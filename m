@@ -1,10 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Date: Wed, 19 Jun 2002 15:02:56 +0200
+From: Jacob Gorm Hansen <jg@domain.hid>
+Message-ID: <20020619130256.GA1529@domain.hid>
+References: <3D0F0BA2.969434A3@domain.hid> <20020619051755.75505.qmail@domain.hid> <15632.30733.393799.700979@domain.hid>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15692.6131.246095.272987@domain.hid>
-Date: Sat, 3 Aug 2002 19:50:43 +0200
-Subject: [Adeos-main] [ANNOUNCE] Adeos-20020803 snapshot
+Content-Disposition: inline
+In-Reply-To: <15632.30733.393799.700979@domain.hid>
+Subject: [Adeos-main] Address spaces in adeos
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,22 +20,14 @@ List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
 To: adeos-main@gna.org
 
-Hello all,
+Hi,
 
-A new Adeos snapshot has been released on August 3 2002. This
-intermediate release includes a stable port to the latest Linux 2.4.19
-kernel for x86 platforms.
+just curious,
 
-You will also find a preliminary port of the nanokernel to the Linux
-2.5 branch (x86), but since it is based on 2.5.25, it is only aimed at
-people who like living on the bleeding edge... As you may already
-know, 2.5.25 has nasty IDE-related problems, among other bugs.
-You've been warned.
+do you guys have any plans to implement protected address spaces, and means of
+communicating between them (like ipc)? There are some scenarios in which
+operating systems cannot be trusted not to sabotage eachother.
 
-Download:
-http://savannah.gnu.org/download/adeos/snapshots/adeos-20020803.tar.gz
-
-Regards,
-
-Philippe.
+best,
+Jacob
 
