@@ -1,33 +1,38 @@
-Date: Thu, 29 Jul 2004 14:50:28 +0200
-Message-ID: <20040729125028.GA9378@domain.hid>
-Mime-Version: 1.0
+From: Philippe Gerum <philippe.gerum@domain.hid>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-From: kleine-budde@domain.hid (Marc Kleine-Budde)
-Subject: [Adeos-main] What's the purpose of ADEOS_USER_EVENT?
+Content-Transfer-Encoding: 7bit
+Message-ID: <15805.29685.210293.7530@domain.hid>
+Date: Mon, 28 Oct 2002 18:29:25 +0100
+Subject: [Adeos-main] Patch 2.4.19-r6c1 (modular)
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+List-Id: <adeos-main.nongnu.org>
+List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
+List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
 To: adeos-main@gna.org
-Cc: rtai-dev <rtai-dev@domain.hid>
 
-Hi Philippe.
+The first revision of a modularized Adeos nanokernel (x86) is
+available in the CVS as a candidate patch (r6c1) against 2.4.19.
+Starting from this version, the interrupt pipelining can be
+enabled/disabled dynamically upon (internal) request.
 
-What's the purpose of ADEOS_USER_EVENT?
-User defined event?
+A minimalistic Adeos core component remains statically bound to the
+Linux kernel to provide the necessary hooks, while most of the
+pipelining logic is now in a driver (see linux/drivers/adeos). As
+previously indicated, fully static (in-kernel) inclusion remains
+available using the proper kernel configuration option.
 
-Marc
+Just "insmod/rmmod adeos" to load/unload the nanokernel from a patched
+Linux kernel which has been configured with a modular Adeos support.
 
--- 
-#!/bin/sh
-set - `type $0` 'tr "[a-zA-Z]" "[n-za-mN-ZA-M]"';while [ "$2" != "" ];do \
-shift;done; echo 'frq -a -rc '`echo "$0"| $1 `'>$UBZR/.`rpub signature|'`\
-echo $1|$1`'`;rpub "Jr ner fvtangher bs obet. Erfvfgnapr vf shgvyr!"'|$1|sh
+Regards,
+
+Philippe.
+
 
