@@ -1,12 +1,9 @@
-Message-ID: <3D0DD94D.EE781A5E@opersys.com>
-Date: Mon, 17 Jun 2002 12:42:53 +0000
-From: Karim Yaghmour <karim@domain.hid>
-Reply-To: karim@domain.hid
+Subject: Realtime on top of Adeos (Was: Re: [Adeos-main] [ANNOUNCE] Adeos M2)
 MIME-Version: 1.0
-References: <20020617120652.36799.qmail@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: My first tests with adeos!!!
+Message-ID: <OFF782B728.BFF318FC-ON85256BF9.00772E1C-85256BF9.007B8E4C@LocalDomain>
+From: Timothy_J_Massey/TheModernMerchant@domain.hid
+Date: Wed, 17 Jul 2002 17:44:15 -0400
+Content-Type: multipart/alternative; boundary="=_alternative 007B8E4785256BF9_="
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,49 +14,67 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: mohan kumar <mohan_knb@domain.hid>, Adeos <adeos-main@gna.org>
-Cc: rtai@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org
 
-Hello Mohan,
+This is a multipart message in MIME format.
+--=_alternative 007B8E4785256BF9_=
+Content-Type: text/plain; charset="us-ascii"
 
-Cool testdrive ... ;)
+Hello!
 
-BTW, there's an Adeos mailing list here: adeos-main@gna.org
-That's the best place to send your mails to.
+Quick question:  how does Adeos affect real-time response?  Wouldn't Adeos 
+have to be real-time itself, and wouldn't the (guaranteed) latency of 
+Adeos be added to the latency of the upper level RTOS?
 
-mohan kumar wrote:
-> Now, i changed the way timer interrupt(0) is hanlded
-> using the adeos_control_irq call. My understanding is
-> that "it can control weather the interrupt is
-> dispatched to lower priority domains" So i set my
-> domains priority higher to linux and then made adeos
-> not to send linux the interrrupts. I did this because
-> i programmed the 8254 for more grannular interrupts
-> and was going to dispatch the timer interrupt to linux
-> only after 10ms.
+Tim Massey
 
-Did you write the dispatching code? If you didn't then that's what's
-hanging your system for sure.
 
-> I tried with more interrupts down the line (2,3,..9)
-> and see the same scenario happening.
 
-In the example test case we provide, all interrupts are fed to
-all the domains in the ipipe. Of course, if you start telling
-Adeos not to pass interrupts to Linux, then you must have a
-way to handle them.
 
-I think the best way to get some help would be to post the code
-you wrote for your domain. Otherwise, we can only guess, but not
-much more ...
 
-Cheers,
+Philippe Gerum <rpm@xenomai.org>
+Sent by: adeos-main-admin@domain.hid
+07/17/2002 05:38 PM
 
-Karim
+ 
+        To:     linux-kernel@domain.hid
+        cc:     adeos-main@gna.org, 
+xenomai-main@domain.hid
+        Subject:        [Adeos-main] [ANNOUNCE] Adeos M2
+(*) Xenomai is a development framework for real-time systems which
+includes a collection of emulators mimicking APIs of traditional RTOS
+such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single
+"generic" RTOS core which have been ported over Adeos.
 
-===================================================
-                 Karim Yaghmour
-               karim@domain.hid
-      Embedded and Real-Time Linux Expert
-===================================================
+--=_alternative 007B8E4785256BF9_=
+Content-Type: text/html; charset="us-ascii"
+
+
+<br><font size=2 face="sans-serif">Hello!</font>
+<br>
+<br><font size=2 face="sans-serif">Quick question: &nbsp;how does Adeos affect real-time response? &nbsp;Wouldn't Adeos have to be real-time itself, and wouldn't the (guaranteed) latency of Adeos be added to the latency of the upper level RTOS?</font>
+<br>
+<br><font size=2 face="sans-serif">Tim Massey</font>
+<br>
+<br>
+<br>
+<br>
+<table width=100%>
+<tr valign=top>
+<td>
+<td><font size=1 face="sans-serif"><b>Philippe Gerum &lt;rpm@xenomai.org&gt;</b></font>
+<br><font size=1 face="sans-serif">Sent by: adeos-main-admin@domain.hid</font>
+<p><font size=1 face="sans-serif">07/17/2002 05:38 PM</font>
+<br>
+<td><font size=1 face="Arial">&nbsp; &nbsp; &nbsp; &nbsp; </font>
+<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; To: &nbsp; &nbsp; &nbsp; &nbsp;linux-kernel@domain.hid</font>
+<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; cc: &nbsp; &nbsp; &nbsp; &nbsp;adeos-main@gna.org, xenomai-main@domain.hid</font>
+<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; Subject: &nbsp; &nbsp; &nbsp; &nbsp;[Adeos-main] [ANNOUNCE] Adeos M2</font></table>
+<br><font size=2 face="Courier New">(*) Xenomai is a development framework for real-time systems which<br>
+includes a collection of emulators mimicking APIs of traditional RTOS<br>
+such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single<br>
+&quot;generic&quot; RTOS core which have been ported over Adeos.</font>
+<br>
+--=_alternative 007B8E4785256BF9_=--
 
