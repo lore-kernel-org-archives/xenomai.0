@@ -1,10 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Content-Type: text/plain
-Message-Id: <1069320754.626.47.camel@domain.hid>
-Mime-Version: 1.0
-Date: 20 Nov 2003 10:32:34 +0100
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Adeos r9
+Message-ID: <20031224174944.62211.qmail@domain.hid>
+Date: Wed, 24 Dec 2003 17:49:44 +0000 (GMT)
+From: =?iso-8859-1?q?mount=20me?= <linladn@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Adeos-main] HAL
 List-Id: <adeos-main.nongnu.org>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,27 +15,21 @@ List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-Hi,
+Dear (H)all,
+How to start writing a HAL for our normal Desktop 
+Linux ?  Where could i get the necessary details 
+to start from scratch OR any tutorials to develop
+HAL for Linux/Embedded OS ? Some links,tips,books plz.
 
-Adeos r9 for 2.4 is out. Most of the work was aimed at making the
-integration of Adeos with other patches easier (i.e. kpreempt,
-low-latency, LTT), in order to produce combo patches later.
+regards,
+karthik bala guru
+sdcckarthik@domain.hid
 
-Adeos support for 2.6 is making progress too, and has been updated for
--test9.
 
-Adeos patches are available here:
-http://savannah.gnu.org/download/adeos/linux/
 
-Preliminary porting doc:
-http://savannah.gnu.org/download/adeos/doc/porting.txt
 
-Some additional information about interrupt handling using Adeos in a
-real-world application:
-https://mail.rtai.org/pipermail/rtai/2003-November/005623.html
-
--- 
-Philippe.
-
+________________________________________________________________________
+Yahoo! India Mobile: Download the latest polyphonic ringtones.
+Go to http://in.mobile.yahoo.com
 
 
