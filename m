@@ -1,42 +1,30 @@
-Message-ID: <20021105090820.2213.qmail@domain.hid>
-Date: Tue, 5 Nov 2002 01:08:20 -0800 (PST)
-From: Girish Wadhwani <gwadh@domain.hid>
-Subject: Re: [Adeos-main] Re: RTOS over Adeos document
-In-Reply-To: <20021104172711.GA2989@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <15658.47942.927732.168712@domain.hid>
+Date: Tue, 9 Jul 2002 12:30:30 +0200
+Subject: [Adeos-main] Btw,
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: <adeos-main.mail.freesoftware.fsf.org>
+List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: Jacob Gorm Hansen <jg@domain.hid>, Karim Yaghmour <karim@domain.hid>
-Cc: adeos-main@gna.org
+List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
+To: xenomai-main@domain.hid
+Cc: adeos-main@gna.org, rtai-dev@domain.hid, pierre.ficheux@domain.hid
 
-Hello Jacob,
+Xenomai's real-time nanokernel has been ported over Adeos. Works
+great. Nothing special.
 
+Philippe.
 
-> Yes, we are working on a public CVS repo, should be
-> up in a few minutes.
-> Check back soon for access details.
->
-Could you let me know how to access the source. I
-didn't see any links from the site.
+--
 
-How exactly does the project deal with device access?
-
-Cheers,
-Girish 
-
-
-__________________________________________________
-Do you Yahoo!?
-New DSL Internet Access from SBC & Yahoo!
-http://sbc.yahoo.com
-
+http://freesoftware.fsf.org/download/adeos/snapshots/adeos-20020706.tar.gz
+http://freesoftware.fsf.org/download/xenomai/snapshots/xenomai-1.1pre1.tar.gz
 
