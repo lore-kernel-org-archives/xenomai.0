@@ -1,12 +1,10 @@
-Message-ID: <3F11EBC5.10900@domain.hid>
-Date: Sun, 13 Jul 2003 19:31:17 -0400
-From: Karim Yaghmour <karim@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] a few questions
-References: <200307120723.h6C7NmW06778@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: karim@domain.hid
+Message-ID: <16146.53393.27248.460652@domain.hid>
+Date: Mon, 14 Jul 2003 17:47:29 +0200
+Subject: [Adeos-main] Patches 2.6.0test1/r1c1 and 2.4/r8c2
 List-Id: <adeos-main.nongnu.org>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,29 +13,26 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Der Herr Hofrat <der.herr@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
 
-Philippe has already answered the other issues. I have just one thing
-to add about what's below:
+Hi,
 
-Der Herr Hofrat wrote:
->  Has anybody ran multiple Linux or other OS'under ADEOS
->  and are there any docs about this ??
+Two new candidate patches are available. The first one is against
+2.6.0-test1. Preliminary hammering tests on a dual PIII have shown no
+problem so far in SMP mode, but since no concurrent domain was running
+aside of Linux, don't bet your house on it, yet.
 
-No one has yet run multiple Linux instances on Adeos, but there is doc
-about this. Have a look at the "A Practical Approach to Linux Clusters on
-SMP hardware" whitepaper I published close to a year ago:
-http://www.opersys.com/adeos/index.html
-it discusses the issue quite thoroughly.
+The second one (r8c2) is against 2.4.{19,20,21}, and fixes a nasty
+race condition in the domain switch code. Upgrading to r8c2 is highly
+recommended.
 
-Karim
+These patches can be found here:
+http://savannah.nongnu.org/cgi-bin/viewcvs/adeos/adeos/patches/linux/
 
--- 
-Author, Speaker, Developer, Consultant
-Pushing Embedded and Real-Time Linux Systems Beyond the Limits
-http://www.opersys.com || karim@domain.hid || 514-812-4145
+If no showstopper pops up, Adeos milestone #3 will be released by the
+end of this week.
 
+Philippe.
 
 
