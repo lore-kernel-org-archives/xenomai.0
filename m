@@ -2,36 +2,29 @@ From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15826.21905.156728.84938@domain.hid>
-Date: Wed, 13 Nov 2002 14:37:21 +0100
+Message-ID: <15892.25331.907013.597043@domain.hid>
+Date: Thu, 2 Jan 2003 17:04:03 +0100
+Subject: [Adeos-main] Patches 2.4.19-r6c10 and 2.5.54-r3c2
 Reply-To: philippe.gerum@domain.hid
-Subject: [Adeos-main] Adeos snapshot 20021113
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
+List-Id: <adeos-main.nongnu.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
 List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
+List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
 To: adeos-main@gna.org
 
-A new snapshot (adeos-20021113) is available from our download area
-(http://savannah.nongnu.org/download/adeos/snapshots/adeos-20021113.tar.gz/).
 
-It includes the recently modularized layout (Adeos core base + driver)
-and the new "mutex" feature (available as a compile-time support
-option).
+The latest candidate patches against 2.4.19/x86 and 2.5.54/x86 are in
+the CVS.
 
-Adeos mutexes allow multiple domains running on different priority
-levels to enter a common critical section safely, while still enabling
-interrupt delivery for higher priority domains. This should be of some
-use when implementing concurrent o/s domains over Adeos.
+Btw, 2.4-r6c10 is now fully running the current development version of
+the RTAI real-time system, both for UP and SMP configs
+(http://www.aero.polimi.it/~rtai/).
 
-Regards,
+Happy new year.
 
 Philippe.
-
 
