@@ -1,11 +1,10 @@
-From: Philippe Gerum <philippe.gerum@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15819.43249.174706.244197@domain.hid>
-Date: Fri, 8 Nov 2002 13:07:13 +0100
-Reply-To: philippe.gerum@domain.hid
-Subject: [Adeos-main] Candidate patches 2.4r6c2 & 2.5r3c1
+Message-ID: <15826.39948.417701.712466@domain.hid>
+Date: Wed, 13 Nov 2002 19:38:04 +0100
+Subject: [Adeos-main] Adeos snapshot 20021113
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -18,15 +17,17 @@ List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
 To: adeos-main@gna.org
 
-Candidate patches 2.5r3c1 (against 2.5.46) and 2.4r6c2 (against
-2.4.19) are available in the CVS.
+A new snapshot (adeos-20021113) is available from our download area
+(http://savannah.nongnu.org/download/adeos/snapshots/adeos-20021113.tar.gz/).
 
-This work was mainly aimed at keeping up with the 2.5 development
-branch and tweaking a few bits in the pipelining engage/disengage
-protocol.
+It includes the recently modularized layout (Adeos core base + driver)
+and the new "mutex" feature (available as a compile-time support
+option).
 
-[Btw, the preliminary port of 2.4r6c2 to Linux 2.4.20-rc1 happened to
-be very straightforward, so there's hope for the final 2.4.20 too]
+Adeos mutexes allow multiple domains running on different priority
+levels to enter a common critical section safely, while still enabling
+interrupt delivery for higher priority domains. This should be of some
+use when implementing concurrent o/s domains over Adeos.
 
 Regards,
 
