@@ -1,48 +1,52 @@
-Message-ID: <3D35BD91.264AEE03@domain.hid>
-Date: Wed, 17 Jul 2002 14:55:13 -0400
+Message-ID: <3DC85A8A.CE119F27@domain.hid>
+Date: Tue, 05 Nov 2002 18:55:54 -0500
 From: Karim Yaghmour <karim@domain.hid>
 Reply-To: karim@domain.hid
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] RT nanokernel working with ADEOS
-References: <1026904679.653.3.camel@domain.hid>
+Subject: Re: [Adeos-main] Re: RTOS over Adeos document
+References: <20021105232456.62569.qmail@domain.hid>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.mail.freesoftware.fsf.org>
-List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Id: <adeos-main.nongnu.org>
+List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Jerome Poichet <jerome.poichet@domain.hid>
+List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
+To: Girish Wadhwani <gwadh@domain.hid>
 Cc: adeos-main@gna.org
 
-Jerome Poichet wrote:
-> We managed to get a proprietary (sorry nobody's perfect) RT nanokernel
-> working with ADEOS. Thus we have two different OSes working at the same
-> time on the same computer thanks to ADEOS.
+Girish Wadhwani wrote:
+> Wouldn't this severly limit what Adeos could be used
+> for?
+> The hardware will have to scale with the no. of OSes
+> in
+> use. It would be too expenive to use it for
+> allpications like hosting, etc.
 
-This is great news. This is further proof of the viability of the idea.
+If you need to share a machine for hosting, then your best bet is
+to use Jacques Gelinas' virtual servers:
+http://www.solucorp.qc.ca/miscprj/s_context.hc
 
-I had started looking into getting RTEMS to run on Adeos, but I ran out
-of time. Whoever actually knows RTEMS' internals well enough should
-actually be able to do such a port relatively easily. I've looked at
-porting uCos too, but the licensing of the OS requires that you purchase
-a copy of the book to get the sources. An RTEMS port is likely to be
-more useful to the masses since it's licensed under the GPL. There's
-also eCos, but its license isn't approved by the Open Source Initiative.
-Though, it would be a great way for RedHat to revive its dying OS.
+This is actually already used by a few hosting companies and it
+is much better adapted to this job than anything Adeos can do.
 
-> Now we're working on ways to communicate between the two.
+> The only resources
+> that are  shared are the cpu and memory making it not
+> that beneficial to be running multiple OSes.
 
-Have a look at some of the papers we used to create Adeos. Many of the
-mechanisms required to have 2 OSes communicate with each other on
-top of a nanokernel are fairly well documented.
-
-Cheers,
+I, for one, really like to idea of having 2 completely separate
+OSes each running with their separate hardware linked using a
+RAM-based virtual Ethernet. I don't like the idea of having to
+make special modifications to block device drivers and I don't
+like the idea of having layers of block requests (a-la VMWare).
+This doesn't mean other folks can't find those things of some use.
+But from my perspective, nanokernels are better off really being
+"nano" ...
 
 Karim
 
@@ -51,4 +55,5 @@ Karim
                karim@domain.hid
       Embedded and Real-Time Linux Expert
 ===================================================
+
 
