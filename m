@@ -1,43 +1,34 @@
-Subject: Re: [Adeos-main] Re: RTOS over Adeos document
-From: Jacob Gorm Hansen <jg@domain.hid>
-In-Reply-To: <20021105090820.2213.qmail@domain.hid>
-References: <20021105090820.2213.qmail@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: 05 Nov 2002 11:21:50 +0100
-Message-Id: <1036491711.459.54.camel@domain.hid>
-Mime-Version: 1.0
+From: toon.diels@domain.hid
+Message-ID: <OF3F81DAB9.AAA6C7EC-ONC1256BF4.002B1C95@domain.hid>
+Date: Fri, 12 Jul 2002 09:56:29 +0200
+MIME-Version: 1.0
+Content-type: text/plain; charset=us-ascii
+Subject: [Adeos-main] nice techno!
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: <adeos-main.mail.freesoftware.fsf.org>
+List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: Girish Wadhwani <gwadh@domain.hid>
-Cc: adeos-main@gna.org
+List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
+To: adeos-main@gna.org
 
-On Tue, 2002-11-05 at 10:08, Girish Wadhwani wrote:
-> Hello Jacob,
-> 
-> 
-> > Yes, we are working on a public CVS repo, should be
-> > up in a few minutes.
-> > Check back soon for access details.
-> >
-> Could you let me know how to access the source. I
-> didn't see any links from the site.
+Hi all,
 
-The pserver didn't get to work, I've put up some source tarballs
-instead.
+I explored yesterday the Adeos nanokernel and was surprised by the possibilities and also the
+stability!
 
-See the README for more info.
+I tested for example multiple domains having different priorities and installing handlers on the same interrupt
+which works exactly is it is described.
 
-best,
-Jacob
+I also tested snooping other interrupts (mouse/keyboard/ide0/ethernet) then the timer example provided in the package.
+(which works ofcourse also great)
 
+good job!
+
+Toon
 
 
