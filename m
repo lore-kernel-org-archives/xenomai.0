@@ -1,9 +1,10 @@
-Message-ID: <3D37A135.D57FD1A5@domain.hid>
-Date: Fri, 19 Jul 2002 01:18:45 -0400
+Message-ID: <3D0F0BA2.969434A3@domain.hid>
+Date: Tue, 18 Jun 2002 10:29:54 +0000
 From: Karim Yaghmour <karim@domain.hid>
 Reply-To: karim@domain.hid
 MIME-Version: 1.0
-Subject: RE: [Adeos-main] RT nanokernel working with ADEOS 
+Subject: Re: [Adeos-main] Re: My first tests with adeos!!!
+References: <20020618071723.91139.qmail@domain.hid>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
@@ -16,21 +17,39 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
-Cc: Adeos <adeos-main@gna.org>
+To: mohan kumar <mohan_knb@domain.hid>
+Cc: adeos-main@gna.org
 
-[Sorry for having to artificially manufacture a reply, but my
-hosting company's mail server was in the sewers. I've changed
-providers and everything should be fine now.]
+Hello Mohan,
 
-Herman Bruyninckx wrote:
->> There's also eCos, but its license isn't approved by the Open Source
->> Initiative.  Though, it would be a great way for RedHat to revive
->> its dying OS.
->The new version will be GPL. And I think it will be released even
->though Redhat stopped its Ecos activities...
+I've taken a summary look at the code and I think the following is
+the problem:
 
-I haven't seen this anywhere ... do you have a link ?
+mohan kumar wrote:
+> ...
+>     case 0:
+>             adeos_control_irq(INT_NUM,0,IPIPE_PASS_MASK);
+>             break;
+> ...
+
+I don't think that adeos_control_irq() will work like this alone.
+Have a look at arch/i386/ipipe.c:ipipe_handle_irq(). Notice that
+the setting of interrupt flags for the various domains is done
+prior to any domain handler being called. By disabling the passing
+of the interrupts in domain_entry() as you do, all subsequent
+interrupts are not passed on. What you actually do with
+adeos_control_irq() in the interrupt handler only influences the
+next round of interrupts. Given the code in the interrupt handler,
+however, I think that you should be making the following call if
+you want the interrupts to propagate the next time they occur:
+adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,1);
+
+If you disabled the interrupt passing and would still want to
+propagate the IRQ down the ipipe, then have a look at the latest
+code in the CVS by Philippe. Particularily, try using
+adeos_propagate_irq() in your handler.
+
+Cheers,
 
 Karim
 
