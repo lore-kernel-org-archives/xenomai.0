@@ -1,59 +1,85 @@
-Message-ID: <42D27CA4.5080308@domain.hid>
-Date: Mon, 11 Jul 2005 16:05:24 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <4247DEA9.6080400@domain.hid>
+Date: Mon, 28 Mar 2005 12:38:33 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+Subject: Re: [Adeos-main] Adeos-2.6.11 glitch [more info]
+References: <Pine.LNX.4.53.0503281139180.20969@domain.hid> <Pine.LNX.4.53.0503281237020.21474@domain.hid> <4247DCE9.8070407@domain.hid>
+In-Reply-To: <4247DCE9.8070407@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] LRTBF par-log.c & adeos_critical_enter question
+Sender: adeos-main-admin@domain.hid
+Errors-To: adeos-main-admin@domain.hid
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Post: <mailto:adeos-main@gna.org>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Rus V. Brushkoff" <rus@domain.hid>, adeos-main@gna.org
 
-Hi all! (Philippe? Kristian? :-)
+Philippe Gerum wrote:
+> Hi Rus,
+> 
+> Rus V. Brushkoff wrote:
+> 
+>> On Mon, 28 Mar 2005, Rus V. Brushkoff wrote:
+>>
+>> : After booting the system do not receive any ICH interrupt (no working
+>> :mouse/usb/sound/eth0 ) :
+>>
+>> [...]
+>>
+>> : System is Intel D865PERL P4 based system. If I pass "pci=routeirq" 
+>> kernel
+>> :parameter - ICH begin to work again.
+>>
+> 
+> Are we talking about the r9 available from the download area?
+> 
+>>  With the "pci=routeirq" parameter - the kernel locks up solid in
+>> rc.hotplug scripts. If adeos is compiled as module - all is working
+>> fine until the adeos module inserted - the kernel locks up while moving
+>> the mouse. Tested with preeemt=on/off and msi=on/off - result the same,
+>> except that the kernel compiled with preempt=on issuing an "stack
+>> overflow in do_IRQ()" message while rc.hotplug script is running - 
+>> kernel,
+>> compiled without preempt, only freezes.
+>>
+> 
+> Looks like an IRQ acknowledge issue. Like for the previous MSI bug, it's 
+> all a matter of being able to put my hands on a box that exhibits the 
+> problem.
+> 
+>   Can supply any additional info if requested.
+> 
+>>
+> 
+> Does the box still freeze with CONFIG_ADEOS_MODULE-CONFIG_HOTPLUG, 
+> before or after the Adeos module is pushed?
 
-Over the weekend I was pondering over the LRTBF par-log.c example and used
-the circular buffer for one of my own examples:
+i.e. CONFIG_ADEOS_MODULE on
+      CONFIG_HOTPLUG off
 
-One question arose - which actually causes a problem too:
+Btw, could you please send me your .config privately ?
 
-In par-log.c in read_proc: why do you set disable_timer ?
+> 
+>> :
+>>
+>>         Rus
+>>
+>> _______________________________________________
+>> Adeos-main mailing list
+>> Adeos-main@domain.hid
+>> https://mail.gna.org/listinfo/adeos-main
+> 
+> 
+> 
 
-In read_proc there is the while loop:
 
-	flags = adeos_critical_enter (NULL);
-	while (read_pos != write_pos && len <= (count - MAX_STR_LEN )) {
-	[...]
-	}
-	adeos_critical_exit (flags);
+-- 
 
-After adeos_critical_enter, interrupts are disabled anyway (right?), so no
-modification of read_pos or write_pos is possible and reading over the
-proc file is not disturbed.
-
-Furthermore in read_proc you reset disable_timer only after the complete
-buffer was read via the proc file:
-
-	if (read_pos == write_pos) {
-		disable_timer = 0;
-
-The problem:
-While some user-space app is reading from the proc file, nothing is written
-to the buffer and this causes data loss.
-
-IMO, it would be best, if writing to the buffer is not disabled in read_proc.
-In the actual data copying action in read_proc/while-loop no interrupt can
-interfer - and if not everything from the buffer was read in the first place,
-there is no problem if some data is added to the buffer until the next read
-action occurs.
-
-Maybe I'm overlooking something here - thanks for any comments and help! :-)
-
-Best regards,
-Hannes.
+Philippe.
 
