@@ -1,50 +1,49 @@
-Subject: Re: [Adeos-main] Re: RTOS over Adeos document
-From: Jacob Gorm Hansen <jg@domain.hid>
-In-Reply-To: <3DC6BEE3.3AD48CCE@opersys.com>
-References: <20021104100720.78382.qmail@domain.hid>
-	<3DC69037.5A9A1577@domain.hid> <20021104154142.GA2608@domain.hid>
-	<3DC6A8E8.AFE2D5DC@opersys.com> <20021104172711.GA2989@domain.hid> 
-	<3DC6BEE3.3AD48CCE@opersys.com>
-Content-Type: text/plain
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Date: 06 Nov 2002 11:45:22 +0100
-Message-Id: <1036579522.718.2.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <15669.58314.307577.58284@domain.hid>
+Date: Wed, 17 Jul 2002 23:38:18 +0200
+Subject: [Adeos-main] [ANNOUNCE] Adeos M2
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: <adeos-main.mail.freesoftware.fsf.org>
+List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: karim@domain.hid
-Cc: adeos list <adeos-main@gna.org>
+List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
+To: linux-kernel@domain.hid
+Cc: adeos-main@gna.org, xenomai-main@domain.hid
 
-On Mon, 2002-11-04 at 19:39, Karim Yaghmour wrote:
-> 
-> Jacob Gorm Hansen wrote:
-> > If Adeos gets spaces like Space, then it would be interesting.
-> > Otherwise I don't think it is possible, because we need to protect guest
-> > OSes against eachother.
-> 
-> You don't need to do that if each OS is stable and doesn't behave
-> randomly, which we assume is a fine description of Linux. As long
-> as the PCI probe is modified to only reveal the devices the OS
-> instance is supposed to see, then all other hardware should be
-> out of reach.
+On behalf of the Adeos project team, I'm glad to announce the
+availability of the new Adeos milestone release M2 based on 2.4.18
+(x86).  This release aims at stabilizing the code (internals and API),
+which now includes the SMP support.
 
-I agree for the purposes of running a disco-like setup on a large MP
-machine.
+Aside of this, the initial port of Adeos to 2.5 (2.5.25/x86) has just
+been completed. It is available from our CVS area on Savannah.
 
-Our purpose with nomadbios is to make operating systems a kind of mobile
-agents, so they cannot be trusted and we need MMU protection. If Grids
-are to over happen then I think something like this is needed.
+Finally, the RTOS available from the Xenomai project (*) has been
+ported over Adeos to serve as a proof-of-concept of one of the
+possible applications Karim had envisioned. In order to achieve a high
+degree of determinism, this real-time kernel (loaded as a module) runs
+aside of Linux as a separate Adeos domain living ahead of the Linux
+domain in the interrupt pipeline.
 
-Best,
-Jacob
+M2 release: http://savannah.gnu.org/download/adeos/releases/adeos-m2.tar.gz
+On-line Adeos doc: http://www.freesoftware.fsf.org/adeos/doc/api/globals.html
+Adeos CVS: http://savannah.gnu.org/cvs/?group=adeos
+Xenomai: http://savannah.gnu.org/download/xenomai/snapshots/xenomai-1.1pre2.tar.gz
 
+(*) Xenomai is a development framework for real-time systems which
+includes a collection of emulators mimicking APIs of traditional RTOS
+such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single
+"generic" RTOS core which have been ported over Adeos.
 
+Regards,
+
+Philippe.
 
