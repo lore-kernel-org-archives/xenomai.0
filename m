@@ -1,12 +1,11 @@
-Date: Thu, 5 Aug 2004 00:27:27 +0200
-Subject: Re: [Adeos-main] adeos_enter/exit_syscall
-Message-ID: <20040804222727.GA15475@domain.hid>
-References: <0C53F2DBA565D411885300508B553B5204CCEAE9@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+Reply-To: rpm@xenomai.org
+Content-Type: text/plain
+Message-Id: <1093591259.624.18.camel@domain.hid>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0C53F2DBA565D411885300508B553B5204CCEAE9@domain.hid>
-From: kleine-budde@domain.hid (Marc Kleine-Budde)
+Date: Fri, 27 Aug 2004 09:20:59 +0200
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Adeos availability
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,34 +16,29 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: aaron durbin <aarondurbin@domain.hid>
-Cc: "'adeos-main@gna.org'" <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-Hi!
+Here is the current status of the Adeos project wrt architecture ports:
 
-Let's hope I've understand the concept... :)
+o Adeos for Linux 2.4:
 
-On Wed, Aug 04, 2004 at 05:16:07PM -0500, aaron durbin wrote:
-> I have a question concerning the adeos_enter_syscall routine.  Is there
-> normally event monitors for syscall entry (SYSCALL_PROLOGUE)?  If so and
+- x86 (stable, UP/SMP)
+- PPC (testing, UP)
+- ARM (testing, UP)
+- ARMnommu (testing, UP)
 
-There can be a monitor, but there must not be one. 
+o Adeos for Linux 2.6:
 
-> handle_event returns non-zero then one automatically restores the registers
-> and returns w/o calling the system call.  Doesn't this destroy the call?
+- x86 (stable, UP/SMP)
+- PPC (testing, UP -- thanks to Denx Software Engineering for having
+kindly provided the test platform)
+- ia64 (stable, UP/SMP)
 
-Yes - It should - This way you can handle syscall in the RTHAL domain
-und substitute it with you own syscall, doing the same, but better then
-linux (e.g. nanosleep).
-
-Or the syscalls to the nucleus and skins, they are completely handled
-outside of the linux kernel.
-
-hth - Marc
+Adeos patches can be downloaded from:
+http://download.gna.org/adeos/patches/
 
 -- 
-#!/bin/sh
-set - `type $0` 'tr "[a-zA-Z]" "[n-za-mN-ZA-M]"';while [ "$2" != "" ];do \
-shift;done; echo 'frq -a -rc '`echo "$0"| $1 `'>$UBZR/.`rpub signature|'`\
-echo $1|$1`'`;rpub "Jr ner fvtangher bs obet. Erfvfgnapr vf shgvyr!"'|$1|sh
+
+Philippe.
+
 
