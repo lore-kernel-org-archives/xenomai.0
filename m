@@ -1,13 +1,10 @@
-Subject: Re: [Adeos-main] What's the purpose of ADEOS_USER_EVENT?
-From: Philippe Gerum <rpm@xenomai.org>
-Reply-To: rpm@xenomai.org
-In-Reply-To: <20040729125028.GA9378@domain.hid>
-References: <20040729125028.GA9378@domain.hid>
-Content-Type: text/plain
-Message-Id: <1091105785.1466.4.camel@domain.hid>
-Mime-Version: 1.0
-Date: Thu, 29 Jul 2004 14:56:25 +0200
-Content-Transfer-Encoding: 7bit
+Message-ID: <0C53F2DBA565D411885300508B553B5204CCEAE7@domain.hid>
+From: aaron durbin <aarondurbin@domain.hid>
+Date: Wed, 4 Aug 2004 08:35:37 -0500 
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Subject: [Adeos-main] adeos porting
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -18,21 +15,27 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Marc Kleine-Budde <kleine-budde@domain.hid>
-Cc: adeos-main@gna.org, rtai-dev <rtai-dev@domain.hid>
+To: "'adeos-main@gna.org'" <adeos-main@gna.org>
 
-On Thu, 2004-07-29 at 14:50, Marc Kleine-Budde wrote:
-> Hi Philippe.
-> 
-> What's the purpose of ADEOS_USER_EVENT?
-> User defined event?
+Hi,
 
-Yes. Free to use by sending it through adeos_handle_event().
+I am planning on porting ADEOS over to m68knommu (ColdFire based)
+architecture.  I have read the porting guidelines, however they are a little
+outdated. Currently I am using the recently released
+adeos-linux-2.6.7-i386-r6c6.patch patch for a basis. I was wondering if
+there was any more recent documentation on the API so I know exactly what
+calls should be performed in entry.S.
 
-> 
-> Marc
--- 
+The issue I am running into is that the version 2 core of ColdFire does not
+have user/kernel stack support in hardware.  Therefore in entry.S needs to
+disable interrupts to make the stack switch atomic.  I was wondering if it
+would be sufficient to just stall the pipeline for linux at this point and
+make sure to unstall as apposed to disabling interrupts.
 
-Philippe.
+My plans are to first port over ADEOS then go for RTAI.  The two coupled
+together look very promising, and I am hoping they will work as well for
+ColdFire as it does for x86.  
 
+Thanks for the help,
+Aaron Durbin 
 
