@@ -1,12 +1,12 @@
-Subject: Re: [Adeos-main] Re: Patch/Code maintanance 
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: Your message of "Fri, 04 Jun 2004 10:57:59 +0200."
-             <40C03997.5040805@domain.hid> 
-Date: Fri, 04 Jun 2004 17:54:32 +0200
-Message-Id: <20040604155437.6D41AC109F@atlas.denx.de>
+Message-ID: <40C42A0D.5070501@domain.hid>
+Date: Mon, 07 Jun 2004 10:40:45 +0200
+From: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Adeos-main] Re: Patch/Code maintanance
+References: <20040604155437.6D41AC109F@atlas.denx.de>
+In-Reply-To: <20040604155437.6D41AC109F@atlas.denx.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,39 +17,34 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
+To: Wolfgang Denk <wd@domain.hid>
 Cc: rpm@xenomai.org, adeos-main <adeos-main@gna.org>
 
-Hi Wolfgang,
-
-in message <40C03997.5040805@domain.hid> you wrote:
+On 06/04/2004 05:54 PM Wolfgang Denk wrote:
+> Hi Wolfgang,
 > 
-> -	gcc $(CFLAGS) -o $@ -c $<
-> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-...
-> -	gcc $(CFLAGS) -o $@ -c $<
-> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-...
-> -	gcc $(CFLAGS) -o $@ -c $<
-> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-...
-> -	gcc $(CFLAGS) -o $@ -c $<
-> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
+> in message <40C03997.5040805@domain.hid> you wrote:
+>> 
+>> -	gcc $(CFLAGS) -o $@ -c $<
+>> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
+> ...
+>> -	gcc $(CFLAGS) -o $@ -c $<
+>> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
+> ...
+>> -	gcc $(CFLAGS) -o $@ -c $<
+>> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
+> ...
+>> -	gcc $(CFLAGS) -o $@ -c $<
+>> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
+> 
+> Why don't you simply define
+> 
+> 	CC = $(CROSS_COMPILE)gcc
+> 
+> _once_ at the beginning of the Makefile, and  then  use  $(CC)  only?
+> This is IMHO much easier to maintain.
 
-Why don't you simply define
+Of course. Thanks for the hint.
 
-	CC = $(CROSS_COMPILE)gcc
-
-_once_ at the beginning of the Makefile, and  then  use  $(CC)  only?
-This is IMHO much easier to maintain.
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-4596-87  Fax: (+49)-8142-4596-88  Email: wd@domain.hid
-If you can't beat it or corrupt it, you pretend it was your  idea  in
-the first place.                 - Terry Pratchett, _Guards! Guards!_
+Wolfgang.
 
