@@ -4,9 +4,9 @@ Reply-To: rpm@xenomai.org
 In-Reply-To: <1106857570.3241.76.camel@domain.hid>
 References: <1106857570.3241.76.camel@domain.hid>
 Content-Type: text/plain
-Message-Id: <1106859277.707.64.camel@domain.hid>
+Message-Id: <1106859650.707.67.camel@domain.hid>
 Mime-Version: 1.0
-Date: Thu, 27 Jan 2005 21:54:37 +0100
+Date: Thu, 27 Jan 2005 22:00:50 +0100
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
@@ -34,6 +34,12 @@ On Thu, 2005-01-27 at 21:26, Michael Neuhauser wrote:
 > I don't understand why the non-atomic __set_bit() is used instead of the
 > atomic set_bit(). Maybe someone can shed some light on this.
 > 
+
+In the case of __adeos_stall_root() and friends which all deal with the
+current cpuid, we need to keep the adeos_lock_cpu/adeos_unlock_cpu
+construct first to load the cpuid, then to guarantee that no CPU
+migration will occur while fiddling with the array dereference.
+
 > Suppose we have a non-SMP machine. In this case, adeos_get_cpu() is a
 > nop. Hence, hw-irqs may be enabled when __set_bit() is executed. On ARM,
 > __set_bit() is implemented as
@@ -53,14 +59,6 @@ On Thu, 2005-01-27 at 21:26, Michael Neuhauser wrote:
 > __adeos_test_and_stall_root() and adeos_unstall_pipeline_from() also use
 > some non-atomic bitop without ensuring that hw-interrupts are disabled.
 > 
-
-Ack, it's a bug non-x86 wise; likely a collision between two past change
-sets, namely using adeos_get_cpu() when adeos_lock_cpu() would have been
-overkill on UP, and set/clear_bits() changed to __set/__clear_bits() for
-the same reason given that the interrupts were guaranteed to be off at
-that time. The problem is that #1 came after #2, and introduced this bug
-recently.
-
 > Mike
 -- 
 
