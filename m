@@ -1,63 +1,35 @@
-Message-ID: <3D90D388.746D0C0D@opersys.com>
-Date: Tue, 24 Sep 2002 17:05:12 -0400
-From: Karim Yaghmour <karim@domain.hid>
-Reply-To: karim@domain.hid
+Message-ID: <423967B1.2070408@domain.hid>
+Date: Thu, 17 Mar 2005 12:19:13 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <3D8E8371.D2070D87@domain.hid> <20020922045907.C35@domain.hid>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: [PATCH] Adeos nanokernel for 2.5.38 1/2: no-arch code
+Subject: [Adeos-main] New Adeos 2.4/x86 release manager
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.mail.freesoftware.fsf.org>
-List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Pavel Machek <pavel@domain.hid>
-Cc: linux-kernel <linux-kernel@domain.hid>, Adeos <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: adeos-main@gna.org, Alexis Berlemont <alexis.berlemont@domain.hid>
 
-Hello Pavel,
+Hi all,
 
-Pavel Machek wrote:
-> > This is a patch for adding the Adeos nanokernel to the Linux kernel as
-> > described earlier:
-> > http://marc.theaimsgroup.com/?l=linux-kernel&m=102309348817485&w=2
-> 
-> Maybe adding Docs/adeos.txt is good idea... (sorry can't access web
-> right now) --
+FYI, I've just handed over maintenance of Adeos for the 2.4/x86 kernel series to Alexis
+Berlemont, who will act as the release manager for these patches.
+Hopefully, this should help in keeping the Adeos support in sync with the latest Linux 2.4
+releases and GCC updates, better than I could do lately. This move should help me in
+focusing on Adeos for the 2.6 kernel series.
 
-Right, we'll do that.
+Alexis is currently handling the 2.4.28 and 2.4.29 upgrades which were missing so far.
+Expect more news from him when that's done.
 
-> so this is aimed at being free rtlinux replacement?
+-- 
 
-I'm not sure "replacement" is the appropriate description for this.
-The scheme used by rtlinux and rtai is a master-slave scheme where
-Linux is a slave to the rt executive. Adeos makes the entire scheme
-obsolete by making all the OSes running on the same hardware clients
-of the same nanokernel, regardless of whether the client OSes provide
-hard RT or not. None of these OSes need to have a "other OS" task,
-as rtlinux and rtai clearly do. Rather, when an OS is done using
-the machine, it tells Adeos that it's done and Adeos returns control
-to whichever other OS is next in the interrupt pipeline.
-
-To be honest, nothing in Adeos is "new". Adeos is implemented on
-classic early '90s nanokernel research. I've listed a number of
-nanokernel papers in the paper I wrote on Adeos. A complete list
-of nanokernel papers would probably have hundreds of entries.
-Some of these nanokernels even had OS schedulers (exokernel for
-instance). All Adeos implements is a scheme for sharing the
-interrupts among the various OSes using an interrupt pipeline.
-
-Karim
-
-===================================================
-                 Karim Yaghmour
-               karim@domain.hid
-      Embedded and Real-Time Linux Expert
-===================================================
+Philippe.
 
 
