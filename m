@@ -1,13 +1,15 @@
 Subject: Re: [Adeos-main] End of interrupt scheduling
 From: Michael Neuhauser <mike@domain.hid>
-In-Reply-To: <41B974E9.7080801@domain.hid>
+In-Reply-To: <41B9A304.6060101@domain.hid>
 References: <008b01c4b5dd$04d20890$7405a8c0@domain.hid>
 	 <1098196627.666.9.camel@domain.hid> <1098196994.666.11.camel@domain.hid>
 	 <41B974E9.7080801@domain.hid>
+	 <1102682214.13152.116.camel@domain.hid>
+	 <41B9A304.6060101@domain.hid>
 Content-Type: text/plain
-Message-Id: <1102682214.13152.116.camel@domain.hid>
+Message-Id: <1102686747.13152.134.camel@domain.hid>
 Mime-Version: 1.0
-Date: Fri, 10 Dec 2004 13:36:54 +0100
+Date: Fri, 10 Dec 2004 14:52:29 +0100
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
@@ -21,38 +23,34 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-On Fri, 2004-12-10 at 11:05, Andre Tousch wrote:
+On Fri, 2004-12-10 at 14:22, Andre Tousch wrote:
 > Hi,
-> 
-> I'm currently using an RTOS with Linux/Adeos on ARM.
+> thanks for your reply.
 
-What CPU & Kernel are you using? FYI: I'm currently working with an
-ARM920T CPU on Linux 2.4.21-rmk1-crus1.4.2 and found some issues - if
-this is relevant for you: I will post about it here soon.
+I hope you don't mind when we continue this on the mailing list, other
+people might also be interested in it or have something to say on these
+matters.
 
 > [...]
+> 
+> >Maybe I'm overlooking something, but why don't you unstall the pipeline
+> >in your interrupt handler? 
 >
-> If I want to imitate the original RTOS behaviour, I have to schedule 
-> (RTOS scheduler) at end of interrupt.
-> I cannot do that in this domain's interrupt handler, since it would 
-> Schedule() with domain stalled, and thus the domain would not receive 
-> the interrupts until it gives control back to Adeos by suspending itself.
->
->[...]
->
-> My question is, was there already a way to obtain this behaviour in Adeos?
+> Adeos stalls the domain before calling its interrupt handler, and 
+> unstalls the domain after the handler returns.
+> This prevents reentrance on the interrupt handler.
+> If I unstall the pipeline, I make the handler reentrant, while Adeos 
+> assumes it is not.
 
-Maybe I'm overlooking something, but why don't you unstall the pipeline
-in your interrupt handler? You don't have to wait for
-__adeos_sync_stage() to unstall it. Outline of interrupt handler:
-
-	do_irq_work();
-	adeos_unstall_pipeline();
-	rtos_schedule();
-
-Of course you need to have registered a high priority domain in which
-the irq handler runs (irqs are hard disabled when entering a root domain
-irq-handler).
+As far as I know, Adeos does not make such an assumption. Take for
+instance the Linux timer interrupt. It has SA_INTERRUPT set, therefore
+arch/arm/kernel/irq.c:__do_irq() enables interrupts with
+local_irq_enable() before calling the real handler. With Adeos this
+translates to a pipe unstall inside an irq-handler. This allows *other*
+interrupts to occur while the timer irq handler is running. Another
+timer interrupt can't happen while the old one is handled: the timer-irq
+will be unmasked *after* the handler has finished (see 
+arch/arm/kernel/irq.c:do_IRQ()).
 
 Mike
 -- 
