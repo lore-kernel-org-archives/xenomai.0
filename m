@@ -1,37 +1,42 @@
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <20021105090820.2213.qmail@domain.hid>
+Date: Tue, 5 Nov 2002 01:08:20 -0800 (PST)
+From: Girish Wadhwani <gwadh@domain.hid>
+Subject: Re: [Adeos-main] Re: RTOS over Adeos document
+In-Reply-To: <20021104172711.GA2989@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <15657.24190.301211.695088@domain.hid>
-Date: Mon, 8 Jul 2002 11:42:22 +0200
-Subject: [Adeos-main] Adeos r2c2/x86
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.mail.freesoftware.fsf.org>
-List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+List-Id: <adeos-main.nongnu.org>
+List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: adeos-main@gna.org
+List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
+To: Jacob Gorm Hansen <jg@domain.hid>, Karim Yaghmour <karim@domain.hid>
+Cc: adeos-main@gna.org
 
-New Adeos snapshot r2c2/x86 is available from
-http://savannah.gnu.org/download/adeos/snapshots/adeos-20020706.tar.gz
-and from the CVS tree (tag "snap-20020706").
+Hello Jacob,
 
-This new candidate release mainly adds an exception propagation scheme
-similar to the one used for pipelining interrupts. This should be
-rather useful for implementing a kernel debugger over Adeos.
-Basically, domains are now allowed to interpose their own handlers for
-processing exceptions raised by themselves or less prioritary domains.
-A preliminary draft of the Adeos API is also available in doc/api.txt.
 
-Since the code is quite stable now, r2c2 is expected to be the last
-candidate release before the final one.
+> Yes, we are working on a public CVS repo, should be
+> up in a few minutes.
+> Check back soon for access details.
+>
+Could you let me know how to access the source. I
+didn't see any links from the site.
 
-Best regards,
+How exactly does the project deal with device access?
 
-Philippe.
+Cheers,
+Girish 
+
+
+__________________________________________________
+Do you Yahoo!?
+New DSL Internet Access from SBC & Yahoo!
+http://sbc.yahoo.com
+
 
