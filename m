@@ -1,10 +1,12 @@
-Message-ID: <20020618071723.91139.qmail@domain.hid>
-Date: Tue, 18 Jun 2002 00:17:23 -0700 (PDT)
-From: mohan kumar <mohan_knb@domain.hid>
-In-Reply-To: <3D0DD94D.EE781A5E@opersys.com>
+Message-ID: <3D361D89.EE39DC2B@opersys.com>
+Date: Wed, 17 Jul 2002 21:44:41 -0400
+From: Karim Yaghmour <karim@domain.hid>
+Reply-To: karim@domain.hid
 MIME-Version: 1.0
+Subject: Re: Realtime on top of Adeos (Was: Re: [Adeos-main] [ANNOUNCE] Adeos M2)
+References: <OFF782B728.BFF318FC-ON85256BF9.00772E1C-85256BF9.007B8E4C@LocalDomain>
 Content-Type: text/plain; charset=us-ascii
-Subject: [Adeos-main] Re: My first tests with adeos!!!
+Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -15,121 +17,44 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: karim@domain.hid
-Cc: adeos-main@gna.org
+To: Timothy_J_Massey/TheModernMerchant@domain.hid
+Cc: Philippe Gerum <rpm@xenomai.org>, adeos-main@gna.org
 
-hi,
-I assume that resetting the control word (with the
-IPIPE_PASS_MASK bit set) will dispatch the interrupt
-to the next domain. So i reset the control word once
-every 100 interrupts and reset it in the next
-interrupt.
+Timothy_J_Massey/TheModernMerchant@domain.hid wrote:
+> Quick question:  how does Adeos affect real-time response?  Wouldn't Adeos have to be real-time itself, and wouldn't the (guaranteed) latency of
+> Adeos be added to the latency of the upper level RTOS?
 
-Well, my code is not elobrate :)
+Adeos doesn't know anything about real-time. All it sees are hardware
+resources that client OSes need to share. Currently, Adeos allows the
+most basic resource required to run OSes, interrupts, to be shared.
+As is done in many nanokernels before it (see Exokernel paper), Adeos
+provides for an orderly delivery of hardware resources.
 
-cheers,
-Mohan S
+If an RTOS is indeed running on top of Adeos, then it certainly does
+have to contend with the fact that Adeos' code will always run before
+the RTOS' interrupt handler. This code delivers the interrupts in the
+order of domains found in the interrupt pipeline, which is pretty
+much up to the system designer. If Linux is first, then it gets it
+first. If a kernel debugger is first, then it gets it first. If an
+RTOS is first, then it gets if first.
 
-p.s:i am not subsribed to this mailing list. please cc
-me the reply.
+If we are talking about real-time on conceptual grounds, however, note
+that "real-time" is not so much an issue of speed as it is an issue of
+guaranteed deterministic behavior.
 
-#include <linux/version.h>
-#include <linux/module.h>
-#include <linux/wrapper.h>
-#include <linux/config.h>
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/init.h>
-#include <asm/system.h>
-#include <asm/io.h>
-#define INT_NUM 1
+I had some interesting discussions at the OLS with Daniel Phillips about
+Adeos. He was pointing out that one interesting application for Adeos
+was to run 2 RTOSes side-by-side, each responsible for tasks running at
+a different resolution. For example, the first RTOS in the pipeline
+would be responsible for tasks that need microsecond resolution, while
+the second RTOS in the pipeline would be responsible for tasks that
+need millisecond resolution.
 
-#if INT_NUM == 0
-#define REPROGRAM_8254
-#define LATCH_NEW LATCH/100
-#endif
+Karim
 
-MODULE_LICENSE("GPL");
-
-static adomain_t this_domain;
-
-void timer_tick (void)
-
-{
-    static int i , mod;
-    
-    mod=(++i % 100);
-    switch (mod)
-    {
-    case 0:
-	    adeos_control_irq(INT_NUM,0,IPIPE_PASS_MASK);
-	    break;
-    case 1:
-	    adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,0);
-	    break;
-    default:
-	    break;
-    }
-
-    __asm("iret");
-}
-
-void domain_entry (void)
-
-{
-    printk("Domain %s started.\n",adp_current->name);
-
-    adeos_virtualize_irq( INT_NUM ,&timer_tick,NULL); 
-  
-
-adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,0);    
-
-    for (;;)
-	/* This is this domain's idle loop. */
-	adeos_suspend_domain();	/* Yield control back to
-ADEOS. */
-}
-	
-
-static int __init __adtest_init (void)
-
-{
-    int ret;
-    adattr_t attr;
-#ifdef REPROGRAM_8254
-	outb_p(0x34,0x43);	
-	outb_p(LATCH_NEW & 0xff , 0x40);
-	outb(LATCH_NEW >> 8 , 0x40);
-#endif
-    attr.name = "TestDomain";
-    attr.entry = &domain_entry;
-    attr.estacksz = 0;	/* Let ADEOS choose a
-reasonable stack size */
-    attr.priority = ADEOS_ROOT_PRI + 1;
-    
-    ret = adeos_register_domain(&this_domain,&attr);
-    return ret;
-}
-
-static void __exit __adtest_exit (void)
-
-{
-#ifdef REPROGRAM_8254
-	outb_p(0x34,0x43);	
-	outb_p(LATCH & 0xff , 0x40);
-	outb(LATCH >> 8 , 0x40);
-#endif	
-    adeos_unregister_domain(&this_domain);
-}
-
-module_init(__adtest_init);
-module_exit(__adtest_exit);
-
-
-
-
-__________________________________________________
-Do You Yahoo!?
-Yahoo! - Official partner of 2002 FIFA World Cup
-http://fifaworldcup.yahoo.com
+===================================================
+                 Karim Yaghmour
+               karim@domain.hid
+      Embedded and Real-Time Linux Expert
+===================================================
 
