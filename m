@@ -1,11 +1,12 @@
-Date: Thu, 18 Jul 2002 08:56:36 +0200 (CEST)
-From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
-Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
-Subject: Re: [Adeos-main] RT nanokernel working with ADEOS
-In-Reply-To: <3D35BD91.264AEE03@domain.hid>
-Message-ID: <Pine.LNX.4.44.0207180855220.5697-100000@domain.hid>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+From: Wolfgang Denk <wd@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: Your message of "Tue, 18 Jun 2002 09:29:58 +0200."
+             <Pine.LNX.4.33.0206180928190.25522-100000@domain.hid> 
+Date: Tue, 18 Jun 2002 10:27:53 +0200
+Message-Id: <20020618082758.251A7102FB@denx.denx.de>
+Subject: [Adeos-main] Re: [rtai] Re: My first tests with adeos!!!
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -16,22 +17,26 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-Cc: adeos-main@gna.org
+To: Guennadi Liakhovetski <gl@domain.hid>
+Cc: Karim Yaghmour <karim@domain.hid>, Adeos <adeos-main@gna.org>, RTAI <rtai@domain.hid>
 
-On Wed, 17 Jul 2002, Karim Yaghmour wrote:
+In message <Pine.LNX.4.33.0206180928190.25522-100000@domain.hid> you wrote:
+> > BTW, there's an Adeos mailing list here: adeos-main@gna.org
+> > That's the best place to send your mails to.
+> 
+> And how does one subscribe to it? Sorry, didn't find instructions
+> anywhere... Something like "send 'subscribe' to
+> adeos-requests@domain.hid"?...
 
-[...]
-> There's also eCos, but its license isn't approved by the Open Source
-> Initiative.  Though, it would be a great way for RedHat to revive
-> its dying OS.
+See
 
-The new version will be GPL. And I think it will be released even
-though Redhat stopped its Ecos activities...
+http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main
 
-Herman
+Wolfgang Denk
 
 -- 
-K.U.Leuven, Mechanical Engineering, Robotics Research Group
-<http://www.mech.kuleuven.ac.be/~bruyninc>  +32 16 322480
-
+Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
+Phone: (+49)-8142-4596-87  Fax: (+49)-8142-4596-88  Email: wd@domain.hid
+The biggest difference between time and space is that you can't reuse
+time.                                                 - Merrick Furst
 
