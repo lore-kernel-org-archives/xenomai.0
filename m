@@ -1,11 +1,10 @@
-From: "Jose Pascual" <josepascual@domain.hid>
-Date: Tue, 25 May 2004 10:02:38 +0200
-Message-ID: <000d01c4422e$a5fbd4d0$0319a8c0@domain.hid>
+Message-ID: <40BF5148.8000104@domain.hid>
+Date: Thu, 03 Jun 2004 18:26:48 +0200
+From: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Adeos for ARM
+Subject: [Adeos-main] CVS checkout does not include new patches
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -18,16 +17,13 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-Hi,
+Hello,
 
-I have downloaded and adapted Adeos port for ARM (strongarm version) to
-my board 
-It is working unstable, it's the same if adeos is compiled as module or
-not. 
+when I checkout the ADEOS tree as describe on the GNA project pages I
+get rather old files e.g. the latest rc12 and rc13c patches are missing
+(which I see through the CVS web interface). Am I doing something wrong?
 
-Any suggestion? Could it be due to some problem in pipes? 
-perhaps, is it because adeos use linux timer irq?
+Thanks.
 
-thanks 
-
+Wolfgang.
 
