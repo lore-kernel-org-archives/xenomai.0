@@ -1,13 +1,12 @@
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Sender: karim@domain.hid
+Message-ID: <3E78CED9.D2BA0F3E@opersys.com>
+Date: Wed, 19 Mar 2003 15:11:05 -0500
+From: Karim Yaghmour <karim@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15971.5493.382489.89745@domain.hid>
-Date: Mon, 3 Mar 2003 09:42:29 +0100
-In-Reply-To: <3E630431.1080301@domain.hid>
-References: <3E630431.1080301@domain.hid>
-Subject: [Adeos-main] Re: rtai-24.1.11-pre3 plus ADEOS
-Reply-To: philippe.gerum@domain.hid
+Subject: [Adeos-main] TRON / Linux / Adeos
+Reply-To: karim@domain.hid
 List-Id: <adeos-main.nongnu.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
@@ -16,43 +15,21 @@ List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Juan Antonio Garcia <juan-antonio.garcia@domain.hid>
-Cc: adeos-main@gna.org, rtai@domain.hid
+To: Adeos <adeos-main@gna.org>
 
 
-Hi,
+I was browsing through the news on LinuxDevices.com and saw
+this article:
+http://www.linuxdevices.com/news/NS6813561316.html
 
-Juan Antonio Garcia wrote:
- > Hi all.
- > 
- > I've been testing a bit the 2.4.11-pre3 plus the ADEOS patch. I've found 
- > the following behaviour:
- > 
- > My test have a periodic task(T1 with 1 ms period), an sporadic task(T2) 
- > and an interrupt handler. The periodic task, in each period, set a bit  
- > over the parallel port, this write activates the correspondent 
- > interrupt. The interrupt handler uses a semaphore to signal this event 
- > to the sporadic task which reset the bit
- > 
- > 
- > First Test:
- >       linux-2.4.19, rtai 2.4.11-pre3 with ADEOS patch, newlxrt 
- > scheduler, T1 priority <= T2 priority
- >       User Land(newlxrt) : OK
- >       Kernel Land: OK
- > 
- > Second Test::
- >     Same as above but the T1 priority >T2 priority, so the signal in the 
- > interrupt handler results in T2 execution before exit from the interrupt 
- > handler.
- >     User Land(newlxrt): KO The system freeze.
- >     Kernel Land: OK
- > 
- > Both tests go fine with the rthal patch.
+This is certainly yet another Adeos candidate application.
 
-Ok. I'll try to reproduce this bug asap and let you know. Thanks for
-helping.
+Karim
 
-Philippe.
+===================================================
+                 Karim Yaghmour
+               karim@domain.hid
+      Embedded and Real-Time Linux Expert
+===================================================
 
 
