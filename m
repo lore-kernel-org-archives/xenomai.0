@@ -1,44 +1,44 @@
-content-class: urn:content-classes:message
+Date: Thu, 31 Mar 2005 09:42:52 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+In-Reply-To: <Pine.LNX.4.53.0503281333010.21926@domain.hid>
+Message-ID: <Pine.LNX.4.53.0503310916460.8592@domain.hid>
+References: <Pine.LNX.4.53.0503281139180.20969@domain.hid>
+ <Pine.LNX.4.53.0503281237020.21474@domain.hid>
+ <4247DCE9.8070407@domain.hid> <Pine.LNX.4.53.0503281333010.21926@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Adeos-main] Nextgen Adeos patch series
-Date: Mon, 26 Sep 2005 10:43:00 +0200
-Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0DEE@rennsmail02.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: [Adeos-main] Adeos-2.6.11-r10c1 report
+Sender: adeos-main-admin@domain.hid
+Errors-To: adeos-main-admin@domain.hid
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Post: <mailto:adeos-main@gna.org>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main@gna.org
 
-Philippe Gerum wrote:
->>>- I-pipe patches are immediately available for x86. By the time those
->>>lines are written, PPC support is being developed.
->>=20
->> About the PPC patch you're talking about, is it the 2.6.12 one[1]?=20
->> or is there a 2.6.13 for ppc hidden somewhere?
->>=20
->> [1]
-http://download.gna.org/adeos/patches/v2.6/ipipe-light/ipipe-2.6.12-v0.9
--03.patch=20
->>=20
->Nope, this one is a lightweight version used as a showcase on the LKML;
-the one=20
-> that can run fusion has not been published yet.
+	Hi.
 
-Ok, so do you have an ETA of the ADEOS patch for Linux 2.6.13 ?
-I saw Linux 2.6.13 was in the CVS repository of ADEOS, is this version=20
-suitable for Fusion?
+ Booted r10c1, on my P4 ICH system, with adeos compiled in statically is
+behaved the same way as r9 - no interrupts in the ICH chipset occured.
+If I pass "pci=routeirq" kernel parameter - the systems is deadlocked in
+the same place (rc.hotplug scripts) but printed on the console something :
 
-Thanks,
---=20
-Stephane
+..................................
+------cut here -------
+kernel BUG at kernel/sched.c:2666!
+invalid operand: 0000 [#1]
+..................................
 
+ If Adeos is compiled as module and not inserted - the system is working ok.
+After inserting module I've got solid lockup while starting X on the AGP
+nvidia card (tried original Xorg "nv" driver and proprietary "nvidia" one).
+
+
+
+		Rus
 
