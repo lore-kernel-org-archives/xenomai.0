@@ -1,10 +1,12 @@
-Message-ID: <423967B1.2070408@domain.hid>
-Date: Thu, 17 Mar 2005 12:19:13 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] New Adeos 2.4/x86 release manager
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 17 Mar 2005 18:25:51 -0600
+Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC19380296@domain.hid>
+From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
+Subject: [Adeos-main] RE: ppc64 port questions
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -15,21 +17,135 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: adeos-main@gna.org, Alexis Berlemont <alexis.berlemont@domain.hid>
+To: adeos <adeos-main@gna.org>
 
-Hi all,
+Hi All,
 
-FYI, I've just handed over maintenance of Adeos for the 2.4/x86 kernel series to Alexis
-Berlemont, who will act as the release manager for these patches.
-Hopefully, this should help in keeping the Adeos support in sync with the latest Linux 2.4
-releases and GCC updates, better than I could do lately. This move should help me in
-focusing on Adeos for the 2.6 kernel series.
 
-Alexis is currently handling the 2.4.28 and 2.4.29 upgrades which were missing so far.
-Expect more news from him when that's done.
+I have more info, but still no idea as to where things are broken.
+=20
+In trying to run the RTAI latency test, the program ends up in a loop =
+processing schedule_tail=20
+& schedule_head events until the test gives up.  Both events are =
+"caught" in the=20
+rtai/nucleus/shadow.c set of event handlers.  The _head event is caught =
+from the handler
+called in the _adeos_handle_events routine.  The _tail event is caught =
+from the=20
+_adeos_suspend_domain functions' event handler block.  The first is =
+dispatched from=20
+the root domain, whereas the second is from the RTAI domain.
+=20
+The schedule_tail event happens first.
+=20
+After several seconds of this loop, the latency test fails with a =
+"failed to create display task, code -38". =20
+The rt_task_create function wasn't reached (the printk statement which =
+is the first line doesn't get printed),=20
+so this must be comming from one of the module_init functions.
+=20
+The shadow.c routines both report handling the events as the root =
+domain.
+=20
+At the moment I'm stuck trying to figure out which routine is trying to =
+spawn a task, and why it's failing.
+=20
+ANY help would be greatly appreciated!
+=20
+TIA.
+=20
+Terry
 
--- 
+________________________________
 
-Philippe.
+From: adeos-main-admin@domain.hid on behalf of Reynolds, Terry =
+(Contractor-SIMTECH)
+Sent: Tue 3/15/2005 10:24 AM
+To: adeos
+Subject: [Adeos-main] ppc64 port questions
+
+
+
+Hi All,
+
+I apologize for the long posting, but wanted to give sufficient detail =
+for folks to see what's going on.
+
+I have made a good bit of progress on the ppc64 port.  I'm trying to get =
+the RTAI example test latency to work.=20
+Things fail in a way that looks like I've missed a function somewhere.   =
+I've added quite a few printk statements
+in trying to track down the problem.
+
+What I'm seeing is:
+
+Root domain registered.
+Pipeline started.
+
+Start latency test:
+
+RTAI[hal] domain registered:
+   switch from root to RTAI[hal].
+   calls suspend.
+   switches back to root.
+
+Domain IShield registered.
+   root switches to IShield
+  IShield suspends & switches back to root.
+
+RTAI[nucleus] RTAI/fusion v0.6.9 started
+  all initialization routines seem to run OK.
+ __fusion_skin_init processes all the way through and exits without =
+error.
+
+THEN
+
+In Root:
+   sched.c's need_resched: calls -
+   adeos_schedule_tail, which calls __adeos_handle_event with  =
+ADEOS_SCHEDULE_TAIL
+
+   __adeos_handle_event does a switch_to RTAI[hal] domain.
+   it resumes in suspend_domain, from which it returns to =
+rthal_domain_entry.
+   At that point it is in a loop constantly calling suspend_domain.
+   So, RTAI[hal] instantly suspends again, switching back to root.
+   Root ends up back in need_resced, and this process repeats several =
+hundred times,
+   until the latency test gives up and exits with a "failed to create =
+display task, code -38"
+
+IShield is unregistered.
+RTAI/fusion stops.
+RTAI is unregistered.
+RTAI[hal] is unloaded.
+
+At least things seem to exit gracefully!
+
+So, my questions are:
+
+  Did any of that description look totally wrong?=20
+
+   What is suppose to cause RTAI[hal] to break out of the suspend_domain =
+loop,
+  and process the event being passed in from root via the schedule_tail? =
+
+  Should it be suspended at a different place?
+
+I'm not sure if this is an Adeos or an RTAI problem at this point.
+
+
+TIA!
+
+Terry.
+
+
+
+
+_______________________________________________
+Adeos-main mailing list
+Adeos-main@domain.hid
+https://mail.gna.org/listinfo/adeos-main
+
 
 
