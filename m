@@ -1,12 +1,12 @@
-Message-ID: <40C42A0D.5070501@domain.hid>
-Date: Mon, 07 Jun 2004 10:40:45 +0200
-From: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
+From: =?iso-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Date: Wed, 9 Jun 2004 14:07:59 +0200
+Message-ID: <MFEEKLLJKGMFGPMHBDPEEEGCCJAA.iggarpe@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: Patch/Code maintanance
-References: <20040604155437.6D41AC109F@atlas.denx.de>
-In-Reply-To: <20040604155437.6D41AC109F@atlas.denx.de>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+In-Reply-To: <1085430680.3905.25.camel@domain.hid>
+Subject: [Adeos-main] missing EXPORT_SYMBOL for rtf_named_create
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,34 +17,20 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: rpm@xenomai.org, adeos-main <adeos-main@gna.org>
+To: rpm@xenomai.org, rtai@domain.hid
+Cc: adeos-main@gna.org
 
-On 06/04/2004 05:54 PM Wolfgang Denk wrote:
-> Hi Wolfgang,
-> 
-> in message <40C03997.5040805@domain.hid> you wrote:
->> 
->> -	gcc $(CFLAGS) -o $@ -c $<
->> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-> ...
->> -	gcc $(CFLAGS) -o $@ -c $<
->> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-> ...
->> -	gcc $(CFLAGS) -o $@ -c $<
->> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-> ...
->> -	gcc $(CFLAGS) -o $@ -c $<
->> +	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ -c $<
-> 
-> Why don't you simply define
-> 
-> 	CC = $(CROSS_COMPILE)gcc
-> 
-> _once_ at the beginning of the Makefile, and  then  use  $(CC)  only?
-> This is IMHO much easier to maintain.
+Hi,
 
-Of course. Thanks for the hint.
+I'm using 3.0r4 and just noticed this line is missing in
+rtai-core/ipc/fifos/fifos.c
 
-Wolfgang.
+EXPORT_SYMBOL(rtf_named_create);
+
+
+
+Regards.
+
+Nacho.
+
 
