@@ -2,12 +2,9 @@ From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15632.30733.393799.700979@domain.hid>
-Date: Wed, 19 Jun 2002 14:24:45 +0200
-Subject: Re: [Adeos-main] Re: My first tests with adeos!!!
-In-Reply-To: <20020619051755.75505.qmail@domain.hid>
-References: <3D0F0BA2.969434A3@domain.hid>
-	<20020619051755.75505.qmail@domain.hid>
+Message-ID: <15692.6131.246095.272987@domain.hid>
+Date: Sat, 3 Aug 2002 19:50:43 +0200
+Subject: [Adeos-main] [ANNOUNCE] Adeos-20020803 snapshot
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -18,42 +15,24 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: mohan kumar <mohan_knb@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Hi Mohan,
+Hello all,
 
-mohan kumar writes:
- > hi,
- > I think iam not clear...
+A new Adeos snapshot has been released on August 3 2002. This
+intermediate release includes a stable port to the latest Linux 2.4.19
+kernel for x86 platforms.
 
-Now you are ;o)
+You will also find a preliminary port of the nanokernel to the Linux
+2.5 branch (x86), but since it is based on 2.5.25, it is only aimed at
+people who like living on the bleeding edge... As you may already
+know, 2.5.25 has nasty IDE-related problems, among other bugs.
+You've been warned.
 
-I just want to let you know that I'm digging this problem (using your
-code snippet) which also appears with the current CVS head
-version. I'll tell you more asap. My first observations point to a
-random bug in the deferred interrupt dispatch code when returning from
-the user domain handler.
+Download:
+http://savannah.gnu.org/download/adeos/snapshots/adeos-20020803.tar.gz
 
-Btw, the current CVS version implements the basics of SMP support, but
-it is _not_ complete. However, it still works (well on my test
-platforms it does) in UP mode. If you want to fetch the older non-SMP
-code, use the "pre-smp" tag when checking it out.
-
-Finally, be aware that I've added some fields to the adattr_t domain
-attribute struct to control additional functionalities. Mainly,
-"domid" is just an external numerical domain id you can set to
-anything but 0 (reserved to the root Linux domain), and "dswitch"
-which is a domain switch handler called each time the domain is
-resumed by Adeos to process interrupts. 
-
- > 
- > But i will work with the new code in CVS and mail u
- > the results.
-
-Thanks.
-
-Cheers,
+Regards,
 
 Philippe.
 
