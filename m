@@ -2,9 +2,9 @@ From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15892.25331.907013.597043@domain.hid>
-Date: Thu, 2 Jan 2003 17:04:03 +0100
-Subject: [Adeos-main] Patches 2.4.19-r6c10 and 2.5.54-r3c2
+Message-ID: <15960.58352.445742.540922@domain.hid>
+Date: Sun, 23 Feb 2003 16:08:32 +0100
+Subject: [Adeos-main] Adeos snapshot 20030223
 Reply-To: philippe.gerum@domain.hid
 List-Id: <adeos-main.nongnu.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,14 +17,12 @@ List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 To: adeos-main@gna.org
 
 
-The latest candidate patches against 2.4.19/x86 and 2.5.54/x86 are in
-the CVS.
+The last snapshot before milestone #3 is available here:
+http://savannah.nongnu.org/download/adeos/snapshots/adeos-20030223.tar.gz
 
-Btw, 2.4-r6c10 is now fully running the current development version of
-the RTAI real-time system, both for UP and SMP configs
-(http://www.aero.polimi.it/~rtai/).
-
-Happy new year.
+Change log here:
+http://savannah.nongnu.org/download/adeos/ChangeLog
 
 Philippe.
+
 
