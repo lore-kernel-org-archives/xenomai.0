@@ -1,91 +1,56 @@
-From: Der Herr Hofrat <der.herr@domain.hid>
-Message-Id: <200307121047.h6CAlRq08992@domain.hid>
-Subject: Re: [Adeos-main] a few questions
-In-Reply-To: <16143.52321.271972.985045@domain.hid> from Philippe
-	Gerum at "Jul 12, 2003 10:52:49 am"
-Date: Sat, 12 Jul 2003 12:47:27 +0200 (CEST)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
+Date: Wed, 25 Sep 2002 00:06:07 +0200
+From: Pavel Machek <pavel@domain.hid>
+Message-ID: <20020924220607.GD1496@domain.hid>
+References: <3D8E8371.D2070D87@domain.hid> <20020922045907.C35@domain.hid> <3D90D388.746D0C0D@opersys.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3D90D388.746D0C0D@opersys.com>
+Subject: [Adeos-main] Re: [PATCH] Adeos nanokernel for 2.5.38 1/2: no-arch code
+Sender: adeos-main-admin@domain.hid
+Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Post: <mailto:adeos-main@gna.org>
+List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Der Herr Hofrat <der.herr@domain.hid>, adeos-main@gna.org
+List-Id: <adeos-main.mail.freesoftware.fsf.org>
+List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
+To: Karim Yaghmour <karim@domain.hid>
+Cc: linux-kernel <linux-kernel@domain.hid>, Adeos <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
 
-> 
-> Hi,
-> 
-> Der Herr Hofrat writes:
->  > 
->  > HI !
->  > 
->  >  reading my wai into adeos - so pleas excuse if these question are stupid..
->  >  after reading the docs on adeos.org and a few comments in the 
->  >  RTAI mailng list a few questions arose:
->  > 
->  >  1) Is ther and example of running multiple domains under adeos
-> 
-> You can find a trivial code which loads a domain module intercepting
-> the timer IRQ here:
-> http://savannah.nongnu.org/cgi-bin/viewcvs/adeos/adeos/platforms/linux/examples/simple/.
-> 
-> For a more complex implementation, there's something in RTAI's ongoing
-> magma development branch called the "Xenomai skins" which runs three
-> concurrent domains:
-> 
-> o the RTAI domain (priority=200)
-> o the Xenomai domain (priority=150)
-> o the (root) Linux domain (priority=100)
-> 
-> RTAI runs real-time tasks with memory protection created by RTOS
-> emulators mounted by Xenomai, and the Xenomai domain shields
-> interrupts from the Linux domain when needed to guarantee determinism.
-> IOW, the event flow goes this way:
-> [IRQ/traps] ==> RTAI -> Xenomai -> Linux, each of them being able to
-> decide whether the next domain down the pipeline should be passed the
-> event or not.
->
+Hi!
 
-anything on the web about this ??
- 
->  > (exept for RTAI which is not completly independant (?) of the root domain - atleast it does not seem posible to run multiple instances of RTAI in paralell ?
+> > > This is a patch for adding the Adeos nanokernel to the Linux kernel as
+> > > described earlier:
+> > > http://marc.theaimsgroup.com/?l=linux-kernel&m=102309348817485&w=2
+> > 
+> > Maybe adding Docs/adeos.txt is good idea... (sorry can't access web
+> > right now) --
 > 
-> In fact, it is indeed logically independent once the root domain has
-> loaded the RTAI one. One could take the Adeos-based HAL, only change
-> its domain priority and load it as-is, concurrently to the original
-> RTAI domain for running kernel-based tasks.  Have a look to
-> arch/i386/arti.c from the RTAI "etna" or stromboli" branches, or
-> rtai-core/arch/i386/hal/arti.c from the "magma" branch.
+> Right, we'll do that.
 > 
->  >  Has anybody ran multiple Linux or other OS'under ADEOS
->  >  and are there any docs about this ??
->  >
->  >  2) for shared resources - Network cards etc. - the
->  >     Root domain driver is responsible (or a root-domain-process) for
->  >     dispatching the domain specific data (i.e. a ip-packet for a 
->  >     specific domain)a
->  > 
+> > so this is aimed at being free rtlinux replacement?
 > 
-> Running multiple concurrent Linux instances using Adeos on a single
-> box would indeed require to decide about which instance/domain
-> controls which set of hardware resources and system software, and use
-> some kind of virtual relay to honor inter-domain requests. But as of
-> now, there has not been much work on this application of the Adeos
-> scheme (none that I know of to be precise).
->
-thanks for the clarification - I'll try to 
-play with this to find out what I don't understand again ;) 
+> I'm not sure "replacement" is the appropriate description for this.
+> The scheme used by rtlinux and rtai is a master-slave scheme where
+> Linux is a slave to the rt executive. Adeos makes the entire scheme
+> obsolete by making all the OSes running on the same hardware clients
+> of the same nanokernel, regardless of whether the client OSes provide
+> hard RT or not. None of these OSes need to have a "other OS" task,
+> as rtlinux and rtai clearly do. Rather, when an OS is done using
+> the machine, it tells Adeos that it's done and Adeos returns control
+> to whichever other OS is next in the interrupt pipeline.
 
-thx !
-hofrat
+Are you actually able to use Adeos for something reasonable? You can't
+run two copies of linux, because they would fight over memory; right?
 
-ps.: Any presentations on such issues planed/intended fro the
- 5th Real Time Linux Workshop ??
+Do you have something that can run alongside linux?
+								Pavel
+
+-- 
+Casualities in World Trade Center: ~3k dead inside the building,
+cryptography in U.S.A. and free speech in Czech Republic.
 
 
