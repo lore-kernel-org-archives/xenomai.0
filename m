@@ -1,151 +1,68 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 17 Mar 2005 18:25:51 -0600
-Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC19380296@domain.hid>
-From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
-Subject: [Adeos-main] RE: ppc64 port questions
+Date: Mon, 4 Nov 2002 18:27:11 +0100
+From: Jacob Gorm Hansen <jg@domain.hid>
+Subject: Re: [Adeos-main] Re: RTOS over Adeos document
+Message-ID: <20021104172711.GA2989@domain.hid>
+References: <20021104100720.78382.qmail@domain.hid> <3DC69037.5A9A1577@domain.hid> <20021104154142.GA2608@domain.hid> <3DC6A8E8.AFE2D5DC@opersys.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <3DC6A8E8.AFE2D5DC@opersys.com>
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+List-Id: <adeos-main.nongnu.org>
+List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: adeos <adeos-main@gna.org>
+List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
+To: Karim Yaghmour <karim@domain.hid>
+Cc: adeos-main@gna.org
 
-Hi All,
+On Mon, Nov 04, 2002 at 12:05:44PM -0500, Karim Yaghmour wrote:
+> 
+> Jacob Gorm Hansen wrote:
+> > just wanted to point you all to our project about running multiple
+> > linuxes on the same machine, as well as migrating them quickly between
+> > machines: http://www.nomadbios.dk
+> 
+> Quite interesting. It would be even more interesting to see the source.
 
+Yes, we are working on a public CVS repo, should be up in a few minutes.
+Check back soon for access details.
 
-I have more info, but still no idea as to where things are broken.
-=20
-In trying to run the RTAI latency test, the program ends up in a loop =
-processing schedule_tail=20
-& schedule_head events until the test gives up.  Both events are =
-"caught" in the=20
-rtai/nucleus/shadow.c set of event handlers.  The _head event is caught =
-from the handler
-called in the _adeos_handle_events routine.  The _tail event is caught =
-from the=20
-_adeos_suspend_domain functions' event handler block.  The first is =
-dispatched from=20
-the root domain, whereas the second is from the RTAI domain.
-=20
-The schedule_tail event happens first.
-=20
-After several seconds of this loop, the latency test fails with a =
-"failed to create display task, code -38". =20
-The rt_task_create function wasn't reached (the printk statement which =
-is the first line doesn't get printed),=20
-so this must be comming from one of the module_init functions.
-=20
-The shadow.c routines both report handling the events as the root =
-domain.
-=20
-At the moment I'm stuck trying to figure out which routine is trying to =
-spawn a task, and why it's failing.
-=20
-ANY help would be greatly appreciated!
-=20
-TIA.
-=20
-Terry
+> The only thing that dampens my enthusiasm for this is the dependency on
+> L4. I don't mean to debate its merits, but you're really dragging some
+> else's limitations. Would you be interested to interface with the Adeos
+> project for future work?
 
-________________________________
+We had a number of reasons for choosing L4:
 
-From: adeos-main-admin@domain.hid on behalf of Reynolds, Terry =
-(Contractor-SIMTECH)
-Sent: Tue 3/15/2005 10:24 AM
-To: adeos
-Subject: [Adeos-main] ppc64 port questions
+- It has recursive address spaces, which we need.
+- It has fast IPC.
+- It has a working Linux implementation.
+- It has OSKit driver and TCP/IP support.
 
+Having to deal with multiple tasks for each Linux was extremely complex
+though, and might be a good reason for choosing a nano-kernel next time.
 
+If Adeos gets spaces like Space, then it would be interesting.
+Otherwise I don't think it is possible, because we need to protect guest
+OSes against eachother. 
 
-Hi All,
+> Also, I suppose the migration capability requires that both systems have
+> the exact same hardware and the exact same data on disk (or maybe this
+> is why you discuss NFS boot on the project's site)?
 
-I apologize for the long posting, but wanted to give sufficient detail =
-for folks to see what's going on.
+Exactly ;-)
+Currently only networking is abstracted, but this means that it may run
+on any hardware, as long as it is supported by oskit.
 
-I have made a good bit of progress on the ppc64 port.  I'm trying to get =
-the RTAI example test latency to work.=20
-Things fail in a way that looks like I've missed a function somewhere.   =
-I've added quite a few printk statements
-in trying to track down the problem.
+> Karim
 
-What I'm seeing is:
-
-Root domain registered.
-Pipeline started.
-
-Start latency test:
-
-RTAI[hal] domain registered:
-   switch from root to RTAI[hal].
-   calls suspend.
-   switches back to root.
-
-Domain IShield registered.
-   root switches to IShield
-  IShield suspends & switches back to root.
-
-RTAI[nucleus] RTAI/fusion v0.6.9 started
-  all initialization routines seem to run OK.
- __fusion_skin_init processes all the way through and exits without =
-error.
-
-THEN
-
-In Root:
-   sched.c's need_resched: calls -
-   adeos_schedule_tail, which calls __adeos_handle_event with  =
-ADEOS_SCHEDULE_TAIL
-
-   __adeos_handle_event does a switch_to RTAI[hal] domain.
-   it resumes in suspend_domain, from which it returns to =
-rthal_domain_entry.
-   At that point it is in a loop constantly calling suspend_domain.
-   So, RTAI[hal] instantly suspends again, switching back to root.
-   Root ends up back in need_resced, and this process repeats several =
-hundred times,
-   until the latency test gives up and exits with a "failed to create =
-display task, code -38"
-
-IShield is unregistered.
-RTAI/fusion stops.
-RTAI is unregistered.
-RTAI[hal] is unloaded.
-
-At least things seem to exit gracefully!
-
-So, my questions are:
-
-  Did any of that description look totally wrong?=20
-
-   What is suppose to cause RTAI[hal] to break out of the suspend_domain =
-loop,
-  and process the event being passed in from root via the schedule_tail? =
-
-  Should it be suspended at a different place?
-
-I'm not sure if this is an Adeos or an RTAI problem at this point.
-
-
-TIA!
-
-Terry.
-
-
-
-
-_______________________________________________
-Adeos-main mailing list
-Adeos-main@domain.hid
-https://mail.gna.org/listinfo/adeos-main
-
+best,
+jacob
 
 
