@@ -1,10 +1,9 @@
-From: Subash Babu <subashb@domain.hid>
-Content-Type: text/plain
-Message-Id: <1097735522.5779.8.camel@domain.hid>
-Mime-Version: 1.0
-Date: 14 Oct 2004 12:02:03 +0530
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Help request on Adeos domain switching
+Date: Thu, 14 Oct 2004 09:41:22 -0400 (EDT)
+From: Currie Reid <curriereid@domain.hid>
+Message-ID: <Pine.LNX.4.44L.0410140906250.1592-100000@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: [Adeos-main] Behaviour of adeos_catch_event when domain unregistered
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,28 +16,29 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-Dear Mr.Karim/Philippe and Adeos users,
+Hello all,
 
-I was browsing on Adeos! I have one basic query on switching between the
-domains using Adeos.
+I am just trying to understand the underlying behaviour of adeos, and in
+my testing I have come across some behaviour that I want to verify is
+correct.  If I set a handler for ADEOS_EXIT_PROCESS without registering a
+domain, then the handler is in the root domain and behaves as expected
+(thank you printk!).  Next, I do a handler in a registered domain for
+ADEOS_EXIT_PROCESS and perform 2 tests - 1 where the handler doesn't
+propagate the event to the root domain, and one where it does.  These both
+behave as expected - when propagated, I see the handler executing once for
+each domain.  But when I unload the module and unregister the domain, the
+handler in the root domain no longer executes - I would have thought that
+the handler would still be in place.
 
-If there is a need to switch between Linux as one domain running in RAM
-and a proprietary code base which is sitting in some tightly coupled
-memory assume it as some additional memory near to CPU like dcache and
-Icache used for handling data at higher speed.
+If I register 2 domains and duplicate the test, when the higher priority
+domain is unregistered, the lower priority domain starts handling the
+events again, as expected.  I haven't delved into to code to see how easy
+this is to change - mostly because I'm not sure that this isn't
+uninitended behaviour.
 
-1) Then how that code base registers with the Adeos
-2) What all changes should be made in the code base
-3) How Adeos switches the CPU to execute code base
-4) How code base gives control back to Adeos to switch to Linux domain. 
-5) What all considerations need to be taken on Linux domain while code
-base is running.
+I am currently performing testing on a g4 powermac using
+adeos-linuxppc-2.6.8rc1-r6c8.patch.
 
-Hope somebody from this stream will help me in understanding the stuff.
-waiting for your replies.
-
-Thanks in advance
-
-Subash
+Currie
 
 
