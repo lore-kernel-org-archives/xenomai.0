@@ -1,5 +1,5 @@
-Message-ID: <423AEE12.7080801@domain.hid>
-Date: Fri, 18 Mar 2005 16:04:50 +0100
+Message-ID: <423AEEF1.2040805@domain.hid>
+Date: Fri, 18 Mar 2005 16:08:33 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Adeos-main] ppc64 port questions
@@ -61,6 +61,14 @@ Reynolds, Terry (Contractor-SIMTECH) wrote:
 >    So, RTAI[hal] instantly suspends again, switching back to root. 
 >    Root ends up back in need_resced, and this process repeats several hundred times,
 >    until the latency test gives up and exits with a "failed to create display task, code -38"
+
+-ENOSYS. Either you did not properly implement the Linux syscall 
+pipelining and RTAI requests end up being processed by the Linux kernel 
+(instead of passing them first to the RTAI nucleus) -- which fails 
+identifying the syscall number, or the RTAI nucleus rejected the call 
+for some reason. Since you bring in a new Adeos port, you should make 
+sure of that #1 works first.
+
 >  
 > IShield is unregistered.
 > RTAI/fusion stops.
@@ -72,27 +80,13 @@ Reynolds, Terry (Contractor-SIMTECH) wrote:
 > So, my questions are:
 >  
 >   Did any of that description look totally wrong?  
->
-
-The behaviour described above looks sane.
-
+>  
 >    What is suppose to cause RTAI[hal] to break out of the suspend_domain loop,
 >   and process the event being passed in from root via the schedule_tail?  
 >   Should it be suspended at a different place?
 >  
-
-adeos_suspend_domain() looks for events to process (traps & IRQs) before 
-returning to the caller. So the proper callbacks for the current work 
-cycle have already been fired when adeos_suspend_domain() returns back 
-to the calling statement in the RTHAL entry point. This is why an Adeos 
-work cycle usually looks like an endless loop calling 
-adeos_suspend_domain().
-
 > I'm not sure if this is an Adeos or an RTAI problem at this point.
 >  
-
-Everything looks ok so far.
-
 >  
 > TIA!
 >  
