@@ -1,12 +1,11 @@
-Message-ID: <3D0F0BA2.969434A3@domain.hid>
-Date: Tue, 18 Jun 2002 10:29:54 +0000
-From: Karim Yaghmour <karim@domain.hid>
-Reply-To: karim@domain.hid
+Date: Fri, 19 Jul 2002 08:54:52 +0200 (CEST)
+From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
+Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
+Subject: RE: [Adeos-main] RT nanokernel working with ADEOS 
+In-Reply-To: <3D37A135.D57FD1A5@domain.hid>
+Message-ID: <Pine.LNX.4.44.0207190854200.6947-100000@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: My first tests with adeos!!!
-References: <20020618071723.91139.qmail@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,45 +16,25 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: mohan kumar <mohan_knb@domain.hid>
-Cc: adeos-main@gna.org
+Cc: Adeos <adeos-main@gna.org>
 
-Hello Mohan,
+On Fri, 19 Jul 2002, Karim Yaghmour wrote:
 
-I've taken a summary look at the code and I think the following is
-the problem:
+> Herman Bruyninckx wrote:
+> >> There's also eCos, but its license isn't approved by the Open Source
+> >> Initiative.  Though, it would be a great way for RedHat to revive
+> >> its dying OS.
+> >The new version will be GPL. And I think it will be released even
+> >though Redhat stopped its Ecos activities...
+> 
+> I haven't seen this anywhere ... do you have a link ?
+> 
+<http://sources.redhat.com/ml/ecos-discuss/2002-05/msg00191.html>
 
-mohan kumar wrote:
-> ...
->     case 0:
->             adeos_control_irq(INT_NUM,0,IPIPE_PASS_MASK);
->             break;
-> ...
+Herman
 
-I don't think that adeos_control_irq() will work like this alone.
-Have a look at arch/i386/ipipe.c:ipipe_handle_irq(). Notice that
-the setting of interrupt flags for the various domains is done
-prior to any domain handler being called. By disabling the passing
-of the interrupts in domain_entry() as you do, all subsequent
-interrupts are not passed on. What you actually do with
-adeos_control_irq() in the interrupt handler only influences the
-next round of interrupts. Given the code in the interrupt handler,
-however, I think that you should be making the following call if
-you want the interrupts to propagate the next time they occur:
-adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,1);
+-- 
+K.U.Leuven, Mechanical Engineering, Robotics Research Group
+<http://www.mech.kuleuven.ac.be/~bruyninc>  +32 16 322480
 
-If you disabled the interrupt passing and would still want to
-propagate the IRQ down the ipipe, then have a look at the latest
-code in the CVS by Philippe. Particularily, try using
-adeos_propagate_irq() in your handler.
-
-Cheers,
-
-Karim
-
-===================================================
-                 Karim Yaghmour
-               karim@domain.hid
-      Embedded and Real-Time Linux Expert
-===================================================
 
