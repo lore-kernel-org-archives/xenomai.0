@@ -1,9 +1,10 @@
-From: toon.diels@domain.hid
-Message-ID: <OF3F81DAB9.AAA6C7EC-ONC1256BF4.002B1C95@domain.hid>
-Date: Fri, 12 Jul 2002 09:56:29 +0200
-MIME-Version: 1.0
-Content-type: text/plain; charset=us-ascii
-Subject: [Adeos-main] nice techno!
+Date: Wed, 17 Jul 2002 11:17:59 +0000
+From: Jerome Poichet <jerome.poichet@domain.hid>
+Message-id: <1026904679.653.3.camel@domain.hid>
+MIME-version: 1.0
+Content-type: text/plain
+Content-transfer-encoding: 7BIT
+Subject: [Adeos-main] RT nanokernel working with ADEOS
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -16,19 +17,26 @@ List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
 To: adeos-main@gna.org
 
-Hi all,
+Hi all, 
 
-I explored yesterday the Adeos nanokernel and was surprised by the possibilities and also the
-stability!
+We managed to get a proprietary (sorry nobody's perfect) RT nanokernel
+working with ADEOS. Thus we have two different OSes working at the same
+time on the same computer thanks to ADEOS. 
 
-I tested for example multiple domains having different priorities and installing handlers on the same interrupt
-which works exactly is it is described.
+Now we're working on ways to communicate between the two.
 
-I also tested snooping other interrupts (mouse/keyboard/ide0/ethernet) then the timer example provided in the package.
-(which works ofcourse also great)
+keep on the good work :) hope we'll get to help you soon.
 
-good job!
-
-Toon
+-- 
+Jerome Poichet
+-+ Software Engineer
+ |
+ | Arguin Communications, Inc.
+ | 5280 Carroll Canyon Road, Suite 300
+ | San Diego, CA  92121
+ | Tel. (858) 404-0646
+ | Fax. (858) 777-3321
+ |
+ | Fingerprint: CF22 CE30 3223 8940 5849  5828 E08B CD06 A28D 2C59
 
 
