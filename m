@@ -1,9 +1,10 @@
-Subject: Realtime on top of Adeos (Was: Re: [Adeos-main] [ANNOUNCE] Adeos M2)
+Message-ID: <20020618071723.91139.qmail@domain.hid>
+Date: Tue, 18 Jun 2002 00:17:23 -0700 (PDT)
+From: mohan kumar <mohan_knb@domain.hid>
+In-Reply-To: <3D0DD94D.EE781A5E@opersys.com>
 MIME-Version: 1.0
-Message-ID: <OFF782B728.BFF318FC-ON85256BF9.00772E1C-85256BF9.007B8E4C@LocalDomain>
-From: Timothy_J_Massey/TheModernMerchant@domain.hid
-Date: Wed, 17 Jul 2002 17:44:15 -0400
-Content-Type: multipart/alternative; boundary="=_alternative 007B8E4785256BF9_="
+Content-Type: text/plain; charset=us-ascii
+Subject: [Adeos-main] Re: My first tests with adeos!!!
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -14,67 +15,121 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Philippe Gerum <rpm@xenomai.org>
+To: karim@domain.hid
 Cc: adeos-main@gna.org
 
-This is a multipart message in MIME format.
---=_alternative 007B8E4785256BF9_=
-Content-Type: text/plain; charset="us-ascii"
+hi,
+I assume that resetting the control word (with the
+IPIPE_PASS_MASK bit set) will dispatch the interrupt
+to the next domain. So i reset the control word once
+every 100 interrupts and reset it in the next
+interrupt.
 
-Hello!
+Well, my code is not elobrate :)
 
-Quick question:  how does Adeos affect real-time response?  Wouldn't Adeos 
-have to be real-time itself, and wouldn't the (guaranteed) latency of 
-Adeos be added to the latency of the upper level RTOS?
+cheers,
+Mohan S
 
-Tim Massey
+p.s:i am not subsribed to this mailing list. please cc
+me the reply.
+
+#include <linux/version.h>
+#include <linux/module.h>
+#include <linux/wrapper.h>
+#include <linux/config.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/init.h>
+#include <asm/system.h>
+#include <asm/io.h>
+#define INT_NUM 1
+
+#if INT_NUM == 0
+#define REPROGRAM_8254
+#define LATCH_NEW LATCH/100
+#endif
+
+MODULE_LICENSE("GPL");
+
+static adomain_t this_domain;
+
+void timer_tick (void)
+
+{
+    static int i , mod;
+    
+    mod=(++i % 100);
+    switch (mod)
+    {
+    case 0:
+	    adeos_control_irq(INT_NUM,0,IPIPE_PASS_MASK);
+	    break;
+    case 1:
+	    adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,0);
+	    break;
+    default:
+	    break;
+    }
+
+    __asm("iret");
+}
+
+void domain_entry (void)
+
+{
+    printk("Domain %s started.\n",adp_current->name);
+
+    adeos_virtualize_irq( INT_NUM ,&timer_tick,NULL); 
+  
+
+adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,0);    
+
+    for (;;)
+	/* This is this domain's idle loop. */
+	adeos_suspend_domain();	/* Yield control back to
+ADEOS. */
+}
+	
+
+static int __init __adtest_init (void)
+
+{
+    int ret;
+    adattr_t attr;
+#ifdef REPROGRAM_8254
+	outb_p(0x34,0x43);	
+	outb_p(LATCH_NEW & 0xff , 0x40);
+	outb(LATCH_NEW >> 8 , 0x40);
+#endif
+    attr.name = "TestDomain";
+    attr.entry = &domain_entry;
+    attr.estacksz = 0;	/* Let ADEOS choose a
+reasonable stack size */
+    attr.priority = ADEOS_ROOT_PRI + 1;
+    
+    ret = adeos_register_domain(&this_domain,&attr);
+    return ret;
+}
+
+static void __exit __adtest_exit (void)
+
+{
+#ifdef REPROGRAM_8254
+	outb_p(0x34,0x43);	
+	outb_p(LATCH & 0xff , 0x40);
+	outb(LATCH >> 8 , 0x40);
+#endif	
+    adeos_unregister_domain(&this_domain);
+}
+
+module_init(__adtest_init);
+module_exit(__adtest_exit);
 
 
 
 
-
-Philippe Gerum <rpm@xenomai.org>
-Sent by: adeos-main-admin@domain.hid
-07/17/2002 05:38 PM
-
- 
-        To:     linux-kernel@domain.hid
-        cc:     adeos-main@gna.org, 
-xenomai-main@domain.hid
-        Subject:        [Adeos-main] [ANNOUNCE] Adeos M2
-(*) Xenomai is a development framework for real-time systems which
-includes a collection of emulators mimicking APIs of traditional RTOS
-such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single
-"generic" RTOS core which have been ported over Adeos.
-
---=_alternative 007B8E4785256BF9_=
-Content-Type: text/html; charset="us-ascii"
-
-
-<br><font size=2 face="sans-serif">Hello!</font>
-<br>
-<br><font size=2 face="sans-serif">Quick question: &nbsp;how does Adeos affect real-time response? &nbsp;Wouldn't Adeos have to be real-time itself, and wouldn't the (guaranteed) latency of Adeos be added to the latency of the upper level RTOS?</font>
-<br>
-<br><font size=2 face="sans-serif">Tim Massey</font>
-<br>
-<br>
-<br>
-<br>
-<table width=100%>
-<tr valign=top>
-<td>
-<td><font size=1 face="sans-serif"><b>Philippe Gerum &lt;rpm@xenomai.org&gt;</b></font>
-<br><font size=1 face="sans-serif">Sent by: adeos-main-admin@domain.hid</font>
-<p><font size=1 face="sans-serif">07/17/2002 05:38 PM</font>
-<br>
-<td><font size=1 face="Arial">&nbsp; &nbsp; &nbsp; &nbsp; </font>
-<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; To: &nbsp; &nbsp; &nbsp; &nbsp;linux-kernel@domain.hid</font>
-<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; cc: &nbsp; &nbsp; &nbsp; &nbsp;adeos-main@gna.org, xenomai-main@domain.hid</font>
-<br><font size=1 face="sans-serif">&nbsp; &nbsp; &nbsp; &nbsp; Subject: &nbsp; &nbsp; &nbsp; &nbsp;[Adeos-main] [ANNOUNCE] Adeos M2</font></table>
-<br><font size=2 face="Courier New">(*) Xenomai is a development framework for real-time systems which<br>
-includes a collection of emulators mimicking APIs of traditional RTOS<br>
-such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single<br>
-&quot;generic&quot; RTOS core which have been ported over Adeos.</font>
-<br>
---=_alternative 007B8E4785256BF9_=--
+__________________________________________________
+Do You Yahoo!?
+Yahoo! - Official partner of 2002 FIFA World Cup
+http://fifaworldcup.yahoo.com
 
