@@ -1,12 +1,10 @@
-Subject: Re: [Adeos-main] CVS checkout does not include new patches
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <40BF5148.8000104@domain.hid>
-References: <40BF5148.8000104@domain.hid>
-Content-Type: text/plain
-Message-Id: <1086194508.730.28.camel@domain.hid>
-Mime-Version: 1.0
-Date: Wed, 02 Jun 2004 18:41:48 +0200
+Message-ID: <40BF7732.801@domain.hid>
+Date: Thu, 03 Jun 2004 21:08:34 +0200
+From: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Patch/Code maintanance
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,33 +15,19 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>
-Cc: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Thu, 2004-06-03 at 18:26, Wolfgang Grandegger wrote:
-> Hello,
-> 
-> when I checkout the ADEOS tree as describe on the GNA project pages I
-> get rather old files e.g. the latest rc12 and rc13c patches are missing
-> (which I see through the CVS web interface). Am I doing something wrong?
-> 
+Hi Philippe,
 
-It's just that the adeos/adeos directory which you seem to look at is in
-fact the old one as imported from savannah. In fact, it should have been
-renamed adeos/archives (I still need to fill a support request to the
-GNA people to have this done). All patches should be available in
-adeos/patches, all individual files under adeos/linux and so on.
+I started porting ADEOS to PowerPC with "2.4r11c1" and now I want to
+catch up with "24r13c2" before I release it. I realized that there are
+quite some differences and I wonder how you maintain the ADEOS code,
+especially how do you get or handle the files in "linux" and "patches".
 
-> Thanks.
-> 
-> Wolfgang.
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
+Thanks.
 
-Philippe.
+Wolfgang.
+
 
 
