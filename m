@@ -1,11 +1,11 @@
 From: Dirk Roloff <roloff@domain.hid>
-Date: Mon, 23 Feb 2004 00:35:16 +0100
+Date: Mon, 23 Feb 2004 00:41:49 +0100
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Type: text/plain;
-  charset="us-ascii"
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Message-Id: <200402230035.16494.roloff@domain.hid>
+Message-Id: <200402230041.49054.roloff@domain.hid>
 Subject: [Adeos-main] interrupt latency
 List-Id: <adeos-main.nongnu.org>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
