@@ -1,11 +1,13 @@
-From: hwoarang@domain.hid
-Message-Id: <20030806.AAA1060097315@domain.hid>
-Date: Wed, 6 Aug 2003 00:35:44 +0900
+From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: base64
-Subject: [Adeos-main] Adeos and RTAI memory
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <16176.47277.107485.852148@domain.hid>
+Date: Wed, 6 Aug 2003 10:13:33 +0200
+Subject: Re: [Adeos-main] Adeos and RTAI memory
+In-Reply-To: <20030806.AAA1060097315@domain.hid>
+References: <20030806.AAA1060097315@domain.hid>
+Reply-To: philippe.gerum@domain.hid
 List-Id: <adeos-main.nongnu.org>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,26 +16,44 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: hwoarang@domain.hid
+Cc: adeos-main@gna.org
 
-SGVsbG8gYWxsLg0KDQpJIHNlbmQgdGhpcyBtYWlsIGZvciBzb21lIHF1ZXN0aW9ucy4NCg0KMSkg
-V2hpbGUgcnVubmluZyBSVEFJIG92ZXIgdGhlIEFkZW9zLCBkb2VzIFJUQUkgdXNlIExpbnV4IGRv
-bWFpbidzIGtlcm5lbCBtZW1vcnkgc3BhY2UNCiAgIGxpa2Ugb3RoZXIgZGV2aWNlIGRyaXZlcnM/
-DQoNCjIpIEZvciBwcm9wYWdhdGluZyBpbnRlcnJ1cCBvciBtYW5hZ2luZyBkb21haW5zLCBkb2Vz
-IEFkZW9zIHVzZSBzb21lIHNjaGVkdWxpbmcgcG9saWNpZXMNCiAgIG9yIGp1c3QgbWFuYWdlIGRv
-bWFpbnMgYXMgbGlua2VkIGxpc3Q/DQoNCjMpIFRoZSBkZXNpZ24gZG9jdW1lbnQgZG9lc24ndCBj
-b250YWluIHRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIG9mIEFkb2VzLg0KICAgRG8gdGhlIGRl
-dmVsb3BlcnMgaGF2ZSBzb21lIHBsYW5zIHRvIHVwZGF0ZSB0aGUgZG9jdW1lbnQ/IDspDQogICBJ
-dCBtYWtlcyBtZSBmdXp6eS4gOkANCg0KUGxlYXNlIGFuc3dlciB0aGVzZSBxdWVzdGlvbnMuIDop
-DQoNCk1heSB0aGUgZm9yY2UgYmUgd2l0aCB5b3UhDQoNClNlcmlvdXNseSwNCkZyZWRyaWNrCgot
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KU2Vvay1qZW9uZyBI
-d2FuZyANClRlbCA6ICs4Mi01NC0yNzktOTMxOCAoMDU0LTI3OS05MzE4IGluIEtvcmVhKQ0KTW9i
-aWxlIDogKzgyLTE2LTgyNC05MzUwICgwMTYtODI0LTkzNTAgaW4gS29yZWEpCgoK
+hwoarang@domain.hid wrote:
+ > Hello all.
+ > 
+ > I send this mail for some questions.
+ > 
+ > 1) While running RTAI over the Adeos, does RTAI use Linux domain's kernel memory space
+ >    like other device drivers?
+ > 
 
+Yes.
 
+ > 2) For propagating interrup or managing domains, does Adeos use some scheduling policies
+ >    or just manage domains as linked list?
+ > 
 
+It manages a simple linked list of domains ordered by priority,
+walking it to process the pipeline.
 
+ > 3) The design document doesn't contain the current implementation of Adoes.
+ >    Do the developers have some plans to update the document? ;)
+ >    It makes me fuzzy. :@
+ > 
 
+I'm working on an Adeos porting guide which might give you some
+answers. Don't expect a complete and polished reference and
+implementation guide, but it should be descriptive enough to grasp the
+core stuff.
 
+ > Please answer these questions. :)
+ > 
+ > May the force be with you!
+ > 
+
+It is. Just can't get this bloody light-saber working though...
+
+Philippe.
 
 
