@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+From: "Jason Huang" <jason.huang@domain.hid>
+Date: Wed, 23 Feb 2005 19:03:07 -0800
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Adeos-main] Porting question
-Date: Wed, 23 Feb 2005 18:44:44 -0600
-Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC1938025F@amr-ex5.ds.amrdec.army.mil>
-From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <20050205014301.6569.13097.Mailman@domain.hid>
+Message-id: <20050223184214.fff8ccbdc13c4021a107f546ce9db302.in@domain.hid>
+Subject: [Adeos-main] When to do __adeos_takeover() on ARM
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -19,87 +19,62 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-I've been looking at the __adeos_init_domain function with printk =
-statements.   It looks like the ppc64's 64 bits
-for unsigned long's have hosed up the positions of the structure =
-elements.  The adp->m_link and adp->flags
-both come back as zero from the call to the init_domain function.  They =
-were non-zero in the function. I'll have
-to re-compute the relative addresses for the structure elements.
-=20
-Thanks,
-=20
-Terry
-=20
+Dear list members,
 
-________________________________
+If __adeos_takeover is called in init(), the timer interrupt kicks in way before
+adp->irqs[] have been initialized and hence adeos_switch_domain is not called
+and the interrupt is not handled.
 
-From: adeos-main-admin@domain.hid on behalf of Philippe Gerum
-Sent: Wed 2/23/2005 12:32 PM
-To: Reynolds, Terry (Contractor-SIMTECH)
-Cc: adeos
-Subject: Re: [Adeos-main] Porting question
+Has anybody seen the problem? How/where do I place __adeos_takeover?
 
+Thanks in advance.
 
+Jason Huang
+Wescon Technology
+408-727-8818 x108 
 
-Reynolds, Terry (Contractor-SIMTECH) wrote:
-> My apologies for being vague!  I'd never looked at the 2.4 tree & =
-didn't know there was a ppc port there, I'm working on a ppc64, 2.6 =
-port.
->=20
-> I have a newfound appreciation for everyone porting ppc drivers to =
-ppc64, the differences are huge.
->=20
-> My specific problem is in using the RTAI sample test (latency), via =
-the adeos/generic.c implementation.   In adeos_register_domain, when the =
-root domain (linux) calls the adeos_switch_to function, the link =
-register value stored for the RTAI_hal domain isn't set up properly to =
-return to the register_domain function.
->=20
-> At least I assume that's what's happening, since my system crashes in =
-the adeos_switch_domain function, or in returning from there.
->=20
-> This would be much easier to work on if there was a kdb available for =
-ppc64!  Printk statements, with the kernel crashing every time I run the =
-program is very time consuming.
->=20
-> My question is: in the process of registering a domain, when does it's =
-stack get setup so that a call to switch domain will pull up the correct =
-value to place in the link register so that the switch function will =
-know where to return to?
->=20
->=20
-
-__adeos_init_domain(). Really. Excerpt:
-
-        ksp[19] =3D (_cpuid =3D=3D cpuid); /* r3 */
-        ksp[25] =3D (unsigned long)attr->entry; /* lr =
-<=3D=3D=3D=3D=3D=3D */
-        ksp[26] =3D flags & ~MSR_EE; /* msr */
-
-
-PS: please ask your mail client to wrap lines. (My 2700 inches CRT does
-not fit on my office desk...)
-
-> Thanks,
->=20
->=20
-> Terry
->
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
-
-
---
-
-Philippe.
-
-_______________________________________________
-Adeos-main mailing list
-Adeos-main@domain.hid
-https://mail.gna.org/listinfo/adeos-main
-
+> -----Original Message-----
+> From: adeos-main-admin@domain.hid [mailto:adeos-main-admin@domain.hid] On Behalf Of
+> adeos-main-request@domain.hid
+> Sent: Friday, February 04, 2005 5:43 PM
+> To: Jason Huang
+> Subject: Welcome to the "Adeos-main" mailing list
+> 
+> Welcome to the Adeos-main@domain.hid mailing list!
+> 
+> To post to this list, send your email to:
+> 
+>   adeos-main@gna.org
+> 
+> General information about the mailing list is at:
+> 
+>   https://mail.gna.org/listinfo/adeos-main
+> 
+> If you ever want to unsubscribe or change your options (eg, switch to
+> or from digest mode, change your password, etc.), visit your
+> subscription page at:
+> 
+>   https://mail.gna.org/options/adeos-main/jason.huang%40wescongroup.com
+> 
+> 
+> You can also make such adjustments via email by sending a message to:
+> 
+>   Adeos-main-request@domain.hid
+> 
+> with the word `help' in the subject or body (don't include the
+> quotes), and you will get back a message with instructions.
+> 
+> You must know your password to change your options (including changing
+> the password, itself) or to unsubscribe.  It is:
+> 
+>   welcome
+> 
+> If you forget your password, don't worry, you will receive a monthly
+> reminder telling you what all your gna.org mailing list passwords are,
+> and how to unsubscribe or change your options.  There is also a button
+> on your options page that will email your current password to you.
+> 
+> You may also have your password mailed to you automatically from the
+> Web page noted above.
 
 
