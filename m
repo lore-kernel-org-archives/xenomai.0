@@ -1,11 +1,12 @@
-Date: Fri, 19 Jul 2002 08:54:52 +0200 (CEST)
-From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
-Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
-Subject: RE: [Adeos-main] RT nanokernel working with ADEOS 
-In-Reply-To: <3D37A135.D57FD1A5@domain.hid>
-Message-ID: <Pine.LNX.4.44.0207190854200.6947-100000@domain.hid>
+Message-ID: <3D0F0CA1.C0EC9F50@domain.hid>
+Date: Tue, 18 Jun 2002 10:34:09 +0000
+From: Karim Yaghmour <karim@domain.hid>
+Reply-To: karim@domain.hid
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: Re: [Adeos-main] Re: My first tests with adeos!!!
+References: <20020618071723.91139.qmail@domain.hid> <3D0F0BA2.969434A3@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -16,25 +17,24 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-Cc: Adeos <adeos-main@gna.org>
+To: mohan kumar <mohan_knb@domain.hid>, adeos-main@gna.org
 
-On Fri, 19 Jul 2002, Karim Yaghmour wrote:
+Karim Yaghmour wrote:
+> Given the code in the interrupt handler,
+> however, I think that you should be making the following call if
+> you want the interrupts to propagate the next time they occur:
+> adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,1);
 
-> Herman Bruyninckx wrote:
-> >> There's also eCos, but its license isn't approved by the Open Source
-> >> Initiative.  Though, it would be a great way for RedHat to revive
-> >> its dying OS.
-> >The new version will be GPL. And I think it will be released even
-> >though Redhat stopped its Ecos activities...
-> 
-> I haven't seen this anywhere ... do you have a link ?
-> 
-<http://sources.redhat.com/ml/ecos-discuss/2002-05/msg00191.html>
+My mistake. I mixed up the call's API. The original was OK:
+adeos_control_irq(INT_NUM, 0 ,IPIPE_PASS_MASK);
 
-Herman
+The rest of the explanation still holds, however.
 
--- 
-K.U.Leuven, Mechanical Engineering, Robotics Research Group
-<http://www.mech.kuleuven.ac.be/~bruyninc>  +32 16 322480
+Karim
 
+===================================================
+                 Karim Yaghmour
+               karim@domain.hid
+      Embedded and Real-Time Linux Expert
+===================================================
 
