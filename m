@@ -1,12 +1,10 @@
-Date: Mon, 3 May 2004 10:03:14 +0300 (EEST)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-Subject: Re: [Adeos-main] 2.6.5 + vesuvio + gcc-3.4.0 = success
-In-Reply-To: <1083517623.683.73.camel@domain.hid>
-Message-ID: <Pine.LNX.4.53.0405030949360.25142@domain.hid>
-References: <Pine.LNX.4.53.0405021911080.23891@domain.hid>
- <1083517623.683.73.camel@domain.hid>
+Message-ID: <40A399BC.9080001@domain.hid>
+Date: Thu, 13 May 2004 17:52:28 +0200
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] ADEOS for ARM: irq vectors ?
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,46 +15,52 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-On Sun, 2 May 2004, Philippe Gerum wrote:
+Hi there,
 
-:> The rtai_up examples works ok, but lxrt scheduler failed (box freezed
-:> solid while starting XFree 4.4.0 and running lxrt latency test).
-:
-:As far as I can remember, starting the X server while a RT app is
-:running always crashed the box. There must be something in the card
-:support messing with the interrupt machinery well beyond the real-time
-:layer can bear...
+I am looking at the file
 
- Yes you may be right (XFree 4.4.0 issued cli/sti and can hold cpu bus in
-any time - depends from the m/b and video card chipset combination), but
-kernel mode latency example working like a sharm while X server
-started/exited. Anyway framebuffer X gives the smallest and stablest
-latencies in the linux/RTAI world.
+http://download.gna.org/adeos/patches/v2.4/arm/adeos-linux-2.4.19-arm-rmk7-pxa2-r12.patch
 
-:However, we made good progress on vesuvio last week, and now the full
-:stack works in UP+SMP, including with the preemptible kernel support
-:enabled.
+and find the code:
 
-Several comments to vesuvio branch :
+#elif defined(CONFIG_ARCH_SA1100)
 
- - the 2.6 kernel has an option to compile ctitical funcs with
-	gcc regparm(3) attribute, the help says that even kernel modules
-	need to be compiled with this attribute. So vesuvio ignores this
-	config option and this resulted in box crash while simple
-	inserting the rtai_hal module.
- - I tried to rem CONFIG_MODVERSIONS check in configure - no problems at
-	all.
+                 .macro  disable_fiq
+                 .endm
 
-:Thanks, but it was not deliberate! Nah, just kidding... :o)
-:
+                 .macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+                 mov     r4, #0xfa000000                 @ ICIP = 0xfa050000
+                 add     r4, r4, #0x00050000
+                 ldr     \irqstat, [r4]                  @ get irqs
+                 ldr     \irqnr, [r4, #4]                @ ICMR = 0xfa050004
+                 ands    \irqstat, \irqstat, \irqnr
+                 mov     \irqnr, #0
+                 beq     1001f
+#ifdef CONFIG_ADEOS_CORE
+                 tst     \irqstat, #0x04000000   @ check OSMR0 first
+                 movne   \irqnr, #26
+                 bne     1001f
+#endif /* CONFIG_ADEOS_CORE */
+                 tst     \irqstat, #0xff
+                 moveq   \irqstat, \irqstat, lsr #8
+                 addeq   \irqnr, \irqnr, #8
+...
 
-Welcome to Linux 2.6 world my dear RTAI ! Yea, kidding too ... ;)
+What's the point here?
 
-:
-:
+Does it mean that if an interrupt occured and it was a timer interrupt
 
-		Rus
+     tst     \irqstat, #0x04000000   @ check OSMR0 first
+
+then irqnr (=R0) is loaded with the value "26" ...
+
+So ADEOS replace the interrupt "vector 26" with its own code that gets 
+called instead of the normal timer interrupt? Is that correct? Where is it done?
+
+Thanks!
+
+Steven
+
 
