@@ -1,13 +1,11 @@
-Sender: karim@domain.hid
-Message-ID: <3ED26BCB.FDD29D2A@opersys.com>
-Date: Mon, 26 May 2003 15:32:27 -0400
-From: Karim Yaghmour <karim@domain.hid>
+From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] I have one question
-References: <001b01c3209e$9cb205a0$4d4c4150@domain.hid>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: karim@domain.hid
+Message-ID: <16090.12900.872529.963156@domain.hid>
+Date: Sun, 1 Jun 2003 19:05:40 +0200
+Subject: [Adeos-main] Adeos/armnommu
+Reply-To: philippe.gerum@domain.hid
 List-Id: <adeos-main.nongnu.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
@@ -16,28 +14,19 @@ List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Hidic Anel <patlidzan@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
+Cc: rtai@domain.hid
 
 
-Hidic Anel wrote:
-> If we have 2 OSs running side by side, how is implemented process scheduling
-> between OSs. I mean if we have 10 processes per OS, how can we switch
-> between them, so that we have impression of parallel running of 2 OSs
+Hi,
 
-Adeos doesn't implement OS scheduling, though other nanokernels do (see
-exokernel paper for example.) One thing you can do with Adeos is build
-the entire systems so that each OS only takes a certain portion of the
-CPU. For example, you can modify the OS scheduler so that all active
-tasks cannot take more that x% of the CPU time. You could also extend
-Adeos to implement an OS scheduler a-la exokernel.
+Adeos has just been ported to a MMU-less ARM architecture (Atmel
+AT91x). The port is of course based on uClinux ('20030305' snapshot).
+You can even play with it using GDB's ARMulator support.
 
-Karim
+Patch against uClinux-20030305/linux-2.4.x available here:
+http://savannah.nongnu.org/cgi-bin/viewcvs/adeos/adeos/patches/linux/adeos-linux-2.4.20-uc0-r7c2.diff
 
-===================================================
-                 Karim Yaghmour
-               karim@domain.hid
-      Embedded and Real-Time Linux Expert
-===================================================
+Philippe.
 
 
