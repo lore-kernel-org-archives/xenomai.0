@@ -1,60 +1,76 @@
-Message-ID: <433D1E21.70005@domain.hid>
-Date: Fri, 30 Sep 2005 19:14:41 +0800
-From: Wen-chien Jesse Sung <jesse@domain.hid>
+Message-ID: <424BA18A.4060907@domain.hid>
+Date: Thu, 31 Mar 2005 09:06:50 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090302020403090802080505"
-Subject: [Adeos-main] PATCH: fail to compile with CONFIG_IPIPE=n
+Subject: Re: [Adeos-main] RE: RTAI/fusion 0.7
+References: <1CFEB358338412458B21FAA0D78FE86D505935@domain.hid>
+In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D505935@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Sender: adeos-main-admin@domain.hid
+Errors-To: adeos-main-admin@domain.hid
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Post: <mailto:adeos-main@gna.org>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: Fillod Stephane <stephane.fillod@domain.hid>
+Cc: rtai@domain.hid, adeos-main@gna.org
 
-This is a multi-part message in MIME format.
---------------090302020403090802080505
-Content-Type: text/plain; charset=Big5
-Content-Transfer-Encoding: 7bit
+Hi St=E9phane,
 
-Hi,
+Fillod Stephane wrote:
+> Hi Philippe,
+>=20
+> Kudos for the RTAI/fusion 0.7 release!
+> You (the team) are doing an astounding work.
 
-When ipipe is disabled, ipipe_reset_stats() is not defined, but it is
-still referenced in init/main.c:rest_init().
+Thanks.
 
-  CC      init/version.o
-  LD      init/built-in.o
-  LD      .tmp_vmlinux1
-init/built-in.o: In function `rest_init':
-: undefined reference to `ipipe_reset_stats'
-make: *** [.tmp_vmlinux1] Error 1
+>=20
+> [snip]
+>=20
+>>o The Adeos support used in fusion has been upgraded to final releases,
+>=20
+>=20
+>>namely r9/x86 and r6/ppc. Upgrading is strongly recommended, especially
+>=20
+>=20
+>>if CONFIG_PREEMPT is enabled in your kernel config, which is likely
+>=20
+> with=20
+>=20
+>>fusion. Also note that Adeos PPC is now rebased on mainline (2.6.10=20
+>>actually).
+>=20
+>=20
+> Please find attached a patch of Adeos r6/ppc against 2.6.11.
+> I hope I've got it right.
 
--- 
-Best Regards,
-Wen-chien Jesse Sung
+Looks so. Looking at the problem Heikki pointed us at, it would somewhat=20
+affect 2.6.11 usability in RTAI/fusion context, since we would need to=20
+run with CONFIG_PREEMPT disabled. No problem for RT stuff in primary=20
+mode, but rather hopeless for using the secondary one efficiently.=20
+Either we include Paul Mackerras's fix for it in the Adeos patch, or we=20
+go directly for 2.6.12-rc, using your patch as a reference.
 
---------------090302020403090802080505
-Content-Type: text/x-patch;
-	name="31_adeos-compilation-with-ipipe-disabled.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename="31_adeos-compilation-with-ipipe-disabled.patch"
+> Please let me know if it would need=20
+> the spinlock fix in i386-r10c1.
+>=20
 
-Index: linux-2.6.13-js1/include/linux/ipipe.h
-===================================================================
---- linux-2.6.13-js1.orig/include/linux/ipipe.h	2005-09-30 14:53:01.000000000 +0800
-+++ linux-2.6.13-js1/include/linux/ipipe.h	2005-09-30 18:56:32.000000000 +0800
-@@ -702,6 +702,8 @@
- #define ipipe_irq_lock(irq)	do { } while(0)
- #define ipipe_irq_unlock(irq)	do { } while(0)
- 
-+#define ipipe_reset_stats()	do { } while(0)
-+
- #endif	/* CONFIG_IPIPE */
- 
- #endif	/* !__LINUX_IPIPE_H */
+It would be better, yes. This generic bug breaks deemed non-preemptible=20
+sections in printk() at least. I've committed the changes to the Adeos=20
+CVS (adeos-core/include/asm-ppc/adeos.h).
 
---------------090302020403090802080505--
+> Hope to get some Fusion report to share soon.
+>=20
+
+Ack. Thanks for the patch.
+
+--=20
+
+Philippe.
 
