@@ -1,13 +1,12 @@
-Date: Thu, 14 Oct 2004 16:32:38 -0400 (EDT)
-From: Currie Reid <curriereid@domain.hid>
-Subject: Re: [Adeos-main] Behaviour of adeos_catch_event when domain unregistered
-In-Reply-To: <1097780961.668.29.camel@domain.hid>
-Message-ID: <Pine.LNX.4.44L.0410141617520.1592-100000@domain.hid>
-References: <Pine.LNX.4.44L.0410140906250.1592-100000@domain.hid>
-  <1097771420.668.5.camel@domain.hid>  <Pine.LNX.4.44L.0410141400240.1592-100000@domain.hid>
- <1097780961.668.29.camel@domain.hid>
+From: =?iso-8859-1?Q?Andr=E9_Tousch?= <andre.tousch@domain.hid>
+Date: Tue, 19 Oct 2004 15:10:34 +0200
+Message-ID: <008b01c4b5dd$04d20890$7405a8c0@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1097614490.672.6.camel@domain.hid>
+Subject: [Adeos-main] __adeos_handle_event
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -18,128 +17,32 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Makes perfect sense - I was assuming (erroneously) that the module exit
-routine WAS within the non-root domain and you could use the shorthand
-form.  I have put in the explicit form:
+Hi,
 
-adeos_catch_event_from(&domain_desc,event,NULL)
+I'm currently using Adeos 2.4/armnommu to run an RTOS with Linux.=20
+It works well but I have a problem with events.
+I use __adeos_handle_event(ADEOS_USER_EVENT, &event) to send information
+from Linux to the RTOS.
+Reciprocally, I use adeos_propagate_irq(IRQ_A) to send information from
+the RTOS to Linux.
+Now I have the following scenario: Linux sends an event to the RTOS,
+which replies from the event handler by propagating an IRQ.=20
 
-and this works great - I also note that you say it is unecessary; I just
-wanted to verify your theory.
+1) Linux does __adeos_handle_event(ADEOS_USER_EVENT). Domain switches to
+RTOS
+2) RTOS handles the event. It adeos_propagate_irq()'s to Linux.
+3) RTOS does adeos_suspend_domain(). Domain switches back to Linux.
+4) Linux runs from just after the context switch in
+__adeos_handle_event(). No __adeos_sync_stage() is made, and the IRQ_A
+handler is not called before next hardware IRQ.
 
-Thanks for your help,
+Why is there no call to __adeos_sync_stage() in __adeos_handle_event()?=20
+Or do I miss something?
+Thanks for you support
 
-Currie
-
-
-On Thu, 14 Oct 2004, Philippe Gerum wrote:
-
-> On Thu, 2004-10-14 at 20:13, Currie Reid wrote:
-> > Hello Philippe,
-> >
-> > The patch works, but raises one or two questions (sorry!).  First, I
-> > understood what you meant about the disappearing handler crashing the box,
-> > so what I did in the root level domain is on module unloading I reset the
-> > handler to null -
-> >
-> > static void __exit my_cleanup( void ){
-> >
-> >    adeos_catch_event( ADEOS_EXIT_PROCESS, 0 );
-> >    adeos_unregister_domain( &domain_desc );
-> > }
-> >
-> > which works in the root domain.  So I figured that this might be a proper
-> > clean-up procedure in higher priority domains.  So I did the same thing in
-> > the module cleanup routine when registering a domain for the same event.
-> > When this module is unloaded, the handler does not default back to the
-> > root domain handler.  Without the cleanup, it works as I would have
-> > expected, but if I reset the handler in the higher priority domain, it
-> > seems to wipe out the handler further down the pipe.  Again, I don't know
-> > if this is intended behaviour, but I would have thought that setting the
-> > event handler in a higher priority domain to null would have no affect on
-> > lower priority (or root) domains.  These lower priority domains would
-> > retain the handler attributed to them at the time of their entry.
-> >
->
-> First guess: maybe because you are using adeos_catch_event() to nullify
-> it, which implicitely does
-> adeos_catch_event_from(adp_current,event,NULL) [i.e. it's a shorthand] ,
-> and on behalf of a module cleanup routine, adp_current == adp_root, i.e.
-> Linux?
->
-> So, if you want to clean it up at the most prioritary level, you have to
-> write adeos_catch_event_from(&domain_desc,event,NULL), this way, the
-> current domain (Linux) won't be implicitely used for the operation.
->
-> However, unregistering a domain (now) properly releases all events for
-> it since the stage it occupies disappears, so you don't need to clear
-> the event handlers manually for this domain.
->
-> > Currie
-> >
-> >
-> > On Thu, 14 Oct 2004, Philippe Gerum wrote:
-> >
-> > > On Thu, 2004-10-14 at 15:41, Currie Reid wrote:
-> > > > Hello all,
-> > > >
-> > > > I am just trying to understand the underlying behaviour of adeos, and in
-> > > > my testing I have come across some behaviour that I want to verify is
-> > > > correct.  If I set a handler for ADEOS_EXIT_PROCESS without registering a
-> > > > domain, then the handler is in the root domain and behaves as expected
-> > > > (thank you printk!).  Next, I do a handler in a registered domain for
-> > > > ADEOS_EXIT_PROCESS and perform 2 tests - 1 where the handler doesn't
-> > > > propagate the event to the root domain, and one where it does.  These both
-> > > > behave as expected - when propagated, I see the handler executing once for
-> > > > each domain.  But when I unload the module and unregister the domain, the
-> > > > handler in the root domain no longer executes - I would have thought that
-> > > > the handler would still be in place.
-> > > >
-> > > > If I register 2 domains and duplicate the test, when the higher priority
-> > > > domain is unregistered, the lower priority domain starts handling the
-> > > > events again, as expected.  I haven't delved into to code to see how easy
-> > > > this is to change - mostly because I'm not sure that this isn't
-> > > > uninitended behaviour.
-> > > >
-> > >
-> > > Actually, this is. I mean: a bug. Please try applying the following
-> > > patch to adeos/generic.c and let me know of the outcome. This said, keep
-> > > in mind that fixing this bug will make your box crash if you intend to
-> > > keep a handler attached which ends up disappearing from the address
-> > > space after the module is unloaded.
-> > > Thanks for the report.
-> > >
-> > > --- generic.c	4 Oct 2004 17:34:19 -0000	1.17
-> > > +++ generic.c	14 Oct 2004 16:24:53 -0000
-> > > @@ -173,7 +173,7 @@
-> > >
-> > >      for (event = 0; event < ADEOS_NR_EVENTS; event++)
-> > >  	/* Need this to update the monitor count. */
-> > > -	adeos_catch_event(event,NULL);
-> > > +	adeos_catch_event_from(adp,event,NULL);
-> > >
-> > >  #ifdef CONFIG_SMP
-> > >      {
-> > > --
-> > >
-> > > Philippe.
-> > >
-> > >
-> >
-> >
-> > _______________________________________________
-> > Adeos-main mailing list
-> > Adeos-main@domain.hid
-> > https://mail.gna.org/listinfo/adeos-main
-> --
->
-> Philippe.
->
->
-
-
+Regards,
+Andr=E9 Tousch
 
 
