@@ -1,54 +1,68 @@
-Message-ID: <42E1CB25.10003@domain.hid>
-Date: Sat, 23 Jul 2005 06:44:21 +0200
-From: Daniele Gasperini <daniele.gasperini@domain.hid>
+Date: Mon, 28 Mar 2005 11:46:23 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Message-ID: <Pine.LNX.4.53.0503281139180.20969@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Opteron patch?
-References: <200507211000.j6LA0Ddb024561@domain.hid>
-	<42E16171.3000905@domain.hid>
-In-Reply-To: <42E16171.3000905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: [Adeos-main] Adeos-2.6.11 glitch
+Sender: adeos-main-admin@domain.hid
+Errors-To: adeos-main-admin@domain.hid
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Post: <mailto:adeos-main@gna.org>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Nathaniel Villaume <villaume@domain.hid>
-Cc: adeos-main@gna.org
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: adeos-main@gna.org
 
-Ciao Nate
-I'm working on that patch.
-It is fully 64 bit.
-Could you please send me the .config used ?
-Thanks,
-Daniele
+	Hi.
 
-Nathaniel Villaume wrote:
+ After booting the system do not receive any ICH interrupt (no working
+mouse/usb/sound/eth0 ) :
 
->
-> Several architecture patches are available in 
-> http://download.gna.org/adeos/patches/v2.6/adeos/ .
->
-> If ia64 is for Itanium processor, is x86_64 for Opteron?
->
-> Does adeos run in 64-bit on Opteron? (i.e. not using 32-bit backwards 
-> compatibility)
->
-> We get kernel pukage with the x86_64 patch on boot. Is it our config 
-> or a incomplete patch?
->
-> Thanks,
->
-> Nate
->
->
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+Normal system  /proc/interrupts :
+
+           CPU0
+  0:     352045    IO-APIC-edge  timer
+  1:       2029    IO-APIC-edge  i8042
+  7:          2    IO-APIC-edge  parport0
+  9:          0   IO-APIC-level  acpi
+ 15:         12    IO-APIC-edge  ide1
+ 16:          0   IO-APIC-level  uhci_hcd, uhci_hcd
+ 17:          4   IO-APIC-level  ohci1394, Intel ICH5
+ 18:      11753   IO-APIC-level  libata, uhci_hcd
+ 19:       1405   IO-APIC-level  uhci_hcd
+ 20:       1471   IO-APIC-level  eth0
+ 23:          2   IO-APIC-level  ehci_hcd
+NMI:          0
+LOC:     351738
+ERR:          0
+MIS:          0
+
+Adeos-2.6.11 system :
+
+           CPU0
+  0:     376196    IO-APIC-edge  timer
+  1:       2361    IO-APIC-edge  i8042
+  7:          2    IO-APIC-edge  parport0
+  9:          0   IO-APIC-level  acpi
+ 15:         12    IO-APIC-edge  ide1
+169:      11062   IO-APIC-level  libata, uhci_hcd
+177:          0   IO-APIC-level  eth0
+185:          0   IO-APIC-level  ohci1394, Intel ICH5
+193:          0   IO-APIC-level  ehci_hcd
+201:          0   IO-APIC-level  uhci_hcd, uhci_hcd
+209:          0   IO-APIC-level  uhci_hcd
+NMI:          0
+LOC:     375889
+ERR:          0
+MIS:          0
+
+ System is Intel D865PERL P4 based system. If I pass "pci=routeirq" kernel
+parameter - ICH begin to work again.
 
 
+
+		Rus
 
