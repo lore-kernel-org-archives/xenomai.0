@@ -1,12 +1,14 @@
-Message-ID: <41B974E9.7080801@domain.hid>
-Date: Fri, 10 Dec 2004 11:05:29 +0100
-From: Andre Tousch <andre.tousch@domain.hid>
-MIME-Version: 1.0
-References: <008b01c4b5dd$04d20890$7405a8c0@domain.hid>	 <1098196627.666.9.camel@domain.hid> <1098196994.666.11.camel@domain.hid>
-In-Reply-To: <1098196994.666.11.camel@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Adeos-main] End of interrupt scheduling
+Subject: Re: [Adeos-main] End of interrupt scheduling
+From: Michael Neuhauser <mike@domain.hid>
+In-Reply-To: <41B974E9.7080801@domain.hid>
+References: <008b01c4b5dd$04d20890$7405a8c0@domain.hid>
+	 <1098196627.666.9.camel@domain.hid> <1098196994.666.11.camel@domain.hid>
+	 <41B974E9.7080801@domain.hid>
+Content-Type: text/plain
+Message-Id: <1102682214.13152.116.camel@domain.hid>
+Mime-Version: 1.0
+Date: Fri, 10 Dec 2004 13:36:54 +0100
+Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -19,39 +21,44 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-Hi,
+On Fri, 2004-12-10 at 11:05, Andre Tousch wrote:
+> Hi,
+> 
+> I'm currently using an RTOS with Linux/Adeos on ARM.
 
-I'm currently using an RTOS with Linux/Adeos on ARM. The original=20
-behaviour of the RTOS interrupt handler is:
+What CPU & Kernel are you using? FYI: I'm currently working with an
+ARM920T CPU on Linux 2.4.21-rmk1-crus1.4.2 and found some issues - if
+this is relevant for you: I will post about it here soon.
 
-- Lock interrupts
-- Call high-level interrupt handler
-- Unlock interrupts
-- Schedule()
+> [...]
+>
+> If I want to imitate the original RTOS behaviour, I have to schedule 
+> (RTOS scheduler) at end of interrupt.
+> I cannot do that in this domain's interrupt handler, since it would 
+> Schedule() with domain stalled, and thus the domain would not receive 
+> the interrupts until it gives control back to Adeos by suspending itself.
+>
+>[...]
+>
+> My question is, was there already a way to obtain this behaviour in Adeos?
 
-Adeos behaviour on sync_stage is:
-- Stall domain
-- Call interrupt handler
--  Unstall Domain
+Maybe I'm overlooking something, but why don't you unstall the pipeline
+in your interrupt handler? You don't have to wait for
+__adeos_sync_stage() to unstall it. Outline of interrupt handler:
 
-If I want to imitate the original RTOS behaviour, I have to schedule=20
-(RTOS scheduler) at end of interrupt.
-I cannot do that in this domain's interrupt handler, since it would=20
-Schedule() with domain stalled, and thus the domain would not receive=20
-the interrupts until it gives control back to Adeos by suspending itself.
-So the only way I've found to do that was to had a hook in Adeos which=20
-would be called at sync_stage, just after interrupt handler call.
-Thus the modified Adeos behaviour on sync_stage is:
+	do_irq_work();
+	adeos_unstall_pipeline();
+	rtos_schedule();
 
-- Stall domain
-- Call interrupt handler
--  Unstall Domain
-- Call EndOfInterrupt Handler.
+Of course you need to have registered a high priority domain in which
+the irq handler runs (irqs are hard disabled when entering a root domain
+irq-handler).
 
-Now I have exactly the behaviour expected from my RTOS.
+Mike
+-- 
+Dr. Michael Neuhauser                phone: +43 1 789 08 49 - 30
+Firmix Software GmbH                   fax: +43 1 789 08 49 - 55
+Vienna/Austria/Europe                      email: mike@domain.hid
+Embedded Linux Development and Services    http://www.firmix.at/
 
-My question is, was there already a way to obtain this behaviour in Adeos?
-
-Best regards,
-Andr=E9
 
