@@ -1,10 +1,10 @@
-Message-ID: <3D0F0CA1.C0EC9F50@domain.hid>
-Date: Tue, 18 Jun 2002 10:34:09 +0000
+Message-ID: <3D37BCDC.A2F59891@domain.hid>
+Date: Fri, 19 Jul 2002 03:16:44 -0400
 From: Karim Yaghmour <karim@domain.hid>
 Reply-To: karim@domain.hid
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: My first tests with adeos!!!
-References: <20020618071723.91139.qmail@domain.hid> <3D0F0BA2.969434A3@domain.hid>
+Subject: Re: [Adeos-main] RT nanokernel working with ADEOS
+References: <Pine.LNX.4.44.0207190854200.6947-100000@domain.hid>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
@@ -17,18 +17,18 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: mohan kumar <mohan_knb@domain.hid>, adeos-main@gna.org
+To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
+Cc: Adeos <adeos-main@gna.org>
 
-Karim Yaghmour wrote:
-> Given the code in the interrupt handler,
-> however, I think that you should be making the following call if
-> you want the interrupts to propagate the next time they occur:
-> adeos_control_irq(INT_NUM,IPIPE_PASS_MASK,1);
+Herman Bruyninckx wrote:
+> > >The new version will be GPL. And I think it will be released even
+> > >though Redhat stopped its Ecos activities...
+> >
+> > I haven't seen this anywhere ... do you have a link ?
+> >
+> <http://sources.redhat.com/ml/ecos-discuss/2002-05/msg00191.html>
 
-My mistake. I mixed up the call's API. The original was OK:
-adeos_control_irq(INT_NUM, 0 ,IPIPE_PASS_MASK);
-
-The rest of the explanation still holds, however.
+This is great news. Thanks a lot for pointing this out :)
 
 Karim
 
