@@ -1,11 +1,10 @@
-From: Philippe Gerum <philippe.gerum@domain.hid>
+From: Der Herr Hofrat <der.herr@domain.hid>
+Message-Id: <200309250507.h8P57DN17280@domain.hid>
+Date: Thu, 25 Sep 2003 07:07:13 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-ID: <16194.25859.334512.296898@domain.hid>
-Date: Tue, 19 Aug 2003 19:57:23 +0200
-Subject: [Adeos-main] Adeos 2.4r9c1/2.6r2c1 and porting guide
-Reply-To: philippe.gerum@domain.hid
+Subject: [Adeos-main] 2.6.0-test1
 List-Id: <adeos-main.nongnu.org>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,27 +16,24 @@ List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 To: adeos-main@gna.org
 
 
-Hi,
+Hi !
 
-New candidate Adeos patches for 2.4 are available here:
+ 2.6.0-test1 on AMD Duron stops with no further
+ comment after
 
-http://savannah.gnu.org/download/adeos/linux/v2.4/candidates/
+ Uncompressing Linux... Ok, booting the kernel.
 
-The same goes for 2.6:
+ As <CNTRL><ALT><DEL> does not reboot the box  - I guess that could mean
+ interrupts are disabled and not reenabled...
 
-http://savannah.gnu.org/download/adeos/linux/v2.6/candidates/
+RH9.0
+GCC-3.2.2
+adeos-linux-2.6.0-test1-r1.diff
 
-The changes since r8 were mainly aimed at updating the core support so
-that combining Robert Love's preemptible kernel patches, Andrew
-Morton's low-latency patches and Adeos in a single combo patch is now
-possible.
+ The patched kernel with the config options for adeos disabled works fine
+ 
+ how can I proceed on to find the problem ??
 
-I've also written a porting note containing practical information one
-might need to port Adeos to other target architectures. This document
-is available here:
-
-http://savannah.gnu.org/download/adeos/doc/porting.txt
-
-Philippe.
+hofrat
 
 
