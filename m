@@ -1,12 +1,10 @@
-Date: Mon, 23 Sep 2002 00:03:12 -0300
-From: Arnaldo Carvalho de Melo <acme@domain.hid>
-Message-ID: <20020923030312.GM20520@domain.hid>
-References: <3D8E8371.D2070D87@domain.hid>
-Mime-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3D8E8371.D2070D87@domain.hid>
-Subject: [Adeos-main] Re: [PATCH] Adeos nanokernel for 2.5.38 1/2: no-arch code
+Content-Transfer-Encoding: 7bit
+Message-ID: <15657.24190.301211.695088@domain.hid>
+Date: Mon, 8 Jul 2002 11:42:22 +0200
+Subject: [Adeos-main] Adeos r2c2/x86
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,55 +15,23 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Karim Yaghmour <karim@domain.hid>
-Cc: linux-kernel <linux-kernel@domain.hid>, Adeos <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+To: adeos-main@gna.org
 
-Em Sun, Sep 22, 2002 at 10:58:57PM -0400, Karim Yaghmour escreveu:
-> diff -urpN linux-2.5.38/kernel/printk.c linux-2.5.38-adeos/kernel/printk.c
-> --- linux-2.5.38/kernel/printk.c	Sun Sep 22 00:25:31 2002
-> +++ linux-2.5.38-adeos/kernel/printk.c	Sun Sep 22 21:57:19 2002
-> @@ -194,17 +194,33 @@ int do_syslog(int type, char * buf, int 
->  		if (error)
->  			goto out;
->  		i = 0;
-> +#ifdef CONFIG_ADEOS
-> +		ipipe_hw_spin_lock_disable(&logbuf_lock);
-> +#else  /* !CONFIG_ADEOS */
->  		spin_lock_irq(&logbuf_lock);
-> +#endif /* CONFIG_ADEOS */
->  		while ((log_start != log_end) && i < len) {
->  			c = LOG_BUF(log_start);
->  			log_start++;
-> +#ifdef CONFIG_ADEOS
-> +			ipipe_hw_spin_unlock_enable(&logbuf_lock);
-> +#else  /* !CONFIG_ADEOS */
->  			spin_unlock_irq(&logbuf_lock);
-> +#endif /* CONFIG_ADEOS */
->  			__put_user(c,buf);
->  			buf++;
->  			i++;
-> +#ifdef CONFIG_ADEOS
-> +			ipipe_hw_spin_lock_disable(&logbuf_lock);
-> +#else  /* !CONFIG_ADEOS */
->  			spin_lock_irq(&logbuf_lock);
-> +#endif /* CONFIG_ADEOS */
->  		}
-> +#ifdef CONFIG_ADEOS
-> +		ipipe_hw_spin_unlock_enable(&logbuf_lock);
-> +#else  /* !CONFIG_ADEOS */
->  		spin_unlock_irq(&logbuf_lock);
-> +#endif /* CONFIG_ADEOS */
->  		error = i;
+New Adeos snapshot r2c2/x86 is available from
+http://savannah.gnu.org/download/adeos/snapshots/adeos-20020706.tar.gz
+and from the CVS tree (tag "snap-20020706").
 
-Why this ifdef hell and not something like:
+This new candidate release mainly adds an exception propagation scheme
+similar to the one used for pipelining interrupts. This should be
+rather useful for implementing a kernel debugger over Adeos.
+Basically, domains are now allowed to interpose their own handlers for
+processing exceptions raised by themselves or less prioritary domains.
+A preliminary draft of the Adeos API is also available in doc/api.txt.
 
-	lockbuf_lock();
-	bla
-	logbuf_unlock();
+Since the code is quite stable now, r2c2 is expected to be the last
+candidate release before the final one.
 
-and have this defined in a header, say printk.h or whatever, with the
-ifdefs?
+Best regards,
 
-- Arnaldo
-
+Philippe.
 
