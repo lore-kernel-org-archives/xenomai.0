@@ -1,12 +1,13 @@
-From: Thomas Kuhlmann <maillist@domain.hid>
-Date: Tue, 29 Jun 2004 12:42:32 +0200
+Date: Tue, 29 Jun 2004 13:48:53 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Subject: Re: [Adeos-main] Re: Problem with FIFO's (maybe with RTAI/Adeos) at
+ 2.6.x branch
+In-Reply-To: <1088442437.1094.41.camel@domain.hid>
+Message-ID: <Pine.LNX.4.53.0406291346290.767@domain.hid>
+References: <Pine.LNX.4.53.0406151339110.1831@domain.hid>
+ <1088442437.1094.41.camel@domain.hid>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Message-Id: <200406291242.32834.maillist@domain.hid>
-Subject: [Adeos-main] what should __adeos_set_timer(hz) do?
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,30 +18,18 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org
 
-Hello,
+On Mon, 28 Jun 2004, Philippe Gerum wrote:
 
-based on the adeos-linux-2.4.22-armnommu-r12.patch for uClinux 2.4.22-uc0 from 
-http://download.gna.org/adeos/patches/v2.4/armnommu/ I'm trying to extend 
-(port) this patch for armnommu/arch-netarm/ (NetSilicon NS7520 processor).
+:Found the gremlin. As suspected, this was due to the on-demand VM
 
-Has anybody tried a patch for armnommu/arch-netarm (just to prevent me doing 
-it again)?
+ Tested ok - working like a sharm ;) By the way I tested with
+CONFIG_MODVERSIONS turned on (rem'ed in configure from vesuvio cvs) - no
+problems.
 
-The function __adeos_set_time(unsigned long hz) has to be ported to netarm. 
-However what should it do?
-In the given patch for the armnommu/arch-atmel/ it looks like the kernel timer 
-is disabled, the frequency is changed, and the timer is enabled again (not 
-one shot, but periodic mode). Is this the correct semantics of 
-__adeos_set_timer(hz)?
+:
 
-Sorry if my question is misplaced here and I'd better contact the ARM 
-responsible persons (let me know of this).
-
-Thanks, Thomas.
--- 
-Thomas Kuhlmann, FS Forth-Systeme GmbH, www.fsforth.de
-Kueferstrasse 8, D-79206 Breisach, Germany
-Phone: +49 (7667) 908 144 Fax: +49 (7667) 908 221
+		Rus
 
