@@ -1,15 +1,10 @@
-Subject: Re: [Adeos-main] Signalling virtual interrupts to higher priority
-	domains
-From: Philippe Gerum <rpm@xenomai.org>
-Reply-To: rpm@xenomai.org
-In-Reply-To: <B213B204A377E148A31BC71DE4955C9702EBD59F@nbgm346a.ww004.siemens.net>
-References: 
-	 <B213B204A377E148A31BC71DE4955C9702EBD59F@nbgm346a.ww004.siemens.net>
+From: Subash Babu <subashb@domain.hid>
 Content-Type: text/plain
-Message-Id: <1097614490.672.6.camel@domain.hid>
+Message-Id: <1097646504.3783.13.camel@domain.hid>
 Mime-Version: 1.0
-Date: Tue, 12 Oct 2004 22:59:31 +0200
+Date: 13 Oct 2004 11:18:24 +0530
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Help request on Adeos domain switching
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -20,58 +15,30 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Neugebauer Manfred <manfred.neugebauer@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-On Mon, 2004-10-04 at 11:28, Neugebauer Manfred wrote:
-> Hallo,
-> 
-> I'm using the Adeos nanokernel (2.6.8.1-i386-r7c2) within a project to
-> implement a specific realtime environment embedded within Linux. I
-> recognized the following problem sending virtual interrupts between Linux
-> and my realtime domain (having a higher priority):
-> 
-> First I created a virtual interrupt in my realtime domain using
-> adeos_alloc_irq() and adeos_virtualize_irq_from(). This worked fine. 
-> 
-> My first problem was to signal a virtual interrupt from the Linux domain.
-> adeos_schedule_irq() and adeos_propagate_irq() seem to start from the
-> current (or the next) domain to signal the interrupt to one domain down
-> within the domain chain. Since my receiving domain has a higher priority
-> than the Linux domain, no interrupts were signalled. I solved this problem
-> by using the call __adeos_schedule_irq() with (&__adeos_pipeline)->next as
-> starting point. An idea may be always to use __adoes_pipeline as a start
-> point when applying adeos_schedule_irq().
+Dear Adeos users,
 
-> 
-> The second problem appeared when I looked at the specific timing sequence
-> between sending and receiving this interrupt. From my point of view it looks
-> this way that the interrupt is only signaled to the interrupt array in the
-> higher priority domain, but the domain is not started. This will be done
-> later, when a different (hardware) interrupt or a software event forces the
-> higher priority domain to be scheduled. This behavior is not in the way I
-> expected: I prefered an immediate start of the higher priority domain.
-> 
+I was browsing on Adeos! I have one basic query on switching between the
+domains using Adeos.
 
-Use adeos_trigger_irq() to send interrupts to the head of the pipeline.
-Linux will be preempted as you wish. propagate/schedule() are only used
-to make the IRQ progress down the pipeline as you noticed, possibly
-starting at the current stage if you want to log it and have it played
-when the next sync occurs, or start with the next stage directly.
+If there is a need to switch between Linux as one domain running in RAM
+and a proprietary code base which is sitting in some tightly coupled
+memory assume it as some additional memory near to CPU used for handling
+data at higher speed.
 
-> I don't know whether this behavior is planned (or I do something wrong).
-> Additional information is appreciated.
-> 
-> Manfred.
-> 
-> 
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
+1) Then how that code base registers with the Adeos
+2) What all changes should be made in the code base
+3) How Adeos switches the CPU to execute code base
+4) How code base gives control back to Adeos to switch to Linux domain. 
+5) What all considerations need to be taken on Linux domain while code
+base is running.
 
-Philippe.
+Hope somebody from this stream will help me in understanding the stuff.
+waiting for your replies.
+
+Thanks in advance
+
+Subash
 
 
