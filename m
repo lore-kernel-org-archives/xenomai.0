@@ -1,12 +1,12 @@
-Message-ID: <42120A8F.4090806@domain.hid>
-Date: Tue, 15 Feb 2005 15:43:27 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Adeos without Linux as Root Domain
-References: <9C1918067C3BC14C9C351C206D8A84370DB8EE@rennsmail03.eu.thmulti.com>
-In-Reply-To: <9C1918067C3BC14C9C351C206D8A84370DB8EE@rennsmail03.eu.thmulti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Sun, 20 Feb 2005 17:22:37 -0600
+Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC19380243@domain.hid>
+From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
+Subject: [Adeos-main] adeos_switch_domain PPC
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,32 +17,27 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Gonon Philippe <Philippe.Gonon@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Gonon Philippe wrote:
-> Is Adeos Linux dependent or Linux independent?
-
-It's dependent on Linux regarding the current implementation which knows 
-about the innards of the Linux kernel to take over the box properly; 
-it's clearly not dependent design-wise.
-
-> 
-> I wonder if Adeos could be initialized by a RT nanokernel which call a linux free version of __adeos_init() function.
-> What i saw in source code didn't bring me an answer.
-> 
-> 
-> Thanks for the help,
-> Philippe GONON
-> 
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
-
-
--- 
-
-Philippe.
+Hi All,
+=20
+=20
+I'm working on a port of adeos, and have a simple question concerning =
+the adeos_switch_domain function.  In the code the link register is =
+swapped for the value stored in the incoming domain's stack.  Since this =
+value is the return address used by the blr statement, how does the =
+function get back to the switch_to function that called it from the old =
+domain?  My problem seems to occur the first time the new domain is =
+created, when the switch domain function is called, the link register =
+doesn't seem to be set up to the same spot. =20
+=20
+=20
+Any light some one could shed on this would be greatly appreciated!
+=20
+=20
+Thanks,=20
+=20
+=20
+=20
+Terry
 
