@@ -1,10 +1,11 @@
-Date: Tue, 18 Jun 2002 09:29:58 +0200 (CEST)
-From: Guennadi Liakhovetski <gl@domain.hid>
-In-Reply-To: <3D0DD94D.EE781A5E@opersys.com>
-Message-ID: <Pine.LNX.4.33.0206180928190.25522-100000@domain.hid>
+Date: Thu, 18 Jul 2002 08:40:19 +0200 (CEST)
+From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
+Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
+Subject: Re: [Adeos-main] porting adeos to MIPS architecture
+In-Reply-To: <OFCD857115.70858C2E-ONC1256BF9.004147F0@domain.hid>
+Message-ID: <Pine.LNX.4.44.0207180839280.5697-100000@domain.hid>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Subject: [Adeos-main] Re: [rtai] Re: My first tests with adeos!!!
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -15,23 +16,19 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: Karim Yaghmour <karim@domain.hid>
-Cc: Adeos <adeos-main@gna.org>, RTAI <rtai@domain.hid>
+Cc: adeos-main@gna.org
 
-> BTW, there's an Adeos mailing list here: adeos-main@gna.org
-> That's the best place to send your mails to.
+On Wed, 17 Jul 2002 toon.diels@domain.hid wrote:
 
-And how does one subscribe to it? Sorry, didn't find instructions
-anywhere... Something like "send 'subscribe' to
-adeos-requests@domain.hid"?...
+[...]
+> MIPS interrupt mechanisms are different then the x86 interrupt handling.
 
-Thanks
-Guennadi
----------------------------------
-Guennadi Liakhovetski, Ph.D.
-DSA Daten- und Systemtechnik GmbH
-Pascalstr. 28
-D-52076 Aachen
-Germany
+Do you have some URL with documentation about this difference?
+
+Herman
+
+-- 
+K.U.Leuven, Mechanical Engineering, Robotics Research Group
+<http://www.mech.kuleuven.ac.be/~bruyninc>  +32 16 322480
 
 
