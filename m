@@ -1,12 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3CFCD670.977414FE@opersys.com>
+Date: Tue, 04 Jun 2002 11:02:08 -0400
+From: Karim Yaghmour <karim@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <15662.62676.267509.657051@domain.hid>
-Date: Fri, 12 Jul 2002 17:25:08 +0200
-Subject: Re: [Adeos-main] nice techno!
-In-Reply-To: <OF3F81DAB9.AAA6C7EC-ONC1256BF4.002B1C95@domain.hid>
-References: <OF3F81DAB9.AAA6C7EC-ONC1256BF4.002B1C95@domain.hid>
+Subject: Re: [Adeos-main] adeos-devel
+References: <GX6RLP$D27AEF75D1CA6C8D69278E8554553E3B@laposte.net>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,30 +16,53 @@ List-Id: <adeos-main.mail.freesoftware.fsf.org>
 List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: toon.diels@domain.hid
+To: Frederik Deweerdt <dev.deweerdt@domain.hid>
 Cc: adeos-main@gna.org
 
-toon.diels@domain.hid writes:
- > Hi all,
- > 
- > I explored yesterday the Adeos nanokernel and was surprised by the possibilities and also the
- > stability!
- > 
- > I tested for example multiple domains having different priorities and installing handlers on the same interrupt
- > which works exactly is it is described.
- > 
- > I also tested snooping other interrupts (mouse/keyboard/ide0/ethernet) then the timer example provided in the package.
- > (which works ofcourse also great)
- > 
- > good job!
- > 
+Hello Frederik,
 
-Thanks ! :o)
-It's nice to see people giving a try to Karim's idea. Since we aim at
-building rock-solid foundations for using the Adeos scheme in a broad
-range of applications, it seems reading your mail that we might have
-followed the good track so far.  Thanks again for your feedback. It's
-useful and important to us.
+You are at the right place. We've just been very busy with getting
+the word around and haven't had the time to let the dust settle.
+But we're getting there ...
 
-Philippe.
+The sourceforge space is now obsolete. There never was any code there
+and any new development is going to be done on the Savannah
+workspace.
+
+adeos-main is ... well the main adeos mailing list ;)
+
+Best regards,
+
+Karim
+
+=46rederik Deweerdt wrote:
+>=20
+> Hi,
+> I'm new to this list so I apologize in advance if I misunderstood the=
+ purpose of this list. I'd like to know :
+> if the adeos-devel list on sourceforge is still active
+> if there is an adeos related list other than adeos-main
+> Thanks,
+>=20
+> Frederik Deweerdt
+> frederik.deweerdt@domain.hid
+>=20
+> Acc=E9dez au courrier =E9lectronique de La Poste : www.laposte.net ; =
+3615 LAPOSTENET (0,13 ?/mn) ; t=E9l : 08 92 68 13 50 (0,34?/mn)"
+>=20
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main
+
+--=20
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+                 Karim Yaghmour
+               karim@domain.hid
+      Embedded and Real-Time Linux Expert
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
 
