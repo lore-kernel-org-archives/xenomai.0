@@ -1,12 +1,12 @@
-Subject: Re: [Adeos-main] what should __adeos_set_timer(hz) do?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200406291242.32834.maillist@domain.hid>
-References: <200406291242.32834.maillist@domain.hid>
-Content-Type: text/plain
-Message-Id: <1088507709.636.14.camel@domain.hid>
-Mime-Version: 1.0
-Date: Tue, 29 Jun 2004 13:15:09 +0200
+From: Thomas Kuhlmann <maillist@domain.hid>
+Date: Wed, 30 Jun 2004 11:13:48 +0200
+MIME-Version: 1.0
+Content-Disposition: inline
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Message-Id: <200406301113.48282.maillist@domain.hid>
+Subject: [Adeos-main] Adeos testprogram "adtest" does not test all features
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,43 +17,25 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Thomas Kuhlmann <maillist@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-On Tue, 2004-06-29 at 12:42, Thomas Kuhlmann wrote:
-> Hello,
-> 
-> based on the adeos-linux-2.4.22-armnommu-r12.patch for uClinux 2.4.22-uc0 from 
-> http://download.gna.org/adeos/patches/v2.4/armnommu/ I'm trying to extend 
-> (port) this patch for armnommu/arch-netarm/ (NetSilicon NS7520 processor).
-> 
-> Has anybody tried a patch for armnommu/arch-netarm (just to prevent me doing 
-> it again)?
-> 
-> The function __adeos_set_time(unsigned long hz) has to be ported to netarm. 
-> However what should it do?
-> In the given patch for the armnommu/arch-atmel/ it looks like the kernel timer 
-> is disabled, the frequency is changed, and the timer is enabled again (not 
-> one shot, but periodic mode). Is this the correct semantics of 
-> __adeos_set_timer(hz)?
-> 
+Hello
 
-Strictly speaking, setting the hw timer in periodic mode is not required
-by Adeos. __adeos_set_timer() is a helper for the adeos_tune_timer()
-service that is expected to set the Linux timer hw to a given frequency.
-This helper is totally ARM-dependent and does not even exist for other
-archs.
+I just compiled my first Adeos-patched kernel for armnommu/arch-netarm and 
+tried the test module: adtest.c
 
-> Sorry if my question is misplaced here and I'd better contact the ARM 
-> responsible persons (let me know of this).
-> 
+However adtest.c only catches the timer interrupts, counts them and propagates 
+the interrupt to linux.
 
-Your question indeed belongs to this list. Maybe the ARM guru (who I'm
-not) is listening?
+It would be nice to check, if adtest is able to catch interrupts which are 
+disabled by the linux kernel (the timer interrupt isn't disabled by linux).
 
-> Thanks, Thomas.
--- 
+has anyone an idea which interrupt to test, or even an extended version of 
+adtest.c ?
 
-Philippe.
+btw: adtest.c refers to "adsysinfo_t.timer.irq" which is not available in 
+adeos-linux-2.4.22-armnommu-r12.patch, its called "adsysinfo_t.archdep.tmirq" 
+there.
 
+Thanks, Thomas.
 
