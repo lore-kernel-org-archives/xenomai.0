@@ -1,9 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
+From: Philippe Gerum <philippe.gerum@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <15826.39948.417701.712466@domain.hid>
-Date: Wed, 13 Nov 2002 19:38:04 +0100
+Message-ID: <15826.21905.156728.84938@domain.hid>
+Date: Wed, 13 Nov 2002 14:37:21 +0100
+Reply-To: philippe.gerum@domain.hid
 Subject: [Adeos-main] Adeos snapshot 20021113
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
