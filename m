@@ -1,32 +1,37 @@
-From: Philippe Gerum <philippe.gerum@domain.hid>
+From: Der Herr Hofrat <der.herr@domain.hid>
+Message-Id: <200307120723.h6C7NmW06778@domain.hid>
+Date: Sat, 12 Jul 2003 09:23:47 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-ID: <16090.12900.872529.963156@domain.hid>
-Date: Sun, 1 Jun 2003 19:05:40 +0200
-Subject: [Adeos-main] Adeos/armnommu
-Reply-To: philippe.gerum@domain.hid
+Subject: [Adeos-main] a few questions
 List-Id: <adeos-main.nongnu.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
 List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
+List-Archive: <http://mail.gnu.org/pipermail/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
-Cc: rtai@domain.hid
 
 
-Hi,
+HI !
 
-Adeos has just been ported to a MMU-less ARM architecture (Atmel
-AT91x). The port is of course based on uClinux ('20030305' snapshot).
-You can even play with it using GDB's ARMulator support.
+ reading my wai into adeos - so pleas excuse if these question are stupid..
+ after reading the docs on adeos.org and a few comments in the 
+ RTAI mailng list a few questions arose:
 
-Patch against uClinux-20030305/linux-2.4.x available here:
-http://savannah.nongnu.org/cgi-bin/viewcvs/adeos/adeos/patches/linux/adeos-linux-2.4.20-uc0-r7c2.diff
+ 1) Is ther and example of running multiple domains under adeos (exept for RTAI which is not completly independant (?) of the root domain - atleast it does not seem posible to run multiple instances of RTAI in paralell ?
+ Has anybody ran multiple Linux or other OS'under ADEOS
+ and are there any docs about this ??
 
-Philippe.
+ 2) for shared resources - Network cards etc. - the
+    Root domain driver is responsible (or a root-domain-process) for
+    dispatching the domain specific data (i.e. a ip-packet for a 
+    specific domain)a
+
+thanks fro any clarification
+hofrat 
 
 
