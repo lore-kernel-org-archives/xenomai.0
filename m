@@ -1,12 +1,11 @@
-From: Thomas Kuhlmann <maillist@domain.hid>
-Date: Wed, 30 Jun 2004 11:13:48 +0200
+Date: Wed, 14 Jul 2004 08:51:08 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+In-Reply-To: <OF9BBFDAB0.273EFE19-ONC1256ED0.004CFE31-42256ED0.004DAC74@domain.hid>
+Message-ID: <Pine.LNX.4.53.0407140847350.9543@domain.hid>
+References: <OF9BBFDAB0.273EFE19-ONC1256ED0.004CFE31-42256ED0.004DAC74@domain.hid>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Message-Id: <200406301113.48282.maillist@domain.hid>
-Subject: [Adeos-main] Adeos testprogram "adtest" does not test all features
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: [Adeos-main] Re: System clock speed increases with rtai_lxrt.ko
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,25 +16,20 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: adeos-main@gna.org
+To: malte.witt@domain.hid
+Cc: rtai@domain.hid, adeos-main@gna.org
 
-Hello
+On Tue, 13 Jul 2004, malte.witt@domain.hid wrote:
 
-I just compiled my first Adeos-patched kernel for armnommu/arch-netarm and 
-tried the test module: adtest.c
+:constraints. This part I implemented as kernel-modules. This works fine.
+:But when using "rtai_lxrt.ko" as scheduler my system clock seems to double
+:speed (or even more). I gain minutes over minutes during runtime.
 
-However adtest.c only catches the timer interrupts, counts them and propagates 
-the interrupt to linux.
+ I didn't try lxrt, but noticed while trying kernel latency example on one
+console and 'ping -f' on other that ping says - 'time is going backward'.
 
-It would be nice to check, if adtest is able to catch interrupts which are 
-disabled by the linux kernel (the timer interrupt isn't disabled by linux).
+:
+:
 
-has anyone an idea which interrupt to test, or even an extended version of 
-adtest.c ?
-
-btw: adtest.c refers to "adsysinfo_t.timer.irq" which is not available in 
-adeos-linux-2.4.22-armnommu-r12.patch, its called "adsysinfo_t.archdep.tmirq" 
-there.
-
-Thanks, Thomas.
+		Rus
 
