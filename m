@@ -1,47 +1,57 @@
-Message-ID: <3DC6BEE3.3AD48CCE@opersys.com>
-Date: Mon, 04 Nov 2002 13:39:31 -0500
-From: Karim Yaghmour <karim@domain.hid>
-Reply-To: karim@domain.hid
+Message-ID: <423E76BA.60001@domain.hid>
+Date: Mon, 21 Mar 2005 08:24:42 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: RTOS over Adeos document
-References: <20021104100720.78382.qmail@domain.hid> <3DC69037.5A9A1577@domain.hid> <20021104154142.GA2608@domain.hid> <3DC6A8E8.AFE2D5DC@opersys.com> <20021104172711.GA2989@domain.hid>
-Content-Type: text/plain; charset=iso-8859-15
+Subject: Re: [Adeos-main] PATCH: adeos ppc r6c15 oops handling
+References: <423E7517.3040304@domain.hid>
+In-Reply-To: <423E7517.3040304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: Jacob Gorm Hansen <jg@domain.hid>
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: Heikki Lindholm <holindho@domain.hid>
 Cc: adeos-main@gna.org
 
-Jacob Gorm Hansen wrote:
-> If Adeos gets spaces like Space, then it would be interesting.
-> Otherwise I don't think it is possible, because we need to protect guest
-> OSes against eachother.
+Heikki Lindholm wrote:
+> Hello,
+> 
+> Adeos prevents (most) oopses from other domains from printing. The 
+> attached patch should fix the behaviour.
 
-You don't need to do that if each OS is stable and doesn't behave
-randomly, which we assume is a fine description of Linux. As long
-as the PCI probe is modified to only reveal the devices the OS
-instance is supposed to see, then all other hardware should be
-out of reach.
+Applied, thanks.
 
-BTW, I've went through the L4Linux source code briefly and it was
-interesting to see how they take care of cli/sti. They too redefine
-those functions :) However, they use L4's IPC mechanisms to
-implement cli/sti, which is kind of interesting.
+> 
+> -- Heikki Lindholm
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> --- arch/ppc/kernel/traps.c.orig	2005-03-21 09:16:15.783031455 +0200
+> +++ arch/ppc/kernel/traps.c	2005-03-21 09:16:22.182984961 +0200
+> @@ -78,6 +78,12 @@
+>  {
+>  	static int die_counter;
+>  	int nl = 0;
+> +
+> +#ifdef CONFIG_ADEOS_CORE
+> +	/* lets us see Oopses from other domains, too */
+> +	if (adp_current != adp_root)
+> +		adeos_set_printk_sync(adp_current);
+> +#endif /* CONFIG_ADEOS_CORE */
+>  	console_verbose();
+>  	spin_lock_irq(&die_lock);
+>  #ifdef CONFIG_PMAC_BACKLIGHT
 
-Karim
 
-===================================================
-                 Karim Yaghmour
-               karim@domain.hid
-      Embedded and Real-Time Linux Expert
-===================================================
+-- 
 
+Philippe.
 
