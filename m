@@ -1,48 +1,44 @@
-From: Philippe Gerum <philippe.gerum@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Subash Babu <subashb@domain.hid>
+Content-Type: text/plain
+Message-Id: <1097735522.5779.8.camel@domain.hid>
+Mime-Version: 1.0
+Date: 14 Oct 2004 12:02:03 +0530
 Content-Transfer-Encoding: 7bit
-Message-ID: <15806.22647.658709.7556@domain.hid>
-Date: Tue, 29 Oct 2002 10:44:23 +0100
-Subject: [Adeos-main] Re: RTOS over Adeos document
-In-Reply-To: <20021029082623.63858.qmail@domain.hid>
-References: <20021029082623.63858.qmail@domain.hid>
+Subject: [Adeos-main] Help request on Adeos domain switching
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: Girish Wadhwani <gwadh@domain.hid>
-Cc: adeos-main@gna.org
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: adeos-main@gna.org
 
-Hello,
+Dear Mr.Karim/Philippe and Adeos users,
 
-Girish Wadhwani writes:
- > 
- > The PDF and PS versions seem to have only one page,
- > the other pages seem to be missing. I downloaded it
- > from:
- > http://www.opersys.com/adeos/index.html
- > 
+I was browsing on Adeos! I have one basic query on switching between the
+domains using Adeos.
 
-Yep, there seems to be some font problems with the PDF version of this
-document. Try reading the PDF file with gv instead of xpdf.
+If there is a need to switch between Linux as one domain running in RAM
+and a proprietary code base which is sitting in some tightly coupled
+memory assume it as some additional memory near to CPU like dcache and
+Icache used for handling data at higher speed.
 
- > BTW, is this the list where all Adoes discussions take
- > place? Or is there some other list. All I see are
- > announcements.
- > 
+1) Then how that code base registers with the Adeos
+2) What all changes should be made in the code base
+3) How Adeos switches the CPU to execute code base
+4) How code base gives control back to Adeos to switch to Linux domain. 
+5) What all considerations need to be taken on Linux domain while code
+base is running.
 
-Well... Yes, this should be the list where Adeos discussions take
-place, but I must admit that I'm rather alone to consume the available
-bandwidth with announcements right now. But look, you have just
-doubled the weekly traffic! ;o)
+Hope somebody from this stream will help me in understanding the stuff.
+waiting for your replies.
 
-Philippe.
+Thanks in advance
+
+Subash
 
 
