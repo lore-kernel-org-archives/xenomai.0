@@ -1,32 +1,46 @@
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 29 Jun 2004 09:20:01 +0300 (EEST)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Subject: Re: [Adeos-main] Re: Problem with FIFO's (maybe with RTAI/Adeos) at
+ 2.6.x branch
+In-Reply-To: <1088442437.1094.41.camel@domain.hid>
+Message-ID: <Pine.LNX.4.53.0406290917130.23093@domain.hid>
+References: <Pine.LNX.4.53.0406151339110.1831@domain.hid>
+ <1088442437.1094.41.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <15804.11694.108768.648281@domain.hid>
-Date: Sun, 27 Oct 2002 19:17:18 +0100
-Subject: [Adeos-main] Patch freeze + modularization
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.nongnu.org>
-List-Unsubscribe: <http://mail.nongnu.org/mailman/listinfo/adeos-main>,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.nongnu.org/pipermail/adeos-main/>
-To: adeos-main@gna.org
+List-Archive: <https://mail.gna.org/public/adeos-main/>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org
 
-Final 2.4.19-r5 and 2.5.41-r2 patches for x86 are now frozen in the
-CVS.
+On Mon, 28 Jun 2004, Philippe Gerum wrote:
 
-The undergoing work aims at modularizing most of the nanokernel code
-into a dynamically loadable driver. In-kernel (static) inclusion will
-remain possible, depending on the configuration option selected as for
-any regular Linux driver.
+:> Default Trap Handler: vector 14: Suspend RT task ef8b8720
+:Found the gremlin. As suspected, this was due to the on-demand VM
+:mapping resolution. RT tasks were triggering page faults caught in the
+:real-time domain that caused them to be killed by the HAL. As you
+:noticed, extending the size of the data section makes the odds of
+:encountering this situation higher since the module is loaded into
+:vmalloc'ed memory by the kernel. Fixed in the vesuvio CVS.
 
-Regards,
+Thanks, will test today ;)
 
-Philippe.
+:
+:PS: this bug does not affect RTAI running over 2.4 kernels since Adeos
+:for 2.4.x has a built-in fix for this.
 
+ Yes, this bug appeared while porting to 2.6 and I thought this was from
+my wrong written app.
+
+:
+
+		Rus
 
