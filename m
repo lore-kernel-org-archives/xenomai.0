@@ -1,14 +1,12 @@
 From: Dirk Roloff <roloff@domain.hid>
-Subject: Re: [Adeos-main] 260 uSec latency and no idea why
-Date: Thu, 18 Mar 2004 14:11:29 +0100
-References: <200403110326.33694.roloff@domain.hid> <200403130000.34021.roloff@domain.hid> <20040315085343.GA3821@domain.hid>
-In-Reply-To: <20040315085343.GA3821@domain.hid>
+Date: Thu, 18 Mar 2004 14:37:13 +0100
 MIME-Version: 1.0
 Content-Type: text/plain;
   charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200403181411.29292.roloff@domain.hid>
+Message-Id: <200403181437.13187.roloff@domain.hid>
+Subject: [Adeos-main] Adding void * to interrupt isr
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -21,41 +19,39 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-Hi Vitor,
+Hi All,
 
-many thanks - your code works fine. And the jitters are gone after disablei=
-ng the
-SMI.
+after implementing my device driver in a adeos domain, i am missing a pointer to my device struct in the isr.
+Under Linux the prototype of request_irq is:
 
-Also many thanks to all the other helping me to find out whats going on.
-That i had never find on my own.
+int request_irq(unsigned int irq, void (*gest)(int, void *, struct pt_regs *), unsigned long drap_interrupt, const char *devname, void *dev_id); 
 
+as you see / know the last parameter is a void * dev_id. This dev_id is not handled by the kernel and just past as 
+second parm to the isr.
+This makes it easy to handle more the one device withe the same driver, or pass some infos to the isr.
+
+ToDo:
+
+* adding a void * to adomain_t.irq
+ 
+* change adeos_virtualize_irq() and  adeos_alloc_irq() save the dev_id in  
+adomain_t.
+
+* change the call to irq handler passing dev_id;
+
+* Change all calls to adeos_virtualize_irq to pass a NULL dev_id  while init pipeline for linux.
+
+* Change dokumentation
+
+
+What do you think about this ? I would do and test this an supply a patch. Who would add this to the current cvs.
+
+To make the prototypes equal we maybe add also struct pt_regs * but i do not know which regs should be
+the isr.
+
+Regards 
 Dirk
 
 
-Am Montag, 15. M=E4rz 2004 09:53 schrieb Vitor Angelo:
-> Hi Dirk,
->
-> # Any updates on INTEL 82801EB I/O Controller Hub (ICH5)
-> #
-> # Dirk
->
-> could you please test the attached code? You should do a
->
-> echo enable > /proc/smi/global
->
-> and a
->
-> echo disable > /proc/smi/global
->
-> to test if the "global SMI bit" changes anything for you.
->
-> The other entries under /proc/smi are not important, unless you want to
-> test changes in BIOS or ACPI, doing a "cat /proc/smi/...". The "global
-> SMI bit" should override everything.
->
-> Regards,
->
-> Vitor.
 
 
