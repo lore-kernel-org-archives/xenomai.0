@@ -1,10 +1,12 @@
-Message-ID: <41FFC9E0.2000106@domain.hid>
-Date: Tue, 01 Feb 2005 10:26:40 -0800
-From: Max Krasnyansky <maxk@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] x86-64 architecture support
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 15 Feb 2005 15:35:18 +0100
+Message-ID: <9C1918067C3BC14C9C351C206D8A84370DB8EE@rennsmail03.eu.thmulti.com>
+From: "Gonon Philippe" <Philippe.Gonon@domain.hid>
+Subject: [Adeos-main] Adeos without Linux as Root Domain
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,12 +19,14 @@ List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 List-Archive: <https://mail.gna.org/public/adeos-main/>
 To: adeos-main@gna.org
 
-Folks,
+Is Adeos Linux dependent or Linux independent?
 
-I was wondering if anybody started looking into porting ADEOS to x86-64 platform ?
-Just got my dual Opteron machine setup and wanted to do some tests on it. But then
-realized that it's not supported yet.
+I wonder if Adeos could be initialized by a RT nanokernel which call a =
+linux free version of __adeos_init() function.
+What i saw in source code didn't bring me an answer.
 
-Max
+
+Thanks for the help,
+Philippe GONON
 
 
