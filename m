@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <42654F7E.5090209@domain.hid>
+Date: Tue, 19 Apr 2005 11:35:42 -0700
+From: Max Krasnyansky <maxk@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 24 Mar 2005 11:01:21 -0600
-Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC193802B4@domain.hid>
-From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
-Subject: [Adeos-main] ppc64 pipeline problem
+Subject: Re: [Adeos-main] Re: Interrupt Latency Question
+References: <1CFEB358338412458B21FAA0D78FE86D4F0D3F@rennsmail02.eu.thmulti.com> <425EA538.5000306@domain.hid>
+In-Reply-To: <425EA538.5000306@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,37 +17,44 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: adeos <adeos-main@gna.org>
+To: Paolo Mantegazza <mantegazza@domain.hid>
+Cc: Fillod Stephane <stephane.fillod@domain.hid>, Wolfgang Grandegger <wolfgang.grandegger@domain.hid>, rtai@domain.hid, adeos-main@gna.org
 
-Hi All,
-=20
-I've corrected the syscall portion of the pipeline, and have a new, but =
-similar, problem.  The=20
-ADEOS_SYSCALL_PROLOGUE event (event 4 on this system) is now branching =
-to __adeos_enter_syscall
-function, which calls adeos_handle_event.  This eventually returns to =
-the kernel, marked as to be handled via the linux
-syscall code.  This starts a long loop of event 4's, which are =
-apparently not being processed
-correctly.
-=20
-I get this behavior when trying to load the rtai_nucleus module, or run =
-the latency example.
-=20
-What syscall event does this adeos event 4 correspond to?   What =
-generated it? =20
-=20
-FYI, when I modify entry.S to call a .do_show_syscall for this event =
-what I get is:
-=20
-syscall 3221225472 ( f7db7000, 1000, 1000, f7db8000, fe92d50, =
-100000000200f932) regs=3Dc00000000065aefc
-current=3Dc00000007983b1c0 cpu=3D0=20
-=20
-Which is :
-syscall gpr0 ( r3, r4, r5, r6, r7, r8) r9(ptr to regs) current_task cpu#
-=20
-Thanks,
-=20
-Terry
+Hi Paolo,
+
+> If you have a multicpus machine and can reserve CPUs to real time only,
+> than the picture will change a lot. No Linux activity on them, just your
+> real time programs and irq handlers, likely stuck and fully cached to 
+> those CPUs.
+> 
+> This is the solution you'll see native in Linux soon. With true lowcost 
+> multicpus on a single chip massively available within a short time at 
+> the kids' game and mama's word processors store it will change the whole 
+> picture.
+
+Actually this is kind of available right now with vanilla 2.6 kernel.
+I'm talking about CPU reservation. Here is an example.
+Let's say we have dual CPU box and we want to dedicate CPU 1 to
+our application:
+- Configure the kernel with following boot options:
+	isolcpus=1 acpi_irq_nobalance noirqbalance
+
+   This excludes CPU 1 from the scheduler balancing logic. And disables
+   ACPI and SW irq balancing.
+   Make sure that you don't run user-space IRQ balancer.
+
+- Redirect all interrupts to CPU 0
+   for i in /proc/irq/*; do
+	echo 1 > $i/smp_affinity;
+   done
+
+- Your app call now migrate to CPU 1
+   int cpu = 1;
+   uint32_t mask = (1 << cpu);
+   sched_setaffinity(0, sizeof(mask), (cpu_set_t *) &mask);
+
+That's it. CPU 1 is yours. There will be almost zero activity on it, besides
+your task of course.
+
+Max
 
