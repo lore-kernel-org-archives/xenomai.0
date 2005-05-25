@@ -1,12 +1,10 @@
-Message-ID: <4277A2A7.8050006@domain.hid>
-Date: Tue, 03 May 2005 18:11:19 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4294E32B.6010203@domain.hid>
+Date: Wed, 25 May 2005 23:42:19 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-References: <200505030712.j437CaU18874@domain.hid>
-In-Reply-To: <200505030712.j437CaU18874@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: Interrupt Latency Question
+Content-Type: multipart/mixed;
+ boundary="------------020300090207020104050605"
+Subject: [Adeos-main] PATCH: Adeos ppc g5 support
 Sender: adeos-main-admin@domain.hid
 Errors-To: adeos-main-admin@domain.hid
 List-Help: <mailto:adeos-main-request@domain.hid>
@@ -17,43 +15,76 @@ List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Der Herr Hofrat <der.herr@domain.hid>
-Cc: Fillod Stephane <stephane.fillod@domain.hid>, rtai@domain.hid, adeos-main@gna.org
+To: rtai@domain.hid
+Cc: adeos-main@gna.org
 
-On 05/03/2005 09:12 AM Der Herr Hofrat wrote:
->> Hello,
->> 
->> I just run flushy on a low-end PowerPC system:
->> 
->>   XPC855xxZPnnD4 at 80 MHz: 4 kB I-Cache 4 kB D-Cache FEC present
->> 
->> Unfortunately the results are not that clear than expected. I see the
->> latency going up a bit but other activities do increase it as well
->> (telnet, ping -f). Furthermore, from run to run the latency results are
-> 
-> did some measurements on a number of boxes and ping -f is a bad test as
-> especially on low end systems it results in the kernel more or less running
-> the same code in an infinite loop - resulting in "good" values. If you want
-> to see the network layer influence use NetPIPE and see the jitter jump ;)
-> 
->> different. Well, I think it's a complex and arch-dependent interplay of
->> various parameters, e.g. on the system above, the caches are quite small
->> and therefore the influence of cache refills is low. When I have more
->> time I might repeat the tests on other PowerPC archs as well.
->> 
->> 
->> Apart from that, you can do little to reduce the latency degradation due
->> to cache refills and TLB misses (at least not in a portable way). Linux
->> simply requires it.
->>
-> has anybody ever used gcov feedbacks for ppc ? (run load with kernel compiled
-> with -fprofile-arcs recompile -fbranch-probabilities rerun load and test 
-> jitter) . The PPC branch prediction should be almost ideal for this and that
-> would be a fairly portable way of doing it.
+This is a multi-part message in MIME format.
+--------------020300090207020104050605
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-I never tried that but I doubt that it will reduce cache refills and TLB
-misses. I will have a closer look when time permits.
+Hello,
+Current adeos ppc has (at least) two problems with Apple G5 hardware:
+* the PowerPC 970 decrementer does not work the same way as most ppc32 
+decrementers: it can't be turned off and it's level-sensitive
+* cascading interrupts aren't handled correctly
+Attached is patch against fusion 0.7.4 included adeos to fix these 
+problems (not the cleanest possible implementation, but the ppc32 kernel 
+for g5 isn't either)
 
-Wolfgang.
+Regards,
+  Heikki Lindholm
 
+--------------020300090207020104050605
+Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
+ name="adeos-ppc-r7c1-g5.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="adeos-ppc-r7c1-g5.patch"
+
+ZGlmZiAtTnJ1IGxpbnV4LTIuNi4xMC1hZGVvcy1vcmlnL2FyY2gvcHBjL2tlcm5lbC9hZGVv
+cy5jIGxpbnV4LTIuNi4xMC1hZGVvcy13b3JrL2FyY2gvcHBjL2tlcm5lbC9hZGVvcy5jCi0t
+LSBsaW51eC0yLjYuMTAtYWRlb3Mtb3JpZy9hcmNoL3BwYy9rZXJuZWwvYWRlb3MuYwkyMDA1
+LTA1LTI1IDIxOjIyOjQxLjI4OTkwMTAwMCArMDMwMAorKysgbGludXgtMi42LjEwLWFkZW9z
+LXdvcmsvYXJjaC9wcGMva2VybmVsL2FkZW9zLmMJMjAwNS0wNS0yNSAyMzoyMzoxNy45NTQ3
+NjEwMDAgKzAzMDAKQEAgLTY1LDYgKzY1LDExIEBACiAKIHN0cnVjdCBwdF9yZWdzIF9fYWRl
+b3NfaXJxX3JlZ3M7CiAKKyNpZmRlZiBDT05GSUdfUE9XRVI0CitleHRlcm4gc3RydWN0IGly
+cWFjdGlvbiBrMnUzX2Nhc2NhZGVfYWN0aW9uOworZXh0ZXJuIGludCBvcGVucGljMl9nZXRf
+aXJxKHN0cnVjdCBwdF9yZWdzICpyZWdzKTsKKyNlbmRpZgorCiAvKiBDdXJyZW50IHJlbG9h
+ZCB2YWx1ZSBmb3IgdGhlIGRlY3JlbWVudGVyLiAqLwogdW5zaWduZWQgbG9uZyBfX2FkZW9z
+X2RlY3JfdGlja3M7CiAKQEAgLTM0Niw3ICszNTEsNyBAQAogCiB7CiAgICAgaXJxX2Rlc2Nf
+dCAqZGVzYyA9IGlycV9kZXNjICsgaXJxOwotCisgICAgCiAgICAgaWYgKGRlc2MtPmhhbmRs
+ZXItPmFjayAhPSBOVUxMKQogCXsKIAl1bnNpZ25lZCBsb25nIGFkZmxhZ3M7CkBAIC0zNjQs
+NyArMzY5LDE5IEBACiAJcHJlZW1wdF9kaXNhYmxlKCk7CiAjZW5kaWYgLyogQ09ORklHX1BS
+RUVNUFQgKi8KIAlzcGluX2xvY2soJmRlc2MtPmxvY2spOwotCWRlc2MtPmhhbmRsZXItPmFj
+ayhpcnEpOworCWRlc2MtPmhhbmRsZXItPmFjayhpcnEpOyAKKyNpZmRlZiBDT05GSUdfUE9X
+RVI0CisJLyogaWYgaXQgaXMgYSBrMnUzIGNhc2NhZGVkIGlycSwgYWNrbm93bGVkZ2UgaXQs
+IGFsc28gKi8KKwlpZiAoZGVzYy0+YWN0aW9uID09ICZrMnUzX2Nhc2NhZGVfYWN0aW9uKSB7
+CisJICAgIHN0cnVjdCBwdF9yZWdzIHJlZ3M7CisJICAgIGludCBpcnEyID0gb3BlbnBpYzJf
+Z2V0X2lycSgmcmVncyk7CisJICAgIGlmIChpcnEyICE9IC0xKSB7CisgICAgICAgICAgICAg
+ICAgaXJxX2Rlc2NfdCAqZGVzYzIgPSBpcnFfZGVzYyArIGlycTI7CisJCWlmIChkZXNjMi0+
+aGFuZGxlci0+YWNrKQorCQkgICAgZGVzYzItPmhhbmRsZXItPmFjayhpcnEyKTsKKwkgICAg
+fQorCX0KKyNlbmRpZgogCXNwaW5fdW5sb2NrKCZkZXNjLT5sb2NrKTsKICNpZmRlZiBDT05G
+SUdfUFJFRU1QVAogCXByZWVtcHRfZW5hYmxlX25vX3Jlc2NoZWQoKTsKQEAgLTU2NSw2ICs1
+ODIsMTQgQEAKIAlyZXR1cm4gMTsKIAl9CiAKKyNpZmRlZiBDT05GSUdfUE9XRVI0CisgICAg
+LyogT24gOTcwIENQVXMgREVDIGNhbm5vdCBiZSBkaXNhYmxlZCwgYW5kIHdpdGhvdXQgc2V0
+dGluZyBERUMKKyAgICAgKiBoZXJlLCBERUMgaW50ZXJydXB0IHdvdWxkIGJlIHRyaWdnZXJl
+ZCBhcyBzb29uIGFzIGludGVycnVwdHMgYXJlCisgICAgICogZW5hYmxlZCBpbiBfX2FkZW9z
+X3N5bmNfc3RhZ2UgCisgICAgICovCisgICAgc2V0X2RlYygweDdmZmZmZmZmKTsKKyNlbmRp
+ZgorICAgIAogICAgIF9fYWRlb3NfaXJxX3JlZ3MubXNyID0gcmVncy0+bXNyOyAvKiBmb3Ig
+ZG9fdGltZXIoKSAqLwogCiAgICAgX19hZGVvc19oYW5kbGVfaXJxKEFERU9TX1RJTUVSX1ZJ
+UlEscmVncyk7CmRpZmYgLU5ydSBsaW51eC0yLjYuMTAtYWRlb3Mtb3JpZy9hcmNoL3BwYy9w
+bGF0Zm9ybXMvcG1hY19waWMuYyBsaW51eC0yLjYuMTAtYWRlb3Mtd29yay9hcmNoL3BwYy9w
+bGF0Zm9ybXMvcG1hY19waWMuYwotLS0gbGludXgtMi42LjEwLWFkZW9zLW9yaWcvYXJjaC9w
+cGMvcGxhdGZvcm1zL3BtYWNfcGljLmMJMjAwNC0xMi0yNCAyMzozNToyOC4wMDAwMDAwMDAg
+KzAyMDAKKysrIGxpbnV4LTIuNi4xMC1hZGVvcy13b3JrL2FyY2gvcHBjL3BsYXRmb3Jtcy9w
+bWFjX3BpYy5jCTIwMDUtMDUtMjUgMjM6MDk6MzcuNTM1NDgzMDAwICswMzAwCkBAIC0zODcs
+NyArMzg3LDEyIEBACiAJcmV0dXJuIElSUV9IQU5ETEVEOwogfQogCisjaWZkZWYgQ09ORklH
+X0FERU9TX0NPUkUKKy8qIHRoaXMgaXMgdXNlZCBpbiBrZXJuZWwvYWRlb3MuYyBhZGVvc19h
+Y2tub3dsZWRnZV9pcnEgKi8KK3N0cnVjdCBpcnFhY3Rpb24gazJ1M19jYXNjYWRlX2FjdGlv
+biA9IHsKKyNlbHNlIC8qICFDT05GSUdfQURFT1NfQ09SRSAqLwogc3RhdGljIHN0cnVjdCBp
+cnFhY3Rpb24gazJ1M19jYXNjYWRlX2FjdGlvbiA9IHsKKyNlbmRpZiAvKiBDT05GSUdfQURF
+T1NfQ09SRSAqLwogCS5oYW5kbGVyCT0gazJ1M19hY3Rpb24sCiAJLmZsYWdzCQk9IDAsCiAJ
+Lm1hc2sJCT0gQ1BVX01BU0tfTk9ORSwK
+--------------020300090207020104050605--
 
