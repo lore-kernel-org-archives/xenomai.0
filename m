@@ -1,37 +1,34 @@
-Message-ID: <42C56A11.2050700@domain.hid>
-Date: Fri, 01 Jul 2005 18:06:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <20050711062341.66344.qmail@domain.hid>
+Date: Sun, 10 Jul 2005 23:23:40 -0700 (PDT)
+From: chatchai nanudorn <chatchai_tdm@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] ANNOUNCE: Adeos and Fusion PPC64 port updated
-References: <42C42FD4.9050307@domain.hid>
-In-Reply-To: <42C42FD4.9050307@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Adeos-main] loadable adeos module
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: adeos-main@gna.org
+List-Archive: </public>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Heikki Lindholm wrote:
-> Hello list,
-> 
-> We've updated the adeos+fusion ppc64 ports. Updated versions available at
-> 
-> http://www.cs.helsinki.fi/group/nonsto/rtaippc64.html
-> 
+Hi 
+I 'm trying to build RTAI on FC3 for EMC2
+(linuxcnc.org).
+EMC2 ues laodable adeos, and follow by rtai module. I
+have build rtai and ran testsuit but I never got
+loadable 
+adeos modules (I got adeos.o, which can't be loaded
+with insmod). How to compliled for loadable adeos.ko?
+Thank for all help.
+Regard
+Chatchai 
 
-This Adeos/ppc64 patch is now also available for public consumption here:
-http://download.gna.org/adeos/patches/v2.6/adeos/ppc64/candidates/adeos-linux-2.6.10-ppc64-r2c1.patch
-
--- 
-
-Philippe.
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
 
