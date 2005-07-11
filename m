@@ -1,85 +1,48 @@
-Message-ID: <4247DEA9.6080400@domain.hid>
-Date: Mon, 28 Mar 2005 12:38:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <42D28B92.8050800@domain.hid>
+Date: Mon, 11 Jul 2005 09:09:06 -0600
+From: Jim Cromie <jcromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Adeos-2.6.11 glitch [more info]
-References: <Pine.LNX.4.53.0503281139180.20969@domain.hid> <Pine.LNX.4.53.0503281237020.21474@domain.hid> <4247DCE9.8070407@domain.hid>
-In-Reply-To: <4247DCE9.8070407@domain.hid>
+Subject: Re: [Adeos-main] loadable adeos module
+References: <20050711062341.66344.qmail@domain.hid>
+In-Reply-To: <20050711062341.66344.qmail@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Rus V. Brushkoff" <rus@domain.hid>, adeos-main@gna.org
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: chatchai nanudorn <chatchai_tdm@domain.hid>
+Cc: adeos-main@gna.org
 
-Philippe Gerum wrote:
-> Hi Rus,
-> 
-> Rus V. Brushkoff wrote:
-> 
->> On Mon, 28 Mar 2005, Rus V. Brushkoff wrote:
->>
->> : After booting the system do not receive any ICH interrupt (no working
->> :mouse/usb/sound/eth0 ) :
->>
->> [...]
->>
->> : System is Intel D865PERL P4 based system. If I pass "pci=routeirq" 
->> kernel
->> :parameter - ICH begin to work again.
->>
-> 
-> Are we talking about the r9 available from the download area?
-> 
->>  With the "pci=routeirq" parameter - the kernel locks up solid in
->> rc.hotplug scripts. If adeos is compiled as module - all is working
->> fine until the adeos module inserted - the kernel locks up while moving
->> the mouse. Tested with preeemt=on/off and msi=on/off - result the same,
->> except that the kernel compiled with preempt=on issuing an "stack
->> overflow in do_IRQ()" message while rc.hotplug script is running - 
->> kernel,
->> compiled without preempt, only freezes.
->>
-> 
-> Looks like an IRQ acknowledge issue. Like for the previous MSI bug, it's 
-> all a matter of being able to put my hands on a box that exhibits the 
-> problem.
-> 
->   Can supply any additional info if requested.
-> 
->>
-> 
-> Does the box still freeze with CONFIG_ADEOS_MODULE-CONFIG_HOTPLUG, 
-> before or after the Adeos module is pushed?
+chatchai nanudorn wrote:
 
-i.e. CONFIG_ADEOS_MODULE on
-      CONFIG_HOTPLUG off
+>Hi 
+>I 'm trying to build RTAI on FC3 for EMC2
+>(linuxcnc.org).
+>EMC2 ues laodable adeos, and follow by rtai module. I
+>have build rtai and ran testsuit but I never got
+>loadable 
+>adeos modules (I got adeos.o, which can't be loaded
+>with insmod). How to compliled for loadable adeos.ko?
+>Thank for all help.
+>Regard
+>Chatchai 
+>  
+>
+adeos is a patch to the kernel, and is built as a normal part of its 
+build process.
 
-Btw, could you please send me your .config privately ?
+[jimc@domain.hid linux-2.6.12-ska12c3]$ grep ADEOS .config
+CONFIG_ADEOS=y
+CONFIG_ADEOS_CORE=y
+CONFIG_ADEOS_THREADS=y
+# CONFIG_ADEOS_NOTHREADS is not set
+CONFIG_ADEOS_PROFILING=y
+# CONFIG_ADEOS_PREEMPT_RT is not set
 
-> 
->> :
->>
->>         Rus
->>
->> _______________________________________________
->> Adeos-main mailing list
->> Adeos-main@domain.hid
->> https://mail.gna.org/listinfo/adeos-main
-> 
-> 
-> 
-
-
--- 
-
-Philippe.
+If I change the 1st line to 'm', Id get the adeos.ko module that you seek.
 
