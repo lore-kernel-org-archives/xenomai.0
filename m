@@ -1,14 +1,10 @@
-Message-ID: <42D5892B.8040805@domain.hid>
-Date: Wed, 13 Jul 2005 23:35:39 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <42D61F32.9010501@domain.hid>
+Date: Thu, 14 Jul 2005 10:15:46 +0200
+From: Andi <a.platschek@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Fwd: [Adeos-main] LRTBF par-log.c & adeos_critical_enter
-	question]
-References: <42D2B3B7.30007@domain.hid> <1121117338.6162.38.camel@domain.hid>	
-	<42D43C63.2010706@domain.hid> <1121261614.16275.15.camel@domain.hid>
-In-Reply-To: <1121261614.16275.15.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] adtest.c 
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,35 +13,19 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Kristian Benoit <kbenoit@domain.hid>
-Cc: adeos-main@gna.org, Philippe Gerum <rpm@xenomai.org>
+To: adeos-main@gna.org
 
-Kristian Benoit wrote:
-> On Tue, 2005-07-12 at 23:55 +0200, Hannes Mayer wrote:
-> 
->>I mean, is it possible to get information on how many interrupts were
->>lost ?
-> 
-> 
-> Just a though like that, that depend of what you want to do when you
-> critical enter.
-> 
-> Suppose you have the domains root and ham. Where root is the Linux
-> domain and ham is your domain that handle your interrupt. Then if you
-> add the domain potatoes that is of higher priority than root and ham.
-> You can suspend the domain potatoes most of the time, but when you stall
-> (stalling instead of critical_enter is the key) the domain ham you can
-> resume the domain potatoes that will count the number of interrupt
-> receive upon reception of your interrupt. Then when you unstall the
-> domain ham, you get the count from the domain potatoes and resuspend it.
-> 
-> Kristian
+Hi!
 
-Thanks a lot Kristian and Philippe for your answers and tips!
-I've got some good pointers now for further research!
-If a day would just have 36 hours ;-)
+I'm just doing my first steps with adeos. After Installation I wanted to
+ load some of the examples.
+First I installed adeos on linux 2.6.11. The Installation seems to be
+ok, the examples compiled without any errors, but I can't load them
+(Invalid module format).
+I also compiled adeos on a 2.4.29 kernel, and there were no problems.
 
-Best regards,
-Hannes.
+I've no idea what's the problem. Have you any suggestions what to do??
 
+Thx
+A.P.
 
