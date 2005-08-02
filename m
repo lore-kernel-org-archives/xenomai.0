@@ -1,68 +1,56 @@
-Date: Mon, 28 Mar 2005 11:46:23 +0300 (EEST)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-Message-ID: <Pine.LNX.4.53.0503281139180.20969@domain.hid>
+Message-ID: <42EFF665.3060000@domain.hid>
+Date: Wed, 03 Aug 2005 00:40:37 +0200
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Subject: [Adeos-main] Adeos-2.6.11 glitch
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] do_gettimeofday in ADEOS ISR
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-	Hi.
+Hi all!
 
- After booting the system do not receive any ICH interrupt (no working
-mouse/usb/sound/eth0 ) :
+I was just wondering if calling do_gettimeofday in an ADEOS interrupt
+handler might cause any problems whatsoever ?
 
-Normal system  /proc/interrupts :
+My ISR:
+flags = adeos_critical_enter (NULL);
+[...]
+do_gettimeofday()
+[...]
+adeos_critical_exit (flags);
 
-           CPU0
-  0:     352045    IO-APIC-edge  timer
-  1:       2029    IO-APIC-edge  i8042
-  7:          2    IO-APIC-edge  parport0
-  9:          0   IO-APIC-level  acpi
- 15:         12    IO-APIC-edge  ide1
- 16:          0   IO-APIC-level  uhci_hcd, uhci_hcd
- 17:          4   IO-APIC-level  ohci1394, Intel ICH5
- 18:      11753   IO-APIC-level  libata, uhci_hcd
- 19:       1405   IO-APIC-level  uhci_hcd
- 20:       1471   IO-APIC-level  eth0
- 23:          2   IO-APIC-level  ehci_hcd
-NMI:          0
-LOC:     351738
-ERR:          0
-MIS:          0
+I saw that the code for do_gettimeofday is different in kernel 2.4 and
+kernel 2.6:
 
-Adeos-2.6.11 system :
+Kernel 2.4:
+void do_gettimeofday(struct timeval *tv) {
+[...]
+read_lock_irqsave(&xtime_lock, flags);
+[...]
+read_unlock_irqrestore(&xtime_lock, flags);
 
-           CPU0
-  0:     376196    IO-APIC-edge  timer
-  1:       2361    IO-APIC-edge  i8042
-  7:          2    IO-APIC-edge  parport0
-  9:          0   IO-APIC-level  acpi
- 15:         12    IO-APIC-edge  ide1
-169:      11062   IO-APIC-level  libata, uhci_hcd
-177:          0   IO-APIC-level  eth0
-185:          0   IO-APIC-level  ohci1394, Intel ICH5
-193:          0   IO-APIC-level  ehci_hcd
-201:          0   IO-APIC-level  uhci_hcd, uhci_hcd
-209:          0   IO-APIC-level  uhci_hcd
-NMI:          0
-LOC:     375889
-ERR:          0
-MIS:          0
+Kernel 2.6:
+void do_gettimeofday(struct timeval *tv) {
+[...]
+do {
+[...]
+seq = read_seqbegin(&xtime_lock);
+[...]
+} while (read_seqretry(&xtime_lock, seq));
 
- System is Intel D865PERL P4 based system. If I pass "pci=routeirq" kernel
-parameter - ICH begin to work again.
+Well, read_lock_irqsave in 2.4 looks like a possible source for trouble,
+while read_seqbegin in 2.6 doesn't do anything with interrupts, right ?
 
+Thanks for all comments!
 
-
-		Rus
+Best regards,
+Hannes.
 
