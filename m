@@ -1,10 +1,12 @@
-Message-ID: <42EFF665.3060000@domain.hid>
-Date: Wed, 03 Aug 2005 00:40:37 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <42F07A35.7070001@domain.hid>
+Date: Wed, 03 Aug 2005 10:03:01 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+Subject: Re: [Adeos-main] do_gettimeofday in ADEOS ISR
+References: <42EFF665.3060000@domain.hid>
+In-Reply-To: <42EFF665.3060000@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] do_gettimeofday in ADEOS ISR
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,44 +15,58 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Hannes Mayer <h.mayer@domain.hid>
+Cc: adeos-main@gna.org
 
-Hi all!
+Hannes Mayer wrote:
+> Hi all!
+> 
+> I was just wondering if calling do_gettimeofday in an ADEOS interrupt
+> handler might cause any problems whatsoever ?
+> 
+> My ISR:
+> flags = adeos_critical_enter (NULL);
+> [...]
+> do_gettimeofday()
+> [...]
+> adeos_critical_exit (flags);
+> 
+> I saw that the code for do_gettimeofday is different in kernel 2.4 and
+> kernel 2.6:
+> 
+> Kernel 2.4:
+> void do_gettimeofday(struct timeval *tv) {
+> [...]
+> read_lock_irqsave(&xtime_lock, flags);
+> [...]
+> read_unlock_irqrestore(&xtime_lock, flags);
+> 
+> Kernel 2.6:
+> void do_gettimeofday(struct timeval *tv) {
+> [...]
+> do {
+> [...]
+> seq = read_seqbegin(&xtime_lock);
+> [...]
+> } while (read_seqretry(&xtime_lock, seq));
+> 
+> Well, read_lock_irqsave in 2.4 looks like a possible source for trouble,
+> while read_seqbegin in 2.6 doesn't do anything with interrupts, right ?
+> 
 
-I was just wondering if calling do_gettimeofday in an ADEOS interrupt
-handler might cause any problems whatsoever ?
+Yes, but that's not better anyway. Imagine what would happen if an 
+undergoing write sequence on the xtime_lock in the Linux domain was 
+preempted by an ISR from a higher priority domain which in turn calls 
+do_gettimeofday(): the read sequence running over your high priority ISR 
+would then loop on read_seqretry(), waiting for the undergoing write to 
+end. Problem is, that the undergoing write sequence would not be allowed 
+to resume until your current high priority domain running 
+do_gettimeofday() relinquishes the processor. Catch 22. This could 
+happen in both UP and SMP configs, not to speak of the funky behaviour 
+one would get with the additional spinlock recursion issue over SMP, 
+since a write sequence also grabs a spinlock.
 
-My ISR:
-flags = adeos_critical_enter (NULL);
-[...]
-do_gettimeofday()
-[...]
-adeos_critical_exit (flags);
+-- 
 
-I saw that the code for do_gettimeofday is different in kernel 2.4 and
-kernel 2.6:
-
-Kernel 2.4:
-void do_gettimeofday(struct timeval *tv) {
-[...]
-read_lock_irqsave(&xtime_lock, flags);
-[...]
-read_unlock_irqrestore(&xtime_lock, flags);
-
-Kernel 2.6:
-void do_gettimeofday(struct timeval *tv) {
-[...]
-do {
-[...]
-seq = read_seqbegin(&xtime_lock);
-[...]
-} while (read_seqretry(&xtime_lock, seq));
-
-Well, read_lock_irqsave in 2.4 looks like a possible source for trouble,
-while read_seqbegin in 2.6 doesn't do anything with interrupts, right ?
-
-Thanks for all comments!
-
-Best regards,
-Hannes.
+Philippe.
 
