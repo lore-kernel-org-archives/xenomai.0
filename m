@@ -1,12 +1,11 @@
-Message-ID: <42F07A35.7070001@domain.hid>
-Date: Wed, 03 Aug 2005 10:03:01 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <000601c5996c$36b29c80$6101a8c0@domain.hid>
+From: "Terry" <terryac4@domain.hid>
+Date: Thu, 4 Aug 2005 22:17:29 -0500
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] do_gettimeofday in ADEOS ISR
-References: <42EFF665.3060000@domain.hid>
-In-Reply-To: <42EFF665.3060000@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] SMP for ppc64
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,58 +14,37 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Hannes Mayer wrote:
-> Hi all!
-> 
-> I was just wondering if calling do_gettimeofday in an ADEOS interrupt
-> handler might cause any problems whatsoever ?
-> 
-> My ISR:
-> flags = adeos_critical_enter (NULL);
-> [...]
-> do_gettimeofday()
-> [...]
-> adeos_critical_exit (flags);
-> 
-> I saw that the code for do_gettimeofday is different in kernel 2.4 and
-> kernel 2.6:
-> 
-> Kernel 2.4:
-> void do_gettimeofday(struct timeval *tv) {
-> [...]
-> read_lock_irqsave(&xtime_lock, flags);
-> [...]
-> read_unlock_irqrestore(&xtime_lock, flags);
-> 
-> Kernel 2.6:
-> void do_gettimeofday(struct timeval *tv) {
-> [...]
-> do {
-> [...]
-> seq = read_seqbegin(&xtime_lock);
-> [...]
-> } while (read_seqretry(&xtime_lock, seq));
-> 
-> Well, read_lock_irqsave in 2.4 looks like a possible source for trouble,
-> while read_seqbegin in 2.6 doesn't do anything with interrupts, right ?
-> 
+I'm looking at adding SMP support for 2.6.10 kernel on a ppc64.  I'm having 
+trouble scratching my way through the mpic version of using IPI's to trigger 
+interrupts on the other cpu's.  In the Intel ports, an irq is assigned to 
+(ADEOS_CRITICAL_VECTOR) to act as the critical sync isr, and an IPI is sent 
+to "allbutself" to trigger it.  I need some advice on the best approach to 
+do this on a ppc64.
 
-Yes, but that's not better anyway. Imagine what would happen if an 
-undergoing write sequence on the xtime_lock in the Linux domain was 
-preempted by an ISR from a higher priority domain which in turn calls 
-do_gettimeofday(): the read sequence running over your high priority ISR 
-would then loop on read_seqretry(), waiting for the undergoing write to 
-end. Problem is, that the undergoing write sequence would not be allowed 
-to resume until your current high priority domain running 
-do_gettimeofday() relinquishes the processor. Catch 22. This could 
-happen in both UP and SMP configs, not to speak of the funky behaviour 
-one would get with the additional spinlock recursion issue over SMP, 
-since a write sequence also grabs a spinlock.
+I see two options to handle this one.
 
--- 
+The first option is to use smp_call_function (or a similar adeos version) to 
+send the IPI to the other cpu.  The version in smp.c says : "You must not 
+call this function with disabled interrupts or from a hardware interrupt 
+context or from a bottom half handler".  It looks as if I'd be doing just 
+that, as the critical_enter function first does a local_irq_save_hw(flags) 
+before calling the send_ipi.   So I'd need a new version of one or the other 
+to prevent deadlocks.
 
-Philippe.
+The other option is to create a virq for the ADEOS_CRITICAL_VECTOR, and map 
+that to the one unused IPI ( mpic has 4 IPI's one of which is currently 
+unused).  That doesn't seem like a good plan, as ppc64 linux may decide to 
+start using that one some day.
+
+Anyone have any suggestions, or can explain how I misunderstood all of the 
+above?
+
+
+Thanks in advance!
+
+Terry 
+
+
 
