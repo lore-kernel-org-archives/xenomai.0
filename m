@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <43039C6A.2090508@domain.hid>
+Date: Wed, 17 Aug 2005 22:22:02 +0200
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 17 Aug 2005 14:55:47 -0500
-Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC1935943D@amr-ex5.ds.amrdec.army.mil>
-From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
-Subject: [Adeos-main] ppc64 SMP, need help
+Subject: Re: [Adeos-main] do_gettimeofday in ADEOS ISR
+References: <42EFF665.3060000@domain.hid> <42F07A35.7070001@domain.hid>
+In-Reply-To: <42F07A35.7070001@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,35 +15,68 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main@gna.org
 
-=20
- Hi All,
+Ciao Philippe!
 
-I'm stuck on getting the SMP version of ppc64 to correctly boot the
-other cpu.  The way the=20
-kernel starts the other cpu(s) is to temporarily replace the reset
-vector with a pointer to
-the secondary cpu startup routines (pmac_secondary_start_1, _2 etc),
-trigger a reset=20
-interrupt, and then restore the vector.  What I can't figure out is why
-having CONFIG_ADEOS=20
-defined stops this from working even if I postpone the registering the
-root domain and=20
-enabling the pipeline until after the other cpus should be started
-(after doing the reset=20
-interrupts for the second cpu).
+Philippe Gerum wrote:
+> Hannes Mayer wrote:
+> 
+>> Hi all!
+>>
+>> I was just wondering if calling do_gettimeofday in an ADEOS interrupt
+>> handler might cause any problems whatsoever ?
+>>
+>> My ISR:
+>> flags = adeos_critical_enter (NULL);
+>> [...]
+>> do_gettimeofday()
+>> [...]
+>> adeos_critical_exit (flags);
+>>
+>> I saw that the code for do_gettimeofday is different in kernel 2.4 and
+>> kernel 2.6:
+>>
+>> Kernel 2.4:
+>> void do_gettimeofday(struct timeval *tv) {
+>> [...]
+>> read_lock_irqsave(&xtime_lock, flags);
+>> [...]
+>> read_unlock_irqrestore(&xtime_lock, flags);
+>>
+>> Kernel 2.6:
+>> void do_gettimeofday(struct timeval *tv) {
+>> [...]
+>> do {
+>> [...]
+>> seq = read_seqbegin(&xtime_lock);
+>> [...]
+>> } while (read_seqretry(&xtime_lock, seq));
+>>
+>> Well, read_lock_irqsave in 2.4 looks like a possible source for trouble,
+>> while read_seqbegin in 2.6 doesn't do anything with interrupts, right ?
+>>
+> 
+> Yes, but that's not better anyway. Imagine what would happen if an 
+> undergoing write sequence on the xtime_lock in the Linux domain was 
+> preempted by an ISR from a higher priority domain which in turn calls 
+> do_gettimeofday(): the read sequence running over your high priority ISR 
+> would then loop on read_seqretry(), waiting for the undergoing write to 
+> end. Problem is, that the undergoing write sequence would not be allowed 
+> to resume until your current high priority domain running 
+> do_gettimeofday() relinquishes the processor. Catch 22. This could 
+> happen in both UP and SMP configs, not to speak of the funky behaviour 
+> one would get with the additional spinlock recursion issue over SMP, 
+> since a write sequence also grabs a spinlock.
 
-How do you think this should be handled?  How do I get to the Adeos
-version of the reset=20
-vector to send it off to the secondary start functions?
+Late "thank you"! Sorry! Was ill, but now I'm doing better.
 
-Thanks for any ideas!
+So do_gettimeofday is out of question...
 
+What would you suggest to do to get absolute time in RT context ?
+I'd be more than happy if you'd have a few pointers for me.
 
-Terry Reynolds
-
-Simulation Technologies, INC.
-
-
+Thanks a lot & best regards,
+Hannes.
 
