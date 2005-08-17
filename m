@@ -1,11 +1,12 @@
-Message-ID: <000301c59e1b$17845020$6101a8c0@domain.hid>
-From: "Terry" <terryac4@domain.hid>
-Date: Wed, 10 Aug 2005 21:19:24 -0500
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=response
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: SMP for ppc64
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 17 Aug 2005 14:55:47 -0500
+Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC1935943D@amr-ex5.ds.amrdec.army.mil>
+From: "Reynolds, Terry \(Contractor-SIMTECH\)" <terry.reynolds2@domain.hid>
+Subject: [Adeos-main] ppc64 SMP, need help
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,17 +17,33 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-I see the problem with booting the second processor - this is done by 
-temporarily replacing the reset vector with the
-pmac_secondary_start addresses ( a different one for each cpu) and the 
-triggering the reset.  I guess since adeos
-virtualized all the irq's, the hardcoded replacement of the reset vector 
-isn't having the desired effect.  I'll see if I can
-work through how to accomplish this when I get back to work next week.
+=20
+ Hi All,
 
-Later,
+I'm stuck on getting the SMP version of ppc64 to correctly boot the
+other cpu.  The way the=20
+kernel starts the other cpu(s) is to temporarily replace the reset
+vector with a pointer to
+the secondary cpu startup routines (pmac_secondary_start_1, _2 etc),
+trigger a reset=20
+interrupt, and then restore the vector.  What I can't figure out is why
+having CONFIG_ADEOS=20
+defined stops this from working even if I postpone the registering the
+root domain and=20
+enabling the pipeline until after the other cpus should be started
+(after doing the reset=20
+interrupts for the second cpu).
 
-Terry 
+How do you think this should be handled?  How do I get to the Adeos
+version of the reset=20
+vector to send it off to the secondary start functions?
+
+Thanks for any ideas!
+
+
+Terry Reynolds
+
+Simulation Technologies, INC.
 
 
 
