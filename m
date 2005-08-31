@@ -1,12 +1,15 @@
-Message-ID: <4315B4C7.6090109@domain.hid>
-Date: Wed, 31 Aug 2005 16:46:47 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <20050831193733.w5f2d662w0gswwkg@domain.hid>
+Date: Wed, 31 Aug 2005 19:37:33 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: Re: [Adeos-main] adeos i386 and ppc patches forward ported to 2.6.13
+References: <1125495609.4643.16.camel@domain.hid>
+In-Reply-To: <1125495609.4643.16.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] PATCH: adeos handle_event losing events *corrected*
-References: <43159A7C.9020008@domain.hid>
-	<20050831143501.8lgyxa05c4o0wgco@domain.hid>
-In-Reply-To: <20050831143501.8lgyxa05c4o0wgco@domain.hid>
-Content-Type: multipart/mixed; boundary="------------090807060803060604020503"
+Content-Type: text/plain;
+	charset=ISO-8859-1;
+	format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,112 +18,70 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, rtai-dev@domain.hid
+To: Stelian Pop <stelian.pop@domain.hid>
+Cc: adeos-main@gna.org
 
-This is a multi-part message in MIME format.
---------------090807060803060604020503
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Quoting Stelian Pop <stelian.pop@domain.hid>:
 
-Philippe Gerum kirjoitti:
-> Quoting Heikki Lindholm <holindho@domain.hid>:
-> 
->> Hello,
->>
->> While processing __adeos_handle_event enables interrupts for the 
->> ectual event handler periods. Interrupts might happen then and only 
->> logged for domains lower than the current domain in the 
->> __adeos_handle_event loop. The logged irqs would normally get replayed 
->> at the next real interrupt if the domain that caused the event was 
->> lower than the ones the interrupts were logged in or if it wasn't 
->> lower, at the next suspend_domain. On powersave-enabled ppc machines 
->> this might cause a chain where the cpu goes napping and wakes at the 
->> next timer tick which, having possibly been missed at *handle_event, 
->> happens after maximum decrementer period (~minutes).
->>
->> The following patch seems to help in the described case, but I've also 
->> observed another case where interrupt seems to get dropped altogether. 
->> Performance didn't seem to suffer much from the patch. If anything, 
->> the latency/cruncher results got better. This is for the non-threaded 
->> domains case.
-> 
-> 
-> Good spot, thanks. I'd also suggest a different implementation to solve 
-> this,
-> still in adeos_handle_event() though:
-> 
-> - you only need to sync the next domain when it does not handle the current
-> event; if it does, then it would suspend calling adeos_suspend_domain() 
-> when
-> the event is processed, hence switching to the next domain down the 
-> pipeline
-> that has IRQs to process anyway. Additionally, I don't see how notfirst 
-> goes
-> non-zero in this patch, and why we'd need to make some exception case 
-> for the
-> root domain (i.e. you may have domains below it down the pipeline).
+> Hi,
+>
+> I've forward ported
+> 	adeos-linux-2.6.10-ppc-r8c2.patch
+> 	adeos-linux-2.6.12-i386-r13c1.patch
+> to a fresh 2.6.13 kernel.
+>
 
-GRRRRrr! I failed to incorporate that one "notfirst" line from my 
-debug-tree to the CVS tree. No wonder it didn't work there anymore - I 
-was banging my head to the wall in vain! Thinking that over again, I 
-can't think why would the root domain *need* to be excluded, it just 
-seemed to save some work in the "normal" fusion case where most events 
-get propagated to root, which caused them anyway.
+Thanks.
 
-> - in the !threaded case, calling __adeos_switch_to() instead of changing 
-> the
-> domain descriptor by hand then syncing the stage would be better, since it
-> would perform all the additional housekeeping chores, like calling the 
-> switch
-> hook and resetting the current descriptor pointer.
+> The i386 patch port was quite trivial, except for a few code changes.
+> However, I had to modify the ADEOS_PREEMPT_RT definition to:
+> +config ADEOS_PREEMPT_RT
+> +       def_bool PREEMPT_VOLUNTARY || PREEMPT_DESKTOP || PREEMPT_RT
+> +
+> (removed the PREEMPT_NONE from the def_bool definition) in order to make
+> it build on a regular, non PREEMPT_RT kernel (or else the compilation
+> would fail on a raw_spinlock_t undefined error). I think this problem
+> exists in the 2.6.12 patch as well.
+>
 
-Yes. A little more work, but looks neater.
+Ok. Looks like time has come to upgrade the combined Adeos/PREEMPT_RT patch to
+-rt1 in order to fix the issues brought since 0.7.44, I guess.
 
-Anyway, here's a corrected version.
+> The ppc patch was a bit more tricky, but I think I got all of it right.
+> It works ok most of the time (RTAI fusion testsuite passes for example -
+> on a G4 Powerbook), but it hangs the machine hard sometimes. I am not
+> sure if the problem is due to the port or if it is present in the 2.6.10
+> version as well.
+>
 
--- Heikki Lindholm
+I had a report about issues involving insufficiently protected
+get_mmu_context/destroy_context calls on the RTAI mailing list with
+2.6.10-r8c1; I'm currently checking the proposed fix that has been sent to me
+on a mpc8541. If this works, then maybe this would solve the issue you mention
+too; hopefully.
 
---------------090807060803060604020503
-Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
-	name="adeos-handle_event-p2.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="adeos-handle_event-p2.patch"
+> The two patches are at:
+> 	http://www.popies.net/tmp/adeos-linux-2.6.13-i386-r13c1.patch
+> 	http://www.popies.net/tmp/adeos-linux-2.6.13-ppc-r8c2.patch
+>
 
---- kernel/adeos.c.orig	2005-08-31 12:01:30.002707784 +0300
-+++ kernel/adeos.c	2005-08-31 16:33:06.496264192 +0300
-@@ -196,6 +196,7 @@
-     adeos_declare_cpuid;
-     adevinfo_t evinfo;
-     int propagate = 1;
-+    int notfirst = 0;
- 
-     adeos_lock_cpu(flags);
- 
-@@ -204,11 +205,21 @@
-     list_for_each_safe(pos,npos,&__adeos_pipeline) {
- 
-     	next_domain = list_entry(pos,adomain_t,p_link);
--
-+	/* did the previous unlock_cpu gap cause interrupts here? */
-+	if (notfirst && !test_bit(IPIPE_STALL_FLAG,
-+			&next_domain->cpudata[cpuid].status) &&
-+			next_domain->cpudata[cpuid].irq_pending_hi != 0)
-+		{
-+		__adeos_switch_to(this_domain,next_domain,cpuid);
-+		/* in case the domain was changed */
-+		this_domain = adp_cpu_current[cpuid]; 
-+		}
-+	
- 	if (next_domain->events[event].handler != NULL)
- 	    {
- 	    adp_cpu_current[cpuid] = next_domain;
- 	    evinfo.domid = start_domain->domid;
-+	    notfirst = 1;
- 	    adeos_unlock_cpu(flags);
- 	    evinfo.event = event;
- 	    evinfo.evdata = evdata;
+I've picked them; they likely won't reach the CVS or the DL area until 
+next week
+since I'm temporarily behind some paranoid firewall though.
 
---------------090807060803060604020503--
+Thanks again.
+
+> Stelian.
+> --
+> Stelian Pop <stelian.pop@domain.hid>
+>
+>
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+>
+
+
+
 
