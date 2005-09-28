@@ -1,44 +1,61 @@
-Date: Thu, 31 Mar 2005 09:42:52 +0300 (EEST)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-In-Reply-To: <Pine.LNX.4.53.0503281333010.21926@domain.hid>
-Message-ID: <Pine.LNX.4.53.0503310916460.8592@domain.hid>
-References: <Pine.LNX.4.53.0503281139180.20969@domain.hid>
- <Pine.LNX.4.53.0503281237020.21474@domain.hid>
- <4247DCE9.8070407@domain.hid> <Pine.LNX.4.53.0503281333010.21926@domain.hid>
+Message-ID: <a54ba8e505092813105c0b3a54@domain.hid>
+Date: Wed, 28 Sep 2005 16:10:02 -0400
+From: Maggie Nakhla <adi.blackfin@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Subject: [Adeos-main] Adeos-2.6.11-r10c1 report
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_1891_3790521.1127938202635"
+Subject: [Adeos-main] ADEOS port to ADI Blackfin processor
+Reply-To: Maggie Nakhla <adi.blackfin@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-	Hi.
+------=_Part_1891_3790521.1127938202635
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
- Booted r10c1, on my P4 ICH system, with adeos compiled in statically is
-behaved the same way as r9 - no interrupts in the ICH chipset occured.
-If I pass "pci=routeirq" kernel parameter - the systems is deadlocked in
-the same place (rc.hotplug scripts) but printed on the console something :
+Hello - For the past two years my team has been working on porting uClinux
+kernel, GNU Toolchain and Das U-boot to Analog Devices' Blackfin processor =
+(
+http://www.blackfin.uclinux.org).
+We are getting more and more questions from customers about our real-time
+performance and we have been advised that porting the ADEOS interface to th=
+e
+Blackfin is the first step. We would be interested in talking to anyone who
+is interested in potentially working on this project. You can write to me
+directly at adi.blackfin@domain.hid.
 
-..................................
-------cut here -------
-kernel BUG at kernel/sched.c:2666!
-invalid operand: 0000 [#1]
-..................................
+Thanks!
 
- If Adeos is compiled as module and not inserted - the system is working ok.
-After inserting module I've got solid lockup while starting X on the AGP
-nvidia card (tried original Xorg "nv" driver and proprietary "nvidia" one).
+- Maggie Nakhla
 
+------=_Part_1891_3790521.1127938202635
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hello - For the past two years my team has been working on porting
+uClinux kernel, GNU Toolchain and Das U-boot to Analog Devices'
+Blackfin processor (<a href=3D"http://www.blackfin.uclinux.org">http://www.=
+blackfin.uclinux.org</a>). <br>
+We are getting more and more questions from customers about our
+real-time performance and we have been advised that porting the ADEOS
+interface to the Blackfin is the first step.&nbsp; We would be
+interested in talking to anyone who is interested in potentially
+working on this project.&nbsp; You can write to me directly at
+<a href=3D"mailto:adi.blackfin@domain.hid">adi.blackfin@domain.hid</a>. <br>
+<br>
+Thanks!<br>
+<br>
+- Maggie Nakhla<br>
+<br>
 
-		Rus
+------=_Part_1891_3790521.1127938202635--
 
