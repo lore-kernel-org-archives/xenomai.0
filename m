@@ -1,9 +1,9 @@
-Message-ID: <433D0A28.7040603@domain.hid>
-Date: Fri, 30 Sep 2005 17:49:28 +0800
+Message-ID: <433D1E21.70005@domain.hid>
+Date: Fri, 30 Sep 2005 19:14:41 +0800
 From: Wen-chien Jesse Sung <jesse@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------050005060904020209050502"
-Subject: [Adeos-main] PATCH: compilation fix for 2.6.13-i386-1.0-04
+Content-Type: multipart/mixed; boundary="------------090302020403090802080505"
+Subject: [Adeos-main] PATCH: fail to compile with CONFIG_IPIPE=n
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,75 +15,46 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: adeos-main@gna.org
 
 This is a multi-part message in MIME format.
---------------050005060904020209050502
+--------------090302020403090802080505
 Content-Type: text/plain; charset=Big5
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-I got this error message with 2.6.13-i386-1.0-04:
+When ipipe is disabled, ipipe_reset_stats() is not defined, but it is
+still referenced in init/main.c:rest_init().
 
-  CC      arch/i386/kernel/ipipe-core.o
-arch/i386/kernel/ipipe-core.c: In function '__ipipe_if_fixup_root':
-arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
-uninitialized in this function
-arch/i386/kernel/ipipe-core.c: In function '__ipipe_kpreempt_root':
-arch/i386/kernel/ipipe-core.c:585: warning: 'flags' is used
-uninitialized in this function
-arch/i386/kernel/ipipe-core.c: In function '__ipipe_syscall_root':
-arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
-uninitialized in this function
-arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
-uninitialized in this function
-arch/i386/kernel/ipipe-core.c: In function '__ipipe_handle_exception':
-arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
-uninitialized in this function
-arch/i386/kernel/ipipe-core.c: In function '__ipipe_divert_exception':
-arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
-uninitialized in this function
-/bin/sh: line 1: 23642 Done                    gcc -m32 -E
--D__GENKSYMS__ -Wp,-MD,arch/i386/kernel/.ipipe-core.o.d -nostdinc
--isystem /usr/lib/gcc/i486-linux-gnu/4.0.2/include -D__KERNEL__
--Iinclude -Wall -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing
--fno-common -ffreestanding -Os -fno-omit-frame-pointer
--fno-optimize-sibling-calls -pipe -msoft-float
--mpreferred-stack-boundary=2 -fno-unit-at-a-time -march=i486 -mregparm=3
--Iinclude/asm-i386/mach-default -Wdeclaration-after-statement
--Wno-pointer-sign -DKBUILD_BASENAME=ipipe_core
--DKBUILD_MODNAME=ipipe_core arch/i386/kernel/ipipe-core.c
-     23644 Segmentation fault      | scripts/genksyms/genksyms
->arch/i386/kernel/.tmp_ipipe-core.vermake[1]: ***
-[arch/i386/kernel/ipipe-core.o] Error 139
-make: *** [arch/i386/kernel] Error 2
-
-
-Place the fastcall qualifier in front of "void" then genksyms does not
-fail with Segmentation fault again. :)
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+init/built-in.o: In function `rest_init':
+: undefined reference to `ipipe_reset_stats'
+make: *** [.tmp_vmlinux1] Error 1
 
 -- 
 Best Regards,
 Wen-chien Jesse Sung
 
---------------050005060904020209050502
+--------------090302020403090802080505
 Content-Type: text/x-patch;
- name="30_adeos-compilation-fix.patch"
+	name="31_adeos-compilation-with-ipipe-disabled.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="30_adeos-compilation-fix.patch"
+	filename="31_adeos-compilation-with-ipipe-disabled.patch"
 
-Index: linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c
+Index: linux-2.6.13-js1/include/linux/ipipe.h
 ===================================================================
---- linux-2.6.13-js1-opnet.orig/arch/i386/kernel/ipipe-core.c	2005-09-30 16:00:01.000000000 +0800
-+++ linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c	2005-09-30 16:02:11.000000000 +0800
-@@ -694,7 +694,7 @@
- fastcall void do_simd_coprocessor_error(struct pt_regs *regs, long error_code);
- fastcall void do_iret_error(struct pt_regs *regs, long error_code);
+--- linux-2.6.13-js1.orig/include/linux/ipipe.h	2005-09-30 14:53:01.000000000 +0800
++++ linux-2.6.13-js1/include/linux/ipipe.h	2005-09-30 18:56:32.000000000 +0800
+@@ -702,6 +702,8 @@
+ #define ipipe_irq_lock(irq)	do { } while(0)
+ #define ipipe_irq_unlock(irq)	do { } while(0)
  
--static void (fastcall *__ipipe_std_extable[])(struct pt_regs *, long) = {
-+static fastcall void (*__ipipe_std_extable[])(struct pt_regs *, long) = {
++#define ipipe_reset_stats()	do { } while(0)
++
+ #endif	/* CONFIG_IPIPE */
  
- 	[ex_do_divide_error] = &do_divide_error,
- 	[ex_do_overflow] = &do_overflow,
+ #endif	/* !__LINUX_IPIPE_H */
 
---------------050005060904020209050502--
+--------------090302020403090802080505--
 
