@@ -1,11 +1,9 @@
-Message-ID: <a54ba8e505092813105c0b3a54@domain.hid>
-Date: Wed, 28 Sep 2005 16:10:02 -0400
-From: Maggie Nakhla <adi.blackfin@domain.hid>
+Message-ID: <433D0A28.7040603@domain.hid>
+Date: Fri, 30 Sep 2005 17:49:28 +0800
+From: Wen-chien Jesse Sung <jesse@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_1891_3790521.1127938202635"
-Subject: [Adeos-main] ADEOS port to ADI Blackfin processor
-Reply-To: Maggie Nakhla <adi.blackfin@domain.hid>
+Content-Type: multipart/mixed; boundary="------------050005060904020209050502"
+Subject: [Adeos-main] PATCH: compilation fix for 2.6.13-i386-1.0-04
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,46 +14,76 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-------=_Part_1891_3790521.1127938202635
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------050005060904020209050502
+Content-Type: text/plain; charset=Big5
+Content-Transfer-Encoding: 7bit
 
-Hello - For the past two years my team has been working on porting uClinux
-kernel, GNU Toolchain and Das U-boot to Analog Devices' Blackfin processor =
-(
-http://www.blackfin.uclinux.org).
-We are getting more and more questions from customers about our real-time
-performance and we have been advised that porting the ADEOS interface to th=
-e
-Blackfin is the first step. We would be interested in talking to anyone who
-is interested in potentially working on this project. You can write to me
-directly at adi.blackfin@domain.hid.
+Hi,
 
-Thanks!
+I got this error message with 2.6.13-i386-1.0-04:
 
-- Maggie Nakhla
+  CC      arch/i386/kernel/ipipe-core.o
+arch/i386/kernel/ipipe-core.c: In function '__ipipe_if_fixup_root':
+arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+uninitialized in this function
+arch/i386/kernel/ipipe-core.c: In function '__ipipe_kpreempt_root':
+arch/i386/kernel/ipipe-core.c:585: warning: 'flags' is used
+uninitialized in this function
+arch/i386/kernel/ipipe-core.c: In function '__ipipe_syscall_root':
+arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+uninitialized in this function
+arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+uninitialized in this function
+arch/i386/kernel/ipipe-core.c: In function '__ipipe_handle_exception':
+arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+uninitialized in this function
+arch/i386/kernel/ipipe-core.c: In function '__ipipe_divert_exception':
+arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+uninitialized in this function
+/bin/sh: line 1: 23642 Done                    gcc -m32 -E
+-D__GENKSYMS__ -Wp,-MD,arch/i386/kernel/.ipipe-core.o.d -nostdinc
+-isystem /usr/lib/gcc/i486-linux-gnu/4.0.2/include -D__KERNEL__
+-Iinclude -Wall -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing
+-fno-common -ffreestanding -Os -fno-omit-frame-pointer
+-fno-optimize-sibling-calls -pipe -msoft-float
+-mpreferred-stack-boundary=2 -fno-unit-at-a-time -march=i486 -mregparm=3
+-Iinclude/asm-i386/mach-default -Wdeclaration-after-statement
+-Wno-pointer-sign -DKBUILD_BASENAME=ipipe_core
+-DKBUILD_MODNAME=ipipe_core arch/i386/kernel/ipipe-core.c
+     23644 Segmentation fault      | scripts/genksyms/genksyms
+>arch/i386/kernel/.tmp_ipipe-core.vermake[1]: ***
+[arch/i386/kernel/ipipe-core.o] Error 139
+make: *** [arch/i386/kernel] Error 2
 
-------=_Part_1891_3790521.1127938202635
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hello - For the past two years my team has been working on porting
-uClinux kernel, GNU Toolchain and Das U-boot to Analog Devices'
-Blackfin processor (<a href=3D"http://www.blackfin.uclinux.org">http://www.=
-blackfin.uclinux.org</a>). <br>
-We are getting more and more questions from customers about our
-real-time performance and we have been advised that porting the ADEOS
-interface to the Blackfin is the first step.&nbsp; We would be
-interested in talking to anyone who is interested in potentially
-working on this project.&nbsp; You can write to me directly at
-<a href=3D"mailto:adi.blackfin@domain.hid">adi.blackfin@domain.hid</a>. <br>
-<br>
-Thanks!<br>
-<br>
-- Maggie Nakhla<br>
-<br>
+Place the fastcall qualifier in front of "void" then genksyms does not
+fail with Segmentation fault again. :)
 
-------=_Part_1891_3790521.1127938202635--
+-- 
+Best Regards,
+Wen-chien Jesse Sung
+
+--------------050005060904020209050502
+Content-Type: text/x-patch;
+ name="30_adeos-compilation-fix.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="30_adeos-compilation-fix.patch"
+
+Index: linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c
+===================================================================
+--- linux-2.6.13-js1-opnet.orig/arch/i386/kernel/ipipe-core.c	2005-09-30 16:00:01.000000000 +0800
++++ linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c	2005-09-30 16:02:11.000000000 +0800
+@@ -694,7 +694,7 @@
+ fastcall void do_simd_coprocessor_error(struct pt_regs *regs, long error_code);
+ fastcall void do_iret_error(struct pt_regs *regs, long error_code);
+ 
+-static void (fastcall *__ipipe_std_extable[])(struct pt_regs *, long) = {
++static fastcall void (*__ipipe_std_extable[])(struct pt_regs *, long) = {
+ 
+ 	[ex_do_divide_error] = &do_divide_error,
+ 	[ex_do_overflow] = &do_overflow,
+
+--------------050005060904020209050502--
 
