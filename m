@@ -1,113 +1,100 @@
-Message-ID: <436134A6.3020203@domain.hid>
-Date: Thu, 27 Oct 2005 22:12:22 +0200
+Message-ID: <433E643F.3000402@domain.hid>
+Date: Sat, 01 Oct 2005 12:26:07 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] does xenomai support ARM9 ?
-References: <FDBBB5CC70676540B3EF7CFE83FD94E00E6DEA@EINT11.einet.ad.eivd.ch>
-	<FDBBB5CC70676540B3EF7CFE83FD94E004304F@EINT11.einet.ad.eivd.ch>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E004304F@EINT11.einet.ad.eivd.ch>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] PATCH: compilation fix for 2.6.13-i386-1.0-04
+References: <433D0A28.7040603@domain.hid>
+In-Reply-To: <433D0A28.7040603@domain.hid>
+Content-Type: text/plain; charset=Big5
+Content-Transfer-Encoding: 7bit
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Wen-chien Jesse Sung <jesse@domain.hid>
+Cc: adeos-main@gna.org
 
-ROSSIER Daniel wrote:
-> hmm forget my previous mail.
-> I realized that Adeos doesn't support ARM9 yet with kernel 2.6
->=20
+Wen-chien Jesse Sung wrote:
+> Hi,
+> 
+> I got this error message with 2.6.13-i386-1.0-04:
+> 
+>   CC      arch/i386/kernel/ipipe-core.o
+> arch/i386/kernel/ipipe-core.c: In function '__ipipe_if_fixup_root':
+> arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+> uninitialized in this function
+> arch/i386/kernel/ipipe-core.c: In function '__ipipe_kpreempt_root':
+> arch/i386/kernel/ipipe-core.c:585: warning: 'flags' is used
+> uninitialized in this function
+> arch/i386/kernel/ipipe-core.c: In function '__ipipe_syscall_root':
+> arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+> uninitialized in this function
+> arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+> uninitialized in this function
+> arch/i386/kernel/ipipe-core.c: In function '__ipipe_handle_exception':
+> arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+> uninitialized in this function
+> arch/i386/kernel/ipipe-core.c: In function '__ipipe_divert_exception':
+> arch/i386/kernel/ipipe-core.c:549: warning: 'flags' is used
+> uninitialized in this function
+> /bin/sh: line 1: 23642 Done                    gcc -m32 -E
+> -D__GENKSYMS__ -Wp,-MD,arch/i386/kernel/.ipipe-core.o.d -nostdinc
+> -isystem /usr/lib/gcc/i486-linux-gnu/4.0.2/include -D__KERNEL__
+> -Iinclude -Wall -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing
+> -fno-common -ffreestanding -Os -fno-omit-frame-pointer
+> -fno-optimize-sibling-calls -pipe -msoft-float
+> -mpreferred-stack-boundary=2 -fno-unit-at-a-time -march=i486 -mregparm=3
+> -Iinclude/asm-i386/mach-default -Wdeclaration-after-statement
+> -Wno-pointer-sign -DKBUILD_BASENAME=ipipe_core
+> -DKBUILD_MODNAME=ipipe_core arch/i386/kernel/ipipe-core.c
+>      23644 Segmentation fault      | scripts/genksyms/genksyms
+> 
+>>arch/i386/kernel/.tmp_ipipe-core.vermake[1]: ***
+> 
+> [arch/i386/kernel/ipipe-core.o] Error 139
+> make: *** [arch/i386/kernel] Error 2
+> 
+> 
+> Place the fastcall qualifier in front of "void" then genksyms does not
+> fail with Segmentation fault again. :)
+> 
 
-Actually, there is more: you would need Adeos for ARM _and_ the arch-dep =
-bits of=20
-the Xenomai core being ported over ARM too.
+Hm, interesting... Ok, applied, thanks. To play it safe, function pointers
+obtained from this array are re-cast so that the fast call convention will be
+enforced individually at invocation time anyway. Should be ok, then.
 
-> Cheers
-> DAniel
->=20
->=20
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid on behalf of ROSSIER Daniel
-> Sent: Thu 10/27/2005 5:17 PM
-> To: xenomai@xenomai.org
-> Subject: [Xenomai-help] does xenomai support ARM9 ?
-> =20
->            =20
->=20
-> Hello,
->=20
-> =20
->=20
-> Just a small question regarding Xenomai-2.0
->=20
-> =20
->=20
-> Has anybody mode some test with Xenomai on an ARM9 (or other ARM-x) pro=
-cessor ?
->=20
-> =20
->=20
-> I think that compiling a xenomai patched linux kernel for an ARM9 targe=
-t (using a generic hal) should work; maybe I'm totally wrong...
->=20
-> =20
->=20
-> Thanks in advance for your help.
->=20
-> =20
->=20
-> Cheers
->=20
-> Daniel
->=20
-> =20
->=20
-> =20
->=20
-> =20
->=20
-> Dr. Daniel Rossier, Professeur
->=20
-> REDS, Reconfigurable & Embedded Digital Systems, http://reds.eivd.ch/ <=
-http://reds.eivd.ch/>=20
->=20
-> HES-SO
->=20
-> Haute Ecole d'Ing=E9nieurs et de Gestion (HEIG-VD)
->=20
-> Rte de Cheseaux 1
->=20
-> =20
->=20
-> CH-1774 Yverdon-les-Bains
->=20
-> =20
->=20
-> T=E9l. fixe:     +41 24 557 62 69
->=20
-> T=E9l. mobile:   +41 79 292 54 58
->=20
-> E-mail:        daniel.rossier@domain.hid
->=20
-> =20
->=20
->=20
->=20
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c
+> ===================================================================
+> --- linux-2.6.13-js1-opnet.orig/arch/i386/kernel/ipipe-core.c	2005-09-30 16:00:01.000000000 +0800
+> +++ linux-2.6.13-js1-opnet/arch/i386/kernel/ipipe-core.c	2005-09-30 16:02:11.000000000 +0800
+> @@ -694,7 +694,7 @@
+>  fastcall void do_simd_coprocessor_error(struct pt_regs *regs, long error_code);
+>  fastcall void do_iret_error(struct pt_regs *regs, long error_code);
+>  
+> -static void (fastcall *__ipipe_std_extable[])(struct pt_regs *, long) = {
+> +static fastcall void (*__ipipe_std_extable[])(struct pt_regs *, long) = {
+>  
+>  	[ex_do_divide_error] = &do_divide_error,
+>  	[ex_do_overflow] = &do_overflow,
+> 
+> 
+> ------------------------------------------------------------------------
+> 
 > _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
 
---=20
+-- 
 
 Philippe.
 
