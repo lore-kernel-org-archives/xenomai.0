@@ -1,76 +1,41 @@
-Message-ID: <424BA18A.4060907@domain.hid>
-Date: Thu, 31 Mar 2005 09:06:50 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Sat, 8 Oct 2005 12:41:49 +0200 (CEST)
+From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
+Message-ID: <Pine.LNX.4.64.0510081235280.18584@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] RE: RTAI/fusion 0.7
-References: <1CFEB358338412458B21FAA0D78FE86D505935@domain.hid>
-In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D505935@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: rtai@domain.hid, adeos-main@gna.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Xenomai-core] "New" roadmap after split from RTAI...?
+Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Hi St=E9phane,
+Dear list,
 
-Fillod Stephane wrote:
-> Hi Philippe,
->=20
-> Kudos for the RTAI/fusion 0.7 release!
-> You (the team) are doing an astounding work.
+I was wondering whether there is a new roadmap for the Xenomai project, now
+that the split from RTAI is effective?
 
-Thanks.
+In my contacts with industry, I feel that a clear roadmap and a clear
+documentation and a clear design are paramount for getting credibility. And
+a top-notch POSIX implementation is also a must. I hope all these things
+will (remain to) be priorities for "the new Xenomi"...
 
->=20
-> [snip]
->=20
->>o The Adeos support used in fusion has been upgraded to final releases,
->=20
->=20
->>namely r9/x86 and r6/ppc. Upgrading is strongly recommended, especially
->=20
->=20
->>if CONFIG_PREEMPT is enabled in your kernel config, which is likely
->=20
-> with=20
->=20
->>fusion. Also note that Adeos PPC is now rebased on mainline (2.6.10=20
->>actually).
->=20
->=20
-> Please find attached a patch of Adeos r6/ppc against 2.6.11.
-> I hope I've got it right.
+If I may recommend one urgent action it would be to update the project's
+home page at <http://home.gna.org/xenomai/>, and, especially, to remove the
+rubbish from the mailing list announced on that page :-)
 
-Looks so. Looking at the problem Heikki pointed us at, it would somewhat=20
-affect 2.6.11 usability in RTAI/fusion context, since we would need to=20
-run with CONFIG_PREEMPT disabled. No problem for RT stuff in primary=20
-mode, but rather hopeless for using the secondary one efficiently.=20
-Either we include Paul Mackerras's fix for it in the Adeos patch, or we=20
-go directly for 2.6.12-rc, using your patch as a reference.
+Herman
 
-> Please let me know if it would need=20
-> the spinlock fix in i386-r10c1.
->=20
+--
+   K.U.Leuven, Mechanical Eng.,  Mechatronics & Robotics Research Group
+     <http://people.mech.kuleuven.be/~bruyninc> Tel: +32 16 322480
 
-It would be better, yes. This generic bug breaks deemed non-preemptible=20
-sections in printk() at least. I've committed the changes to the Adeos=20
-CVS (adeos-core/include/asm-ppc/adeos.h).
+Disclaimer: http://www.kuleuven.be/cwis/email_disclaimer.htm
 
-> Hope to get some Fusion report to share soon.
->=20
-
-Ack. Thanks for the patch.
-
---=20
-
-Philippe.
 
