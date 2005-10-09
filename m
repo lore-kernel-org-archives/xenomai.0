@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4349615F.7010307@domain.hid>
+Date: Sun, 09 Oct 2005 20:28:47 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17225.21265.493200.329801@domain.hid>
-Date: Sun, 9 Oct 2005 19:27:45 +0200
-Subject: Re: [Xenomai-core] First patch :)
-In-Reply-To: <434951B2.4060907@domain.hid>
-References: <434951B2.4060907@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB9E183B0173496FEAE37FD00"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [patch] include core.h in rtdm_driver.h
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > Hehe, the show goes on!
- > 
- > Here is the first patch for the new xenomai code base. Fixes some naming
- > inconsistency discovered while trying to make RTnet compile (still some
- > work remaining here...).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB9E183B0173496FEAE37FD00
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Applied, thanks.
+--- skins/rtdm/rtdm_driver.h    (Revision 10)
++++ skins/rtdm/rtdm_driver.h    (Arbeitskopie)
+@@ -34,6 +34,7 @@
+ #include <linux/list.h>
+
+ #include <nucleus/xenomai.h>
++#include <nucleus/core.h>
+ #include <nucleus/heap.h>
+ #include <nucleus/pod.h>
+ #include <nucleus/synch.h>
 
 
--- 
+Required for XNCORE_xxx_PRIO defines.
 
+Jan
 
-					    Gilles Chanteperdrix.
+--------------enigB9E183B0173496FEAE37FD00
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.0 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDSWFfniDOoMHTA+kRApVDAJ9HSGTxY36A9SwVkVphILUXwRPHwQCfThYR
+8mF85UDLRwFYFBpCoWdNPu0=
+=4FzL
+-----END PGP SIGNATURE-----
+
+--------------enigB9E183B0173496FEAE37FD00--
 
