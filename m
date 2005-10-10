@@ -1,13 +1,12 @@
-Message-ID: <434A49CB.5080009@domain.hid>
-Date: Mon, 10 Oct 2005 13:00:27 +0200
+Message-ID: <434A5389.2060905@domain.hid>
+Date: Mon, 10 Oct 2005 13:42:01 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [16550-patch] detect required context
-	of	RTSER_RTIOC_WAIT_EVENT
-References: <434A4719.60503@domain.hid>
-In-Reply-To: <434A4719.60503@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <OF67718347.A739127D-ONC1257096.003D7ADA-C1257096.003F7677@domain.hid>
+In-Reply-To: <OF67718347.A739127D-ONC1257096.003D7ADA-C1257096.003F7677@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [syscall.c] rt_bind_queue/heap()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,77 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
+Dmitry Adamushko wrote:
+> Philippe Gerum <rpm@xenomai.org> wrote on 10.10.2005 13:09:13:
 > 
-> again thanks to a smart student reviewing my ugly code, here is another
-> minor fix for the serial driver.
+>  > Dmitry Adamushko wrote:
+>  > > Philippe Gerum <rpm@xenomai.org> wrote on 05.10.2005 14:13:07:
+>  > >
+>  > >  >
+>  > >  > Your patch is ok, my implementation was uselessly convoluted.
+>  > >
+>  > > Ok, then it's enclosed.
+>  > >
+>  > > 2005-10-05  Dmitry Adamushko  <dmitry.adamushko@domain.hid>
+>  >
+>  > Applied, thanks.
+>  > ...
+> 
+> btw,
+> 
+> It looks like something wrong with the xenomai mailing list. I have got 
+> your answer but only one copy (you specified my own e-mail) and I 
+> haven't got my own message on the list (but I've cc'ed "xenomai-core").
+>
+
+Your mail to the list was blocked since you used an unregistered address to send 
+it (datacon.at).
+
+> One more thing. I had a discussion with Steven Seeger regarding the use 
+> of NULL-named objects from the user space. I cc'ed you but probably you 
+> were too buzy at that time. The problem is that one may create 
+> successfully a NULL-named object but then there is no way to use it 
+> since all further calls give an error (some funny stuff there indeed :)
+> 
+> So a simple fix would look like:
+> 
+> for all rt_OBJECT_create() calls in libnative:
+> 
+> int rt_mutex_create(RT_MUTEX *mutex, const char *name)
+> {
+> 
+> + if (!name)
+> + return -E_SOMETHING; // E_INVAL?
+> 
+> return XENOMAI_SKINCALL2(__xeno_muxid,
+> __xeno_mutex_create,
+> mutex,
+> name);
+> }
+> 
+> What do you think? Or are there any reasons to keep it as is now?
 > 
 
-Applied, thanks.
+The reason is to allow anonymous objects to be created, so that the descriptor 
+could only be shared by tasks belonging to the same address space if they happen 
+to all have access to the descriptor's memory. Kind of semi-private object if 
+you want. The fact that such an object is non-bindable should not make it 
+unusable actually.
 
-> Jan
+> 
+> p.s. I have cc'ed "xenomai@xenomai.org" for both reasons to test the 
+> mailing list and, well, maybe someone else has an opinion on the matter.
 > 
 > 
+>  > --
+>  >
+>  > Philippe.
 > 
-> ------------------------------------------------------------------------
+> ---
+> Best regards,
+> Dmitry
 > 
-> Index: drivers/16550A/16550A.c
-> ===================================================================
-> --- drivers/16550A/16550A.c	(revision 14)
-> +++ drivers/16550A/16550A.c	(working copy)
-> @@ -516,8 +516,8 @@
->  }
->  
->  
-> -int rt_16550_ioctl_rt(struct rtdm_dev_context *context,
-> -                      rtdm_user_info_t *user_info, int request, void *arg)
-> +int rt_16550_ioctl(struct rtdm_dev_context *context,
-> +                   rtdm_user_info_t *user_info, int request, void *arg)
->  {
->      struct rt_16550_context *ctx;
->      int                     ret = 0;
-> @@ -639,6 +639,9 @@
->              rtdm_lockctx_t      lock_ctx;
->              rtdm_toseq_t        timeout_seq;
->  
-> +            if (!rtdm_in_rt_context())
-> +                return -EPERM;
-> +
->              /* only one waiter allowed, stop any further attempts here */
->              if (test_and_set_bit(0, &ctx->ioc_event_lock))
->                  return -EBUSY;
-> @@ -980,8 +983,8 @@
->          close_rt:       rt_16550_close,
->          close_nrt:      rt_16550_close,
->  
-> -        ioctl_rt:       rt_16550_ioctl_rt,
-> -        ioctl_nrt:      rt_16550_ioctl_rt,
-> +        ioctl_rt:       rt_16550_ioctl,
-> +        ioctl_nrt:      rt_16550_ioctl,
->  
->          read_rt:        rt_16550_read,
->          read_nrt:       NULL,
-> @@ -999,7 +1002,7 @@
->      device_class:       RTDM_CLASS_SERIAL,
->      device_sub_class:   RTDM_SUBCLASS_16550A,
->      driver_name:        "rt_16550A",
-> -    driver_version:     RTDM_DRIVER_VER(1, 1, 0),
-> +    driver_version:     RTDM_DRIVER_VER(1, 1, 1),
->      peripheral_name:    "UART 16550A",
->      provider_name:      "Jan Kiszka",
->  };
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
