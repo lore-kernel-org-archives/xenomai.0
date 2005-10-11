@@ -1,10 +1,12 @@
-Message-ID: <434B6BC6.4030401@domain.hid>
-Date: Tue, 11 Oct 2005 10:37:42 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Generated docs
+Message-ID: <17227.27763.201941.114412@domain.hid>
+Date: Tue, 11 Oct 2005 09:40:35 +0200
+Subject: Re: [Xenomai-core] Generated docs
+In-Reply-To: <434B6BC6.4030401@domain.hid>
+References: <434B6BC6.4030401@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,13 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Heikki Lindholm wrote:
+ > Hi,
+ > 
+ > One thing that always bothered my in fusion cvs: why do the generated 
+ > docs have to be in the cvs/svn? Why not just let them be... well... 
+ > generated?
 
-One thing that always bothered my in fusion cvs: why do the generated 
-docs have to be in the cvs/svn? Why not just let them be... well... 
-generated?
+Because it allows the releases to be done taking the docs from the
+generated dir instead of generating them.
 
--- Heikki Lindholm
+IOW: separate maintenance of documentation and code.
+
+What I do not understand is what is so bothering ?
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
