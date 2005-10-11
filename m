@@ -1,10 +1,10 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17227.32173.553628.758964@domain.hid>
-Date: Tue, 11 Oct 2005 10:54:05 +0200
+Message-ID: <17227.32989.726582.610079@domain.hid>
+Date: Tue, 11 Oct 2005 11:07:41 +0200
 Subject: Re: [Xenomai-core] Generated docs
-In-Reply-To: <434B7928.1080201@domain.hid>
+In-Reply-To: <434B7DFD.4050806@domain.hid>
 References: <434B6BC6.4030401@domain.hid>
 	<17227.27763.201941.114412@domain.hid>
 	<434B6FA4.80309@domain.hid>
@@ -12,6 +12,8 @@ References: <434B6BC6.4030401@domain.hid>
 	<434B7422.6040603@domain.hid>
 	<17227.30216.496851.780843@domain.hid>
 	<434B7928.1080201@domain.hid>
+	<17227.31188.962652.600870@domain.hid>
+	<434B7DFD.4050806@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -27,24 +29,21 @@ Cc: xenomai@xenomai.org
 
 Heikki Lindholm wrote:
  > Gilles Chanteperdrix kirjoitti:
- > Hehe. So Philippe's machine would choke, if it had to generate the docs, 
- > too(?) And since most(?) of the docs comes from the sources, you don't 
- > actually edit them by hand now do you? So what does maintaining mean here?
-
-Means proof-reading and correcting typos or avoiding doxygen parse errors
-actually.
-
- > > Having the generated documentation in svn repository also allows us to
- > > copy it to the documentation directory of the download zone from a
- > > script run by cron.
+ > > It means looking at the doc, if there are no anomalies, like warnings,
+ > > parsing errors of doxygen, or typos in the text. Usually takes an hour
+ > > or two. I admit I am not fast, but I think it would take some time for
+ > > Philippe to do that too.
  > 
- > Ok, this makes sense. But could be done by other means, too, I guess.
+ > Okay. Although, I would be stupid enough to trust that if it generates 
+ > nicely for you it does so for Philippe, too, and not take the usual 
+ > metaphysical factors into account. Assuming that some coordination is 
+ > done to ensure that similar configurations are used - not too hard if 
+ > both use the same distro, for example.
 
-Automatically ? It could result in broken documentation on the web site,
-which is not quite user-friendly.
-
-Now that you answered publically to a discussion you started privately,
-I guess our readers will not understand anything :-)
+Definitely not enough: doxygen need some external programs, which
+presence is detected by the configure script, but in their absence the
+same documentation is not generated. The docbook generation use some
+tools which do not even exist as Debian packages.
 
 -- 
 
