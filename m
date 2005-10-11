@@ -1,11 +1,11 @@
-Message-ID: <434BD84B.5020606@domain.hid>
-Date: Tue, 11 Oct 2005 18:20:43 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <434C12AA.7010303@domain.hid>
+Date: Tue, 11 Oct 2005 21:29:46 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] PATCH: fix ppc64 calibration
 References: <1CFEB358338412458B21FAA0D78FE86D02CABCA8@domain.hid>
 In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D02CABCA8@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,27 +19,32 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Fillod Stephane <stephane.fillod@domain.hid>
 Cc: xenomai@xenomai.org
 
-Fillod Stephane kirjoitti:
+On 10/11/2005 05:11 PM Fillod Stephane wrote:
 > Heikki Lindholm wrote:
 > [..]
-> 
->>Probably, but there are less than awesome 4xx boards around and I'd 
->>guess they might even be more likely targets than G4 based machines,
-> 
+>> Probably, but there are less than awesome 4xx boards around and I'd 
+>> guess they might even be more likely targets than G4 based machines,
 > for 
-> 
->>example. Some tuning might be needed.
-> 
+>> example. Some tuning might be needed.
 > 
 > How many people are using Xenomai (or Fusion) on 4xx ?
-
-No idea here, but my understanding is that these are popular embedded 
-processors.
-
 > What are their typical sched latency ?
 
-This one I could check for a 405 box.
+RTAI is used on 4xx and other embedded PowerPC processors, like 8xx,
+8xxx and 52xx and Xenomai/Fusion might be an option in the future.
+Today, there are only a few people running and testing Xenomai/Fusion on
+these PowerPC processors, I guess. The problem is the availability of
+the Linux 2.6 together with the ADEOS/iPipe-Patch. A lot of embedded
+PowerPC boards do still not run or even compile Linux 2.6.
 
--- Heikki Lindholm
+Depending on the CPU power and cache size, latencies can go up to 200 us
+(or more), e.g. on a MPC 850 with 50 MHz and 1K cache. I'm going to
+measure the latency on a Ocotea (440GP) and Ebony (405) board this week
+(with adeos-linux-2.6.10-ppc-r8c4.patch and Fusion 0.9.1).
+
+Wolfgang.
+
+
+
 
 
