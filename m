@@ -1,5 +1,5 @@
-Message-ID: <434B75C7.9090509@domain.hid>
-Date: Tue, 11 Oct 2005 11:20:23 +0300
+Message-ID: <434B773B.2080500@domain.hid>
+Date: Tue, 11 Oct 2005 11:26:35 +0300
 From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Linux powerpc merger
@@ -19,6 +19,20 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+Philippe Gerum kirjoitti:
+> Heikki Lindholm wrote:
+> 
+>> Hello,
+>>
+>> As people following powerpc kernel mailing lists probably know, the 
+>> Linux "ppc" and "ppc64" architectures are merging into a single 
+>> "powerpc" arch. I think the same should be done to fusion.
+> 
+> 
+> Agreed. Let's closely follow the "natural" development path of the 
+> kernel incarnations we use for our ports; especially when such path is 
+> sensible.
+> 
 >  It would seem
 > 
 >> quite easy and there's already lots of redundant code there, but 
@@ -28,14 +42,24 @@ Cc: xenomai@xenomai.org
 > 
 > Would the issues be located at the Adeos level, or would this leak to 
 > Xeno's arch-dep layer?
+> 
+>  Is there any ideas
+> 
+>> regarding or work being done on this front?
+> 
+> 
+> I plan to restart working on the I-pipe/ppc patch shortly, so that we 
+> can both upgrade the Adeos architecture and the kernel version available 
+> for Xeno's ppc port. Since most of the work has been done already, we 
+> should synchronize and start crafting a patch for the ppc* combo after 
+> the initial I-pipe/ppc one.
 
-I suppose adeos level should go nicely with the kernel changes once 
-they're in place; we can easily mimick the kernel techniques (#ifdefs) 
-to tell which arch we're on. The issues would be with Xeno having to 
-distinguish the kernel were building for. I'm quite sure putting all the 
-Xenomai stuff under a common powerpc and having a few #ifdef 
-__powerpc32/64__ won't be enough. Having SAID that, it probably will 
-enough, though :)
+We could actually start by proactively (ugh!) merging the Xenomai ppc 
+and ppc64 dirs into one powerpc dir like the kernel folks do and see if 
+we can get it to work with the current separate ppc/ppc64 patches. I 
+actually had this in mind when I noticed how much code would be 
+unchanged for the ppc64 arch, but decided to do it separately anyway in 
+case something bigger would have surfaced later, which it seems it didn't.
 
 -- Heikki Lindholm
 
