@@ -1,12 +1,9 @@
-Date: Tue, 11 Oct 2005 07:26:06 -0700
-Subject: Re: [Xenomai-core] rt_timer_ticks2ns
-From: Steven Seeger <steve@domain.hid>
-Message-ID: <BF71198E.17D1%steve@domain.hid>
-In-Reply-To: <17227.51979.437655.440790@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="US-ASCII"
-Content-transfer-encoding: 7bit
+Message-ID: <434BCC9E.5070109@domain.hid>
+Date: Tue, 11 Oct 2005 17:30:54 +0300
+From: Heikki Lindholm <holindho@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------080608000703080900030704"
+Subject: [Xenomai-core] PATCH: fix ppc64 calibration
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Do you have to ask? :)
+This is a multi-part message in MIME format.
+--------------080608000703080900030704
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-rt_timer_start(125000);
+The old calibration value was from some ancient ppc32 embedded board, I 
+guess. This reflects the awesome power of them ppc64 boxen better :)
 
+-- Heikki Lindholm
 
-On 10/11/05 7:24 AM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
+--------------080608000703080900030704
+Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
+	name="xenomai-ppc64-calibration.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai-ppc64-calibration.patch"
 
-> Steven Seeger wrote:
->> In periodic mode, rt_timer_ticks2ns should convert ticks to periodic
->> jiffies. However, it always seems to return 0.
-> 
-> Did you call rt_timer_start before rt_timer_tick2ns ?
+diff -Nru xenomai/include/nucleus/asm-ppc64/calibration.h xenomai-dev/include/nucleus/asm-ppc64/calibration.h
+--- xenomai/include/nucleus/asm-ppc64/calibration.h	2005-10-11 10:30:03.000000000 +0300
++++ xenomai-dev/include/nucleus/asm-ppc64/calibration.h	2005-10-11 17:10:11.000000000 +0300
+@@ -32,7 +32,7 @@
+ #define __sched_latency CONFIG_XENO_HW_SCHED_LATENCY
+ #else
+ 
+-#define __sched_latency 18500
++#define __sched_latency 1000
+ 
+ #endif /* CONFIG_XENO_HW_SCHED_LATENCY */
+ 
 
+--------------080608000703080900030704--
 
