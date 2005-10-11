@@ -1,11 +1,11 @@
-Message-ID: <434BB819.5000406@domain.hid>
-Date: Tue, 11 Oct 2005 15:03:21 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <434BBAF0.6060501@domain.hid>
+Date: Tue, 11 Oct 2005 16:15:28 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [syscall.c] rt_bind_queue/heap()
-References: <b647ffbd0510100450n19552d5fq@domain.hid>		<434A585B.40905@domain.hid>		<b647ffbd0510100529v2c96d260r@domain.hid>		<434A601C.7000605@domain.hid>		<b647ffbd0510102343w3828a0cs@domain.hid>		<434B6DA2.6080806@domain.hid>	<b647ffbd0510110547u32cea8feg@domain.hid>
-	<434BB728.3050704@domain.hid>
-In-Reply-To: <434BB728.3050704@domain.hid>
+Subject: Re: [Xenomai-core] Generated docs
+References: <434B6BC6.4030401@domain.hid>	<17227.27763.201941.114412@domain.hid>	<434B6FA4.80309@domain.hid>	<17227.29206.223750.761504@domain.hid>	<434B7422.6040603@domain.hid>	<17227.30216.496851.780843@domain.hid>	<434B7928.1080201@domain.hid>
+	<17227.32173.553628.758964@domain.hid>
+In-Reply-To: <17227.32173.553628.758964@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,146 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Dmitry Adamushko wrote:
+Gilles Chanteperdrix kirjoitti:
+>  > > Having the generated documentation in svn repository also allows us to
+>  > > copy it to the documentation directory of the download zone from a
+>  > > script run by cron.
+>  > 
+>  > Ok, this makes sense. But could be done by other means, too, I guess.
 > 
->> On 11/10/05, Philippe Gerum <rpm@xenomai.org> wrote:
->>
->>>> ...
->>>> So,
->>>>
->>>> 1) don't display such names in /proc;
->>>> 2) make a common mechanism for both spaces.
->>>>
->>>> rt_mutex_create()   // for other objects as well
->>>> {
->>>> ...
->>>> - xnobject_copy_name(mutex->name,name);
->>>> +xnobject_create_name(mutex->name,name, object);
->>>> ...
->>>> }
->>>>
->>>> xnobject_create_name(dst,src, object)
->>>> {
->>>>      if (src)
->>>>            xnobject_copy_name(mutex->name,name);
->>>>      else
->>>>            snprintf(dst, XNOBJECT_NAME_LEN, "%p", object);
->>>> }
->>>>
->>>> // the slightly ugly thing is that we need to be sure that dst is
->>>> always object->name so it's really of XNOBJECT_NAME_LEN size.
->>>>
->>>
->>> We should pass the size along with the copy buffer, mainly for 
->>> readability, and
->>> also as a safety belt.
->>
->>
->>
->> We don't need that at all, since now we don't want to change a
->> behaviour of NULL-named objects created from kernel-space.
->>
->>
->>
->>>> Frankly, I like this approach better. All objects get some name if
->>>> they are NULL-named by a user and the code changes are a bit more
->>>> graceful. To show them in /proc or not is still another question.
->>>
->>>
->>> I'd like we don't generalize an exception case here. The fact that 
->>> for some
->>> internal reason we need to put a dummy name on anon objects created from
->>> user-space should not make all anon objects from kernel space have a 
->>> registry
->>> slot too, this would just be overkill (registry slots don't come for 
->>> free actually).
->>>
->>> That said, the remaining point basically is: how do we avoid anon 
->>> objects with
->>> auto-generated names from appearing under /proc? I'm not a fan of 
->>> "magic values"
->>> which would distinguish a real name from a dummy one, so I'd rather 
->>> use the
->>> existing possibility of passing a NULL pnode pointer to 
->>> rt_registry_enter(),
->>> which would still index an object without actually exporting it to 
->>> the /proc
->>> interface. The question is: how could we make the *_create() calls 
->>> invoking
->>> rt_registry_enter() with a NULL pnode when applicable, without 
->>> changing the
->>> kernel-based interface of the API.
->>
->>
->>
->> Well, I guess the only way a given *_create() call may determine a
->> certain environment (kernel mode vs. user mode) is by analyzing some
->> of the given arguments (ok, in case of the user mode, a previous call
->> on the stack has been one of the syscall.c:__rt_object_create() ones,
->> so we may track the stack... ok-ok, I'm just kidding :)
->> There are only 2 arguments: rt_object *object or char *name.
->> We probably can't rely on the first one since it may contain anything
->> and we don't want to force a user to set it up to something certain:
->>
->> /* kernel mode */
->> RT_MUTEX m;
->> bzero(&m); // because we use some RT_MUTEX's internal fields when
->> making a call from syscall.c:__rt_mutex_create(), e.g. m->handle =
->> DONT_USE_REGISTRY;
->>
->> rt_mutex_create(&m, NULL);
->>
->> So the only way is to deal somehow with the "name" argument. There is
->> a difference already.
->>
->> rt_mutex_create() being called from:
->>
->> 1) kernel mode:  name == NULL;
->> 2) user mode:    name == "\0" (see, syscall.c:__rt_mutex_create(), so
->> *name == NULL;
->>
->> Then a fix would look like:
->>
->> rt_object_create()
->> {
->> ...
->>
->> - if (name && *name)
->> + if (name)
->>         {
->> + if (*name)
->>    err = 
->> rt_registry_enter(mutex->name,mutex,&mutex->handle,&__mutex_pnode);
->> + else {
->> + // this is a NULL-named object being created from the user-mode or
->> + // "\0"-named object from the kernel-mode
->> +xnobject_create_name(mutex->name, OBJNAME_MAX_SIZE, mutex);
->> + err = rt_registry_enter(mutex->name,mutex,&mutex->handle,NULL);
->> +}
->>
->>         if (err)
->>             rt_mutex_delete(mutex);
->>         }
->> }
->>
->> Maybe a bit ugly but should work. eerrr... I can't come up with a
->> better solution at the moment.
->>
-> 
-> At least the magic value here would make some sense, NULL=unregistered, 
-> empty=registered,not-exported,
+> Automatically ? It could result in broken documentation on the web site,
+> which is not quite user-friendly.
 
-Actually, this is "registered,anonymous,hence not-exported"
+Well, there are always other means. I don't know doxygen specifics, so 
+I'll just shut up here. When the generated docs grow to some few 
+hundreds of megs, maybe I'll raise this point again.
 
-  otherwise=registered,exported. Looks ok
-> for that purpose, since we do need the additional 2nd state here.
-> 
+> Now that you answered publically to a discussion you started privately,
+> I guess our readers will not understand anything :-)
 
--- 
+That'll be true. Or rather, I answered publicly/privately in random 
+fashion --- there are just too many buttons on a mail client for my 
+intellect.
 
-Philippe.
+-- Heikki Lindholm
 
