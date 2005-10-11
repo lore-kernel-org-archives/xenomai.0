@@ -1,9 +1,12 @@
-Message-ID: <434BCC9E.5070109@domain.hid>
-Date: Tue, 11 Oct 2005 17:30:54 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------080608000703080900030704"
-Subject: [Xenomai-core] PATCH: fix ppc64 calibration
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-core] PATCH: fix ppc64 calibration
+Date: Tue, 11 Oct 2005 16:36:25 +0200
+Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E16@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,35 +18,17 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------080608000703080900030704
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Heikki Lindholm wrote:
+> The old calibration value was from some ancient ppc32 embedded board,
+I=20
+> guess. This reflects the awesome power of them ppc64 boxen better :)
 
-The old calibration value was from some ancient ppc32 embedded board, I 
-guess. This reflects the awesome power of them ppc64 boxen better :)
+Actually, the ppc32 calibration value was from some ancient x86 machine,
+I=20
+guess. The same patch could be applied to asm-ppc/calibration.h. This=20
+reflects the awesome power of them ppc32 boxen better :)
 
--- Heikki Lindholm
+--=20
+Stephane
 
---------------080608000703080900030704
-Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
-	name="xenomai-ppc64-calibration.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-ppc64-calibration.patch"
-
-diff -Nru xenomai/include/nucleus/asm-ppc64/calibration.h xenomai-dev/include/nucleus/asm-ppc64/calibration.h
---- xenomai/include/nucleus/asm-ppc64/calibration.h	2005-10-11 10:30:03.000000000 +0300
-+++ xenomai-dev/include/nucleus/asm-ppc64/calibration.h	2005-10-11 17:10:11.000000000 +0300
-@@ -32,7 +32,7 @@
- #define __sched_latency CONFIG_XENO_HW_SCHED_LATENCY
- #else
- 
--#define __sched_latency 18500
-+#define __sched_latency 1000
- 
- #endif /* CONFIG_XENO_HW_SCHED_LATENCY */
- 
-
---------------080608000703080900030704--
 
