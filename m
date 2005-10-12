@@ -1,13 +1,10 @@
-From: Wolfgang Denk <wd@domain.hid>
-Subject: Re: [Xenomai-core] 2.4 vs 2.6 in embedded space 
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: Your message of "Wed, 12 Oct 2005 16:39:02 +0200."
-	<434D2006.1060908@domain.hid> 
-Date: Wed, 12 Oct 2005 17:00:08 +0200
-Sender: wd@domain.hid
-Message-Id: <20051012150008.A98AA353A4F@atlas.denx.de>
+Date: Wed, 12 Oct 2005 17:23:43 +0200 (MEST)
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Message-ID: <Pine.GSO.4.58.0510121715430.6772@domain.hid>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-851401618-1129130623=:6772"
+Subject: [Xenomai-core] Wrong RTDM proc entry prevents xeno_rtdm.ko from
+	being loaded
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,54 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Dear Philippe,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@domain.hid for more info.
 
-in message <434D2006.1060908@domain.hid> you wrote:
->
-> Open question: to your opinion, is 2.6 on low-end embedded hw doomed "by design" 
+---559023410-851401618-1129130623=:6772
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 
-Something like that.
+Hi,
 
-> and why, or do you think that part of the reluctance to move to 2.6 is mostly 
-> explained because 2.4 is just fine and up to the task, IOW it's kind of a "don't 
-> fix if it ain't broken" perception?
+today I discovered a bug after having tried to load the Xenomai RTDM skin.
+I've attached a patch which should correct the problem.
 
-Please see
-http://www.denx.de/twiki/bin/view/Know/Linux24vs26
-and
-http://www.denx.de/twiki/bin/view/Know/Clock100vs1000Hz
+Sebastian
+---559023410-851401618-1129130623=:6772
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name="rtdm_proc_entry.patch"
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.GSO.4.58.0510121723431.6772@domain.hid>
+Content-Description: 
+Content-Disposition: attachment; filename="rtdm_proc_entry.patch"
 
-The major causes of the serious performance degradation under 2.6 are
-(1) the increased code size (especially the code that is running in
-    interrupt context and for test switching - check for example just
-    the code size of the scheduler and compar ewith it's size under 2.4),
-    and
-(2) the increased clock frequency.
+LS0tIHhlbm9tYWkvc2tpbnMvcnRkbS9wcm9jLmMJMjAwNS0xMC0xMiAxNjo1
+ODo0OC4wMDAwMDAwMDAgKzAyMDANCisrKyBwcm9jLmMJMjAwNS0xMC0xMiAx
+NzowMDo1OS4wMDAwMDAwMDAgKzAyMDANCkBAIC0yODUsNyArMjg1LDcgQEAg
+aW50IF9faW5pdCBydGRtX3Byb2NfaW5pdCh2b2lkKQ0KIA0KIA0KICAgICAv
+KiBJbml0aWFsaXNlIC9wcm9jIGVudHJpZXMgKi8NCi0gICAgcnRkbV9wcm9j
+X3Jvb3QgPSBjcmVhdGVfcHJvY19lbnRyeSgiWGVub21haS9ydGRtIiwgU19J
+RkRJUiwgTlVMTCk7DQorICAgIHJ0ZG1fcHJvY19yb290ID0gY3JlYXRlX3By
+b2NfZW50cnkoInhlbm9tYWkvcnRkbSIsIFNfSUZESVIsIE5VTEwpOw0KICAg
+ICBpZiAoIXJ0ZG1fcHJvY19yb290KQ0KICAgICAgICAgcmV0dXJuIC1FQUdB
+SU47DQogDQo=
 
-OK, (2) has been partially fixed in the mean time by making the clock
-frequency adjustable, so you can go back to the old value of  100  Hz
-on  low  end  systems. The other factor remains. And yes, this is "by
-design" - Linux is more and more designed for high end machines  like
-fat  servers  running  thousands  of  tasks  or  other multiprocessor
-systems with N GHz clocks. A MPC860 at 50 Mhz is just another world.
-
-<joke>
-I see a business opportunity to revive the 2.2 or even the 2.0 kernel
-tree  development  especially  for  small   systems   wth   real-time
-requirements.
-</joke>
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-If there was anything that depressed him more than his own  cynicism,
-it was that quite often it still wasn't as cynical as real life.
-                                 - Terry Pratchett, _Guards! Guards!_
+---559023410-851401618-1129130623=:6772--
 
