@@ -1,152 +1,73 @@
-Message-ID: <425E90A3.5050103@domain.hid>
-Date: Thu, 14 Apr 2005 17:47:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <434D0D2D.4010606@domain.hid>
+Date: Wed, 12 Oct 2005 15:18:37 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] RE: Interrupt Latency Question
-References: <1CFEB358338412458B21FAA0D78FE86D4F0D3F@rennsmail02.eu.thmulti.com>
-In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D4F0D3F@rennsmail02.eu.thmulti.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] PATCH: fix ppc64 calibration
+References: <1CFEB358338412458B21FAA0D78FE86D02CABCA8@domain.hid>
+	<434CFDFF.2090201@domain.hid> <434D06C9.3030802@domain.hid>
+In-Reply-To: <434D06C9.3030802@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: <https://mail.gna.org/public/adeos-main/>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: Wolfgang Grandegger <wolfgang.grandegger@domain.hid>, rtai@domain.hid, adeos-main@gna.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: xenomai@xenomai.org
 
-Fillod Stephane wrote:
-> Wolfgang Grandegger wrote:
+On 10/12/2005 02:51 PM Heikki Lindholm wrote:
+> Wolfgang Grandegger kirjoitti:
+>> On 10/11/2005 05:11 PM Fillod Stephane wrote:
+>> 
+>>>Heikki Lindholm wrote:
+>>>[..]
+>>>
+>>>>Probably, but there are less than awesome 4xx boards around and I'd 
+>>>>guess they might even be more likely targets than G4 based machines,
+>>>
+>>>for 
+>>>
+>>>>example. Some tuning might be needed.
+>>>
+>>>How many people are using Xenomai (or Fusion) on 4xx ?
+>>>What are their typical sched latency ?
+>> 
+>> 
+>> Attached is the result of some latency measurements on the Ocotea eval
+>> board. The AMCC 440 GX is already a fast 4xx processor. Unfortunately,
+>> the linuxppc-2.6.10rc3 does not run on our Ebony board. Nevertheless,
+>> it's difficult to provide a resonable default value. Why not simply
+>> using 0 and it's then up to the user to provide an appropriate value
+>> at configuration time?
 > 
->>It's also my experience, that the large latencies are
->>due to TLB misses and cache refills, especially the
->>latter one. What helps is L2 cache or fast memory.
->>For example, on an MPC 5200 I get significately better
->>latencies with DDR-RAM than with SDRAM (which is ca. 
->>20% slower).
-> 
-> 
-> I keep on hearing people are having feeling that their latency
-> can be caused by TLB misses/cache refills, but never seen proof.
-> Is there some literature about that subject? Nobody in the RTAI 
-> community had curiosity to explain and fix this interesting problem?
->
+> 0? No machine is that fast. For the 32-bit ppc it might be harder to 
+> provide a reasonable default, because of the broader scale of hardware, 
+> but I'd guess that < 100MHz targets prefer to use a dedicated RTOS 
+> instead of Xenomai. For the 64-bit targets, I didn't find slower than 
 
-AFAIC, the curiosity is there, and better understanding the caching 
-behaviour of the nucleus is planned before fusion turns 1.0; after all, 
-the core can run inside a regular Linux process so we could even use 
-cachegrind for this. The same goes for Adeos, except that cachegrind is 
-obviously out of reach, so the usual tough way is currently followed, 
-when time allows.
+There are a lot of 32 bit CPUs < 100 MHz running Linux and sometimes
+they even need a realtime extension.
 
-For instance, this explains why the CONFIG_ADEOS_NOTHREADS came into 
-play in recent Adeos releases, but with limited success, since the cost 
-of switching domain stacks on low-end machines (Pentium 90Mhz-based 
-slug, Geode/x86 266 and IceCube/ppc) was apparently not worth the effort 
-of coding up this mode. On mid-range to high-end boxen,
-the perceived benefits so far are nil, except perhaps that you don't 
-have to fiddle
-with non-Linux allocated stacks inside your interrupt handlers (e.g. 
-"current" determination hack for x86). Maybe other have had better 
-results trying a similar approach on other archs (Michael, with ARM?), I 
-don't know. OTOH, the cache issues that could be triggered by the layout 
-of the Adeos domain descriptor (adomain_t) still bother me, and have not 
-been checked in depth so far AFAIK.
+> 400 MHz machines and they were iSeries, which, I suppose, also aren't 
+> prime target for Xenomai. Regardless of what default value is used, 
+> there could be some examples provided by the config help to direct user 
+> to the right direction.
 
-> If not, what about showing (or not) that the large latencies are due
-> to TLB misses/cache refills with a tool like Flushy?
-> 
-> Using Flushy would be like using low-end hardware. It's far easier to
-> make 
-> performance improvements on low-end hardware than high-end. It works as
-> a 
-> magnifying glass. It reminds me a comment on Gnome mailing list, where
-> an 
-> end-user wished that developers had high-end compile machine, but slow 
-> hardware to test with.
-> 
+I fully agree.
 
-More precisely, we need fast compile machines, low-end testing platforms 
-and fat brains. Guess which one I'm personally missing right now... :o>
+> What's the problem with Ebonys? I remember running at least 2.6.9 on 
+> Ebonys (440GP) and Walnuts (405).
 
-> 
->>>Have a look at http://rtai.dk/cgi-bin/gratiswiki.pl?Latency_Killer
->>>To get real bad cases, try the Flushy module.
->>>You can try also to disable caches for better predictability, but it
-> 
-> really
-> 
->>>hurts :*)
->>
->>I will try it on an embedded PowerPC platform a.s.a.p.
-> 
-> 
-> After thought, there would be a better design for Flushy. Instead of 
-> an infinite loop in a separate module(process), we should instead call
-> the TLB flush/cache invalidate right before entering the RT world
-> from ADEOS. Therefore, we should get "predictable" worst case latencies
-> wrt 
-> TLB/cache conditions.
-> 
-> Where is the best place in ADEOS to do that?
+We have linux-2.4.14-rc3 running on all AMCC eval boards (see
+http://www.denx.de). But the kernel supported by RTAI/Fusion,
+linuxppc-2.6.10rc3, does not boot on Ebony. The main problem is the
+missing support for U-Boot but there might be others. And it's simply
+not worth the effort to port it, I think.
 
-I'd say arch/ppc/kernel/adeos.c:__adeos_sync_stage(), this is the 
-interrupt log syncer. You will find this pattern:
-
-     if (adp == adp_root) {
-	/* dispatching ISR to Linux */
-     } else {
-	/* dispatching ISR to non-root domains. This is where you likely 	 
-want to play with the cache, before calling the handler. */
-     }
-
-> The earlier, the better. Tapping at the exception level would be the
-> best, right before saving registers, but we need couple registers to
-> call the 
-> TLB/cache flush.
-> Any idea?
-> 
-
-Only to interpose before the pipelining stuff comes into play, you could 
-  hook __adeos_grab_irq(), still in arch/ppc/kernel/adeos.c. It's called 
-right after the address translation has been switch on by the exception 
-transfer block, so it's quite early already.
-
-> I've Cc:'d the adeos-main list to reach some more gurus.
-> 
-> 
->>>Note: if it turns out this latency is due to cache misses, then
-> 
-> solutions
-> 
->>>exist.
->>
->>Can you be more precise here.
-> 
-> 
-> With reproducible latencies, we can then use OProfile (where available)
-> to
-> spot slow areas. We have to sort out whether TLB misses, I-cache misses
-> or
-> D-cache misses is the bigger culprit. Make your guess :-)
-> Modern processors have cache control instructions, like prefetch for
-> read,
-> zero cache line, writeback flush, etc. With nice cpp macros, we can use
-> them (where available) ahead of time in the previously spotted places, 
-> to render the memory access latency predictable.
-> 
-> Do you think that will do it? Anybody has experience to share?
-> 
-> 
-> Thanks
-
-
--- 
-
-Philippe.
+Wolfgang.
 
