@@ -1,14 +1,10 @@
-Message-ID: <434D310D.80009@domain.hid>
-Date: Wed, 12 Oct 2005 17:51:41 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Wrong RTDM proc entry prevents xeno_rtdm.ko from
-	being loaded
-References: <Pine.GSO.4.58.0510121715430.6772@domain.hid>	<434D2C1A.4050102@domain.hid>
-	<Pine.GSO.4.58.0510121742360.15047@domain.hid>
-In-Reply-To: <Pine.GSO.4.58.0510121742360.15047@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17229.31343.98877.781567@domain.hid>
+Date: Wed, 12 Oct 2005 23:04:47 +0200
+Subject: [Xenomai-core] Bug tracker.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,28 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Sebastian Smolorz wrote:
-> On Wed, 12 Oct 2005, Philippe Gerum wrote:
-> 
-> 
->>Sebastian Smolorz wrote:
->>
->>>Hi,
->>>
->>>today I discovered a bug after having tried to load the Xenomai RTDM skin.
->>>I've attached a patch which should correct the problem.
-> 
-> 
-> ... and if we want to have a clean removal of the proc entry at module
-> unload, this next patch is very useful! ;-)
-> 
 
-Oh, well...
+Hi,
+
+GNA offers a bug tracking system which is undoubtely a useful tool
+for lots of projects. What about using it for the Xenomai project ?
+
+The bug submission form is here:
+https://gna.org/bugs/?func=additem&group=xenomai
+
+I just had a look at its configuration, here is how it could be
+configured if we agreed on using it :
+- add a little explanation in place of the "0", reminding people to use
+  mailing list/archives before posting a bug and what details are needed
+  for a bug report (exact release or revision, kernel
+  configuration file, xenomai configuration, small test case, kernel
+  crash dump when appliable, etc...)
+- add the fields which seem to be missing ; so far, only the software
+  revision and component (nucleus, native skin, posix skin, etc...).
+
+Suggestions and comments welcome.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
