@@ -1,12 +1,12 @@
-Message-ID: <434D2FF3.6000500@domain.hid>
-Date: Wed, 12 Oct 2005 17:46:59 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] remove_proc_entry problem semi-tracked down
-References: <BF727E02.1806%steve@domain.hid>
-In-Reply-To: <BF727E02.1806%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17229.12621.620087.85940@domain.hid>
+Date: Wed, 12 Oct 2005 17:52:45 +0200
+Subject: Re: [Xenomai-help] Kernel oops on posix threads
+In-Reply-To: <434D2CCD.4070802@domain.hid>
+References: <434D2CCD.4070802@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
+To: Luotao Fu <devtty0@domain.hid>
 Cc: xenomai@xenomai.org
 
-Steven Seeger wrote:
-> It doesn't break when all my app does is this. This issue requires more
-> investigation. Still, nothing I do in userspace should make it kernel panic.
+Luotao Fu wrote:
+ > Hi folks,
+ > 
+ > I found out that parallel threads using the Posix skin cause kernel oops
+ > somewhere between the finishing of the threads and the main thread. I
+ > have two threads, say thread A and thread B. Both created as joinable
+ > threads and they have both the same priority 99. The main routine hold a
+ > semaphore semA to synchronize the threads. After the creation thread A
+ > waits on the Semaphore semA, while the thread B runs and releases semA,
+ > so that semA can finish. On exiting the thread B I always get a Kernel
+ > ooops. The kernerl says:
+ > 
+ > unable to handle kernel paging request at virtual address 6b6b6b77
+ > etc.......
 
-Sure, this exactely why we are trying to find this bug.
+Thanks a lot for your report, it is almost perfect. However, it would be
+really helpful to have the "etc...." in order to have a stack dump and
+have a quick look at the code before trying to reproduce the situation
+here.
 
-> :)
-> 
-> Steven
-> 
-> On 10/12/05 7:54 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
-> 
-> 
->>Steven Seeger wrote:
->>
->>>I only seem to get this problem if I start and stop my app a few times
->>>without unloading the xenomai modules and reloading them, btw.
->>>
->>
->>Ok, this might be a useful hint. Please try crafting a simple test case
->>creating 
->>a hundred mutexes then destroying them in a row, restarting this app a few
->>times 
->>without unloading the xeno_native module. It would help to know if it breaks
->>too.
-> 
-> 
-> 
+ > 
+ > I scratched some simple code which causes this Kernel Ooops. Packed a
+ > tar ball together with the makefile and attached the tar ball it to this
+ > mail so that you might have a look at it yourself.
+ > I'm using
+ > Kernel: Vanilla 2.6.12 patched with adeos-linux-2.6.12-i386-r12.patch
+ > Distr. Debian 3.1
+ > Testhost: vmware 5.0
+ > compiler gcc 3.3.5
+ > 
+ > I also wrote some code doing the same tasks in RTAI native context and
+ > it ran without problems. Hence I suppose the problem to be in the posix
+ > skin.
+ > Am I making any mistakes in the code or have I evtl. found a bug in the
+ > posix skin?
 
+A kernel oops is almost always certainly a bug... Could you tell me
+whether this happens even the first time after insertion of the
+rtai_posix module ?
+Also, why do you link your program with the rtai library, rtai-config
+--posix-ldflags should be enough ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
