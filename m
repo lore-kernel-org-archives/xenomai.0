@@ -1,16 +1,17 @@
-Resent-Message-ID: <17230.51015.15044.257418@domain.hid>
-Resent-To: xenomai@xenomai.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17230.50005.610300.142351@domain.hid>
-In-Reply-To: <200510131146.04013.bdi-emc@domain.hid>
-References: <000d01c5cfcb$8b5dfaf0$0600a8c0@domain.hid>
-	<434E19AD.4030500@domain.hid>
-	<200510131146.04013.bdi-emc@domain.hid>
+Message-ID: <17230.60977.476892.10184@domain.hid>
+Date: Fri, 14 Oct 2005 01:30:57 +0200
+Subject: Re: [Xenomai-core] Bug tracker.
+In-Reply-To: <434E0C91.1050607@domain.hid>
+References: <17229.31343.98877.781567@domain.hid>
+	<434DEDDD.4020607@domain.hid>
+	<17229.64735.691164.146992@domain.hid>
+	<434E003E.4020604@domain.hid>
+	<17230.2176.893187.59758@domain.hid>
+	<434E0C91.1050607@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] Future of fusion
-Date: Thu, 13 Oct 2005 22:28:05 +0200
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,34 +21,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <bdi-emc@domain.hid>
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: xenomai@xenomai.org
 
-Paul wrote:
+Heikki Lindholm wrote:
+ > Gilles Chanteperdrix kirjoitti:
+ > > Heikki Lindholm wrote:
+ > >  > There's the "if". What I've seen on sourceforge is that often times bugs 
+ > >  > that are reported on the ml don't appear in the tracker and vice versa, 
+ > >  > although the tracker can probably be configured to forward reports to 
+ > >  > ml, or? Who will type the ml-only reports to the tracker? Btw. would you 
+ > >  > only allow developers to file bugs into the tracker?
+ > > 
+ > > I would use it as a one line answer to bug reports on the mailing
+ > > list... I would prefer users to always post on the mailing list first,
+ > > and if it looks like a real bug, a developer would ask the user to fill
+ > > a bug report.
  > 
- > Hi Philippe
- > 
- > On Thursday 13 October 2005 09:24, Philippe Gerum wrote:
- > > - Regular automated benchmarking: What is Xenomai currently capable of, how
- > > stable is it, do we progress or regress over time and releases, arch by
- > > arch?
- > 
- > Have a couple of x86 development boxes running 24/7 - Could set one up as a 
- > compile farm for running automated builds. Also have a PowerPC thin client 
- > that I would like to utilise, but could really do with some help in setting 
- > up the tools for cross-compiling the base system under Debian.
+ > That might work. As a case study of something to avoid: I know at least 
 
-Actually, there are ready made debian cross toolchain packages at
-debian.speedblue.org 
+Ok. Have a look and tell me:
 
- > Gilles already has a tarball of the Debian rules I used for packaging fusion. 
- > With minor changes, these could be used for a Xenomai package. One 
- > possibility is to use the rules and the compile farm to produce "ready to 
- > run" kernel/Xenomai Debian packages.
-
-Well, quite frankly, I do not know much about the debian packages
-creation process, in any case not enough to do the work which remains
-to be done. The best I can do is add the debian directory to the svn
-repository, letting volunteers work on it and submit patches...
+https://gna.org/bugs/?func=additem&group=xenomai
 
 -- 
 
