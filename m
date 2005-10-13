@@ -1,15 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <18969.193.52.24.125.1129211788.squirrel@domain.hid>
+Date: Thu, 13 Oct 2005 15:56:28 +0200 (CEST)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17229.14905.153200.627965@domain.hid>
-Date: Wed, 12 Oct 2005 18:30:49 +0200
-Subject: Re: [Xenomai-help] Kernel oops on posix threads
-In-Reply-To: <17229.14671.80367.846809@domain.hid>
-References: <434D2CCD.4070802@domain.hid>
-	<17229.12998.842183.402786@domain.hid>
-	<434D370B.6090605@domain.hid>
-	<17229.14671.80367.846809@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] A couple of questions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,20 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Luotao Fu <devtty0@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Ok, you really ought to try xenomai, because this strangely looks like a
- > bug that was fixed. It was not as reproducible as that in my test cases
- > though...
+Hi everybody:
 
-Instructions to download current revision of xenomai sources may be
-found here :
+I think that this fork is a very good opportunity to "start with the
+right foot". I believe also that a document like
 
-https://gna.org/svn/?group=xenomai
+https://mail.rtai.org/pipermail/rtai/2005-June/011949.html
 
--- 
+but with Fusion/Xenomai it would be a very good starting point for a
+relatively inexperienced user. What I do until now:
+- I dowloaded, adeos-patched, configured & compiled kernel 2.6.13.4
+- I downloaded, configured, installed fusion 0.9.1
+- I run sucessfull all the [testsuite] examples
+- I dowloaded all the pdf(s)
+
+Now the questions:
+1) it is important dowload and install fusion OR xenomai ?
+2) why the xenomai files are so old (2002) ?
+3) I think that a very important PDF file - already present in the past
+in www.rtai.org - is missed: the Fusion tutorial with examples.
+4) where I can find some Fusion/Xenomai examples, complete of instruction
+to compile and link to create standalone applications ?
+5) how is it possible to use Comedi driver ?
+6) how port xrtailab under Xenomai/Fusion ?
+7) it is possible use USB device (eg. camera) realtime ?
+
+Thanks in advance for your help
+
+                               Simone Mannori
 
 
-					    Gilles Chanteperdrix.
+
 
