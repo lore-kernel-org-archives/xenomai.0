@@ -1,10 +1,13 @@
-Message-ID: <434E5ED5.10303@domain.hid>
-Date: Thu, 13 Oct 2005 09:19:17 -0400
-From: Sean McGranaghan <smm@domain.hid>
+Message-ID: <434EB9C6.4010102@domain.hid>
+Date: Thu, 13 Oct 2005 21:47:18 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] Future of fusion
+References: <000d01c5cfcb$8b5dfaf0$0600a8c0@domain.hid>	<434E19AD.4030500@domain.hid>	<200510131146.04013.bdi-emc@domain.hid>
+	<434E622D.801@domain.hid>
+In-Reply-To: <434E622D.801@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Best way to make a device driver realtime ready
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,57 +17,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Paul <bdi-emc@domain.hid>, xenomai@xenomai.org
 
-Hello all,
+On 10/13/2005 03:33 PM Philippe Gerum wrote:
+> Paul wrote:
+>> Hi Philippe
+>> 
+>> On Thursday 13 October 2005 09:24, Philippe Gerum wrote:
+>> 
+>>>- Regular automated benchmarking: What is Xenomai currently capable of, how
+>>>stable is it, do we progress or regress over time and releases, arch by
+>>>arch?
+>> 
+>> 
+>> Have a couple of x86 development boxes running 24/7 - Could set one up as a 
+>> compile farm for running automated builds.
+> 
+> That would be great, thanks. Let us know if we could help.
+> 
+>   Also have a PowerPC thin client
+>> that I would like to utilise, but could really do with some help in setting 
+>> up the tools for cross-compiling the base system under Debian.
+> 
+> What about DENX's ELDK?
+> 
+>> 
+>> 
+>>>- Configuration, building and packaging issues: Could we make this easier?
+>> 
+>> 
+>> Anything that involves patching/compiling kernels is bound to cause trouble 
+>> for new users. Perhaps some tests for kernel options known to cause trouble 
+>> (such as APM & REGPARM) that print out large warnings during the config stage 
+>> might help..
+>> 
+> 
+> Ok, I have something rather highly ranked on my TODO list (which ends up by 2117 
+> or so), which is about allowing to build all Xenomai's in-kernel support 
+> statically in the Linux kernel. The rationale behind that is about making more 
+> straightforward and efficient embedded setups; straightforward because modules 
+> add more complexity than they would solve in typical embedded systems, and 
+> efficient since loading modules in a running kernel doesn't come for free.
 
-My name is Sean McGranaghan, I am a software engineer working in 
-Rochester, NY. USA. I have recently been tasked with porting a standard 
-Linux driver to the RTAI/fusion environment. I have RTAI/fusion 0.8.3 up 
-and running with a 2.6.13 kernel. I have a couple general questions, 
-followed by my specific problem. I apologize for the length of this post 
-in advance, this is my first foray into RTAI/fusion. Please direct this 
-message as appropriate.
+That would be great for embedded systems, indeed. Apart from getting rid
+of the module infrastructure, it also save TLB misses because modules
+are typically placed in vmalloc'ed space. Systems with small TLB entry
+tables will benefit, like PowerPC 8xx and 4xx.
 
-When a realtime RTAI native or LXRT task performs io using a vanilla 
-Linux driver, does it retain its realtime scheduling priority via the 
-nucleaus scheduler or is the task demoted to the non-realtime domain 
-i.e. the Linux scheduler? Assume the vanilla Linux driver uses 
-wake_up_interruptible() to wake Linux tasks.
-
-Is there a standard approach to making a driver "realtime"? I would 
-assume replacing the interrupt handling, synchronization and task 
-scheduling calls with RTAI/fusion equivalents would be the approach to 
-take. How does this affect the file operations interface in Linux? 
-(open(), close(), read(), write(), ioctl() etc.) Is this driver still 
-usable by non-realtime Linux tasks?
-
-My specific problem is to make an existing Linux driver "realtime". 
-(Vague requirement I know.) The driver is for an ISA CAN bus card. The 
-card contains two CAN controllers using two irqs. My first step was to 
-try and get the irq handling under nucleus control. I replaced 
-request_irq() and related Linux irq calls with rt_intr_create() and 
-such. I was then going to look at replacing the Linux 
-spin_lock_irqsave()/spin_unlock_irqrestore() and wake_interruptble() 
-calls if needed. I am currently having problems with the first step.
-
-I test the driver with a loopback cable between the two channels. In the 
-pure Linux driver I send and receive datagrams with no problem. I 
-receive a transmit complete interrupt immediatly followed by a message 
-received interrupt for each datagram sent. When I replace the interrupt 
-handling with RTAI/fusion calls I seem to be missing the receive 
-interrupt. I have looked at the CAN controller register contents and 
-they are consistant between the vanilla driver and realtime driver. I am 
-currently trying to look at the 8259 PIC controller register contents to 
-see how the interrupt handling differs. I suspect that the mixing of 
-nucleaus interrupt handling and Linux spin locks (irq save/restore) is 
-fouling up the PIC, but I can't prove this yet. Is there any benefit to 
-moving the interrupt handling to the realtime domain?
-
-Any help is greatly appreciated.
-
-Thanks,
-Sean McGranaghan
-
+> 
+> To do that, portions of the Xeno build system which are currently 
+> autoconfiscated should move to the target kernel, so that we would only keep the 
+> autoconf infrastructure for what it's good at, i.e. building the user-space 
+> support. The basic idea is that we would then have a kernel extension part 
+> either buildable statically or as modules using Linux's Kconfig/Kbuild 
+> infrastructure, and a user-space support package providing the various interface 
+> libraries, headers, tools and scripts, ala glibc.
+> 
+> The immediate advantages would be:
+> 
+> - The core of the Xenomai support would be statically embeddable in the Linux 
+> kernel;
+> - No need for a Kconfig duplication like we have now; most of the options 
+> currently presented by Xeno's Kconfig sub-system concern the kernel portions, 
+> and very few actually concern the user-space stuff. We would then get rid of the 
+> former, and rely on the vanilla Linux's one instead.
+> - Centralizing Xenomai's kernel-related options with Linux's ones would make 
+> easier defining sanity checks (e.g. APM stuff and so on), since we could use the 
+> Kconfig language to enforce them in order to obtain sane configurations "by 
+> construction" (e.g. CONFIG_XENO disables CONFIG_APM). Currently, Xeno's Kconfig 
+> is not aware of the kernel settings, so the checks are performed afterwise by 
+> the configure script instead.
+> - Removing the module compilation logic from the autoconfiscated Makefiles would 
+> be a significant simplification of the Xeno build system, and would make it less 
+> dependent on the kernel build system.
+> - This build process is still fully automatable.
+> - LKML people among my co-workers (Hi Stelian!) would start talking to me again, 
+> since I would stop pretending that autoconf is a sane way of controlling builds 
+> for kernel-based code. :o>
+> 
+> The way I see a typical build process would then be along these lines:
+> 
+> $ tar jxf xenomai-*
+> $ mkdir xeno-build && cd xeno-build && ../xenomai-*/configure 
+> --kernel=/usr/src/linux --some-option-only-for-uspace-stuff --prefix=<install-dir>
+> ....
+> (the configure script would then prepare the autoconf _and_ make the necessary 
+> links from the target kernel to the Xenomai source tree to connect the modules 
+> to the kernel's Kbuild/Kconfig infrastructure.
+> ....
+> $ cd /usr/src/linux
+> $ make gconfig
+> ....
+> The user would configure his kernel, and all the kernel-based Xenomai stuff, as 
+> if they were standard drivers/extensions
+> ....
+> $ make <the_kernel>
+> $ cd xeno-build && make install
+> 
+> And we would be done. Well, in a perfect world, I mean.
+> 
+>> Gilles already has a tarball of the Debian rules I used for packaging fusion. 
+>> With minor changes, these could be used for a Xenomai package. One 
+>> possibility is to use the rules and the compile farm to produce "ready to 
+>> run" kernel/Xenomai Debian packages.
+>>
+> 
+> I think we should be able to work this out will Gilles before 2.0 is out since 
+> it's a separate build-related issue.
+> 
+>> 
+>> Regards, Paul.
+>> 
+>> 
+>> 
+> 
+> 
 
 
