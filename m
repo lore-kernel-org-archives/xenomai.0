@@ -1,12 +1,10 @@
-Message-ID: <434E6E18.8000603@domain.hid>
-Date: Thu, 13 Oct 2005 16:24:24 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <434E6F00.9090805@domain.hid>
+Date: Thu, 13 Oct 2005 10:28:16 -0400
+From: Sean McGranaghan <smm@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] A couple of questions
-References: <18969.193.52.24.125.1129211788.squirrel@domain.hid>
-In-Reply-To: <18969.193.52.24.125.1129211788.squirrel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Best way to port device driver to RTAI/fusion
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,81 +14,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
-Cc: xenomai@xenomai.org, Alexis Berlemont <alexis.berlemont@domain.hid>
+To: xenomai@xenomai.org
 
-smannori@domain.hid wrote:
-> Hi everybody:
-> 
-> I think that this fork is a very good opportunity to "start with the
-> right foot". I believe also that a document like
+Hello all,
 
-Well, technically it's a split, not a fork; i.e. you don't fork your own code 
-out of yourself. The RTAI 3.x and RTAI/fusion codebases have always been 
-separate, basically because they can't mix properly at core level and pursue 
-different goals. Hence the split.
+My name is Sean McGranaghan, I am a software engineer working in 
+Rochester, NY. USA. I have recently been tasked with porting a standard 
+Linux driver to the RTAI/fusion environment. I have RTAI/fusion 0.8.3 up 
+and running with a 2.6.13 kernel. I have a couple general questions, 
+followed by my specific problem. I apologize for the length of this post 
+in advance, this is my first foray into RTAI/fusion. Please direct this 
+message as appropriate.
 
-> 
-> https://mail.rtai.org/pipermail/rtai/2005-June/011949.html
-> 
-> but with Fusion/Xenomai it would be a very good starting point for a
-> relatively inexperienced user. What I do until now:
-> - I dowloaded, adeos-patched, configured & compiled kernel 2.6.13.4
-> - I downloaded, configured, installed fusion 0.9.1
-> - I run sucessfull all the [testsuite] examples
-> - I dowloaded all the pdf(s)
-> 
-> Now the questions:
-> 1) it is important dowload and install fusion OR xenomai ?
+When a realtime RTAI native or LXRT task performs io using a vanilla 
+Linux driver, does it retain its realtime scheduling priority via the 
+nucleaus scheduler or is the task demoted to the non-realtime domain 
+i.e. the Linux scheduler? Assume the vanilla Linux driver uses 
+wake_up_interruptible() to wake Linux tasks.
 
-Xenomai. RTAI/fusion is dead; all fusion contributors moved to Xenomai.
+Is there a standard approach to making a driver "realtime"? I would 
+assume replacing the interrupt handling, synchronization and task 
+scheduling calls with RTAI/fusion equivalents would be the approach to 
+take. How does this affect the file operations interface in Linux? 
+(open(), close(), read(), write(), ioctl() etc.) Is this driver still 
+usable by non-realtime Linux tasks?
 
-> 2)  why the xenomai files are so old (2002) ?
+My specific problem is to make an existing Linux driver "realtime". 
+(Vague requirement I know.) The driver is for an ISA CAN bus card. The 
+card contains two CAN controllers using two irqs. My first step was to 
+try and get the irq handling under nucleus control. I replaced 
+request_irq() and related Linux irq calls with rt_intr_create() and 
+such. I was then going to look at replacing the Linux 
+spin_lock_irqsave()/spin_unlock_irqrestore() and wake_interruptble() 
+calls if needed. I am currently having problems with the first step.
 
-Which ones? Those under the attic/ directory? Well, because Xenomai has been 
-founded in 2001, and what you see there are the versions released up to 1.1.1, 
-before the project had decided to merge with RTAI in 2003, in order to  produce 
-a pervasive and highly integrated real-time framework for the GNU/Linux 
-environment, based on the initial Xenomai codebase.
+I test the driver with a loopback cable between the two channels. In the 
+pure Linux driver I send and receive datagrams with no problem. I 
+receive a transmit complete interrupt immediatly followed by a message 
+received interrupt for each datagram sent. When I replace the interrupt 
+handling with RTAI/fusion calls I seem to be missing the receive 
+interrupt. I have looked at the CAN controller register contents and 
+they are consistant between the vanilla driver and realtime driver. I am 
+currently trying to look at the 8259 PIC controller register contents to 
+see how the interrupt handling differs. I suspect that the mixing of 
+nucleaus interrupt handling and Linux spin locks (irq save/restore) is 
+fouling up the PIC, but I can't prove this yet. Is there any benefit to 
+moving the interrupt handling to the realtime domain?
 
-What we have done is basically a retro-merge, getting back our independence so 
-that we can continue the development effort in a more consistent manner. The 
-next version based on the latest CVS tree from RTAI/fusion 0.9.1 with additional 
-updates will then be 2.0. For the time being, only our development tree 
-(http://gna.org/svn/?group=xenomai) is available since there has been no formal 
-release of "Xenomai reloaded" yet.
+Any help is greatly appreciated.
 
-> 3) I think that a very important PDF file - already present in the past
-> in www.rtai.org - is missed: the Fusion tutorial with examples.
+Thanks,
+Sean McGranaghan
 
-They have been restored there.
-http://download.gna.org/xenomai/documentation/
 
-They will be referenced by our new website as soon as it is available.
-
-> 4) where I can find some Fusion/Xenomai examples, complete of instruction
-> to compile and link to create standalone applications ?
-
-Look at the demos/ directories under the various skins. Some of the PDF 
-documents available from the URL above give more.
-
-> 5) how is it possible to use Comedi driver ?
-
-Alex did a port of Comedi over RTAI/fusion. It will need to be rejuvenated over 
-Xenomai.
-
-> 6) how port xrtailab under Xenomai/Fusion ?
-
-Don't know. But if you do know xrtailab enough, you should have more clues than 
-I do regarding the port though.
-
-> 7) it is possible use USB device (eg. camera) realtime ?
-> 
-
-AFAIK, a generic effort has been started:
-http://developer.berlios.de/projects/usb4rt
-
--- 
-
-Philippe.
 
