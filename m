@@ -1,10 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <434DEDDD.4020607@domain.hid>
+Date: Thu, 13 Oct 2005 08:17:17 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Bug tracker.
+References: <17229.31343.98877.781567@domain.hid>
+In-Reply-To: <17229.31343.98877.781567@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17229.31343.98877.781567@domain.hid>
-Date: Wed, 12 Oct 2005 23:04:47 +0200
-Subject: [Xenomai-core] Bug tracker.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,31 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
+Gilles Chanteperdrix kirjoitti:
+> Hi,
+> 
+> GNA offers a bug tracking system which is undoubtely a useful tool
+> for lots of projects. What about using it for the Xenomai project ?
 
-Hi,
+I'm not stronly opposing, but in my opinion it causes information to 
+scatter in contrast to the ml. There'll be bug reports on the ml 
+regardless of having or not having a bug tracking system in function. 
+It's more difficult to follow/search two places than one. And this 
+project isn't the size of openoffice or debian, so maybe the ml doesn't 
+get cluttered by incoming bug reports. And finally, many bug reports 
+already contain a reasonable fix and their tracking summarizes to 
+"Applied." There are benefits, too, of course, like forcing a good 
+format for a report.
 
-GNA offers a bug tracking system which is undoubtely a useful tool
-for lots of projects. What about using it for the Xenomai project ?
-
-The bug submission form is here:
-https://gna.org/bugs/?func=additem&group=xenomai
-
-I just had a look at its configuration, here is how it could be
-configured if we agreed on using it :
-- add a little explanation in place of the "0", reminding people to use
-  mailing list/archives before posting a bug and what details are needed
-  for a bug report (exact release or revision, kernel
-  configuration file, xenomai configuration, small test case, kernel
-  crash dump when appliable, etc...)
-- add the fields which seem to be missing ; so far, only the software
-  revision and component (nucleus, native skin, posix skin, etc...).
-
-Suggestions and comments welcome.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+-- Heikki Lindholm
 
