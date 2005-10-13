@@ -1,13 +1,13 @@
-Message-ID: <434E622D.801@domain.hid>
-Date: Thu, 13 Oct 2005 15:33:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <434E6566.6040108@domain.hid>
+Date: Thu, 13 Oct 2005 15:47:18 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Future of fusion
-References: <000d01c5cfcb$8b5dfaf0$0600a8c0@domain.hid>	<434E19AD.4030500@domain.hid>
-	<200510131146.04013.bdi-emc@domain.hid>
-In-Reply-To: <200510131146.04013.bdi-emc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] A couple of questions
+References: <30382.193.52.24.125.1129207775.squirrel@domain.hid>
+In-Reply-To: <30382.193.52.24.125.1129207775.squirrel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBEEC2FB230D10CB5A05C2191"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,116 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <bdi-emc@domain.hid>
-Cc: xenomai@xenomai.org
+To: smannori <smannori@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Paul wrote:
-> Hi Philippe
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBEEC2FB230D10CB5A05C2191
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+smannori wrote:
+> Hi everybody:
 > 
-> On Thursday 13 October 2005 09:24, Philippe Gerum wrote:
+> I think that this fork is a very good opportunity to "start with the right
+> foot". I believe also that a document like
 > 
->>- Regular automated benchmarking: What is Xenomai currently capable of, how
->>stable is it, do we progress or regress over time and releases, arch by
->>arch?
+> https://mail.rtai.org/pipermail/rtai/2005-June/011949.html
 > 
+> but with Fusion/Xenomai it would be a very good starting point for a
+> relatively inexperienced user. What I do until now:
+> - I dowloaded, adeos-patched, configured & compiled kernel 2.6.13.4 - I
+> downloaded, configured, installed fusion 0.9.1
+> - I run sucessfull all the [testsuite] examples
+> - I dowloaded all the pdf
 > 
-> Have a couple of x86 development boxes running 24/7 - Could set one up as a 
-> compile farm for running automated builds.
+> Now the questions:
 
-That would be great, thanks. Let us know if we could help.
+Sorry to defer your questions at this point, but we are trying to
+establish some separation between this list (xenomai-core) and the
+prefered support list (xenomai-help). People subscribed here (me
+included) will be happy to help you if you re-post your question on
+xenomai-help.
 
-  Also have a PowerPC thin client
-> that I would like to utilise, but could really do with some help in setting 
-> up the tools for cross-compiling the base system under Debian.
+The reason for the separation is that plans exist to collect
+questions&answers on xenomai-help and make them available as a FAQ. This
+is much easier if the list does not contain a mix of core design and
+implementation topics together with the relevant user questions.
 
-What about DENX's ELDK?
-
+> 1) it is important dowload and install fusion OR xenomai ?
+> 2) why the xenomai files are so old (2002) ?
+> 3) I think that a very important PDF file - already present in the past in
+> www.rtai.org - is missed: the Fusion tutorial with examples.
+> 4) where I can find some Fusion/Xenomai examples, complete of instruction to
+> compile and link to create standalone applications ?
+> 5) how is it possible to use Comedi driver ?
+> 6) how port xrtailab under Xenomai/Fusion ?
+> 7) it is possible use USB device (eg. camera) realtime ?
 > 
+> Thanks in advance for your help
 > 
->>- Configuration, building and packaging issues: Could we make this easier?
-> 
-> 
-> Anything that involves patching/compiling kernels is bound to cause trouble 
-> for new users. Perhaps some tests for kernel options known to cause trouble 
-> (such as APM & REGPARM) that print out large warnings during the config stage 
-> might help..
-> 
-
-Ok, I have something rather highly ranked on my TODO list (which ends up by 2117 
-or so), which is about allowing to build all Xenomai's in-kernel support 
-statically in the Linux kernel. The rationale behind that is about making more 
-straightforward and efficient embedded setups; straightforward because modules 
-add more complexity than they would solve in typical embedded systems, and 
-efficient since loading modules in a running kernel doesn't come for free.
-
-To do that, portions of the Xeno build system which are currently 
-autoconfiscated should move to the target kernel, so that we would only keep the 
-autoconf infrastructure for what it's good at, i.e. building the user-space 
-support. The basic idea is that we would then have a kernel extension part 
-either buildable statically or as modules using Linux's Kconfig/Kbuild 
-infrastructure, and a user-space support package providing the various interface 
-libraries, headers, tools and scripts, ala glibc.
-
-The immediate advantages would be:
-
-- The core of the Xenomai support would be statically embeddable in the Linux 
-kernel;
-- No need for a Kconfig duplication like we have now; most of the options 
-currently presented by Xeno's Kconfig sub-system concern the kernel portions, 
-and very few actually concern the user-space stuff. We would then get rid of the 
-former, and rely on the vanilla Linux's one instead.
-- Centralizing Xenomai's kernel-related options with Linux's ones would make 
-easier defining sanity checks (e.g. APM stuff and so on), since we could use the 
-Kconfig language to enforce them in order to obtain sane configurations "by 
-construction" (e.g. CONFIG_XENO disables CONFIG_APM). Currently, Xeno's Kconfig 
-is not aware of the kernel settings, so the checks are performed afterwise by 
-the configure script instead.
-- Removing the module compilation logic from the autoconfiscated Makefiles would 
-be a significant simplification of the Xeno build system, and would make it less 
-dependent on the kernel build system.
-- This build process is still fully automatable.
-- LKML people among my co-workers (Hi Stelian!) would start talking to me again, 
-since I would stop pretending that autoconf is a sane way of controlling builds 
-for kernel-based code. :o>
-
-The way I see a typical build process would then be along these lines:
-
-$ tar jxf xenomai-*
-$ mkdir xeno-build && cd xeno-build && ../xenomai-*/configure 
---kernel=/usr/src/linux --some-option-only-for-uspace-stuff --prefix=<install-dir>
-....
-(the configure script would then prepare the autoconf _and_ make the necessary 
-links from the target kernel to the Xenomai source tree to connect the modules 
-to the kernel's Kbuild/Kconfig infrastructure.
-....
-$ cd /usr/src/linux
-$ make gconfig
-....
-The user would configure his kernel, and all the kernel-based Xenomai stuff, as 
-if they were standard drivers/extensions
-....
-$ make <the_kernel>
-$ cd xeno-build && make install
-
-And we would be done. Well, in a perfect world, I mean.
-
-> Gilles already has a tarball of the Debian rules I used for packaging fusion. 
-> With minor changes, these could be used for a Xenomai package. One 
-> possibility is to use the rules and the compile farm to produce "ready to 
-> run" kernel/Xenomai Debian packages.
->
-
-I think we should be able to work this out will Gilles before 2.0 is out since 
-it's a separate build-related issue.
-
-> 
-> Regards, Paul.
-> 
-> 
+>                                Simone Mannori
 > 
 
+TIA for your cooperation,
 
--- 
+Jan
 
-Philippe.
+--------------enigBEEC2FB230D10CB5A05C2191
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDTmVmncNeS9Q0k+IRAu+FAJ43YbmQoaNzCATqgg8CY89cxqUdMACcCvrH
+1DTBlTZU/QJ8kXQjCWszTn8=
+=CiNy
+-----END PGP SIGNATURE-----
+
+--------------enigBEEC2FB230D10CB5A05C2191--
 
