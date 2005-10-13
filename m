@@ -1,13 +1,12 @@
-Message-ID: <434E0C91.1050607@domain.hid>
-Date: Thu, 13 Oct 2005 10:28:17 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <000d01c5cfcb$8b5dfaf0$0600a8c0@domain.hid>
+From: "Marco Cavallini" <rtai@domain.hid>
+Date: Thu, 13 Oct 2005 09:55:53 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Bug tracker.
-References: <17229.31343.98877.781567@domain.hid>	<434DEDDD.4020607@domain.hid>	<17229.64735.691164.146992@domain.hid>	<434E003E.4020604@domain.hid>
-	<17230.2176.893187.59758@domain.hid>
-In-Reply-To: <17230.2176.893187.59758@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; format=flowed; charset="Windows-1252";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Future of fusion
+Reply-To: Marco Cavallini <rtai@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,31 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix kirjoitti:
-> Heikki Lindholm wrote:
->  > There's the "if". What I've seen on sourceforge is that often times bugs 
->  > that are reported on the ml don't appear in the tracker and vice versa, 
->  > although the tracker can probably be configured to forward reports to 
->  > ml, or? Who will type the ml-only reports to the tracker? Btw. would you 
->  > only allow developers to file bugs into the tracker?
-> 
-> I would use it as a one line answer to bug reports on the mailing
-> list... I would prefer users to always post on the mailing list first,
-> and if it looks like a real bug, a developer would ask the user to fill
-> a bug report.
+Hello,
+I'd like to know (if is possible) the future plans and task schedule of 
+fusion into xenomai project.
+TIA
 
-That might work. As a case study of something to avoid: I know at least 
-three persistent bugs in the firefox browser I'm using and I thought 
-about reporting them, ending up in 
-http://www.mozilla.org/support/firefox/bugs
-which in turn leads to many worksome steps and eventually to
-http://www.mozilla.org/quality/bug-writing-guidelines.html
-Blech! It seems easier to write a firefox from ground up than giving 
-them a bug report --- and thus my observations stay unreported. Moral of 
-the story: keep it simple!
+Marco Cavallini
+=====================================================
+Koan s.a.s. - Software Engineering
+Linux and WinCE solutions for Embedded and Real-Time Software
+Klinux : the embedded distribution for industrial applications
+  - Atmel AT91 ARM Third Party Consultant
+  - Intel PCA Developer Network Member
+  - Microsoft Windows Embedded Partner
+Via Pascoli, 3  - 24121 Bergamo - ITALIA
+Tel. (++39) 035-255.235 - Fax (++39) 178-223.9748
+http://www.koansoftware.com  -  http://www.klinux.org
+===================================================== 
 
--- Heikki Lindholm
 
