@@ -1,12 +1,10 @@
-Message-ID: <434FF597.8060804@domain.hid>
-Date: Fri, 14 Oct 2005 20:14:47 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <39706.193.52.24.125.1129317549.squirrel@domain.hid>
+Date: Fri, 14 Oct 2005 21:19:09 +0200 (CEST)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai -> PPC
-References: <22826.193.52.24.125.1129297430.squirrel@domain.hid>
-In-Reply-To: <22826.193.52.24.125.1129297430.squirrel@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Xenomai -> PPC (II)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,49 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/14/2005 03:43 PM smannori@domain.hid wrote:
-> Hi:
-> 
-> waiting some hints on x86 machine, I'm playing with may PowerBook 1.67 GHz.
-> The 80GB is split equally bettewen MacOS X and Mandrake (Mandriva PPC 10.2).
+Hi:
 
-I had good experience in the past with Yellowdog Linux and a while ago I
-successfully tested RTAI/Fusion on my iBook2 with 2.6.10.
+tanks to everybody for the suggestions. Good ideas BUT no cigar yet.
 
->>From xenomai/arc/ppc/patches and www.adeos.org I see that le latest kernel
-> supported is the 2.6.10. Relase that I like BUT, unfortunately, there is NOT
-> support for PowerBook audio and network. I tried anyway to install xenomai.
-> The usal phase are OK but the /testsuite/latency/run is not stable: it kill
-> itself after few second.
-> 
-> Maybe there is some residual bug inside the ADEOS patch ?
+Now I'm compiling a minimal 2.6.10 kernel, but I think that there is
+something more profund. Yellodog works erratically on my PowerBook (works
+great on my previos iBook). The best distro for PPC is - my opinion -
+Ubuntu, BUT I cannot use here (Cite' Universitaire de Paris - France )
+because I'm a a bastard network with a bastard proxi and a VERY bastard
+sys-admin that close ALL the very useful port: apt and synaptiptic simply
+does not works at all.
 
-Did you disable power management?
+Also Fedora Core 4 is impossible to install because don't like the Powebook
+video (ati 9600) card and display.
 
-> It wuold be a great news if someone will produce a patch for the latest
-> 2.6.13, which support all the PowerBook peripherial.
-> 
-> At this momenent there is no realtime support for PowerBook using 2.6.x
-> kernel, and I don't know if the latest Mandriva can run with 2.4 kernel or
-> if an adeos-patched 2.4.x is able to run Xenomai.
-> 
-> All my previous effort to install RTAI 3.2 with kernel 2.6 was completely
-> unsuccessfull.
-> 
-> Thanks in advance for your help
-> 
->                                             Simone
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
+I'm using Mandriva 2005 10.2 because is the "official" distribution where I
+work (INRIA) and is quite complete and up-to-date.
+
+The installation is strightforward: the only problems are the partitioning
+of the HD and dual boot configuration.
+
+Any suggestion is very welcome.
+
+Simone
+
+
+
+
 
 
