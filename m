@@ -1,10 +1,10 @@
-Message-ID: <39706.193.52.24.125.1129317549.squirrel@domain.hid>
-Date: Fri, 14 Oct 2005 21:19:09 +0200 (CEST)
+Message-ID: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
+Date: Fri, 14 Oct 2005 21:33:10 +0200 (CEST)
 From: <smannori@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Xenomai -> PPC (II)
+Subject: [Xenomai-help] Xenomai -> PPC (III): Total Failure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,29 +18,22 @@ To: xenomai@xenomai.org
 
 Hi:
 
-tanks to everybody for the suggestions. Good ideas BUT no cigar yet.
+result: total failure. I think that could be the x.org X11 driver
 
-Now I'm compiling a minimal 2.6.10 kernel, but I think that there is
-something more profund. Yellodog works erratically on my PowerBook (works
-great on my previos iBook). The best distro for PPC is - my opinion -
-Ubuntu, BUT I cannot use here (Cite' Universitaire de Paris - France )
-because I'm a a bastard network with a bastard proxi and a VERY bastard
-sys-admin that close ALL the very useful port: apt and synaptiptic simply
-does not works at all.
+    BoardName "ATI Radeon (fglrx)"
+    Driver "radeon"
 
-Also Fedora Core 4 is impossible to install because don't like the Powebook
-video (ati 9600) card and display.
+that cause so many problems.
 
-I'm using Mandriva 2005 10.2 because is the "official" distribution where I
-work (INRIA) and is quite complete and up-to-date.
+Someone could suggest any alternative explanations ?
 
-The installation is strightforward: the only problems are the partitioning
-of the HD and dual boot configuration.
+My every attempt to install Fusion/RTAI or Xenomai on this machine was a
+disaster. I think that Powerbook and iBook are different beast.
 
-Any suggestion is very welcome.
+Beside that, standard Linux works great on this machine, expecially if you
+use a recent kernel (2.6.11 or better).
 
-Simone
-
+       Simone
 
 
 
