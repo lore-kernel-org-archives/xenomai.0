@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <43500B0D.1030405@domain.hid>
+Date: Fri, 14 Oct 2005 21:46:21 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Xenomai -> PPC (III): Total Failure
+References: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
+In-Reply-To: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17232.2752.731603.9598@domain.hid>
-Date: Fri, 14 Oct 2005 21:45:04 +0200
-Subject: Re: [Xenomai-help] Xenomai -> PPC (III): Total Failure
-In-Reply-To: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
-References: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,41 +19,32 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: smannori@domain.hid
 Cc: xenomai@xenomai.org
 
-smannori@domain.hid wrote:
- > Hi:
- > 
- > result: total failure. I think that could be the x.org X11 driver
- > 
- >     BoardName "ATI Radeon (fglrx)"
- >     Driver "radeon"
- > 
- > that cause so many problems.
- > 
- > Someone could suggest any alternative explanations ?
- > 
- > My every attempt to install Fusion/RTAI or Xenomai on this machine was a
- > disaster. I think that Powerbook and iBook are different beast.
+On 10/14/2005 09:33 PM smannori@domain.hid wrote:
+> Hi:
+> 
+> result: total failure. I think that could be the x.org X11 driver
+> 
+>     BoardName "ATI Radeon (fglrx)"
+>     Driver "radeon"
+> 
+> that cause so many problems.
 
-If you do not give us any more precise description of the symptoms you
-observe, I am afraid no one wil be able to help you.
+It's not clear to me what you are speaking about. What failed?
 
-As usual; do it step by step :
-- try and get an adeos patched kernel running in text only mode on your
-  box, with as few options as possible enabled ;
--  try and install Xenomai in text-only mode so that if there is a
-   crash, you will at least be able to send us a kernel stack trace. 
-- if this work, try running X-windows. Then, if it crashes, you will
-  know that it is because of X. In such a case, to get a crash dump,
-  enable console on serial port or netconsole. Of course, you will need
-  a second box.
+> Someone could suggest any alternative explanations ?
+> 
+> My every attempt to install Fusion/RTAI or Xenomai on this machine was a
+> disaster. I think that Powerbook and iBook are different beast.
+> 
+> Beside that, standard Linux works great on this machine, expecially if you
+> use a recent kernel (2.6.11 or better).
 
-Also note that :
-- you can not run graphic driver kernel module without recompiling them
-  for the adeos patched kernel ;
-- you probably do not need open GL support for running Xenomai.
+If you have a rather recent Linux 2.6 version running on your system,
+just use it. The distro does not really matter. Then download a recent
+kernel version from kernel.org and try to get it compiled and running on
+your box. Use the .config file from the kernel comming with the
+distribution. Don't forget to disable power management. Then wait until
+an up-to-date iPIPE patch get's available.
 
--- 
-
-
-					    Gilles Chanteperdrix.
+Wolfgang.
 
