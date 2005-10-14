@@ -1,12 +1,14 @@
-Message-ID: <4356459C.30306@domain.hid>
-Date: Wed, 19 Oct 2005 15:09:48 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <434FC9CA.6030807@domain.hid>
+Date: Fri, 14 Oct 2005 17:07:54 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
-References: <1CFEB358338412458B21FAA0D78FE86D4F0E31@domain.hid>
-In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D4F0E31@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Fixes for serial driver
+References: <434FC080.3000900@domain.hid>
+	<434FC80F.6070907@domain.hid>
+In-Reply-To: <434FC80F.6070907@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF2ED7A88AFF8D350208BA37E"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,70 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Fillod Stephane wrote:
-> Philippe Gerum wrote:
-> [..]
-> 
-> http://download.gna.org/adeos/patches/v2.6/adeos/ppc/adeos-ipipe-2.6.13-
-> ppc-1.0-02.patch
-> 
-> Here is the result of tests with version 1.0-02 on e500:
-> 
-> load: ~1 minute ping -f, one run of calibrator chewing 64MiB.
-> 
-> $ cat /proc/ipipe/version
-> 1.0-02
-> 
-> SWITCH without load:
-> RTH|     lat min|     lat avg|     lat max|        lost
-> RTD|        3660|        3690|        8070|           0    1.0-00
-> RTD|        4620|        4740|        8730|           0    1.0-01
-> RTD|        4620|        4740|        8190|           0    1.0-02
-> 
-> KLATENCY with load:
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-> RTS|       -7350|       -5715|        6420|       0|    00:03:17 1.0-00
-> RTS|       -6150|       -4384|       12180|       0|    00:03:13 1.0-01
-> RTS|       -6150|       -4183|       12480|       0|    00:03:38 1.0-02
-> 
-> LATENCY with load:
-> == Sampling period: 100 us
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-> RTS|       -6930|       -4260|        8700|       0|    00:08:06 1.0-00
-> RTS|       -5670|       -4620|       12930|       0|    00:12:39 1.0-01
-> RTS|       -5700|       -3750|       11280|       0|    00:06:05 1.0-02
-> 
-> It looks like the char vs. long in the 1.0-0[12] patch was not the
-> culprit,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF2ED7A88AFF8D350208BA37E
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-The last significant change between -00 and -01 is actually the one related to 
-the fork pressure (others are cosmetic ones aimed at better sharing stuff with 
-the blackfin port). The patch below against -02 removes it.
-
---- 2.6.13/arch/ppc/kernel/entry.S~	2005-10-18 18:42:09.000000000 +0200
-+++ 2.6.13/arch/ppc/kernel/entry.S	2005-10-19 15:07:54.000000000 +0200
-@@ -316,10 +316,8 @@
-
-  	.globl	ret_from_fork
-  ret_from_fork:
--	STALL_ROOT_COND
-  	REST_NVGPRS(r1)
-  	bl	schedule_tail
--	UNSTALL_ROOT_COND
-  	li	r3,0
-  	b	ret_from_syscall
-
-> at least not on e500. I'll do the bench again on 1.0-00. Man, if only we
-> had that automated benchmark suite...
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+> 
+>> Hi,
+>>
+>> attached are two minor fixes for the serial driver and header: one is
+>> cosmetic, the other addresses out-of-memory detection.
+>>
+>> Credits go, as usual, to Sebastian. ;)
+>>
+> 
+> Applied, thanks.
 > 
 
-Indeed... The positive thing being that, we now have the ultimate proof of its 
-usefulness :o>
+Except for the highly critical, showstopping rtserial.h patch?! ;)
 
--- 
+Jan
 
-Philippe.
+--------------enigF2ED7A88AFF8D350208BA37E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDT8nKncNeS9Q0k+IRAsouAKCdbKF+itTtVP+VjIqieFXzFiTQugCgkEAg
+Ppt/SCM88BzG1AUUupecEpU=
+=J5n8
+-----END PGP SIGNATURE-----
+
+--------------enigF2ED7A88AFF8D350208BA37E--
 
