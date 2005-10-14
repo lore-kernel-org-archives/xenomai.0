@@ -1,10 +1,13 @@
-Message-ID: <1436.10.2.100.4.1129898928.squirrel@domain.hid>
-Date: Fri, 21 Oct 2005 14:48:48 +0200 (CEST)
-From: "Germain Olivier" <germain.olivier@domain.hid>
+Message-ID: <434F4D71.8070000@domain.hid>
+Date: Fri, 14 Oct 2005 09:17:21 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-core] EDF or RM scheduler for Xenomai
+Subject: Re: [Xenomai-core] Bug tracker.
+References: <17229.31343.98877.781567@domain.hid>	<434DEDDD.4020607@domain.hid>	<17229.64735.691164.146992@domain.hid>	<434E003E.4020604@domain.hid>	<17230.2176.893187.59758@domain.hid>	<434E0C91.1050607@domain.hid>
+	<17230.60977.476892.10184@domain.hid>
+In-Reply-To: <17230.60977.476892.10184@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,65 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-At the beginning of October I've posted on the RTAI mailing list a
-question about the development of additional scheduler for RTAI/Fusion.
+Gilles Chanteperdrix kirjoitti:
+> Heikki Lindholm wrote:
+>  > Gilles Chanteperdrix kirjoitti:
+>  > > Heikki Lindholm wrote:
+>  > >  > There's the "if". What I've seen on sourceforge is that often times bugs 
+>  > >  > that are reported on the ml don't appear in the tracker and vice versa, 
+>  > >  > although the tracker can probably be configured to forward reports to 
+>  > >  > ml, or? Who will type the ml-only reports to the tracker? Btw. would you 
+>  > >  > only allow developers to file bugs into the tracker?
+>  > > 
+>  > > I would use it as a one line answer to bug reports on the mailing
+>  > > list... I would prefer users to always post on the mailing list first,
+>  > > and if it looks like a real bug, a developer would ask the user to fill
+>  > > a bug report.
+>  > 
+>  > That might work. As a case study of something to avoid: I know at least 
+> 
+> Ok. Have a look and tell me:
+> 
+> https://gna.org/bugs/?func=additem&group=xenomai
 
-About the pluggable scheduler infrastructure, can you give more details on
-what you expect ?
+Btw. Do you think the Task/Patch/Tech Support Managers are worth using? 
+If not, can the unused(/-ful) ones be disabled from the site?
 
-Also I'm searching in which files the priority inheritance mechanism code
-is implemented.
-
-Thanks
-
-Germain
-
-> 100% agreed. The key issue is having the pluggable scheduler
-> infrastructure
-> which fusion currently lacks. After that, other scheduling policies than
-> fixed-priority FIFO could be mapped cleanly and easily on top of it.
-
-
-> Jan Kiszka wrote:
->> Germain wrote:
->>
->>>According to refactoring.txt from Fusion doc directory, Rate Monotonic
->>> and
->>>EDF are not supported in Fusion.
->>>I'm in my last year of CS engineering school with a major in Emmbedded
->>>Systems. One of the subject of my final year project is to write a
->>>scheduler (Rate Monotonic, Earliest Deadline First or Least Laxity
->>> First).
->>>So I want to know what kind of knowledges is required to put the hand in
->>>RTAI and develop a such thing. We are two and we have to finish for
->>> early
->>>february. We have skills in C, real time theory and developpment (with
->>>Java), and system programming.
->>>
->>
->>
->> This would best be answered by the nucleus maintainer, who seems to be
->> offline ATM.
->   Philippe already acknowledged the usefulness of a more
->> flexible scheduling subsystem which, e.g., allows to select a different
->> policy during compile time or even later. What is certainly required for
->> this is a clean framework that keeps the compatibility with the upper
->> (skins) and lower layers (hal) - as far as possible.
->>
->> Again, this is something to discuss best with Philippe directly. I guess
->> he will jump into this thread when time permits. In my eyes, your work
->> would be very welcome.
->>
->
-> 100% agreed. The key issue is having the pluggable scheduler
-> infrastructure
-> which fusion currently lacks. After that, other scheduling policies than
-> fixed-priority FIFO could be mapped cleanly and easily on top of it.
->
-> Hint: scheduling issues are all sorted out inside nucleus/pod.c;
-> nucleus/synch.c
-> should be also studied in order to find out the relashionships that exist
-> between base synchronization object management and scheduling deci
+-- Heikki Lindholm
 
