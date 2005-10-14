@@ -1,10 +1,10 @@
-Message-ID: <1534.193.52.24.125.1129275849.squirrel@domain.hid>
-Date: Fri, 14 Oct 2005 09:44:09 +0200 (CEST)
+Message-ID: <22826.193.52.24.125.1129297430.squirrel@domain.hid>
+Date: Fri, 14 Oct 2005 15:43:50 +0200 (CEST)
 From: <smannori@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Xenomai + Comedi + USB-DUX
+Subject: [Xenomai-help] Xenomai -> PPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,175 +18,30 @@ To: xenomai@xenomai.org
 
 Hi:
 
-I just written a litte demo/test program using Xenomai, Comedi and USB-DUX.
+waiting some hints on x86 machine, I'm playing with may PowerBook 1.67 GHz.
+The 80GB is split equally bettewen MacOS X and Mandrake (Mandriva PPC 10.2).
 
-Comedi it is not supported yet inside Xenomai nor the USB is yet usable in
-hard realtime mode. My bet (and hope) is that the trasparent xenomai
-handling of of standard Linux syscall, the low latency of a brand new
-2.6.13.4 kernel and the well written USB-DUX driver from Bernd Porr will
-work.
-They work, more or less.
+>From xenomai/arc/ppc/patches and www.adeos.org I see that le latest kernel
+supported is the 2.6.10. Relase that I like BUT, unfortunately, there is NOT
+support for PowerBook audio and network. I tried anyway to install xenomai.
+The usal phase are OK but the /testsuite/latency/run is not stable: it kill
+itself after few second.
 
-//** October 14th 2005
-//** My  Xenomai application with Comedi Output
+Maybe there is some residual bug inside the ADEOS patch ?
 
-//** Print a dot every 100 ms e.g. 10 dot/s an output to all 8 USB-DUX leds
+It wuold be a great news if someone will produce a patch for the latest
+2.6.13, which support all the PowerBook peripherial.
 
-#include <sys/mman.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-#include <getopt.h>
-#include <time.h>
-#include <native/task.h>
-#include <native/timer.h>
-#include <native/sem.h>
+At this momenent there is no realtime support for PowerBook using 2.6.x
+kernel, and I don't know if the latest Mandriva can run with 2.4 kernel or
+if an adeos-patched 2.4.x is able to run Xenomai.
 
-#include <comedilib.h>
+All my previous effort to install RTAI 3.2 with kernel 2.6 was completely
+unsuccessfull.
 
-#define TASK_PRIO 99    /* Highest RT priority */
-#define TASK_MODE 0     /* No flags */
-#define TASK_STKSZ 0    /* Stack size (use default one) */
-#define TASK_PERIOD 10000000 /*  period: time expressed in nanosecond*/
+Thanks in advance for your help
 
-RT_TASK task_desc; // descrittore
-
-void sampling_task (void *cookie)
-{
-   int err, bitmask;    // Local variable
-   int counter = 0 ;
-
-   // subdevice 2:
-   //  type: 5 (digital I/O)
-   //  number of channels: 8
-   //  max data value: 1
-   //  ranges:
-   //    all chans: [0,5]
-
-    unsigned int subdev = 2;    /* change this to your input subdevice */
-unsigned int chan = 0;      /* change this to your channel */
-    unsigned int range = 0; /* more on this later */
-    unsigned int aref = AREF_GROUND; /* more on this later */
-
-    comedi_t *it ;
-    lsampl_t data;
-
-    it = comedi_open("/dev/comedi0"); // get the handler
-
-    // configure the all the 8 bits as outputs
-    for (chan=0; chan <= 7 ; chan++)
-       {
-          err = comedi_dio_config(it, subdev, chan, COMEDI_OUTPUT);
-       }
-
-
-    for (chan=0 ; chan <= 7 ; chan++)
-	    { data = 0;
-              err = comedi_data_write(it, subdev, chan, range, aref, data);
-// clear led output
-            }
-
-
-   /* The task will undergo a 0.1 s  periodic timeline. */
-   err = rt_task_set_periodic(NULL,TM_NOW,TASK_PERIOD);
-
-   for (;;) // Run forever
-      {
-         err = rt_task_wait_period(); // wait (sleep) until time expired
-
-	 if (err)
-	   {
-             printf("Something goes wrong");
-	     break;
-	   }
-
-	 /* Work for the current period */
-
-	 if ( (counter % 100) == 0 )
-	        fprintf(stderr, ".") ; // print a dot every 100 x sampling time
-
-      // 8 bit output
-	 bitmask = 1 ;
-	 for (chan=0 ; chan <= 7 ; chan++)
-	    {
-	      data = counter & bitmask ;
-	      if (data > 0) data = 1;
-	      else          data = 0;
-
-	      err = comedi_data_write(it, subdev, chan, range, aref, data); // led
-output
-
-	      bitmask = bitmask<<1  ; // bitmask for the next bit
-            }
-
-	 counter = counter + 1 ; // counter for the next period
-      }
-}
-
-//** Main Routine
-
-int main (int argc, char *argv[])
-{
-    int err;
-
-    /* Disable paging for this program's memory. */
-    mlockall(MCL_CURRENT|MCL_FUTURE);
-
-    /* Start the timer in oneshot mode */
-    err = rt_timer_start(TM_ONESHOT);
-    if (err)
-      printf("I'm not able to start the oneshot timer \n");
-
-    /* Create a real-time task */
-    err =
-rt_task_create(&task_desc,"DotPrint",TASK_STKSZ,TASK_PRIO,TASK_MODE); if
-(!err)      {
-    /* If successfully created, start the task. */
-       rt_task_start(&task_desc,&sampling_task,NULL);
-       printf("Realtime Started... : \n ");
-      }
-
-  pause(); // Wait a CTRL-C to exit
-
-  return 0 ;
-}
-
-The main idea is to print on the 8 bit output port the binary value of the
-lower 8 bits of "counter" variable. It works but with some limitations:
-
-- any sampling time lower than "TASK_PERIOD 10000000" (10ms) is not
-reliable. Until 1ms the program start but after a while (less than 60s) stop
-itself. I think that Xenomai nucleus detect some missed deadline and stop
-the execution;
-
-- sampling time above 10m works with all 8 bit active and CPU 100% with
-heavvy multimedia load (Xine: Matrix Revolution) :). I'm using a little
-piezoeletric beeper connected to the bit 0: in this way is possible to hear
-the 50Hz square wave directly generated by the 100 Hz periodic interrupt.
-Also whith heavvy load the sound is steady with no detectable jitter or
-hole... BUT after a while (20 minutes) the program stops as in above case.
-
-All the builtin test works very well so I not cosidered the dmesg:
-
-Xenomai: Intel chipset found and SMI workaround not enabled,
-       you may encounter high interrupt latencies.
-
-May be I need to install the SMI workaround ?
-
-Any suggestions to improve the performances to push the sampling time to 1ms
-in a reliable way ?
-
-Anyway Xenomai and Comedi are GREAT project !
-
-Simone
-
-
-
-
+                                            Simone
 
 
 
