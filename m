@@ -1,10 +1,10 @@
-Message-ID: <40871.193.52.24.125.1129216395.squirrel@domain.hid>
-Date: Thu, 13 Oct 2005 17:13:15 +0200 (CEST)
+Message-ID: <1534.193.52.24.125.1129275849.squirrel@domain.hid>
+Date: Fri, 14 Oct 2005 09:44:09 +0200 (CEST)
 From: <smannori@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Recipe for dummies
+Subject: [Xenomai-help] Xenomai + Comedi + USB-DUX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +16,173 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi everybody !
+Hi:
 
-thanks at all the Xeno people for the fast and accurate answers. This is my
-"quick recipe for Dummies Like Me (TM)":
+I just written a litte demo/test program using Xenomai, Comedi and USB-DUX.
 
-- dowload a vaililla kernel from www.kernel.org (I used 2.6.13.4 with VERY
-good results);
+Comedi it is not supported yet inside Xenomai nor the USB is yet usable in
+hard realtime mode. My bet (and hope) is that the trasparent xenomai
+handling of of standard Linux syscall, the low latency of a brand new
+2.6.13.4 kernel and the well written USB-DUX driver from Bernd Porr will
+work.
+They work, more or less.
 
-- download latest SVN source tree using [svn] (Subversion) following the
-instruction and examples on the page
-https://gna.org/svn/?group=xenomai
-If you are unlucky people like me, eg. you live behind a bastard proxi,
-dowload the daily snapshot (look in bottom of the page) and unpack the file
+//** October 14th 2005
+//** My  Xenomai application with Comedi Output
 
-- unpack the kernel
+//** Print a dot every 100 ms e.g. 10 dot/s an output to all 8 USB-DUX leds
 
-- patch the kernel with the adeos patch
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+#include <getopt.h>
+#include <time.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/sem.h>
 
-- configure, compile and install the kernel
+#include <comedilib.h>
 
-- reboot the machine
+#define TASK_PRIO 99    /* Highest RT priority */
+#define TASK_MODE 0     /* No flags */
+#define TASK_STKSZ 0    /* Stack size (use default one) */
+#define TASK_PERIOD 10000000 /*  period: time expressed in nanosecond*/
 
-- configure, compile and install Xenomai
+RT_TASK task_desc; // descrittore
 
-- run the tests in [testsuite].
+void sampling_task (void *cookie)
+{
+   int err, bitmask;    // Local variable
+   int counter = 0 ;
 
-In this configuration everything looks good. I think that the only important
-missed step was the SNV or daily snapshot dowload of Xenomai.
-After this precisation, everything looks more clear, documentation included:
-there is NOT Fusion documentation because Fusion is "XenoAssimilated" TM :).
+   // subdevice 2:
+   //  type: 5 (digital I/O)
+   //  number of channels: 8
+   //  max data value: 1
+   //  ranges:
+   //    all chans: [0,5]
+
+    unsigned int subdev = 2;    /* change this to your input subdevice */
+unsigned int chan = 0;      /* change this to your channel */
+    unsigned int range = 0; /* more on this later */
+    unsigned int aref = AREF_GROUND; /* more on this later */
+
+    comedi_t *it ;
+    lsampl_t data;
+
+    it = comedi_open("/dev/comedi0"); // get the handler
+
+    // configure the all the 8 bits as outputs
+    for (chan=0; chan <= 7 ; chan++)
+       {
+          err = comedi_dio_config(it, subdev, chan, COMEDI_OUTPUT);
+       }
+
+
+    for (chan=0 ; chan <= 7 ; chan++)
+	    { data = 0;
+              err = comedi_data_write(it, subdev, chan, range, aref, data);
+// clear led output
+            }
+
+
+   /* The task will undergo a 0.1 s  periodic timeline. */
+   err = rt_task_set_periodic(NULL,TM_NOW,TASK_PERIOD);
+
+   for (;;) // Run forever
+      {
+         err = rt_task_wait_period(); // wait (sleep) until time expired
+
+	 if (err)
+	   {
+             printf("Something goes wrong");
+	     break;
+	   }
+
+	 /* Work for the current period */
+
+	 if ( (counter % 100) == 0 )
+	        fprintf(stderr, ".") ; // print a dot every 100 x sampling time
+
+      // 8 bit output
+	 bitmask = 1 ;
+	 for (chan=0 ; chan <= 7 ; chan++)
+	    {
+	      data = counter & bitmask ;
+	      if (data > 0) data = 1;
+	      else          data = 0;
+
+	      err = comedi_data_write(it, subdev, chan, range, aref, data); // led
+output
+
+	      bitmask = bitmask<<1  ; // bitmask for the next bit
+            }
+
+	 counter = counter + 1 ; // counter for the next period
+      }
+}
+
+//** Main Routine
+
+int main (int argc, char *argv[])
+{
+    int err;
+
+    /* Disable paging for this program's memory. */
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    /* Start the timer in oneshot mode */
+    err = rt_timer_start(TM_ONESHOT);
+    if (err)
+      printf("I'm not able to start the oneshot timer \n");
+
+    /* Create a real-time task */
+    err =
+rt_task_create(&task_desc,"DotPrint",TASK_STKSZ,TASK_PRIO,TASK_MODE); if
+(!err)      {
+    /* If successfully created, start the task. */
+       rt_task_start(&task_desc,&sampling_task,NULL);
+       printf("Realtime Started... : \n ");
+      }
+
+  pause(); // Wait a CTRL-C to exit
+
+  return 0 ;
+}
+
+The main idea is to print on the 8 bit output port the binary value of the
+lower 8 bits of "counter" variable. It works but with some limitations:
+
+- any sampling time lower than "TASK_PERIOD 10000000" (10ms) is not
+reliable. Until 1ms the program start but after a while (less than 60s) stop
+itself. I think that Xenomai nucleus detect some missed deadline and stop
+the execution;
+
+- sampling time above 10m works with all 8 bit active and CPU 100% with
+heavvy multimedia load (Xine: Matrix Revolution) :). I'm using a little
+piezoeletric beeper connected to the bit 0: in this way is possible to hear
+the 50Hz square wave directly generated by the 100 Hz periodic interrupt.
+Also whith heavvy load the sound is steady with no detectable jitter or
+hole... BUT after a while (20 minutes) the program stops as in above case.
+
+All the builtin test works very well so I not cosidered the dmesg:
+
+Xenomai: Intel chipset found and SMI workaround not enabled,
+       you may encounter high interrupt latencies.
+
+May be I need to install the SMI workaround ?
+
+Any suggestions to improve the performances to push the sampling time to 1ms
+in a reliable way ?
+
+Anyway Xenomai and Comedi are GREAT project !
 
 Simone
-
-
 
 
 
