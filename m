@@ -1,14 +1,10 @@
-Message-ID: <4357DF0F.3060806@domain.hid>
-Date: Thu, 20 Oct 2005 20:16:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <34086.193.52.24.125.1129373726.squirrel@domain.hid>
+Date: Sat, 15 Oct 2005 12:55:26 +0200 (CEST)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] timeout in native API calls (cond, sem, mutex,
-	etc).
-References: <4357C3E1.1040701@domain.hid> <4357C9F7.2060808@domain.hid>
-	<4357CF67.8080601@domain.hid>
-In-Reply-To: <4357CF67.8080601@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] XenoPPC :-> 2.6.13.4-ipipe :)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,136 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ignacio Garc=EDa P=E9rez wrote:
-> Jan Kiszka wrote:
->=20
->=20
->>Ignacio Garc=EDa P=E9rez wrote:
->>=20
->>
->>
->>>Hi,
->>>
->>>While porting my application, I noticed that all synchronization
->>>primitives locking calls take a relative timeout as a parameter, right=
-?
->>>
->>>Of course, I can get the current time, calculate the timeout interval =
-by
->>>substracting the current time from the desired timeout moment, and cal=
-l
->>>the function. But wouldn't something like this be possible?:
->>>
->>>Suppose I want to wait on a semaphore until t=3D1000, and now=3D900.
->>>
->>>1- I get current time (900).
->>>2- I calculate the relative timeout as 1000-900 =3D 100
->>>3- I call rt_sem_p(&mysem, 100);
->>>
->>>In the best case, no preemption will occur between steps 1 and 3, but =
-my
->>>thread will still be sleeping not until t=3D1000, but until some time
->>>later, t=3D1000+d, where d is the time used by the code in steps 1-3 a=
-nd
->>>into the native skin/nucleus.
->>>
->>>In the worst case, in addition to that, the thread will be preempted
->>>between steps 1 and 3. If it is preempted by another higher priority
->>>thread for, say, 50 ticks, and the call in step 3 is actually executed
->>>at t=3D950, the thread will be sleeping until t=3D1050+d, which may no=
-t be
->>>acceptable.
->>>
->>>What do you think?
->>>  =20
->>>
->>
->>That's true, having to convert between absolute and relative time (and
->>vice versa) in interruptible contexts can cause problems if the
->>application is not prepared for it.
->>
->>The question is: do you really need that precise timeouts for
->>synchronisation primitives?
->>
->=20
-> Yes I do. In my application, there is a free-run periodic execution
-> thread that gets once in a while synchronized to an external event.
->=20
-> This thread waits on a semaphore with an absolute timeout of t, does it=
-s
-> work, calculates t =3D t + period and waits again on the semaphore. If =
-the
-> external event signals the semaphore, the thread wakes up immediately
-> and does some slightly different stuff.
->=20
-> The thing is, I want the free-run thread to execute at 2 KHz, this is,
-> every 5 ms. If I use a relative time, I face the problem I described.
->=20
-> I guess I could get it working properly using a periodic thread, but I'=
-m
-> sure it's not as simple (and does not "feel" as natural) as just waitin=
-g
-> on the synchronization primitive using an absolute timeout.
->
+Hi:
 
-If the need for abs timeout protection is seldom, you could also make the=
-=20
-related portion of code interrupt-free, since this is what's going to hap=
-pen=20
-early on within the syscall anyway. e.g.:
+- Apple PowerBook 1.67
+- Mandriva Limited 2005 (Mandrake 10.2) for PPC
+- Linux 2.6.13.4
+- Adeos patch x ppc (32bit - G4) (www.adeos.org) (Thanks Philippe :) )
+- Xenomai: configured with NO FPU SUPPORT  (Thanks Gilles  :) )
 
-rthal_lock_irqsave
-<compute-timeout>
-sem_wait(&s,timeout)
-rthal_lock_irqrestore
+Everything works perfect (for the internal test). CPU pushed steady to 99%
+with glxgear (NO DRI, software emululation only by Mesa): 350 fps
 
-Ok, I admit that nobody would want to use this on a regular basis, but is=
- this a=20
-usual need in the first place?
+Max latency = 44 us
+Overrun = zero nil nada zip.
 
-> I really really think there should be, for each call that takes a
-> timeout, two version, one that takes a relative timeout and another tha=
-t
-> takes an absolute timeout.
->=20
-> Any chances of this being implemented in the current native API?
->=20
->=20
+I think that the save/restore functions of xenomai must be aware of the
+presence of Altivec. If I disable Altivec the X11 server (x.org) shipped
+with mandriva ppc does not start.
 
-The issue there is really about deciding if we have a proper usefulness /=
-=20
-complexity ratio, i.e. how unique, frequently needed and relevant is the =
-feature=20
-wrt the cost to implement it and the impact on the core and the API to ex=
-port it.
+This is a very good impruvement. If you use thread in the user space, the
+FPU support is not a must.
 
-The scenario you presented with a single synchronization allowing to pend=
- for an=20
-event and a precisely timed fallback action is not that uncommon, even if=
- it's=20
-not a frequent one either.
+   Simone
 
-In a first approach, I would suggest an intermediate solution which would=
-=20
-provide support for this kind of synchronization constructs, without requ=
-iring=20
-the whole timeout API to be extended in a somewhat overkill manner (i.e. =
-as Jan=20
-already pointed out, in the general case, a timeout associated to a block=
-ing=20
-call is by essence a safety belt in case things go weird, not a precision=
- timer).
 
-The proposed solution would be to add a single new call to the condvar=20
-interface, namely rt_cond_abswait(). Since one can already build any kind=
- of=20
-synchro object over the condvar, this would likely provide an adaptable s=
-olution.
 
---=20
 
-Philippe.
+
+
+
 
