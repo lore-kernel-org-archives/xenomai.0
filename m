@@ -1,13 +1,12 @@
-Message-ID: <43668C11.9080306@domain.hid>
-Date: Mon, 31 Oct 2005 22:26:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] kernel screen dump: "scheduling while atomic:
- "
-References: <312725565956E84DBB7C760BA4052BB583528A@diablo.Cadillac.Genmarkinc.com>
-In-Reply-To: <312725565956E84DBB7C760BA4052BB583528A@diablo.Cadillac.Genmarkinc.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17232.43539.194460.48904@domain.hid>
+Date: Sat, 15 Oct 2005 09:04:51 +0200
+Subject: Re: [Xenomai-help] XenoPPC : Latency test results
+In-Reply-To: <1146.193.52.24.125.1129357068.squirrel@domain.hid>
+References: <1146.193.52.24.125.1129357068.squirrel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,46 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: GeorgyS@GenmarkAutomation.com
+To: smannori@domain.hid
 Cc: xenomai@xenomai.org
 
-GeorgyS@GenmarkAutomation.com wrote:
-> Hi,
->  
-> I have a user space real-time application that uses fusion/xenomai 0.9.1 
-> native API on linux kernel 2.6.11 and uClibc-0.9.28.
+smannori@domain.hid wrote:
+ > Hi:
+ > 
+ > if I run the latency test and I contunue to use the PPC as usual, after a
+ > while, I noticed some overruns (see report below).
+ > 
+ > Question: it is a serious problems or a normal behavior ?
 
-Which architecture are you running on?
-
-> Everything seems to work fine, but after the application has run for 
-> some time (10 to 20 minutes), the following screen dumps begin to appear 
-> on the console:
->  
->      scheduling while atomic: <my_real-time_func_name>/0x00000002/276
->  
-> followed by a call stack dump.
-> My application continues to run normally, the scheduling of my real time 
-> func seems ok too, but I wonder,
-> why this screen dump appears and can in be disabled?
-
-It's the sign of a bug, either in your application, in Xenomai, or maybe in the 
-kernel itself. Please send the complete stack dump so that we can figure out 
-what's happening.
-
->  
-> Thanks,
-> Georgi Stoykov
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
+150 us is high, you likely have a hardware problem. Do you also have
+the 150us latency without X running at all ? Do you also have them when
+disabling Altivec/Spe support in kernel configuration ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
