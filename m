@@ -1,16 +1,14 @@
-Message-ID: <4358FDEF.5020800@domain.hid>
-Date: Fri, 21 Oct 2005 16:40:47 +0200
-From: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Resent-Message-ID: <17232.58645.769350.642883@domain.hid>
+Resent-To: xenomai@xenomai.org
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] timeout in native API calls          (cond, sem,
-	mutex, etc).
-References: <4357C3E1.1040701@domain.hid>
-	<4357C9F7.2060808@domain.hid>	<4357CF67.8080601@domain.hid>
-	<4357DF0F.3060806@domain.hid> <435896AA.1060103@domain.hid>
-	<4358C885.8010808@domain.hid> <4358DC25.9010307@domain.hid>
-In-Reply-To: <4358DC25.9010307@domain.hid>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17232.57953.551450.669843@domain.hid>
+In-Reply-To: <34086.193.52.24.125.1129373726.squirrel@domain.hid>
+References: <34086.193.52.24.125.1129373726.squirrel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] XenoPPC :-> 2.6.13.4-ipipe :)
+Date: Sat, 15 Oct 2005 13:05:05 +0200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,74 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: smannori@domain.hid
 
-Jan Kiszka wrote:
+smannori@domain.hid wrote:
+ > Max latency = 44 us
+ > Overrun = zero nil nada zip.
 
->Ignacio Garc=EDa P=E9rez wrote:
-> =20
->
->>In my previous (long) message I forgot something. I think that without
->>support for abolute timeouts in the nucleus, the RTAI skin cannot be
->>accurately implemented (*_until and *_timed calls).
->>
->>   =20
->>
->
->Then something must be wrong, e.g. here: ;)
->
->http://www.rts.uni-hannover.de/xenomai/lxr/source/skins/rtdm/drvlib.c?v=3D=
-SVN#L280
->(other skins do it similar but have to deal with more complexity)
->
->I does work as you can see, it just takes some locking. :)
-> =20
->
-Um. I meant it cannot be properly done in a user application.
+You should not conclude to rapidly. Running the dohell script for ten
+hours would make me a bit more confident about your results.
 
-One of the best things of xenomai is the neat layered design. In theory
-(again, correct this newbie if he's wrong),* the application developer
-should use only the API provided by the skin he chooses. The nucleus
-services should be used only by skin developers.*
 
-So, it's perfectly ok that the RTDM developer uses the locking mechanism
-provided by the nucleus.
+ > I think that the save/restore functions of xenomai must be aware of the
+ > presence of Altivec. If I disable Altivec the X11 server (x.org) shipped
+ > with mandriva ppc does not start.
 
-But I think that I, as an application developer using the native skin,
-should not need to resort to the nucleus to implement a certain basic RT
-functionality (and yes, I agree it is a quite rare design pattern, but
-it's there).
+It is true that the save/restore functions of xenomai should be
+altivec-aware, but you likely have another problem: if it was the only
+one, Xenomai would work flawlessly when CONFIG_ALTIVEC (and CONFIG_SPE,
+for that matter) are disabled in kernel configuration.
 
-As I discuss in another message, I think the best (and easy!) solution
-from the design standpoint would be to modify all nucleus calls that
-take a timeout argument and add a boolean argument to specify whether
-the timeout is realtive or absolute. Would be almost trivial to
-implement, however:
 
-- Would break the nucleus API, THOUGH the required updates in the skins
-would be TRIVIAL (just add a zero/one after the timeout). Later, some
-calls like the RTDM one you mention could be further optimized by using
-the absolute timeout nucleus call instead of the locking.
+ > This is a very good impruvement. If you use thread in the user space, the
+ > FPU support is not a must.
 
-- Would require modifications of the documentation. Since it's generated
-with doxygen, and the code changes are trivial, this would be probably
-the largest job.
+Well, disabling FPU support in Xenomai configuration means that you can
+use FPU neither in kernel space, nor for user-space threads in primary
+mode without causing a transition to secondary mode. This is too
+restrictive.
 
-The nucleus API would suffer a minimal change (no new calls, just a new
-parameter in ones) and would provide quite a large amount of
-flexibility. Extending the native skip API would be the next step, and
-if the project leader decides not to do it, that would be OK because I
-could do it only for myself via a tiny patch.
 
->Well, it's not that accurate as it could be at best, that's true, but
->the short time you "loose" between the conversions in the skin and the
->nucleus is not significant compared to the overall jitter you always
->face on an OS.
->
->Jan
->
-> =20
->
+-- 
 
+
+					    Gilles Chanteperdrix.
 
