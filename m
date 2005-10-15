@@ -1,21 +1,13 @@
-Message-ID: <4354B258.6080901@domain.hid>
-Date: Tue, 18 Oct 2005 10:29:12 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4350BCF3.6030606@domain.hid>
+Date: Sat, 15 Oct 2005 10:25:23 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>
-	<4353F411.4000500@domain.hid>
-	<4353F896.1040508@domain.hid>
-	<435402B4.5060004@domain.hid> <435403C8.80400@domain.hid>
-	<43540531.8050304@domain.hid>
-	<435406E0.8020405@domain.hid> <435408E5.8020007@domain.hid>
-	<435419B0.8030004@domain.hid>
-	<4354AD5A.7010305@domain.hid>
-	<17236.44759.217634.762329@domain.hid>
-In-Reply-To: <17236.44759.217634.762329@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig584AB7D2C8C23003A5199DA2"
+Subject: Re: [Xenomai-help] Xenomai -> PPC (III): Total Failure
+References: <50649.193.52.24.125.1129318390.squirrel@domain.hid>
+	<43500B0D.1030405@domain.hid>
+In-Reply-To: <43500B0D.1030405@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,45 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig584AB7D2C8C23003A5199DA2
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Jan Kiszka wrote:
->  > I just analysed this further: the problem disappears when I manually
->  > remove any "-I<path-to-kernel-includes>" from the makefiles. Seems to be
->  > the well-known user space include issue again... ;)
+Wolfgang Grandegger wrote:
+> On 10/14/2005 09:33 PM smannori@domain.hid wrote:
 > 
-> This is wrong, the include files that should be used are those from the
-> Adeos/I-pipe patched 2.6 kernel you are compiling for, not those which
-> come from your distribution.
+>>Hi:
+>>
+>>result: total failure. I think that could be the x.org X11 driver
+>>
+>>    BoardName "ATI Radeon (fglrx)"
+>>    Driver "radeon"
+>>
+>>that cause so many problems.
+> 
+> 
+> It's not clear to me what you are speaking about. What failed?
+> 
+> 
+>>Someone could suggest any alternative explanations ?
+>>
+>>My every attempt to install Fusion/RTAI or Xenomai on this machine was a
+>>disaster. I think that Powerbook and iBook are different beast.
+>>
+>>Beside that, standard Linux works great on this machine, expecially if you
+>>use a recent kernel (2.6.11 or better).
+> 
+> 
+> If you have a rather recent Linux 2.6 version running on your system,
+> just use it. The distro does not really matter. Then download a recent
+> kernel version from kernel.org and try to get it compiled and running on
+> your box. Use the .config file from the kernel comming with the
+> distribution. Don't forget to disable power management. Then wait until
+> an up-to-date iPIPE patch get's available.
 > 
 
-Yep, true. But then the build system is still somehow confused, because
-it seems to include headers from both sources - otherwise I would not
-see redefinitions when only asm/sigcontext.h contains the structs.
+Ok, the "thing" is here. Validated on my mpc52xx for now; will test it later on 
+the Sandpoint board.
 
-Jan
+http://download.gna.org/adeos/patches/v2.6/adeos/ppc/adeos-ipipe-2.6.13-ppc-1.0-00.patch
 
---------------enig584AB7D2C8C23003A5199DA2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDVLJYncNeS9Q0k+IRAmqyAJ9sDsiA2GXdBkbTzrWytFlzHqf5HwCgjJyy
-h+AkbwpjNHDKjtKkAuOwNqg=
-=iL/2
------END PGP SIGNATURE-----
-
---------------enig584AB7D2C8C23003A5199DA2--
+Philippe.
 
