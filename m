@@ -1,12 +1,12 @@
-Message-ID: <4362A764.6070004@domain.hid>
-Date: Sat, 29 Oct 2005 00:34:12 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+From: Romain Lenglet <rlenglet@domain.hid>
+Date: Sun, 16 Oct 2005 16:51:31 +0900
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] serial driver fixes/improvements
-References: <4360B46C.5030104@domain.hid>
-In-Reply-To: <4360B46C.5030104@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200510161651.31795.rlenglet@domain.hid>
+Subject: [Xenomai-core] Packaging issues - part 2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,38 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Jan et al.!
+Hi,
 
-Jan Kiszka wrote:
-[...]
-> +modprobe xeno_16550A ioaddr=<io1>[,<io2>...] irq=<irq1>[,<irq2>...]
-> +                     [tx_fifo=<len1>[,<len2>...]] [start_index=<index>]
-> +
-> +Arguments:
-> +    ioaddr<N>   - I/O address of device <N> (e.g. 0x3f8 for ttyS0)
-> +    irq<N>      - interrupt number of device <N> (e.g. 4 for ttyS0)
-> +    tx_fifo<N>  - Transmitter FIFO size in bytes of device <N>, default is 16
-> +    start_index - First device instance number to be used, default is 0
 
-If I may throw in my 2 eurocents:
-I think the Arguments-section is a bit misleading.
-One doesn't specify ioaddr1, ioaddr2 etc. on the command line, as suggested
-by ioaddr<N>, but ioaddr=[1.dev],[2.dev]...
-Same for irq and tx_fifo.
+Some more packaging issues...
 
-What about this:
 
-Arguments:
-     ioaddr      - I/O addresses of devices (e.g. 0x3f8 for ttyS0), separated by comma
-     irq         - interrupt numbers of devices (e.g. 4 for ttyS0), separated by comma
-     tx_fifo     - Transmitter FIFO sizes in bytes of devices, default is 16, separated by comma
-     start_index - First device instance number to be used, default is 0 => rtser0
+There is currently no man page for binaries (xeno-config,=20
+xeno-info, xeno-load and xeno-test), but there should.
 
-Just trying to make it as clear as possible :-)
 
-Best regards,
-Hannes.
+It would be nice to build the documentation when building the=20
+packages. Patrick, you wrote that it is not possible to build=20
+the documentation using packages available in Debian. Could you=20
+explain that please? This should be fixed.
+
+
+In addition, I am wondering if it could be useful to package=20
+every skin in a separate package, e.g. libxenomai-posix,=20
+libxenomai-rtdm, etc.
+What do you think about that?
+This would imply to have also one module source package for every=20
+skin (e.g. xenomai-posix-source, xenomai-rtdm-source, etc.), and=20
+to be careful about dependencies between modules, but it can be=20
+manageable.
+That way, the I-am-dreaming-for packages for RTnet would directly=20
+depend on xenomai-rtdm-source and libxenomai-rtdm.
+
+
+There is also an issue about some compile-time flags. I think=20
+that there is no risk in enabling and packaging every skin, but=20
+how about --enable-x86-sep and --enable-smi-workaround ???
+What should be enabled by default (in the standard package)?
+Should we make several different packages compiled with the=20
+different options? How about the many combinations of=20
+=2D-enable-periodic-smi, --enable-intel-usb2-smi, --enable-mc-smi,=20
+etc., etc.?!
+=46rom a user/packager point of view, it would be much better if=20
+those flags were kernel module parameters, and to have only=20
+package / set of modules to deal with. Is it possible to make=20
+that change? Would the runtime penalty be acceptable?
+As for --enable-x86-sep, I guess that it is safe to disable it by=20
+default, wether or not users use NTPL, but can someone confirm=20
+this?
+
+=2D-=20
+Romain Lenglet
 
