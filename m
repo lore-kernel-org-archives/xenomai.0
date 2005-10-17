@@ -1,12 +1,12 @@
-Message-ID: <435406E0.8020405@domain.hid>
-Date: Mon, 17 Oct 2005 22:17:36 +0200
+Message-ID: <435408E5.8020007@domain.hid>
+Date: Mon, 17 Oct 2005 22:26:13 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>	<4353F411.4000500@domain.hid>	<4353F896.1040508@domain.hid>
-	<435402B4.5060004@domain.hid> <435403C8.80400@domain.hid>
-	<43540531.8050304@domain.hid>
-In-Reply-To: <43540531.8050304@domain.hid>
+References: <4353F109.7000707@domain.hid>	<4353F411.4000500@domain.hid>	<4353F896.1040508@domain.hid>	<435402B4.5060004@domain.hid>
+	<435403C8.80400@domain.hid>	<43540531.8050304@domain.hid>
+	<435406E0.8020405@domain.hid>
+In-Reply-To: <435406E0.8020405@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,73 +18,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 > 
->>Heikki Lindholm wrote:
+>> Philippe Gerum wrote:
 >>
->>
->>>Jan Kiszka kirjoitti:
+>>> Heikki Lindholm wrote:
 >>>
 >>>
->>>>Heikki Lindholm wrote:
+>>>> Jan Kiszka kirjoitti:
 >>>>
 >>>>
->>>>>Jan Kiszka kirjoitti:
+>>>>> Heikki Lindholm wrote:
 >>>>>
 >>>>>
->>>>>
->>>>>>Hi,
+>>>>>> Jan Kiszka kirjoitti:
 >>>>>>
->>>>>>I'm dumb x86 user who unfortunately just seem to have tumbled in the
->>>>>>cross-compilation trap: I'm trying to generate i586 code on a fancy
->>>>>>new
->>>>>>and fast x86_64 compilation host. I got the kernel compiled with
->>>>>>ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
->>>>>>cross tool chain), but I failed to compile xenomai against that kernel
->>>>>>in the following. Which magic switch do I have to apply and where?
+>>>>>>
+>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> I'm dumb x86 user who unfortunately just seem to have tumbled in the
+>>>>>>> cross-compilation trap: I'm trying to generate i586 code on a fancy
+>>>>>>> new
+>>>>>>> and fast x86_64 compilation host. I got the kernel compiled with
+>>>>>>> ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
+>>>>>>> cross tool chain), but I failed to compile xenomai against that 
+>>>>>>> kernel
+>>>>>>> in the following. Which magic switch do I have to apply and where?
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> As dumb a guess: -m32 compiler switch?
+>>>>>>
 >>>>>
 >>>>>
->>>>>
->>>>>
->>>>>As dumb a guess: -m32 compiler switch?
->>>>>
+>>>>> Yes, I know, that would help. But where to feed this argument into the
+>>>>> build system?
 >>>>
 >>>>
->>>>Yes, I know, that would help. But where to feed this argument into the
->>>>build system?
+>>>>
+>>>>
+>>>> I would try makefile (and perhaps config/kconfig/Makefile*) and
+>>>> command line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to
+>>>> be sure.
+>>>>
 >>>
+>>> You should be able to do that just by reconfiguring:
 >>>
->>>
->>>I would try makefile (and perhaps config/kconfig/Makefile*) and
->>>command line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to
->>>be sure.
+>>> cd build && make reconfig CC="gcc -m32"
 >>>
 >>
->>You should be able to do that just by reconfiguring:
 >>
->>cd build && make reconfig CC="gcc -m32"
+>> ... would have been too easy: :-/
+>>
+>> [after "make menuconfig ARCH=i386"]
+>> gcchost2:/tmp/xenomai/build # make reconfig CC="gcc -m32"
+>> make[1]: Entering directory `/tmp/xenomai/build'
+>> configure: error: unrecognized option: -m32
+>> Try `/tmp/xenomai/configure --help' for more information.
+>> make[1]: *** [config.status] Error 1
+>> make[1]: Leaving directory `/tmp/xenomai/build'
+>> make: *** [reconfig] Error 2
 >>
 > 
-> 
-> ... would have been too easy: :-/
-> 
-> [after "make menuconfig ARCH=i386"]
-> gcchost2:/tmp/xenomai/build # make reconfig CC="gcc -m32"
-> make[1]: Entering directory `/tmp/xenomai/build'
-> configure: error: unrecognized option: -m32
-> Try `/tmp/xenomai/configure --help' for more information.
-> make[1]: *** [config.status] Error 1
-> make[1]: Leaving directory `/tmp/xenomai/build'
-> make: *** [reconfig] Error 2
+> make reconfig CC="\"gcc -m32\""
+>
+
+Please resync from the SVN head too; I've added the necessary quoting hackery 
+for the above to fully work.
+
+> (Ok, ok, we'll get rid of autoconf for kernel modules in 2.1...)
 > 
 
-make reconfig CC="\"gcc -m32\""
-
-(Ok, ok, we'll get rid of autoconf for kernel modules in 2.1...)
 
 -- 
 
