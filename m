@@ -1,40 +1,35 @@
-Message-ID: <434561DB.5030600@domain.hid>
-Date: Thu, 06 Oct 2005 19:41:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4353F411.4000500@domain.hid>
+Date: Mon, 17 Oct 2005 21:57:21 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-References: <4344C9B8.5010304@domain.hid>
-In-Reply-To: <4344C9B8.5010304@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] compiling xenomai on x86_64
+References: <4353F109.7000707@domain.hid>
+In-Reply-To: <4353F109.7000707@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: PPC64 Adeos patch r2
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: adeos-main@gna.org, rtai-dev@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Heikki Lindholm wrote:
-> Updated PPC64 adeos patch (r2) available at:
+Jan Kiszka kirjoitti:
+> Hi,
 > 
-> http://www.cs.helsinki.fi/group/nonsto/adeos-linux-2.6.10-ppc64-r2.patch.gz
-> 
-> Protected some mm sections with the downside of somewhat increased 
-> latency. Much more stable when there's background Linux activity.
-> 
+> I'm dumb x86 user who unfortunately just seem to have tumbled in the
+> cross-compilation trap: I'm trying to generate i586 code on a fancy new
+> and fast x86_64 compilation host. I got the kernel compiled with
+> ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
+> cross tool chain), but I failed to compile xenomai against that kernel
+> in the following. Which magic switch do I have to apply and where?
 
-Available from the official dl area too: 
-http://download.gna.org/adeos/patches/v2.6/adeos/ppc64/adeos-linux-2.6.10-ppc64-r2.patch
+As dumb a guess: -m32 compiler switch?
 
-Also committed to fusion's CVS tree.
-
-Thanks,
-
--- 
-
-Philippe.
+-- Heikki Lindholm
 
