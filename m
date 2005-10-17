@@ -1,12 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <435402B4.5060004@domain.hid>
+Date: Mon, 17 Oct 2005 22:59:48 +0300
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] compiling xenomai on x86_64
+References: <4353F109.7000707@domain.hid>
+	<4353F411.4000500@domain.hid>
+	<4353F896.1040508@domain.hid>
+In-Reply-To: <4353F896.1040508@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17232.43539.194460.48904@domain.hid>
-Date: Sat, 15 Oct 2005 09:04:51 +0200
-Subject: Re: [Xenomai-help] XenoPPC : Latency test results
-In-Reply-To: <1146.193.52.24.125.1129357068.squirrel@domain.hid>
-References: <1146.193.52.24.125.1129357068.squirrel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,23 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-smannori@domain.hid wrote:
- > Hi:
- > 
- > if I run the latency test and I contunue to use the PPC as usual, after a
- > while, I noticed some overruns (see report below).
- > 
- > Question: it is a serious problems or a normal behavior ?
+Jan Kiszka kirjoitti:
+> Heikki Lindholm wrote:
+> 
+>>Jan Kiszka kirjoitti:
+>>
+>>
+>>>Hi,
+>>>
+>>>I'm dumb x86 user who unfortunately just seem to have tumbled in the
+>>>cross-compilation trap: I'm trying to generate i586 code on a fancy new
+>>>and fast x86_64 compilation host. I got the kernel compiled with
+>>>ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
+>>>cross tool chain), but I failed to compile xenomai against that kernel
+>>>in the following. Which magic switch do I have to apply and where?
+>>
+>>
+>>As dumb a guess: -m32 compiler switch?
+>>
+> 
+> 
+> Yes, I know, that would help. But where to feed this argument into the
+> build system?
 
-150 us is high, you likely have a hardware problem. Do you also have
-the 150us latency without X running at all ? Do you also have them when
-disabling Altivec/Spe support in kernel configuration ?
+I would try makefile (and perhaps config/kconfig/Makefile*) and command 
+line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to be sure.
 
--- 
-
-
-					    Gilles Chanteperdrix.
+-- Heikki Lindholm
 
