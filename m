@@ -1,10 +1,14 @@
-Message-ID: <435EFAB8.2050501@domain.hid>
-Date: Wed, 26 Oct 2005 05:40:40 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <32970.128.93.15.41.1129537841.squirrel@domain.hid>
+Date: Mon, 17 Oct 2005 10:30:41 +0200 (CEST)
+Subject: Re: [Xenomai-help] A couple of questions
+From: <smannori@domain.hid>
+In-Reply-To: <20051017091716.9rn609mmk2dckksw@domain.hid>
+References: <18969.193.52.24.125.1129211788.squirrel@domain.hid>
+	<434E6E18.8000603@domain.hid>
+	<20051017091716.9rn609mmk2dckksw@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] RTDM & serial port
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,23 +20,26 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi Jan et al.!
+Alexis:
 
-I've noticed your thread on the RTAI list "Driver Model for RTAI" in June.
-Now as I try to port some RTAI serial port stuff to Xenomai in order to
-put up some howto page on my website, I'm clueless.
+> No problem, I will do it as soon as possible. I just have to find my
+way through
+> the mess in my new appartment, I am still looking for some parts of my
+computer
+> ;)
+>
+> Sorry for answering so lately.
+>
 
-None of the RTAI functions rt_spopen, rt_spread_timed, rt_spwrite are
-available - I see that there is some rt_dev_open, rt_dev_write available,
-but only rt_dev_read - what about some timed-read ?
+No apologies :).
 
-I see that rt_spopen opens /dev/rtser[X] but /dev/rtser[X] is not on my
-system, nor can I find any creation-script in the xenomai source.
+May I suggest you the "windows way":
+- pull all the things off you appatement e.g. ALT-F4
+- restart the [appartement]
+- put the things inside the appartement one at time :)
 
-Sorry if I'm overlooking some stuff... 5:40am here.
+Simone Mannori
 
-I'd be very glad for any hints/examples/code-snippets!
 
-Thanks a lot & best regards,
-Hannes.
+
 
