@@ -1,19 +1,12 @@
+Message-ID: <4353D250.9050807@domain.hid>
+Date: Mon, 17 Oct 2005 10:33:20 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Cosmetic changes to script xeno-config + man page
+References: <200510170157.58507.rlenglet@domain.hid>
+In-Reply-To: <200510170157.58507.rlenglet@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17231.24259.411785.672898@domain.hid>
-Date: Fri, 14 Oct 2005 09:31:15 +0200
-Subject: Re: [Xenomai-core] Bug tracker.
-In-Reply-To: <434F4D71.8070000@domain.hid>
-References: <17229.31343.98877.781567@domain.hid>
-	<434DEDDD.4020607@domain.hid>
-	<17229.64735.691164.146992@domain.hid>
-	<434E003E.4020604@domain.hid>
-	<17230.2176.893187.59758@domain.hid>
-	<434E0C91.1050607@domain.hid>
-	<17230.60977.476892.10184@domain.hid>
-	<434F4D71.8070000@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,17 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
+To: Romain Lenglet <rlenglet@domain.hid>
 Cc: xenomai@xenomai.org
 
-Heikki Lindholm wrote:
- > Btw. Do you think the Task/Patch/Tech Support Managers are worth using? 
+Romain Lenglet wrote:
 
-The patch manager may be useful, it avoids loosing patches. For the
-rest, I have no opinion, maybe someone else?
+>By the way, I noticed that the output of function usage() in that 
+>script was wrong. Here is a correct version, to replace the one 
+>  
+>
+if you see an error, please provide a proper patch.
+I cannot see the error youve 'corrected' below..
 
--- 
+In fact, youve added one;  -v doesnt work,  --v does.
 
-
-					    Gilles Chanteperdrix.
+>in scripts/xeno-config.in:
+>usage ()
+>{
+>cat <<EOF
+>Usage xeno-config OPTIONS
+>Options :
+>        --help
+>        -v,--verbose
+>        --version
+>        --cc
+>        --cross-compile
+>  
+>
+thx
+jimc
 
