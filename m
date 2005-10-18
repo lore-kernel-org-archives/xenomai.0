@@ -1,14 +1,16 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17236.37957.919219.175800@domain.hid>
-Date: Tue, 18 Oct 2005 08:20:53 +0200
+From: Romain Lenglet <rlenglet@domain.hid>
 Subject: Re: [Xenomai-core] Cosmetic changes to script xeno-config + man page
-In-Reply-To: <200510180217.41806.rlenglet@domain.hid>
+Date: Tue, 18 Oct 2005 17:59:22 +0900
 References: <200510170157.58507.rlenglet@domain.hid>
-	<4353D250.9050807@domain.hid>
 	<200510180217.41806.rlenglet@domain.hid>
+	<17236.37957.919219.175800@domain.hid>
+In-Reply-To: <17236.37957.919219.175800@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200510181759.22534.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,56 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Romain Lenglet <rlenglet@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Romain Lenglet wrote:
- > > if you see an error, please provide a proper patch.
- > 
- > Here is a patch that includes the correction of xeno-config.in 
- > and the manpage. If someone wants to add it to the patch tracker 
- > on the Gna! project page, please do it.
+> In order to compare Xenomai with other Debian packagees, I
+> checked gtk-config, and I have a few remarks on xeno-config
+> and its manpage.
+[...]
 
-You are supposed to be able to ad that patch to the tracker: being a
-logged-in user should be enough to be able to post a patch. I do not
-think it wise to open it to anonymous users, it would open it for use by
-spammers.
+I merely documented xeno-config as it is now, and made the 
+printed usage consistent. If you modify it, I will update the 
+manpage accordingly.
 
- > I am currently working on manpages for xeno-load(1) and 
- > runinfo(5) (for the format of .runinfo files). I will send a 
- > patch with these.
 
-Thanks. Note that you will need to document the latency test. This looks
-important, because this is the first program users should run, before
-messing with .runinfo.
+Another item to add to the looOOong-term wishlist: I would like 
+to have ready-to-use autoconf rules, to use instead of 
+xeno-config.
 
-In order to compare Xenomai with other Debian packagees, I checked
-gtk-config, and I have a few remarks on xeno-config and its manpage.
+If someone ever writes such rules, e.g. in a "xenomai.m4" file, 
+it would only be necessary, at Xenomai install time:
+1- to copy xenomai.m4 into /usr/share/autoconf/autoconf/
+2- to add the following line into autoconf.m4:
+m4_include([autoconf/xenomai.m4])
+2- to regenerate autoconf.m4f by running:
+cd /usr/share/autoconf/autoconf
+autom4te --language=autoconf --freeze --output=autoconf.m4f
 
-gtk-config is made to be sourced from configure scripts, so that
-configure scripts have a simple way to know whether GTK is installed,
-and a simple way to get the glib_* variables and export them to the
-generated makefiles.
+A simpler solution would be to ship a xenomai.m4 to be used as a 
+acinclude.m4 in every project using Xenomai. But I have had very 
+bad experiences with aclocal in that use case. aclocal is quite 
+buggy. And it would be more confortable for projects it is were 
+immediately available after installing Xenomai.
 
-When run with no arguments, xeno-config prints the usage, but most
-importantly returns an error. I would suggest firstly that we do not
-print anything, after all the standard way to get help is the --help
-or -h argument, but if you do insist that you want help, I admit
-configure script may redirect output when sourcing xeno-config. But I
-strongly suggest we return 0, otherwise, there is no simple way
-for a configure script to know whether Xenomai is correctly installed.
 
-gtk-config has no --verbose option and I wonder how useful this option
-is. I mean, if you want to have the variables list, you may run (modulo
-we do not return 1 as status when called with no arguments)
-. xeno-config
-set | grep '^XENO'
+> Now, about the manpage itself, unless I am wrong, the DESTDIR
+> feature is not documented, it is very useful when compiling
+> for a target.
 
-Now, about the manpage itself, unless I am wrong, the DESTDIR feature is
-not documented, it is very useful when compiling for a target.
+DESTDIR is a feature of makefiles generated through Automake, not 
+of xeno-config. Why would you like to document this is in 
+xeno-config's manpage?
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Romain Lenglet
 
