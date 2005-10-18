@@ -1,12 +1,14 @@
-Message-ID: <4354033B.4060800@domain.hid>
-Date: Mon, 17 Oct 2005 22:02:03 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
-References: <1CFEB358338412458B21FAA0D78FE86D4F0E28@domain.hid>
-In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D4F0E28@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17236.37957.919219.175800@domain.hid>
+Date: Tue, 18 Oct 2005 08:20:53 +0200
+Subject: Re: [Xenomai-core] Cosmetic changes to script xeno-config + man page
+In-Reply-To: <200510180217.41806.rlenglet@domain.hid>
+References: <200510170157.58507.rlenglet@domain.hid>
+	<4353D250.9050807@domain.hid>
+	<200510180217.41806.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,50 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
+To: Romain Lenglet <rlenglet@domain.hid>
 Cc: xenomai@xenomai.org
 
-Fillod Stephane wrote:
-> Hi Philippe,
-> 
-> Sorry for the late report, Xenomai appears to work fine on a Freescale
-> e500
-> board (MPC8541E) under Linux 2.6.13. Xenomai version was v1.9.9, ie. the
-> daily
-> snapshot as of today. Here are some preliminary figures (CPU 800MHz, Bus
-> 133MHz, 
-> 32 kiB I-Cache 32 kiB D-Cache, 256 kiB L2):
-> 
-> switch $ ./run
-> == Sampling period: 100 us
-> RTH|     lat min|     lat avg|     lat max|        lost
-> RTD|        3660|        3690|        8070|           0
-> 
-> kaltency $ ./run
-> RTH|----klat min|----klat avg|----klat max| overrun|
-> RTS|       -7350|       -5715|        6420|       0|
-> 00:03:17/00:03:17
-> 
-> latency $ ./run
-> == Sampling period: 100 us
-> RTT|  00:08:04
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-> RTS|       -6930|       -4260|        8700|       0|
-> 00:08:06/00:08:06
->
+Romain Lenglet wrote:
+ > > if you see an error, please provide a proper patch.
+ > 
+ > Here is a patch that includes the correction of xeno-config.in 
+ > and the manpage. If someone wants to add it to the patch tracker 
+ > on the Gna! project page, please do it.
 
-Great you tested that, thanks. The calibration looks a bit pessimistic, so I 
-guess that a narrowed one would leave us with something in the 10-12 us range 
-worst-case in user-space, which would still be quite decent.
+You are supposed to be able to ad that patch to the tracker: being a
+logged-in user should be enough to be able to post a patch. I do not
+think it wise to open it to anonymous users, it would open it for use by
+spammers.
 
-> Load for klatency/latency was ping flooding on FCC (piece of cake),
-> and cache calibrator. IMHO, we can do nastier.
-> 
-> 
+ > I am currently working on manpages for xeno-load(1) and 
+ > runinfo(5) (for the format of .runinfo files). I will send a 
+ > patch with these.
 
-Mixed LTP stuff and dd loops are quite good punishers AFAICS here.
+Thanks. Note that you will need to document the latency test. This looks
+important, because this is the first program users should run, before
+messing with .runinfo.
+
+In order to compare Xenomai with other Debian packagees, I checked
+gtk-config, and I have a few remarks on xeno-config and its manpage.
+
+gtk-config is made to be sourced from configure scripts, so that
+configure scripts have a simple way to know whether GTK is installed,
+and a simple way to get the glib_* variables and export them to the
+generated makefiles.
+
+When run with no arguments, xeno-config prints the usage, but most
+importantly returns an error. I would suggest firstly that we do not
+print anything, after all the standard way to get help is the --help
+or -h argument, but if you do insist that you want help, I admit
+configure script may redirect output when sourcing xeno-config. But I
+strongly suggest we return 0, otherwise, there is no simple way
+for a configure script to know whether Xenomai is correctly installed.
+
+gtk-config has no --verbose option and I wonder how useful this option
+is. I mean, if you want to have the variables list, you may run (modulo
+we do not return 1 as status when called with no arguments)
+. xeno-config
+set | grep '^XENO'
+
+Now, about the manpage itself, unless I am wrong, the DESTDIR feature is
+not documented, it is very useful when compiling for a target.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
