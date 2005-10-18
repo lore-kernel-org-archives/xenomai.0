@@ -1,16 +1,17 @@
-Message-ID: <4354AD5A.7010305@domain.hid>
-Date: Tue, 18 Oct 2005 10:07:54 +0200
+Message-ID: <4354ADA9.2010809@domain.hid>
+Date: Tue, 18 Oct 2005 10:09:13 +0200
 From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>	<4353F411.4000500@domain.hid>	<4353F896.1040508@domain.hid>	<435402B4.5060004@domain.hid>
-	<435403C8.80400@domain.hid>	<43540531.8050304@domain.hid>
-	<435406E0.8020405@domain.hid> <435408E5.8020007@domain.hid>
-	<435419B0.8030004@domain.hid>
-In-Reply-To: <435419B0.8030004@domain.hid>
+References: <4353F109.7000707@domain.hid>
+	<4353F411.4000500@domain.hid>
+	<4353F896.1040508@domain.hid>
+	<435402B4.5060004@domain.hid>
+	<17236.13453.672147.550393@domain.hid>
+In-Reply-To: <17236.13453.672147.550393@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigABB44D8F1260E43EEE53B606"
+	boundary="------------enig06489F73DF947AE7AFE0A47D"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,70 +21,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigABB44D8F1260E43EEE53B606
+--------------enig06489F73DF947AE7AFE0A47D
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Jan Kiszka wrote:
-> ...
-> make[3]: Entering directory `/tmp/xenomai/build/skins/native/lib'
-> if /bin/sh ../../../libtool --mode=compile --tag=CC gcc -m32
-> -DHAVE_CONFIG_H -I. -I/tmp/xenomai/skins/native/lib -I../../../include
-> -O2 -I/tmp/linux-2.6.13.1/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__
->  -march=i586 -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing
-> -D__IN_XENO__ -Wstrict-prototypes -I../../../include
-> -I/tmp/xenomai/include -I/tmp/xenomai/skins/native/lib/../..    -MT
-> libnative_la-task.lo -MD -MP -MF ".deps/libnative_la-task.Tpo" -c -o
-> libnative_la-task.lo `test -f 'task.c' || echo
-> '/tmp/xenomai/skins/native/lib/'`task.c; \
-> then mv -f ".deps/libnative_la-task.Tpo" ".deps/libnative_la-task.Plo";
-> else rm -f ".deps/libnative_la-task.Tpo"; exit 1; fi
->  gcc -m32 -DHAVE_CONFIG_H -I. -I/tmp/xenomai/skins/native/lib
-> -I../../../include -O2 -I/tmp/linux-2.6.13.1/include -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__ -march=i586 -Wall -pipe -fstrict-aliasing
-> -Wno-strict-aliasing -D__IN_XENO__ -Wstrict-prototypes
-> -I../../../include -I/tmp/xenomai/include
-> -I/tmp/xenomai/skins/native/lib/../.. -MT libnative_la-task.lo -MD -MP
-> -MF .deps/libnative_la-task.Tpo -c /tmp/xenomai/skins/native/lib/task.c
->  -fPIC -DPIC -o .libs/libnative_la-task.o
-> In file included from /tmp/linux-2.6.13.1/include/asm/math_emu.h:4,
->                  from /tmp/linux-2.6.13.1/include/asm/processor.h:11,
->                  from /tmp/linux-2.6.13.1/include/asm/atomic.h:6,
->                  from ../../../include/nucleus/asm/atomic.h:44,
->                  from /tmp/xenomai/include/nucleus/system.h:33,
->                  from /tmp/xenomai/include/nucleus/asm-generic/system.h:560,
->                  from ../../../include/nucleus/asm/system.h:25,
->                  from /tmp/xenomai/include/nucleus/types.h:40,
->                  from /tmp/xenomai/include/nucleus/queue.h:23,
->                  from /tmp/xenomai/include/nucleus/timer.h:23,
->                  from /tmp/xenomai/include/nucleus/thread.h:23,
->                  from /tmp/xenomai/skins/native/lib/../../native/task.h:26,
->                  from /tmp/xenomai/skins/native/lib/task.c:28:
-> /tmp/linux-2.6.13.1/include/asm/sigcontext.h:20: error: redefinition of
-> struct _fpreg
-> /tmp/linux-2.6.13.1/include/asm/sigcontext.h:25: error: redefinition of
-> struct _fpxreg
-> /tmp/linux-2.6.13.1/include/asm/sigcontext.h:31: error: redefinition of
-> struct _xmmreg
-> /tmp/linux-2.6.13.1/include/asm/sigcontext.h:35: error: redefinition of
-> struct _fpstate
-> /tmp/linux-2.6.13.1/include/asm/sigcontext.h:59: error: redefinition of
-> struct sigcontext
+Gilles Chanteperdrix wrote:
+> Heikki Lindholm wrote:
+>  > Jan Kiszka kirjoitti:
+>  > > Heikki Lindholm wrote:
+>  > > 
+>  > >>Jan Kiszka kirjoitti:
+>  > >>
+>  > >>
+>  > >>>Hi,
+>  > >>>
+>  > >>>I'm dumb x86 user who unfortunately just seem to have tumbled in the
+>  > >>>cross-compilation trap: I'm trying to generate i586 code on a fancy new
+>  > >>>and fast x86_64 compilation host. I got the kernel compiled with
+>  > >>>ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
+>  > >>>cross tool chain), but I failed to compile xenomai against that kernel
+>  > >>>in the following. Which magic switch do I have to apply and where?
+>  > >>
+>  > >>
+>  > >>As dumb a guess: -m32 compiler switch?
+>  > >>
+>  > > 
+>  > > 
+>  > > Yes, I know, that would help. But where to feed this argument into the
+>  > > build system?
+>  > 
+>  > I would try makefile (and perhaps config/kconfig/Makefile*) and command 
+>  > line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to be sure.
 > 
-> Any idea where this comes from? If not, I will dig deeper.
+> When using autoconf, you are not supposed to pass compiler flags in
+> CC, CFLAGS and CXXFLAGS are made for that... and the build system is
+> supposed to only touch AM_CFLAGS, so that CFLAGS is let for users, but I
+> am pretty sure this does not work with Xenomai, since we never tried :-)
+
+Indeed. Setting CFLAGS on make overwrites a lot of important stuff, and
+the compilation fails eagerly.
+
+> 
+> As for the compilation for pentium on an x86_64, isn't there any
+> i686-linux-gcc that directly cross compiles for ia32 ?
+> 
+> If not, would not the following wrapper do the trick ?
+> 
+> #! /bin/sh
+> exec `expr "$0" : 'i686-linux-\(.*\)'` -m32r ${1+"$@"}
+> 
+> It should work with most build systems...
 > 
 
-I just analysed this further: the problem disappears when I manually
-remove any "-I<path-to-kernel-includes>" from the makefiles. Seems to be
-the well-known user space include issue again... ;)
+Yes, this seems to work (and fail) just like the "CC=" approach.
 
 Jan
 
---------------enigABB44D8F1260E43EEE53B606
+--------------enig06489F73DF947AE7AFE0A47D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -92,10 +90,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDVK1ancNeS9Q0k+IRAqMuAJ0T4BKD4soBP29DFaWciT5QZykWewCgv2VR
-S37mSmb7aLYBbcF/WJO7aeY=
-=wyA8
+iD8DBQFDVK2pncNeS9Q0k+IRApaeAJwJ2f12dpws9TtlwVsmYJaed/SNagCeN+sP
+ctP9HLt3e/3LKHErnbe6r+4=
+=QL+A
 -----END PGP SIGNATURE-----
 
---------------enigABB44D8F1260E43EEE53B606--
+--------------enig06489F73DF947AE7AFE0A47D--
 
