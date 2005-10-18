@@ -1,13 +1,12 @@
-Message-ID: <434F487A.9060309@domain.hid>
-Date: Fri, 14 Oct 2005 08:56:10 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <001701c5d3f8$388d4660$0600a8c0@domain.hid>
+From: "Marco Cavallini" <rtai@domain.hid>
+Date: Tue, 18 Oct 2005 17:10:27 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Bug tracker.
-References: <17229.31343.98877.781567@domain.hid>	<434DEDDD.4020607@domain.hid>	<17229.64735.691164.146992@domain.hid>	<434E003E.4020604@domain.hid>	<17230.2176.893187.59758@domain.hid>	<434E0C91.1050607@domain.hid>
-	<17230.60977.476892.10184@domain.hid>
-In-Reply-To: <17230.60977.476892.10184@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; format=flowed; charset="Windows-1252";
+	reply-type=original
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai and gdbserver
+Reply-To: Marco Cavallini <rtai@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,34 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix kirjoitti:
-> Heikki Lindholm wrote:
->  > Gilles Chanteperdrix kirjoitti:
->  > > Heikki Lindholm wrote:
->  > >  > There's the "if". What I've seen on sourceforge is that often times bugs 
->  > >  > that are reported on the ml don't appear in the tracker and vice versa, 
->  > >  > although the tracker can probably be configured to forward reports to 
->  > >  > ml, or? Who will type the ml-only reports to the tracker? Btw. would you 
->  > >  > only allow developers to file bugs into the tracker?
->  > > 
->  > > I would use it as a one line answer to bug reports on the mailing
->  > > list... I would prefer users to always post on the mailing list first,
->  > > and if it looks like a real bug, a developer would ask the user to fill
->  > > a bug report.
->  > 
->  > That might work. As a case study of something to avoid: I know at least 
-> 
-> Ok. Have a look and tell me:
-> 
-> https://gna.org/bugs/?func=additem&group=xenomai
+Hi
+I wonder if someone has been able to perform a remote debug with 
+xenomai/fusion.
+I have problems debugging fusion-0.9.1 programs with kernel-2.6.12.2 and 
+Fedora Core 2
+gdb-6.0
 
-Looks good, doesn't place too much burden on the user. One might 
-consider adding "details of the hardware platform used 
-(CPU/chipset/etc)" or similar, because that isn't necessarily obvious 
-from the configs.
+When i run GDB chain and step into rt_task_create(...), GDB prompts "[1]+ 
+Stopped         gdb chain" and
+terminates. I can
+call "gdbserver ipnum:port chain". then connect to it from a remote machine
+using gdb and "target remote..." 
 
--- Heikki Lindholm
 
