@@ -1,10 +1,13 @@
-Message-ID: <13527.193.52.24.125.1129367011.squirrel@domain.hid>
-Date: Sat, 15 Oct 2005 11:03:31 +0200 (CEST)
-From: <smannori@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] XenoPPC:NoAltivec
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17237.22199.793983.902217@domain.hid>
+Date: Tue, 18 Oct 2005 22:10:31 +0200
+Subject: Re: [Xenomai-help] latency_rt: disagrees about version of symbol
+	rt_task_wait_period
+In-Reply-To: <435543AD.4010807@domain.hid>
+References: <435543AD.4010807@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,23 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi:
+Jim Cromie wrote:
+ > 
+ > Im having trouble with built/installed xenomai,
+ > 
+ > soekris:/usr/realtime/2.6.13-ski7-v1# insmod 
+ > testsuite/klatency/latency_rt.ko
+ > latency_rt: disagrees about version of symbol rt_task_delete
+ > latency_rt: Unknown symbol rt_task_delete
+ > latency_rt: disagrees about version of symbol rt_task_wait_period
+ > latency_rt: Unknown symbol rt_task_wait_period
+ > insmod: error inserting 'testsuite/klatency/latency_rt.ko': -1 Unknown 
+ > symbol in module
 
-disabling the Altivec in the kernel "kill" the X server. Anywai I completd
-the Xenomai installation (make menuconfig). Without FP support.
-
-Now the latency test works (26 min) no overrun, max latency = 17us.
-I will leave the PPC machine running ...
-
-I will test the new adeos patch for kernel 2.6.13 this night.
-
-Thanks to everybody
-
-    Simone
+I already saw that, and can not remember where it came from...
+Do you have CONFIG_MODVERSION enabled ?
 
 
+-- 
 
 
+					    Gilles Chanteperdrix.
 
