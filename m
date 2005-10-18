@@ -2,8 +2,8 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17237.17732.539752.179481@domain.hid>
-Date: Tue, 18 Oct 2005 20:56:04 +0200
+Message-ID: <17237.18512.708882.8589@domain.hid>
+Date: Tue, 18 Oct 2005 21:09:04 +0200
 Subject: Re: [Xenomai-help] latency_rt: disagrees about version of symbol
 	rt_task_wait_period
 In-Reply-To: <435543AD.4010807@domain.hid>
@@ -35,10 +35,12 @@ Jim Cromie wrote:
  > 
  > this has been replicated after deleting old tree,
  > and doing a fresh checkout to -r41
+ > 
+ > modinfo reports same vermagic for above module,
+ > and those in modules/xeno*.ko, and Im at a loss wrt how to track this down.
 
-Did you delete your source tree too ? I renamed Kbuild files into
-Makefiles this morning, I can not figure how this could break
-compilation though.
+the rt_task* symbols are defined (or supposed to be) into the
+xeno_native.ko module, which does not seem to appear in your list.
 
 -- 
 
