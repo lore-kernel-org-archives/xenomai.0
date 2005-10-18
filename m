@@ -1,14 +1,25 @@
-Message-ID: <43555033.4010806@domain.hid>
-Date: Tue, 18 Oct 2005 13:42:43 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <43555065.40704@domain.hid>
+Date: Tue, 18 Oct 2005 21:43:33 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] latency_rt: disagrees about version of symbol
-	rt_task_wait_period
-References: <435543AD.4010807@domain.hid>
-	<17237.18512.708882.8589@domain.hid>
-In-Reply-To: <17237.18512.708882.8589@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] compiling xenomai on x86_64
+References: <4353F109.7000707@domain.hid>
+	<4353F411.4000500@domain.hid>
+	<4353F896.1040508@domain.hid>
+	<435402B4.5060004@domain.hid> <435403C8.80400@domain.hid>
+	<43540531.8050304@domain.hid>
+	<435406E0.8020405@domain.hid> <435408E5.8020007@domain.hid>
+	<435419B0.8030004@domain.hid>
+	<4354AD5A.7010305@domain.hid>
+	<17237.13723.766826.515585@domain.hid>
+	<43553F22.80805@domain.hid>
+	<17237.19216.373031.430361@domain.hid>
+	<43554BD2.1050305@domain.hid>
+	<17237.20014.842135.310718@domain.hid>
+In-Reply-To: <17237.20014.842135.310718@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAB650952C6AF9A994A5B2B62"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,55 +32,47 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAB650952C6AF9A994A5B2B62
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
 Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > They are for both. You can compile some helloworld64 by calling gcc
+>  > without arguments or as easily a helloworld32 by running "gcc -m32" -
+>  > all on the same box withouth additional cross-tool stuff.
+> 
+> Ok, the -m32 fix to configure.in is what I can do for now, it is in the
+> repository. Could you try it ?
+> 
 
->Jim Cromie wrote:
-> > 
-> > Im having trouble with built/installed xenomai,
-> > 
-> > soekris:/usr/realtime/2.6.13-ski7-v1# insmod 
-> > testsuite/klatency/latency_rt.ko
-> > latency_rt: disagrees about version of symbol rt_task_delete
-> > latency_rt: Unknown symbol rt_task_delete
-> > latency_rt: disagrees about version of symbol rt_task_wait_period
-> > latency_rt: Unknown symbol rt_task_wait_period
-> > insmod: error inserting 'testsuite/klatency/latency_rt.ko': -1 Unknown 
-> > symbol in module
-> > 
-> > this has been replicated after deleting old tree,
-> > and doing a fresh checkout to -r41
-> > 
-> > modinfo reports same vermagic for above module,
-> > and those in modules/xeno*.ko, and Im at a loss wrt how to track this down.
->
->the rt_task* symbols are defined (or supposed to be) into the
->xeno_native.ko module, which does not seem to appear in your list.
->
->  
->
-its there (along with most skins), just excessive trimming..
+Sorry, this doesn't work (but it was my first guess as well).
 
-soekris:/usr/realtime/2.6.13-ski7-v1/modules# ls
-xeno_16550A.ko  xeno_nucleus.ko  xeno_rtai.ko    xeno_uvm.ko
-xeno_hal.ko     xeno_posix.ko    xeno_rtdm.ko    xeno_vrtx.ko
-xeno_native.ko  xeno_psos.ko     xeno_uitron.ko  xeno_vxworks.ko
-soekris:/usr/realtime/2.6.13-ski7-v1/modules# modinfo xeno_native.ko
-filename:       xeno_native.ko
-description:    Native skin
-author:         rpm@xenomai.org
-license:        GPL
-vermagic:       2.6.13-ski7-v1 preempt GEODEGX1 gcc-3.4
-depends:        xeno_nucleus,xeno_hal
+The problem is that "-m32" comes from the CC-overloading in
+arch/i386/Makefile, and this is not visible to the grabbing trick in
+configure.in. Moreover, this would not address ld and ar flags.
 
-`nm modules/xeno_native.ko` shows me the symbols exist, (but not their 
-'version')
+I'm not deep enough into this to see where one can best get the
+information from. All I know is that - by chance? - RTnet's stolen build
+system did not suffer from this effect the last time I checked. I think
+I will have to re-check.
 
-00000270 T rt_task_create
-00000900 T rt_task_delete
-00001120 T rt_task_inquire
+Jan
 
-00001020 T rt_task_unblock
-00000c30 T rt_task_wait_period
-00000a80 T rt_task_yield
+--------------enigAB650952C6AF9A994A5B2B62
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDVVBmncNeS9Q0k+IRAlMrAKCd0/QEw9XzyYc6trgllji7cy6xFQCgsx7h
+p3rfGQS2uNoKyzqY703G7PU=
+=pIt8
+-----END PGP SIGNATURE-----
+
+--------------enigAB650952C6AF9A994A5B2B62--
 
