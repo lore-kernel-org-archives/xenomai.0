@@ -1,12 +1,12 @@
-content-class: urn:content-classes:message
+From: Romain Lenglet <rlenglet@domain.hid>
+Date: Wed, 19 Oct 2005 19:40:41 +0900
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
-Date: Wed, 19 Oct 2005 12:05:05 +0200
-Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E30@domain.hid>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200510191940.42085.rlenglet@domain.hid>
+Subject: [Xenomai-core] Latest man pages
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,61 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Takis <panagiotis.issaris@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-[...]
->> Load for klatency/latency was ping flooding on FCC (piece of cake),
->> and cache calibrator. IMHO, we can do nastier.
->
->You mean the cache calibrator from http://monetdb.cwi.nl/Calibrator/? I
->tried it on my Ocotea board and it increased the max latency for 25 to
->30 us.
+I have submitted a last patch that adds the last manpages: 
+xeno-info(1) and xeno-test(1)
+https://gna.org/patch/index.php?func=detailitem&item_id=475
 
-Yes, that very one. In this case, it has been used as a cache trashing
-load generator. But IMHO, this Calibrator should be better used in the
-Benchmarking Plan to get L1/L2/RAM access latency figures (w/o RT
-running),
-and offer one more correlation against RT latency results.
-
-We can afford a better cache trashing load generator. Earlier this year,
-I proposed flushy(tm) [1], but as Philippe suggested, we can do better.
-Flushy should be rewritten as an ADEOS layer, inserted just in front of=20
-Xenomai in the pipeline. This way, we would be sure the caches
-are dead cold when Xenomai enter its domain. Using tools like OProfile,
-it should be possible then to track cache misses, and fix them=20
-by prefetching, where available.
-
-[1] http://rtai.dk/cgi-bin/gratiswiki.pl?Latency_Killer (bottom of page)
+The manpage for xeno-test also documents the options for latency 
+and klatency, since xeno-test's options are a superset of their 
+options.
 
 
-Here is the result of my 1.0-01 tests on e500:
+Please apply this patch after my two last patches, thanks.
 
-$ cat /proc/ipipe/version
-1.0-01
-
-SWITCH without load:
-RTH|     lat min|     lat avg|     lat max|        lost
-RTD|        3660|        3690|        8070|           0	1.0-00
-RTD|        4620|        4740|        8730|           0	1.0-01
-
-KLATENCY with load:
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-RTS|       -7350|       -5715|        6420|       0|    00:03:17 1.0-00
-RTS|       -6150|       -4384|       12180|       0|    00:03:13 1.0-01
-
-LATENCY with load:
-=3D=3D Sampling period: 100 us
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-RTS|       -6930|       -4260|        8700|       0|    00:08:06 1.0-00
-RTS|       -5670|       -4620|       12930|       0|    00:12:39 1.0-01
-
-That's weird. Figures are worse, but since the load (ping -f +
-calibrator)
-was executed manually, it may not be the same.
-
---=20
-Stephane
-
+-- 
+Romain Lenglet
 
