@@ -1,12 +1,10 @@
-Message-ID: <4356267B.6020402@domain.hid>
-Date: Wed, 19 Oct 2005 12:56:59 +0200
+Message-ID: <4356274A.5010004@domain.hid>
+Date: Wed, 19 Oct 2005 13:00:26 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai latency tests on various PowerPC boards
-References: <4354C0A9.5060901@domain.hid> <4354DB29.9060004@domain.hid>
-	<4354E039.9010305@domain.hid> <4354E6A3.2010500@domain.hid>
-	<43553B94.4070801@domain.hid> <43560550.5070706@domain.hid>
-In-Reply-To: <43560550.5070706@domain.hid>
+Subject: Re: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
+References: <1CFEB358338412458B21FAA0D78FE86D4F0E30@domain.hid>
+In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D4F0E30@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -18,116 +16,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Fillod Stephane <stephane.fillod@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> On 10/18/2005 08:14 PM Philippe Gerum wrote:
+Fillod Stephane wrote:
+> Wolfgang Grandegger wrote:
+> [...]
 > 
->>Wolfgang Grandegger wrote:
+>>>Load for klatency/latency was ping flooding on FCC (piece of cake),
+>>>and cache calibrator. IMHO, we can do nastier.
 >>
->>>On 10/18/2005 01:44 PM Philippe Gerum wrote:
->>>
->>>
->>>>Philippe Gerum wrote:
->>>>
->>>>
->>>>>Wolfgang Grandegger wrote:
->>>>>
->>>>>
->>>>>
->>>>>>Hallo,
->>>>>>
->>>>>>attached you will find the results of Xemonai latency measurements on
->>>>>>various embedded PowerPC boards using MPC 8xx and AMCC 4xx processors,
->>>>>
->>>>>>from low to high end covering a worst case latency range from 25 to 225
->>>>>
->>>>>>us. It also includes a comparison with RTAI 3.0r5 on the slowest CPU.
->>>>>>Here are some remarks and comments:
->>>>>>
->>>>>>- On low-end processor code size matters a lot and it's difficult to
->>>>>> beat RTAI/RTHAL.
->>>>>>
->>>>>
->>>>>Beat no, get closer, yes, probably. The good news is that looking at the 
->>>>>figures, we do have a margin of improvement! :o>
->>>>>
->>>>>Btw, the nucleus can be configured so that the user-space threading 
->>>>>engine is compiled out (i.e. CONFIG_XENO_OPT_PERVASIVE from the nucleus 
->>>>>menu), which would be the corresponding profile to compare with klatency 
->>>>>(i.e. sched_up). Disabling this option reduces the code size for the 
->>>>>nucleus from:
->>>>>
->>>>>  text       data        bss        dec        hex    filename
->>>>> 66740        792       6540      74072      12158    
->>>>>nucleus/xeno_nucleus.ko
->>>>>
->>>>>to:
->>>>>
->>>>> text       data        bss        dec        hex    filename
->>>>> 52596        576       3956      57128       df28    
->>>>>nucleus/xeno_nucleus.ko
->>>>>
->>>>
->>>>Disabling the periodic timer support which is unused for the klatency test 
->>>>brings this down to:
->>>>
->>>>   text	   data	    bss	    dec	    hex	filename
->>>>  51040	    544	   3956	  55540	   d8f4	nucleus/xeno_nucleus.ko
->>>
->>>
->>>OK, here are the new figures with (*)
->>>
->>> CONFIG_XENO_OPT_PERVASIVE is not set
->>> CONFIG_XENO_HW_PERIODIC_TIMER is not set:
->>>
->>>           |-----lat min|-----lat avg|-----lat max|-overrun|---test-time
->>>RTAI 3.0r5 |       23120|       31838|       70520|       ?|    00:12:26
->>>Xenomai    |       50560|       98976|      199040|       0|    00:09:45
->>>Xenomai (*)|       44160|       96215|      200640|       0|    00:09:53
->>>
->>>The min latency decreases as expected.
->>>
->>
->>I just discovered that -00 did not include some recent changes I had in my tree, 
->>aimed at prevent high latencies during fork pressure. I've committed -01 which 
->>does include them. When time allows, I'd be interested to know if this has some 
->>impact on the Ocotea figures. TIA,
+>>You mean the cache calibrator from http://monetdb.cwi.nl/Calibrator/? I
+>>tried it on my Ocotea board and it increased the max latency for 25 to
+>>30 us.
 > 
 > 
-> bash-2.05b# cat /proc/ipipe/version
+> Yes, that very one. In this case, it has been used as a cache trashing
+> load generator. But IMHO, this Calibrator should be better used in the
+> Benchmarking Plan to get L1/L2/RAM access latency figures (w/o RT
+> running),
+> and offer one more correlation against RT latency results.
+> 
+> We can afford a better cache trashing load generator. Earlier this year,
+> I proposed flushy(tm) [1], but as Philippe suggested, we can do better.
+> Flushy should be rewritten as an ADEOS layer, inserted just in front of 
+> Xenomai in the pipeline. This way, we would be sure the caches
+> are dead cold when Xenomai enter its domain. Using tools like OProfile,
+> it should be possible then to track cache misses, and fix them 
+> by prefetching, where available.
+> 
+> [1] http://rtai.dk/cgi-bin/gratiswiki.pl?Latency_Killer (bottom of page)
+> 
+> 
+> Here is the result of my 1.0-01 tests on e500:
+> 
+> $ cat /proc/ipipe/version
 > 1.0-01
 > 
 > SWITCH without load:
-> 
-> == Sampling period: 100 us
 > RTH|     lat min|     lat avg|     lat max|        lost
-> RTD|        5158|        5169|       10038|           0   iPipe 1.0-00
-> RTD|        5145|        5154|       10166|           0   iPipe 1.0-01
+> RTD|        3660|        3690|        8070|           0	1.0-00
+> RTD|        4620|        4740|        8730|           0	1.0-01
 > 
 > KLATENCY with load:
-> 
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTS|        2953|        5974|       19147|       0|    00:12:05 1.0-00
-> RTS|        3035|        8705|       20705|       0|    00:09:54 1.0-01
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
+> RTS|       -7350|       -5715|        6420|       0|    00:03:17 1.0-00
+> RTS|       -6150|       -4384|       12180|       0|    00:03:13 1.0-01
 > 
 > LATENCY with load:
-> 
 > == Sampling period: 100 us
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTS|        3575|        7438|       24474|       0|    00:10:50 1.0-00
-> RTS|        3553|       10125|       23970|       0|    00:09:41 1.0-01
-
-Mmm, average even looks worse for both latency tests.
-
-> It has no significant impact, I think.
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
+> RTS|       -6930|       -4260|        8700|       0|    00:08:06 1.0-00
+> RTS|       -5670|       -4620|       12930|       0|    00:12:39 1.0-01
+> 
+> That's weird. Figures are worse, but since the load (ping -f +
+> calibrator)
+> was executed manually, it may not be the same.
 > 
 
-Ok, thanks. The same fix is worth 10 us on high-end x86 boxen, so I wondered if 
-the same could apply to ppc as well.
+Ok, I now suspect that another change regarding the size of the interrupt 
+counters made this worse. I'm going to revert it and upload -02, just to make sure.
 
 -- 
 
