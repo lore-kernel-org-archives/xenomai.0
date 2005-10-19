@@ -1,35 +1,38 @@
-Message-ID: <4353F411.4000500@domain.hid>
-Date: Mon, 17 Oct 2005 21:57:21 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <489ecd0c0510182024s4fd894bavdf070cec603d8000@domain.hid>
+Date: Wed, 19 Oct 2005 11:24:30 +0800
+From: Luke Yang <luke.adi@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>
-In-Reply-To: <4353F109.7000707@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Adeos-main] newbie questions
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Jan Kiszka kirjoitti:
-> Hi,
-> 
-> I'm dumb x86 user who unfortunately just seem to have tumbled in the
-> cross-compilation trap: I'm trying to generate i586 code on a fancy new
-> and fast x86_64 compilation host. I got the kernel compiled with
-> ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
-> cross tool chain), but I failed to compile xenomai against that kernel
-> in the following. Which magic switch do I have to apply and where?
+Hi,
 
-As dumb a guess: -m32 compiler switch?
+   I am an adeos newbie from ADI's blackfin team. I overviewed some
+papers/code from adeos. Now I have some questions:
 
--- Heikki Lindholm
+  1. Is there any guide/getting-started document on how to start an
+example of running 2 OS on adeos in an x86/arm?
+
+   2. Besides Linux as root domain os and adeos started as a module in
+Linux, how is the other OS started? also as a module in root Linux?
+
+   3. Which RTOSes have been ported to run on adeos? I saw some
+documents about porting RTAI to adeos. How about others? Is there any
+RTOS running on ARM adeos?
+
+  Thank you in advance!
+
+Regards,
+Luke Yang
 
