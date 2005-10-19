@@ -1,12 +1,14 @@
-content-class: urn:content-classes:message
+Message-ID: <43560550.5070706@domain.hid>
+Date: Wed, 19 Oct 2005 10:35:28 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] Cosmetic changes to script xeno-config + man page
-Date: Wed, 19 Oct 2005 10:15:16 +0200
-Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E2E@rennsmail02.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai latency tests on various PowerPC boards
+References: <4354C0A9.5060901@domain.hid> <4354DB29.9060004@domain.hid>
+	<4354E039.9010305@domain.hid> <4354E6A3.2010500@domain.hid>
+	<43553B94.4070801@domain.hid>
+In-Reply-To: <43553B94.4070801@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,30 +18,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> > Romain Lenglet wrote:
-> > [..]
-> > >I found a better solution, that could be a replacement for both a=20
-> > >xenomai.m4 trick, and the xeno-config script: pkg-config.
-> > >http://pkgconfig.freedesktop.org/wiki/
-> > >There are packages for pkgconfig in both Debian and RedHat,=20
-> > >AFAIK, and surely for all other distribs.
-> > >
-> > >I will look into making a xenomai.pc file.
-> >=20
-> > Make it a xenomai.pc.in file   ;-)
->
-> I am not sure we want to depend on pkg-config...
+On 10/18/2005 08:14 PM Philippe Gerum wrote:
+> Wolfgang Grandegger wrote:
+>> On 10/18/2005 01:44 PM Philippe Gerum wrote:
+>> 
+>>>Philippe Gerum wrote:
+>>>
+>>>>Wolfgang Grandegger wrote:
+>>>>
+>>>>
+>>>>>Hallo,
+>>>>>
+>>>>>attached you will find the results of Xemonai latency measurements on
+>>>>>various embedded PowerPC boards using MPC 8xx and AMCC 4xx processors,
+>>>>>from low to high end covering a worst case latency range from 25 to 225
+>>>>>us. It also includes a comparison with RTAI 3.0r5 on the slowest CPU.
+>>>>>Here are some remarks and comments:
+>>>>>
+>>>>>- On low-end processor code size matters a lot and it's difficult to
+>>>>>  beat RTAI/RTHAL.
+>>>>>
+>>>>
+>>>>Beat no, get closer, yes, probably. The good news is that looking at the 
+>>>>figures, we do have a margin of improvement! :o>
+>>>>
+>>>>Btw, the nucleus can be configured so that the user-space threading 
+>>>>engine is compiled out (i.e. CONFIG_XENO_OPT_PERVASIVE from the nucleus 
+>>>>menu), which would be the corresponding profile to compare with klatency 
+>>>>(i.e. sched_up). Disabling this option reduces the code size for the 
+>>>>nucleus from:
+>>>>
+>>>>   text       data        bss        dec        hex    filename
+>>>>  66740        792       6540      74072      12158    
+>>>>nucleus/xeno_nucleus.ko
+>>>>
+>>>>to:
+>>>>
+>>>>  text       data        bss        dec        hex    filename
+>>>>  52596        576       3956      57128       df28    
+>>>>nucleus/xeno_nucleus.ko
+>>>>
+>>>
+>>>Disabling the periodic timer support which is unused for the klatency test 
+>>>brings this down to:
+>>>
+>>>    text	   data	    bss	    dec	    hex	filename
+>>>   51040	    544	   3956	  55540	   d8f4	nucleus/xeno_nucleus.ko
+>> 
+>> 
+>> OK, here are the new figures with (*)
+>> 
+>>  CONFIG_XENO_OPT_PERVASIVE is not set
+>>  CONFIG_XENO_HW_PERIODIC_TIMER is not set:
+>> 
+>>            |-----lat min|-----lat avg|-----lat max|-overrun|---test-time
+>> RTAI 3.0r5 |       23120|       31838|       70520|       ?|    00:12:26
+>> Xenomai    |       50560|       98976|      199040|       0|    00:09:45
+>> Xenomai (*)|       44160|       96215|      200640|       0|    00:09:53
+>> 
+>> The min latency decreases as expected.
+>> 
+> 
+> I just discovered that -00 did not include some recent changes I had in my tree, 
+> aimed at prevent high latencies during fork pressure. I've committed -01 which 
+> does include them. When time allows, I'd be interested to know if this has some 
+> impact on the Ocotea figures. TIA,
 
-Gilles, put it the other way around. Xenomai won't depend on pkg-config,
-but applications using Xenomai, will happily depend on it, if they
-choose this option. To me, pkg-config shouldn't be a replacement,
-but an alternative choice to xeno-config.
+bash-2.05b# cat /proc/ipipe/version
+1.0-01
 
---=20
-Stephane
+SWITCH without load:
 
+== Sampling period: 100 us
+RTH|     lat min|     lat avg|     lat max|        lost
+RTD|        5158|        5169|       10038|           0   iPipe 1.0-00
+RTD|        5145|        5154|       10166|           0   iPipe 1.0-01
+
+KLATENCY with load:
+
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTS|        2953|        5974|       19147|       0|    00:12:05 1.0-00
+RTS|        3035|        8705|       20705|       0|    00:09:54 1.0-01
+
+LATENCY with load:
+
+== Sampling period: 100 us
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTS|        3575|        7438|       24474|       0|    00:10:50 1.0-00
+RTS|        3553|       10125|       23970|       0|    00:09:41 1.0-01
+
+It has no significant impact, I think.
+
+Wolfgang.
 
