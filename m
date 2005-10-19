@@ -1,12 +1,11 @@
-Message-ID: <435678B6.5070002@domain.hid>
-Date: Wed, 19 Oct 2005 19:47:50 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <43568931.8070902@domain.hid>
+Date: Wed, 19 Oct 2005 19:58:09 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Autotools versions
-References: <435676B1.6090900@domain.hid> <43567794.5050009@domain.hid>
-In-Reply-To: <43567794.5050009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDF1290C44DB2387970CAAB29"
+Subject: [Xenomai-core] [patch] doc fix in rtdm
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,28 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum kirjoitti:
-> Heikki Lindholm wrote:
-> 
->> Hello,
->>
->> To whoever knows: What versions of the various autotools are used to 
->> generate the (svn) makefiles at the moment?
-> 
-> 
-> o autoconf 2.59
-> o automake 1.9.5
-> o aclocal 1.9.5
-> o libtool 1.5.6
-> 
-> We always document this in the README.INSTALL (see 1.6).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDF1290C44DB2387970CAAB29
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Cool. I automatically - and wrongfully - assumed that READMEs aren't 
-up-to-date.
+Hi,
 
--- Heikki Lindholm
+someone ;) complained about this statement regarding
+rtdm_task_busy_sleep. I think he is right.
 
+--- drvlib.c    (revision 44)
++++ drvlib.c    (working copy)
+@@ -335,7 +335,7 @@
+  * - Kernel-based task
+  * - User-space task (RT, non-RT)
+  *
+- * Rescheduling: always.
++ * Rescheduling: never.
+  */
+ void rtdm_task_busy_sleep(__u64 delay)
+ {
+
+Jan
+
+
+--------------enigDF1290C44DB2387970CAAB29
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDVokxncNeS9Q0k+IRArOdAJ4ztxQG3ZR2N5+FTrVVT4J5W41IxgCfcTie
+1oqEml1NgnFJqUOnUdKfIvQ=
+=l4Ee
+-----END PGP SIGNATURE-----
+
+--------------enigDF1290C44DB2387970CAAB29--
 
