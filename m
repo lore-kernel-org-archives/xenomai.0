@@ -1,12 +1,12 @@
-Message-ID: <43560DCC.9040606@domain.hid>
-Date: Wed, 19 Oct 2005 11:11:40 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
-References: <1CFEB358338412458B21FAA0D78FE86D4F0E28@domain.hid>
-In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D4F0E28@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
+Date: Wed, 19 Oct 2005 12:05:05 +0200
+Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E30@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,46 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Takis <panagiotis.issaris@domain.hid>, xenomai@xenomai.org
 
-On 10/17/2005 05:42 PM Fillod Stephane wrote:
-> Hi Philippe,
-> 
-> Sorry for the late report, Xenomai appears to work fine on a Freescale
-> e500
-> board (MPC8541E) under Linux 2.6.13. Xenomai version was v1.9.9, ie. the
-> daily
-> snapshot as of today. Here are some preliminary figures (CPU 800MHz, Bus
-> 133MHz, 
-> 32 kiB I-Cache 32 kiB D-Cache, 256 kiB L2):
-> 
-> switch $ ./run
-> == Sampling period: 100 us
-> RTH|     lat min|     lat avg|     lat max|        lost
-> RTD|        3660|        3690|        8070|           0
-> 
-> kaltency $ ./run
-> RTH|----klat min|----klat avg|----klat max| overrun|
-> RTS|       -7350|       -5715|        6420|       0|
-> 00:03:17/00:03:17
-> 
-> latency $ ./run
-> == Sampling period: 100 us
-> RTT|  00:08:04
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-> RTS|       -6930|       -4260|        8700|       0|
-> 00:08:06/00:08:06
-> 
-> Load for klatency/latency was ping flooding on FCC (piece of cake),
-> and cache calibrator. IMHO, we can do nastier.
+Wolfgang Grandegger wrote:
+[...]
+>> Load for klatency/latency was ping flooding on FCC (piece of cake),
+>> and cache calibrator. IMHO, we can do nastier.
+>
+>You mean the cache calibrator from http://monetdb.cwi.nl/Calibrator/? I
+>tried it on my Ocotea board and it increased the max latency for 25 to
+>30 us.
 
-You mean the cache calibrator from http://monetdb.cwi.nl/Calibrator/? I
-tried it on my Ocotea board and it increased the max latency for 25 to
-30 us.
+Yes, that very one. In this case, it has been used as a cache trashing
+load generator. But IMHO, this Calibrator should be better used in the
+Benchmarking Plan to get L1/L2/RAM access latency figures (w/o RT
+running),
+and offer one more correlation against RT latency results.
 
-Thanks.
+We can afford a better cache trashing load generator. Earlier this year,
+I proposed flushy(tm) [1], but as Philippe suggested, we can do better.
+Flushy should be rewritten as an ADEOS layer, inserted just in front of=20
+Xenomai in the pipeline. This way, we would be sure the caches
+are dead cold when Xenomai enter its domain. Using tools like OProfile,
+it should be possible then to track cache misses, and fix them=20
+by prefetching, where available.
 
-Wolfgang.
+[1] http://rtai.dk/cgi-bin/gratiswiki.pl?Latency_Killer (bottom of page)
+
+
+Here is the result of my 1.0-01 tests on e500:
+
+$ cat /proc/ipipe/version
+1.0-01
+
+SWITCH without load:
+RTH|     lat min|     lat avg|     lat max|        lost
+RTD|        3660|        3690|        8070|           0	1.0-00
+RTD|        4620|        4740|        8730|           0	1.0-01
+
+KLATENCY with load:
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|
+RTS|       -7350|       -5715|        6420|       0|    00:03:17 1.0-00
+RTS|       -6150|       -4384|       12180|       0|    00:03:13 1.0-01
+
+LATENCY with load:
+=3D=3D Sampling period: 100 us
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|
+RTS|       -6930|       -4260|        8700|       0|    00:08:06 1.0-00
+RTS|       -5670|       -4620|       12930|       0|    00:12:39 1.0-01
+
+That's weird. Figures are worse, but since the load (ping -f +
+calibrator)
+was executed manually, it may not be the same.
+
+--=20
+Stephane
 
 
