@@ -1,12 +1,15 @@
-Message-ID: <4350D182.5060608@domain.hid>
-Date: Sat, 15 Oct 2005 11:53:06 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4357C464.5050206@domain.hid>
+Date: Thu, 20 Oct 2005 18:23:00 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] XenoPPC:NoAltivec
-References: <13527.193.52.24.125.1129367011.squirrel@domain.hid>
-In-Reply-To: <13527.193.52.24.125.1129367011.squirrel@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Replacement for rt_save_flags_and_cli
+References: <40292.128.93.15.41.1129793705.squirrel@domain.hid>
+	<435766D6.6090605@domain.hid> <43576FA9.6010202@domain.hid>
+	<4357C11B.3080103@domain.hid>
+In-Reply-To: <4357C11B.3080103@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEA179018D21D82736F7EF980"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,37 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
+To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 10/15/2005 11:03 AM smannori@domain.hid wrote:
-> Hi:
-> 
-> disabling the Altivec in the kernel "kill" the X server. Anywai I completd
-> the Xenomai installation (make menuconfig). Without FP support.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEA179018D21D82736F7EF980
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I also observed big latencies with X running on my iBook2.
+Ignacio Garc=EDa P=E9rez wrote:
+> Philippe Gerum wrote:
+>=20
+>=20
+>>Ignacio Garc=EDa P=E9rez wrote:
+>>
+>>
+>>>Hi,
+>>>
+>>>Porting app from RTAI. Just another newbie question. Is there a
+>>>substitute for rt_save_flags_and_cli / rt_restore_flags ?.
+>>
+>>
+>>See include/nucleus/asm-generic/hal.h:
+>>
+>>#define rthal_local_irq_save(x)  =20
+>>#define rthal_local_irq_restore(x)
+>=20
+>=20
+> Thanks. I just found the following functions in
+> include/nucleus/asm-generic/system.h
+>=20
+> xnlock_get_irqsave
+> xnlock_put_irqrestore
+> xnlock_clear_irqoff
+> xnlock_clear_irqon
+>=20
+> They're just #defines to the rthal_ functions.
+>=20
+> Should I use rthal_* or xnlock_* ?
 
-> Now the latency test works (26 min) no overrun, max latency = 17us.
-> I will leave the PPC machine running ...
+I would suggest xnlock_, because this is the higher abstraction layer
+(the nucleus on top of the hal).
 
-Is this figure with load, e.g. using "ping -f" of some kind of disk access?
+But: both primitives are rather low-level. Do you really need that
+"hard" locks? What are you synchronising this way, IRQ handlers with
+tasks, tasks with other tasks?
 
-> I will test the new adeos patch for kernel 2.6.13 this night.
-> 
-> Thanks to everybody
-> 
->     Simone
-> 
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
+>=20
+> By the way, so far I'm uttery in love with the clean, consistent API of=
 
+> the native skin.
+
+Would you like to forward this statement to a specific mailing list of a
+formely related project? ;) (only kidding, just had to smile)
+
+Jan
+
+
+--------------enigEA179018D21D82736F7EF980
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDV8RkncNeS9Q0k+IRAh7JAJ90po7xj5w0PUUj3BfQTfgS67KVRACfV5nZ
+UDRoqcFhyY3tQtL0nvztvTQ=
+=BQaP
+-----END PGP SIGNATURE-----
+
+--------------enigEA179018D21D82736F7EF980--
 
