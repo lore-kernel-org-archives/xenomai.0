@@ -1,14 +1,14 @@
-Message-ID: <4357C9F7.2060808@domain.hid>
-Date: Thu, 20 Oct 2005 18:46:47 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4357CC7D.2030907@domain.hid>
+Date: Thu, 20 Oct 2005 18:57:33 +0200
+From: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] timeout in native API calls (cond, sem, mutex,
-	etc).
-References: <4357C3E1.1040701@domain.hid>
-In-Reply-To: <4357C3E1.1040701@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD4696C0D58613DB16E59E354"
+Subject: Re: [Xenomai-help] Replacement for rt_save_flags_and_cli
+References: <40292.128.93.15.41.1129793705.squirrel@domain.hid>
+	<435766D6.6090605@domain.hid> <43576FA9.6010202@domain.hid>
+	<4357C11B.3080103@domain.hid> <4357C464.5050206@domain.hid>
+In-Reply-To: <4357C464.5050206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,80 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD4696C0D58613DB16E59E354
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
 
-Ignacio Garc=EDa P=E9rez wrote:
-> Hi,
->=20
-> While porting my application, I noticed that all synchronization
-> primitives locking calls take a relative timeout as a parameter, right?=
+>>Thanks. I just found the following functions in
+>>include/nucleus/asm-generic/system.h
+>>
+>>xnlock_get_irqsave
+>>xnlock_put_irqrestore
+>>xnlock_clear_irqoff
+>>xnlock_clear_irqon
+>>
+>>They're just #defines to the rthal_ functions.
+>>
+>>Should I use rthal_* or xnlock_* ?
+>>    
+>>
+>
+>I would suggest xnlock_, because this is the higher abstraction layer
+>(the nucleus on top of the hal).
+>  
+>
+That's just what I thought.
 
->=20
-> Of course, I can get the current time, calculate the timeout interval b=
-y
-> substracting the current time from the desired timeout moment, and call=
+>But: both primitives are rather low-level. Do you really need that
+>"hard" locks? What are you synchronising this way, IRQ handlers with
+>tasks, tasks with other tasks?
+>  
+>
+An IRQ handler with a task.
 
-> the function. But wouldn't something like this be possible?:
->=20
-> Suppose I want to wait on a semaphore until t=3D1000, and now=3D900.
->=20
-> 1- I get current time (900).
-> 2- I calculate the relative timeout as 1000-900 =3D 100
-> 3- I call rt_sem_p(&mysem, 100);
->=20
-> In the best case, no preemption will occur between steps 1 and 3, but m=
-y
-> thread will still be sleeping not until t=3D1000, but until some time
-> later, t=3D1000+d, where d is the time used by the code in steps 1-3 an=
-d
-> into the native skin/nucleus.
->=20
-> In the worst case, in addition to that, the thread will be preempted
-> between steps 1 and 3. If it is preempted by another higher priority
-> thread for, say, 50 ticks, and the call in step 3 is actually executed
-> at t=3D950, the thread will be sleeping until t=3D1050+d, which may not=
- be
-> acceptable.
->=20
-> What do you think?
+Yeah, I know I could just use rt_intr_disable on that interrupt object,
+but for reasons too long to explain, the it is encapsulated in a piece
+of code and I'd rather not allow other code to see it. Probably not a
+good design but at this stage of the port, I'd like to get it working
+under xenomai with as little modifications as possible.
 
-That's true, having to convert between absolute and relative time (and
-vice versa) in interruptible contexts can cause problems if the
-application is not prepared for it.
+Another place I've used it sometimes is substituting a mutex for very
+short pieces of code such as:
 
-The question is: do you really need that precise timeouts for
-synchronisation primitives? Typically, timeouts are used here to detect
-errors (someone else failed to signal), and you don't have to detect
-them that precisely - typically.
+cli()
+a = b + c;
+sti()
 
-An exception is when you want to maintain a single timeout across
-multiple blocking calls. Then you could create a timer instead that
-unblocks your infinitely waiting task when being triggered. Just as
-timing out, unblocking also gives you an error when returning from the
-blocking call.
+It is usually more efficient that using a mutex, and this may be
+important in low-end processors with little horsepower.
 
-Jan
+>>By the way, so far I'm uttery in love with the clean, consistent API of
+>>the native skin.
+>>    
+>>
+>
+>Would you like to forward this statement to a specific mailing list of a
+>formely related project? ;) (only kidding, just had to smile)
+>  
+>
+Man, you just read my mind :-)
 
+I just have to say it:
 
---------------enigD4696C0D58613DB16E59E354
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+1- It is amazing that fusion has progressed from conception to its
+actual usable, stable state in such a short time.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+2- In general, I appreciate good design and robustness over efficiency
+and other issues, but IMHO, for real-time systems it must be the number
+one priority, which I'm not sure it was in the "formerly related
+project". Too many large changes in too many time.
 
-iD8DBQFDV8n3ncNeS9Q0k+IRAiuqAKCx9mXjTaq+99uXGNsOKAhWI3HoBgCg6G0j
-ognhN/Do5dqRYQpo4Flnpyc=
-=2t4q
------END PGP SIGNATURE-----
+3- The patent issue may not be a priority in the academic world, but it
+definitely is for industrial applications.
 
---------------enigD4696C0D58613DB16E59E354--
+Nacho.
+
 
