@@ -1,10 +1,15 @@
-Message-ID: <1146.193.52.24.125.1129357068.squirrel@domain.hid>
-Date: Sat, 15 Oct 2005 08:17:48 +0200 (CEST)
-From: <smannori@domain.hid>
+Message-ID: <4357D4D2.1030400@domain.hid>
+Date: Thu, 20 Oct 2005 19:33:06 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] XenoPPC : Latency test results
+Subject: Re: [Xenomai-help] timeout in native API calls          (cond, sem,
+	mutex, etc).
+References: <4357C3E1.1040701@domain.hid> <4357C9F7.2060808@domain.hid>
+	<4357CF67.8080601@domain.hid>
+In-Reply-To: <4357CF67.8080601@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1545FBFBC381B3CCA716763D"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,114 +19,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1545FBFBC381B3CCA716763D
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-if I run the latency test and I contunue to use the PPC as usual, after a
-while, I noticed some overruns (see report below).
+Ignacio Garc=EDa P=E9rez wrote:
+> Jan Kiszka wrote:
+>=20
+>=20
+>>Ignacio Garc=EDa P=E9rez wrote:
+>>=20
+>>
+>>
+>>>Hi,
+>>>
+>>>While porting my application, I noticed that all synchronization
+>>>primitives locking calls take a relative timeout as a parameter, right=
+?
+>>>
+>>>Of course, I can get the current time, calculate the timeout interval =
+by
+>>>substracting the current time from the desired timeout moment, and cal=
+l
+>>>the function. But wouldn't something like this be possible?:
+>>>
+>>>Suppose I want to wait on a semaphore until t=3D1000, and now=3D900.
+>>>
+>>>1- I get current time (900).
+>>>2- I calculate the relative timeout as 1000-900 =3D 100
+>>>3- I call rt_sem_p(&mysem, 100);
+>>>
+>>>In the best case, no preemption will occur between steps 1 and 3, but =
+my
+>>>thread will still be sleeping not until t=3D1000, but until some time
+>>>later, t=3D1000+d, where d is the time used by the code in steps 1-3 a=
+nd
+>>>into the native skin/nucleus.
+>>>
+>>>In the worst case, in addition to that, the thread will be preempted
+>>>between steps 1 and 3. If it is preempted by another higher priority
+>>>thread for, say, 50 ticks, and the call in step 3 is actually executed=
 
-Question: it is a serious problems or a normal behavior ?
+>>>at t=3D950, the thread will be sleeping until t=3D1050+d, which may no=
+t be
+>>>acceptable.
+>>>
+>>>What do you think?
+>>>  =20
+>>>
+>>
+>>That's true, having to convert between absolute and relative time (and
+>>vice versa) in interruptible contexts can cause problems if the
+>>application is not prepared for it.
+>>
+>>The question is: do you really need that precise timeouts for
+>>synchronisation primitives?
+>>
+>=20
+> Yes I do. In my application, there is a free-run periodic execution
+> thread that gets once in a while synchronized to an external event.
+>=20
+> This thread waits on a semaphore with an absolute timeout of t, does it=
+s
+> work, calculates t =3D t + period and waits again on the semaphore. If =
+the
+> external event signals the semaphore, the thread wakes up immediately
+> and does some slightly different stuff.
+>=20
+> The thing is, I want the free-run thread to execute at 2 KHz, this is,
+> every 5 ms. If I use a relative time, I face the problem I described.
+>=20
+> I guess I could get it working properly using a periodic thread, but I'=
+m
+> sure it's not as simple (and does not "feel" as natural) as just waitin=
+g
+> on the synchronization primitive using an absolute timeout.
 
-                Simone
+I see.
 
-"Il mattino ha l'oro in bocca"
---------------------------------------------------------------------------
+>=20
+> I really really think there should be, for each call that takes a
+> timeout, two version, one that takes a relative timeout and another tha=
+t
+> takes an absolute timeout.
+>=20
+> Any chances of this being implemented in the current native API?
+>=20
 
-..................
-RTT|  00:19:58
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-RTD|      -13400|      -12532|        7486|       5|      -13400|      152777
-RTD|      -13346|      -12532|        9602|       5|      -13400|      152777
-RTD|      -13346|      -12532|        4340|       5|      -13400|      152777
-RTD|      -13400|      -12532|       -1627|       5|      -13400|      152777
-RTD|      -13346|      -12044|        4231|       5|      -13400|      152777
-RTD|      -13400|      -12369|       -3580|       5|      -13400|      152777
-RTD|      -13346|      -12478|        2495|       5|      -13400|      152777
-RTD|      -13292|      -12532|        6130|       5|      -13400|      152777
-RTD|      -13346|      -12478|       10362|       5|      -13400|      152777
-RTD|      -13400|      -12478|       -6239|       5|      -13400|      152777
----|--param|----range-|--samples
-HSD|    min|  12 - 13 |       71
-HSD|    min|  13 - 14 |     1136
----|--param|----range-|--samples
-HSD|    avg|   0 -  1 |      538
-HSD|    avg|   1 -  2 |      515
-HSD|    avg|   2 -  3 |      458
-HSD|    avg|   3 -  4 |      498
-HSD|    avg|   4 -  5 |      563
-HSD|    avg|   5 -  6 |      773
-HSD|    avg|   6 -  7 |     2092
-HSD|    avg|   7 -  8 |     7197
-HSD|    avg|   8 -  9 |    51929
-HSD|    avg|   9 - 10 |   306348
-HSD|    avg|  10 - 11 |   552698
-HSD|    avg|  11 - 12 |   583088
-HSD|    avg|  12 - 13 | 10567490
-HSD|    avg|  13 - 14 |     4511
-HSD|    avg|  14 - 15 |       31
-HSD|    avg|  15 - 16 |       31
-HSD|    avg|  16 - 17 |       21
-HSD|    avg|  17 - 18 |       34
-HSD|    avg|  18 - 19 |       12
-HSD|    avg|  19 - 20 |        5
-HSD|    avg|  20 - 21 |        4
-HSD|    avg|  21 - 22 |        1
-HSD|    avg|  23 - 24 |        2
-HSD|    avg|  25 - 26 |        1
-HSD|    avg|  26 - 27 |        1
-HSD|    avg|  29 - 30 |        2
-HSD|    avg|  36 - 37 |        1
-HSD|    avg|  39 - 40 |        1
-HSD|    avg|  43 - 44 |        1
-HSD|    avg|  51 - 52 |        1
-HSD|    avg|  55 - 56 |        1
-HSD|    avg|  56 - 57 |        1
-HSD|    avg|  60 - 61 |        1
-HSD|    avg|  65 - 66 |        1
-HSD|    avg|  70 - 71 |        1
-HSD|    avg|  74 - 75 |        1
-HSD|    avg|  91 - 92 |        1
-HSD|    avg|  96 - 97 |        1
-HSD|    avg|  99 -100 |        2
----|--param|----range-|--samples
-HSD|    max|   0 -  1 |      133
-HSD|    max|   1 -  2 |      126
-HSD|    max|   2 -  3 |      110
-HSD|    max|   3 -  4 |      112
-HSD|    max|   4 -  5 |       99
-HSD|    max|   5 -  6 |       95
-HSD|    max|   6 -  7 |       88
-HSD|    max|   7 -  8 |       62
-HSD|    max|   8 -  9 |       56
-HSD|    max|   9 - 10 |       45
-HSD|    max|  10 - 11 |       50
-HSD|    max|  11 - 12 |       27
-HSD|    max|  12 - 13 |       43
-HSD|    max|  13 - 14 |       22
-HSD|    max|  14 - 15 |       30
-HSD|    max|  15 - 16 |       29
-HSD|    max|  16 - 17 |       20
-HSD|    max|  17 - 18 |       34
-HSD|    max|  18 - 19 |       12
-HSD|    max|  19 - 20 |        3
-HSD|    max|  20 - 21 |        3
-HSD|    max|  23 - 24 |        1
-HSD|    max|  25 - 26 |        1
-HSD|    max|  60 - 61 |        1
-HSD|    max|  65 - 66 |        1
-HSD|    max|  91 - 92 |        1
-HSD|    max|  96 - 97 |        1
-HSD|    max|  99 -100 |        2
-HSH|--param|--samples-|--average--|---stddev--
-HSS|    min|      1207|     12.941|      0.235
-HSS|    avg|  12078857|     11.761|      0.722
-HSS|    max|      1207|      6.306|      7.550
----|------------|------------|------------|--------|-------------------------
-RTS|      -13400|      -12369|      152777|       5|    00:20:08/00:20:08
-[root@domain.hid latency]#
+In kernel mode, you can already implement such version on your own. Take
+a look at the RTDM_EXECUTE_ATOMICALLY() macro (see RTDM->Driver
+Development API->Synchronisation Services - or rtdm_driver.h). It should
+demonstrate how to run the relative timeout calculation and the rt_sem_p
+call atomically (i.e. by taking the global nucleus lock already before
+the service calls).
 
-Question: it is a serious problems or a normal behavior ?
+Jan
 
 
+--------------enig1545FBFBC381B3CCA716763D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDV9TSncNeS9Q0k+IRAi/tAJ9uroZ9WiWxu9anP9aYfGMPAQXbvgCfdtTz
+y2poibilDnN1i/U7AdUGEig=
+=wWsM
+-----END PGP SIGNATURE-----
+
+--------------enig1545FBFBC381B3CCA716763D--
 
