@@ -1,15 +1,14 @@
-Message-ID: <4357D4D2.1030400@domain.hid>
-Date: Thu, 20 Oct 2005 19:33:06 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4357DF0F.3060806@domain.hid>
+Date: Thu, 20 Oct 2005 20:16:47 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] timeout in native API calls          (cond, sem,
-	mutex, etc).
+Subject: Re: [Xenomai-help] timeout in native API calls (cond, sem, mutex,
+	etc).
 References: <4357C3E1.1040701@domain.hid> <4357C9F7.2060808@domain.hid>
 	<4357CF67.8080601@domain.hid>
 In-Reply-To: <4357CF67.8080601@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1545FBFBC381B3CCA716763D"
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,11 +20,6 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1545FBFBC381B3CCA716763D
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
 
 Ignacio Garc=EDa P=E9rez wrote:
 > Jan Kiszka wrote:
@@ -62,8 +56,7 @@ nd
 >>>
 >>>In the worst case, in addition to that, the thread will be preempted
 >>>between steps 1 and 3. If it is preempted by another higher priority
->>>thread for, say, 50 ticks, and the call in step 3 is actually executed=
-
+>>>thread for, say, 50 ticks, and the call in step 3 is actually executed
 >>>at t=3D950, the thread will be sleeping until t=3D1050+d, which may no=
 t be
 >>>acceptable.
@@ -98,10 +91,23 @@ m
 > sure it's not as simple (and does not "feel" as natural) as just waitin=
 g
 > on the synchronization primitive using an absolute timeout.
+>
 
-I see.
+If the need for abs timeout protection is seldom, you could also make the=
+=20
+related portion of code interrupt-free, since this is what's going to hap=
+pen=20
+early on within the syscall anyway. e.g.:
 
->=20
+rthal_lock_irqsave
+<compute-timeout>
+sem_wait(&s,timeout)
+rthal_lock_irqrestore
+
+Ok, I admit that nobody would want to use this on a regular basis, but is=
+ this a=20
+usual need in the first place?
+
 > I really really think there should be, for each call that takes a
 > timeout, two version, one that takes a relative timeout and another tha=
 t
@@ -109,30 +115,39 @@ t
 >=20
 > Any chances of this being implemented in the current native API?
 >=20
+>=20
 
-In kernel mode, you can already implement such version on your own. Take
-a look at the RTDM_EXECUTE_ATOMICALLY() macro (see RTDM->Driver
-Development API->Synchronisation Services - or rtdm_driver.h). It should
-demonstrate how to run the relative timeout calculation and the rt_sem_p
-call atomically (i.e. by taking the global nucleus lock already before
-the service calls).
+The issue there is really about deciding if we have a proper usefulness /=
+=20
+complexity ratio, i.e. how unique, frequently needed and relevant is the =
+feature=20
+wrt the cost to implement it and the impact on the core and the API to ex=
+port it.
 
-Jan
+The scenario you presented with a single synchronization allowing to pend=
+ for an=20
+event and a precisely timed fallback action is not that uncommon, even if=
+ it's=20
+not a frequent one either.
 
+In a first approach, I would suggest an intermediate solution which would=
+=20
+provide support for this kind of synchronization constructs, without requ=
+iring=20
+the whole timeout API to be extended in a somewhat overkill manner (i.e. =
+as Jan=20
+already pointed out, in the general case, a timeout associated to a block=
+ing=20
+call is by essence a safety belt in case things go weird, not a precision=
+ timer).
 
---------------enig1545FBFBC381B3CCA716763D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+The proposed solution would be to add a single new call to the condvar=20
+interface, namely rt_cond_abswait(). Since one can already build any kind=
+ of=20
+synchro object over the condvar, this would likely provide an adaptable s=
+olution.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+--=20
 
-iD8DBQFDV9TSncNeS9Q0k+IRAi/tAJ9uroZ9WiWxu9anP9aYfGMPAQXbvgCfdtTz
-y2poibilDnN1i/U7AdUGEig=
-=wWsM
------END PGP SIGNATURE-----
-
---------------enig1545FBFBC381B3CCA716763D--
+Philippe.
 
