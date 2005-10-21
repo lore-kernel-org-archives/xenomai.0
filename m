@@ -1,15 +1,12 @@
-Message-ID: <435939B4.3090102@domain.hid>
-Date: Fri, 21 Oct 2005 20:55:48 +0200
-From: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] timeout in native API calls (cond, sem, mutex,
-	etc).
-References: <4357C3E1.1040701@domain.hid>	<4357C9F7.2060808@domain.hid>	<4357CF67.8080601@domain.hid>	<4357DF0F.3060806@domain.hid>
-	<435896AA.1060103@domain.hid> <4358C829.5050304@domain.hid>
-	<435919C8.6080906@domain.hid>
-In-Reply-To: <435919C8.6080906@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17241.17423.857860.990465@domain.hid>
+Date: Fri, 21 Oct 2005 21:39:59 +0200
+Subject: Re: [Xenomai-help] Strangeness in named Semaphores(xenomai posix skin)
+In-Reply-To: <43590FD1.5030503@domain.hid>
+References: <43590FD1.5030503@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,22 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Luotao Fu <devtty0@domain.hid>
 Cc: xenomai@xenomai.org
 
+Luotao Fu wrote:
+ > Hi folks,
+ > 
+ > I got the feeling, that named semaphores in xenomai posix skin don't
+ > work properly. I hacked some simple code to test this and attached the
+ > code to this mail, so that you might have a look of my problem yourself.
 
->
-> The real issue is only about extending the absolute timeout support to
-> _all_ blocking primitives from the native API, or only to a single one
-> for which there exists a clear POSIX counterpart (i.e. rt_cond_wait ->
-> pthread_cond_timedwait). I'd like we focus on this issue instead. IOW,
-> would rt_sem_p_abs() or rt_queue_recv_abs() be of any use?
+Thanks for reporting, you probably found a bug.
 
-Don't think so. Just liked the idea of an "orthogonal" API. Sometimes
-it's simply easier to remember that wherever you specify a timeout you
-can do it abs/rel than to remember that some sync primitives allow abs
-and other don't.
+I am on it.
 
-Nacho.
+-- 
 
+
+					    Gilles Chanteperdrix.
 
