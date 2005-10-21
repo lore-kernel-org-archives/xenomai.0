@@ -1,9 +1,14 @@
-Message-ID: <43590FD1.5030503@domain.hid>
-Date: Fri, 21 Oct 2005 17:57:05 +0200
-From: Luotao Fu <devtty0@domain.hid>
+Message-ID: <435919C8.6080906@domain.hid>
+Date: Fri, 21 Oct 2005 18:39:36 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------010901020100050209000605"
-Subject: [Xenomai-help] Strangeness in named Semaphores(xenomai posix skin)
+Subject: Re: [Xenomai-help] timeout in native API calls (cond, sem, mutex,
+	etc).
+References: <4357C3E1.1040701@domain.hid>	<4357C9F7.2060808@domain.hid>	<4357CF67.8080601@domain.hid>	<4357DF0F.3060806@domain.hid>
+	<435896AA.1060103@domain.hid> <4358C829.5050304@domain.hid>
+In-Reply-To: <4358C829.5050304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,133 +18,161 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------010901020100050209000605
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Ignacio Garc=EDa P=E9rez wrote:
+> Ok, so I took the time to delve a bit into the xenomai code to check ou=
+t
+> by myself how complex would it be to implement absolute timeouts. This
+> is from a 1 hour walk around the code, so I'll post my thoughts so thos=
+e
+> truly knowledgeable can correct me.
+>=20
+> (BTW, here goes another praise: nice, readable, structured,
+> understandable code, you know what's my reference for comparison)
+>=20
+> All synchronization primitive's blocking calls that take a timeout end
+> up using
+>=20
+> xnsync_sleep_on()
+>=20
+> to suspend (delay, actually) the current thread. That function takes a
+> relative timeout, just as passed to the blocking synchronization
+> primitive call. After some magic, xsync_sleep_on() ends up calling
+>=20
+> xnpod_suspend_thread()
+>=20
+> again passign the timeout as a relative value. Eventually, the timeout
+> is again passed in a call to:
+>=20
+> xntimer_start()
+>=20
+> which in turn calls xntimer_do_start_periodic() or
+> xntimer_do_start_aperiodic() depending on the current timer operation
+> mode. In xntimer_do_start_(a)periodic(), one can see, finally how the
+> wakeup time (xntimer_t.date) is calculated from the current time and th=
+e
+> requested sleep interval.
+>=20
+> So, we timeout trail is:
+>=20
+> rt_mutex_lock() --> xsync_sleep_on() ---> xnpod_suspend_thread() --->
+> xntimer_start() ---> xntimer_do_start_(a)periodic()
+>=20
+> And my assumption that internally the scheduler works with absolute
+> timeouts for delayed threads is true.
+>
 
-Hi folks,
+Yes.
 
-I got the feeling, that named semaphores in xenomai posix skin don't
-work properly. I hacked some simple code to test this and attached the
-code to this mail, so that you might have a look of my problem yourself.
+> Now suppose that I want to implement absolute timeouts. There are two
+> alternatives:
+>=20
+> 1- Write an absolute timeout alter ego of every "public" function in th=
+e
+> native skin AND in the nucleus, except maybe for
+> xntimer_do_start_(a)periodic.
+>=20
+> 2- Add a parmeter to every "public" function in the native skin AND in
+> the nucleus which specifies if the timeout is absolute or relative.
+>=20
+> 3- Write an absolute timeout alter ego of every synchronization call in
+> the native skin, and add a parameter in the nucleus calls to specify
+> absolute/relative timeout.
+>=20
+> 4- Rewrite all functions that use a relatime timeout to use an absolute
+> timeout.
+>=20
+> (1) Would mean copy&paste of code. Definitely a no-no.
+>=20
 
-In my code the main thread initialize a named Semaphore, locks it up and
-than create a thread. The thread initialize a semaphore with the same
-name and than tries to lock it. Since the semaphore is already locked by
-the main thread, the thread blocks. As the main thread is waiting for
-the finishing of the thread. It blocks too. So at this point the
-programm should block. I tried two sem lock call in the thread, in one
-it calls simply sem_wait() and blocks till the Implosion of the Universe
-or the arrival of SIGINT, in the other it calls a sem_timedwait() and
-blocks for 5 seconds. Both variants work just fine as normal posix
-binay. Once compiled and linked against the xenomai posix library, the
-sem_wait() appears however not to block at all and the trhead just
-marchs through. the sem_timedwait() quits with a segfault.
+Indeed.
 
-I'm quite not understanding this. Have I overlooked something or is
-there evtl. a bug in the posix skin?
+> (2) Is very easy to implement. One downside is that, for example, the
+> locking of a mutex requires three parameters when most of the time one
+> would do (just the mutex). Another important downside is that it breaks
+> the API of applications written over the native API.
+>
 
-P.S.
-Systemconfiguration
-Kernel: Vanilla 2.6.13 patched with adeos-linux-2.6.13-i386-r13.patch
-Distr. Debian 3.1
-Testhost: vmware 5.0
-compiler gcc 3.3.5
-Xenomai: 2.0, the most recent version from svn. (just updated it 15 Min.
-ago. :-) )
+No-go.
 
-Thanx a lot in advance
-Cheers
-Luotao Fu
+> (3) Best IMHO. Would keep the native API intact while providing all the
+> absolute/relatime timeout flexibility in the nucleus.
+>=20
 
---------------010901020100050209000605
-Content-Type: text/x-csrc;
- name="test.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="test.c"
+Again, the nucleus internals are not the issue here. Actually, Xenomai 1.=
+x=20
+worked with both rel/abs timing modes on demand; the feature was removed =
+because=20
+no clear sign of usefulness went backing the decision to keep this dualit=
+y at=20
+that time. So let's keep this aside, there would be no problem adding the=
+=20
+feature at this level.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <pthread.h>
-#include <limits.h>
-#include <semaphore.h>
-#include <pthread.h>
-#include <sys/mman.h>
-#include <sys/ipc.h>
-#include <sys/types.h>
-#include <signal.h>
-#include <errno.h>
-#define THR_AMOUNT 1
+The real issue is only about extending the absolute timeout support to _a=
+ll_=20
+blocking primitives from the native API, or only to a single one for whic=
+h there=20
+exists a clear POSIX counterpart (i.e. rt_cond_wait -> pthread_cond_timed=
+wait).=20
+I'd like we focus on this issue instead. IOW, would rt_sem_p_abs() or=20
+rt_queue_recv_abs() be of any use?
 
-char *semName = "/testSem";
-struct timespec t;
+> (4) Worst IMHO. Would break the whole API, would be a nightmare to
+> debug. However, I have to point out that this would probably have been
+> my initial design choice. Work always with absolute timeouts, if the
+> user wants a relative timeout, he should calculate it from current time=
+.
+> I cannot imagine a situation in which a preemption in between getting
+> current time and issuing the blocking call would be undesirable. I'll
+> explain:
+>=20
+> With the relatime timeout API, if I want this thread to wake up at
+> t=3D1000, I must calculate delay as d =3D 1000 - current_time and then =
+call
+> rt_sem_p (or whatever). If the thread is preempted between getting
+> current time and calling rt_sem_p, it will sleep for longer than desire=
+d
+> and will end up waking up after t=3D1000, which is what I wanted exactl=
+y.
+>=20
+> In the absolute timeout scenatio, suppose that I want this thread to
+> wake up in 100 ns. In 100 ns since when?... since current time?... then
+> use the absolute timeout and you're done. Since some other operation
+> like setting a digital output?, then there is anyway nothing you can do
+> to prevent the possibility of being preempted in between the I/O
+> operation and the actual rt_sem_p call, so why worry about that
+> preemption happening in between getting current time and issuing the ca=
+ll?
+>=20
 
-void *funcA(void *parm){
-	sem_t *binSem;
- 	if ((binSem = sem_open(semName, O_CREAT)) == SEM_FAILED){
-	  	perror("cannot open Semaphore"); 
-	  	exit(1);
- 	}
-	printf("semAdress: %p\n", binSem);
-	printf("starting Thread A\n");	
-	clock_gettime(CLOCK_REALTIME, &t);
-	//while (sem_wait(binSem) == -1 && errno == EINTR)
-	//  ;
-	t.tv_sec += 5;
-	sem_timedwait(binSem, &t);	
-	printf("finishing Thread A\n");
- 	sem_close(binSem);
-	pthread_exit(NULL);
-}
+In any case, changing the semantics of existing calls now is the last thi=
+ng we=20
+should do.
 
-int main(int argc, char **argv)
-{	
-	int co,rc;	
-	pthread_t testThread[THR_AMOUNT];
- 	pthread_attr_t thrAttr;	
- 	struct sched_param param = { .sched_priority = 99 };
-	sem_t *binSem;
- 	if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
- 		perror("could not lock memeory\n");
- 		exit(1);
- 	}
- 	if ((binSem = sem_open(semName, O_CREAT)) == SEM_FAILED){
-	  	perror("cannot open Semaphore"); 
-	  	exit(1);
- 	}
-	printf("semAdress: %p\n", binSem);
-	sem_post(binSem);
- 	sem_wait(binSem); 	
-	pthread_attr_init(&thrAttr);
- 	pthread_attr_setdetachstate(&thrAttr,PTHREAD_CREATE_JOINABLE);
- 	pthread_attr_setinheritsched(&thrAttr,PTHREAD_EXPLICIT_SCHED);	
- 	pthread_attr_setschedpolicy(&thrAttr,SCHED_FIFO); 
- 	pthread_attr_setschedparam(&thrAttr,&param); 
-	if ( (rc = pthread_create(&testThread[0],&thrAttr, funcA, NULL))
- 	     != 0 ){
- 	        fprintf(stderr, "cannot create Threads %s\n", strerror(rc)); 
- 		exit(1);
- 	}
- 	for ( co = 0; co < THR_AMOUNT; co++) {
- 		if ( pthread_join(testThread[co], NULL) != 0 ){
- 			perror("cannot join Threads");			
- 			exit(1);
- 		}
- 	}
- 	if (munlockall() == -1){
- 		perror("munlockall failure");
- 		exit(1);
- 	}
- 	sem_close(binSem);
-	sem_unlink(semName);
-	return 0;
-}
+> Nacho.
+>=20
+> P.S: Not to be a purist, but I think that functions like
+> xntimer_do_start_aperiodic and xntimer_do_start_periodic should be
+> declared static, since they are only to be accessed through their
+> pointers in the nktimer structure.
+>
 
---------------010901020100050209000605--
+Indeed, they should.
+
+> P.S: As a side note, wouldn't be a good practice to expand tabs to
+> spaces in all the code?
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>=20
+
+
+--=20
+
+Philippe.
 
