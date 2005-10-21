@@ -1,11 +1,10 @@
-Message-ID: <4358A665.2020903@domain.hid>
-Date: Fri, 21 Oct 2005 10:27:17 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <1436.10.2.100.4.1129898928.squirrel@domain.hid>
+Date: Fri, 21 Oct 2005 14:48:48 +0200 (CEST)
+From: "Germain Olivier" <germain.olivier@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig29DD17D8F4769E8D3DA532B3"
-Subject: [Xenomai-core] [patch] signedness issues in testsuite
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-core] EDF or RM scheduler for Xenomai
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,79 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig29DD17D8F4769E8D3DA532B3
-Content-Type: multipart/mixed; boundary="------------070003030205000902030004"
+At the beginning of October I've posted on the RTAI mailing list a
+question about the development of additional scheduler for RTAI/Fusion.
 
-This is a multi-part message in MIME format.
---------------070003030205000902030004
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+About the pluggable scheduler infrastructure, can you give more details on
+what you expect ?
 
-Fixes gcc-4 warnings.
+Also I'm searching in which files the priority inheritance mechanism code
+is implemented.
 
-Jan
+Thanks
+
+Germain
+
+> 100% agreed. The key issue is having the pluggable scheduler
+> infrastructure
+> which fusion currently lacks. After that, other scheduling policies than
+> fixed-priority FIFO could be mapped cleanly and easily on top of it.
 
 
---------------070003030205000902030004
-Content-Type: text/plain;
- name="signedness.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="signedness.patch"
-
-Index: testsuite/latency/latency.c
-===================================================================
---- testsuite/latency/latency.c	(revision 54)
-+++ testsuite/latency/latency.c	(working copy)
-@@ -40,9 +40,9 @@
- #define WARMUP_TIME 1
- #define HISTOGRAM_CELLS 100
- int histogram_size = HISTOGRAM_CELLS;
--unsigned long *histogram_avg = NULL,
--    *histogram_max = NULL,
--    *histogram_min = NULL;
-+long *histogram_avg = NULL,
-+     *histogram_max = NULL,
-+     *histogram_min = NULL;
- 
- int do_histogram = 0, do_stats = 0, finished = 0;
- int bucketsize = 1000;  /* default = 1000ns, -B <size> to override */
-Index: testsuite/klatency/latency.c
-===================================================================
---- testsuite/klatency/latency.c	(revision 54)
-+++ testsuite/klatency/latency.c	(working copy)
-@@ -12,9 +12,9 @@
- 
- #define HISTOGRAM_CELLS 200
- int histogram_size = HISTOGRAM_CELLS;
--unsigned long *histogram_avg = NULL,
--              *histogram_max = NULL,
--              *histogram_min = NULL;
-+long *histogram_avg = NULL,
-+     *histogram_max = NULL,
-+     *histogram_min = NULL;
- 
- int do_histogram = 0, do_stats = 0, finished = 0;
- int bucketsize = 1000;		/* bucketsize */
-
---------------070003030205000902030004--
-
---------------enig29DD17D8F4769E8D3DA532B3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDWKZlncNeS9Q0k+IRAlukAJ0evtQeAUJLVaHRKeVBpeIQ5FBl4wCbBCkl
-f5srmmNua6jrMr2v3QdpoHs=
-=T327
------END PGP SIGNATURE-----
-
---------------enig29DD17D8F4769E8D3DA532B3--
+> Jan Kiszka wrote:
+>> Germain wrote:
+>>
+>>>According to refactoring.txt from Fusion doc directory, Rate Monotonic
+>>> and
+>>>EDF are not supported in Fusion.
+>>>I'm in my last year of CS engineering school with a major in Emmbedded
+>>>Systems. One of the subject of my final year project is to write a
+>>>scheduler (Rate Monotonic, Earliest Deadline First or Least Laxity
+>>> First).
+>>>So I want to know what kind of knowledges is required to put the hand in
+>>>RTAI and develop a such thing. We are two and we have to finish for
+>>> early
+>>>february. We have skills in C, real time theory and developpment (with
+>>>Java), and system programming.
+>>>
+>>
+>>
+>> This would best be answered by the nucleus maintainer, who seems to be
+>> offline ATM.
+>   Philippe already acknowledged the usefulness of a more
+>> flexible scheduling subsystem which, e.g., allows to select a different
+>> policy during compile time or even later. What is certainly required for
+>> this is a clean framework that keeps the compatibility with the upper
+>> (skins) and lower layers (hal) - as far as possible.
+>>
+>> Again, this is something to discuss best with Philippe directly. I guess
+>> he will jump into this thread when time permits. In my eyes, your work
+>> would be very welcome.
+>>
+>
+> 100% agreed. The key issue is having the pluggable scheduler
+> infrastructure
+> which fusion currently lacks. After that, other scheduling policies than
+> fixed-priority FIFO could be mapped cleanly and easily on top of it.
+>
+> Hint: scheduling issues are all sorted out inside nucleus/pod.c;
+> nucleus/synch.c
+> should be also studied in order to find out the relashionships that exist
+> between base synchronization object management and scheduling deci
 
