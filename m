@@ -1,11 +1,12 @@
-Message-ID: <435926CE.1090201@domain.hid>
-Date: Fri, 21 Oct 2005 19:35:10 +0200
+Message-ID: <43592876.10001@domain.hid>
+Date: Fri, 21 Oct 2005 19:42:14 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [patch] rtdm without CONFIG_XENO_OPT_PERVASIVE
+References: <43581E3B.7050005@domain.hid>
+In-Reply-To: <43581E3B.7050005@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] [Fwd: Re: [Xenomai-help] timeout in native API calls
- (cond, sem,	mutex, etc).]
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,57 +16,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-
-Resending here since this is a general project issue.
-
--------- Original Message --------
-Subject: Re: [Xenomai-help] timeout in native API calls          (cond, s=
-em,=20
-mutex, etc).
-Date: Fri, 21 Oct 2005 18:45:59 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-Organization: Xenomai
 To: Jan Kiszka <kiszka@domain.hid>
-CC: xenomai@xenomai.org
-References: <4357C3E1.1040701@domain.hid>=20
-<4357C9F7.2060808@domain.hid>	<4357CF67.8080601@domain.hid>=20
-<4357DF0F.3060806@domain.hid>	<435896AA.1060103@domain.hid>=20
-<4358C829.5050304@domain.hid>	<4358DDAE.2090703@domain.hid>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Ignacio Garc=EDa P=E9rez wrote:
->=20
->>...
->>P.S: As a side note, wouldn't be a good practice to expand tabs to
->>spaces in all the code?
->=20
->=20
-> My opinion is yes - but it's a nasty work. Would you provide such
-> patches...?
->=20
+> Hi,
+> 
+> this fixes an unresolved symbol in xeno_rtdm when
+> CONFIG_XENO_OPT_PERVASIVE is switched off.
+>
 
-Actually, there is a more general problem with the current coding style u=
-sed
-throughout the code base: it's mine, it's not that standard, and now that=
-more
-people are contributing to it, I'm pondering whether we should just adopt=
-the
-conventional kernel coding style, without the ludicrous 8-space tabs, tha=
-t is.
-
---=20
-
-Philippe.
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
+Applied, thanks.
 
 
---=20
+> Jan
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: skins/rtdm/device.c
+> ===================================================================
+> --- skins/rtdm/device.c	(Revision 53)
+> +++ skins/rtdm/device.c	(Arbeitskopie)
+> @@ -30,7 +30,6 @@
+>  
+>  #include <rtdm/device.h>
+>  #include <rtdm/proc.h>
+> -#include <rtdm/syscall.h>
+>  
+>  
+>  #define SET_DEFAULT_OP(device, operation)                               \
+> @@ -68,6 +67,12 @@
+>  #endif /* CONFIG_SMP */
+>  
+>  
+> +int rtdm_no_support(void)
+> +{
+> +    return -ENOSYS;
+> +}
+> +
+> +
+>  static inline int get_name_hash(const char *str, int limit, int hashkey_mask)
+>  {
+>      int hash = 0;
+> Index: skins/rtdm/GNUmakefile.am
+> ===================================================================
+> --- skins/rtdm/GNUmakefile.am	(Revision 53)
+> +++ skins/rtdm/GNUmakefile.am	(Arbeitskopie)
+> @@ -10,9 +10,12 @@
+>  	device.c \
+>  	drvlib.c \
+>  	module.c \
+> -	proc.c \
+> -	syscall.c
+> +	proc.c
+>  
+> +if CONFIG_XENO_OPT_PERVASIVE
+> +libmodule_SRC += syscall.c
+> +endif
+> +
+>  include_HEADERS = \
+>  	rtdm.h \
+>  	rtdm_driver.h \
+> Index: skins/rtdm/device.h
+> ===================================================================
+> --- skins/rtdm/device.h	(Revision 53)
+> +++ skins/rtdm/device.h	(Arbeitskopie)
+> @@ -40,6 +40,8 @@
+>  extern struct list_head *rtdm_protocol_devices;
+>  
+>  
+> +int rtdm_no_support(void);
+> +
+>  struct rtdm_device *get_named_device(const char *name);
+>  struct rtdm_device *get_protocol_device(int protocol_family, int socket_type);
+>  
+> Index: skins/rtdm/syscall.c
+> ===================================================================
+> --- skins/rtdm/syscall.c	(Revision 53)
+> +++ skins/rtdm/syscall.c	(Arbeitskopie)
+> @@ -26,12 +26,6 @@
+>  int __rtdm_muxid;
+>  
+>  
+> -int rtdm_no_support(void)
+> -{
+> -    return -ENOSYS;
+> -}
+> -
+> -
+>  static int sys_rtdm_fdcount(struct task_struct *curr, struct pt_regs *regs)
+>  {
+>      return fd_count;
+> Index: skins/rtdm/syscall.h
+> ===================================================================
+> --- skins/rtdm/syscall.h	(Revision 53)
+> +++ skins/rtdm/syscall.h	(Arbeitskopie)
+> @@ -46,8 +46,6 @@
+>  extern int __rtdm_muxid;
+>  
+>  
+> -int rtdm_no_support(void);
+> -
+>  int __init rtdm_syscall_init(void);
+>  
+>  static inline void rtdm_syscall_cleanup(void)
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
+
+-- 
 
 Philippe.
 
