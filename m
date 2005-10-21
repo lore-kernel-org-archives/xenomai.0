@@ -1,14 +1,16 @@
-Resent-Message-ID: <17232.58645.769350.642883@domain.hid>
-Resent-To: xenomai@xenomai.org
+Message-ID: <4358FF63.5070600@domain.hid>
+Date: Fri, 21 Oct 2005 16:46:59 +0200
+From: =?ISO-8859-15?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17232.57953.551450.669843@domain.hid>
-In-Reply-To: <34086.193.52.24.125.1129373726.squirrel@domain.hid>
-References: <34086.193.52.24.125.1129373726.squirrel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] XenoPPC :-> 2.6.13.4-ipipe :)
-Date: Sat, 15 Oct 2005 13:05:05 +0200
+Subject: Re: [Xenomai-help] timeout in native API calls          (cond, sem,
+	mutex, etc).
+References: <4357C3E1.1040701@domain.hid>
+	<4357C9F7.2060808@domain.hid>	<4357CF67.8080601@domain.hid>
+	<4357DF0F.3060806@domain.hid> <435896AA.1060103@domain.hid>
+	<4358C829.5050304@domain.hid> <4358DDAE.2090703@domain.hid>
+In-Reply-To: <4358DDAE.2090703@domain.hid>
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,37 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-smannori@domain.hid wrote:
- > Max latency = 44 us
- > Overrun = zero nil nada zip.
+Jan Kiszka wrote:
 
-You should not conclude to rapidly. Running the dohell script for ten
-hours would make me a bit more confident about your results.
+>Ignacio Garc=EDa P=E9rez wrote:
+> =20
+>
+>>...
+>>P.S: As a side note, wouldn't be a good practice to expand tabs to
+>>spaces in all the code?
+>>   =20
+>>
+>
+>My opinion is yes - but it's a nasty work. Would you provide such
+>patches...?
+>
+>Jan
+>
+> =20
+>
+Assuming everybody is using the 8 space tab (I saw it in all the files I
+examined today), something like this would do:
+
+texp () {
+    TMPFILE=3D$(mktemp tmp.XXXXXX)
+    expand -t 8 $1 > $TMPFILE
+    mv -f $TMPFILE $1
+}
+
+for i in $(find -name "*.c"); do texp $i; done
+for i in $(find -name "*.h"); do texp $i; done
 
 
- > I think that the save/restore functions of xenomai must be aware of the
- > presence of Altivec. If I disable Altivec the X11 server (x.org) shipped
- > with mandriva ppc does not start.
 
-It is true that the save/restore functions of xenomai should be
-altivec-aware, but you likely have another problem: if it was the only
-one, Xenomai would work flawlessly when CONFIG_ALTIVEC (and CONFIG_SPE,
-for that matter) are disabled in kernel configuration.
+However, this is of no help if developers don't configure their editors
+to expand spaces by default, which I think is quite difiicult to achieve.
 
+Would be a good idea too to enforce this tab expansion policy with a SVN
+submit filter, but that's beyond by knowledge.
 
- > This is a very good impruvement. If you use thread in the user space, the
- > FPU support is not a must.
-
-Well, disabling FPU support in Xenomai configuration means that you can
-use FPU neither in kernel space, nor for user-space threads in primary
-mode without causing a transition to secondary mode. This is too
-restrictive.
-
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Nacho.
 
