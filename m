@@ -1,12 +1,13 @@
-Message-ID: <434FF887.7020406@domain.hid>
-Date: Fri, 14 Oct 2005 12:27:19 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <43592C6B.1010509@domain.hid>
+Date: Fri, 21 Oct 2005 19:59:07 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <434FD878.4090908@domain.hid>
-In-Reply-To: <434FD878.4090908@domain.hid>
+Subject: Re: [Xenomai-core] [packaging] Proposal of split source
+	code	organization
+References: <200510211641.40806.rlenglet@domain.hid>
+In-Reply-To: <200510211641.40806.rlenglet@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Benchmarking Plan  [Was: Partial roadmap]
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,373 +17,562 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Romain Lenglet <rlenglet@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-
+Romain Lenglet wrote:
+> Hi,
+> 
+> Here is a proposal of reorganization of the files in Xenomai, to 
+> make packaging easier. I have moved all the files, and the 
+> resulting hierarchy of directories in in the attached dirs.txt, 
+> and the contained files in allfiles.txt.
+> The GNUmakefiles, etc. are still missing here.
+> 
+> What do you think about that?
 >
-> This is a partial roadmap for the project, composed of the currently
 
-
-> o Web site.
->
-Wiki ++ , eventually
-
->
-> o Automated benchmarking.
->
->     - We are still considering the best way to do that; actually,
->     my take is that we would just need to bootstrap the thing and
->     flesh it out over time, writing one or two significant
->     benchmark tests to start with, choosing a tool to plot the
->     collected data and push the results to some web page for
->     public consumption on a regular basis, but so far, we did not
->     manage to spark this. It's still in the short-term plan,
->     though, because we currently have neither metrics nor data to
->     check for basics, and we deeply need both of them now.
->     ETA: Q4 2005.
-
-
-
-A Xenomai Automatic Benchmarking plan
-
-
-Goal is to test xenomai performance so we know when something breaks,
-test it thoroughly enough that we can see / identify systematic, generic, or
-platform specific bottlenecks.
-
-Benchmarking
-
-wrt bootstrap approach; scripts/xeno-test already runs 2
-of 3 testsuite/* tests, and collects the results along with useful
-platform data.  If new testsuite/* stuff gets added, its trivial to
-call them from xeno-test.
-
-Automatic
-
-Automating the process is trickier than usual, due to need for
-cross-compile (in some situations), NFS root mounts for remote boxes,
-remote or scripted reboots, etc.  Ive cobbled up a rube-goldberg
-arrangement, which is out-of-scope for this message, will discuss all
-that separately.
-
-Characterization
-
-RPM mentioned plotting, I take that to mean heavy use of graphs to
-characterize and ultimately to predict xenomai performance over a
-range of criteria, for any given platform.
-
-LiveCD had the right idea wrt this - collecting platform info and
-performance data on any vanilla PC with a CD-ROM drive.  And make this
-data available on a website, allowing users to compare their results
-with others done on similar platforms.
-
-LiveCD has a few weaknesses though:
-
-- cant test platforms w/o cdrom
-- manual re-entry of data is tedious,
-- no collection of platform data (available for automation)
-- spotty info about cpu, memory, mobo, etc
-- no unattended test (still true?)
-
-These things could be readily fixed, but xeno-test already does
-everything but the data upload.
-
-The real value of LiveCD was the collection of data across hundreds of
-different platforms, and its promise was that studying the data would
-reveal the secrets of better performance on any platform.
-
-
-A Plan (sort of)
-
-1. xeno-test currently (patch pending) executes following commands,
-and captures output in a reasonably parseable format; a set of chunks:
-
-- uname -a
-- cat /proc/config.gz if -f /proc/config.gz
-- cat /proc/cpuinfo
-- cat /proc/meminfo
-- cat /proc/adeos/* foreach /proc/adeos/*
-- cat /proc/ipipe/* foreach /proc/ipipe/*
-- xeno-config --v
-- xeno-info
-
-The info captured is a fairly complete picture of the platform, it
-should support careful selection of data-sets for use in analysing,
-characterizing, and improving xenomai performance.
-
-Several chunks are collected optionally, ex config.gz.  Although each
-chunk has some cost (config.gz kernels are larger, kernels with
-/proc/ipipe/Linux_stats are slower), Id encourage you to build your
-kernels with this stuff enabled, as it enriches the data.  Besides,
-with baseline data collected, you can then accurately demonstrate each
-config-tweak's performance effect, and put it in a nice graph.
-
-also need these:
-- xenomai svn revision-level, perhaps as part of xeno-info,config ?
-- what else ?  Anything added now is info-opportunity later
-- testsuite/cruncher ?
-
-2. send your results to xenomai.testout-at-gmail.com
-
-Please run xeno-test, attach the resulting file(s), and send it to
-above address.  This collects data now, we can decide where to host it
-when website is up.  Obviously, an official gna.org ML might be more
-appropriate.
-
-# run something like this
-xeno-test -T300 -sh -w2 -L -N ~/xenotest-outputs/foo
-
-xeno-test will write all test output to a file:
-~/xenotest-outputs/foo-$timestamp.  The timestamp gives unique-ness,
-and you can choose which files 'look right' after inspecting several
-trial-runs
-
-FWIW - I could poach LiveCD code to upload to LiveCD site.
-That might be handy if it doesnt break the process that populates the data
-onto the web-page (which must parse for the data).
-
-3. mail handler
-
-Ive previously written a mail-bot to do poll a pop-mbox, and collect
-attachments.  I just need to dredge it out or rewrite it.  Once I do,
-I'll just run it on that inbox to collect your results.  Eventually,
-the data will be uploaded somewhere for everyone to peruse.
-
-If we go with a xenotest-results-at-gna.org, I can just subscribe my new
-acct to the new list :-)
-
-4. xeno-test output parser
-
-Ive written a parser to chop the formatted output into chunks, and
-then parse some of those chunks into hashes.  Soon Ill define some
-matching db-tables for the (well mannered) data
-
-'well mannered' means lots of limitations atm;
-
-- /proc/ipipe/Linux-stats parse into pairs of IRQ => CPU0 prop-times
-- such data is only comparable across kernels with eq IRQ maps
-- currently wont handle CPU1, SMP data
-- /proc/interrupts is slightly better parsed.
-- no detail-parse at all for top-data, needed?
-
-prototype only, but its hackable (perl), and Im happy to graft all
-sorts of horrible experiments on it provisionally to see whats useful.
-Hopefully a plugin refactoring will become obvious wo too much work.
-
-
-5. Data-Base
-
-The data extracted above needs to be written to a database, perhaps in
-multiple, increasingly cooked, redundant forms.  Point is, we can do
-it incrementally, a chunk at a time.
-
-- store chunks as raw-text, along w indexing
-- write a query to replicate full-report text from the chunks
-- many chunk-types have table designed to match
-- some chunk-types insert 1 row into chunk-typeX-table, others 2+
-- latency-data has lots of data
---- raw interval data (min, avg, max, ovfl)
---- histograms of data (for min, avg, max)
-- chunk-types index VS md5(raw-text)
--- ok: uname - semi-regular, (various kernel suffixes)
--- ok: /prc/cpuinfo - almost (fuzz on  mhz, bogomips)
--- no: /proc/config.gz - contains arbitrary date, reveals no commonality
-
-At first, I dont plan on much data-normalization, indexification.  Id
-like to be able to later go back, and 'histogram' each field; many
-will have a discrete set of values (ex: config setting of
-CONFIG_PREEMPT, presense of /proc/ipipe/Linux_stats, etc)
-
-makefile-esque production semantics would be useful here, esp as a
-cross-check against same implemented in the DB.
-
-
-6. Plotting
-
-The best use of any collected data is to graph it many different ways,
-and so to understand it.  Gnuplot is a clear choice for this. (maybe
-Octave?)
-
-Biggest issue is preparing data for gnuplot, which seems to want files
-of space/tab-separated data.  We'll have to provide some db-extract
-mechanism (or direct from file-set, using parser+plugin) to select the
-right data for each plot, format it accordingly, and run the plot.
-
-Ive yet to try to plot anything from my collected files, so I dont
-have real insight into the issues/difficulties.  But heres a few
-hastily-concieved examples:
-
-judging the data-set itself:
-
-- select count(*) from .. where X group.by Y
-- see dist of samples across Y
-- identify strongly bucketized vars
-- ex:
--- how many of each cpuinfo.model-name ? (expect finite set)
--- how many of each cpuinfo.cpu-mhz foreach above ? (1..dozen foreach model)
--- how many old cpuinfo.steppings ? (curiosity)
---- select count(*)
----  group by cpuinfo.model_name
----  having count(cpuinfo.stepping) > 1
-
-looking for performance factors:
-
-- correlations (outputs vs inputs/features)
-- boolean features should correlate strongly if related
-- multi-val features too
-- ex:
--- max-latency vs bogo-mips foreach arch/cpu-type
-
-- histograms of correlated variables (as idenfified above)
--- display for hints wrt causes
-
-- for variables/fields with certian value-distributions,
--- group-by those fields
--- plot, and look for clustering
--- when kernel.config.PREEMPT becomes a queryable-field, analysis flows
---- =PREEMPT_NONE, =PREEMPT_RT, etc... with
-
-- curve fitting vs data subsets
--- posit: latency is-inverse-to bogo-mips
--- hypothesize: latency * bogo-mips == quality-metric-weak
--- graph it, per cputype
--- select different subsets of cputype
---- x86, 586 +/- TSC, MMX, GENERIC, etc..
---- does spread narrow as subset is narrowed ?
-
-
-GOALS - MILESTONES
-
-0. that which is measured, is quantitatively improved (fact, not goal)
-
-1. rich, automatically collected data makes it possible to compare
-data from different people.
-
-Most of us are stuck with 1 platform, so its difficult to find out
-what effects clock-rate has on latency, for a given platform. IOW,
-what is the "latency vs clock-rate" (Lat-v-clk)
-
-With pooled data, for common PC platforms at least (ex p4, k8), we can
-collect a large pool of data, enough to make predictions about
-Lat-v-clk.  Graphs are encouraged.
-
-2. Repeat for Lat = f(clk-rate, mem-size) over (select ..)
-   Plot as elevation-map
-
-3. Somebody hacks the cpufreq clock-control, and reruns the test on a
-progressively throttled cpu.  This represents a (more) highly
-controlled study, and comes with lots of pretty graph jpegs showing
-the effect clearly.  This becomes pseudo-reference data.
-
-4. Somebody examines predictions against ref3-data.
-Start actually doing the analysis that I handwaved in L<Plotting>
-
-5. Others start to repeat earlier experiments, attempting to replicate
-the results.  Where differences persist, they collaborate to
-distinguish the reasons.  We improve our understanding of the tests,
-and the processes around them.
-
-6. people explore xeno-test options.
-
-They run batteries of tests while varying -options, and create many
-graphs which illustrate various performances:
-
-- what happens when sampling period shrinks towards the max-latency
-seen in the previous test-run ?  Does xenomai panic, muddle on,
-error-out, give proper warning, etc ??
-
-- whats the histogram look like when number of buckets is greatly
-increased ?  Does it start to look like a comb with lots of broken
-teeth ?  Can it be adequately smoothed by a plotting function ?
-
-- what kind of results can you get from using -W "$command $args"
-with the wide range of benchmark tests (which themselves serve as a 
-workload).
-
-7. people hack parse-testout.pl.
-
-Each person in 6 should consider hacking the chunk-specific text
-processing into parse-testout.pl.  I'll look for a workable plug-in
-scheme to simplify & extend how and what can be done.  We get
-use-cases at least, maybe bits of automation, and probably a workable
-alpha version.  (Ill try this at some point)
-
-8. Patterns of analysis emerge, and develop into a "howto gnuplot your
-xenotest-perfdata".  With these, we better understand what the
-automation must do.
-
-Presumably this is gnuplot centric; we start with a gnuplot script,
-and template/parametrize it.  With it, some plugin code to prep the
-data-files to produce plots.
-
-This is also where Im most uncertain how things will look.
-
-
-9. workable plotting automation ?
-
-10. Growing sample-set attracts study
-
-Growth of a quality-assessable dataset, and workable automation (9)
-lures hackers to madly correlate performance numbers against possible
-causal factors.  Much of this is likely in x86 data, since platform is
-so widely available.
-
-11. somebody rewrites xeno-test
-
-Its currently in bash, and (prolly) uses constructs that wont work on
-busybox.  It also has some bugs in workload management.
-
-12. and I want a pony.
-
-
-
-NOTES
-
-theres a difference between benchmarks and tests, and Ive munged
-things already by saying test until now.  But calling everything a
-benchmark is just as clumsy.
-
-Tests are things that can pass or fail, good ones give an indication
-of what broke.  Ideally, a test demonstrates that a bug exists, and
-that the patch it was submitted with fixes that bug.  Then the test
-gets added to the regression-test framework that uses them to guard
-against breakage. (hey - I said ideally).
-
-Turning benchmark tests into regression tests is easy - once we know
-how a given platform *should* perform.  Obviously, thats the goal
-stated at the top.
-
-
-
-COMMENTS ?
-
-Lets pretend that we're developing content for a wiki ;-)
-
-Im accepting 2 kinds of comments
-
-- those where you change the subject
-- the rest ;-)
-
-Im making the inference that if you change the message-subject;
-
-- you think the topic is a proto-wiki-node (not necessarily a page)
-- youre keeping the message on that topic
-- youre actively adapting subjects on such threads that you participate in
--- we strike balance on node-growth rate (is there a just right ?)
-
-if you dont change subject,
-- above rules dont apply, stream of conciousness is fine.
-- or youre adding to / correcting the previous 'wiki-node'
-
-I dont prefer either kind of post a-priori; this is an experiment in
-social/community self-organization on an ML.  Its not supposed to be 
-laborious.
-Lets see what happens.
-
-tia
-jimc
-
-
+Xeno's build scheme is going to be refactored as explained here:
+https://mail.gna.org/public/xenomai-core/2005-10/msg00089.html
+
+Your proposal seems to complement the solution, since in a way or another, we 
+will need to organize the source tree in order to reflect the kernel / user 
+split. Going for a strict Debian approach for doing so is another issue; I'm not 
+  opposed to it, but that's not a pre-requisite to split the codebase anyway.
+
+I suggest that we restart this discussion after a prototype of a statically 
+embeddable Xenomai core into the Linux kernel has been achieved; from that 
+point, it should be easier to progress toward the user-space revamping, since we 
+will have the complete picture about what is needed, specifically in terms of 
+configuration and file dependencies. This task is #1 on my list after 2.0 is 
+out, so the topic is going to be revived quickly.
+
+> The idea is to have a ksrc/ directory that is independent from 
+> all other directories (except include/), to contain all the 
+> kernel modules code (and only that). It would have its own 
+> independent configuration mechanism based on Kconfig and/or 
+> autotools (??).
+> I would help a lot to have such an independent ksrc/ directory 
+> for packaging, since in Debian packages this would directly 
+> become the content of the kernel source package 
+> (xenomai-source).
+> 
+> In addition, an independent and complete include/ directory would 
+> directly become the main content of the libxenomai-dev package.
+> 
+> 
+> The two non-trivial tasks to reach that organization of files is:
+> - modify most GNUmakefile.am files (that seems quite easy),
+> - modify the kernel code configuration mechanism.
+> 
+> If everybody agrees, I propose to adapt most GNUmakefile.am 
+> files...
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> xenomai/
+> xenomai/ksrc
+> xenomai/ksrc/test
+> xenomai/ksrc/test/klatency
+> xenomai/ksrc/test/klatency/latency.h
+> xenomai/ksrc/test/klatency/latency-module.c
+> xenomai/ksrc/arch
+> xenomai/ksrc/arch/generic
+> xenomai/ksrc/arch/generic/hal
+> xenomai/ksrc/arch/generic/hal/generic.c
+> xenomai/ksrc/arch/i386
+> xenomai/ksrc/arch/i386/hal
+> xenomai/ksrc/arch/i386/hal/nmi.c
+> xenomai/ksrc/arch/i386/hal/smi.c
+> xenomai/ksrc/arch/i386/hal/smi.h
+> xenomai/ksrc/arch/i386/hal/usercopy.c
+> xenomai/ksrc/arch/i386/hal/x86.c
+> xenomai/ksrc/arch/ppc
+> xenomai/ksrc/arch/ppc/arch
+> xenomai/ksrc/arch/ppc/arch/ppc.c
+> xenomai/ksrc/arch/ppc/arch/switch.S
+> xenomai/ksrc/arch/ppc/arch/fpu.S
+> xenomai/ksrc/arch/ia64
+> xenomai/ksrc/arch/ia64/hal
+> xenomai/ksrc/arch/ia64/hal/ia64.c
+> xenomai/ksrc/arch/ia64/hal/switch.S
+> xenomai/ksrc/arch/ppc64
+> xenomai/ksrc/arch/ppc64/hal
+> xenomai/ksrc/arch/ppc64/hal/fpu.S
+> xenomai/ksrc/arch/ppc64/hal/ppc64.c
+> xenomai/ksrc/arch/ppc64/hal/switch.S
+> xenomai/ksrc/drivers
+> xenomai/ksrc/drivers/16550A
+> xenomai/ksrc/drivers/16550A/16550A.c
+> xenomai/ksrc/nucleus
+> xenomai/ksrc/nucleus/heap.c
+> xenomai/ksrc/nucleus/intr.c
+> xenomai/ksrc/nucleus/module.c
+> xenomai/ksrc/nucleus/pod.c
+> xenomai/ksrc/nucleus/synch.c
+> xenomai/ksrc/nucleus/thread.c
+> xenomai/ksrc/nucleus/timer.c
+> xenomai/ksrc/nucleus/shadow.c
+> xenomai/ksrc/nucleus/core.c
+> xenomai/ksrc/nucleus/pipe.c
+> xenomai/ksrc/nucleus/ltt.c
+> xenomai/ksrc/nucleus/config.c
+> xenomai/ksrc/native
+> xenomai/ksrc/native/syscall.h
+> xenomai/ksrc/native/module.c
+> xenomai/ksrc/native/task.c
+> xenomai/ksrc/native/timer.c
+> xenomai/ksrc/native/syscall.c
+> xenomai/ksrc/native/pipe.c
+> xenomai/ksrc/native/sem.c
+> xenomai/ksrc/native/event.c
+> xenomai/ksrc/native/mutex.c
+> xenomai/ksrc/native/registry.c
+> xenomai/ksrc/native/cond.c
+> xenomai/ksrc/native/queue.c
+> xenomai/ksrc/native/heap.c
+> xenomai/ksrc/native/alarm.c
+> xenomai/ksrc/native/intr.c
+> xenomai/ksrc/psos+
+> xenomai/ksrc/psos+/module.c
+> xenomai/ksrc/psos+/asr.c
+> xenomai/ksrc/psos+/event.c
+> xenomai/ksrc/psos+/pt.c
+> xenomai/ksrc/psos+/queue.c
+> xenomai/ksrc/psos+/rn.c
+> xenomai/ksrc/psos+/task.c
+> xenomai/ksrc/psos+/tm.c
+> xenomai/ksrc/psos+/sem.c
+> xenomai/ksrc/psos+/asr.h
+> xenomai/ksrc/psos+/defs.h
+> xenomai/ksrc/psos+/event.h
+> xenomai/ksrc/psos+/pt.h
+> xenomai/ksrc/psos+/queue.h
+> xenomai/ksrc/psos+/rn.h
+> xenomai/ksrc/psos+/sem.h
+> xenomai/ksrc/psos+/task.h
+> xenomai/ksrc/psos+/tm.h
+> xenomai/ksrc/psos+/doc
+> xenomai/ksrc/psos+/doc/psos.txt
+> xenomai/ksrc/posix
+> xenomai/ksrc/posix/cancel.c
+> xenomai/ksrc/posix/clock.c
+> xenomai/ksrc/posix/cond_attr.c
+> xenomai/ksrc/posix/cond.c
+> xenomai/ksrc/posix/intr.c
+> xenomai/ksrc/posix/module.c
+> xenomai/ksrc/posix/mq.c
+> xenomai/ksrc/posix/mutex_attr.c
+> xenomai/ksrc/posix/mutex.c
+> xenomai/ksrc/posix/once.c
+> xenomai/ksrc/posix/registry.c
+> xenomai/ksrc/posix/sched.c
+> xenomai/ksrc/posix/sem.c
+> xenomai/ksrc/posix/signal.c
+> xenomai/ksrc/posix/syscall.c
+> xenomai/ksrc/posix/thread_attr.c
+> xenomai/ksrc/posix/thread.c
+> xenomai/ksrc/posix/timer.c
+> xenomai/ksrc/posix/tsd.c
+> xenomai/ksrc/posix/cancel.h
+> xenomai/ksrc/posix/cond.h
+> xenomai/ksrc/posix/internal.h
+> xenomai/ksrc/posix/intr.h
+> xenomai/ksrc/posix/jhash.h
+> xenomai/ksrc/posix/mq.h
+> xenomai/ksrc/posix/mutex.h
+> xenomai/ksrc/posix/registry.h
+> xenomai/ksrc/posix/sem.h
+> xenomai/ksrc/posix/signal.h
+> xenomai/ksrc/posix/syscall.h
+> xenomai/ksrc/posix/thread.h
+> xenomai/ksrc/posix/timer.h
+> xenomai/ksrc/posix/tsd.h
+> xenomai/ksrc/posix/doc
+> xenomai/ksrc/posix/doc/pse51.txt
+> xenomai/ksrc/rtai
+> xenomai/ksrc/rtai/syscall.h
+> xenomai/ksrc/rtai/fifo.c
+> xenomai/ksrc/rtai/intr.c
+> xenomai/ksrc/rtai/module.c
+> xenomai/ksrc/rtai/sem.c
+> xenomai/ksrc/rtai/shm.c
+> xenomai/ksrc/rtai/syscall.c
+> xenomai/ksrc/rtai/task.c
+> xenomai/ksrc/rtai/timer.c
+> xenomai/ksrc/rtai/doc
+> xenomai/ksrc/rtai/doc/rtai.txt
+> xenomai/ksrc/rtdm
+> xenomai/ksrc/rtdm/core.h
+> xenomai/ksrc/rtdm/device.h
+> xenomai/ksrc/rtdm/proc.h
+> xenomai/ksrc/rtdm/syscall.h
+> xenomai/ksrc/rtdm/core.c
+> xenomai/ksrc/rtdm/device.c
+> xenomai/ksrc/rtdm/drvlib.c
+> xenomai/ksrc/rtdm/module.c
+> xenomai/ksrc/rtdm/proc.c
+> xenomai/ksrc/rtdm/syscall.c
+> xenomai/ksrc/uitron
+> xenomai/ksrc/uitron/defs.h
+> xenomai/ksrc/uitron/flag.h
+> xenomai/ksrc/uitron/mbx.h
+> xenomai/ksrc/uitron/sem.h
+> xenomai/ksrc/uitron/task.h
+> xenomai/ksrc/uitron/flag.c
+> xenomai/ksrc/uitron/mbx.c
+> xenomai/ksrc/uitron/module.c
+> xenomai/ksrc/uitron/sem.c
+> xenomai/ksrc/uitron/task.c
+> xenomai/ksrc/uitron/doc
+> xenomai/ksrc/uitron/doc/mitron3.02.txt
+> xenomai/ksrc/uitron/doc/uITRON.txt
+> xenomai/ksrc/uvm
+> xenomai/ksrc/uvm/syscall.h
+> xenomai/ksrc/uvm/module.c
+> xenomai/ksrc/uvm/syscall.c
+> xenomai/ksrc/vrtx
+> xenomai/ksrc/vrtx/event.c
+> xenomai/ksrc/vrtx/heap.c
+> xenomai/ksrc/vrtx/mb.c
+> xenomai/ksrc/vrtx/module.c
+> xenomai/ksrc/vrtx/mx.c
+> xenomai/ksrc/vrtx/pt.c
+> xenomai/ksrc/vrtx/queue.c
+> xenomai/ksrc/vrtx/sem.c
+> xenomai/ksrc/vrtx/task.c
+> xenomai/ksrc/vrtx/time.c
+> xenomai/ksrc/vrtx/defs.h
+> xenomai/ksrc/vrtx/event.h
+> xenomai/ksrc/vrtx/heap.h
+> xenomai/ksrc/vrtx/mb.h
+> xenomai/ksrc/vrtx/mx.h
+> xenomai/ksrc/vrtx/pt.h
+> xenomai/ksrc/vrtx/queue.h
+> xenomai/ksrc/vrtx/sem.h
+> xenomai/ksrc/vrtx/task.h
+> xenomai/ksrc/vrtx/doc
+> xenomai/ksrc/vrtx/doc/vrtx.txt
+> xenomai/ksrc/vxworks
+> xenomai/ksrc/vxworks/defs.h
+> xenomai/ksrc/vxworks/doc
+> xenomai/ksrc/vxworks/doc/vxworks.txt
+> xenomai/ksrc/vxworks/errnoLib.c
+> xenomai/ksrc/vxworks/intLib.c
+> xenomai/ksrc/vxworks/kernelLib.c
+> xenomai/ksrc/vxworks/module.c
+> xenomai/ksrc/vxworks/msgQLib.c
+> xenomai/ksrc/vxworks/semLib.c
+> xenomai/ksrc/vxworks/sysLib.c
+> xenomai/ksrc/vxworks/taskHookLib.c
+> xenomai/ksrc/vxworks/taskInfo.c
+> xenomai/ksrc/vxworks/taskLib.c
+> xenomai/ksrc/vxworks/tickLib.c
+> xenomai/ksrc/vxworks/wdLib.c
+> xenomai/src
+> xenomai/src/test
+> xenomai/src/test/cruncher
+> xenomai/src/test/cruncher/cruncher.c
+> xenomai/src/test/cruncher/runinfo
+> xenomai/src/test/klatency
+> xenomai/src/test/klatency/latency.c
+> xenomai/src/test/klatency/runinfo
+> xenomai/src/test/latency
+> xenomai/src/test/latency/latency.c
+> xenomai/src/test/latency/runinfo
+> xenomai/src/test/switch
+> xenomai/src/test/switch/runinfo
+> xenomai/src/test/switch/switch.c
+> xenomai/src/nucleus
+> xenomai/src/native
+> xenomai/src/native/alarm.c
+> xenomai/src/native/cond.c
+> xenomai/src/native/event.c
+> xenomai/src/native/heap.c
+> xenomai/src/native/init.c
+> xenomai/src/native/intr.c
+> xenomai/src/native/misc.c
+> xenomai/src/native/mutex.c
+> xenomai/src/native/pipe.c
+> xenomai/src/native/queue.c
+> xenomai/src/native/sem.c
+> xenomai/src/native/task.c
+> xenomai/src/native/timer.c
+> xenomai/src/posix
+> xenomai/src/posix/clock.c
+> xenomai/src/posix/cond.c
+> xenomai/src/posix/init.c
+> xenomai/src/posix/interrupt.c
+> xenomai/src/posix/mq.c
+> xenomai/src/posix/mutex.c
+> xenomai/src/posix/rtdm.c
+> xenomai/src/posix/semaphore.c
+> xenomai/src/posix/thread.c
+> xenomai/src/posix/timer.c
+> xenomai/src/posix/wrappers.c
+> xenomai/src/posix/posix.wrappers
+> xenomai/src/posix/pse51.txt
+> xenomai/src/psos+
+> xenomai/src/rtai
+> xenomai/src/rtai/init.c
+> xenomai/src/rtdm
+> xenomai/src/rtdm/core.c
+> xenomai/src/rtdm/init.c
+> xenomai/src/uvm
+> xenomai/src/uvm/init.c
+> xenomai/src/uvm/uvm.c
+> xenomai/src/uitron
+> xenomai/include
+> xenomai/include/nucleus
+> xenomai/include/nucleus/core.h
+> xenomai/include/nucleus/heap.h
+> xenomai/include/nucleus/intr.h
+> xenomai/include/nucleus/ltt.h
+> xenomai/include/nucleus/module.h
+> xenomai/include/nucleus/pipe.h
+> xenomai/include/nucleus/pod.h
+> xenomai/include/nucleus/queue.h
+> xenomai/include/nucleus/shadow.h
+> xenomai/include/nucleus/synch.h
+> xenomai/include/nucleus/system.h
+> xenomai/include/nucleus/thread.h
+> xenomai/include/nucleus/timer.h
+> xenomai/include/nucleus/types.h
+> xenomai/include/nucleus/version.h
+> xenomai/include/nucleus/xenomai.h
+> xenomai/include/nucleus/asm-generic
+> xenomai/include/nucleus/asm-generic/hal.h
+> xenomai/include/nucleus/asm-generic/syscall.h
+> xenomai/include/nucleus/asm-generic/system.h
+> xenomai/include/nucleus/asm-i386
+> xenomai/include/nucleus/asm-i386/atomic.h
+> xenomai/include/nucleus/asm-i386/calibration.h
+> xenomai/include/nucleus/asm-i386/hal.h
+> xenomai/include/nucleus/asm-i386/syscall.h
+> xenomai/include/nucleus/asm-i386/system.h
+> xenomai/include/nucleus/asm-i386/uart.h
+> xenomai/include/nucleus/asm-ia64
+> xenomai/include/nucleus/asm-ia64/atomic.h
+> xenomai/include/nucleus/asm-ia64/calibration.h
+> xenomai/include/nucleus/asm-ia64/hal.h
+> xenomai/include/nucleus/asm-ia64/syscall.h
+> xenomai/include/nucleus/asm-ia64/system.h
+> xenomai/include/nucleus/asm-ppc
+> xenomai/include/nucleus/asm-ppc/atomic.h
+> xenomai/include/nucleus/asm-ppc/calibration.h
+> xenomai/include/nucleus/asm-ppc/hal.h
+> xenomai/include/nucleus/asm-ppc/syscall.h
+> xenomai/include/nucleus/asm-ppc/system.h
+> xenomai/include/nucleus/asm-ppc/uart.h
+> xenomai/include/nucleus/asm-ppc64
+> xenomai/include/nucleus/asm-ppc64/atomic.h
+> xenomai/include/nucleus/asm-ppc64/calibration.h
+> xenomai/include/nucleus/asm-ppc64/hal.h
+> xenomai/include/nucleus/asm-ppc64/syscall.h
+> xenomai/include/nucleus/asm-ppc64/system.h
+> xenomai/include/nucleus/asm-uvm
+> xenomai/include/nucleus/asm-uvm/system.h
+> xenomai/include/native
+> xenomai/include/native/alarm.c
+> xenomai/include/native/cond.h
+> xenomai/include/native/event.h
+> xenomai/include/native/heap.h
+> xenomai/include/native/intr.h
+> xenomai/include/native/misc.h
+> xenomai/include/native/mutex.h
+> xenomai/include/native/pipe.h
+> xenomai/include/native/queue.h
+> xenomai/include/native/registry.h
+> xenomai/include/native/sem.h
+> xenomai/include/native/task.h
+> xenomai/include/native/timer.h
+> xenomai/include/native/types.h
+> xenomai/include/posix
+> xenomai/include/posix/mqueue.h
+> xenomai/include/posix/posix.h
+> xenomai/include/posix/pthread.h
+> xenomai/include/posix/semaphore.h
+> xenomai/include/psos+
+> xenomai/include/psos+/psos.h
+> xenomai/include/rtai
+> xenomai/include/rtai/fifo.h
+> xenomai/include/rtai/intr.h
+> xenomai/include/rtai/rtai_fifos.h
+> xenomai/include/rtai/rtai.h
+> xenomai/include/rtai/rtai_hal.h
+> xenomai/include/rtai/rtai_nam2num.h
+> xenomai/include/rtai/rtai_proc_fs.h
+> xenomai/include/rtai/rtai_sched.h
+> xenomai/include/rtai/rtai_sem.h
+> xenomai/include/rtai/rtai_shm.h
+> xenomai/include/rtai/rtai_types.h
+> xenomai/include/rtai/rt_mem_mgr.h
+> xenomai/include/rtai/sem.h
+> xenomai/include/rtai/shm.h
+> xenomai/include/rtai/task.h
+> xenomai/include/rtai/timer.h
+> xenomai/include/rtai/types.h
+> xenomai/include/rtdm
+> xenomai/include/rtdm/rtdm_driver.h
+> xenomai/include/rtdm/rtdm.h
+> xenomai/include/rtdm/rtserial.h
+> xenomai/include/uitron
+> xenomai/include/uitron/uitron.h
+> xenomai/include/uvm
+> xenomai/include/uvm/uvm.h
+> xenomai/include/vrtx
+> xenomai/include/vrtx/vrtx.h
+> xenomai/include/vxworks
+> xenomai/include/vxworks/vxworks.h
+> xenomai/doc
+> xenomai/doc/snippets
+> xenomai/doc/snippets/native
+> xenomai/doc/snippets/native/bound_task.c
+> xenomai/doc/snippets/native/cond_var.c
+> xenomai/doc/snippets/native/event_flags.c
+> xenomai/doc/snippets/native/kernel_task.c
+> xenomai/doc/snippets/native/local_heap.c
+> xenomai/doc/snippets/native/msg_queue.c
+> xenomai/doc/snippets/native/mutex.c
+> xenomai/doc/snippets/native/pipe.c
+> xenomai/doc/snippets/native/semaphore.c
+> xenomai/doc/snippets/native/shared_mem.c
+> xenomai/doc/snippets/native/sigxcpu.c
+> xenomai/doc/snippets/native/user_alarm.c
+> xenomai/doc/snippets/native/user_irq.c
+> xenomai/doc/snippets/native/user_task.c
+> xenomai/doc/demos
+> xenomai/doc/demos/posix
+> xenomai/doc/demos/posix/accuracy.c
+> xenomai/doc/demos/posix/satch.c
+> xenomai/doc/demos/native
+> xenomai/doc/demos/native/latency.c
+> xenomai/doc/demos/native/satch.c
+> xenomai/doc/demos/psos+
+> xenomai/doc/demos/psos+/satch.c
+> xenomai/doc/demos/vxworks
+> xenomai/doc/demos/vxworks/koan.c
+> xenomai/doc/demos/vxworks/satch.c
+> xenomai/doc/docbook
+> xenomai/doc/doxygen
+> xenomai/doc/man
+> xenomai/doc/nodist
+> xenomai/doc/generated
+> xenomai/etc
+> xenomai/etc/udev
+> xenomai/etc/udev/rtheap.rules
+> xenomai/etc/udev/rtpipe.rules
+> xenomai/scripts
+> xenomai/scripts/xeno-config.in
+> xenomai/scripts/xeno-info
+> xenomai/scripts/xeno-load.in
+> xenomai/scripts/xeno-test.in
+> xenomai/build
+> xenomai/build/bootstrap
+> xenomai/build/generate-doc
+> xenomai/README.QUICKINSTALL
+> xenomai/README.INSTALL
+> xenomai/TROUBLESHOOTING
+> xenomai/CREDITS
+> xenomai/ChangeLog
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> xenomai/
+> xenomai/ksrc
+> xenomai/ksrc/test
+> xenomai/ksrc/test/klatency
+> xenomai/ksrc/arch
+> xenomai/ksrc/arch/generic
+> xenomai/ksrc/arch/generic/hal
+> xenomai/ksrc/arch/i386
+> xenomai/ksrc/arch/i386/hal
+> xenomai/ksrc/arch/ppc
+> xenomai/ksrc/arch/ppc/arch
+> xenomai/ksrc/arch/ia64
+> xenomai/ksrc/arch/ia64/hal
+> xenomai/ksrc/arch/ppc64
+> xenomai/ksrc/arch/ppc64/hal
+> xenomai/ksrc/drivers
+> xenomai/ksrc/drivers/16550A
+> xenomai/ksrc/nucleus
+> xenomai/ksrc/native
+> xenomai/ksrc/psos+
+> xenomai/ksrc/psos+/doc
+> xenomai/ksrc/posix
+> xenomai/ksrc/posix/doc
+> xenomai/ksrc/rtai
+> xenomai/ksrc/rtai/doc
+> xenomai/ksrc/rtdm
+> xenomai/ksrc/uitron
+> xenomai/ksrc/uitron/doc
+> xenomai/ksrc/uvm
+> xenomai/ksrc/vrtx
+> xenomai/ksrc/vrtx/doc
+> xenomai/ksrc/vxworks
+> xenomai/ksrc/vxworks/doc
+> xenomai/src
+> xenomai/src/test
+> xenomai/src/test/cruncher
+> xenomai/src/test/klatency
+> xenomai/src/test/latency
+> xenomai/src/test/switch
+> xenomai/src/nucleus
+> xenomai/src/native
+> xenomai/src/posix
+> xenomai/src/psos+
+> xenomai/src/rtai
+> xenomai/src/rtdm
+> xenomai/src/uvm
+> xenomai/src/uitron
+> xenomai/include
+> xenomai/include/nucleus
+> xenomai/include/nucleus/asm-generic
+> xenomai/include/nucleus/asm-i386
+> xenomai/include/nucleus/asm-ia64
+> xenomai/include/nucleus/asm-ppc
+> xenomai/include/nucleus/asm-ppc64
+> xenomai/include/nucleus/asm-uvm
+> xenomai/include/native
+> xenomai/include/posix
+> xenomai/include/psos+
+> xenomai/include/rtai
+> xenomai/include/rtdm
+> xenomai/include/uitron
+> xenomai/include/uvm
+> xenomai/include/vrtx
+> xenomai/include/vxworks
+> xenomai/doc
+> xenomai/doc/snippets
+> xenomai/doc/snippets/native
+> xenomai/doc/demos
+> xenomai/doc/demos/posix
+> xenomai/doc/demos/native
+> xenomai/doc/demos/psos+
+> xenomai/doc/demos/vxworks
+> xenomai/doc/docbook
+> xenomai/doc/doxygen
+> xenomai/doc/man
+> xenomai/doc/nodist
+> xenomai/doc/generated
+> xenomai/etc
+> xenomai/etc/udev
+> xenomai/scripts
+> xenomai/build
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
+
+-- 
+
+Philippe.
 
