@@ -1,12 +1,15 @@
-Message-ID: <43592FFE.6060003@domain.hid>
-Date: Fri, 21 Oct 2005 20:14:22 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [Fwd: Re: [Xenomai-help] timeout in native API
+	calls (cond, sem, =?iso-8859-15?q?=09mutex?=, etc).]
+Date: Sat, 22 Oct 2005 15:51:23 +0200
+References: <435926CE.1090201@domain.hid>
+In-Reply-To: <435926CE.1090201@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] EDF or RM scheduler for Xenomai
-References: <1436.10.2.100.4.1129898928.squirrel@domain.hid>
-In-Reply-To: <1436.10.2.100.4.1129898928.squirrel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200510221551.25114.dmitry.adamushko@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,97 +19,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Germain Olivier <germain.olivier@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Germain Olivier wrote:
-> At the beginning of October I've posted on the RTAI mailing list a
-> question about the development of additional scheduler for RTAI/Fusion.
-> 
-> About the pluggable scheduler infrastructure, can you give more details on
-> what you expect ?
-> 
+On Friday 21 October 2005 19:35, Philippe Gerum wrote:
+>
+> Actually, there is a more general problem with the current coding style
+> used throughout the code base: it's mine, it's not that standard,
 
-An implementation in the nucleus that make scheduling policies provided as 
-software plugins, so that we don't end up with braindamage exception cases in 
-nucleus/pod.c in order to support them. As of now, nucleus/pod.c implements the 
-fixed priority FIFO policy in a hard-wired manner: to have other policies 
-integrated into the core, we need to think of a lightweight generic 
-infrastructure for hosting those plugins that would replace the hard-coded, 
-FIFO-based, scheduling decisions.
+then what's standard in this case?
 
-> Also I'm searching in which files the priority inheritance mechanism code
-> is implemented.
-> 
+> and now 
+> thatmore people are contributing to it, I'm pondering whether we should
+> just adoptthe conventional kernel coding style, without the ludicrous
+> 8-space tabs, that is.
 
-nucleus/sync.c.
+The "kernel coding style" is just yet another codding style. If more people 
+are contributing to the project, then it should be a standard that satisfies 
+the most part of them. Is it necessarily the linux way?
+As I told you once, the important thing is how easily the code may be read, 
+hence, understood. IMHO, how/where the braces, etc. are placed is not the 
+matter of the first instance.
+The use of any codding style doesn't result in neat and well-readable code 
+automagically.
 
-> Thanks
-> 
-> Germain
-> 
-> 
->>100% agreed. The key issue is having the pluggable scheduler
->>infrastructure
->>which fusion currently lacks. After that, other scheduling policies than
->>fixed-priority FIFO could be mapped cleanly and easily on top of it.
-> 
-> 
-> 
->>Jan Kiszka wrote:
->>
->>>Germain wrote:
->>>
->>>
->>>>According to refactoring.txt from Fusion doc directory, Rate Monotonic
->>>>and
->>>>EDF are not supported in Fusion.
->>>>I'm in my last year of CS engineering school with a major in Emmbedded
->>>>Systems. One of the subject of my final year project is to write a
->>>>scheduler (Rate Monotonic, Earliest Deadline First or Least Laxity
->>>>First).
->>>>So I want to know what kind of knowledges is required to put the hand in
->>>>RTAI and develop a such thing. We are two and we have to finish for
->>>>early
->>>>february. We have skills in C, real time theory and developpment (with
->>>>Java), and system programming.
->>>>
->>>
->>>
->>>This would best be answered by the nucleus maintainer, who seems to be
->>>offline ATM.
->>
->>  Philippe already acknowledged the usefulness of a more
->>
->>>flexible scheduling subsystem which, e.g., allows to select a different
->>>policy during compile time or even later. What is certainly required for
->>>this is a clean framework that keeps the compatibility with the upper
->>>(skins) and lower layers (hal) - as far as possible.
->>>
->>>Again, this is something to discuss best with Philippe directly. I guess
->>>he will jump into this thread when time permits. In my eyes, your work
->>>would be very welcome.
->>>
->>
->>100% agreed. The key issue is having the pluggable scheduler
->>infrastructure
->>which fusion currently lacks. After that, other scheduling policies than
->>fixed-priority FIFO could be mapped cleanly and easily on top of it.
->>
->>Hint: scheduling issues are all sorted out inside nucleus/pod.c;
->>nucleus/synch.c
->>should be also studied in order to find out the relashionships that exist
->>between base synchronization object management and scheduling deci
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+Nevertheless, if the ideas are as follows:
 
+1) linux codding style as a part of the seamless integration with the linux 
+kernel. err.., what about a possibility to be merged with the mainline 
+kernel? ok, sounds almost impossible :) ;
 
--- 
+2) linux people are reading/will read the code, there are a lot of 
+style-adherents amongst them, so let's keep them satisfied and our mail boxes 
+free of the messages like "first change your codding style before submitting 
+anything" (btw, I remember one of the answers after publishing of first 
+i-pipe patch was of that kind). btw, there are some parts of the kernel (e.g. 
+some filesystems, if I'm not wrong) that use another style;
 
-Philippe.
+3) ok, I may assume, that if a person is familiar with some codding style, 
+he/she gets a few percent speed-up when reading the code that is of the same 
+style. At least, for the first few minutes :) But here we must assume that 
+the most part of the potential readers/contributors like the linux codding 
+way.
+
+err.. to sum it up, I like the current codding style, but if 1-3) + smth else 
+are worthy things, then why not. I'll get used to another style, if the code 
+will remain err. well-readable :)
+
+>
+> --
+
+>
+> Philippe.
+>
+
+---
+Best regards,
+Dmitry
 
