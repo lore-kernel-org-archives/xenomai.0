@@ -1,12 +1,14 @@
-Message-ID: <4351642C.2020607@domain.hid>
-Date: Sat, 15 Oct 2005 22:18:52 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <435D4B16.7020907@domain.hid>
+Date: Mon, 24 Oct 2005 22:59:02 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-References: <43514FE1.80703@domain.hid>
-In-Reply-To: <43514FE1.80703@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
+Subject: Re: [Xenomai-core] [bug-reminder] user/kernel space header deps
+References: <43536E90.2050001@domain.hid>	<43538C34.7010802@domain.hid>
+	<435CC24C.20708@domain.hid> <435D4840.2050602@domain.hid>
+In-Reply-To: <435D4840.2050602@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig73FA3951BB60477135FD70A0"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,78 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Wolfgang Grandegger wrote:
-> Hello Philippe,
-> 
-> I got Xenomai working on a Ocotea-Board (AMCC 440GX) and a low-end
-> TQM855L-Module (MPC 855) under Linux 2.6.14-rc3 :-). The patch applied
-> with a few hunks and one easy to fix reject and I had to correct two
-> problems. One with FEW_CONTEXT (see attached patch) and the second with
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig73FA3951BB60477135FD70A0
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Applied.
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>
+>> Philippe Gerum wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>
+>>>> Hi,
+>>>>
+>>>> just to avoid that this issue got lost during the migration to Xenomai:
+>>>>
+>>>> It's still not possible to compile a C++ POSIX program with CFLAGS
+>>>> obtained via "xeno-config --posix-ldflags". This is due to the fact
+>>>> that
+>>>> low-level, C++-incompatible headers get included in that case.
+>>>> Moreover,
+>>>> the same scenarion works for native skin programs only by chance at the
+>>>> moment.
+>>>>
+>>>> On the long term, a clear separation between types, defines, function
+>>>> prototypes, etc. needed for the user API on the one and for core
+>>>> compilation on the other side is required.
+>>>>
+>>>
+>>> Without duplicating definitions and ABI information, otherwise this
+>>> would be an absolute nightmare. Suggestions welcome.
+>>>
+>>
+>>
+>> To pick up this issue again (as it's biting me more and more...):
+>>
+>> What precisely prevents us at the moment from removing the
+>> -I<kernel-headers> from all userspace build steps, both Xenomai's own
+>> libraries as well as external rt-applications?
+>>
+>
+> Because a few things like asm/atomic.h and linux/bitops.h are wanted
+> from the target header base for compiling some bits of user-space stuff.
+> Not pretty, but currently needed. This is probably what needs to be
+> fixed, in which case the -I directive would become useless in the same
+> move.
+>
+>> Gilles explained to me that at least asm/atomic.h is used by certain
+>> parts like UVM (or only UVM?), and that including this header directly
+>> from /usr/include fails on Red Hat/Fedora boxes. Are there any further
+>> problems? At least on my SuSE 10 everything still compiles fine
+>> (including UVM) when I remove the kernel headers from XENO_USER_CFLAGS
+>> in configure.in.
+>>
+>
+> It's not an issue with such inclusion failing/passing, it's just that it
+> would be incorrect to include your host distro's headers for that
+> purpose, since what we need here is the _target_ stuff. The fact that it
+> works on your box is just because 1) your host == your target arch, and
+> 2) your host header base does not seem to implement guards preventing
+> the use of kernel headers in user-space context. In cross compilation
+> context, such inclusion would simply break the build, since it expects
+> the target architecture headers to be used, not the host's ones.
+>
 
-> "#include <asm/offsets.h>" in "xenomai/arch/ppc/hal/switch.S". The
-> include file does not exist (any more) in the kernel tree and therefore
+I see, so the problem is the pre-set link of /usr/include/asm to
+/usr/include/asm-i386 in my case.
 
-This was useless anyway, so I've removed it too.
+Anyway, it seems that really few code is involved so that it should be
+possible to find either related headers in the standard libc or copy
+that few atomic ops to Xenomai's arch-dependent includes.
 
-> I commented out the line. I'm going to perform latency tests on various
-> 4xx and 8xx boards next week.
+Jan
 
-This will help a lot, thanks.
+--------------enig73FA3951BB60477135FD70A0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-  Here are some preliminary figures of the
-> TQM855L-Module (CPU 80 MHz, Bus 40 MHz, 4 kB I-Cache 4 kB D-Cache):
-> 
-> bash-2.05b# ./cruncher -p 500
-> Calibrating cruncher...3025953, 334, 334, 334, 334, done -- ideal
-> computation time = 334 us.
-> 1000 samples, 1000 hz freq (pid=338, policy=SCHED_FIFO, prio=99)
-> --------
-> Nanosleep jitter: min = 118 us, max = 474 us, avg = 155 us
-> Execution jitter: min = 32 us (9%), max = 100 us (29%), avg = 47 us (14%)
-> --------
-> 
-> bash-2.05b# ./switch -p 500
-> == Sampling period: 500 us
-> == Do not interrupt this program
-> RTH|     lat min|     lat avg|     lat max|        lost
-> RTD|      110400|      120200|      206600|           0
-> 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.0 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-Min lat is huge, there's a lot of room for improving the intrinsic latency...
+iD8DBQFDXUsWncNeS9Q0k+IRAr+EAJ46MN4c8BclXKUq3fsIMLZJL64XGwCfRRTK
+SSMgXDCFIvkt4tAFUQBce5s=
+=CjDp
+-----END PGP SIGNATURE-----
 
-> bash-2.05b# ./latency -p 500
-> == Sampling period: 500 us
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|       70000|       84000|      183200|       0|    00:00:50/00:00:50
-> 
-> Have a nice weekend.
-> 
-
-You too, thanks.
-
-> Wolfgang.
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> + diff -u linux-2.6.14-rc3-g4c234921-ipipe/arch/ppc/kernel/ipipe-root.c.FEW_CONTEXTS linux-2.6.14-rc3-g4c234921-ipipe/arch/ppc/kernel/ipipe-root.c
-> --- linux-2.6.14-rc3-g4c234921-ipipe/arch/ppc/kernel/ipipe-root.c.FEW_CONTEXTS	2005-10-15 12:03:40.000000000 +0200
-> +++ linux-2.6.14-rc3-g4c234921-ipipe/arch/ppc/kernel/ipipe-root.c	2005-10-15 13:56:29.000000000 +0200
-> @@ -35,6 +35,7 @@
->  #include <asm/atomic.h>
->  #include <asm/io.h>
->  #include <asm/time.h>
-> +#include <asm/mmu_context.h>
->  
->  extern irq_desc_t irq_desc[];
->  
-
--- 
-
-Philippe.
+--------------enig73FA3951BB60477135FD70A0--
 
