@@ -1,12 +1,14 @@
-Message-ID: <435155D1.5090302@domain.hid>
-Date: Sat, 15 Oct 2005 22:17:37 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <435CC24C.20708@domain.hid>
+Date: Mon, 24 Oct 2005 13:15:24 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Testing the adeos-ipipe-2.6.13-ppc-1.0-00.patch
-References: <43514FE1.80703@domain.hid>
-In-Reply-To: <43514FE1.80703@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [bug-reminder] user/kernel space header deps
+References: <43536E90.2050001@domain.hid>
+	<43538C34.7010802@domain.hid>
+In-Reply-To: <43538C34.7010802@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD6B093031A8E35A6D3C1C6B9"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,25 +18,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Wolfgang Grandegger kirjoitti:
-> Hello Philippe,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD6B093031A8E35A6D3C1C6B9
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 > 
-> I got Xenomai working on a Ocotea-Board (AMCC 440GX) and a low-end
-> TQM855L-Module (MPC 855) under Linux 2.6.14-rc3 :-). The patch applied
-> with a few hunks and one easy to fix reject and I had to correct two
-> problems. One with FEW_CONTEXT (see attached patch) and the second with
-> "#include <asm/offsets.h>" in "xenomai/arch/ppc/hal/switch.S". The
-> include file does not exist (any more) in the kernel tree and therefore
-> I commented out the line. I'm going to perform latency tests on various
-> 4xx and 8xx boards next week. Here are some preliminary figures of the
-> TQM855L-Module (CPU 80 MHz, Bus 40 MHz, 4 kB I-Cache 4 kB D-Cache):
+>> Hi,
+>>
+>> just to avoid that this issue got lost during the migration to Xenomai:
+>>
+>> It's still not possible to compile a C++ POSIX program with CFLAGS
+>> obtained via "xeno-config --posix-ldflags". This is due to the fact that
+>> low-level, C++-incompatible headers get included in that case. Moreover,
+>> the same scenarion works for native skin programs only by chance at the
+>> moment.
+>>
+>> On the long term, a clear separation between types, defines, function
+>> prototypes, etc. needed for the user API on the one and for core
+>> compilation on the other side is required.
+>>
+> 
+> Without duplicating definitions and ABI information, otherwise this
+> would be an absolute nightmare. Suggestions welcome.
+> 
 
-If you happen to know some (semi-)comparable figures for the same boards 
-using some commercial RTOS, it would be nice to know them also, for 
-comparison.
+To pick up this issue again (as it's biting me more and more...):
 
--- Heikki Lindholm
+What precisely prevents us at the moment from removing the
+-I<kernel-headers> from all userspace build steps, both Xenomai's own
+libraries as well as external rt-applications?
+
+Gilles explained to me that at least asm/atomic.h is used by certain
+parts like UVM (or only UVM?), and that including this header directly
+from /usr/include fails on Red Hat/Fedora boxes. Are there any further
+problems? At least on my SuSE 10 everything still compiles fine
+(including UVM) when I remove the kernel headers from XENO_USER_CFLAGS
+in configure.in.
+
+Jan
+
+--------------enigD6B093031A8E35A6D3C1C6B9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDXMJMncNeS9Q0k+IRAooQAKCg5UYIBMCBpzkdi4XG9VjUh+FbEACgq36h
+PjJamwjIDycDw0nJOglO87o=
+=ZMhq
+-----END PGP SIGNATURE-----
+
+--------------enigD6B093031A8E35A6D3C1C6B9--
 
