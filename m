@@ -1,13 +1,12 @@
-Message-ID: <435D45DC.3010304@domain.hid>
-Date: Mon, 24 Oct 2005 22:36:44 +0200
+Message-ID: <435D4840.2050602@domain.hid>
+Date: Mon, 24 Oct 2005 22:46:56 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] problem and solution
-	with	adeos-ipipe-2.6.13-ppc-1.0-03.patch
-References: <1CFEB358338412458B21FAA0D78FE86D4F0E3F@rennsmail02.eu.thmulti.com>
-	<20051024175649.GR15211@domain.hid>
-In-Reply-To: <20051024175649.GR15211@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [bug-reminder] user/kernel space header deps
+References: <43536E90.2050001@domain.hid>	<43538C34.7010802@domain.hid>
+	<435CC24C.20708@domain.hid>
+In-Reply-To: <435CC24C.20708@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,30 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Aristeu Sergio Rozanski Filho <aris@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Aristeu Sergio Rozanski Filho wrote:
->>Hi,
->>
->>The adeos-ipipe-2.6.13-ppc-1.0-03.patch file in Xenomai-2.0 dist appears
->>to be broken. The unified diff format is wrong on
->>include/asm-ppc/ipipe.h,
->>which breaks include/asm-ppc/mmu_context.h. I've found the problem while
->>
->>applying the patch on a Linux 2.6.13 kernel.
->>Line 1664 (no pun :), instead of @@ -0,1 +1,178 @@, the following solves
->>the problem here: @@ -0,0 +1,177 @@
->>
->>Does somebody else encountered the problem?
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
 > 
-> I did.
-> maybe it's a good reason for 2.01?
+>>Jan Kiszka wrote:
+>>
+>>
+>>>Hi,
+>>>
+>>>just to avoid that this issue got lost during the migration to Xenomai:
+>>>
+>>>It's still not possible to compile a C++ POSIX program with CFLAGS
+>>>obtained via "xeno-config --posix-ldflags". This is due to the fact that
+>>>low-level, C++-incompatible headers get included in that case. Moreover,
+>>>the same scenarion works for native skin programs only by chance at the
+>>>moment.
+>>>
+>>>On the long term, a clear separation between types, defines, function
+>>>prototypes, etc. needed for the user API on the one and for core
+>>>compilation on the other side is required.
+>>>
+>>
+>>Without duplicating definitions and ABI information, otherwise this
+>>would be an absolute nightmare. Suggestions welcome.
+>>
+> 
+> 
+> To pick up this issue again (as it's biting me more and more...):
+> 
+> What precisely prevents us at the moment from removing the
+> -I<kernel-headers> from all userspace build steps, both Xenomai's own
+> libraries as well as external rt-applications?
 > 
 
-Maybe as we need to put perfectly buildable stuff on-line before making some 
-noise as Jan's put it. Time for discovering other rough edges before 2.0.1 is 
-rolled out, I guess.
+Because a few things like asm/atomic.h and linux/bitops.h are wanted from the 
+target header base for compiling some bits of user-space stuff. Not pretty, but 
+currently needed. This is probably what needs to be fixed, in which case the -I 
+directive would become useless in the same move.
+
+> Gilles explained to me that at least asm/atomic.h is used by certain
+> parts like UVM (or only UVM?), and that including this header directly
+> from /usr/include fails on Red Hat/Fedora boxes. Are there any further
+> problems? At least on my SuSE 10 everything still compiles fine
+> (including UVM) when I remove the kernel headers from XENO_USER_CFLAGS
+> in configure.in.
+>
+
+It's not an issue with such inclusion failing/passing, it's just that it would 
+be incorrect to include your host distro's headers for that purpose, since what 
+we need here is the _target_ stuff. The fact that it works on your box is just 
+because 1) your host == your target arch, and 2) your host header base does not 
+seem to implement guards preventing the use of kernel headers in user-space 
+context. In cross compilation context, such inclusion would simply break the 
+build, since it expects the target architecture headers to be used, not the 
+host's ones.
+
+> Jan
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 
