@@ -3,11 +3,10 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Date: Mon, 24 Oct 2005 19:28:50 +0200
-Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E3F@rennsmail02.eu.thmulti.com>
+Subject: RE: [Xenomai-core] Xenomai v2.0
+Date: Mon, 24 Oct 2005 19:34:14 +0200
+Message-ID: <1CFEB358338412458B21FAA0D78FE86D4F0E40@domain.hid>
 From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: [Xenomai-core] problem and solution with
-	adeos-ipipe-2.6.13-ppc-1.0-03.patch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,36 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <kiszka@domain.hid>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi,
+Jan Kiszka wrote:
+>Philippe Gerum wrote:
+>> The first stable release of the former "fusion" effort is now
+available
+>> for download. I have not much more to say, except to thank to
+everyone
+>> involved with this tireless work since 2001. v2.0 is an important
+>> milestone in the life of this project, and as such, it paves the way
+to
+>> the seamlessly integrated real-time framework for Linux we strive at
+>> building.
+>
+>Time to make some noise, I guess ;): What about an article at
+>LinuxDevices e.g.? Further suggestions? Once there are some text
+modules
+>they could easily be reused...
 
-The adeos-ipipe-2.6.13-ppc-1.0-03.patch file in Xenomai-2.0 dist appears
-to be broken. The unified diff format is wrong on
-include/asm-ppc/ipipe.h,
-which breaks include/asm-ppc/mmu_context.h. I've found the problem while
+LWN ? /.?
 
-applying the patch on a Linux 2.6.13 kernel.
-Line 1664 (no pun :), instead of @@ -0,1 +1,178 @@, the following solves
-the problem here: @@ -0,0 +1,177 @@
+>But before starting: should we wait for the new website? When will it
+>likely be finished?
 
-Does somebody else encountered the problem?
-
-
-For the record, here is for 2.6.13-ppc-1.0-03 the result of klatency,=20
-with only calibrator as a load generator.
-
-KLATENCY with load:
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-RTS|       -7350|       -5715|        6420|       0|    00:03:17 1.0-00
-RTS|       -6150|       -4384|       12180|       0|    00:03:13 1.0-01
-RTS|       -6150|       -4183|       12480|       0|    00:03:38 1.0-02
-RTS|       -6120|       -4447|        8370|       0|    00:03:47 1.0-02+
-RTS|       -6210|       -5381|       12390|       0|    00:03:38 1.0-03
+I would argue in favor of waiting for the new website. The current
+xemai.org
+portal is a bit, well, rough for newcomers :-)
 
 --=20
 Stephane
-
-PS: kudos for the 2.0 release!
 
 
