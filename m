@@ -1,14 +1,13 @@
-Message-ID: <435E8647.2030501@domain.hid>
-Date: Tue, 25 Oct 2005 21:23:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <435EB00B.4040407@domain.hid>
+Date: Tue, 25 Oct 2005 15:22:03 -0700
+From: Vincent Levesque <vleves@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Usage of sim with xenomai-2.0
-References: <FDBBB5CC70676540B3EF7CFE83FD94E00E6CE2@domain.hid>
-	<435E3A68.9090601@domain.hid>
-	<FDBBB5CC70676540B3EF7CFE83FD94E0043049@domain.hid>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0043049@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] How to implement a GUI for RT apps?
+References: <435D7D8C.1010004@domain.hid>
+	<435DF423.5000800@domain.hid>
+In-Reply-To: <435DF423.5000800@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,220 +17,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-ROSSIER Daniel wrote:
-> Ok, I will also try to have a look. Maybe, an idea would be to migrate =
-to gcc-3.4.4 for the code
-> instrumentation...Are there specific issues related to the gcc version =
-for that?
->=20
+Hi Jan,
 
-There is big issue, unfortunately: the instrumenter is based on a patch a=
-gainst=20
-the C and C++ parsers that provides the needed support to insert code on-=
-the-fly=20
-into the user code; it is this code which actually binds the application =
-to the=20
-simulation engine. Crafting this patch is a rather complex business becau=
-se you=20
-have to tap directly into GCC's lexer and grammar parser, and quite frank=
-ly,=20
-this is something I'm really reluctant to start anew on a radically diffe=
-rent=20
-GCC parsing engine, at least now, with respect to the actual benefit upgr=
-ading=20
-the instrumenter base would bring. Again, usefulness / complexity ratio i=
-ssue.
+>...and hopefully do not call any non-rt functions while holding the
+>lock. Note that you can install a SIGXCPU handler to catch such
+>potential accidental violations. Likely not needed if you only copy some
+>data between the shared objects and your local buffers (all locked into
+>memory - mlockall?).
+>  
+>
+What do you mean by non-rt function? System calls? Functions that take a 
+lot of time to run? Unless I made some mistakes, I'm only doing simple 
+computations and copying data while mutexes are locked. I'm also using 
+mlockall().
 
-> Daniel
->=20
->=20
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Tue 10/25/2005 4:00 PM
-> To: ROSSIER Daniel
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Usage of sim with xenomai-2.0
-> =20
-> ROSSIER Daniel wrote:
->=20
->>Hi Philippe,
->>
->>Here is the info about my env:
->>
->>- kernel 2.6.9
->>- glibc 2.3.5
->>- gcc 3.4.4
->>- actually, I built my env. from scratch (no distro) - simply from www.=
-linuxfromscratch.org
->>
->>But everything else works fine :-) (xenomai works perfectly. I tested i=
-t with the LinuxTraceToolkit, and it works as well)
->>
->>Here is the fragment of log, right before the failure (all the compilat=
-ion steps before are OK):
->>
->>
->>make[4]: Leaving directory `/home/rossier/xenomai-2.0/sim/gcic/gcc-buil=
-d/i686-pc-linux-gnu/libiberty'
->>make[3]: Leaving directory `/home/rossier/xenomai-2.0/sim/gcic/gcc-buil=
-d/i686-pc-linux-gnu/libiberty'
->>make[3]: Entering directory `/home/rossier/xenomai-2.0/sim/gcic/gcc-bui=
-ld/i686-pc-linux-gnu/libio'
->>if [ x"no" =3D xyes ] && [ ! -d pic ]; then \
->>  mkdir pic; \
->>else true; fi
->>touch stamp-picdir
->>test x"no" !=3D xyes ||\
->>  /home/rossier/xenomai-2.0/sim/gcic/gcc-build/gcc/xgcc -B/home/rossier=
-/xenomai-2.0/sim/gcic/gcc-build/gcc/ -B/usr/realtime/libexec/gcic/i686-pc=
--linux-gnu/bin/ -c -g -O2 -I. -I../../../gcc-2.95.3/libio -D_IO_MTSAFE_IO=
-  ../../../gcc-2.95.3/libio/iogetline.c -o pic/iogetline.o /home/rossier/=
-xenomai-2.0/sim/gcic/gcc-build/gcc/xgcc -B/home/rossier/xenomai-2.0/sim/g=
-cic/gcc-build/gcc/ -B/usr/realtime/libexec/gcic/i686-pc-linux-gnu/bin/ -c=
- -g -O2 -I. -I../../../gcc-2.95.3/libio -D_IO_MTSAFE_IO ../../../gcc-2.95=
-.3/libio/iogetline.c
->>In file included from ../../../gcc-2.95.3/libio/libio.h:167,
->>                 from ../../../gcc-2.95.3/libio/iolibio.h:1,
->>                 from ../../../gcc-2.95.3/libio/libioP.h:47,
->>                 from ../../../gcc-2.95.3/libio/iogetline.c:26:
->>/usr/include/bits/stdio-lock.h:24: lowlevellock.h: No such file or dire=
-ctory
->>make[3]: *** [iogetline.o] Error 1
->>make[3]: Leaving directory `/home/rossier/xenomai-2.0/sim/gcic/gcc-buil=
-d/i686-pc-linux-gnu/libio'
->>make[2]: *** [all-target-libio] Error 2
->>make[2]: Leaving directory `/home/rossier/xenomai-2.0/sim/gcic/gcc-buil=
-d'
->>make[1]: *** [gcc-build/.gcic-built] Error 2
->>make[1]: Leaving directory `/home/rossier/xenomai-2.0/sim/gcic'
->>make: *** [all-recursive] Error 1
->>root@domain.hid#
->>
->=20
->=20
-> It seems to be an incompatibility issue between the NPTL and gcc-2.95.x=
-:
-> http://sources.redhat.com/ml/glibc-bugs/2004-06/msg00144.html
->=20
-> The best way to solve this would be to get rid of the MT support for bu=
-ilding=20
-> the GCC-based instrumenter, since we don't need it, and libio/ compilat=
-ion would=20
-> not break. I'll look at some way to fix this.
->=20
->=20
->>Thanks a lot.
->>
->>Cheers
->>
->>Daniel
->>
->>
->>
->>-----Message d'origine-----
->>De : Philippe Gerum [mailto:rpm@xenomai.org
->>Envoy=E9 : mardi, 25. octobre 2005 15:03
->>=C0 : ROSSIER Daniel
->>Cc : xenomai@xenomai.org
->>Objet : Re: [Xenomai-help] Usage of sim with xenomai-2.0
->>
->>ROSSIER Daniel wrote:
->>
->>
->>>Hi xeno-workers,
->>>
->>>
->>>
->>>I'm trying to compile the simulator of xenomai-2.0 within a kernel 2.6=
-.9=20
->>>but I get
->>>
->>>the following error when gcc-2.95.3 is being compiled:=20
->>>"/usr/include/bits/stdio-lock.h:24: lowlevellock.h: No such file or=20
->>>directory"
->>>
->>>(I presume that this include is not supported anymore by my current li=
-bc)
->>>
->>>
->>>
->>>I'm pretty sure that it is not a new issue - Sorry about this - I=20
->>>probably missed the workaround.
->>>
->>
->>
->>This one is new actually. Could you send more information about your en=
-vironment=20
->>(glibc version, distro, compiler version) and the fragment of the outpu=
-t log=20
->>containing the error message? TIA,
->>
->>
->>
->>>Please, would you be so kind as to help me?
->>>
->>>
->>>
->>>Thanks in advance
->>>
->>>
->>>
->>>Cheers
->>>
->>>Daniel
->>>
->>>
->>>
->>>
->>>
->>>
->>>
->>>
->>>
->>>Dr. Daniel Rossier, Professeur
->>>
->>>REDS, Reconfigurable & Embedded Digital Systems, http://reds.eivd.ch/
->>>
->>>HES-SO
->>>
->>>Haute Ecole d'Ing=E9nieurs et de Gestion (HEIG-VD)
->>>
->>>Rte de Cheseaux 1
->>>
->>>
->>>
->>>CH-1774 Yverdon-les-Bains
->>>
->>>
->>>
->>>T=E9l. fixe:     +41 24 557 62 69
->>>
->>>T=E9l. mobile:   +41 79 292 54 58
->>>
->>>E-mail:        daniel.rossier@domain.hid <mailto:daniel.rossier@domain.hid=
-d.ch>
->>>
->>>
->>>
->>>
->>>----------------------------------------------------------------------=
---
->>>
->>>_______________________________________________
->>>Xenomai-help mailing list
->>>Xenomai-help@domain.hid
->>>https://mail.gna.org/listinfo/xenomai-help
->>
->>
->>
->=20
->=20
+What would be the effect otherwise? I assume it would slow things down 
+(by taking too long or switching to secondary mode) and possibly starve 
+the rest of the system (freeze). I'm currently getting segfaults...
 
+>>To summarize,
+>>
+>>1. What's the best way to implement a GUI for a RT app?
+>>    
+>>
+>
+>Depends too much on your requirements, GUI toolkit, etc. to give a
+>general statement here.
+>  
+>
+Good point. I guess the real question is: what are my options?
 
---=20
+A few words about my needs. I'm a grad student in a research lab 
+specializing in experimental haptic devices (computer interfaces for the 
+sense of touch). I've been writing RT software to control different 
+pieces of hardware. The software is for the most part for prototypes and 
+will never leave the lab. The specs are constantly changing and I need 
+to be able to continuously refactor and extend my code. My GUIs are 
+mainly used to modify parameters and determine what goes on in RT 
+control loops. I also give feedback with widgets and opengl drawings.
 
-Philippe.
+I could use the traditional decoupled approach (two processes) but that 
+imposes some limits on what can be done fast. It essentially means that 
+I need to design some kind of communication protocol between my RT and 
+"non-RT" processes using queues or shared  memory. It's not that 
+difficult but it complicates things and discourages changes to the 
+software once finished. This approach can also quickly lead to very ugly 
+hacks and workarounds when you can't afford to spend much time 
+refactoring. It's not uncommon to see huge "do-it-all" structures with 
+obsolete fields being passed around to save development time.
+
+The approach that I'm using is more risky but it has many advantages 
+(if/when it works). After all, there's a reason why multithreaded apps 
+and frameworks like CORBA are popular...
+
+Some information about my development env.:
+
+OS: Ubuntu Linux 5.04 / 5.10
+Kernel: 2.6.13 with ipipe adeos patch
+RT: RTAI/fusion 0.9
+Language: C++
+GUI: gtkmm and gtkglextmm
+
+>>2. Is my approach "legal" in fusion/xenomai?
+>>    
+>>
+>
+>Sounds sane to me. Which fusion version are you using? Already tried to
+>update some component (kernel, patch, fusion/xenomai) and watch
+>potential changes?
+>  
+>
+Just to be sure we're clear: I have two tasks reusing the same RT_MUTEX 
+structure, not two structure with the same content. That is allowed?
+
+I didn't try to change much at this point. In fact I had to go back to 
+my old linux distribution for the time being. I was using RTAI/fusion 
+0.9. I switched to Xenomai 2.0 last night.
+
+>>3. I remember reading that RTAI and X don't play well together. Is that
+>>the case with Xenomai? Will things be better if I use the two-processes
+>>approach?
+>>    
+>>
+>
+>Not a general problem, but a specific one related to certain graphic
+>cards and drivers (don't ask me which, we are only using head-less or
+>console-based boxes here).
+>
+That's good to know. I think I figured out why my program was sometimes 
+freezing *before* the upgrade. It was unrelated to any problems with X.
+
+Another question: Is there any restrictions on the use of the "new" 
+operator in a RT task (or after calling mlockall)? That's the other 
+possible culprit I had in mind....
+
+Thanks a lot for your help!
+
+Vincent Levesque
+vleves@domain.hid
 
