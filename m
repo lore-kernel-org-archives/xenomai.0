@@ -1,16 +1,12 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Date: Sun, 16 Oct 2005 16:47:23 +0900
-References: <000d01c5cfcb$8b5dfaf0$0600a8c0@domain.hid>
-	<17230.50005.610300.142351@domain.hid>
-	<200510141242.59134.rlenglet@domain.hid>
-In-Reply-To: <200510141242.59134.rlenglet@domain.hid>
+Message-ID: <435DD999.9090408@domain.hid>
+Date: Tue, 25 Oct 2005 09:07:05 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] [patch] RTDM abstraction for priority direction
+References: <435D4FEE.10301@domain.hid>
+In-Reply-To: <435D4FEE.10301@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200510161647.23589.rlenglet@domain.hid>
-Subject: [Xenomai-core] Packaging issues and licensing issues
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,98 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+> 
+> it turned out that it is useful to abstract the priority
+> increment/decrement by one level at the RTDM layer - for systems that
+> use a different scheme compared to POSIX or Xenomai (so far only classic
+> RTAI). Please apply.
 
-I repost here the issues that I have pointed in "wish" #4523 on 
-the GNA interface 
-https://gna.org/bugs/index.php?func=detailitem&item_id=4523
-which, although it is listed in the bug tracker, is *not* a 
-bug... ;) but there is no other place to put wishes or todo 
-items.
+Applied, thanks.
 
-========================================
-Debian offers the module-assistant package, that relies on the 
-kernel-package tools.
- module-assistant is both a command-line and a dialog-and-menus 
-based tool, to make it very easy to build and package kernel 
-modules.
- 
- For instance, to build a module package from the ipw2100-source 
-package (for wireless cards), the single following command is 
-sufficient:
- $> m-a build ipw2100
- This downloads the source package, builds the modules and 
-packages them.
- $> m-a install ipw2100
- This command does the same and even installs the built package.
- 
- However, the current rtai-source in Debian is the only *-source 
-package that cannot be built using module-assistant. This should 
-be corrected in the next packages.
- 
- 
- I propose that the package be split into 5 packages, anyway:
- - libxenomai: the libraries,
- - libxenomai-dev: the development libraries, headers and devel 
-tools (rtai-config, etc.),
- - libxenomai-tools: the runtime tools (rtai-load, etc.?)
- - libxenomai-doc: the docs,
- - xenomai-source: only the sources of modules; should be usable 
-with module-assistant.
- 
- And the *-source package should be well integrated: the module 
-*.ko files should go into /lib/modules/... so that we can use 
-modprobe directly to load the Xenomai modules. But that should 
-be OK if it is compatible with module-assistant.
-========================================
+> 
+> Jan
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: skins/rtdm/rtdm_driver.h
+> ===================================================================
+> --- skins/rtdm/rtdm_driver.h	(Revision 72)
+> +++ skins/rtdm/rtdm_driver.h	(Arbeitskopie)
+> @@ -831,8 +831,16 @@
+>  #define RTDM_TASK_HIGHEST_PRIORITY  XNCORE_HIGH_PRIO
+>  /** @} */
+> 
+> +/*!
+> + * @anchor changetaskprio @name Task Priority Modification
+> + * Raise or lower task priorities by one level
+> + * @{ */
+> +#define RTDM_TASK_RAISE_PRIORITY    (+1)
+> +#define RTDM_TASK_LOWER_PRIORITY    (-1)
+>  /** @} */
+> 
+> +/** @} */
+> +
+>  static inline int rtdm_task_init(rtdm_task_t *task, const char *name,
+>                                   rtdm_task_proc_t task_proc, void *arg,
+>                                   int priority, __u64 period)
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-
-I have started creating a Debian package mockup (as a week-end 
-hobby, do no expect that I finish it ;)), following the above 
-remarks, and I have found other issues:
-
-There are three licenses used in the source code:
-1- GPL v2 or later:
-  ./sim/**
-  ./skins/rtai/*
-  ./skins/posix/*
-  ./skins/native/*
-  ./skins/uvm/*
-  ...
-OK, no problem: the COPYING files are consistent with the license 
-headers in files.
-
-2- GPL v2 or later with exceptions:
-  ./nucleus/**
-  ./include/nucleus/**
-  ./skins/psos+/**
-  ./skins/uitron/**
-  ./skins/vrtx/**
-  ./skins/vxworks/**
-  ...
-The license headers in files do not mention the exceptions, only 
-the COPYING files do. -> You should update the license headers 
-in files.
-
-3- LGPL v2 or later:
-  ./skins/rtai/lib/*
-  ./skins/posix/lib/*
-  ./skins/native/lib/*
-  ./skins/uvm/lib/*
-  ...
-Problem: only the text for v2.1 is in the COPYING files, not for 
-v2 as mentioned in all license headers in files. -> You should 
-update the COPYING files to contain LGPL v2, or update headers 
-in files.
-
-
-My other issue is: what are precisely the licences of every 
-binaries / docs / modules / ... produced by make install? 
-Because the right license files and doc must be provided in 
-binary packages.
 
 -- 
-Romain Lenglet
+
+Philippe.
 
