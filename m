@@ -1,15 +1,10 @@
-Message-ID: <435EACB1.2070405@domain.hid>
-Date: Wed, 26 Oct 2005 00:07:45 +0200
+Message-ID: <435EFAB8.2050501@domain.hid>
+Date: Wed, 26 Oct 2005 05:40:40 +0200
 From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] How to implement a GUI for RT apps?
-References: <435D7D8C.1010004@domain.hid>
-	<435E079F.4030108@domain.hid>	<435E0921.20001@domain.hid>
-	<435E5044.8090600@domain.hid>	<435E5647.70406@domain.hid>	<435EC897.3020601@domain.hid>
-	<435EA49C.3090402@domain.hid>
-In-Reply-To: <435EA49C.3090402@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] RTDM & serial port
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,17 +16,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi all!
+Hi Jan et al.!
 
-I must admit that I've done only RT stuff without GUI so far (well,
-one with ncurses, but I guess that one doesn't count here ;-)
+I've noticed your thread on the RTAI list "Driver Model for RTAI" in June.
+Now as I try to port some RTAI serial port stuff to Xenomai in order to
+put up some howto page on my website, I'm clueless.
 
-Just to get started - instead of theoretical talk only - it'll
-be great if the one or another long time list-member could post
-an examples to get the feet of the non-GUI folks wet.
+None of the RTAI functions rt_spopen, rt_spread_timed, rt_spwrite are
+available - I see that there is some rt_dev_open, rt_dev_write available,
+but only rt_dev_read - what about some timed-read ?
 
-Thanks a bunch :-)
+I see that rt_spopen opens /dev/rtser[X] but /dev/rtser[X] is not on my
+system, nor can I find any creation-script in the xenomai source.
 
-Best regards,
+Sorry if I'm overlooking some stuff... 5:40am here.
+
+I'd be very glad for any hints/examples/code-snippets!
+
+Thanks a lot & best regards,
 Hannes.
 
