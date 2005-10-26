@@ -1,12 +1,12 @@
-Message-ID: <435F9469.9060701@domain.hid>
-Date: Wed, 26 Oct 2005 16:36:25 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <435FB6CB.9030307@domain.hid>
+Date: Wed, 26 Oct 2005 19:03:07 +0200
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Spawn Task from a Task -vxworks-skin
-References: <10692.1130336592@domain.hid> <31499.1130337090@domain.hid>
-In-Reply-To: <31499.1130337090@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] RTDM & serial port
+References: <435EFAB8.2050501@domain.hid> <435F2DDA.1030702@domain.hid>
+In-Reply-To: <435F2DDA.1030702@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,86 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "j.p.schulz" <j.p.schulz@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-j.p.schulz wrote:
->>--- Urspr=FCngliche Nachricht ---
->>Von: Philippe Gerum <rpm@xenomai.org>
->>An: "j.p.schulz" <j.p.schulz@domain.hid>
->>Kopie: xenomai@xenomai.org
->>Betreff: Re: [Xenomai-help] Spawn Task from a Task -vxworks-skin
->>Datum: Wed, 26 Oct 2005 15:54:24 +0200
->>
->>j.p.schulz wrote:
->>
->>>>--- Urspr=FCngliche Nachricht ---
->>>>Von: Philippe Gerum <rpm@xenomai.org>
->>>>An: "j.p.schulz" <j.p.schulz@domain.hid>
->>>>Kopie: xenomai@xenomai.org
->>>>Betreff: Re: [Xenomai-help] Spawn Task from a Task -vxworks-skin
->>>>Datum: Wed, 26 Oct 2005 10:09:19 +0200
->>>>
->>>>j.p.schulz wrote:
->>>>
->>>>
->>>>>Hello
->>>>>I have Problems spawning a Task from a Task under the vxworks skin!
->>>>>If I spawn my Tasks from a Funktion - it works!
->>>>>If I spawn my Tasks from a Task     - system crashes!
->>>>
->>>>Make sure to use an Adeos patch >=3D 1.0-07. v0.9.1 ships with 1.0-02=
-, so
->>>>you=20
->>>>likely want to upgrade and try again. Recent Adeos patches for x86 ca=
-n
->>
->>be
->>
->>>>found=20
->>>>here: http://download.gna.org/adeos/patches/v2.6/adeos/i386/
->>>>
->>>
->>>
->>>I installed the latest Fusion 9.1 patch - no changes
->>
->>Which _Adeos_ patch version, exactely?
->=20
->=20
-> First I tried adeos-ipipe-2.6.13-i386-1.0-07.patch=20
-> and now       adeos-ipipe-2.6.13-i386-1.0-08.patch
->=20
->=20
->>>Do I make a mistake when I am spawning the tasks?
->>>
->>>Second Problem ist that the uvm module has to be started twice. The
->>
->>first
->>
->>>attempt returns: -1 Function not implemented=20
->>>The second attempt works!=20
->>>
->>
->>Does dmesg say something after the first attempt?
->=20
-> =20
-> No, but why does it work after the second attempt?
+Hi Jan!
 
-If only I knew it, I would not ask for more information.
+Jan Kiszka wrote:
+[...]
+> Actually, there is already some howto, but I guess also enough room for
+> improvements: http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon/
 
-  It is possible that the
-> task spawn problem is caused by the uvm module?=20
+Cool! Thanks!
 
-I have no clue right now. Ok, issue logged.
+> Nope, RTDM devices are not being mapped into the Linux file system. They
+> use a separate namespace where you can find serial devices as plain
+> "rtser[X]".
 
-> Ups - there is something: dmesg says RTAI: starting the UVM services
->=20
-> Thanks=20
-> Jan-Peter
->=20
+I compiled the rt_serial_uprog, but it can't open rtser0:
 
+# ./rt_serial_uprog
+rt_serial_uprog: timer started
+rt_serial_uprog: can't open rtser0 (write)
+rt_serial_uprog: stop timer
 
---=20
+# lsmod
+Module                  Size  Used by
+xeno_16550A            12392  0
+xeno_rtdm              23460  1 xeno_16550A
+xeno_native           114384  0
+xeno_nucleus           82696  3 xeno_16550A,xeno_rtdm,xeno_native
+xeno_hal               23616  4 xeno_16550A,xeno_rtdm,xeno_native,xeno_nucleus
+[...]
 
-Philippe.
+rtser[X] should be available as soon as xeno_16550A is loaded, right ?
+
+> Any frequent problems falling asleep? ;)
+
+Usually not - we have national holiday today, so I was doing my stuff as long
+as I wanted :-)
+
+Thanks and best regards,
+Hannes.
 
