@@ -1,13 +1,12 @@
-Message-ID: <435F2DDA.1030702@domain.hid>
-Date: Wed, 26 Oct 2005 09:18:50 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <435F39AF.1030005@domain.hid>
+Date: Wed, 26 Oct 2005 10:09:19 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM & serial port
-References: <435EFAB8.2050501@domain.hid>
-In-Reply-To: <435EFAB8.2050501@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC36E8A4A816A32C1130B8855"
+Subject: Re: [Xenomai-help] Spawn Task from a Task -vxworks-skin
+References: <959.1130313667@domain.hid>
+In-Reply-To: <959.1130313667@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,65 +16,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
+To: "j.p.schulz" <j.p.schulz@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC36E8A4A816A32C1130B8855
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+j.p.schulz wrote:
+> Hello
+> I have Problems spawning a Task from a Task under the vxworks skin!
+> If I spawn my Tasks from a Funktion - it works!
+> If I spawn my Tasks from a Task     - system crashes!
 
-Hannes Mayer wrote:
-> Hi Jan et al.!
-> 
-> I've noticed your thread on the RTAI list "Driver Model for RTAI" in June.
-> Now as I try to port some RTAI serial port stuff to Xenomai in order to
-> put up some howto page on my website, I'm clueless.
-
-Actually, there is already some howto, but I guess also enough room for
-improvements: http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon/
+Make sure to use an Adeos patch >= 1.0-07. v0.9.1 ships with 1.0-02, so you 
+likely want to upgrade and try again. Recent Adeos patches for x86 can be found 
+here: http://download.gna.org/adeos/patches/v2.6/adeos/i386/
 
 > 
-> None of the RTAI functions rt_spopen, rt_spread_timed, rt_spwrite are
-> available - I see that there is some rt_dev_open, rt_dev_write available,
-> but only rt_dev_read - what about some timed-read ?
-
-Yep, that's correct, it's yet another new API. Anyway, if you feel the
-need for a legacy wrapper, you are welcome to add some library on top of
-the RTDM profile.
-
-BTW, timed read can be realised by setting a reception timeout for the
-opened device instance, see example or profile documentation.
-
+> Here the programm:
 > 
-> I see that rt_spopen opens /dev/rtser[X] but /dev/rtser[X] is not on my
-> system, nor can I find any creation-script in the xenomai source.
-
-Nope, RTDM devices are not being mapped into the Linux file system. They
-use a separate namespace where you can find serial devices as plain
-"rtser[X]".
-
+> #include <stdlib.h>
+> #include <stdio.h>
+> #include <string.h>
+> #include <signal.h>
+> #include <ctype.h>
+> #include <fcntl.h>
+> #include <sys/io.h>
+> #include <sys/stat.h>
+> #include <sys/ioctl.h>
 > 
-> Sorry if I'm overlooking some stuff... 5:40am here.
+> #include <vxworks/vxworks.h>
+> 
+> #include "vxChain.h"
+> #include "portutils.h"
+> 
+> 
+> #define PRIORITY_LOW 	100
+> #define PRIORITY_MID 	90
+> #define PRIORITY_HIGH 	80
+> 
+> #define USE_FPU 		(VX_FP_TASK | VX_NO_STACK_FILL)
+> #define NO_FPU 			VX_NO_STACK_FILL
+> #define STACK_SIZE 		0x5000
+> #define TASK_OPTIONS	USE_FPU
+> 
+> #define NUM_TASKS		8
+> #define MAX_TASKS		15
+> 
+> SEM_ID		semId[MAX_TASKS * 2];
+> int			taskId[MAX_TASKS];
+> int			triggerId;
+> 
+> 
+> int root_thread_init()
+> {
+> 	// Allow port I/O in userspace
+> 	iopl(3);
+> 	
+> 	vxTest();		// Just a function call (works)
+> //	vxSpawn();		// Spawns the function as a task (crashes)
+> 
+> 	return 0;	
+> }
+> 
+> void vxSpawn( void )
+> {
+> 	taskSpawn ("Master Task", PRIORITY_HIGH, 
+> 				TASK_OPTIONS, STACK_SIZE, 
+> 				(FUNCPTR) vxTest,
+> 				0,0,0,0,0,0,0,0,0,0); 					
+> }
+> 	
+> void root_thread_exit (void)
+> {
+> 	printf ("root_thread_exit() called.\n");
+> }	
+> 
+> void vxTest( void )
+> {
+> 	int i;  
+>     char buf[80];
+>         
+>     for (i=0; i < NUM_TASKS; i++)
+>     {
+> 		semId[2*i]   = semBCreate( SEM_Q_PRIORITY, SEM_EMPTY);    
+> 		semId[2*i+1] = semBCreate( SEM_Q_PRIORITY, SEM_EMPTY);        
+>     }
+>          
+>     for (i=0; i < NUM_TASKS; i++)
+>     { 
+> 		sprintf(buf, "Task_%d", i);    
+> 		taskId[i] = 
+> 		taskSpawn(buf, PRIORITY_LOW, TASK_OPTIONS, STACK_SIZE,
+> 			(FUNCPTR) WorkerTask, 
+> 			i, 				// Task Nummer
+> 			semId[i], 		// warten auf Semaphor
+> 			semId[i+1],   	// anzutriggerndes Semaphor
+> 			0,0,0,0,0,0,0);		
+> 			
+> 		printf ("task[%d] = 0x%08X, errno = %d\n", i, taskId[i], errnoGet());
+>     }
+> 
+>     triggerId = taskSpawn ("Trigger task", PRIORITY_MID, 
+>     					TASK_OPTIONS, STACK_SIZE,
+> 						(FUNCPTR) TriggerTask, 0,0,0,0,0,0,0,0,0,0);
+> 	printf ("taskTrigger = 0x%08X\n", triggerId);
+> 	
+> 	taskSuspend(taskIdSelf());
+> }
+> 
+> void TriggerTask( void )
+> {
+> 	while( 1 )
+> 	{
+> 		taskDelay(1);
+> 		semGive(semId[0]);
+> 	}
+> }
+> 
+> FUNCPTR WorkerTask(int i0,int i1,int i2,int i3,int i4,int i5,int i6,int
+> i7,int i8,int i9)
+> {
+>     unsigned int task_num 	= (unsigned int) i0;
+>     int sem_to_wait 		= i1;
+>     int sem_to_trigger		= i2;
+> 
+> 	iopl(3);
+>     while (1)
+>     {
+> 		semTake(sem_to_wait, WAIT_FOREVER);
+> 		if (task_num < 8)
+> 		{
+> 			lpt_peak_bit (task_num);	
+> 		}	
+> 		semGive(sem_to_trigger);			
+>     }
+>     return 0;
+> }    
+> 
+> 
+> 
+> Fusion 0.9.1
+> Kernel 2.6.13-ipipe
+> Suse 9.3
+> Any Ideas?
+> Thanks 
+> Jan-Peter
 > 
 
-Any frequent problems falling asleep? ;)
 
-Jan
+-- 
 
---------------enigC36E8A4A816A32C1130B8855
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDXy3bncNeS9Q0k+IRAn8cAJ9aGS8KfhQTUyFoHsk7ii50IVYqJACcCUF6
-Z3fWrcCk6MTAuRH2vZ0ydrg=
-=4Dc4
------END PGP SIGNATURE-----
-
---------------enigC36E8A4A816A32C1130B8855--
+Philippe.
 
