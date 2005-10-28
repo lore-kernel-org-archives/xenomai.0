@@ -1,10 +1,9 @@
-Message-ID: <4358FE53.4010505@domain.hid>
-Date: Fri, 21 Oct 2005 16:42:27 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 28 Oct 2005 09:51:33 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Message-ID: <Pine.LNX.4.63.0510280949010.31574@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Adeos for the Blackfin architecture
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Adeos-main] [OLDGEN] adeos r17 patch for 2.4.27
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,21 +14,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
+Hi,
 
-I have uploaded the initial version of the Adeos real-time enabler for the 
-Blackfin architecture:
-http://download.gna.org/adeos/patches/v2.6/adeos/bfin/adeos-ipipe-uc-2.6.12-bfin-1.0-00.patch
+I was encountering the gcc-3.4 problem when trying to compile rtai on
+a 2.4.27 kernel with the adeos r16 patch included with rtai.
+<https://mail.rtai.org/pipermail/rtai/2005-March/010819.html>
+and
+<https://mail.rtai.org/pipermail/rtai/2005-March/010701.html>
 
-It is based on the 2.6.12 kernel found in the uClinux-2005R3 distribution, and 
-tested on a BF533. Functionally, it is complete for a uniprocessor 
-configuration, which means that porting the Xenomai RTOS over it is now 
-possible. The Adeos support for the Blackfin will likely evolve in a positive 
-way as a result of being stressed by a client RTOS.
+As I understood, this problem has been fixed in r17.  I found this
+announcement <https://mail.rtai.org/pipermail/rtai/2005-March/010821.html>, but 
+the r17 patches seem to have dissappeared from download.gna.org?
 
-Special thanks to the Analog Devices people (http://www.analog.com/) who kindly 
-provided evaluation boards and support for this port to happen.
+Is it better to use the r18c1 candidate instead (speaking OLDGEN
+patches, that is)?  Or maybe, more appropriately, has development for
+adeos 2.4 patches stopped with r18c1?
 
--- 
+Thx,
 
-Philippe.
+Klaas Gadeyne
+
+
 
