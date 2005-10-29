@@ -1,14 +1,14 @@
-Message-ID: <436331A0.2050104@domain.hid>
-Date: Sat, 29 Oct 2005 10:24:00 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4363E546.3090803@domain.hid>
+Date: Sat, 29 Oct 2005 23:10:30 +0200
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [patch] serial driver fixes/improvements
 References: <4360B46C.5030104@domain.hid> <4362A764.6070004@domain.hid>
 	<4362CD78.6020304@domain.hid>
-In-Reply-To: <4362CD78.6020304@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE922B42E2A875094BE0CF135"
+	<436331A0.2050104@domain.hid>
+In-Reply-To: <436331A0.2050104@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,83 +18,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE922B42E2A875094BE0CF135
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Hi Jan!
 
 Jan Kiszka wrote:
-> Hannes Mayer wrote:
-> 
->>Hi Jan et al.!
->>
->>Jan Kiszka wrote:
->>[...]
->>
->>
->>>+modprobe xeno_16550A ioaddr=<io1>[,<io2>...] irq=<irq1>[,<irq2>...]
->>>+                     [tx_fifo=<len1>[,<len2>...]] [start_index=<index>]
->>>+
->>>+Arguments:
->>>+    ioaddr<N>   - I/O address of device <N> (e.g. 0x3f8 for ttyS0)
->>>+    irq<N>      - interrupt number of device <N> (e.g. 4 for ttyS0)
->>>+    tx_fifo<N>  - Transmitter FIFO size in bytes of device <N>,
->>>default is 16
->>>+    start_index - First device instance number to be used, default is 0
->>
->>
->>If I may throw in my 2 eurocents:
->>I think the Arguments-section is a bit misleading.
->>One doesn't specify ioaddr1, ioaddr2 etc. on the command line, as suggested
->>by ioaddr<N>, but ioaddr=[1.dev],[2.dev]...
->>Same for irq and tx_fifo.
->>
->>What about this:
->>
->>Arguments:
->>    ioaddr      - I/O addresses of devices (e.g. 0x3f8 for ttyS0),
->>separated by comma
->>    irq         - interrupt numbers of devices (e.g. 4 for ttyS0),
->>separated by comma
->>    tx_fifo     - Transmitter FIFO sizes in bytes of devices, default is
->>16, separated by comma
->>    start_index - First device instance number to be used, default is 0
->>=> rtser0
->>
->>Just trying to make it as clear as possible :-)
->>
-> 
-> 
-> Indeed, my version is misleading, your version makes more sense. Just
-> the parameter for ttyS0 are not necessarily the one you listed, only
+[...]
+> Oops, actually I originally sorted ttyS0 to 0x3f8, not you. As I said:
+> don't trust anything I produce between 3 and 5 am...
 
-Oops, actually I originally sorted ttyS0 to 0x3f8, not you. As I said:
-don't trust anything I produce between 3 and 5 am...
+Well, as long as it is just documentation ;-)
 
-> typically. Will post a patch.
-> 
+I've never worked on other arch's than i386 with RTAI, so you are the
+expert here to make it as general as possible.
 
-Patch posted, feel free to comment again!
+Thanks again! Meanwhile my Xeno serial prog. is happily talking to the
+ATmega16 :-)
 
-Thanks,
-Jan
-
---------------enigE922B42E2A875094BE0CF135
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDYzGgncNeS9Q0k+IRAnNoAKDDURPgiTljAXIvpT/WW5r4lRnRlwCfcNMz
-nUNxSxgqemoHSgT1/lYlDCk=
-=+cxC
------END PGP SIGNATURE-----
-
---------------enigE922B42E2A875094BE0CF135--
+Best regards,
+Hannes.
 
