@@ -1,14 +1,10 @@
-Message-ID: <4363E546.3090803@domain.hid>
-Date: Sat, 29 Oct 2005 23:10:30 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <4364A1DD.2060603@domain.hid>
+Date: Sun, 30 Oct 2005 11:35:09 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] serial driver fixes/improvements
-References: <4360B46C.5030104@domain.hid> <4362A764.6070004@domain.hid>
-	<4362CD78.6020304@domain.hid>
-	<436331A0.2050104@domain.hid>
-In-Reply-To: <436331A0.2050104@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] UVM bugfix for RTAI/fusion and Xenomai 2.0
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,24 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Jan!
 
-Jan Kiszka wrote:
-[...]
-> Oops, actually I originally sorted ttyS0 to 0x3f8, not you. As I said:
-> don't trust anything I produce between 3 and 5 am...
+People depending on the UVM support as available with RTAI/fusion should apply 
+the following patch (against v0.9.1); it solves a serious bug which usually 
+bites at thread creation time. The bug affects Xenomai 2.0 as well, so this fix 
+will be part of Xenomai 2.0.1.
 
-Well, as long as it is just documentation ;-)
+--- fusion-0.9.1/skins/uvm/syscall.c~	2005-09-09 18:16:02.000000000 +0200
++++ fusion-0.9.1/skins/uvm/syscall.c	2005-10-30 11:22:35.000000000 +0100
+@@ -315,8 +315,9 @@
 
-I've never worked on other arch's than i386 with RTAI, so you are the
-expert here to make it as general as possible.
+      if (!testbits(next->status,XNSTARTED))
+  	{
++	/* First, make sure it won't preempt us. */
++	xnpod_suspend_thread(next,XNSUSP,XN_INFINITE,NULL);
+  	err = xnpod_start_thread(next,0,0,XNPOD_ALL_CPUS,NULL,NULL);
+-	goto out;
+  	}
 
-Thanks again! Meanwhile my Xeno serial prog. is happily talking to the
-ATmega16 :-)
+      xnpod_resume_thread(next,XNSUSP);
+-- 
 
-Best regards,
-Hannes.
+Philippe.
 
