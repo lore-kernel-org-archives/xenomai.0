@@ -1,38 +1,64 @@
-Date: Fri, 28 Oct 2005 09:51:33 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Message-ID: <Pine.LNX.4.63.0510280949010.31574@domain.hid>
+Message-ID: <436613FF.50604@domain.hid>
+Date: Mon, 31 Oct 2005 13:54:23 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: [Adeos-main] [OLDGEN] adeos r17 patch for 2.4.27
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig47EF0D1DA224DDA8516A4EC6"
+Subject: [Xenomai-core] [RFC] support for sharing IRQs
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig47EF0D1DA224DDA8516A4EC6
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-I was encountering the gcc-3.4 problem when trying to compile rtai on
-a 2.4.27 kernel with the adeos r16 patch included with rtai.
-<https://mail.rtai.org/pipermail/rtai/2005-March/010819.html>
-and
-<https://mail.rtai.org/pipermail/rtai/2005-March/010701.html>
+at the moment the 16550A UART driver that comes with Xenomai does not
+support IRQ sharing between serial ports or with other real-time
+devices. I first considered adding such support to the driver
+internally, but I think it's better work on a generic approach for Xenoma=
+i.
 
-As I understood, this problem has been fixed in r17.  I found this
-announcement <https://mail.rtai.org/pipermail/rtai/2005-March/010821.html>, but 
-the r17 patches seem to have dissappeared from download.gna.org?
+I have some code hanging around here which implements IRQ sharing at
+skin level for an experimental in-house development over Xenomai. The
+code is smart enough to register an IRQ sharing trampoline handler only
+in case sharing is actually practiced for a specific line. The IRQ API
+is just extended by a single flag (imagine RTDM_IRQ_SHARED) which is set
+upon registering an ISR that is capable of IRQ sharing. The semantic is
+the same as the kernel's SA_SHIRQ.
 
-Is it better to use the r18c1 candidate instead (speaking OLDGEN
-patches, that is)?  Or maybe, more appropriately, has development for
-adeos 2.4 patches stopped with r18c1?
+I think it would be possible to break this out and generate a mainline
+patch. Anyway, the question for me is where to put this best, at skin
+(RTDM?) or at nucleus level? Both is technically feasible, but which way
+is desired? (I would vote for the nucleus...)
 
-Thx,
-
-Klaas Gadeyne
+Jan
 
 
+--------------enig47EF0D1DA224DDA8516A4EC6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDZhP/ncNeS9Q0k+IRAkRtAKDqPF/WUU3UvyWOK7J3ttQzpkdpIgCfbMB4
+e5O1kTcjSR1pV+71u7aEKYY=
+=88n9
+-----END PGP SIGNATURE-----
+
+--------------enig47EF0D1DA224DDA8516A4EC6--
 
