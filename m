@@ -1,14 +1,12 @@
-Message-ID: <4353F896.1040508@domain.hid>
-Date: Mon, 17 Oct 2005 21:16:38 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <436654ED.4010804@domain.hid>
+Date: Mon, 31 Oct 2005 18:31:25 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>
-	<4353F411.4000500@domain.hid>
-In-Reply-To: <4353F411.4000500@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig205BB01472A751E61D835C21"
+Subject: Re: [Xenomai-help] pthread_attr_setfp_np needed in user space apps ?
+References: <200510311453.14159.schwab@domain.hid>
+In-Reply-To: <200510311453.14159.schwab@domain.hid>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,48 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
+To: Ulrich Schwab <schwab@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig205BB01472A751E61D835C21
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Heikki Lindholm wrote:
-> Jan Kiszka kirjoitti:
+Ulrich Schwab wrote:
+> Hello,
 > 
->> Hi,
->>
->> I'm dumb x86 user who unfortunately just seem to have tumbled in the
->> cross-compilation trap: I'm trying to generate i586 code on a fancy new
->> and fast x86_64 compilation host. I got the kernel compiled with
->> ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
->> cross tool chain), but I failed to compile xenomai against that kernel
->> in the following. Which magic switch do I have to apply and where?
+> I am in the progress of porting an application from RTLinux to Xenomai-2.0
+> While compiling for a user space RT program with the posix skin I get
+> the following warning:
 > 
+> warning: implicit declaration of function `pthread_attr_setfp_np'
 > 
-> As dumb a guess: -m32 compiler switch?
+> is this call NOT needed in an user space app   ?
 > 
 
-Yes, I know, that would help. But where to feed this argument into the
-build system?
+It's not needed. If you selected FPU support in the "Machine" menu when 
+configuring, then Xenomai will handle FPU switches properly.
 
-Jan
+> It is there in the sources, but does not seem to be exported to a user space 
+> RT app.
+> 
+> Another point unclear to me is, how are printf's handled in RT user space 
+> apps ?
+> Isn't the RT scheduling affected, when done in a RT critical context ?
+> 
 
---------------enig205BB01472A751E61D835C21
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Printf ends up calling the write(2) system call, which is indeed the issue.
+When issuing a Linux call over a RT context, your thread automatically switches 
+from primary execution mode (Xenomai) to secondary (Linux). The priority of this 
+thread is kept across such migration (*), so the scheduling per se is not 
+impacted. What's impacted is the overall determinism one could expect from 
+running Linux code, which cannot be guaranteed with vanilla kernels: IOW, you 
+would have unpredictable execution times in such context, since nothing could 
+guarantee that the syscall some routine end up calling would not be delayed for 
+an unbounded amount of time by lower priority kernel operations.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+What Xenomai brings is the ability to keep the priority scheme intact in such 
+circumstances, so that a high RT priority thread switching in secondary mode is 
+still runnable before a low RT priority one. The day we have a really 
+deterministic Linux kernel, this little thing will make a huge difference when 
+it comes to provide a seamless RT service integration.
 
-iD8DBQFDU/iWncNeS9Q0k+IRAt5eAJ4yBWkZWaEBZxPzkAUMudnHvXuO5gCcD4/f
-TYU016eaPplE6dB9ww7Cz6M=
-=29hn
------END PGP SIGNATURE-----
+> Thanks, for any comments,
+> Ulrich Schwab
+> 
 
---------------enig205BB01472A751E61D835C21--
+
+-- 
+
+Philippe.
 
