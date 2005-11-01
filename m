@@ -1,70 +1,97 @@
-Message-ID: <435403C8.80400@domain.hid>
-Date: Mon, 17 Oct 2005 22:04:24 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43673A30.4080807@domain.hid>
+Date: Tue, 01 Nov 2005 10:49:36 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>	<4353F411.4000500@domain.hid>	<4353F896.1040508@domain.hid>
-	<435402B4.5060004@domain.hid>
-In-Reply-To: <435402B4.5060004@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC] support for sharing IRQs
+References: <OF52EBEF44.18C1609B-ONC12570AB.004913D2-C12570AB.004F9693@domain.hid>
+	<200510312121.14160.dmitry.adamushko@domain.hid>
+	<436680D5.4010105@domain.hid>
+	<200510312202.07522.dmitry.adamushko@domain.hid>
+In-Reply-To: <200510312202.07522.dmitry.adamushko@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5C6F94BF5C5568E63CFAEC43"
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
-> Jan Kiszka kirjoitti:
-> 
->> Heikki Lindholm wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5C6F94BF5C5568E63CFAEC43
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Dmitry Adamushko wrote:
+> On Monday 31 October 2005 21:38, you wrote:
+>>> [...]
+>>> In our case, the relation between xnintr_irq_handler() and
+>>> rthal_irq_trampoline() is 1:1. The first one does much more things th=
+at
+>>> the second one which is really almost a pure redirection layer.
+>>> Hopefully, xnintr_irq_handler() is i-cache-hot as long as possible un=
+der
+>>> high irq load. In this case, I guess, rthal_irq_trampoline() will be =
+in
+>>> cache as well (since it's really small) and the overhead is only abou=
+t
+>>> having one array indexing op. and issuing a call via a pointer to the=
+
+>>> function (xnintr_irq_handler() in our case).
+>>> Do you think that really gives a significant overhead? Well, maybe so=
+=2E
+>>> I'm not a profie here anyway...
+>> ...compared to the usefulness I still have to understand - yes.
 >>
->>> Jan Kiszka kirjoitti:
->>>
->>>
->>>> Hi,
->>>>
->>>> I'm dumb x86 user who unfortunately just seem to have tumbled in the
->>>> cross-compilation trap: I'm trying to generate i586 code on a fancy new
->>>> and fast x86_64 compilation host. I got the kernel compiled with
->>>> ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
->>>> cross tool chain), but I failed to compile xenomai against that kernel
->>>> in the following. Which magic switch do I have to apply and where?
->>>
->>>
->>>
->>> As dumb a guess: -m32 compiler switch?
->>>
->>
->>
->> Yes, I know, that would help. But where to feed this argument into the
->> build system?
-> 
-> 
-> I would try makefile (and perhaps config/kconfig/Makefile*) and command 
-> line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to be sure.
->
+>> Other option: what about merging [2] into [3], i.e. let
+>> xnintr_irq_handler deal with the translation IRQ number -> cookie?
+>=20
+> In that case, the nucleus must keep track of all the irqs, i.e. some_st=
+ruct=20
+> irqs[IPIPE_NR_IRQS]. Ok, the rthal_realtime_irq[] may be removed here f=
+rom=20
+> hal.
+> But there is already the per-irq array in ipipe_domain struct. Having g=
+ot [1]=20
+> and [2] merged, we would have this array as the only one and avoid the =
+use of=20
+> rthal_realtime_irq[] at all. Although, the ipipe_domain would become a =
+bit=20
+> more heavy :) Well, but [2] into [3] is leeeess intrusive on the other =
+hand.
 
-You should be able to do that just by reconfiguring:
+Due to the intrusiveness, I would vote for a [2]->[3] merge.
 
-cd build && make reconfig CC="gcc -m32"
+One issue remains in any case: the HAL currently maintains a /proc entry
+for the registered IRQs. It reports if a handler is registered and the
+IRQ hits per CPU. As I think this entry should also report the
+registered driver names in the future, we have to hand the management
+over to whatever part traces all registered handlers. Is this acceptable
+from the layering point of view?
 
-> -- Heikki Lindholm
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+Jan
 
 
--- 
 
-Philippe.
+--------------enig5C6F94BF5C5568E63CFAEC43
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDZzowncNeS9Q0k+IRArlUAJ4wjr2fATQjPCXBl1TjQbRyRwGqGQCdGyLN
+9oT4+Jzfh9YFB9Ijkf6IL04=
+=9qQb
+-----END PGP SIGNATURE-----
+
+--------------enig5C6F94BF5C5568E63CFAEC43--
 
