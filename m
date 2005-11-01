@@ -1,51 +1,56 @@
-Message-ID: <435402B4.5060004@domain.hid>
-Date: Mon, 17 Oct 2005 22:59:48 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+From: Romain Lenglet <rlenglet@domain.hid>
+Date: Tue, 1 Nov 2005 12:27:02 +0900
+References: <OF8F0700EC.A1D80BF4-ONC12570AB.004AE3CB-C12570AB.005254F3@domain.hid>
+	<4366708B.8010501@domain.hid>
+In-Reply-To: <4366708B.8010501@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] compiling xenomai on x86_64
-References: <4353F109.7000707@domain.hid>
-	<4353F411.4000500@domain.hid>
-	<4353F896.1040508@domain.hid>
-In-Reply-To: <4353F896.1040508@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+Message-Id: <200511011227.03173.rlenglet@domain.hid>
+Subject: [Xenomai-core] Re: [Xenomai-help] General Xenomai / RTAI Skin Usage
+	Questions
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka kirjoitti:
-> Heikki Lindholm wrote:
-> 
->>Jan Kiszka kirjoitti:
->>
->>
->>>Hi,
->>>
->>>I'm dumb x86 user who unfortunately just seem to have tumbled in the
->>>cross-compilation trap: I'm trying to generate i586 code on a fancy new
->>>and fast x86_64 compilation host. I got the kernel compiled with
->>>ARCH=i386, using only the pre-installed compiler (i.e. no dedicated
->>>cross tool chain), but I failed to compile xenomai against that kernel
->>>in the following. Which magic switch do I have to apply and where?
->>
->>
->>As dumb a guess: -m32 compiler switch?
->>
-> 
-> 
-> Yes, I know, that would help. But where to feed this argument into the
-> build system?
+> - A kernel option that causes Xenomai (or Adeos) to blatantly
+> malfunction or even crash is a freaking BUG, and should be
+> reported asap to the Xenomai-core list or the Adeos-main list.
+> IOW, there is no such thing as options allowed to crash your
+> box with Adeos/Xenomai because of some "don't care attitude";
+> would such bug happen, it must and will be fixed. All the
+> people involved in contributing to both projects try to make
+> sure that any option could be enabled without risking terminal
+> damage to anyone's setup. The worst thing that should be
+> allowed to happen is high latency spots, because some options
+> might cause some hardware to interact badly with critical
+> resources Adeos/Xenomai also happen manage.
 
-I would try makefile (and perhaps config/kconfig/Makefile*) and command 
-line 'CC="gcc -m32" CXX="gcc -m32" make menuconfig/install' to be sure.
+Here is a kernel-option-related bug.
+I am using a stock Debian-patched kernel with the standard Debian 
+kernel config, on Pentium M and Pentium 4 machines, + the latest 
+Adeos patch.
+The Debian kernel configuration file, that has every option 
+enabled and everything as modules, works fine with Xenomai 
+except for one single option which must be disabled:
+CONFIG_PCI_MSI
+This option messes with the oneshot timer (timer freezes).
+(thanks to Gilles to have found this out)
 
--- Heikki Lindholm
+
+Otherwise, my biggest source of problems is IRQ sharing between 
+realtime and non-realtime drivers: this predictably provokes 
+kernel panics. But Jan seems to be working on it.
+
+-- 
+Romain Lenglet
 
