@@ -1,12 +1,12 @@
-Message-ID: <437F6EBD.5040705@domain.hid>
-Date: Sat, 19 Nov 2005 19:28:13 +0100
+Message-ID: <4368CACD.4000905@domain.hid>
+Date: Wed, 02 Nov 2005 15:18:53 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] v2.1 status
-References: <437CB8BA.8040902@domain.hid> <437F6273.1050601@domain.hid>
-In-Reply-To: <437F6273.1050601@domain.hid>
+Subject: Re: [Xenomai-core] [RFC] support for sharing IRQs
+References: <!&!AAAAAAAAAAAYAAAAAAAAAFl5OYS2HqNLpPPM8SELvJDCgAAAEAAAAJHy9YD7gaxGnAtpaanpWP8BAAAAAA==@ac6.fr>
+In-Reply-To: <!&!AAAAAAAAAAAYAAAAAAAAAFl5OYS2HqNLpPPM8SELvJDCgAAAEAAAAJHy9YD7gaxGnAtpaanpWP8BAAAAAA==@ac6.fr>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,76 +16,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Bernard Dautrevaux <bernard.dautrevaux@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Philippe Gerum wrote:
-> 
+Bernard Dautrevaux wrote:
+> =20
+>=20
+>=20
+>>-----Message d'origine-----
+>>De : xenomai-core-bounces@domain.hid
+>>[mailto:xenomai-core-bounces@domain.hid] De la part de Philippe Gerum
+>>Envoy=E9 : mardi 1 novembre 2005 18:30
+>>=C0 : Jan Kiszka
+>>Cc : xenomai-core
+>>Objet : Re: [Xenomai-core] [RFC] support for sharing IRQs
+>=20
+> 	....
+>=20
+>>Ok, let's go for those changes this way:
 >>
->> Here is an update regarding the way things progress on the v2.1 branch:
+>>1. The I-pipe series needs to be updated so that an opaque=20
+>>cookie is passed to the handler; since we have a change in=20
+>>the interface, the 1.1 series has to be started for this purpose.
 >>
->> o The build system has been deeply revamped, so that we now fully 
->> leave the burden of building Xenomai's kernel support to Linux. To 
->> this end, the code tree has been reorganized in two major sections, 
->> the first one contains the kernel-related sources (ksrc/), the other 
->> is hosting the user-space support (src/). Since the user-space portion 
->> does not need to know about the kernel sources anymore, several issues 
->> have been solved in the same move. All in all, things are way simpler 
->> than before, which seems to indicate that we are heading to the right 
->> direction. The documentation for the installation process needs to be 
->> updated though.
-> 
-> 
-> I like it a lot.
-> 
->> o Also as a matter of build system (and a bit more), v2.1 has been 
->> backported to Linux 2.4, starting with the ppc32 support. We rely on 
->> Denx's 2_4-devel tree as our 2.4 kernel of reference for this port 
->> [1]. A second backport to 2.4/x86 will happen when this combo is 
->> I-pipe ready. We are ahead of schedule regarding this backport, since 
->> it was initially planned for Q12006, but since we are going to add 
->> more supported architectures in the next months, it's better to have a 
->> stable build system for that.
-> 
-> 
-> Just tested Xenomai with adeos-ipipe-2.4.25-ppc-denx-0.9-02.patch on a 
-> recent DENX kernel tree. MPC 8xx support was missing. I have attached
-> the patch to fix it. Furthermore I have not found the "Machine" options 
+>>2. In order to let the people running the legacy RTAI/fusion=20
+>>and Xenomai 2.0.x series a reasonable amount of time to=20
+>>upgrade their patchset, the IRQ layer updates (sharing and=20
+>>trampoline suppression) will go to the Xenomai 2.1 dev=20
+>>branch. IOW, Xenomai 2.1 will be exclusively based on the=20
+>>I-pipe 1.1 series, which also means that Xenomai support for=20
+>>the oldgen Adeos and I-pipe 1.0 patches will be discontinued=20
+>>after the Xenomai 2.0.x series is closed.
+>=20
+>=20
+> I agree with all that is said in this post; however there is just a sma=
+l
+> problem: some very useful tool for xenomai application debug and tune i=
+s
+> LTT; however the only available Adeos+LTT patch is not an ipipe one, bu=
+t an
+> old linux-2.6.9 kernel patch.
+>=20
+> At least the LTT support should be available with an ipipe-based Adeos-=
+1.1
+> patch for 2.6.9 (waiting for LTT to support a more recent kernel), so t=
+hat
+> LTT is not lost for xenomai (as it seems to be in fact for RTAI).=20
+>=20
 
-Applied, thanks. 0.9-03 contains this fix.
+LTT has been undergoing a significant refactoring recently, so there has =
+been=20
+little incentive to go for a combo Adeos+LTT patch over a moving target, =
+this is=20
+the reason why Alex - the LTT support maintainer for Xenomai - has focuse=
+d on a=20
+2.6.9 kernel featuring the previous LTT architecture, and this was a good=
+=20
+decision. Upgrading this combo will be done in the I-pipe 1.1 timeframe o=
+ver the=20
+newest LTT support, for sure, basically to get rid of the oldgen Adeos pa=
+tches=20
+for Xenomai completely.
 
-> (here from 2.6):
-> 
->  #
->  # Machine
->  #
->  # CONFIG_XENO_HW_FPU is not set
->  CONFIG_XENO_HW_PERIODIC_TIMER=y
->  CONFIG_XENO_HW_TIMER_LATENCY=1
->  CONFIG_XENO_HW_SCHED_LATENCY=1
-> 
+RTAI had problem maintaining the LTT support because of the lack of a=20
+maintainer; we do have one. This said, the best way you could contribute =
+to this=20
+is crafting a prototype combo between I-pipe 1.0 and a recent LTT core (i=
+.e. the=20
+one that relies on the refactored relayfs stuff), especially if you do co=
+nsider=20
+this support as a critical feature. I guess that Alex would be fine worki=
+ng on=20
+this base later.
 
-Now fixed.
+> Bernard
+>=20
+>=20
+>>3. Changes in the IRQ layer will be made at nucleus level,=20
+>>which is the most efficient way to provide them.
+>>
+>>It should be noted that as part of the build system=20
+>>refactoring, the real-time HAL has become a static portion of=20
+>>the Linux kernel, with its generic part being moved to the=20
+>>nucleus. IOW, the proposed changes will basically end up as=20
+>>redispatching some code inside the nucleus.
+>>
+>>--=20
+>>
+>>Philippe.
+>>
+>>_______________________________________________
+>>Xenomai-core mailing list
+>>Xenomai-core@domain.hid
+>>https://mail.gna.org/listinfo/xenomai-core
+>>
+>>
+>=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>=20
 
-> 
-> The latency figures on my TQM860L board with Xenomai 2.1 and Liunx 2.4 
-> are close to the one I measured with Xenomail 2.0 with Linux 2.6:
-> 
-> LATENCY with load on TQM860L:
-> 
-> Linux   |-----lat min|-----lat avg|-----latmax|-overrun|---test-time
-> 2.6.13  |       60480|      120960|     224320|       0|    00:09:46
-> 2.4.25  |       64080|       95120|     225040|       0|    00:10:00
-> 
-> 
 
-Same observation here on a Freescale Icecube. I will reactivate the 
-kernel-space latency test in order to have the full picture.
-
-Thanks,
-
--- 
+--=20
 
 Philippe.
 
