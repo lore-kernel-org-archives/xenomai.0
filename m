@@ -1,16 +1,13 @@
-Message-ID: <43837F37.8040406@domain.hid>
-Date: Tue, 22 Nov 2005 21:27:35 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+From: "Bernard Dautrevaux" <bernard.dautrevaux@domain.hid>
+Date: Thu, 3 Nov 2005 02:24:56 +0100
+Message-ID: <!&!AAAAAAAAAAAYAAAAAAAAAFl5OYS2HqNLpPPM8SELvJDCgAAAEAAAAKfbycwad0RPhAYQJaioQp4BAAAAAA==@ac6.fr>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC] define your own pipe heap
-References: <4382201C.8040503@domain.hid>	<43825E4C.4030002@domain.hid>
-	<4382F115.5010007@domain.hid>
-	<4382F81D.8020303@domain.hid>
-	<43830785.6010402@domain.hid> <43836DA2.90705@domain.hid>
-In-Reply-To: <43836DA2.90705@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9B1DE5D9888C3C28DB0C90EE"
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4368CACD.4000905@domain.hid>
+Subject: [Xenomai-core] LTT support on Xenomai (was part of support for
+	sharing IRQs)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,83 +17,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9B1DE5D9888C3C28DB0C90EE
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+> -----Message d'origine-----
+> De : Philippe Gerum [mailto:rpm@xenomai.org
+> Envoy=E9 : mercredi 2 novembre 2005 15:19
+> =C0 : Bernard Dautrevaux
+> Cc : xenomai@xenomai.org; karim@domain.hid
+> Objet : Re: [Xenomai-core] [RFC] support for sharing IRQs
+>=20
+> Bernard Dautrevaux wrote:
+> > =20
+> >=20
+> >=20
+> >>-----Message d'origine-----
+> >>De : xenomai-core-bounces@domain.hid
+> >>[mailto:xenomai-core-bounces@domain.hid] De la part de Philippe Gerum=20
+> >>Envoy=E9 : mardi 1 novembre 2005 18:30 =C0 : Jan Kiszka Cc :=20
+> xenomai-core=20
+> >>Objet : Re: [Xenomai-core] [RFC] support for sharing IRQs
+> >=20
+> > 	....
+> >=20
+> > At least the LTT support should be available with an=20
+> ipipe-based Adeos-1.1
+> > patch for 2.6.9 (waiting for LTT to support a more recent=20
+> kernel), so that
+> > LTT is not lost for xenomai (as it seems to be in fact for RTAI).=20
+> >=20
+>=20
+> LTT has been undergoing a significant refactoring recently,=20
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
-> 
->> Philippe Gerum wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>> Jan Kiszka wrote:
->>>>
->>>>
->>>>> ...
->>>>> A patch says more than thousand words. ;)
->>>>>
->>>>> As a first approach, I picked the second variant and implemented a new
->>>>> function called rt_pipe_setpool. I also had to extend rt_pipe_alloc
->>>>> and
->>>>> rt_pipe_free so that the right pool is used by them.
->>>>>
->>>>
->>>>
->>>> I thought about this variant again, and it seems to me rather unsafe in
->>>> case some buffer allocation takes place between rt_pipe_create and
->>>> rt_pipe_setpool. So, here is a patch which extends rt_pipe_create
->>>> with a
->>>> new argument poolsize instead.
->>>>
->>>
->>> Yep, looks safer to me too.
->>>
->>
->>
->> Ok, I addressed most your comments, and here is round 2 of variant 2.
->> The only question for me is if we should rt_pipe_create in kernel space
->> from RT context with poolsize=0 if this is prevented effectively for
->> userspace task?
-> 
-> 
-> This is not prevented for user-space, since there is an automatic switch
-> to secondary mode caused by the lostage exec bit.
+Do you mean there is something more recent than ltt-0.9.6-pre4 ?
 
-That's what I meant. Anyway, this doesn't change the situation:
-rt_pipe_create is not called in primary context from userspace, so the
-questions if we should allow this for kernelspace and poolsize=0.
+If this is true where can this be found?
 
-> 
->  So far, I deny any non-RT invocation.
-> 
->>
-> 
-> You likely mean, any non-Linux invocation.
-> 
+> so there has been=20
+> little incentive to go for a combo Adeos+LTT patch over a=20
+> moving target, this is=20
+> the reason why Alex - the LTT support maintainer for Xenomai=20
+> - has focused on a=20
+> 2.6.9 kernel featuring the previous LTT architecture, and=20
+> this was a good=20
+> decision.=20
 
-Of course, I did.
+This restrain then to use oldgen Adeos architecture, as LTT is only
+available on 2.6.9 and ipipe only from 2.6.13; is there anything =
+preventing
+having ipipe on 2.6.9 (apart from workload of course)?
+=20
+> Upgrading this combo will be done in the I-pipe 1.1=20
+> timeframe over the=20
+> newest LTT support, for sure, basically to get rid of the=20
+> oldgen Adeos patches=20
+> for Xenomai completely.
 
-Jan
+That for sure will be nice.
 
---------------enig9B1DE5D9888C3C28DB0C90EE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> RTAI had problem maintaining the LTT support because of the lack of a=20
+> maintainer; we do have one. This said, the best way you could=20
+> contribute to this=20
+> is crafting a prototype combo between I-pipe 1.0 and a recent=20
+> LTT core (i.e. the=20
+> one that relies on the refactored relayfs stuff), especially=20
+> if you do consider=20
+> this support as a critical feature. I guess that Alex would=20
+> be fine working on=20
+> this base later.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+This is something we may look at, but need access to this new-gen LTT,
+hopefuly supporting recent Linux kernel, at least 2.6.13.
 
-iD8DBQFDg388ncNeS9Q0k+IRAlrgAKCEbEP4NODAw8SMpw64BorfHRMx/wCfT/pV
-yCcTcMfHF+1HSwLOlrXDnJ0=
-=vo2U
------END PGP SIGNATURE-----
+BTW the rapid evolution of 2.6 is perhaps a benefit for some people, but =
+to
+maintain kernel-dependent extensions, it seems to be more a nightmare =
+than
+anything else...=20
 
---------------enig9B1DE5D9888C3C28DB0C90EE--
+> --=20
+>=20
+> Philippe.
+>=20
+>
+
+Bernard=20
+
+
 
