@@ -1,11 +1,11 @@
-Message-ID: <436F80EF.5020302@domain.hid>
-Date: Mon, 07 Nov 2005 17:29:35 +0100
+Message-ID: <436F8F47.8020307@domain.hid>
+Date: Mon, 07 Nov 2005 18:30:47 +0100
 From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig866D00A41169734F418D31D7"
-Subject: [Xenomai-core] [PATCH] fixes, clarifications, cleanups for RTDM
+	boundary="------------enig1D5FCD13FDBEF02B755B49CF"
+Subject: [Xenomai-core] [16550A-PATCH] integer baud rate, type renaming
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,485 +18,371 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig866D00A41169734F418D31D7
-Content-Type: multipart/mixed; boundary="------------020602060307040709020204"
+--------------enig1D5FCD13FDBEF02B755B49CF
+Content-Type: multipart/mixed; boundary="------------040705090205010708080703"
 
 This is a multi-part message in MIME format.
---------------020602060307040709020204
+--------------040705090205010708080703
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi all,
 
-this patch
- o fixes a cleanup-on-error problem with rtdm_task_init()
- o moves this call into drvlib (i.e. de-inlines it)
- o gets rid of __u64 and __s64 usages in favour of uint64_t and int64_t
-   (for consistent types in both kernel and user space)
- o tries to improve the documentation of rtdm_device.device_name and
-   RTDM_EXECUTE_ATOMICALLY and
- o moves EXPORT_SYMBOLs to their related functions
+and another patch: This one changes the rtserial API so that the baud
+rate can now be provided as an integer instead of the previous low-level
+encoded value. The baud base of a device is provided as module parameter
+to the driver on insmod. Turned out that I specified a not very useful
+interface in this regard. Moreover, this patch also moves to
+int64_t/uint64_t types.
 
-Tested, caused no regressions so far. Please apply.
+No regressions known, except that existing applications need a tiny
+patch for setting the baud rate according to the new format. Please apply=
+=2E
 
 Jan
 
---------------020602060307040709020204
+--------------040705090205010708080703
 Content-Type: text/plain;
- name="rtdm_task_init_etc.patch"
+ name="rtser-baudrate-and-types.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="rtdm_task_init_etc.patch"
+ filename="rtser-baudrate-and-types.patch"
 
-Index: skins/rtdm/drvlib.c
+Index: skins/rtdm/rtserial.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/rtdm/drvlib.c	(revision 112)
-+++ skins/rtdm/drvlib.c	(working copy)
-@@ -58,7 +58,7 @@
-  *
-  * Rescheduling: never.
-  */
--__u64 rtdm_clock_read(void);
-+uint64_t rtdm_clock_read(void);
- #endif /* DOXYGEN_CPP */
- /** @} */
+--- skins/rtdm/rtserial.h	(revision 112)
++++ skins/rtdm/rtserial.h	(working copy)
+@@ -77,38 +77,19 @@
+ #ifndef _RTSERIAL_H
+ #define _RTSERIAL_H
 =20
-@@ -69,7 +69,6 @@
-  * @{
-  */
-=20
--#ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
- /**
-  * @brief Intialise and start a real-time task
-  *
-@@ -96,8 +95,40 @@
-  */
- int rtdm_task_init(rtdm_task_t *task, const char *name,
-                    rtdm_task_proc_t task_proc, void *arg,
--                   int priority, __u64 period);
-+                   int priority, uint64_t period)
-+{
-+    int res;
-=20
+-#include <asm/types.h>
++#ifdef __KERNEL__
++# include <asm/types.h>
++#else
++# include <sys/types.h>
++#endif
 +
-+    res =3D xnpod_init_thread(task, name, priority, 0, 0);
-+    if (res)
-+        goto error_out;
-+
-+    if (period !=3D XN_INFINITE) {
-+        res =3D xnpod_set_thread_periodic(task, XN_INFINITE,
-+                                        xnpod_ns2ticks(period));
-+        if (res)
-+            goto cleanup_out;
-+    }
-+
-+    res =3D xnpod_start_thread(task, 0, 0, XNPOD_ALL_CPUS, task_proc, ar=
-g);
-+    if (res)
-+        goto cleanup_out;
-+
-+    return res;
-+
-+
-+ cleanup_out:
-+    xnpod_delete_thread(task);
-+
-+ error_out:
-+    return res;
-+}
-+
-+EXPORT_SYMBOL(rtdm_task_init);
-+
-+
-+#ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
- /**
-  * @brief Destroy a real-time task
-  *
-@@ -153,7 +184,7 @@
-  *
-  * Rescheduling: possible.
-  */
--int rtdm_task_set_period(rtdm_task_t *task, __u64 period);
-+int rtdm_task_set_period(rtdm_task_t *task, uint64_t period);
+ #include <rtdm/rtdm.h>
 =20
- /**
-  * @brief Wait on next real-time task period
-@@ -246,7 +277,9 @@
-     xnlock_put_irqrestore(&nklock, s);
- }
-=20
-+EXPORT_SYMBOL(rtdm_task_join_nrt);
-=20
-+
- /**
-  * @brief Sleep a specified amount of time
-  *
-@@ -266,7 +299,7 @@
-  *
-  * Rescheduling: always.
-  */
--int rtdm_task_sleep(__u64 delay)
-+int rtdm_task_sleep(uint64_t delay)
- {
-     xnthread_t  *thread =3D xnpod_current_thread();
-=20
-@@ -276,7 +309,9 @@
-     return xnthread_test_flags(thread, XNBREAK) ? -EINTR : 0;
- }
-=20
-+EXPORT_SYMBOL(rtdm_task_sleep);
-=20
-+
- /**
-  * @brief Sleep until a specified absolute time
-  *
-@@ -296,7 +331,7 @@
-  *
-  * Rescheduling: always, unless the specified time already passed.
-  */
--int rtdm_task_sleep_until(__u64 wakeup_time)
-+int rtdm_task_sleep_until(uint64_t wakeup_time)
- {
-     xnthread_t  *thread =3D xnpod_current_thread();
-     xnsticks_t  delay;
-@@ -320,7 +355,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_task_sleep_until);
-=20
-+
- /**
-  * @brief Busy-wait a specified amount of time
-  *
-@@ -337,13 +374,15 @@
-  *
-  * Rescheduling: never.
-  */
--void rtdm_task_busy_sleep(__u64 delay)
-+void rtdm_task_busy_sleep(uint64_t delay)
- {
-     xnticks_t wakeup =3D xnarch_get_cpu_tsc() + xnarch_ns_to_tsc(delay);=
-
-=20
-     while (xnarch_get_cpu_tsc() < wakeup)
-         cpu_relax();
- }
-+
-+EXPORT_SYMBOL(rtdm_task_busy_sleep);
- /** @} */
-=20
-=20
-@@ -368,8 +407,10 @@
-     xnlock_put_irqrestore(&nklock, s);
- }
-=20
-+EXPORT_SYMBOL(_rtdm_synch_flush);
-=20
-=20
-+
  /*!
-  * @ingroup driverapi
-  * @defgroup rtdmsync Synchronisation Services
-@@ -431,7 +472,7 @@
-  *
-  * Rescheduling: never.
-  */
--void rtdm_toseq_init(rtdm_toseq_t *timeout_seq, __s64 timeout);
-+void rtdm_toseq_init(rtdm_toseq_t *timeout_seq, int64_t timeout);
- #endif /* DOXYGEN_CPP */
- /** @} */
-=20
-@@ -552,7 +593,9 @@
-     xnlock_put_irqrestore(&nklock, s);
- }
-=20
-+EXPORT_SYMBOL(rtdm_event_signal);
-=20
-+
- /**
-  * @brief Wait on event occurrence
-  *
-@@ -605,7 +648,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_event_wait);
-=20
-+
- /**
-  * @brief Wait on event occurrence with timeout
-  *
-@@ -638,7 +683,7 @@
-  *
-  * Rescheduling: possible.
-  */
--int rtdm_event_timedwait(rtdm_event_t *event, __s64 timeout,
-+int rtdm_event_timedwait(rtdm_event_t *event, int64_t timeout,
-                          rtdm_toseq_t *timeout_seq)
- {
-     xnthread_t  *thread;
-@@ -687,6 +732,8 @@
-=20
-     return err;
- }
-+
-+EXPORT_SYMBOL(rtdm_event_timedwait);
- /** @} */
-=20
-=20
-@@ -787,7 +834,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_sem_down);
-=20
-+
- /**
-  * @brief Decrement a semaphore with timeout
-  *
-@@ -823,7 +872,7 @@
-  *
-  * Rescheduling: possible.
-  */
--int rtdm_sem_timeddown(rtdm_sem_t *sem, __s64 timeout,
-+int rtdm_sem_timeddown(rtdm_sem_t *sem, int64_t timeout,
-                        rtdm_toseq_t *timeout_seq)
- {
-     xnthread_t  *thread;
-@@ -871,7 +920,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_sem_timeddown);
-=20
-+
- /**
-  * @brief Increment a semaphore
-  *
-@@ -905,6 +956,8 @@
-=20
-     xnlock_put_irqrestore(&nklock, s);
- }
-+
-+EXPORT_SYMBOL(rtdm_sem_up);
- /** @} */
-=20
-=20
-@@ -1001,7 +1054,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_mutex_lock);
-=20
-+
- /**
-  * @brief Request a mutex with timeout
-  *
-@@ -1036,7 +1091,7 @@
-  *
-  * Rescheduling: possible.
-  */
--int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, __s64 timeout,
-+int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, int64_t timeout,
-                          rtdm_toseq_t *timeout_seq)
- {
-     xnthread_t  *thread;
-@@ -1084,7 +1139,9 @@
-     return err;
- }
-=20
-+EXPORT_SYMBOL(rtdm_mutex_timedlock);
-=20
-+
- /**
-  * @brief Release a mutex
-  *
-@@ -1115,6 +1172,8 @@
-=20
-     xnlock_put_irqrestore(&nklock, s);
- }
-+
-+EXPORT_SYMBOL(rtdm_mutex_unlock);
- /** @} */
-=20
- /** @} Synchronisation services */
-@@ -1520,19 +1579,3 @@
- /** @} */
-=20
- #endif /* DOXYGEN_CPP */
+- * @anchor RTSER_xxx_BAUD   @name RTSER_xxx_BAUD
+- * Baud rates
++ * @anchor RTSER_DEF_BAUD   @name RTSER_DEF_BAUD
++ * Default baud rate
+  * @{ */
+-#define RTSER_50_BAUD               2304
+-#define RTSER_75_BAUD               1536
+-#define RTSER_110_BAUD              1047
+-#define RTSER_134_5_BAUD            857
+-#define RTSER_150_BAUD              768
+-#define RTSER_300_BAUD              384
+-#define RTSER_600_BAUD              192
+-#define RTSER_1200_BAUD             96
+-#define RTSER_2400_BAUD             48
+-#define RTSER_3600_BAUD             32
+-#define RTSER_4800_BAUD             24
+-#define RTSER_7200_BAUD             16
+-#define RTSER_9600_BAUD             12
+-#define RTSER_19200_BAUD            6
+-#define RTSER_38400_BAUD            3
+-#define RTSER_57600_BAUD            2
+-#define RTSER_115200_BAUD           1
+-#define RTSER_DEF_BAUD              RTSER_9600_BAUD
 -
--
--EXPORT_SYMBOL(rtdm_task_join_nrt);
--EXPORT_SYMBOL(rtdm_task_sleep);
--EXPORT_SYMBOL(rtdm_task_sleep_until);
--EXPORT_SYMBOL(rtdm_task_busy_sleep);
--EXPORT_SYMBOL(_rtdm_synch_flush);
--EXPORT_SYMBOL(rtdm_event_wait);
--EXPORT_SYMBOL(rtdm_event_timedwait);
--EXPORT_SYMBOL(rtdm_event_signal);
--EXPORT_SYMBOL(rtdm_sem_down);
--EXPORT_SYMBOL(rtdm_sem_timeddown);
--EXPORT_SYMBOL(rtdm_sem_up);
--EXPORT_SYMBOL(rtdm_mutex_lock);
--EXPORT_SYMBOL(rtdm_mutex_timedlock);
--EXPORT_SYMBOL(rtdm_mutex_unlock);
-Index: skins/rtdm/rtdm_driver.h
+-/** Generate customised baud rate code
+- * @param base UART clock base
+- * @param rate baud rate
+- */
+-#define RTSER_CUSTOM_BAUD(base, rate) \
+-    ((base + (rate >> 1)) / rate)
++#define RTSER_DEF_BAUD              9600
+ /** @} */
+=20
+ /*!
+@@ -259,7 +240,7 @@
+ typedef struct rtser_config {
+     int     config_mask;        /**< mask specifying valid fields,
+                                  *   see @ref RTSER_SET_xxx */
+-    int     baud_rate;          /**< baud rate, see @ref RTSER_xxx_BAUD =
+*/
++    int     baud_rate;          /**< baud rate, default @ref RTSER_DEF_B=
+AUD */
+     int     parity;             /**< number of parity bits, see
+                                  *   @ref RTSER_xxx_PARITY */
+     int     data_bits;          /**< number of data bits, see
+@@ -270,13 +251,13 @@
+                                  *   @ref RTSER_xxx_HAND */
+     int     fifo_depth;         /**< reception FIFO interrupt threshold,=
+ see
+                                  *   @ref RTSER_FIFO_xxx */
+-    __s64   rx_timeout;         /**< reception timeout in ns, see
++    int64_t rx_timeout;         /**< reception timeout in ns, see
+                                  *   @ref RTSER_TIMEOUT_xxx for special
+                                  *   values */
+-    __s64   tx_timeout;         /**< transmission timeout in ns, see
++    int64_t tx_timeout;         /**< transmission timeout in ns, see
+                                  *   @ref RTSER_TIMEOUT_xxx for special
+                                  *   values */
+-    __s64   event_timeout;      /**< event timeout in ns, see
++    int64_t event_timeout;      /**< event timeout in ns, see
+                                  *   @ref RTSER_TIMEOUT_xxx for special
+                                  *   values */
+     int     timestamp_history;  /**< enable timestamp history, see
+@@ -303,9 +284,9 @@
+     int     events;             /**< signalled events, see
+                                  *   @ref RTSER_EVENT_xxx */
+     int     rx_pending;         /**< number of pending input characters =
+*/
+-    __u64   last_timestamp;     /**< last interrupt timestamp (absolute =
+time
++    uint64_t last_timestamp;    /**< last interrupt timestamp (absolute =
+time
+                                  *   in ns) */
+-    __u64   rxpend_timestamp;   /**< reception timestamp (absolute time =
+in ns)
++    uint64_t rxpend_timestamp;  /**< reception timestamp (absolute time =
+in ns)
+                                  *   of oldest character in input queue =
+*/
+ } rtser_event_t;
+=20
+Index: drivers/16550A/16550A.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/rtdm/rtdm_driver.h	(revision 112)
-+++ skins/rtdm/rtdm_driver.h	(working copy)
-@@ -381,7 +381,7 @@
-     /** Size of driver defined appendix to struct rtdm_dev_context */
-     size_t                          context_size;
+--- drivers/16550A/16550A.c	(revision 112)
++++ drivers/16550A/16550A.c	(working copy)
+@@ -29,9 +29,9 @@
+ #define IN_BUFFER_SIZE      4096
+ #define OUT_BUFFER_SIZE     4096
 =20
--    /** Named device identification */
-+    /** Named device identification (orthogonal to Linux device name spa=
-ce) */
-     char                            device_name[RTDM_MAX_DEVNAME_LEN+1];=
++#define DEFAULT_BAUD_BASE   115200
+ #define DEFAULT_TX_FIFO     16
+=20
+-#define BAUD_MASK           0xFFFF
+ #define PARITY_MASK         0x03
+ #define DATA_BITS_MASK      0x03
+ #define STOP_BITS_MASK      0x01
+@@ -84,7 +84,7 @@
+     rtdm_event_t            in_event;
+     char                    in_buf[IN_BUFFER_SIZE];
+     volatile unsigned long  in_lock;
+-    u64                     *in_history;
++    uint64_t                *in_history;
+=20
+     int                     out_head;
+     int                     out_tail;
+@@ -93,7 +93,7 @@
+     char                    out_buf[OUT_BUFFER_SIZE];
+     rtdm_mutex_t            out_lock;
+=20
+-    u64                     last_timestamp;
++    uint64_t                last_timestamp;
+     volatile int            ioc_events;
+     rtdm_event_t            ioc_event;
+     volatile unsigned long  ioc_event_lock;
+@@ -117,6 +117,8 @@
+ static int                  ioaddr_c;
+ static unsigned int         irq[MAX_DEVICES];
+ static int                  irq_c;
++static unsigned int         baud_base[MAX_DEVICES];
++static int                  baud_base_c;
+ static int                  tx_fifo[MAX_DEVICES];
+ static int                  tx_fifo_c;
+ static unsigned int         start_index;
+@@ -125,6 +127,9 @@
+ MODULE_PARM_DESC(ioaddr, "I/O addresses of the serial devices");
+ module_param_array(irq, uint, &irq_c, 0400);
+ MODULE_PARM_DESC(irq, "IRQ numbers of the serial devices");
++module_param_array(baud_base, uint, &baud_base_c, 0400);
++MODULE_PARM_DESC(baud_base,
++    "Maximum baud rate of the serial device (internal clock rate / 16)")=
+;
+ module_param_array(tx_fifo, int, &tx_fifo_c, 0400);
+ MODULE_PARM_DESC(tx_fifo, "Transmitter FIFO size");
+ module_param(start_index, uint, 0400);
+@@ -135,7 +140,7 @@
+=20
+=20
+ static inline int rt_16550_rx_interrupt(struct rt_16550_context *ctx,
+-                                        u64 *timestamp)
++                                        uint64_t *timestamp)
+ {
+     int dev_id =3D ctx->dev_id;
+     int rbytes =3D 0;
+@@ -219,7 +224,7 @@
+     struct rt_16550_context *ctx;
+     int                     dev_id;
+     int                     iir;
+-    u64                     timestamp =3D rtdm_clock_read();
++    uint64_t                timestamp =3D rtdm_clock_read();
+     int                     rbytes =3D 0;
+     int                     events =3D 0;
+     int                     modem;
+@@ -297,11 +302,12 @@
+=20
+ static int rt_16550_set_config(struct rt_16550_context *ctx,
+                                const struct rtser_config *config,
+-                               u64 **in_history_ptr)
++                               uint64_t **in_history_ptr)
+ {
+     rtdm_lockctx_t  lock_ctx;
+     int             dev_id;
+     int             ret =3D 0;
++    int             baud_div =3D 0;
+=20
+=20
+     dev_id =3D ctx->dev_id;
+@@ -310,11 +316,12 @@
+     rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
+=20
+     if (testbits(config->config_mask, RTSER_SET_BAUD)) {
+-        ctx->config.baud_rate =3D config->baud_rate & BAUD_MASK;
+-
+-        outb(LCR_DLAB,                           LCR(dev_id));
+-        outb(ctx->config.baud_rate & 0xff, DLL(dev_id));
+-        outb(ctx->config.baud_rate >> 8,   DLM(dev_id));
++        ctx->config.baud_rate =3D config->baud_rate;
++        baud_div =3D (baud_base[dev_id] + (ctx->config.baud_rate >> 1)) =
+/
++                   ctx->config.baud_rate;
++        outb(LCR_DLAB,        LCR(dev_id));
++        outb(baud_div & 0xff, DLL(dev_id));
++        outb(baud_div >> 8,   DLM(dev_id));
+     }
+=20
+     if (testbits(config->config_mask, RTSER_SET_PARITY))
+@@ -423,7 +430,7 @@
+     struct rt_16550_context *ctx;
+     int                     dev_id =3D context->device->device_id;
+     int                     ret;
+-    __u64                   *dummy;
++    uint64_t                *dummy;
+=20
+=20
+     ctx =3D (struct rt_16550_context *)context->dev_private;
+@@ -473,7 +480,7 @@
+ {
+     struct rt_16550_context *ctx;
+     int                     dev_id;
+-    u64                     *in_history;
++    uint64_t                *in_history;
+     rtdm_lockctx_t          lock_ctx;
+=20
+=20
+@@ -521,6 +528,7 @@
+ {
+     struct rt_16550_context *ctx;
+     int                     ret =3D 0;
++    int                     dev_id =3D context->device->device_id;
+=20
+=20
+     ctx =3D (struct rt_16550_context *)context->dev_private;
+@@ -541,7 +549,7 @@
+         case RTSER_RTIOC_SET_CONFIG: {
+             struct rtser_config *config;
+             struct rtser_config config_buf;
+-            __u64               *hist_buf =3D NULL;
++            uint64_t            *hist_buf =3D NULL;
+=20
+             config =3D (struct rtser_config *)arg;
+=20
+@@ -556,6 +564,12 @@
+                 config =3D &config_buf;
+             }
+=20
++            if (testbits(config->config_mask, RTSER_SET_BAUD) &&
++                (config->baud_rate > baud_base[dev_id])) {
++                /* the baudrate is to high for this port */
++                return -EINVAL;
++            }
++
+             if (testbits(config->config_mask, RTSER_SET_TIMESTAMP_HISTOR=
+Y)) {
+                 if (test_bit(RTDM_CREATED_IN_NRT, &context->context_flag=
+s) &&
+                     rtdm_in_rt_context()) {
+@@ -568,11 +582,11 @@
+                              RTSER_RX_TIMESTAMP_HISTORY)) {
+                     if (test_bit(RTDM_CREATED_IN_NRT,
+                                  &context->context_flags))
+-                        hist_buf =3D kmalloc(IN_BUFFER_SIZE * sizeof(__u=
+64),
++                        hist_buf =3D kmalloc(IN_BUFFER_SIZE * sizeof(uin=
+t64_t),
+                                            GFP_KERNEL);
+                     else
+                         hist_buf =3D
+-                            rtdm_malloc(IN_BUFFER_SIZE * sizeof(__u64));=
 
++                            rtdm_malloc(IN_BUFFER_SIZE * sizeof(uint64_t=
+));
+                 }
 =20
-     /** Protocol device identification: protocol family (PF_xxx) */
-@@ -477,7 +477,7 @@
+                 if (!hist_buf)
+@@ -1011,7 +1025,7 @@
+     device_class:       RTDM_CLASS_SERIAL,
+     device_sub_class:   RTDM_SUBCLASS_16550A,
+     driver_name:        "rt_16550A",
+-    driver_version:     RTDM_DRIVER_VER(1, 1, 2),
++    driver_version:     RTDM_DRIVER_VER(1, 2, 0),
+     peripheral_name:    "UART 16550A",
+     provider_name:      "Jan Kiszka",
+ };
+@@ -1043,6 +1057,9 @@
+         if (!request_region(ioaddr[i], 8, dev->device_name))
+             goto kfree_out;
 =20
++        if (baud_base[i] =3D=3D 0)
++            baud_base[i] =3D DEFAULT_BAUD_BASE;
++
+         if (tx_fifo[i] =3D=3D 0)
+             tx_fifo[i] =3D DEFAULT_TX_FIFO;
 =20
- /* --- clock services --- */
--static inline __u64 rtdm_clock_read(void)
-+static inline uint64_t rtdm_clock_read(void)
- {
-     return xnpod_ticks2ns(xnpod_get_time());
- }
-@@ -500,7 +500,7 @@
-  * Generally, it is illegal to suspend the current task by calling
-  * rtdm_task_sleep(), rtdm_event_wait(), etc. while holding a spinlock. =
-In
-  * contrast, this macro allows to combine several operations including
-- * potentially rescheduling calls to an atomic code block with respect t=
-o
-+ * a potentially rescheduling call to an atomic code block with respect =
-to
-  * other RTDM_EXECUTE_ATOMICALLY() blocks. The macro is a light-weight
-  * alternative for protecting code blocks via mutexes, and it can even b=
-e used
-  * to synchronise real-time and non-real-time contexts.
-@@ -511,7 +511,9 @@
-  * @c break, @c return, @c goto, etc. This would leave the global lock h=
-eld
-  * during the code block execution in an inconsistent state. Moreover, d=
-o not
-  * embed complex operations into the code bock. Consider that they will =
-be
-- * executed under preemption lock with interrupts switched-off.
-+ * executed under preemption lock with interrupts switched-off. Also not=
-e that
-+ * invocation of rescheduling calls may break the atomicity until the ta=
-sk
-+ * gains the CPU again.
-  *
-  * Environments:
-  *
-@@ -841,29 +843,10 @@
+Index: drivers/16550A/README
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- drivers/16550A/README	(revision 112)
++++ drivers/16550A/README	(working copy)
+@@ -1,6 +1,9 @@
+ Real-Time Serial Driver for 16550A-Compatible Devices
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
 =20
- /** @} */
++Driver revision: 1.2.0
++
++
+ Preparation
+ -----------
+  - decide which serial ports are to be managed by the real-time driver
+@@ -18,6 +21,7 @@
+ ----------
 =20
--static inline int rtdm_task_init(rtdm_task_t *task, const char *name,
--                                 rtdm_task_proc_t task_proc, void *arg,
--                                 int priority, __u64 period)
--{
--    int res;
-+int rtdm_task_init(rtdm_task_t *task, const char *name,
-+                   rtdm_task_proc_t task_proc, void *arg,
-+                   int priority, uint64_t period);
+ modprobe xeno_16550A ioaddr=3D<io1>[,<io2>...] irq=3D<irq1>[,<irq2>...]
++                     [baud_base=3D<base1>[,<base2>...]]
+                      [tx_fifo=3D<len1>[,<len2>...]] [start_index=3D<inde=
+x>]
 =20
--    res =3D xnpod_init_thread(task, name, priority, 0, 0);
--    if (res)
--        goto done;
--
--    if (!__builtin_constant_p(period) || (period !=3D XN_INFINITE)) {
--        res =3D xnpod_set_thread_periodic(task, XN_INFINITE,
--                                        xnpod_ns2ticks(period));
--        if (res)
--            goto done;
--    }
--
--    res =3D xnpod_start_thread(task, 0, 0, XNPOD_ALL_CPUS, task_proc, ar=
-g);
--
--  done:
--    return res;
--}
--
- static inline void rtdm_task_destroy(rtdm_task_t *task)
- {
-     xnpod_delete_thread(task);
-@@ -877,7 +860,7 @@
-     xnpod_schedule();
- }
-=20
--static inline int rtdm_task_set_period(rtdm_task_t *task, __u64 period)
-+static inline int rtdm_task_set_period(rtdm_task_t *task, uint64_t perio=
-d)
- {
-     return xnpod_set_thread_periodic(task, XN_INFINITE,
-                                      xnpod_ns2ticks(period));
-@@ -901,16 +884,16 @@
-     return xnpod_wait_thread_period();
- }
-=20
--int rtdm_task_sleep(__u64 delay);
--int rtdm_task_sleep_until(__u64 wakeup_time);
--void rtdm_task_busy_sleep(__u64 delay);
-+int rtdm_task_sleep(uint64_t delay);
-+int rtdm_task_sleep_until(uint64_t wakeup_time);
-+void rtdm_task_busy_sleep(uint64_t delay);
-=20
-=20
- /* --- timeout sequences */
-=20
--typedef __u64                       rtdm_toseq_t;
-+typedef uint64_t                    rtdm_toseq_t;
-=20
--static inline void rtdm_toseq_init(rtdm_toseq_t *timeout_seq, __s64 time=
-out)
-+static inline void rtdm_toseq_init(rtdm_toseq_t *timeout_seq, int64_t ti=
-meout)
- {
-     *timeout_seq =3D xnpod_get_time() + xnpod_ns2ticks(timeout);
- }
-@@ -937,7 +920,7 @@
- }
-=20
- int rtdm_event_wait(rtdm_event_t *event);
--int rtdm_event_timedwait(rtdm_event_t *event, __s64 timeout,
-+int rtdm_event_timedwait(rtdm_event_t *event, int64_t timeout,
-                          rtdm_toseq_t *timeout_seq);
- void rtdm_event_signal(rtdm_event_t *event);
-=20
-@@ -971,7 +954,7 @@
- }
-=20
- int rtdm_sem_down(rtdm_sem_t *sem);
--int rtdm_sem_timeddown(rtdm_sem_t *sem, __s64 timeout,
-+int rtdm_sem_timeddown(rtdm_sem_t *sem, int64_t timeout,
-                        rtdm_toseq_t *timeout_seq);
- void rtdm_sem_up(rtdm_sem_t *sem);
-=20
-@@ -995,7 +978,7 @@
- }
-=20
- int rtdm_mutex_lock(rtdm_mutex_t *mutex);
--int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, __s64 timeout,
-+int rtdm_mutex_timedlock(rtdm_mutex_t *mutex, int64_t timeout,
-                          rtdm_toseq_t *timeout_seq);
- void rtdm_mutex_unlock(rtdm_mutex_t *mutex);
-=20
+ Arguments:
+@@ -25,6 +29,8 @@
+                   (e.g. "0x3f8,0x2f8")
+     irq         - interrupt numbers of the devices, comma separated
+                   (e.g. "4,3")
++    baud_base   - Maximum baud rates of the devices, comma separated, de=
+fault
++                  is 115200
+     tx_fifo     - Transmitter FIFO sizes of the devices in bytes, comma
+                   separated, default is 16
+     start_index - First device instance number to be used, default is 0
 
---------------020602060307040709020204--
+--------------040705090205010708080703--
 
---------------enig866D00A41169734F418D31D7
+--------------enig1D5FCD13FDBEF02B755B49CF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -505,10 +391,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFDb4DvncNeS9Q0k+IRAijPAJ95beSD24sS6TxE26587xuUq2cykwCeJFJd
-fpzOG/atqZ4SqzHw9j+t6ak=
-=3QwN
+iD8DBQFDb49HncNeS9Q0k+IRAkDRAJ9IHZRD5dNhyddMG+efpXpnkQeWEQCgjQTM
+7Kww/c20H4okIQyDuvlxtqU=
+=URwN
 -----END PGP SIGNATURE-----
 
---------------enig866D00A41169734F418D31D7--
+--------------enig1D5FCD13FDBEF02B755B49CF--
 
