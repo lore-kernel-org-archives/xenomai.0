@@ -1,11 +1,12 @@
-Message-ID: <009101c5e516$02bd2a80$1000000a@domain.hid>
-From: "Hans-J. Ude" <ude@domain.hid>
-Date: Wed, 9 Nov 2005 11:11:52 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1252"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Module loading problems
+Message-ID: <17263.53196.315176.630084@domain.hid>
+Date: Mon, 7 Nov 2005 23:06:04 +0100
+Subject: RE: [Xenomai-help] number-crunching execution jitter
+In-Reply-To: <2F8EE677D406514ABE53EF9C0934A666017CAF3E@anubis2.clb.tcfr.thales>
+References: <2F8EE677D406514ABE53EF9C0934A666017CAF3E@anubis2.clb.tcfr.thales>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,33 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Dominique.RAGOT@fr.thalesgroup.com
+Cc: xenomai@xenomai.org
 
-I've installed Xenomai 2.0.1 but can't load a module stack for the vxWorks
-skin. Kernel is 2.6.13 with the included ipipe patch and I'm getting the
-following results.
+Dominique.RAGOT@fr.thalesgroup.com wrote:
+ > In the meantime I modified the benchmark with a call to the routine
+ > pthread_set_mode_np(0, PTHREAD_SHIELD) immediately after thread is
+ > created, and observes a huge reduction in execution jitter, but at
+ > the expense of wakeup jitter. So I concluded the interrupt shield was
+ > definitely not doing much without this call. Am I wrong ? 
 
-# insmod xeno_hal.ko
-# insmod xeno_nucleus.ko
-# insmod xeno_vxworks.ko
-# insmod xeno_uvm.ko
-insmod: error inserting 'xeno_uvm.ko': -1 Function not implemented
+I guess Philippe and Stephane gave you answers regarding the way to
+activate the shield (I did not check if pthread_set_mode fails when the
+shield was disabled at compilation time and is used at run time, if not,
+maybe it would be a good idea ?).
 
-# insmod xeno_hal.ko
-# insmod xeno_nucleus.ko
-# insmod xeno_uvm.ko
-# insmod xeno_vxworks.ko
-insmod: error inserting 'xeno_vxworks.ko': -1 Device or resource busy
+Now about the wakeup jitter, if you are still using the "cruncher" as in
+RTAI/Fusion, what is called "nanosleep jitter" may not be a precise
+measurement of the wakeup latency. A better measurement of the
+scheduling latency using the POSIX skin is obtained using the
+clock_nanosleep call with the TIMER_ABSTIME flag, pass an absolute time,
+and measure the difference between this time and the wakeup time.
 
-I've put some printk's into the nucleus modules and found that in the first
-case there are two pointers which are compared when a subsequent modules is
-loaded. Those pointers are expected to be equal but are unequal and the
-module is rejected. Can someone tell what I can do here? Maybe there is
-something wrong with the modules, with the distro (Suse 9.3) or maybe I'm
-doing something wrong. I think i'm gonna try the original gnu modutils next
-and get rid of that Suse stuff.
+Also note that CLOCK_MONOTONIC will give better accuracy than
+CLOCK_REALTIME, since it is using the tsc even when system timer is in
+periodic mode.
 
-regards,
-Hans
+-- 
 
+
+					    Gilles Chanteperdrix.
 
