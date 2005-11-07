@@ -1,15 +1,11 @@
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] RTLWS 2005 - who plans to attend?
-Date: Tue, 1 Nov 2005 14:53:40 +0100
-References: <200510192023.58689.dmitry.adamushko@domain.hid>
-	<435696CB.2070808@domain.hid>
-In-Reply-To: <435696CB.2070808@domain.hid>
+Message-ID: <436F80D9.7090503@domain.hid>
+Date: Mon, 07 Nov 2005 17:29:13 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="koi8-r"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200511011453.41458.dmitry.adamushko@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig920B257BFF8D8003D5FAAC66"
+Subject: [Xenomai-core] [PATCH] fixes, clarifications, cleanups for RTDM
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,24 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig920B257BFF8D8003D5FAAC66
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+this patch
+ o fixes a cleanup-on-error problem with rtdm_task_init
+ o moves this call into drvlib (i.e. de-inlines it)
+ o gets rid of __u64 and __s64 usages in favour of uint64_t and int64_t
+   (for consistent types in both kernel and user space)
+ o tries to improve the documentation of rtdm_device.device_name and
+   RTDM_EXECUTE_ATOMICALLY and
+ o moves EXPORT_SYMBOLs to their related functions
+
+Tested, caused no regressions so far. Please apply.
+
+Jan
 
 
-Hi Jan and everybody,
+--------------enig920B257BFF8D8003D5FAAC66
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> I would be happy to meet another Xenomai face in real there :).
-> Actually, I can only come around on Friday, maybe already late Thursday
-> evening (depends on the traffic...). The main reason for me to do this
-> trip anyway is meeting new people. So, let's get together!
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Now holding a ticket in hands, I may say that I'm going to be there too. The 
-only difference is that I may attend the workshop on Thursday since on Friday 
-I need to be in Brussel. And then I'm going to Paris :o)
+iD8DBQFDb4DZncNeS9Q0k+IRAkpsAJ43PEs3fuvEFJvN/HLUajiHYnlBuQCdFm/B
+yo9gHOOixhOGOpYgCuXIqBw=
+=jweG
+-----END PGP SIGNATURE-----
 
-Ok, so it would be nice to meet you somehow anyway.
-
----
-Best regards,
-Dmitry
+--------------enig920B257BFF8D8003D5FAAC66--
 
