@@ -1,12 +1,11 @@
-In-Reply-To: <437C5119.4060100@domain.hid>
-Subject: Re: [Xenomai-help] Blocking reads from pipes
-Message-ID: <OF793B3877.8F9E3BF6-ONC12570BC.003AE718-C12570BC.003B282B@datacon.at>
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Date: Thu, 17 Nov 2005 11:46:09 +0100
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBFA2FDFA961888f9e8a93df938690918c4EBBFA2FDFA96188"
-Content-Disposition: inline
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C5E45E.55DF146D"
+Date: Tue, 8 Nov 2005 13:17:06 +0100
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0162902@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-help] Failed with native queues
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,82 +15,299 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ignacio =?ISO-8859-1?Q?Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---0__=4EBBFA2FDFA961888f9e8a93df938690918c4EBBFA2FDFA96188
-Content-type: text/plain; charset=US-ASCII
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C5E45E.55DF146D
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+=20
+
+I get a strange behaviour when using the RT_queues from the user space =
+(using
+
+xeno-load). Actually, when /dev/rtheap is missing rt_queue_create() =
+failed returning
+
+-2 error code. If I put the rtheap.rules into /etc/udev/rules.d, then =
+the program immediately freezes -
+
+same thing when I manually create the node with mknod -m 0666 c 10 254.
+
+=20
+
+I'm using Linux 2.6.9 with adeos-linux-ltt-patch...
+
+=20
+
+=20
+
+What did I wrong? Any experience with RT_QUEUE from the user space?
+
+=20
+
+Thanks for your support
+
+=20
+
+Cheers
+
+Daniel
+
+=20
+
+=20
+
+=20
+
+Dr. Daniel Rossier, Professeur
+
+REDS, Reconfigurable & Embedded Digital Systems, http://reds.eivd.ch/ =
+<http://reds.eivd.ch/>=20
+
+HES-SO
+
+Haute Ecole d'Ing=E9nieurs et de Gestion (HEIG-VD)
+
+Rte de Cheseaux 1
+
+=20
+
+CH-1774 Yverdon-les-Bains
+
+=20
+
+T=E9l. fixe:     +41 24 557 62 69
+
+T=E9l. mobile:   +41 79 292 54 58
+
+E-mail:        daniel.rossier@domain.hid
+
+=20
 
 
-> Hi,
->
-> My application consists of a real time module and a non-realtime user
-> mode program. They communicate through several pipes.
->
-> The user mode program creates a thread (pthread) that opens a pipe and
-> blocks in a read call, waiting for data. Under certain conditions, the
-> user mode program must do an orderly exit, and thus I need a way to
-> unblock that thread.
->
-> I've done that in the past with sockets. If you have one thread blocked
-> reading from a socket handle, and you close it from another thread, the
-> read call will immediately return with an error code.
->
-> However, that doesn't seem to work with xenomai pipes. One posix thread
-> blocked reading from a pipe (using posix open/read) won't unblock when
-> you close the file handle from another thread.
+------_=_NextPart_001_01C5E45E.55DF146D
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Actually, it should be unblocked but with 0 as a return value. I'll take a
-look at that.
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
 
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
 
->
-> Any suggestions?
->
-> Thanks.
->
-> Nacho.
+</head>
 
----
-Best regards,
-Dmitry
---0__=4EBBFA2FDFA961888f9e8a93df938690918c4EBBFA2FDFA96188
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
 
-<html><body>
-<p><tt>&gt; Hi,<br>
-&gt; <br>
-&gt; My application consists of a real time module and a non-realtime user<br>
-&gt; mode program. They communicate through several pipes.<br>
-&gt; <br>
-&gt; The user mode program creates a thread (pthread) that opens a pipe and<br>
-&gt; blocks in a read call, waiting for data. Under certain conditions, the<br>
-&gt; user mode program must do an orderly exit, and thus I need a way to<br>
-&gt; unblock that thread.<br>
-&gt; <br>
-&gt; I've done that in the past with sockets. If you have one thread blocked<br>
-&gt; reading from a socket handle, and you close it from another thread, the<br>
-&gt; read call will immediately return with an error code.<br>
-&gt; <br>
-&gt; However, that doesn't seem to work with xenomai pipes. One posix thread<br>
-&gt; blocked reading from a pipe (using posix open/read) won't unblock when<br>
-&gt; you close the file handle from another thread.</tt><br>
-<br>
-<tt>Actually, it should be unblocked but with 0 as a return value. I'll take a look at that.</tt><br>
-<br>
-<tt><br>
-&gt; <br>
-&gt; Any suggestions?<br>
-&gt; <br>
-&gt; Thanks.<br>
-&gt; <br>
-&gt; Nacho.<br>
-</tt><br>
-<tt>---</tt><br>
-<tt>Best regards,</tt><br>
-<tt>Dmitry</tt><br>
-</body></html>
---0__=4EBBFA2FDFA961888f9e8a93df938690918c4EBBFA2FDFA96188--
+<div class=3DSection1>
 
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Hello,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I get a strange behaviour when using the =
+RT_queues
+from the user space (using<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>xeno-load). Actually, when /dev/rtheap is =
+missing
+rt_queue_create() failed returning<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>-2 error code. If I put the rtheap.rules into
+/etc/udev/rules.d, then the program immediately freezes =
+&#8211;<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>same thing when I manually create the node =
+with mknod
+&#8211;m 0666 c 10 254.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I'm using Linux 2.6.9 with =
+adeos-linux-ltt-patch...<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>What did I wrong? Any experience with RT_QUEUE =
+from
+the user space?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Thanks for your =
+support<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Cheers<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Daniel<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<div =
+style=3D'mso-element:para-border-div;border:none;border-bottom:solid =
+windowtext 1.0pt;
+padding:0cm 0cm 1.0pt 0cm'>
+
+<p =
+style=3D'margin:0cm;margin-bottom:.0001pt;border:none;padding:0cm'><font
+size=3D1 face=3D"Times New Roman"><span lang=3DEN-GB =
+style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>Dr. Daniel Rossier, =
+Professeur<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>REDS, Reconfigurable &amp; Embedded Digital =
+Systems, </span></font><font
+size=3D1><span lang=3DEN-GB style=3D'font-size:8.0pt'><a =
+href=3D"http://reds.eivd.ch/"><span
+lang=3DFR>http://reds.eivd.ch/</span></a></span></font><font =
+size=3D1><span
+style=3D'font-size:8.0pt'><o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>HES-SO<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>Haute Ecole d'Ing=E9nieurs et de Gestion =
+(HEIG-VD)<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>Rte de Cheseaux 1<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'>CH-1774 =
+Yverdon-les-Bains<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Times New Roman"><span
+style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Courier New"><span
+style=3D'font-size:8.0pt;font-family:"Courier New"'>T=E9l. =
+fixe:=A0=A0=A0=A0 +41 24 557 62
+69<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Courier New"><span
+style=3D'font-size:8.0pt;font-family:"Courier New"'>T=E9l. mobile:=A0=A0 =
++41 79 292 54
+58<o:p></o:p></span></font></p>
+
+<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
+face=3D"Courier New"><span
+style=3D'font-size:8.0pt;font-family:"Courier =
+New"'>E-mail:=A0=A0=A0=A0=A0=A0=A0 <a
+href=3D"mailto:daniel.rossier@domain.hid">daniel.rossier@domain.hid</a><o=
+:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
+style=3D'font-size:
+12.0pt'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C5E45E.55DF146D--
 
