@@ -1,13 +1,11 @@
-Message-ID: <438D9B20.5090609@domain.hid>
-Date: Wed, 30 Nov 2005 13:29:20 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <002f01c5e44a$b675bf50$1000000a@domain.hid>
+From: "Hans-J. Ude" <ude@domain.hid>
+Date: Tue, 8 Nov 2005 10:56:31 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems with mutex
-References: <438D993E.7010904@domain.hid>
-In-Reply-To: <438D993E.7010904@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1E3E68F7158934D010472E88"
+Content-Type: text/plain;
+	charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Task lock/unlock unlock difficulties
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: kai.m.moritz@domain.hid
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1E3E68F7158934D010472E88
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+I need to lock/unlock the scheduler from time to time. I'm using the RTAI
+native skin in userspace and tried the rt_task_set_mode approach but was not
+very successfus yet. I've tried this:
 
-Kai Moritz wrote:
-> Hello folks,
->=20
-> I'm using Xenomai 2.0.1 with Linux 2.6.14 and ipipe. I've a strange
-> problem using mutex-locks. Repeted calls to rt_mutex_lock with
-> TM_NONBLOCK on the same mutex return always 0, which means lock
-> successfully aquired, if I understand the API-documentation right.
-> I've attached a small programm to test that behavior and the
-> log-messages it produces on my machine. Perhaps anyone has a hint, what=
+int task_lock(void) { return rt_task_set_mode(0, T_LOCK, &mask); }
+int task_unlock(void) { return rt_task_set_mode(T_LOCK, mask, NULL); }
 
-> I'm doing wrong...
+To support nested calls to these functions i've implement an array of masks
+and lock/unlock counters to maintain a stack. I've also tried a single mask
+and no stack and with no mask at all. No success. It's hard to explain what
+exactly happens because I'm porting an existing software with a really bad
+design but the original works. I found there are xenomai functions called
+xnpod_lock_sched(), which are directly called from e.g. the vxWorks skin.
+Obviously xn_pod_lock has an integrated counting. Otherwise the vx skin
+would be incompatible. But when i include pod.h i get a whole bunch of error
+messages, likely due to missing defines. So can someone show me a way to a
+clean working counting lock/unlock mechanism.
 
-Does the same thread lock this mutex over and over again (I did not look
-at your code yet)? If so, note that mutexes can be acquired recursively
-by the original owner.
+TAI,
+Hans
 
-Jan
-
-
-
---------------enig1E3E68F7158934D010472E88
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDjZsgncNeS9Q0k+IRAkvyAKC1Y5qVn++ST2yuTGfn0OuWErBRiACgxZWr
-m4gKzFIEFqMSyhIkdSIGJ7M=
-=SoZW
------END PGP SIGNATURE-----
-
---------------enig1E3E68F7158934D010472E88--
 
