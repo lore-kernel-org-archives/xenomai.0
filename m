@@ -1,11 +1,11 @@
-Message-ID: <436F9F3F.3010405@domain.hid>
-Date: Mon, 07 Nov 2005 19:38:55 +0100
+Message-ID: <4370641D.7010906@domain.hid>
+Date: Tue, 08 Nov 2005 09:38:53 +0100
 From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [16550A-PATCH] integer baud rate, type renaming
-References: <436F8F47.8020307@domain.hid>
-In-Reply-To: <436F8F47.8020307@domain.hid>
-Content-Type: multipart/mixed; boundary="------------050608010104050207040308"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD2FB813759934B895D0A08AD"
+Subject: [Xenomai-core] [BUG] scheduling order of dying shadow threads
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,350 +17,180 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD2FB813759934B895D0A08AD
+Content-Type: multipart/mixed; boundary="------------020904000301030606010104"
+
 This is a multi-part message in MIME format.
---------------050608010104050207040308
-Content-Type: text/plain; charset=ISO-8859-1
+--------------020904000301030606010104
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Jan Kiszka wrote:
-> Hi all,
-> 
-> and another patch: This one changes the rtserial API so that the baud
-> rate can now be provided as an integer instead of the previous low-level
-> encoded value. The baud base of a device is provided as module parameter
-> to the driver on insmod. Turned out that I specified a not very useful
-> interface in this regard. Moreover, this patch also moves to
-> int64_t/uint64_t types.
-> 
-> No regressions known, except that existing applications need a tiny
-> patch for setting the baud rate according to the new format. Please apply.
-> 
+Hi Philippe,
 
-There was a regression in user space due to the int64_t/uint64_t types.
-The attached patch addresses this in rtdm/rtdm.h by including inttypes.h
-- no need for the device profile header to care about this anymore.
+I think this one is for you: ;)
 
-Please apply THIS one instead.
+Sebastian got almost mad with his CAN driver while tracing a strange
+scheduling behaviour during shadow thread deletion for several days(!) -
+and I was right on the way to follow him yesterday evening. Attached is
+a simplified demonstration of the effect, consisting of a RTDM driver
+and both a kernel and user space application to trigger it.
+
+Assume two or more user space RT-threads blocking on the same RTDM
+semaphore inside a driver (I was not yet able to reproduce this with a
+simply native user space application :/). All get then woken up on
+rtdm_sem_destroy during device closure. They increment a global counter,
+save the current value in a per-thread variable, and then terminate.
+They had also passed another per-thread variable to the RTDM driver
+which was updated in the kernel using the same(!) counter.
+
+/* application */
+void demo(void *arg)
+{
+    rt_dev_read(dev, &value_k[(int)arg], 0);
+    value_u[(int)arg] = ++counter;
+}
+
+/* driver */
+int demo_read_rt(struct rtdm_dev_context    *context,
+                 rtdm_user_info_t           *user_info,
+                 void                       *buf,
+                 size_t                     nbyte)
+{
+    struct demodrv_context  *my_context;
+    int                     ret;
+
+
+    my_context = (struct demodrv_context *)context->dev_private;
+
+    ret = rtdm_sem_down(&my_context->read_sem);
+    *(int *)buf = ++(*counter);
+
+    return ret;
+}
+
+
+That global counter is also incremented during closure to visualise the
+call order:
+
+
+int demo_close_rt(struct rtdm_dev_context   *context,
+                  rtdm_user_info_t          *user_info)
+{
+    struct demodrv_context  *my_context;
+
+
+    my_context = (struct demodrv_context *)context->dev_private;
+
+    printk("close 1: %d\n", xnpod_current_thread()->cprio);
+    rtdm_sem_destroy(&my_context->read_sem);
+    printk("close 2: %d\n", xnpod_current_thread()->cprio);
+    (*counter)++;
+
+    return 0;
+}
+
+
+Now one would expect the following content of the involved variables
+when running 3 threads e.g.:
+
+           thread 1      (prio 99)
+         /   thread 2    (prio 98)
+         |  /   thread 3 (prio 97)
+         |  |  /
+value_k: 1, 3, 5
+value_u: 2, 4, 6
+counter: 7
+
+This is indeed what we get when the application locates in kernel space,
+i.e. does not use shadow threads. But when it is a user space
+application, the result looks like this:
+
+           thread 1
+         /   thread 2
+         |  /   thread 3
+         |  |  /
+value_k: 1, 4, 6
+value_u: 2, 5, 7
+counter: 7
+
+Which means that first thread returns from kernel to user space and
+terminates, then the close handler gets executed again, and only
+afterwards the remaining threads!
+
+The reason is also displayed by demodrv:
+close 1: 0	- prio of root thread before rtdm_sem_destroy
+close 2: 99	- ... and after rtdm_sem_destroy
+
+Which means that the non-RT thread calling rt_dev_close gets lifted to
+prio 99 on calling rtdm_sem_destroy, the prio of the thread first woken
+up. It seems to loose this prio quite soon again, but not soon enough to
+avoid the inversion - very strange.
+
+Any ideas?
 
 Jan
 
---------------050608010104050207040308
-Content-Type: text/plain;
- name="rtser-baudrate-and-types.patch2"
-Content-Transfer-Encoding: 7bit
+--------------020904000301030606010104
+Content-Type: application/x-bzip2;
+ name="cleanup-race.tar.bz2"
+Content-Transfer-Encoding: base64
 Content-Disposition: inline;
- filename="rtser-baudrate-and-types.patch2"
+ filename="cleanup-race.tar.bz2"
 
-Index: skins/rtdm/rtdm.h
-===================================================================
---- skins/rtdm/rtdm.h	(revision 112)
-+++ skins/rtdm/rtdm.h	(working copy)
-@@ -48,6 +48,7 @@
- #else  /* !__KERNEL__ */
- 
- #include <fcntl.h>
-+#include <inttypes.h>
- #include <sys/ioctl.h>
- #include <sys/socket.h>
- 
-Index: skins/rtdm/rtserial.h
-===================================================================
---- skins/rtdm/rtserial.h	(revision 112)
-+++ skins/rtdm/rtserial.h	(working copy)
-@@ -77,38 +77,13 @@
- #ifndef _RTSERIAL_H
- #define _RTSERIAL_H
- 
--#include <asm/types.h>
- #include <rtdm/rtdm.h>
- 
- /*!
-- * @anchor RTSER_xxx_BAUD   @name RTSER_xxx_BAUD
-- * Baud rates
-+ * @anchor RTSER_DEF_BAUD   @name RTSER_DEF_BAUD
-+ * Default baud rate
-  * @{ */
--#define RTSER_50_BAUD               2304
--#define RTSER_75_BAUD               1536
--#define RTSER_110_BAUD              1047
--#define RTSER_134_5_BAUD            857
--#define RTSER_150_BAUD              768
--#define RTSER_300_BAUD              384
--#define RTSER_600_BAUD              192
--#define RTSER_1200_BAUD             96
--#define RTSER_2400_BAUD             48
--#define RTSER_3600_BAUD             32
--#define RTSER_4800_BAUD             24
--#define RTSER_7200_BAUD             16
--#define RTSER_9600_BAUD             12
--#define RTSER_19200_BAUD            6
--#define RTSER_38400_BAUD            3
--#define RTSER_57600_BAUD            2
--#define RTSER_115200_BAUD           1
--#define RTSER_DEF_BAUD              RTSER_9600_BAUD
--
--/** Generate customised baud rate code
-- * @param base UART clock base
-- * @param rate baud rate
-- */
--#define RTSER_CUSTOM_BAUD(base, rate) \
--    ((base + (rate >> 1)) / rate)
-+#define RTSER_DEF_BAUD              9600
- /** @} */
- 
- /*!
-@@ -259,7 +234,7 @@
- typedef struct rtser_config {
-     int     config_mask;        /**< mask specifying valid fields,
-                                  *   see @ref RTSER_SET_xxx */
--    int     baud_rate;          /**< baud rate, see @ref RTSER_xxx_BAUD */
-+    int     baud_rate;          /**< baud rate, default @ref RTSER_DEF_BAUD */
-     int     parity;             /**< number of parity bits, see
-                                  *   @ref RTSER_xxx_PARITY */
-     int     data_bits;          /**< number of data bits, see
-@@ -270,13 +245,13 @@
-                                  *   @ref RTSER_xxx_HAND */
-     int     fifo_depth;         /**< reception FIFO interrupt threshold, see
-                                  *   @ref RTSER_FIFO_xxx */
--    __s64   rx_timeout;         /**< reception timeout in ns, see
-+    int64_t rx_timeout;         /**< reception timeout in ns, see
-                                  *   @ref RTSER_TIMEOUT_xxx for special
-                                  *   values */
--    __s64   tx_timeout;         /**< transmission timeout in ns, see
-+    int64_t tx_timeout;         /**< transmission timeout in ns, see
-                                  *   @ref RTSER_TIMEOUT_xxx for special
-                                  *   values */
--    __s64   event_timeout;      /**< event timeout in ns, see
-+    int64_t event_timeout;      /**< event timeout in ns, see
-                                  *   @ref RTSER_TIMEOUT_xxx for special
-                                  *   values */
-     int     timestamp_history;  /**< enable timestamp history, see
-@@ -303,9 +278,9 @@
-     int     events;             /**< signalled events, see
-                                  *   @ref RTSER_EVENT_xxx */
-     int     rx_pending;         /**< number of pending input characters */
--    __u64   last_timestamp;     /**< last interrupt timestamp (absolute time
-+    uint64_t last_timestamp;    /**< last interrupt timestamp (absolute time
-                                  *   in ns) */
--    __u64   rxpend_timestamp;   /**< reception timestamp (absolute time in ns)
-+    uint64_t rxpend_timestamp;  /**< reception timestamp (absolute time in ns)
-                                  *   of oldest character in input queue */
- } rtser_event_t;
- 
-Index: drivers/16550A/16550A.c
-===================================================================
---- drivers/16550A/16550A.c	(revision 112)
-+++ drivers/16550A/16550A.c	(working copy)
-@@ -29,9 +29,9 @@
- #define IN_BUFFER_SIZE      4096
- #define OUT_BUFFER_SIZE     4096
- 
-+#define DEFAULT_BAUD_BASE   115200
- #define DEFAULT_TX_FIFO     16
- 
--#define BAUD_MASK           0xFFFF
- #define PARITY_MASK         0x03
- #define DATA_BITS_MASK      0x03
- #define STOP_BITS_MASK      0x01
-@@ -84,7 +84,7 @@
-     rtdm_event_t            in_event;
-     char                    in_buf[IN_BUFFER_SIZE];
-     volatile unsigned long  in_lock;
--    u64                     *in_history;
-+    uint64_t                *in_history;
- 
-     int                     out_head;
-     int                     out_tail;
-@@ -93,7 +93,7 @@
-     char                    out_buf[OUT_BUFFER_SIZE];
-     rtdm_mutex_t            out_lock;
- 
--    u64                     last_timestamp;
-+    uint64_t                last_timestamp;
-     volatile int            ioc_events;
-     rtdm_event_t            ioc_event;
-     volatile unsigned long  ioc_event_lock;
-@@ -117,6 +117,8 @@
- static int                  ioaddr_c;
- static unsigned int         irq[MAX_DEVICES];
- static int                  irq_c;
-+static unsigned int         baud_base[MAX_DEVICES];
-+static int                  baud_base_c;
- static int                  tx_fifo[MAX_DEVICES];
- static int                  tx_fifo_c;
- static unsigned int         start_index;
-@@ -125,6 +127,9 @@
- MODULE_PARM_DESC(ioaddr, "I/O addresses of the serial devices");
- module_param_array(irq, uint, &irq_c, 0400);
- MODULE_PARM_DESC(irq, "IRQ numbers of the serial devices");
-+module_param_array(baud_base, uint, &baud_base_c, 0400);
-+MODULE_PARM_DESC(baud_base,
-+    "Maximum baud rate of the serial device (internal clock rate / 16)");
- module_param_array(tx_fifo, int, &tx_fifo_c, 0400);
- MODULE_PARM_DESC(tx_fifo, "Transmitter FIFO size");
- module_param(start_index, uint, 0400);
-@@ -135,7 +140,7 @@
- 
- 
- static inline int rt_16550_rx_interrupt(struct rt_16550_context *ctx,
--                                        u64 *timestamp)
-+                                        uint64_t *timestamp)
- {
-     int dev_id = ctx->dev_id;
-     int rbytes = 0;
-@@ -219,7 +224,7 @@
-     struct rt_16550_context *ctx;
-     int                     dev_id;
-     int                     iir;
--    u64                     timestamp = rtdm_clock_read();
-+    uint64_t                timestamp = rtdm_clock_read();
-     int                     rbytes = 0;
-     int                     events = 0;
-     int                     modem;
-@@ -297,11 +302,12 @@
- 
- static int rt_16550_set_config(struct rt_16550_context *ctx,
-                                const struct rtser_config *config,
--                               u64 **in_history_ptr)
-+                               uint64_t **in_history_ptr)
- {
-     rtdm_lockctx_t  lock_ctx;
-     int             dev_id;
-     int             ret = 0;
-+    int             baud_div = 0;
- 
- 
-     dev_id = ctx->dev_id;
-@@ -310,11 +316,12 @@
-     rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
- 
-     if (testbits(config->config_mask, RTSER_SET_BAUD)) {
--        ctx->config.baud_rate = config->baud_rate & BAUD_MASK;
--
--        outb(LCR_DLAB,                           LCR(dev_id));
--        outb(ctx->config.baud_rate & 0xff, DLL(dev_id));
--        outb(ctx->config.baud_rate >> 8,   DLM(dev_id));
-+        ctx->config.baud_rate = config->baud_rate;
-+        baud_div = (baud_base[dev_id] + (ctx->config.baud_rate >> 1)) /
-+                   ctx->config.baud_rate;
-+        outb(LCR_DLAB,        LCR(dev_id));
-+        outb(baud_div & 0xff, DLL(dev_id));
-+        outb(baud_div >> 8,   DLM(dev_id));
-     }
- 
-     if (testbits(config->config_mask, RTSER_SET_PARITY))
-@@ -423,7 +430,7 @@
-     struct rt_16550_context *ctx;
-     int                     dev_id = context->device->device_id;
-     int                     ret;
--    __u64                   *dummy;
-+    uint64_t                *dummy;
- 
- 
-     ctx = (struct rt_16550_context *)context->dev_private;
-@@ -473,7 +480,7 @@
- {
-     struct rt_16550_context *ctx;
-     int                     dev_id;
--    u64                     *in_history;
-+    uint64_t                *in_history;
-     rtdm_lockctx_t          lock_ctx;
- 
- 
-@@ -521,6 +528,7 @@
- {
-     struct rt_16550_context *ctx;
-     int                     ret = 0;
-+    int                     dev_id = context->device->device_id;
- 
- 
-     ctx = (struct rt_16550_context *)context->dev_private;
-@@ -541,7 +549,7 @@
-         case RTSER_RTIOC_SET_CONFIG: {
-             struct rtser_config *config;
-             struct rtser_config config_buf;
--            __u64               *hist_buf = NULL;
-+            uint64_t            *hist_buf = NULL;
- 
-             config = (struct rtser_config *)arg;
- 
-@@ -556,6 +564,12 @@
-                 config = &config_buf;
-             }
- 
-+            if (testbits(config->config_mask, RTSER_SET_BAUD) &&
-+                (config->baud_rate > baud_base[dev_id])) {
-+                /* the baudrate is to high for this port */
-+                return -EINVAL;
-+            }
-+
-             if (testbits(config->config_mask, RTSER_SET_TIMESTAMP_HISTORY)) {
-                 if (test_bit(RTDM_CREATED_IN_NRT, &context->context_flags) &&
-                     rtdm_in_rt_context()) {
-@@ -568,11 +582,11 @@
-                              RTSER_RX_TIMESTAMP_HISTORY)) {
-                     if (test_bit(RTDM_CREATED_IN_NRT,
-                                  &context->context_flags))
--                        hist_buf = kmalloc(IN_BUFFER_SIZE * sizeof(__u64),
-+                        hist_buf = kmalloc(IN_BUFFER_SIZE * sizeof(uint64_t),
-                                            GFP_KERNEL);
-                     else
-                         hist_buf =
--                            rtdm_malloc(IN_BUFFER_SIZE * sizeof(__u64));
-+                            rtdm_malloc(IN_BUFFER_SIZE * sizeof(uint64_t));
-                 }
- 
-                 if (!hist_buf)
-@@ -1011,7 +1025,7 @@
-     device_class:       RTDM_CLASS_SERIAL,
-     device_sub_class:   RTDM_SUBCLASS_16550A,
-     driver_name:        "rt_16550A",
--    driver_version:     RTDM_DRIVER_VER(1, 1, 2),
-+    driver_version:     RTDM_DRIVER_VER(1, 2, 0),
-     peripheral_name:    "UART 16550A",
-     provider_name:      "Jan Kiszka",
- };
-@@ -1043,6 +1057,9 @@
-         if (!request_region(ioaddr[i], 8, dev->device_name))
-             goto kfree_out;
- 
-+        if (baud_base[i] == 0)
-+            baud_base[i] = DEFAULT_BAUD_BASE;
-+
-         if (tx_fifo[i] == 0)
-             tx_fifo[i] = DEFAULT_TX_FIFO;
- 
-Index: drivers/16550A/README
-===================================================================
---- drivers/16550A/README	(revision 112)
-+++ drivers/16550A/README	(working copy)
-@@ -1,6 +1,9 @@
- Real-Time Serial Driver for 16550A-Compatible Devices
- =====================================================
- 
-+Driver revision: 1.2.0
-+
-+
- Preparation
- -----------
-  - decide which serial ports are to be managed by the real-time driver
-@@ -18,6 +21,7 @@
- ----------
- 
- modprobe xeno_16550A ioaddr=<io1>[,<io2>...] irq=<irq1>[,<irq2>...]
-+                     [baud_base=<base1>[,<base2>...]]
-                      [tx_fifo=<len1>[,<len2>...]] [start_index=<index>]
- 
- Arguments:
-@@ -25,6 +29,8 @@
-                   (e.g. "0x3f8,0x2f8")
-     irq         - interrupt numbers of the devices, comma separated
-                   (e.g. "4,3")
-+    baud_base   - Maximum baud rates of the devices, comma separated, default
-+                  is 115200
-     tx_fifo     - Transmitter FIFO sizes of the devices in bytes, comma
-                   separated, default is 16
-     start_index - First device instance number to be used, default is 0
+QlpoOTFBWSZTWQT6ibsAB4N/nP/7PQBff//////f7v////4AIAACAAEACGAJHfVKgoa1QFaW
+YoAAAKCEpNJT0Q0NND1HtU9I0GgBiAAAGgAAADQAAcaGjRoNGgaAAAAABkAAAAaAyAAw40NG
+jQaNA0AAAAADIAAAA0BkABgkKQpkaT1PUxDQGg0D0ho2o0DQaGgAeoADRkaANDjQ0aNBo0DQ
+AAAAAMgAAADQGQAGCRImgmTKYmmU9ABTaT0ypp6T1B6TCP1RiaaNPU0GgZGjA0E8gtlYT0N8
+PNDkO9ZrCkerEIJighBYX86Sm+LbTFUkVdkRSUyCfbrmCsSsG2JiSQxAmggNA2gG0ra/nzZe
+NDAj21EYdBwzy1BqCFDQiETNc4O6zWfHZQGytqApZ6JEwkESVBUY6KMIQIMbBlCAQQ2ySRjC
+FCOjbbbbSGWzZZK3ZrQoDRdcGDGmDbRMRCRXkktAmkhI+YTEJAY1nzkIgSPNEBhoRiKo04du
+RBq1Jso8Rpu4VD/wd4Z9RYFAYMGMR89QQLPmFcjoNkjAm1WtWXyhcBsDXkVvJ8OM9aLAV7QS
+LAiwqgUIKYLh+Q2TJn0jKVBgHvk/akXbN+22UqyoIIm18IqiEKs3oWRvBANvRqMwpjExlYyK
+rGHhCw6M/e5EjrP1lCYfg294/JA9AoF4epDZnCo56gV0CDRhZpjEKoymhEL5jnAg26ZhwhsG
+DGDKeiOM+k0+5M6ZixF2NC82YLSZh04f8CwJrK9VyF4y5U3ujq6uvEgdnjtf8R/FvnqDPOfG
+a8dPipxkoCdQqjr/YRPPoIJHiOw7CzT5Jk7KTrk84yZYQLVbBzurPkDDCrcC/c17bPdcx4DD
+o7/WPDO702o1GDDMc6STelIKhbB995R5r7FRpA23VS7VbSEcSyMBeTJkzjLBTAq48x5zznnO
+YtK6CwgXXiYm0sDEGFCGS8tAQsFFo3kfu4EpUfl54lQkM0/Gz1bNBGfrnveT1dpWV42Gh57s
+GfVUEGhx6nuXrGotxDZEZeok0gyFS+O4VEENhRim/YCMyLOF7+b1/59rvoCtExMXuWi9L3Qe
+AvzhVn6Q4DQaOYbCYH6JWvOLPf77iQmdrApaW5wvLyYs5svLd7enmrLg3sGO8mZMHZUrLS4U
+hWMrL60ijmEVsU0SiZOM0qrKqshVW4TqKqEnKUVSZkiO0soUrFSvMVhmFu4T0wgiEcoyE2yM
+j6yRpLr/mp5OW2xFmxeW+BuGCmyTl5QgJtB7DAKXmBcaDUWlcOkKuVp1aUF/wfByzSmxLmOo
+9gzFx9aDpA4jvPMaZr/Rip1fqY9sZbZgvl47hT8GOW5sDX2Y0tcuhTB6plnxzfQA57D6H8Jd
+57VHrfMZrOC0u2LMhRTjE7CpNh6kixcWSI0p2p+R3SAk1sAhy1mWyaLHT3lzANCKjcEYvaB8
+uvflo350M+I+AVtmRvZjfS1dBu1SFUGmeMhbaTJQlfPwSDQXFxoxOMxolIwVn5T8gMYwYxmH
+Ca4mMaKGOCmIYowYQ3t1MWJGRPLKsxImZH1KCijBHdTGLKFkjFo6AMGJljaZawAS0VLplYiw
+700rUepllCq518Yxk0McpXG3LCFlKmFwMbBLMFdwOqikAqIFgVCM1AnXhziuFIEVgrwrWr7C
+qnZmAWIFtjALxeY95eyjsmmwOAaEjErFcpXKfV1nlRrzXzvLPCL3t27fu/N8lG00NpNDFMXF
+r5ZNw1dcn6/2lNny2YkLQdpp5AjI2LoVpLfDWoFzlxM9BIkEvbP+lBbhLfSg5DaI52vADUeg
+FTlgUFQHKrRHDcLOZCff7MSTlKPi96PBQUDExiZuBu2OFgaM3AZcwDVRMFrTQVHCzRxa+G1Q
+JEisoTEFDp7fAel2kkE1cCkFFEqNCoOD72pqRuEMisG4qmI8IKxAMBi7CC5LsCwCAAO5KDgZ
+/MRQu6Bf2zoWWIoRYBmnkDwwqFJYmQV4B2sQyYoSkhIuQlupC0xLWGRPGvXUBQGWgYAwsOkI
+2oLSoMsCjyEYADw8eoMkygd1jDk+xBpA3D5Di+n6uc5W0iaYQHABuGaLUdRwKcw3cRnFCmjS
+mqLRzzQyQhXEMRCQcwuHWG8LiyRahzg2BQ4+RXs3KaAvFBUKr7YC0lz1pEMRIBb8qlCGNJts
+Gw5eHvssLALw3uS5JI0NAalcaObO3YjwruV9+1L7gLzyzqYPSTSzi26z5axFSoECNjUhHiJW
+JVVISqJgEkJSAtSTNRybDhmNQLkFKElIGAujRlUlPrGFaYgw+3aATocQNoS3Gg8DTMyRMAv3
+PSXi1IDPJKzNeQBaZlBVZqS5IRY21Jo5WkSGkpiXjFE+wtPSY/GufAUiefeMQ7i8s42E0skL
+aIx5SFrWtKDZBUgoBnAzjGDBu0uGMYl0sRtg5lNE3KIZ2fb4zASxQtQs5h2LzboemoONI0Aa
+Tab4lyB2hgqZfhsQkaumykot4KECqApz7WSMbVgqNG2VVdYuskjWoREEJtWhCXKAwGhhS8Kx
+oldQURQKDFBKKNsbCCKikJBMYVb4q0wMSEhEKYkWGIxjGcDVxaqDQkVk2DUItS66kBYlQFFo
+lxCA7kbkY02gGYS0D4UsDsCgfcLT94qzIxGgY02cjAgBpHcXgbBiOo4EF6oIyxOjl4QOJNWl
+OY5DxagdM5Jl6Eq+PmQcfFoUCzpWNMWlBGSygQQL/i7kinChIAn1E3Y=
+--------------020904000301030606010104--
 
---------------050608010104050207040308--
+--------------enigD2FB813759934B895D0A08AD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDcGQdncNeS9Q0k+IRAimvAJ94D0Vih9GbtfTh802xp947JWG65QCguxNE
+0vTP8wWMDHefzpmd9HvFl/0=
+=OCtY
+-----END PGP SIGNATURE-----
+
+--------------enigD2FB813759934B895D0A08AD--
 
