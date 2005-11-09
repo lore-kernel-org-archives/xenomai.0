@@ -1,15 +1,13 @@
-Message-ID: <437D0ABB.3040004@domain.hid>
-Date: Thu, 17 Nov 2005 23:56:59 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <008001c5e512$5c6e4630$1000000a@domain.hid>
+From: "Hans-J. Ude" <ude@domain.hid>
+References: <002f01c5e44a$b675bf50$1000000a@domain.hid>
+	<43707B3E.8060900@domain.hid>
+Subject: Re: [Xenomai-help] Task lock/unlock unlock difficulties
+Date: Wed, 9 Nov 2005 10:45:44 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] kernel module misses rt_get_time
-References: <20051117214647.61520725.gda@domain.hid>	<437D0735.8070306@domain.hid>
-	<20051117235310.4418aee6.gda@domain.hid>
-In-Reply-To: <20051117235310.4418aee6.gda@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0DD21604BFEE702BE2F73F40"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,42 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gerald Dachs <gda@domain.hid>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0DD21604BFEE702BE2F73F40
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Phillipe Gerum wrote:
 
-Gerald Dachs wrote:
->>Actually, rt_get_time and rt_get_time_ns are the same in the RTAI
->>compatibility skin (counts are nanoseconds here, see count2nano e.g.).
->>Therefore, a
-> 
-> 
-> Sorry, but I don't think so. In the rtai docs I read that rt_get_time returns ticks
-> and rt_get_time_ns returns nano seconds.
-> 
+> Hans-J. Ude wrote:
+> > I need to lock/unlock the scheduler from time to time. I'm using the
+RTAI
+> > native skin in userspace and tried the rt_task_set_mode approach but was
+not
+> > very successfus yet. I've tried this:
+> >
+> > int task_lock(void) { return rt_task_set_mode(0, T_LOCK, &mask); }
+> > int task_unlock(void) { return rt_task_set_mode(T_LOCK, mask, NULL); }
+> >
+> > To support nested calls to these functions i've implement an array of
+masks
+> > and lock/unlock counters to maintain a stack. I've also tried a single
+mask
+> > and no stack and with no mask at all. No success. It's hard to explain
+what
+> > exactly happens because I'm porting an existing software with a really
+bad
+> > design but the original works. I found there are xenomai functions
+called
+> > xnpod_lock_sched(), which are directly called from e.g. the vxWorks
+skin.
+> > Obviously xn_pod_lock has an integrated counting. Otherwise the vx skin
+> > would be incompatible. But when i include pod.h i get a whole bunch of
+error
+> > messages, likely due to missing defines. So can someone show me a way to
+a
+> > clean working counting lock/unlock mechanism.
+>
+> Bypassing the interface won't help, especially if you think that there is
+an
+> issue in the core. Please write a simple test case illustrating the use
+you want
+> to make of sched locking using the native skin - which possibly exhibits
+the
+> issue - and post it.
 
-Yes, in the original RTAI. But the emulation skin of Xenomai makes no
-difference in this regard - all nanoseconds. That's why the conversion
-functions are void here.
+I'm gonna try to do so, but it's not easy to track the problem down to a
+simple testcase from inside a complex application. There is another basic
+question I have. When the locking mechanism works as expected i would think
+of the following szenario:
 
-Jan
+I have three task running. Then task 1 locks the scheduler then for some
+reason pends on a semaphore or event from task 2 or 3. Then it should
+automatically release the lock to prevent a deadlock. VxWorks does it that
+way according to it's docs. But I don't know if gets automatically relocked
+and latest lock count restored after the pended event was fired. The
+application i'm porting is written on vxWorks but we went away from the vx
+skin due to problems with taskSpawn. These problems probably came from to
+the bug in the uvm layer which you recently fixed. Thanks for that. So we
+switched to the rtai skin but ran into that tasklock problem. It would be
+also important to know who handles the lock/unlock count as there is an
+internal counter in the suspend/release funtions too. Were thinking of going
+back to the vx skin but there is a problem with loading the modules now but
+i'll put that under another subject. Any ideas somebody?
 
---------------enig0DD21604BFEE702BE2F73F40
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+regards,
+Hans
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDfQq7niDOoMHTA+kRAvvrAJ9mSY0maG8efczKLgmABP6ZfoXXUQCeKT45
-xqW1Cwrsw6u0d7oMAkvFyGE=
-=jSpT
------END PGP SIGNATURE-----
-
---------------enig0DD21604BFEE702BE2F73F40--
 
