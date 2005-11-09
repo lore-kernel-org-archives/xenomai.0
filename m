@@ -1,9 +1,9 @@
-Date: Wed, 9 Nov 2005 12:26:00 +0100 (MET)
+Date: Wed, 9 Nov 2005 18:51:30 +0100 (MET)
 From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Message-ID: <Pine.GSO.4.58.0511091211310.13432@domain.hid>
+Message-ID: <Pine.GSO.4.58.0511091817070.29250@domain.hid>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
-Subject: [Xenomai-core] Ambiguity in description about rt_task_delete()
+Subject: [Xenomai-core] RT pipes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,18 +17,21 @@ To: xenomai@xenomai.org
 
 Hi,
 
-I just stumbled across an ambiguity in the documentation for
-rt_task_delete() in the native skin. One could think that this function
-can only be called from userspace if it is a RT task because of
+I've spotted a -- in my view -- strange behaviour of RT pipes in the
+native skin. The scenario is as follows:
 
-"This service can be called from:
-...
-User-space task (switches to primary mode)"
+A RT task creates a RT pipe and writes some bytes into it. A NRT
+counterpart reads from this pipe, but not all bytes. Afterwards, the RT
+task deletes the pipe.
 
-But this is only true if the argument is NULL. Otherwise it is possible
-from NRT context (if I understood the code in task.c correctly).
+Now the program is re-run: RT task creates the pipe, writes some bytes,
+and the NRT part reads some bytes, but begins with the old ones which
+weren't read during the first run of the program.
 
-Maybe a clearer description is necessary here.
+Now my question: Is this behaviour intentional? If it is then I see the
+following problem: A task which calls rt_pipe_create() cannot be sure that
+the pipe is empty. So it should be able to clear the pipe before use but I
+found no function that allows a RT task to clear the pipe.
 
 
 Sebastian
