@@ -1,117 +1,56 @@
-Message-ID: <438DC8F4.9070409@domain.hid>
-Date: Wed, 30 Nov 2005 16:44:52 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Subject: Re: [Adeos-main] [OLDGEN] adeos r17 patch for 2.4.27
+Date: Thu, 10 Nov 2005 00:38:00 +0100
+References: <Pine.LNX.4.63.0510280949010.31574@domain.hid>
+In-Reply-To: <Pine.LNX.4.63.0510280949010.31574@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] using mq_receive and mq_send
-References: <02AA386EB831044F8537A696BA785C78076489@domain.hid>
-In-Reply-To: <02AA386EB831044F8537A696BA785C78076489@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF3A38AA1E99671EC421D64BA"
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+Content-Disposition: inline
+Message-Id: <200511100038.00478.alexis.berlemont@domain.hid>
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF3A38AA1E99671EC421D64BA
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Landau, Bracha wrote:
-> it says:
->          U __wrap_mq_close
->          U __wrap_mq_open
->          U __wrap_mq_receive
->          U __wrap_mq_send
->          U __wrap_mq_unlink
+Sorry for answering so late. 
 
-Are you calling send and receive from a xenomai thread? EPERM (1) is
-typically related to non-RT invocations.
+> I was encountering the gcc-3.4 problem when trying to compile rtai on
+> a 2.4.27 kernel with the adeos r16 patch included with rtai.
+> <https://mail.rtai.org/pipermail/rtai/2005-March/010819.html>
+> and
+> <https://mail.rtai.org/pipermail/rtai/2005-March/010701.html>
+>
+> As I understood, this problem has been fixed in r17.  I found this
+> announcement <https://mail.rtai.org/pipermail/rtai/2005-March/010821.html>,
+> but the r17 patches seem to have dissappeared from download.gna.org?
+>
+> Is it better to use the r18c1 candidate instead (speaking OLDGEN
+> patches, that is)?  Or maybe, more appropriately, has development for
+> adeos 2.4 patches stopped with r18c1?
 
-Jan
+The adeos 2.4 branch development has not been stopped but all the 
+modifications from the adeos 2.6 branch are not backported to 2.4.
 
->=20
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Wednesday, November 30, 2005 4:37 PM
-> To: Landau, Bracha
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] using mq_receive and mq_send
->=20
->=20
-> Landau, Bracha wrote:
->> I do link that way. The linking is fine, only the mq_receive and mq_se=
-nd don't work. I don't even "own" the regular libmqueue library.
->>
->=20
-> What does "nm <your_app>|grep wrap_mq_" says?
->=20
->> -----Original Message-----
->> From: Philippe Gerum [mailto:rpm@xenomai.org]
->> Sent: Wednesday, November 30, 2005 4:01 PM
->> To: Landau, Bracha
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai-help] using mq_receive and mq_send
->>
->>
->> Landau, Bracha wrote:
->>
->>> I am using Xenomai on the MPC8272ADS board with kernel 2.6.14.3.
->>>
->>> I've created an application that uses posix message queuing from xeno=
-mai.
->>>
->>> When I call mq_open, mq_close, mq_setattr, mq_getattr, mq_unlink - th=
-e calls succeed.
->>>
->>> When I call mq_receive or mq_send, the call fails (returns -1) and er=
-rno is set to 1 (Operation not permited).
->>>
->>> I put some debugging printk's into the xenomai code and it seems it d=
-oesn't even get to the call to __mq_receive or __mq_send from syscall.c (=
-it does get to printk's that I put in  the other __mq_* functions).
->>>
->>> Can anyone help?
->>>
->>
->> You must link your app with the flags output by "xeno-config=20
->> --posix-ldflags". Have a look at skins/posix/demos/Makefile for a=20
->> working example.
->>
->=20
->=20
+The reason is not lack of time (but it could be), it is just not necessary 
+considering the use of this patch branch (kilauea, vesuvio,... but not 
+xenomai).
 
+The candidate release 18 was released at least two months ago. You can use it. 
+It can be considered as stable. I have not noticed any problem reported. I am 
+working on something else this moment, I still have not found the time to 
+update the r18c1 patches to stable; but it will be done.
 
---=20
-Dipl.-Ing. Jan Kiszka
+Regards.
 
-Institute for Systems Engineering, Real-Time Systems Group (RTS)
-Appelstra=DFe 9A, D-30167 Hannover
-phone +49 511 762-3974 / fax +49 511 762-4012
-http://www.rts.uni-hannover.de
+Alexis.
 
-
---------------enigF3A38AA1E99671EC421D64BA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDjcj0ncNeS9Q0k+IRAoCKAJoCTx/Rke898l5dx086zkcGb/X54QCfaZ2J
-snU7+Ii067JYujkRuASOVnQ=
-=EjhS
------END PGP SIGNATURE-----
-
---------------enigF3A38AA1E99671EC421D64BA--
 
