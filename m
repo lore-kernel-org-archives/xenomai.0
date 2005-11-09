@@ -1,12 +1,11 @@
-In-Reply-To: <437C8299.3010503@domain.hid>
-Subject: Re: [Xenomai-help] Blocking reads from pipes
-Message-ID: <OF84150644.927CE822-ONC12570BC.00531CC2-C12570BC.00536AFA@datacon.at>
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Date: Thu, 17 Nov 2005 16:11:08 +0100
+Message-ID: <009101c5e516$02bd2a80$1000000a@domain.hid>
+From: "Hans-J. Ude" <ude@domain.hid>
+Date: Wed, 9 Nov 2005 11:11:52 +0100
 MIME-Version: 1.0
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBFA2FDFC09A528f9e8a93df938690918c4EBBFA2FDFC09A52"
-Content-Disposition: inline
+Content-Type: text/plain;
+	charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Module loading problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,60 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ignacio =?ISO-8859-1?Q?Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
---0__=4EBBFA2FDFC09A528f9e8a93df938690918c4EBBFA2FDFC09A52
-Content-type: text/plain; charset=US-ASCII
+I've installed Xenomai 2.0.1 but can't load a module stack for the vxWorks
+skin. Kernel is 2.6.13 with the included ipipe patch and I'm getting the
+following results.
 
+# insmod xeno_hal.ko
+# insmod xeno_nucleus.ko
+# insmod xeno_vxworks.ko
+# insmod xeno_uvm.ko
+insmod: error inserting 'xeno_uvm.ko': -1 Function not implemented
 
->
-> >As a conclusion, the behaviour that you observed with Xenomai
-> >pipes seems consistent with that of Linux' named pipes, except
-> >that in Linux read() returns 0, and not an error code as you
-> >observed with Xenomai.
-> >
-> >
-> The read() call does *not* return when you close the *same* file handle
-> from another pthread in the same process.
+# insmod xeno_hal.ko
+# insmod xeno_nucleus.ko
+# insmod xeno_uvm.ko
+# insmod xeno_vxworks.ko
+insmod: error inserting 'xeno_vxworks.ko': -1 Device or resource busy
 
-I confirm that and as I pointed it out in my previous mail - this is not
-how it's supposed to be.
-I'm currently on it. More news later.
+I've put some printk's into the nucleus modules and found that in the first
+case there are two pointers which are compared when a subsequent modules is
+loaded. Those pointers are expected to be equal but are unequal and the
+module is rejected. Can someone tell what I can do here? Maybe there is
+something wrong with the modules, with the distro (Suse 9.3) or maybe I'm
+doing something wrong. I think i'm gonna try the original gnu modutils next
+and get rid of that Suse stuff.
 
-
-> Nacho.
->
-
----
-
-Dmitry
---0__=4EBBFA2FDFC09A528f9e8a93df938690918c4EBBFA2FDFC09A52
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
-
-<html><body>
-<p><tt>&gt; <br>
-&gt; &gt;As a conclusion, the behaviour that you observed with Xenomai <br>
-&gt; &gt;pipes seems consistent with that of Linux' named pipes, except <br>
-&gt; &gt;that in Linux read() returns 0, and not an error code as you <br>
-&gt; &gt;observed with Xenomai.<br>
-&gt; &gt; &nbsp;<br>
-&gt; &gt;<br>
-&gt; The read() call does *not* return when you close the *same* file handle<br>
-&gt; from another pthread in the same process.</tt><br>
-<br>
-<tt>I confirm that and as I pointed it out in my previous mail - this is not how it's supposed to be.</tt><br>
-<tt>I'm currently on it. More news later.</tt><br>
-<tt><br>
-</tt><br>
-<tt>&gt; Nacho.<br>
-&gt; <br>
-</tt><br>
-<tt>---</tt><br>
-<br>
-<tt>Dmitry</tt><br>
-</body></html>
---0__=4EBBFA2FDFC09A528f9e8a93df938690918c4EBBFA2FDFC09A52--
+regards,
+Hans
 
 
