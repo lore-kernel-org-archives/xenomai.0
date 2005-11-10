@@ -1,52 +1,70 @@
-Message-ID: <438E0C5B.3050307@domain.hid>
-Date: Wed, 30 Nov 2005 21:32:27 +0100
-From: Hannes Mayer <h.mayer@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] ipipe backport for 2.4
-References: <200511282336.49995.alexis.berlemont@domain.hid>
-	<438CBE22.70600@domain.hid> <438CD1D9.1010308@domain.hid>
-In-Reply-To: <438CD1D9.1010308@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 10 Nov 2005 22:05:07 +0100
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E004305A@EINT11.einet.ad.eivd.ch>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-help] Creation of a rt-queue from the user space
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Hannes Mayer wrote:
-> 
->> Ciao Alexis!
->>
->> Alexis Berlemont wrote:
->>
->>> Hi,
->>>
->>> A backport of I-Pipe 2.6/x86 has been made for 2.4/x86. The patch is 
->>> available at the following URL:
->>>
->>> http://download.gna.org/adeos/patches/v2.4/i386/adeos-ipipe-2.4.31-i386-1.0-00.patch 
->>>
->> Way cool! Thanks! :-)
->>
->>> Consequently, the 2.4 I-Pipe branch offers same functionnalities as 
->>> 2.6's and their behaviours are nearly identical.
->>
->> Just one question - what do you mean by "nearly identical" ?
->> Could you provide a brief list of the differences ?
->>
-> 
-> Functionally: none.
 
-Thanks Philippe!
-I tested a few examples I've written for adeos-ipipe and all work well so far.
+Hello everyone,
 
-Best regards,
-Hannes.
+I've recently posted a message in this mailing list about an issue =
+regarding the use of realtime queue in xenomai from the user space.=20
+
+I didn't make any significant progress regarding this issue. I've =
+upgraded to linux 2.6.12; everything works in the user/kernel space =
+except the queue. If I correctly understood, it's necessary to have a =
+/dev/rtheap in order to set up a shared memory segment between user and =
+kernel space.=20
+If this entry does not exist, we get an error at the queue creation =
+time.=20
+
+I've observed that if I'm creating manually the entry in /dev, I get the =
+same error and the entry disappears from /dev. Then, I've transfered the =
+udev/rtheap.rules located in the xenomai/nucleus directory into =
+/etc/udev/rules.d. But the system totally freezes after xeno-load.
+
+I've put the segment of code (very simple) for the creation of a simple =
+rt-queue.
+
+----------------
+
+int main(int argc, char *argv[]) {
+
+  printf("Now starting: %s\n", argv[0]);
+
+  /* Timer initialization */
+  err =3D rt_timer_start(1000000);   /* So, one tick will be equal to 1 =
+ms */
+  if (err !=3D 0) {
+    printf("Error timer: %d\n", err);
+    clean_exit(0);
+  }
+
+  /* Create the mailbox */
+  err =3D rt_queue_create(&mailbox, "MAILBOX", 80, 1, Q_FIFO);
+  if (err !=3D 0) {
+    printf("mbox creation failed: %d\n", err);
+    clean_exit(0);
+  }
+
+------------
+
+Thanks for any support.
+
+Regards
+Daniel
 
