@@ -1,12 +1,12 @@
-Message-ID: <4375E667.1090708@domain.hid>
-Date: Sat, 12 Nov 2005 13:56:07 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43767341.10309@domain.hid>
+Date: Sat, 12 Nov 2005 23:57:05 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5AEF777A4C358FAB8A473470"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Xenomai homepage
+Subject: Re: [Xenomai-core] Patch for RTDM recvmsg bug
+References: <Pine.GSO.4.58.0511101656220.6569@domain.hid>
+In-Reply-To: <Pine.GSO.4.58.0511101656220.6569@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,35 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5AEF777A4C358FAB8A473470
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Sebastian Smolorz wrote:
+> Hi,
+> 
+> here's a patch for a bug in skins/rtdm/syscall.c. The msghdr was not
+> copied to user space upon completion of a recvmsg() call if the return
+> value was not equal to zero. But recvmsg shall return the length of the
+> message in bytes (according to IEEE Std 1003.1).
+> 
 
-Hi,
+Applied, thanks.
 
-just to bring this topic in mind again: what is currently preventing to
-activate Bruno's nice page as the main Xenomai site? I see no
-significant features lacking, fine-tuning can still be done later. This
-project deserves a more representative portal than the Gna site! ;)
+> I have the permission from Jan to patch his code. ;-)
+> 
+> 
+> Sebastian
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> --- xenomai/skins/rtdm/syscall.c	2005-11-10 16:45:24.000000000 +0100
+> +++ syscall.c	2005-11-10 16:27:08.000000000 +0100
+> @@ -99,7 +99,7 @@ static int sys_rtdm_recvmsg(struct task_
+>  
+>      ret = _rtdm_recvmsg(curr, __xn_reg_arg1(regs), &krnl_msg,
+>                          __xn_reg_arg3(regs));
+> -    if (!ret)
+> +    if (ret >= 0)
+>          __xn_copy_to_user(curr, (void __user *)__xn_reg_arg2(regs), &krnl_msg,
+>                            sizeof(krnl_msg));
+>  
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-Jan
 
---------------enig5AEF777A4C358FAB8A473470
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDdeZnniDOoMHTA+kRAn1lAJkB6FV/xizYCf7Zv9n8lqVqTNRhlgCfVk9B
-gWLZqHo4oiuzDhE9eQ3Zo/g=
-=9eca
------END PGP SIGNATURE-----
-
---------------enig5AEF777A4C358FAB8A473470--
+Philippe.
 
