@@ -1,9 +1,12 @@
-Date: Thu, 10 Nov 2005 17:07:16 +0100 (MET)
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Message-ID: <Pine.GSO.4.58.0511101656220.6569@domain.hid>
+Message-ID: <4375E667.1090708@domain.hid>
+Date: Sat, 12 Nov 2005 13:56:07 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-959030623-1131638836=:6569"
-Subject: [Xenomai-core] Patch for RTDM recvmsg bug
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5AEF777A4C358FAB8A473470"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Xenomai homepage
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,44 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-  Send mail to mime@domain.hid for more info.
-
----559023410-959030623-1131638836=:6569
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5AEF777A4C358FAB8A473470
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-here's a patch for a bug in skins/rtdm/syscall.c. The msghdr was not
-copied to user space upon completion of a recvmsg() call if the return
-value was not equal to zero. But recvmsg shall return the length of the
-message in bytes (according to IEEE Std 1003.1).
+just to bring this topic in mind again: what is currently preventing to
+activate Bruno's nice page as the main Xenomai site? I see no
+significant features lacking, fine-tuning can still be done later. This
+project deserves a more representative portal than the Gna site! ;)
 
-I have the permission from Jan to patch his code. ;-)
+Jan
 
+--------------enig5AEF777A4C358FAB8A473470
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Sebastian
----559023410-959030623-1131638836=:6569
-Content-Type: TEXT/PLAIN; charset=US-ASCII; name="rtdm_syscall_recvmsg.patch"
-Content-Transfer-Encoding: BASE64
-Content-ID: <Pine.GSO.4.58.0511101707160.6569@domain.hid>
-Content-Description: 
-Content-Disposition: attachment; filename="rtdm_syscall_recvmsg.patch"
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-LS0tIHhlbm9tYWkvc2tpbnMvcnRkbS9zeXNjYWxsLmMJMjAwNS0xMS0xMCAx
-Njo0NToyNC4wMDAwMDAwMDAgKzAxMDANCisrKyBzeXNjYWxsLmMJMjAwNS0x
-MS0xMCAxNjoyNzowOC4wMDAwMDAwMDAgKzAxMDANCkBAIC05OSw3ICs5OSw3
-IEBAIHN0YXRpYyBpbnQgc3lzX3J0ZG1fcmVjdm1zZyhzdHJ1Y3QgdGFza18N
-CiANCiAgICAgcmV0ID0gX3J0ZG1fcmVjdm1zZyhjdXJyLCBfX3huX3JlZ19h
-cmcxKHJlZ3MpLCAma3JubF9tc2csDQogICAgICAgICAgICAgICAgICAgICAg
-ICAgX194bl9yZWdfYXJnMyhyZWdzKSk7DQotICAgIGlmICghcmV0KQ0KKyAg
-ICBpZiAocmV0ID49IDApDQogICAgICAgICBfX3huX2NvcHlfdG9fdXNlcihj
-dXJyLCAodm9pZCBfX3VzZXIgKilfX3huX3JlZ19hcmcyKHJlZ3MpLCAma3Ju
-bF9tc2csDQogICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplb2Yoa3Ju
-bF9tc2cpKTsNCiANCg==
+iD8DBQFDdeZnniDOoMHTA+kRAn1lAJkB6FV/xizYCf7Zv9n8lqVqTNRhlgCfVk9B
+gWLZqHo4oiuzDhE9eQ3Zo/g=
+=9eca
+-----END PGP SIGNATURE-----
 
----559023410-959030623-1131638836=:6569--
+--------------enig5AEF777A4C358FAB8A473470--
 
