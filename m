@@ -1,14 +1,12 @@
-Message-ID: <437886EF.6070001@domain.hid>
-Date: Mon, 14 Nov 2005 13:45:35 +0100
-From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Message-ID: <437890B1.3090107@domain.hid>
+Date: Mon, 14 Nov 2005 14:27:13 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4370641D.7010906@domain.hid>	<4370C966.3030903@domain.hid>	<4370D2B8.8070608@domain.hid>
-	<4370E49F.3070305@domain.hid>
-In-Reply-To: <4370E49F.3070305@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] Xenomai homepage
+References: <4375E667.1090708@domain.hid>
+In-Reply-To: <4375E667.1090708@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [BUG] rt_pipe_flush declaration missing in
-	skins/native/pipe.h
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,11 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+> 
+> just to bring this topic in mind again: what is currently preventing to
+> activate Bruno's nice page as the main Xenomai site? I see no
+> significant features lacking, fine-tuning can still be done later. This
+> project deserves a more representative portal than the Gna site! ;)
+>
 
-The subject says it all.
+The DNS should point at the final URL for xenomai.org within a few hours/days. 
+The site is still under construction; the idea is to keep things clear, simple 
+and informative. So if you have any comments/suggestions regarding this, don't 
+forget to let Bruno know about them.
 
-Nacho.
+-- 
+
+Philippe.
 
