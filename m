@@ -1,49 +1,73 @@
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4378BB28.8080804@domain.hid>
+Date: Mon, 14 Nov 2005 17:28:24 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] xn_pipe_create [minor]
+References: <OFEDEE04A0.61E312DA-ONC12570B9.0044844D-C12570B9.004C5251@domain.hid>
+In-Reply-To: <OFEDEE04A0.61E312DA-ONC12570B9.0044844D-C12570B9.004C5251@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <15669.58314.307577.58284@domain.hid>
-Date: Wed, 17 Jul 2002 23:38:18 +0200
-Subject: [Adeos-main] [ANNOUNCE] Adeos M2
-Sender: adeos-main-admin@domain.hid
-Errors-To: adeos-main-admin@domain.hid
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Post: <mailto:adeos-main@gna.org>
-List-Subscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Id: <adeos-main.mail.freesoftware.fsf.org>
-List-Unsubscribe: <http://mail.freesoftware.fsf.org/mailman/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: <http://mail.freesoftware.fsf.org/pipermail/adeos-main/>
-To: linux-kernel@domain.hid
-Cc: adeos-main@gna.org, xenomai-main@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-On behalf of the Adeos project team, I'm glad to announce the
-availability of the new Adeos milestone release M2 based on 2.4.18
-(x86).  This release aims at stabilizing the code (internals and API),
-which now includes the SMP support.
+Dmitry Adamushko wrote:
 
-Aside of this, the initial port of Adeos to 2.5 (2.5.25/x86) has just
-been completed. It is available from our CVS area on Savannah.
+> xenomai-help-bounces@domain.hid wrote on 14.11.2005 13:15:07:
+>
+> > Hi,
+> >
+> > The registry system is great, allows to forget about agreeing about an
+> > arbitrary minor number for pipes. But as far as I ca see, you still have
+> > to pass an unique "minor" number to rt_pipe_create.
+> >
+> > What if you have several rt modules?... you must make sure you assign
+> > different minor numbers to each pipe!.
+> >
+> > Wouldn't be useful to have a way to let the rt_pipe_create decide which
+> > minor to use? (a free one, of course)
+>
+> It can be done and that would work if both sides of the communication
+> channel are real-time threads so a rt_pipe_create/bind() pair may be
+> used to establish a connection.
+>
+> But what should be done if another side is a linux task and uses a
+> mere open() call?
+>
+> Currently, a naming convention is a "/dev/rtpN", N - is a minor being
+> used by rt_pipe_create() and both sides of the channel must be aware
+> of it.
+>
+> Moreover, a client side of the connection may be open even in case
+> there is no server side yet (the one that calls rt_pipe_create) at the
+> mement. In that case, the client is blocked in open().
+>
+> So the only convention between both sides can be a minor number +
+> pre-created /dev/rtp[0, OPT_PIPE_NRDEV] character devices.
+>
+Um... I think you are wrong. When the rt task creates a pipe, a symbolik
+link appears at /proc/xenomai/registry/pipes. Its name is the fifo name,
+and points to the /dev/rtpN device. That's what I was talking about when
+I said "clever procfs usage of xenomai".
 
-Finally, the RTOS available from the Xenomai project (*) has been
-ported over Adeos to serve as a proof-of-concept of one of the
-possible applications Karim had envisioned. In order to achieve a high
-degree of determinism, this real-time kernel (loaded as a module) runs
-aside of Linux as a separate Adeos domain living ahead of the Linux
-domain in the interrupt pipeline.
+Using this scheme, user mode programs just need to open()
+/proc/xenomai/registry/pipes/whatever to access a named pipe, without
+having to know the minor number.
 
-M2 release: http://savannah.gnu.org/download/adeos/releases/adeos-m2.tar.gz
-On-line Adeos doc: http://www.freesoftware.fsf.org/adeos/doc/api/globals.html
-Adeos CVS: http://savannah.gnu.org/cvs/?group=adeos
-Xenomai: http://savannah.gnu.org/download/xenomai/snapshots/xenomai-1.1pre2.tar.gz
+Under these circumstances, it would be *very* useful to have
+rt_pipe_create choose an unused minor automagically (for example passing
+-1 as the minor).
 
-(*) Xenomai is a development framework for real-time systems which
-includes a collection of emulators mimicking APIs of traditional RTOS
-such as VxWorks, pSOS+ and VRTXsa. These emulators run over a single
-"generic" RTOS core which have been ported over Adeos.
+Currently, I'm emulating this by calling rt_pipe_create for minor =
+0,1,2... until it succeeds or returns any error different than -EBUSY.
 
-Regards,
-
-Philippe.
+Nacho.
 
