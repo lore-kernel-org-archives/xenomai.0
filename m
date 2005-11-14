@@ -1,11 +1,11 @@
-Message-ID: <437890B1.3090107@domain.hid>
-Date: Mon, 14 Nov 2005 14:27:13 +0100
+Message-ID: <4378A39C.5060503@domain.hid>
+Date: Mon, 14 Nov 2005 15:47:56 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai homepage
-References: <4375E667.1090708@domain.hid>
-In-Reply-To: <4375E667.1090708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-core] [PATCH] Xenomai stable ppc64 I-pipe sync
+References: <43787801.5040101@domain.hid>
+In-Reply-To: <43787801.5040101@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,22 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
+Heikki Lindholm wrote:
+> Sync the ppc64 arch of the stable tree to work with I-pipe kernel also.
 > 
-> just to bring this topic in mind again: what is currently preventing to
-> activate Bruno's nice page as the main Xenomai site? I see no
-> significant features lacking, fine-tuning can still be done later. This
-> project deserves a more representative portal than the Gna site! ;)
->
 
-The DNS should point at the final URL for xenomai.org within a few hours/days. 
-The site is still under construction; the idea is to keep things clear, simple 
-and informative. So if you have any comments/suggestions regarding this, don't 
-forget to let Bruno know about them.
+Applied, thanks.
+
+> -- Heikki Lindholm
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> diff -Nru xenomai/arch/ppc64/hal/switch.S xenomai-devel/arch/ppc64/hal/switch.S
+> --- xenomai/arch/ppc64/hal/switch.S	2005-10-11 10:32:30.000000000 +0300
+> +++ xenomai-devel/arch/ppc64/hal/switch.S	2005-11-08 12:49:18.000000000 +0200
+> @@ -26,7 +26,6 @@
+>  #include <asm/processor.h>
+>  #include <asm/cputable.h>
+>  #include <asm/page.h>
+> -#include <asm/offsets.h>
+>  #include <asm/ppc_asm.h>
+>  #include <xeno_config.h> 
+>  
+> diff -Nru xenomai/include/nucleus/asm-ppc64/hal.h xenomai-devel/include/nucleus/asm-ppc64/hal.h
+> --- xenomai/include/nucleus/asm-ppc64/hal.h	2005-10-11 10:30:03.000000000 +0300
+> +++ xenomai-devel/include/nucleus/asm-ppc64/hal.h	2005-11-08 11:32:17.000000000 +0200
+> @@ -98,7 +98,11 @@
+>  #include <nucleus/asm/atomic.h>
+>  #include <asm/processor.h>
+>  
+> +#ifdef CONFIG_ADEOS_CORE
+>  #define RTHAL_TIMER_IRQ   ADEOS_TIMER_VIRQ
+> +#else /* !CONFIG_ADEOS_CORE */
+> +#define RTHAL_TIMER_IRQ   IPIPE_TIMER_VIRQ
+> +#endif /* CONFIG_ADEOS_CORE */
+>  
+>  #define rthal_irq_descp(irq)	(&irq_desc[(irq)])
+>  
+> diff -Nru xenomai/include/nucleus/asm-ppc64/system.h xenomai-devel/include/nucleus/asm-ppc64/system.h
+> --- xenomai/include/nucleus/asm-ppc64/system.h	2005-11-01 11:04:04.000000000 +0200
+> +++ xenomai-devel/include/nucleus/asm-ppc64/system.h	2005-11-08 11:35:38.000000000 +0200
+> @@ -31,10 +31,12 @@
+>  #include <linux/config.h>
+>  #include <linux/ptrace.h>
+>  
+> +#ifdef CONFIG_ADEOS_CORE
+>  #if ADEOS_RELEASE_NUMBER < 0x02060201
+>  #error "Adeos 2.6r2c1/ppc64 or above is required to run this software; please upgrade."
+>  #error "See http://download.gna.org/adeos/patches/v2.6/ppc64/"
+>  #endif
+> +#endif /* CONFIG_ADEOS_CORE */
+>  
+>  #define XNARCH_DEFAULT_TICK     1000000 /* ns, i.e. 1ms */
+>  #define XNARCH_HOST_TICK        (1000000000UL/HZ)
+> @@ -102,11 +104,19 @@
+>  
+>  /* The following predicates are only usable over a regular Linux stack
+>   *    context. */
+> +#ifdef CONFIG_ADEOS_CORE
+>  #define xnarch_fault_pf_p(fi)   ((fi)->exception == ADEOS_ACCESS_TRAP)
+>  #define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
+>  				((fi)->exception == ADEOS_IABR_TRAP || \
+>  				(fi)->exception == ADEOS_SSTEP_TRAP || \
+>  				(fi)->exception == ADEOS_PERFMON_TRAP))
+> +#else /* !CONFIG_ADEOS_CORE */
+> +#define xnarch_fault_pf_p(fi)   ((fi)->exception == IPIPE_TRAP_ACCESS)
+> +#define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
+> +				((fi)->exception == IPIPE_TRAP_IABR || \
+> +				(fi)->exception == IPIPE_TRAP_SSTEP || \
+> +				(fi)->exception == IPIPE_TRAP_PERFMON))
+> +#endif /* CONFIG_ADEOS_CORE */
+>  
+>  #define xnarch_fault_notify(fi) (!xnarch_fault_bp_p(fi))
+>  
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 
