@@ -1,10 +1,12 @@
-Message-ID: <OF79E2F845.408F45C4-ONC12570BA.005A85E4-C12570BA.005B6724@domain.hid>
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Date: Tue, 15 Nov 2005 17:38:20 +0100
+Message-ID: <437A5E8E.3020100@domain.hid>
+Date: Tue, 15 Nov 2005 23:17:50 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-type: multipart/mixed; 
-	Boundary="0__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374"
-Subject: [Xenomai-core] [PATCH] Auto-allocation of minor values for pipe
+References: <OF79E2F845.408F45C4-ONC12570BA.005A85E4-C12570BA.005B6724@domain.hid>
+In-Reply-To: <OF79E2F845.408F45C4-ONC12570BA.005A85E4-C12570BA.005B6724@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [PATCH] Auto-allocation of minor values for pipe
 	objects
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -15,136 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
---0__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374
-Content-type: multipart/alternative; 
-	Boundary="1__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374"
+Dmitry Adamushko wrote:
+> 
+> Hello,
+> 
+> enclosed please find a patch that hopefully adds so desired 
+> functionality. I have made various tests with it just now and it seems 
+> to work fine.
+> 
 
---1__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374
-Content-type: text/plain; charset=US-ASCII
+Sounds good.
 
+> A size of the bitmap is dependent on XNPIPE_NDEVS parameter in the same 
+> vein as xnpipe_states depends on it; so hopefully that is what you have 
+> meant Philippe (?)
+>
 
+And NDEVS still does not depend on BITS_PER_LONG - yes, that's ok.
 
-Hello,
+Two minor missing points :
 
-enclosed please find a patch that hopefully adds so desired functionality.
-I have made various tests with it just now and it seems to work fine.
+- Doc update for rt_pipe_create() describing P_MINOR_AUTO
+- ChangeLog frag
 
-A size of the bitmap is dependent on XNPIPE_NDEVS parameter in the same
-vein as xnpipe_states depends on it; so hopefully that is what you have
-meant Philippe (?)
-
-A few comment later since I have to go now.
-
----
-Best regards,
-Dmitry
-
-(See attached file: pipe.auto-minor-2.patch)
---1__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
-
-<html><body>
-<p><font face="Arial"><br>
-</font><font face="Arial">Hello,</font><br>
-<br>
-<font face="Arial">enclosed please find a patch that hopefully adds so desired functionality. I have made various tests with it just now and it seems to work fine.</font><br>
-<br>
-<font face="Arial">A size of the bitmap is dependent on </font><font face="Arial">XNPIPE_NDEVS parameter in the same vein as xnpipe_states depends on it; so hopefully that is what you have meant Philippe (?)</font><br>
-<br>
-<font face="Arial">A few comment later since I have to go now.</font><br>
-<br>
-<font face="Arial">---</font><br>
-<font face="Arial">Best regards,</font><br>
-<font face="Arial">Dmitry</font><br>
-<br>
-<i>(See attached file: pipe.auto-minor-2.patch)</i><br>
-</body></html>
-
---1__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374--
+> A few comment later since I have to go now.
+> 
+> ---
+> Best regards,
+> Dmitry
+> 
+> /(See attached file: pipe.auto-minor-2.patch)/
+> 
 
 
---0__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374
-Content-type: application/octet-stream; 
-	name="pipe.auto-minor-2.patch"
-Content-Disposition: attachment; filename="pipe.auto-minor-2.patch"
-Content-ID: <10__=4EBBFA29DFC903748f9e8a93df938@domain.hid>
-Content-transfer-encoding: base64
+-- 
 
-ZGlmZiAtdXIgeGVub21haS9pbmNsdWRlL251Y2xldXMvcGlwZS5oIHhlbm9tYWktcGlwZTIvaW5j
-bHVkZS9udWNsZXVzL3BpcGUuaAotLS0geGVub21haS9pbmNsdWRlL251Y2xldXMvcGlwZS5oCTIw
-MDUtMTAtMDcgMjM6MTE6MjMuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpLXBpcGUyL2luY2x1
-ZGUvbnVjbGV1cy9waXBlLmgJMjAwNS0xMS0xNSAxMDoxOToxOS4wMDAwMDAwMDAgKzAxMDAKQEAg
-LTMwLDYgKzMwLDggQEAKICNkZWZpbmUgWE5QSVBFX05PUk1BTCAweDAKICNkZWZpbmUgWE5QSVBF
-X1VSR0VOVCAweDEKIAorI2RlZmluZSBYTlBJUEVfTUlOT1JfQVVUTwktMQorCiAjaWZkZWYgX19L
-RVJORUxfXwogCiAjaW5jbHVkZSA8bnVjbGV1cy9xdWV1ZS5oPgpkaWZmIC11ciB4ZW5vbWFpL251
-Y2xldXMvcGlwZS5jIHhlbm9tYWktcGlwZTIvbnVjbGV1cy9waXBlLmMKLS0tIHhlbm9tYWkvbnVj
-bGV1cy9waXBlLmMJMjAwNS0xMS0wOSAxOToyMDo0Ny4wMDAwMDAwMDAgKzAxMDAKKysrIHhlbm9t
-YWktcGlwZTIvbnVjbGV1cy9waXBlLmMJMjAwNS0xMS0xNSAxODo0NDo1MS4wMDAwMDAwMDAgKzAx
-MDAKQEAgLTQzLDYgKzQzLDkgQEAKIAogeG5waXBlX3N0YXRlX3QgeG5waXBlX3N0YXRlc1tYTlBJ
-UEVfTkRFVlNdOwogCisjZGVmaW5lIFhOUElQRV9CSVRNQVBfU0laRQkoKFhOUElQRV9OREVWUyAr
-IEJJVFNfUEVSX0xPTkcgLSAxKSAvIEJJVFNfUEVSX0xPTkcpCitzdGF0aWMgdW5zaWduZWQgbG9u
-ZyB4bnBpcGVfYml0bWFwW1hOUElQRV9CSVRNQVBfU0laRV07CisKIHhucXVldWVfdCB4bnBpcGVf
-c2xlZXBxLCB4bnBpcGVfYXN5bmNxOwogCiBpbnQgeG5waXBlX3dha2V1cF9hcGM7CkBAIC01Nyw2
-ICs2MCwzNyBAQAogICAgI2RlZmluZSBjbGFzc19kZXN0cm95IGNsYXNzX3NpbXBsZV9kZXN0cm95
-CiAjZW5kaWYKIAorLyogQWxsb2NhdGlvbiBvZiBtaW5vciB2YWx1ZXMgKi8KKworc3RhdGljIGlu
-bGluZSBpbnQgeG5waXBlX21pbm9yX2FsbG9jKGludCBtaW5vcikKK3sKKyAgICBzcGxfdCBzOwor
-CisgICAgaWYgKChtaW5vciA8IDAgJiYgbWlub3IgIT0gWE5QSVBFX01JTk9SX0FVVE8pIHx8IG1p
-bm9yID49IFhOUElQRV9OREVWUykKKwlyZXR1cm4gLUVOT0RFVjsKKworICAgIHhubG9ja19nZXRf
-aXJxc2F2ZSgmbmtsb2NrLHMpOworCisgICAgaWYgKG1pbm9yID09IFhOUElQRV9NSU5PUl9BVVRP
-KQorCW1pbm9yID0gZmluZF9maXJzdF96ZXJvX2JpdCh4bnBpcGVfYml0bWFwLFhOUElQRV9OREVW
-Uyk7CisKKyAgICBpZiAobWlub3IgPT0gWE5QSVBFX05ERVZTIHx8IHRlc3RiaXRzKHhucGlwZV9i
-aXRtYXBbbWlub3IgLyBCSVRTX1BFUl9MT05HXSwgMSA8PCAobWlub3IgJSBCSVRTX1BFUl9MT05H
-KSkpCisgICAgICAgIG1pbm9yID0gLUVCVVNZOworICAgIGVsc2UgICAgCisJX19zZXRiaXRzKHhu
-cGlwZV9iaXRtYXBbbWlub3IgLyBCSVRTX1BFUl9MT05HXSwgMSA8PCAobWlub3IgJSBCSVRTX1BF
-Ul9MT05HKSk7CisKKyAgICB4bmxvY2tfcHV0X2lycXJlc3RvcmUoJm5rbG9jayxzKTsKKyAgICBy
-ZXR1cm4gbWlub3I7Cit9CisKK3N0YXRpYyBpbmxpbmUgdm9pZCB4bnBpcGVfbWlub3JfZnJlZShp
-bnQgbWlub3IpCit7CisgICAgaWYgKG1pbm9yIDwgMCB8fCBtaW5vciA+PSBYTlBJUEVfTkRFVlMp
-CisJcmV0dXJuOworCisgICAgY2xyYml0cyh4bnBpcGVfYml0bWFwW21pbm9yIC8gQklUU19QRVJf
-TE9OR10sIDEgPDwgKG1pbm9yICUgQklUU19QRVJfTE9ORykpOworfQorCiAvKiBHZXQgbmtsb2Nr
-IGxvY2tlZCBiZWZvcmUgdXNpbmcgdGhpcyBtYWNybyAqLwogCiAjZGVmaW5lIHhucGlwZV9yZWFk
-X3dhaXQoc3RhdGUsZmxhZ3MpCQkJCQkJXApAQCAtMjE1LDggKzI0OSw5IEBACiAgICAgaW50IG5l
-ZWRfc2NoZWQgPSAwOwogICAgIHNwbF90IHM7CiAKLSAgICBpZiAobWlub3IgPCAwIHx8IG1pbm9y
-ID49IFhOUElQRV9OREVWUykKLQlyZXR1cm4gLUVOT0RFVjsKKyAgICBtaW5vciA9IHhucGlwZV9t
-aW5vcl9hbGxvYyhtaW5vcik7CisgICAgaWYgKG1pbm9yIDwgMCkKKwlyZXR1cm4gbWlub3I7CiAK
-ICAgICBzdGF0ZSA9ICZ4bnBpcGVfc3RhdGVzW21pbm9yXTsKIApAQCAtMjI0LDEyICsyNTksNiBA
-QAogICAgICAgIHRvIHByZXZlbnQgdXNpbmcgYSBwYXJ0aWFsbHkgY3JlYXRlZCBvYmplY3QgKi8K
-ICAgICB4bmxvY2tfZ2V0X2lycXNhdmUoJm5rbG9jayxzKTsKIAotICAgIGlmICh0ZXN0Yml0cyhz
-dGF0ZS0+c3RhdHVzLFhOUElQRV9LRVJOX0NPTk4pKQotCXsKLQl4bmxvY2tfcHV0X2lycXJlc3Rv
-cmUoJm5rbG9jayxzKTsKLQlyZXR1cm4gLUVCVVNZOwotCX0KLSAgICAKICAgICBzZXRiaXRzKHN0
-YXRlLT5zdGF0dXMsWE5QSVBFX0tFUk5fQ09OTik7CiAgICAgCiAgICAgeG5zeW5jaF9pbml0KCZz
-dGF0ZS0+c3luY2hiYXNlLFhOU1lOQ0hfRklGTyk7CkBAIC0yNjEsNyArMjkwLDcgQEAKICAgICBp
-ZiAobmVlZF9zY2hlZCkKICAgICAgICAgeG5waXBlX3NjaGVkdWxlX3JlcXVlc3QoKTsKIAotICAg
-IHJldHVybiAwOworICAgIHJldHVybiBtaW5vcjsKIH0KIAogaW50IHhucGlwZV9kaXNjb25uZWN0
-IChpbnQgbWlub3IpCkBAIC0zMjMsNiArMzUyLDggQEAKIAkgICAgfQogCX0KIAorICAgIHhucGlw
-ZV9taW5vcl9mcmVlKG1pbm9yKTsKKwogICAgIHhubG9ja19wdXRfaXJxcmVzdG9yZSgmbmtsb2Nr
-LHMpOwogCiAgICAgaWYgKG5lZWRfc2NoZWQpCmRpZmYgLXVyIHhlbm9tYWkvc2tpbnMvbmF0aXZl
-L3BpcGUuYyB4ZW5vbWFpLXBpcGUyL3NraW5zL25hdGl2ZS9waXBlLmMKLS0tIHhlbm9tYWkvc2tp
-bnMvbmF0aXZlL3BpcGUuYwkyMDA1LTExLTE0IDE3OjExOjIyLjAwMDAwMDAwMCArMDEwMAorKysg
-eGVub21haS1waXBlMi9za2lucy9uYXRpdmUvcGlwZS5jCTIwMDUtMTEtMTUgMTg6MzU6NTIuMDAw
-MDAwMDAwICswMTAwCkBAIC0yMjcsMTIgKzIyNywxMSBAQAogCQkgICAgY29uc3QgY2hhciAqbmFt
-ZSwKIAkJICAgIGludCBtaW5vcikKIHsKLSAgICBpbnQgZXJyOworICAgIGludCBlcnIgPSAwOwog
-CiAgICAgaWYgKHhucG9kX2FzeW5jaF9wKCkpCiAJcmV0dXJuIC1FUEVSTTsKIAotICAgIHBpcGUt
-Pm1pbm9yID0gbWlub3I7CiAgICAgcGlwZS0+YnVmZmVyID0gTlVMTDsKICAgICBwaXBlLT5maWxs
-c3ogPSAwOwogICAgIHBpcGUtPmZsdXNoYWJsZSA9IDA7CkBAIC0yNDAsMTMgKzIzOSwxNiBAQAog
-ICAgIHBpcGUtPm1hZ2ljID0gWEVOT19QSVBFX01BR0lDOwogICAgIHhub2JqZWN0X2NvcHlfbmFt
-ZShwaXBlLT5uYW1lLG5hbWUpOwogCi0gICAgZXJyID0geG5waXBlX2Nvbm5lY3QobWlub3IsCisg
-ICAgbWlub3IgPSB4bnBpcGVfY29ubmVjdChtaW5vciwKIAkJCSAmX19waXBlX291dHB1dF9oYW5k
-bGVyLAogCQkJIE5VTEwsCiAJCQkgJl9fcGlwZV9hbGxvY19oYW5kbGVyLAogCQkJIHBpcGUpOwot
-ICAgIGlmIChlcnIpCi0JcmV0dXJuIGVycjsKKworICAgIGlmIChtaW5vciA8IDApCisJcmV0dXJu
-IG1pbm9yOworCisgICAgcGlwZS0+bWlub3IgPSBtaW5vcjsKIAogI2lmZGVmIENPTkZJR19YRU5P
-X09QVF9QRVJWQVNJVkUKICAgICBwaXBlLT5jcGlkID0gMDsKZGlmZiAtdXIgeGVub21haS9za2lu
-cy9uYXRpdmUvcGlwZS5oIHhlbm9tYWktcGlwZTIvc2tpbnMvbmF0aXZlL3BpcGUuaAotLS0geGVu
-b21haS9za2lucy9uYXRpdmUvcGlwZS5oCTIwMDUtMTEtMTQgMTY6MDE6MDYuMDAwMDAwMDAwICsw
-MTAwCisrKyB4ZW5vbWFpLXBpcGUyL3NraW5zL25hdGl2ZS9waXBlLmgJMjAwNS0xMS0xNSAxMToz
-NDowMC4wMDAwMDAwMDAgKzAxMDAKQEAgLTI5LDYgKzI5LDggQEAKICNkZWZpbmUgUF9OT1JNQUwg
-IFhOUElQRV9OT1JNQUwKICNkZWZpbmUgUF9VUkdFTlQgIFhOUElQRV9VUkdFTlQKIAorI2RlZmlu
-ZSBQX01JTk9SX0FVVE8JWE5QSVBFX01JTk9SX0FVVE8KKwogdHlwZWRlZiBzdHJ1Y3QgcnRfcGlw
-ZV9wbGFjZWhvbGRlciB7CiAgICAgcnRfaGFuZGxlX3Qgb3BhcXVlOwogfSBSVF9QSVBFX1BMQUNF
-SE9MREVSOwo=
-
---0__=4EBBFA29DFC903748f9e8a93df938690918c4EBBFA29DFC90374--
-
+Philippe.
 
