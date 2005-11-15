@@ -1,13 +1,13 @@
-Message-ID: <436F6503.90705@domain.hid>
-Date: Mon, 07 Nov 2005 15:30:27 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <437A0FAF.5050303@domain.hid>
+Date: Tue, 15 Nov 2005 17:41:19 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM driver path question
-References: <436F60D3.9080104@domain.hid>
-In-Reply-To: <436F60D3.9080104@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6D64DF7BEF6D53AFE02F8EBD"
+References: <OFBDFF2ABC.D4775297-ONC12570B9.004E7A08-C12570B9.00517F6A@datacon.at>	<4378B391.5030306@domain.hid>
+	<4378B824.5050708@domain.hid> <4379E194.2050202@domain.hid>
+In-Reply-To: <4379E194.2050202@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Re: [Xenomai-core] More on rt pipes usage
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,69 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sean McGranaghan <smm@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6D64DF7BEF6D53AFE02F8EBD
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
 
-Sean McGranaghan wrote:
-> Hello all,
->=20
-> I am in the process of writing a simple device driver for Xenomai 2.0
-> using RTDM. I have a skeleton driver module loading and registering wit=
-h
-> RTDM. (I can see the entries in the /proc filesystem when the module
-> loads.) I now want to write a driver validation application to exercise=
+> Ignacio Garc=EDa P=E9rez wrote:
+>
+>> Hi,
+>>
+>> Suppose I have a kernel rt task that samples data at a certain rate and
+>> writes it as messages into a rt pipe, from which it is read by a user
+>> space non rt program.
+>>
+>> I want to limit the number of messages that are put into the pipe,
+>> because otherwise if the user space program dies, it will grow endlessly
+>> till it exausts the rt heap.
+>>
+>> What I want to do is to have a pipe that can hold a limited number of
+>> messages such that rt_pipe_write will fail if it is full.
+>>
+>> Is there a way to know how many messages are there in the pipe?
+>>
+>> Even if there is a way, to prevent a (harmless) race condition, I would
+>> need to lock the pipe between checking the number of messages and
+>> calling rt_pipe_write. As far as I know, pipe locking belongs to the
+>> nucleus and I'd like to stay in the native skin as much as possible.
+>>
+>> Another method would be to count how many messages I write, but then I'd
+>> need some hook that notifies me when the user space program reads a
+>> message so I can decrement the count.
+>>
+>> Any ideas?
+>
+>
+> The plan is to be able to tell the pipe manager to use a user-provided
+> heap instead of the system one; this way, exhausting the local heap
+> (*) in RT space would be a clear sign that non-RT must be allowed to
+> consume the pending data first. A simple interface to do that is
+> missing, but the pipe manager already works with a variable heap pointer.
 
-> the interface, but don't know how Linux device nodes map to Xenomai
-> devices. Do I have to manually create device nodes or are they built
-> with udev? (I am more familiar with traditional Unix style /dev entries=
-,
-> udev is new to me.) Do Xenomai devices use the Linux filesystem layer a=
-t
-> all? Does Xenomain keep a separate namespace/registry of named devices?=
+That mechanism would work only if you allow a local heap for *each* pipe
+(otherwise one abused pipe may clobber others).
+
+Personally, I need this feature to manage extreme error cases (the user
+process dying). There is no point in knowing when the non-RT processing
+is overwhelmed, because if that happens there is nothing you can do.
+
+If you are producing more RT data that your non-RT processes can
+consume, then you'll exhaust storage sooner or later. If you have RT
+data production peaks, it's your responsibility to allocate enough
+storage to provide for the worst case.
+
+In other words. RT processes may *never* have to wait for non-RT
+processes, because then they would become also non-RT.
+
+So, the only use I can think of for limited pipe storage (be it in
+message count or used memory) is to detect fatal error conditions, such
+as the case of no one consuming data. And at least in my case, I
+absolutely need this feature (if the non-RT process dies for any reason,
+the system must not collapse).
+
+>
+> (*) Using the overall available memory seems a better metric than the
+> number of pending messages, since it may often happen that messages
+> have different sizes.
+>
+Mmm... yeah, you are probably right. I mentioned the number of messages
+because I noticed the elems field in the queue structure and though it
+would be easier to implement using it.
+
+However, being this limitation just an "electric fence" for out of hand
+scenarios, the way you express the limit is not critial. If no one is
+consuming data from non-RT space, the limit will be reached no matter if
+you express it as messages or as memory.
+
+Nacho.
 
 
-The RTDM namespace is totally separated from the Linux file system.
-Thus, there is no dev node or "/dev/" name prefix - as long as you don't
-prefer to register your device under "/dev/mydevice".
-
-To differentiate between both namespaces, you address RTDM devices via
-rt_dev_open/rt_dev_socket under most skins except for the POSIX skin.
-The latter will tell them apart by first asking RTDM for a device to be
-opened and then, if this fails, standard Linux.
-
->=20
-> If I missed this in the documentation please feel free to redirect me a=
-s
-> needed. Any help is appreciated.
-
-Hmm, maybe we rather missed to clearly state this aspect in the docs,
-will have to check this.
-
-Anyway, there is also an overview paper available now from the Real-Time
-Linux Workshop 2005, Lille (www.realtimelinuxfoundation.org, but papers
-are not yet online, I can send it to you privately).
-
-Jan
-
-
---------------enig6D64DF7BEF6D53AFE02F8EBD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDb2UDncNeS9Q0k+IRAuqeAJ9qwVyGcKpKq/T+yf44j7IQU2QeCACeJzkM
-Kv0umM3ylqt0Lkg+ykScfB0=
-=TPW5
------END PGP SIGNATURE-----
-
---------------enig6D64DF7BEF6D53AFE02F8EBD--
 
