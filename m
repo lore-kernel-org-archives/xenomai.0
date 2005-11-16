@@ -1,12 +1,11 @@
-Message-ID: <437B1CBC.8000808@domain.hid>
-Date: Wed, 16 Nov 2005 12:49:16 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <437B2B37.50105@domain.hid>
+Date: Wed, 16 Nov 2005 13:51:03 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Small build system fix for Xenomai 2.1
-References: <437B162F.1040109@domain.hid>
-In-Reply-To: <437B162F.1040109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig671161384C7735EDDCF5688A"
+Subject: [Xenomai-core] Official logo
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,44 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
-> The prepare-kernel.sh script doesn't link assembly files to the kernel 
-> at all. This should fix it.
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig671161384C7735EDDCF5688A
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks.
+Hi all,
 
-> -- Heikki Lindholm
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> diff -Nru xenomai.orig/scripts/prepare-kernel.sh xenomai/scripts/prepare-kernel.sh
-> --- xenomai.orig/scripts/prepare-kernel.sh	2005-11-14 20:04:19.000000000 +0200
-> +++ xenomai/scripts/prepare-kernel.sh	2005-11-16 13:03:27.000000000 +0200
-> @@ -4,7 +4,7 @@
->  do_links() {
->      rm -fr $2
->      ( cd $1 &&
-> -      find . \( -name Makefile -o -name Kconfig -o -name '*.[ch]' \) |
-> +      find . \( -name Makefile -o -name Kconfig -o -name '*.[chS]' \) |
->        while read f; do
->          d=`dirname $f`
->  	mkdir -p $2/$d && ln -s $1/$f $2/$f
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+is the Xenomai logo on Bruno's site now the one going to be official? No
+objections from my side (as I said: I like it), just to avoid confusions.=
 
 
--- 
+If so, Bruno, do you have some vector graphic version at hand? EPS, SVG,
+whatever?
 
-Philippe.
+Thanks,
+Jan
+
+
+--------------enig671161384C7735EDDCF5688A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDeys3ncNeS9Q0k+IRAsb/AKCnlRtD6/eiR5/9toyawZdJffJV9gCdGFcx
+sIzVANfFFyBSQmAfUSCwy8g=
+=VYcS
+-----END PGP SIGNATURE-----
+
+--------------enig671161384C7735EDDCF5688A--
 
