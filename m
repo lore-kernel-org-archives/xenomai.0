@@ -1,14 +1,11 @@
-Message-ID: <437AC5CE.50401@domain.hid>
-Date: Wed, 16 Nov 2005 06:38:22 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <437AE923.7020004@domain.hid>
+Date: Wed, 16 Nov 2005 09:09:07 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] rt_pipe_* usage
-References: <OFDC60A907.2FB7647D-ONC12570B9.0058D97B-C12570B9.005A128D@datacon.at>
-	<4378BD15.8020206@domain.hid> <4379DFC1.6020904@domain.hid>
-	<437A0B62.20308@domain.hid>
-In-Reply-To: <437A0B62.20308@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6DC013DF1EAB95D8FFE4941B"
+Subject: [Xenomai-core] Question about shadow migration
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,71 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Ignacio Garc=EDa P=E9rez wrote:
-> Philippe Gerum wrote:
->=20
->=20
->>Ignacio Garc=EDa P=E9rez wrote:
->>
->>
->>>>>RT_PIPE_MSG *m =3D rt_pipe_alloc(sizeof(mystruct_t));
->>>>>mystruct_t *p =3D (mystruct_t *)P_MSGPTR(m);
->>>>>p->whatever1 =3D X;
->>>>>p->whatever2 =3D X;
->>>>>rt_pipe_send(&mypipe, m, sizeof(mystruct_t), P_NORMAL);
->>>>>
->>>>>If this is correct, why do I have to specify the size of mystruct_t
->>>>>*twice*. Can't it be initialized by rt_pipe_alloc ?.
->>>>
->>>>
->>>>It's initialized actually (*).
->>>>
->>>
->>>So, what's the sense of having to specify it again whet calling
->>>rt_pipe_send ?
->>>
->>
->>Because you may (pre-)allocate more than you really need to send
->>afterwards.
->>
->=20
-> I guess this should be explained in the docs. Please consider the small
-> patch I attach.
->=20
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6DC013DF1EAB95D8FFE4941B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Ok, applied. Thanks.
+Hi,
 
-> Nacho.
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> Index: skins/native/pipe.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- skins/native/pipe.c	(revision 143)
-> +++ skins/native/pipe.c	(working copy)
-> @@ -598,7 +598,11 @@
->   *
->   * @param size The size in bytes of the message (payload data
->   * only). Zero is a valid value, in which case the service returns
-> - * immediately without sending any message.
-> + * immediately without sending any message. This parameter allows
-> + * you to actually send less data than you reserved using the
-> + * rt_pipe_alloc() service, which may be the case if you did not
-> + * know how much space you needed at the time of allocation. In all
-> + * other cases it may be more convenient to just pass P_MSGSIZE(msg).
->   *
->   * Additionally, rt_pipe_send() causes any data buffered by
->   * rt_pipe_stream() to be flushed prior to sending the message. For
+I'm currently trying to confirm my understanding of what precisely
+happens during a switch-back of a shadow thread from primary to
+secondary mode. I guess the thrilling things happen in xnshadow_relax().
+The shadow enters in primary and leaves in secondary.
+
+The question for me is now if I got these details right: first a
+migration request is issued [1] but not immediately executed, then the
+priority of the root thread (Linux) is lifted to the one of the shadow
+thread [2], and then the shadow thread is suspend with respect to the
+xenomai scheduler [3]. The last step should let the Linux kernel start
+over again, run to its next preemption point (and this is the region
+where non-deterministic delays may be injected with current kernels,
+isn't it?), and switch over to lostage_handler() [4] to resume the Linux
+part of the shadow thread. After that the execution of the shadow, now
+in secondary mode, continues in xnshadow_relax() after [3]. Am I right?
+
+Thanks,
+Jan
 
 
---=20
+[1] www.rts.uni-hannover.de/xenomai/lxr/source/nucleus/shadow.c#L540
+[2] www.rts.uni-hannover.de/xenomai/lxr/source/nucleus/shadow.c#L542
+[3] www.rts.uni-hannover.de/xenomai/lxr/source/nucleus/shadow.c#L543
+[4] www.rts.uni-hannover.de/xenomai/lxr/source/nucleus/shadow.c#L254
 
-Philippe.
+--------------enig6DC013DF1EAB95D8FFE4941B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDeukjncNeS9Q0k+IRAstaAJ9/l+AFR8bw+JzbyA/AARE3fs9aVgCcDKJz
+JrNV/P4z6uNWGggfgVVkb3E=
+=zVuN
+-----END PGP SIGNATURE-----
+
+--------------enig6DC013DF1EAB95D8FFE4941B--
 
