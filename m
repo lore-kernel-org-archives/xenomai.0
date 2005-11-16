@@ -1,12 +1,9 @@
-From: "Bernard Dautrevaux" <bernard.dautrevaux@domain.hid>
-Subject: RE: [Xenomai-core] [RFC] support for sharing IRQs
-Date: Wed, 2 Nov 2005 00:21:37 +0100
-Message-ID: <!&!AAAAAAAAAAAYAAAAAAAAAFl5OYS2HqNLpPPM8SELvJDCgAAAEAAAAJHy9YD7gaxGnAtpaanpWP8BAAAAAA==@ac6.fr>
+Message-ID: <437B162F.1040109@domain.hid>
+Date: Wed, 16 Nov 2005 13:21:19 +0200
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4367A60D.9030108@domain.hid>
+Content-Type: multipart/mixed; boundary="------------040709050101060806080208"
+Subject: [Xenomai-core] [PATCH] Small build system fix for Xenomai 2.1
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,65 +15,35 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-=20
+This is a multi-part message in MIME format.
+--------------040709050101060806080208
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> -----Message d'origine-----
-> De : xenomai-core-bounces@domain.hid
-> [mailto:xenomai-core-bounces@domain.hid] De la part de Philippe Gerum
-> Envoy=E9 : mardi 1 novembre 2005 18:30
-> =C0 : Jan Kiszka
-> Cc : xenomai-core
-> Objet : Re: [Xenomai-core] [RFC] support for sharing IRQs
-	....
->=20
-> Ok, let's go for those changes this way:
->=20
-> 1. The I-pipe series needs to be updated so that an opaque=20
-> cookie is passed to the handler; since we have a change in=20
-> the interface, the 1.1 series has to be started for this purpose.
->=20
-> 2. In order to let the people running the legacy RTAI/fusion=20
-> and Xenomai 2.0.x series a reasonable amount of time to=20
-> upgrade their patchset, the IRQ layer updates (sharing and=20
-> trampoline suppression) will go to the Xenomai 2.1 dev=20
-> branch. IOW, Xenomai 2.1 will be exclusively based on the=20
-> I-pipe 1.1 series, which also means that Xenomai support for=20
-> the oldgen Adeos and I-pipe 1.0 patches will be discontinued=20
-> after the Xenomai 2.0.x series is closed.
+The prepare-kernel.sh script doesn't link assembly files to the kernel 
+at all. This should fix it.
 
-I agree with all that is said in this post; however there is just a smal
-problem: some very useful tool for xenomai application debug and tune is
-LTT; however the only available Adeos+LTT patch is not an ipipe one, but =
-an
-old linux-2.6.9 kernel patch.
+-- Heikki Lindholm
 
-At least the LTT support should be available with an ipipe-based =
-Adeos-1.1
-patch for 2.6.9 (waiting for LTT to support a more recent kernel), so =
-that
-LTT is not lost for xenomai (as it seems to be in fact for RTAI).=20
+--------------040709050101060806080208
+Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
+	name="xenomai2.1-051116-buildsys.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai2.1-051116-buildsys.patch"
 
-Bernard
+diff -Nru xenomai.orig/scripts/prepare-kernel.sh xenomai/scripts/prepare-kernel.sh
+--- xenomai.orig/scripts/prepare-kernel.sh	2005-11-14 20:04:19.000000000 +0200
++++ xenomai/scripts/prepare-kernel.sh	2005-11-16 13:03:27.000000000 +0200
+@@ -4,7 +4,7 @@
+ do_links() {
+     rm -fr $2
+     ( cd $1 &&
+-      find . \( -name Makefile -o -name Kconfig -o -name '*.[ch]' \) |
++      find . \( -name Makefile -o -name Kconfig -o -name '*.[chS]' \) |
+       while read f; do
+         d=`dirname $f`
+ 	mkdir -p $2/$d && ln -s $1/$f $2/$f
 
-> 3. Changes in the IRQ layer will be made at nucleus level,=20
-> which is the most efficient way to provide them.
->=20
-> It should be noted that as part of the build system=20
-> refactoring, the real-time HAL has become a static portion of=20
-> the Linux kernel, with its generic part being moved to the=20
-> nucleus. IOW, the proposed changes will basically end up as=20
-> redispatching some code inside the nucleus.
->=20
-> --=20
->=20
-> Philippe.
->=20
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
->=20
->=20
-
-
+--------------040709050101060806080208--
 
