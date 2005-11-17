@@ -1,13 +1,13 @@
-Message-ID: <43836942.2020901@domain.hid>
-Date: Tue, 22 Nov 2005 19:53:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <437C5119.4060100@domain.hid>
+Date: Thu, 17 Nov 2005 10:44:57 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] __raw_*lock for Xenaomai 2.01 on ppc
-References: <4381FC29.5040506@domain.hid> <43821221.9070702@domain.hid>
-	<4382CEF6.7020109@domain.hid>
-In-Reply-To: <4382CEF6.7020109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <OF53595BAB.2AA49C4A-ONC12570BA.0035EF11-C12570BA.0036F2D4@domain.hid>
+	<437B2D05.6070003@domain.hid>
+In-Reply-To: <437B2D05.6070003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Blocking reads from pipes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,39 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Anders Blomdell wrote:
->>> Is it by design or mistake that I get the following undefined symbols 
->>> on a PowerPC
->>>
->>> # insmod xeno_nucleus.ko
->>> xeno_nucleus: Unknown symbol __raw_read_lock
->>> xeno_nucleus: Unknown symbol __raw_write_unlock
->>> xeno_nucleus: Unknown symbol __raw_read_unlock
->>> xeno_nucleus: Unknown symbol __raw_write_lock
->>>
->>> unless the kernel is compiled with:
->>>
->>> CONFIG_DEBUG_KERNEL=y
->>> CONFIG_DEBUG_SPINLOCK=y
->>
->> Patch version, please.
-> 
-> xenomai-2.0.1/arch/ppc/patches/adeos-ipipe-2.6.14-ppc-1.0-06.patch
-> 
-> The problem probably is that the EXPORT_SYMBOL are done in 
-> lib/spinlock_debug.c, which is only compiled if CONFIG_DEBUG_SPINLOCK=y
-> 
+Hi,
 
-lib/debug_spinlock.c adds exports for the _raw_* symbols, not for 
-__raw_* ones (actually, I did add those since they were missing in the 
-vanilla kernel in the first place). At first sight, the issue looks like 
-related to linux/spinlock_up.h not defining no-ops for those symbols in 
-the non-debug case. Maybe another vanilla kernel issue.
+My application consists of a real time module and a non-realtime user
+mode program. They communicate through several pipes.
 
--- 
+The user mode program creates a thread (pthread) that opens a pipe and
+blocks in a read call, waiting for data. Under certain conditions, the
+user mode program must do an orderly exit, and thus I need a way to
+unblock that thread.
 
-Philippe.
+I've done that in the past with sockets. If you have one thread blocked
+reading from a socket handle, and you close it from another thread, the
+read call will immediately return with an error code.
+
+However, that doesn't seem to work with xenomai pipes. One posix thread
+blocked reading from a pipe (using posix open/read) won't unblock when
+you close the file handle from another thread.
+
+Any suggestions?
+
+Thanks.
+
+Nacho.
+
+
+
+
 
