@@ -1,12 +1,15 @@
-Message-ID: <4388E22C.9030101@domain.hid>
-Date: Sat, 26 Nov 2005 23:31:08 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <437D0ABB.3040004@domain.hid>
+Date: Thu, 17 Nov 2005 23:56:59 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems linking latency
-References: <200511262226.24260.niklaus.giger@domain.hid>
-In-Reply-To: <200511262226.24260.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel module misses rt_get_time
+References: <20051117214647.61520725.gda@domain.hid>	<437D0735.8070306@domain.hid>
+	<20051117235310.4418aee6.gda@domain.hid>
+In-Reply-To: <20051117235310.4418aee6.gda@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0DD21604BFEE702BE2F73F40"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,92 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: Gerald Dachs <gda@domain.hid>, xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Hi
->=20
-> I try to compile Xenomai on my Powerbook for an embedded PPC405. The
-> kernel boots okay with the xenomai kernel.
->=20
-> But when I try to compile the xenomai (trunk) I get the following error=
-:
->=20
-> =BB/mnt/data.ng/hcu/kernel/build-xeno-hcu3/src/testsuite/latency=AB
-> /bin/sh ../../../libtool --mode=3Dlink --tag=3DCC powerpc-405-linux-gnu=
--gcc     -o=20
-> latency  latency-latency.o ../../skins/native/libnative.la -lpthread -l=
-m
->=20
-> *** Warning: Linking the executable latency against the loadable module
-> *** libnative.so is not portable!
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0DD21604BFEE702BE2F73F40
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Ignore this message, the link is ok anyhow. This will be fixed in later=20
-releases.
+Gerald Dachs wrote:
+>>Actually, rt_get_time and rt_get_time_ns are the same in the RTAI
+>>compatibility skin (counts are nanoseconds here, see count2nano e.g.).
+>>Therefore, a
+> 
+> 
+> Sorry, but I don't think so. In the rtai docs I read that rt_get_time returns ticks
+> and rt_get_time_ns returns nano seconds.
+> 
 
-> The Xenomai part of my kernel/.config looks like this
-> CONFIG_XENOMAI=3Dy
-> CONFIG_XENO_OPT_NUCLEUS=3Dy
-> CONFIG_XENO_OPT_PERVASIVE=3Dy
-> CONFIG_XENO_OPT_PIPE=3Dy
-> CONFIG_XENO_OPT_PIPE_NRDEV=3D32
-> CONFIG_XENO_OPT_SYS_HEAPSZ=3D128
-> # CONFIG_XENO_OPT_ISHIELD is not set
-> CONFIG_XENO_OPT_STATS=3Dy
-> # CONFIG_XENO_OPT_DEBUG is not set
-> # CONFIG_XENO_OPT_WATCHDOG is not set
-> # CONFIG_XENO_OPT_SCALABLE_SCHED is not set
-> # CONFIG_XENO_HW_FPU is not set
-> CONFIG_XENO_HW_PERIODIC_TIMER=3Dy
-> CONFIG_XENO_HW_TIMER_LATENCY=3D0
-> CONFIG_XENO_HW_SCHED_LATENCY=3D0
-> CONFIG_XENO_SKIN_NATIVE=3Dm
-> CONFIG_XENO_OPT_NATIVE_REGISTRY=3Dy
-> CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS=3D512
-> CONFIG_XENO_OPT_NATIVE_PIPE=3Dy
-> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=3D4096
-> CONFIG_XENO_OPT_NATIVE_SEM=3Dy
-> CONFIG_XENO_OPT_NATIVE_EVENT=3Dy
-> CONFIG_XENO_OPT_NATIVE_MUTEX=3Dy
-> CONFIG_XENO_OPT_NATIVE_COND=3Dy
-> CONFIG_XENO_OPT_NATIVE_QUEUE=3Dy
-> CONFIG_XENO_OPT_NATIVE_HEAP=3Dy
-> CONFIG_XENO_OPT_NATIVE_ALARM=3Dy
-> CONFIG_XENO_OPT_NATIVE_MPS=3Dy
-> CONFIG_XENO_OPT_NATIVE_INTR=3Dy
-> # CONFIG_XENO_SKIN_POSIX is not set
-> # CONFIG_XENO_SKIN_PSOS is not set
-> # CONFIG_XENO_SKIN_UITRON is not set
-> # CONFIG_XENO_SKIN_VRTX is not set
-> CONFIG_XENO_SKIN_VXWORKS=3Dy
-> # CONFIG_XENO_SKIN_RTAI is not set
-> # CONFIG_XENO_SKIN_RTDM is not set
-> CONFIG_XENO_SKIN_UVM=3Dy
->=20
-> What is wrong?
->=20
-> I was also surprised that I could not configure xenomai with=20
-> CROSS_COMPILE=3Dpowerpc-405-linux-gnu- but had do specify
-> CC=3Dpowerpc-405-linux-gnu-gcc to be able to use the same compiler, wit=
-h which I=20
-> built my kernel.=20
->
+Yes, in the original RTAI. But the emulation skin of Xenomai makes no
+difference in this regard - all nanoseconds. That's why the conversion
+functions are void here.
 
-v2.1 stops defining its own set of funky rules for building Xenomai, but=20
-rather strictly relies on the kernel rules for building kernel support,=20
-and on the autoconf rules for building user-space support, so it's=20
-perfectly normal that the new configure script does not recognize=20
-CROSS_COMPILE since it is a variable defined by Linux's Kbuild system.=20
-Just follow the appropriate vanilla set of rules depending on which=20
-support you are trying to build.
+Jan
 
-> Best regards for any hints.
->=20
+--------------enig0DD21604BFEE702BE2F73F40
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
---=20
+iD8DBQFDfQq7niDOoMHTA+kRAvvrAJ9mSY0maG8efczKLgmABP6ZfoXXUQCeKT45
+xqW1Cwrsw6u0d7oMAkvFyGE=
+=jSpT
+-----END PGP SIGNATURE-----
 
-Philippe.
+--------------enig0DD21604BFEE702BE2F73F40--
 
