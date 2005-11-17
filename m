@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <437C8299.3010503@domain.hid>
+Date: Thu, 17 Nov 2005 14:16:09 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C5E45E.55DF146D"
-Date: Tue, 8 Nov 2005 13:17:06 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0162902@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: [Xenomai-help] Failed with native queues
+Subject: Re: [Xenomai-help] Blocking reads from pipes
+References: <OF53595BAB.2AA49C4A-ONC12570BA.0035EF11-C12570BA.0036F2D4@domain.hid>	<437B2D05.6070003@domain.hid>
+	<437C5119.4060100@domain.hid>
+	<200511171921.43221.rlenglet@domain.hid>
+In-Reply-To: <200511171921.43221.rlenglet@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,299 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Romain Lenglet <rlenglet@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C5E45E.55DF146D
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+>As a conclusion, the behaviour that you observed with Xenomai 
+>pipes seems consistent with that of Linux' named pipes, except 
+>that in Linux read() returns 0, and not an error code as you 
+>observed with Xenomai.
+>  
+>
+The read() call does *not* return when you close the *same* file handle
+from another pthread in the same process.
 
-Hello,
+Is that the expected posix behaviour?
 
-=20
+Nacho.
 
-I get a strange behaviour when using the RT_queues from the user space =
-(using
-
-xeno-load). Actually, when /dev/rtheap is missing rt_queue_create() =
-failed returning
-
--2 error code. If I put the rtheap.rules into /etc/udev/rules.d, then =
-the program immediately freezes -
-
-same thing when I manually create the node with mknod -m 0666 c 10 254.
-
-=20
-
-I'm using Linux 2.6.9 with adeos-linux-ltt-patch...
-
-=20
-
-=20
-
-What did I wrong? Any experience with RT_QUEUE from the user space?
-
-=20
-
-Thanks for your support
-
-=20
-
-Cheers
-
-Daniel
-
-=20
-
-=20
-
-=20
-
-Dr. Daniel Rossier, Professeur
-
-REDS, Reconfigurable & Embedded Digital Systems, http://reds.eivd.ch/ =
-<http://reds.eivd.ch/>=20
-
-HES-SO
-
-Haute Ecole d'Ing=E9nieurs et de Gestion (HEIG-VD)
-
-Rte de Cheseaux 1
-
-=20
-
-CH-1774 Yverdon-les-Bains
-
-=20
-
-T=E9l. fixe:     +41 24 557 62 69
-
-T=E9l. mobile:   +41 79 292 54 58
-
-E-mail:        daniel.rossier@domain.hid
-
-=20
-
-
-------_=_NextPart_001_01C5E45E.55DF146D
-Content-Type: text/html;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Diso-8859-1">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-p
-	{mso-margin-top-alt:auto;
-	margin-right:0cm;
-	mso-margin-bottom-alt:auto;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DFR link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Hello,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>I get a strange behaviour when using the =
-RT_queues
-from the user space (using<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>xeno-load). Actually, when /dev/rtheap is =
-missing
-rt_queue_create() failed returning<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>-2 error code. If I put the rtheap.rules into
-/etc/udev/rules.d, then the program immediately freezes =
-&#8211;<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>same thing when I manually create the node =
-with mknod
-&#8211;m 0666 c 10 254.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>I'm using Linux 2.6.9 with =
-adeos-linux-ltt-patch...<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>What did I wrong? Any experience with RT_QUEUE =
-from
-the user space?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Thanks for your =
-support<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Cheers<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Daniel<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<div =
-style=3D'mso-element:para-border-div;border:none;border-bottom:solid =
-windowtext 1.0pt;
-padding:0cm 0cm 1.0pt 0cm'>
-
-<p =
-style=3D'margin:0cm;margin-bottom:.0001pt;border:none;padding:0cm'><font
-size=3D1 face=3D"Times New Roman"><span lang=3DEN-GB =
-style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>Dr. Daniel Rossier, =
-Professeur<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>REDS, Reconfigurable &amp; Embedded Digital =
-Systems, </span></font><font
-size=3D1><span lang=3DEN-GB style=3D'font-size:8.0pt'><a =
-href=3D"http://reds.eivd.ch/"><span
-lang=3DFR>http://reds.eivd.ch/</span></a></span></font><font =
-size=3D1><span
-style=3D'font-size:8.0pt'><o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>HES-SO<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>Haute Ecole d'Ing=E9nieurs et de Gestion =
-(HEIG-VD)<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>Rte de Cheseaux 1<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'>CH-1774 =
-Yverdon-les-Bains<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Times New Roman"><span
-style=3D'font-size:8.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Courier New"><span
-style=3D'font-size:8.0pt;font-family:"Courier New"'>T=E9l. =
-fixe:=A0=A0=A0=A0 +41 24 557 62
-69<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Courier New"><span
-style=3D'font-size:8.0pt;font-family:"Courier New"'>T=E9l. mobile:=A0=A0 =
-+41 79 292 54
-58<o:p></o:p></span></font></p>
-
-<p style=3D'margin:0cm;margin-bottom:.0001pt'><font size=3D1 =
-face=3D"Courier New"><span
-style=3D'font-size:8.0pt;font-family:"Courier =
-New"'>E-mail:=A0=A0=A0=A0=A0=A0=A0 <a
-href=3D"mailto:daniel.rossier@domain.hid">daniel.rossier@domain.hid</a><o=
-:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
-style=3D'font-size:
-12.0pt'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C5E45E.55DF146D--
 
