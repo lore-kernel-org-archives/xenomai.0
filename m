@@ -1,15 +1,15 @@
-Message-ID: <437CCA0A.8000101@domain.hid>
-Date: Thu, 17 Nov 2005 19:20:58 +0100
-From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Official logo
-References: <437B2B37.50105@domain.hid>
-	<003601c5eab1$0fa72390$0600a8c0@domain.hid>
-	<f48df4840511160538x448b17dx40d432b2128190d1@domain.hid>
-In-Reply-To: <f48df4840511160538x448b17dx40d432b2128190d1@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAACBE8C38C57F2DBE4AB1E21"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17276.55104.956181.681355@domain.hid>
+Date: Thu, 17 Nov 2005 20:17:20 +0100
+In-Reply-To: <200511171855.15588.dmitry.adamushko@domain.hid>
+References: <437C8299.3010503@domain.hid>
+	<OF84150644.927CE822-ONC12570BC.00531CC2-C12570BC.00536AFA@datacon.at>
+	<17276.48309.803651.529811@domain.hid>
+	<200511171855.15588.dmitry.adamushko@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai-core] Re: [Xenomai-help] Blocking reads from pipes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,49 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bruno Rouchouse <brouchouse@domain.hid>
-Cc: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAACBE8C38C57F2DBE4AB1E21
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Dmitry Adamushko wrote:
+ > On Thursday 17 November 2005 18:24, Gilles Chanteperdrix wrote:
+ > > Dmitry Adamushko wrote:
+ > >  > > >As a conclusion, the behaviour that you observed with Xenomai
+ > >  > > >pipes seems consistent with that of Linux' named pipes, except
+ > >  > > >that in Linux read() returns 0, and not an error code as you
+ > >  > > >observed with Xenomai.
+ > >  > >
+ > >  > > The read() call does *not* return when you close the *same* file
+ > >  > > handle from another pthread in the same process.
+ > >  >
+ > >  > I confirm that and as I pointed it out in my previous mail - this is not
+ > >  > how it's supposed to be.
+ > >  > I'm currently on it. More news later.
+ > >
+ > > I am not sure about that: Linux regular pipes follow the same behaviour
+ > > (the real destruction of the file descriptor is delayed until read()
+ > > really returns).
+ > 
+ > My assertion was only based on the idea that nucleus::xnpipe_release() must be 
 
-Bruno Rouchouse wrote:
-> ...
-> Don't hesitate if you have any comments or suggestions about any of the=
-se
-> subjects.
->=20
+ > called as a result of any close() from the user space.
 
-A section for links to related projects and other stuff would be nice. I
-would have a few to offer:
+If we have a look at the sources, sys_read uses fput_light and
+fget_light, which increment and decrement the file descriptor
+reference count (member f_count of the file structure) used by fget and
+fput when the file descriptor is shared between. open and close call
+fget and fput.
 
- o http://rtfirewire.berlios.de
- o http://developer.berlios.de/projects/usb4rt
- o http://www.rtnet.org
- o http://www.rts.uni-hannover.de/xenomai/lxr
- o http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon
+"release" only get called through __fput when f_count reaches 0.
 
-And there are certainly more. :)
-
-Jan
+-- 
 
 
-
---------------enigAACBE8C38C57F2DBE4AB1E21
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDfMoKncNeS9Q0k+IRAntKAJ0RDaSJiKHrZSpLT7ZsAX2A/4yoUACgwXdC
-ILOReuxyf06GRQM9Ppb0EW0=
-=e0Hm
------END PGP SIGNATURE-----
-
---------------enigAACBE8C38C57F2DBE4AB1E21--
+					    Gilles Chanteperdrix.
 
