@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
+From: Romain Lenglet <rlenglet@domain.hid>
+Subject: Re: [Xenomai-help] Blocking reads from pipes
+Date: Thu, 17 Nov 2005 19:21:42 +0900
+References: <OF53595BAB.2AA49C4A-ONC12570BA.0035EF11-C12570BA.0036F2D4@domain.hid>
+	<437B2D05.6070003@domain.hid> <437C5119.4060100@domain.hid>
+In-Reply-To: <437C5119.4060100@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 24 Nov 2005 08:09:22 +0200
-Message-ID: <8DF1258D5F0FC94EBF5810BF2C7BF2FB3423FF@ILEX5.IL.NDS.COM>
-From: "Ashri, Sarit" <Sashri@domain.hid>
-Subject: [Xenomai-help] Newbie question about MVM
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_3mFfDsFVVCb+LiK"
+Message-Id: <200511171921.43221.rlenglet@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,33 +19,106 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
-I'm new to Linux and Xenomai so excuse me if my question is trivial.
-Can I install and use the MVM on a Linux 2.4 workstation (Red Hat RHEL
-2.1AS)=20
-that is not patched by Adeos?
-I'm having trouble installing it and I don't know if its because I'm
-doing something wrong,=20
-Or because its not supposed to work...
-I've searched the internet and could not find any answers.
-My target board is PPC and I use patched Linux 2.6.13.4 with it +
-Xenomai 2.0.1 , cross
-Compiled with the flags: ARCH=3Dppc CROSS_COMPILE=3Dppc_82xx.
+--Boundary-00=_3mFfDsFVVCb+LiK
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Thanks a lot in advance,
-Sarit.
+> One posix thread blocked reading from a pipe (using posix
+> open/read) won't unblock when you close the file handle from
+> another thread.
+
+Yes, it does!
+
+Compile the two attached source files:
+$ gcc -o read read.c
+$ gcc -o close close.c
+
+Create the named pipe:
+$ mkfifo testfifo
+
+In two different terminals, run "read", which will block in 
+read(), then "close".
+
+You will remark that the blocking read call is unblocked when the 
+other process closes its descriptor.
 
 
-*************************************************************************=
-**********
-This email message and any attachments thereto are intended only for use =
-by the addressee(s) named above, and may contain legally privileged and/o=
-r confidential information. If the reader of this message is not the inte=
-nded recipient, or the employee or agent responsible to deliver it to the=
- intended recipient, you are hereby notified that any dissemination, dist=
-ribution or copying of this communication is strictly prohibited. If you =
-have received this communication in error, please immediately notify the =
-postmaster@domain.hid and destroy the original message.
-*************************************************************************=
-**********
+As a conclusion, the behaviour that you observed with Xenomai 
+pipes seems consistent with that of Linux' named pipes, except 
+that in Linux read() returns 0, and not an error code as you 
+observed with Xenomai.
+
+-- 
+Romain Lenglet
+
+--Boundary-00=_3mFfDsFVVCb+LiK
+Content-Type: text/x-csrc;
+  charset="iso-8859-1";
+  name="close.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="close.c"
+
+#include <stdio.h>
+#include <fcntl.h>
+
+#define SIZE 1024
+
+int
+main (int argc, char **argv)
+{
+  int desc;
+  int nread;
+  char buf[SIZE];
+  desc = open ("./testfifo", O_WRONLY);
+  if (desc == -1)
+    {
+      perror (argv[0]);
+      return 1;
+    }
+  close (desc);
+  return 0;
+}
+
+--Boundary-00=_3mFfDsFVVCb+LiK
+Content-Type: text/x-csrc;
+  charset="iso-8859-1";
+  name="read.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="read.c"
+
+#include <stdio.h>
+#include <fcntl.h>
+
+#define SIZE 1024
+
+int
+main (int argc, char **argv)
+{
+  int desc;
+  int nread;
+  char buf[SIZE];
+  desc = open ("./testfifo", O_RDONLY);
+  if (desc == -1)
+    {
+      perror (argv[0]);
+      return 1;
+    }
+  while ((nread = read (desc, buf, SIZE)) > 0)
+    {
+      buf[nread] = 0;
+      printf ("child received \"%s\" (%d)\n", buf, nread);
+    }
+  if (nread == 0)
+    printf ("child received 0 bytes!\n");
+  if (nread == -1)
+    perror (argv[0]);
+  close (desc);
+  return 0;
+}
+
+--Boundary-00=_3mFfDsFVVCb+LiK--
 
