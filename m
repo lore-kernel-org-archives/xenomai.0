@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <437D976B.3040502@domain.hid>
+Date: Fri, 18 Nov 2005 09:57:15 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <437C8299.3010503@domain.hid>	<200511171855.15588.dmitry.adamushko@domain.hid>	<17276.55104.956181.681355@domain.hid>
+	<200511172045.43942.dmitry.adamushko@domain.hid>
+In-Reply-To: <200511172045.43942.dmitry.adamushko@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <17277.1480.697494.927414@domain.hid>
-Date: Thu, 17 Nov 2005 23:35:52 +0100
-In-Reply-To: <17276.58557.959901.736760@domain.hid>
-References: <17276.58557.959901.736760@domain.hid>
-Subject: [Xenomai-core] Re: [Xenomai-help] v2.1 becomes trunk.
+Subject: [Xenomai-core] Re: [Xenomai-help] Blocking reads from pipes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,35 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org
-
-Gilles Chanteperdrix wrote:
- > 
- > Now that the 2.1 branch is becoming the branch where Philippe is
- > working, errh... I mean, where the main development effort occurs, it is
- > time for this branch to become trunk, and for the old branch retirement.
- > 
- > So, a rename will occur in two hours (that is, at 22:00 GMT).
- > 
- > Before the rename, the svn repository for the 2.0 branch is :
- > svn://svn.gna.org/svn/xenomai/trunk
- > the svn repository for the 2.1 branch is :
- > svn://svn.gna.org/svn/xenomai/branches/v2.1
- > 
- > After the rename, the svn repository for the 2.0 branch will be:
- > svn://svn.gna.org/svn/xenomai/branches/v2.0.x
- > the svn repository for the 2.1 branch will be :
- > svn://svn.gna.org/svn/xenomai/trunk
- > 
- > I will post another mail when the rename is done.
-
-It is done.
-
-Please also note that branch 2.0 is not really retired, 2.0.x
-maintenance will take place in this branch.
-
--- 
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org, xenomai-core <xenomai@xenomai.org>
 
 
-					    Gilles Chanteperdrix.
+>Exactly, I have just found out that and posted actually a long mail just 
+>before getting this mail from you :o)
+>
+>Yep, and before getting blocked, read() increments the counter as well, that's 
+>why we don't have a xnpipe_realease() called as a result of close().
+>So everything is correct.
+>  
+>
+Fine. Though then my problem is not related to xenomai, any suggestions
+on how to force read() to return? (without writing anything to the other
+end of the pipe)
 
