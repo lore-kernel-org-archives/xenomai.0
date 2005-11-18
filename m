@@ -1,12 +1,9 @@
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-class: urn:content-classes:message
-Date: Sat, 26 Nov 2005 16:42:48 -0700
-Message-ID: <A0BC2AD74130A347BC7D2D653A27541C301509@domain.hid>
-From: "Diekema, Jon (AGRE)" <Jon.Diekema@domain.hid>
-Subject: [Xenomai-help] How to access the MPC8260 register space
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] 2.6 kernel module with math functions
+In-Reply-To: <20051118090703.57135.qmail@domain.hid>
+References: <20051118090703.57135.qmail@domain.hid>
+Message-Id: <E1Ed69H-0002kJ-J2@domain.hid>
+Date: Fri, 18 Nov 2005 14:19:27 +0100
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,55 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Cedric Herreman <glocker50@domain.hid>
+Cc: xenomai@xenomai.org
+
+Cedric Herreman wrote:
+ > Hello,
+ >  
+ >  I am porting a 2.4 RTAI kernel module to Xenomai 2.0 kernel 2.6. I used some basic math functions in the original module. This is posing problems for me now.
+ >  
+ >  In the module source i include <math.h>. I add -I/usr/include to the compiler flags and also "-ffast-math -mhard-float".
+ >  
+ >  If i compile this, i get warnings about double definitions of "__attribute_pure__" and "__attribute_used__".
+ >  
+ >  If i insert the kernel module, i get an error message :
+ >  "Xenomai: Invalid use of FPU in Xenomai context at " + probably the address of the instruction where the math function is called.
+ >  
+ >  Can anyone give me a hint ? Thanks.
+
+You can only use floating point operations from real-time threads
+contexts, not from module initialization and finalization routines, and
+you have to signal Xenomai, when creating kernel space real-time
+threads, that the thread will be allowed to use FPU. For the RTAI skin,
+this is what the rt_task_init function 6th argument is for.
+
+There is currently no math library module in Xenomai. So, the answer is
+that you have to avoid math functions, or make a xeno_math module, the
+way it is done in RTAI, i.e. using a math library such as the one made
+by Sun and used by FreeBSD, or one among the various libcs available.
+We once discussed this with Philippe, and a good candidate seemed to be
+newlib at that time:
+
+http://sourceware.org/newlib/
+
+Looking at newlib sources, it seems that some of its contents come from
+the Sun library too.
+
+-- 
 
 
-Configuration:
-	MPC8260
-	Linux 2.4.25
-	IPIPE 0.9-03
-	Xenomai 2.1 (latest SVN version)
-	IMMR =3D 0xF0000000
-
-Background:
-	- Have Linux based device driver, providing SCC/FCC transparent
-mode access
-
-Problem:
-
-I am new to Xenomai, and am quite exciting about the prospects of what
-it can offer.  A user mode device driver sounds like a *nice* dream, but
-I ed
- a few more details.  I have a Xenomai task that is able to intercept
-the the SCC2 interrupts, but now I need to figure out how to access the
-memory based MPC8260 registers. =0D
-
-What is needed for a user mode Xenonmai task to access the MPC8260
-register which live in 0xf00000000..0xf0020000?  I tried using
-rt_misc_get_io_region(), but didn't get too far.  I think this routine
-is designed to access I/O space, which doesn't exist on PPC processor.
-Should I be using the mmap() system call?  Or, is there a better
-approach?
-
-In kernel space, I have no trouble accessing these registers.
-
-
-
-
-
-
-******************************************
-The information contained in, or attached to, this e-mail, may contain=
- confidential information and is intended solely for the use of the=
- individual or entity to whom they are addressed and may be subject to=
- legal privilege.  If you have received this e-mail in error you should=
- notify the sender immediately by reply e-mail, delete the message from=
- your system and notify your system manager.  Please do not copy it for any=
- purpose, or disclose its contents to any other person.  The views or=
- opinions presented in this e-mail are solely those of the author and do=
- not necessarily represent those of the company.  The recipient should=
- check this e-mail and any attachments for the presence of viruses.  The=
- company accepts no liability for any damage caused, directly or=
- indirectly, by any virus transmitted in this email.
-******************************************
+					    Gilles Chanteperdrix.
 
