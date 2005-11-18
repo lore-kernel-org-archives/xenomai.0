@@ -1,9 +1,9 @@
-Message-ID: <437E044E.1030503@domain.hid>
-Date: Fri, 18 Nov 2005 18:41:50 +0200
+Message-ID: <437E0529.8030102@domain.hid>
+Date: Fri, 18 Nov 2005 18:45:29 +0200
 From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090001030404040803000901"
-Subject: [Xenomai-core] [PATCH] xenomai 2.1 ppc64 i-pipe support
+Content-Type: multipart/mixed; boundary="------------070702080006090706090008"
+Subject: [Xenomai-core] [PATCH] xenomai 2.1 ppc64 build fix
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,55 +16,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------090001030404040803000901
+--------------070702080006090706090008
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 
 Xenomai 2.1:
 
-- Add ppc64 I-pipe kernel support
+- powerpc/atomic.h lost one 64-bit #ifdef during the merge - ppc64 
+defines its own atomic mask functions.
 
 -- Heikki Lindholm
 
---------------090001030404040803000901
+--------------070702080006090706090008
 Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
-	name="xenomai2.1-051118-ipipe-ppc64.patch"
+	name="xenomai2.1-051118-atomic.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="xenomai2.1-051118-ipipe-ppc64.patch"
+ filename="xenomai2.1-051118-atomic.patch"
 
-diff -Nru xenomai/include/asm-powerpc/system.h xenomai-devel/include/asm-powerpc/system.h
---- xenomai/include/asm-powerpc/system.h	2005-11-08 09:43:39.000000000 +0200
-+++ xenomai-devel/include/asm-powerpc/system.h	2005-11-17 12:51:47.000000000 +0200
-@@ -127,10 +127,17 @@
- #endif /* CONFIG_PPC64 */
- #else /* !CONFIG_ADEOS_CORE */
- #define xnarch_fault_pf_p(fi)   ((fi)->exception == IPIPE_TRAP_ACCESS)
-+#ifdef CONFIG_PPC64
-+#define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
-+				 ((fi)->exception == IPIPE_TRAP_IABR || \
-+				  (fi)->exception == IPIPE_TRAP_SSTEP || \
-+				  (fi)->exception == IPIPE_TRAP_PERFMON))
-+#else /* !CONFIG_PPC64 */
- #define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
- 				 ((fi)->exception == IPIPE_TRAP_IABR || \
- 				  (fi)->exception == IPIPE_TRAP_SSTEP || \
- 				  (fi)->exception == IPIPE_TRAP_DEBUG))
-+#endif /* CONFIG_PPC64 */
- #endif /* CONFIG_ADEOS_CORE */
+diff -Nru xenomai/include/asm-powerpc/atomic.h xenomai-devel/include/asm-powerpc/atomic.h
+--- xenomai/include/asm-powerpc/atomic.h	2005-11-08 09:43:39.000000000 +0200
++++ xenomai-devel/include/asm-powerpc/atomic.h	2005-11-18 15:37:34.000000000 +0200
+@@ -210,6 +210,7 @@
+     return t;
+ }
  
- #define xnarch_fault_notify(fi) (!xnarch_fault_bp_p(fi))
-diff -Nru xenomai/ksrc/arch/powerpc/switch_64.S xenomai-devel/ksrc/arch/powerpc/switch_64.S
---- xenomai/ksrc/arch/powerpc/switch_64.S	2005-11-08 09:44:47.000000000 +0200
-+++ xenomai-devel/ksrc/arch/powerpc/switch_64.S	2005-11-17 12:52:06.000000000 +0200
-@@ -24,7 +24,6 @@
- #include <asm/processor.h>
- #include <asm/cputable.h>
- #include <asm/page.h>
--#include <asm/offsets.h>
- #include <asm/ppc_asm.h>
++#ifndef __powerpc64__
+ static __inline__ void atomic_set_mask(unsigned long mask,
+ 				       unsigned long *ptr)
+ {
+@@ -237,6 +238,7 @@
+ 	: "r" (ptr), "r" (mask)
+ 	: "r5", "cc", "memory");
+ }
++#endif /* __powerpc64__ */
  
- #define RTHAL_SAVEREG(reg, pos)	std reg,STACK_FRAME_OVERHEAD+8*(pos)(r1)
+ #define xnarch_atomic_xchg(ptr,v)   atomic_xchg(ptr,v)
+ #define xnarch_memory_barrier()     __asm__ __volatile__("": : :"memory")
 
---------------090001030404040803000901--
+--------------070702080006090706090008--
 
