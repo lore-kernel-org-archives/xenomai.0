@@ -1,12 +1,12 @@
-Message-ID: <437DE7FD.7050206@domain.hid>
-Date: Fri, 18 Nov 2005 15:41:01 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <437E036D.4010707@domain.hid>
+Date: Fri, 18 Nov 2005 17:38:05 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] v2.1 status
-References: <437CB8BA.8040902@domain.hid>
-	<437DD08E.1020202@domain.hid>
-In-Reply-To: <437DD08E.1020202@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <437CB8BA.8040902@domain.hid>	<437DD08E.1020202@domain.hid>
+	<437DE7FD.7050206@domain.hid>
+In-Reply-To: <437DE7FD.7050206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,30 +17,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> 
-> 
-> Question: On recent roadmaps I'm so far missing the topic "RT-signal
-> support in userspace". Are there any concrete schedules (Qx 200y)?
->
+I had a first contact with the new build system. I really really don't
+like the fact it touches my kernel source tree. Besides adeos, I like to
+keep the kernel source independent of xenomai, because that tree is
+shared for other projects.
 
-Not currently, even if AFAIC, this is an interesting feature to have, so
-that we don't always have to process async events over dedicated server
-threads in user-space. But, I'm cowardly entirely leaving the core
-design issues to Gilles regarding this; I need to keep focused on the
-other pending stuff for now.
+Also, why does it default to monolithic build of the xeno modules when
+in 2.0 you always got them as modules?.
 
-> I think to remember that you said Adeos would be involved in such an
-> extension. Maybe it would be a good time to think about this also when
-> we extend the Adeos API by shareable IRQs.
-> 
-
-Likely, yes.
-
--- 
-
-Philippe.
 
