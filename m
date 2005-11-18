@@ -1,9 +1,13 @@
-Message-ID: <437E0529.8030102@domain.hid>
-Date: Fri, 18 Nov 2005 18:45:29 +0200
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <437E090E.3060406@domain.hid>
+Date: Fri, 18 Nov 2005 18:02:06 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070702080006090706090008"
-Subject: [Xenomai-core] [PATCH] xenomai 2.1 ppc64 build fix
+Subject: Re: [Xenomai-core] Announce: RTDM CAN Device Profile and Driver
+References: <Pine.GSO.4.58.0511171900490.10042@domain.hid>
+In-Reply-To: <Pine.GSO.4.58.0511171900490.10042@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig97BE5073B07A4E2ABD01EFE7"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,44 +19,57 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------070702080006090706090008
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig97BE5073B07A4E2ABD01EFE7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Xenomai 2.1:
+Sebastian Smolorz wrote:
+> Hello list,
+>=20
+> as a result of a student research project of mine (kind of bachelor
+> thesis), here is a CAN device profile for RTDM including a driver for t=
+he
+> SJA1000-based eNET PHYTEC card. See RT-Add-On-Repository at the Univers=
+ity
+> of Hannover:
+> http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon/
+>=20
 
-- powerpc/atomic.h lost one 64-bit #ifdef during the merge - ppc64 
-defines its own atomic mask functions.
+To add a further note to this announcement:
 
--- Heikki Lindholm
+It is planned to extend, or better: break up this driver into a generic
+protocol part (socket setup/cleanup, transmission management, demux on
+reception, etc.), a controller-specific part, and a eNET-specific
+fragment (register addressing). The controller-specific part would be
+first for SJA1000, of course. Further controllers could then be added
+later. Thus, we aim at a real-time CAN framework which will be open for
+a (hopefully) broad hardware support - based on this socket model!
 
---------------070702080006090706090008
-Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
-	name="xenomai2.1-051118-atomic.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai2.1-051118-atomic.patch"
+There is nothing like a fixed schedule so far, but I would suggest Q2
+2006 as a rather pessimistic goal for the integration of such a
+framework into the Xenomai code base. As usual: any active contribution
+could significantly speed up such a development! Actually, not so much
+work remains, it just has to be a clean break-up and adjustment. And we
+need intensive testing...
 
-diff -Nru xenomai/include/asm-powerpc/atomic.h xenomai-devel/include/asm-powerpc/atomic.h
---- xenomai/include/asm-powerpc/atomic.h	2005-11-08 09:43:39.000000000 +0200
-+++ xenomai-devel/include/asm-powerpc/atomic.h	2005-11-18 15:37:34.000000000 +0200
-@@ -210,6 +210,7 @@
-     return t;
- }
- 
-+#ifndef __powerpc64__
- static __inline__ void atomic_set_mask(unsigned long mask,
- 				       unsigned long *ptr)
- {
-@@ -237,6 +238,7 @@
- 	: "r" (ptr), "r" (mask)
- 	: "r5", "cc", "memory");
- }
-+#endif /* __powerpc64__ */
- 
- #define xnarch_atomic_xchg(ptr,v)   atomic_xchg(ptr,v)
- #define xnarch_memory_barrier()     __asm__ __volatile__("": : :"memory")
+Have a nice weekend,
+Jan
 
---------------070702080006090706090008--
+
+--------------enig97BE5073B07A4E2ABD01EFE7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDfgkOncNeS9Q0k+IRAkQdAKDKe4gkfvN32vASUA/foWiXhqaWEwCghCgK
+UdrORYd2hghxJ/o9+HG/HJA=
+=pf78
+-----END PGP SIGNATURE-----
+
+--------------enig97BE5073B07A4E2ABD01EFE7--
 
