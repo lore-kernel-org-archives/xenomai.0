@@ -1,11 +1,10 @@
-Message-ID: <43804DEC.8030805@domain.hid>
-Date: Sun, 20 Nov 2005 11:20:28 +0100
+Message-ID: <43804F2D.8010309@domain.hid>
+Date: Sun, 20 Nov 2005 11:25:49 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [pipe.c] hairy synchronization -> "flush the output
-	queue upon closure"
-References: <OFCFB2F55F.EFC474AA-ONC12570BD.00453247-C12570BD.0045E0FD@datacon.at>
-In-Reply-To: <OFCFB2F55F.EFC474AA-ONC12570BD.00453247-C12570BD.0045E0FD@datacon.at>
+Subject: Re: [Xenomai-core] [PATCH] xenomai 2.1 ppc64 i-pipe support
+References: <437E044E.1030503@domain.hid>
+In-Reply-To: <437E044E.1030503@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,74 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Heikki Lindholm <holindho@domain.hid>
 Cc: xenomai@xenomai.org
 
-Dmitry Adamushko wrote:
-> Philippe Gerum <rpm@xenomai.org> wrote on 18.11.2005 12:07:22:
+Heikki Lindholm wrote:
+> Xenomai 2.1:
 > 
->  >
->  > > Hm.. but we still have fasync_helper(-1,file,0,&state->asyncq); 
-> which is
->  > > about sending a signal and that's perfectly valid (a file::counter is
->  > > not involved here). And that call may lead to re-scheduling (linux
->  > > re-scheduling of course) so we can't put it in a blocked section.
->  > >
->  > > So the best way I see is to have something like():
->  > >
->  > > xnpipe_drop_user_conn()
->  > > {
->  > > xnlock_get_irqsave(&nklock,s);
->  > >
->  > > while ((holder = getq(&state->outq)) != NULL)
->  > >              
->  > >  state->output_handler(minor,link2mh(holder),-EPIPE,state->cookie);
->  > >            }
->  > >
->  > >        while ((holder = getq(&state->inq)) != NULL)
->  > >            {
->  > >            if (state->input_handler != NULL)
->  > >              
->  > >  state->input_handler(minor,link2mh(holder),-EPIPE,state->cookie);
->  > >            else if (state->alloc_handler == NULL)
->  > >                xnfree(link2mh(holder));
->  > >            }
->  > >
->  > > __clrbits(state->status,XNPIPE_USER_CONN);
->  > >
->  > > xnlock_put_irqrestore(&nklock,s);
->  > > }
->  > >
->  > > and call it everywhere instead of 
-> clrbits(state->status,XNPIPE_USER_CONN);
->  > >
->  > > This way we may be sure there are no pending messages left.
->  > >
->  > >
->  >
->  > Sounds consistent, since USER_CONN flag is semantically bound to the
->  > active/inactive state
->  > of the associated data queues anyway.
->  >
-> 
-> Then a patch is enclosed.
+> - Add ppc64 I-pipe kernel support
 > 
 
 Applied, thanks.
 
-> 
->  > --
->  >
->  > Philippe.
-> 
-> ---
-> 
-> Dmitry
+> -- Heikki Lindholm
 > 
 > 
-> /(See attached file: pipe.cleanup-user-conn.patch)//(See attached file: 
-> ChangeLog-diff.patch)/
+> ------------------------------------------------------------------------
 > 
+> diff -Nru xenomai/include/asm-powerpc/system.h xenomai-devel/include/asm-powerpc/system.h
+> --- xenomai/include/asm-powerpc/system.h	2005-11-08 09:43:39.000000000 +0200
+> +++ xenomai-devel/include/asm-powerpc/system.h	2005-11-17 12:51:47.000000000 +0200
+> @@ -127,10 +127,17 @@
+>  #endif /* CONFIG_PPC64 */
+>  #else /* !CONFIG_ADEOS_CORE */
+>  #define xnarch_fault_pf_p(fi)   ((fi)->exception == IPIPE_TRAP_ACCESS)
+> +#ifdef CONFIG_PPC64
+> +#define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
+> +				 ((fi)->exception == IPIPE_TRAP_IABR || \
+> +				  (fi)->exception == IPIPE_TRAP_SSTEP || \
+> +				  (fi)->exception == IPIPE_TRAP_PERFMON))
+> +#else /* !CONFIG_PPC64 */
+>  #define xnarch_fault_bp_p(fi)   ((current->ptrace & PT_PTRACED) && \
+>  				 ((fi)->exception == IPIPE_TRAP_IABR || \
+>  				  (fi)->exception == IPIPE_TRAP_SSTEP || \
+>  				  (fi)->exception == IPIPE_TRAP_DEBUG))
+> +#endif /* CONFIG_PPC64 */
+>  #endif /* CONFIG_ADEOS_CORE */
+>  
+>  #define xnarch_fault_notify(fi) (!xnarch_fault_bp_p(fi))
+> diff -Nru xenomai/ksrc/arch/powerpc/switch_64.S xenomai-devel/ksrc/arch/powerpc/switch_64.S
+> --- xenomai/ksrc/arch/powerpc/switch_64.S	2005-11-08 09:44:47.000000000 +0200
+> +++ xenomai-devel/ksrc/arch/powerpc/switch_64.S	2005-11-17 12:52:06.000000000 +0200
+> @@ -24,7 +24,6 @@
+>  #include <asm/processor.h>
+>  #include <asm/cputable.h>
+>  #include <asm/page.h>
+> -#include <asm/offsets.h>
+>  #include <asm/ppc_asm.h>
+>  
+>  #define RTHAL_SAVEREG(reg, pos)	std reg,STACK_FRAME_OVERHEAD+8*(pos)(r1)
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
