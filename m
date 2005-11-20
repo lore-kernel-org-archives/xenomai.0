@@ -1,16 +1,13 @@
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [RFC] support for sharing IRQs
-Date: Tue, 1 Nov 2005 14:31:11 +0100
-References: <OF52EBEF44.18C1609B-ONC12570AB.004913D2-C12570AB.004F9693@domain.hid>
-	<200510312121.14160.dmitry.adamushko@domain.hid>
-	<43675853.1000209@domain.hid>
-In-Reply-To: <43675853.1000209@domain.hid>
+Message-ID: <43804DEC.8030805@domain.hid>
+Date: Sun, 20 Nov 2005 11:20:28 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="koi8-r"
+Subject: Re: [Xenomai-core] [pipe.c] hairy synchronization -> "flush the output
+	queue upon closure"
+References: <OFCFB2F55F.EFC474AA-ONC12570BD.00453247-C12570BD.0045E0FD@datacon.at>
+In-Reply-To: <OFCFB2F55F.EFC474AA-ONC12570BD.00453247-C12570BD.0045E0FD@datacon.at>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200511011431.12506.dmitry.adamushko@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,47 +17,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tuesday 01 November 2005 12:58, you wrote:
+Dmitry Adamushko wrote:
+> Philippe Gerum <rpm@xenomai.org> wrote on 18.11.2005 12:07:22:
+> 
+>  >
+>  > > Hm.. but we still have fasync_helper(-1,file,0,&state->asyncq); 
+> which is
+>  > > about sending a signal and that's perfectly valid (a file::counter is
+>  > > not involved here). And that call may lead to re-scheduling (linux
+>  > > re-scheduling of course) so we can't put it in a blocked section.
+>  > >
+>  > > So the best way I see is to have something like():
+>  > >
+>  > > xnpipe_drop_user_conn()
+>  > > {
+>  > > xnlock_get_irqsave(&nklock,s);
+>  > >
+>  > > while ((holder = getq(&state->outq)) != NULL)
+>  > >              
+>  > >  state->output_handler(minor,link2mh(holder),-EPIPE,state->cookie);
+>  > >            }
+>  > >
+>  > >        while ((holder = getq(&state->inq)) != NULL)
+>  > >            {
+>  > >            if (state->input_handler != NULL)
+>  > >              
+>  > >  state->input_handler(minor,link2mh(holder),-EPIPE,state->cookie);
+>  > >            else if (state->alloc_handler == NULL)
+>  > >                xnfree(link2mh(holder));
+>  > >            }
+>  > >
+>  > > __clrbits(state->status,XNPIPE_USER_CONN);
+>  > >
+>  > > xnlock_put_irqrestore(&nklock,s);
+>  > > }
+>  > >
+>  > > and call it everywhere instead of 
+> clrbits(state->status,XNPIPE_USER_CONN);
+>  > >
+>  > > This way we may be sure there are no pending messages left.
+>  > >
+>  > >
+>  >
+>  > Sounds consistent, since USER_CONN flag is semantically bound to the
+>  > active/inactive state
+>  > of the associated data queues anyway.
+>  >
+> 
+> Then a patch is enclosed.
+> 
 
-> > as "cockie" to the xnintr_irq_handler().
-> >
-> > The analogy is irq_desc_t vs. irqaction structures in Linux.
-> >
-> > This way, xnintr_irq_handler() can be called from adeos-ipipe layer
-> > directly without the [2] layer.
-> >
-> > But that change looks quite invasive to me so far since
-> > ipipe_domain::irqs::handler(irq - with a single parameter) is used all
-> > over the map.
->
-> I'd really prefer making one invasive change early in the process of
-> addressing the issue than several kludges later to work around structural
-> shortcomings, so no problem, go wild, I'm all ears.
->
+Applied, thanks.
 
-If we only want to get rid of the trampoline-thing then [2] + [3] would work 
-out (btw, I have sent a message this morning where I tried to provide even 
-some pseudo-code :) 
-
-But if we want to (think that we may) gain the adventage of having a more 
-flexible irq-related support from the ipipe layer, then yep, those changes 
-might look worthy. I thought that this way, we would even get rid of another 
-per-irq (rthal_realtime_irq) array in hal/generic.c, maybe even from 
-rthal_linux_irq too. The sole one is provided by the ipipe_domain structure 
-and a set of generic interfaces e.g. via system.h so that the HAL or another 
-layer may get access of it.
-
-e.g.
-
-the "cookie" remains opaque for the ipipe but when requested by 
-HAL::rthal_irq_request() or NUCLEUS::xnintr_irq_handler() it's treated as a 
-chain of ISR handlers.
+> 
+>  > --
+>  >
+>  > Philippe.
+> 
+> ---
+> 
+> Dmitry
+> 
+> 
+> /(See attached file: pipe.cleanup-user-conn.patch)//(See attached file: 
+> ChangeLog-diff.patch)/
+> 
 
 
----
-Best regards,
-Dmitry
+-- 
+
+Philippe.
 
