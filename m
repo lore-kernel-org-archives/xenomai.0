@@ -1,12 +1,11 @@
-Message-ID: <43804F38.7090107@domain.hid>
-Date: Sun, 20 Nov 2005 11:26:00 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4382201C.8040503@domain.hid>
+Date: Mon, 21 Nov 2005 20:29:32 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] xenomai 2.1 ppc64 build fix
-References: <437E0529.8030102@domain.hid>
-In-Reply-To: <437E0529.8030102@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig76A9ACFA7E588BDD9708C884"
+Subject: [Xenomai-core] [RFC] define your own pipe heap
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,53 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
-> Xenomai 2.1:
-> 
-> - powerpc/atomic.h lost one 64-bit #ifdef during the merge - ppc64 
-> defines its own atomic mask functions.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig76A9ACFA7E588BDD9708C884
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks.
+Hi there,
 
-> 
-> -- Heikki Lindholm
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> diff -Nru xenomai/include/asm-powerpc/atomic.h xenomai-devel/include/asm-powerpc/atomic.h
-> --- xenomai/include/asm-powerpc/atomic.h	2005-11-08 09:43:39.000000000 +0200
-> +++ xenomai-devel/include/asm-powerpc/atomic.h	2005-11-18 15:37:34.000000000 +0200
-> @@ -210,6 +210,7 @@
->      return t;
->  }
->  
-> +#ifndef __powerpc64__
->  static __inline__ void atomic_set_mask(unsigned long mask,
->  				       unsigned long *ptr)
->  {
-> @@ -237,6 +238,7 @@
->  	: "r" (ptr), "r" (mask)
->  	: "r5", "cc", "memory");
->  }
-> +#endif /* __powerpc64__ */
->  
->  #define xnarch_atomic_xchg(ptr,v)   atomic_xchg(ptr,v)
->  #define xnarch_memory_barrier()     __asm__ __volatile__("": : :"memory")
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+yea, I also want to join this endless pipe discussion! ;)
+
+We ran into troubles here due to large messages that should be sent via
+native pipes. Large means larger than the default message heap, the
+system heap, of the pipe subsystem so far. That raised the question why
+we should not provide some interface (and the required internal patches)
+to maintain per-pipe heaps. At least optional. This would allow to
+create pipe channels with even some megabyte space as we used them under
+RTAI.
+
+I would provide the required patches, but I'm not yet sure if we better
+extend rt_pipe_create with an additional parameter bufsize (0 =3D default=
+,
+i.e. system heap, 0 > allocate per kmalloc or vmalloc) or if we add
+another function like rt_pipe_bufsize to allocate a dedicated heap after
+creation.
+
+Ideas, comments?
+
+Jan
 
 
--- 
+--------------enig76A9ACFA7E588BDD9708C884
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDgiAdncNeS9Q0k+IRAq1zAKDqDEW/LtTbI3VWEwDEV2dkfwm/iwCguX+C
+t8AsUxIX5FjzdyXXdw2YdoE=
+=nZUw
+-----END PGP SIGNATURE-----
+
+--------------enig76A9ACFA7E588BDD9708C884--
 
