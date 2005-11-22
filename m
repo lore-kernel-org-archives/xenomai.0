@@ -1,14 +1,12 @@
-Message-ID: <4382F115.5010007@domain.hid>
-Date: Tue, 22 Nov 2005 11:21:09 +0100
-From: Jan Kiszka <kiszka@domain.hid>
-MIME-Version: 1.0
+In-Reply-To: <4382F115.5010007@domain.hid>
 Subject: Re: [Xenomai-core] [RFC] define your own pipe heap
-References: <4382201C.8040503@domain.hid>
-	<43825E4C.4030002@domain.hid>
-In-Reply-To: <43825E4C.4030002@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7663B03B33AE89C88AFAF5CE"
+Message-ID: <OF293DA25F.F77BC86C-ONC12570C1.00394E8C-C12570C1.003AFD12@domain.hid>
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Date: Tue, 22 Nov 2005 11:44:18 +0100
+MIME-Version: 1.0
+Content-type: multipart/alternative; 
+	Boundary="0__=4EBBFA52DFAAC81C8f9e8a93df938690918c4EBBFA52DFAAC81C"
+Content-Disposition: inline
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,489 +16,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7663B03B33AE89C88AFAF5CE
-Content-Type: multipart/mixed; boundary="------------070104000904050400070101"
+--0__=4EBBFA52DFAAC81C8f9e8a93df938690918c4EBBFA52DFAAC81C
+Content-type: text/plain; charset=US-ASCII
+Content-transfer-encoding: quoted-printable
 
-This is a multi-part message in MIME format.
---------------070104000904050400070101
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> ...
-> A patch says more than thousand words. ;)
->=20
-> As a first approach, I picked the second variant and implemented a new
-> function called rt_pipe_setpool. I also had to extend rt_pipe_alloc and=
 
-> rt_pipe_free so that the right pool is used by them.
->=20
+xenomai-core-bounces@domain.hid wrote on 22.11.2005 11:21:09:
 
-I thought about this variant again, and it seems to me rather unsafe in
-case some buffer allocation takes place between rt_pipe_create and
-rt_pipe_setpool. So, here is a patch which extends rt_pipe_create with a
-new argument poolsize instead.
+> Jan Kiszka wrote:
+> > ...
+> > A patch says more than thousand words. ;)
+> >
+> > As a first approach, I picked the second variant and implemented a =
+new
+> > function called rt_pipe_setpool. I also had to extend rt_pipe_alloc=
+ and
+> > rt_pipe_free so that the right pool is used by them.
+> >
+>
+> I thought about this variant again, and it seems to me rather unsafe =
+in
+> case some buffer allocation takes place between rt_pipe_create and
+> rt_pipe_setpool. So, here is a patch which extends rt_pipe_create wit=
+h a
+> new argument poolsize instead.
 
-Still untested...
+I haven't read the patch thoroughly yet so just a few common remarks. I=
+MHO,
+the interface would be much clear in case a rt_pipe_create() is extende=
+d
+since:
 
-Jan
+- we avoid a misuse when a rt_pipe_alloc() is called with an old pool b=
+ut
+rt_pipe_free() (explicitly or implicitly internally) is called with a n=
+ew
+one;
 
---------------070104000904050400070101
-Content-Type: text/plain;
- name="rt_pipe_create-ext.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="rt_pipe_create-ext.patch"
+- rt_pipe_setpool() can be successfuly called only once and a user must=
 
-Index: skins/native/pipe.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/native/pipe.h	(revision 165)
-+++ skins/native/pipe.h	(working copy)
-@@ -37,6 +37,8 @@
-=20
- #ifdef __KERNEL__
-=20
-+#include <nucleus/heap.h>
-+
- #define XENO_PIPE_MAGIC 0x55550202
-=20
- typedef xnpipe_mh_t RT_PIPE_MSG;
-@@ -57,6 +59,10 @@
-=20
-     RT_PIPE_MSG *buffer;	/* !< Buffer used in byte stream mode. */
-=20
-+    xnheap_t *bufpool;		/* !< Current buffer pool. */
-+
-+    xnheap_t privpool;		/* !< Private buffer pool. */
-+
-     size_t fillsz;		/* !< Bytes written to the buffer.  */
-=20
-     u_long flushable;		/* !< Flush request flag. */
-@@ -85,8 +91,12 @@
-=20
- int rt_pipe_create(RT_PIPE *pipe,
- 		   const char *name,
--		   int minor);
-+		   int minor,
-+		   size_t poolsize);
-=20
-+int rt_pipe_setpool(RT_PIPE *pipe,
-+                    size_t poolsize);
-+
- int rt_pipe_delete(RT_PIPE *pipe);
-=20
- ssize_t rt_pipe_read(RT_PIPE *pipe,
-@@ -113,9 +123,11 @@
- 		     size_t size,
- 		     int mode);
-=20
--RT_PIPE_MSG *rt_pipe_alloc(size_t size);
-+RT_PIPE_MSG *rt_pipe_alloc(RT_PIPE *pipe,
-+                           size_t size);
-=20
--int rt_pipe_free(RT_PIPE_MSG *msg);
-+int rt_pipe_free(RT_PIPE *pipe,
-+                 RT_PIPE_MSG *msg);
-=20
- ssize_t rt_pipe_flush(RT_PIPE *pipe);
-=20
-Index: skins/native/syscall.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/native/syscall.c	(revision 165)
-+++ skins/native/syscall.c	(working copy)
-@@ -3194,6 +3194,7 @@
-     char name[XNOBJECT_NAME_LEN];
-     RT_PIPE_PLACEHOLDER ph;
-     int err, minor;
-+    size_t poolsize;
-     RT_PIPE *pipe;
-=20
-     if (!__xn_access_ok(curr,VERIFY_WRITE,__xn_reg_arg1(regs),sizeof(ph)=
-))
-@@ -3213,12 +3214,15 @@
-     /* Device minor. */
-     minor =3D (int)__xn_reg_arg3(regs);
-=20
-+    /* Buffer pool size. */
-+    poolsize =3D (size_t)__xn_reg_arg4(regs);
-+
-     pipe =3D (RT_PIPE *)xnmalloc(sizeof(*pipe));
-=20
-     if (!pipe)
- 	return -ENOMEM;
-=20
--    err =3D rt_pipe_create(pipe,name,minor);
-+    err =3D rt_pipe_create(pipe,name,minor,poolsize);
-=20
-     if (err =3D=3D 0)
- 	{
-@@ -3332,7 +3336,7 @@
-     /* Zero-sized messages are allowed, so we still need to free the
-        message buffer even if no data copy took place. */
-=20
--    rt_pipe_free(msg);
-+    rt_pipe_free(pipe,msg);
-=20
-     return err;
- }
-@@ -3374,7 +3378,7 @@
-     if (!__xn_access_ok(curr,VERIFY_READ,__xn_reg_arg2(regs),size))
- 	return -EFAULT;
-=20
--    msg =3D rt_pipe_alloc(size);
-+    msg =3D rt_pipe_alloc(pipe,size);
- =09
-     if (!msg)
- 	return -ENOMEM;
-@@ -3386,7 +3390,7 @@
-     if (err !=3D size)
- 	/* If the operation failed, we need to free the message buffer
- 	   by ourselves. */
--	rt_pipe_free(msg);
-+	rt_pipe_free(pipe,msg);
-=20
-     return err;
- }
-@@ -3436,7 +3440,7 @@
- 	}
-     else
- 	{
--	msg =3D rt_pipe_alloc(size);
-+	msg =3D rt_pipe_alloc(pipe,size);
- =09
- 	if (!msg)
- 	    return -ENOMEM;
-@@ -3449,7 +3453,7 @@
-     err =3D rt_pipe_stream(pipe,buf,size);
-=20
-     if (msg)
--	rt_pipe_free(msg);
-+	rt_pipe_free(pipe,msg);
-=20
-     return err;
- }
-Index: skins/native/lib/pipe.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/native/lib/pipe.c	(revision 165)
-+++ skins/native/lib/pipe.c	(working copy)
-@@ -23,7 +23,8 @@
-=20
- int rt_pipe_create (RT_PIPE *pipe,
- 		    const char *name,
--		    int minor)
-+		    int minor,
-+		    size_t poolsize)
- {
-     return XENOMAI_SKINCALL3(__xeno_muxid,
- 			     __xeno_pipe_create,
-Index: skins/native/pipe.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- skins/native/pipe.c	(revision 165)
-+++ skins/native/pipe.c	(working copy)
-@@ -50,8 +50,6 @@
- #include <native/registry.h>
- #include <native/pipe.h>
-=20
--static xnheap_t *__pipe_heap =3D &kheap;
--
- static int __pipe_flush_apc;
-=20
- static DECLARE_XNQUEUE(__pipe_flush_q);
-@@ -83,6 +81,14 @@
-=20
- #endif /* CONFIG_XENO_NATIVE_EXPORT_REGISTRY */
-=20
-+static void __pipe_flush_pool (xnheap_t *heap,
-+                               void *poolmem,
-+                               u_long poolsize,
-+                               void *cookie)
-+{
-+    xnarch_sysfree(poolmem,poolsize);
-+}
-+
- static inline ssize_t __pipe_flush (RT_PIPE *pipe)
-=20
- {
-@@ -122,8 +128,10 @@
- 				   size_t size,
- 				   void *cookie)
- {
-+    RT_PIPE *pipe =3D (RT_PIPE *)cookie;
-+
-     /* Allocate memory for the incoming message. */
--    return xnheap_alloc(__pipe_heap,size);
-+    return xnheap_alloc(pipe->bufpool,size);
- }
-=20
- static int __pipe_output_handler (int bminor,
-@@ -131,8 +139,10 @@
- 				  int retval,
- 				  void *cookie)
- {
-+    RT_PIPE *pipe =3D (RT_PIPE *)cookie;
-+
-     /* Free memory from output/discarded message. */
--    xnheap_free(__pipe_heap,mh);
-+    xnheap_free(pipe->bufpool,mh);
-     return retval;
- }
-=20
-@@ -154,7 +164,7 @@
- }
-=20
- /**
-- * @fn int rt_pipe_create(RT_PIPE *pipe,const char *name,int minor)
-+ * @fn int rt_pipe_create(RT_PIPE *pipe,const char *name,int minor, size=
-_t poolsize)
-  * @brief Create a message pipe.
-  *
-  * This service opens a bi-directional communication channel allowing
-@@ -232,20 +242,55 @@
-=20
- int rt_pipe_create (RT_PIPE *pipe,
- 		    const char *name,
--		    int minor)
-+		    int minor,
-+		    size_t poolsize)
- {
-     int err =3D 0;
-+    void *poolmem;
-=20
--    if (xnpod_asynch_p())
-+    if (!xnpod_root_p())
- 	return -EPERM;
-=20
-     pipe->buffer =3D NULL;
-+    pipe->bufpool =3D &kheap;
-     pipe->fillsz =3D 0;
-     pipe->flushable =3D 0;
-     pipe->handle =3D 0;    /* i.e. (still) unregistered pipe. */
-     pipe->magic =3D XENO_PIPE_MAGIC;
-     xnobject_copy_name(pipe->name,name);
-=20
-+    if (poolsize > 0)
-+	{
-+	/* Make sure we won't hit trivial argument errors when calling
-+	   xnheap_init(). */
-+
-+	if (poolsize < 2 * PAGE_SIZE)
-+	    poolsize =3D 2 * PAGE_SIZE;
-+
-+	/* Account for the overhead so that the actual free space is large
-+	   enough to match the requested size. */
-+
-+	poolsize +=3D xnheap_overhead(poolsize,PAGE_SIZE);
-+	poolsize =3D PAGE_ALIGN(poolsize);
-+
-+	poolmem =3D xnarch_sysalloc(poolsize);
-+
-+	if (!poolmem)
-+	    return -ENOMEM;
-+
-+	err =3D xnheap_init(&pipe->privpool,
-+	                  poolmem,
-+	                  poolsize,
-+	                  PAGE_SIZE); /* Use natural page size */
-+	if (err)
-+	    {
-+	    xnarch_sysfree(poolmem,poolsize);
-+	    return err;
-+	    }
-+
-+	pipe->bufpool =3D &pipe->privpool;
-+	}
-+
-     minor =3D xnpipe_connect(minor,
- 			 &__pipe_output_handler,
- 			 NULL,
-@@ -253,7 +298,12 @@
- 			 pipe);
-=20
-     if (minor < 0)
-+	{
-+	if (pipe->bufpool =3D=3D &pipe->privpool)
-+	    xnheap_destroy(&pipe->privpool,__pipe_flush_pool,NULL);
-+
- 	return minor;
-+	}
-=20
-     pipe->minor =3D minor;
-=20
-@@ -337,14 +387,15 @@
-     if (!pipe)
- 	{
- 	err =3D xeno_handle_error(pipe,XENO_PIPE_MAGIC,RT_PIPE);
--	goto unlock_and_exit;
-+	xnlock_put_irqrestore(&nklock,s);
-+	return err;
- 	}
-=20
-     if (__test_and_clear_bit(0,&pipe->flushable))
- 	{
- 	/* Purge data waiting for flush. */
- 	removeq(&__pipe_flush_q,&pipe->link);
--	rt_pipe_free(pipe->buffer);
-+	rt_pipe_free(pipe,pipe->buffer);
- 	}
-=20
-     err =3D xnpipe_disconnect(pipe->minor);
-@@ -356,10 +407,11 @@
-=20
-     xeno_mark_deleted(pipe);
-=20
-- unlock_and_exit:
--
-     xnlock_put_irqrestore(&nklock,s);
-=20
-+    if (pipe->bufpool =3D=3D &pipe->privpool)
-+	xnheap_destroy(&pipe->privpool,__pipe_flush_pool,NULL);
-+
-     return err;
- }
-=20
-@@ -572,7 +624,7 @@
-     /* Zero-sized messages are allowed, so we still need to free the
-        message buffer even if no data copy took place. */
-=20
--    rt_pipe_free(msg);
-+    rt_pipe_free(pipe,msg);
-=20
-     return nbytes;
- }
-@@ -767,7 +819,7 @@
- 	/* Try flushing the streaming buffer in any case. */
- 	return rt_pipe_send(pipe,NULL,0,mode);
-=20
--    msg =3D rt_pipe_alloc(size);
-+    msg =3D rt_pipe_alloc(pipe,size);
- =09
-     if (!msg)
- 	return -ENOMEM;
-@@ -779,7 +831,7 @@
-     if (nbytes !=3D size)
- 	/* If the operation failed, we need to free the message buffer
- 	   by ourselves. */
--	rt_pipe_free(msg);
-+	rt_pipe_free(pipe,msg);
-=20
-     return nbytes;
- }
-@@ -886,7 +938,7 @@
-=20
- 	if (pipe->buffer =3D=3D NULL)
- 	    {
--	    pipe->buffer =3D rt_pipe_alloc(CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ);
-+	    pipe->buffer =3D rt_pipe_alloc(pipe,CONFIG_XENO_OPT_NATIVE_PIPE_BUF=
-SZ);
-=20
- 	    if (pipe->buffer =3D=3D NULL)
- 		{
-@@ -984,7 +1036,7 @@
- }
-=20
- /**
-- * @fn RT_PIPE_MSG *rt_pipe_alloc(size_t size)
-+ * @fn RT_PIPE_MSG *rt_pipe_alloc(RT_PIPE *pipe,size_t size)
-  *
-  * @brief Allocate a message pipe buffer.
-  *
-@@ -1010,10 +1062,11 @@
-  * Rescheduling: never.
-  */
-=20
--RT_PIPE_MSG *rt_pipe_alloc (size_t size)
-+RT_PIPE_MSG *rt_pipe_alloc (RT_PIPE *pipe,
-+                            size_t size)
-=20
- {
--    RT_PIPE_MSG *msg =3D (RT_PIPE_MSG *)xnheap_alloc(__pipe_heap,size + =
-sizeof(RT_PIPE_MSG));
-+    RT_PIPE_MSG *msg =3D (RT_PIPE_MSG *)xnheap_alloc(pipe->bufpool,size =
-+ sizeof(RT_PIPE_MSG));
-=20
-     if (msg)
- 	{
-@@ -1025,7 +1078,7 @@
- }
-=20
- /**
-- * @fn int rt_pipe_free(RT_PIPE_MSG *msg)
-+ * @fn int rt_pipe_free(RT_PIPE *pipe,RT_PIPE_MSG *msg)
-  *
-  * @brief Free a message pipe buffer.
-  *
-@@ -1049,9 +1102,9 @@
-  * Rescheduling: never.
-  */
-=20
--int rt_pipe_free (RT_PIPE_MSG *msg)
-+int rt_pipe_free (RT_PIPE *pipe,RT_PIPE_MSG *msg)
- {
--    return xnheap_free(__pipe_heap,msg);
-+    return xnheap_free(pipe->bufpool,msg);
- }
-=20
- /*@}*/
-Index: testsuite/klatency/latency-module.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- testsuite/klatency/latency-module.c	(revision 165)
-+++ testsuite/klatency/latency-module.c	(working copy)
-@@ -83,7 +83,7 @@
- 	maxjitter =3D maxj;
- 	avgjitter =3D sumj / sample_count;
-=20
--	msg =3D rt_pipe_alloc(sizeof(struct latency_stat));
-+	msg =3D rt_pipe_alloc(&pipe,sizeof(struct latency_stat));
-=20
- 	if (!msg)
- 	    {
-@@ -103,7 +103,7 @@
- 	   ourselves. */
-=20
- 	if (rt_pipe_send(&pipe,msg,sizeof(*s),0) !=3D sizeof(*s))
--	    rt_pipe_free(msg);
-+	    rt_pipe_free(&pipe,msg);
- 	}
- }
-=20
-@@ -128,7 +128,7 @@
- 	return 2;
- 	}
-=20
--    err =3D rt_pipe_create(&pipe,"klatency",0);
-+    err =3D rt_pipe_create(&pipe,"klatency",0,0);
-=20
-     if (err)
- 	{
+care that:
+      o  either this is next call after a pipe has been created;
+      o  or all messages allocated from the "old" pool have been freed =
+by
+that moment (otherwise we need to extend a pipe::message interface so t=
+hat
+every message knows the exact pool it has been allocated from and,
+moreover, implement the reference counting so that a pool object exists=
+ as
+long as there is at least a reference on it - and we don't need that
+complications).
 
---------------070104000904050400070101--
+So, yep, adding an additional parameter to the rt_pipe_create() would b=
+e a
+better solution. My humble 2 cents :o)
 
---------------enig7663B03B33AE89C88AFAF5CE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Once I thought about an interface that allows to "attach/detach" an
+existing RT_HEAP object to any pipe/queue/maybe_smth_else but here we w=
+ould
+need to extend the underlying mechanisms as I mentioned above.
+And likely, such an interface is not something of big avail for strict
+real-time environments. Keep it simple instaed :o)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFDgvEVncNeS9Q0k+IRAkSiAKCMlg1pSYIiTLjKzD+F9ZOlcxPlgwCeN2Uy
-IswVUM9YKIi0mXC7X9yHgKU=
-=77tb
------END PGP SIGNATURE-----
+---
+Best regards,
+Dmitry=
 
---------------enig7663B03B33AE89C88AFAF5CE--
+--0__=4EBBFA52DFAAC81C8f9e8a93df938690918c4EBBFA52DFAAC81C
+Content-type: text/html; charset=US-ASCII
+Content-Disposition: inline
+Content-transfer-encoding: quoted-printable
+
+<html><body>
+<p><tt>xenomai-core-bounces@domain.hid wrote on 22.11.2005 11:21:09:<br>
+<br>
+&gt; Jan Kiszka wrote:<br>
+&gt; &gt; ...<br>
+&gt; &gt; A patch says more than thousand words. ;)<br>
+&gt; &gt; <br>
+&gt; &gt; As a first approach, I picked the second variant and implemen=
+ted a new<br>
+&gt; &gt; function called rt_pipe_setpool. I also had to extend rt_pipe=
+_alloc and<br>
+&gt; &gt; rt_pipe_free so that the right pool is used by them.<br>
+&gt; &gt; <br>
+&gt; <br>
+&gt; I thought about this variant again, and it seems to me rather unsa=
+fe in<br>
+&gt; case some buffer allocation takes place between rt_pipe_create and=
+<br>
+&gt; rt_pipe_setpool. So, here is a patch which extends rt_pipe_create =
+with a<br>
+&gt; new argument poolsize instead.</tt><br>
+<br>
+<tt>I haven't read the patch </tt><tt>thoroughly yet so just a few comm=
+on remarks. IMHO, the interface would be much clear in case a rt_pipe_c=
+reate() is extended since:</tt><br>
+<br>
+<tt>- we avoid a misuse when a rt_pipe_alloc() is called with an old po=
+ol but rt_pipe_free() (explicitly or implicitly internally) is called w=
+ith a new one;</tt><br>
+<br>
+<tt>- rt_pipe_setpool() can be successfuly called only once and a user =
+must care that:</tt><br>
+<tt>	o &nbsp;either this is next call after a pipe has been created;</t=
+t><br>
+<tt>	o &nbsp;or all messages allocated from the &quot;old&quot; pool ha=
+ve been freed by that moment (otherwise we need to extend a pipe::messa=
+ge interface so that every message knows the exact pool it has been all=
+ocated from and, moreover, implement the reference counting so that a p=
+ool object exists as long as there is at least a reference on it - and =
+we don't need that complications).</tt><br>
+<br>
+<tt>So, yep, adding an additional parameter to the rt_pipe_create() wou=
+ld be a better solution. My humble 2 cents :o)</tt><br>
+<tt><br>
+Once I thought about an interface that allows to &quot;attach/detach&qu=
+ot; an existing RT_HEAP object to any pipe/queue/maybe_smth_else but he=
+re we would need to extend the underlying mechanisms as I mentioned abo=
+ve.</tt><br>
+<tt>And likely, such an interface is not something of big avail for str=
+ict real-time environments. Keep it simple instaed :o)</tt><br>
+<br>
+<br>
+<tt>---</tt><br>
+<tt>Best regards,</tt><br>
+<tt>Dmitry</tt><br>
+</body></html>=
+
+--0__=4EBBFA52DFAAC81C8f9e8a93df938690918c4EBBFA52DFAAC81C--
+
 
