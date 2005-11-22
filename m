@@ -1,13 +1,16 @@
-Message-ID: <43675AB8.8000109@domain.hid>
-Date: Tue, 01 Nov 2005 13:08:24 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43837F37.8040406@domain.hid>
+Date: Tue, 22 Nov 2005 21:27:35 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC] support for sharing IRQs
-References: <OF52EBEF44.18C1609B-ONC12570AB.004913D2-C12570AB.004F9693@domain.hid>	<43663262.80303@domain.hid>	<200510312121.14160.dmitry.adamushko@domain.hid>
-	<436680D5.4010105@domain.hid>
-In-Reply-To: <436680D5.4010105@domain.hid>
-Content-Type: text/plain; charset=KOI8-R; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC] define your own pipe heap
+References: <4382201C.8040503@domain.hid>	<43825E4C.4030002@domain.hid>
+	<4382F115.5010007@domain.hid>
+	<4382F81D.8020303@domain.hid>
+	<43830785.6010402@domain.hid> <43836DA2.90705@domain.hid>
+In-Reply-To: <43836DA2.90705@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9B1DE5D9888C3C28DB0C90EE"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,134 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Dmitry Adamushko wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9B1DE5D9888C3C28DB0C90EE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 > 
->>On Monday 31 October 2005 16:04, you wrote:
+>> Philippe Gerum wrote:
 >>
->>
->>>Dmitry Adamushko wrote:
+>>> Jan Kiszka wrote:
 >>>
+>>>> Jan Kiszka wrote:
+>>>>
+>>>>
+>>>>> ...
+>>>>> A patch says more than thousand words. ;)
+>>>>>
+>>>>> As a first approach, I picked the second variant and implemented a new
+>>>>> function called rt_pipe_setpool. I also had to extend rt_pipe_alloc
+>>>>> and
+>>>>> rt_pipe_free so that the right pool is used by them.
+>>>>>
+>>>>
+>>>>
+>>>> I thought about this variant again, and it seems to me rather unsafe in
+>>>> case some buffer allocation takes place between rt_pipe_create and
+>>>> rt_pipe_setpool. So, here is a patch which extends rt_pipe_create
+>>>> with a
+>>>> new argument poolsize instead.
+>>>>
 >>>
->>>>It seems to me now, that some parts of the hal will be involved
->>>>(rthal_irq_request/release()) since the nucleus itself doesn't keep track
->>>>of registered irqs.
+>>> Yep, looks safer to me too.
 >>>
->>>That's true. And it also raises another question to me: why do we have
->>>those two different IRQ models?
->>>
->>>The HAL only one handler per IRQ which get called with the triggering
->>>IRQ number. That handler will call the nucleus with an attached cookie.
->>>And on the other side is the nucleus which works with a xnintr_t per
->>>IRQ. The xnintr_irq_handler() deals with things like re-enabling IRQs,
->>>rescheduling, etc.
->>>
->>>I'm asking as this abstraction adds one trampoline call (at HAL level),
->>>thus may lead to more I-cache misses. Isn't it worth considering some
->>>HAL mechanisms based on more #defines and static inlines in this regard?
 >>
 >>
->>Let's take a look at what we have got currently:
->>
->>[1] 	ipipe_domain::irqs[IPIPE_NR_IRQS]	[ADEOS-IPIPE]
->>
->>the handler is defined as void (*handler)(unsigned irq);
->>
->>in our case, this is rthal_irq_trampoline() [2] , but can be different for 
->>some other cases;
->>
->>[2] 	rthal_irq_trampoline()				[HAL]
->>
->>struct rthal_realtime_irq[IPIPE_NR_IRQS]
->>
->>the handler is defined as void (*handler)(unsigned irq, void *cookie);
->>
->>this one normally does a simple thing, just calls xnintr_irq_handler() [3] as 
->>you have mentioned before.
->>
->>[3] 	xnintr_irq_handler()				[nucleus]
->> 
->>this routine calls a certain user's ISR as well as handles some 
->>nucleus-specific chores (re-scheduling, etc.)
->>
->>[4]	user's ISR						[user driver]
->>
->>does user-specific things
->>
->>Well, [3] is necessary anyway since some nucleus-related chores must be done 
->>and this is a correct layer for that (e.g. [2] knows nothing about 
->>scheduling).
->>
->>What can be theoretically merged is [1] + [2] (errr... I said theoretically, 
->>it's still not the case to kill me for just having said that :o). To this 
->>end, ipipe_domain should be extended in order to contain all the fields of 
->>[2]::struct rthal_realtime_irq (at least, handler(irq, cookie) + cookie).
->>btw, ipipe_domain::irqs may even contain a pointer to the slightly modified 
->>xnintr_t structure (which is really e.g. a circular list) that may be passed 
->>as "cockie" to the xnintr_irq_handler().
->>
->>The analogy is irq_desc_t vs. irqaction structures in Linux.
->>
->>This way, xnintr_irq_handler() can be called from adeos-ipipe layer directly 
->>without the [2] layer.
->>
->>But that change looks quite invasive to me so far since 
->>ipipe_domain::irqs::handler(irq - with a single parameter) is used all over 
->>the map.
->>
->>In our case, the relation between xnintr_irq_handler() and 
->>rthal_irq_trampoline() is 1:1. The first one does much more things that the 
->>second one which is really almost a pure redirection layer.
->>Hopefully, xnintr_irq_handler() is i-cache-hot as long as possible under high 
->>irq load. In this case, I guess, rthal_irq_trampoline() will be in cache as 
->>well (since it's really small) and the overhead is only about having one 
->>array indexing op. and issuing a call via a pointer to the function 
->>(xnintr_irq_handler() in our case).
->>Do you think that really gives a significant overhead? Well, maybe so. I'm not 
->>a profie here anyway...
->>
+>> Ok, I addressed most your comments, and here is round 2 of variant 2.
+>> The only question for me is if we should rt_pipe_create in kernel space
+>> from RT context with poolsize=0 if this is prevented effectively for
+>> userspace task?
 > 
 > 
-> ...compared to the usefulness I still have to understand - yes.
+> This is not prevented for user-space, since there is an automatic switch
+> to secondary mode caused by the lostage exec bit.
+
+That's what I meant. Anyway, this doesn't change the situation:
+rt_pipe_create is not called in primary context from userspace, so the
+questions if we should allow this for kernelspace and poolsize=0.
+
 > 
-> Other option: what about merging [2] into [3], i.e. let
-> xnintr_irq_handler deal with the translation IRQ number -> cookie?
+>  So far, I deny any non-RT invocation.
+> 
+>>
+> 
+> You likely mean, any non-Linux invocation.
 > 
 
-That's an option, yes. The other one being to teach Adeos to pass an additional 
-cookie, but in such a case, only the i-pipe series would be upgraded to allow 
-that, which would be a bit rude to people still currently relying on the legacy 
-oldgen patches for running Xenomai. This said, at some point in time, upgrading 
-will be necessary though.
+Of course, I did.
 
-> Philippe, I guess your wisdom is required here. Are we missing some
-> important point in your design right now?
-> 
+Jan
 
-Mmm, for the wisdom thing, please see there: 
-http://fr.wikipedia.org/wiki/Mahatma_Gandhi
+--------------enig9B1DE5D9888C3C28DB0C90EE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-For the design issue, I agree that the initial trampoline is just a waste of 
-cache lines and cycles. The only thing to keep in mind is to preserve a sensible 
-layering so that the whole thing is still able to run over the event-driven 
-simulation engine we have, but AFAICS, fixing the xnarch layer everywhere would 
-grant that.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+iD8DBQFDg388ncNeS9Q0k+IRAlrgAKCEbEP4NODAw8SMpw64BorfHRMx/wCfT/pV
+yCcTcMfHF+1HSwLOlrXDnJ0=
+=vo2U
+-----END PGP SIGNATURE-----
 
-
--- 
-
-Philippe.
+--------------enig9B1DE5D9888C3C28DB0C90EE--
 
