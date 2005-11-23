@@ -1,13 +1,11 @@
-Message-ID: <437AC773.6070501@domain.hid>
-Date: Wed, 16 Nov 2005 06:45:23 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Hans-J. Ude" <software@domain.hid>
+Date: Wed, 23 Nov 2005 18:06:32 +0100
+Message-ID: <000001c5f050$416d9e00$7b030080@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Strange pipe behaviour
-References: <OF904A8BBE.F91DE4A2-ONC12570B9.005BDDF6-C12570B9.005CB25A@datacon.at>
-	<4378D175.7010304@domain.hid>
-In-Reply-To: <4378D175.7010304@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Priorities in the vxWorks skin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Ignacio Garc=EDa P=E9rez wrote:
-> Hi,
->=20
-> I have the following piece of code:
->=20
-> RT_PIPE_MSG *msg;
->=20
-> while ((r =3D rt_pipe_receive(&mypipe, &msg, TM_INFINITE)) >=3D 0) {
->     /* whatever */
->     rt_pipe_free(msg);
-> }
->=20
-> When that thread enters, it blocks, as expected, in the rt_pipe_receive
-> call.
->=20
-> Then, from user space, I do:
->=20
-> echo -en "\x00" > /dev/rtp0
->=20
-> What happens is:
->=20
-> 1- rt_pipe_receive returns with r >=3D 0.
-> 2- /* whatever */
-> 3- Message is freed using rt_pipe_free.
-> 4- Next call to rt_pipe_receive returns with r =3D -EINTR.
->=20
-> The only explanation I could come up with is that when the pipe is
-> closed by the user mode process, the rt_pipe_receive tells the rt task
-> by returning -EINTR. Is this right?.
+When I create some tasks under the vx skin with different priorities and
+then look at the /proc/xeno/sched file they are all listed with the
+value 2. Shouldn't priorities be mapped to the internal priority scale?
+Of course I can't expect the original vx values there but nevertheless
+they shouldn't be all the same. I've created an rtai interrupt handler
+task with priority 99 too. That one appeares with the value 100 in the
+list.
 
-Yes.
+regards,
+Hans
 
-  According to the docs, -EINTR is
-> only returned if rt_task_unblock() has been called...
->=20
-
-Actually, this is what happened through the internal interface.
-driver::release(pipe) -> nucleus::unblock(sleepers_on_pipe)
-
-> Nacho.
->=20
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
-
-
---=20
-
-Philippe.
 
