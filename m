@@ -1,13 +1,12 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Subject: Re: [Xenomai-help] Blocking reads from pipes
-Date: Thu, 17 Nov 2005 19:21:42 +0900
-References: <OF53595BAB.2AA49C4A-ONC12570BA.0035EF11-C12570BA.0036F2D4@domain.hid>
-	<437B2D05.6070003@domain.hid> <437C5119.4060100@domain.hid>
-In-Reply-To: <437C5119.4060100@domain.hid>
+Message-ID: <4386C775.4070603@domain.hid>
+Date: Fri, 25 Nov 2005 09:12:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_3mFfDsFVVCb+LiK"
-Message-Id: <200511171921.43221.rlenglet@domain.hid>
+Subject: Re: [Xenomai-help] Priorities in the vxWorks skin
+References: <000001c5f050$416d9e00$7b030080@domain.hid>
+In-Reply-To: <000001c5f050$416d9e00$7b030080@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,108 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Hans-J. Ude" <software@domain.hid>
+Cc: xenomai@xenomai.org
 
---Boundary-00=_3mFfDsFVVCb+LiK
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hans-J. Ude wrote:
+> When I create some tasks under the vx skin with different priorities and
+> then look at the /proc/xeno/sched file they are all listed with the
+> value 2. Shouldn't priorities be mapped to the internal priority scale?
+> Of course I can't expect the original vx values there but nevertheless
+> they shouldn't be all the same. I've created an rtai interrupt handler
+> task with priority 99 too. That one appeares with the value 100 in the
+> list.
+> 
 
-> One posix thread blocked reading from a pipe (using posix
-> open/read) won't unblock when you close the file handle from
-> another thread.
+The explanation is accessible there:
+http://download.gna.org/xenomai/documentation/tags/v2.0.1/pdf/Introduction-to-UVMs.pdf
 
-Yes, it does!
+In short, in the context of the UVM, a user-space copy of the nucleus is 
+running embodied into your Linux process, this is the one that enforces 
+the VxWorks priority levels. To this end, it only uses three scheduling 
+levels from the real nucleus in kernel space it communicates with, in 
+order to schedule the application threads: one for the interrupt 
+services, one for the idle thread, and the final one for the thread that 
+should be running application-wise. Non-running threads are simply 
+suspended from the in-kernel nucleus POV.
 
-Compile the two attached source files:
-$ gcc -o read read.c
-$ gcc -o close close.c
+> regards,
+> Hans
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
-Create the named pipe:
-$ mkfifo testfifo
-
-In two different terminals, run "read", which will block in 
-read(), then "close".
-
-You will remark that the blocking read call is unblocked when the 
-other process closes its descriptor.
-
-
-As a conclusion, the behaviour that you observed with Xenomai 
-pipes seems consistent with that of Linux' named pipes, except 
-that in Linux read() returns 0, and not an error code as you 
-observed with Xenomai.
 
 -- 
-Romain Lenglet
 
---Boundary-00=_3mFfDsFVVCb+LiK
-Content-Type: text/x-csrc;
-  charset="iso-8859-1";
-  name="close.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="close.c"
-
-#include <stdio.h>
-#include <fcntl.h>
-
-#define SIZE 1024
-
-int
-main (int argc, char **argv)
-{
-  int desc;
-  int nread;
-  char buf[SIZE];
-  desc = open ("./testfifo", O_WRONLY);
-  if (desc == -1)
-    {
-      perror (argv[0]);
-      return 1;
-    }
-  close (desc);
-  return 0;
-}
-
---Boundary-00=_3mFfDsFVVCb+LiK
-Content-Type: text/x-csrc;
-  charset="iso-8859-1";
-  name="read.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="read.c"
-
-#include <stdio.h>
-#include <fcntl.h>
-
-#define SIZE 1024
-
-int
-main (int argc, char **argv)
-{
-  int desc;
-  int nread;
-  char buf[SIZE];
-  desc = open ("./testfifo", O_RDONLY);
-  if (desc == -1)
-    {
-      perror (argv[0]);
-      return 1;
-    }
-  while ((nread = read (desc, buf, SIZE)) > 0)
-    {
-      buf[nread] = 0;
-      printf ("child received \"%s\" (%d)\n", buf, nread);
-    }
-  if (nread == 0)
-    printf ("child received 0 bytes!\n");
-  if (nread == -1)
-    perror (argv[0]);
-  close (desc);
-  return 0;
-}
-
---Boundary-00=_3mFfDsFVVCb+LiK--
+Philippe.
 
