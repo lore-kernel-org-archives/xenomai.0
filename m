@@ -1,10 +1,12 @@
-Message-ID: <20051118090703.57135.qmail@domain.hid>
-Date: Fri, 18 Nov 2005 01:07:03 -0800 (PST)
-From: Cedric Herreman <glocker50@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1696470112-1132304823=:56929"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] 2.6 kernel module with math functions
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-class: urn:content-classes:message
+Date: Sat, 26 Nov 2005 16:42:48 -0700
+Message-ID: <A0BC2AD74130A347BC7D2D653A27541C301509@domain.hid>
+From: "Diekema, Jon (AGRE)" <Jon.Diekema@domain.hid>
+Subject: [Xenomai-help] How to access the MPC8260 register space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,55 +18,53 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0-1696470112-1132304823=:56929
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
 
-Hello,
- 
- I am porting a 2.4 RTAI kernel module to Xenomai 2.0 kernel 2.6. I used some basic math functions in the original module. This is posing problems for me now.
- 
- In the module source i include <math.h>. I add -I/usr/include to the compiler flags and also "-ffast-math -mhard-float".
- 
- If i compile this, i get warnings about double definitions of "__attribute_pure__" and "__attribute_used__".
- 
- If i insert the kernel module, i get an error message :
- "Xenomai: Invalid use of FPU in Xenomai context at " + probably the address of the instruction where the math function is called.
- 
- Can anyone give me a hint ? Thanks.
- 
- This is the makefile  :
- 
- obj-m    := rt_canio.o
- 
- XENODIR = /usr/realtime
- 
- KDIR    := /lib/modules/2.6.13.3/build
- PWD    := $(shell pwd)
- 
- EXTRA_CFLAGS := -I$(XENODIR)/include -I/usr/include -ffast-math -mhard-float 
- 
- all:
-     $(MAKE) -C $(KDIR) M=$(PWD) modules
- 
- clean:
-     $(MAKE) -C $(KDIR) M=$(PWD) clean
- 
- 
+Configuration:
+	MPC8260
+	Linux 2.4.25
+	IPIPE 0.9-03
+	Xenomai 2.1 (latest SVN version)
+	IMMR =3D 0xF0000000
 
-		
----------------------------------
- Yahoo! FareChase - Search multiple travel sites in one click.  
---0-1696470112-1132304823=:56929
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Background:
+	- Have Linux based device driver, providing SCC/FCC transparent
+mode access
 
-<div id="RTEContent">Hello,<br> <br> I am porting a 2.4 RTAI kernel module to Xenomai 2.0 kernel 2.6. I used some basic math functions in the original module. This is posing problems for me now.<br> <br> In the module source i include &lt;math.h&gt;. I add -I/usr/include to the compiler flags and also "-ffast-math -mhard-float".<br> <br> If i compile this, i get warnings about double definitions of "__attribute_pure__" and "__attribute_used__".<br> <br> If i insert the kernel module, i get an error message :<br> "Xenomai: Invalid use of FPU in Xenomai context at " + probably the address of the instruction where the math function is called.<br> <br> Can anyone give me a hint ? Thanks.<br> <br> This is the makefile&nbsp; :<br> <br> obj-m&nbsp;&nbsp;&nbsp; := rt_canio.o<br> <br> XENODIR = /usr/realtime<br> <br> KDIR&nbsp;&nbsp;&nbsp; := /lib/modules/2.6.13.3/build<br> PWD&nbsp;&nbsp;&nbsp; := $(shell pwd)<br> <br> EXTRA_CFLAGS := -I$(XENODIR)/include -I/usr/include -ffast-math
- -mhard-float <br> <br> all:<br> &nbsp;&nbsp;&nbsp; $(MAKE) -C $(KDIR) M=$(PWD) modules<br> <br> clean:<br> &nbsp;&nbsp;&nbsp; $(MAKE) -C $(KDIR) M=$(PWD) clean<br> <br> </div><p>
-		<hr size=1> <a href="http://us.lrd.yahoo.com/_ylc=X3oDMTFqODRtdXQ4BF9TAzMyOTc1MDIEX3MDOTY2ODgxNjkEcG9zAzEEc2VjA21haWwtZm9vdGVyBHNsawNmYw--/SIG=110oav78o/**http%3a//farechase.yahoo.com/">Yahoo! FareChase - Search multiple travel sites in one click.</a>
+Problem:
 
- 
+I am new to Xenomai, and am quite exciting about the prospects of what
+it can offer.  A user mode device driver sounds like a *nice* dream, but
+I ed
+ a few more details.  I have a Xenomai task that is able to intercept
+the the SCC2 interrupts, but now I need to figure out how to access the
+memory based MPC8260 registers. =0D
 
- 
---0-1696470112-1132304823=:56929--
+What is needed for a user mode Xenonmai task to access the MPC8260
+register which live in 0xf00000000..0xf0020000?  I tried using
+rt_misc_get_io_region(), but didn't get too far.  I think this routine
+is designed to access I/O space, which doesn't exist on PPC processor.
+Should I be using the mmap() system call?  Or, is there a better
+approach?
+
+In kernel space, I have no trouble accessing these registers.
+
+
+
+
+
+
+******************************************
+The information contained in, or attached to, this e-mail, may contain=
+ confidential information and is intended solely for the use of the=
+ individual or entity to whom they are addressed and may be subject to=
+ legal privilege.  If you have received this e-mail in error you should=
+ notify the sender immediately by reply e-mail, delete the message from=
+ your system and notify your system manager.  Please do not copy it for any=
+ purpose, or disclose its contents to any other person.  The views or=
+ opinions presented in this e-mail are solely those of the author and do=
+ not necessarily represent those of the company.  The recipient should=
+ check this e-mail and any attachments for the presence of viruses.  The=
+ company accepts no liability for any damage caused, directly or=
+ indirectly, by any virus transmitted in this email.
+******************************************
 
