@@ -1,11 +1,12 @@
-Message-ID: <002f01c5e44a$b675bf50$1000000a@domain.hid>
-From: "Hans-J. Ude" <ude@domain.hid>
-Date: Tue, 8 Nov 2005 10:56:31 +0100
+Message-ID: <4388E22C.9030101@domain.hid>
+Date: Sat, 26 Nov 2005 23:31:08 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Task lock/unlock unlock difficulties
+Subject: Re: [Xenomai-help] Problems linking latency
+References: <200511262226.24260.niklaus.giger@domain.hid>
+In-Reply-To: <200511262226.24260.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,27 +16,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-I need to lock/unlock the scheduler from time to time. I'm using the RTAI
-native skin in userspace and tried the rt_task_set_mode approach but was not
-very successfus yet. I've tried this:
+Niklaus Giger wrote:
+> Hi
+>=20
+> I try to compile Xenomai on my Powerbook for an embedded PPC405. The
+> kernel boots okay with the xenomai kernel.
+>=20
+> But when I try to compile the xenomai (trunk) I get the following error=
+:
+>=20
+> =BB/mnt/data.ng/hcu/kernel/build-xeno-hcu3/src/testsuite/latency=AB
+> /bin/sh ../../../libtool --mode=3Dlink --tag=3DCC powerpc-405-linux-gnu=
+-gcc     -o=20
+> latency  latency-latency.o ../../skins/native/libnative.la -lpthread -l=
+m
+>=20
+> *** Warning: Linking the executable latency against the loadable module
+> *** libnative.so is not portable!
+>
 
-int task_lock(void) { return rt_task_set_mode(0, T_LOCK, &mask); }
-int task_unlock(void) { return rt_task_set_mode(T_LOCK, mask, NULL); }
+Ignore this message, the link is ok anyhow. This will be fixed in later=20
+releases.
 
-To support nested calls to these functions i've implement an array of masks
-and lock/unlock counters to maintain a stack. I've also tried a single mask
-and no stack and with no mask at all. No success. It's hard to explain what
-exactly happens because I'm porting an existing software with a really bad
-design but the original works. I found there are xenomai functions called
-xnpod_lock_sched(), which are directly called from e.g. the vxWorks skin.
-Obviously xn_pod_lock has an integrated counting. Otherwise the vx skin
-would be incompatible. But when i include pod.h i get a whole bunch of error
-messages, likely due to missing defines. So can someone show me a way to a
-clean working counting lock/unlock mechanism.
+> The Xenomai part of my kernel/.config looks like this
+> CONFIG_XENOMAI=3Dy
+> CONFIG_XENO_OPT_NUCLEUS=3Dy
+> CONFIG_XENO_OPT_PERVASIVE=3Dy
+> CONFIG_XENO_OPT_PIPE=3Dy
+> CONFIG_XENO_OPT_PIPE_NRDEV=3D32
+> CONFIG_XENO_OPT_SYS_HEAPSZ=3D128
+> # CONFIG_XENO_OPT_ISHIELD is not set
+> CONFIG_XENO_OPT_STATS=3Dy
+> # CONFIG_XENO_OPT_DEBUG is not set
+> # CONFIG_XENO_OPT_WATCHDOG is not set
+> # CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+> # CONFIG_XENO_HW_FPU is not set
+> CONFIG_XENO_HW_PERIODIC_TIMER=3Dy
+> CONFIG_XENO_HW_TIMER_LATENCY=3D0
+> CONFIG_XENO_HW_SCHED_LATENCY=3D0
+> CONFIG_XENO_SKIN_NATIVE=3Dm
+> CONFIG_XENO_OPT_NATIVE_REGISTRY=3Dy
+> CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS=3D512
+> CONFIG_XENO_OPT_NATIVE_PIPE=3Dy
+> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=3D4096
+> CONFIG_XENO_OPT_NATIVE_SEM=3Dy
+> CONFIG_XENO_OPT_NATIVE_EVENT=3Dy
+> CONFIG_XENO_OPT_NATIVE_MUTEX=3Dy
+> CONFIG_XENO_OPT_NATIVE_COND=3Dy
+> CONFIG_XENO_OPT_NATIVE_QUEUE=3Dy
+> CONFIG_XENO_OPT_NATIVE_HEAP=3Dy
+> CONFIG_XENO_OPT_NATIVE_ALARM=3Dy
+> CONFIG_XENO_OPT_NATIVE_MPS=3Dy
+> CONFIG_XENO_OPT_NATIVE_INTR=3Dy
+> # CONFIG_XENO_SKIN_POSIX is not set
+> # CONFIG_XENO_SKIN_PSOS is not set
+> # CONFIG_XENO_SKIN_UITRON is not set
+> # CONFIG_XENO_SKIN_VRTX is not set
+> CONFIG_XENO_SKIN_VXWORKS=3Dy
+> # CONFIG_XENO_SKIN_RTAI is not set
+> # CONFIG_XENO_SKIN_RTDM is not set
+> CONFIG_XENO_SKIN_UVM=3Dy
+>=20
+> What is wrong?
+>=20
+> I was also surprised that I could not configure xenomai with=20
+> CROSS_COMPILE=3Dpowerpc-405-linux-gnu- but had do specify
+> CC=3Dpowerpc-405-linux-gnu-gcc to be able to use the same compiler, wit=
+h which I=20
+> built my kernel.=20
+>
 
-TAI,
-Hans
+v2.1 stops defining its own set of funky rules for building Xenomai, but=20
+rather strictly relies on the kernel rules for building kernel support,=20
+and on the autoconf rules for building user-space support, so it's=20
+perfectly normal that the new configure script does not recognize=20
+CROSS_COMPILE since it is a variable defined by Linux's Kbuild system.=20
+Just follow the appropriate vanilla set of rules depending on which=20
+support you are trying to build.
 
+> Best regards for any hints.
+>=20
+
+
+--=20
+
+Philippe.
 
