@@ -1,14 +1,13 @@
-Message-ID: <437D0735.8070306@domain.hid>
-Date: Thu, 17 Nov 2005 23:41:57 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 26 Nov 2005 22:26:23 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] kernel module misses rt_get_time
-References: <20051117214647.61520725.gda@domain.hid>
-In-Reply-To: <20051117214647.61520725.gda@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE0E153087C59475F1DC45C5D"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200511262226.24260.niklaus.giger@domain.hid>
+Subject: [Xenomai-help] Problems linking latency
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,52 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gerald Dachs <gda@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE0E153087C59475F1DC45C5D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Hi
 
-Gerald Dachs wrote:
-> Hi,
-> 
-> I am new to xenomai, sorry if I ask something stupid. 
-> I try to use a kernel module with xenomai, but upon loading it
-> misses rt_get_time. It looks like it was build with rtai. I have thought
-> I could use it with xenomai via the rtai skin.
-> In the rtai skin I found only rt_get_time_ns.
-> Searching the web I found them both mentioned, I didn't found
-> that it is replaced by another function. Is xnpod_get_time the
-> same?
+I try to compile Xenomai on my Powerbook for an embedded PPC405. The
+kernel boots okay with the xenomai kernel.
 
-Actually, rt_get_time and rt_get_time_ns are the same in the RTAI
-compatibility skin (counts are nanoseconds here, see count2nano e.g.).
-Therefore, a
+But when I try to compile the xenomai (trunk) I get the following error:
 
-static inline RTIME rt_get_time(void) {
-	return rt_get_time_ns();
-}
+=BB/mnt/data.ng/hcu/kernel/build-xeno-hcu3/src/testsuite/latency=AB
+/bin/sh ../../../libtool --mode=3Dlink --tag=3DCC powerpc-405-linux-gnu-gcc=
+     -o=20
+latency  latency-latency.o ../../skins/native/libnative.la -lpthread -lm
 
-should make it into rtai/timer.h (sorry, I have nothing to generate a
-patch at hand).
+*** Warning: Linking the executable latency against the loadable module
+*** libnative.so is not portable!
 
-Jan
+The Xenomai part of my kernel/.config looks like this
+CONFIG_XENOMAI=3Dy
+CONFIG_XENO_OPT_NUCLEUS=3Dy
+CONFIG_XENO_OPT_PERVASIVE=3Dy
+CONFIG_XENO_OPT_PIPE=3Dy
+CONFIG_XENO_OPT_PIPE_NRDEV=3D32
+CONFIG_XENO_OPT_SYS_HEAPSZ=3D128
+# CONFIG_XENO_OPT_ISHIELD is not set
+CONFIG_XENO_OPT_STATS=3Dy
+# CONFIG_XENO_OPT_DEBUG is not set
+# CONFIG_XENO_OPT_WATCHDOG is not set
+# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+# CONFIG_XENO_HW_FPU is not set
+CONFIG_XENO_HW_PERIODIC_TIMER=3Dy
+CONFIG_XENO_HW_TIMER_LATENCY=3D0
+CONFIG_XENO_HW_SCHED_LATENCY=3D0
+CONFIG_XENO_SKIN_NATIVE=3Dm
+CONFIG_XENO_OPT_NATIVE_REGISTRY=3Dy
+CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS=3D512
+CONFIG_XENO_OPT_NATIVE_PIPE=3Dy
+CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=3D4096
+CONFIG_XENO_OPT_NATIVE_SEM=3Dy
+CONFIG_XENO_OPT_NATIVE_EVENT=3Dy
+CONFIG_XENO_OPT_NATIVE_MUTEX=3Dy
+CONFIG_XENO_OPT_NATIVE_COND=3Dy
+CONFIG_XENO_OPT_NATIVE_QUEUE=3Dy
+CONFIG_XENO_OPT_NATIVE_HEAP=3Dy
+CONFIG_XENO_OPT_NATIVE_ALARM=3Dy
+CONFIG_XENO_OPT_NATIVE_MPS=3Dy
+CONFIG_XENO_OPT_NATIVE_INTR=3Dy
+# CONFIG_XENO_SKIN_POSIX is not set
+# CONFIG_XENO_SKIN_PSOS is not set
+# CONFIG_XENO_SKIN_UITRON is not set
+# CONFIG_XENO_SKIN_VRTX is not set
+CONFIG_XENO_SKIN_VXWORKS=3Dy
+# CONFIG_XENO_SKIN_RTAI is not set
+# CONFIG_XENO_SKIN_RTDM is not set
+CONFIG_XENO_SKIN_UVM=3Dy
 
---------------enigE0E153087C59475F1DC45C5D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+What is wrong?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+I was also surprised that I could not configure xenomai with=20
+CROSS_COMPILE=3Dpowerpc-405-linux-gnu- but had do specify
+CC=3Dpowerpc-405-linux-gnu-gcc to be able to use the same compiler, with wh=
+ich I=20
+built my kernel.=20
 
-iD8DBQFDfQc5niDOoMHTA+kRAiR9AJ41P9iKRI75zmQJL0Kqo8k+YhBTWgCcC0VD
-GLApIGYqhQib3G2V1Ph8UPE=
-=1C88
------END PGP SIGNATURE-----
+Best regards for any hints.
 
---------------enigE0E153087C59475F1DC45C5D--
+=2D-=20
+Niklaus Giger
 
