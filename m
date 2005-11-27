@@ -1,10 +1,13 @@
-Message-ID: <43819D68.4000800@domain.hid>
-Date: Mon, 21 Nov 2005 11:11:52 +0100
-From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] pipe fun
+Message-ID: <17289.59986.830043.755977@domain.hid>
+Date: Sun, 27 Nov 2005 18:18:10 +0100
+Subject: Re: [Xenomai-help] 2.6 kernel module with math functions
+In-Reply-To: <4386DBD1.90605@domain.hid>
+References: <20051125093348.40193.qmail@domain.hid>
+	<4386DBD1.90605@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,73 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi,
+Philippe Gerum wrote:
+ > Cedric Herreman wrote:
+ > > OK,
+ > > 
+ > > I made an extra math module, copying some of the source code from newlib 
+ > > for the functions i needed. It works.
+ > > 
+ > > Another question : if i create an application (in stead of kernel 
+ > > module) that starts a real time thread. Can i then use math functions 
+ > > inside the real time running part ?
+ > > 
+ > > In the latency example, the sqrt function is used for displaying the 
+ > > results of the latency test.  This is outside the real time task. Is it 
+ > > possible to use this call in the real time function ? Or any other 
+ > > library function (that is not performing system calls) ?
+ > >
+ > 
+ > Yes. RT threads in user-space have their own FPU context managed by Xenomai.
 
-This has to be something really simple but I'm hitting a wall. I have a
-rt module that creates a pipe and periodically writes some data to it.
-In the following program, the read fails with "No space left on device":
+As for math functions implemented in libm, they may be called from
+real-time threads, but if we want to be precise, we can not guarantee
+their worst case behaviour, you have to do a mathematical analysis of
+their implementation for that (sqrt is probably implemented in hardware,
+so you have to read intel spec to know if the max cycles count is known,
+but it would be strange if it was not).
 
-
-int main (void) {
-
-    int r, fd; u_char c;
-
-    fd = open("/proc/xenomai/registry/pipes/rt2event", O_RDWR);
-    if (fd < 0) {
-        fprintf(stderr, "ERROR opening pipe: %s\n", strerror(errno));
-        return -1;
-    }
-
-    for (;;) {
-        r = read(fd, &c, sizeof(c));
-        if (r == 0) { fprintf(stderr, "ERROR reading (returned 0)\n");
-break; }
-        if (r < 0) { fprintf(stderr, "ERROR reading: %s\n",
-strerror(errno)); break; }
-        fprintf(stderr, "%02hX ", c);
-    }
-
-    close(fd);
-
-    return 0;
-}
+-- 
 
 
-However, the following program works fine!!!
-
-
-int main (void) {
-
-    int r; u_char c;
-
-    FILE *f;
-
-    f = fopen("/proc/xenomai/registry/pipes/rt2event", "r+b");
-    if (f == NULL) {
-        fprintf(stderr, "ERROR opening pipe: %s\n", strerror(errno));
-        return -1;
-    }
-
-    for (;;) {
-        r = fread(&c, sizeof(c), 1, f);
-        if (r == 0) { fprintf(stderr, "ERROR reading (returned 0)\n");
-break; }
-        if (r < 0) { fprintf(stderr, "ERROR reading: %s\n",
-strerror(errno)); break; }
-        fprintf(stderr, "%02hX ", c);
-    }
-
-    fclose(f);
-
-    return 0;
-}
-
-
-
-Any clues?
-
-By the way, I noticed a "cat /proc/xenomai/registry/pipes/rt2event |
-xxd" won't work, perhaps due to the same reason?
+					    Gilles Chanteperdrix.
 
