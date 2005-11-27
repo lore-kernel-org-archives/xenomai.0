@@ -1,9 +1,12 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] 2.6 kernel module with math functions
-In-Reply-To: <20051118090703.57135.qmail@domain.hid>
-References: <20051118090703.57135.qmail@domain.hid>
-Message-Id: <E1Ed69H-0002kJ-J2@domain.hid>
-Date: Fri, 18 Nov 2005 14:19:27 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17289.65337.283547.623504@domain.hid>
+Date: Sun, 27 Nov 2005 19:47:21 +0100
+Subject: Re: [Xenomai-help] Interrupt processing crashes in semTake
+In-Reply-To: <001f01c5f1a6$cffd8250$1000000a@domain.hid>
+References: <001f01c5f1a6$cffd8250$1000000a@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,40 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Cedric Herreman <glocker50@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Hans-J. Ude" <ude@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-Cedric Herreman wrote:
- > Hello,
- >  
- >  I am porting a 2.4 RTAI kernel module to Xenomai 2.0 kernel 2.6. I used some basic math functions in the original module. This is posing problems for me now.
- >  
- >  In the module source i include <math.h>. I add -I/usr/include to the compiler flags and also "-ffast-math -mhard-float".
- >  
- >  If i compile this, i get warnings about double definitions of "__attribute_pure__" and "__attribute_used__".
- >  
- >  If i insert the kernel module, i get an error message :
- >  "Xenomai: Invalid use of FPU in Xenomai context at " + probably the address of the instruction where the math function is called.
- >  
- >  Can anyone give me a hint ? Thanks.
+Hans-J. Ude wrote:
+ > I'm porting an vxWorks application to Xenomai at the moment. When it comes
+ > to interrupt handling, there is nothing in the vx skin to handle that (did i
+ > overlook something?). 
 
-You can only use floating point operations from real-time threads
-contexts, not from module initialization and finalization routines, and
-you have to signal Xenomai, when creating kernel space real-time
-threads, that the thread will be allowed to use FPU. For the RTAI skin,
-this is what the rt_task_init function 6th argument is for.
+Would an implementation of intConnect be enough ? With vectors and
+interrupts being the same thing (IVEC_TO_INUM and INUM_TO_IVEC would not
+change anything).
 
-There is currently no math library module in Xenomai. So, the answer is
-that you have to avoid math functions, or make a xeno_math module, the
-way it is done in RTAI, i.e. using a math library such as the one made
-by Sun and used by FreeBSD, or one among the various libcs available.
-We once discussed this with Philippe, and a good candidate seemed to be
-newlib at that time:
+ > First I've tried to handle that down in the xenomai
+ > layer but problems occured and someone advised me to use a native interrupt
+ > task using rt_intr_wait. I did so but the program segfaults after a minute
+ > or so. I've put a sigsegv handler with a stack backtrace function into the
+ > code. That shows the crash happens in the internals of semTake. Is it
+ > problematic to make skin calls (semGive in my case) from inside the native
+ > irq handler? Is there a bug somewhere in UVM or the test program or settings
+ > or in other words: how are interrups handled properly from the vxWorks skin?
+ > 
+ > I've tracked the problem down to a test program which is appended to this
+ > mail. I set up the irq number by #define to the irq of my network card. Then
+ > made traffic by copying a large amount of files to the target system. After
+ > about 30000 interrupts the crash happens most times but this value ranges
+ > from about 1000 to 50000.
 
-http://sourceware.org/newlib/
+I have just tried your test program and it appears to work. But I had to
+fix the various function prototypes (vxWorks thread functions take 10
+int arguments, and irq_server is void). Add -W -Wstrict-prototypes to
+your compilation flags, and you will get the warnings.
 
-Looking at newlib sources, it seems that some of its contents come from
-the Sun library too.
+Appart from that, the "wrong context" issue does not seem to be a
+real issue, since irq_server is a valid thread context. But fixing
+wind_errnoset was needed anyway.
+
+I did not get any crash, but used the disk IRQ (only 150 interrupts by
+second or so, worse than the timer...), running a recursive ls about 10
+minutes.
+
+So, I am afraid you will have to dig a bit deeper 
+ > 
+ > No clue what could be wrong. I'm using kernel 2.6.13 and xenomai 2.0.1 with
+ > the included ipipe patch on a PIImmx running at 266 Mhz.
+ > 
+ > The backtrace function is the only debugging function i have since remote
+ > debugging with gdb/gdbserver is still not working properly, but i'm gonna
+ > describe that in detail in anorter post. Here comes the program:
+
+note that at the end of sigsegv_handler, after having restored the
+default signal handler, you should raise SIGSEGV again so that the
+normal processing may be done (otherwise, the program retries the
+same operation and SEGV again, but who knows ?). And if you do not want
+to have to bother about doing all that stuff, the program "catchsegv" is
+your friend.
 
 -- 
 
