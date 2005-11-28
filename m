@@ -1,14 +1,12 @@
-Message-ID: <43875AB0.6000706@domain.hid>
-Date: Fri, 25 Nov 2005 19:40:48 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <438AAEC9.7070703@domain.hid>
+Date: Mon, 28 Nov 2005 08:16:25 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] private heaps for native pipes
-References: <438756DA.9000808@domain.hid>
-	<43875924.7070903@domain.hid>
-In-Reply-To: <43875924.7070903@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6111E81DFECB43ACB0DAF05F"
+	boundary="------------enigE750D54A5745EF0BC046216C"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] NMI-watchdog related fixes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,56 +16,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6111E81DFECB43ACB0DAF05F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+--------------enigE750D54A5745EF0BC046216C
+Content-Type: multipart/mixed; boundary="------------080400060003040302050203"
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Hi,
->>
->> this is basically the last version of my rt_pipe_create-ext patch to a=
-dd
->> private, user-resizeable heaps to native pipes. Joerg has tested this
->> patch successfully under the 2.1 trunk, and I added a ChangeLog snippe=
-t.
->> Attached both 2.0.x and 2.1.x patches - please apply at least the 2.1
->> variant.
->>
->=20
-> Applied to 2.1, thanks. We need to keep the 2.0 branch 100% compatible
-> with the former RTAI/fusion API-wise, so I won't merge this in 2.0 thou=
-gh.
->=20
+This is a multi-part message in MIME format.
+--------------080400060003040302050203
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-No problem. The patch was first developed on 2.0, so I just attached
-that version. Now, as I returned from my short travel, Joerg told me
-that he is already happily working over 2.1-trunk and had adapted my
-patch. :)
+Hi,
 
-BTW, RTnet also compiles against trunk now, I just have to get the patch
-into SVN.
+some fixes related to warnings when you switch on Xenomai's NMI watchdog.
 
 Jan
 
+--------------080400060003040302050203
+Content-Type: text/x-patch;
+ name="nmi-wd.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="nmi-wd.patch"
 
---------------enig6111E81DFECB43ACB0DAF05F
+Index: include/asm-i386/system.h
+===================================================================
+--- include/asm-i386/system.h	(Revision 191)
++++ include/asm-i386/system.h	(Arbeitskopie)
+@@ -602,9 +602,11 @@
+        handler would simply occur after 4 billions ticks. */
+     rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,RTHAL_CPU_FREQ));
+ #ifdef CONFIG_XENO_HW_NMI_DEBUG_LATENCY
+-    extern unsigned long rthal_maxlat_tsc;
+-    if (delay <= (ULONG_MAX - rthal_maxlat_tsc))
+-        rthal_nmi_arm(delay + rthal_maxlat_tsc);
++    {
++        extern unsigned long rthal_maxlat_tsc;
++        if (delay <= (ULONG_MAX - rthal_maxlat_tsc))
++            rthal_nmi_arm(delay + rthal_maxlat_tsc);
++    }
+ #endif /* CONFIG_XENO_HW_NMI_DEBUG_LATENCY */
+ }
+ 
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(Revision 191)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,11 @@
++2005-11-28  Jan Kiszka <jan.kiszka@domain.hid>
++
++	* ksrc/arch/i386/Kconfig: Fixed XENO_HW_NMI_DEBUG_LATENCY_MAX
++	kconfig type.
++
++	* include/asm-i386/system.h, ksrc/arch/i386/hal.c: Fixed
++	harmless compiler warnings.
++
+ 2005-11-25  Jan Kiszka <jan.kiszka@domain.hid>
+ 
+ 	* ksrc/skins/native/{pipe.c,syscall.c}, src/skins/native/pipe.c,
+Index: ksrc/arch/i386/Kconfig
+===================================================================
+--- ksrc/arch/i386/Kconfig	(Revision 191)
++++ ksrc/arch/i386/Kconfig	(Arbeitskopie)
+@@ -81,8 +81,8 @@
+ 
+ config XENO_HW_NMI_DEBUG_LATENCY_MAX
+         depends XENO_HW_NMI_DEBUG_LATENCY
+-        string "NMI watchdog latency threshold (us)"
+-        default "100"
++        int "NMI watchdog latency threshold (us)"
++        default 100
+         help
+         When the timer interrupt latency goes above this threshold, the
+         NMI watchdog pulls the handbrake.
+Index: ksrc/arch/i386/hal.c
+===================================================================
+--- ksrc/arch/i386/hal.c	(Revision 191)
++++ ksrc/arch/i386/hal.c	(Arbeitskopie)
+@@ -175,6 +175,8 @@
+ }
+ 
+ #ifdef CONFIG_XENO_HW_NMI_DEBUG_LATENCY
++#include <asm/nmi.h>
++
+ unsigned long rthal_maxlat_tsc;
+ EXPORT_SYMBOL(rthal_maxlat_tsc);
+ 
+
+--------------080400060003040302050203--
+
+--------------enigE750D54A5745EF0BC046216C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDh1qwncNeS9Q0k+IRAhW6AJ9PP8ntwNq7aOpvDfe6UomSNWUUuwCeJ0S6
-aLcPddII5Yf5ImKUS69isU4=
-=DEJB
+iD8DBQFDiq7fniDOoMHTA+kRAno/AJ9fPVZiBvWhFbxXX2/T6AHv/vgw8gCdEuFL
+VnShTURBo4R2F1UjqVOUaL0=
+=1A6V
 -----END PGP SIGNATURE-----
 
---------------enig6111E81DFECB43ACB0DAF05F--
+--------------enigE750D54A5745EF0BC046216C--
 
