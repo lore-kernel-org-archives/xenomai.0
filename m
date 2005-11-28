@@ -1,16 +1,11 @@
-Message-ID: <438B3EF8.3080303@domain.hid>
-Date: Mon, 28 Nov 2005 18:31:36 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <438B6F43.4060104@domain.hid>
+Date: Mon, 28 Nov 2005 21:57:39 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Latest snapshot (182) not compiling (kernel)
-References: <438743FC.6070007@domain.hid>	
-	<ae7121c60511280857l26c080b7g299c6cae93a8afed@domain.hid>	
-	<ae7121c60511280858g7d25f4d9y28de0688053ad51d@domain.hid>	
-	<438B3BDC.6090700@domain.hid>
-	<ae7121c60511280923l5e013f1es89f8a700bf81fe20@domain.hid>
-In-Reply-To: <ae7121c60511280923l5e013f1es89f8a700bf81fe20@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB053A33E3B86D19F95408AFC"
+Subject: [Xenomai-core] [RFC] latency tracing
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,36 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Panagiotis Issaris <panagiotis@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Panagiotis Issaris wrote:
-> Hi Philippe,
-> 
-> On 11/28/05, *Philippe Gerum* <rpm@xenomai.org <mailto:rpm@xenomai.org>> 
-> wrote:
-> 
->     Panagiotis Issaris wrote:
->      > Hi,
->      >
->      > I'm also having issues compiling the latest Xenomai tree.
->      >
-> 
->     Mm, dot-config would be great. TIA,
-> 
-> Sorry :)
-> The problem appears to be gone when disabling the interrupt shield. (An 
-> excerpt from my config can be found in my reply to Jan's e-mail.)
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB053A33E3B86D19F95408AFC
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Confirmed here, there's indeed something fishy. Ok, I will look at this 
-asap. Thanks,
+Hi,
 
-> With friendly regards,
-> Takis
+as I'm lazy, er busy, I'm pushing this idea into public instead of
+hacking a patch on my own: wouldn't it be nice to have something like
+the latency backtrace of PREEMPT_RT also in Xenomai? Even when the core
+is once optimised ;), there can still be drivers with long IRQ locks
+nuking the WCET.
+
+I saw that there is already something for SMP spinlock debugging. Is it
+a lot of work to extend this to UP and maybe even all IRQ-off locks? Did
+someone already look at the backtrace implementation of PREEMPT_RT in
+details? Is is complicated to port? Does it require some changes at
+ADEOS level?
+
+Jan
 
 
--- 
+--------------enigB053A33E3B86D19F95408AFC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFDi29DncNeS9Q0k+IRAqWqAJ94SxOsg0/pkG1O1Fixn5DQij1AFACfRsLQ
+FhXiZbvOxDrGK55FUriP2aw=
+=pa8a
+-----END PGP SIGNATURE-----
+
+--------------enigB053A33E3B86D19F95408AFC--
 
