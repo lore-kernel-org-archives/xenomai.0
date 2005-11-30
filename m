@@ -1,10 +1,10 @@
-Message-ID: <4382CEF6.7020109@domain.hid>
-Date: Tue, 22 Nov 2005 08:55:34 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <438DB092.4050308@domain.hid>
+Date: Wed, 30 Nov 2005 15:00:50 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] __raw_*lock for Xenaomai 2.01 on ppc
-References: <4381FC29.5040506@domain.hid> <43821221.9070702@domain.hid>
-In-Reply-To: <43821221.9070702@domain.hid>
+Subject: Re: [Xenomai-help] using mq_receive and mq_send
+References: <02AA386EB831044F8537A696BA785C78076485@domain.hid>
+In-Reply-To: <02AA386EB831044F8537A696BA785C78076485@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,29 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Landau, Bracha" <BLandau@domain.hid>
+Cc: xenomai@xenomai.org.
 
->> Is it by design or mistake that I get the following undefined symbols 
->> on a PowerPC
->>
->> # insmod xeno_nucleus.ko
->> xeno_nucleus: Unknown symbol __raw_read_lock
->> xeno_nucleus: Unknown symbol __raw_write_unlock
->> xeno_nucleus: Unknown symbol __raw_read_unlock
->> xeno_nucleus: Unknown symbol __raw_write_lock
->>
->> unless the kernel is compiled with:
->>
->> CONFIG_DEBUG_KERNEL=y
->> CONFIG_DEBUG_SPINLOCK=y
-> Patch version, please.
-xenomai-2.0.1/arch/ppc/patches/adeos-ipipe-2.6.14-ppc-1.0-06.patch
+Landau, Bracha wrote:
+> I am using Xenomai on the MPC8272ADS board with kernel 2.6.14.3.
+> 
+> I've created an application that uses posix message queuing from xenomai.
+> 
+> When I call mq_open, mq_close, mq_setattr, mq_getattr, mq_unlink - the calls succeed.
+> 
+> When I call mq_receive or mq_send, the call fails (returns -1) and errno is set to 1 (Operation not permited).
+> 
+> I put some debugging printk's into the xenomai code and it seems it doesn't even get to the call to __mq_receive or __mq_send from syscall.c (it does get to printk's that I put in  the other __mq_* functions).
+> 
+> Can anyone help?
+> 
 
-The problem probably is that the EXPORT_SYMBOL are done in 
-lib/spinlock_debug.c, which is only compiled if CONFIG_DEBUG_SPINLOCK=y
+You must link your app with the flags output by "xeno-config 
+--posix-ldflags". Have a look at skins/posix/demos/Makefile for a 
+working example.
 
-Regards
+-- 
 
-Anders Blomdell
+Philippe.
 
