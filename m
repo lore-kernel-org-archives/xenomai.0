@@ -1,5 +1,5 @@
-Message-ID: <438E1D6D.30609@domain.hid>
-Date: Wed, 30 Nov 2005 22:45:17 +0100
+Message-ID: <438E1DCA.7070607@domain.hid>
+Date: Wed, 30 Nov 2005 22:46:50 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [bug?] calling xnpod_delete_thread
@@ -29,7 +29,8 @@ Jan Kiszka wrote:
 > function. Is this double-deletion illegal? Or is it a cleanup-bug of the
 > nucleus?
 
-Double-deletion is actually illegal.
+We could test the XNZOMBIE bit in xnpod_delete_thread() to prevent this, 
+I guess.
 
 > 
 > To reproduce: this happens with RTnet over all Xenomai versions (i.e.
