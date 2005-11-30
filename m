@@ -1,13 +1,12 @@
-Message-ID: <4369E251.8070802@domain.hid>
-Date: Thu, 03 Nov 2005 11:11:29 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <438D8814.4060407@domain.hid>
+Date: Wed, 30 Nov 2005 12:08:04 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Dev branch 2.1
-References: <4368A088.9070906@domain.hid> <43693662.3080601@domain.hid>
-	<4369C3C1.2040302@domain.hid>
-In-Reply-To: <4369C3C1.2040302@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Coding style
+References: <438C5480.1020806@domain.hid> <438C5663.4030902@domain.hid>
+In-Reply-To: <438C5663.4030902@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,67 +17,27 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Philippe Gerum wrote:
-> Hannes Mayer wrote:
-> 
->> Ciao Philippe!
->>
->> prepare-kernel.sh works well - I'd suggest to ask the user for
->> the 3 needed parameters, instead of supplying them as parameters.
->> e.g.
->> # scripts/prepare-kernel.sh
->> Linux directory: [default: /usr/src/linux] :
->> Adeos-patch: [default: none] :
->> Architecture: [default: i386]
->>
->> ...or something like that.
->>
-> 
-> Yep, good idea.
-> 
->> ./configure also went well, but then:
->>
->> # make
->> Making all in src
->> make[1]: Entering directory `/usr/src/xenomai-2.1/src'
->> Making all in include
->> make[2]: Entering directory `/usr/src/xenomai-2.1/src/include'
->> make  all-recursive
->> make[3]: Entering directory `/usr/src/xenomai-2.1/src/include'
->> Making all in asm-uvm
->> make[4]: Entering directory `/usr/src/xenomai-2.1/src/include/asm-uvm'
->> make[4]: stat:system.h: Too many levels of symbolic links
->> make[4]: *** No rule to make target `system.h', needed by `all-am'.  
->> Stop.
->> make[4]: Leaving directory `/usr/src/xenomai-2.1/src/include/asm-uvm'
->> make[3]: *** [all-recursive] Error 1
->> make[3]: Leaving directory `/usr/src/xenomai-2.1/src/include'
->> make[2]: *** [all] Error 2
->> make[2]: Leaving directory `/usr/src/xenomai-2.1/src/include'
->> make[1]: *** [all-recursive] Error 1
->> make[1]: Leaving directory `/usr/src/xenomai-2.1/src'
->> make: *** [all-recursive] Error 1
->>
->>
->> /usr/src/xenomai-2.1/src/include/asm-uvm# ll
->> total 36
->> -rw-r--r--  1 root root 12780 2005-11-03 01:03 Makefile
->> -rw-r--r--  1 cap  cap     67 2005-11-02 21:36 Makefile.am
->> -rw-r--r--  1 cap  cap  13046 2005-11-02 21:36 Makefile.in
->> lrwxrwxrwx  1 root root    39 2005-11-03 01:03 system.h -> 
->> ../../.././src/include/asm-uvm/system.h
->>
-> 
-> Try building out of the source tree; it's something I'm likely going to 
-> enforce anyway.
 
-I have realized the same error building out of the source tree for 
-PowerPC. The problem is, that the link is pointing to itself. Apart from 
-that, the ksrc part works fine (at least I can boot the ipipe kernel).
+> Ignacio Garc=EDa P=E9rez wrote:
+>
+>> Hi,
+>>
+>> Some time ago someone mentioned the current xenomai coding style, and
+>> that maybe it would be a good idea to change it to something more
+>> "standard". A good place to start would be turn the tabs into spaces to
+>> eliminate editor configuration dependency. Anyway, my question is: could
+>> indent be used to do this?
+>>
+>
+> The discussion was about going for the kernel coding style and rules;
+> in such a case, tabs would have to be hard ones.
 
-Thanks.
+Ok. Never mind about the tabs. What about the coding style?. In general
+when I fiddle with someone else's code, I just adapt to his coding
+style, but it is a bit hard in this case...
 
-Wolfgang.
+Nacho.
 
