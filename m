@@ -1,62 +1,109 @@
-Message-ID: <438E1D3F.4010501@domain.hid>
-Date: Wed, 30 Nov 2005 22:44:31 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <438E42B7.5080808@domain.hid>
+Date: Thu, 01 Dec 2005 01:24:23 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] ipipe backport for 2.4
-References: <200511282336.49995.alexis.berlemont@domain.hid>	<438CBE22.70600@domain.hid>
-	<438CD1D9.1010308@domain.hid> <438E0C5B.3050307@domain.hid>
-In-Reply-To: <438E0C5B.3050307@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8B8055B45F4219C4139DDECC"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [patch] minor doc clarification
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8B8055B45F4219C4139DDECC
+Content-Type: multipart/mixed; boundary="------------080405080206090807050607"
+
+This is a multi-part message in MIME format.
+--------------080405080206090807050607
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
-Cc: adeos-main@gna.org, Alexis Berlemont <alexis.berlemont@domain.hid>
 
-Hannes Mayer wrote:
-> Philippe Gerum wrote:
-> 
->> Hannes Mayer wrote:
->>
->>> Ciao Alexis!
->>>
->>> Alexis Berlemont wrote:
->>>
->>>> Hi,
->>>>
->>>> A backport of I-Pipe 2.6/x86 has been made for 2.4/x86. The patch is 
->>>> available at the following URL:
->>>>
->>>> http://download.gna.org/adeos/patches/v2.4/i386/adeos-ipipe-2.4.31-i386-1.0-00.patch 
->>>>
->>>
->>> Way cool! Thanks! :-)
->>>
->>>> Consequently, the 2.4 I-Pipe branch offers same functionnalities as 
->>>> 2.6's and their behaviours are nearly identical.
->>>
->>>
->>> Just one question - what do you mean by "nearly identical" ?
->>> Could you provide a brief list of the differences ?
->>>
->>
->> Functionally: none.
-> 
-> 
-> Thanks Philippe!
-> I tested a few examples I've written for adeos-ipipe and all work well 
-> so far.
+Hi,
 
-Good. Actually, Xenomai is running on top of the ppc and x86 backports 
-perfectly too.
+this patch clarifies the usage of rtdm_task_join_nrt.
 
--- 
+Typically, rtdm_task_join_nrt + target task wakeup should be preferred
+over rtdm_task_destroy during cleanup of drivers. It's now intensively
+used in RTnet.
 
-Philippe.
+Jan
+
+--------------080405080206090807050607
+Content-Type: text/x-patch;
+ name="join_nrt-doc.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="join_nrt-doc.patch"
+
+Index: ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ChangeLog	(Revision 219)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,7 @@
++2005-12-01  Jan Kiszka  <jan.kiszka@domain.hid>
++
++	* ksrc/skins/rtdm/drvlib.c (rtdm_task_join_nrt): Clarify doc.
++
+ 2005-11-30  Philippe Gerum  <rpm@xenomai.org>
+=20
+ 	* ksrc/nucleus/pod.c (xnpod_delete_thread): Prevent double-deletion.
+@@ -10,7 +14,7 @@
+ 	* ksrc/arch/powerpc/patches: Upgrade to Adeos
+ 	2.4.25-denx-0.9-04, 2.6.10-ppc64-r3.patch.
+=20
+-2005-11-30  Ignacio Garc=EDa P=E9rez <iggarpe@domain.hid>
++2005-11-30  Ignacio Garcia Perez <iggarpe@domain.hid>
+=20
+ 	* ksrc/nucleus/timer.c: Make internal routines static.
+=20
+Index: ksrc/skins/rtdm/drvlib.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/rtdm/drvlib.c	(Revision 219)
++++ ksrc/skins/rtdm/drvlib.c	(Arbeitskopie)
+@@ -250,6 +250,11 @@
+  * @param[in,out] task Task handle as returned by rtdm_task_init()
+  * @param[in] poll_delay Polling delay in milliseconds
+  *
++ * @note It is not required to call rtdm_task_destroy() for a task which=
+ has
++ * been passed to rtdm_task_join_nrt(). Moreover, don't forget to inform=
+ the
++ * targeted task that it has to terminate. Otherwise, this function will=
+ never
++ * return.
++ *
+  * Environments:
+  *
+  * This service can be called from:
+
+--------------080405080206090807050607--
+
+--------------enig8B8055B45F4219C4139DDECC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDjkK6niDOoMHTA+kRApFrAJ91gsgdtlCrMflWSvbA2q2LZn+UgACdEjDH
+N0Uctdfi00zOufQk2/VM/cw=
+=PxVX
+-----END PGP SIGNATURE-----
+
+--------------enig8B8055B45F4219C4139DDECC--
 
