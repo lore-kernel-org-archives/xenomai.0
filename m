@@ -1,40 +1,34 @@
-Message-ID: <437464B2.6030204@domain.hid>
-Date: Fri, 11 Nov 2005 10:30:26 +0100
-From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
-MIME-Version: 1.0
-References: <FDBBB5CC70676540B3EF7CFE83FD94E004305A@EINT11.einet.ad.eivd.ch>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E004305A@EINT11.einet.ad.eivd.ch>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] printk
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Thu, 01 Dec 2005 09:37:03 +0800
+From: =?gb2312?B?ufnT7u+j?= <pigguo@domain.hid>
+Message-id: <d2b06bd248f3.d248f3d2b06b@domain.hid>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
+Content-language: zh-CN
+Content-transfer-encoding: 7BIT
+Content-disposition: inline
+Subject: [Xenomai-core] rt_heap_bind error -2
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Hi, I'm using xenomai instead of fusion.
+When I bind a heap in user space which is created by a kernel module, 
+the return value is -2 which I don't know what it means for it is not 
+one of several values explained by the document.
+This program runned well with fusion 0.9.
+My kernel is 2.6.13 patched with ipipe.
+Can anybody shed light on it?
 
-I'm porting an app from RTAI to Xenomai, and when it came to the
-rt_printk function, I had to replace it with plain printk (the
-xnarch_log* functions all use printk).
-
-What I want to know if:
-
-1- Is totally safe to call the standard kernel printk function from a
-real time task?
-
-2- Even if it's safe, can it affect the performance of a real time task?
-(or can it block under *any* conceivable condition?)
+And there's another strange error. In an ISR, printk must be called or 
+the interrupt can't be cleared. So now I add an empty printk to every 
+ISR.
 
 Thanks.
-
-Nacho.
-
-
 
