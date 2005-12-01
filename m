@@ -1,12 +1,10 @@
-Message-ID: <438EABE1.2010207@domain.hid>
-Date: Thu, 01 Dec 2005 08:53:05 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <f48df4840512010440j2c3a8dc7v6ad50e7ef8e3b0ec@domain.hid>
+Date: Thu, 1 Dec 2005 13:40:04 +0100
+From: Bruno Rouchouse <brouchouse@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] minor doc clarification
-References: <438E42B7.5080808@domain.hid>
-In-Reply-To: <438E42B7.5080808@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_19335_32425353.1133440804467"
+Subject: [Xenomai-core] [Website] Current issues
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,83 +14,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
->=20
-> this patch clarifies the usage of rtdm_task_join_nrt.
+------=_Part_19335_32425353.1133440804467
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Applied, thanks.
+Hi !
 
->=20
-> Typically, rtdm_task_join_nrt + target task wakeup should be preferred
-> over rtdm_task_destroy during cleanup of drivers. It's now intensively
-> used in RTnet.
->=20
-> Jan
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> Index: ChangeLog
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ChangeLog	(Revision 219)
-> +++ ChangeLog	(Arbeitskopie)
-> @@ -1,3 +1,7 @@
-> +2005-12-01  Jan Kiszka  <jan.kiszka@domain.hid>
-> +
-> +	* ksrc/skins/rtdm/drvlib.c (rtdm_task_join_nrt): Clarify doc.
-> +
->  2005-11-30  Philippe Gerum  <rpm@xenomai.org>
-> =20
->  	* ksrc/nucleus/pod.c (xnpod_delete_thread): Prevent double-deletion.
-> @@ -10,7 +14,7 @@
->  	* ksrc/arch/powerpc/patches: Upgrade to Adeos
->  	2.4.25-denx-0.9-04, 2.6.10-ppc64-r3.patch.
-> =20
-> -2005-11-30  Ignacio Garc=EDa P=E9rez <iggarpe@domain.hid>
-> +2005-11-30  Ignacio Garcia Perez <iggarpe@domain.hid>
-> =20
->  	* ksrc/nucleus/timer.c: Make internal routines static.
-> =20
-> Index: ksrc/skins/rtdm/drvlib.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ksrc/skins/rtdm/drvlib.c	(Revision 219)
-> +++ ksrc/skins/rtdm/drvlib.c	(Arbeitskopie)
-> @@ -250,6 +250,11 @@
->   * @param[in,out] task Task handle as returned by rtdm_task_init()
->   * @param[in] poll_delay Polling delay in milliseconds
->   *
-> + * @note It is not required to call rtdm_task_destroy() for a task whi=
-ch has
-> + * been passed to rtdm_task_join_nrt(). Moreover, don't forget to info=
-rm the
-> + * targeted task that it has to terminate. Otherwise, this function wi=
-ll never
-> + * return.
-> + *
->   * Environments:
->   *
->   * This service can be called from:
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+You will find below some information about current issues concerning Xenoma=
+i
+website.
 
+Just for your information, I performed some slight improvements on Xenomai
+website. The main menu column has actually been resized smaller, not too
+much though in order to keep a reasonable size for the NewsFlash area.
 
---=20
+Next step is to do the same with the top banner (probably half size) which
+will be done as soon as I find a web designer willing to work on this task.
+If you find some pictures (free from rights) that would fit well in a banne=
+r
+(or just in part of the composition), don't hesitate to send it to me.
 
-Philippe.
+There is still a problem with xenomai.org redirection and clean URL since
+the domain name is automatically remapped to
+http://snail.fsffrance.org/www.xenomai.org/
+
+I'm currently investigating the problem with the system administrator of th=
+e
+fsffrance which hosts the website.
+
+Migration of API documentation should be done by the end of the week.
+
+Finally a wiki has been installed and is available at
+http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php
+The purpose of this wiki is to facilitate the working-out of draft document
+such as FAQ for example. Feel free to use it if you think you have relevant
+information that could be part of more complete documents. You will have to
+register first at
+http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php?id=3Dstart&do=3Dre=
+gister.
+After registration, an email will be sent to your email address and I will
+give you proper rights for creating pages.
+
+If you have any questions or remarks, don't hesitate to drop me a mail.
+
+Regards,
+
+--
+Bruno Rouchouse
+
+------=_Part_19335_32425353.1133440804467
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<div>Hi !</div>
+<div>&nbsp;</div>
+<div>You will find below some information about current issues concerning&n=
+bsp;Xenomai website.</div>
+<div>&nbsp;</div>
+<div>Just for your information, I performed some slight improvements on Xen=
+omai website. The main menu column has actually been resized smaller, not t=
+oo much though in order to keep a reasonable size for the NewsFlash area.
+</div>
+<div>&nbsp;</div>
+<div>Next step is to do the same with the top banner (probably half size) w=
+hich will be done as soon as I find a web designer willing to work on this =
+task. If you find some pictures (free from rights) that would fit well in a=
+ banner (or just in part of the composition), don't hesitate to send it to =
+me.=20
+</div>
+<div>&nbsp;</div>
+<div>There is still a problem with <a onclick=3D"return top.js.OpenExtLink(=
+window,event,this)" href=3D"http://xenomai.org/" target=3D"_blank">xenomai.=
+org</a> redirection and clean URL since the domain name is automatically re=
+mapped to=20
+<a onclick=3D"return top.js.OpenExtLink(window,event,this)" href=3D"http://=
+snail.fsffrance.org/www.xenomai.org/" target=3D"_blank">http://snail.fsffra=
+nce.org/www.xenomai.org/ </a></div>
+<div>I'm currently investigating the problem with the system administrator =
+of the fsffrance which hosts the website.</div>
+<div>&nbsp;</div>
+<div>Migration of API documentation should be done by the end of the week.<=
+/div>
+<div>&nbsp;</div>
+<div>Finally a wiki has been installed&nbsp;and is available at&nbsp;<a onc=
+lick=3D"return top.js.OpenExtLink(window,event,this)" href=3D"http://snail.=
+fsffrance.org/www.xenomai.org/wiki/doku.php" target=3D"_blank">http://snail=
+.fsffrance.org/www.xenomai.org/wiki/doku.php
+</a></div>
+<div>The purpose of this wiki is to facilitate the working-out of draft doc=
+ument such as FAQ for example. Feel free to use it if you think you have re=
+levant information that could be part of more complete documents.&nbsp;You =
+will have to register first at=20
+<font color=3D"#0000ff"><a onclick=3D"return top.js.OpenExtLink(window,even=
+t,this)" href=3D"http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php?i=
+d=3Dstart&amp;do=3Dregister" target=3D"_blank">http://snail.fsffrance.org/w=
+ww.xenomai.org/wiki/doku.php?id=3Dstart&amp;do=3Dregister
+</a></font><font color=3D"#000000">. After registration, an email will be s=
+ent to your email address and I will give you proper rights for creating pa=
+ges.</font></div>
+<div>&nbsp;</div>
+<div>If you have any questions or remarks, don't hesitate to drop me a mail=
+. </div>
+<div>&nbsp;</div>
+<div>Regards,</div>
+<div>&nbsp;</div>
+<div>--</div>
+<div>Bruno Rouchouse</div>
+
+------=_Part_19335_32425353.1133440804467--
 
