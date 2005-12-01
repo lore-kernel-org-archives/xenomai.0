@@ -1,10 +1,10 @@
-Message-ID: <f48df4840512010440j2c3a8dc7v6ad50e7ef8e3b0ec@domain.hid>
-Date: Thu, 1 Dec 2005 13:40:04 +0100
-From: Bruno Rouchouse <brouchouse@domain.hid>
+Message-ID: <95210d7e0512011447h7b7d9aa9tc7e0502b8f5137fa@domain.hid>
+Date: Thu, 1 Dec 2005 23:47:49 +0100
+From: Yuchen Zhang <yuchen623@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_19335_32425353.1133440804467"
-Subject: [Xenomai-core] [Website] Current issues
+	boundary="----=_Part_31768_12435977.1133477269690"
+Subject: [Xenomai-core] [RT-FireWire][Announce]0.1 release of RT-FireWire
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,116 +14,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: rtfirewire-devel@domain.hid
+Cc: xenomai@xenomai.org, rtnet-users@domain.hid
 
-------=_Part_19335_32425353.1133440804467
+------=_Part_31768_12435977.1133477269690
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi !
+Dear all,
+probably some of you have already heared about the RT-FireWire project. Now=
+,
+I would like to announce the 0.1 release of the work. You can download the
+package via
+http://home.student.utwente.nl/y.zhang-4/download.htm. (BTW, for the
+homepage of RT-FireWire, you can just type rtfirewire.berlios.de, which wil=
+l
+be automatically redirected)
 
-You will find below some information about current issues concerning Xenoma=
-i
-website.
+Key features:
+o   Compiles with Xenomai 2.0 and Linux 2.6.12+
+o   Real-Time packet transmission (asynchronous and isochronous)
+o   Real-Time Memory management
+o   Device management via /dev/rt-firewire
+o   Support RTnet via Real-Time Ethernet emulation over FireWire.
 
-Just for your information, I performed some slight improvements on Xenomai
-website. The main menu column has actually been resized smaller, not too
-much though in order to keep a reasonable size for the NewsFlash area.
+Some other remarks:
+o   in current implementation, quite a part of the work is adopted from the
+Linux1394 system, which is designed for general purpose usage.
+o   for those who are interested in the technical issues, it is recommended
+to read these 2 papers. http://home.student.utwente.nl/y.zhang-4/doc.htm
 
-Next step is to do the same with the top banner (probably half size) which
-will be done as soon as I find a web designer willing to work on this task.
-If you find some pictures (free from rights) that would fit well in a banne=
-r
-(or just in part of the composition), don't hesitate to send it to me.
+As a start-up OS project, we badly need more developing force, so please
+just drop me a mail if you are interested to join the work, or just curious
+to know more about the internals. And of course, it is recommended to
+register to the mailing list.
+http://lists.berlios.de/mailman/listinfo/rtfirewire-devel
 
-There is still a problem with xenomai.org redirection and clean URL since
-the domain name is automatically remapped to
-http://snail.fsffrance.org/www.xenomai.org/
+Best regards,
+Yuchen Zhang
 
-I'm currently investigating the problem with the system administrator of th=
-e
-fsffrance which hosts the website.
-
-Migration of API documentation should be done by the end of the week.
-
-Finally a wiki has been installed and is available at
-http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php
-The purpose of this wiki is to facilitate the working-out of draft document
-such as FAQ for example. Feel free to use it if you think you have relevant
-information that could be part of more complete documents. You will have to
-register first at
-http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php?id=3Dstart&do=3Dre=
-gister.
-After registration, an email will be sent to your email address and I will
-give you proper rights for creating pages.
-
-If you have any questions or remarks, don't hesitate to drop me a mail.
-
-Regards,
-
---
-Bruno Rouchouse
-
-------=_Part_19335_32425353.1133440804467
+------=_Part_31768_12435977.1133477269690
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-<div>Hi !</div>
-<div>&nbsp;</div>
-<div>You will find below some information about current issues concerning&n=
-bsp;Xenomai website.</div>
-<div>&nbsp;</div>
-<div>Just for your information, I performed some slight improvements on Xen=
-omai website. The main menu column has actually been resized smaller, not t=
-oo much though in order to keep a reasonable size for the NewsFlash area.
-</div>
-<div>&nbsp;</div>
-<div>Next step is to do the same with the top banner (probably half size) w=
-hich will be done as soon as I find a web designer willing to work on this =
-task. If you find some pictures (free from rights) that would fit well in a=
- banner (or just in part of the composition), don't hesitate to send it to =
-me.=20
-</div>
-<div>&nbsp;</div>
-<div>There is still a problem with <a onclick=3D"return top.js.OpenExtLink(=
-window,event,this)" href=3D"http://xenomai.org/" target=3D"_blank">xenomai.=
-org</a> redirection and clean URL since the domain name is automatically re=
-mapped to=20
-<a onclick=3D"return top.js.OpenExtLink(window,event,this)" href=3D"http://=
-snail.fsffrance.org/www.xenomai.org/" target=3D"_blank">http://snail.fsffra=
-nce.org/www.xenomai.org/ </a></div>
-<div>I'm currently investigating the problem with the system administrator =
-of the fsffrance which hosts the website.</div>
-<div>&nbsp;</div>
-<div>Migration of API documentation should be done by the end of the week.<=
-/div>
-<div>&nbsp;</div>
-<div>Finally a wiki has been installed&nbsp;and is available at&nbsp;<a onc=
-lick=3D"return top.js.OpenExtLink(window,event,this)" href=3D"http://snail.=
-fsffrance.org/www.xenomai.org/wiki/doku.php" target=3D"_blank">http://snail=
-.fsffrance.org/www.xenomai.org/wiki/doku.php
-</a></div>
-<div>The purpose of this wiki is to facilitate the working-out of draft doc=
-ument such as FAQ for example. Feel free to use it if you think you have re=
-levant information that could be part of more complete documents.&nbsp;You =
-will have to register first at=20
-<font color=3D"#0000ff"><a onclick=3D"return top.js.OpenExtLink(window,even=
-t,this)" href=3D"http://snail.fsffrance.org/www.xenomai.org/wiki/doku.php?i=
-d=3Dstart&amp;do=3Dregister" target=3D"_blank">http://snail.fsffrance.org/w=
-ww.xenomai.org/wiki/doku.php?id=3Dstart&amp;do=3Dregister
-</a></font><font color=3D"#000000">. After registration, an email will be s=
-ent to your email address and I will give you proper rights for creating pa=
-ges.</font></div>
-<div>&nbsp;</div>
-<div>If you have any questions or remarks, don't hesitate to drop me a mail=
-. </div>
-<div>&nbsp;</div>
-<div>Regards,</div>
-<div>&nbsp;</div>
-<div>--</div>
-<div>Bruno Rouchouse</div>
+Dear all,<br>probably some of you have already heared about the RT-FireWire=
+ project. Now, I would like to announce the 0.1 release of the work. You ca=
+n download the package via <br><a href=3D"http://home.student.utwente.nl/y.=
+zhang-4/download.htm">
+http://home.student.utwente.nl/y.zhang-4/download.htm</a>. (BTW, for the ho=
+mepage of RT-FireWire, you can just type <a href=3D"http://rtfirewire.berli=
+os.de">rtfirewire.berlios.de</a>, which will be automatically redirected)
+<br><br>Key features:<br>o&nbsp;&nbsp; Compiles with Xenomai 2.0 and Linux =
+2.6.12+<br>o&nbsp;&nbsp; Real-Time packet transmission (asynchronous and is=
+ochronous) <br>o&nbsp;&nbsp; Real-Time Memory management<br>o&nbsp;&nbsp; D=
+evice management via /dev/rt-firewire
+<br>o&nbsp;&nbsp; Support RTnet via Real-Time Ethernet emulation over FireW=
+ire. <br><br>Some other remarks:<br>o&nbsp;&nbsp; in current implementation=
+, quite a part of the work is adopted from the Linux1394 system, which is d=
+esigned for general purpose usage.
+<br>o&nbsp;&nbsp; for those who are interested in the technical issues, it =
+is recommended to read these 2 papers. <a href=3D"http://home.student.utwen=
+te.nl/y.zhang-4/doc.htm">http://home.student.utwente.nl/y.zhang-4/doc.htm</=
+a><br><br>
+As a start-up OS project, we badly need more developing force, so please ju=
+st drop me a mail if you are interested to join the work, or just curious t=
+o know more about the internals. And of course, it is recommended to regist=
+er to the mailing list.=20
+<a href=3D"http://lists.berlios.de/mailman/listinfo/rtfirewire-devel">http:=
+//lists.berlios.de/mailman/listinfo/rtfirewire-devel</a><br><br>Best regard=
+s,<br>Yuchen Zhang<br><br><br>
 
-------=_Part_19335_32425353.1133440804467--
+------=_Part_31768_12435977.1133477269690--
 
