@@ -1,12 +1,9 @@
-Message-ID: <43902168.8060205@domain.hid>
-Date: Fri, 02 Dec 2005 11:26:48 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 2 Dec 2005 13:15:54 +0100 (CET)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Message-ID: <Pine.LNX.4.63.0512021139500.2791@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problem running koan (UVM)
-References: <200512012201.21380.niklaus.giger@domain.hid>
-In-Reply-To: <200512012201.21380.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Xenomai-help] i386 2.4 backport performing (too?) well
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,57 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Hi
-> 
-> Many thanks to Philip Gerum for his previous help!
-> 
-> I am no able to sucessfully link koan on my PPC405 board.
-> 
-> However after calling 
-> $ koan
-> The only output I get is
-> Xenomai/uvm: real-time nucleus v2.1 (Surfing With The Alien) loaded.
-> koan was linked like this:
->  /home/hcu/tools/gcc-3.4.4-glibc-2.3.5/powerpc-405-linux-gnu/bin/powerpc-405-linux-gnu-g++  
-> -g  -o koan   /home/hcu/project/bb/3_1_x/work/xeno/koan.o   
-> -u__xeno_skin_init -L/mnt/data.ng/hcu/rootfs/usr/xenomai/lib -luvm -lnucleus 
-> -lpthread -lnative -lvxworks
-> 
-> Nothing more. I know its now time to build the GDB stub, but as it is the 
-> first time that I do this it will take a moment to read the documentation.
-> 
-> In the mean time any help would be appreciated.
-> 
-> Looking at the output of xeno-config in my cross compile case I think that one 
-> should create two xeno-config's one representing the target's view and one 
-> for the host which did the cross-compile, e.g.creating in the build directory 
-> a xeno-config-host.
+With the arrival of the 2.4 i386 adeos ipipe patch for xenomai [1], I
+decided to try to compile xenomai-trunk for a 2.4 kernel. This worked
+flawlessly, and moreover, I got excellent latency results:
 
-Actually, xeno-config currently always presents the build system's view 
-(e.g the cross-compiling side). E.g., compiling the user-space support 
-for some ppc architecture can be done this way:
+I used the "same" kernel config as for our 2.4.31 rtai3.0r5 kernel,
+which is based on Takis Issaris' liveCD config.
 
-.../configure --build=`config.guess` --host=powerpc-unknown-linux-gnu 
-CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
+This resulted in a maximal latency of 30 usec after a run of over 100
+minutes under heavy load (tar and dd loops, compiling, keyboard
+interrupts and ping flood) [2].
 
-Since xeno-config is informed of the build setup determined by 
-configure, it will return the cross-compiler path and the proper 
-compilation and link flags for building executables for the target 
-already. Following the above example, CC, CXX, compilation and link 
-flags will be the ones used to cross-compile an executable on the 
-current build system for the target system.
+For comparison, on the same hardware platform: 
+- the RTAI lxrt-latency on rtai 3.0r5 (adeos oldgen r18c1
+   patch for 2.4.31 also) test reports 38 usec
+- the latency test of xenomai 2.01 running on a 2.6.14-ipipe-1.0-10
+   kernel resulted in a latency of 80 usec.
 
-  And how should we handle a canadian cross?
-> 
+This seems too good to be true?  Can one simply compare the results of
+the former RTAI lxrt-latency test with the xenomai latency test?
 
-Never considered the issue so far, quite frankly. Do you actually want 
-to cross-build Xenomai systems that would in turn cross-build Xenomai apps?
+Klaas
 
--- 
-
-Philippe.
+[1] <https://mail.gna.org/public/adeos-main/2005-11/msg00010.html>
+[2] HW: a via mini-itx board,
+     HW config at <http://issaris.org/rtai/show_entry.php?ts=2004-12-01+18%3A02%3A08%2B01>
 
