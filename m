@@ -1,10 +1,10 @@
-Message-ID: <43907C35.90403@domain.hid>
-Date: Fri, 02 Dec 2005 18:54:13 +0200
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <43907E6B.8030301@domain.hid>
+Date: Fri, 02 Dec 2005 18:03:39 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] i386 2.4 backport performing (too?) well
-References: <Pine.LNX.4.63.0512021139500.2791@domain.hid>	<4390470F.8040503@domain.hid>	<439071EF.3040004@domain.hid>
-	<439077A7.6000903@domain.hid>
+References: <Pine.LNX.4.63.0512021139500.2791@domain.hid>	<4390470F.8040503@domain.hid>
+	<439071EF.3040004@domain.hid> <439077A7.6000903@domain.hid>
 In-Reply-To: <439077A7.6000903@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
@@ -20,7 +20,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum kirjoitti:
+Philippe Gerum wrote:
 > Wolfgang Grandegger wrote:
 > 
 >> Jan Kiszka wrote:
@@ -79,10 +79,11 @@ Philippe Gerum kirjoitti:
 > space test yet, due to the build system refactoring. Still pondering how 
 > to introduce this back into the codebase.
 
-As a silly off-hand remark, it would be nice to get rid of the "making a 
-module" for the kernel space tasks and be able to use the same .c for 
-both kernel and user space. Maybe a module loader stub as init and some 
-linker magic would do the trick. Don't know about main(), though..
+Yes, I know. That's why I have said approximately and why I have not yet 
+posted figures for the MPC 5200, for example. Nevertheless, Xenomai is
+pointing into the right direction and support for PowerPC is already 
+excellent (on the level with X86 :-). So far, building and running 
+Xenomai worked fine without any real problems. Thanks a lot.
 
--- Heikki Lindholm
+Wolfgang.
 
