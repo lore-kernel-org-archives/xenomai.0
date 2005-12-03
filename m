@@ -1,16 +1,10 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-help] Problem running koan (UVM)
-Date: Sat, 3 Dec 2005 12:05:22 +0100
-References: <200512012201.21380.niklaus.giger@domain.hid>
-	<43902168.8060205@domain.hid>
-In-Reply-To: <43902168.8060205@domain.hid>
+Message-ID: <4392171A.9070703@domain.hid>
+Date: Sat, 03 Dec 2005 23:07:22 +0100
+From: Paolo Gai <pj@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200512031205.23442.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+Subject: [Xenomai-help] Newbie question about priorities of xenomai Threads
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,63 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Am Freitag, 2. Dezember 2005 11.26 schrieb Philippe Gerum:
-> Niklaus Giger wrote:
-> > Hi
-> >
-> > Many thanks to Philip Gerum for his previous help!
-> >
-> > I am no able to sucessfully link koan on my PPC405 board.
-> >
-> > However after calling
-> > $ koan
-> > The only output I get is
-> > Xenomai/uvm: real-time nucleus v2.1 (Surfing With The Alien) loaded.
-> > koan was linked like this:
-> > 
-> > /home/hcu/tools/gcc-3.4.4-glibc-2.3.5/powerpc-405-linux-gnu/bin/powerpc-4
-> >05-linux-gnu-g++ -g  -o koan   /home/hcu/project/bb/3_1_x/work/xeno/koan.o
-> > -u__xeno_skin_init -L/mnt/data.ng/hcu/rootfs/usr/xenomai/lib -luvm
-> > -lnucleus -lpthread -lnative -lvxworks
-> >
-> > Nothing more. I know its now time to build the GDB stub, but as it is the
-> > first time that I do this it will take a moment to read the
-> > documentation.
-> >
-> > In the mean time any help would be appreciated.
-> >
-> > Looking at the output of xeno-config in my cross compile case I think
-> > that one should create two xeno-config's one representing the target's
-> > view and one for the host which did the cross-compile, e.g.creating in
-> > the build directory a xeno-config-host.
->
-> Actually, xeno-config currently always presents the build system's view
-> (e.g the cross-compiling side). E.g., compiling the user-space support
-> for some ppc architecture can be done this way:
->
-> .../configure --build=`config.guess` --host=powerpc-unknown-linux-gnu
-> CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
-Thanks for the hint. As I compile my own sources using jam. I had to use 
-different means to get the same results.
+Dear all,
 
-> Since xeno-config is informed of the build setup determined by
-> configure, it will return the cross-compiler path and the proper
-> compilation and link flags for building executables for the target
-> already. Following the above example, CC, CXX, compilation and link
-> flags will be the ones used to cross-compile an executable on the
-> current build system for the target system.
->
->   And how should we handle a canadian cross?
->
->
-> Never considered the issue so far, quite frankly. Do you actually want
-> to cross-build Xenomai systems that would in turn cross-build Xenomai apps?
-No. It was more a matter of curiosity. But the cross-compile case interests me 
-really.
+My name is Paolo and i am brand new to Xenomai :-)
 
--- 
-Niklaus Giger
+I downloaded and installed the stable version of Xenomai, 2.0.1. I tried 
+a few demos, and some POSIX skin examples: they work just fine :-). Then 
+and I started reading the documentation and some code (I have to say it 
+is very well done). Sorry if my first questions will be a little bit 
+simple and obvious.
+
+I have a first question related to Xenomai Threads priorities and 
+scheduling. In particular I refer to the "Common priority scheme" in the 
+"Life with Adeos" document. What I understood is the following:
+
+- Xenomai threads have a priority value that is compatible (let's say 
+transparent) between the primary and secondary domain.
+- Xenomai threads in secondary mode and Linux real time threads (let's 
+say those with SCHED_FIFO or SCHED_RR policy) have compatible priority 
+values.
+- Among the pool of ready Xenomai threads, the Xenomai thread with 
+highest priority is scheduled first.
+- If the selected xenomai thread is in secondary mode and there is a 
+Linux thread with higher priority, the Linux thread is scheduled first.
+
+
+First example:
+---------------------
+Suppose that at a rescheduling we have the following thread in the ready 
+queues
+- High Priority -> Linux thread H
+- Medium Priority -> Xenomai thread M in PRIMARY domain
+- Low Priority -> Xenomai thread L in primary domain
+
+Then, the Xenomai scheduler will select M, and M will be dispatched.
+
+Second example:
+--------------------------
+- High Priority -> Linux thread H
+- Medium Priority -> Xenomai thread M in SECONDARY domain
+- Low Priority -> Xenomai thread L in primary domain
+
+Then, the Xenomai scheduler will select M. but M is in secondary mode, 
+which means the Linux kernel will be scheduled. The Linux scheduler 
+knows H (it's a linux thread), M (it's in secondary mode), and maybe 
+about L (if it has been created by UVMs). The Linux scheduler will 
+choose H, and H will be scheduled.
+
+Is that right?
+
+bye
+
+Paolo Gai
+http://www.evidence.eu.com
+
 
