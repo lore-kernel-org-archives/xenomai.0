@@ -1,14 +1,10 @@
-Message-ID: <439411B5.7030708@domain.hid>
-Date: Mon, 05 Dec 2005 11:08:53 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <25192.193.52.24.125.1133817387.squirrel@domain.hid>
+Date: Mon, 5 Dec 2005 22:16:27 +0100 (CET)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] i386 2.4 backport performing (too?) well
-References: <Pine.LNX.4.63.0512021139500.2791@domain.hid>
-	<43904AE7.4090002@domain.hid>
-	<Pine.LNX.4.63.0512051002430.4132@domain.hid>
-In-Reply-To: <Pine.LNX.4.63.0512051002430.4132@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Xenomai-PPC: Two problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,59 +14,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Klaas Gadeyne wrote:
-> On Fri, 2 Dec 2005, Philippe Gerum wrote:
-> 
->> Klaas Gadeyne wrote:
-> 
-> [...]
-> 
->>> For comparison, on the same hardware platform: - the RTAI 
->>> lxrt-latency on rtai 3.0r5 (adeos oldgen r18c1
->>>   patch for 2.4.31 also) test reports 38 usec
->>> - the latency test of xenomai 2.01 running on a 2.6.14-ipipe-1.0-10
->>>   kernel resulted in a latency of 80 usec.
->>
->>
->> 80 us on 2.6 is clearly pathological if 2.4 gives 30 us. All tests 
->> using 2.6.14-1.0-10 on dual SMP 750Mhz and 2.8Ghz, Geode 266 Mhz, 
->> Celeron 1Ghz, Centrino 1.6 Mhz and Pentium 90Mhz show a slight 
->> advantage for 2.4 over 2.6 (1-3%), but still in the error margin, I 
->> think. Maybe some option is enabled in your 2.6 configuration that 
->> might trigger this very high value?
-> 
-> 
-> I rechecked the 2.6 config.  Apart from the lapic option, which I
-> couldn't enable with xenomai [*], I can't see something obvious that I
-> would have missed.  I'm sending you the config file in private.
-> 
-> Note that I haven't tested the 2.6 kernel with xenomai-trunk yet though...
-> 
-> thx,
-> 
-> Klaas
-> 
-> [*] When enabling local apic in the kernel configuration and booting
-> with the lapic option, I get
-> 
+Hi everybody.
 
-> Disable APIC support or pass "lapic" as boot param.
-> 
+I'm working with an Apple Powerbook 15" G4, Xenomai 2.1 (SVN), Linux kernel
+2.6.14.3. I'm using Umbutu 5.10 with gcc 3.4.5
 
-lapic=1 on your boot line. This is not a Xeno issue, but a Linux kernel 
-requirement. Using the local APIC is even recommended when available on 
-your hw with Xeno.
+simone@domain.hid:~$ gcc -v
+Reading specs from /usr/lib/gcc/powerpc-linux-gnu/3.4.5/specs
+Configured with: ../src/configure -v
+--enable-languages=c,c++,f77,pascal,objc,ada --prefix=/usr
+--libexecdir=/usr/lib --with-gxx-include-dir=/usr/include/c++/3.4
+--enable-shared --with-system-zlib --enable-nls --without-included-gettext
+--program-suffix=-3.4 --enable-__cxa_atexit --enable-libstdcxx-allocator=mt
+--enable-clocale=gnu --enable-libstdcxx-debug --disable-softfloat
+--enable-targets=powerpc-linux,powerpc64-linux --with-cpu=default32
+--disable-softfloat powerpc-linux-gnu
+Thread model: posix
+gcc version 3.4.5 20050809 (prerelease) (Ubuntu 3.4.4-6ubuntu8)
 
-> while loading xeno_hal.
-> 
-> 
-> 
+I have two residual problems:
+
+1) The machine is unstable (freeze after a while) if Xenomai FPU support in
+the kernel is active. This is a know problem. Gilles help me to find the
+catch and complete the installation. The problems is related to the Altivec
+unit present in the G4. I tried to fix the problems eliminating the  Altivec
+support (in the kernel coinfiguration) without success.
+
+2) If I activate the interrupt shield in the kernel, the kernel compilation
+stops this this message:
+
+root@domain.hid# make
+  CHK     include/linux/version.h
+  SPLIT   include/linux/autoconf.h -> include/config/*
+  CHK     include/linux/compile.h
+  CHK     usr/initramfs_list
+  CC      kernel/xenomai/nucleus/pod.o
+  CC      kernel/xenomai/nucleus/shadow.o
+kernel/xenomai/nucleus/shadow.c: In function `engage_irq_shield':
+kernel/xenomai/nucleus/shadow.c:164: warning: implicit declaration of
+function `__raw_read_lock'
+kernel/xenomai/nucleus/shadow.c:170: warning: implicit declaration of
+function `__raw_read_unlock'
+kernel/xenomai/nucleus/shadow.c: In function `disengage_irq_shield':
+kernel/xenomai/nucleus/shadow.c:188: warning: implicit declaration of
+function `__raw_write_lock'
+kernel/xenomai/nucleus/shadow.c:198: warning: implicit declaration of
+function `__raw_write_unlock'
+  LD      kernel/xenomai/nucleus/xeno_nucleus.o
+  LD      kernel/xenomai/nucleus/built-in.o
+  CC      kernel/xenomai/skins/native/task.o
+  LD      kernel/xenomai/skins/native/xeno_native.o
+  LD      kernel/xenomai/skins/native/built-in.o
+  LD      kernel/xenomai/skins/built-in.o
+  LD      kernel/xenomai/built-in.o
+  LD      kernel/built-in.o
+  GEN     .version
+  CHK     include/linux/compile.h
+  UPD     include/linux/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  LD      .tmp_vmlinux1
+kernel/built-in.o: In function `disengage_irq_shield':
+shadow.c:(.text+0x42708): undefined reference to `__raw_write_lock'
+shadow.c:(.text+0x42840): undefined reference to `__raw_write_unlock'
+shadow.c:(.text+0x42868): undefined reference to `__raw_write_unlock'
+kernel/built-in.o: In function `xnshadow_reset_shield':
+: undefined reference to `__raw_read_lock'
+kernel/built-in.o: In function `xnshadow_reset_shield':
+: undefined reference to `__raw_read_unlock'
+kernel/built-in.o: In function `lostage_handler':
+shadow.c:(.text+0x42c64): undefined reference to `__raw_read_lock'
+shadow.c:(.text+0x42d54): undefined reference to `__raw_read_unlock'
+kernel/built-in.o: In function `xnshadow_relax':
+: undefined reference to `__raw_read_lock'
+kernel/built-in.o: In function `xnshadow_relax':
+: undefined reference to `__raw_read_unlock'
+kernel/built-in.o: In function `schedule_event':
+shadow.c:(.text+0x44a00): undefined reference to `__raw_read_lock'
+shadow.c:(.text+0x44af8): undefined reference to `__raw_read_unlock'
+make: *** [.tmp_vmlinux1] Error 1
+root@domain.hid#
 
 
--- 
 
-Philippe.
+TIA
+
+       Simone Mannori - INRIA Rocquencourt (Paris)
+       www.scilab.org - www.scicos.org
+
+
+
+
+
+
 
