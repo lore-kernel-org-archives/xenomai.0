@@ -1,5 +1,5 @@
-Message-ID: <4397030C.7060603@domain.hid>
-Date: Wed, 07 Dec 2005 17:43:08 +0200
+Message-ID: <4397067A.9010206@domain.hid>
+Date: Wed, 07 Dec 2005 17:57:46 +0200
 From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Xenomai-PPC: One problem
@@ -31,14 +31,19 @@ smannori@domain.hid kirjoitti:
 > 
 > Gilles suspects that there is a conflict with the Altivec FPU units inside
 > the G4 CPU, because ADEOS does not save the Altivec FPU-exended register.
+> 
+> I think that I can live and prosper without FPU support in the kernel, but I
+> suppose also that someone is interested in this - possibile - limitation e/o
+> potential bug.
 
-I find this very unlikely. Unlike Intel SSE stuff, ppc altivec is a 
-separate unit from the fpu. If your compiler generates altivec code 
-(instead of normal fpu code) from math functions in the xenomai 
-executable, then it might be the issue. AFAIK gcc uses altivec only 
-after release 4.0. In case you have gcc 4 (ubuntu 5.10), you might be 
-able to turn altivec code generation off by, say, "-mno-altivec".
+Be a bit more specific, please:
+- compiler version,
+- kernel version,
+- i-pipe version,
+- xenomai version,
+- environment where the bug happens (what else is running, like 
+X11/glQuake...)
+I could take a look at this, if I can reproduce it.
 
 -- Heikki Lindholm
-
 
