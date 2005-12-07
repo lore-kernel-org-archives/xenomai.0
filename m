@@ -1,12 +1,10 @@
-Message-ID: <43954D56.9020909@domain.hid>
-Date: Tue, 06 Dec 2005 09:35:34 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <38086.128.93.12.158.1133967095.squirrel@domain.hid>
+Date: Wed, 7 Dec 2005 15:51:35 +0100 (CET)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai-PPC: Two problems
-References: <25192.193.52.24.125.1133817387.squirrel@domain.hid>
-In-Reply-To: <25192.193.52.24.125.1133817387.squirrel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Xenomai-PPC: One problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-smannori@domain.hid wrote:
-> Hi everybody.
-> 
+Hi everybody,
 
-<snip>
+thanks to your help now the interrupt shield option compile OK :)
 
-> 2) If I activate the interrupt shield in the kernel, the kernel compilation
-> stops this this message:
-> 
-> root@domain.hid# make
->   CHK     include/linux/version.h
->   SPLIT   include/linux/autoconf.h -> include/config/*
->   CHK     include/linux/compile.h
->   CHK     usr/initramfs_list
->   CC      kernel/xenomai/nucleus/pod.o
->   CC      kernel/xenomai/nucleus/shadow.o
-> kernel/xenomai/nucleus/shadow.c: In function `engage_irq_shield':
-> kernel/xenomai/nucleus/shadow.c:164: warning: implicit declaration of
-> function `__raw_read_lock'
-> kernel/xenomai/nucleus/shadow.c:170: warning: implicit declaration of
-> function `__raw_read_unlock'
-> kernel/xenomai/nucleus/shadow.c: In function `disengage_irq_shield':
-> kernel/xenomai/nucleus/shadow.c:188: warning: implicit declaration of
-> function `__raw_write_lock'
-> kernel/xenomai/nucleus/shadow.c:198: warning: implicit declaration of
-> function `__raw_write_unlock'
+Unfortunately, I must to leave the Xenomai FPU option disabled.
 
-This has been fixed in the latest ppc patch:
-http://download.gna.org/adeos/patches/v2.6/adeos/ppc/adeos-ipipe-2.6.14-ppc-1.0-07.patch
+With this option active my PowerBook "Ubuntu-Xenomai" machine go crazy after
+few seconds after the launch of the the "latency" test.
 
--- 
+Gilles suspects that there is a conflict with the Altivec FPU units inside
+the G4 CPU, because ADEOS does not save the Altivec FPU-exended register.
 
-Philippe.
+I think that I can live and prosper without FPU support in the kernel, but I
+suppose also that someone is interested in this - possibile - limitation e/o
+potential bug.
+
+Simone Mannori
+
+
+
+
 
