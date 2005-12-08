@@ -1,11 +1,11 @@
-Message-ID: <43986AFA.6060908@domain.hid>
-Date: Thu, 08 Dec 2005 18:18:50 +0100
+Message-ID: <43987EA2.9000504@domain.hid>
+Date: Thu, 08 Dec 2005 19:42:42 +0100
 From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig681E9CB171265B300961DE47"
-Subject: [Xenomai-core] [bug] user memory leakage on rt_task_delete
+	boundary="------------enig69754E3BB95E4383A97973B4"
+Subject: [Xenomai-core] [patch] fix rt_task_delete for cancellable rt-threads
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,32 +18,67 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig681E9CB171265B300961DE47
+--------------enig69754E3BB95E4383A97973B4
+Content-Type: multipart/mixed; boundary="------------020409000007090408020909"
+
+This is a multi-part message in MIME format.
+--------------020409000007090408020909
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+Hi,
 
-during my ongoing search for the init/cleanup issue of shadow threads, I
-stumbled over another problem: Deleting a userspace native thread that
-is blocked in primary mode does not let the NPTL clean up all resources
-allocated in userspace. If you plan to do some rt_task_create/delete in
-a loop, you will soon run out of memory (and Mr. oom-killer will show
-up...).
+no, this is not the fix for the issue I described earlier. This just
+improves the behaviour of rt_task_delete in case the target is blocking
+at a cancellation point (tested with standard sem_wait). With the
+current version, rt_task_deletes the rt-shadow and just wakes up the
+linux pthread even if the target is cancellable at that moment. With the
+reordering, this is fixed and the target is actually terminated. No
+major issue, though.
 
-I haven't found a solution for this beyond letting a rt-task always
-terminate itself (or terminate the whole program after forced
-deletions). If there is no solution, we should at least document this
-fact somewhere.
-
-Again, it's not a common use case, but it's also not an expectable
-behaviour of the native skin.
-
-Ok, back to work,
 Jan
 
+--------------020409000007090408020909
+Content-Type: text/plain;
+ name="rt_task_delete.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="rt_task_delete.patch"
 
---------------enig681E9CB171265B300961DE47
+Index: src/skins/native/task.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- src/skins/native/task.c	(revision 243)
++++ src/skins/native/task.c	(working copy)
+@@ -203,12 +203,18 @@
+ int rt_task_delete (RT_TASK *task)
+=20
+ {
+-    int err =3D XENOMAI_SKINCALL1(__native_muxid,
+-				__native_task_delete,
+-				task);
+-    if (!err)
+-	pthread_cancel((pthread_t)task->opaque2);
++    int err;
+=20
++    err =3D pthread_cancel((pthread_t)task->opaque2)
++    if (err)
++        return -err;
++
++    err =3D XENOMAI_SKINCALL1(__native_muxid,
++			    __native_task_delete,
++			    task);
++    if (err =3D=3D -ESRCH)
++	return 0;
++
+     return err;
+ }
+=20
+
+--------------020409000007090408020909--
+
+--------------enig69754E3BB95E4383A97973B4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -52,10 +87,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFDmGr6ncNeS9Q0k+IRArIvAKCAH9LCq7ooAB6foFXpbUtllNknTQCfX0Ik
-uyRphn5W3bDrU+J15SIYlv0=
-=NDry
+iD8DBQFDmH6incNeS9Q0k+IRAnZKAJ4rFh5L8SG9LH5yCCZSfgY4IHd+2ACdHStQ
+b18nMPpH1Ps74VfSOaXfGqE=
+=IErS
 -----END PGP SIGNATURE-----
 
---------------enig681E9CB171265B300961DE47--
+--------------enig69754E3BB95E4383A97973B4--
 
