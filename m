@@ -1,9 +1,11 @@
-Message-ID: <53943.128.93.12.158.1134030205.squirrel@domain.hid>
-Date: Thu, 8 Dec 2005 09:23:25 +0100 (CET)
-From: <smannori@domain.hid>
+From: "Martijn Hazenberg (GOVA)" <martijn@domain.hid>
+Date: Thu, 8 Dec 2005 11:02:10 +0100
+Message-ID: <002301c5fbde$7534e740$0200000a@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----=_20051208092325_23794"
-Subject: [Xenomai-help] Xenomai-PPC: Xenomai FPU Support
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0024_01C5FBE6.D6FC5C80"
+Subject: [Xenomai-help] insmod: error inserting './xeno_posix.ko': -1
+	Unknown symbol in module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,222 +17,485 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_20051208092325_23794
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+This is a multi-part message in MIME format.
 
-Heikki:
+------=_NextPart_000_0024_01C5FBE6.D6FC5C80
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-I am including my ".config" file.
+Hi all,
 
-I hope that will be useful for diagnosis my Xenomail FPU support on PPC
-architecture (on x86 everithings is OK).
+I have downloaded a 2.6.14 kernel from kernel.org.
+Also have I applied the adeos patch belonging to this kernel. Rebooted =
+with
+this kernel, and all ok.
 
-TIA
+Then I configured and compiled the xenomai tree. All ok. Only thing I
+changed to the config was the enable of the serial driver.=20
 
-Simone
+Added the path to /usr/realtime/bin
+	with PATH=3D$PATH:/usr/realtime/bin
+went to the /usr/realtime/testsuite/latency
+en did ./run
+
+I got :
+
+linux-test ~ #
+linux-test ~ #
+linux-test ~ #
+linux-test ~ # cd /usr/realtime/
+linux-test realtime # echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin:/us=
+r/i
+686-
+pc-linux-gnu/gcc-bin/3.3.5-20050130
+linux-test realtime #
+linux-test realtime #
+linux-test realtime # PATH=3D$PATH:/usr/realtime/bin
+linux-test realtime #
+linux-test realtime # cd /usr/realtime/testsuite/latency/=20
+linux-test latency # ./run
+head: `-1' option is obsolete; use `-n 1' since this will be removed in =
+the
+futu re
+*
+*
+* Type ^C to stop this application.
+*
+*
+insmod: error inserting '/usr/realtime/modules/xeno_hal.ko': -1 No such
+device
+ERROR: cannot load /usr/realtime/modules/xeno_hal.ko
+Xenomai: native skin or user-space support unavailable.
+(did you load the xeno_native.ko module?)
+linux-test latency #=20
+linux-test latency #
+linux-test latency #
+linux-test latency #
+linux-test latency # cd ../../modules/
+linux-test modules # ls -all
+total 536
+drwxr-xr-x  2 root root   4096 Dec  7 17:15 .
+drwxr-xr-x  9 root root   4096 Dec  7 17:16 ..
+-rw-r--r--  1 root root  16413 Dec  7 17:15 xeno_16550A.ko
+-rw-r--r--  1 root root  20255 Dec  7 17:14 xeno_hal.ko
+-rw-r--r--  1 root root 136473 Dec  7 17:15 xeno_native.ko
+-rw-r--r--  1 root root 135807 Dec  7 17:14 xeno_nucleus.ko
+-rw-r--r--  1 root root 160091 Dec  7 17:15 xeno_posix.ko
+-rw-r--r--  1 root root  43588 Dec  7 17:15 xeno_rtdm.ko=20
+# linux-test modules=20
+# linux-test modules=20
+# linux-test modules=20
+# linux-test modules=20
+# linux-test modules=20
+# insmod ./xeno_native.ko
+insmod: error inserting './xeno_native.ko': -1 Unknown symbol in module=20
+ linux-test modules=20
+# insmod ./xeno_nucleus.ko
+insmod: error inserting './xeno_nucleus.ko': -1 Unknown symbol in module
+linux-test modules=20
+# insmod ./xeno_posix.ko
+insmod: error inserting './xeno_posix.ko': -1 Unknown symbol in module
+linux-test modules=20
+# linux-test modules=20
+# linux-test modules=20
 
 
-------=_20051208092325_23794
-Content-Type: application/x-gzip; name="mioconfig.tar.gz"
-Content-Disposition: attachment; filename="mioconfig.tar.gz"
-Content-Transfer-Encoding: base64
+The complete output of dmesg command is attached in file...=20
+Indeed it complains about a lot of unknown symbols.
 
-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
-OnjecPKr0z5fnlbNt7SNKUh2Z1MCLm6Nts5Pu4/HQ+8P6gvPfhxVwqKj6n9XqlGqJNfrNV/CdhL7
-U5rnqtFNzsjnIwuW6LkVUczujFFGHP/oH3QepKGR+IxNbcN33hk58DuPl90e8CN73r4dupAqEN9P
-Qqu1Pdk8t2O/p+uBHYXOXNmwJd3sDbcutuiyO4TSzuqIv1d9bdwKSncDVMFBN7p8M5B8TgXgUCst
-NIsLL5YXygJVgva6cZwFC6UI8VNLIhf/7kdLJ/PKtFmmRa7Y0cnfm5n6LBEQYINA2mZR+EMSKPNF
-omo8Jr7W3vgb1rRmVVHKr4Fa8iXWmIDrWwn+FvuiZazyZoe3w+prb1TrB3ln+wIKboPyKfqSz9LO
-05qdiMKXuOiSy/Hw0oN8o1PC2F+p+sqToGalK6ndzBIWx7D027OLjbyEozaFCpsB63x6TULVma4H
-tna90udWsS50i4BJTk3YfHt834vX96rPN/VIIWdFhY4u0/bFcm17h2U/PcchWzcrp3SMJo+Ez9g5
-hpZ9xQp+MTHehahJtW2XzNOHuYv+zWPmRxYrYMEylUv/8neVWQy1g+Htjb5oAbRFE6+JXC43DpMv
-MipnltY4FxVXBVT+i2yWX/VZNLUUJFf37fv+/3a9ePv682P7c6cIjc141ga3stJQXEtctmzPZtBX
-9Jk1ZGxHVKVxDfGGN1bEtSL23Gw18EbWckaOFbHWQFWN7yADK2Kt9WhkRSYWZNK3pZlYW3TSt33P
-ZGArxxt3vgfYcRwdG8+SwHGt5QPUaWpWBpzT+Ts02aXJfZpsqfuQJo9o8pgmTyz1tlTFsdTF6VRm
-kXFvUxC0pU5bVlOv1ZDb/zhuj5+94+Hjff+qbg1BEWyCgFfaDQUQdYXSM10154+5LygKs3MPNDww
-0D2kCOrZb8p/1s5BgZPXjXraCoA4MkUHLuZ16kK8xNR72j78KZ/nU9KgDpfQRiOXQ2mgsEB/ihSL
-gkbJ/nK6Ked8Wv3mtG4//Cyr1uKNwVbhbvfwcdy/fyqX0G0heLFAL9fEeYBMePx8ez/8lOra5r22
-fItI4SfEb/FKrUFMl6oDhJqYhAOCNjQS45u4RkQgusMRRR46rkG+zSlqNSuciUkOVfdhNc0Xnv/K
-uZnHbUbS0VuB9jB8TWdE5gErqyFJNT+wipiZZxGYLbmYs3sWmnHTpc/NKjRTwOgPHsxZFOO/ZgU7
-M6ytYdm6u2ot5R7EWFKulP7jGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7hGq7h
-Gq7hGq7hGq7hGq7hGq4Bw/8DBQdvZQDIAAA=
+I have compiled everything from :=20
 
-------=_20051208092325_23794--
+linux-test / #
+linux-test / #
+linux-test / # cd /usr/src/
+linux-test src # ls -all
+total 20
+drwxr-xr-x   5 root root 4096 Dec  7 16:40 .
+drwxr-xr-x  14 root root 4096 Dec  7 17:14 ..
+-rw-r--r--   1 root root    0 Oct 20 02:22 .keep
+lrwxrwxrwx   1 root root   12 Dec  7 16:39 linux -> linux-2.6.14
+drwxr-xr-x  19 root root 4096 Dec  8 10:23 linux-2.6.14 drwxr-xr-x  19 =
+root
+root 4096 Dec  7 14:26 linux-2.6.14-gentoo-r2
+lrwxrwxrwx   1 root root   14 Dec  7 16:40 realtime -> xenomai-2.0.1/
+drwxrwxrwx  14 1000 1000 4096 Dec  7 17:14 xenomai-2.0.1 linux-test src =
+#
+
+Kernel that's running :=20
+
+linux-test src # uname -r
+2.6.14-ipipe
+linux-test src #
+
+Installation dir was kept default :=20
+
+linux-test / #
+linux-test / #ls -all /usr/realtime/
+total 36
+drwxr-xr-x   9 root root 4096 Dec  7 17:16 .
+drwxr-xr-x  14 root root 4096 Dec  7 17:14 ..
+drwxr-xr-x   2 root root 4096 Dec  7 17:16 bin
+lrwxrwxrwx   1 root root   17 Dec  7 17:16 build -> /usr/src/realtime
+drwxr-xr-x   6 root root 4096 Dec  7 17:15 include
+drwxr-xr-x   2 root root 4096 Dec  7 17:15 lib
+drwxr-xr-x   4 root root 4096 Dec  7 17:16 man
+drwxr-xr-x   2 root root 4096 Dec  8 10:28 modules
+drwxr-xr-x   4 root root 4096 Dec  7 17:16 share
+lrwxrwxrwx   1 root root   17 Dec  7 17:16 source -> /usr/src/realtime
+lrwxrwxrwx   1 root root   25 Dec  7 17:16 symbols ->
+/usr/src/realtime/symbols
+drwxr-xr-x   6 root root 4096 Dec  7 17:16 testsuite
+linux-test / #=20
+linux-test / #
+
+
+The patch that I applied was : adeos-ipipe-2.6.14-i386-1.0-11.patch
+
+Can someone please help me get started... what am I doing wrong ?
+
+Best regards and thanks a lot !
+
+Martijn
+
+
+------=_NextPart_000_0024_01C5FBE6.D6FC5C80
+Content-Type: text/plain;
+	name="dmesg.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="dmesg.txt"
+
+Linux version 2.6.14-ipipe (root@domain.hid) (gcc version 3.3.5-20050130 =
+(Gentoo 3.3.5.20050130-r1, ssp-3.3.5.20050130-1, pie-8.7.7.1)) #1 SMP =
+PREEMPT Wed Dec 7 16:55:45 CET 2005=0A=
+BIOS-provided physical RAM map:=0A=
+ BIOS-e820: 0000000000000000 - 000000000009fc00 (usable)=0A=
+ BIOS-e820: 000000000009fc00 - 00000000000a0000 (reserved)=0A=
+ BIOS-e820: 00000000000f0000 - 0000000000100000 (reserved)=0A=
+ BIOS-e820: 0000000000100000 - 000000003fff0000 (usable)=0A=
+ BIOS-e820: 000000003fff0000 - 000000003fff3000 (ACPI NVS)=0A=
+ BIOS-e820: 000000003fff3000 - 0000000040000000 (ACPI data)=0A=
+ BIOS-e820: 00000000ffff0000 - 0000000100000000 (reserved)=0A=
+Warning only 896MB will be used.=0A=
+Use a HIGHMEM enabled kernel.=0A=
+896MB LOWMEM available.=0A=
+On node 0 totalpages: 229376=0A=
+  DMA zone: 4096 pages, LIFO batch:1=0A=
+  Normal zone: 225280 pages, LIFO batch:31=0A=
+  HighMem zone: 0 pages, LIFO batch:1=0A=
+DMI 2.2 present.=0A=
+ACPI: RSDP (v000 VIA694                                ) @ 0x000f7620=0A=
+ACPI: RSDT (v001 VIA694 AWRDACPI 0x42302e31 AWRD 0x00000000) @ 0x3fff3000=0A=
+ACPI: FADT (v001 VIA694 AWRDACPI 0x42302e31 AWRD 0x00000000) @ 0x3fff3040=0A=
+ACPI: DSDT (v001 VIA694 AWRDACPI 0x00001000 MSFT 0x0100000c) @ 0x00000000=0A=
+Allocating PCI resources starting at 50000000 (gap: 40000000:bfff0000)=0A=
+Built 1 zonelists=0A=
+Kernel command line: root=3D/dev/hda3=0A=
+Local APIC disabled by BIOS -- you can enable it with "lapic"=0A=
+mapped APIC to ffffd000 (01745000)=0A=
+Initializing CPU#0=0A=
+PID hash table entries: 4096 (order: 12, 65536 bytes)=0A=
+Detected 1156.470 MHz processor.=0A=
+Using tsc for high-res timesource=0A=
+I-pipe 1.0-10: pipeline enabled.=0A=
+Console: colour VGA+ 80x25=0A=
+Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)=0A=
+Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)=0A=
+Memory: 904420k/917504k available (2928k kernel code, 12644k reserved, =
+938k data, 224k init, 0k highmem)=0A=
+Checking if this processor honours the WP bit even in supervisor mode... =
+Ok.=0A=
+Calibrating delay using timer specific routine.. 2319.39 BogoMIPS =
+(lpj=3D4638798)=0A=
+Mount-cache hash table entries: 512=0A=
+CPU: After generic identify, caps: 0383f9ff c1cbf9ff 00000000 00000000 =
+00000000 00000000 00000000=0A=
+CPU: After vendor identify, caps: 0383f9ff c1cbf9ff 00000000 00000000 =
+00000000 00000000 00000000=0A=
+CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64 bytes/line)=0A=
+CPU: L2 Cache: 256K (64 bytes/line)=0A=
+CPU: After all inits, caps: 0383f9ff c1cbf9ff 00000000 00000020 00000000 =
+00000000 00000000=0A=
+Intel machine check architecture supported.=0A=
+Intel machine check reporting enabled on CPU#0.=0A=
+mtrr: v2.0 (20020519)=0A=
+Enabling fast FPU save and restore... done.=0A=
+Enabling unmasked SIMD FPU exception support... done.=0A=
+Checking 'hlt' instruction... OK.=0A=
+ACPI: setting ELCR to 0200 (from 0e00)=0A=
+CPU0: AMD Athlon(tm)  stepping 02=0A=
+SMP motherboard not detected.=0A=
+Local APIC not detected. Using dummy APIC emulation.=0A=
+Brought up 1 CPUs=0A=
+NET: Registered protocol family 16=0A=
+ACPI: bus type pci registered=0A=
+PCI: PCI BIOS revision 2.10 entry at 0xfb460, last bus=3D1=0A=
+PCI: Using configuration type 1=0A=
+ACPI: Subsystem revision 20050902=0A=
+ACPI: Interpreter enabled=0A=
+ACPI: Using PIC for interrupt routing=0A=
+ACPI: PCI Root Bridge [PCI0] (0000:00)=0A=
+PCI: Probing PCI hardware (bus 00)=0A=
+ACPI: Assume root bridge [\_SB_.PCI0] bus is 0=0A=
+Boot video device is 0000:01:00.0=0A=
+ACPI: PCI Interrupt Routing Table [\_SB_.PCI0._PRT]=0A=
+ACPI: PCI Interrupt Link [LNKA] (IRQs 1 3 4 5 6 7 10 *11 12 14 15)=0A=
+ACPI: PCI Interrupt Link [LNKB] (IRQs 1 3 4 5 6 7 10 11 12 14 15) *0, =
+disabled.=0A=
+ACPI: PCI Interrupt Link [LNKC] (IRQs 1 3 4 5 6 7 *10 11 12 14 15)=0A=
+ACPI: PCI Interrupt Link [LNKD] (IRQs 1 3 4 5 6 7 10 *11 12 14 15)=0A=
+Linux Plug and Play Support v0.97 (c) Adam Belay=0A=
+pnp: PnP ACPI init=0A=
+pnp: PnP ACPI: found 12 devices=0A=
+SCSI subsystem initialized=0A=
+usbcore: registered new driver usbfs=0A=
+usbcore: registered new driver hub=0A=
+PCI: Using ACPI for IRQ routing=0A=
+PCI: If a device doesn't work, try "pci=3Drouteirq".  If it helps, post =
+a report=0A=
+PCI: Bridge: 0000:00:01.0=0A=
+  IO window: disabled.=0A=
+  MEM window: d2000000-d3ffffff=0A=
+  PREFETCH window: d0000000-d1ffffff=0A=
+PCI: Setting latency timer of device 0000:00:01.0 to 64=0A=
+Machine check exception polling timer started.=0A=
+audit: initializing netlink socket (disabled)=0A=
+audit(1134033884.876:1): initialized=0A=
+Installing knfsd (copyright (C) 1996 okir@domain.hid=
+ACPI: Power Button (FF) [PWRF]=0A=
+ACPI: Power Button (CM) [PWRB]=0A=
+ACPI: Sleep Button (CM) [SLPB]=0A=
+ACPI: Fan [FAN] (on)=0A=
+ACPI: CPU0 (power states: C1[C1] C2[C2])=0A=
+ACPI: Thermal Zone [THRM] (48 C)=0A=
+ibm_acpi: ec object not found=0A=
+lp: driver loaded but no devices found=0A=
+Linux agpgart interface v0.101 (c) Dave Jones=0A=
+[drm] Initialized drm 1.0.0 20040925=0A=
+PNP: PS/2 Controller [PNP0303:PS2K,PNP0f13:PS2M] at 0x60,0x64 irq 1,12=0A=
+serio: i8042 AUX port at 0x60,0x64 irq 12=0A=
+serio: i8042 KBD port at 0x60,0x64 irq 1=0A=
+Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing disabled=0A=
+ttyS0 at I/O 0x3f8 (irq =3D 4) is a 16550A=0A=
+ttyS1 at I/O 0x2f8 (irq =3D 3) is a 16550A=0A=
+ttyS0 at I/O 0x3f8 (irq =3D 4) is a 16550A=0A=
+ttyS1 at I/O 0x2f8 (irq =3D 3) is a 16550A=0A=
+parport: PnPBIOS parport detected.=0A=
+parport0: PC-style at 0x378, irq 7 [PCSPP(,...)]=0A=
+lp0: using parport0 (interrupt-driven).=0A=
+io scheduler noop registered=0A=
+io scheduler anticipatory registered=0A=
+io scheduler deadline registered=0A=
+io scheduler cfq registered=0A=
+FDC 0 is a post-1991 82077=0A=
+8139too Fast Ethernet driver 0.9.27=0A=
+ACPI: PCI Interrupt Link [LNKC] enabled at IRQ 10=0A=
+PCI: setting IRQ 10 as level-triggered=0A=
+ACPI: PCI Interrupt 0000:00:0a.0[A] -> Link [LNKC] -> GSI 10 (level, =
+low) -> IRQ 10=0A=
+eth0: RealTek RTL8139 at 0xc000, 00:e0:7d:d1:c2:b2, IRQ 10=0A=
+eth0:  Identified 8139 chip type 'RTL-8100B/8139D'=0A=
+Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2=0A=
+ide: Assuming 33MHz system bus speed for PIO modes; override with =
+idebus=3Dxx=0A=
+Probing IDE interface ide0...=0A=
+hda: Maxtor 54098H8, ATA DISK drive=0A=
+hdb: Maxtor 6Y120P0, ATA DISK drive=0A=
+Probing IDE interface ide1...=0A=
+hdc: PLEXTOR CD-R PX-W1210A, ATAPI CD/DVD-ROM drive=0A=
+hdd: PIONEER DVD-RW DVR-107D, ATAPI CD/DVD-ROM drive=0A=
+ide0 at 0x1f0-0x1f7,0x3f6 on irq 14=0A=
+ide1 at 0x170-0x177,0x376 on irq 15=0A=
+hda: max request size: 128KiB=0A=
+hda: 80041248 sectors (40981 MB) w/2048KiB Cache, CHS=3D65535/16/63=0A=
+hda: cache flushes not supported=0A=
+ hda: hda1 hda2 hda3 hda4=0A=
+hdb: max request size: 128KiB=0A=
+hdb: 240121728 sectors (122942 MB) w/7936KiB Cache, CHS=3D65535/16/63=0A=
+hdb: cache flushes supported=0A=
+ hdb: hdb1=0A=
+hdc: ATAPI 32X CD-ROM CD-R/RW drive, 2048kB Cache=0A=
+Uniform CD-ROM driver Revision: 3.20=0A=
+hdd: ATAPI 40X DVD-ROM DVD-R CD-R/RW drive, 2000kB Cache=0A=
+libata version 1.12 loaded.=0A=
+ieee1394: raw1394: /dev/raw1394 device initialized=0A=
+usbmon: debugfs is not available=0A=
+USB Universal Host Controller Interface driver v2.3=0A=
+ACPI: PCI Interrupt Link [LNKD] enabled at IRQ 11=0A=
+PCI: setting IRQ 11 as level-triggered=0A=
+ACPI: PCI Interrupt 0000:00:11.2[D] -> Link [LNKD] -> GSI 11 (level, =
+low) -> IRQ 11=0A=
+uhci_hcd 0000:00:11.2: UHCI Host Controller=0A=
+uhci_hcd 0000:00:11.2: new USB bus registered, assigned bus number 1=0A=
+uhci_hcd 0000:00:11.2: irq 11, io base 0x0000e400=0A=
+hub 1-0:1.0: USB hub found=0A=
+hub 1-0:1.0: 2 ports detected=0A=
+ACPI: PCI Interrupt 0000:00:11.3[D] -> Link [LNKD] -> GSI 11 (level, =
+low) -> IRQ 11=0A=
+uhci_hcd 0000:00:11.3: UHCI Host Controller=0A=
+uhci_hcd 0000:00:11.3: new USB bus registered, assigned bus number 2=0A=
+uhci_hcd 0000:00:11.3: irq 11, io base 0x0000e800=0A=
+hub 2-0:1.0: USB hub found=0A=
+hub 2-0:1.0: 2 ports detected=0A=
+usb 1-2: new full speed USB device using uhci_hcd and address 2=0A=
+usbcore: registered new driver usblp=0A=
+drivers/usb/class/usblp.c: v0.13: USB Printer Device Class driver=0A=
+Initializing USB Mass Storage driver...=0A=
+usbcore: registered new driver usb-storage=0A=
+USB Mass Storage support registered.=0A=
+usbcore: registered new driver usbhid=0A=
+drivers/usb/input/hid-core.c: v2.6:USB HID core driver=0A=
+mice: PS/2 mouse device common for all mice=0A=
+Advanced Linux Sound Architecture Driver Version 1.0.10rc1 (Mon Sep 12 =
+08:13:09 2005 UTC).=0A=
+ALSA device list:=0A=
+  No soundcards found.=0A=
+oprofile: using timer interrupt.=0A=
+NET: Registered protocol family 2=0A=
+input: AT Translated Set 2 keyboard on isa0060/serio0=0A=
+IP route cache hash table entries: 32768 (order: 5, 131072 bytes)=0A=
+TCP established hash table entries: 131072 (order: 8, 1572864 bytes)=0A=
+TCP bind hash table entries: 65536 (order: 7, 786432 bytes)=0A=
+TCP: Hash tables configured (established 131072 bind 65536)=0A=
+TCP reno registered=0A=
+ip_conntrack version 2.3 (7168 buckets, 57344 max) - 216 bytes per =
+conntrack=0A=
+ip_tables: (C) 2000-2002 Netfilter core team=0A=
+ipt_recent v0.3.1: Stephen Frost <sfrost@domain.hid>.  =
+http://snowman.net/projects/ipt_recent/=0A=
+arp_tables: (C) 2002 David S. Miller=0A=
+input: ImPS/2 Generic Wheel Mouse on isa0060/serio1=0A=
+TCP bic registered=0A=
+NET: Registered protocol family 1=0A=
+NET: Registered protocol family 17=0A=
+Using IPI Shortcut mode=0A=
+EXT3-fs: mounted filesystem with ordered data mode.=0A=
+VFS: Mounted root (ext3 filesystem) readonly.=0A=
+Freeing unused kernel memory: 224k freed=0A=
+kjournald starting.  Commit interval 5 seconds=0A=
+Adding 999928k swap on /dev/hda2.  Priority:-1 extents:1 across:999928k=0A=
+EXT3 FS on hda3, internal journal=0A=
+eth0: link up, 100Mbps, full-duplex, lpa 0x45E1=0A=
+xeno_native: Unknown symbol nktimer=0A=
+xeno_native: Unknown symbol xnheap_schedule_free=0A=
+xeno_native: Unknown symbol xnshadow_register_interface=0A=
+xeno_native: Unknown symbol xntimer_get_timeout=0A=
+xeno_native: Unknown symbol xnpipe_connect=0A=
+xeno_native: Unknown symbol xnpod_unblock_thread=0A=
+xeno_native: Unknown symbol xncore_detach=0A=
+xeno_native: Unknown symbol xnpod_shutdown=0A=
+xeno_native: Unknown symbol xnpod_remove_hook=0A=
+xeno_native: Unknown symbol rthal_apc_free=0A=
+xeno_native: Unknown symbol xnsynch_wakeup_one_sleeper=0A=
+xeno_native: Unknown symbol xnheap_init=0A=
+xeno_native: Unknown symbol xnpod_announce_tick=0A=
+xeno_native: Unknown symbol rthal_apc_schedule=0A=
+xeno_native: Unknown symbol nkgkptd=0A=
+xeno_native: Unknown symbol xnpod_init_thread=0A=
+xeno_native: Unknown symbol rthal_strncpy_from_user=0A=
+xeno_native: Unknown symbol xnpod_get_time=0A=
+xeno_native: Unknown symbol xnpod_renice_thread=0A=
+xeno_native: Unknown symbol xnheap_alloc=0A=
+xeno_native: Unknown symbol xntimer_destroy=0A=
+xeno_native: Unknown symbol xnintr_enable=0A=
+xeno_native: Unknown symbol kheap=0A=
+xeno_native: Unknown symbol xnpod_start_timer=0A=
+xeno_native: Unknown symbol xnpod_stop_timer=0A=
+xeno_native: Unknown symbol xntimer_init=0A=
+xeno_native: Unknown symbol rthal_tunables=0A=
+xeno_native: Unknown symbol xnpod_wait_thread_period=0A=
+xeno_native: Unknown symbol rthal_domain=0A=
+xeno_native: Unknown symbol xnsynch_wakeup_this_sleeper=0A=
+xeno_native: Unknown symbol xnshadow_relax=0A=
+xeno_native: Unknown symbol xnsynch_flush=0A=
+xeno_native: Unknown symbol nkpod=0A=
+xeno_native: Unknown symbol xnintr_detach=0A=
+xeno_native: Unknown symbol nklock=0A=
+xeno_native: Unknown symbol xnshadow_map=0A=
+xeno_native: Unknown symbol xnpipe_disconnect=0A=
+xeno_native: Unknown symbol xnshadow_unmap=0A=
+xeno_native: Unknown symbol xnheap_destroy=0A=
+xeno_native: Unknown symbol xncore_attach=0A=
+xeno_native: Unknown symbol xnshadow_signal_completion=0A=
+xeno_native: Unknown symbol xnshadow_unregister_interface=0A=
+xeno_native: Unknown symbol xnheap_test_and_free=0A=
+xeno_native: Unknown symbol xnpod_add_hook=0A=
+xeno_native: Unknown symbol xnpod_set_thread_periodic=0A=
+xeno_native: Unknown symbol xnsynch_init=0A=
+xeno_native: Unknown symbol xntimer_start=0A=
+xeno_native: Unknown symbol xnpod_schedule=0A=
+xeno_native: Unknown symbol xnheap_destroy_shared=0A=
+xeno_native: Unknown symbol rthal_apc_alloc=0A=
+xeno_native: Unknown symbol rthal_proc_root=0A=
+xeno_native: Unknown symbol xnpod_start_thread=0A=
+xeno_native: Unknown symbol xnpod_set_thread_mode=0A=
+xeno_native: Unknown symbol xnpod_suspend_thread=0A=
+xeno_native: Unknown symbol xnheap_free=0A=
+xeno_native: Unknown symbol xnintr_disable=0A=
+xeno_native: Unknown symbol xnintr_attach=0A=
+xeno_native: Unknown symbol xnheap_init_shared=0A=
+xeno_native: Unknown symbol xnpipe_send=0A=
+xeno_native: Unknown symbol xnintr_init=0A=
+xeno_native: Unknown symbol xnsynch_sleep_on=0A=
+xeno_native: Unknown symbol xnpod_delete_thread=0A=
+xeno_native: Unknown symbol xnpipe_recv=0A=
+xeno_native: Unknown symbol xnintr_destroy=0A=
+xeno_native: Unknown symbol xnpod_resume_thread=0A=
+xeno_native: Unknown symbol xntimer_get_date=0A=
+xeno_posix: Unknown symbol nktimer=0A=
+xeno_posix: Unknown symbol xnshadow_register_interface=0A=
+xeno_posix: Unknown symbol xntimer_get_timeout=0A=
+xeno_posix: Unknown symbol xnpod_unblock_thread=0A=
+xeno_posix: Unknown symbol xncore_detach=0A=
+xeno_posix: Unknown symbol xnpod_shutdown=0A=
+xeno_posix: Unknown symbol xnpod_remove_hook=0A=
+xeno_posix: Unknown symbol xnpod_fatal_helper=0A=
+xeno_posix: Unknown symbol xnsynch_wakeup_one_sleeper=0A=
+xeno_posix: Unknown symbol xnpod_announce_tick=0A=
+xeno_posix: Unknown symbol xnpod_init_thread=0A=
+xeno_posix: Unknown symbol rthal_strncpy_from_user=0A=
+xeno_posix: Unknown symbol xnpod_get_time=0A=
+xeno_posix: Unknown symbol xnpod_renice_thread=0A=
+xeno_posix: Unknown symbol xnheap_alloc=0A=
+xeno_posix: Unknown symbol xntimer_destroy=0A=
+xeno_posix: Unknown symbol xnintr_enable=0A=
+xeno_posix: Unknown symbol kheap=0A=
+xeno_posix: Unknown symbol xnpod_start_timer=0A=
+xeno_posix: Unknown symbol xnpod_stop_timer=0A=
+xeno_posix: Unknown symbol xntimer_init=0A=
+xeno_posix: Unknown symbol rthal_tunables=0A=
+xeno_posix: Unknown symbol xnpod_wait_thread_period=0A=
+xeno_posix: Unknown symbol rthal_domain=0A=
+xeno_posix: Unknown symbol xnshadow_relax=0A=
+xeno_posix: Unknown symbol xnsynch_flush=0A=
+xeno_posix: Unknown symbol nkpod=0A=
+xeno_posix: Unknown symbol xnintr_detach=0A=
+xeno_posix: Unknown symbol nklock=0A=
+xeno_posix: Unknown symbol xnshadow_map=0A=
+xeno_posix: Unknown symbol xnshadow_unmap=0A=
+xeno_posix: Unknown symbol xncore_attach=0A=
+xeno_posix: Unknown symbol xnshadow_unregister_interface=0A=
+xeno_posix: Unknown symbol xnpod_add_hook=0A=
+xeno_posix: Unknown symbol xnpod_set_thread_periodic=0A=
+xeno_posix: Unknown symbol xnsynch_init=0A=
+xeno_posix: Unknown symbol xntimer_start=0A=
+xeno_posix: Unknown symbol xnpod_schedule=0A=
+xeno_posix: Unknown symbol xnpod_start_thread=0A=
+xeno_posix: Unknown symbol xnpod_set_thread_mode=0A=
+xeno_posix: Unknown symbol xnpod_suspend_thread=0A=
+xeno_posix: Unknown symbol xnheap_free=0A=
+xeno_posix: Unknown symbol xnshadow_suspend=0A=
+xeno_posix: Unknown symbol xnintr_disable=0A=
+xeno_posix: Unknown symbol xnintr_attach=0A=
+xeno_posix: Unknown symbol xnintr_init=0A=
+xeno_posix: Unknown symbol xnpod_check_context=0A=
+xeno_posix: Unknown symbol xnsynch_sleep_on=0A=
+xeno_posix: Unknown symbol xnpod_delete_thread=0A=
+xeno_posix: Unknown symbol xnintr_destroy=0A=
+xeno_posix: Unknown symbol xnpod_resume_thread=0A=
+
+------=_NextPart_000_0024_01C5FBE6.D6FC5C80--
 
 
