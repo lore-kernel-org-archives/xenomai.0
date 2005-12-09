@@ -1,12 +1,14 @@
-Message-ID: <4398B958.8040705@domain.hid>
-Date: Thu, 08 Dec 2005 23:53:12 +0100
+Message-ID: <4399313A.6090004@domain.hid>
+Date: Fri, 09 Dec 2005 08:24:42 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [bug?] set pthread stack size broken
+References: <4398B958.8040705@domain.hid>
+In-Reply-To: <4398B958.8040705@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig88DEAD950FE4B148DF24FBF7"
+	boundary="------------enig24C5275F0DB691AEB8262E51"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [bug?] set pthread stack size broken
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,92 +21,62 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig88DEAD950FE4B148DF24FBF7
-Content-Type: multipart/mixed; boundary="------------070504050505040205070305"
-
-This is a multi-part message in MIME format.
---------------070504050505040205070305
+--------------enig24C5275F0DB691AEB8262E51
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+> 
+> something for the night: Can someone explain why normal pthreads can be
+> restricted to initially use only the stack size provided via
+> pthread_attr_setstacksize() while any rt-mapped thread (posix and
+> native) refuse to accept this? For a simple test, compile the attached
+> program one time as normal
+> 
+>     gcc -lpthread -o stacksize stacksize.c
+> 
+> and the other time against xeno's posix skin
+> 
+>     gcc `xeno-config --posix-cflags` `xeno-config --posix-ldflags` \
+>         -o stacksize.o stacksize.c
+> 
+> Then compare the memory requirements of both processes - they should
+> differ by 2M, the stack size when pthread_attr_setstacksize is not used.
+> Strange - and also critical when considering larger applications...
 
-something for the night: Can someone explain why normal pthreads can be
-restricted to initially use only the stack size provided via
-pthread_attr_setstacksize() while any rt-mapped thread (posix and
-native) refuse to accept this? For a simple test, compile the attached
-program one time as normal
+This has been nailed down now to be some strange linker problem: while
+the standard version of the stacksize demo calls the latest
+pthread_create (__pthread_create_2_1 in glibc-2.3.x), the wrapped
+real-time version and likely also applications linked against libnative
+call an older pthread_create (__pthread_create_2_0). That variant
+assumes that pthread_attr_t does not yet contain things like the stack
+size and fills in the standard value again. :(
 
-    gcc -lpthread -o stacksize stacksize.c
+Can anyone with another build environment than my SuSE 10 confirm this?
 
-and the other time against xeno's posix skin
+> 
+> So far I only tested against 2.1, but I don't see a reason why 2.0.x
+> should behave different. Will get checked, though.
+> 
 
-    gcc `xeno-config --posix-cflags` `xeno-config --posix-ldflags` \
-        -o stacksize.o stacksize.c
-
-Then compare the memory requirements of both processes - they should
-differ by 2M, the stack size when pthread_attr_setstacksize is not used.
-Strange - and also critical when considering larger applications...
-
-So far I only tested against 2.1, but I don't see a reason why 2.0.x
-should behave different. Will get checked, though.
-
-Any ideas?
+Same behaviour on 2.0.x (SVN).
 
 Jan
 
---------------070504050505040205070305
-Content-Type: text/plain;
- name="stacksize.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="stacksize.c"
-
-#include <sys/mman.h>
-#include <unistd.h>
-#include <limits.h>
-#include <pthread.h>
-
-
-static void *simple_thread(void *arg)
-{
-    sleep(30);
-    return 0;
-}
-
-
-int main (int ac, char **av)
-{
-    pthread_t pth;
-    pthread_attr_t attr;
-
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    pthread_attr_init(&attr);
-    pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
-    pthread_create(&pth, &attr, simple_thread, NULL);
-
-    sleep(30);
-
-    return 0;
-}
-
---------------070504050505040205070305--
-
---------------enig88DEAD950FE4B148DF24FBF7
+--------------enig24C5275F0DB691AEB8262E51
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDmLlbniDOoMHTA+kRAt4GAJoDbfGNhtfQGGoQxHaNEam6WUqfPQCfdk5l
-z7hdwbVUrCARh8LDKuxmIRY=
-=83wx
+iD8DBQFDmTE6niDOoMHTA+kRApLyAJ91695oBfRIxOXBH5FJC+LPjn8zXgCfe772
+/EXfoAFUft+iRBkrXJaWaZc=
+=2SqB
 -----END PGP SIGNATURE-----
 
---------------enig88DEAD950FE4B148DF24FBF7--
+--------------enig24C5275F0DB691AEB8262E51--
 
