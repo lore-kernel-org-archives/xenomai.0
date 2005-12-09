@@ -1,13 +1,13 @@
-Message-ID: <4399AE7A.2030507@domain.hid>
-Date: Fri, 09 Dec 2005 17:19:06 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4399AEBC.7060309@domain.hid>
+Date: Fri, 09 Dec 2005 17:20:12 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [bug?] set pthread stack size broken
-References: <4398B958.8040705@domain.hid> <4399313A.6090004@domain.hid>
-In-Reply-To: <4399313A.6090004@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6CB9EC31346806ACAA9221D0"
+Subject: Re: [Xenomai-core] [RFC] rt_task_join?
+References: <439729A6.3010309@domain.hid>
+	<43972D95.6090507@domain.hid>
+In-Reply-To: <43972D95.6090507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,130 +17,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6CB9EC31346806ACAA9221D0
-Content-Type: multipart/mixed; boundary="------------090903000305010003000809"
-
-This is a multi-part message in MIME format.
---------------090903000305010003000809
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
 > Jan Kiszka wrote:
->> Hi,
+> 
+>>Hi all,
 >>
->> something for the night: Can someone explain why normal pthreads can b=
-e
->> restricted to initially use only the stack size provided via
->> pthread_attr_setstacksize() while any rt-mapped thread (posix and
->> native) refuse to accept this? For a simple test, compile the attached=
-
->> program one time as normal
+>>we ran into some issue where we have to wait on the termination of a
+>>native real-time userspace thread during cleanup. This can be done in a
+>>custom way of course, either via some polling on a flag or by blocking
+>>on a standard posix semaphore that are signalled by the terminating
+>>real-time thread. But maybe it is more useful to have a generic function
+>>available with the native skin.
 >>
->>     gcc -lpthread -o stacksize stacksize.c
+>>The problem is now that the pthreads underneath the real-time threads
+>>are created with PTHREAD_CREATE_DETACHED. Changing this also changes the
+>>semantic of other rt_task_xxx functions as posix then requires the
+>>creator to call pthread_join (i.e. a new rt_task_join) in any case. A
+>>better option might be to introduce a new mode bit T_JOINABLE to decide
+>>if the related pthread should be created detached or not. Default would
+>>remain PTHREAD_CREATE_DETACHED, if rt_task_join is to be used,
+>>T_JOINABLE could be passed to rt_task_create.
 >>
->> and the other time against xeno's posix skin
+>>What do you think, worth the effort?
 >>
->>     gcc `xeno-config --posix-cflags` `xeno-config --posix-ldflags` \
->>         -o stacksize.o stacksize.c
->>
->> Then compare the memory requirements of both processes - they should
->> differ by 2M, the stack size when pthread_attr_setstacksize is not use=
-d.
->> Strange - and also critical when considering larger applications...
->=20
-> This has been nailed down now to be some strange linker problem: while
-> the standard version of the stacksize demo calls the latest
-> pthread_create (__pthread_create_2_1 in glibc-2.3.x), the wrapped
-> real-time version and likely also applications linked against libnative=
+> 
+> 
+> Actually, the effort could be as simple as this (+ some docs) - as long
+> as I'm not overseeing some side effect right now.
+> 
 
-> call an older pthread_create (__pthread_create_2_0). That variant
-> assumes that pthread_attr_t does not yet contain things like the stack
-> size and fills in the standard value again. :(
->=20
-> Can anyone with another build environment than my SuSE 10 confirm this?=
+Looks ok.
 
->=20
->> So far I only tested against 2.1, but I don't see a reason why 2.0.x
->> should behave different. Will get checked, though.
->>
->=20
-> Same behaviour on 2.0.x (SVN).
->=20
-> Jan
->=20
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: include/native/task.h
+> ===================================================================
+> --- include/native/task.h	(revision 245)
+> +++ include/native/task.h	(working copy)
+> @@ -35,18 +35,19 @@
+>  #define T_CPUMASK  0xff000000
+>  
+>  /* Status/mode flags. */
+> -#define T_BLOCKED XNPEND
+> -#define T_DELAYED XNDELAY
+> -#define T_READY   XNREADY
+> -#define T_DORMANT XNDORMANT
+> -#define T_STARTED XNSTARTED
+> -#define T_BOOST   XNBOOST
+> -#define T_LOCK    XNLOCK
+> -#define T_RRB     XNRRB
+> -#define T_NOSIG   XNASDI
+> -#define T_SHIELD  XNSHIELD
+> -#define T_WARNSW  XNTRAPSW
+> -#define T_PRIMARY XNTHREAD_SPARE0
+> +#define T_BLOCKED  XNPEND
+> +#define T_DELAYED  XNDELAY
+> +#define T_READY    XNREADY
+> +#define T_DORMANT  XNDORMANT
+> +#define T_STARTED  XNSTARTED
+> +#define T_BOOST    XNBOOST
+> +#define T_LOCK     XNLOCK
+> +#define T_RRB      XNRRB
+> +#define T_NOSIG    XNASDI
+> +#define T_SHIELD   XNSHIELD
+> +#define T_WARNSW   XNTRAPSW
+> +#define T_PRIMARY  XNTHREAD_SPARE0
+> +#define T_JOINABLE XNTHREAD_SPARE1
+>  
+>  /* Task hook types. */
+>  #define T_HOOK_START  XNHOOK_THREAD_START
+> @@ -268,6 +269,8 @@
+>  int rt_task_slice(RT_TASK *task,
+>  		  RTIME quantum);
+>  
+> +int rt_task_join(RT_TASK *task);
+> +
 
-The attached patch fixes this issue for 2.1-SVN. A similar patch should
-be applied to 2.0.x as well. And maybe it also hits the UVM, but this is
-something I cannot assess ATM.
+Should move to the user-space section of the header file (i.e. !(KERNEL 
+|| XENO_SIM))
 
-Well, you know, the smaller the bug... :-/
+>  #ifdef CONFIG_XENO_OPT_NATIVE_MPS
+>  
+>  ssize_t rt_task_send(RT_TASK *task,
+> Index: src/skins/native/task.c
+> ===================================================================
+> --- src/skins/native/task.c	(revision 245)
+> +++ src/skins/native/task.c	(working copy)
+> @@ -127,7 +127,8 @@
+>  	stksize = PTHREAD_STACK_MIN;
+>  
+>      pthread_attr_setstacksize(&thattr,stksize);
+> -    pthread_attr_setdetachstate(&thattr,PTHREAD_CREATE_DETACHED);
+> +    if (!(mode & T_JOINABLE))
+> +	pthread_attr_setdetachstate(&thattr,PTHREAD_CREATE_DETACHED);
+>      pthread_attr_setschedpolicy(&thattr,SCHED_FIFO);
+>      param.sched_priority = sched_get_priority_max(SCHED_FIFO);
+>      pthread_attr_setschedparam(&thattr,&param);
+> @@ -331,6 +332,11 @@
+>  			     &quantum);
+>  }
+>  
+> +int rt_task_join (RT_TASK *task)
+> +{
+> +    return -pthread_join((pthread_t)task->opaque2, NULL);
+> +}
+> +
+>  #ifdef CONFIG_XENO_OPT_NATIVE_MPS
+>  
+>  ssize_t rt_task_send (RT_TASK *task,
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-Jan
 
+-- 
 
-PS: For those you are interested why we need this, read
-
-https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=3D145941
-
-Found via google:"pthread_create NOTYPE" after I noticed the differences
-in "readelf -s libnative.so".
-
---------------090903000305010003000809
-Content-Type: text/plain;
- name="setstacksize.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="setstacksize.patch"
-
-Index: src/skins/native/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- src/skins/native/Makefile.am	(revision 243)
-+++ src/skins/native/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES =3D libnative.la
-=20
--libnative_la_LDFLAGS =3D -module -version-info 0:0:0
-+libnative_la_LDFLAGS =3D -module -version-info 0:0:0 -pthread
-=20
- libnative_la_SOURCES =3D \
- 	alarm.c \
-Index: src/skins/posix/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- src/skins/posix/Makefile.am	(revision 243)
-+++ src/skins/posix/Makefile.am	(working copy)
-@@ -2,7 +2,7 @@
-=20
- lib_LTLIBRARIES =3D libpthread_rt.la
-=20
--libpthread_rt_la_LDFLAGS =3D -module -version-info 0:0:0
-+libpthread_rt_la_LDFLAGS =3D -module -version-info 0:0:0 -lpthread
-=20
- libpthread_rt_la_SOURCES =3D \
- 	init.c \
-
---------------090903000305010003000809--
-
---------------enig6CB9EC31346806ACAA9221D0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDma56ncNeS9Q0k+IRAiHOAJ93gE6mhwIudwDs212kY18IuvnUdQCfYclX
-/ErWj6P0XfisEu2I4s9jwVE=
-=q9WS
------END PGP SIGNATURE-----
-
---------------enig6CB9EC31346806ACAA9221D0--
+Philippe.
 
