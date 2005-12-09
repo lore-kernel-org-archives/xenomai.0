@@ -1,14 +1,15 @@
-Message-ID: <4399E194.6020403@domain.hid>
-Date: Fri, 09 Dec 2005 20:57:08 +0100
+Message-ID: <4399E1E9.6000509@domain.hid>
+Date: Fri, 09 Dec 2005 20:58:33 +0100
 From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] fix rt_task_delete for cancellable
-	rt-threads
-References: <43987EA2.9000504@domain.hid>
-In-Reply-To: <43987EA2.9000504@domain.hid>
+Subject: Re: [Xenomai-core] [bug?] set pthread stack size broken
+References: <4398B958.8040705@domain.hid> <4399313A.6090004@domain.hid>
+	<4399AE7A.2030507@domain.hid>
+	<4399B477.6050101@domain.hid>
+In-Reply-To: <4399B477.6050101@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1917A26DFD7FCC624397515F"
+	boundary="------------enig7DD98CAB8D20478678D51299"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,74 +23,115 @@ To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1917A26DFD7FCC624397515F
+--------------enig7DD98CAB8D20478678D51299
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Jan Kiszka wrote:
-> Hi,
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 > 
-> no, this is not the fix for the issue I described earlier. This just
-> improves the behaviour of rt_task_delete in case the target is blocking
-> at a cancellation point (tested with standard sem_wait). With the
-> current version, rt_task_deletes the rt-shadow and just wakes up the
-> linux pthread even if the target is cancellable at that moment. With the
-> reordering, this is fixed and the target is actually terminated. No
-> major issue, though.
+>> Jan Kiszka wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> something for the night: Can someone explain why normal pthreads can be
+>>>> restricted to initially use only the stack size provided via
+>>>> pthread_attr_setstacksize() while any rt-mapped thread (posix and
+>>>> native) refuse to accept this? For a simple test, compile the attached
+>>>> program one time as normal
+>>>>
+>>>>    gcc -lpthread -o stacksize stacksize.c
+>>>>
+>>>> and the other time against xeno's posix skin
+>>>>
+>>>>    gcc `xeno-config --posix-cflags` `xeno-config --posix-ldflags` \
+>>>>        -o stacksize.o stacksize.c
+>>>>
+>>>> Then compare the memory requirements of both processes - they should
+>>>> differ by 2M, the stack size when pthread_attr_setstacksize is not
+>>>> used.
+>>>> Strange - and also critical when considering larger applications...
+>>>
+>>>
+>>> This has been nailed down now to be some strange linker problem: while
+>>> the standard version of the stacksize demo calls the latest
+>>> pthread_create (__pthread_create_2_1 in glibc-2.3.x), the wrapped
+>>> real-time version and likely also applications linked against libnative
+>>> call an older pthread_create (__pthread_create_2_0). That variant
+>>> assumes that pthread_attr_t does not yet contain things like the stack
+>>> size and fills in the standard value again. :(
+>>>
+>>> Can anyone with another build environment than my SuSE 10 confirm this?
+>>>
+>>>
+>>>> So far I only tested against 2.1, but I don't see a reason why 2.0.x
+>>>> should behave different. Will get checked, though.
+>>>>
+>>>
+>>> Same behaviour on 2.0.x (SVN).
+>>>
+>>> Jan
+>>>
+>>
+>>
+>> The attached patch fixes this issue for 2.1-SVN. A similar patch should
+>> be applied to 2.0.x as well. And maybe it also hits the UVM, but this is
+>> something I cannot assess ATM.
+>>
+>> Well, you know, the smaller the bug... :-/
+>>
+>> Jan
+>>
+>>
+>> PS: For those you are interested why we need this, read
+>>
+>> https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=145941
+>>
+>> Found via google:"pthread_create NOTYPE" after I noticed the differences
+>> in "readelf -s libnative.so".
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> Index: src/skins/native/Makefile.am
+>> ===================================================================
+>> --- src/skins/native/Makefile.am    (revision 243)
+>> +++ src/skins/native/Makefile.am    (working copy)
+>> @@ -1,6 +1,6 @@
+>>  lib_LTLIBRARIES = libnative.la
+>>  
+>> -libnative_la_LDFLAGS = -module -version-info 0:0:0
+>> +libnative_la_LDFLAGS = -module -version-info 0:0:0 -pthread
+>>  
+>>  libnative_la_SOURCES = \
+>>      alarm.c \
+>> Index: src/skins/posix/Makefile.am
+>> ===================================================================
+>> --- src/skins/posix/Makefile.am    (revision 243)
+>> +++ src/skins/posix/Makefile.am    (working copy)
+>> @@ -2,7 +2,7 @@
+>>  
+>>  lib_LTLIBRARIES = libpthread_rt.la
+>>  
+>> -libpthread_rt_la_LDFLAGS = -module -version-info 0:0:0
+>> +libpthread_rt_la_LDFLAGS = -module -version-info 0:0:0 -lpthread
+>>
+>>  libpthread_rt_la_SOURCES = \
+>>      init.c \
 > 
-> Jan
 > 
+> Applied (with -pthread everywhere), thanks.
 > 
-> ------------------------------------------------------------------------
-> 
-> Index: src/skins/native/task.c
-> ===================================================================
-> --- src/skins/native/task.c	(revision 243)
-> +++ src/skins/native/task.c	(working copy)
-> @@ -203,12 +203,18 @@
->  int rt_task_delete (RT_TASK *task)
->  
->  {
-> -    int err = XENOMAI_SKINCALL1(__native_muxid,
-> -				__native_task_delete,
-> -				task);
-> -    if (!err)
-> -	pthread_cancel((pthread_t)task->opaque2);
-> +    int err;
->  
-> +    err = pthread_cancel((pthread_t)task->opaque2)
-> +    if (err)
-> +        return -err;
-> +
-> +    err = XENOMAI_SKINCALL1(__native_muxid,
-> +			    __native_task_delete,
-> +			    task);
-> +    if (err == -ESRCH)
-> +	return 0;
-> +
->      return err;
->  }
->  
 
-Oops, fix for my patch:
-
---- ../src/skins/native/task.c  (Revision 251)
-+++ ../src/skins/native/task.c  (Arbeitskopie)
-@@ -206,7 +206,7 @@
- {
-     int err;
-
--    err = pthread_cancel((pthread_t)task->opaque2)
-+    err = pthread_cancel((pthread_t)task->opaque2);
-     if (err)
-         return -err;
-
-
-I reorganised the code without a compiler run before posting.
+Hmm, shouldn't is spell -lpthread? Seems like the autotools resolve this
+because it works with both versions for me (current posix/Makefile.in
+still has "-lpthread").
 
 Jan
 
---------------enig1917A26DFD7FCC624397515F
+--------------enig7DD98CAB8D20478678D51299
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -98,10 +140,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDmeGUncNeS9Q0k+IRAhk5AJ9A3lwJNqXWzBG0Nb4VHJEThw9t+gCfcO0N
-K4Yx0JxRM9bq9WdstAc0lhs=
-=HjLp
+iD8DBQFDmeHpncNeS9Q0k+IRAgy5AJ0TNwE0D6POk/n+CUYv6GnkWVTwQgCg3hI/
+gb1MD9hcr2QyU7UtW68PFC0=
+=P/ZA
 -----END PGP SIGNATURE-----
 
---------------enig1917A26DFD7FCC624397515F--
+--------------enig7DD98CAB8D20478678D51299--
 
