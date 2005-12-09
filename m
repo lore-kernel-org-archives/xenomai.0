@@ -1,14 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4399CA00.6010905@domain.hid>
+Date: Fri, 09 Dec 2005 19:16:32 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17305.51026.541872.815402@domain.hid>
-Date: Fri, 9 Dec 2005 19:05:06 +0100
-Subject: Re: [Xenomai-help] Xenomai 2.0.1 - Posix Skin - realtime priorities -
-	what I'm doing wrong?
-In-Reply-To: <200512091650.11637.schwab@domain.hid>
-References: <439995C0.6030006@domain.hid>
-	<200512091650.11637.schwab@domain.hid>
+Subject: Re: [Xenomai-help] Commercial use of Xenomai
+References: <B4D14EA407C38B4DAF92B8EAC9249D7F01788ACA@mspex01.go.mts.com>
+In-Reply-To: <B4D14EA407C38B4DAF92B8EAC9249D7F01788ACA@mspex01.go.mts.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,89 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
+Cc: xenomai@xenomai.org
 
-Ulrich Schwab wrote:
- > On Friday 09 December 2005 15:33, Paolo Gai wrote:
- > > Dear all,
- > >
- > > First of all, I would like to thank Philippe for the long and exaustive
- > > reply to my previous post about the scheduling example.
- > >
- > > I'm now trying the POSIX skin to write a very simple example using
- > > real-time priorities, RR and FIFO scheduling.
- > >
- > > The idea is that a high priority task creates two medium priority tasks
- > > (that just prints something using printf) and a low priority task (that
- > > prints a message).  The example is run twice, in one case the medium
- > > priority tasks have SCHED_FIFO, in another case they have SCHED_RR.
- > >
- > > I would expect that in both cases the two medium priority tasks would
- > > run printing their characters (either in a FIFO order or mixed when
- > > using RR), and at their end the low priority task would have run
- > > printing its message.
- > I did not look inside Your code, but if You are using printf the threads will 
- > be switched back to secondary domain (non-RT), this might screw up the order 
- > of scheduling.
+Rosenow, Jim wrote:
+> First let me start by saying I apologize if xenomai-help is the wrong=20
+> list, I found a xenomai-main which I though more likely the correct lis=
+t=20
+> but it has had no activity.
+>
 
-What happens for certain is that the access to stdout buffer, when
-compiling with the -D_REENTRANT flag, is serialized with a GNU libc
-POSIX mutex. This account for the consistent behaviour between GNU libc
-libpthread, or Xenomai POSIX skin library. The scheduling order is the
-one of the libc POSIX library, and knowing exactly what happens would
-require further investigation (there may be a difference between NPTL
-and linuxthreads for example).
+Xenomai-main is a hidden and dead list. Active lists are listed here:
+http://gna.org/mail/?group=3Dxenomai
 
-Working around this issue means using calls to unlocked versions of libc
-functions protected with Xenomai POSIX mutexes, such as, for example,
-myputs and myputchar (sufficient for Paolo example) defined as :
+> =20
+>=20
+> I had been following fusion for some time with an eye toward the=20
+> possibility of commercial use due to it being user-space real-time and=20
+> thus more likely to allow protection of intellectual property.  I=92m=20
+> pleased to see a continuation of fusion in the Xenomai project.
+>=20
+> =20
+>=20
+> =20
+>=20
+> I=92ve searched the archives for license details and have only found=20
+> reference to GPL V2.
+>=20
 
-pthread_mutex_t xeno_stdout_lock;
+Look harder: e.g. skins/native/lib/COPYING (v2.0.x) or=20
+src/skins/native/COPYING (v2.1). LGPL inside.
 
-int myputchar(int c)
-{
-    int err;
+> =20
+>=20
+> My primary question is if a user space Xenomai real-time application is=
+=20
+> considered a derivate work and thus is subject to be GPL=92d?
+>=20
+> =20
 
-    pthread_mutex_lock(&xeno_stdout_lock);
-    err = putchar_unlocked(c);
-    pthread_mutex_unlock(&xeno_stdout_lock);
+1. Xenomai libraries that provide system call wrappers to invoke the=20
+real-time nucleus services from user-space are LGPL. E.g. libnative.so=20
+and libpthread_rt.so. Application-wise, those have the same role with=20
+respect to the Xenomai nucleus than the glibc has with respect to the=20
+Linux kernel. This is likely what you want to use.
 
-    return err;
-}
+2. Xenomai libraries that provide the UVM support are licensed under the=20
+GPL, with a specific exception clause that basically says that mere=20
+linking against such unmodified libraries does not cause by itself the=20
+application to be covered by the GPL. Rationale: UVM support is mainly=20
+composed of GPLed kernel-based code (nucleus, various RTOS skins), but=20
+compiled for a different execution environment, so that the UVM can run=20
+it over a virtual machine layer, all of this being in the context of a=20
+regular Linux process in user-space. For this reason, the base license=20
+remains the GPL, but the exception is there for what is worth.
 
-int myputs(const char *s)
-{
-    int err;
+3. All Xenomai code running in Linux kernel space is GPL.
 
-    pthread_mutex_lock(&xeno_stdout_lock);
-    err = puts_unlocked(s);
-    pthread_mutex_unlock(&xeno_stdout_lock);
+4. All Xenomai code implementing the simulator (i.e. sim/ directory) is G=
+PL.
 
-    return err;
-}
+--=20
 
-defining myprintf is a bit more complicated if we want to avoid dynamic
-allocation, and if we do not avoid dynamic allocation, malloc is
-protected with another mutex, so we may run (less often, of course) into
-a similar issue.
-
-Now, your answer yields another important question: are domain
-migrations inocuous from a scheduling point of view ?
-Intuitively, if two tasks A and B in the same priority group are
-runnable, and task A undergoes a migration from secondary to primary,
-followed by a migration from primary to secondary without a suspension,
-the scheduling order will be wrong.
-
-The reason for this behaviour is that when task A migrates from
-primary mode to secondary mode and will be waken up in Linux scheduler,
-it should be put at the end of its priority group, so that B should
-become the running task.
-
-In short, the two successive migrations are equivalent to calling
-sched_yield() from Linux scheduler point of view.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Philippe.
 
