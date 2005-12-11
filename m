@@ -1,15 +1,12 @@
-Message-ID: <439AEBA5.1090502@domain.hid>
-Date: Sat, 10 Dec 2005 15:52:21 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <439C18EC.1070500@domain.hid>
+Date: Sun, 11 Dec 2005 13:17:48 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] fix rt_task_delete for cancellable   
-	rt-threads
-References: <43987EA2.9000504@domain.hid>
-	<4399E194.6020403@domain.hid>
-In-Reply-To: <4399E194.6020403@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig21F8A596860BC15089250C13"
+	boundary="------------enigF19EB92308E488FB928BF585"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [bug] vfree/kfree under hard IRQ locks
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,56 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig21F8A596860BC15089250C13
-Content-Type: multipart/mixed; boundary="------------080600060102010005050605"
-
-This is a multi-part message in MIME format.
---------------080600060102010005050605
+--------------enigF19EB92308E488FB928BF585
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Hi Philippe,
+Hi,
 
-really hope we can close this issue soon, but I managed to add another
-regression with my fix (rt_task_delete(NULL) caused seg-faults, e.g. in
-latency). Please apply the attached path against current SVN.
+I happened to stumble over this comment[1]. It made me curious,
+especially as it is not totally correct (the loop is executed in IRQ-off
+context, thus it *is* timecritical).
+
+While thinking about the possibility to convert the hard IRQ lock
+protection of kheapq into some Linux mutex or whatever, I analysed the
+contexts the users of this queue (__validate_heap_addr/xnheap_ioctl,
+xnheap_init_shared, xnheap_destroy_shared) execute in. Basically, it is
+Linux/secondary mode, but there are unfortunate exceptions:
+
+rt_heap_delete(): take nklock[2], then call xnheap_destroy_shared()[3].
+The latter will call __unreserve_and_free_heap()[4] which calls Linux
+functions like vfree()[5] or kfree()[6] -- I would say: not good! At
+least on SMP we could easily get trapped by non-deterministic waiting on
+Linux spinlocks inside those functions.
+
+The same applies to rt_queue_delete()[7].
+
+To clarify the relevance: These issues only concern the native skin, and
+they only hit during init and cleanup. Anyway, should get fixed.
 
 Jan
 
---------------080600060102010005050605
-Content-Type: text/plain;
- name="rt_task_delete.patch.fix"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="rt_task_delete.patch.fix"
 
-Index: src/skins/native/task.c
-===================================================================
---- src/skins/native/task.c	(Revision 251)
-+++ src/skins/native/task.c	(Arbeitskopie)
-@@ -206,9 +206,11 @@
- {
-     int err;
- 
--    err = pthread_cancel((pthread_t)task->opaque2)
--    if (err)
--        return -err;
-+    if (task) {
-+	err = pthread_cancel((pthread_t)task->opaque2);
-+	if (err)
-+	    return -err;
-+    }
- 
-     err = XENOMAI_SKINCALL1(__native_muxid,
- 			    __native_task_delete,
+[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/heap.c?v=SVN-trunk#L845
+[2]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/native/heap.c?v=SVN-trunk#L353
+[3]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/native/heap.c?v=SVN-trunk#L365
+[4]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/heap.c?v=SVN-trunk#L1157
+[5]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/heap.c?v=SVN-trunk#L1092
+[6]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/heap.c?v=SVN-trunk#L1100
+[7]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/native/queue.c?v=SVN-trunk#L338
 
---------------080600060102010005050605--
 
---------------enig21F8A596860BC15089250C13
+--------------enigF19EB92308E488FB928BF585
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -77,10 +67,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDmuuqncNeS9Q0k+IRAtAbAKDnKVqJCR6f9bi88s/Gz9OmwjqeAACeOGyK
-4TaKv6cAI3EmQj9jj5ExZTs=
-=aAVR
+iD8DBQFDnBjzniDOoMHTA+kRAnqXAJ9UZhioLz7R3Sx3rPyUPiTRB0w93gCfdpvA
+Io7Zqpf/FbsjnyRPJaMMM1c=
+=3+KG
 -----END PGP SIGNATURE-----
 
---------------enig21F8A596860BC15089250C13--
+--------------enigF19EB92308E488FB928BF585--
 
