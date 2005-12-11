@@ -1,101 +1,132 @@
-Message-ID: <43786C64.1050404@domain.hid>
-Date: Mon, 14 Nov 2005 11:52:20 +0100
-From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+Message-ID: <439C789E.8010608@domain.hid>
+Date: Sun, 11 Dec 2005 20:06:06 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] printk
-References: <OF1D0CCC98.82E4D674-ONC12570B6.003B9ABD-C12570B6.003D16B7@domain.hid>
-In-Reply-To: <OF1D0CCC98.82E4D674-ONC12570B6.003B9ABD-C12570B6.003D16B7@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] [bug] vfree/kfree under hard IRQ locks
+References: <439C18EC.1070500@domain.hid> <439C3A32.8020405@domain.hid>
+	<439C63A4.3080309@domain.hid> <439C6BF7.5070404@domain.hid>
+	<439C700B.7050501@domain.hid>
+In-Reply-To: <439C700B.7050501@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Dmitry Adamushko wrote:
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>
+>>>Philippe Gerum wrote:
+>>>
+>>>
+>>>>Jan Kiszka wrote:
+>>>>
+>>>>
+>>>>
+>>>>>Hi,
+>>>>>
+>>>>>I happened to stumble over this comment[1]. It made me curious,
+>>>>>especially as it is not totally correct (the loop is executed in
+>>>>>IRQ-off
+>>>>>context, thus it *is* timecritical).
+>>>>>
+>>>>
+>>>>Critical should be understood here in the sense that IRQs are off while
+>>>>the loop workload is high, which is fortunately not the case. Hence the
+>>>>comment.
+>>>
+>>>
+>>>
+>>>Sure, there is not much to do inside the loop. But it does not scale
+>>>very well in case a significant number of elements are registered - and
+>>>they are scattered over a larger memory area so that cache missed
+>>>strike us.
+>>>
+>>
+>>Compared to what it costs to actually call Linux to release the system
+>>memory which is an operation the syscall will do anyway, those cache
+>>misses account for basically nothing.
+> 
+> 
+> I don't have the function caller's cost in mind here (which is likely
+> either starting up or on the way to termination anyway), I just worry
+> about the rest of the system which may want to continue it's operation
+> undisturbed.
+> 
 
->
-> xenomai-help-bounces@domain.hid wrote on 11.11.2005 10:30:26:
->
-> > Hi,
-> >
-> > I'm porting an app from RTAI to Xenomai, and when it came to the
-> > rt_printk function, I had to replace it with plain printk (the
-> > xnarch_log* functions all use printk).
-> >
-> > What I want to know if:
-> >
-> > 1- Is totally safe to call the standard kernel printk function from a
-> > real time task?
->
-> Actually, the adeos/ipipe patches make some changes to the vanilla
-> kernel's printk() mechanism.
->
-> There are 2 possible modes of printk() being issued from the primary
-> domain.
->
-> 1) asynchronous:
->
-> all data is written into the protected buffer and the
-> __ipipe_printk_virq virq is risen for the secondary domain. So the
-> data will be printed out when the linux gets control next time.
->
-> Although, here is, well, a tiny race because of the fact that the virq
-> handler doesn't lock a buffer-related data (like __ipipe_printk_fill)
-> so a loss of data may occur under some circumstances.
->
-> 2) synchronous (IPIPE_SPRINTK_FLAG)
->
-> in this case, a normal linux vprintk() call is issued. Oops, this one,
-> in turn, calls spin_lock_irqsave(&logbuf_lock, flags); in real-time
-> context and that lock may be already held by a preempted non-rt task
-> on the same CPU.
->
-> Houston? :o)
->
-(2) is unacceptable. Losing some data would be acceptable if it is
-caused by too much printk output, but not because of a race condition.
-This should be fixed. I guess a simple FIFO with proper locking should
-be in place. printk would discard data only if there is no space left.
+Again, it's a matter of tradeoff: do we want to add more locking 
+complexity, which means more code and likely more data fetches in the 
+hot path, in order to be able to avoid a series of uninterruptible cache 
+misses when scanning a short heap descriptor queue? The queue we are 
+talking about links all the currently active heaps, which means 1 
+element for the system heap, plus 1 element for each of the user-defined 
+heaps.
 
->
-> >
-> > 2- Even if it's safe, can it affect the performance of a real time task?
-> > (or can it block under *any* conceivable condition?)
->
-> It gives some overhead since data must be copied to the buffer and at
-> that time the interrupts are off.
-> Blocked? No, if not taking into account a possible "hang up" with the
-> synchronous mode (ok, as always there is still a hope that I can be
-> wrong ):)
->
-If you are right, then it's unacceptable. An RT task would be blocked by
-a non-RT task.
-
->
-> >
-> > Thanks.
-> >
-> > Nacho.
-> >
->
-> ---
-> Best regards,
-> Dmitry
->
->------------------------------------------------------------------------
->
->No virus found in this incoming message.
->Checked by AVG Free Edition.
->Version: 7.1.362 / Virus Database: 267.13.0/167 - Release Date: 11/11/2005
->  
+> 
+>>>It's a bit theoretical, but I also think we can easily resolve it by
+>>>using Linux locks as soon as we can sanely sleep inside
+>>>xnheap_init/destroy_shared and xnheap_ioctl.
+>>>
+>>>
+>>>
+>>>>>While thinking about the possibility to convert the hard IRQ lock
+>>>>>protection of kheapq into some Linux mutex or whatever, I analysed the
+>>>>>contexts the users of this queue (__validate_heap_addr/xnheap_ioctl,
+>>>>>xnheap_init_shared, xnheap_destroy_shared) execute in. Basically, it is
+>>>>>Linux/secondary mode, but there are unfortunate exceptions:
+>>>>>
+>>>>>rt_heap_delete(): take nklock[2], then call xnheap_destroy_shared()[3].
+>>>>>The latter will call __unreserve_and_free_heap()[4] which calls Linux
+>>>>>functions like vfree()[5] or kfree()[6] -- I would say: not good! At
+>>>>>least on SMP we could easily get trapped by non-deterministic
+>>>>>waiting on
+>>>>>Linux spinlocks inside those functions.
+>>>>>
+>>>>>The same applies to rt_queue_delete()[7].
+>>>>>
+>>>>
+>>>>Good spot. Better not calling the heap deletion routines under nklock
+>>>>protection in the first place. The committed fix does just that for both
+>>>>rt_heap_delete and rt_queue_delete.
+>>>
+>>>
+>>>
+>>>Ok, we no longer have IRQs locked over vfree/kfree, but task scheduling
+>>>is still suffering from potential delays. Wouldn't it be better to defer
+>>>such operations to an asynchronous Linux call?
+>>>
+>>
+>>Do we really want heap creation/deletion to be short time bounded
+>>operations at the expense of added complexity?
+>>
+> 
+> 
+> Again, the side effects on other real-time programs are my concern.
+> There are quite a lot of scenarios where only parts of the real-time
+> programs are started or stopped while others keep on working as usual.
+> The caller's cost is more or less irrelevant in that case.
 >
 
+What does an asynchronous Linux call for freeing the memory would buy us 
+for the rest of the real-time system, compared to the now fixed 
+situation where no real-time lock is being held? I don't see your point 
+about the potentially induced task scheduling delays in the current case.
+
+> Jan
+
+
+-- 
+
+Philippe.
 
