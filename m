@@ -1,70 +1,32 @@
-Message-ID: <43B04512.1070505@domain.hid>
-Date: Mon, 26 Dec 2005 20:31:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <439D3EA8.4070800@domain.hid>
+Date: Mon, 12 Dec 2005 11:11:04 +0200
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [rt shared irqs] ipipe-related changes (draft)
-References: <b647ffbd0512260117n7023fb93h@domain.hid>
-In-Reply-To: <b647ffbd0512260117n7023fb93h@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig149871C12B96F608D0D52BB0"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] Why is __adeos_irq_regs only updated when a timer
+	IRQ	is caught?
+References: <BAY14-F198BE7F001241582B02E46C0460@domain.hid>
+In-Reply-To: <BAY14-F198BE7F001241582B02E46C0460@domain.hid>
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: =?GB2312?B?1cUgvrI=?= <zhang_jing_bit@domain.hid>
+Cc: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig149871C12B96F608D0D52BB0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Dmitry Adamushko wrote:
-> Hi everybody,
-> 
-> the enclosed patches (the first version, hence it's still raw) are
-> supposed to build the basis needed on the ipipe layer for adding
-> support of real-time shared interrupts. As a side effect, the
-> irq_trampoline() layer has been eliminated and the irq processing
-> chain has become shorter.
-
-Great!
-
-> 
-> Some points are more likely to be changed in the next iteration (e.g.
-> __ipipe_irq_cookie() vs. changing the ipipe_virtualize_irq()
-> interface).
-> The struct rthal_realtime_irq::hits[per-IRQ] is missed so far.
-> 
-> Anyway, comments are very wellcome.
-> 
-
-Only one so far: please update your Xenomai base - or is your Internet
-link really /that/ slow ATM? ;)
-
-Merry Christmas,
-Jan
-
---------------enig149871C12B96F608D0D52BB0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDsEUWniDOoMHTA+kRAvJmAJ927rCvdfqnp92BL629my+Au+5KIACfeJ6r
-hSqJGt2FnyS52mFhn/D7gu0=
-=rwSB
------END PGP SIGNATURE-----
-
---------------enig149871C12B96F608D0D52BB0--
-
+1cUgvrIga2lyam9pdHRpOgo+IEhpLCBhbGwsCj4gCj4gSSBoYXZlIG5vIGlkZWEgYWJvdXQgd2h5
+IF9fYWRlb3NfaXJxX3JlZ3MgaXMgb25seSB1cGRhdGVkIHdoZW4gYSB0aW1lciAKPiBJUlEgaXMg
+Y2F1Z2h0LiBEb2VzIGl0IG1lYW5zIGl0cyB2YWx1ZSBkb2Vzbid0IG1hdHRlciB0byBvdGhlciBp
+cnEgCj4gaGFuZGxlcnM/IEknYW0gd29ya2luZyBvbiB2ZXJzaW9uIDIuNHIxMiBmb3IgQVJNLgoK
+SWYgeW91IGxvb2sgYXQgdGhlIGlycSBoYW5kbGVycyB5b3UnbGwgc2VlIHRoYXQgbW9zdCBkb24n
+dCB1c2UgdGhlIHJlZ3MKcGFyYW1ldGVyCmFuZCB0aGVyZSBoYXZlIGJlZW4gdGFsa3MgYWJvdXQg
+cmVtb3ZpbmcgaXQgYWx0b2dldGhlciBmcm9tIHRoZSBrZXJuZWwuCkFsc28sCmlmIHlvdSB0aGlu
+ayBhYm91dCB0aGUgaXJxIHJlcGxheWluZyBzY2hlbWUgb2YgQWRlb3MgYW5kIGhvdyB5b3Ugd291
+bGQKaW1wbGVtZW50CnNhdmluZyB0aGUgcmVncyBmb3IgZXZlcnkgKHRvIGJlKSByZXBsYXllZCBp
+bnRlcnJ1cHQsIG1heWJlIHlvdSdsbCBzZWUKdGhlIHBvaW50IG9mCmRvaW5nIG9ubHkgdGhlIG5l
+Y2Vzc2FyeSByZWcgc2F2aW5nIGluIEFkZW9zLgoKLS0gSGVpa2tpIExpbmRob2xtCgo=
