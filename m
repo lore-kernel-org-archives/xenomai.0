@@ -1,14 +1,13 @@
-Message-ID: <439F2159.4080307@domain.hid>
-Date: Tue, 13 Dec 2005 20:30:33 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] PowerDAQ Board Under Xenomai?
-References: <20051213141433.S16178@domain.hid>
-In-Reply-To: <20051213141433.S16178@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB1CDF28A5A14938129CB4430"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17311.11934.369273.220410@domain.hid>
+Date: Tue, 13 Dec 2005 21:27:10 +0100
+Subject: Re: [Xenomai-help] Xenomai 2.0.1 - Posix Skin - implementing a
+	periodic thread
+In-Reply-To: <439F0B78.2000002@domain.hid>
+References: <439F0B78.2000002@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,59 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kent Borg <kentborg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB1CDF28A5A14938129CB4430
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Paolo Gai wrote:
+ > Dear all,
+ > 
+ > here is another small demo... this time of a periodic thread in POSIX.
+ > 
+ > It works under Xenomai, but it fails under Posix Real-Time.
+ > 
+ > The reason of the failure is the SIGUSR1 not being blocked by the main 
+ > thread. If in main() the comments below the note "// REMOVE THE COMMENTS 
+ > BELOW" are removed, then the signal is masked also in the main(), and as 
+ > a result the POSIX version works.
+ > 
+ > The question I have is if the behavior in Xenomai (that is, not failing 
+ > like the POSIX counterpart) is correct or not...
 
-Kent Borg wrote:
-> Newbie here investigating whether we can use Xenomai.  Looking good so
-> far, but I am wondering whether we will be able to use our PowerDAQ
-> PD2-MF-16-150/16H board.  It comes with drivers for RTLinux and RTAI
-> (I think with complete sources), does that do us any good for use with
-> Xenomai?
->=20
+The answer is in section 2.4.2 of the standard, delivery of real-time
+signals.
 
-Depends. Is that driver based on Comedi?
+http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_04.html#tag_02_04_02
 
-If so, the usage depends on the availability of Comedi under Xenomai.
-This is not yet ported, but I'm currently trying to trigger a discussion
-with the Comedi maintainers about a port of their project's real-time
-subsystem over the generic driver layer RTDM. This step would provide
-immediate support for all recent real-time Linux variants, from Xenomai
-over RTAI 3.3 and, on the mid-term, even to RTLinux/GPL (they also plan
-to adopt RTDM). Anyway, I cannot say yet if and when this port will be do=
-ne.
+real-time signals are marked pending to the process, not a particular
+thread. So, Linux implementation is correct, Xenomai is incorrect.
 
-If your driver is stand-alone at least for one of both supported
-real-time Linux versions, then it should already be possible to port it
-over a similar API skin of Xenomai (native for RTAI, POSIX for RTLinux).
-This is not the preferred way (RTDM / Comedi would be cleaner), but it
-is a pragmatic one.
+When creating a timer with timer_create, Xenomai assume that signals
+will be delivered to the thread which created the thread.
 
-Well, with the sources available and if the programming model of the
-hardware is not complicated, you can still try to develop your own
-specific interface - option three...
+Linux supports an extension which allows timer notifications to be
+delivered to a particular thread; set the sigev_notify member of the
+sigevent structure to 
+SIGEV_SIGNAL | SIGEV_THREAD_ID
+and set the member _sigev_un._tid to the thread ID of the target thread.
 
-Jan
+-- 
 
 
---------------enigB1CDF28A5A14938129CB4430
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDnyFZniDOoMHTA+kRApMSAJ900nWokN8dQiyAxTxyEXPgVxlIPgCdFr1i
-/dQcKK9b2NRcKSx4L8kOee4=
-=M3E2
------END PGP SIGNATURE-----
-
---------------enigB1CDF28A5A14938129CB4430--
+					    Gilles Chanteperdrix.
 
