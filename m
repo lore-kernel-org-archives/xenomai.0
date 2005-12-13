@@ -1,10 +1,12 @@
-Message-ID: <439F0B78.2000002@domain.hid>
-Date: Tue, 13 Dec 2005 18:57:12 +0100
-From: Paolo Gai <pj@domain.hid>
+Message-ID: <439F0CCF.4060609@domain.hid>
+Date: Tue, 13 Dec 2005 19:02:55 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090602020507000004010505"
-Subject: [Xenomai-help] Xenomai 2.0.1 - Posix Skin - implementing a periodic
-	thread
+Subject: Re: [Xenomai-help] events and domains
+References: <439F0806.4070206@domain.hid>
+In-Reply-To: <439F0806.4070206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,138 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Giuseppe Lipari <lipari@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------090602020507000004010505
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Giuseppe Lipari wrote:
+> Dear all,
+>=20
+> We are new to Xenomai and Adeos. We have some questions and I could not
+> find answers to these in the documentation (but maybe we are not very
+> good at finding things!). We hope someone can help!
+>=20
+> 1) Adeos is able to handle events that are passed to domains.
+> I understand that events are hw interrupts and "other things". In the
+> docs, I see that an event can be a "soft interrupt". As soft interrupt
+> can have different meanings in different contexts, what do you actually
+> mean with "soft interrupt"??
+>
 
-Dear all,
+Virtual interrupts (virq) actually. Pseudo-IRQ channels that are not=20
+mapped to real hardware but rather allocated by software to propagate=20
+software-generated events. For instance, Xeno uses a virq for carrying=20
+out asynchronous procedure calls from the primary to the secondary=20
+domain (see /proc/xenomai/apc).
 
-here is another small demo... this time of a periodic thread in POSIX.
+> 2) Also, what exactly are hooks? In particular, when there is a
+> context-switch between two non-Xenomai (Linux) threads running in user
+> space, is any hook-event generated?
+>=20
 
-It works under Xenomai, but it fails under Posix Real-Time.
+Hooks =3D=3D callbacks. Yes, Xeno uses this to track and monitor what the=
+=20
+hell Linux is doing at any time wrt user-space tasks mapped to shadow=20
+Xeno threads. In nucleus/shadow.c, see do_schedule_event().
 
-The reason of the failure is the SIGUSR1 not being blocked by the main 
-thread. If in main() the comments below the note "// REMOVE THE COMMENTS 
-BELOW" are removed, then the signal is masked also in the main(), and as 
-a result the POSIX version works.
+> 3) when a Xenomai thread starts executing, does it start in primary or
+> in secondary mode?
+>=20
 
-The question I have is if the behavior in Xenomai (that is, not failing 
-like the POSIX counterpart) is correct or not...
+Primary, always. It's written in stone.
 
-bye
+> 4) is the memory of a Xenomai thread allocated in user space? (I guess
+> yes, but just to be sure!)
+>=20
 
-Paolo
+No difference from regular Linux threads. Actually, a Xenomai thread=20
+running in user-space is a Linux thread on stero=EFd. To this end, what w=
+e=20
+call a shadow thread context is mapped to the initial Linux task=20
+context, so that the Xenomai scheduler can handle it too, in parallel to=20
+the regular Linux scheduler (in a mutally exclusive fashion though).
 
--- 
-Evidence S.R.L. - Paolo Gai, CEO
-http://www.evidence.eu.com   Tel: +39 0587 274823   Fax: +39 0587 291904
+> 5) if  two UVMs are active at the same time, how they are scheduled wit=
+h
+> respect to each other? (I guess SCHED\_FIFO, but it looks somewhat
+> strange to me: why not SCHED\_RR, at least for the application tasks?).
+>=20
 
+It's explained in the "Introduction to UVMs" document.
 
---------------090602020507000004010505
-Content-Type: text/x-csrc;
- name="ex_periodic.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="ex_periodic.c"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <errno.h>
-#include <signal.h>
-#include <unistd.h>
-#include <pthread.h>
-
-void abort_perror(const char *msg)
-{
-  perror(msg);
-  exit(1);
-}
-
-
-void *my_periodic_thread (void *cookie)
-{
-  struct itimerspec its;
-  struct sigevent sig;
-  sigset_t blocked;
-  siginfo_t si;
-  timer_t mytimer;
-  int i;
-
-  /* create a timer that will be used to periodically send a signal */
-  sig.sigev_notify = SIGEV_SIGNAL;
-  sig.sigev_signo = SIGUSR1;
-  sig.sigev_value.sival_ptr = &sig;
-  if(timer_create(CLOCK_REALTIME, &sig, &mytimer))
-    abort_perror("timer_create");
-
-  /* block the signal used by the timer */
-  sigemptyset(&blocked);
-  sigaddset(&blocked, SIGUSR1);
-  pthread_sigmask(SIG_BLOCK, &blocked, NULL);
-
-  /* set the periodic timer */
-  its.it_value.tv_sec = 0;
-  its.it_value.tv_nsec = 40000000; /* 40 ms */
-  its.it_interval.tv_sec = 0;
-  its.it_interval.tv_nsec = 20000000; /* 20 ms */;
-  if(timer_settime(mytimer, 0, &its, NULL))
-    abort_perror("timer_settime");
-
-  printf("periodic thread started...\n");
-
-  for (i=0; i<40; i++) {
-    while (sigwaitinfo(&blocked, &si) == -1 && errno == EINTR);
-
-    /* The thread body */
-    printf("%d\n",i);
-  }
-
-  printf("...periodic thread end!\n");
-  
-  timer_delete(mytimer);
-  return NULL;
-}
-
-int main()
-{
-  pthread_t mythread;
-  pthread_attr_t myattr;
-  struct sched_param myparam;
-  void *returnvalue;
-  sigset_t blocked;
-
-  /* block the signal used by the timer */
-  // REMOVE THE COMMENTS BELOW
-  //  sigemptyset(&blocked);
-  //  sigaddset(&blocked, SIGUSR1);
-  //  pthread_sigmask(SIG_BLOCK, &blocked, NULL);
-
-  /* initializes the thread attribute */
-  pthread_attr_init(&myattr);
-  pthread_attr_setinheritsched(&myattr, PTHREAD_EXPLICIT_SCHED);
-  pthread_attr_setschedpolicy(&myattr, SCHED_FIFO);
-  myparam.sched_priority = 3;
-  pthread_attr_setschedparam(&myattr, &myparam);
-
-  printf("starting a periodic thread...\n");
-
-  if (pthread_create(&mythread, &myattr, my_periodic_thread, NULL))
-    abort_perror("pthread_create");
-
-  pthread_attr_destroy(&myattr);
-
-  /* wait the end of the thread we just created */
-  pthread_join(mythread, &returnvalue);
-
-  printf("ending main...\n");
-
-  return 0;
-}
+>=20
+> Giuseppe Lipari and Paolo Gai
+>=20
+>=20
+>=20
 
 
---------------090602020507000004010505--
+--=20
+
+Philippe.
 
