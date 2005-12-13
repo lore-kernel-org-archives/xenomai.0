@@ -1,10 +1,10 @@
-Message-ID: <439F0806.4070206@domain.hid>
-Date: Tue, 13 Dec 2005 18:42:30 +0100
-From: Giuseppe Lipari <lipari@domain.hid>
+Message-ID: <439F0B78.2000002@domain.hid>
+Date: Tue, 13 Dec 2005 18:57:12 +0100
+From: Paolo Gai <pj@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] events and domains
+Content-Type: multipart/mixed; boundary="------------090602020507000004010505"
+Subject: [Xenomai-help] Xenomai 2.0.1 - Posix Skin - implementing a periodic
+	thread
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,45 +16,136 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+This is a multi-part message in MIME format.
+--------------090602020507000004010505
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
 Dear all,
 
-We are new to Xenomai and Adeos. We have some questions and I could not
-find answers to these in the documentation (but maybe we are not very
-good at finding things!). We hope someone can help!
+here is another small demo... this time of a periodic thread in POSIX.
 
-1) Adeos is able to handle events that are passed to domains.
-I understand that events are hw interrupts and "other things". In the
-docs, I see that an event can be a "soft interrupt". As soft interrupt
-can have different meanings in different contexts, what do you actually
-mean with "soft interrupt"??
+It works under Xenomai, but it fails under Posix Real-Time.
 
-2) Also, what exactly are hooks? In particular, when there is a
-context-switch between two non-Xenomai (Linux) threads running in user
-space, is any hook-event generated?
+The reason of the failure is the SIGUSR1 not being blocked by the main 
+thread. If in main() the comments below the note "// REMOVE THE COMMENTS 
+BELOW" are removed, then the signal is masked also in the main(), and as 
+a result the POSIX version works.
 
-3) when a Xenomai thread starts executing, does it start in primary or
-in secondary mode?
+The question I have is if the behavior in Xenomai (that is, not failing 
+like the POSIX counterpart) is correct or not...
 
-4) is the memory of a Xenomai thread allocated in user space? (I guess
-yes, but just to be sure!)
+bye
 
-5) if  two UVMs are active at the same time, how they are scheduled with
-respect to each other? (I guess SCHED\_FIFO, but it looks somewhat
-strange to me: why not SCHED\_RR, at least for the application tasks?).
-
-
-Giuseppe Lipari and Paolo Gai
-
-
+Paolo
 
 -- 
-------------------------------------------------------
-| Prof. Giuseppe Lipari      |
-| RETIS Lab                  |
-| Scuola Superiore Sant'Anna | tel:   +39 050 882030
-| via G. Moruzzi, 1          | fax:   +39 050 882003
-| 56124 Pisa (PI)            | email: lipari@domain.hid
-------------------------------------------------------
+Evidence S.R.L. - Paolo Gai, CEO
+http://www.evidence.eu.com   Tel: +39 0587 274823   Fax: +39 0587 291904
 
 
+--------------090602020507000004010505
+Content-Type: text/x-csrc;
+ name="ex_periodic.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="ex_periodic.c"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <errno.h>
+#include <signal.h>
+#include <unistd.h>
+#include <pthread.h>
+
+void abort_perror(const char *msg)
+{
+  perror(msg);
+  exit(1);
+}
+
+
+void *my_periodic_thread (void *cookie)
+{
+  struct itimerspec its;
+  struct sigevent sig;
+  sigset_t blocked;
+  siginfo_t si;
+  timer_t mytimer;
+  int i;
+
+  /* create a timer that will be used to periodically send a signal */
+  sig.sigev_notify = SIGEV_SIGNAL;
+  sig.sigev_signo = SIGUSR1;
+  sig.sigev_value.sival_ptr = &sig;
+  if(timer_create(CLOCK_REALTIME, &sig, &mytimer))
+    abort_perror("timer_create");
+
+  /* block the signal used by the timer */
+  sigemptyset(&blocked);
+  sigaddset(&blocked, SIGUSR1);
+  pthread_sigmask(SIG_BLOCK, &blocked, NULL);
+
+  /* set the periodic timer */
+  its.it_value.tv_sec = 0;
+  its.it_value.tv_nsec = 40000000; /* 40 ms */
+  its.it_interval.tv_sec = 0;
+  its.it_interval.tv_nsec = 20000000; /* 20 ms */;
+  if(timer_settime(mytimer, 0, &its, NULL))
+    abort_perror("timer_settime");
+
+  printf("periodic thread started...\n");
+
+  for (i=0; i<40; i++) {
+    while (sigwaitinfo(&blocked, &si) == -1 && errno == EINTR);
+
+    /* The thread body */
+    printf("%d\n",i);
+  }
+
+  printf("...periodic thread end!\n");
+  
+  timer_delete(mytimer);
+  return NULL;
+}
+
+int main()
+{
+  pthread_t mythread;
+  pthread_attr_t myattr;
+  struct sched_param myparam;
+  void *returnvalue;
+  sigset_t blocked;
+
+  /* block the signal used by the timer */
+  // REMOVE THE COMMENTS BELOW
+  //  sigemptyset(&blocked);
+  //  sigaddset(&blocked, SIGUSR1);
+  //  pthread_sigmask(SIG_BLOCK, &blocked, NULL);
+
+  /* initializes the thread attribute */
+  pthread_attr_init(&myattr);
+  pthread_attr_setinheritsched(&myattr, PTHREAD_EXPLICIT_SCHED);
+  pthread_attr_setschedpolicy(&myattr, SCHED_FIFO);
+  myparam.sched_priority = 3;
+  pthread_attr_setschedparam(&myattr, &myparam);
+
+  printf("starting a periodic thread...\n");
+
+  if (pthread_create(&mythread, &myattr, my_periodic_thread, NULL))
+    abort_perror("pthread_create");
+
+  pthread_attr_destroy(&myattr);
+
+  /* wait the end of the thread we just created */
+  pthread_join(mythread, &returnvalue);
+
+  printf("ending main...\n");
+
+  return 0;
+}
+
+
+--------------090602020507000004010505--
 
