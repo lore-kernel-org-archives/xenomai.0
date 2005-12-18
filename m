@@ -1,66 +1,109 @@
-Message-ID: <43904AE7.4090002@domain.hid>
-Date: Fri, 02 Dec 2005 14:23:51 +0100
+Message-ID: <43A5B648.5010104@domain.hid>
+Date: Sun, 18 Dec 2005 20:19:36 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] i386 2.4 backport performing (too?) well
-References: <Pine.LNX.4.63.0512021139500.2791@domain.hid>
-In-Reply-To: <Pine.LNX.4.63.0512021139500.2791@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [bug] don't try this at home...
+References: <438DD4E2.9080208@domain.hid>	<438DE166.5090303@domain.hid>	<438DE551.7080708@domain.hid>
+	<43A32305.8030004@domain.hid> <43A329E6.3080505@domain.hid>
+	<43A34F6C.6020904@domain.hid> <43A56A44.6020308@domain.hid>
+	<43A5AACF.6050505@domain.hid> <43A5B188.3080003@domain.hid>
+In-Reply-To: <43A5B188.3080003@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Klaas Gadeyne wrote:
-> With the arrival of the 2.4 i386 adeos ipipe patch for xenomai [1], I
-> decided to try to compile xenomai-trunk for a 2.4 kernel. This worked
-> flawlessly, and moreover, I got excellent latency results:
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
 > 
-> I used the "same" kernel config as for our 2.4.31 rtai3.0r5 kernel,
-> which is based on Takis Issaris' liveCD config.
+>>Jan Kiszka wrote:
+>>
+>>
+>>>Philippe Gerum wrote:
+>>>
+>>>
+>>>>>>...
+>>>>>>Fixed. The cause was related to the thread migration routine to
+>>>>>>primary mode (xnshadow_harden), which would spuriously call the Linux
+>>>>>>rescheduling procedure from the primary domain under certain
+>>>>>>circumstances. This bug only triggers on preemptible kernels. This
+>>>>>>also fixes the spinlock recursion issue which is sometimes triggered
+>>>>>>when the spinlock debug option is active.
+>>>>>>
+>>>>>
+>>>>>Gasp. I've found a severe regression with this fix, so more work is
+>>>>>needed. More later.
+>>>>>
+>>>>
+>>>>End of alert. Should be ok now.
+>>>>
+>>>
+>>>
+>>>No crashes so far, looks good. But the final test, a box which always
+>>>went to hell very quickly, is still waiting in my office - more on
+>>>Monday.
+>>>
+>>>Anyway, there seems to be some latency issues pending. I discovered this
+>>>again with my migration test. Please give it a try on a mid- (800 MHz
+>>>Athlon in my case) to low-end box. On that Athlon I got peaks of over
+>>>100 us in the userspace latency test right on starting migration. The
+>>>Athlon does not support the NMI watchdog, but on my 1.4 GHz Notebook
+>>>there were alarms (>30 us) hitting in the native registry during
+>>>rt_task_create. I have no clue yet if anything is broken there.
+>>
+>>
+>>I suspect that rt_registry_enter() is inherently a long operation when
+>>considered as a non-preemptible sum of reasonably short ones. Since it
+>>is always called with interrupts enabled, we should split the work in
+>>there, releasing interrupts in the middle. The tricky thing is that we
+>>must ensure that the new registration slot is not exposed in a
+>>half-baked state during the preemptible section.
 > 
-> This resulted in a maximal latency of 30 usec after a run of over 100
-> minutes under heavy load (tar and dd loops, compiling, keyboard
-> interrupts and ping flood) [2].
 > 
-> For comparison, on the same hardware platform: - the RTAI lxrt-latency 
-> on rtai 3.0r5 (adeos oldgen r18c1
->   patch for 2.4.31 also) test reports 38 usec
-> - the latency test of xenomai 2.01 running on a 2.6.14-ipipe-1.0-10
->   kernel resulted in a latency of 80 usec.
+> Yea, I guess there are a few more of such complex call chains inside the
+> core lock, at least when looking at the native skin. For a regression
+> test suite, we should define load scenarios of low-prio realtime tasks
+> doing some init/cleanup and communication while e.g. the latency test is
+> running. This should give a clearer picture what numbers you can expect
+> in a normal application scenarios.
+> 
+> 
+>>>We need
+>>>that back-tracer soon - did I mentioned this before? ;)
+>>
+>>
+>>Well, we have a backtrace support for detecting latency peaks, but it's
+>>dependent on NMI availability. The thing is that not every platform
+>>provides a programmable NMI support. A possible option would be to
+>>overload the existing LTT tracepoints in order to keep an execution
+>>backtrace, so that we would not have to rely on any hw support.
+>>
+> 
+> 
+> The advantage of Fu's mcount-based tracer will be that is can capture
+> also functions you do not expect, e.g. accidentally called kernel
+> services. His patch, likely against Adeos, will enable kernel-wide
+> function tracing which you can use to instrument IRQ-off paths or (in a
+> second step or so) others things you are interested in. And it will
+> maintain a FULL calling history, something that NMI can't do.
+> 
+> NMI will still be useful for hard lock-ups, LTT for a more global view
+> what's happening, but the mcount-instrumentation should give deep
+> insights on the core's and skin's critical timing behaviours.
+> 
 
-80 us on 2.6 is clearly pathological if 2.4 gives 30 us. All tests using 
-2.6.14-1.0-10 on dual SMP 750Mhz and 2.8Ghz, Geode 266 Mhz, Celeron 
-1Ghz, Centrino 1.6 Mhz and Pentium 90Mhz show a slight advantage for 2.4 
-over 2.6 (1-3%), but still in the error margin, I think. Maybe some 
-option is enabled in your 2.6 configuration that might trigger this very 
-high value?
-
-> 
-> This seems too good to be true?  Can one simply compare the results of
-> the former RTAI lxrt-latency test with the xenomai latency test?
-> 
-> Klaas
-> 
-> [1] <https://mail.gna.org/public/adeos-main/2005-11/msg00010.html>
-> [2] HW: a via mini-itx board,
->     HW config at 
-> <http://issaris.org/rtai/show_entry.php?ts=2004-12-01+18%3A02%3A08%2B01>
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-
+No problem. I've just suggested to build a bicycle to go to the shop 
+around the corner, but if you tell me that a spaceship to visit Venus is 
+at hand, I'll wait for it: shopping can wait.
 
 -- 
 
