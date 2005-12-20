@@ -1,14 +1,10 @@
-Message-ID: <b647ffbd0512170211l4a0894b8g@domain.hid>
-Date: Sat, 17 Dec 2005 12:11:35 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] [testsuite/latency] intervals are much > than 1
-	second
-In-Reply-To: <43A2BB1F.1070707@domain.hid>
+Message-ID: <38197.128.93.15.41.1135063005.squirrel@domain.hid>
+Date: Tue, 20 Dec 2005 08:16:45 +0100 (CET)
+From: <smannori@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_4072_7289128.1134814295807"
-References: <b647ffbd0512160453w6baa9d4g@domain.hid>
-	<43A2BB1F.1070707@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Interrupt Shied (II)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,115 +14,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: wjasper@domain.hid
 
-------=_Part_4072_7289128.1134814295807
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi everybody:
 
-> > Hello all,
-> >
-> > I have been out of xeno-scope for a while so maybe I successufy missed
-> > something important
-> > that might be the explanation of a problem described below.
-> >
-> > The problem is as follows:
-> >
-> > x86-ipipe-1.0.10 && xenomai-2.1 (CVS: ~ November, 21)
-> >
-> > testsuite/letency is used as it is by defaulty (nsamples =3D 1 billion =
-(1
-> > second) / sample (e.g.100000 us))
-> >
-> > I am used to getting data with ~1-second-interval on the screen when
-> > "latency" is running and so expected to observe the same behaviour now.
-> >
-> > Nevertheless, the interval (with all parameters by default) is ~ 4
-> > seconds, and it gets up to 16-17 seconds when -p 1000 (sampling period
-> > =3D=3D 1 ms.) is used.
-> >
-> > e.g. it took 1 minute and 30 seconds to get 21 lines of statistics on
-> > the screen (-p 100) but should have been ~22-23 seconds.
-> >
-> > And the latency thread really reported the presence of collected data 2=
-1
-> > times (through rt_sem_v()) .
-> >
-> > So have I missed something important? any ideas are wellcome.
-> >
->
-> Dunno yet, but this reminds me of a trap I've been into recently that
-> caused a massive slowdown of the latency test (v2.0.x) whilst the
-> reported real-time activity seemed to be ok. Weird enough, actually. The
-> explanation was that I mistakenly left the full ACPI support and SUSPEND
-> active in my kernel config (Asus box with ICH6 chipset). Shutting them
-> down solved the issue. I've not investigated further which one of the
-> ACPI options or SUSPEND caused that trouble yet.
+I installed xenomai 2.1 on a little Celeron M laptop with SiS chipset
+(distro : fedora core 3, kernel : linux-2.6.14.3-ipipe) :
 
+00:00.0 Host bridge:
+Silicon Integrated Systems [SiS] 661FX/M661FX/M661MX Host (rev 11)
+00:01.0 PCI bridge: Silicon Integrated Systems [SiS]: Unknown device 0003
+00:02.0 ISA bridge: Silicon Integrated Systems [SiS] SiS963 [MuTIOL Media
+IO] (rev 25)
+00:02.1 SMBus:Silicon Integrated Systems [SiS] SiS961/2 SMBus Controller
+00:02.5 IDE interface: Silicon Integrated Systems [SiS] 5513 [IDE] 00:02.6
+Modem: Silicon Integrated Systems [SiS] AC'97 Modem Controller (rev a0)
+00:02.7 Multimedia audio controller:
+Silicon Integrated Systems [SiS] Sound Controller (rev a0)
+00:03.0 USB Controller:
+Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
+00:03.1 USB Controller:
+Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
+00:03.3 USB Controller: Silicon Integrated Systems [SiS] USB 2.0 Controller
+00:04.0 Ethernet controller: Silicon Integrated Systems [SiS] SiS900 PCI
+Fast Ethernet (rev 90)
+00:09.0 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
+00:09.1 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
+00:09.2 FireWire (IEEE 1394): Ricoh Co Ltd R5C552 IEEE 1394 Controller (rev
+04) 00:0e.0 Network controller: Intersil Corporation ISL3886 [Prism
+Javelin/Prism Xbow] (rev 01)
+01:00.0 VGA compatible controller: Silicon Integrated Systems [SiS]
+661FX/M661FX/M661MX/741/M741/760/M760 PCI/AGP
 
-Thanks for a hint. I have mistakenly used an improper .config as a base for
-the recently built xeno-aware kernel. ACPI support was on.
+I left the SMI detection active, but I don't have warning message because
+SiS does NOT use SMI interrupt. As I know, everything works OK.
 
-Yep, it seemed the flow of time was ~4 times slower than normally but no
-overruns were encountered.
+I want to use a little USB data acquisition board USB-1208FS , because some
+brave soul ( Warren J. Jasper ) has developed a generic linux library for
+this card, including some good documentation an VERY GOOD test programs
+(useful for "Dummies Like Me (@TM)" ).
 
->
-> --
->
-> Philippe.
->
+This board is garantee to reach 250 S/s. On my PC, without Xenomai, the
+maximum free-running speed is 330 S/s.
 
---
-Best regards,
-Dmitry Adamushko
+My idea is to use a real time xenomai task to pace the data acquisition. As
+demo, I'm generating a square wave with the internal DAC to hear the results
+on a little piezoelectric speaker. It's sound good :).
 
-------=_Part_4072_7289128.1134814295807
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To show the dramatic difference bettewen real time and standard Linux, I'm
+using the usual usleep() function to generate soft realtime square wave on
+the second DAC channel. If run the program leaving the PC idle, the two
+channels sound almost equal. If a begin to load the CPU, the real time sound
+remain steady and clear BUT the other show jitter and "hole" (no sound).
 
-<br><div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid =
-rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; Hel=
-lo all,<br>&gt;<br>&gt; I have been out of xeno-scope for a while so maybe =
-I successufy missed
-<br>&gt; something important<br>&gt; that might be the explanation of a pro=
-blem described below.<br>&gt;<br>&gt; The problem is as follows:<br>&gt;<br=
->&gt; x86-ipipe-1.0.10 &amp;&amp; xenomai-2.1 (CVS: ~ November, 21)<br>
-&gt;<br>&gt; testsuite/letency is used as it is by defaulty (nsamples =3D 1=
- billion (1<br>&gt; second) / sample (e.g.100000 us))<br>&gt;<br>&gt; I am =
-used to getting data with ~1-second-interval on the screen when<br>&gt; &qu=
-ot;latency&quot; is running and so expected to observe the same behaviour n=
-ow.
-<br>&gt;<br>&gt; Nevertheless, the interval (with all parameters by default=
-) is ~ 4<br>&gt; seconds, and it gets up to 16-17 seconds when -p 1000 (sam=
-pling period<br>&gt; =3D=3D 1 ms.) is used.<br>&gt;<br>&gt; e.g. it took 1 =
-minute and 30 seconds to get 21 lines of statistics on
-<br>&gt; the screen (-p 100) but should have been ~22-23 seconds.<br>&gt;<b=
-r>&gt; And the latency thread really reported the presence of collected dat=
-a 21<br>&gt; times (through rt_sem_v()) .<br>&gt;<br>&gt; So have I missed =
-something important? any ideas are wellcome.
-<br>&gt;<br><br>Dunno yet, but this reminds me of a trap I've been into rec=
-ently that<br>caused a massive slowdown of the latency test (v2.0.x) whilst=
- the<br>reported real-time activity seemed to be ok. Weird enough, actually=
-. The
-<br>explanation was that I mistakenly left the full ACPI support and SUSPEN=
-D<br>active in my kernel config (Asus box with ICH6 chipset). Shutting them=
-<br>down solved the issue. I've not investigated further which one of the
-<br>ACPI options or SUSPEND caused that trouble yet.</blockquote><div><br>
-Thanks for a hint. I have mistakenly used an improper .config as a base
-for the recently built xeno-aware kernel. ACPI support was on.<br>
-</div><br>
-Yep, it seemed the flow of time was ~4 times slower than normally but no ov=
-erruns were encountered.<br>
-<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
-04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt;<br>--<br=
-><br>Philippe.<br></blockquote></div><br>-- <br>Best regards,<br>Dmitry Ada=
-mushko
-<br>
-<br>
+The demo is really dramatic when the audience realize that the SAME HARDWARE
+on the SAME I/O chanel can be used in "dual mode" seamless :o.
+
+Now the problems:
+
+1) If I push the sample rate above 50 S/s the progam starts, but, after a
+while, the real time square wave disappear. Also the "SquareWave" task
+disappear from /proc/xenomai/sched.
+
+2) it is not a problem of interaction with the NON realtime square wave
+because the same behavior remain if I remove the code
+
+3) I tried the same program on the PPC achitecture using a PowerBook with
+similar results.
+
+Where is the catch ? I missed something around the interrupt shield ?
+
+I need to develop real-time application using USB devices because we need
+something usable with a laptop. Unfortunately USB is NOT supported for real
+time applications and I'm not competent enough to write my real time USB
+driver.
+My hope is that the interrupt shield of Xenomai will save my day :)
+
+Simone Mannori
 
 
-------=_Part_4072_7289128.1134814295807--
+
 
