@@ -1,13 +1,12 @@
-Message-ID: <43A7B687.2030807@domain.hid>
-Date: Tue, 20 Dec 2005 08:45:11 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <43A7BA57.1030801@domain.hid>
+Date: Tue, 20 Dec 2005 09:01:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Interrupt Shied (II)
 References: <38197.128.93.15.41.1135063005.squirrel@domain.hid>
 In-Reply-To: <38197.128.93.15.41.1135063005.squirrel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB26C1F00D2088F602463E268"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,25 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: smannori <smannori@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, wjasper@domain.hid
+To: smannori@domain.hid
+Cc: xenomai@xenomai.org, wjasper@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB26C1F00D2088F602463E268
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-smannori wrote:
-> ...
+smannori@domain.hid wrote:
+> Hi everybody:
+> 
+> I installed xenomai 2.1 on a little Celeron M laptop with SiS chipset
+> (distro : fedora core 3, kernel : linux-2.6.14.3-ipipe) :
+> 
+> 00:00.0 Host bridge:
+> Silicon Integrated Systems [SiS] 661FX/M661FX/M661MX Host (rev 11)
+> 00:01.0 PCI bridge: Silicon Integrated Systems [SiS]: Unknown device 0003
+> 00:02.0 ISA bridge: Silicon Integrated Systems [SiS] SiS963 [MuTIOL Media
+> IO] (rev 25)
+> 00:02.1 SMBus:Silicon Integrated Systems [SiS] SiS961/2 SMBus Controller
+> 00:02.5 IDE interface: Silicon Integrated Systems [SiS] 5513 [IDE] 00:02.6
+> Modem: Silicon Integrated Systems [SiS] AC'97 Modem Controller (rev a0)
+> 00:02.7 Multimedia audio controller:
+> Silicon Integrated Systems [SiS] Sound Controller (rev a0)
+> 00:03.0 USB Controller:
+> Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
+> 00:03.1 USB Controller:
+> Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
+> 00:03.3 USB Controller: Silicon Integrated Systems [SiS] USB 2.0 Controller
+> 00:04.0 Ethernet controller: Silicon Integrated Systems [SiS] SiS900 PCI
+> Fast Ethernet (rev 90)
+> 00:09.0 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
+> 00:09.1 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
+> 00:09.2 FireWire (IEEE 1394): Ricoh Co Ltd R5C552 IEEE 1394 Controller (rev
+> 04) 00:0e.0 Network controller: Intersil Corporation ISL3886 [Prism
+> Javelin/Prism Xbow] (rev 01)
+> 01:00.0 VGA compatible controller: Silicon Integrated Systems [SiS]
+> 661FX/M661FX/M661MX/741/M741/760/M760 PCI/AGP
+> 
+> I left the SMI detection active, but I don't have warning message because
+> SiS does NOT use SMI interrupt. As I know, everything works OK.
+> 
+> I want to use a little USB data acquisition board USB-1208FS , because some
+> brave soul ( Warren J. Jasper ) has developed a generic linux library for
+> this card, including some good documentation an VERY GOOD test programs
+> (useful for "Dummies Like Me (@TM)" ).
+> 
+> This board is garantee to reach 250 S/s. On my PC, without Xenomai, the
+> maximum free-running speed is 330 S/s.
+> 
+> My idea is to use a real time xenomai task to pace the data acquisition. As
+> demo, I'm generating a square wave with the internal DAC to hear the results
+> on a little piezoelectric speaker. It's sound good :).
+> 
+> To show the dramatic difference bettewen real time and standard Linux, I'm
+> using the usual usleep() function to generate soft realtime square wave on
+> the second DAC channel. If run the program leaving the PC idle, the two
+> channels sound almost equal. If a begin to load the CPU, the real time sound
+> remain steady and clear BUT the other show jitter and "hole" (no sound).
+> 
+> The demo is really dramatic when the audience realize that the SAME HARDWARE
+> on the SAME I/O chanel can be used in "dual mode" seamless :o.
+> 
 > Now the problems:
 > 
 > 1) If I push the sample rate above 50 S/s the progam starts, but, after a
 > while, the real time square wave disappear. Also the "SquareWave" task
 > disappear from /proc/xenomai/sched.
-
-Any segfaults? Take a look at /proc/xenomai/faults (if I remember this
-entry name correctly now).
-
 > 
 > 2) it is not a problem of interaction with the NON realtime square wave
 > because the same behavior remain if I remove the code
@@ -45,43 +88,35 @@ entry name correctly now).
 > 
 > Where is the catch ? I missed something around the interrupt shield ?
 > 
+
+You could try to strace your app and log the output, so that the cause 
+of the thread exit might be identified more easily. Running it under GDB 
+is another option to detect unexpected faults.
+
 > I need to develop real-time application using USB devices because we need
 > something usable with a laptop. Unfortunately USB is NOT supported for real
 > time applications and I'm not competent enough to write my real time USB
 > driver.
 > My hope is that the interrupt shield of Xenomai will save my day :)
+>
+
+Nb: The I-shield will prevent a real-time task running in secondary mode 
+to be preempted by Linux interrupts, but it won't make non-RT kernel 
+code become deterministic.
+
+> Simone Mannori
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 > 
 
-It may improve the number of deadline misses, but it will not make them
-disappear. The standard Linux stack may do things in your back while you
-do some data acquisition, and you cannot control this. Moreover, you can
-suffer from low buffers when trying to issue some request to the stack,
-and this is also something you cannot influence as the buffers are taken
-from global pools.
 
-I'm hopefull that we (well, it's going to be outsourced: a student) will
-be able to revise the existing USB4RT stack (=>RTDM port), derive or
-define an interface for high-layer drivers like your USB DAQ requires,
-and then someone could port things over... :) Actually, USB becomes more
-and more important for hard-RT. One just have to think of all those
-<X>2USB devices (replace <X> with RS232, CAN, etc.) for boxes with
-otherwise limited extensibility.
+-- 
 
-Jan
-
---------------enigB26C1F00D2088F602463E268
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDp7aHncNeS9Q0k+IRAuGtAKCxrc3cnP+JmhOZFdbCPD/qng4vkgCgsuZY
-wzdQw0JvDk+vjf6oh5/70yU=
-=OJcA
------END PGP SIGNATURE-----
-
---------------enigB26C1F00D2088F602463E268--
+Philippe.
 
