@@ -1,58 +1,38 @@
-MIME-Version: 1.0
+Date: Tue, 20 Dec 2005 18:52:10 -0500
+From: Kent Borg <kentborg@domain.hid>
+Subject: Re: [Xenomai-help] Shared Memory?
+Message-ID: <20051220185210.U16178@domain.hid>
+References: <20051220183927.T16178@domain.hid> <43A89841.1070407@domain.hid>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17323.59996.206992.318054@domain.hid>
-Date: Fri, 23 Dec 2005 13:15:24 +0100
-Subject: Re: [Xenomai-core] [RFC] in-kernel timer benchmark
-In-Reply-To: <43AAFDA7.7090106@domain.hid>
-References: <43A5AE20.804@domain.hid> <17322.62424.94946.83579@domain.hid>
-	<43AAFDA7.7090106@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+In-Reply-To: <43A89841.1070407@domain.hid>;
+	from jan.kiszka@domain.hid on Wed, Dec 21, 2005 at 12:48:17AM +0100
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > (...) But I would vote for a split between the user-space
- > > latency measurement tool and the display tool for kernel-space latency.
- > > 
- > 
- > What's your main concern about the current solution? The need to have
- > RTDM being loaded to start only the userspace test?
+On Wed, Dec 21, 2005 at 12:48:17AM +0100, Jan Kiszka wrote:
+> Use mixed RT/non-RT threads and you will have shared mem for free, use
+> processes and you only have to ask linux for some shared fragments. In
+> any case don't forget to mlockall() your RT-processes!
 
-I thought the user-space latency was also an example for the native
-skin, and had not much in common with the display task for the
-kernel-space benchmark. But these benchmarks have in fact much in
-common, and the native skin still has the "satch" demo.
+So does that mean regular shmget() to set up the shared memory, and
+mlockall() in the RT process?  I was thinking mlock(), but you have a
+point that mlockall() would be better!
+
+I haven't done shared memroy before, but it looks pretty easy.
 
 
- > > It is a very interesting tool indeed (especially since I would need such
- > > a tool to benchmark the various solutions to improve nucleus timers
- > > scalability :). But it would be nice to be able to create several tasks
- > > or several timers without having to open one file descriptor by
- > > timer/task. Or if you want one file descriptor by timer/task,
- > > rt_tmbench_ioctl_nrt should return an error when trying to start the
- > > task or timer twice.
- > > 
- > 
- > Ok, I will try to reworks this, generating a ready-for-merge patch which
- > will also include Philippe's remarks. No promise if this is going to be
- > a pre-Christmas gift. ;)
+Thanks,
 
-Do not bother, since I am the one who need it, I may change it. I will
-follow-up with a new proposal.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+-kb
 
