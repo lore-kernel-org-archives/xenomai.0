@@ -1,10 +1,10 @@
-Message-ID: <38197.128.93.15.41.1135063005.squirrel@domain.hid>
-Date: Tue, 20 Dec 2005 08:16:45 +0100 (CET)
+Message-ID: <42781.128.93.15.41.1135063080.squirrel@domain.hid>
+Date: Tue, 20 Dec 2005 08:18:00 +0100 (CET)
 From: <smannori@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Interrupt Shied (II)
+Subject: [Xenomai-help] Interrupt Shield (III)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,81 +17,189 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai@xenomai.org
 Cc: wjasper@domain.hid
 
-Hi everybody:
+The code:
 
-I installed xenomai 2.1 on a little Celeron M laptop with SiS chipset
-(distro : fedora core 3, kernel : linux-2.6.14.3-ipipe) :
+/*
 
-00:00.0 Host bridge:
-Silicon Integrated Systems [SiS] 661FX/M661FX/M661MX Host (rev 11)
-00:01.0 PCI bridge: Silicon Integrated Systems [SiS]: Unknown device 0003
-00:02.0 ISA bridge: Silicon Integrated Systems [SiS] SiS963 [MuTIOL Media
-IO] (rev 25)
-00:02.1 SMBus:Silicon Integrated Systems [SiS] SiS961/2 SMBus Controller
-00:02.5 IDE interface: Silicon Integrated Systems [SiS] 5513 [IDE] 00:02.6
-Modem: Silicon Integrated Systems [SiS] AC'97 Modem Controller (rev a0)
-00:02.7 Multimedia audio controller:
-Silicon Integrated Systems [SiS] Sound Controller (rev a0)
-00:03.0 USB Controller:
-Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
-00:03.1 USB Controller:
-Silicon Integrated Systems [SiS] USB 1.0 Controller (rev 0f)
-00:03.3 USB Controller: Silicon Integrated Systems [SiS] USB 2.0 Controller
-00:04.0 Ethernet controller: Silicon Integrated Systems [SiS] SiS900 PCI
-Fast Ethernet (rev 90)
-00:09.0 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
-00:09.1 CardBus bridge: Ricoh Co Ltd RL5c476 II (rev ac)
-00:09.2 FireWire (IEEE 1394): Ricoh Co Ltd R5C552 IEEE 1394 Controller (rev
-04) 00:0e.0 Network controller: Intersil Corporation ISL3886 [Prism
-Javelin/Prism Xbow] (rev 01)
-01:00.0 VGA compatible controller: Silicon Integrated Systems [SiS]
-661FX/M661FX/M661MX/741/M741/760/M760 PCI/AGP
+The raw batch file that I'm using to compile this program.
 
-I left the SMI detection active, but I don't have warning message because
-SiS does NOT use SMI interrupt. As I know, everything works OK.
+Please, forgive my iGNUrance of Makefile
 
-I want to use a little USB data acquisition board USB-1208FS , because some
-brave soul ( Warren J. Jasper ) has developed a generic linux library for
-this card, including some good documentation an VERY GOOD test programs
-(useful for "Dummies Like Me (@TM)" ).
+mio:
 
-This board is garantee to reach 250 S/s. On my PC, without Xenomai, the
-maximum free-running speed is 330 S/s.
+gcc m.c -o m -static -g -Wall -I. -I/usr/xenomai/include -O2
+-I/lib/modules/2.6.14.3-ipipe/build/include -D_GNU_SOURCE -D_REENTRANT
+-D__XENO__ -pipe -fstrict-aliasing -Wno-strict-aliasing -lmccusb -lm
+-lnative -L/usr/xenomai/lib -lpthread
 
-My idea is to use a real time xenomai task to pace the data acquisition. As
-demo, I'm generating a square wave with the internal DAC to hear the results
-on a little piezoelectric speaker. It's sound good :).
 
-To show the dramatic difference bettewen real time and standard Linux, I'm
-using the usual usleep() function to generate soft realtime square wave on
-the second DAC channel. If run the program leaving the PC idle, the two
-channels sound almost equal. If a begin to load the CPU, the real time sound
-remain steady and clear BUT the other show jitter and "hole" (no sound).
+*/
 
-The demo is really dramatic when the audience realize that the SAME HARDWARE
-on the SAME I/O chanel can be used in "dual mode" seamless :o.
 
-Now the problems:
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+#include <getopt.h>
+#include <time.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/sem.h>
 
-1) If I push the sample rate above 50 S/s the progam starts, but, after a
-while, the real time square wave disappear. Also the "SquareWave" task
-disappear from /proc/xenomai/sched.
+/* USB */
 
-2) it is not a problem of interaction with the NON realtime square wave
-because the same behavior remain if I remove the code
+#include <unistd.h>
+#include <fcntl.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <asm/types.h>
 
-3) I tried the same program on the PPC achitecture using a PowerBook with
-similar results.
+#include "pmd.h"
+#include "usb-1208FS.h"
 
-Where is the catch ? I missed something around the interrupt shield ?
+/* definizioni standard */
 
-I need to develop real-time application using USB devices because we need
-something usable with a laptop. Unfortunately USB is NOT supported for real
-time applications and I'm not competent enough to write my real time USB
-driver.
-My hope is that the interrupt shield of Xenomai will save my day :)
+#define TASK_PRIO 99    /* Highest RT priority */
+#define TASK_MODE 0     /* No flags */
+#define TASK_STKSZ 0    /* Stack size (use default one) */
+#define TASK_PERIOD   20000000 /* 20 ms period: time expressed in
+nanosecond */#define TASK_PERIOD_U 20000    /* 20 ms delay - for the usleep() - in
+microseconds */
+//**                .**.**.**
+RT_TASK task_desc; // descrittore
 
-Simone Mannori
+ int fd[4]; //** USB datastucture
+ int flag;
+
+  signed short svalue;
+                __u8 input, channel, gain, options;
+                __u16 value;
+                __u16 out_data[1024]; //** 1 kS OUTPUT FIFO buffer
+
+  signed short in_data[1024];  //** 1Ks INPUT FIFO buffer
+
+  int count;
+
+  int temp, i, j;
+  int ch;
+  int nInterfaces = 0;
+  float freq;
+
+// --------
+
+
+
+int ao_0_value = 0, ao_1_value = 0 ;
+
+//-----------------------------------------------------------------------------
+/* questo task manda un campione e aspetta il suo periodo*/
+
+void sampling_task (void *cookie)
+{
+   int err; // Local variable
+
+   /* The task will undergo a 0.1 s  periodic timeline. */
+   err = rt_task_set_periodic(NULL,TM_NOW,TASK_PERIOD);
+
+   for (;;) // Run forever
+      {
+         // analog output channel zero
+         usbAOut_USB1208FS(fd[0], 0, ao_0_value);
+
+         if (ao_0_value == 0 )   // square wave generator
+               ao_0_value = 0xFFF ;
+         else
+               ao_0_value = 0x000 ;
+
+         err = rt_task_wait_period(); // wait (sleep) until time expired
+
+	 if (err)
+	   {
+             printf("Something goes wrong");
+	     break;
+	   }
+
+	 /* Work for the current period */
+      //   fprintf(stderr, "."); /* Immediate print of a single dot */
+      }
+}
+
+//------------------------------------------------------------------------------
+//** Main Routine
+
+int main (int argc, char *argv[])
+{
+  int err;
+
+  nInterfaces = PMD_Find(MCC_VID, USB1208FS_PID, fd); // check the presence
+of the interface
+
+  if ( nInterfaces <= 0 ) {
+        fprintf(stderr, "USB 1208FS not found.\n");
+        exit(1);
+  } else
+        printf("USB 1208FS Device is found! Number of Interfaces = %d\n",
+nInterfaces);
+
+  /* config mask 0x01 means all inputs */
+
+  usbDConfigPort_USB1208FS(fd[0], DIO_PORTA, DIO_DIR_OUT); // configure PORT
+A as OUTPUT
+  usbDConfigPort_USB1208FS(fd[0], DIO_PORTB, DIO_DIR_IN);  // configure PORT
+B as INPUT
+
+  usbDOut_USB1208FS(fd[0], DIO_PORTA, 0); // put all output bit to zero
+  usbDOut_USB1208FS(fd[0], DIO_PORTA, 0);
+
+// -----
+
+    /* Disable paging for this program's memory. */
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    /* Start the timer in oneshot mode */
+    err = rt_timer_start(TM_ONESHOT);
+    if (err)
+      printf("I'm not able to start the oneshot timer \n");
+
+    /* Create an empty "task_desc" ; real-time task program structure  */
+    err =
+rt_task_create(&task_desc,"SquareWave",TASK_STKSZ,TASK_PRIO,TASK_MODE);
+    if (!err)
+      {
+    /* If successfully created, start the desired task. */
+    /*               rt_descriptor, real_task_function_name, atrr    */
+         rt_task_start(&task_desc,&sampling_task,NULL);
+         printf("Realtime Task Started... : \n ");
+      }
+
+/* Soft real time square wave */
+
+  while (1) {
+
+         // analog output channel one
+         usbAOut_USB1208FS(fd[0], 1, ao_1_value);
+
+         if (ao_1_value == 0 )   // square wave generator
+               ao_1_value = 0xFFF ;
+         else
+               ao_1_value = 0x000 ;
+
+        // usleep ( TASK_PERIOD_U ) ;
+
+
+  }
+
+
+
+
+// pause(); // Wait a CTRL-C to exit
+
+  return 0 ;
+}
 
 
 
