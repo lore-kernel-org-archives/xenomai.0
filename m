@@ -1,112 +1,91 @@
-Message-ID: <25192.193.52.24.125.1133817387.squirrel@domain.hid>
-Date: Mon, 5 Dec 2005 22:16:27 +0100 (CET)
-From: <smannori@domain.hid>
+Message-ID: <43AA80C8.7060307@domain.hid>
+Date: Thu, 22 Dec 2005 11:32:40 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Xenomai-PPC: Two problems
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC] in-kernel timer benchmark
+References: <43A5AE20.804@domain.hid>
+In-Reply-To: <43A5AE20.804@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi everybody.
+Jan Kiszka wrote:
+> Hi all,
+> 
+> this is fully working proposal how to re-enable in-kernel timer latency
+> benchmarks.
+> 
+> More precisely, it adds a new RTDM device "rtbenchmark<X>" (and also a
+> new RTDM class) which can execute either a kernel task or timer
+> periodically. The benchmark device generates all the usual latency data
+> which can be retrieved from userspace via IOCTLs. I patched the existing
+> latency tool to open the device and read the data from there instead of
+> running its own latency task.
+> 
+> README for a quick test:
+> 
+>  o apply patch and rebuild everything (don't forget to re-prepare the
+>    kernel and also call scripts/bootstrap, I added some files)
+> 
+>  o load xeno_timerbench (+ xeno_native, xeno_rtdm, ...)
+> 
+>  o run "latency -D0" to start in-kernel timer task test on device
+>    "rtbenchmark0"
+> 
+>  o run "latency -D0 -t" to start in-kernel timer handler test (i.e.
+>    without scheduling latency) on device "rtbenchmark0"
+> 
 
-I'm working with an Apple Powerbook 15" G4, Xenomai 2.1 (SVN), Linux kernel
-2.6.14.3. I'm using Umbutu 5.10 with gcc 3.4.5
+Worked like a charm here.
 
-simone@domain.hid:~$ gcc -v
-Reading specs from /usr/lib/gcc/powerpc-linux-gnu/3.4.5/specs
-Configured with: ../src/configure -v
---enable-languages=c,c++,f77,pascal,objc,ada --prefix=/usr
---libexecdir=/usr/lib --with-gxx-include-dir=/usr/include/c++/3.4
---enable-shared --with-system-zlib --enable-nls --without-included-gettext
---program-suffix=-3.4 --enable-__cxa_atexit --enable-libstdcxx-allocator=mt
---enable-clocale=gnu --enable-libstdcxx-debug --disable-softfloat
---enable-targets=powerpc-linux,powerpc64-linux --with-cpu=default32
---disable-softfloat powerpc-linux-gnu
-Thread model: posix
-gcc version 3.4.5 20050809 (prerelease) (Ubuntu 3.4.4-6ubuntu8)
+> This is rather fresh code, handle with care! ;) Moreover, I would like
+> to hear your comments if the extension of the latency tool is the right
+> way to got or if we better split things up. The problem I see is that
+> this patch makes latency depend on xeno_rtdm being loaded.
+>
 
-I have two residual problems:
+IMO, using RTDM here is definitely the right thing, and depending on it 
+for the purpose of benchmarking is acceptable if we admit that 
+additional and more complex benchmarks we may provide in the future will 
+most likely benefit from using RTDM as a mean to exchange data and get 
+control requests from user-space. Better not having to invent some 
+braindamage FIFO-based messaging protocol each time we want to enrich 
+the benchmark/test collection anyway. Production systems will likely 
+don't care about the benchmark suite, so configuring out RTDM if 
+otherwise unneeded would still be a no-brainer.
 
-1) The machine is unstable (freeze after a while) if Xenomai FPU support in
-the kernel is active. This is a know problem. Gilles help me to find the
-catch and complete the installation. The problems is related to the Altivec
-unit present in the G4. I tried to fix the problems eliminating the  Altivec
-support (in the kernel coinfiguration) without success.
+On the split/no-split issue, I'd keep it the way you crafted it, i.e. 
+both tests integrated. After all, they both measure the same latencies 
+(pure timer test option put aside) even if they happen to do the 
+measurements in different exec contexts. I will have two remarks though:
 
-2) If I activate the interrupt shield in the kernel, the kernel compilation
-stops this this message:
+- a clearer message upon failure to start the kernel-based test (likely 
+due to the absence of the benchmark module) should be sent. Some hint 
+telling the user that "modprobe xeno_timerbench?" would not be a bad 
+idea to issue would likely be useful.
 
-root@domain.hid# make
-  CHK     include/linux/version.h
-  SPLIT   include/linux/autoconf.h -> include/config/*
-  CHK     include/linux/compile.h
-  CHK     usr/initramfs_list
-  CC      kernel/xenomai/nucleus/pod.o
-  CC      kernel/xenomai/nucleus/shadow.o
-kernel/xenomai/nucleus/shadow.c: In function `engage_irq_shield':
-kernel/xenomai/nucleus/shadow.c:164: warning: implicit declaration of
-function `__raw_read_lock'
-kernel/xenomai/nucleus/shadow.c:170: warning: implicit declaration of
-function `__raw_read_unlock'
-kernel/xenomai/nucleus/shadow.c: In function `disengage_irq_shield':
-kernel/xenomai/nucleus/shadow.c:188: warning: implicit declaration of
-function `__raw_write_lock'
-kernel/xenomai/nucleus/shadow.c:198: warning: implicit declaration of
-function `__raw_write_unlock'
-  LD      kernel/xenomai/nucleus/xeno_nucleus.o
-  LD      kernel/xenomai/nucleus/built-in.o
-  CC      kernel/xenomai/skins/native/task.o
-  LD      kernel/xenomai/skins/native/xeno_native.o
-  LD      kernel/xenomai/skins/native/built-in.o
-  LD      kernel/xenomai/skins/built-in.o
-  LD      kernel/xenomai/built-in.o
-  LD      kernel/built-in.o
-  GEN     .version
-  CHK     include/linux/compile.h
-  UPD     include/linux/compile.h
-  CC      init/version.o
-  LD      init/built-in.o
-  LD      .tmp_vmlinux1
-kernel/built-in.o: In function `disengage_irq_shield':
-shadow.c:(.text+0x42708): undefined reference to `__raw_write_lock'
-shadow.c:(.text+0x42840): undefined reference to `__raw_write_unlock'
-shadow.c:(.text+0x42868): undefined reference to `__raw_write_unlock'
-kernel/built-in.o: In function `xnshadow_reset_shield':
-: undefined reference to `__raw_read_lock'
-kernel/built-in.o: In function `xnshadow_reset_shield':
-: undefined reference to `__raw_read_unlock'
-kernel/built-in.o: In function `lostage_handler':
-shadow.c:(.text+0x42c64): undefined reference to `__raw_read_lock'
-shadow.c:(.text+0x42d54): undefined reference to `__raw_read_unlock'
-kernel/built-in.o: In function `xnshadow_relax':
-: undefined reference to `__raw_read_lock'
-kernel/built-in.o: In function `xnshadow_relax':
-: undefined reference to `__raw_read_unlock'
-kernel/built-in.o: In function `schedule_event':
-shadow.c:(.text+0x44a00): undefined reference to `__raw_read_lock'
-shadow.c:(.text+0x44af8): undefined reference to `__raw_read_unlock'
-make: *** [.tmp_vmlinux1] Error 1
-root@domain.hid#
+- some information when starting/running? the current test that tells us 
+which benchmark is currently running.
 
+> PS: I likely broke src/testsuite/latency/runinfo.
 
+This patch should do it, whether the listed features are available as 
+modules or statically bound to the kernel:
 
-TIA
+-latency:rtdm+native:!./latency;popall:control_c
++latency:rtdm+native+timerbench:!./latency;popall:control_c
 
-       Simone Mannori - INRIA Rocquencourt (Paris)
-       www.scilab.org - www.scicos.org
+-- 
 
-
-
-
-
-
+Philippe.
 
