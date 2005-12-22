@@ -1,191 +1,74 @@
-Content-class: urn:content-classes:message
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C5FBF5.D45C64B8"
-Date: Thu, 8 Dec 2005 06:49:29 -0600
-Message-ID: <B4D14EA407C38B4DAF92B8EAC9249D7F01788ACA@mspex01.go.mts.com>
-From: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
-Subject: [Xenomai-help] Commercial use of Xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17322.62424.94946.83579@domain.hid>
+Date: Thu, 22 Dec 2005 19:43:36 +0100
+Subject: Re: [Xenomai-core] [RFC] in-kernel timer benchmark
+In-Reply-To: <43A5AE20.804@domain.hid>
+References: <43A5AE20.804@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+Jan Kiszka wrote:
+ > Hi all,
+ > 
+ > this is fully working proposal how to re-enable in-kernel timer latency
+ > benchmarks.
+ > 
+ > More precisely, it adds a new RTDM device "rtbenchmark<X>" (and also a
+ > new RTDM class) which can execute either a kernel task or timer
+ > periodically. The benchmark device generates all the usual latency data
+ > which can be retrieved from userspace via IOCTLs. I patched the existing
+ > latency tool to open the device and read the data from there instead of
+ > running its own latency task.
+ > 
+ > README for a quick test:
+ > 
+ >  o apply patch and rebuild everything (don't forget to re-prepare the
+ >    kernel and also call scripts/bootstrap, I added some files)
+ > 
+ >  o load xeno_timerbench (+ xeno_native, xeno_rtdm, ...)
+ > 
+ >  o run "latency -D0" to start in-kernel timer task test on device
+ >    "rtbenchmark0"
+ > 
+ >  o run "latency -D0 -t" to start in-kernel timer handler test (i.e.
+ >    without scheduling latency) on device "rtbenchmark0"
+ > 
+ > This is rather fresh code, handle with care! ;) Moreover, I would like
+ > to hear your comments if the extension of the latency tool is the right
+ > way to got or if we better split things up. The problem I see is that
+ > this patch makes latency depend on xeno_rtdm being loaded.
 
-------_=_NextPart_001_01C5FBF5.D45C64B8
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+I agree with Philippe: having a driver for the various benchmarking
+needs is a good idea, we could imagine adding ioctls for the various
+loads, etc... But I would vote for a split between the user-space
+latency measurement tool and the display tool for kernel-space latency.
 
-First let me start by saying I apologize if xenomai-help is the wrong
-list, I found a xenomai-main which I though more likely the correct list
-but it has had no activity.
+A minor issue: in the 2.4 portion of ksrc/drivers/Makefile, should not
+CONFIG_XENO_DRIVERS_benchmark be replaced with
+CONFIG_XENO_DRIVERS_TIMERBENCH ?
 
-=20
+It is a very interesting tool indeed (especially since I would need such
+a tool to benchmark the various solutions to improve nucleus timers
+scalability :). But it would be nice to be able to create several tasks
+or several timers without having to open one file descriptor by
+timer/task. Or if you want one file descriptor by timer/task,
+rt_tmbench_ioctl_nrt should return an error when trying to start the
+task or timer twice.
 
-I had been following fusion for some time with an eye toward the
-possibility of commercial use due to it being user-space real-time and
-thus more likely to allow protection of intellectual property.  I'm
-pleased to see a continuation of fusion in the Xenomai project.
-
-=20
-
-=20
-
-I've searched the archives for license details and have only found
-reference to GPL V2.
-
-=20
-
-My primary question is if a user space Xenomai real-time application is
-considered a derivate work and thus is subject to be GPL'd?
-
-=20
-
-Thanks and regards,
-
-Jim
-
-=20
-
-=20
-
-=20
+-- 
 
 
-------_=_NextPart_001_01C5FBF5.D45C64B8
-Content-Type: text/html;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"MS Mincho";
-	panose-1:2 2 6 9 4 2 5 8 3 4;}
-@font-face
-	{font-family:"\@MS Mincho";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>First let me start by saying I apologize if =
-xenomai-help is
-the wrong list, I found a xenomai-main which I though more likely the =
-correct
-list but it has had no activity.</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>I had been following fusion for some time with an eye =
-toward
-the possibility of commercial use due to it being user-space real-time =
-and thus
-more likely to allow protection of intellectual property.&nbsp; =
-I&#8217;m
-pleased to see a continuation of fusion in the Xenomai =
-project.</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>I&#8217;ve searched the archives for license details =
-and
-have only found reference to GPL V2.</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>My primary question is if a user space Xenomai =
-real-time
-application is considered a derivate work and thus is subject to be =
-GPL&#8217;d?</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Thanks and regards,</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Jim</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C5FBF5.D45C64B8--
+					    Gilles Chanteperdrix.
 
