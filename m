@@ -1,11 +1,10 @@
-From: Stefan Kisdaroczi <kisda@domain.hid>
-Date: Mon, 2 Jan 2006 11:23:36 +0100
+Message-ID: <43B1F5CE.7030407@domain.hid>
+Date: Wed, 28 Dec 2005 03:17:50 +0100
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart7899902.lDmt9CheyB";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <200601021123.42425.kisda@domain.hid>
-Subject: [Xenomai-core] src/skins/*/COPYING consistency
+Subject: [Xenomai-core] 2.4.32 compilation error + old timer example problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,32 +16,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---nextPart7899902.lDmt9CheyB
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+I checked out xeno.trunk just a few minutes ago.
+With kernel 2.4.32, kernel compilation fails with this:
 
-hi,
+mq.c: In function `mq_notify':
+mq.c:475: error: `SIGEV_SIVNAL' undeclared (first use in this function)
+mq.c:475: error: (Each undeclared identifier is reported only once
+mq.c:475: error: for each function it appears in.)
 
-license detail:
-in every src/skins/*/ directory containing source is a LGPL COPYING file,
-except in rtdm. For consistency there should be also one.
-Or only one file src/skins/COPYING ?
+kernel/xenomai/skins/posix/mq.c
+SIGEV_SIVNAL => SIGEV_SIGNAL
 
-thx
-kisda
+..with that it succeeds.
 
---nextPart7899902.lDmt9CheyB
-Content-Type: application/pgp-signature
+But still my timer example doesn't work - see:
+https://mail.gna.org/public/xenomai-help/2005-12/msg00020.html
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+With 2.6.14.3 it works...
 
-iD8DBQBDuP8uIPTw9rIdn6oRAnBQAJ9fLs0l/YA7h2f8u6Wxj7grmHI4fgCaAiIR
-g9Hds9v1lKL6MnVW/HLJzsE=
-=jRek
------END PGP SIGNATURE-----
-
---nextPart7899902.lDmt9CheyB--
+Thanks for any hints, Happy New Year,
+Hannes.
 
