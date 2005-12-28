@@ -1,16 +1,15 @@
-Message-ID: <43B30F30.9000603@domain.hid>
-Date: Wed, 28 Dec 2005 23:18:24 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43B30FB3.9050209@domain.hid>
+Date: Wed, 28 Dec 2005 23:20:35 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] 2.4.32 compilation error + old timer
-	example	problem
-References: <43B1F5CE.7030407@domain.hid> <43B27936.2000108@domain.hid>
-	<43B303A8.7010903@domain.hid> <43B30DB0.3080104@domain.hid>
+Subject: Re: [Xenomai-core] 2.4.32 compilation error + old
+	timer	example	problem
+References: <43B1F5CE.7030407@domain.hid>
+	<43B27936.2000108@domain.hid>	<43B303A8.7010903@domain.hid>
+	<43B30DB0.3080104@domain.hid>
 In-Reply-To: <43B30DB0.3080104@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3969FB51DC85D866DC0DF14F"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,13 +19,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3969FB51DC85D866DC0DF14F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
 Philippe Gerum wrote:
 > Hannes Mayer wrote:
@@ -68,29 +62,14 @@ Philippe Gerum wrote:
 >> from the task are flooding the screen).
 > 
 > 
-> It would be nice to have the error codes possibly returned by
+> It would be nice to have the error codes possibly returned by 
 > rt_timer_start() and/or rt_task_sleep() if any.
 > 
 
-Yea, maybe that periodic timer mode is not compiled in and
-rt_timer_start fails in your original example. I think it's off by
-default now.
+PS: the same goes for the calls involved in the message pipe related 
+issue you recently posted and which is still pending in my log.
 
-Jan
+-- 
 
---------------enig3969FB51DC85D866DC0DF14F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDsw80niDOoMHTA+kRAhBdAJ90lKNOXOWn39OMlVzVrUGTe0AnMQCeM565
-l6FlpXalo+UpCQG4l8DDJtg=
-=VCX2
------END PGP SIGNATURE-----
-
---------------enig3969FB51DC85D866DC0DF14F--
+Philippe.
 
