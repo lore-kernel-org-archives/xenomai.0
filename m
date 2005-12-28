@@ -1,12 +1,14 @@
-Message-ID: <43B26C65.7020807@domain.hid>
-Date: Wed, 28 Dec 2005 11:43:49 +0100
+Message-ID: <43B2789F.2090104@domain.hid>
+Date: Wed, 28 Dec 2005 12:35:59 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] I-pipe hosted tracing service
+References: <43B1381B.6060001@domain.hid> <43B26587.9090809@domain.hid>
+In-Reply-To: <43B26587.9090809@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD03B331B3EAD9E19892EB1C3"
+	boundary="------------enigE4191CCFEA57030596B0A3AF"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] fixing modprobe hint in libs
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,88 +18,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD03B331B3EAD9E19892EB1C3
-Content-Type: multipart/mixed; boundary="------------070800060007000307000304"
-
-This is a multi-part message in MIME format.
---------------070800060007000307000304
+--------------enigE4191CCFEA57030596B0A3AF
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Hi,
+Philippe Gerum wrote:
+>>  ...
+>> +#ifdef CONFIG_IPIPE_TRACE
+>> +extern void __ipipe_init_trace_proc(void);
+>> +#else /* !CONFIG_IPIPE_TRACE */
+>> +# define __ipipe_init_trace_proc()
+>> +#endif /* CONFIG_IPIPE_TRACE */
+>> +
+> 
+> 
+> Better move this to linux/ipipe.h.
 
-this patches fixes the hint a user sees when trying to start some
-RT-application without the related core service being available. Might
-be frustrating for a newbie if the suggested command fails...
+Ok.
+
+>> +
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/version.h>
+>> +#include <linux/kallsyms.h>
+>> +#include <linux/seq_file.h>
+>> +#include <linux/proc_fs.h>
+>> +#include <linux/ctype.h>
+>> +#include <linux/ipipe_trace.h>
+>> +#include <asm/uaccess.h>
+>> +
+>> +#ifndef CONFIG_ARM
+> 
+> 
+> Eeek... Any chance to have such arch-dependent stuff out of the generic
+> core? I'd better see this in asm/ipipe.h.
+> 
+>> +# define __CALLER_ADDR0 ((unsigned long)__builtin_return_address(0))
+>> +# define __CALLER_ADDR1 ((unsigned long)__builtin_return_address(1))
+>> +#else
+>> +# error Implement ipipe_arm_return_addr!
+>> +  unsigned long ipipe_arm_return_addr(int level);
+>> +# define __CALLER_ADDR0 ipipe_arm_return_addr(0)
+>> +# define __CALLER_ADDR1 ipipe_arm_return_addr(1)
+>> +#endif
+>> +
+
+Ok. Will add something like
+
+
+#ifndef BROKEN_BUILTIN_RETURN_ADDRESS
+#define __BUILTIN_RETURN_ADDRESS0 \
+    ((unsigned long)__builtin_return_address(0))
+...
+#endif
+
+
+to linux/ipipe.h and we may later add
+
+
+unsigned long ipipe_arm_return_addr(int level);
+
+#define BROKEN_BUILTIN_RETURN_ADDRESS 1
+#define __BUILTIN_RETURN_ADDRESS0 ipipe_arm_return_addr(0)
+...
+
+
+to an upcoming asm-arm/ipipe.h. Ack?
+
+>> +
+>> +static inline unsigned long ipipe_tsc2us(unsigned long long delta)
+>> +{
+>> +#ifdef CONFIG_X86
+>> +    do_div(delta, cpu_khz/1000+1);
+>> +#elif defined(CONFIG_PPC)
+>> +    delta = mulhwu(tb_to_us, delta);
+>> +#elif defined(CONFIG_ARM)
+>> +    delta = mach_cycles_to_usecs(delta);
+>> +#else
+>> +    #error Implement ipipe_tsc2us.
+>> +#endif
+> 
+> 
+> Ditto. Actually, recent ipipe patches implement ipipe_tsc2ns already.
+> 
+
+Hmm, switching to ipipe_tsc2ns/1000 for the microsecond calculation may
+work without loosing too much precision (the only exception would be a
+trace over more than a few seconds - not very common). But is
+ipipe_tsc2ns supposed to work on signed arguments on all archs, or do I
+have to continue handling this separately?
 
 Jan
 
---------------070800060007000307000304
-Content-Type: text/x-patch;
- name="modprobe_hint.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="modprobe_hint.patch"
-
-Index: src/skins/uvm/init.c
-===================================================================
---- src/skins/uvm/init.c	(Revision 304)
-+++ src/skins/uvm/init.c	(Arbeitskopie)
-@@ -56,7 +56,7 @@
- 	case -ESRCH:
- 
- 	    fprintf(stderr,"Xenomai: UVM skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n");
--	    fprintf(stderr,"(modprobe xeno_uvm.ko?)\n");
-+	    fprintf(stderr,"(modprobe xeno_uvm?)\n");
- 	    exit(1);
- 
- 	default:
-Index: src/skins/rtai/init.c
-===================================================================
---- src/skins/rtai/init.c	(Revision 304)
-+++ src/skins/rtai/init.c	(Arbeitskopie)
-@@ -53,7 +53,7 @@
- 	case -ESRCH:
- 
- 	    fprintf(stderr,"Xenomai: RTAI skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n");
--	    fprintf(stderr,"(modprobe xeno_rtai.ko?)\n");
-+	    fprintf(stderr,"(modprobe xeno_rtai?)\n");
- 	    exit(1);
- 
- 	default:
-Index: src/skins/posix/init.c
-===================================================================
---- src/skins/posix/init.c	(Revision 304)
-+++ src/skins/posix/init.c	(Arbeitskopie)
-@@ -59,7 +59,7 @@
- 	case -ESRCH:
- 
- 	    fprintf(stderr,"Xenomai: POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n");
--	    fprintf(stderr,"(modprobe xeno_posix.ko?)\n");
-+	    fprintf(stderr,"(modprobe xeno_posix?)\n");
- 	    exit(1);
- 
- 	default:
-Index: src/skins/native/init.c
-===================================================================
---- src/skins/native/init.c	(Revision 304)
-+++ src/skins/native/init.c	(Arbeitskopie)
-@@ -65,7 +65,7 @@
- 	case -ESRCH:
- 
- 	    fprintf(stderr,"Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n");
--	    fprintf(stderr,"(modprobe xeno_native.ko?)\n");
-+	    fprintf(stderr,"(modprobe xeno_native?)\n");
- 	    exit(1);
- 
- 	default:
-
---------------070800060007000307000304--
-
---------------enigD03B331B3EAD9E19892EB1C3
+--------------enigE4191CCFEA57030596B0A3AF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -106,10 +123,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDsmxpniDOoMHTA+kRAoU0AJ46DRxXPkZJoMsQe4al1/GQZ9vRtwCeN5tB
-PlUZoC6ej9qakqg4ve/RKLE=
-=hUA+
+iD8DBQFDsnifniDOoMHTA+kRAk0XAJsE3NDwho+mVlsTSiE5maTExioJaQCeKYbO
+qqcNN9gElycCS1k/GefAdSo=
+=N8Iu
 -----END PGP SIGNATURE-----
 
---------------enigD03B331B3EAD9E19892EB1C3--
+--------------enigE4191CCFEA57030596B0A3AF--
 
