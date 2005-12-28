@@ -1,11 +1,11 @@
-Message-ID: <43B256F1.6070801@domain.hid>
-Date: Wed, 28 Dec 2005 10:12:17 +0100
+Message-ID: <43B25CAB.7090603@domain.hid>
+Date: Wed, 28 Dec 2005 10:36:43 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] load librtdm without xeno_rtdm
-References: <43AB1429.2090300@domain.hid>
-In-Reply-To: <43AB1429.2090300@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-core] [rt shared irqs] ipipe-related changes (draft)
+References: <b647ffbd0512260117n7023fb93h@domain.hid>
+In-Reply-To: <b647ffbd0512260117n7023fb93h@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,102 +16,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
-> 
-> as suggested in an earlier mail, here is a patch that - as I think -
-> improves the behaviour of librtdm. It will let applications start even
-> if the kernel services of RTDM are not available. Instead, -ENODEV or
-> -EAFNOSUPPORT will be returned in this case when the user tries to open
-> some device or socket later - just like there is no appropriate driver
-> loaded, which is actually true!
-> 
-> Please apply.
+Hi Dmitry,
 
-Applied, thanks.
+Dmitry Adamushko wrote:
+> Hi everybody,
+> 
+> the enclosed patches (the first version, hence it's still raw) are
+> supposed to build the basis needed on the ipipe layer for adding
+> support of real-time shared interrupts. As a side effect, the
+> irq_trampoline() layer has been eliminated and the irq processing
+> chain has become shorter.
+
+Mm, it seems that everybody is working except me these days. Ah! these 
+are delightfully unfair times.
 
 > 
-> Jan
+> Some points are more likely to be changed in the next iteration (e.g.
+> __ipipe_irq_cookie() vs. changing the ipipe_virtualize_irq()
+> interface).
+
+Ack.
+
+> The struct rthal_realtime_irq::hits[per-IRQ] is missed so far.
+> 
+
+I think we should move this counter to the Adeos layer directly and 
+remove it from the HAL, in parallel to maintaining the current irq_hits 
+(which should be renamed irq_pending_count or something along these 
+lines); doing so would likely reduce the number of cache misses since 
+the IRQ syncer is already peeking at the same memory area before firing 
+the handler.
+
+> Anyway, comments are very wellcome.
+>
+
+A few comments follow, but I would definitely merge something along 
+these lines for the 1.1 series.
+
+> 
+> --
+> Best regards,
+> Dmitry Adamushko
 > 
 > 
 > ------------------------------------------------------------------------
 > 
-> Index: src/skins/rtdm/core.c
-> ===================================================================
-> --- src/skins/rtdm/core.c	(Revision 292)
-> +++ src/skins/rtdm/core.c	(Arbeitskopie)
-> @@ -18,6 +18,7 @@
+> diff -urp linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-core.c linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-core.c
+> --- linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-core.c	2005-12-22 14:15:17.000000000 +0100
+> +++ linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-core.c	2005-12-23 16:37:32.000000000 +0100
+> @@ -98,13 +98,14 @@ static void (*__ipipe_cpu_sync) (void);
+>  	                 "pushl %%edx\n\t" \
+>  	                 "pushl %%ecx\n\t" \
+>  	                 "pushl %%ebx\n\t" \
+> +			 "pushl %2\n\t" \
+>                           "pushl %%eax\n\t" \
+>                           "call *%1\n\t" \
+> -			 "addl $4,%%esp\n\t" \
+> +			 "addl $8,%%esp\n\t" \
+>  	                 "jmp ret_from_intr\n\t" \
+>  	                 "1:\n" \
+>  			 : /* no output */ \
+> -			 : "a" (irq), "m" ((ipd)->irqs[irq].handler))
+> +			 : "a" (irq), "m" ((ipd)->irqs[irq].handler), "r" ((ipd)->irqs[irq].cookie))
 >  
->  #include <stdarg.h>
->  #include <stddef.h>
-> +#include <errno.h>
->  
->  #include <xenomai/rtdm/rtdm.h>
->  #include <xenomai/rtdm/syscall.h>
-> @@ -27,19 +28,25 @@
->  
->  int rt_dev_open(const char *path, int oflag, ...)
+>  static __inline__ unsigned long flnz(unsigned long word)
 >  {
-> -  return XENOMAI_SKINCALL2( __rtdm_muxid,
-> -                            __rtdm_open,
-> -                            path,
-> -                            oflag);
-> +    if (__rtdm_muxid < 0)
-> +        return -ENODEV;
-> +
-> +    return XENOMAI_SKINCALL2( __rtdm_muxid,
-> +                              __rtdm_open,
-> +                              path,
-> +                              oflag);
->  }
+> @@ -125,7 +126,7 @@ int __ipipe_ack_system_irq(unsigned irq)
 >  
->  int rt_dev_socket(int protocol_family, int socket_type, int protocol)
+>  /* Always called with hw interrupts off. */
+>  
+> -void __ipipe_do_critical_sync(unsigned irq)
+> +void __ipipe_do_critical_sync(unsigned irq, void *cookie)
 >  {
-> -  return XENOMAI_SKINCALL3( __rtdm_muxid,
-> -                            __rtdm_socket,
-> -                            protocol_family,
-> -                            socket_type,
-> -                            protocol);
-> +    if (__rtdm_muxid < 0)
-> +        return -EAFNOSUPPORT;
-> +
-> +    return XENOMAI_SKINCALL3( __rtdm_muxid,
-> +                              __rtdm_socket,
-> +                              protocol_family,
-> +                              socket_type,
-> +                              protocol);
->  }
+>  	ipipe_declare_cpuid;
 >  
->  int rt_dev_close(int fd)
-> Index: src/skins/rtdm/init.c
-> ===================================================================
-> --- src/skins/rtdm/init.c	(Revision 292)
-> +++ src/skins/rtdm/init.c	(Arbeitskopie)
-> @@ -53,9 +53,9 @@
->  	case -ENOSYS:
->  	case -ESRCH:
+> @@ -301,7 +302,7 @@ void fastcall __ipipe_sync_stage(unsigne
+>  				local_irq_disable_hw();
+>  			} else {
+>  				__clear_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+> -				ipd->irqs[irq].handler(irq);
+> +				ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
+>  				__set_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+>  			}
 >  
-> -	    fprintf(stderr,"Xenomai: RTDM skin or CONFIG_XENO_OPT_PERVASIVE disabled.\n");
-> -	    fprintf(stderr,"(modprobe xeno_rtdm.ko?)\n");
-> -	    exit(1);
-> +	    /* we ignore this and fail later when the user tries to open
-> +	       a device or socket. */
-> +	    break;
+> @@ -415,7 +416,7 @@ int fastcall __ipipe_send_ipi (unsigned 
 >  
->  	default:
->  
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+>  int ipipe_virtualize_irq(struct ipipe_domain *ipd,
+>  			 unsigned irq,
+> -			 void (*handler) (unsigned irq),
+> +			 ipipe_irq_handler_t handler,
+>  			 int (*acknowledge) (unsigned irq),
 
+Let's define ipipe_irq_ackfn_t while we are at it.
+
+<snip>
+
+> +static void rthal_apc_handler (unsigned virq, void *cookie)
+>  
+>  {
+>      void (*handler)(void *), *cookie;
+> @@ -650,7 +631,7 @@ static int rthal_apc_thread (void *data)
+>      return 0;
+>  }
+>  
+> -void rthal_apc_kicker (unsigned virq)
+> +void rthal_apc_kicker (unsigned virq, void *cookie)
+>  
+>  {
+>      wake_up_process(rthal_apc_servers[smp_processor_id()]);
+> @@ -877,14 +858,14 @@ static int irq_read_proc (char *page,
+>  
+>      for (irq = 0; irq < IPIPE_NR_IRQS; irq++) {
+>  
+> -	if (rthal_realtime_irq[irq].handler == NULL)
+> -	    continue;
+> +//	if (rthal_realtime_irq[irq].handler == NULL)
+> +//	    continue;
+>  
+>  	p += sprintf(p,"\n%3d:",irq);
+>  
+> -	for_each_online_cpu(cpu) {
+> -	    p += sprintf(p,"%12lu",rthal_realtime_irq[irq].hits[cpu]);
+> -	}
+> +//	for_each_online_cpu(cpu) {
+> +//	    p += sprintf(p,"%12lu",rthal_realtime_irq[irq].hits[cpu]);
+> +//	}
+>      }
+
+Likely some cleanup here.
+
+>  
+>      p += sprintf(p,"\n");
+> @@ -1093,6 +1074,9 @@ int rthal_init (void)
+>  			       &rthal_apc_trampoline,
+>  			       NULL,
+>  			       IPIPE_HANDLE_MASK);
+> +
+> +    rthal_irq_cookie(rthal_current_domain, irq) = NULL;
+> +
+>      if (err)
+>      {
+>          printk(KERN_ERR "Xenomai: Failed to virtualize IRQ.\n");
+> diff -urp xenomai-2.1-clean/ksrc/skins/rtai/intr.c xenomai-2.1-ext/ksrc/skins/rtai/intr.c
+> --- xenomai-2.1-clean/ksrc/skins/rtai/intr.c	2005-11-21 21:52:58.000000000 +0100
+> +++ xenomai-2.1-ext/ksrc/skins/rtai/intr.c	2005-12-22 13:38:34.000000000 +0100
+> @@ -24,7 +24,7 @@ int rt_request_irq (unsigned irq,
+>  		    void (*handler)(unsigned irq, void *cookie),
+>  		    void *cookie)
+>  {
+> -    return rthal_irq_request(irq,handler,NULL,cookie);
+> +    return xnarch_hook_irq(irq,handler,NULL,cookie);
+>  }
+
+Oops, yes. Indeed.
 
 -- 
 
