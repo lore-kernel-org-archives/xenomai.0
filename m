@@ -1,12 +1,9 @@
-Message-ID: <43A5AE20.804@domain.hid>
-Date: Sun, 18 Dec 2005 19:44:48 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0512291103y383a96c1i@domain.hid>
+Date: Thu, 29 Dec 2005 21:03:38 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3EE2F568697FA38B3751F815"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [RFC] in-kernel timer benchmark
+Content-Type: multipart/mixed; boundary="----=_Part_356_5332618.1135883018608"
+Subject: [Xenomai-core] [rt shared irqs] changes on the adeos-ipipe layer v.2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,1131 +13,836 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3EE2F568697FA38B3751F815
-Content-Type: multipart/mixed; boundary="------------010804040902070400070601"
+------=_Part_356_5332618.1135883018608
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_357_1438914.1135883018608"
 
-This is a multi-part message in MIME format.
---------------010804040902070400070601
-Content-Type: text/plain; charset=ISO-8859-15
+------=_Part_357_1438914.1135883018608
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi everybody,
+
+the recent patches are enclosed here. Mmm I haven't ported it to the recent
+adeos-ipipe && xeno though but I guess it's not a big obstacle for possible
+design-related comments etc.
+
+just to note some main issues...
+
+o  the ipipe_virtualize_irq() interface now includes an additional param,
+namely - void *cookie.
+
+o  ipipe_domain::cpudata::irq_hits has been renamed to irq_pending_hits
+while irq_hits now stands for the former rthal_realtime_irq::irq_hits.
+
+It's incremeneted in ipipe_irq_handle() and ipipe_schedule_irq(), IOW at th=
+e
+places where irqs (normal or virtual) become visible on the adeos radar
+first time.
+
+Another approach would be to increment it in ipipe_sync_stage() right befor=
+e
+calling actual isr handlers. This way, accounting (well, it depends what ar=
+e
+we going to count though) would be wrong for virq and ipipe_tick_irq
+handler.
+
+er.. I was confused by the fact that sum of all apcs in /proc/xenomai/apc !=
+=3D
+virq from /proc/xenomai/irq, but ipipe_printk_virq is not listed since it's
+registered without rthal::apc interface. Ok, should take a look at it
+closer, i.e. maybe at least rthal_linux_irq can be reworked now.
+
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_357_1438914.1135883018608
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<br>
+Hi everybody,<br>
+<br>
+the recent patches are enclosed here. Mmm I haven't ported it to the
+recent adeos-ipipe &amp;&amp; xeno though but I guess it's not a big
+obstacle for possible design-related comments etc.<br>
+<br>
+just to note some main issues...<br>
+<br>
+o&nbsp; the ipipe_virtualize_irq() interface now includes an additional par=
+am, namely - void *cookie.<br>
+<br>
+o&nbsp; ipipe_domain::cpudata::irq_hits has been renamed to
+irq_pending_hits while irq_hits now stands for the former
+rthal_realtime_irq::irq_hits.<br>
+<br>
+It's incremeneted in ipipe_irq_handle() and ipipe_schedule_irq(), IOW
+at the places where irqs (normal or virtual) become visible on the
+adeos radar first time.<br>
+<br>
+Another approach would be to increment it in ipipe_sync_stage() right
+before calling actual isr handlers. This way, accounting (well, it
+depends what are we going to count though) would be wrong for virq and
+ipipe_tick_irq handler.<br>
+<br>
+er.. I was confused by the fact that sum of all apcs in
+/proc/xenomai/apc !=3D virq from /proc/xenomai/irq, but ipipe_printk_virq
+is not listed since it's registered without rthal::apc interface. Ok,
+should take a look at it closer, i.e. maybe at least rthal_linux_irq
+can be reworked now.<br>
+<br>
+<br>-- <br>Best regards,<br>Dmitry Adamushko
+
+------=_Part_357_1438914.1135883018608--
+
+------=_Part_356_5332618.1135883018608
+Content-Type: application/octet-stream; name=ipipe-i386-1.0-10-ext-2.patch
 Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="ipipe-i386-1.0-10-ext-2.patch"
 
-Hi all,
-
-this is fully working proposal how to re-enable in-kernel timer latency
-benchmarks.
-
-More precisely, it adds a new RTDM device "rtbenchmark<X>" (and also a
-new RTDM class) which can execute either a kernel task or timer
-periodically. The benchmark device generates all the usual latency data
-which can be retrieved from userspace via IOCTLs. I patched the existing
-latency tool to open the device and read the data from there instead of
-running its own latency task.
-
-README for a quick test:
-
- o apply patch and rebuild everything (don't forget to re-prepare the
-   kernel and also call scripts/bootstrap, I added some files)
-
- o load xeno_timerbench (+ xeno_native, xeno_rtdm, ...)
-
- o run "latency -D0" to start in-kernel timer task test on device
-   "rtbenchmark0"
-
- o run "latency -D0 -t" to start in-kernel timer handler test (i.e.
-   without scheduling latency) on device "rtbenchmark0"
-
-This is rather fresh code, handle with care! ;) Moreover, I would like
-to hear your comments if the extension of the latency tool is the right
-way to got or if we better split things up. The problem I see is that
-this patch makes latency depend on xeno_rtdm being loaded.
-
-Jan
-
-
-PS: I likely broke src/testsuite/latency/runinfo.
-
---------------010804040902070400070601
-Content-Type: text/x-patch;
- name="timerbench.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="timerbench.patch"
-
-Index: include/rtdm/rtbenchmark.h
-===================================================================
---- include/rtdm/rtbenchmark.h	(Revision 0)
-+++ include/rtdm/rtbenchmark.h	(Revision 0)
-@@ -0,0 +1,121 @@
-+/**
-+ * @file
-+ * Real-Time Driver Model for Xenomai, benchmark device profile header
-+ *
-+ * @note Copyright (C) 2005 Jan Kiszka <jan.kiszka@domain.hid>
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software Foundation,
-+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ *
-+ * @ingroup rtbenchmark
-+ */
-+
-+/*!
-+ * @ingroup profiles
-+ * @defgroup rtbenchmark Benchmark Devices
-+ *
-+ * This group of devices is intended to provide in-kernel benchmark results.
-+ * Feel free to comment on this profile via the Xenomai mailing list
-+ * (Xenomai-help@domain.hid) or directly to the author (jan.kiszka@domain.hid). @n
-+ * @n
-+ *
-+ * @par Device Characteristics
-+ * @ref rtdm_device.device_flags "Device Flags": @c RTDM_NAMED_DEVICE, @c RTDM_EXCLUSIVE @n
-+ * @n
-+ * @ref rtdm_device.device_name "Device Name": @c "rtbenchmark<N>", N >= 0 @n
-+ * @n
-+ * @ref rtdm_device.device_class "Device Class": @c RTDM_CLASS_BENCHMARK @n
-+ * @n
-+ *
-+ * @par Supported Operations
-+ * @b Open @n
-+ * Environments: non-RT (RT optional)@n
-+ * Specific return values: none @n
-+ * @n
-+ * @b Close @n
-+ * Environments: non-RT (RT optional)@n
-+ * Specific return values: none @n
-+ * @n
-+ * @b IOCTL @n
-+ * Mandatory Environments: see @ref IOCTLs "below" @n
-+ * Specific return values: see @ref IOCTLs "below" @n
-+ *
-+ * @{
-+ */
-+
-+#ifndef _RTBENCHMARK_H
-+#define _RTBENCHMARK_H
-+
-+#include <asm/types.h>
-+#include <xenomai/rtdm/rtdm.h>
-+
-+#define RTBNCH_TIMER_TASK       0
-+#define RTBNCH_TIMER_HANDLER    1
-+
-+typedef struct rtbnch_result {
-+    long                    avg;
-+    long                    min;
-+    long                    max;
-+    long                    overruns;
-+    long                    test_loops;
-+} rtbnch_result_t;
-+
-+typedef struct rtbnch_timerconfig {
-+    int                     mode;
-+    uint64_t                period;
-+    int                     warmup_loops;
-+    int                     histogram_size;
-+    int                     histogram_bucketsize;
-+} rtbnch_timerconfig_t;
-+
-+typedef struct rtbnch_interm_result {
-+    struct rtbnch_result    last;
-+    struct rtbnch_result    overall;
-+} rtbnch_interm_result_t;
-+
-+typedef struct rtbnch_overall_result {
-+    struct rtbnch_result    result;
-+    long                    *histogram_avg;
-+    long                    *histogram_min;
-+    long                    *histogram_max;
-+} rtbnch_overall_result_t;
-+
-+
-+#define RTIOC_TYPE_BENCHMARK        RTDM_CLASS_BENCHMARK
-+
-+
-+/*!
-+ * @name Sub-Classes of RTDM_CLASS_BENCHMARK
-+ * @{ */
-+#define RTDM_SUBCLASS_TIMER         0
-+/** @} */
-+
-+
-+/*!
-+ * @anchor IOCTLs @name IOCTLs
-+ * Benchmark device IOCTLs
-+ * @{ */
-+
-+#define RTBNCH_RTIOC_INTERM_RESULT      \
-+    _IOWR(RTIOC_TYPE_BENCHMARK, 0x00, struct rtbnch_interm_result)
-+
-+#define RTBNCH_RTIOC_START_TMTEST       \
-+    _IOW(RTIOC_TYPE_BENCHMARK, 0x10, struct rtbnch_timerconfig)
-+
-+#define RTBNCH_RTIOC_STOP_TMTEST        \
-+    _IOWR(RTIOC_TYPE_BENCHMARK, 0x11, struct rtbnch_overall_result)
-+
-+/** @} */
-+
-+#endif /* _RTBENCHMARK_H */
-Index: include/rtdm/rtdm.h
-===================================================================
---- include/rtdm/rtdm.h	(Revision 288)
-+++ include/rtdm/rtdm.h	(Arbeitskopie)
-@@ -68,6 +68,7 @@
- #define RTDM_CLASS_CAN              3
- #define RTDM_CLASS_NETWORK          4
- #define RTDM_CLASS_RTMAC            5
-+#define RTDM_CLASS_BENCHMARK        6
- /*
- #define RTDM_CLASS_USB              ?
- #define RTDM_CLASS_FIREWIRE         ?
-Index: src/testsuite/latency/latency.c
-===================================================================
---- src/testsuite/latency/latency.c	(Revision 288)
-+++ src/testsuite/latency/latency.c	(Arbeitskopie)
-@@ -11,6 +11,7 @@
- #include <xenomai/native/task.h>
- #include <xenomai/native/timer.h>
- #include <xenomai/native/sem.h>
-+#include <xenomai/rtdm/rtbenchmark.h>
+diff -urp linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-core.c linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-core.c
+--- linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-core.c	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-core.c	2005-12-29 18:56:40.000000000 +0100
+@@ -98,13 +98,14 @@ static void (*__ipipe_cpu_sync) (void);
+ 	                 "pushl %%edx\n\t" \
+ 	                 "pushl %%ecx\n\t" \
+ 	                 "pushl %%ebx\n\t" \
++			 "pushl %2\n\t" \
+                          "pushl %%eax\n\t" \
+                          "call *%1\n\t" \
+-			 "addl $4,%%esp\n\t" \
++			 "addl $8,%%esp\n\t" \
+ 	                 "jmp ret_from_intr\n\t" \
+ 	                 "1:\n" \
+ 			 : /* no output */ \
+-			 : "a" (irq), "m" ((ipd)->irqs[irq].handler))
++			 : "a" (irq), "m" ((ipd)->irqs[irq].handler), "r" ((ipd)->irqs[irq].cookie))
  
- RT_TASK latency_task, display_task;
- 
-@@ -29,6 +30,9 @@
- int test_duration = 0;  /* sec of testing, via -T <sec>, 0 is inf */
- int data_lines = 21;    /* data lines per header line, -l <lines> to change */
- int quiet = 0;          /* suppress printing of RTH, RTD lines when -T given */
-+int benchdev_no = -1;
-+int benchdev = -1;
-+int test_mode = RTBNCH_TIMER_TASK;
- 
- time_t test_start, test_end;    /* report test duration */
- int test_loops = 0;             /* outer loop count */
-@@ -60,14 +64,6 @@
-     RTIME expected_tsc, period_tsc, start_ticks;
-     RT_TIMER_INFO timer_info;
- 
--    err = rt_timer_start(TM_ONESHOT);
--
--    if (err)
--        {
--        fprintf(stderr,"latency: cannot start timer, code %d\n",err);
--        return;
--        }
--
-     err = rt_timer_inquire(&timer_info);
-     
-     if (err)
-@@ -156,14 +152,33 @@
-     int err, n = 0;
-     time_t start;
- 
--    err = rt_sem_create(&display_sem,"dispsem",0,S_FIFO);
-+    if (benchdev >= 0) {
-+        struct rtbnch_timerconfig   config;
- 
--    if (err)
--        {
--        fprintf(stderr,"latency: cannot create semaphore: %s\n",strerror(-err));
--        return;
--        }
-+        config.mode                 = test_mode;
-+        config.period               = period_ns;
-+        config.warmup_loops         = WARMUP_TIME;
-+        config.histogram_size       = (do_histogram || do_stats) ? histogram_size : 0;
-+        config.histogram_bucketsize = bucketsize;
- 
-+        err = rt_dev_ioctl(benchdev, RTBNCH_RTIOC_START_TMTEST, &config);
-+
-+        if (err)
-+            {
-+            fprintf(stderr,"latency: failed to start in-kernel timer benchmark, code %d\n",err);
-+            return;
-+            }
-+
-+    } else {
-+        err = rt_sem_create(&display_sem,"dispsem",0,S_FIFO);
-+
-+        if (err)
-+            {
-+            fprintf(stderr,"latency: cannot create semaphore: %s\n",strerror(-err));
-+            return;
-+            }
-+    }
-+
-     time(&start);
- 
-     if (quiet)
-@@ -172,23 +187,46 @@
-     for (;;)
-         {
-         long minj, gminj, maxj, gmaxj, avgj;
--        err = rt_sem_p(&display_sem,TM_INFINITE);
- 
--        if (err)
--            {
--            if (err != -EIDRM)
--                fprintf(stderr,"latency: failed to pend on semaphore, code %d\n",err);
-+        if (benchdev >= 0) {
-+            struct rtbnch_interm_result result;
- 
--            rt_task_delete(NULL);
--            }
-+            err = rt_dev_ioctl(benchdev, RTBNCH_RTIOC_INTERM_RESULT, &result);
- 
--        /* convert jitters to nanoseconds. */
--        minj = rt_timer_tsc2ns(minjitter);
--        gminj = rt_timer_tsc2ns(gminjitter);
--        avgj = rt_timer_tsc2ns(avgjitter);
--        maxj = rt_timer_tsc2ns(maxjitter);
--        gmaxj = rt_timer_tsc2ns(gmaxjitter);
-+            if (err)
-+                {
-+                if (err != -EIDRM)
-+                    fprintf(stderr,"latency: failed to call RTBNCH_RTIOC_INTERM_RESULT, code %d\n",err);
- 
-+                return;
-+                }
-+
-+            minj = result.last.min;
-+            gminj = result.overall.min;
-+            avgj = result.last.avg;
-+            maxj = result.last.max;
-+            gmaxj = result.overall.max;
-+            goverrun = result.overall.overruns;
-+
-+        } else {
-+            err = rt_sem_p(&display_sem,TM_INFINITE);
-+
-+            if (err)
-+                {
-+                if (err != -EIDRM)
-+                    fprintf(stderr,"latency: failed to pend on semaphore, code %d\n",err);
-+
-+                return;
-+                }
-+
-+            /* convert jitters to nanoseconds. */
-+            minj = rt_timer_tsc2ns(minjitter);
-+            gminj = rt_timer_tsc2ns(gminjitter);
-+            avgj = rt_timer_tsc2ns(avgjitter);
-+            maxj = rt_timer_tsc2ns(maxjitter);
-+            gmaxj = rt_timer_tsc2ns(gmaxjitter);
-+        }
-+
-         if (!quiet)
-             {
-             if (data_lines && (n++ % data_lines)==0)
-@@ -295,20 +333,38 @@
- 
-     finished = 1;
-     rt_timer_stop();
--    rt_sem_delete(&display_sem);
- 
-+    if (benchdev >= 0) {
-+        struct rtbnch_overall_result overall;
-+
-+        overall.histogram_min = histogram_min;
-+        overall.histogram_max = histogram_max;
-+        overall.histogram_avg = histogram_avg;
-+
-+        rt_dev_ioctl(benchdev, RTBNCH_RTIOC_STOP_TMTEST, &overall);
-+        rt_dev_close(benchdev);
-+
-+        gminj    = overall.result.min;
-+        gmaxj    = overall.result.max;
-+        gavgj    = overall.result.avg;
-+        goverrun = overall.result.overruns;
-+    } else {
-+        rt_sem_delete(&display_sem);
-+
-+        gavgjitter /= (test_loops > 1 ? test_loops : 2)-1;
-+
-+        gminj = rt_timer_tsc2ns(gminjitter);
-+        gmaxj = rt_timer_tsc2ns(gmaxjitter);
-+        gavgj = rt_timer_tsc2ns(gavgjitter);
-+    }
-+
-     if (do_histogram || do_stats)
-         dump_hist_stats();
- 
-     time(&test_end);
-     actual_duration = test_end - test_start - WARMUP_TIME;
-     if (!test_duration) test_duration = actual_duration;
--    gavgjitter /= (test_loops > 1 ? test_loops : 2)-1;
- 
--    gminj = rt_timer_tsc2ns(gminjitter);
--    gmaxj = rt_timer_tsc2ns(gmaxjitter);
--    gavgj = rt_timer_tsc2ns(gavgjitter);
--
-     printf("---|------------|------------|------------|--------|-------------------------\n"
-            "RTS|%12ld|%12ld|%12ld|%8ld|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
-            gminj,
-@@ -333,7 +389,7 @@
+ static __inline__ unsigned long flnz(unsigned long word)
  {
-     int c, err;
+@@ -125,7 +126,7 @@ int __ipipe_ack_system_irq(unsigned irq)
  
--    while ((c = getopt(argc,argv,"hp:l:T:qH:B:s")) != EOF)
-+    while ((c = getopt(argc,argv,"hp:l:T:qH:B:sD:t")) != EOF)
-         switch (c)
-             {
-             case 'h':
-@@ -377,6 +433,16 @@
-                 quiet = 1;
-                 break;
+ /* Always called with hw interrupts off. */
  
-+            case 'D':
+-void __ipipe_do_critical_sync(unsigned irq)
++void __ipipe_do_critical_sync(unsigned irq, void *cookie)
+ {
+ 	ipipe_declare_cpuid;
+ 
+@@ -275,7 +276,7 @@ void fastcall __ipipe_sync_stage(unsigne
+ 				continue;
+ 			}
+ 
+-			if (--cpudata->irq_hits[irq] == 0) {
++			if (--cpudata->irq_pending_hits[irq] == 0) {
+ 				__clear_bit(rank,
+ 					    &cpudata->irq_pending_lo[level]);
+ 				ipipe_mark_irq_delivery(ipd,irq,cpuid);
+@@ -301,7 +302,7 @@ void fastcall __ipipe_sync_stage(unsigne
+ 				local_irq_disable_hw();
+ 			} else {
+ 				__clear_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+-				ipd->irqs[irq].handler(irq);
++				ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
+ 				__set_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+ 			}
+ 
+@@ -415,8 +416,9 @@ int fastcall __ipipe_send_ipi (unsigned 
+ 
+ int ipipe_virtualize_irq(struct ipipe_domain *ipd,
+ 			 unsigned irq,
+-			 void (*handler) (unsigned irq),
+-			 int (*acknowledge) (unsigned irq),
++			 ipipe_irq_handler_t handler,
++			 void *cookie,
++			 ipipe_irq_ackfn_t acknowledge,
+ 			 unsigned modemask)
+ {
+ 	unsigned long flags;
+@@ -434,6 +436,7 @@ int ipipe_virtualize_irq(struct ipipe_do
+ 
+ 		if (handler == IPIPE_SAME_HANDLER) {
+ 			handler = ipd->irqs[irq].handler;
++			cookie = ipd->irqs[irq].cookie;
+ 
+ 			if (handler == NULL) {
+ 				err = -EINVAL;
+@@ -473,6 +476,7 @@ int ipipe_virtualize_irq(struct ipipe_do
+ 	}
+ 
+ 	ipd->irqs[irq].handler = handler;
++	ipd->irqs[irq].cookie = cookie;
+ 	ipd->irqs[irq].acknowledge = acknowledge;
+ 	ipd->irqs[irq].control = modemask;
+ 
+diff -urp linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-root.c linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-root.c
+--- linux-2.6.14.2-ipipe-1.0-10/arch/i386/kernel/ipipe-root.c	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/arch/i386/kernel/ipipe-root.c	2005-12-29 18:59:12.000000000 +0100
+@@ -78,7 +78,7 @@ static int __ipipe_ack_common_irq(unsign
+ 
+ #ifdef CONFIG_X86_LOCAL_APIC
+ 
+-static void __ipipe_null_handler(unsigned irq)
++static void __ipipe_null_handler(unsigned irq, void *cookie)
+ {
+ 	/* Nop. */
+ }
+@@ -124,50 +124,58 @@ void __init __ipipe_enable_pipeline(void
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     LOCAL_TIMER_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_apic_timer_interrupt,
++			     (ipipe_irq_handler_t)&smp_apic_timer_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     SPURIOUS_APIC_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_spurious_interrupt,
++			     (ipipe_irq_handler_t)&smp_spurious_interrupt,
++			     NULL,
+ 			     &__ipipe_noack_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     ERROR_APIC_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_error_interrupt,
++			     (ipipe_irq_handler_t)&smp_error_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     IPIPE_SERVICE_VECTOR0 - FIRST_EXTERNAL_VECTOR,
+ 			     &__ipipe_null_handler,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     IPIPE_SERVICE_VECTOR1 - FIRST_EXTERNAL_VECTOR,
+ 			     &__ipipe_null_handler,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     IPIPE_SERVICE_VECTOR2 - FIRST_EXTERNAL_VECTOR,
+ 			     &__ipipe_null_handler,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     IPIPE_SERVICE_VECTOR3 - FIRST_EXTERNAL_VECTOR,
+ 			     &__ipipe_null_handler,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ #ifdef CONFIG_X86_MCE_P4THERMAL
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     THERMAL_APIC_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_thermal_interrupt,
++			     (ipipe_irq_handler_t)&smp_thermal_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ #endif /* CONFIG_X86_MCE_P4THERMAL */
+@@ -185,19 +193,22 @@ void __init __ipipe_enable_pipeline(void
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     RESCHEDULE_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_reschedule_interrupt,
++			     (ipipe_irq_handler_t)&smp_reschedule_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     INVALIDATE_TLB_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_invalidate_interrupt,
++			     (ipipe_irq_handler_t)&smp_invalidate_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+ 	ipipe_virtualize_irq(ipipe_root_domain,
+ 			     CALL_FUNCTION_VECTOR - FIRST_EXTERNAL_VECTOR,
+-			     (void (*)(unsigned))&smp_call_function_interrupt,
++			     (ipipe_irq_handler_t)&smp_call_function_interrupt,
++			     NULL,
+ 			     &__ipipe_ack_system_irq,
+ 			     IPIPE_STDROOT_MASK);
+ 
+@@ -224,7 +235,8 @@ void __init __ipipe_enable_pipeline(void
+ 		/* Fails for IPIPE_CRITICAL_IPI but that's ok. */
+ 		ipipe_virtualize_irq(ipipe_root_domain,
+ 				     irq,
+-				     (void (*)(unsigned))&do_IRQ,
++				     (ipipe_irq_handler_t)&do_IRQ,
++				     NULL,
+ 				     &__ipipe_ack_common_irq,
+ 				     IPIPE_STDROOT_MASK);
+ 	}
+@@ -530,6 +542,7 @@ int __ipipe_handle_irq(struct pt_regs re
+ 			   status flags before the PIC is unlocked. */
+ 
+ 			next_domain->cpudata[cpuid].irq_hits[irq]++;
++			next_domain->cpudata[cpuid].irq_pending_hits[irq]++;
+ 			__ipipe_set_irq_bit(next_domain, cpuid, irq);
+ 			ipipe_mark_irq_receipt(next_domain, irq, cpuid);
+ 
+@@ -563,11 +576,11 @@ int __ipipe_handle_irq(struct pt_regs re
+ 		__ipipe_tick_regs[cpuid].ebp = regs.ebp;
+ #endif	/* CONFIG_SMP && CONFIG_FRAME_POINTER */
+ 		if (__ipipe_pipeline_head_p(ipipe_root_domain) &&
+-		    ipipe_root_domain->cpudata[cpuid].irq_hits[irq] > 1)
++		    ipipe_root_domain->cpudata[cpuid].irq_pending_hits[irq] > 1)
+ 			/* Emulate a loss of clock ticks if Linux is
+ 			 * owning the time source. The drift will be
+ 			 * compensated by the timer support code.*/
+-			ipipe_root_domain->cpudata[cpuid].irq_hits[irq] = 1;
++			ipipe_root_domain->cpudata[cpuid].irq_pending_hits[irq] = 1;
+ 	}
+ 
+ 	/* Now walk the pipeline, yielding control to the highest
+diff -urp linux-2.6.14.2-ipipe-1.0-10/include/asm-i386/ipipe.h linux-2.6.14.2-ipipe-1.0-10-ext/include/asm-i386/ipipe.h
+--- linux-2.6.14.2-ipipe-1.0-10/include/asm-i386/ipipe.h	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/include/asm-i386/ipipe.h	2005-12-23 16:27:12.000000000 +0100
+@@ -173,7 +173,7 @@ int __ipipe_ack_system_irq(unsigned irq)
+ 
+ int __ipipe_handle_irq(struct pt_regs regs);
+ 
+-void __ipipe_do_critical_sync(unsigned irq);
++void __ipipe_do_critical_sync(unsigned irq, void *cookie);
+ 
+ extern struct pt_regs __ipipe_tick_regs[];
+ 
+diff -urp linux-2.6.14.2-ipipe-1.0-10/include/linux/ipipe.h linux-2.6.14.2-ipipe-1.0-10-ext/include/linux/ipipe.h
+--- linux-2.6.14.2-ipipe-1.0-10/include/linux/ipipe.h	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/include/linux/ipipe.h	2005-12-29 18:51:40.000000000 +0100
+@@ -39,7 +39,6 @@
+ 
+ #define IPIPE_RESET_TIMER	0x1
+ #define IPIPE_GRAB_TIMER	0x2
+-#define IPIPE_SAME_HANDLER	((void (*)(unsigned))(-1))
+ 
+ /* Global domain flags */
+ #define IPIPE_SPRINTK_FLAG	0	/* Synchronous printk() allowed */
+@@ -116,6 +115,13 @@
+ #define ipipe_virtual_irq_p(irq)	((irq) >= IPIPE_VIRQ_BASE && \
+ 					 (irq) < IPIPE_NR_IRQS)
+ 
++typedef void (*ipipe_irq_handler_t)(unsigned irq,
++				    void *cookie);
 +
-+                benchdev_no = atoi(optarg);
-+                break;
++typedef int (*ipipe_irq_ackfn_t)(unsigned irq);
 +
-+            case 't':
++#define IPIPE_SAME_HANDLER	((ipipe_irq_handler_t)(-1))
 +
-+                test_mode = RTBNCH_TIMER_HANDLER;
-+                break;
+ struct ipipe_domain {
+ 
+ 	struct list_head p_link;	/* Link in pipeline */
+@@ -124,14 +130,16 @@ struct ipipe_domain {
+ 		unsigned long status;
+ 		unsigned long irq_pending_hi;
+ 		unsigned long irq_pending_lo[IPIPE_IRQ_IWORDS];
++		unsigned long irq_pending_hits[IPIPE_NR_IRQS];
+ 		unsigned long irq_hits[IPIPE_NR_IRQS];
+-	} cpudata[IPIPE_NR_CPUS];
++	} ____cacheline_aligned_in_smp cpudata[IPIPE_NR_CPUS];
+ 
+ 	struct {
+-		int (*acknowledge) (unsigned irq);
+-		void (*handler) (unsigned irq);
+ 		unsigned long control;
+-	} irqs[IPIPE_NR_IRQS];
++		ipipe_irq_ackfn_t acknowledge;
++		ipipe_irq_handler_t handler;
++		void *cookie;
++	} ____cacheline_aligned irqs[IPIPE_NR_IRQS];
+ 
+ 	int (*evhand[IPIPE_NR_EVENTS])(unsigned event,
+ 				       struct ipipe_domain *from,
+@@ -148,7 +156,7 @@ struct ipipe_domain {
+ 			unsigned long long last_receipt_date;
+ 			unsigned long max_delivery_time;
+ 		} irq_stats[IPIPE_NR_IRQS];
+-	} stats[IPIPE_NR_CPUS];
++	} ____cacheline_aligned_in_smp stats[IPIPE_NR_CPUS];
+ #endif /* CONFIG_IPIPE_STATS */
+ 	unsigned long flags;
+ 	unsigned domid;
+@@ -168,6 +176,11 @@ struct ipipe_domain_attr {
+ 
+ /* The following macros must be used hw interrupts off. */
+ 
++#define __ipipe_irq_cookie(ipd,irq)	(ipd)->irqs[irq].cookie
++#define __ipipe_irq_handler(ipd,irq)	(ipd)->irqs[irq].handler
 +
-             default:
- 
-                 fprintf(stderr, "usage: latency [options]\n"
-@@ -387,7 +453,9 @@
-                         "  [-p <period_us>]             # sampling period\n"
-                         "  [-l <data-lines per header>] # default=21, 0 to supress headers\n"
-                         "  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
--                        "  [-q]                         # supresses RTD, RTH lines if -T is used\n");
-+                        "  [-q]                         # supresses RTD, RTH lines if -T is used\n"
-+                        "  [-D <benchmark_device_no>]   # use in-kernel benchmark of given device\n"
-+                        "  [-t]                         # run in-kernel timer handler test, default: task\n");
-                 exit(2);
-             }
- 
-@@ -397,6 +465,12 @@
-         quiet = 0;
-         }
- 
-+    if ((benchdev_no < 0) && (test_mode == RTBNCH_TIMER_HANDLER))
-+        {
-+        fprintf(stderr, "latency: -t only works if -D has been given.\n");
-+        exit(2);
-+        }
++#define __ipipe_cpudata_irq_hits(ipd,cpuid,irq)	(ipd)->cpudata[cpuid].irq_hits[irq]
 +
-     time(&test_start);
+ #define __ipipe_set_irq_bit(ipd,cpuid,irq) \
+ do { \
+ 	if (!test_bit(IPIPE_LOCK_FLAG,&(ipd)->irqs[irq].control)) { \
+@@ -194,7 +207,7 @@ do { \
+ 	int __cpuid, __nr_cpus = num_online_cpus(); \
+ 	if (test_and_clear_bit(IPIPE_LOCK_FLAG,&(ipd)->irqs[irq].control)) \
+ 		for (__cpuid = 0; __cpuid < __nr_cpus; __cpuid++) \
+-			if ((ipd)->cpudata[__cpuid].irq_hits[irq] > 0) { /* We need atomic ops next. */ \
++			if ((ipd)->cpudata[__cpuid].irq_pending_hits[irq] > 0) { /* We need atomic ops next. */ \
+ 				set_bit(irq & IPIPE_IRQ_IMASK,&(ipd)->cpudata[__cpuid].irq_pending_lo[irq >> IPIPE_IRQ_ISHIFT]); \
+ 				set_bit(irq >> IPIPE_IRQ_ISHIFT,&(ipd)->cpudata[__cpuid].irq_pending_hi); \
+ 			} \
+@@ -205,7 +218,7 @@ do { \
+ 	int __cpuid, __nr_cpus = num_online_cpus(); \
+ 	clear_bit(IPIPE_LOCK_FLAG,&(ipd)->irqs[irq].control); \
+ 	for (__cpuid = 0; __cpuid < __nr_cpus; __cpuid++) { \
+-		(ipd)->cpudata[__cpuid].irq_hits[irq] = 0; \
++		(ipd)->cpudata[__cpuid].irq_pending_hits[irq] = 0; \
+ 		__ipipe_clear_pend(ipd,__cpuid,irq); \
+ 	} \
+ } while(0)
+@@ -313,7 +326,7 @@ void __ipipe_add_domain_proc(struct ipip
  
-     histogram_avg = calloc(histogram_size, sizeof(long));
-@@ -420,38 +494,61 @@
+ void __ipipe_remove_domain_proc(struct ipipe_domain *ipd);
  
-     mlockall(MCL_CURRENT|MCL_FUTURE);
+-void __ipipe_flush_printk(unsigned irq);
++void __ipipe_flush_printk(unsigned irq, void *cookie);
  
--    err = rt_task_create(&display_task,"display",0,98,0);
-+    err = rt_timer_start(TM_ONESHOT);
+ void __ipipe_stall_root(void);
  
-     if (err)
-         {
--        fprintf(stderr,"latency: failed to create display task, code %d\n",err);
-+        fprintf(stderr,"latency: cannot start timer, code %d\n",err);
-         return 0;
-         }
+@@ -472,16 +485,18 @@ void ipipe_suspend_domain(void);
  
--    err = rt_task_start(&display_task,&display,NULL);
-+    if (benchdev_no >= 0) {
-+        char devname[RTDM_MAX_DEVNAME_LEN];
+ int ipipe_virtualize_irq(struct ipipe_domain *ipd,
+ 			 unsigned irq,
+-			 void (*handler) (unsigned irq),
+-			 int (*acknowledge) (unsigned irq),
++			 ipipe_irq_handler_t handler,
++			 void *cookie,
++			 ipipe_irq_ackfn_t acknowledge,
+ 			 unsigned modemask);
  
--    if (err)
--        {
--        fprintf(stderr,"latency: failed to start display task, code %d\n",err);
--        return 0;
--        }
-+        snprintf(devname, RTDM_MAX_DEVNAME_LEN, "rtbenchmark%d", benchdev_no);
-+        benchdev = rt_dev_open(devname, O_RDWR);
+ static inline int ipipe_share_irq(unsigned irq,
+-				  int (*acknowledge) (unsigned irq))
++				  ipipe_irq_ackfn_t acknowledge)
+ {
+ 	return ipipe_virtualize_irq(ipipe_current_domain,
+ 				    irq,
+ 				    IPIPE_SAME_HANDLER,
++				    NULL,
+ 				    acknowledge,
+ 				    IPIPE_SHARED_MASK | IPIPE_HANDLE_MASK |
+ 				    IPIPE_PASS_MASK);
+diff -urp linux-2.6.14.2-ipipe-1.0-10/kernel/ipipe/core.c linux-2.6.14.2-ipipe-1.0-10-ext/kernel/ipipe/core.c
+--- linux-2.6.14.2-ipipe-1.0-10/kernel/ipipe/core.c	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/kernel/ipipe/core.c	2005-12-29 12:59:35.000000000 +0100
+@@ -78,6 +78,7 @@ void ipipe_init(void)
  
--    err = rt_task_create(&latency_task,"sampling",0,99,T_FPU);
-+        if (benchdev)
-+            {
-+            fprintf(stderr,"latency: failed to open benchmark device, code %d\n",benchdev);
-+            return 0;
-+            }
-+    }
+ 	__ipipe_printk_virq = ipipe_alloc_virq();	/* Cannot fail here. */
+ 	ipd->irqs[__ipipe_printk_virq].handler = &__ipipe_flush_printk;
++	ipd->irqs[__ipipe_printk_virq].cookie = NULL;
+ 	ipd->irqs[__ipipe_printk_virq].acknowledge = NULL;
+ 	ipd->irqs[__ipipe_printk_virq].control = IPIPE_HANDLE_MASK;
  
-+    err = rt_task_create(&display_task,"display",0,98,0);
+@@ -97,8 +98,10 @@ void __ipipe_init_stage(struct ipipe_dom
+ 		for (n = 0; n < IPIPE_IRQ_IWORDS; n++)
+ 			ipd->cpudata[cpuid].irq_pending_lo[n] = 0;
+ 
+-		for (n = 0; n < IPIPE_NR_IRQS; n++)
++		for (n = 0; n < IPIPE_NR_IRQS; n++) {
++			ipd->cpudata[cpuid].irq_pending_hits[n] = 0;
+ 			ipd->cpudata[cpuid].irq_hits[n] = 0;
++		}
+ 	}
+ 
+ 	for (n = 0; n < IPIPE_NR_IRQS; n++) {
+@@ -115,6 +118,7 @@ void __ipipe_init_stage(struct ipipe_dom
+ #ifdef CONFIG_SMP
+ 	ipd->irqs[IPIPE_CRITICAL_IPI].acknowledge = &__ipipe_ack_system_irq;
+ 	ipd->irqs[IPIPE_CRITICAL_IPI].handler = &__ipipe_do_critical_sync;
++	ipd->irqs[IPIPE_CRITICAL_IPI].cookie = NULL;
+ 	/* Immediately handle in the current domain but *never* pass */
+ 	ipd->irqs[IPIPE_CRITICAL_IPI].control =
+ 		IPIPE_HANDLE_MASK|IPIPE_STICKY_MASK|IPIPE_SYSTEM_MASK;
+diff -urp linux-2.6.14.2-ipipe-1.0-10/kernel/ipipe/generic.c linux-2.6.14.2-ipipe-1.0-10-ext/kernel/ipipe/generic.c
+--- linux-2.6.14.2-ipipe-1.0-10/kernel/ipipe/generic.c	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/kernel/ipipe/generic.c	2005-12-29 17:44:35.000000000 +0100
+@@ -175,7 +175,7 @@ int ipipe_unregister_domain(struct ipipe
+ 
+ 		for (_cpuid = 0; _cpuid < nr_cpus; _cpuid++)
+ 			for (irq = 0; irq < IPIPE_NR_IRQS; irq++)
+-				while (ipd->cpudata[_cpuid].irq_hits[irq] > 0)
++				while (ipd->cpudata[_cpuid].irq_pending_hits[irq] > 0)
+ 					cpu_relax();
+ 	}
+ #endif	/* CONFIG_SMP */
+@@ -226,6 +226,7 @@ int fastcall __ipipe_schedule_irq(unsign
+ 
+ 		if (test_bit(IPIPE_HANDLE_FLAG, &ipd->irqs[irq].control)) {
+ 			ipd->cpudata[cpuid].irq_hits[irq]++;
++			ipd->cpudata[cpuid].irq_pending_hits[irq]++;
+ 			__ipipe_set_irq_bit(ipd, cpuid, irq);
+ 			ipipe_mark_irq_receipt(ipd, irq, cpuid);
+ 			ipipe_unlock_cpu(flags);
+diff -urp linux-2.6.14.2-ipipe-1.0-10/kernel/printk.c linux-2.6.14.2-ipipe-1.0-10-ext/kernel/printk.c
+--- linux-2.6.14.2-ipipe-1.0-10/kernel/printk.c	2005-12-22 14:15:17.000000000 +0100
++++ linux-2.6.14.2-ipipe-1.0-10-ext/kernel/printk.c	2005-12-23 16:30:57.000000000 +0100
+@@ -515,7 +515,7 @@ static int __ipipe_printk_fill;
+ 
+ static char __ipipe_printk_buf[__LOG_BUF_LEN];
+ 
+-void __ipipe_flush_printk (unsigned virq)
++void __ipipe_flush_printk (unsigned virq, void *cookie)
+ {
+ 	char *p = __ipipe_printk_buf;
+ 	int out = 0, len;
+
+
+
+
+
+------=_Part_356_5332618.1135883018608
+Content-Type: application/octet-stream; name=xenomai-2.1-i386-ext-2.patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="xenomai-2.1-i386-ext-2.patch"
+
+diff -urp xenomai-2.1-clean/include/asm-generic/hal.h xenomai-2.1-ext/include/asm-generic/hal.h
+--- xenomai-2.1-clean/include/asm-generic/hal.h	2005-11-21 21:52:35.000000000 +0100
++++ xenomai-2.1-ext/include/asm-generic/hal.h	2005-12-29 19:33:41.000000000 +0100
+@@ -86,6 +86,11 @@ typedef rwlock_t rthal_rwlock_t;
+ #endif /* RAW_RW_LOCK_UNLOCKED */
+ #endif /* IPIPE_RW_LOCK_UNLOCKED */
+ 
++#define rthal_irq_cookie(ipd,irq)	__ipipe_irq_cookie(ipd,irq)
++#define rthal_irq_handler(ipd,irq)	__ipipe_irq_handler(ipd,irq)
 +
-     if (err)
-         {
--        fprintf(stderr,"latency: failed to create latency task, code %d\n",err);
-+        fprintf(stderr,"latency: failed to create display task, code %d\n",err);
-         return 0;
-         }
- 
--    err = rt_task_start(&latency_task,&latency,NULL);
-+    err = rt_task_start(&display_task,&display,NULL);
- 
-     if (err)
-         {
--        fprintf(stderr,"latency: failed to start latency task, code %d\n",err);
-+        fprintf(stderr,"latency: failed to start display task, code %d\n",err);
-         return 0;
-         }
- 
-+    if (benchdev_no < 0) {
-+        err = rt_task_create(&latency_task,"sampling",0,99,T_FPU);
++#define rthal_cpudata_irq_hits(ipd,cpu,irq)	__ipipe_cpudata_irq_hits(ipd,cpu,irq)
 +
-+        if (err)
-+            {
-+            fprintf(stderr,"latency: failed to create latency task, code %d\n",err);
-+            return 0;
-+            }
-+
-+        err = rt_task_start(&latency_task,&latency,NULL);
-+
-+        if (err)
-+            {
-+            fprintf(stderr,"latency: failed to start latency task, code %d\n",err);
-+            return 0;
-+            }
-+    }
-+
-     pause();
+ #define rthal_local_irq_disable()	ipipe_stall_pipeline_from(&rthal_domain)
+ #define rthal_local_irq_enable()	ipipe_unstall_pipeline_from(&rthal_domain)
+ #define rthal_local_irq_save(x)		((x) = !!ipipe_test_and_stall_pipeline_from(&rthal_domain))
+@@ -118,7 +123,7 @@ typedef rwlock_t rthal_rwlock_t;
+ #define rthal_propagate_irq(irq)		ipipe_propagate_irq(irq)
+ #define rthal_set_irq_affinity(irq,aff)		ipipe_set_irq_affinity(irq,aff)
+ #define rthal_schedule_irq(irq)			ipipe_schedule_irq(irq)
+-#define rthal_virtualize_irq(dom,irq,isr,ackfn,mode) ipipe_virtualize_irq(dom,irq,isr,ackfn,mode)
++#define rthal_virtualize_irq(dom,irq,isr,cookie,ackfn,mode) ipipe_virtualize_irq(dom,irq,isr,cookie,ackfn,mode)
+ #define rthal_alloc_virq()			ipipe_alloc_virq()
+ #define rthal_free_virq(irq)			ipipe_free_virq(irq)
+ #define rthal_trigger_irq(irq)			ipipe_trigger_irq(irq)
+@@ -447,8 +452,8 @@ do {  \
  
+ #define rthal_printk	printk
+ 
+-typedef void (*rthal_irq_handler_t)(unsigned irq,
+-				    void *cookie);
++typedef ipipe_irq_handler_t rthal_irq_handler_t;
++typedef ipipe_irq_ackfn_t   rthal_irq_ackfn_t;
+ 
+ struct rthal_calibration_data {
+ 
+@@ -497,8 +502,8 @@ int rthal_init(void);
+ void rthal_exit(void);
+ 
+ int rthal_irq_request(unsigned irq,
+-		      void (*handler)(unsigned irq, void *cookie),
+-		      int (*ackfn)(unsigned irq),
++		      rthal_irq_handler_t handler,
++		      rthal_irq_ackfn_t ackfn,
+ 		      void *cookie);
+ 
+ int rthal_irq_release(unsigned irq);
+diff -urp xenomai-2.1-clean/include/asm-generic/system.h xenomai-2.1-ext/include/asm-generic/system.h
+--- xenomai-2.1-clean/include/asm-generic/system.h	2005-11-21 21:52:35.000000000 +0100
++++ xenomai-2.1-ext/include/asm-generic/system.h	2005-12-29 19:34:32.000000000 +0100
+@@ -349,7 +349,8 @@ static inline int xnarch_hook_ipi (void 
+ {
+     return rthal_virtualize_irq(&rthal_domain,
+ 				RTHAL_SERVICE_IPI0,
+-				(void (*)(unsigned)) handler,
++				(rthal_irq_handler_t) handler,
++				NULL,
+ 				NULL,
+ 				IPIPE_HANDLE_MASK);
+ }
+@@ -361,6 +362,7 @@ static inline int xnarch_release_ipi (vo
+ 				RTHAL_SERVICE_IPI0,
+ 				NULL,
+ 				NULL,
++				NULL,
+ 				IPIPE_PASS_MASK);
+ }
+ 
+@@ -387,7 +389,8 @@ static inline void xnarch_notify_halt(vo
+ 
+     rthal_virtualize_irq(rthal_current_domain,
+ 			 RTHAL_SERVICE_IPI2,
+-			 xnarch_finalize_cpu,
++			 (rthal_irq_handler_t)xnarch_finalize_cpu,
++			 NULL,
+ 			 NULL,
+ 			 IPIPE_HANDLE_MASK);
+ 
+@@ -403,6 +406,7 @@ static inline void xnarch_notify_halt(vo
+ 			 RTHAL_SERVICE_IPI2,
+ 			 NULL,
+ 			 NULL,
++			 NULL,
+ 			 IPIPE_PASS_MASK);
+ 
+     rthal_release_control();
+@@ -481,9 +485,8 @@ static inline unsigned long long xnarch_
+ #ifdef XENO_INTR_MODULE
+ 
+ static inline int xnarch_hook_irq (unsigned irq,
+-				   void (*handler)(unsigned irq,
+-						   void *cookie),
+-				   int (*ackfn)(unsigned irq),
++				   rthal_irq_handler_t handler,
++				   rthal_irq_ackfn_t ackfn,
+ 				   void *cookie)
+ {
+     return rthal_irq_request(irq,handler,ackfn,cookie);
+diff -urp xenomai-2.1-clean/include/asm-i386/system.h xenomai-2.1-ext/include/asm-i386/system.h
+--- xenomai-2.1-clean/include/asm-i386/system.h	2005-11-21 21:52:39.000000000 +0100
++++ xenomai-2.1-ext/include/asm-i386/system.h	2005-12-29 19:04:07.000000000 +0100
+@@ -542,7 +542,7 @@ static inline void xnarch_init_shadow_tc
+     tcb->fpup = &task->thread.i387;
+ }
+ 
+-static inline void xnarch_grab_xirqs (void (*handler)(unsigned irq))
++static inline void xnarch_grab_xirqs (rthal_irq_handler_t handler)
+ 
+ {
+     unsigned irq;
+@@ -551,6 +551,7 @@ static inline void xnarch_grab_xirqs (vo
+         rthal_virtualize_irq(rthal_current_domain,
+ 			     irq,
+                              handler,
++			     NULL,
+                              NULL,
+                              IPIPE_DYNAMIC_MASK);
+ }
+@@ -726,7 +727,8 @@ static inline int xnarch_init (void)
+ 
+     rthal_virtualize_irq(&rthal_domain,
+ 			 xnarch_escalation_virq,
+-			 (void (*)(unsigned))&xnpod_schedule_handler,
++			 (rthal_irq_handler_t)&xnpod_schedule_handler,
++			 NULL,
+ 			 NULL,
+ 			 IPIPE_HANDLE_MASK);
+ 
+diff -urp xenomai-2.1-clean/include/rtdm/rtdm_driver.h xenomai-2.1-ext/include/rtdm/rtdm_driver.h
+--- xenomai-2.1-clean/include/rtdm/rtdm_driver.h	2005-11-21 21:52:39.000000000 +0100
++++ xenomai-2.1-ext/include/rtdm/rtdm_driver.h	2005-12-29 19:05:28.000000000 +0100
+@@ -793,7 +793,7 @@ static inline int rtdm_nrtsig_init(rtdm_
+     if (*nrt_sig == 0)
+         return -EAGAIN;
+ 
+-    rthal_virtualize_irq(rthal_root_domain, *nrt_sig, handler, NULL,
++    rthal_virtualize_irq(rthal_root_domain, *nrt_sig, (rthal_irq_handler_t)handler, NULL, NULL,
+                          IPIPE_HANDLE_MASK);
      return 0;
-Index: src/testsuite/latency/Makefile.am
-===================================================================
---- src/testsuite/latency/Makefile.am	(Revision 288)
-+++ src/testsuite/latency/Makefile.am	(Arbeitskopie)
-@@ -10,6 +10,7 @@
+ }
+diff -urp xenomai-2.1-clean/ksrc/arch/generic/hal.c xenomai-2.1-ext/ksrc/arch/generic/hal.c
+--- xenomai-2.1-clean/ksrc/arch/generic/hal.c	2005-11-21 21:53:09.000000000 +0100
++++ xenomai-2.1-ext/ksrc/arch/generic/hal.c	2005-12-29 19:47:03.000000000 +0100
+@@ -57,14 +57,6 @@ module_param_named(timerfreq,rthal_timer
  
- latency_LDADD = \
- 	../../skins/native/libnative.la \
-+	../../skins/rtdm/librtdm.la \
- 	-lpthread -lm
+ static struct {
  
- install-data-local:
-Index: ksrc/drivers/Kconfig
-===================================================================
---- ksrc/drivers/Kconfig	(Revision 288)
-+++ ksrc/drivers/Kconfig	(Arbeitskopie)
-@@ -1 +1,2 @@
- source "drivers/xenomai/16550A/Kconfig"
-+source "drivers/xenomai/benchmark/Kconfig"
-Index: ksrc/drivers/Config.in
-===================================================================
---- ksrc/drivers/Config.in	(Revision 288)
-+++ ksrc/drivers/Config.in	(Arbeitskopie)
-@@ -8,5 +8,6 @@
- mainmenu_option next_comment
- comment 'Real-time drivers'
- 	source drivers/xenomai/16550A/Config.in
-+	source drivers/xenomai/benchmark/Config.in
- endmenu
- fi
-Index: ksrc/drivers/benchmark/Kconfig
-===================================================================
---- ksrc/drivers/benchmark/Kconfig	(Revision 0)
-+++ ksrc/drivers/benchmark/Kconfig	(Revision 0)
-@@ -0,0 +1,7 @@
-+config XENO_DRIVERS_TIMERBENCH
-+	depends on XENO_SKIN_RTDM
-+	tristate "Timer benchmark driver"
-+	default n
-+	help
-+	Kernel-based benchmark driver for timer latency evaluation.
-+	See testsuite/latency for a possible front-end.
-Index: ksrc/drivers/benchmark/timerbench.c
-===================================================================
---- ksrc/drivers/benchmark/timerbench.c	(Revision 0)
-+++ ksrc/drivers/benchmark/timerbench.c	(Revision 0)
-@@ -0,0 +1,498 @@
-+/*
-+ * Copyright (C) 2005 Jan Kiszka <jan.kiszka@domain.hid>.
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software Foundation,
-+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ */
-+
-+#include <linux/module.h>
-+#include <asm/semaphore.h>
-+
-+#include <xenomai/rtdm/rtbenchmark.h>
-+#include <xenomai/rtdm/rtdm_driver.h>
-+
-+struct rt_tmbench_context {
-+    int                         mode;
-+    unsigned long               period;
-+    int                         warmup_loops;
-+    int                         samples_per_sec;
-+    long                        *histogram_min;
-+    long                        *histogram_max;
-+    long                        *histogram_avg;
-+    int                         histogram_size;
-+    int                         bucketsize;
-+
-+    rtdm_task_t                 timer_task;
-+
-+    xntimer_t                   timer;
-+    int                         warmup;
-+    uint64_t                    start_time;
-+    uint64_t                    date;
-+    struct rtbnch_result        curr;
-+
-+    rtdm_event_t                result_event;
-+    struct rtbnch_interm_result result;
-+
-+    struct semaphore            nrt_mutex;
-+};
-+
-+static unsigned int start_index;
-+
-+module_param(start_index, uint, 0400);
-+MODULE_PARM_DESC(start_index, "First device instance number to be used");
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("jan.kiszka@domain.hid");
-+
-+
-+static inline void add_histogram(struct rt_tmbench_context *ctx,
-+                                 long *histogram, long addval)
-+{
-+    /* bucketsize steps */
-+    long inabs = (addval >= 0 ? addval : -addval) / ctx->bucketsize;
-+    histogram[inabs < ctx->histogram_size ? inabs : ctx->histogram_size-1]++;
-+}
-+
-+
-+void eval_inner_loop(struct rt_tmbench_context *ctx, long dt)
-+{
-+    if (ctx->date <= ctx->start_time)
-+        ctx->curr.overruns++;
-+
-+    if (dt > ctx->curr.max)
-+        ctx->curr.max = dt;
-+    if (dt < ctx->curr.min)
-+        ctx->curr.min = dt;
-+    ctx->curr.avg += dt;
-+
-+    ctx->date += ctx->period;
-+
-+    if (!ctx->warmup && ctx->histogram_size)
-+        add_histogram(ctx, ctx->histogram_avg, dt);
-+}
-+
-+
-+void eval_outer_loop(struct rt_tmbench_context *ctx)
-+{
-+    if (!ctx->warmup) {
-+        if (ctx->histogram_size) {
-+            add_histogram(ctx, ctx->histogram_max, ctx->curr.max);
-+            add_histogram(ctx, ctx->histogram_min, ctx->curr.min);
-+        }
-+
-+        ctx->result.last.min = ctx->curr.min;
-+        if (ctx->curr.min < ctx->result.overall.min)
-+            ctx->result.overall.min = ctx->curr.min;
-+
-+        ctx->result.last.max = ctx->curr.max;
-+        if (ctx->curr.max > ctx->result.overall.max)
-+            ctx->result.overall.max = ctx->curr.max;
-+
-+        ctx->result.last.avg = ctx->curr.avg / ctx->samples_per_sec;
-+        ctx->result.overall.avg      += ctx->result.last.avg;
-+        ctx->result.overall.overruns += ctx->curr.overruns;
-+        rtdm_event_pulse(&ctx->result_event);
-+    }
-+
-+    if (ctx->warmup &&
-+        (ctx->result.overall.test_loops == ctx->warmup_loops)) {
-+        ctx->result.overall.test_loops = 0;
-+        ctx->warmup = 0;
-+    }
-+
-+    ctx->curr.min        = 10000000;
-+    ctx->curr.max        = -10000000;
-+    ctx->curr.avg        = 0;
-+    ctx->curr.overruns   = 0;
-+
-+    ctx->result.overall.test_loops++;
-+}
-+
-+
-+void timer_task_proc(void *arg)
-+{
-+    struct rt_tmbench_context   *ctx = (struct rt_tmbench_context *)arg;
-+    int                         count;
-+
-+
-+    /* start time: one millisecond from now. */
-+    ctx->date = rtdm_clock_read() + 1000000;
-+
-+    while (1) {
-+        int err;
-+
-+
-+        for (count = 0; count < ctx->samples_per_sec; count++) {
-+            RTDM_EXECUTE_ATOMICALLY(
-+                ctx->start_time = rtdm_clock_read();
-+                err = rtdm_task_sleep_until(ctx->date);
-+            );
-+
-+            if (err)
-+                return;
-+
-+            eval_inner_loop(ctx, (long)(rtdm_clock_read() - ctx->date));
-+        }
-+        eval_outer_loop(ctx);
-+    }
-+}
-+
-+
-+void timer_proc(void *arg)
-+{
-+    struct rt_tmbench_context   *ctx = (struct rt_tmbench_context *)arg;
-+
-+
-+    eval_inner_loop(ctx, (long)(rtdm_clock_read() - ctx->date));
-+
-+    ctx->start_time = rtdm_clock_read();
-+    /* FIXME: convert to RTDM timers */
-+    xntimer_start(&ctx->timer, xnpod_ns2ticks(ctx->date-ctx->start_time),
-+                  XN_INFINITE);
-+
-+    if (++ctx->curr.test_loops < ctx->samples_per_sec)
-+        return;
-+
-+    ctx->curr.test_loops = 0;
-+    eval_outer_loop(ctx);
-+}
-+
-+
-+int rt_tmbench_open(struct rtdm_dev_context *context,
-+                    rtdm_user_info_t *user_info, int oflags)
-+{
-+    struct rt_tmbench_context   *ctx;
-+
-+
-+    ctx = (struct rt_tmbench_context *)context->dev_private;
-+
-+    ctx->mode = -1;
-+    init_MUTEX(&ctx->nrt_mutex);
-+
-+    return 0;
-+}
-+
-+
-+int rt_tmbench_close(struct rtdm_dev_context *context,
-+                     rtdm_user_info_t *user_info)
-+{
-+    struct rt_tmbench_context   *ctx;
-+
-+
-+    ctx = (struct rt_tmbench_context *)context->dev_private;
-+
-+    down(&ctx->nrt_mutex);
-+
-+    if (ctx->mode >= 0) {
-+        if (ctx->mode == RTBNCH_TIMER_TASK)
-+            rtdm_task_destroy(&ctx->timer_task);
-+        else
-+            /* FIXME: convert to RTDM timers */
-+            xntimer_destroy(&ctx->timer);
-+
-+        rtdm_event_destroy(&ctx->result_event);
-+
-+        if (ctx->histogram_size)
-+            kfree(ctx->histogram_min);
-+
-+        ctx->mode           = -1;
-+        ctx->histogram_size = 0;
-+    }
-+
-+    up(&ctx->nrt_mutex);
-+
-+    return 0;
-+}
-+
-+
-+int rt_tmbench_ioctl_nrt(struct rtdm_dev_context *context,
-+                         rtdm_user_info_t *user_info, int request, void *arg)
-+{
-+    struct rt_tmbench_context   *ctx;
-+    int                         ret = 0;
-+
-+
-+    ctx = (struct rt_tmbench_context *)context->dev_private;
-+
-+    switch (request) {
-+        case RTBNCH_RTIOC_START_TMTEST: {
-+            struct rtbnch_timerconfig   config_buf;
-+            struct rtbnch_timerconfig   *config;
-+
-+
-+            config = (struct rtbnch_timerconfig *)arg;
-+            if (user_info) {
-+                if (!rtdm_read_user_ok(user_info, arg,
-+                                       sizeof(struct rtbnch_timerconfig)) ||
-+                    rtdm_copy_from_user(user_info, &config_buf, arg,
-+                                        sizeof(struct rtbnch_timerconfig)))
-+                    return -EFAULT;
-+
-+                config = &config_buf;
-+            }
-+
-+            down(&ctx->nrt_mutex);
-+
-+            ctx->period          = config->period;
-+            ctx->warmup_loops    = config->warmup_loops;
-+            ctx->samples_per_sec = 1000000000 / ctx->period;
-+            ctx->histogram_size  = config->histogram_size;
-+
-+            if (ctx->histogram_size > 0) {
-+                ctx->histogram_min =
-+                    kmalloc(3 * ctx->histogram_size * sizeof(long),
-+                            GFP_KERNEL);
-+                ctx->histogram_max =
-+                    ctx->histogram_min + config->histogram_size;
-+                ctx->histogram_avg =
-+                    ctx->histogram_max + config->histogram_size;
-+
-+                if (!ctx->histogram_min) {
-+                    up(&ctx->nrt_mutex);
-+                    return -ENOMEM;
-+                }
-+
-+                memset(ctx->histogram_min, 0,
-+                       3 * ctx->histogram_size * sizeof(long));
-+                ctx->bucketsize = config->histogram_bucketsize;
-+            }
-+
-+            ctx->result.overall.min        = 10000000;
-+            ctx->result.overall.max        = -10000000;
-+            ctx->result.overall.avg        = 0;
-+            ctx->result.overall.test_loops = 1;
-+            ctx->result.overall.overruns   = 0;
-+
-+            ctx->warmup = 1;
-+
-+            ctx->curr.min        = 10000000;
-+            ctx->curr.max        = -10000000;
-+            ctx->curr.avg        = 0;
-+            ctx->curr.overruns   = 0;
-+
-+            rtdm_event_init(&ctx->result_event, 0);
-+
-+            if (config->mode == RTBNCH_TIMER_TASK) {
-+                if (!test_bit(RTDM_CLOSING, &context->context_flags)) {
-+                    ctx->mode = RTBNCH_TIMER_TASK;
-+                    ret = rtdm_task_init(&ctx->timer_task, "timerbench",
-+                                         timer_task_proc, ctx,
-+                                         RTDM_TASK_HIGHEST_PRIORITY, 0);
-+                }
-+            } else {
-+                /* FIXME: convert to RTDM timers */
-+                xntimer_init(&ctx->timer, timer_proc, ctx);
-+
-+                ctx->curr.test_loops = 0;
-+
-+                if (!test_bit(RTDM_CLOSING, &context->context_flags)) {
-+                    ctx->mode = RTBNCH_TIMER_HANDLER;
-+                    RTDM_EXECUTE_ATOMICALLY(
-+                        /* start time: one millisecond from now. */
-+                        ctx->start_time = rtdm_clock_read() + 1000000;
-+                        ctx->date       = ctx->start_time + ctx->period;
-+
-+                        /* FIXME: convert to RTDM timers */
-+                        xntimer_start(&ctx->timer,
-+                                xnpod_ns2ticks(ctx->date-rtdm_clock_read()),
-+                                XN_INFINITE);
-+                    );
-+                }
-+            }
-+
-+            up(&ctx->nrt_mutex);
-+
-+            break;
-+        }
-+
-+        case RTBNCH_RTIOC_STOP_TMTEST: {
-+            struct rtbnch_overall_result *usr_res;
-+
-+
-+            usr_res = (struct rtbnch_overall_result *)arg;
-+
-+            down(&ctx->nrt_mutex);
-+
-+            if (ctx->mode < 0) {
-+                up(&ctx->nrt_mutex);
-+                return -EINVAL;
-+            }
-+
-+            if (ctx->mode == RTBNCH_TIMER_TASK)
-+                rtdm_task_destroy(&ctx->timer_task);
-+            else
-+                /* FIXME: convert to RTDM timers */
-+                xntimer_destroy(&ctx->timer);
-+
-+            rtdm_event_destroy(&ctx->result_event);
-+
-+            ctx->mode = -1;
-+
-+            ctx->result.overall.avg /=
-+                    ((ctx->result.overall.test_loops) > 1 ?
-+                     ctx->result.overall.test_loops : 2) - 1;
-+
-+            if (user_info) {
-+                if (!rtdm_rw_user_ok(user_info, usr_res,
-+                                     sizeof(struct rtbnch_overall_result)) ||
-+                    rtdm_copy_to_user(user_info, &usr_res->result,
-+                                      &ctx->result.overall,
-+                                      sizeof(struct rtbnch_result)))
-+                    ret = -EFAULT;
-+            } else {
-+                memcpy(&usr_res->result, &ctx->result.overall,
-+                       sizeof(struct rtbnch_result));
-+            }
-+
-+            if (ctx->histogram_size) {
-+                int size = ctx->histogram_size * sizeof(long);
-+
-+                if (user_info) {
-+                    if (!rtdm_rw_user_ok(user_info, usr_res->histogram_min,
-+                                         size) ||
-+                        rtdm_copy_to_user(user_info, usr_res->histogram_min,
-+                                          ctx->histogram_min, size) ||
-+                        !rtdm_rw_user_ok(user_info, usr_res->histogram_max,
-+                                         size) ||
-+                        rtdm_copy_to_user(user_info, usr_res->histogram_max,
-+                                          ctx->histogram_max, size) ||
-+                        !rtdm_rw_user_ok(user_info, usr_res->histogram_avg,
-+                                         size) ||
-+                        rtdm_copy_to_user(user_info, usr_res->histogram_avg,
-+                                          ctx->histogram_avg, size))
-+                        ret = -EFAULT;
-+                } else {
-+                    memcpy(usr_res->histogram_min, ctx->histogram_min, size);
-+                    memcpy(usr_res->histogram_max, ctx->histogram_max, size);
-+                    memcpy(usr_res->histogram_avg, ctx->histogram_avg, size);
-+                }
-+
-+                kfree(ctx->histogram_min);
-+            }
-+
-+            up(&ctx->nrt_mutex);
-+
-+            break;
-+        }
-+
-+        case RTBNCH_RTIOC_INTERM_RESULT:
-+            ret = -ENOSYS;
-+            break;
-+
-+        default:
-+            ret = -ENOTTY;
-+    }
-+
-+    return ret;
-+}
-+
-+
-+int rt_tmbench_ioctl_rt(struct rtdm_dev_context *context,
-+                        rtdm_user_info_t *user_info, int request, void *arg)
-+{
-+    struct rt_tmbench_context   *ctx;
-+    int                         ret = 0;
-+
-+
-+    ctx = (struct rt_tmbench_context *)context->dev_private;
-+
-+    switch (request) {
-+        case RTBNCH_RTIOC_INTERM_RESULT: {
-+            struct rtbnch_interm_result *usr_res;
-+
-+
-+            usr_res = (struct rtbnch_interm_result *)arg;
-+
-+            ret = rtdm_event_wait(&ctx->result_event);
-+            if (ret < 0)
-+                return ret;
-+
-+            if (user_info) {
-+                if (!rtdm_rw_user_ok(user_info, usr_res,
-+                                     sizeof(struct rtbnch_interm_result)) ||
-+                    rtdm_copy_to_user(user_info, usr_res, &ctx->result,
-+                                      sizeof(struct rtbnch_interm_result)))
-+                    ret = -EFAULT;
-+            } else
-+                memcpy(usr_res, &ctx->result,
-+                       sizeof(struct rtbnch_interm_result));
-+
-+            break;
-+        }
-+
-+        case RTBNCH_RTIOC_START_TMTEST:
-+        case RTBNCH_RTIOC_STOP_TMTEST:
-+            ret = -ENOSYS;
-+            break;
-+
-+        default:
-+            ret = -ENOTTY;
-+    }
-+
-+    return ret;
-+}
-+
-+
-+static struct rtdm_device device = {
-+    struct_version:     RTDM_DEVICE_STRUCT_VER,
-+
-+    device_flags:       RTDM_NAMED_DEVICE | RTDM_EXCLUSIVE,
-+    context_size:       sizeof(struct rt_tmbench_context),
-+    device_name:        "",
-+
-+    open_rt:            NULL,
-+    open_nrt:           rt_tmbench_open,
-+
-+    ops: {
-+        close_rt:       NULL,
-+        close_nrt:      rt_tmbench_close,
-+
-+        ioctl_rt:       rt_tmbench_ioctl_rt,
-+        ioctl_nrt:      rt_tmbench_ioctl_nrt,
-+
-+        read_rt:        NULL,
-+        read_nrt:       NULL,
-+
-+        write_rt:       NULL,
-+        write_nrt:      NULL,
-+
-+        recvmsg_rt:     NULL,
-+        recvmsg_nrt:    NULL,
-+
-+        sendmsg_rt:     NULL,
-+        sendmsg_nrt:    NULL,
-+    },
-+
-+    device_class:       RTDM_CLASS_BENCHMARK,
-+    device_sub_class:   RTDM_SUBCLASS_TIMER,
-+    driver_name:        "xeno_timerbench",
-+    driver_version:     RTDM_DRIVER_VER(0, 1, 0),
-+    peripheral_name:    "Timer Latency Benchmark",
-+    provider_name:      "Jan Kiszka",
-+    proc_name:          device.device_name,
-+};
-+
-+int __init init_module(void)
-+{
-+    snprintf(device.device_name, RTDM_MAX_DEVNAME_LEN, "rtbenchmark%d",
-+             start_index);
-+
-+    return rtdm_dev_register(&device);
-+}
-+
-+
-+void cleanup_module(void)
-+{
-+    rtdm_dev_unregister(&device, 1000);
-+}
-Index: ksrc/drivers/benchmark/Config.in
-===================================================================
---- ksrc/drivers/benchmark/Config.in	(Revision 0)
-+++ ksrc/drivers/benchmark/Config.in	(Revision 0)
-@@ -0,0 +1,5 @@
-+#
-+# Xenomai configuration for Linux v2.4
-+#
-+
-+dep_tristate 'Timer benchmark driver' CONFIG_XENO_DRIVERS_TIMERBENCH $CONFIG_XENO_SKIN_RTDM
-Index: ksrc/drivers/benchmark/Makefile
-===================================================================
---- ksrc/drivers/benchmark/Makefile	(Revision 0)
-+++ ksrc/drivers/benchmark/Makefile	(Revision 0)
-@@ -0,0 +1,30 @@
-+ifeq ($(PATCHLEVEL),6)
-+
-+# Makefile frag for Linux v2.6
-+
-+obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) += xeno_timerbench.o
-+
-+xeno_timerbench-y := timerbench.o
-+
-+else
-+
-+# Makefile frag for Linux v2.4
-+
-+O_TARGET := built-in.o
-+
-+obj-$(CONFIG_XENO_DRIVERS_TIMERBENCH) := xeno_timerbench.o
-+
-+list-multi := xeno_timerbench.o
-+
-+xeno_timerbench-objs := timerbench.o
-+
-+export-objs := $(xeno_timerbench-objs)
-+
-+EXTRA_CFLAGS += -I$(TOPDIR)/include/xenomai/compat
-+
-+include $(TOPDIR)/Rules.make
-+
-+xeno_timerbench.o: $(xeno_timerbench-objs)
-+	$(LD) -r -o $@ $(xeno_timerbench-objs)
-+
-+endif
-Index: ksrc/drivers/Makefile
-===================================================================
---- ksrc/drivers/Makefile	(Revision 288)
-+++ ksrc/drivers/Makefile	(Arbeitskopie)
-@@ -2,7 +2,7 @@
+-    void (*handler)(unsigned irq, void *cookie);
+-    void *cookie;
+-    unsigned long hits[RTHAL_NR_CPUS];
+-
+-} rthal_realtime_irq[IPIPE_NR_IRQS];
+-
+-static struct {
+-
+     unsigned long flags;
+     int count;
  
- # Makefile frag for Linux v2.6
+@@ -123,13 +115,6 @@ void rthal_critical_exit (unsigned long 
+     rthal_release_superlock(flags);
+ }
  
--obj-$(CONFIG_XENOMAI) += 16550A/
-+obj-$(CONFIG_XENOMAI) += 16550A/ benchmark/
+-static void rthal_irq_trampoline (unsigned irq)
+-
+-{
+-    rthal_realtime_irq[irq].hits[rthal_processor_id()]++;
+-    rthal_realtime_irq[irq].handler(irq,rthal_realtime_irq[irq].cookie);
+-}
+-
+ /**
+  * @fn int rthal_irq_request(unsigned irq, void (*handler)(unsigned irq, void *cookie), int (*ackfn)(unsigned irq), void *cookie)
+  *
+@@ -179,8 +164,8 @@ static void rthal_irq_trampoline (unsign
+  */
  
- else
+ int rthal_irq_request (unsigned irq,
+-		       void (*handler)(unsigned irq, void *cookie),
+-		       int (*ackfn)(unsigned irq),
++		       rthal_irq_handler_t handler,
++		       rthal_irq_ackfn_t ackfn,
+ 		       void *cookie)
+ {
+     unsigned long flags;
+@@ -191,7 +176,7 @@ int rthal_irq_request (unsigned irq,
  
-@@ -10,6 +10,8 @@
+     flags = rthal_critical_enter(NULL);
  
- subdir-$(CONFIG_XENO_DRIVERS_16550A) += 16550A
+-    if (rthal_realtime_irq[irq].handler != NULL)
++    if (rthal_irq_handler(&rthal_domain, irq) != NULL)
+ 	{
+ 	err = -EBUSY;
+ 	goto unlock_and_exit;
+@@ -199,14 +184,10 @@ int rthal_irq_request (unsigned irq,
  
-+subdir-$(CONFIG_XENO_DRIVERS_benchmark) += benchmark
+     err = rthal_virtualize_irq(&rthal_domain,
+ 			       irq,
+-			       &rthal_irq_trampoline,
++			       handler,
++			       cookie,
+ 			       ackfn,
+ 			       IPIPE_DYNAMIC_MASK);
+-    if (!err)
+-	{
+-	rthal_realtime_irq[irq].handler = handler;
+-	rthal_realtime_irq[irq].cookie = cookie;
+-	}
+ 
+  unlock_and_exit:
+ 
+@@ -253,9 +234,8 @@ int rthal_irq_release (unsigned irq)
+ 			       irq,
+ 			       NULL,
+ 			       NULL,
++			       NULL,
+ 			       IPIPE_PASS_MASK);
+-    if (!err)
+-        xchg(&rthal_realtime_irq[irq].handler,NULL);
+ 
+     return err;
+ }
+@@ -580,8 +560,7 @@ rthal_trap_handler_t rthal_trap_catch (r
+     return (rthal_trap_handler_t)xchg(&rthal_trap_handler,handler);
+ }
+ 
+-static void rthal_apc_handler (unsigned virq)
+-
++static void rthal_apc_handler (unsigned virq, void *arg)
+ {
+     void (*handler)(void *), *cookie;
+     rthal_declare_cpuid;
+@@ -650,7 +629,7 @@ static int rthal_apc_thread (void *data)
+     return 0;
+ }
+ 
+-void rthal_apc_kicker (unsigned virq)
++void rthal_apc_kicker (unsigned virq, void *cookie)
+ 
+ {
+     wake_up_process(rthal_apc_servers[smp_processor_id()]);
+@@ -877,13 +856,13 @@ static int irq_read_proc (char *page,
+ 
+     for (irq = 0; irq < IPIPE_NR_IRQS; irq++) {
+ 
+-	if (rthal_realtime_irq[irq].handler == NULL)
++	if (rthal_irq_handler(&rthal_domain, irq) == NULL)
+ 	    continue;
+ 
+ 	p += sprintf(p,"\n%3d:",irq);
+ 
+ 	for_each_online_cpu(cpu) {
+-	    p += sprintf(p,"%12lu",rthal_realtime_irq[irq].hits[cpu]);
++	    p += sprintf(p,"%12lu",rthal_cpudata_irq_hits(&rthal_domain,cpu,irq));
+ 	}
+     }
+ 
+@@ -1092,7 +1071,9 @@ int rthal_init (void)
+ 			       rthal_apc_virq,
+ 			       &rthal_apc_trampoline,
+ 			       NULL,
++			       NULL,
+ 			       IPIPE_HANDLE_MASK);
 +
- include $(TOPDIR)/Rules.make
+     if (err)
+     {
+         printk(KERN_ERR "Xenomai: Failed to virtualize IRQ.\n");
+@@ -1145,7 +1126,7 @@ out_kthread_stop:
+       }
+     }
+ #endif /* CONFIG_PREEMPT_RT */
+-    rthal_virtualize_irq(rthal_current_domain,rthal_apc_virq,NULL,NULL,0);
++    rthal_virtualize_irq(rthal_current_domain,rthal_apc_virq,NULL,NULL,NULL,0);
+    
+ out_free_irq:
+     rthal_free_virq(rthal_apc_virq);
+@@ -1172,7 +1153,7 @@ void rthal_exit (void)
  
- endif
+     if (rthal_apc_virq)
+ 	{
+-	rthal_virtualize_irq(rthal_current_domain,rthal_apc_virq,NULL,NULL,0);
++	rthal_virtualize_irq(rthal_current_domain,rthal_apc_virq,NULL,NULL,NULL,0);
+ 	rthal_free_virq(rthal_apc_virq);
+ #ifdef CONFIG_PREEMPT_RT
+ 	{
+diff -urp xenomai-2.1-clean/ksrc/skins/rtai/intr.c xenomai-2.1-ext/ksrc/skins/rtai/intr.c
+--- xenomai-2.1-clean/ksrc/skins/rtai/intr.c	2005-11-21 21:52:58.000000000 +0100
++++ xenomai-2.1-ext/ksrc/skins/rtai/intr.c	2005-12-22 13:38:34.000000000 +0100
+@@ -24,7 +24,7 @@ int rt_request_irq (unsigned irq,
+ 		    void (*handler)(unsigned irq, void *cookie),
+ 		    void *cookie)
+ {
+-    return rthal_irq_request(irq,handler,NULL,cookie);
++    return xnarch_hook_irq(irq,handler,NULL,cookie);
+ }
+ 
+ int rt_release_irq (unsigned irq)
+diff -urp xenomai-2.1-clean/sim/include/asm-mvm/system.h xenomai-2.1-ext/sim/include/asm-mvm/system.h
+--- xenomai-2.1-clean/sim/include/asm-mvm/system.h	2005-11-21 21:52:48.000000000 +0100
++++ xenomai-2.1-ext/sim/include/asm-mvm/system.h	2005-12-29 19:36:57.000000000 +0100
+@@ -365,9 +365,8 @@ void mvm_tcl_build_pendq(mvm_tcl_listobj
+ #ifdef XENO_INTR_MODULE
+ 
+ static inline int xnarch_hook_irq (unsigned irq,
+-				   void (*handler)(unsigned irq,
+-						   void *cookie),
+-				   int (*ackfn)(unsigned irq), /* Ignored. */
++				   rthal_irq_handler_t handler,
++				   rthal_irq_ackfn_t ackfn, /* Ignored. */
+ 				   void *cookie)
+ {
+     return mvm_hook_irq(irq,handler,cookie);
+diff -urp xenomai-2.1-clean/src/include/asm-uvm/system.h xenomai-2.1-ext/src/include/asm-uvm/system.h
+--- xenomai-2.1-clean/src/include/asm-uvm/system.h	2005-11-21 21:52:41.000000000 +0100
++++ xenomai-2.1-ext/src/include/asm-uvm/system.h	2005-12-29 19:36:34.000000000 +0100
+@@ -272,9 +272,8 @@ void xnarch_sync_irq (void) /* Synchroni
+ }
+ 
+ static inline int xnarch_hook_irq (unsigned irq,
+-				   void (*handler)(unsigned irq,
+-						   void *cookie),
+-				   int (*ackfn)(unsigned irq),
++				   rthal_irq_handler_t handler,
++				   rthal_irq_ackfn_t ackfn,
+ 				   void *cookie)
+ {
+     return -ENOSYS;
 
---------------010804040902070400070601--
 
---------------enig3EE2F568697FA38B3751F815
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDpa4gniDOoMHTA+kRAuxGAKCCM/t7MKntfqcPm6AYI78u/2vacwCfYEHS
-0yUmTHfvhmeQ8dzDjTi3uVw=
-=SKpO
------END PGP SIGNATURE-----
 
---------------enig3EE2F568697FA38B3751F815--
+------=_Part_356_5332618.1135883018608--
 
