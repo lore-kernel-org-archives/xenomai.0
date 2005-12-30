@@ -1,14 +1,10 @@
-Message-ID: <43B278B3.1070206@domain.hid>
-Date: Wed, 28 Dec 2005 12:36:19 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <1135950474.43b53a8a070f6@domain.hid>
+Date: Fri, 30 Dec 2005 14:47:54 +0100
+From: vdkeybus <Jeroen.VandenKeybus@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_spawn how to
-References: <20051228004108.2353.qmail@domain.hid>
-In-Reply-To: <20051228004108.2353.qmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD77B552E7E5AC42EFE7368D0"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] RTDM interrupt programming practice
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,109 +14,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrice Congo <congo_p@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD77B552E7E5AC42EFE7368D0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+I've programmed an RTDM PCI driver using interrupts. However, I've a 
+few questions regarding the programming practices (especially because 
+I'm not getting the performance I want). 
 
-Hi Patrice,
+1. The PCI system assigns an interrupt 177 which is totally outside the 
+range 0..15 I'm used to. Is it ok to pass this value to rtdm_irq_request
+() ?
 
-Patrice Congo wrote:
-> Hi all,
-> 
-> is it posible to spawn a  task from another rt task?
-> The following code tries to, but does not succeed:
-> <code>
-> #include <string.h>
-> #include <stdio.h>
-> 
-> #include <native/task.h>
-> //#include <general_macros.h>
-> 
-> #define STACK_SIZE 8192
-> 
-> RT_TASK spawner;
-> RT_TASK spawnee;
-> void spawner_work(void* c);
-> void spawnee_work(void* c);
-> 
-> void spawner_work(void* c)
-> {
-> 	printf("\nspawner\n");
-> 	//SWITCH_TASK_TO_SECONDARY_MODE();
-> 	int
-> ret=rt_task_spawn(&spawnee,"spawnee",STACK_SIZE,50,0,spawnee_work,NULL);
-> 	printf("IN SPAWNER WORK: ret=%d
-> %s\n",ret,strerror(ret));
-> }
-> 
-> void spawnee_work(void* c)
-> {
-> 	printf("I am spawnee");	
-> }
-> 
-> int main(int argc, char *argv[])
-> {
-> 	int ret=
-> 	
-> rt_task_spawn(&spawner,"spawner",STACK_SIZE,50,0,spawner_work,NULL);
-> 	printf("\nIN MAIN:ret=%d %s\n",ret,strerror(-ret));
-> 	getchar();
-> 	return 0;
-> }
-> 
-> 
-> </code>
-> 
-> the resulting output is:
-> <output>
-> spawner
-> 
-> IN MAIN:ret=0 Success
-> 
-> </output>
-> This means that the task "spawner" starts but get
-> blocked at rt_task_spwan call.
+2. Is it obligatory to use a rtdm_toseq_t in rtdm_event_timedwait() and 
+friends. Or, in other words, can I do rtdm_event_timedwait(&evt, 10000, 
+NULL); ?
 
-Hmm, strange. This is what I see with latest SVN checkout of Xenomai:
+3. Currently, I register my ISR in the open() function. I unregister it 
+in close(), after I've disabled the card's interrupt line. 
+Nevertheless, I get a kernel message right after shutting down:
 
-spawner
-IN SPAWNER WORK: ret=0 Success
-I am spawnee
-IN MAIN:ret=0 Success
+irq 177: nobody cared (try booting with the "irqpoll" option)
+ [<c013a18f>] __report_bad_irq+0x24/0x7f
+ [<c013a26a>] note_interrupt+0x62/0xb8
+ [<c0139c70>] __do_IRQ+0xb7/0xc7
+ [<c010511b>] do_IRQ+0x53/0x8b
+ =======================
+ [<c011c045>] profile_tick+0x20/0x49
+ [<c0114908>] __ipipe_sync_stage+0xf1/0x13a
+ [<c011490d>] __ipipe_sync_stage+0xf6/0x13a
+ [<c0115187>] __ipipe_handle_irq+0x233/0x24c
+ [<c010104a>] default_idle+0x30/0x3b
+ [<c010101a>] default_idle+0x0/0x3b
+ [<c0103b30>] common_interrupt+0x18/0x30
+ [<c010101a>] default_idle+0x0/0x3b
+ [<c010104a>] default_idle+0x30/0x3b
+ [<c01010c2>] cpu_idle+0x3a/0x52
+ [<c0327785>] start_kernel+0x179/0x1df
+ [<c0327330>] unknown_bootoption+0x0/0x1b6
+handlers:
+[<f88ae638>] (snd_intel8x0_interrupt+0x0/0x23c [snd_intel8x0])
+Disabling IRQ #177
 
-Looks fine.
+After this message, it is impossible to reuse the interrupt line (after 
+e.g. rmmod and insmod of driver and xeno_... modules) and the computer 
+becomes very slow. Also note that I have traces of snd_intel8x0 
+appearing in this context.
 
-But you are lacking mlockall() in your demo. Maybe some page fault is
-hitting your spawnee during creation.
+4. How can I verify the status of running xenomai processes (and the 
+driver). I would like to find out why I'm not meeting my interrupt 
+deadlines.
 
-> 
-> Switching context explicitely to secondary or to
-> primary does not help too.
-> 
-> can you help?
-> 
-> best, patrice
-> 
+Thanks for any help,
 
-Jan
 
---------------enigD77B552E7E5AC42EFE7368D0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Jeroen.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDsnizniDOoMHTA+kRAlypAJ9pSE3pgnua8cznonhv/DlKrcsFQgCdHyh1
-NvIDHCEL8+LFg1b9WafU3kQ=
-=szIW
------END PGP SIGNATURE-----
+Disclaimer: http://www.kuleuven.be/cwis/email_disclaimer.htm
 
---------------enigD77B552E7E5AC42EFE7368D0--
 
