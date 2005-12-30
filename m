@@ -1,13 +1,15 @@
-Message-ID: <43B5AF3F.9040605@domain.hid>
-Date: Fri, 30 Dec 2005 23:05:51 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43B5B0A1.6030409@domain.hid>
+Date: Fri, 30 Dec 2005 23:11:45 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Adeos-main] Re: [Xenomai-core] I-pipe + latency tracing patch
 References: <43B5658D.3030004@domain.hid> <43B58FED.6070404@domain.hid>
 	<43B5AB49.7040704@domain.hid>
 In-Reply-To: <43B5AB49.7040704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0ECA4202C5E3928649A4B1E6"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,7 +20,12 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+Cc: adeos-main@gna.org, xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0ECA4202C5E3928649A4B1E6
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
 Philippe Gerum wrote:
 > Jan Kiszka wrote:
@@ -31,10 +38,10 @@ Philippe Gerum wrote:
 >>> stalled path of the domain with the highest priority. Apply them in that
 >>> order:
 >>>
->>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/adeos-ipipe-2.6.14-i386-1.1-00.patch 
+>>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/adeos-ipipe-2.6.14-i386-1.1-00.patch
 >>>
 >>>
->>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/tracer/ipipe-tracer-2.6.14-i386-1.1-00.patch 
+>>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/tracer/ipipe-tracer-2.6.14-i386-1.1-00.patch
 >>>
 >>>
 >>
@@ -65,10 +72,19 @@ Philippe Gerum wrote:
 > +        ipipe_trace_end(code);
 > +}
 > 
-> The test is wrong in both case. You need to check that ipd is above or 
-> equal to ipipe_current_domain in the pipeline. To determine that quickly 
-> while tracing, you will probably need to insert an integer giving the 
+> The test is wrong in both case. You need to check that ipd is above or
+> equal to ipipe_current_domain in the pipeline. To determine that quickly
+> while tracing, you will probably need to insert an integer giving the
 > position of each domain into the ipipe_domain struct.
+
+So the orderning in __ipipe_pipeline does say nothing about the priority
+of the domain? Then this seems to have worked only by chance so far for me.
+
+Anyway, fixing this does not seem to address the other issue I
+mentioned. I once also traced the evaluation of those two conditions and
+found no indication that this triggers the preliminary end-of-stall
+reports I'm facing.
+
 > 
 >> And second, the separation between both patches is not clean. There are
 >> tracer related fragments in the 1.1-00 base patch, intentionally? What's
@@ -76,45 +92,47 @@ Philippe Gerum wrote:
 >> maintenance effort?
 >>
 > 
-> It's intentional, those (very few) bits always evaluate to false when 
-> the tracer is not in, and become conditional depending on the value of 
-> CONFIG_IPIPE_TRACE when the support available. IOW, they should be seen 
-> as sleeping hooks serving the purpose of allowing a further optional 
+> It's intentional, those (very few) bits always evaluate to false when
+> the tracer is not in, and become conditional depending on the value of
+> CONFIG_IPIPE_TRACE when the support available. IOW, they should be seen
+> as sleeping hooks serving the purpose of allowing a further optional
 > extension of the I-pipe.
+
+I see. Then these hooks are intended to keep the effort of breaking up
+the patches low.
+
 > 
-> The key issue here is not about ease of maintenance for us, but rather 
-> about ease of use for the people who don't necessarily want to drag 
-> what's fundamentally a debug infrastructure into the codebase of 
-> production systems, even if it's passive and can be compiled out. Adeos 
-> for x86 is about 151k without tracing, and goes beyond 189k with the 
+> The key issue here is not about ease of maintenance for us, but rather
+> about ease of use for the people who don't necessarily want to drag
+> what's fundamentally a debug infrastructure into the codebase of
+> production systems, even if it's passive and can be compiled out. Adeos
+> for x86 is about 151k without tracing, and goes beyond 189k with the
 > tracer, which is nearly a 20% increase. Add to this that since a latency
-
-To be fair, it's rather 151k compared to 179k actually, which leads us 
-to a 15% increase.
-
-> tracer is now available for vanilla Linux as an independent patch, it's 
-> likely wiser to allow people to keep the I-pipe tracing facility as a 
+> tracer is now available for vanilla Linux as an independent patch, it's
+> likely wiser to allow people to keep the I-pipe tracing facility as a
 > patch option too, so that you won't create conflicts (e.g. mcount).
-> 
-> In any case, I do see the tracer as a first-class citizen, regardless of 
-> the way we distribute it, be it inside the core support or as a broken 
-> out patch.
-> 
->> Jan
->>
->>
->> ------------------------------------------------------------------------
->>
->> _______________________________________________
->> Adeos-main mailing list
->> Adeos-main@domain.hid
->> https://mail.gna.org/listinfo/adeos-main
-> 
-> 
-> 
 
+Actually, both traces should not collide as long as only one is active
+at the same time.
 
--- 
+Anyway, I already assumed that this more or less psychological aspect of
+patch size makes a difference. I don't have a problem with this separation!
 
-Philippe.
+Jan
+
+--------------enig0ECA4202C5E3928649A4B1E6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDtbChniDOoMHTA+kRAiWtAJ0ZgP4rjSlKj2o/vvfJcMzPDZT2WgCeLoeS
+Z0uZpzpw0tjW/21Au45dAo8=
+=1uVy
+-----END PGP SIGNATURE-----
+
+--------------enig0ECA4202C5E3928649A4B1E6--
 
