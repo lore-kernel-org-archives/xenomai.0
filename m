@@ -1,14 +1,14 @@
-Message-ID: <43B9696D.3080106@domain.hid>
-Date: Mon, 02 Jan 2006 18:57:01 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0601021014w170115cg@domain.hid>
+Date: Mon, 2 Jan 2006 20:14:10 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [rt shared irqs] changes on the adeos-ipipe layer
+	v.2
+In-Reply-To: <43B81ADC.9090002@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCHES] various fixes
-References: <43B92C73.6080004@domain.hid> <200601021848.54916.kisda@domain.hid>
-In-Reply-To: <200601021848.54916.kisda@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD227115C6C2C9F9C5FA7CE9A"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_11554_10415964.1136225650805"
+References: <b647ffbd0512291103y383a96c1i@domain.hid>
+	<43B81ADC.9090002@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,58 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD227115C6C2C9F9C5FA7CE9A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+------=_Part_11554_10415964.1136225650805
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Stefan Kisdaroczi wrote:
-> Hi Jan,
-> 
-> Am Montag, 2. Januar 2006 14.36 schrieb Jan Kiszka:
-> 
->> * rtdm-license.patch - add missing COPYING files to RTDM skin and lib
->>   (or go for just a single file for ksrc/skins and src/skins if this is
->>   applicable)
-> 
-> 
-> The COPYING file in your patch contains the GPL license. Should'nt it be the 
-> LGPL license ? I mean, its your choice :-), but all other skins are LGPL and 
-> in the headers of the rtdm/*.c-files is also the LGPL license.
-> 
+>
+>
+> >
+> > er.. I was confused by the fact that sum of all apcs in
+> > /proc/xenomai/apc !=3D virq from /proc/xenomai/irq, but ipipe_printk_vi=
+rq
+> > is not listed since it's registered without rthal::apc interface. Ok,
+> > should take a look at it closer, i.e. maybe at least rthal_linux_irq ca=
+n
+> > be reworked now.
+> >
+>
+> APCs are multiplexed on a single virq.
 
-[Hold on, re-checking...]
 
-All fine: it's GPL for the core, but LGPL for the lib:
+Yep, I know. Don't know why but I thought that printk_flush is multiplexed
+on the same virq, OTOH it's an APC too. Well, the easiest argument against
+that could have been that the APC interface is implemented in the hal but
+printk_virq is registered in the ipipe, i.e. when there is no APC interface
+yet, mea culpa.
 
-Index: src/skins/rtdm/COPYING
-===================================================================
---- src/skins/rtdm/COPYING	(Revision 0)
-+++ src/skins/rtdm/COPYING	(Revision 0)
-@@ -0,0 +1,504 @@
-+		  GNU LESSER GENERAL PUBLIC LICENSE
-+		       Version 2.1, February 1999
 
-Or what do you mean?
 
-Jan
+> --
+>
+> Philippe.
+>
 
---------------enigD227115C6C2C9F9C5FA7CE9A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--
+Best regards,
+Dmitry Adamushko
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+------=_Part_11554_10415964.1136225650805
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-iD8DBQFDuWltniDOoMHTA+kRAmxGAJ4+BNNyNtL779VaVIuGMRvRQg9GQwCeOroG
-gBJTPKjs1/L2fyMUlX5J6Qs=
-=M4iG
------END PGP SIGNATURE-----
+<div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(=
+204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>&gt;<br>=
+&gt; er.. I was confused by the fact that sum of all apcs in<br>&gt; /proc/=
+xenomai/apc !=3D virq from /proc/xenomai/irq, but ipipe_printk_virq
+<br>&gt; is not listed since it's registered without rthal::apc interface. =
+Ok,<br>&gt; should take a look at it closer, i.e. maybe at least rthal_linu=
+x_irq can<br>&gt; be reworked now.<br>&gt;<br><br>APCs are multiplexed on a=
+ single virq.
+</blockquote><div><br>
+Yep, I know. Don't know why but I thought that printk_flush is
+multiplexed on the same virq, OTOH it's an APC too. Well, the easiest
+argument against that could have been that the APC interface is
+implemented in the hal but printk_virq is registered in the ipipe, i.e.
+when there is no APC interface yet, mea culpa.<br>
+<br>
+</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>--<=
+br><br>Philippe.<br></blockquote></div><br>-- <br>Best regards,<br>Dmitry A=
+damushko
 
---------------enigD227115C6C2C9F9C5FA7CE9A--
+------=_Part_11554_10415964.1136225650805--
 
