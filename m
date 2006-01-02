@@ -1,13 +1,13 @@
-Message-ID: <43B92E61.3010009@domain.hid>
-Date: Mon, 02 Jan 2006 14:45:05 +0100
+Message-ID: <43B949F1.60001@domain.hid>
+Date: Mon, 02 Jan 2006 16:42:41 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] src/skins/*/COPYING consistency
-References: <200601021123.42425.kisda@domain.hid>
-In-Reply-To: <200601021123.42425.kisda@domain.hid>
+Subject: Re: [Xenomai-core] [PATCHES] various fixes
+References: <43B92C73.6080004@domain.hid>
+In-Reply-To: <43B92C73.6080004@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig541CCE16DA8BD2E92B2987CF"
+	boundary="------------enig08C4A91BD0AF4CA220776965"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,29 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig541CCE16DA8BD2E92B2987CF
+--------------enig08C4A91BD0AF4CA220776965
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Stefan Kisdaroczi wrote:
-> hi,
+Jan Kiszka wrote:
+> ...
+> Moreover, here are two minor fixes:
 > 
-> license detail:
-> in every src/skins/*/ directory containing source is a LGPL COPYING file,
-> except in rtdm. For consistency there should be also one.
-> Or only one file src/skins/COPYING ?
-> 
+>  * accuracy.patch - add missing define to let this posix demo compile
 
-Thanks for pointing out. Will be addressed soon (see my "various fixes"
-posting).
+Forget about this one. I oversaw the way SPERIOD is passed in the
+original Makefile while compiling accuracy.c by hand.
 
 Jan
 
---------------enig541CCE16DA8BD2E92B2987CF
+--------------enig08C4A91BD0AF4CA220776965
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -49,10 +45,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDuS5hniDOoMHTA+kRAvziAKCDFyt1Hsu3DlKHbThNRLZvT0NwZQCfWkLf
-+6p16Vhf+iepouv4C5qy4Qg=
-=eOBs
+iD8DBQFDuUnxniDOoMHTA+kRAvZPAJ9jZXve20V+4zbCfnxb23cHL2IKVQCfTdTe
+jLif3T67zcP2lbi/ovnmykY=
+=/wxq
 -----END PGP SIGNATURE-----
 
---------------enig541CCE16DA8BD2E92B2987CF--
+--------------enig08C4A91BD0AF4CA220776965--
 
