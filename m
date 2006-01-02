@@ -1,13 +1,14 @@
-From: Stefan Kisdaroczi <kisda@domain.hid>
-Subject: Re: [Xenomai-core] [PATCHES] various fixes
-Date: Mon, 2 Jan 2006 18:48:50 +0100
-References: <43B92C73.6080004@domain.hid>
-In-Reply-To: <43B92C73.6080004@domain.hid>
+Message-ID: <43B9696D.3080106@domain.hid>
+Date: Mon, 02 Jan 2006 18:57:01 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1621959.rHH60UO9Hg";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <200601021848.54916.kisda@domain.hid>
+Subject: Re: [Xenomai-core] [PATCHES] various fixes
+References: <43B92C73.6080004@domain.hid> <200601021848.54916.kisda@domain.hid>
+In-Reply-To: <200601021848.54916.kisda@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD227115C6C2C9F9C5FA7CE9A"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,41 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
---nextPart1621959.rHH60UO9Hg
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD227115C6C2C9F9C5FA7CE9A
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Hi Jan,
+Stefan Kisdaroczi wrote:
+> Hi Jan,
+> 
+> Am Montag, 2. Januar 2006 14.36 schrieb Jan Kiszka:
+> 
+>> * rtdm-license.patch - add missing COPYING files to RTDM skin and lib
+>>   (or go for just a single file for ksrc/skins and src/skins if this is
+>>   applicable)
+> 
+> 
+> The COPYING file in your patch contains the GPL license. Should'nt it be the 
+> LGPL license ? I mean, its your choice :-), but all other skins are LGPL and 
+> in the headers of the rtdm/*.c-files is also the LGPL license.
+> 
 
-Am Montag, 2. Januar 2006 14.36 schrieb Jan Kiszka:
->  * rtdm-license.patch - add missing COPYING files to RTDM skin and lib
->    (or go for just a single file for ksrc/skins and src/skins if this is
->    applicable)
+[Hold on, re-checking...]
 
-The COPYING file in your patch contains the GPL license. Should'nt it be th=
-e=20
-LGPL license ? I mean, its your choice :-), but all other skins are LGPL an=
-d=20
-in the headers of the rtdm/*.c-files is also the LGPL license.
+All fine: it's GPL for the core, but LGPL for the lib:
 
-greetings
-kisda
+Index: src/skins/rtdm/COPYING
+===================================================================
+--- src/skins/rtdm/COPYING	(Revision 0)
++++ src/skins/rtdm/COPYING	(Revision 0)
+@@ -0,0 +1,504 @@
++		  GNU LESSER GENERAL PUBLIC LICENSE
++		       Version 2.1, February 1999
 
---nextPart1621959.rHH60UO9Hg
-Content-Type: application/pgp-signature
+Or what do you mean?
+
+Jan
+
+--------------enigD227115C6C2C9F9C5FA7CE9A
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQBDuWeGIPTw9rIdn6oRAsrEAJ99hnyOEfKPpxwzgkFUhO4oraiohQCeL4QP
-50d2ubaa3RG/OiAoX+TSiCo=
-=r20t
+iD8DBQFDuWltniDOoMHTA+kRAmxGAJ4+BNNyNtL779VaVIuGMRvRQg9GQwCeOroG
+gBJTPKjs1/L2fyMUlX5J6Qs=
+=M4iG
 -----END PGP SIGNATURE-----
 
---nextPart1621959.rHH60UO9Hg--
+--------------enigD227115C6C2C9F9C5FA7CE9A--
 
