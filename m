@@ -1,14 +1,12 @@
-Message-ID: <b647ffbd0601021014w170115cg@domain.hid>
-Date: Mon, 2 Jan 2006 20:14:10 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [rt shared irqs] changes on the adeos-ipipe layer
-	v.2
-In-Reply-To: <43B81ADC.9090002@domain.hid>
+Message-ID: <43B970BA.3080707@domain.hid>
+Date: Mon, 02 Jan 2006 19:28:10 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_11554_10415964.1136225650805"
-References: <b647ffbd0512291103y383a96c1i@domain.hid>
-	<43B81ADC.9090002@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] in-kernel timer benchmark -v3
+References: <43B92741.8030609@domain.hid>
+In-Reply-To: <43B92741.8030609@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,70 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_11554_10415964.1136225650805
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
->
->
-> >
-> > er.. I was confused by the fact that sum of all apcs in
-> > /proc/xenomai/apc !=3D virq from /proc/xenomai/irq, but ipipe_printk_vi=
-rq
-> > is not listed since it's registered without rthal::apc interface. Ok,
-> > should take a look at it closer, i.e. maybe at least rthal_linux_irq ca=
-n
-> > be reworked now.
-> >
->
-> APCs are multiplexed on a single virq.
-
-
-Yep, I know. Don't know why but I thought that printk_flush is multiplexed
-on the same virq, OTOH it's an APC too. Well, the easiest argument against
-that could have been that the APC interface is implemented in the hal but
-printk_virq is registered in the ipipe, i.e. when there is no APC interface
-yet, mea culpa.
-
-
-
-> --
->
-> Philippe.
+Jan Kiszka wrote:
+> Happy New Year everyone!
+> 
+> Hope you all survived the turn of the year without complications. ;)
 >
 
---
-Best regards,
-Dmitry Adamushko
+Nearly buried alive in patches, but this is hardly a complication.
 
-------=_Part_11554_10415964.1136225650805
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+> I would like to start with a new patch round. The first one is a revised
+> and extended version of the earlier posted in-kernel timer benchmark
+> based on a RTDM device. Changes since the first version:
+> 
+>  * revised command line argument to set the test mode
+>  * display test mode during startup
+>  * display hint on missing benchmark device
+>  * support of trace freeze on latency above specified threshold
+>  * extended benchmark device to provide ipipe-tracing functions to
+>    userspace
+>  * further minor fixes
+> 
 
-<div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(=
-204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>&gt;<br>=
-&gt; er.. I was confused by the fact that sum of all apcs in<br>&gt; /proc/=
-xenomai/apc !=3D virq from /proc/xenomai/irq, but ipipe_printk_virq
-<br>&gt; is not listed since it's registered without rthal::apc interface. =
-Ok,<br>&gt; should take a look at it closer, i.e. maybe at least rthal_linu=
-x_irq can<br>&gt; be reworked now.<br>&gt;<br><br>APCs are multiplexed on a=
- single virq.
-</blockquote><div><br>
-Yep, I know. Don't know why but I thought that printk_flush is
-multiplexed on the same virq, OTOH it's an APC too. Well, the easiest
-argument against that could have been that the APC interface is
-implemented in the hal but printk_virq is registered in the ipipe, i.e.
-when there is no APC interface yet, mea culpa.<br>
-<br>
-</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
- rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>--<=
-br><br>Philippe.<br></blockquote></div><br>-- <br>Best regards,<br>Dmitry A=
-damushko
+Ok, merged.
 
-------=_Part_11554_10415964.1136225650805--
+> I think the patch should be ready to merge now. This would also be
+> helpful to provide a base on which Gilles can build his timer-scaling
+> tests. BTW, we still need some RTDM abstraction for timers, but this is
+> a different topic that will be addressed later.
+> 
+
+Btw, since -rc1 is out, I've deprecated the Adeos oldgen support for all 
+archs (ia64 is now I-pipe based too), so that I can merge Dmitry's work 
+later on, exclusively into the newgen codebase. So if anyone still keeps 
+any venerable pre-Ipipe patch in some hideout of his hdd, just let it go 
+now; I know it's heartbreaking, but Xenomai is thankless.
+
+-- 
+
+Philippe.
 
