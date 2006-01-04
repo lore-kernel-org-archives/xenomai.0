@@ -1,12 +1,12 @@
-Message-ID: <43BC430C.5080204@domain.hid>
-Date: Wed, 04 Jan 2006 22:50:04 +0100
+Message-ID: <43BC4FFB.8040709@domain.hid>
+Date: Wed, 04 Jan 2006 23:45:15 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig82AC67B6F18A747E4D6A60E9"
+	boundary="------------enig94CDF42271B86A8AD307259A"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] enjoying the trace
+Subject: [Xenomai-core] [PATCH] latency tracer update
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,265 +16,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>, adeos-main@gna.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig82AC67B6F18A747E4D6A60E9
-Content-Type: multipart/mixed; boundary="------------010906060700030503030809"
+--------------enig94CDF42271B86A8AD307259A
+Content-Type: multipart/mixed; boundary="------------000806080802050706010407"
 
 This is a multi-part message in MIME format.
---------------010906060700030503030809
+--------------000806080802050706010407
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Hi all,
+Hi again,
 
-after a long day of experimenting with a new tracer revision (will get
-posted later), I'm looking now for some external wisdom.
+here comes the first update of the new latency tracer.
 
-I changed the instrumentation for high-domain stall times such that I
-now attach to local_irq_disable_hw & friends instead. In case the
-hard-IRQ status doesn't change, only a ipipe_trace_special is issued, a
-trace_begin/end otherwise. Additionally, I grab the entering and exiting
-of __ipipe_handle_irq and suppress two IRQ on/off points in
-arch/i386/kernel/ipipe-root.c. See attached patch (will likely become
-part of the tracer).
+ arch/i386/kernel/entry.S      |   27 +++
+ arch/i386/kernel/ipipe-root.c |    4
+ include/asm-i386/system.h     |   70 +++++++++
+ include/linux/ipipe_trace.h   |    3
+ kernel/ipipe/Kconfig          |   18 ++
+ kernel/ipipe/tracer.c         |  247 +++++++++++++++++++++++-----------
+ 6 files changed, 288 insertions(+), 81 deletions(-)
 
-Ok, this works significantly better than the previous approach. I just
-tormented an Athlon 800 MHz box with Xenomai 2.1 revision 357 (old ipipe
-IRQ layer) about 50 minutes with
+The list of changes:
 
-	latency -p1000 -t1
-	dd if=/dev/hda of=/dev/null
-	ping -f -s 1400 [from external]
-	cachebench [part of llcbench]
+ o save ipipe_trace_freeze() (and only this function!) from NMI context
+ o CONFIG_IPIPE_TRACE_IRQSOFF instrumentation traces the longest
+   hard-IRQs-off phase of the system (regarding limitations see my
+   earlier posting today)
+ o fixed subtle trace mess-up
+ o added some "unlikely" to the tracer's hotpath
+ o added ipipe_trace_{max|frozen}_reset() to the API
 
-The result was a maximum latency of 38 us (in-kernel periodic task) and
-some traces which correlate quite well. I attached two of them, showing
-the similarity between the final and last but one outputs of
-/proc/ipipe/trace/max. Note that the instrumentation and the trace
-recording add some overhead, how much is just going to be measured.
+To-do
+ o fix leaking IRQs-off trace
+ o documentation...
 
-So far so good. But I still have at least one virtual IRQ leakage in my
-instrumenation, see the third trace. This is where the "external wisdom"
-would be welcome. I know, I'm not tracing all IRQ offs and ons to make
-life easier. This one is like an IRQ-reenable-on-iret when return to
-userspace (the following IRQ hits a userspace address). Any ideas how to
-catch this without rewriting entry.S - where modifications are real
-*slowly* maturing?
+Philippe, I think this should already be merged into Adeos although
+TRACE_IRQSOFF is not perfect yet.
 
-Thanks,
 Jan
 
-
-PS: The removal of rthal_irq_trampoline() should not cause noticable
-positive effects on such mid-range platforms, I'm afraid. But this will
-get checked later. And there is a "nice" Pentium I 133 MHz sitting next
-to me. I guess he will like this more. :)
-
-PPS: "later" may not mean "soon".
-
---------------010906060700030503030809
+--------------000806080802050706010407
 Content-Type: text/plain;
- name="xeno-2.1-athlon800.trace"
+ name="ipipe_trace.update1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="xeno-2.1-athlon800.trace"
+ filename="ipipe_trace.update1"
 
-I-pipe worst-case tracing service on 2.6.14.3/ipipe-1.1-00
-------------------------------------------------------------
-Begin: 1068123402870 cycles, Trace Points: 44 (-10/+5), Length: 36 us
-
-  Type   User Val.   Time    Delay  Function (Parent)
-  fn                   -3    0.381  losyscall_event+0xc (__ipipe_dispatch_event+0x88)
-  begin  0x80000001    -3    0.252  __ipipe_dispatch_event+0xb0 (__ipipe_syscall_root+0x31)
-  end    0x80000001    -3    0.399  __ipipe_dispatch_event+0x160 (__ipipe_syscall_root+0x31)
-  fn                   -2    0.136  sys_write+0xd (syscall_call+0x7)
-  fn                   -2    0.295  fget_light+0xb (sys_write+0x1d)
-  fn                   -2    0.402  vfs_write+0xc (sys_write+0x41)
-  fn                   -1    0.186  rw_verify_area+0xb (vfs_write+0x67)
-  fn                   -1    0.160  write_null+0x8 (vfs_write+0x8a)
-  fn                   -1    0.400  dnotify_parent+0xa (vfs_write+0xb5)
-  fn                   -1    1.053  inotify_dentry_parent_queue_event+0xa (vfs_write+0xd5)
->|begin  0x80000002     0    0.451  common_interrupt+0x21 (__ipipe_trace+0x160)
-:|fn                    0    0.904  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                    1    0.438  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|fn                    1    0.392  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0xa4)
-:|(0x11) 0x80000001     2!  13.393  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0xa4)
-:|(0x22) 0x80000001    15    0.267  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0xa4)
-:|fn                   15+   1.448  __ipipe_sync_stage+0xe (__ipipe_handle_irq+0x225)
-:|begin  0x80000002    17    0.163  common_interrupt+0x21 (__ipipe_sync_stage+0xdd)
-:|fn                   17    0.423  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                   17    0.158  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|fn                   18    0.178  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0xa4)
-:|(0x11) 0x80000001    18+   1.712  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0xa4)
-:|(0x22) 0x80000001    19    0.350  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0xa4)
-:|fn                   20    0.198  ipipe_suspend_domain+0xc (__ipipe_handle_irq+0x1cc)
-:|(0x11) 0x80000001    20    0.349  ipipe_suspend_domain+0xac (__ipipe_handle_irq+0x1cc)
-:|fn                   20    0.285  __ipipe_sync_stage+0xe (ipipe_suspend_domain+0x68)
-:|fn                   21    0.311  rthal_irq_trampoline+0x8 (__ipipe_sync_stage+0xc1)
-:|fn                   21    0.155  xnintr_clock_handler+0x8 (rthal_irq_trampoline+0x2c)
-:|fn                   21    0.195  xnintr_irq_handler+0xb (xnintr_clock_handler+0x18)
-:|fn                   21    0.454  xnpod_announce_tick+0xb (xnintr_irq_handler+0x28)
-:|(0x11) 0x80000000    22    0.220  xnpod_announce_tick+0x214 (xnintr_irq_handler+0x28)
-:|fn                   22    0.298  xntimer_do_tick_aperiodic+0xe (xnpod_announce_tick+0xb8)
-:|fn                   22    0.425  xnthread_timeout_handler+0x8 (xntimer_do_tick_aperiodic+0x273)
-:|fn                   23    0.148  xnpod_resume_thread+0xc (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000000    23    0.362  xnpod_resume_thread+0x350 (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000000    23    0.319  xnpod_resume_thread+0x21b (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000001    24+   2.933  xntimer_do_tick_aperiodic+0x20c (xnpod_announce_tick+0xb8)
-:|(0x22) 0x80000001    26    0.320  xntimer_do_tick_aperiodic+0x233 (xnpod_announce_tick+0xb8)
-:|(0x11) 0x80000000    27    0.202  xnpod_announce_tick+0x183 (xnintr_irq_handler+0x28)
-:|fn                   27    0.159  xnpod_schedule+0xe (xnintr_irq_handler+0xa5)
-:|(0x11) 0x80000000    27+   1.029  xnpod_schedule+0x68a (xnintr_irq_handler+0xa5)
-:|(0x11) 0x80000000    28    0.214  xnpod_schedule+0x985 (xnpod_suspend_thread+0x2b7)
-:|(0x11) 0x80000000    28    0.325  xnpod_suspend_thread+0x1ba (rtdm_task_sleep_until+0x99 [xeno_rtdm])
-:|(0x11) 0x80000000    29    0.194  rtdm_task_sleep_until+0xe4 [xeno_rtdm] (timer_task_proc+0x12c [xeno_timerbench])
-:|fn                   29    0.190  ipipe_unstall_pipeline_from+0xd (timer_task_proc+0x145 [xeno_timerbench])
-:|(0x11) 0x80000001    29+   1.144  ipipe_unstall_pipeline_from+0x90 (timer_task_proc+0x145 [xeno_timerbench])
-:|begin  0x80000002    30    0.162  common_interrupt+0x21 (ipipe_unstall_pipeline_from+0xff)
-:|fn                   30    0.237  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                   31    0.397  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|(0x11) 0x80000000    31    0.176  __ipipe_ack_common_irq+0xd3 (__ipipe_handle_irq+0xf5)
-:|fn                   31    0.315  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0x40)
-:|(0x11) 0x80000001    32+   4.283  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0x40)
-:|(0x22) 0x80000001    36    0.300  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0x40)
-<|end    0x80000002    36    0.470  common_interrupt+0x34 (ipipe_unstall_pipeline_from+0xff)
-  end    0x80000000    37    0.236  ipipe_unstall_pipeline_from+0x104 (timer_task_proc+0x145 [xeno_timerbench])
-  fn                   37    0.186  xnpod_get_time+0x8 (timer_task_proc+0x8c [xeno_timerbench])
-  fn                   37    0.575  xntimer_get_jiffies_aperiodic+0xe (xnpod_get_time+0x10)
-  fn                   38    0.202  eval_inner_loop+0xb [xeno_timerbench] (timer_task_proc+0xb2 [xeno_timerbench])
-  begin  0x80000000    38    0.000  timer_task_proc+0x166 [xeno_timerbench] (xnarch_thread_redirect+0x97)
-
---------------010906060700030503030809
-Content-Type: text/plain;
- name="xeno-2.1-athlon800.trace2"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xeno-2.1-athlon800.trace2"
-
-I-pipe worst-case tracing service on 2.6.14.3/ipipe-1.1-00
-------------------------------------------------------------
-Begin: 1625655337641 cycles, Trace Points: 44 (-10/+5), Length: 38 us
-
-  Type   User Val.   Time    Delay  Function (Parent)
-  fn                   -5    0.126  __ipipe_unstall_root+0x8 (find_get_page+0x3b)
-  begin  0x80000000    -5    0.368  __ipipe_unstall_root+0x19 (find_get_page+0x3b)
-  end    0x80000000    -5    0.225  __ipipe_unstall_root+0x43 (find_get_page+0x3b)
-  fn                   -5    0.387  file_read_actor+0xd (do_generic_mapping_read+0x3c8)
-  fn                   -4    2.175  __copy_to_user_ll+0xa (file_read_actor+0x77)
-  fn                   -2    0.311  update_atime+0xc (do_generic_mapping_read+0x41b)
-  fn                   -2    0.394  current_fs_time+0xe (update_atime+0x51)
-  fn                   -1    0.215  timespec_trunc+0xb (current_fs_time+0x65)
-  fn                   -1    0.206  dnotify_parent+0xa (vfs_read+0xb5)
-  fn                   -1    1.337  inotify_dentry_parent_queue_event+0xa (vfs_read+0xd5)
->|begin  0x80000002     0    0.226  common_interrupt+0x21 (mcount+0x29)
-:|fn                    0    0.907  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                    1    0.417  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|fn                    1    0.136  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0xa4)
-:|(0x11) 0x80000001     1!  12.181  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0xa4)
-:|(0x22) 0x80000001    13    0.283  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0xa4)
-:|fn                   14+   1.431  __ipipe_sync_stage+0xe (__ipipe_handle_irq+0x225)
-:|begin  0x80000002    15    0.371  common_interrupt+0x21 (__ipipe_sync_stage+0xdd)
-:|fn                   15    0.219  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                   16    0.313  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|fn                   16    0.176  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0xa4)
-:|(0x11) 0x80000001    16+   3.290  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0xa4)
-:|(0x22) 0x80000001    19    0.577  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0xa4)
-:|fn                   20    0.201  ipipe_suspend_domain+0xc (__ipipe_handle_irq+0x1cc)
-:|(0x11) 0x80000001    20    0.200  ipipe_suspend_domain+0xac (__ipipe_handle_irq+0x1cc)
-:|fn                   20    0.529  __ipipe_sync_stage+0xe (ipipe_suspend_domain+0x68)
-:|fn                   21    0.217  rthal_irq_trampoline+0x8 (__ipipe_sync_stage+0xc1)
-:|fn                   21    0.358  xnintr_clock_handler+0x8 (rthal_irq_trampoline+0x2c)
-:|fn                   22    0.199  xnintr_irq_handler+0xb (xnintr_clock_handler+0x18)
-:|fn                   22    0.220  xnpod_announce_tick+0xb (xnintr_irq_handler+0x28)
-:|(0x11) 0x80000000    22    0.585  xnpod_announce_tick+0x214 (xnintr_irq_handler+0x28)
-:|fn                   23    0.311  xntimer_do_tick_aperiodic+0xe (xnpod_announce_tick+0xb8)
-:|fn                   23    0.205  xnthread_timeout_handler+0x8 (xntimer_do_tick_aperiodic+0x273)
-:|fn                   23    0.475  xnpod_resume_thread+0xc (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000000    24    0.361  xnpod_resume_thread+0x350 (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000000    24    0.373  xnpod_resume_thread+0x21b (xnthread_timeout_handler+0x22)
-:|(0x11) 0x80000001    24+   2.892  xntimer_do_tick_aperiodic+0x20c (xnpod_announce_tick+0xb8)
-:|(0x22) 0x80000001    27    0.209  xntimer_do_tick_aperiodic+0x233 (xnpod_announce_tick+0xb8)
-:|(0x11) 0x80000000    27    0.474  xnpod_announce_tick+0x183 (xnintr_irq_handler+0x28)
-:|fn                   28    0.363  xnpod_schedule+0xe (xnintr_irq_handler+0xa5)
-:|(0x11) 0x80000000    28    0.936  xnpod_schedule+0x68a (xnintr_irq_handler+0xa5)
-:|(0x11) 0x80000000    29    0.550  xnpod_schedule+0x985 (xnpod_suspend_thread+0x2b7)
-:|(0x11) 0x80000000    30    0.288  xnpod_suspend_thread+0x1ba (rtdm_task_sleep_until+0x99 [xeno_rtdm])
-:|(0x11) 0x80000000    30    0.334  rtdm_task_sleep_until+0xe4 [xeno_rtdm] (timer_task_proc+0x12c [xeno_timerbench])
-:|fn                   30    0.186  ipipe_unstall_pipeline_from+0xd (timer_task_proc+0x145 [xeno_timerbench])
-:|(0x11) 0x80000001    31    0.912  ipipe_unstall_pipeline_from+0x90 (timer_task_proc+0x145 [xeno_timerbench])
-:|begin  0x80000002    31    0.303  common_interrupt+0x21 (ipipe_unstall_pipeline_from+0xff)
-:|fn                   32    0.226  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                   32    0.191  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|(0x11) 0x80000000    32    0.417  __ipipe_ack_common_irq+0xd3 (__ipipe_handle_irq+0xf5)
-:|fn                   33    0.136  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0x40)
-:|(0x11) 0x80000001    33+   4.519  mask_and_ack_8259A+0x9f (__ipipe_ack_common_irq+0x40)
-:|(0x22) 0x80000001    37    0.290  mask_and_ack_8259A+0x124 (__ipipe_ack_common_irq+0x40)
-<|end    0x80000002    38    0.306  common_interrupt+0x34 (ipipe_unstall_pipeline_from+0xff)
-  end    0x80000000    38    0.397  ipipe_unstall_pipeline_from+0x104 (timer_task_proc+0x145 [xeno_timerbench])
-  fn                   38    0.165  xnpod_get_time+0x8 (timer_task_proc+0x8c [xeno_timerbench])
-  fn                   38    0.313  xntimer_get_jiffies_aperiodic+0xe (xnpod_get_time+0x10)
-  fn                   39    0.638  eval_inner_loop+0xb [xeno_timerbench] (timer_task_proc+0xb2 [xeno_timerbench])
-  begin  0x80000000    39    0.000  timer_task_proc+0x166 [xeno_timerbench] (xnarch_thread_redirect+0x97)
-
---------------010906060700030503030809
-Content-Type: text/plain;
- name="leaking-irq.trace"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="leaking-irq.trace"
-
-  Type   User Val.   Time    Delay  Function (Parent)
-  fn                   -9    0.149  activate_task+0xb (try_to_wake_up+0x100)
-  fn                   -9    0.836  sched_clock+0xd (activate_task+0x13)
-  fn                   -8    1.616  recalc_task_prio+0xe (activate_task+0x1f)
-  fn                   -6    0.250  effective_prio+0x8 (recalc_task_prio+0x17d)
-  fn                   -6    0.825  enqueue_task+0xa (activate_task+0x59)
-  fn                   -5    0.136  __ipipe_restore_root+0x8 (try_to_wake_up+0x4d)
-  fn                   -5    0.309  __ipipe_stall_root+0x8 (__ipipe_restore_root+0x11)
-  fn                   -5    0.527  preempt_schedule+0xb (try_to_wake_up+0x8b)
-  fn                   -4    0.175  xnpod_schedule+0xe (lostage_handler+0x115)
-  fn                   -4    0.720  ipipe_trigger_irq+0xe (xnpod_schedule+0x660)
-  begin  0x80000001    -3    0.430  ipipe_trigger_irq+0xac (xnpod_schedule+0x660)
- |fn                   -3    0.566  __ipipe_handle_irq+0xe (ipipe_trigger_irq+0x55)
- |fn                   -2    0.315  ipipe_suspend_domain+0xc (__ipipe_handle_irq+0x1cc)
- |fn                   -2    0.455  __ipipe_sync_stage+0xe (ipipe_suspend_domain+0x59)
- |fn                   -2    0.165  xnpod_schedule_handler+0x8 (__ipipe_sync_stage+0xca)
- |fn                   -1    0.694  xnpod_schedule+0xe (xnpod_schedule_handler+0x17)
-  end    0x80000001    -1    0.332  ipipe_trigger_irq+0x7a (xnpod_schedule+0x660)
-  fn                    0    0.228  __ipipe_stall_root+0x8 (resume_kernel+0x5)
-  fn                    0    0.518  __ipipe_unstall_iret_root+0x8 (restore_raw+0x0)
-  fn                    0    0.189  irq_exit+0x8 (__ipipe_sync_stage+0x177)
-> begin  0x80000000     0! 874.819  __ipipe_sync_stage+0x120 (__ipipe_unstall_iret_root+0x42)
-:|begin  0x80000002   874    0.157  common_interrupt+0x21 (<b7f2a1e3>)
-:|fn                  874    0.356  __ipipe_handle_irq+0xe (common_interrupt+0x29)
-:|fn                  875    0.888  __ipipe_ack_common_irq+0xb (__ipipe_handle_irq+0xf5)
-:|fn                  876+   1.780  mask_and_ack_8259A+0xc (__ipipe_ack_common_irq+0xa4)
-:|fn                  878    0.152  ipipe_suspend_domain+0xc (__ipipe_handle_irq+0x1cc)
-:|fn                  878    0.502  __ipipe_sync_stage+0xe (ipipe_suspend_domain+0x59)
-:|fn                  878    0.181  rthal_irq_trampoline+0x8 (__ipipe_sync_stage+0xca)
-:|fn                  878    0.315  xnintr_clock_handler+0x8 (rthal_irq_trampoline+0x2c)
-:|fn                  879    0.179  xnintr_irq_handler+0xb (xnintr_clock_handler+0x18)
-:|fn                  879    0.290  xnpod_announce_tick+0xb (xnintr_irq_handler+0x28)
-:|fn                  879    0.597  xntimer_do_tick_aperiodic+0xe (xnpod_announce_tick+0xb8)
-:|fn                  880    0.139  xnthread_timeout_handler+0x8 (xntimer_do_tick_aperiodic+0x240)
-:|fn                  880+   3.327  xnpod_resume_thread+0xc (xnthread_timeout_handler+0x22)
-:|fn                  883+   1.346  xnpod_schedule+0xe (xnintr_irq_handler+0xa5)
-:|fn                  885    0.188  ipipe_unstall_pipeline_from+0xd (timer_task_proc+0x145 [xeno_timerbench])
-< end    0x80000000   885    0.375  ipipe_unstall_pipeline_from+0xd3 (timer_task_proc+0x145 [xeno_timerbench])
-  fn                  885    0.137  xnpod_get_time+0x8 (timer_task_proc+0x8c [xeno_timerbench])
-  fn                  885    0.293  xntimer_get_jiffies_aperiodic+0xe (xnpod_get_time+0x10)
-  fn                  886    0.516  eval_inner_loop+0xb [xeno_timerbench] (timer_task_proc+0xb2 [xeno_timerbench])
-  begin  0x80000000   886    0.000  timer_task_proc+0x166 [xeno_timerbench] (xnarch_thread_redirect+0x97)
-
---------------010906060700030503030809
-Content-Type: text/plain;
- name="ipipe_trace.instr2"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="ipipe_trace.instr2"
-
+--- linux-2.6.14.3//arch/i386/kernel/entry.S.orig	2006-01-03 19:30:15.000000000 +0100
++++ linux-2.6.14.3//arch/i386/kernel/entry.S	2006-01-04 04:25:02.000000000 +0100
+@@ -106,6 +106,29 @@ VM_MASK		= 0x00020000
+ 				call __ipipe_divert_exception ; \
+ 				testl %eax,%eax	; \
+ 				jnz restore_raw
++
++#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
++# ifdef CONFIG_REGPARM
++#  define LOAD_ARG(arg)         movl $arg, %eax
++#  define REMOVE_ARG
++# else  /* !CONFIG_REGPARM */
++#  define LOAD_ARG(arg)         pushl $arg
++#  define REMOVE_ARG            addl $4, %esp
++# endif /* CONFIG_REGPARM */
++# define IPIPE_TRACE_BEGIN(v)   lea 0x24(%esp), %ebp ; \
++                                LOAD_ARG(v) ; \
++                                call ipipe_trace_begin ; \
++                                REMOVE_ARG
++# define IPIPE_TRACE_END(v)     pushl %eax ; \
++                                LOAD_ARG(v) ; \
++                                call ipipe_trace_end ; \
++                                REMOVE_ARG ; \
++                                popl %eax
++#else  /* !CONFIG_IPIPE_TRACE_IRQSOFF */
++# define IPIPE_TRACE_BEGIN(v)
++# define IPIPE_TRACE_END(v)
++#endif /* CONFIG_IPIPE_TRACE_IRQSOFF */
++
+ #else  /* !CONFIG_IPIPE */
+ #define CLI                     cli
+ #define STI                     sti
+@@ -474,7 +497,9 @@ vector=vector+1
+ 	ALIGN
+ common_interrupt:
+ 	SAVE_ALL
++	IPIPE_TRACE_BEGIN(0x80000002); \
+ 	call __ipipe_handle_irq
++	IPIPE_TRACE_END(0x80000002); \
+ 	testl %eax,%eax
+ 	jnz  ret_from_intr
+ 	RESTORE_REGS
+@@ -485,7 +510,9 @@ common_interrupt:
+ ENTRY(name)				\
+ 	pushl $nr-288;	/* nr - (256 + FIRST_EXTERNAL_VECTOR) */ \
+ 	SAVE_ALL;			\
++	IPIPE_TRACE_BEGIN(0x80000002); \
+ 	call __ipipe_handle_irq;	\
++	IPIPE_TRACE_END(0x80000002); \
+ 	testl %eax,%eax;		\
+ 	jnz  ret_from_intr;		\
+ 	RESTORE_REGS;			\
 --- linux-2.6.14.3//arch/i386/kernel/ipipe-root.c.orig	2006-01-02 20:42:58.000000000 +0100
 +++ linux-2.6.14.3//arch/i386/kernel/ipipe-root.c	2006-01-04 01:26:16.000000000 +0100
 @@ -283,7 +283,7 @@ asmlinkage int __ipipe_kpreempt_root(str
@@ -295,6 +137,428 @@ Content-Disposition: inline;
  
  	ipipe_load_cpuid();
  
+--- linux-2.6.14.3//kernel/ipipe/tracer.c.orig	2006-01-02 20:44:21.000000000 +0100
++++ linux-2.6.14.3//kernel/ipipe/tracer.c	2006-01-04 21:10:21.000000000 +0100
+@@ -47,8 +47,10 @@
+ 
+ #define IPIPE_TFLG_NMI_LOCK         0x0001
+ #define IPIPE_TFLG_NMI_HIT          0x0002
+-#define IPIPE_TFLG_HWIRQ_OFF        0x0004
+-#define IPIPE_TFLG_FREEZING         0x0008
++#define IPIPE_TFLG_NMI_FREEZE_REQ   0x0004
++
++#define IPIPE_TFLG_HWIRQ_OFF        0x0100
++#define IPIPE_TFLG_FREEZING         0x0200
+ 
+ 
+ struct ipipe_trace_point{
+@@ -63,10 +65,13 @@ struct ipipe_trace_point{
+ struct ipipe_trace_path{
+ 	volatile int flags;
+ 	int dump_lock; /* separated from flags due to cross-cpu access */
+-	int trace_pos;
+-	int begin, end;
+-	int post_trace;
+-	unsigned long long length;
++	int trace_pos; /* next point to fill */
++	int begin, end; /* finalised path begin and end */
++	int post_trace; /* non-zero when in post-trace phase */
++	unsigned long long length; /* max path length in cycles */
++	unsigned long nmi_saved_eip; /* for deferred requests from NMIs */
++	unsigned long nmi_saved_parent_eip;
++	unsigned long nmi_saved_v;
+ 	struct ipipe_trace_point point[IPIPE_TRACE_POINTS];
+ } ____cacheline_aligned_in_smp;
+ 
+@@ -84,8 +89,10 @@ int ipipe_trace_enable = 1;
+ 
+ static struct ipipe_trace_path trace_paths[NR_CPUS][IPIPE_TRACE_PATHS] =
+ 	{ [0 ... NR_CPUS-1] =
+-		{ [ IPIPE_DEFAULT_ACTIVE ] = {.begin = -1, .end = -1 },
+-		  [ IPIPE_DEFAULT_FROZEN ] = {.begin = -1, .end = -1 } } };
++		{ [0 ... IPIPE_TRACE_PATHS-1] =
++			{ .begin = -1, .end = -1 }
++		}
++	};
+ static int active_path[NR_CPUS] =
+ 	{ [0 ... NR_CPUS-1] = IPIPE_DEFAULT_ACTIVE };
+ static int max_path[NR_CPUS] =
+@@ -133,7 +140,7 @@ __ipipe_migrate_pre_trace(struct ipipe_t
+ 		       sizeof(struct ipipe_trace_point));
+ }
+ 
+-static inline struct ipipe_trace_path *
++static notrace struct ipipe_trace_path *
+ __ipipe_trace_end(int cpu_id, struct ipipe_trace_path *tp, int pos)
+ {
+ 	struct ipipe_trace_path *old_tp = tp;
+@@ -166,7 +173,7 @@ __ipipe_trace_end(int cpu_id, struct ipi
+ 	return tp;
+ }
+ 
+-static inline struct ipipe_trace_path *
++static notrace struct ipipe_trace_path *
+ __ipipe_trace_freeze(int cpu_id, struct ipipe_trace_path *tp, int pos)
+ {
+ 	struct ipipe_trace_path *old_tp = tp;
+@@ -212,19 +219,31 @@ __ipipe_trace(enum ipipe_trace_type type
+ 	unsigned long flags;
+ 	int cpu_id;
+ 
+-	local_irq_save_hw(flags);
++	local_irq_save_hw_notrace(flags);
+ 
+ 	cpu_id = raw_smp_processor_id();
+ 	tp = old_tp = &trace_paths[cpu_id][active_path[cpu_id]];
+ 
+ 	/* check for NMI recursion */
+-	if (tp->flags & IPIPE_TFLG_NMI_LOCK) {
++	if (unlikely(tp->flags & IPIPE_TFLG_NMI_LOCK)) {
+ 		tp->flags |= IPIPE_TFLG_NMI_HIT;
++
++		/* first freeze request from NMI context? */
++		if ((type == IPIPE_TRACE_FREEZE) &&
++		    !(tp->flags & IPIPE_TFLG_NMI_FREEZE_REQ)) {
++			/* save arguments and mark deferred freezing */
++			tp->flags |= IPIPE_TFLG_NMI_FREEZE_REQ;
++			tp->nmi_saved_eip = eip;
++			tp->nmi_saved_parent_eip = parent_eip;
++			tp->nmi_saved_v = v;
++		}
+ 		return; /* no need for restoring flags inside IRQ */
+ 	}
+ 
+-	/* clear NMI warning and set lock (atomically per cpu) */
+-	tp->flags = (tp->flags & ~IPIPE_TFLG_NMI_HIT) | IPIPE_TFLG_NMI_LOCK;
++	/* clear NMI events and set lock (atomically per cpu) */
++	tp->flags = (tp->flags & ~(IPIPE_TFLG_NMI_HIT |
++	                           IPIPE_TFLG_NMI_FREEZE_REQ))
++	                       | IPIPE_TFLG_NMI_LOCK;
+ 
+ 	/* get the point buffer */
+ 	pos = tp->trace_pos;
+@@ -244,33 +263,32 @@ __ipipe_trace(enum ipipe_trace_type type
+ 
+ 	/* only mark beginning if we haven't started yet */
+ 	begin = tp->begin;
+-	if ((type == IPIPE_TRACE_BEGIN) && (begin < 0))
++	if (unlikely(type == IPIPE_TRACE_BEGIN) && (begin < 0))
+ 		tp->begin = pos;
+ 
+-	/* skip END and FREEZE request during post-trace */
+-	if (!tp->post_trace) {
+-		/* end of critical path, start post-trace */
+-		if ((type == IPIPE_TRACE_END) && (begin >= 0))
+-			tp->post_trace = post_trace + 1;
+-
+-		/* freeze only if the slot is free */
+-		if ((type == IPIPE_TRACE_FREEZE) &&
+-		    (trace_paths[cpu_id][frozen_path[cpu_id]].begin < 0)) {
+-			tp->post_trace = post_trace + 1;
+-			tp->flags |= IPIPE_TFLG_FREEZING;
+-		}
++	/* end of critical path, start post-trace if not already started */
++	if (unlikely(type == IPIPE_TRACE_END) &&
++	    (begin >= 0) && !tp->post_trace)
++		tp->post_trace = post_trace + 1;
++
++	/* freeze only if the slot is free and we are not already freezing */
++	if (unlikely(type == IPIPE_TRACE_FREEZE) &&
++	    (trace_paths[cpu_id][frozen_path[cpu_id]].begin < 0) &&
++	    !(tp->flags & IPIPE_TFLG_FREEZING)) {
++		tp->post_trace = post_trace + 1;
++		tp->flags |= IPIPE_TFLG_FREEZING;
+ 	}
+ 
+ 	/* enforce end of trace in case of overflow */
+-	if (WRAP_POINT_NO(next_pos + 1) == begin)
++	if (unlikely(WRAP_POINT_NO(next_pos + 1) == begin))
+ 		tp->post_trace = 1;
+ 
+ 	/* stop tracing this path if we are in post-trace and
+ 	 *  a) that phase is over now or
+ 	 *  b) a new TRACE_BEGIN came in but we are not freezing this path */
+-	if ((tp->post_trace > 0) && ((--tp->post_trace == 0) ||
+-	    ((type == IPIPE_TRACE_BEGIN) &&
+-	    !(tp->flags & IPIPE_TFLG_FREEZING)))) {
++	if (unlikely((tp->post_trace > 0) && ((--tp->post_trace == 0) ||
++	             ((type == IPIPE_TRACE_BEGIN) &&
++	              !(tp->flags & IPIPE_TFLG_FREEZING))))) {
+ 		/* store the path's end (i.e. excluding post-trace) */
+ 		tp->end = WRAP_POINT_NO(pos - post_trace + tp->post_trace);
+ 
+@@ -284,20 +302,81 @@ __ipipe_trace(enum ipipe_trace_type type
+ 			tp->trace_pos-1 : -1;
+ 		tp->end = -1;
+ 		tp->post_trace = 0;
++		tp->flags = 0;
+ 
+ 		/* update active_path not earlier to avoid races with NMIs */
+ 		active_path[cpu_id] = tp - trace_paths[cpu_id];
+ 	}
+ 
+ 	/* we still have old_tp and point,
+-	 * let's reset NMI lock and check for noise */
++	 * let's reset NMI lock and check for catches */
+ 	old_tp->flags &= ~IPIPE_TFLG_NMI_LOCK;
+-	if (old_tp->flags & IPIPE_TFLG_NMI_HIT) {
++	if (unlikely(old_tp->flags & IPIPE_TFLG_NMI_HIT)) {
+ 		/* well, this late tagging may not immediately be visible for
+ 		 * other cpus already dumping this path - a minor issue */
+ 		point->flags |= IPIPE_TFLG_NMI_HIT;
++
++		/* handle deferred freezing from NMI context */
++		if (old_tp->flags & IPIPE_TFLG_NMI_FREEZE_REQ)
++			__ipipe_trace(IPIPE_TRACE_FREEZE, old_tp->nmi_saved_eip,
++			              old_tp->nmi_saved_parent_eip,
++			              old_tp->nmi_saved_v);
+ 	}
+ 
++	local_irq_restore_hw_notrace(flags);
++}
++
++static notrace unsigned long __ipipe_global_path_lock(void)
++{
++	unsigned long flags;
++	int cpu_id;
++	struct ipipe_trace_path *tp;
++
++	spin_lock_irqsave_hw(&global_path_lock, flags);
++
++	cpu_id = raw_smp_processor_id();
++restart:
++	tp = &trace_paths[cpu_id][active_path[cpu_id]];
++
++	/* here is small race window with NMIs - catched below */
++
++	/* clear NMI events and set lock (atomically per cpu) */
++	tp->flags = (tp->flags & ~(IPIPE_TFLG_NMI_HIT |
++	                           IPIPE_TFLG_NMI_FREEZE_REQ))
++	                       | IPIPE_TFLG_NMI_LOCK;
++
++	/* check active_path again - some nasty NMI may have switched
++	 * it meanwhile */
++	if (tp != &trace_paths[cpu_id][active_path[cpu_id]]) {
++		/* release lock on wrong path and restart */
++		tp->flags &= ~IPIPE_TFLG_NMI_LOCK;
++
++		/* there is no chance that the NMI got deferred
++		 * => no need to check for pending freeze requests */
++		goto restart;
++	}
++
++	return flags;
++}
++
++static notrace void __ipipe_global_path_unlock(unsigned long flags)
++{
++	int cpu_id;
++	struct ipipe_trace_path *tp;
++
++	/* release spinlock first - it's not involved in the NMI issue */
++	spin_unlock_hw(&global_path_lock);
++
++	cpu_id = raw_smp_processor_id();
++	tp = &trace_paths[cpu_id][active_path[cpu_id]];
++
++	tp->flags &= ~IPIPE_TFLG_NMI_LOCK;
++
++	/* handle deferred freezing from NMI context */
++	if (tp->flags & IPIPE_TFLG_NMI_FREEZE_REQ)
++		__ipipe_trace(IPIPE_TRACE_FREEZE, tp->nmi_saved_eip,
++		              tp->nmi_saved_parent_eip, tp->nmi_saved_v);
++
+ 	local_irq_restore_hw(flags);
+ }
+ 
+@@ -340,6 +419,58 @@ void notrace ipipe_trace_special(unsigne
+ }
+ EXPORT_SYMBOL(ipipe_trace_special);
+ 
++void ipipe_trace_max_reset(void)
++{
++	int cpu_id;
++	unsigned long flags;
++	struct ipipe_trace_path *path;
++
++	/* only allowed from root domain (we sync with /proc routines) */
++	if (ipipe_current_domain != ipipe_root_domain)
++		return;
++
++	down(&out_mutex);
++	flags = __ipipe_global_path_lock();
++
++	for_each_cpu(cpu_id) {
++		path = &trace_paths[cpu_id][max_path[cpu_id]];
++		path->begin     = -1;
++		path->end       = -1;
++		path->trace_pos = 0;
++		path->length    = 0;
++	}
++
++	__ipipe_global_path_unlock(flags);
++	up(&out_mutex);
++}
++EXPORT_SYMBOL(ipipe_trace_max_reset);
++
++void ipipe_trace_frozen_reset(void)
++{
++	int cpu_id;
++	unsigned long flags;
++	struct ipipe_trace_path *path;
++
++	/* only allowed from root domain (we sync with /proc routines) */
++	if (ipipe_current_domain != ipipe_root_domain)
++		return;
++
++	down(&out_mutex);
++	flags = __ipipe_global_path_lock();
++
++	for_each_cpu(cpu_id) {
++		path = &trace_paths[cpu_id][frozen_path[cpu_id]];
++		path->begin = -1;
++		path->end = -1;
++		path->trace_pos = 0;
++		path->length    = 0;
++	}
++
++	__ipipe_global_path_unlock(flags);
++	up(&out_mutex);
++}
++EXPORT_SYMBOL(ipipe_trace_frozen_reset);
++
+ 
+ /* --- /proc output --- */
+ 
+@@ -453,8 +584,9 @@ static void *__ipipe_max_prtrace_start(s
+ 		unsigned long flags;
+ 
+ 		/* protect against max_path/frozen_path updates while we
+-		 * haven't locked our target path */
+-		spin_lock_irqsave_hw(&global_path_lock, flags);
++		 * haven't locked our target path, also avoid recursively
++		 * taking global_path_lock from NMI context */
++		flags = __ipipe_global_path_lock();
+ 
+ 		/* find the longest of all per-cpu paths */
+ 		print_path = NULL;
+@@ -466,7 +598,7 @@ static void *__ipipe_max_prtrace_start(s
+ 		}
+ 		print_path->dump_lock = 1;
+ 
+-		spin_unlock_irqrestore_hw(&global_path_lock, flags);
++		__ipipe_global_path_unlock(flags);
+ 
+ 		/* does this path actually contain data? */
+ 		if (print_path->end == print_path->begin)
+@@ -600,24 +732,7 @@ static ssize_t
+ __ipipe_max_reset(struct file *file, const char __user *pbuffer,
+                   size_t count, loff_t *data)
+ {
+-	int cpu_id;
+-	unsigned long flags;
+-	struct ipipe_trace_path *path;
+-
+-	down(&out_mutex);
+-	spin_lock_irqsave_hw(&global_path_lock, flags);
+-
+-	for_each_cpu(cpu_id) {
+-		path = &trace_paths[cpu_id][max_path[cpu_id]];
+-		path->begin     = 0;
+-		path->end       = 0;
+-		path->trace_pos = 0;
+-		path->length    = 0;
+-	}
+-
+-	spin_unlock_irqrestore_hw(&global_path_lock, flags);
+-	up(&out_mutex);
+-
++	ipipe_trace_max_reset();
+ 	return count;
+ }
+ 
+@@ -641,8 +756,9 @@ static void *__ipipe_frozen_prtrace_star
+ 		unsigned long flags;
+ 
+ 		/* protect against max_path/frozen_path updates while we
+-		 * haven't locked our target path */
+-		spin_lock_irqsave_hw(&global_path_lock, flags);
++		 * haven't locked our target path, also avoid recursively
++		 * taking global_path_lock from NMI context */
++		flags = __ipipe_global_path_lock();
+ 
+ 		/* find the first of all per-cpu frozen paths */
+ 		print_path = NULL;
+@@ -654,7 +770,7 @@ static void *__ipipe_frozen_prtrace_star
+ 		if (print_path)
+ 			print_path->dump_lock = 1;
+ 
+-		spin_unlock_irqrestore_hw(&global_path_lock, flags);
++		__ipipe_global_path_unlock(flags);
+ 
+ 		if (!print_path)
+ 			return NULL;
+@@ -708,22 +824,7 @@ static ssize_t
+ __ipipe_frozen_reset(struct file *file, const char __user *pbuffer,
+                      size_t count, loff_t *data)
+ {
+-	int cpu_id;
+-	unsigned long flags;
+-	struct ipipe_trace_path *path;
+-
+-	down(&out_mutex);
+-	spin_lock_irqsave_hw(&global_path_lock, flags);
+-
+-	for_each_cpu(cpu_id) {
+-		path = &trace_paths[cpu_id][frozen_path[cpu_id]];
+-		path->begin = -1;
+-		path->end = -1;
+-	}
+-
+-	spin_unlock_irqrestore_hw(&global_path_lock, flags);
+-	up(&out_mutex);
+-
++	ipipe_trace_frozen_reset();
+ 	return count;
+ }
+ 
+--- linux-2.6.14.3//kernel/ipipe/Kconfig.orig	2006-01-02 20:44:21.000000000 +0100
++++ linux-2.6.14.3//kernel/ipipe/Kconfig	2006-01-04 04:19:53.000000000 +0100
+@@ -15,9 +15,21 @@ config IPIPE_STATS
+ 	  is useful to detect unexpected latency spots.
+ 
+ config IPIPE_TRACE
+-	bool "Trace interrupt latencies"
++	bool "Latency Tracing"
+ 	depends on IPIPE && PROC_FS
+ 	default n
+ 	---help---
+-	  Activate this option if I-pipe shall trace the longest stalled path
+-	  of the domain with the highest priority.
++	  Activate this option if you want to use per-function tracing of
++	  the kernel. The tracer will collect data via instrumentation
++	  features like the one below or with the help of explicite calls
++	  of ipipe_trace_xxx(). See include/linux/ipipe_trace.h for the
++	  in-kernel tracing API. The collected data and runtime control
++	  is available via /proc/ipipe/trace/*.
++
++config IPIPE_TRACE_IRQSOFF
++	bool "Trace IRQs-off times"
++	depends on IPIPE_TRACE
++	default y
++	---help---
++	  Activate this option if I-pipe shall trace the longest path
++	  with hard-IRQs switched off.
+--- linux-2.6.14.3//include/linux/ipipe_trace.h.orig	2006-01-02 20:44:21.000000000 +0100
++++ linux-2.6.14.3//include/linux/ipipe_trace.h	2006-01-03 17:06:09.000000000 +0100
+@@ -28,4 +28,7 @@ void ipipe_trace_end(unsigned long v);
+ void ipipe_trace_freeze(unsigned long v);
+ void ipipe_trace_special(unsigned char special_id, unsigned long v);
+ 
++void ipipe_trace_max_reset(void);
++void ipipe_trace_frozen_reset(void);
++
+ #endif	/* !__LINUX_IPIPE_H */
 --- linux-2.6.14.3//include/asm-i386/system.h.orig	2006-01-03 19:05:32.000000000 +0100
 +++ linux-2.6.14.3//include/asm-i386/system.h	2006-01-04 22:15:53.000000000 +0100
 @@ -481,18 +481,82 @@ void fastcall __ipipe_restore_root(unsig
@@ -384,9 +648,9 @@ Content-Disposition: inline;
  #define local_test_iflag_hw(x)   ((x) & (1<<9))
  #define irqs_disabled_hw()	\
 
---------------010906060700030503030809--
+--------------000806080802050706010407--
 
---------------enig82AC67B6F18A747E4D6A60E9
+--------------enig94CDF42271B86A8AD307259A
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -395,10 +659,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDvEMPniDOoMHTA+kRAkToAJ0YGFPPPKV7NztRAaA43gRpJYJP6wCeOe7C
-z8rut9tMi+n+b8P/gQz46Yc=
-=ftXk
+iD8DBQFDvE/7niDOoMHTA+kRAjnQAJ9Wdsjo616OdnaZsGhUBmv+QNdMYQCfbZ5W
+7ZZqfZcwCLqVvE3bJDG/VFw=
+=Hpny
 -----END PGP SIGNATURE-----
 
---------------enig82AC67B6F18A747E4D6A60E9--
+--------------enig94CDF42271B86A8AD307259A--
 
