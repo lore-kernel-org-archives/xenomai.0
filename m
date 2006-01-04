@@ -1,16 +1,11 @@
-Message-ID: <43BA977F.9040303@domain.hid>
-Date: Tue, 03 Jan 2006 16:25:51 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <20060104140720.52693.qmail@domain.hid>
+Date: Wed, 4 Jan 2006 06:07:20 -0800 (PST)
+From: "Md. Omar Faruque Sarker" <writefaruq@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: [Xenomai-core] I-pipe + latency tracing patch
-References: <43B5658D.3030004@domain.hid>
-	<43B58FED.6070404@domain.hid>	<43B5AB49.7040704@domain.hid>
-	<43B5B0A1.6030409@domain.hid> <43B6569D.30506@domain.hid>
-In-Reply-To: <43B6569D.30506@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE0E23EAED29BE75EC10DF8CB"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] Some fundamental questions on Xenomai : past,
+	present and future
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,125 +15,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE0E23EAED29BE75EC10DF8CB
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Dear all,
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
-> 
->> Philippe Gerum wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>
->>>> Philippe Gerum wrote:
->>>>
->>>>
->>>>> I've just rolled out two patches, the first issue of the 1.1 series
->>>>> for
->>>>> x86, and the accompanying tracer patch contributed by Jan Kiszka and
->>>>> Luotao Fu. With the latter patch, the I-pipe shall trace the longest
->>>>> stalled path of the domain with the highest priority. Apply them in
->>>>> that
->>>>> order:
->>>>>
->>>>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/adeos-ipipe-2.6.14-i386-1.1-00.patch
->>>>>
->>>>>
->>>>>
->>>>> http://download.gna.org/adeos/patches/v2.6/adeos/i386/tracer/ipipe-tracer-2.6.14-i386-1.1-00.patch
->>>>>
->>>>>
->>>>>
->>>>
->>>>
->>>> Two remarks: First, the tracer patch claims more in its config option
->>>> than it actually provides - mea culpa. The patch itself does not
->>>> contain
->>>> any instrumentation of ipipe. This has to be fixed. Meanwhile, please
->>>> have a look at this posting for instrumentation options:
->>>> https://mail.gna.org/public/xenomai-core/2005-12/msg00076.html
->>>>
->>>> Philippe, do you remember the issues I described about my original
->>>> ipipe_trace.instr? How can we avoid too short worst-case traces due to
->>>> domain unstalling followed by re-stalling inside the same IRQ context?
->>>> Do you see further issues with this approach? I think it would be best
->>>> if we can provide a clean CONFIG_IPIPE_TRACE_STALLS for the highest (or
->>>> later maybe even for an arbitrary) domain together with the tracer.
->>>>
->>>
->>> +static inline void ipipe_trace_stall(struct ipipe_domain *ipd, int
->>> code)
->>> +{
->>> +    if (__ipipe_pipeline_head_p(ipd) && (ipd != ipipe_root_domain))
->>> +        ipipe_trace_begin(code);
->>> +}
->>> +
->>> +static inline void ipipe_trace_unstall(struct ipipe_domain *ipd, int
->>> code)
->>> +{
->>> +    if (__ipipe_pipeline_head_p(ipd) && (ipd != ipipe_root_domain))
->>> +        ipipe_trace_end(code);
->>> +}
->>>
->>> The test is wrong in both case. You need to check that ipd is above or
->>> equal to ipipe_current_domain in the pipeline. To determine that quickly
->>> while tracing, you will probably need to insert an integer giving the
->>> position of each domain into the ipipe_domain struct.
->>
->>
->>
->> So the orderning in __ipipe_pipeline does say nothing about the priority
->> of the domain? Then this seems to have worked only by chance so far
->> for me.
->>
-> 
-> Of course it does. The thing is that your test must reflect the fact
-> that stalling above and up to the current domain actually blocks the
-> interrupts for the latter, and unstalling at least from your current
-> domain unblocks them. The position value is just a suggestion to quickly
-> compare the effective priority of two domains given their descriptor,
-> without being stuck with the uncertainty of ipd->priority which might be
-> the same for multiple domains, and without having to scan the pipeline
-> top-down.
+Greetings of New Year 2006!
 
-As I'm looking for the stall-time of the highest order domain, I don't
-get this point for the stall. Regarding unstall: Is it the case that an
-unstall below the highest domain currently stalled (e.g. Xenomai and
-below is stalled, Linux gets unstalled) will also unstall the domains
-above? In that case and when only looking at the highest domain (which I
-will likely keep for simplicity), ipipe_trace_unstall() would simply
-have to trace unconditionally.
+I presume that this is the right mailing list to ask
+about the fundamental characteristics of Xenomai, a
+very promising RTOS. If I'm wrong please forward it to
+right place since I'm going to invite a group of=20
+people to implement Xenomai -;)
 
-> 
->> Anyway, fixing this does not seem to address the other issue I
->> mentioned. I once also traced the evaluation of those two conditions and
->> found no indication that this triggers the preliminary end-of-stall
->> reports I'm facing.
->>
+1. Xenomai and RTAI:=20
+I have already read some postings of this mailing list
+about the separation of Xenomai from RTAI. But still
+I'm not sure about the fundamental differences between
+Xenomai and RTAI. I'm assuming that both are capable
+RTOS working in conjunction with Linux after patching
+by ADEOS patch, additionally Xenomai can be also used
+to emulate traditional RTOS via skin personalities
+like VxWorks, pSOS etc and user space RTOS API are
+available in Xenomai (similar as LXRT in RTAI ?). I
+think this is not all.=20
+So what are the basic differences in design,
+functionality, implementation and also in motivation
+between the two projects ?
 
-...and this needs a closer look now.
+2. Xenomai and other RTOSes: I assume, all RTOS has
+their own strengths and limitations. But still I like
+to ask about the specific limitation of Xenomai
+comparing with other commercial RTOS.=20
+Is there any known significant RTOS functionality=20
+missing in Xenomai w.r.t major commercial RTOSes ?
 
-Jan
+3. Xenomai and target application domain: Is there any
+specific application domain planned for Xenomai in
+near future? (Like, RTAI gained popularity in DSP
+style systems)
 
---------------enigE0E23EAED29BE75EC10DF8CB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I would like to express my big thanks to you all for
+mainataining such a  novel work and I hope soon many
+people will join with you for making Xenomai a de
+facto RTOS in open source world.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+P.S. IEEE RTS and Xenomai: I explore the RT Research
+Repository of IEEE at
+http://www.cs.bu.edu/pub/ieee-rts/Groups.html and I
+think Xenomai should also be added there.
 
-iD8DBQFDupd/niDOoMHTA+kRAivNAJ9ZxPykXPKgaSMTWQWz09Y4iO2wywCdH+ud
-EZO/C1r1LW931ECBalMjtS4=
-=BoJ3
------END PGP SIGNATURE-----
+---
+Sincerely,
+M. Omar Faruque Sarker
+MS Student,
+Korea Institue of Science and Technology (KIST)
+Seoul, Korea (South)
 
---------------enigE0E23EAED29BE75EC10DF8CB--
+=20
+
+
+
+	=09
+__________________________________________=20
+Yahoo! DSL =96 Something to write home about.=20
+Just $16.99/mo. or less.=20
+dsl.yahoo.com=20
+
 
