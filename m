@@ -1,13 +1,12 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17340.951.310449.498691@domain.hid>
+Date: Wed, 4 Jan 2006 18:19:51 +0100
 Subject: Re: [Xenomai-core] RTDM timerbench problems
-From: Stelian Pop <stelian.pop@domain.hid>
-In-Reply-To: <43BBFCB6.9080601@domain.hid>
+In-Reply-To: <1136391676.5443.57.camel@domain.hid>
 References: <1136391676.5443.57.camel@domain.hid>
-	<43BBFCB6.9080601@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Wed, 04 Jan 2006 18:10:47 +0100
-Message-Id: <1136394647.5443.64.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,56 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Le mercredi 04 janvier 2006 =E0 17:49 +0100, Jan Kiszka a =E9crit :
-> Stelian Pop wrote:
-> > Hi,
-> >=20
-> 88> I'm trying to use the xeno_timerbench as a replacement to the old 2=
-.0
-> > klatency module and I encounter some problems.
-> >=20
-> > This is on my in-progress ARM Xenomai port. User space latency and ol=
-d
-> > klatency work great (my board has some hardware latency problems thou=
-gh
-> > - latencies can be as high as 500 us..). This in on a 2.6.14.5 kernel
-> > using the latest ipipe patch and the latest SVN trunk xenomai.
-> >=20
-> > Note that I never used the RTDM skin until now, so the problem could =
-be
-> > as well in the core RTDM code.
->=20
-> Almost impossible - there are no bugs! ;)
+Stelian Pop wrote:
+ > Before hanging, sometimes it just prints:
+ > 	Unable to handle kernel NULL pointer dereference at virtual address 0000004d
+ > 
+ > Sometimes the oops is more complete (note that sometimes it also hangs in the middle of
+ > the printout):
+ > 	Unable to handle kernel NULL pointer dereference at virtual address 0000004d
+ > 	pgd = c0004000
+ > 	[0000004d] *pgd=00000000
+ > 	Internal error: Oops: 817 [#1]
+ > 	Modules linked in: xeno_timerbench
+ > 	CPU: 0
+ > 	PC is at xnpod_schedule+0x6b4/0x7f0
+ > 	LR is at xnpod_schedule+0x54c/0x7f0
+ > 	pc : [<c0056cc4>]    lr : [<c0056b5c>]    Not tainted
+ > 	sp : c7d41830  ip : c79e8044  fp : c7d41860
+ > 	r10: c0283c2c  r9 : c0282
+ > 
+ > Does this rings a bell to someone ? 
 
-there is no spoon either :)
+Not much, but two remarks:
+- last summer, there use to be such a problem on x86 because of some
+  wrong FPU switch. So, is FPU enabled ? Are you compiling latency with
+  -msoft-float ?
 
-=20
-> Well, seriously, I don't believe it's a RTDM-related issue as the
-> invocation of the timer-handler and the kernel-task tests are quite
-> similar. The former works, the latter fails inside the scheduler, this
-> rather indicates some issue in the arch-specific part of the scheduler
-> (the timer test runs in IRQ-context).
->=20
-> Did you test some RTDM or native kernel-only timed-task before? With
-> RTDM this can be as trivial as this one:
+  When announcing the ARM Adeos port, you told us that not all
+  exceptions were trapped by the Adeos patch. If one of the FPU
+  exceptions is not trapped, it would explain why we do not get the
+  usual message "Invalid use of FPU at ..." before the oops.
 
-As I said in the previous post, the old klatency works.
+- as far as I know, xnpod_schedule never recurses, so, there is little
+  chance for PC and LR to be both in xnpod_schedule. If I am not wrong,
+  it means that you will have to have a look at the disassembly (sorry)
+  and see in really what functions the bugs happen. Sometimes the -r and
+  -S option of objdump help...
 
-As for your rtdm example:
+-- 
 
-# insmod test-rtdm.ko
-test_rtdm: module license 'unspecified' taints kernel.
-# I'm alive.I'm alive.I'm alive.I'm alive.I'm alive.I'm alive.I'm
-alive.I'm alive.I'm alive.I'm alive.I'm alive.I'm alive.I'm alive.I'm
-alive.I'm alive.I'm alive.
 
-seems to work fine too (and I'm even able to rmmod the module).
-
-Stelian.
---=20
-Stelian Pop <stelian.pop@domain.hid>
-
+					    Gilles Chanteperdrix.
 
