@@ -1,11 +1,12 @@
-Message-ID: <43BD24D4.3070802@domain.hid>
-Date: Thu, 05 Jan 2006 14:53:24 +0100
+Message-ID: <43BD6CC1.7080103@domain.hid>
+Date: Thu, 05 Jan 2006 20:00:17 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] heres a go at an
-	adeos-ipipe-2.6.15-i386-1.1-01.patch
-References: <43BC87C2.1080503@domain.hid>
-In-Reply-To: <43BC87C2.1080503@domain.hid>
+Subject: Re: [Xenomai-core] Re: [PATCH,	RFC] nucleus:shared irq and possible
+	ipipe problem
+References: <b647ffbd0512310437x6e92487es@domain.hid>	<43B69CEC.1040606@domain.hid>	<b647ffbd0601021042h140c0f7dk@domain.hid>
+	<b647ffbd0601021043n1e8704aco@domain.hid>
+In-Reply-To: <b647ffbd0601021043n1e8704aco@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,51 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-
-Hi Jim,
-
-Jim Cromie wrote:
-> hi Phillipe, everyone,
+Dmitry Adamushko wrote:
 > 
-> happy 06 !
+> err... I have to orginize some issues next few days so I'll be out of my 
+> notebook. Then I'll finilize the ipipe-irq-related patch so to be ready 
+> for the .01 version.
 >
 
-Bugfree 06? Nah, just kidding...
-
-> Out of curiosity, I applied adeos-ipipe-2.6.14-i386-1.1-01.patch on top 
-> of 15.
-> 
-> the rejects were small, and simple enough looking, that even
-> a lazy sod like myself might manually fix them, so I did.
-> 
-> whats more, it built clean and booted !
-> I havent done anything more demanding than ls, df, etc,
-> but hey, low hanging fruit tastes just as good / even better ;-)
-> 
-> So heres hoping that you've not started this particular thankless task,
-> 
-
-Nope, and since I don't routinely check Adeos against intermediate 
-kernel versions, it's useful to know about the result people get doing 
-so. Thanks.
-
-and Ive saved your cycles for something more dependent on your
-> particular talents.
-> 
-
-Well, the list of my talents is shortening it seems, since I managed to 
-issue a nifty set of terminally broken patches for ppc, arm and blackfin 
-in less than four hours yesterday... Ok, before resorting to brain 
-surgery, I guess than I'm going to try coffee first. Who knows...
-
-> enjoy.
-> jimc
-> 
-
-Cheers,
+Meanwhile, I have finished merging the shared IRQ infrastructure into 
+the Adeos codebase for all supported archs. The Xenomai trunk/ has been 
+upgraded accordingly too. x86-wise, please make sure to rebase your 
+development on 1.1-02.
 
 -- 
 
