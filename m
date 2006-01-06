@@ -1,14 +1,9 @@
-Message-ID: <43BEB938.7010906@domain.hid>
-Date: Fri, 06 Jan 2006 19:38:48 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43BEBA0D.5090708@domain.hid>
+Date: Fri, 06 Jan 2006 20:42:21 +0200
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Oops, I broke something
-References: <43BE5E3E.1060208@domain.hid>	<43BE626A.6000500@domain.hid>
-	<17342.26740.324646.221814@domain.hid>
-	<43BE771C.2090005@domain.hid> <43BEA273.5090808@domain.hid>
-In-Reply-To: <43BEA273.5090808@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="------------080704050601020007070402"
+Subject: [Xenomai-core] [PATCH] Fix ppc fpu support
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,70 +13,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Gilles Chanteperdrix wrote:
->>
->>
->>>Philippe Gerum wrote:
->>> > Jan Kiszka wrote:
->>> > > But this raised the question to me again if we really need the
->>>"xenomai"
->>> > > prefix for all the skin headers /from within xenomai/. Why not
->>>doing the
->>> > > same linking dance for the other skins as well? Or do you also
->>>prefer
->>> > > that user include <xenomai/native/task.h> instead of just
->>><native/task.h>?
->>> >  > We need this for building from within the kernel. Other options
->>>would  > require to either alter the Xenomai source tree adding
->>>symlinks there,  > pollute linux/include with symlinks to reach the
->>>individual Xeno  > components, or refer to some external tree that
->>>eventually redirects to  > the Xenomai tree, which is not acceptable
->>>in any case.
->>>
->>>Maybe we could add EXTRA_CFLAGS=-I$(TOPDIR)/include/xenomai to every
->>>xenomai kernel makefile
->>
->>
->>Yes, I would preferably merge that instead of playing with symlinks.
->>
->> and to the cflags returned by xeno-config for
->>
->>
->>>kernel-space applications ?
->>>
->>
->>There no such support in xeno-config anymore. Kernel module flags and
->>dependencies now exclusively belong to the kernel build system;
->>xeno-config is only relevant for building user-space apps.
->>
-> 
-> 
-> Actually, my concerns only targeted the userspace applications, more
-> precisely those few being built inside the xeno tree. External user apps
-> can still use the standard, non-prefixed headers. Thus my idea was to
-> unify the includes for those in-tree applications so that users who are
-> taking them as reference only see the standard way.
+This is a multi-part message in MIME format.
+--------------080704050601020007070402
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Ack, but this is a matter of general consistency. Now that the issue is 
-raised and that we need to address it, it's better if we don't have to 
-fiddle with exception cases uselessly, so using the proper include 
-directives for both internal/external cases is the best way to go; 
-provided it works, but it should.
+Xenomai might preempt linux when linux has cleared a tasks MSR_FP, but 
+not yet set last_task_used_math to NULL. As a result the tasks MSR_FP 
+will get set, although it should be cleared. If the task happens to hit 
+one of the codepaths that save FPU state if MSR_FP is set, the wrong FPU 
+state might be saved to the task. The attached patch should fix this. I 
+couldn't try it on most recent Xenomai trunk, because latency wouldn't 
+build anymore. However, I see no reason it shouldn't work. All thee 
+having trouble with X and Xenomai, give this a shot.
 
-> 
-> External kernel applications and drivers can and should catch this
-> prefix by adding <linuxsrc>/include/xenomai to their makefiles.
-> 
-> Jan
+-- Heikki Lindholm
 
+--------------080704050601020007070402
+Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
+	name="xenomai-060106-ppc-hwfpu.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai-060106-ppc-hwfpu.patch"
 
--- 
+diff -Nru xenomai/include/asm-powerpc/system.h xenomai-devel/include/asm-powerpc/system.h
+--- xenomai/include/asm-powerpc/system.h	2006-01-06 15:55:19.000000000 +0200
++++ xenomai-devel/include/asm-powerpc/system.h	2006-01-06 16:44:53.000000000 +0200
+@@ -55,6 +55,7 @@
+     rthal_fpenv_t fpuenv  __attribute__ ((aligned (16)));
+     rthal_fpenv_t *fpup;	/* Pointer to the FPU backup area */
+     struct task_struct *user_fpu_owner;
++    unsigned long user_fpu_owner_prev_msr;
+     /* Pointer the the FPU owner in userspace:
+        - NULL for RT K threads,
+        - last_task_used_math for Linux US threads (only current or NULL when MP)
+@@ -368,7 +369,10 @@
+         rthal_save_fpu(tcb->fpup);
+ 
+         if(tcb->user_fpu_owner && tcb->user_fpu_owner->thread.regs)
++            {
++            tcb->user_fpu_owner_prev_msr = tcb->user_fpu_owner->thread.regs->msr;
+             tcb->user_fpu_owner->thread.regs->msr &= ~MSR_FP;
++            }
+         }   
+ 
+ #endif /* CONFIG_XENO_HW_FPU */
+@@ -383,7 +387,13 @@
+         {
+         rthal_restore_fpu(tcb->fpup);
+ 
+-        if(tcb->user_fpu_owner && tcb->user_fpu_owner->thread.regs)
++	/* Note: Only enable FP in MSR, if it was enabled when we saved the
++	 * fpu state. We might have preempted Linux when it had disabled FP
++	 * for the thread, but not yet set last_task_used_math to NULL 
++	 */
++        if(tcb->user_fpu_owner && 
++			tcb->user_fpu_owner->thread.regs &&
++			((tcb->user_fpu_owner_prev_msr & MSR_FP) != 0))
+             tcb->user_fpu_owner->thread.regs->msr |= MSR_FP;
+         }   
+ 
 
-Philippe.
+--------------080704050601020007070402--
 
