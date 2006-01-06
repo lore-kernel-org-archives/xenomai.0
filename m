@@ -1,13 +1,12 @@
-Message-ID: <43BE5507.3040805@domain.hid>
-Date: Fri, 06 Jan 2006 12:31:19 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43BE5E3E.1060208@domain.hid>
+Date: Fri, 06 Jan 2006 13:10:38 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <43BC4FFB.8040709@domain.hid> <43BCF891.1080402@domain.hid>
-	<43BCFFBB.1080303@domain.hid>
-In-Reply-To: <43BCFFBB.1080303@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [Adeos-main] Re: [PATCH] latency tracer update
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9911318958EC44B5438EA57F"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Oops, I broke something
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,66 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Jan Kiszka wrote:
->>
->>
->>>Hi again,
->>>
->>>here comes the first update of the new latency tracer.
->>>
->>> arch/i386/kernel/entry.S      |   27 +++
->>
->>
->>Is there any good reason to patch the callers of __ipipe_handle_irq
->>instead of instrumenting the callee directly?
->>
-> 
-> 
-> To capture the invocation delay of __ipipe_handle_irq itself.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9911318958EC44B5438EA57F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Ok.
+Hi Philippe,
 
-> 
->>> arch/i386/kernel/ipipe-root.c |    4
->>> include/asm-i386/system.h     |   70 +++++++++
->>> include/linux/ipipe_trace.h   |    3
->>> kernel/ipipe/Kconfig          |   18 ++
->>> kernel/ipipe/tracer.c         |  247 +++++++++++++++++++++++-----------
->>> 6 files changed, 288 insertions(+), 81 deletions(-)
->>>
->>
->>
-> 
-> Meanwhile I found a solution for the described unterminated trace (put
-> an explicite trace_end at the end of __ipipe_unstall_iret_root),
-> 
+my RTDM header "optimisation" broke the compilation of
+testsuite/latency. I need an extra link for the userspace compilation
+inside xeno now. Please apply this patch
 
-Yeah, sorry for the delay in answering. That's indeed the way to do it.
+--- configure.in        (Revision 372)
++++ configure.in        (Arbeitskopie)
+@@ -348,6 +348,8 @@
 
-included the irq number in the begin/end report, and stumbled over some
-> other remaining unterminated trace on a different machine. So, no need
-> to hurry with the merge (not the review! ;) ), I will publish a second
-> revision first.
-> 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+ base=include
+ AC_CONFIG_LINKS([src/include/xenomai:$base])
++base=rtdm
++AC_CONFIG_LINKS([src/include/$base:include/$base])
+ base=asm-$XENO_TARGET_ARCH
+ AC_CONFIG_LINKS([src/include/asm/xenomai:include/$base])
+ base=asm-generic
 
+and run bootstrap. Sorry.
 
--- 
+But this raised the question to me again if we really need the "xenomai"
+prefix for all the skin headers /from within xenomai/. Why not doing the
+same linking dance for the other skins as well? Or do you also prefer
+that user include <xenomai/native/task.h> instead of just <native/task.h>?
 
-Philippe.
+Jan
+
+--------------enig9911318958EC44B5438EA57F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDvl4+niDOoMHTA+kRAm5FAJwOy+nve3qaCOw/B5HO/zH4C7gZvQCfV2ta
+3WUlOEOU7OsxKEwLue42UEM=
+=Orww
+-----END PGP SIGNATURE-----
+
+--------------enig9911318958EC44B5438EA57F--
 
