@@ -1,5 +1,5 @@
-Message-ID: <43BE626A.6000500@domain.hid>
-Date: Fri, 06 Jan 2006 13:28:26 +0100
+Message-ID: <43BE64CC.2020504@domain.hid>
+Date: Fri, 06 Jan 2006 13:38:36 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <43BE5E3E.1060208@domain.hid>
@@ -44,12 +44,14 @@ Jan Kiszka wrote:
 > prefix for all the skin headers /from within xenomai/. Why not doing the
 > same linking dance for the other skins as well? Or do you also prefer
 > that user include <xenomai/native/task.h> instead of just <native/task.h>?
+>
 
-We need this for building from within the kernel. Other options would 
-require to either alter the Xenomai source tree adding symlinks there, 
-pollute linux/include with symlinks to reach the individual Xeno 
-components, or refer to some external tree that eventually redirects to 
-the Xenomai tree, which is not acceptable in any case.
+Nope, people writing apps should not have to handle our internal issues, 
+asking them to prefix with xenomai/ is not an option.
+
+
+> Jan
+
 
 -- 
 
