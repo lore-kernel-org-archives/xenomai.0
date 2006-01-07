@@ -1,15 +1,11 @@
-Message-ID: <43C01D76.3090808@domain.hid>
-Date: Sat, 07 Jan 2006 20:58:46 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 7 Jan 2006 21:03:32 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
-References: <17343.42595.626357.181448@domain.hid>	<17344.665.154004.811426@domain.hid>	<43C00A97.4020404@domain.hid>
-	<17344.5951.309397.423794@domain.hid>
-In-Reply-To: <17344.5951.309397.423794@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB10F9F4F22D82F1177B49866"
-Sender: jan.kiszka@domain.hid
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_U6BwD/4ZT9Aw5JF"
+Message-Id: <200601072103.32588.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Two patches for the documentation
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,86 +15,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB10F9F4F22D82F1177B49866
-Content-Type: text/plain; charset=ISO-8859-15
+--Boundary-00=_U6BwD/4ZT9Aw5JF
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > > The previous patch was also incorrect when trying to cross-compile the
->  > > Linux kernel or building it for ppc. The attached patch fixes these
->  > > issues.
->  > > 
->  > 
->  > Regarding your general idea, I'm just trying to imagine the new build
->  > process: you prepare and build the kernel + the userspace stuff again in
->  > one step?. But you still have to configure both parts separately.
->  > 
->  > The question for me is now if this simplifies the situation expecially
->  > for beginners. So far, the separation was clearly visible, now it /may/
->  > become blurred (but I'm not a beginner...).
->  > 
->  > Can you provide a rough comparision of the workflows? Sorry, but I'm too
->  > lazy, I mean busy to give it a try.
-> 
-> configure --enable-linux-build
-> make xconfig
-> make install
-> 
+Hi
 
-I'm starting to like this!
+xeno.sim.patch contains some clarification on how to build the xenoscope. (GCC 
+3.4 worked for me on a x86 system, but with a lot of warnings, that fwritable 
+is deprecated)
 
-> If you already have a .config file, the "make xconfig" step becomes
-> optional.
-> 
-> Note that the --enable-linux-build flag is optional too.
-> 
-> The simplification is mainly for developping xenomai itself, not for its
-> users. Because with the current scheme, after some modifications, you
-> have to recompile and reinstall both the kernel-space modules and
-> user-space libraries.
-> 
-> If you let configure select the proper adeos patch, you are warned when
-> the adeos patch changed in the source directory (after an svn update,
-> for example), and just have to type: 
-> rm linux/.xenomai-prepared (Ok, this step is a bit awkward, we may find
->                             something better)
-> make install
-> 
-> And a new kernel will be built and installed, using the new adeos patch
-> and the same .config.
-> 
+xeno.patch is a shorter way how to cross-compile using the CROSS_COMPILE 
+variable. It worked for me without any problems for my board.
+Also contains a hint to use O=../a-build-dir to compile the linux kernel.
 
-Hmm, what about this: Instead of leaving some (probably empty)
-xenomai-prepared in the kernel tree, better create an xenomai-uninstall
-script in the same place. It a) can serve as an indication for a
-prepared kernel and b) can be used to upgrade that tree by first running
-it and then applying the usual steps on the kernel again.
+Best regards
 
-I often forget to save my old adeos patch before updating the xenomai
-tree, thus I will then have to download the old patch again,
-reverse-apply it, and can finally run the prepare script for the update.
-Automating this would be REALLY, REALLY GREAT!
+-- 
+Niklaus Giger
 
-Jan
+--Boundary-00=_U6BwD/4ZT9Aw5JF
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="xeno.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+	filename="xeno.patch"
 
---------------enigB10F9F4F22D82F1177B49866
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Index: README.INSTALL
+===================================================================
+--- README.INSTALL	(Revision 392)
++++ README.INSTALL	(Arbeitskopie)
+@@ -150,20 +150,22 @@
+ needed, but if you do not use it, configure emit a warning, which may be
+ confusing.
+ 
++The easiest way to build a GNU cross-compiler might involve using Dan Kegel 
++crosstools found at http://kegel.com/crosstool.
++
+ Since cross-compiling requires specific tools, such tools are generally prefixed
+ with the host architecture name; for example, a compiler for the power PC
+-architecture may be named powerpc-linux-gcc.
++architecture may be named powerpc-405-linux-gnu-gcc.
+ 
+-When this prefix contains the name of the architecture, you may pass this prefix
+-to the --host option of configure. For example, if you type :
+-configure --host=powerpc-linux
+-
+-configure will automatically use powerpc-linux- as a prefix too all compilation
++configure will automatically use powerpc-405-linux-gnu- as a prefix too all compilation
+ tools names and deduce the architecture name. If configure is unable to deduce
+ the architecture name from this prefix, you will have to manually pass the name
+ of all compilation tools on configure command line. As in:
+ 
+-configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
++It might be a good idea to put all the output into a differen build directory
++as to build from from linux source several targets. For each target add 
++O=../build-<target> to each make invocation.
++configure CROSS_COMPILE=powerpc-405-linux-gnu-
+ 
+ For more details:
+ http://sourceware.org/autobook/autobook/autobook_264.html#SEC264
+@@ -204,16 +206,18 @@
+ 2.2 Building for the PowerPC architecture
+ 
+ A typical cross-compilation setup, in order to build Xenomai for a
+-82xx-based system:
++PowerPC-405-based system:
+ 
+ $ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
+   --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
+   --linux=$linux_tree
+ $ cd $linux_tree
+-$ make xconfig/gconfig/menuconfig # select the kernel and Xenomai options
+-$ make bzImage modules # then install as needed
++$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
++# select the kernel and Xenomai options
++$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
++# then install as needed
+ $ mkdir $build_root && cd $build_root
+-$ $xenomai_root/configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
++$ $xenomai_root/configure CROSS_COMPILE=powerpc-405-linux-gnu-
+ $ make install
+ 
+ 2.3 Building for the IPF
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+--Boundary-00=_U6BwD/4ZT9Aw5JF
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="xeno.sim.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+	filename="xeno.sim.patch"
 
-iD8DBQFDwB12niDOoMHTA+kRAooHAJ42QGySpnFXTMeFn4hnt2t0i7+eGwCdE/AR
-V7os4euKYjWh4/4Iv3iL0yA=
-=VkmH
------END PGP SIGNATURE-----
+Index: sim/README
+===================================================================
+--- sim/README	(Revision 392)
++++ sim/README	(Arbeitskopie)
+@@ -28,7 +28,11 @@
+ Building the simulator
+ ======================
+ 
+-You will need the libelf, libpng, tcl8.x/tk8.x and tix41 _development
++The simulator does not build with GCC 4.0 or later.
++
++Currently it does not work on PowerPC systems.
++
++You will need the libelf, libpng, tcl8.x/tk8.x and tix81 _development
+ packages_ in order to build the simulator and its companion tools.
+ For instance, on Debian systems, you will need to install
+ libelfg0-dev, libpng2-dev, tcl8.3-dev, tk8.3-dev and tix41-dev (any
 
---------------enigB10F9F4F22D82F1177B49866--
+--Boundary-00=_U6BwD/4ZT9Aw5JF--
 
