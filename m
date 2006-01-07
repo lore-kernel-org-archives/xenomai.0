@@ -1,13 +1,15 @@
-Message-ID: <43BFFD58.80303@domain.hid>
-Date: Sat, 07 Jan 2006 18:41:44 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43C00044.7000109@domain.hid>
+Date: Sat, 07 Jan 2006 18:54:12 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Fix ppc fpu support
-References: <43BEBA0D.5090708@domain.hid> <43BFC344.2030907@domain.hid>
-	<43BFF955.7010205@domain.hid>
-In-Reply-To: <43BFF955.7010205@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <43BFB26F.8020409@domain.hid> <43BFF568.2030804@domain.hid>
+	<43BFF69C.4040705@domain.hid> <43BFF919.60706@domain.hid>
+In-Reply-To: <43BFF919.60706@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7EE4CECD455D3B10410D439D"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [PATCH] move RTDM headers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,47 +19,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
-> Philippe Gerum kirjoitti:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7EE4CECD455D3B10410D439D
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 > 
->> Heikki Lindholm wrote:
+>> Philippe Gerum wrote:
 >>
->>> Xenomai might preempt linux when linux has cleared a tasks MSR_FP, 
->>> but not yet set last_task_used_math to NULL. As a result the tasks 
->>> MSR_FP will get set, although it should be cleared. If the task 
->>> happens to hit one of the codepaths that save FPU state if MSR_FP is 
->>> set, the wrong FPU state might be saved to the task. The attached 
->>> patch should fix this. I couldn't try it on most recent Xenomai 
->>> trunk, because latency wouldn't build anymore. However, I see no 
->>> reason it shouldn't work. All thee having trouble with X and Xenomai, 
->>> give this a shot.
+>>> Jan Kiszka wrote:
+>>>
+>>>
+>>>> Hi Philippe,
+>>>>
+>>>> this patches cleans up the include/rtdm folder by moving internal
+>>>> headers to ksrc/skins/rtdm, leaving only rtdm.h, rtdm_driver.h, the two
+>>>> profile headers, and syscall.h there. The latter is still only needed
+>>>> for building Xenomai itself, thus it will not be installed.
+>>>> Successfully
+>>>> built for 2.4 and 2.6. Additionally, I compiled latest RTnet SVN
+>>>> against
+>>>> it without problems (x86, PPC is currently being fixed by Wolfgang).
+>>>>
+>>>> Please apply/move the involved headers and run bootstrap.
+>>>>
+>>>
+>>> This one broke the build here:
+>>>
+>>> -- 
+>>>  CC      kernel/xenomai/skins/rtdm/core.o
+>>> kernel/xenomai/skins/rtdm/core.c:36:18: core.h: No such file or
+>>> directory
+>>> kernel/xenomai/skins/rtdm/core.c:37:20: device.h: No such file or
+>>> directory
+>>> -- 
+>>
+>>
+>>
+>> Updated your repos? As you forgot to apply the moving, I also got
+>> problems and applied my local versions of core.h, device.h, and proc.h,
+>> also removing the three from their previous location.
+>>
+> 
+> The problem is that the patch does not recreate those files in
+> ksrc/skin/rtdm, but only deletes them from include/rtdm.
+> 
+
+Oops, indeed. I was sure "svn diff" will include locally added files in
+the output, but it didn't -- ah, my svn version is too old! :)
+
+>>
+>>> Additionally, it's a really very bad idea to start including things like
+>>> "core.h" removing the rtdm/ prefix, while other include files like
+>>> nucleus/core.h exist. For the sake of readability, I'm going to revert
+>>> this particular change at least.
 >>>
 >>
->> Merged in r383, thanks.
+>>
+>> That's why I use #include "core.h", which -for me- clearly states: "Pick
+>> the local one!"
 > 
 > 
-> On a related note, how do you think patches to Linux kernel that don't 
-> fit into I-pipe should be handled? Put into patches directory 
-> separately? There are now at least two instances for 2.6.14/ppc: the fpu 
-> bug that I already posted on this thread and the ppc64 UP building bug 
-> that effectively makes impossible to build I-pipe 2.6.14 for UP on ppc64.
->
+> Nope, it "states pick the first one you find outside of the system dirs
+> depending on the order of the directories listed by -I in your
+> Makefile", which is quite different, and leads to all sort of
+> braindamage issues if you happen to screw up your CFLAGS in your Makefile.
 
-I'm going to put those patches on GNA, so that people can access to them 
-easily. I'm going to add a fix for x86 too, which is needed at least on 
-one of my boxen since 2.6.13 to make the PCI setup correct again.
+#include "file.h" -> start searching for file.h in that place you found
+the file containing this statement. Likely one can overwrite this
+behaviour with some strange gcc flags.
 
-Is this patch still the right one to fix the UP build on ppc64?
-http://patchwork.ozlabs.org/linuxppc64/patchcontent?id=3178
-
-> -- Heikki Lindholm
 > 
+>  You will now have to tweak the Makefiles again...
+> 
+>>
+> 
+> That's ok, I will do that. The prefix rule is enforced everywhere for
+> internal headers so that nobody gets mad trying to find why the wrong
+> one is included, and the best way not to depend on "-I" pecularities is
+> to avoid playing with them in the first place. Additionally, this leaves
+> no doubt about which header you wanted to include, regardless of the
+> sanity of your Makefile.
 
+Ok, it's a matter of taste, and if you like to keep it this way for all
+skins, I'm fine with it.
 
--- 
+Jan
 
-Philippe.
+--------------enig7EE4CECD455D3B10410D439D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDwABEniDOoMHTA+kRAkEVAJ4ilJIOzJm614fTrrbB9dKaUvtfrQCePri/
+NunWg/SybyYeasy7IZlM1Y0=
+=qnIz
+-----END PGP SIGNATURE-----
+
+--------------enig7EE4CECD455D3B10410D439D--
 
