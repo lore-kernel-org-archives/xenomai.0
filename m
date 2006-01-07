@@ -1,15 +1,12 @@
-Message-ID: <43C00A97.4020404@domain.hid>
-Date: Sat, 07 Jan 2006 19:38:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43C00BAE.6000403@domain.hid>
+Date: Sat, 07 Jan 2006 19:42:54 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
-References: <17343.42595.626357.181448@domain.hid>
-	<17344.665.154004.811426@domain.hid>
-In-Reply-To: <17344.665.154004.811426@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF99B931B590AB3AAAE3842DC"
-Sender: jan.kiszka@domain.hid
+References: <43C004EB.1090702@domain.hid> <43C00542.7020501@domain.hid>
+In-Reply-To: <43C00542.7020501@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [PATCH] reset tracer after timer calibration
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,65 +16,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF99B931B590AB3AAAE3842DC
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->  > Known limitations are:
->  > (...)
->  > - for an unknown reason, xenomai modules are built every time
->  >   prepare-kernel.sh is run ;
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
 > 
-> The reason for this limitation is that prepare-kernel.sh remove
-> directories before re-creating them and before creating symbolic links.
+>>Hi Philippe,
+>>
+>>this patch is to reset the maximum IRQs-off path after timer calibration
+>>(will get flooded otherwise). If you have no concerns, please apply.
+>>
+
+Applied, thanks.
+
+>>Actually, there is another noise source: rthal_timer_request() for the
+>>APIC case. But I think we should let this one alone as the user may
+>>trigger millisecond latencies by accidentally restarting the timer while
+>>some external-IRQ-driven device still depends on low latencies. In that
+>>case, the tracer can provide helpful hints.
+>>
+>>Therefore, in order to get useful information after starting the timer,
+>>one always have to run "echo > /proc/ipipe/trace/max" first. Well, if we
+>>move the timer start to some module init or whatever phase also for the
+>>native skin, we should reconsider this exclusion.
+>>
+
+We will do that right after -rc2, which is close now.
+
+>>Jan
 > 
-
-At this chance, something from my private whish list: :)
-
-"unprepare-kernel.sh" or so, i.e. turning the kernel in its original
-vanilla state again.
-
-This is helpful when applying/reversing third-party kernel patches which
-also touch the modified Makefiles. I think on some 2.4 kernel, even
-reverting ipipe collides with the xeno-preparation.
-
-> The previous patch was also incorrect when trying to cross-compile the
-> Linux kernel or building it for ppc. The attached patch fixes these
-> issues.
 > 
+> and *with* the attachement...
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: ChangeLog
+> ===================================================================
+> --- ChangeLog	(Revision 388)
+> +++ ChangeLog	(Arbeitskopie)
+> @@ -7,6 +7,8 @@
+>  	src/testsuite/latency/latency.c: Add re-freeze support and make use
+>  	of it to back-trace always the max latency during benchmarks.
+>  
+> +	* ksrc/arch/i386/hal.c: reset tracer after timer calibration.
+> +
+>  2006-01-07  Heikki Lindholm <holindho@domain.hid>
+>  
+>  	* include/asm-powerpc/system.h: Fix FPU preemption bug.
+> Index: ksrc/arch/i386/hal.c
+> ===================================================================
+> --- ksrc/arch/i386/hal.c	(Revision 386)
+> +++ ksrc/arch/i386/hal.c	(Arbeitskopie)
+> @@ -61,6 +61,9 @@
+>  #endif /* CONFIG_X86_LOCAL_APIC */
+>  #include <asm/xenomai/hal.h>
+>  #include <stdarg.h>
+> +#ifdef CONFIG_IPIPE_TRACE
+> +#include <linux/ipipe_trace.h>
+> +#endif /* CONFIG_IPIPE_TRACE */
+>  
+>  extern struct desc_struct idt_table[];
+>  
+> @@ -177,6 +180,11 @@
+>  
+>      rthal_critical_exit(flags);
+>  
+> +#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+> +    /* reset the max trace, it contains the excessive calibration now */
+> +    ipipe_trace_max_reset();
+> +#endif /* CONFIG_IPIPE_TRACE_IRQSOFF */
+> +
+>      return rthal_imuldiv(dt,100000,RTHAL_CPU_FREQ);
+>  }
+>  
+> @@ -345,6 +353,11 @@
+>  
+>      rthal_critical_exit(flags);
+>  
+> +#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+> +    /* reset the max trace, it contains the excessive calibration now */
+> +    ipipe_trace_max_reset();
+> +#endif /* CONFIG_IPIPE_TRACE_IRQSOFF */
+> +
+>      return rthal_imuldiv(dt,100000,RTHAL_CPU_FREQ);
+>  }
+>  
 
-Regarding your general idea, I'm just trying to imagine the new build
-process: you prepare and build the kernel + the userspace stuff again in
-one step?. But you still have to configure both parts separately.
 
-The question for me is now if this simplifies the situation expecially
-for beginners. So far, the separation was clearly visible, now it /may/
-become blurred (but I'm not a beginner...).
+-- 
 
-Can you provide a rough comparision of the workflows? Sorry, but I'm too
-lazy, I mean busy to give it a try.
-
-Jan
-
---------------enigF99B931B590AB3AAAE3842DC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDwAqYniDOoMHTA+kRAsYvAJ4vwe8NaoEK4/RNwiidBj/O1pA/4wCePtga
-netHp7q1aGQO8CMvbntj8Co=
-=MoZe
------END PGP SIGNATURE-----
-
---------------enigF99B931B590AB3AAAE3842DC--
+Philippe.
 
