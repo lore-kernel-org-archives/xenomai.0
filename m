@@ -1,10 +1,12 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Sat, 7 Jan 2006 21:03:32 +0100
+Date: Sat, 7 Jan 2006 21:24:44 +0100
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_U6BwD/4ZT9Aw5JF"
-Message-Id: <200601072103.32588.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Two patches for the documentation
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200601072124.44626.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Problems cross-compiling for PPC405
 Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,118 +19,32 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_U6BwD/4ZT9Aw5JF
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
 Hi
 
-xeno.sim.patch contains some clarification on how to build the xenoscope. (GCC 
-3.4 worked for me on a x86 system, but with a lot of warnings, that fwritable 
-is deprecated)
+I just upgraded to revision 392 of xenomai and got the following error trying
+to compile the linux 2.6.14 kernel
+  CC      kernel/xenomai/nucleus/heap.o
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c:1017:1: 
+pasting "," and "args" does not give a valid preprocessing token
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c: In 
+function `xnheap_mount':
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c:1015: 
+error: `args' undeclared (first use in this function)
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c:1015: 
+error: (Each undeclared identifier is reported only once
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c:1015: 
+error: for each function it appears in.)
+/mnt/data.ng/hcu/kernel/linux-2.6.14/kernel/xenomai/nucleus/heap.c:1015: 
+warning: too many arguments for format
+make[4]: *** [kernel/xenomai/nucleus/heap.o] Fehler 1
+make[3]: *** [kernel/xenomai/nucleus] Fehler 2
+make[2]: *** [kernel/xenomai] Fehler 2
+make[1]: *** [kernel] Fehler 2
 
-xeno.patch is a shorter way how to cross-compile using the CROSS_COMPILE 
-variable. It worked for me without any problems for my board.
-Also contains a hint to use O=../a-build-dir to compile the linux kernel.
 
-Best regards
+I am using GCC 3.4.4.
 
+Best regards 
 -- 
 Niklaus Giger
-
---Boundary-00=_U6BwD/4ZT9Aw5JF
-Content-Type: text/x-diff;
-  charset="iso-8859-1";
-  name="xeno.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename="xeno.patch"
-
-Index: README.INSTALL
-===================================================================
---- README.INSTALL	(Revision 392)
-+++ README.INSTALL	(Arbeitskopie)
-@@ -150,20 +150,22 @@
- needed, but if you do not use it, configure emit a warning, which may be
- confusing.
- 
-+The easiest way to build a GNU cross-compiler might involve using Dan Kegel 
-+crosstools found at http://kegel.com/crosstool.
-+
- Since cross-compiling requires specific tools, such tools are generally prefixed
- with the host architecture name; for example, a compiler for the power PC
--architecture may be named powerpc-linux-gcc.
-+architecture may be named powerpc-405-linux-gnu-gcc.
- 
--When this prefix contains the name of the architecture, you may pass this prefix
--to the --host option of configure. For example, if you type :
--configure --host=powerpc-linux
--
--configure will automatically use powerpc-linux- as a prefix too all compilation
-+configure will automatically use powerpc-405-linux-gnu- as a prefix too all compilation
- tools names and deduce the architecture name. If configure is unable to deduce
- the architecture name from this prefix, you will have to manually pass the name
- of all compilation tools on configure command line. As in:
- 
--configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
-+It might be a good idea to put all the output into a differen build directory
-+as to build from from linux source several targets. For each target add 
-+O=../build-<target> to each make invocation.
-+configure CROSS_COMPILE=powerpc-405-linux-gnu-
- 
- For more details:
- http://sourceware.org/autobook/autobook/autobook_264.html#SEC264
-@@ -204,16 +206,18 @@
- 2.2 Building for the PowerPC architecture
- 
- A typical cross-compilation setup, in order to build Xenomai for a
--82xx-based system:
-+PowerPC-405-based system:
- 
- $ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
-   --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
-   --linux=$linux_tree
- $ cd $linux_tree
--$ make xconfig/gconfig/menuconfig # select the kernel and Xenomai options
--$ make bzImage modules # then install as needed
-+$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
-+# select the kernel and Xenomai options
-+$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
-+# then install as needed
- $ mkdir $build_root && cd $build_root
--$ $xenomai_root/configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
-+$ $xenomai_root/configure CROSS_COMPILE=powerpc-405-linux-gnu-
- $ make install
- 
- 2.3 Building for the IPF
-
---Boundary-00=_U6BwD/4ZT9Aw5JF
-Content-Type: text/x-diff;
-  charset="iso-8859-1";
-  name="xeno.sim.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename="xeno.sim.patch"
-
-Index: sim/README
-===================================================================
---- sim/README	(Revision 392)
-+++ sim/README	(Arbeitskopie)
-@@ -28,7 +28,11 @@
- Building the simulator
- ======================
- 
--You will need the libelf, libpng, tcl8.x/tk8.x and tix41 _development
-+The simulator does not build with GCC 4.0 or later.
-+
-+Currently it does not work on PowerPC systems.
-+
-+You will need the libelf, libpng, tcl8.x/tk8.x and tix81 _development
- packages_ in order to build the simulator and its companion tools.
- For instance, on Debian systems, you will need to install
- libelfg0-dev, libpng2-dev, tcl8.3-dev, tk8.3-dev and tix41-dev (any
-
---Boundary-00=_U6BwD/4ZT9Aw5JF--
 
