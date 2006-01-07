@@ -1,14 +1,12 @@
-Message-ID: <43BFC392.1000700@domain.hid>
-Date: Sat, 07 Jan 2006 14:35:14 +0100
+Message-ID: <43BFC4FD.8050308@domain.hid>
+Date: Sat, 07 Jan 2006 14:41:17 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] latency tracer update
-References: <43BC4FFB.8040709@domain.hid>
-	<43BCF891.1080402@domain.hid>	<43BCFFBB.1080303@domain.hid>
-	<43BE4091.4020806@domain.hid> <43BEC786.8050504@domain.hid>
-In-Reply-To: <43BEC786.8050504@domain.hid>
+References: <43BFB26F.8020409@domain.hid>
+In-Reply-To: <43BFB26F.8020409@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [PATCH] move RTDM headers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,202 +17,299 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Jan Kiszka wrote:
+> Hi Philippe,
 > 
->>Jan Kiszka wrote:
->>
->>
->>>...
->>>Meanwhile I found a solution for the described unterminated trace (put
->>>an explicite trace_end at the end of __ipipe_unstall_iret_root),
->>>included the irq number in the begin/end report, and stumbled over some
->>>other remaining unterminated trace on a different machine. So, no need
->>>to hurry with the merge (not the review! ;) ), I will publish a second
->>>revision first.
->>>
->>
->>
->>And here comes this revision finally. Should apply (almost) cleanly
->>against latest ipipe versions. Additionally to the changes of the first
->>revision this one addresses the following topics:
->>
->> o fix trace overrun handling
->> o report IRQ number to tracer on IRQ entry/exit
->> o fix virtually leaking IRQs-off in __ipipe_unstall_iret_root()
->> o fix another potential NMI race
->> o really trace the maximum IRQs-off time, not the maximum time of
->>   consecutive IRQs-off times (that scenario will soon be addressed
->>   instead  in the latency benchmark tool => reset&freeze the maximum
->>   latency from the user's point of view)
+> this patches cleans up the include/rtdm folder by moving internal
+> headers to ksrc/skins/rtdm, leaving only rtdm.h, rtdm_driver.h, the two
+> profile headers, and syscall.h there. The latter is still only needed
+> for building Xenomai itself, thus it will not be installed. Successfully
+> built for 2.4 and 2.6. Additionally, I compiled latest RTnet SVN against
+> it without problems (x86, PPC is currently being fixed by Wolfgang).
 > 
-> 
-> ...and it turned out that the existing functions were no sufficient for
-> this. So here comes an add-on patch to update3:
-> 
->  o allow ipipe_trace_{frozen|max}_reset from every context
->    (well, at least give it a try and just fail on locked traces)
->  o mark border between valid and invalid trace points
->  o show invalid points border
-> 
-> Apply order:
-> 
-> ipipe_tracer.update3
-> ipipe_tracer.update3-1
+> Please apply/move the involved headers and run bootstrap.
 > 
 
-Merged in 1.1-03, with the appropriate tracer patch. Thanks.
+Applied, thanks.
 
-> The front-end to the first change, a modified latency+timerbench will
-> get committed to Xenomai soon. It already works nicely, automatically
-> creating a freeze of the maximum latency turn the benchmark perceives.
-> 
 > Jan
+> 
 > 
 > 
 > ------------------------------------------------------------------------
 > 
-> --- linux-2.6.14.3/kernel/ipipe/tracer.c.orig	2006-01-06 11:13:41.000000000 +0100
-> +++ linux-2.6.14.3/kernel/ipipe/tracer.c	2006-01-06 20:11:10.000000000 +0100
-> @@ -134,10 +134,14 @@ __ipipe_migrate_pre_trace(struct ipipe_t
->  	int i;
->  
->  	new_tp->trace_pos = pre_trace+1;
-> +
->  	for (i = new_tp->trace_pos; i > 0; i--)
->  		memcpy(&new_tp->point[WRAP_POINT_NO(new_tp->trace_pos-i)],
->  		       &old_tp->point[WRAP_POINT_NO(old_pos-i)],
->  		       sizeof(struct ipipe_trace_point));
-> +
-> +	/* mark the end (i.e. the point before point[0]) invalid */
-> +	new_tp->point[IPIPE_TRACE_POINTS-1].eip = 0;
->  }
->  
->  static notrace struct ipipe_trace_path *
-> @@ -436,21 +440,23 @@ void notrace ipipe_trace_special(unsigne
->  }
->  EXPORT_SYMBOL(ipipe_trace_special);
->  
-> -void ipipe_trace_max_reset(void)
-> +int ipipe_trace_max_reset(void)
->  {
->  	int cpu_id;
->  	unsigned long flags;
->  	struct ipipe_trace_path *path;
-> +	int ret = 0;
->  
-> -	/* only allowed from root domain (we sync with /proc routines) */
-> -	if (ipipe_current_domain != ipipe_root_domain)
-> -		return;
+> Index: include/rtdm/device.h
+> ===================================================================
+> --- include/rtdm/device.h	(Revision 380)
+> +++ include/rtdm/device.h	(Arbeitskopie)
+> @@ -1,60 +0,0 @@
+> -/*
+> - * Copyright (C) 2005 Jan Kiszka <jan.kiszka@domain.hid>.
+> - * Copyright (C) 2005 Joerg Langenberg <joerg.langenberg@domain.hid>.
+> - *
+> - * Xenomai is free software; you can redistribute it and/or modify it
+> - * under the terms of the GNU General Public License as published by
+> - * the Free Software Foundation; either version 2 of the License, or
+> - * (at your option) any later version.
+> - *
+> - * Xenomai is distributed in the hope that it will be useful, but
+> - * WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> - * General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with Xenomai; if not, write to the Free Software Foundation,
+> - * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> - */
 > -
-> -	down(&out_mutex);
->  	flags = __ipipe_global_path_lock();
->  
->  	for_each_cpu(cpu_id) {
->  		path = &trace_paths[cpu_id][max_path[cpu_id]];
-> +
-> +		if (path->dump_lock) {
-> +			ret = -EBUSY;
-> +			break;
-> +		}
-> +
->  		path->begin     = -1;
->  		path->end       = -1;
->  		path->trace_pos = 0;
-> @@ -458,25 +464,28 @@ void ipipe_trace_max_reset(void)
->  	}
->  
->  	__ipipe_global_path_unlock(flags);
-> -	up(&out_mutex);
-> +
-> +	return ret;
->  }
->  EXPORT_SYMBOL(ipipe_trace_max_reset);
->  
-> -void ipipe_trace_frozen_reset(void)
-> +int ipipe_trace_frozen_reset(void)
->  {
->  	int cpu_id;
->  	unsigned long flags;
->  	struct ipipe_trace_path *path;
-> +	int ret = 0;
->  
-> -	/* only allowed from root domain (we sync with /proc routines) */
-> -	if (ipipe_current_domain != ipipe_root_domain)
-> -		return;
+> -#ifndef _RTDM_DEVICE_H
+> -#define _RTDM_DEVICE_H
 > -
-> -	down(&out_mutex);
->  	flags = __ipipe_global_path_lock();
+> -#include <xenomai/nucleus/pod.h>
+> -#include <xenomai/rtdm/rtdm_driver.h>
+> -#include <linux/sem.h>
+> -
+> -
+> -#define DEF_DEVNAME_HASHTAB_SIZE    256 /* entries in name hash table */
+> -#define DEF_PROTO_HASHTAB_SIZE      256 /* entries in protocol hash table */
+> -
+> -
+> -extern struct semaphore nrt_dev_lock;
+> -extern xnlock_t         rt_dev_lock;
+> -
+> -extern unsigned int     devname_hashtab_size;
+> -extern unsigned int     protocol_hashtab_size;
+> -
+> -extern struct list_head *rtdm_named_devices;
+> -extern struct list_head *rtdm_protocol_devices;
+> -
+> -
+> -int rtdm_no_support(void);
+> -
+> -struct rtdm_device *get_named_device(const char *name);
+> -struct rtdm_device *get_protocol_device(int protocol_family, int socket_type);
+> -
+> -static inline void rtdm_dereference_device(struct rtdm_device *device)
+> -{
+> -    atomic_dec(&device->reserved.refcount);
+> -}
+> -
+> -int __init rtdm_dev_init(void);
+> -
+> -static inline void rtdm_dev_cleanup(void)
+> -{
+> -    kfree(rtdm_named_devices);
+> -    kfree(rtdm_protocol_devices);
+> -}
+> -
+> -#endif /* _RTDM_DEVICE_H */
+> Index: include/rtdm/Makefile.am
+> ===================================================================
+> --- include/rtdm/Makefile.am	(Revision 380)
+> +++ include/rtdm/Makefile.am	(Arbeitskopie)
+> @@ -1,11 +1,10 @@
+>  includedir = $(prefix)/include/rtdm
 >  
->  	for_each_cpu(cpu_id) {
->  		path = &trace_paths[cpu_id][frozen_path[cpu_id]];
+> +noinst_HEADERS = \
+> +	syscall.h
 > +
-> +		if (path->dump_lock) {
-> +			ret = -EBUSY;
-> +			break;
-> +		}
+>  include_HEADERS = \
+> -	core.h \
+> -	device.h \
+> -	proc.h \
+>  	rtdm.h \
+>  	rtdm_driver.h \
+>  	rtserial.h \
+> -	syscall.h \
+>  	rtbenchmark.h
+> Index: include/rtdm/proc.h
+> ===================================================================
+> --- include/rtdm/proc.h	(Revision 380)
+> +++ include/rtdm/proc.h	(Arbeitskopie)
+> @@ -1,32 +0,0 @@
+> -/*
+> - * Copyright (C) 2005 Jan Kiszka <jan.kiszka@domain.hid>.
+> - * Copyright (C) 2005 Joerg Langenberg <joerg.langenberg@domain.hid>.
+> - *
+> - * Xenomai is free software; you can redistribute it and/or modify it
+> - * under the terms of the GNU General Public License as published by
+> - * the Free Software Foundation; either version 2 of the License, or
+> - * (at your option) any later version.
+> - *
+> - * Xenomai is distributed in the hope that it will be useful, but
+> - * WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> - * General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with Xenomai; if not, write to the Free Software Foundation,
+> - * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> - */
+> -
+> -#ifndef _RTDM_PROC_H
+> -#define _RTDM_PROC_H
+> -
+> -extern struct proc_dir_entry *rtdm_proc_root;
+> -
+> -
+> -int rtdm_proc_register_device(struct rtdm_device* device);
+> -
+> -int __init rtdm_proc_init(void);
+> -
+> -void rtdm_proc_cleanup(void);
+> -
+> -#endif /* _RTDM_PROC_H */
+> Index: include/rtdm/core.h
+> ===================================================================
+> --- include/rtdm/core.h	(Revision 380)
+> +++ include/rtdm/core.h	(Arbeitskopie)
+> @@ -1,52 +0,0 @@
+> -/*
+> - * Copyright (C) 2005 Jan Kiszka <jan.kiszka@domain.hid>.
+> - * Copyright (C) 2005 Joerg Langenberg <joerg.langenberg@domain.hid>.
+> - *
+> - * Xenomai is free software; you can redistribute it and/or modify it
+> - * under the terms of the GNU General Public License as published by
+> - * the Free Software Foundation; either version 2 of the License, or
+> - * (at your option) any later version.
+> - *
+> - * Xenomai is distributed in the hope that it will be useful, but
+> - * WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> - * General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with Xenomai; if not, write to the Free Software Foundation,
+> - * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+> - */
+> -
+> -#ifndef _RTDM_CORE_H
+> -#define _RTDM_CORE_H
+> -
+> -#include <xenomai/nucleus/pod.h>
+> -#include <xenomai/rtdm/rtdm_driver.h>
+> -
+> -
+> -#define DEF_FILDES_COUNT    64  /* default number of file descriptors */
+> -
+> -
+> -struct rtdm_fildes {
+> -    struct rtdm_fildes                  *next;
+> -    volatile struct rtdm_dev_context    *context;
+> -};
+> -
+> -
+> -#ifdef CONFIG_SMP
+> -extern xnlock_t             rt_fildes_lock;
+> -#endif /* CONFIG_SMP */
+> -
+> -extern unsigned int         fd_count;
+> -extern struct rtdm_fildes   *fildes_table;
+> -extern int                  open_fildes;
+> -
+> -
+> -int __init rtdm_core_init(void);
+> -
+> -static inline void rtdm_core_cleanup(void)
+> -{
+> -    kfree(fildes_table);
+> -}
+> -
+> -#endif /* _RTDM_CORE_H */
+> Index: ksrc/skins/rtdm/device.c
+> ===================================================================
+> --- ksrc/skins/rtdm/device.c	(Revision 380)
+> +++ ksrc/skins/rtdm/device.c	(Arbeitskopie)
+> @@ -28,8 +28,8 @@
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+>  
+> -#include <xenomai/rtdm/device.h>
+> -#include <xenomai/rtdm/proc.h>
+> +#include "device.h"
+> +#include "proc.h"
+>  
+>  
+>  #define SET_DEFAULT_OP(device, operation)                               \
+> Index: ksrc/skins/rtdm/proc.c
+> ===================================================================
+> --- ksrc/skins/rtdm/proc.c	(Revision 380)
+> +++ ksrc/skins/rtdm/proc.c	(Arbeitskopie)
+> @@ -22,10 +22,11 @@
+>  #ifdef CONFIG_PROC_FS
+>  
+>  #include <linux/proc_fs.h>
+> -#include <xenomai/rtdm/core.h>
+> -#include <xenomai/rtdm/device.h>
+>  
+> +#include "core.h"
+> +#include "device.h"
+>  
 > +
->  		path->begin = -1;
->  		path->end = -1;
->  		path->trace_pos = 0;
-> @@ -484,7 +493,8 @@ void ipipe_trace_frozen_reset(void)
->  	}
+>  /* Derived from Erwin Rol's rtai_proc_fs.h.
+>     Assumes that output fits into the provided buffer. */
 >  
->  	__ipipe_global_path_unlock(flags);
-> -	up(&out_mutex);
+> Index: ksrc/skins/rtdm/module.c
+> ===================================================================
+> --- ksrc/skins/rtdm/module.c	(Revision 380)
+> +++ ksrc/skins/rtdm/module.c	(Arbeitskopie)
+> @@ -45,10 +45,12 @@
+>  #include <xenomai/nucleus/core.h>
+>  #include <xenomai/rtdm/syscall.h>
+>  #endif /* __KERNEL__ */
+> -#include <xenomai/rtdm/core.h>
+> -#include <xenomai/rtdm/device.h>
+> -#include <xenomai/rtdm/proc.h>
+>  
+> +#include "core.h"
+> +#include "device.h"
+> +#include "proc.h"
 > +
-> +	return ret;
->  }
->  EXPORT_SYMBOL(ipipe_trace_frozen_reset);
->  
-> @@ -684,8 +694,10 @@ static int __ipipe_prtrace_show(struct s
->  	unsigned long long abs_delta;
->  	struct ipipe_trace_point *point = p;
->  
-> -	if (!point->eip)
-> +	if (!point->eip) {
-> +		seq_puts(m, "-<invalid>-\n");
->  		return 0;
-> +	}
->  
->  	/* ipipe_tsc2us works on unsigned => handle sign separately */
->  	delta = point->timestamp -
-> @@ -749,7 +761,10 @@ static ssize_t
->  __ipipe_max_reset(struct file *file, const char __user *pbuffer,
->                    size_t count, loff_t *data)
->  {
-> +	down(&out_mutex);
->  	ipipe_trace_max_reset();
-> +	up(&out_mutex);
 > +
->  	return count;
->  }
+>  MODULE_DESCRIPTION("Real-Time Driver Model");
+>  MODULE_AUTHOR("jan.kiszka@domain.hid");
+>  MODULE_LICENSE("GPL");
+> Index: ksrc/skins/rtdm/core.c
+> ===================================================================
+> --- ksrc/skins/rtdm/core.c	(Revision 380)
+> +++ ksrc/skins/rtdm/core.c	(Arbeitskopie)
+> @@ -30,12 +30,13 @@
 >  
-> @@ -841,7 +856,10 @@ static ssize_t
->  __ipipe_frozen_reset(struct file *file, const char __user *pbuffer,
->                       size_t count, loff_t *data)
->  {
-> +	down(&out_mutex);
->  	ipipe_trace_frozen_reset();
-> +	up(&out_mutex);
+>  #include <xenomai/nucleus/pod.h>
+>  #include <xenomai/nucleus/heap.h>
+> +#include <xenomai/rtdm/syscall.h>
+>  #include <xenomai/rtdm/rtdm_driver.h>
+> -#include <xenomai/rtdm/core.h>
+> -#include <xenomai/rtdm/device.h>
+> -#include <xenomai/rtdm/syscall.h>
+>  
+> +#include "core.h"
+> +#include "device.h"
+>  
 > +
->  	return count;
->  }
+>  unsigned int                fd_count = DEF_FILDES_COUNT;
+>  module_param(fd_count, uint, 0400);
+>  MODULE_PARM_DESC(fd_count, "Maximum number of file descriptors");
+> Index: ksrc/skins/rtdm/syscall.c
+> ===================================================================
+> --- ksrc/skins/rtdm/syscall.c	(Revision 380)
+> +++ ksrc/skins/rtdm/syscall.c	(Arbeitskopie)
+> @@ -19,10 +19,11 @@
 >  
-> --- linux-2.6.14.3/include/linux/ipipe_trace.h.orig	2006-01-06 11:13:41.000000000 +0100
-> +++ linux-2.6.14.3/include/linux/ipipe_trace.h	2006-01-06 12:37:19.000000000 +0100
-> @@ -28,7 +28,7 @@ void ipipe_trace_end(unsigned long v);
->  void ipipe_trace_freeze(unsigned long v);
->  void ipipe_trace_special(unsigned char special_id, unsigned long v);
+>  #include <xenomai/nucleus/shadow.h>
+>  #include <xenomai/rtdm/rtdm_driver.h>
+> -#include <xenomai/rtdm/core.h>
+>  #include <xenomai/rtdm/syscall.h>
 >  
-> -void ipipe_trace_max_reset(void);
-> -void ipipe_trace_frozen_reset(void);
-> +int ipipe_trace_max_reset(void);
-> +int ipipe_trace_frozen_reset(void);
+> +#include "core.h"
 >  
->  #endif	/* !__LINUX_IPIPE_H */
+> +
+>  int __rtdm_muxid;
+>  
+>  
+> 
 
 
 -- 
