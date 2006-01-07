@@ -1,14 +1,14 @@
-Message-ID: <43C00542.7020501@domain.hid>
-Date: Sat, 07 Jan 2006 19:15:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43C009EC.70306@domain.hid>
+Date: Sat, 07 Jan 2006 19:35:24 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <43C004EB.1090702@domain.hid>
-In-Reply-To: <43C004EB.1090702@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig42324B8DC7A6A7577B9F966C"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [PATCH] reset tracer after timer calibration
+Subject: Re: [Xenomai-core] [PATCH] Fix ppc fpu support
+References: <43BEBA0D.5090708@domain.hid> <43BFC344.2030907@domain.hid>
+	<43BFF955.7010205@domain.hid> <43BFFD58.80303@domain.hid>
+	<43C001A7.1010408@domain.hid>
+In-Reply-To: <43C001A7.1010408@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,113 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig42324B8DC7A6A7577B9F966C
-Content-Type: multipart/mixed; boundary="------------010804050505070501020504"
-
-This is a multi-part message in MIME format.
---------------010804050505070501020504
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Jan Kiszka wrote:
-> Hi Philippe,
+Heikki Lindholm wrote:
+> Philippe Gerum kirjoitti:
 > 
-> this patch is to reset the maximum IRQs-off path after timer calibration
-> (will get flooded otherwise). If you have no concerns, please apply.
+>> Heikki Lindholm wrote:
+>>
+>>> Philippe Gerum kirjoitti:
+>>>
+>>>> Heikki Lindholm wrote:
+>>>>
+>>>>> Xenomai might preempt linux when linux has cleared a tasks MSR_FP, 
+>>>>> but not yet set last_task_used_math to NULL. As a result the tasks 
+>>>>> MSR_FP will get set, although it should be cleared. If the task 
+>>>>> happens to hit one of the codepaths that save FPU state if MSR_FP 
+>>>>> is set, the wrong FPU state might be saved to the task. The 
+>>>>> attached patch should fix this. I couldn't try it on most recent 
+>>>>> Xenomai trunk, because latency wouldn't build anymore. However, I 
+>>>>> see no reason it shouldn't work. All thee having trouble with X and 
+>>>>> Xenomai, give this a shot.
+>>>>>
+>>>>
+>>>> Merged in r383, thanks.
+>>>
+>>>
+>>>
+>>>
+>>> On a related note, how do you think patches to Linux kernel that 
+>>> don't fit into I-pipe should be handled? Put into patches directory 
+>>> separately? There are now at least two instances for 2.6.14/ppc: the 
+>>> fpu bug that I already posted on this thread and the ppc64 UP 
+>>> building bug that effectively makes impossible to build I-pipe 2.6.14 
+>>> for UP on ppc64.
+>>>
+>>
+>> I'm going to put those patches on GNA, so that people can access to 
+>> them easily. I'm going to add a fix for x86 too, which is needed at 
+>> least on one of my boxen since 2.6.13 to make the PCI setup correct 
+>> again.
+>>
+>> Is this patch still the right one to fix the UP build on ppc64?
+>> http://patchwork.ozlabs.org/linuxppc64/patchcontent?id=3178
 > 
-> Actually, there is another noise source: rthal_timer_request() for the
-> APIC case. But I think we should let this one alone as the user may
-> trigger millisecond latencies by accidentally restarting the timer while
-> some external-IRQ-driven device still depends on low latencies. In that
-> case, the tracer can provide helpful hints.
 > 
-> Therefore, in order to get useful information after starting the timer,
-> one always have to run "echo > /proc/ipipe/trace/max" first. Well, if we
-> move the timer start to some module init or whatever phase also for the
-> native skin, we should reconsider this exclusion.
+> Yep. That makes it build. But catenate it with the following and it'll 
+> boot, too ;)
+>
+
+Ah! Great release. Mm, do we need another one in order to use it on a 
+console shell, or should we only telnet to the G5 and look at the syslog 
+for bash output? :o>
+
+> -- Heikki Lindholm
 > 
-> Jan
+> 
+> ------------------------------------------------------------------------
+> 
+> diff -Nru linux-2.6.14/arch/ppc64/kernel/prom.c linux-2.6.14-dev/arch/ppc64/kernel/prom.c
+> --- linux-2.6.14/arch/ppc64/kernel/prom.c	2005-10-28 03:02:08.000000000 +0300
+> +++ linux-2.6.14-dev/arch/ppc64/kernel/prom.c	2005-11-06 14:14:07.000000000 +0200
+> @@ -1019,6 +1019,7 @@
+>  		 */
+>  		boot_cpuid_phys = initial_boot_params->boot_cpuid_phys;
+>  		boot_cpuid = 0;
+> +		set_hard_smp_processor_id(boot_cpuid, boot_cpuid_phys);
+>  	} else {
+>  		/* Check if it's the boot-cpu, set it's hw index in paca now */
+>  		if (get_flat_dt_prop(node, "linux,boot-cpu", NULL) != NULL) {
 
-and *with* the attachement...
 
---------------010804050505070501020504
-Content-Type: text/x-patch;
- name="reset-trace.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="reset-trace.patch"
+-- 
 
-Index: ChangeLog
-===================================================================
---- ChangeLog	(Revision 388)
-+++ ChangeLog	(Arbeitskopie)
-@@ -7,6 +7,8 @@
- 	src/testsuite/latency/latency.c: Add re-freeze support and make use
- 	of it to back-trace always the max latency during benchmarks.
- 
-+	* ksrc/arch/i386/hal.c: reset tracer after timer calibration.
-+
- 2006-01-07  Heikki Lindholm <holindho@domain.hid>
- 
- 	* include/asm-powerpc/system.h: Fix FPU preemption bug.
-Index: ksrc/arch/i386/hal.c
-===================================================================
---- ksrc/arch/i386/hal.c	(Revision 386)
-+++ ksrc/arch/i386/hal.c	(Arbeitskopie)
-@@ -61,6 +61,9 @@
- #endif /* CONFIG_X86_LOCAL_APIC */
- #include <asm/xenomai/hal.h>
- #include <stdarg.h>
-+#ifdef CONFIG_IPIPE_TRACE
-+#include <linux/ipipe_trace.h>
-+#endif /* CONFIG_IPIPE_TRACE */
- 
- extern struct desc_struct idt_table[];
- 
-@@ -177,6 +180,11 @@
- 
-     rthal_critical_exit(flags);
- 
-+#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
-+    /* reset the max trace, it contains the excessive calibration now */
-+    ipipe_trace_max_reset();
-+#endif /* CONFIG_IPIPE_TRACE_IRQSOFF */
-+
-     return rthal_imuldiv(dt,100000,RTHAL_CPU_FREQ);
- }
- 
-@@ -345,6 +353,11 @@
- 
-     rthal_critical_exit(flags);
- 
-+#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
-+    /* reset the max trace, it contains the excessive calibration now */
-+    ipipe_trace_max_reset();
-+#endif /* CONFIG_IPIPE_TRACE_IRQSOFF */
-+
-     return rthal_imuldiv(dt,100000,RTHAL_CPU_FREQ);
- }
- 
-
---------------010804050505070501020504--
-
---------------enig42324B8DC7A6A7577B9F966C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
-
-iD8DBQFDwAVCniDOoMHTA+kRAhOBAJ4plr3BPSdUucdHN0gruJIkjYVaewCdGETZ
-vm0PdkEMu7bgKC3WS9f/hQQ=
-=xQSa
------END PGP SIGNATURE-----
-
---------------enig42324B8DC7A6A7577B9F966C--
+Philippe.
 
