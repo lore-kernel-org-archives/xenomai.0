@@ -1,14 +1,15 @@
-Message-ID: <43C009EC.70306@domain.hid>
-Date: Sat, 07 Jan 2006 19:35:24 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43C00A97.4020404@domain.hid>
+Date: Sat, 07 Jan 2006 19:38:15 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Fix ppc fpu support
-References: <43BEBA0D.5090708@domain.hid> <43BFC344.2030907@domain.hid>
-	<43BFF955.7010205@domain.hid> <43BFFD58.80303@domain.hid>
-	<43C001A7.1010408@domain.hid>
-In-Reply-To: <43C001A7.1010408@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
+References: <17343.42595.626357.181448@domain.hid>
+	<17344.665.154004.811426@domain.hid>
+In-Reply-To: <17344.665.154004.811426@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF99B931B590AB3AAAE3842DC"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,78 +19,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Heikki Lindholm wrote:
-> Philippe Gerum kirjoitti:
-> 
->> Heikki Lindholm wrote:
->>
->>> Philippe Gerum kirjoitti:
->>>
->>>> Heikki Lindholm wrote:
->>>>
->>>>> Xenomai might preempt linux when linux has cleared a tasks MSR_FP, 
->>>>> but not yet set last_task_used_math to NULL. As a result the tasks 
->>>>> MSR_FP will get set, although it should be cleared. If the task 
->>>>> happens to hit one of the codepaths that save FPU state if MSR_FP 
->>>>> is set, the wrong FPU state might be saved to the task. The 
->>>>> attached patch should fix this. I couldn't try it on most recent 
->>>>> Xenomai trunk, because latency wouldn't build anymore. However, I 
->>>>> see no reason it shouldn't work. All thee having trouble with X and 
->>>>> Xenomai, give this a shot.
->>>>>
->>>>
->>>> Merged in r383, thanks.
->>>
->>>
->>>
->>>
->>> On a related note, how do you think patches to Linux kernel that 
->>> don't fit into I-pipe should be handled? Put into patches directory 
->>> separately? There are now at least two instances for 2.6.14/ppc: the 
->>> fpu bug that I already posted on this thread and the ppc64 UP 
->>> building bug that effectively makes impossible to build I-pipe 2.6.14 
->>> for UP on ppc64.
->>>
->>
->> I'm going to put those patches on GNA, so that people can access to 
->> them easily. I'm going to add a fix for x86 too, which is needed at 
->> least on one of my boxen since 2.6.13 to make the PCI setup correct 
->> again.
->>
->> Is this patch still the right one to fix the UP build on ppc64?
->> http://patchwork.ozlabs.org/linuxppc64/patchcontent?id=3178
-> 
-> 
-> Yep. That makes it build. But catenate it with the following and it'll 
-> boot, too ;)
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF99B931B590AB3AAAE3842DC
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-Ah! Great release. Mm, do we need another one in order to use it on a 
-console shell, or should we only telnet to the G5 and look at the syslog 
-for bash output? :o>
-
-> -- Heikki Lindholm
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>  > Known limitations are:
+>  > (...)
+>  > - for an unknown reason, xenomai modules are built every time
+>  >   prepare-kernel.sh is run ;
 > 
+> The reason for this limitation is that prepare-kernel.sh remove
+> directories before re-creating them and before creating symbolic links.
 > 
-> ------------------------------------------------------------------------
+
+At this chance, something from my private whish list: :)
+
+"unprepare-kernel.sh" or so, i.e. turning the kernel in its original
+vanilla state again.
+
+This is helpful when applying/reversing third-party kernel patches which
+also touch the modified Makefiles. I think on some 2.4 kernel, even
+reverting ipipe collides with the xeno-preparation.
+
+> The previous patch was also incorrect when trying to cross-compile the
+> Linux kernel or building it for ppc. The attached patch fixes these
+> issues.
 > 
-> diff -Nru linux-2.6.14/arch/ppc64/kernel/prom.c linux-2.6.14-dev/arch/ppc64/kernel/prom.c
-> --- linux-2.6.14/arch/ppc64/kernel/prom.c	2005-10-28 03:02:08.000000000 +0300
-> +++ linux-2.6.14-dev/arch/ppc64/kernel/prom.c	2005-11-06 14:14:07.000000000 +0200
-> @@ -1019,6 +1019,7 @@
->  		 */
->  		boot_cpuid_phys = initial_boot_params->boot_cpuid_phys;
->  		boot_cpuid = 0;
-> +		set_hard_smp_processor_id(boot_cpuid, boot_cpuid_phys);
->  	} else {
->  		/* Check if it's the boot-cpu, set it's hw index in paca now */
->  		if (get_flat_dt_prop(node, "linux,boot-cpu", NULL) != NULL) {
 
+Regarding your general idea, I'm just trying to imagine the new build
+process: you prepare and build the kernel + the userspace stuff again in
+one step?. But you still have to configure both parts separately.
 
--- 
+The question for me is now if this simplifies the situation expecially
+for beginners. So far, the separation was clearly visible, now it /may/
+become blurred (but I'm not a beginner...).
 
-Philippe.
+Can you provide a rough comparision of the workflows? Sorry, but I'm too
+lazy, I mean busy to give it a try.
+
+Jan
+
+--------------enigF99B931B590AB3AAAE3842DC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
+
+iD8DBQFDwAqYniDOoMHTA+kRAsYvAJ4vwe8NaoEK4/RNwiidBj/O1pA/4wCePtga
+netHp7q1aGQO8CMvbntj8Co=
+=MoZe
+-----END PGP SIGNATURE-----
+
+--------------enigF99B931B590AB3AAAE3842DC--
 
