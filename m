@@ -1,15 +1,12 @@
-Message-ID: <43C0F792.3000300@domain.hid>
-Date: Sun, 08 Jan 2006 12:29:22 +0100
+Message-ID: <43C100A2.6040605@domain.hid>
+Date: Sun, 08 Jan 2006 13:08:02 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <b647ffbd0512310437x6e92487es@domain.hid>	
-	<43B69CEC.1040606@domain.hid>
-	<b647ffbd0601071105p746bf2ebx@domain.hid>
-In-Reply-To: <b647ffbd0601071105p746bf2ebx@domain.hid>
+Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
+References: <17343.42595.626357.181448@domain.hid>
+In-Reply-To: <17343.42595.626357.181448@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [PATCH,
-	RFC] nucleus:shared irq and possible ipipe problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,92 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Dmitry Adamushko wrote:
+Gilles Chanteperdrix wrote:
+> Hi,
 > 
+> attached is a patch of Xenomai trunk build system to allow building
+> Linux kernel as part of Xenomai build process. This way, typing make
+> install builds and installs the Linux kernel, kernel modules and
+> Xenomai.
 > 
-> On 31/12/05, *Philippe Gerum* <rpm@xenomai.org <mailto:rpm@xenomai.org>> 
-> wrote:
+> The patch is a bit young and still has a few drawbacks, but before
+> spending to much time on it, I would like to know if anyone is opposed
+> to the idea of building Linux in Xenomai build tree.
 > 
->  > ...
-> 
->      > 2) xnintr_irq_handler() gets a cookie which is == xnshared_irq_t*
->     (see
->      > xnintr_attach) that may already be invalid at that time or, and
->     that's a
->      > problem, become invalid during the execution of xnintr_irq_handler().
->      > To prevent that, we could add a flag like IRQ_INPROGRESS but
->      >
->      > either we have to set/remove it on the adeos layer before the
->     control is
->      > passed to the xnintr_irq_handler() (to be sure that cookie is not
->      > xnfree()'d. xnintr_detach() will do busy waiting)
->      >
-> 
->     Synchronizing the pending IRQs in ipipe_virtualize_irq() should be done
->     by polling the proper irq_pending count (and _not_ the hi/lo bits which
->     get cleared before the handler is run). 
-> 
-> 
-> But irq_pending counter (pending_hits in the recent adeos patch) gets 
-> cleared before running the isr handler too.
->
+> To try this patch, apply and run the bootstrap script.
+> 3 options are then added to configure :
+> --enable-linux-build    Build Linux in Xenomai build tree
+> --with-linux-srcdir     specify the path to Linux sources. Default is to
+>                         use, if not cross-compiling, the source of the
+>                         running kernel or /usr/src/linux.
 
-I was referring to __ipipe_lock_irq() which clears the pending bits but 
-keeps the irq count intact to emulate a PIC masking for a given interrupt.
+--enable-linux-build=<linux-tree> ?
 
-> In ipipe_sync_stage() :
-> ...
->             if (--cpudata->irq_pending_hits[irq] == 0) {
->                  __clear_bit(rank,
->                          &cpudata->irq_pending_lo[level]);
->                  ipipe_mark_irq_delivery(ipd,irq,cpuid);
->             }
-> (*)
+> --with-adeos-patch      specify the path to the Adeos patch. Default is to
+>                         infer the patch name from Linux kernel version.
 > 
-> // run the corresponding isr handler
+> When using the --enable-linux-build option, configure creates a linux
+> tree in Xenomai build tree, and run the prepare-kernel.sh script for
+> this tree. Typing "make" re-runs prepare-kernel.sh (in case some changes
+> occured in Xenomai sources) and run make in the kernel tree.
 > 
-> This code drops the irq_pending_hits to 0 before running the handler.
->
-
-> Doesn't it make the following code wrong ?
+> Known limitations are:
+> - it is not very well tested, so, maybe some error cases are not handled
+>   correctly ;
+> - it is not tested with Linux 2.4 ;
+> - for an unknown reason, xenomai modules are built every time
+>   prepare-kernel.sh is run ;
+> - the cross-compilation prefix is inferred from the CC variable, it
+>   should work in most situations, but not all.
 > 
->     for (_cpuid = 0; _cpuid < nr_cpus; _cpuid++)
->             while (ipd->cpudata[_cpuid].irq_pending_hits[irq] > 0)
->                     cpu_relax();
-> 
-> 
-> as the handler still can be running / or even about to be run when 
-> ipd->cpudata[_cpuid].irq_pending_hits[irq] is already 0.
-> 
-> We can remove the (*) code at the end of ipipe_sync_stage() so that 
-> irq_pending_hits[irq] may become 0 only after the corresponding isr 
-> handler has completed.
-> 
-
-I don't like the idea of having the interrupt bookkeeping stuff 
-incompletely updated while calling a handler that might sleep and/or 
-migrate to another CPU.
-
-Another option would be to check for SYNC flag; the syncer sets it 
-before entering the dispatch loop.
-
-> At the same time, the irq_pending counter can't be increased anymore 
-> since we clear the IPIPE_HANDLE_FLAG before doing the busy waiting in 
-> ipipe_unregister_domain() or ipipe_virtualize_irq().
->  
-> 
->     --
-> 
->     Philippe.
+> Happy new year.
 > 
 > 
-> -- 
-> Best regards,
-> Dmitry Adamushko
 > 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
