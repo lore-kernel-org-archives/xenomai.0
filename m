@@ -1,14 +1,10 @@
-Message-ID: <43C0EE00.9050203@domain.hid>
-Date: Sun, 08 Jan 2006 11:48:32 +0100
+Message-ID: <43C0EF40.6090501@domain.hid>
+Date: Sun, 08 Jan 2006 11:53:52 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] heres a
-	go	at	an	adeos-ipipe-2.6.15-i386-1.1-01.patch
-References: <20060106163226.X16178@domain.hid>
-	<43BF7337.7020506@domain.hid>	<20060107114240.B16178@domain.hid>
-	<43C01960.3090806@domain.hid>	<43C0364B.5020000@domain.hid>
-	<43C03DC3.1040502@domain.hid>
-In-Reply-To: <43C03DC3.1040502@domain.hid>
+Subject: Re: [Xenomai-core] Two patches for the documentation
+References: <200601072103.32588.niklaus.giger@domain.hid>
+In-Reply-To: <200601072103.32588.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -20,126 +16,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jim Cromie wrote:
+Niklaus Giger wrote:
+> Hi
 > 
->> Philippe Gerum wrote:
->>
->>> You may want to try this one:
->>> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.15-i386-1.1-03.patch 
->>>
->>>
->>
->> although Im not surprised, I feel like telling someone,
->>
->> [jimc@domain.hid ~]$ uname -a
->> Linux harpo.jimc.earth 2.6.15-ipipe-103-sony #1 Sat Jan 7 13:54:09 MST 
->> 2006 i686 i686 i386 GNU/Linux
->> [jimc@domain.hid ~]$
->>
->> is NFS root for ..
->>
->> soekris:~# uname -a
->> Linux soekris 2.6.15-ipipe-103-sk #3 Sat Jan 7 13:42:06 MST 2006 i586 
->> GNU/Linux
->> soekris:~#
->> soekris:~# df
->> Filesystem           1K-blocks      Used Available Use% Mounted on
->> 192.168.42.1:/nfshost/soekris
->>                      20158372  14249292   4885080  75% /
->> tmpfs                    63268         0     63268   0% /dev/shm
->> /dev/hda1               484602    268767    190813  59% /mnt/flash
->> 192.168.42.1:/boot    20158400  14249312   4885088  75% /boot
->> 192.168.42.1:/lib/modules
->>                      20158400  14249312   4885088  75% /lib/modules
->> 192.168.42.1:/media/cdrecorder
->>                      20158400  14249312   4885088  75% /mnt/cd
->> 192.168.42.1:/home    20158400  14249312   4885088  75% /home
->> 192.168.42.1:/mnt/dilbert
->>                      15638816  11716256   3128128  79% /mnt/dilbert
->> 192.168.42.1:/usr/xenomai
->>                      20158400  14249312   4885088  75% /usr/xenomai
->> 192.168.42.1:/home/jimc/dilbert/pirt
->>                      15638816  11716256   3128128  79% /mnt/pirt
->>
->>
->> woohoo!
->>
->> I just diffed my-1.01 and real-1.03, it looks like I missed a bunch
->> of these:
->>  > -     spin_unlock_irqrestore(&ioapic_lock, flags);
->>  > +     spin_unlock_irqrestore_hw(&ioapic_lock, flags);
->>
->> did I get lucky ?
->> or is it cuz Im not SMP ?
+> xeno.sim.patch contains some clarification on how to build the xenoscope. (GCC 
+> 3.4 worked for me on a x86 system, but with a lot of warnings, that fwritable 
+> is deprecated)
+> 
+> xeno.patch is a shorter way how to cross-compile using the CROSS_COMPILE 
+> variable. It worked for me without any problems for my board.
+> Also contains a hint to use O=../a-build-dir to compile the linux kernel.
+> 
+> Best regards
 > 
 > 
-> The additional hw locking is to make 100% sure that built-in Adeos 
-> domains pushed above Linux could call the related routines
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: README.INSTALL
+> ===================================================================
+> --- README.INSTALL	(Revision 392)
+> +++ README.INSTALL	(Arbeitskopie)
+> @@ -150,20 +150,22 @@
+>  needed, but if you do not use it, configure emit a warning, which may be
+>  confusing.
+>  
+> +The easiest way to build a GNU cross-compiler might involve using Dan Kegel 
+> +crosstools found at http://kegel.com/crosstool.
+> +
+>  Since cross-compiling requires specific tools, such tools are generally prefixed
+>  with the host architecture name; for example, a compiler for the power PC
+> -architecture may be named powerpc-linux-gcc.
+> +architecture may be named powerpc-405-linux-gnu-gcc.
+>  
+> -When this prefix contains the name of the architecture, you may pass this prefix
+> -to the --host option of configure. For example, if you type :
+> -configure --host=powerpc-linux
+> -
+> -configure will automatically use powerpc-linux- as a prefix too all compilation
+> +configure will automatically use powerpc-405-linux-gnu- as a prefix too all compilation
+>  tools names and deduce the architecture name. If configure is unable to deduce
+>  the architecture name from this prefix, you will have to manually pass the name
+>  of all compilation tools on configure command line. As in:
+>  
+> -configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
+> +It might be a good idea to put all the output into a differen build directory
+> +as to build from from linux source several targets. For each target add 
+> +O=../build-<target> to each make invocation.
+> +configure CROSS_COMPILE=powerpc-405-linux-gnu-
+>  
+>  For more details:
+>  http://sourceware.org/autobook/autobook/autobook_264.html#SEC264
+> @@ -204,16 +206,18 @@
+>  2.2 Building for the PowerPC architecture
+>  
+>  A typical cross-compilation setup, in order to build Xenomai for a
+> -82xx-based system:
+> +PowerPC-405-based system:
+>  
+>  $ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
+>    --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
+>    --linux=$linux_tree
+>  $ cd $linux_tree
+> -$ make xconfig/gconfig/menuconfig # select the kernel and Xenomai options
+> -$ make bzImage modules # then install as needed
+> +$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
+> +# select the kernel and Xenomai options
+> +$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
+> +# then install as needed
+>  $ mkdir $build_root && cd $build_root
+> -$ $xenomai_root/configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
+> +$ $xenomai_root/configure CROSS_COMPILE=powerpc-405-linux-gnu-
+>  $ make install
+>  
+>  2.3 Building for the IPF
+> 
 
-i.e. any routine manipulating the io_apic spinlock. This said, I've been 
-a bit silly ironing the IO-APIC enabling code, since you can't get any 
-conflict until the IO-APIC is well, enabled, and interrupts could flow 
-and thus feed the high priority domain.
+Applied, thanks.
 
-  even during
-> the kernel init phase. Since the I-pipe is enabled quite early during 
-> this process, I've decided to play extra safe here.
 > 
->> or cuz my sony has no APIC  (as distinct from ACPI) ?
->> do any PCs have an APIC, or is that something for servers / hi-end
->> or embedded ?
->>
+> ------------------------------------------------------------------------
 > 
-> It has become the norm for desktops, Intel CPU(s) of hi-end boxen have 
-> one especially SMP since it works with the IO-APIC for routing 
-> interrupts among other things. Still not the norm for embedded AFAIK, 
-> this will possibly evolve the same way over time too.
-> 
->> BIOS-provided physical RAM map:
->> BIOS-e820: 0000000000000000 - 000000000009fc00 (usable)
->> BIOS-e820: 000000000009fc00 - 00000000000a0000 (reserved)
->> BIOS-e820: 00000000000e0000 - 0000000000100000 (reserved)
->> BIOS-e820: 0000000000100000 - 000000001ff40000 (usable)
->> BIOS-e820: 000000001ff40000 - 000000001ff50000 (ACPI data)
->> BIOS-e820: 000000001ff50000 - 0000000020000000 (ACPI NVS)
->> 511MB LOWMEM available.
->> On node 0 totalpages: 130880
->>  DMA zone: 4096 pages, LIFO batch:0
->>  DMA32 zone: 0 pages, LIFO batch:0
->>  Normal zone: 126784 pages, LIFO batch:31
->>  HighMem zone: 0 pages, LIFO batch:0
->> DMI present.
->> ACPI: RSDP (v000 SONY                                  ) @ 0x000f53f0
->> ACPI: RSDT (v001   SONY       F1 0x20040323 MSFT 0x00000097) @ 0x1ff40000
->> ACPI: FADT (v002   SONY       F1 0x20040323 MSFT 0x00000097) @ 0x1ff40200
->> ACPI: OEMB (v001   SONY       F1 0x20040323 MSFT 0x00000097) @ 0x1ff50040
->> ACPI: DSDT (v001   SONY       F1 0x20040323 MSFT 0x0100000d) @ 0x00000000
->> ACPI: PM-Timer IO Port: 0x408
->> Allocating PCI resources starting at 30000000 (gap: 20000000:e0000000)
->> Built 1 zonelists
->> Kernel command line: ro root=LABEL=/
->> Initializing CPU#0
->> PID hash table entries: 2048 (order: 11, 32768 bytes)
->> Detected 1694.791 MHz processor.
->> Using pmtmr for high-res timesource
->> I-pipe 1.1-03: pipeline enabled.
->>
->>
->> BTW, what happened to 1.01 and 1.02 ?
->>
-> 
-> There were three critical changes to merge for starting 1.1; one at a 
-> time, -03 has ended the series.
-> 
->> tia
->> jimc
->>
+> Index: sim/README
+> ===================================================================
+> --- sim/README	(Revision 392)
+> +++ sim/README	(Arbeitskopie)
+> @@ -28,7 +28,11 @@
+>  Building the simulator
+>  ======================
+>  
+> -You will need the libelf, libpng, tcl8.x/tk8.x and tix41 _development
+> +The simulator does not build with GCC 4.0 or later.
+> +
+> +Currently it does not work on PowerPC systems.
+> +
+
+Why?
+
+> +You will need the libelf, libpng, tcl8.x/tk8.x and tix81 _development
+>  packages_ in order to build the simulator and its companion tools.
+>  For instance, on Debian systems, you will need to install
+>  libelfg0-dev, libpng2-dev, tcl8.3-dev, tk8.3-dev and tix41-dev (any
 > 
 > 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
