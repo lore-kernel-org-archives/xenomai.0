@@ -1,13 +1,13 @@
-Message-ID: <43C166BB.4030606@domain.hid>
-Date: Sun, 08 Jan 2006 20:23:39 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
-References: <17343.42595.626357.181448@domain.hid>	<43C100A2.6040605@domain.hid>	<17345.3786.644399.982109@domain.hid>	<43C11EEB.8040003@domain.hid>
-	<17345.17403.927352.223271@domain.hid>
-In-Reply-To: <17345.17403.927352.223271@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17345.26276.110671.822369@domain.hid>
+Date: Sun, 8 Jan 2006 20:23:16 +0100
+Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
+In-Reply-To: <43C14453.3040907@domain.hid>
+References: <43C12304.4040802@domain.hid> <43C12CEC.8070403@domain.hid>
+	<43C14453.3040907@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,51 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Heikki Lindholm <holindho@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > The current approach is to use the sources of the running kernel if the
->  > > only option specified is --enable-linux-build. Do you mean you find this
->  > > feature superfluous ?
->  > > 
->  > 
->  > If $enableval is "y", then no path has been specified, so you can 
->  > default to the running kernel in such a case.
-> 
-> Here is a third version of the patch, where :
-> * the --enable-sim option is removed
-> * the --with-linux-srcdir option is removed
-> * the CC variable is passed to kernel build system
-> * prepare-kernel.sh no longer removes target directories before
->   creating symbolic links.
-> 
-> 
+Heikki Lindholm wrote:
+ > >  o When and how does it crash? At start-up immediately? Or after a
+ > >    while?
+ > 
+ > I inserted some serial debug prints and it gets two passes to 
+ > eval_outer_loop done (enter/exit function). After that it freezes. 
+ > Without the debug printing it dies with kernel access of illegal memory 
+ > at xnpod_schedule, which btw. has been quite a common place to die.
 
-This is needed for creating links in a new kernel for the fist time:
+A way to know a bit more about this error would be to have a look at the
+exact address given by the kernel oops in the disassembly of
+xnpod_schedule and try and find which pointer is invalid. This is not
+very subtle, but sometimes works.
 
---- scripts/prepare-kernel.sh~  2006-01-08 20:14:05.000000000 +0100
-+++ scripts/prepare-kernel.sh   2006-01-08 20:19:41.000000000 +0100
-@@ -2,11 +2,12 @@
-  set -e
-
-  do_links() {
--    ( cd $2 &&
-+    ( if test -x $2; then
-+      cd $2 &&
-        find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
-        while read f; do
-          if test ! -e $1/$f; then rm -f $f; fi
--      done &&
-+      done; else true; fi &&
-        cd $1 &&
-        find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
-        while read f; do
-
+One reason why there used to be some invalid pointers accesses in
+xnpod_schedule was when the context switch routine (on x86) forgot to
+declare a few output or clobbered registers. In this case, the compiler
+may assume that the contents of the registers are correct, whereas the
+context switch clobbered them.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
