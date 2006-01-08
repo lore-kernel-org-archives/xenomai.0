@@ -1,5 +1,5 @@
-Message-ID: <43C15A7E.9050109@domain.hid>
-Date: Sun, 08 Jan 2006 20:31:26 +0200
+Message-ID: <43C15D59.4020006@domain.hid>
+Date: Sun, 08 Jan 2006 20:43:37 +0200
 From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
@@ -40,18 +40,43 @@ Jan Kiszka kirjoitti:
 > To get this clearly: You tested the old klatency(+front-end) on latest
 > xeno and it worked? Or does this parse "the old klatency worked over old
 > xeno on PPC64"?
-
-"Previously" as in ... well ... previously, so it means the old xenomai 
-with klatency intact.
-
+> 
 > Comparing the old test with the new framework, the major difference is
 > that the old one only knew a single kernel RT-task. Its front-end was
 > reading from a pipe and was therefore a pure linux program. Now we have
 > two RT-tasks, one is even a shadow, and they use RT-IPC. Not sure if
 > this really means that the bug must be in the benchmark suite...
-
-Right. I'll have to see if there's a problem with any of these.
-
+> 
+> 
+>>>
+>>>Nope, it should work as it is. But as Stelian also reported problems on
+>>>his fresh ARM port with the in-kernel test, I cannot exclude that there
+>>>/might/ be a problem in the benchmark.
+>>>
+>>>As I don't have any ppc64 hanging around somewhere, we will have to go
+>>>through this together. Things I would like to know:
+>>
+>>
+>>Dammit, I hoped you'd whip up a fix just from me noting a problem. Well,
+>>all right then, I'll play along...;)
+>>
+>>
+>>> o When and how does it crash? At start-up immediately? Or after a
+>>>   while?
+>>
+>>
+>>I inserted some serial debug prints and it gets two passes to
+>>eval_outer_loop done (enter/exit function). After that it freezes.
+>>Without the debug printing it dies with kernel access of illegal memory
+>>at xnpod_schedule, which btw. has been quite a common place to die.
+>>
+>>
+>>> o Are there any details / backtraces available with the crash?
+>>
+>>
+>>Becaktrace limits to xnpod_schedule if I remember right.
+>>
+>>
 >>> o Does -t2 work?
 >>
 >>
@@ -60,38 +85,8 @@ Right. I'll have to see if there's a problem with any of these.
 > 
 > Arrgh, "probably" - when it's so easy to test...
 
-Well, it's one compile and boot cycle more with my current situation. I 
-try to view laziness as a gift...
+Shoot! The "probably" operator was incorrect, "-t 2" did work.
 
-> When you are already on it: pure user-space (-t0) also works?
+-- hl
 
-Pure user-space works fine.
-
->>> o What happens if your disable "rtdm_event_pulse(&ctx->result_event);"
->>>   in eval_outer_loop (thus no signalling of intermediate results during
->>>   the test)? Does it still crash, maybe later during cleanup now?
->>
->>
->>Doesn't freeze and can be exited with ctrl-c and even re-run.
->>
->>One odd thing (probably unrelated) is that the first two ioctls get
->>called in what seems like wrong order, eg. START_TMTEST first ends up in
->>tmbench_ioctl_rt and then _nrt and INTERM_RESULT ends up first in _nrt
->>and then _rt.
-> 
-> 
-> This takes me back to the number of active real-time tasks during the
-> test. This disabling reduces the scenario basically again to old
-> klatency times.
-> 
-> I looked at my code again, but - maybe I'm too blind now - I cannot find
-> even a potential pointer bug, especially when the histogram feature (-h)
-> is not used. I need more input! ;)
-
-Hehe. The histogram was the first thing I peered at, only to find out 
-it's not even used. This might be a kernel thread switching bug in my 
-code, but I find it hard to believe, because then even one thread 
-probably wouldn't work.
-
--- Heikki Lindholm
 
