@@ -1,13 +1,12 @@
-Message-ID: <43C11EEB.8040003@domain.hid>
-Date: Sun, 08 Jan 2006 15:17:15 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [rfc] Building Linux kernel in Xenomai tree.
-References: <17343.42595.626357.181448@domain.hid>	<43C100A2.6040605@domain.hid>
-	<17345.3786.644399.982109@domain.hid>
-In-Reply-To: <17345.3786.644399.982109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: multipart/mixed; boundary="CUG1A5Rj9Z"
 Content-Transfer-Encoding: 7bit
+Message-ID: <17345.8348.137708.453294@domain.hid>
+Date: Sun, 8 Jan 2006 15:24:28 +0100
+Subject: Re: [Xenomai-core] Two patches for the documentation
+In-Reply-To: <200601072103.32588.niklaus.giger@domain.hid>
+References: <200601072103.32588.niklaus.giger@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,41 +16,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Hi,
->  > > 
->  > > attached is a patch of Xenomai trunk build system to allow building
->  > > Linux kernel as part of Xenomai build process. This way, typing make
->  > > install builds and installs the Linux kernel, kernel modules and
->  > > Xenomai.
->  > > 
->  > > The patch is a bit young and still has a few drawbacks, but before
->  > > spending to much time on it, I would like to know if anyone is opposed
->  > > to the idea of building Linux in Xenomai build tree.
->  > > 
->  > > To try this patch, apply and run the bootstrap script.
->  > > 3 options are then added to configure :
->  > > --enable-linux-build    Build Linux in Xenomai build tree
->  > > --with-linux-srcdir     specify the path to Linux sources. Default is to
->  > >                         use, if not cross-compiling, the source of the
->  > >                         running kernel or /usr/src/linux.
->  > 
->  > --enable-linux-build=<linux-tree> ?
-> 
-> The current approach is to use the sources of the running kernel if the
-> only option specified is --enable-linux-build. Do you mean you find this
-> feature superfluous ?
-> 
 
-If $enableval is "y", then no path has been specified, so you can 
-default to the running kernel in such a case.
+--CUG1A5Rj9Z
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
+
+Niklaus Giger wrote:
+ > xeno.patch is a shorter way how to cross-compile using the CROSS_COMPILE 
+ > variable.
+
+The CROSS_COMPILE prefix is not used by the configure script of branch
+2.1 of Xenomai (though it works with branch 2.0), the --host option of
+configure should be used instead.
+
+ > Also contains a hint to use O=../a-build-dir to compile the linux kernel.
+
+Maybe this would look more apropriate in section 1.2, entitled "Configuring and
+building Linux kernel" ?
+
+The attached patch, for your review, attempt to reword the paragraph I
+had written on cross-compilation, and reflect the last two remarks.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
+
+--CUG1A5Rj9Z
+Content-Type: application/octet-stream
+Content-Disposition: attachment;
+	filename="xeno.readme.patch"
+Content-Transfer-Encoding: base64
+
+SW5kZXg6IFJFQURNRS5JTlNUQUxMCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIFJFQURNRS5JTlNUQUxM
+CShyZXZpc2lvbiAzOTgpCisrKyBSRUFETUUuSU5TVEFMTAkod29ya2luZyBjb3B5KQpAQCAt
+NzYsNiArNzYsMTQgQEAKIAogT25jZSBjb25maWd1cmVkLCB0aGUga2VybmVsIHNob3VsZCBi
+ZSBidWlsdCBhcyB1c3VhbC4KIAorSXQgbWlnaHQgYmUgYSBnb29kIGlkZWEgdG8gcHV0IGFs
+bCB0aGUgb3V0cHV0IGludG8gYSBkaWZmZXJlbnQgYnVpbGQKK2RpcmVjdG9yeSBhcyB0byBi
+dWlsZCBmcm9tIGZyb20gbGludXggc291cmNlIHNldmVyYWwgdGFyZ2V0cy4gRm9yIGVhY2gK
+K3RhcmdldCBhZGQgTz0uLi9idWlsZC08dGFyZ2V0PiB0byBlYWNoIG1ha2UgaW52b2NhdGlv
+bi4KKworSW4gb3JkZXIgdG8gY3Jvc3MtY29tcGlsZSB0aGUgTGludXgga2VybmVsLCBwYXNz
+IGFuIEFSQ0ggYW5kCitDUk9TU19DT01QSUxFIHZhcmlhYmxlIG9uIG1ha2UgY29tbWFuZCBs
+aW5lLiBTZWUgc2VjdGlvbnMgMi4yLCAyLjMgYW5kCisyLjQgZm9yIGV4YW1wbGVzLgorCiAx
+LjMgQnVpbGRpbmcgdGhlIHVzZXItc3BhY2Ugc3VwcG9ydAogLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0KIApAQCAtMTQ0LDMzICsxNTIsMjkgQEAKIC0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tCiAKIFBhc3NpbmcgYSAtLWhvc3Qgb3B0aW9uIHRvIHRoZSBjb25maWd1
+cmUgc2NyaXB0IGFsbG93cyB0byBzZWxlY3QgdGhlCi1hcmNoaXRlY3R1cmUgZm9yIHdoaWNo
+IHRoZSBsaWJyYXJpZXMgYW5kIHByb2dyYW1zIGFyZSBidWlsdC4gVGhlIC0tYnVpbGQgb3B0
+aW9uCi1hbGxvdyB0byBjaG9vc2UgdGhlIGFyY2hpdGVjdHVyZSBvbiB3aGljaCB0aGUgY29t
+cGlsYXRpb24gdG9vbCBhcmUgcnVuLCBpLmUuIHRoZQotc3lzdGVtIHJ1bm5pbmcgdGhlIGNv
+bmZpZ3VyZSBzY3JpcHQuIFVzaW5nIHRoZSAtLWJ1aWxkIG9wdGlvbiBzaG91bGQgbm90IGJl
+Ci1uZWVkZWQsIGJ1dCBpZiB5b3UgZG8gbm90IHVzZSBpdCwgY29uZmlndXJlIGVtaXQgYSB3
+YXJuaW5nLCB3aGljaCBtYXkgYmUKLWNvbmZ1c2luZy4KK2FyY2hpdGVjdHVyZSBmb3Igd2hp
+Y2ggdGhlIGxpYnJhcmllcyBhbmQgcHJvZ3JhbXMgYXJlIGJ1aWx0LiBUaGUKKy0tYnVpbGQg
+b3B0aW9uIGFsbG93IHRvIGNob29zZSB0aGUgYXJjaGl0ZWN0dXJlIG9uIHdoaWNoIHRoZQor
+Y29tcGlsYXRpb24gdG9vbCBhcmUgcnVuLCBpLmUuIHRoZSBzeXN0ZW0gcnVubmluZyB0aGUg
+Y29uZmlndXJlCitzY3JpcHQuIFVzaW5nIHRoZSAtLWJ1aWxkIG9wdGlvbiBzaG91bGQgbm90
+IGJlIG5lZWRlZCwgYnV0IGlmIHlvdSBkbworbm90IHVzZSBpdCwgY29uZmlndXJlIGVtaXQg
+YSB3YXJuaW5nLCB3aGljaCBtYXkgYmUgY29uZnVzaW5nLgogCi1UaGUgZWFzaWVzdCB3YXkg
+dG8gYnVpbGQgYSBHTlUgY3Jvc3MtY29tcGlsZXIgbWlnaHQgaW52b2x2ZSB1c2luZyBEYW4g
+S2VnZWwgCi1jcm9zc3Rvb2xzIGZvdW5kIGF0IGh0dHA6Ly9rZWdlbC5jb20vY3Jvc3N0b29s
+LgorVGhlIGVhc2llc3Qgd2F5IHRvIGJ1aWxkIGEgR05VIGNyb3NzLWNvbXBpbGVyIG1pZ2h0
+IGludm9sdmUgdXNpbmcgRGFuCitLZWdlbCBjcm9zc3Rvb2xzIGZvdW5kIGF0IGh0dHA6Ly9r
+ZWdlbC5jb20vY3Jvc3N0b29sLgogCi1TaW5jZSBjcm9zcy1jb21waWxpbmcgcmVxdWlyZXMg
+c3BlY2lmaWMgdG9vbHMsIHN1Y2ggdG9vbHMgYXJlIGdlbmVyYWxseSBwcmVmaXhlZAotd2l0
+aCB0aGUgaG9zdCBhcmNoaXRlY3R1cmUgbmFtZTsgZm9yIGV4YW1wbGUsIGEgY29tcGlsZXIg
+Zm9yIHRoZSBwb3dlciBQQwotYXJjaGl0ZWN0dXJlIG1heSBiZSBuYW1lZCBwb3dlcnBjLTQw
+NS1saW51eC1nbnUtZ2NjLgorU2luY2UgY3Jvc3MtY29tcGlsaW5nIHJlcXVpcmVzIHNwZWNp
+ZmljIHRvb2xzLCBzdWNoIHRvb2xzIGFyZQorZ2VuZXJhbGx5IHByZWZpeGVkIHdpdGggdGhl
+IGhvc3QgYXJjaGl0ZWN0dXJlIG5hbWU7IGZvciBleGFtcGxlLCBhCitjb21waWxlciBmb3Ig
+dGhlIHBvd2VyIFBDIGFyY2hpdGVjdHVyZSBtYXkgYmUgbmFtZWQKK3Bvd2VycGMtNDA1LWxp
+bnV4LWdudS1nY2MuCiAKLWNvbmZpZ3VyZSB3aWxsIGF1dG9tYXRpY2FsbHkgdXNlIHBvd2Vy
+cGMtNDA1LWxpbnV4LWdudS0gYXMgYSBwcmVmaXggdG9vIGFsbCBjb21waWxhdGlvbgotdG9v
+bHMgbmFtZXMgYW5kIGRlZHVjZSB0aGUgYXJjaGl0ZWN0dXJlIG5hbWUuIElmIGNvbmZpZ3Vy
+ZSBpcyB1bmFibGUgdG8gZGVkdWNlCi10aGUgYXJjaGl0ZWN0dXJlIG5hbWUgZnJvbSB0aGlz
+IHByZWZpeCwgeW91IHdpbGwgaGF2ZSB0byBtYW51YWxseSBwYXNzIHRoZSBuYW1lCi1vZiBh
+bGwgY29tcGlsYXRpb24gdG9vbHMgb24gY29uZmlndXJlIGNvbW1hbmQgbGluZS4gQXMgaW46
+CitXaGVuIHBhc3NpbmcgdGhlIG9wdGlvbiAtLWhvc3Q9cG93ZXJwYy00MDUtbGludXgtZ251
+IHRvIGNvbmZpZ3VyZSwKK2NvbmZpZ3VyZSB3aWxsIGF1dG9tYXRpY2FsbHkgdXNlIHBvd2Vy
+cGMtNDA1LWxpbnV4LWdudS0gYXMgYSBwcmVmaXggdG8KK2FsbCBjb21waWxhdGlvbiB0b29s
+cyBuYW1lcyBhbmQgaW5mZXIgdGhlIGhvc3QgYXJjaGl0ZWN0dXJlIG5hbWUgZnJvbQordGhp
+cyBwcmVmaXguIElmIGNvbmZpZ3VyZSBpcyB1bmFibGUgdG8gaW5mZXIgdGhlIGFyY2hpdGVj
+dHVyZSBuYW1lCitmcm9tIHRoZSBjcm9zcy1jb21waWxhdGlvbiB0b29scyBwcmVmaXgsIHlv
+dSB3aWxsIGhhdmUgdG8gbWFudWFsbHkKK3Bhc3MgdGhlIG5hbWUgb2YgYWxsIGNvbXBpbGF0
+aW9uIHRvb2xzIG9uIGNvbmZpZ3VyZSBjb21tYW5kIGxpbmUuIAogCi1JdCBtaWdodCBiZSBh
+IGdvb2QgaWRlYSB0byBwdXQgYWxsIHRoZSBvdXRwdXQgaW50byBhIGRpZmZlcmVuIGJ1aWxk
+IGRpcmVjdG9yeQotYXMgdG8gYnVpbGQgZnJvbSBmcm9tIGxpbnV4IHNvdXJjZSBzZXZlcmFs
+IHRhcmdldHMuIEZvciBlYWNoIHRhcmdldCBhZGQgCi1PPS4uL2J1aWxkLTx0YXJnZXQ+IHRv
+IGVhY2ggbWFrZSBpbnZvY2F0aW9uLgotY29uZmlndXJlIENST1NTX0NPTVBJTEU9cG93ZXJw
+Yy00MDUtbGludXgtZ251LQorU2VlIHNlY3Rpb25zIDIuMiwgMi4zIGFuZCAyLjQgZm9yIGV4
+YW1wbGVzLgogCi1Gb3IgbW9yZSBkZXRhaWxzOgotaHR0cDovL3NvdXJjZXdhcmUub3JnL2F1
+dG9ib29rL2F1dG9ib29rL2F1dG9ib29rXzI2NC5odG1sI1NFQzI2NAotaHR0cDovL3NvdXJj
+ZXdhcmUub3JnL2F1dG9ib29rL2F1dG9ib29rL2F1dG9ib29rXzI2Ni5odG1sI1NFQzI2Ngot
+CiAyLiBUeXBpY2FsIGluc3RhbGxhdGlvbiBwcm9jZWR1cmVzCiAtLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tCiAKQEAgLTIxNyw3ICsyMjEsNyBAQAogJCBtYWtlIENST1NT
+X0NPTVBJTEU9cG93ZXJwYy00MDUtbGludXgtZ251LSBPPS4uL2J1aWxkLXBvd2VycGMtNDA1
+LTIuNi4xNCBiekltYWdlIG1vZHVsZXMgCiAjIHRoZW4gaW5zdGFsbCBhcyBuZWVkZWQKICQg
+bWtkaXIgJGJ1aWxkX3Jvb3QgJiYgY2QgJGJ1aWxkX3Jvb3QKLSQgJHhlbm9tYWlfcm9vdC9j
+b25maWd1cmUgQ1JPU1NfQ09NUElMRT1wb3dlcnBjLTQwNS1saW51eC1nbnUtCiskICR4ZW5v
+bWFpX3Jvb3QvY29uZmlndXJlIC0tYnVpbGQ9aTY4Ni1saW51eCAtLWhvc3Q9cG93ZXJwYy00
+MDUtbGludXgtZ251CiAkIG1ha2UgaW5zdGFsbAogCiAyLjMgQnVpbGRpbmcgZm9yIHRoZSBJ
+UEYK
+--CUG1A5Rj9Z--
 
