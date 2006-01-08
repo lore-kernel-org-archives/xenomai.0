@@ -1,12 +1,15 @@
-Message-ID: <43C0EF40.6090501@domain.hid>
-Date: Sun, 08 Jan 2006 11:53:52 +0100
+Message-ID: <43C0F792.3000300@domain.hid>
+Date: Sun, 08 Jan 2006 12:29:22 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Two patches for the documentation
-References: <200601072103.32588.niklaus.giger@domain.hid>
-In-Reply-To: <200601072103.32588.niklaus.giger@domain.hid>
+References: <b647ffbd0512310437x6e92487es@domain.hid>	
+	<43B69CEC.1040606@domain.hid>
+	<b647ffbd0601071105p746bf2ebx@domain.hid>
+In-Reply-To: <b647ffbd0601071105p746bf2ebx@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [PATCH,
+	RFC] nucleus:shared irq and possible ipipe problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,118 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Hi
-> 
-> xeno.sim.patch contains some clarification on how to build the xenoscope. (GCC 
-> 3.4 worked for me on a x86 system, but with a lot of warnings, that fwritable 
-> is deprecated)
-> 
-> xeno.patch is a shorter way how to cross-compile using the CROSS_COMPILE 
-> variable. It worked for me without any problems for my board.
-> Also contains a hint to use O=../a-build-dir to compile the linux kernel.
-> 
-> Best regards
+Dmitry Adamushko wrote:
 > 
 > 
+> On 31/12/05, *Philippe Gerum* <rpm@xenomai.org <mailto:rpm@xenomai.org>> 
+> wrote:
 > 
-> ------------------------------------------------------------------------
+>  > ...
 > 
-> Index: README.INSTALL
-> ===================================================================
-> --- README.INSTALL	(Revision 392)
-> +++ README.INSTALL	(Arbeitskopie)
-> @@ -150,20 +150,22 @@
->  needed, but if you do not use it, configure emit a warning, which may be
->  confusing.
->  
-> +The easiest way to build a GNU cross-compiler might involve using Dan Kegel 
-> +crosstools found at http://kegel.com/crosstool.
-> +
->  Since cross-compiling requires specific tools, such tools are generally prefixed
->  with the host architecture name; for example, a compiler for the power PC
-> -architecture may be named powerpc-linux-gcc.
-> +architecture may be named powerpc-405-linux-gnu-gcc.
->  
-> -When this prefix contains the name of the architecture, you may pass this prefix
-> -to the --host option of configure. For example, if you type :
-> -configure --host=powerpc-linux
-> -
-> -configure will automatically use powerpc-linux- as a prefix too all compilation
-> +configure will automatically use powerpc-405-linux-gnu- as a prefix too all compilation
->  tools names and deduce the architecture name. If configure is unable to deduce
->  the architecture name from this prefix, you will have to manually pass the name
->  of all compilation tools on configure command line. As in:
->  
-> -configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
-> +It might be a good idea to put all the output into a differen build directory
-> +as to build from from linux source several targets. For each target add 
-> +O=../build-<target> to each make invocation.
-> +configure CROSS_COMPILE=powerpc-405-linux-gnu-
->  
->  For more details:
->  http://sourceware.org/autobook/autobook/autobook_264.html#SEC264
-> @@ -204,16 +206,18 @@
->  2.2 Building for the PowerPC architecture
->  
->  A typical cross-compilation setup, in order to build Xenomai for a
-> -82xx-based system:
-> +PowerPC-405-based system:
->  
->  $ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
->    --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
->    --linux=$linux_tree
->  $ cd $linux_tree
-> -$ make xconfig/gconfig/menuconfig # select the kernel and Xenomai options
-> -$ make bzImage modules # then install as needed
-> +$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
-> +# select the kernel and Xenomai options
-> +$ make CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
-> +# then install as needed
->  $ mkdir $build_root && cd $build_root
-> -$ $xenomai_root/configure --build=i686-pc-linux-gnu --host=powerpc-unknown-linux-gnu CC=ppc_82xx-gcc CXX=ppc_82xx-gcc AR=ppc_82xx-ar LD=ppc_82xx-ld
-> +$ $xenomai_root/configure CROSS_COMPILE=powerpc-405-linux-gnu-
->  $ make install
->  
->  2.3 Building for the IPF
+>      > 2) xnintr_irq_handler() gets a cookie which is == xnshared_irq_t*
+>     (see
+>      > xnintr_attach) that may already be invalid at that time or, and
+>     that's a
+>      > problem, become invalid during the execution of xnintr_irq_handler().
+>      > To prevent that, we could add a flag like IRQ_INPROGRESS but
+>      >
+>      > either we have to set/remove it on the adeos layer before the
+>     control is
+>      > passed to the xnintr_irq_handler() (to be sure that cookie is not
+>      > xnfree()'d. xnintr_detach() will do busy waiting)
+>      >
+> 
+>     Synchronizing the pending IRQs in ipipe_virtualize_irq() should be done
+>     by polling the proper irq_pending count (and _not_ the hi/lo bits which
+>     get cleared before the handler is run). 
+> 
+> 
+> But irq_pending counter (pending_hits in the recent adeos patch) gets 
+> cleared before running the isr handler too.
+>
+
+I was referring to __ipipe_lock_irq() which clears the pending bits but 
+keeps the irq count intact to emulate a PIC masking for a given interrupt.
+
+> In ipipe_sync_stage() :
+> ...
+>             if (--cpudata->irq_pending_hits[irq] == 0) {
+>                  __clear_bit(rank,
+>                          &cpudata->irq_pending_lo[level]);
+>                  ipipe_mark_irq_delivery(ipd,irq,cpuid);
+>             }
+> (*)
+> 
+> // run the corresponding isr handler
+> 
+> This code drops the irq_pending_hits to 0 before running the handler.
+>
+
+> Doesn't it make the following code wrong ?
+> 
+>     for (_cpuid = 0; _cpuid < nr_cpus; _cpuid++)
+>             while (ipd->cpudata[_cpuid].irq_pending_hits[irq] > 0)
+>                     cpu_relax();
+> 
+> 
+> as the handler still can be running / or even about to be run when 
+> ipd->cpudata[_cpuid].irq_pending_hits[irq] is already 0.
+> 
+> We can remove the (*) code at the end of ipipe_sync_stage() so that 
+> irq_pending_hits[irq] may become 0 only after the corresponding isr 
+> handler has completed.
 > 
 
-Applied, thanks.
+I don't like the idea of having the interrupt bookkeeping stuff 
+incompletely updated while calling a handler that might sleep and/or 
+migrate to another CPU.
 
-> 
-> ------------------------------------------------------------------------
-> 
-> Index: sim/README
-> ===================================================================
-> --- sim/README	(Revision 392)
-> +++ sim/README	(Arbeitskopie)
-> @@ -28,7 +28,11 @@
->  Building the simulator
->  ======================
+Another option would be to check for SYNC flag; the syncer sets it 
+before entering the dispatch loop.
+
+> At the same time, the irq_pending counter can't be increased anymore 
+> since we clear the IPIPE_HANDLE_FLAG before doing the busy waiting in 
+> ipipe_unregister_domain() or ipipe_virtualize_irq().
 >  
-> -You will need the libelf, libpng, tcl8.x/tk8.x and tix41 _development
-> +The simulator does not build with GCC 4.0 or later.
-> +
-> +Currently it does not work on PowerPC systems.
-> +
-
-Why?
-
-> +You will need the libelf, libpng, tcl8.x/tk8.x and tix81 _development
->  packages_ in order to build the simulator and its companion tools.
->  For instance, on Debian systems, you will need to install
->  libelfg0-dev, libpng2-dev, tcl8.3-dev, tk8.3-dev and tix41-dev (any
+> 
+>     --
+> 
+>     Philippe.
 > 
 > 
-> ------------------------------------------------------------------------
+> -- 
+> Best regards,
+> Dmitry Adamushko
 > 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
