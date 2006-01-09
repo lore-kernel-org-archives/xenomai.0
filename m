@@ -1,14 +1,16 @@
-Message-ID: <43C220FE.4010100@domain.hid>
-Date: Mon, 09 Jan 2006 09:38:22 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b647ffbd0601091214p18fbd37s@domain.hid>
+Date: Mon, 9 Jan 2006 22:14:27 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+In-Reply-To: <43C0F792.3000300@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
-References: <43C12304.4040802@domain.hid>	<43C12CEC.8070403@domain.hid>	<43C14453.3040907@domain.hid>	<1136754149.17443.21.camel@domain.hid>
-	<43C18CE1.5040509@domain.hid> <43C1CFC2.8040104@domain.hid>
-	<43C21BA7.4050806@domain.hid>
-In-Reply-To: <43C21BA7.4050806@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_25763_10438636.1136837667817"
+References: <b647ffbd0512310437x6e92487es@domain.hid>
+	<43B69CEC.1040606@domain.hid>
+	<b647ffbd0601071105p746bf2ebx@domain.hid>
+	<43C0F792.3000300@domain.hid>
+Subject: [Xenomai-core] Re: [PATCH,
+	RFC] nucleus:shared irq and possible ipipe problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,77 +20,164 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->=20
->>Jan Kiszka wrote:
->>
->>
->>>Stelian Pop wrote:
->>>
->>>
->>>>Le dimanche 08 janvier 2006 =E0 18:56 +0200, Heikki Lindholm a =E9cri=
-t :
->>>>
->>>>
->>>>
->>>>
->>>>>>>Some recent changes (*cough* RTDM benchmark driver *cough*) broke
->>>>>>>kernel
->>>>>>>mode benchmarking for ppc64. Previously klatency worked fine, but =
-now
->>>>>>>latency -t 1 crashes somewhere in xnpod_schedule. Jan, any pending
->>>>>>>patches a comin'?
->>>>
->>>>
->>>>
->>>>So it seems I'm not alone.
->>>>I have done some additionnal debugging on this issue in the last days=
-. I
->>>>still haven't find the bug but I narrowed it down a bit.
->>>>
->>>>
->>>>
->>>>>>Nope, it should work as it is. But as Stelian also reported
->>>>>>problems on
->>>>>>his fresh ARM port with the in-kernel test, I cannot exclude that
->>>>>>there
->>>>>>/might/ be a problem in the benchmark.
->>>>>>
->>>>>>As I don't have any ppc64 hanging around somewhere, we will have to=
- go
->>>>>>through this together. Things I would like to know:
->>>>>
->>>>>
->>Hi guys, it's "/me too" time here for ppc. My mpc5200 board is jumping
->>out of the window when running "./latency -t1", while "./latency -t2"
->>works. No trace dump, hard freeze or spontaneous reboot, at your option=
-.
->>OPT_NUCLEUS_DEBUG spits nothing. No issue with the regular user-space
->>test though.
->>
->>x86 has no problem at all.
->>
->=20
->=20
-> Ok, three smart guys, all having the same bug on their systems - who
-> will be first shouting "I got it"? If it's an issue in my code, I'm
-> going to pay you a beer (which I likely have to schedule already). ;)
->=20
+------=_Part_25763_10438636.1136837667817
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Likely not this time (keep it cold anyway, who knows); I strongly suspect=
- a bug in=20
-xnarch_switch_to() for all archs but x86 which causes the sampling task c=
-ode to be=20
-spuriously rescheduled over the root thread after a few rounds of=20
-rtdm_task_sleep_until. This might happen when a user-space shadow attempt=
-s to=20
-switch to a kernel-based task. Sounds rather worrying eh?! More later.
+On 08/01/06, Philippe Gerum <rpm@xenomai.org> wrote:
+>
+> > [skiped]
 
---=20
+> In ipipe_sync_stage() :
 
-Philippe.
+> > ...
+> >             if (--cpudata->irq_pending_hits[irq] =3D=3D 0) {
+> >                  __clear_bit(rank,
+> >                          &cpudata->irq_pending_lo[level]);
+> >                  ipipe_mark_irq_delivery(ipd,irq,cpuid);
+> >             }
+> > (*)
+> >
+> > // run the corresponding isr handler
+> >
+> > This code drops the irq_pending_hits to 0 before running the handler.
+> >
+>
+> > Doesn't it make the following code wrong ?
+> >
+> >     for (_cpuid =3D 0; _cpuid < nr_cpus; _cpuid++)
+> >             while (ipd->cpudata[_cpuid].irq_pending_hits[irq] > 0)
+> >                     cpu_relax();
+> >
+> >
+> > as the handler still can be running / or even about to be run when
+> > ipd->cpudata[_cpuid].irq_pending_hits[irq] is already 0.
+> >
+> > We can remove the (*) code at the end of ipipe_sync_stage() so that
+> > irq_pending_hits[irq] may become 0 only after the corresponding isr
+> > handler has completed.
+> >
+>
+> I don't like the idea of having the interrupt bookkeeping stuff
+> incompletely updated while calling a handler that might sleep and/or
+> migrate to another CPU.
+>
+> Another option would be to check for SYNC flag; the syncer sets it
+> before entering the dispatch loop.
+
+
+It's unset for all domains but root when the corresponding irq handler is
+running.
+
+ipipe_sync_stage() :
+...
+            __clear_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+            ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
+            __set_bit(IPIPE_SYNC_FLAG, &cpudata->status);
+
+So it doesn't help here as it is used now.
+
+Ok, so far I have built all synchronization completely on the nucleus layer=
+,
+provided that the "cookie" param is not used as it is passed to the handler
+but is taken via the rthal_irq_cookie() service being in a protected
+section.
+
+The disadvantage so far is that the recently extended adeos irq interface i=
+s
+not used as it is supposed to be (the "cookie" argument of the handler).
+
+I'll post the current version of the patch in the separate mail.
+
+--
+>
+> Philippe.
+>
+
+
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_25763_10438636.1136837667817
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<br><div><span class=3D"gmail_quote">On 08/01/06, <b class=3D"gmail_sendern=
+ame">Philippe Gerum</b> &lt;<a href=3D"mailto:rpm@xenomai.org">rpm@xenomai.org.=
+org</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-=
+left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left=
+: 1ex;">
+&gt; [skiped]</blockquote>&gt; In ipipe_sync_stage() :<br>
+<blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, =
+204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; ...<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if =
+(--cpudata-&gt;irq_pending_hits[irq] =3D=3D 0) {<br>&gt;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;__clear_bit(rank,
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&amp;cpudata-&gt;irq_pending_lo[level]);<br>&gt;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;ipipe_mark_irq_delivery(ipd,irq,cpuid);<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&gt; =
+(*)<br>&gt;<br>&gt; // run the corresponding isr handler
+<br>&gt;<br>&gt; This code drops the irq_pending_hits to 0 before running t=
+he handler.<br>&gt;<br><br>&gt; Doesn't it make the following code wrong ?<=
+br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; for (_cpuid =3D 0; _cpuid &lt; nr_c=
+pus; _cpuid++)<br>
+&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; while (ipd-&gt;cpudata[_cpuid].irq_pending_hits[irq] &gt; 0)<br>&gt;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cpu_relax();<br>&gt;<br>&gt;<br>&gt; as the handler still can be running / =
+or even about to be run when<br>&gt; ipd-&gt;cpudata[_cpuid].irq_pending_hi=
+ts[irq] is already 0.<br>&gt;<br>&gt; We can remove the (*) code at the end=
+ of ipipe_sync_stage() so that
+<br>&gt; irq_pending_hits[irq] may become 0 only after the corresponding is=
+r<br>&gt; handler has completed.<br>&gt;<br><br>I don't like the idea of ha=
+ving the interrupt bookkeeping stuff<br>incompletely updated while calling =
+a handler that might sleep and/or
+<br>migrate to another CPU.<br><br>Another option would be to check for SYN=
+C flag; the syncer sets it<br>before entering the dispatch loop.</blockquot=
+e><div><br>
+It's unset for all domains but root when the corresponding irq handler is r=
+unning.<br>
+<br>
+ipipe_sync_stage() :<br>
+...<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; __clear_bit(IPIPE_=
+SYNC_FLAG, &amp;cpudata-&gt;status);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ipd-&gt;irqs[irq].=
+handler(irq, ipd-&gt;irqs[irq].cookie);<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; __set_bit(IPIPE_SY=
+NC_FLAG, &amp;cpudata-&gt;status);<br>
+<br>
+So it doesn't help here as it is used now.<br>
+</div><br>
+Ok, so far I have built all synchronization completely on the nucleus
+layer, provided that the &quot;cookie&quot; param is not used as it is pass=
+ed to
+the handler but is taken via the rthal_irq_cookie() service being in a
+protected section.<br>
+<br>
+The disadvantage so far is that the recently extended adeos irq
+interface is not used as it is supposed to be (the &quot;cookie&quot; argum=
+ent of
+the handler).<br>
+<div><br>
+I'll post the current version of the patch in the separate mail.<br>
+</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">--<br><=
+br>Philippe.<br></blockquote></div><br><br clear=3D"all"><br>-- <br>Best re=
+gards,
+<br>Dmitry Adamushko
+
+------=_Part_25763_10438636.1136837667817--
 
