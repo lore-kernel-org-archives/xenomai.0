@@ -1,12 +1,13 @@
-Message-ID: <43C1C9F5.2050108@domain.hid>
-Date: Mon, 09 Jan 2006 03:27:01 +0100
+Message-ID: <43C1CFC2.8040104@domain.hid>
+Date: Mon, 09 Jan 2006 03:51:46 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <43C18FCB.9080404@domain.hid>
-In-Reply-To: <43C18FCB.9080404@domain.hid>
+Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
+References: <43C12304.4040802@domain.hid>	<43C12CEC.8070403@domain.hid>	<43C14453.3040907@domain.hid>	<1136754149.17443.21.camel@domain.hid>
+	<43C18CE1.5040509@domain.hid>
+In-Reply-To: <43C18CE1.5040509@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [PATCH] fix tracer compilation issues
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,52 +18,53 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> two minor updates I fixed since your last merge. The first one triggers
-> if the tracer tries to warn of debugging switch related latencies. The
-> second one when building very specific out-of-tree modules against the
-> kernel (here: madwifi with its binary-only component), stumbling over
-> -pg vs. -fomit-frame-pointer.
-> 
-> No need for a separate ipipe release from my POV, just apply for the
-> next round.
->
+> Stelian Pop wrote:
+>=20
+>>Le dimanche 08 janvier 2006 =E0 18:56 +0200, Heikki Lindholm a =E9crit =
+:
+>>
+>>
+>>
+>>>>>Some recent changes (*cough* RTDM benchmark driver *cough*) broke ke=
+rnel
+>>>>>mode benchmarking for ppc64. Previously klatency worked fine, but no=
+w
+>>>>>latency -t 1 crashes somewhere in xnpod_schedule. Jan, any pending
+>>>>>patches a comin'?
+>>
+>>
+>>So it seems I'm not alone.=20
+>>
+>>I have done some additionnal debugging on this issue in the last days. =
+I
+>>still haven't find the bug but I narrowed it down a bit.
+>>
+>>
+>>>>Nope, it should work as it is. But as Stelian also reported problems =
+on
+>>>>his fresh ARM port with the in-kernel test, I cannot exclude that the=
+re
+>>>>/might/ be a problem in the benchmark.
+>>>>
+>>>>As I don't have any ppc64 hanging around somewhere, we will have to g=
+o
+>>>>through this together. Things I would like to know:
+>>>
 
-Ok, queued. Thanks.
+Hi guys, it's "/me too" time here for ppc. My mpc5200 board is jumping ou=
+t of the=20
+window when running "./latency -t1", while "./latency -t2" works. No trac=
+e dump,=20
+hard freeze or spontaneous reboot, at your option. OPT_NUCLEUS_DEBUG spit=
+s=20
+nothing. No issue with the regular user-space test though.
 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> --- ./kernel/ipipe/tracer.c.orig	2006-01-07 13:28:01.000000000 +0100
-> +++ ./kernel/ipipe/tracer.c	2006-01-08 23:08:45.000000000 +0100
-> @@ -821,7 +821,7 @@ static void *__ipipe_frozen_prtrace_star
->  			"------------------------------------------------------"
->  			"------\n",
->  			UTS_RELEASE, IPIPE_ARCH_STRING);
-> -		__ipipe_print_dbgwarning();
-> +		__ipipe_print_dbgwarning(m);
->  		seq_printf(m, "Freeze: %lld cycles, Trace Points: %d (+%d)\n\n",
->  			print_path->point[print_path->begin].timestamp,
->  			print_pre_trace+1, print_post_trace);
-> --- ./kernel/ipipe/Kconfig.orig	2006-01-07 13:28:01.000000000 +0100
-> +++ ./kernel/ipipe/Kconfig	2006-01-07 14:24:50.000000000 +0100
-> @@ -17,6 +17,7 @@ config IPIPE_STATS
->  config IPIPE_TRACE
->   	bool "Latency Tracing"
->  	depends on IPIPE && PROC_FS
-> +	select FRAME_POINTER
->  	default n
->  	---help---
->  	  Activate this option if you want to use per-function tracing of
+x86 has no problem at all.
 
-
--- 
+--=20
 
 Philippe.
 
