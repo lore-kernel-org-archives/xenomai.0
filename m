@@ -1,13 +1,14 @@
-Message-ID: <43C37926.5060007@domain.hid>
-Date: Tue, 10 Jan 2006 10:06:46 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b647ffbd0601100737j50909ba4u@domain.hid>
+Date: Tue, 10 Jan 2006 07:37:40 -0800
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+In-Reply-To: <17346.54589.751654.349370@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
-References: <43C12304.4040802@domain.hid>	<43C12CEC.8070403@domain.hid>	<43C14453.3040907@domain.hid>	<1136754149.17443.21.camel@domain.hid>	<43C18CE1.5040509@domain.hid>	<43C1CFC2.8040104@domain.hid>	<43C21BA7.4050806@domain.hid>	<43C220FE.4010100@domain.hid>
-	<17346.57955.432284.905332@domain.hid>
-In-Reply-To: <17346.57955.432284.905332@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <b647ffbd0601091221h5596da2fg@domain.hid>
+	<17346.54589.751654.349370@domain.hid>
+Subject: [Xenomai-core] Re: nucleus:shared irq, draft v.2
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,78 +19,82 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Likely not this time (keep it cold anyway, who knows); I strongly suspect a bug in 
->  > xnarch_switch_to() for all archs but x86
-> 
-> Now that you are talking about it, I may be the one who owes a beer to
-> everyone by first having put a bug in ia64 context-switch code... If I
-> am not wrong, the bug should be observed on ia64 too. Unfortunately, I
-> am unable to compile my ia64 kernel right now, so I wrote a patch for
-> power PC, and would be glad if some power PC owner could try it.
-> 
+On 09/01/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Dmitry Adamushko wrote:
+>  > Hi everybody,
+>  >
+>  > I'm presenting it one last time as a draft, so it's a right time to gi=
+ve
+> all
+>  > the remarks concerning design/implementation issues for all interested
+>  > parties.
+>  >
+>  > Any feedback is wellcome.
+>
+> Maybe I missed some recent changes in Xenomai HAL or Adeos, in which
+> case, please forget my remark, but calling xnarch_hook_irq,
+> i.e. rthal_irq_request when nklock is locked, irq off, may lead to
+> deadlock on multi-processor machines. The situation is (or used to be)
+> as follows:
+>
+> CPU1
+> holds the nklock
+> calls rthal_irq_request, which calls ipipe_critical_enter, which:
+>    triggers the critical IPI
+>    spins, waiting for other CPUs to enter __ipipe_do_critical_sync
+>
+> CPU2
+> spins on nklock, irq off
+> never handles the critical IPI, because irqs are off
+>
 
-Nope, same lockup with hybrid scheduling.
+Nop, your remark is actually right to the place. I had some doubts
+regarding the use of nklock here but, flankly, I didn't even consider
+that possible deadlock. Thanks for a hint.
 
-> It should work on PPC 64 too...
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> Index: include/asm-powerpc/system.h
-> ===================================================================
-> --- include/asm-powerpc/system.h	(revision 410)
-> +++ include/asm-powerpc/system.h	(working copy)
-> @@ -182,13 +182,19 @@
->  {
->      struct task_struct *prev = out_tcb->active_task;
->      struct task_struct *next = in_tcb->user_task;
-> +    static unsigned long last_ksp;
-> +    static xnarchtcb_t *last_tcb;
->  
-> +    last_tcb = out_tcb;
->      in_tcb->active_task = next ?: prev;
->  
->      if (next && next != prev) /* Switch to new user-space thread? */
->  	{
->  	struct mm_struct *mm = next->active_mm;
->  
-> +        if (prev != out_tcb->user_task)
-> +            last_ksp = prev->thread.ksp;
-> +
->  	/* Switch the mm context.*/
->  
->  #ifdef CONFIG_PPC64
-> @@ -245,6 +251,22 @@
->      else
->          /* Kernel-to-kernel context switch. */
->          rthal_switch_context(out_tcb->kspp,in_tcb->kspp);
-> +
-> +    /* If we are not the epilogue of a regular linux schedule(),... */
-> +    if (likely(test_bit(xnarch_current_cpu(),&rthal_cpu_realtime)) &&
-> +        /* we are a user-space thread,... */
-> +        out_tcb->user_task &&
-> +        /* the last context switch used linux switch routine,... */
-> +        last_tcb->active_task != out_tcb->user_task &&
-> +        /* but the last xenomai context was a kernel thread,... */
-> +        last_tcb->user_task != last_tcb->active_task)
-> +        {
-> +        /* then linux context switch routine saved kernel thread stack pointer
-> +           in last user-space context. We hence put the stack pointers in the
-> +           right place. */
-> +        last_tcb->ksp = last_tcb->active_task->thread.ksp;
-> +        last_tcb->active_task->thread.ksp = last_ksp;
-> +        }
->  }
->  
->  static inline void xnarch_finalize_and_switch (xnarchtcb_t *dead_tcb,
+> I only skimmed over the discussion about ipipe_virtualize_irq_from. I do
+> not know if it finally flushes all pending interrupts an all CPUs when
+> called with a NULL handler. But if it does, the call to
+> xnintr_shirq_spin seems redundant in xnintr_detach.
+
+Well, the problem is that the shirq->handlers list, i.e. the shirq
+object itself may be in use
+at the moment when xnintr_detach() is called. That said, the shirq
+object as well as all the elements of shirq->handlers (those that have
+been removed by xnintr_detach() from the list) must remain valid as
+long as there is a isr handler for the given irq running (i.e.
+xnintr_irq_handler() ).
+
+To sum it up:
+
+xnintr_shirq_spin() is for:
+
+o  "shirq" must be deleted only when the xnintr_irq_handler() for the
+given irq has completed;
+
+o  even if there is no need to delete the "shirq" object (there are
+other intr objects in the list) the xnintr_detach() must wait until
+the handler gets completed, thas keeping intr->link valid.
+
+Ok, maybe my explanation is a bit confusing but the direct analogy is
+the way used in Linux, namely the synchroize_irq() call (take a look
+at how it's used in free_irq()).
+
+This is a kind of RCU. The element is removed from the list but it's
+completely freed only when all the read clients are completed (in our
+case, xnintr_irq_handler() and handle_IRQ_events() in Linux).
+
+>
+> --
+>
+>
+> =09=09=09=09=09    Gilles Chanteperdrix.
+>
 
 
--- 
-
-Philippe.
+--
+Best regards,
+Dmitry Adamushko
 
