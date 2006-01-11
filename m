@@ -1,14 +1,13 @@
-Message-ID: <43C58755.2040407@domain.hid>
-Date: Wed, 11 Jan 2006 23:31:49 +0100
+Message-ID: <43C58EB0.8060300@domain.hid>
+Date: Thu, 12 Jan 2006 00:03:12 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] PCI Framegrabber real-time driver
-References: <200601111655.57020.lbocseg@domain.hid> <43C56124.4040407@domain.hid>
-	<200601111921.05544.lbocseg@domain.hid>
-In-Reply-To: <200601111921.05544.lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] question about task migrating to primary mode
+References: <200601112256.41723.kisda@domain.hid>
+In-Reply-To: <200601112256.41723.kisda@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigDC3A3CD85269443EDCD1342F"
+	boundary="------------enigD4F23B66043C0D1AA07B566E"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,173 +18,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDC3A3CD85269443EDCD1342F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+--------------enigD4F23B66043C0D1AA07B566E
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi Jan, thank you for replying (I was really guessing that your answer would 
-> be the first ;) ).
+Stefan Kisdaroczi wrote:
+> Hi,
+>=20
+> I have a question about migrating a task to primary mode.
+>=20
+> Following code is from Captain's  "Hard Real Time Serial Port (RS232)=20
+> Example" [1]:
+> ...
+>   while (1) {
+>     /* switch to primary mode */
+>     ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+>     if (ret) {
+>       printf(WTASK_PREFIX "error while rt_task_set_mode, code %d\n",ret=
+);
+>       goto exit_write_task;
+>     }
+>     ret =3D rt_task_wait_period();
+>     if (ret) {
+>       printf(WTASK_PREFIX "error while rt_task_wait_period, code %d\n",=
+ret);
+>       goto exit_write_task;
+>     }
+>     sz =3D sizeof(buf);
+>     written =3D rt_dev_write(my_fd, &buf, sizeof(buf));
+>     printf(WTASK_PREFIX "rt_dev_write written=3D%d sz=3D%d\n", written,=
+ sz);
+>     if (written !=3D sz ) {
+>       if (written < 0 ) {
+>         printf(WTASK_PREFIX "error while rt_dev_write, code %d\n",writt=
+en);
+>       } else {
+>         printf(WTASK_PREFIX "only %d / %d byte transmitted\n",written, =
+sz);
+>       }
+>       goto exit_write_task;
+>     }
+>   }
+> ...
+>=20
+> Is the rt_task_set_mode(0, T_PRIMARY, NULL) call really necessary?
 
-How did you? ;)
+Damn, this is the old-style RTDM 16550A serial driver example code which
+found it way here. I think that even the original code on my side is
+still outdated.
 
-> 
-> I'll comment along the message.
-> 
-> 
->>>Hi,
->>>
->>>...
->>>Let me explain how the driver works. It initializes the board with some
->>>PCI writes on startup. It's passed to the kernel the parameter "mem=510M"
->>>reserving 2Mb for use with the framegrabber through DMA access. I need a
->>
->>I guess "510M" does not stand for 510 MB... ;)
-> 
-> 
-> Sorry, why not? This is taken from Documentation/kernel-parameters.txt:
-> mem=nn[KMG]     [KNL,BOOT] Force usage of a specific amount of memory
->                        Amount of memory to be used when the kernel is not able
->                        to see the whole system memory or for test.
->                        [IA-32] Use together with memmap= to avoid physical
->                        address space collisions. Without memmap= PCI devices
->                        could be placed at addresses belonging to unused RAM.
-> 
+No, this is no longer needed here. All native functions automatically
+switch to the right mode on invocation. The former issue was with the
+RTDM API (rt_dev_xxx) which required the right mode on entry in case the
+driver in the background only supports a specific one (e.g. if there is
+no blocking read for a specific device from secondary mode - rather usual=
+).
 
-Argh, I confused something here.
+Things evolved, this restriction was removed in Xenomai, the original
+demo got reordered, but the mode switches remained. We need to clean
+this up.
 
-Yes, this is a way to obtain this continous memory. The other, more
-organised way is via the old bigphysarea patch. It's still being update
-even for 2.6 (http://pv105234.reshsg.uci.edu/~jfeise/Downloads/zr36120).
-Anyway, as long as you are alone with this requirement on your system,
-this is the simpler way to go.
+> I seems the call is used here to migrate to task back to primary mode i=
+f a=20
+> error-"printf" switched the task to secondary mode.
+>=20
+> From the "Native API Tour"-Document, page 8 [2]:
+> "By convention, all Xenomai services which
+> might block the caller cause such transition when necessary; in other w=
+ords, real=AD
+> time tasks blocked on Xenomai resources are always aslept in primary mo=
+de."
+>=20
+> As the next call is rt_task_wait_period which should block, i think its=
+ not=20
+> necessary to force a migration "by hand" to primary mode. Is this true =
+?
+>=20
 
-> 
->>>continuous physic memory area and I can't get it through kmalloc or
->>>similar functions. I map this memory in my programs in user space. So, I
->>>basically need to write and read from PCI registers in the drive. But I
->>>don't know if it should be better to develop the driver using some
->>>existing API or not because I didn't find any API that applies to
->>>framegrabbers like v4l does on Linux domain...
->>
->>There is no such thing like video4RTDM (yet), that's true.
-> 
-> 
-> :(
-> 
-> 
->>>Please, what do you suggest about the design of my driver?
->>
->>Well, if you already have a working driver for standard Linux, I would
->>suggest the following:
->>
->>Split up your driver in the (non-real-time) initialisation work where
->>you may use all the useful driver APIs Linux provides you (BTW, how do
->>you obtain this continuous memory block?) and a (real-time) runtime part
->>where only RTDM functions can be used.
-> 
-> 
-> Actually, the great advantage of V4L(2) API is for user space programmers to 
-> have a common API. There is too few advantages the API provides for 
-> initialization (actually, the API does no hardware initialization, it only 
-> register the devices to be used by userspace programs). So, the 
-> initialization API is useless without the runtime API.
-> 
-> The memory is obtained passing the kernel the parameter "mem=510M". So, the 
-> kernel won't use the last 2 Mb. I know it is not an elegant solution but it's 
-> pretty simple and I can't imagine another one... For using this memory in the 
-> driver there are two options:
->  - The user pass the address to be used by DMA through a module parameter.
->  - if no address was specified, try to use the last address with the "dma = 
-> virt_to_phys(high_memory);". Of course, this is dangerous if another driver 
-> uses the same method and is already using that memory. But I know that in my 
-> system this is the only driver that uses that memory.
-> 
->>Then register a RTDM device, likely some misc device with a nice unique
->>name and an instance number postfix, and with open, close, and ioctl
->>handlers.
-> 
-> I think that in that cases a mmap handler is very useful too.
-> 
+Yes, definitly. Even with the old RTDM code this would have been redundan=
+t.
 
-Maybe, maybe not. The mmap interface, especially its current low-end
-side on Linux, contains a lot dynamics and tight relations to the
-mm-subsystem to use it directly in hard-RT contexts. So far I think it
-would be overkill to define this interface just to pass some user memory
-region to a RTDM driver. I rather vote for specialised new interfaces in
-this cases, typically based on IOCTLs.
+You only need explicit mode switches with RTDM device in case there are
+handlers both for the primary and secondary case and you want to pick a
+specific one. Corner cases, but not purely theoretical:
 
-See, touching the mm in hard RT code is at least "tricky". You drag a
-lot of external compexity into your RT subdomain without real need. It
-simply that you then have to take much more code into account to gain
-certainty if your system is actually deterministic. Tight mm-relation is
-e.g. one reason why userspace locking services (futexes) are even on
-PREEMPT_RT still fishy regarding hard-RT - but this is a different topic.
+Creating RTnet UDP sockets e.g. can happen in both contexts. In primary
+mode, the required buffers are taken from a limited global pool of
+pre-allocated buffers. In secondary mode, these buffers are allocated
+classically, using Linux kernel services (kmem_cache_alloc). So, when
+you are already in a real-time task and want to call rt_dev_socket but
+you do have some time, you should explicitely switch to secondary mode
+and then issue the request.
 
-> 
->>The init stuff, or parts of it, would be moved to the open_nrt 
->>(note the "_nrt") handler, cleanup to close_nrt. Likely the parameters
->>that can be passed via rt_dev_open (or plain "open" in the posix skin)
->>are not sufficient to configure your device instance. E.g. you may want
->>to pass up or down some userspace buffer addresses. Therefore, register
->>an ioctl_nrt handler which deals with specific setup-IOCTLs. On the
->>other hand, all the synchronisation, buffer flipping, etc. you need to
->>perform during runtime from your hard-real-time task has to be
->>implemented in an ioctl_rt (note: "_rt") handler.
->>
->>As there is no magic involved in the rt-part of RTDM - all
->>synchronisation mechanisms are standard -, porting the existing semantic
->>of your driver over the RTDM API should cause no real problem. But I
->>don't know your driver design and its usage, so feel free to point out
->>potential issues you see.
-> 
-> 
-> Well, there is only one thing I can see at the moment. I would need to rewrite 
-> the interrupt part to use a real-time interrupt routine instead of the PCI 
-> interrupt method, am I right?
-> 
+That's the idea behind it, and I hope it became a bit clearer than it is
+now with existing code and docs.
 
-Don't know. Maybe you could sketch the data flow of a typical frame
-capturing cycle. Does the application trigger it by polling and then
-blocks until the result arrived? Or is the update continously going on?
-How does an application know if a frame is up-to-date, is currently
-being updated, or whatever? Sorry, I never worked with such hardware
-before and only have a rough idea of it.
-
-> 
->>If you like to have a look at a rather simple reference code with all
->>the described features included (just without direct hardware acesss),
->>check out ksrc/drivers/benchmark/ in the latest Xenomai SVN.
-> 
-> Thank you, I'll check them...
-> 
-> 
->>And if you think the final API design for your framegrabbing hardware
->>looks common enough to cover other framegrabbing hardware as well, you
->>are warmly welcome to post the concept so that we can discuss making
->>this THE real-time framegrabbing device profile (officially reserving an
->>RTDM ID and name, including the API header in the Xenomai code base,
->>etc.). That could mean your application suddenly becomes portable over
->>other hardware - something like video4RTDM...
-> 
-> 
-> Unfortunatelly, I think I won't have time at this moment to suggest a common 
-> API for all framegrabbers because I'm bad on time. I have no more than 6 
-> months to finish my work on college and I have a lot of other things to 
-> implement and some articles to write... But, I might have some time in 
-> future...
-
-Nevermind, this discussion can already collect interesting aspects and
-new ideas. Maybe others, e.g. from the (RT-)FireWire framegrabbing side
-will pick this once up.
+> Thank you Hannes for all your examples.
+>=20
+> Thanks
+> kisda
+>=20
+> [1] http://www.captain.at/xenomai-serial-port-example.php
+> [2]=20
+> http://snail.fsffrance.org/www.xenomai.org/documentation/branches/v2.0.=
+x/pdf/Native-API-Tour.pdf
+>=20
 
 Jan
 
---------------enigDC3A3CD85269443EDCD1342F
+
+--------------enigD4F23B66043C0D1AA07B566E
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -194,10 +140,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Thunderbird - http://enigmail.mozdev.org
 
-iD8DBQFDxYdVniDOoMHTA+kRArXaAJ4untkhQ7ExPm66nLl2RTyGCytz3wCcDkCr
-9++YN4ntoikIcRu2w57ouag=
-=0T1O
+iD8DBQFDxY6wniDOoMHTA+kRAsJ0AJ0e5pZiZX0ZgqqbydpNeGTTJl45cgCeNGGd
+Mbx/ekSz6TaBKF/wPynD4H4=
+=UmxZ
 -----END PGP SIGNATURE-----
 
---------------enigDC3A3CD85269443EDCD1342F--
+--------------enigD4F23B66043C0D1AA07B566E--
 
