@@ -1,13 +1,20 @@
-Message-ID: <43C638C1.9070708@domain.hid>
-Date: Thu, 12 Jan 2006 12:08:49 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Xenomai broken on Linux 2.4
-References: <43C61CC6.5090802@domain.hid> <43C61D87.1080301@domain.hid>
-	<BCC969F7-8D97-46BD-A314-2153708D71AE@openwide.fr>
-In-Reply-To: <BCC969F7-8D97-46BD-A314-2153708D71AE@openwide.fr>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17350.20759.34780.813349@domain.hid>
+Date: Thu, 12 Jan 2006 13:52:39 +0100
+Subject: Re: [Xenomai-core] latency kernel part crashes on ppc64
+In-Reply-To: <43C58820.5010006@domain.hid>
+References: <43C12304.4040802@domain.hid> <43C12CEC.8070403@domain.hid>
+	<43C14453.3040907@domain.hid>
+	<1136754149.17443.21.camel@domain.hid>
+	<43C18CE1.5040509@domain.hid> <43C1CFC2.8040104@domain.hid>
+	<43C21BA7.4050806@domain.hid> <43C220FE.4010100@domain.hid>
+	<17346.57955.432284.905332@domain.hid>
+	<43C37926.5060007@domain.hid>
+	<17349.33404.156585.857948@domain.hid>
+	<43C58820.5010006@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,41 +24,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stelian Pop <stelian.pop@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Stelian Pop wrote:
->=20
-> Le 12 janv. 06 =E0 10:12, Philippe Gerum a =E9crit :
->=20
->>
->> Hi Wolfgang,
->>
->> Wolfgang Grandegger wrote:
->>
->>> Hi Philippe,
->>> I just realized that recent changes in ksrc/arch/powerpc/switch.S =20
->>> have broken the build of Xenomai with linuxppc_2_4_devel on PPC:
->>>  #include <asm/offsets.h> does not exist
->>>  Symbols like SAVE_NVGPRS do not exist
->>>
->>
->> Ok, thanks for the info. I'm going to fix and check the 2.4/ppc  port=20
->> today.
->=20
->=20
-> 2.6/ppc build fails in the same way. Correcting it to <linux/asm-=20
-> offsets.h> fixes fixes it.
->
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > But it does not seem to be due to the bug I was suspecting in context
+ > > switch code.
+ > > 
+ > 
+ > What about the PPC world? I saw some SVN commits claiming to fix this
+ > (also for blackfin) - but there was no "Hey, it's fixed now!" on the
+ > mailing list.
 
-Fixed.
+Actually, the bug I suspected was the real cause of trouble on
+ia64. But, if you look at Philippe's commit, you will see that there
+were a couple of other bugs (probably all my work) on this architecture,
+hence my previous, wrong, claim.
 
-> Stelian.
->=20
->=20
+-- 
 
 
---=20
-
-Philippe.
+					    Gilles Chanteperdrix.
 
