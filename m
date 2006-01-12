@@ -1,12 +1,13 @@
-Message-ID: <43C67A80.40100@domain.hid>
-Date: Thu, 12 Jan 2006 16:49:20 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43C6B23B.6030503@domain.hid>
+Date: Thu, 12 Jan 2006 16:47:07 -0300
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RT Heap in Userspace
-References: <200601121136.38271.s.zimmermann@domain.hid>
-In-Reply-To: <200601121136.38271.s.zimmermann@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] PCI Framegrabber real-time driver
+References: <200601111655.57020.lbocseg@domain.hid>	<43C56124.4040407@domain.hid>	<200601111921.05544.lbocseg@domain.hid>
+	<17349.34151.559777.835174@domain.hid>
+In-Reply-To: <17349.34151.559777.835174@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,61 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephan Zimmermann <s.zimmermann@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Stephan Zimmermann wrote:
-> Hello again,
-> based on your information about memory allocation, I tried out the following:
-> 
-> in main:
-> // creating the Heap
-> ret = rt_heap_create(&rt_heap,"Main-RT-Heap",rt_heapsize,H_FIFO);
-> 
-> global:
-> // overloaded operator new 
-> void* operator new(size_t size){
-> 	void* newmem = NULL;
-> 	int ret = rt_heap_alloc(&rt_heap,size,TM_INFINITE,&newmem);
-> 	printf("new memory allocated: %i bytes, return %i\n",size,ret); fflush(NULL);
-> 	return newmem;
-> }
-> 
-> This works fine, as long as I use a standard 'malloc' in my operator new. When 
-> executing the rt_... code, creating the heap returns 0 as expected. But 
-> trying to allocate some Memory insode of it using operator new fails with 
-> -EEINVAL.
-> 
-> Reading the API-Doc more thoroughly, I saw a statement that H_SHARED is 
-> implicitly set, when a heap is created from Userspace (where my program 
-> executes).
-> So, is ist possible to do what I try, or will I need to run in kernelspace for 
-> it? Maybe there is some 'trick' to do it?
+Gilles Chanteperdrix escreveu:
+
+>Rodrigo Rosenfeld Rosas wrote:
+> > The memory is obtained passing the kernel the parameter "mem=3D510M". S=
+o, the=20
+> > kernel won't use the last 2 Mb. I know it is not an elegant solution bu=
+t it's=20
+> > pretty simple and I can't imagine another one...
 >
+>Another one, suggested in "Linux devices drivers", chapter 8, is to
+>allocate your memory at boot time with one of the alloc_bootmem
+>functions. Of course, in order to call these functions, a small part of
+>your driver need to run in the kernel itself.
+>
+>For more details, see:
+>http://lwn.net/Kernel/LDD3/
+> =20
+>
+Yes, I knew about that, but the it was not an option at the time. I can=20
+not show the source code of the driver due to a contract or else I=20
+wouldn't have the specifications. So, if I need to use the driver in=20
+other places I will have to build a module and distribute only the=20
+module. I'm still thinking in other solutions but it is easier to ask=20
+the user to pass the kernel the mem parameter...
 
-Not yet. For the time being, user-space heaps are always built as single shared 
-memory segments, which is a useless limitation. There is a plan to fix that in a 
-reasonable future, by decoupling the mappable heap property from the 
-single-segment one (i.e. which will allow in turn to create shared heaps which are 
-not necessarily single-segment areas). If your application can bare higher 
-execution latencies as a result of calling the allocator for a while, then you 
-might consider sticking with malloc until this fix is available.
+But thank you anyway!
 
-Sidenote: going for kernel-space with C++ always seemed to me a bad idea. It's not 
-that it is impossible, it's just that it often turns out to be a maintenance hell 
-  provided you want to keep your options reasonably open regarding your kernel+gcc 
-combo of choice.
-
-> Thaks for your help, Stephan
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+Rodrigo.
 
 
--- 
+=09
 
-Philippe.
+=09
+	=09
+_______________________________________________________=20
+Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
+http://br.yahoo.com/homepageset.html=20
+
+
 
