@@ -1,12 +1,10 @@
-Message-ID: <43C6D2F5.2050607@domain.hid>
-Date: Thu, 12 Jan 2006 23:06:45 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Xenomai broken on Linux 2.4
-References: <20060112215453.78FD335262C@atlas.denx.de>
-In-Reply-To: <20060112215453.78FD335262C@atlas.denx.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Thu, 12 Jan 2006 18:02:33 -0500
+From: Kent Borg <kentborg@domain.hid>
+Message-ID: <20060112180233.T15311@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] rt_pipe_create() and P_MINOR_AUTO
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,36 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Wolfgang Denk wrote:
-> In message <43C6B428.2040506@domain.hid> you wrote:
-> 
->>Well, our 2.6 tree is based on the offical 2.6 tree. Don't know where 
->>the difference come from. Maybe Wolfgang can help (he is now on CC).
-> 
-> 
-> I'm subscribed, too.
-> 
-> We added some patches (especially 4xx network driver related) to  our
-> tree long before they were accepted and merged into Linus' tree.
-> 
-> Does this answer the question? [Or what exactly is the problem?]
->
+Hello,
 
-We try to find a way to wrap class_device_create properly depending on the kernel 
-version Xeno is compiled against. The parent device class argument in this call 
-(2nd in order) seems to show up in 2.6.15 for kernel.org, but 2.6.14-denx-git has 
-it too. So we have a problem relying on the version sublevel.
+First things first: I am using version Xenomai 2.0.1 on a recompiled
+Ubuntu kernel version 2.6.14.3.
 
-> Best regards,
-> 
-> Wolfgang Denk
-> 
+I am confused by rt_pipe_create(), specifically, the "minor"
+parameter.  The writeup at
+http://snail.fsffrance.org/www.xenomai.org/documentation/branches/v2.0.x/html/api/group__pipe.html#ga20
+says that:
+
+  Passing P_MINOR_AUTO causes the minor number to be
+  auto-allocated. In such a case, the name parameter must be valid so
+  that user-space processes may subsequently follow the symbolic link
+  that will be automatically created from
+  /proc/xenomai/registry/pipes/name to the allocated pipe device entry
+  (i.e. /dev/rtp*).
+
+Sounds great, but it doesn't seem true.  <mope>  
+
+So I have to manage minor usage be hand until P_MINOR_AUTO is
+implemented, or did I miss something?
 
 
--- 
+Thanks,
 
-Philippe.
+-kb, the Kent who hasn't had a chance to try the 2.6.15 kernel he
+started playing with last week.
 
