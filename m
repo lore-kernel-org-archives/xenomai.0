@@ -1,10 +1,10 @@
-Message-ID: <43C75905.70603@domain.hid>
-Date: Fri, 13 Jan 2006 08:38:45 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43C765E0.4030407@domain.hid>
+Date: Fri, 13 Jan 2006 09:33:36 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] rt_pipe_create() and P_MINOR_AUTO
-References: <20060112180233.T15311@domain.hid>
-In-Reply-To: <20060112180233.T15311@domain.hid>
+Subject: Re: [Xenomai-core] Re: Xenomai broken on Linux 2.4
+References: <20060113011449.E32C7353CCD@atlas.denx.de>
+In-Reply-To: <20060113011449.E32C7353CCD@atlas.denx.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,49 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Kent Borg <kentborg@domain.hid>
+To: Wolfgang Denk <wd@domain.hid>
 Cc: xenomai@xenomai.org
 
-Kent Borg wrote:
-> Hello,
+Wolfgang Denk wrote:
+> Dear Philippe,
 > 
-> First things first: I am using version Xenomai 2.0.1 on a recompiled
-> Ubuntu kernel version 2.6.14.3.
+> in message <43C6D2F5.2050607@domain.hid> you wrote:
 > 
-> I am confused by rt_pipe_create(), specifically, the "minor"
-> parameter.  The writeup at
-> http://snail.fsffrance.org/www.xenomai.org/documentation/branches/v2.0.x/html/api/group__pipe.html#ga20
-> says that:
+>>We try to find a way to wrap class_device_create properly depending on the kernel 
+>>version Xeno is compiled against. The parent device class argument in this call 
+>>(2nd in order) seems to show up in 2.6.15 for kernel.org, but 2.6.14-denx-git has 
+>>it too. So we have a problem relying on the version sublevel.
 > 
->   Passing P_MINOR_AUTO causes the minor number to be
->   auto-allocated. In such a case, the name parameter must be valid so
->   that user-space processes may subsequently follow the symbolic link
->   that will be automatically created from
->   /proc/xenomai/registry/pipes/name to the allocated pipe device entry
->   (i.e. /dev/rtp*).
 > 
-> Sounds great, but it doesn't seem true.  <mope>  
+> I see. Well, I feel honored, but the reference in such  cases  should
+> always be Linus' tree (i. e. the "official" kernel.org tree). Xenomai
+> cannot  and  should  not  have  to be considerate of all the N vendor
+> kernel trees that exist out there in the wild...
+> 
+> And if some user should use our old 2.6.14 tree and run into problems
+> we can just tell him to use  current  code  -  so  no  problem  here,
+> either.
+> 
+> Please use kernel.org as reference (and  remember  that  decision  in
+> case other vendors should come urging you).
 
-eh. P_MINOR_AUTO appears in 2.0.2.
+Philippe, for some (yet) unknown reasons the trees are not in sync but 
+they should in respect to include/linux/device.h. Well, lets simply 
+ignore this problem for Xenomai.
 
+Thanks.
+
+Wolfgang.
+
+> Best regards,
 > 
-> So I have to manage minor usage be hand until P_MINOR_AUTO is
-> implemented, or did I miss something?
-> 
-> 
-> Thanks,
-> 
-> -kb, the Kent who hasn't had a chance to try the 2.6.15 kernel he
-> started playing with last week.
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> Wolfgang Denk
 > 
 
-
--- 
-
-Philippe.
 
