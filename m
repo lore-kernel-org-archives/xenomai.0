@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <43C7D3BC.7090604@domain.hid>
+Date: Fri, 13 Jan 2006 17:22:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="BImEm2Bm7x"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17351.51365.989840.981282@domain.hid>
-Date: Fri, 13 Jan 2006 16:35:01 +0100
 Subject: Re: [Xenomai-core] [patch] factoring arithmetic routines.
-In-Reply-To: <17351.50625.229758.938503@domain.hid>
 References: <17351.50625.229758.938503@domain.hid>
+In-Reply-To: <17351.50625.229758.938503@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,436 +16,586 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-
---BImEm2Bm7x
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
- > 
- > Hi,
- > 
- > For your review, here is an attempt to factor arithmetic routines in
- > asm-generic/hal.h.
+> Hi,
+> 
+> For your review, here is an attempt to factor arithmetic routines in
+> asm-generic/hal.h.
+> 
+> I am not sure the way I did it is the best one.
+> Maybe defining some HAVE_ARCH symbols, would have been better.
+> Maybe moving the definitions in asm-generic/system.h would have been
+> better than the #defines before #include for side effects.
+> I am not to pleased with the double definition of div96by32 either.
+> 
+> Please feel free to comment, insult, etc...
+> 
 
-And with the blackfin architecture...
+Queued for -rc3, froggie, etc...
+
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: include/asm-arm/hal.h
+> ===================================================================
+> --- include/asm-arm/hal.h	(revision 453)
+> +++ include/asm-arm/hal.h	(working copy)
+> @@ -29,12 +29,6 @@
+>  #ifndef _XENO_ASM_ARM_HAL_H
+>  #define _XENO_ASM_ARM_HAL_H
+>  
+> -#include <asm-generic/xenomai/hal.h>	/* Read the generic bits. */
+> -#include <asm/div64.h>
+> -#include <asm/byteorder.h>
+> -
+> -typedef unsigned long long rthal_time_t;
+> -
+>  #ifdef __BIG_ENDIAN
+>  #define endianstruct struct { u_long _h; u_long _l; } _s
+>  #else /* __LITTLE_ENDIAN */
+> @@ -50,72 +44,12 @@
+>      (l) = _u._s._l;                             \
+>  })
+>  
+> -#define __rthal_u64fromu32(h, l) ({             \
+> -    union { unsigned long long _ull;            \
+> -    endianstruct;                               \
+> -    } _u;                                       \
+> -    _u._s._h = (h);                             \
+> -    _u._s._l = (l);                             \
+> -    _u._ull;                                    \
+> -})
+> +#include <asm-generic/xenomai/hal.h>	/* Read the generic bits. */
+> +#include <asm/div64.h>
+> +#include <asm/byteorder.h>
+>  
+> -static inline unsigned long long rthal_ullmul(const unsigned long m0,
+> -                                              const unsigned long m1)
+> -{
+> -    return (unsigned long long) m0 * m1;
+> -}
+> +typedef unsigned long long rthal_time_t;
+>  
+> -static inline unsigned long long rthal_ulldiv (unsigned long long ull,
+> -                                               const unsigned long uld,
+> -                                               unsigned long *const rp)
+> -{
+> -    unsigned long r = do_div(ull, uld);
+> -
+> -    if (rp)
+> -    	*rp = r;
+> -
+> -    return ull;
+> -}
+> -
+> -#define rthal_uldivrem(ull,ul,rp) ((u_long) rthal_ulldiv((ull),(ul),(rp)))
+> -
+> -static inline int rthal_imuldiv (int i, int mult, int div) {
+> -
+> -    /* Returns (int)i = (unsigned long long)i*(u_long)(mult)/(u_long)div. */
+> -    const unsigned long long ull = rthal_ullmul(i, mult);
+> -    return rthal_uldivrem(ull, div, NULL);
+> -}
+> -
+> -static inline __attribute_const__
+> -unsigned long long __rthal_ullimd (const unsigned long long op,
+> -                                   const unsigned long m,
+> -                                   const unsigned long d)
+> -{
+> -    u_long oph, opl, tlh, tll, qh, rh, ql;
+> -    unsigned long long th, tl;
+> -
+> -    __rthal_u64tou32(op, oph, opl);
+> -    tl = rthal_ullmul(opl, m);
+> -    __rthal_u64tou32(tl, tlh, tll);
+> -    th = rthal_ullmul(oph, m);
+> -    th += tlh;
+> -
+> -    qh = rthal_uldivrem(th, d, &rh);
+> -    th = __rthal_u64fromu32(rh, tll);
+> -    ql = rthal_uldivrem(th, d, NULL);
+> -    return __rthal_u64fromu32(qh, ql);
+> -}
+> -
+> -static inline long long rthal_llimd (long long op,
+> -                                     unsigned long m,
+> -                                     unsigned long d)
+> -{
+> -
+> -    if(op < 0LL)
+> -        return -__rthal_ullimd(-op, m, d);
+> -    return __rthal_ullimd(op, m, d);
+> -}
+> -
+>  #if __LINUX_ARM_ARCH__ < 5
+>  static inline __attribute_const__ unsigned long ffnz (unsigned long x) {
+>  	int r = 0;
+> Index: include/asm-generic/hal.h
+> ===================================================================
+> --- include/asm-generic/hal.h	(revision 453)
+> +++ include/asm-generic/hal.h	(working copy)
+> @@ -38,6 +38,8 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/kallsyms.h>
+>  #include <linux/init.h>
+> +#include <asm/byteorder.h>
+> +#include <asm/div64.h>
+>  #include <asm/xenomai/wrappers.h>
+>  
+>  #define RTHAL_DOMAIN_ID		0x58454e4f
+> @@ -278,6 +280,124 @@
+>  
+>  #define rthal_printk	printk
+>  
+> +#ifdef __BIG_ENDIAN
+> +#define endianstruct struct { u_long _h; u_long _l; } _s
+> +#else /* __LITTLE_ENDIAN */
+> +#define endianstruct struct { u_long _l; u_long _h; } _s
+> +#endif
+> +
+> +#ifndef __rthal_u64tou32
+> +#define __rthal_u64tou32(ull, h, l) ({          \
+> +    union { unsigned long long _ull;            \
+> +    endianstruct;                               \
+> +    } _u;                                       \
+> +    _u._ull = (ull);                            \
+> +    (h) = _u._s._h;                             \
+> +    (l) = _u._s._l;                             \
+> +})
+> +#endif /* !__rthal_u64tou32 */
+> +
+> +#ifndef __rthal_u64fromu32
+> +#define __rthal_u64fromu32(h, l) ({             \
+> +    union { unsigned long long _ull;            \
+> +    endianstruct;                               \
+> +    } _u;                                       \
+> +    _u._s._h = (h);                             \
+> +    _u._s._l = (l);                             \
+> +    _u._ull;                                    \
+> +})
+> +#endif /* !__rthal_u64fromu32 */
+> +
+> +#ifndef rthal_ullmul
+> +static inline __attribute_const__ unsigned long long
+> +__rthal_generic_ullmul(const unsigned m0, const unsigned m1)
+> +{
+> +    return (unsigned long long) m0 * m1;
+> +}
+> +#define rthal_ullmul(m0,m1) __rthal_generic_ullmul((m0),(m1))
+> +#endif /* !rthal_ullmul */
+> +
+> +#ifndef rthal_ulldiv
+> +static inline unsigned long long __rthal_generic_ulldiv (unsigned long long ull,
+> +                                                         const unsigned uld,
+> +                                                         unsigned long *const rp)
+> +{
+> +    const unsigned long r = do_div(ull, uld);
+> +
+> +    if (rp)
+> +        *rp = r;
+> +
+> +    return ull;
+> +}
+> +#define rthal_ulldiv(ull,uld,rp) __rthal_generic_ulldiv((ull),(uld),(rp))
+> +#endif /* !rthal_ulldiv */
+> +
+> +/* Another implementation of ulldiv, used to be defined on x86. */
+> +#define rthal_u64div32c(ull,uld,rp) rthal_ulldiv((ull),(uld),(rp))
+> +
+> +#ifndef rthal_uldivrem
+> +#define rthal_uldivrem(ull,ul,rp) ((unsigned) rthal_ulldiv((ull),(ul),(rp)))
+> +#endif /* !rthal_uldivrem */
+> +
+> +#ifndef rthal_imuldiv
+> +static inline __attribute_const__ int __rthal_generic_imuldiv (int i,
+> +                                                               int mult,
+> +                                                               int div)
+> +{
+> +    /* Returns (int)i = (unsigned long long)i*(unsigned)(mult)/(unsigned)div. */
+> +    const unsigned long long ull = rthal_ullmul(i, mult);
+> +    return rthal_uldivrem(ull, div, NULL);
+> +}
+> +#define rthal_imuldiv(i,m,d) __rthal_generic_imuldiv((i),(m),(d))
+> +#endif /* !rthal_imuldiv */
+> +
+> +#ifndef rthal_llimd
+> +/* Division of an unsigned 96 bits ((h << 32) + l) by an unsigned 32 bits. 
+> +   Building block for llimd. Without const qualifiers, gcc reload registers
+> +   after each call to uldivrem. */
+> +static inline unsigned long long
+> +__rthal_generic_div96by32 (const unsigned long long h,
+> +                           const unsigned long l,
+> +                           const unsigned long d,
+> +                           unsigned long *const rp)
+> +{
+> +    unsigned long rh;
+> +    const unsigned qh = rthal_uldivrem(h, d, &rh);
+> +    const unsigned long long t = __rthal_u64fromu32(rh, l);
+> +    const unsigned ql = rthal_uldivrem(t, d, rp);
+> +
+> +    return __rthal_u64fromu32(qh, ql);
+> +}
+> +
+> +static inline __attribute_const__
+> +unsigned long long __rthal_generic_ullimd (const unsigned long long op,
+> +                                           const unsigned m,
+> +                                           const unsigned d)
+> +{
+> +    unsigned oph, opl, tlh, tll;
+> +    unsigned long long th, tl;
+> +
+> +    __rthal_u64tou32(op, oph, opl);
+> +    tl = rthal_ullmul(opl, m);
+> +    __rthal_u64tou32(tl, tlh, tll);
+> +    th = rthal_ullmul(oph, m);
+> +    th += tlh;
+> +
+> +    return __rthal_generic_div96by32(th, tll, d, NULL);
+> +}
+> +
+> +static inline __attribute_const__ long long __rthal_generic_llimd (long long op,
+> +                                                                   unsigned m,
+> +                                                                   unsigned d)
+> +{
+> +
+> +    if(op < 0LL)
+> +        return -__rthal_generic_ullimd(-op, m, d);
+> +    return __rthal_generic_ullimd(op, m, d);
+> +}
+> +#define rthal_llimd(ll,m,d) __rthal_generic_llimd((ll),(m),(d))
+> +#endif /* !rthal_llimd */
+> +
+>  typedef ipipe_irq_handler_t rthal_irq_handler_t;
+>  typedef ipipe_irq_ackfn_t   rthal_irq_ackfn_t;
+>  
+> Index: include/asm-i386/hal.h
+> ===================================================================
+> --- include/asm-i386/hal.h	(revision 453)
+> +++ include/asm-i386/hal.h	(working copy)
+> @@ -37,14 +37,6 @@
+>  #ifndef _XENO_ASM_I386_HAL_H
+>  #define _XENO_ASM_I386_HAL_H
+>  
+> -#include <asm-generic/xenomai/hal.h>    /* Read the generic bits. */
+> -
+> -#ifndef CONFIG_X86_WP_WORKS_OK
+> -#error "Xenomai has to rely on the WP bit, CONFIG_M486 or better required"
+> -#endif /* CONFIG_X86_WP_WORKS_OK */
+> -
+> -typedef unsigned long long rthal_time_t;
+> -
+>  #define __rthal_u64tou32(ull, h, l) ({          \
+>      unsigned long long _ull = (ull);            \
+>      (l) = _ull & 0xffffffff;                    \
+> @@ -57,13 +49,6 @@
+>      _ull;                                       \
+>  })
+>  
+> -/* Fast longs multiplication. */
+> -static inline __attribute_const__ unsigned long long
+> -rthal_ullmul(unsigned long m1, unsigned long m2) {
+> -    /* Gcc (at least for versions 2.95 and higher) optimises correctly here. */
+> -    return (unsigned long long) m1 * m2;
+> -}
+> -
+>  /* const helper for rthal_uldivrem, so that the compiler will eliminate
+>     multiple calls with same arguments, at no additionnal cost. */
+>  static inline __attribute_const__ unsigned long long
+> @@ -75,23 +60,12 @@
+>      return ret;
+>  }
+>  
+> -static inline __attribute_const__ int rthal_imuldiv (const int i,
+> -                                                     const int mult,
+> -                                                     const int div) {
+>  
+> -    /* Returns (unsigned)i =
+> -               (unsigned long long)i*(unsigned)(mult)/(unsigned)div. */
+> -    const unsigned long ui = (const unsigned long) i;
+> -    const unsigned long um = (const unsigned long) mult;
+> -    return __rthal_uldivrem((const unsigned long long) ui * um, div);
+> -}
+> +/* Fast long long division: when the quotient and remainder fit on 32 bits. */
+> +static inline unsigned long __rthal_i386_uldivrem(unsigned long long ull,
+> +                                                  const unsigned d,
+> +                                                  unsigned long *const rp) {
+>  
+> -/* Fast long long division: when the quotient and remainder fit on 32 bits.
+> -   Recent compilers remove redundant calls to this function. */
+> -static inline unsigned long rthal_uldivrem(unsigned long long ull,
+> -                                           const unsigned long d,
+> -                                           unsigned long *const rp) {
+> -
+>      unsigned long q, r;
+>      ull = __rthal_uldivrem(ull, d);
+>      __asm__ ( "": "=d"(r), "=a"(q) : "A"(ull));
+> @@ -99,10 +73,10 @@
+>          *rp = r;
+>      return q;
+>  }
+> +#define rthal_uldivrem(ull, d, rp) __rthal_i386_uldivrem((ull),(d),(rp))
+>  
+> -
+>  /* Division of an unsigned 96 bits ((h << 32) + l) by an unsigned 32 bits.
+> -   Common building block for ulldiv and llimd. */
+> +   Building block for ulldiv. */
+>  static inline unsigned long long __rthal_div96by32 (const unsigned long long h,
+>                                                      const unsigned long l,
+>                                                      const unsigned long d,
+> @@ -116,53 +90,27 @@
+>      return __rthal_u64fromu32(qh, ql);
+>  }
+>  
+> -
+>  /* Slow long long division. Uses rthal_uldivrem, hence has the same property:
+>     the compiler removes redundant calls. */
+> -static inline unsigned long long rthal_ulldiv (const unsigned long long ull,
+> -                                               const unsigned long d,
+> -                                               unsigned long *const rp) {
+> +static inline unsigned long long
+> +__rthal_i386_ulldiv (const unsigned long long ull,
+> +                     const unsigned d,
+> +                     unsigned long *const rp) {
+>  
+>      unsigned long h, l;
+>      __rthal_u64tou32(ull, h, l);
+>      return __rthal_div96by32(h, l, d, rp);
+>  }
+> +#define rthal_ulldiv(ull,d,rp) __rthal_i386_ulldiv((ull),(d),(rp))
+>  
+> -/* Replaced the helper with rthal_ulldiv. */
+> -#define rthal_u64div32c rthal_ulldiv
+> +#include <asm-generic/xenomai/hal.h>    /* Read the generic bits. */
+>  
+> -static inline __attribute_const__
+> -unsigned long long __rthal_ullimd (const unsigned long long op,
+> -                                   const unsigned long m,
+> -                                   const unsigned long d) {
+> +#ifndef CONFIG_X86_WP_WORKS_OK
+> +#error "Xenomai has to rely on the WP bit, CONFIG_M486 or better required"
+> +#endif /* CONFIG_X86_WP_WORKS_OK */
+>  
+> -    unsigned long long th, tl;
+> -    u_long oph, opl, tlh, tll;
+> +typedef unsigned long long rthal_time_t;
+>  
+> -    __rthal_u64tou32(op, oph, opl);
+> -    tl = (unsigned long long) opl * m;
+> -    __rthal_u64tou32(tl, tlh, tll);
+> -    th = (unsigned long long) oph * m;
+> -    /* op * m == ((th + tlh) << 32) + tll */
+> -
+> -    __asm__ (  "addl %1, %%eax\n\t"
+> -               "adcl $0, %%edx"
+> -               : "=A,A"(th)
+> -               : "r,?m"(tlh), "A,A"(th) );
+> -    /* op * m == (th << 32) + tll */
+> -
+> -    return __rthal_div96by32(th, tll, d, NULL);
+> -}
+> -
+> -static inline __attribute_const__ long long rthal_llimd (const long long op,
+> -                                                         const unsigned long m,
+> -                                                         const unsigned long d) {
+> -
+> -    if(op < 0LL)
+> -        return -__rthal_ullimd(-op, m, d);
+> -    return __rthal_ullimd(op, m, d);
+> -}
+> -
+>  static inline __attribute_const__ unsigned long ffnz (unsigned long ul) {
+>      /* Derived from bitops.h's ffs() */
+>      __asm__("bsfl %1, %0"
+> Index: include/asm-ia64/hal.h
+> ===================================================================
+> --- include/asm-ia64/hal.h	(revision 453)
+> +++ include/asm-ia64/hal.h	(working copy)
+> @@ -31,76 +31,6 @@
+>  
+>  typedef unsigned long long rthal_time_t;
+>  
+> -#define __rthal_u64tou32(ull, h, l) ({          \
+> -    unsigned long long _ull = (ull);            \
+> -    (l) = _ull & 0xffffffff;                    \
+> -    (h) = _ull >> 32;                           \
+> -})
+> -
+> -#define __rthal_u64fromu32(h, l) ({             \
+> -    (((unsigned long long) (h)) << 32) + (l);   \
+> -})
+> -
+> -static inline unsigned long long rthal_ullmul(const unsigned m0, 
+> -                                              const unsigned m1)
+> -{
+> -    return (unsigned long long) m0 * m1;
+> -}
+> -
+> -static inline unsigned long long rthal_ulldiv (unsigned long long ull,
+> -                                               const unsigned uld,
+> -                                               unsigned long *const rp)
+> -{
+> -    const unsigned long long result = ull / uld;
+> -
+> -    if (rp)
+> -        *rp = ull % uld;
+> -
+> -    return result;
+> -}
+> -
+> -#define rthal_uldivrem(ull,ul,rp) ((u_long) rthal_ulldiv((ull),(ul),(rp)))
+> -
+> -static inline __attribute_const__ int rthal_imuldiv (const int i,
+> -                                                     const int mult,
+> -                                                     const int div) {
+> -
+> -    /* Returns (int)i = (unsigned long long)i*(u_long)(mult)/(u_long)div. */
+> -    const unsigned long long ull = rthal_ullmul(i, mult);
+> -    return rthal_uldivrem(ull, div, NULL);
+> -}
+> -
+> -static inline __attribute_const__
+> -unsigned long long __rthal_ullimd (const unsigned long long op,
+> -                                   const unsigned m,
+> -                                   const unsigned d)
+> -{
+> -    unsigned oph, opl, tlh, tll, qh, ql;
+> -    unsigned long long th, tl;
+> -    unsigned long rh;
+> -
+> -    __rthal_u64tou32(op, oph, opl);
+> -    tl = rthal_ullmul(opl, m);
+> -    __rthal_u64tou32(tl, tlh, tll);
+> -    th = rthal_ullmul(oph, m);
+> -    th += tlh;
+> -
+> -    qh = rthal_uldivrem(th, d, &rh);
+> -    th = __rthal_u64fromu32(rh, tll);
+> -    ql = rthal_uldivrem(th, d, NULL);
+> -    return __rthal_u64fromu32(qh, ql);
+> -}
+> -
+> -static inline long long rthal_llimd (long long op,
+> -                                     unsigned m,
+> -                                     unsigned d)
+> -{
+> -
+> -    if(op < 0LL)
+> -        return -__rthal_ullimd(-op, m, d);
+> -    return __rthal_ullimd(op, m, d);
+> -}
+> -
+>  static inline __attribute_const__ unsigned long ffnz (unsigned long ul)
+>  {
+>      unsigned long r;
+> Index: include/asm-powerpc/hal.h
+> ===================================================================
+> --- include/asm-powerpc/hal.h	(revision 453)
+> +++ include/asm-powerpc/hal.h	(working copy)
+> @@ -30,89 +30,9 @@
+>  #define _XENO_ASM_POWERPC_HAL_H
+>  
+>  #include <asm-generic/xenomai/hal.h>	/* Read the generic bits. */
+> -#include <asm/div64.h>
+>  
+>  typedef unsigned long long rthal_time_t;
+>  
+> -#define __rthal_u64tou32(ull, h, l) ({                          \
+> -        union { unsigned long long _ull;                        \
+> -            struct { unsigned _h; unsigned _l; } _s; } _u;      \
+> -        _u._ull = (ull);                                        \
+> -        (h) = _u._s._h;                                         \
+> -        (l) = _u._s._l;                                         \
+> -        })
+> -
+> -#define __rthal_u64fromu32(h, l) ({                             \
+> -        union { unsigned long long _ull;                        \
+> -            struct { unsigned _h; unsigned _l; } _s; } _u;      \
+> -        _u._s._h = (h);                                         \
+> -        _u._s._l = (l);                                         \
+> -        _u._ull;                                                \
+> -        })
+> -
+> -static inline unsigned long long rthal_ullmul(const unsigned m0, 
+> -					      const unsigned m1)
+> -{
+> -    return (unsigned long long) m0 * m1;
+> -}
+> -
+> -static inline unsigned long long rthal_ulldiv (unsigned long long ull,
+> -					       const unsigned uld,
+> -					       unsigned long *const rp)
+> -{
+> -#if BITS_PER_LONG == 32
+> -    const unsigned long r = __div64_32(&ull, uld);
+> -#else /* BITS_PER_LONG == 64 */
+> -    const unsigned long r = ull % uld;
+> -    ull /= uld;
+> -#endif
+> -
+> -    if (rp)
+> -	*rp = r;
+> -
+> -    return ull;
+> -}
+> -
+> -#define rthal_uldivrem(ull,ul,rp) ((u_long) rthal_ulldiv((ull),(ul),(rp)))
+> -
+> -static inline __attribute_const__ int rthal_imuldiv (int i, int mult, int div) {
+> -
+> -    /* Returns (int)i = (unsigned long long)i*(u_long)(mult)/(u_long)div. */
+> -    const unsigned long long ull = rthal_ullmul(i, mult);
+> -    return rthal_uldivrem(ull, div, NULL);
+> -}
+> -
+> -static inline __attribute_const__
+> -unsigned long long __rthal_ullimd (const unsigned long long op,
+> -                                   const unsigned m,
+> -                                   const unsigned d)
+> -{
+> -    unsigned oph, opl, tlh, tll, qh, ql;
+> -    unsigned long long th, tl;
+> -    unsigned long rh;
+> -
+> -    __rthal_u64tou32(op, oph, opl);
+> -    tl = rthal_ullmul(opl, m);
+> -    __rthal_u64tou32(tl, tlh, tll);
+> -    th = rthal_ullmul(oph, m);
+> -    th += tlh;
+> -
+> -    qh = rthal_uldivrem(th, d, &rh);
+> -    th = __rthal_u64fromu32(rh, tll);
+> -    ql = rthal_uldivrem(th, d, NULL);
+> -    return __rthal_u64fromu32(qh, ql);
+> -}
+> -
+> -static inline long long rthal_llimd (long long op,
+> -                                     unsigned m,
+> -                                     unsigned d)
+> -{
+> -
+> -    if(op < 0LL)
+> -        return -__rthal_ullimd(-op, m, d);
+> -    return __rthal_ullimd(op, m, d);
+> -}
+> -
+>  static inline __attribute_const__ unsigned long ffnz (unsigned long ul) {
+>  #ifdef CONFIG_PPC64
+>      __asm__ ("cntlzd %0, %1" : "=r" (ul) : "r" (ul & (-ul)));
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 
-
-					    Gilles Chanteperdrix.
-
---BImEm2Bm7x
-Content-Type: application/octet-stream
-Content-Disposition: attachment;
-	filename="xeno-arith.diff"
-Content-Transfer-Encoding: base64
-
-SW5kZXg6IGluY2x1ZGUvYXNtLWFybS9oYWwuaAo9PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBpbmNsdWRl
-L2FzbS1hcm0vaGFsLmgJKHJldmlzaW9uIDQ1MykKKysrIGluY2x1ZGUvYXNtLWFybS9oYWwu
-aAkod29ya2luZyBjb3B5KQpAQCAtMzAsOTIgKzMwLDEwIEBACiAjZGVmaW5lIF9YRU5PX0FT
-TV9BUk1fSEFMX0gKIAogI2luY2x1ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvaGFsLmg+CS8q
-IFJlYWQgdGhlIGdlbmVyaWMgYml0cy4gKi8KLSNpbmNsdWRlIDxhc20vZGl2NjQuaD4KICNp
-bmNsdWRlIDxhc20vYnl0ZW9yZGVyLmg+CiAKIHR5cGVkZWYgdW5zaWduZWQgbG9uZyBsb25n
-IHJ0aGFsX3RpbWVfdDsKIAotI2lmZGVmIF9fQklHX0VORElBTgotI2RlZmluZSBlbmRpYW5z
-dHJ1Y3Qgc3RydWN0IHsgdV9sb25nIF9oOyB1X2xvbmcgX2w7IH0gX3MKLSNlbHNlIC8qIF9f
-TElUVExFX0VORElBTiAqLwotI2RlZmluZSBlbmRpYW5zdHJ1Y3Qgc3RydWN0IHsgdV9sb25n
-IF9sOyB1X2xvbmcgX2g7IH0gX3MKLSNlbmRpZgotCi0jZGVmaW5lIF9fcnRoYWxfdTY0dG91
-MzIodWxsLCBoLCBsKSAoeyAgICAgICAgICBcCi0gICAgdW5pb24geyB1bnNpZ25lZCBsb25n
-IGxvbmcgX3VsbDsgICAgICAgICAgICBcCi0gICAgZW5kaWFuc3RydWN0OyAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBcCi0gICAgfSBfdTsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBcCi0gICAgX3UuX3VsbCA9ICh1bGwpOyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBcCi0gICAgKGgpID0gX3UuX3MuX2g7ICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBcCi0gICAgKGwpID0gX3UuX3MuX2w7ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBcCi19KQotCi0jZGVmaW5lIF9fcnRoYWxfdTY0ZnJvbXUzMihoLCBsKSAoeyAg
-ICAgICAgICAgICBcCi0gICAgdW5pb24geyB1bnNpZ25lZCBsb25nIGxvbmcgX3VsbDsgICAg
-ICAgICAgICBcCi0gICAgZW5kaWFuc3RydWN0OyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICBcCi0gICAgfSBfdTsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBcCi0gICAgX3UuX3MuX2ggPSAoaCk7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBc
-Ci0gICAgX3UuX3MuX2wgPSAobCk7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCi0g
-ICAgX3UuX3VsbDsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCi19KQot
-Ci1zdGF0aWMgaW5saW5lIHVuc2lnbmVkIGxvbmcgbG9uZyBydGhhbF91bGxtdWwoY29uc3Qg
-dW5zaWduZWQgbG9uZyBtMCwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBjb25zdCB1bnNpZ25lZCBsb25nIG0xKQotewotICAgIHJldHVybiAodW5z
-aWduZWQgbG9uZyBsb25nKSBtMCAqIG0xOwotfQotCi1zdGF0aWMgaW5saW5lIHVuc2lnbmVk
-IGxvbmcgbG9uZyBydGhhbF91bGxkaXYgKHVuc2lnbmVkIGxvbmcgbG9uZyB1bGwsCi0gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2ln
-bmVkIGxvbmcgdWxkLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB1bnNpZ25lZCBsb25nICpjb25zdCBycCkKLXsKLSAgICB1bnNpZ25lZCBsb25n
-IHIgPSBkb19kaXYodWxsLCB1bGQpOwotCi0gICAgaWYgKHJwKQotICAgIAkqcnAgPSByOwot
-Ci0gICAgcmV0dXJuIHVsbDsKLX0KLQotI2RlZmluZSBydGhhbF91bGRpdnJlbSh1bGwsdWws
-cnApICgodV9sb25nKSBydGhhbF91bGxkaXYoKHVsbCksKHVsKSwocnApKSkKLQotc3RhdGlj
-IGlubGluZSBpbnQgcnRoYWxfaW11bGRpdiAoaW50IGksIGludCBtdWx0LCBpbnQgZGl2KSB7
-Ci0KLSAgICAvKiBSZXR1cm5zIChpbnQpaSA9ICh1bnNpZ25lZCBsb25nIGxvbmcpaSoodV9s
-b25nKShtdWx0KS8odV9sb25nKWRpdi4gKi8KLSAgICBjb25zdCB1bnNpZ25lZCBsb25nIGxv
-bmcgdWxsID0gcnRoYWxfdWxsbXVsKGksIG11bHQpOwotICAgIHJldHVybiBydGhhbF91bGRp
-dnJlbSh1bGwsIGRpdiwgTlVMTCk7Ci19Ci0KLXN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVf
-Y29uc3RfXwotdW5zaWduZWQgbG9uZyBsb25nIF9fcnRoYWxfdWxsaW1kIChjb25zdCB1bnNp
-Z25lZCBsb25nIGxvbmcgb3AsCi0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IGNvbnN0IHVuc2lnbmVkIGxvbmcgbSwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgY29uc3QgdW5zaWduZWQgbG9uZyBkKQotewotICAgIHVfbG9uZyBvcGgsIG9wbCwg
-dGxoLCB0bGwsIHFoLCByaCwgcWw7Ci0gICAgdW5zaWduZWQgbG9uZyBsb25nIHRoLCB0bDsK
-LQotICAgIF9fcnRoYWxfdTY0dG91MzIob3AsIG9waCwgb3BsKTsKLSAgICB0bCA9IHJ0aGFs
-X3VsbG11bChvcGwsIG0pOwotICAgIF9fcnRoYWxfdTY0dG91MzIodGwsIHRsaCwgdGxsKTsK
-LSAgICB0aCA9IHJ0aGFsX3VsbG11bChvcGgsIG0pOwotICAgIHRoICs9IHRsaDsKLQotICAg
-IHFoID0gcnRoYWxfdWxkaXZyZW0odGgsIGQsICZyaCk7Ci0gICAgdGggPSBfX3J0aGFsX3U2
-NGZyb211MzIocmgsIHRsbCk7Ci0gICAgcWwgPSBydGhhbF91bGRpdnJlbSh0aCwgZCwgTlVM
-TCk7Ci0gICAgcmV0dXJuIF9fcnRoYWxfdTY0ZnJvbXUzMihxaCwgcWwpOwotfQotCi1zdGF0
-aWMgaW5saW5lIGxvbmcgbG9uZyBydGhhbF9sbGltZCAobG9uZyBsb25nIG9wLAotICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgbSwKLSAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBsb25nIGQpCi17Ci0K
-LSAgICBpZihvcCA8IDBMTCkKLSAgICAgICAgcmV0dXJuIC1fX3J0aGFsX3VsbGltZCgtb3As
-IG0sIGQpOwotICAgIHJldHVybiBfX3J0aGFsX3VsbGltZChvcCwgbSwgZCk7Ci19Ci0KICNp
-ZiBfX0xJTlVYX0FSTV9BUkNIX18gPCA1CiBzdGF0aWMgaW5saW5lIF9fYXR0cmlidXRlX2Nv
-bnN0X18gdW5zaWduZWQgbG9uZyBmZm56ICh1bnNpZ25lZCBsb25nIHgpIHsKIAlpbnQgciA9
-IDA7CkluZGV4OiBpbmNsdWRlL2FzbS1ibGFja2Zpbi9oYWwuaAo9PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci0t
-LSBpbmNsdWRlL2FzbS1ibGFja2Zpbi9oYWwuaAkocmV2aXNpb24gNDUzKQorKysgaW5jbHVk
-ZS9hc20tYmxhY2tmaW4vaGFsLmgJKHdvcmtpbmcgY29weSkKQEAgLTMxLDc2ICszMSw2IEBA
-CiAKIHR5cGVkZWYgdW5zaWduZWQgbG9uZyBsb25nIHJ0aGFsX3RpbWVfdDsKIAotI2RlZmlu
-ZSBfX3J0aGFsX3U2NHRvdTMyKHVsbCwgaCwgbCkgKHsgICAgICAgICAgICAgICAgICBcCi0g
-ICAgICAgIHVuaW9uIHsgdW5zaWduZWQgbG9uZyBsb25nIF91bGw7ICAgICAgICAgICAgICAg
-IFwKLSAgICAgICAgICAgIHN0cnVjdCB7IHVfbG9uZyBfbDsgdV9sb25nIF9oOyB9IF9zOyB9
-IF91OyAgXAotICAgICAgICBfdS5fdWxsID0gKHVsbCk7ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBcCi0gICAgICAgIChoKSA9IF91Ll9zLl9oOyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIFwKLSAgICAgICAgKGwpID0gX3UuX3MuX2w7ICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgXAotICAgICAgICB9KQotCi0jZGVmaW5lIF9fcnRoYWxf
-dTY0ZnJvbXUzMihoLCBsKSAoeyAgICAgICAgICAgICAgICAgICAgIFwKLSAgICAgICAgdW5p
-b24geyB1bnNpZ25lZCBsb25nIGxvbmcgX3VsbDsgICAgICAgICAgICAgICAgXAotICAgICAg
-ICAgICAgc3RydWN0IHsgdV9sb25nIF9sOyB1X2xvbmcgX2g7IH0gX3M7IH0gX3U7ICBcCi0g
-ICAgICAgIF91Ll9zLl9oID0gKGgpOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IFwKLSAgICAgICAgX3UuX3MuX2wgPSAobCk7ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgXAotICAgICAgICBfdS5fdWxsOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICBcCi0gICAgICAgIH0pCi0KLXN0YXRpYyBpbmxpbmUgdW5zaWduZWQgbG9u
-ZyBsb25nIHJ0aGFsX3VsbG11bChjb25zdCB1bnNpZ25lZCBsb25nIG0wLCAKLQkJCQkJICAg
-ICAgY29uc3QgdW5zaWduZWQgbG9uZyBtMSkKLXsKLSAgICByZXR1cm4gKHVuc2lnbmVkIGxv
-bmcgbG9uZykgbTAgKiBtMTsKLX0KLQotc3RhdGljIGlubGluZSB1bnNpZ25lZCBsb25nIGxv
-bmcgcnRoYWxfdWxsZGl2ICh1bnNpZ25lZCBsb25nIGxvbmcgdWxsLAotCQkJCQkgICAgICAg
-Y29uc3QgdW5zaWduZWQgbG9uZyB1bGQsCi0JCQkJCSAgICAgICB1bnNpZ25lZCBsb25nICpj
-b25zdCBycCkKLXsKLSAgICBjb25zdCB1bnNpZ25lZCBsb25nIHIgPSBfX2RpdjY0XzMyKCZ1
-bGwsIHVsZCk7Ci0gICAgaWYgKHJwKSAqcnAgPSByOwotICAgIHJldHVybiB1bGw7Ci19Ci0K
-LSNkZWZpbmUgcnRoYWxfdWxkaXZyZW0odWxsLHVsLHJwKSAoKHVfbG9uZykgcnRoYWxfdWxs
-ZGl2KCh1bGwpLCh1bCksKHJwKSkpCi0KLXN0YXRpYyBpbmxpbmUgaW50IHJ0aGFsX2ltdWxk
-aXYgKGludCBpLCBpbnQgbXVsdCwgaW50IGRpdikKLXsKLSAgICAvKiBSZXR1cm5zIChpbnQp
-aSA9ICh1bnNpZ25lZCBsb25nIGxvbmcpaSoodV9sb25nKShtdWx0KS8odV9sb25nKWRpdi4g
-Ki8KLSAgICBjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcgdWxsID0gcnRoYWxfdWxsbXVsKGks
-IG11bHQpOwotICAgIHJldHVybiBydGhhbF91bGRpdnJlbSh1bGwsIGRpdiwgTlVMTCk7Ci19
-Ci0KLXN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVfY29uc3RfXwotdW5zaWduZWQgbG9uZyBs
-b25nIF9fcnRoYWxfdWxsaW1kIChjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcgb3AsCi0gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgbSwK
-LSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWduZWQgbG9u
-ZyBkKQotewotICAgIHVfbG9uZyBvcGgsIG9wbCwgdGxoLCB0bGwsIHFoLCByaCwgcWw7Ci0g
-ICAgdW5zaWduZWQgbG9uZyBsb25nIHRoLCB0bDsKLQotICAgIF9fcnRoYWxfdTY0dG91MzIo
-b3AsIG9waCwgb3BsKTsKLSAgICB0bCA9IHJ0aGFsX3VsbG11bChvcGwsIG0pOwotICAgIF9f
-cnRoYWxfdTY0dG91MzIodGwsIHRsaCwgdGxsKTsKLSAgICB0aCA9IHJ0aGFsX3VsbG11bChv
-cGgsIG0pOwotICAgIHRoICs9IHRsaDsKLQotICAgIHFoID0gcnRoYWxfdWxkaXZyZW0odGgs
-IGQsICZyaCk7Ci0gICAgdGggPSBfX3J0aGFsX3U2NGZyb211MzIocmgsIHRsbCk7Ci0gICAg
-cWwgPSBydGhhbF91bGRpdnJlbSh0aCwgZCwgTlVMTCk7Ci0gICAgcmV0dXJuIF9fcnRoYWxf
-dTY0ZnJvbXUzMihxaCwgcWwpOwotfQotCi1zdGF0aWMgaW5saW5lIGxvbmcgbG9uZyBydGhh
-bF9sbGltZCAobG9uZyBsb25nIG9wLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHVuc2lnbmVkIGxvbmcgbSwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB1bnNpZ25lZCBsb25nIGQpCi17Ci0KLSAgICBpZihvcCA8IDBMTCkKLSAgICAg
-ICAgcmV0dXJuIC1fX3J0aGFsX3VsbGltZCgtb3AsIG0sIGQpOwotICAgIHJldHVybiBfX3J0
-aGFsX3VsbGltZChvcCwgbSwgZCk7Ci19Ci0KIHN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVf
-Y29uc3RfXyB1bnNpZ25lZCBsb25nIGZmbnogKHVuc2lnbmVkIGxvbmcgdWwpCiB7CiAgICAg
-cmV0dXJuIGZmcyh1bCkgLSAxOwpJbmRleDogaW5jbHVkZS9hc20tZ2VuZXJpYy9oYWwuaAo9
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09Ci0tLSBpbmNsdWRlL2FzbS1nZW5lcmljL2hhbC5oCShyZXZpc2lvbiA0
-NTMpCisrKyBpbmNsdWRlL2FzbS1nZW5lcmljL2hhbC5oCSh3b3JraW5nIGNvcHkpCkBAIC0z
-OCw2ICszOCw4IEBACiAjaW5jbHVkZSA8bGludXgvaW50ZXJydXB0Lmg+CiAjaW5jbHVkZSA8
-bGludXgva2FsbHN5bXMuaD4KICNpbmNsdWRlIDxsaW51eC9pbml0Lmg+CisjaW5jbHVkZSA8
-YXNtL2J5dGVvcmRlci5oPgorI2luY2x1ZGUgPGFzbS9kaXY2NC5oPgogI2luY2x1ZGUgPGFz
-bS94ZW5vbWFpL3dyYXBwZXJzLmg+CiAKICNkZWZpbmUgUlRIQUxfRE9NQUlOX0lECQkweDU4
-NDU0ZTRmCkBAIC0yNzgsNiArMjgwLDEyNCBAQAogCiAjZGVmaW5lIHJ0aGFsX3ByaW50awlw
-cmludGsKIAorI2lmZGVmIF9fQklHX0VORElBTgorI2RlZmluZSBlbmRpYW5zdHJ1Y3Qgc3Ry
-dWN0IHsgdV9sb25nIF9oOyB1X2xvbmcgX2w7IH0gX3MKKyNlbHNlIC8qIF9fTElUVExFX0VO
-RElBTiAqLworI2RlZmluZSBlbmRpYW5zdHJ1Y3Qgc3RydWN0IHsgdV9sb25nIF9sOyB1X2xv
-bmcgX2g7IH0gX3MKKyNlbmRpZgorCisjaWZuZGVmIF9fcnRoYWxfdTY0dG91MzIKKyNkZWZp
-bmUgX19ydGhhbF91NjR0b3UzMih1bGwsIGgsIGwpICh7ICAgICAgICAgIFwKKyAgICB1bmlv
-biB7IHVuc2lnbmVkIGxvbmcgbG9uZyBfdWxsOyAgICAgICAgICAgIFwKKyAgICBlbmRpYW5z
-dHJ1Y3Q7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICB9IF91OyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICBfdS5fdWxsID0gKHVs
-bCk7ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICAoaCkgPSBfdS5fcy5faDsg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICAobCkgPSBfdS5fcy5fbDsgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIFwKK30pCisjZW5kaWYgLyogIV9fcnRoYWxfdTY0
-dG91MzIgKi8KKworI2lmbmRlZiBfX3J0aGFsX3U2NGZyb211MzIKKyNkZWZpbmUgX19ydGhh
-bF91NjRmcm9tdTMyKGgsIGwpICh7ICAgICAgICAgICAgIFwKKyAgICB1bmlvbiB7IHVuc2ln
-bmVkIGxvbmcgbG9uZyBfdWxsOyAgICAgICAgICAgIFwKKyAgICBlbmRpYW5zdHJ1Y3Q7ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICB9IF91OyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICBfdS5fcy5faCA9IChoKTsgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIFwKKyAgICBfdS5fcy5fbCA9IChsKTsgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIFwKKyAgICBfdS5fdWxsOyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIFwKK30pCisjZW5kaWYgLyogIV9fcnRoYWxfdTY0ZnJvbXUzMiAq
-LworCisjaWZuZGVmIHJ0aGFsX3VsbG11bAorc3RhdGljIGlubGluZSBfX2F0dHJpYnV0ZV9j
-b25zdF9fIHVuc2lnbmVkIGxvbmcgbG9uZworX19ydGhhbF9nZW5lcmljX3VsbG11bChjb25z
-dCB1bnNpZ25lZCBtMCwgY29uc3QgdW5zaWduZWQgbTEpCit7CisgICAgcmV0dXJuICh1bnNp
-Z25lZCBsb25nIGxvbmcpIG0wICogbTE7Cit9CisjZGVmaW5lIHJ0aGFsX3VsbG11bChtMCxt
-MSkgX19ydGhhbF9nZW5lcmljX3VsbG11bCgobTApLChtMSkpCisjZW5kaWYgLyogIXJ0aGFs
-X3VsbG11bCAqLworCisjaWZuZGVmIHJ0aGFsX3VsbGRpdgorc3RhdGljIGlubGluZSB1bnNp
-Z25lZCBsb25nIGxvbmcgX19ydGhhbF9nZW5lcmljX3VsbGRpdiAodW5zaWduZWQgbG9uZyBs
-b25nIHVsbCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIHVsZCwKKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgKmNv
-bnN0IHJwKQoreworICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgciA9IGRvX2Rpdih1bGwsIHVs
-ZCk7CisKKyAgICBpZiAocnApCisgICAgICAgICpycCA9IHI7CisKKyAgICByZXR1cm4gdWxs
-OworfQorI2RlZmluZSBydGhhbF91bGxkaXYodWxsLHVsZCxycCkgX19ydGhhbF9nZW5lcmlj
-X3VsbGRpdigodWxsKSwodWxkKSwocnApKQorI2VuZGlmIC8qICFydGhhbF91bGxkaXYgKi8K
-KworLyogQW5vdGhlciBpbXBsZW1lbnRhdGlvbiBvZiB1bGxkaXYsIHVzZWQgdG8gYmUgZGVm
-aW5lZCBvbiB4ODYuICovCisjZGVmaW5lIHJ0aGFsX3U2NGRpdjMyYyh1bGwsdWxkLHJwKSBy
-dGhhbF91bGxkaXYoKHVsbCksKHVsZCksKHJwKSkKKworI2lmbmRlZiBydGhhbF91bGRpdnJl
-bQorI2RlZmluZSBydGhhbF91bGRpdnJlbSh1bGwsdWwscnApICgodW5zaWduZWQpIHJ0aGFs
-X3VsbGRpdigodWxsKSwodWwpLChycCkpKQorI2VuZGlmIC8qICFydGhhbF91bGRpdnJlbSAq
-LworCisjaWZuZGVmIHJ0aGFsX2ltdWxkaXYKK3N0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVf
-Y29uc3RfXyBpbnQgX19ydGhhbF9nZW5lcmljX2ltdWxkaXYgKGludCBpLAorICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-aW50IG11bHQsCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBpbnQgZGl2KQoreworICAgIC8qIFJldHVybnMgKGludClp
-ID0gKHVuc2lnbmVkIGxvbmcgbG9uZylpKih1bnNpZ25lZCkobXVsdCkvKHVuc2lnbmVkKWRp
-di4gKi8KKyAgICBjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcgdWxsID0gcnRoYWxfdWxsbXVs
-KGksIG11bHQpOworICAgIHJldHVybiBydGhhbF91bGRpdnJlbSh1bGwsIGRpdiwgTlVMTCk7
-Cit9CisjZGVmaW5lIHJ0aGFsX2ltdWxkaXYoaSxtLGQpIF9fcnRoYWxfZ2VuZXJpY19pbXVs
-ZGl2KChpKSwobSksKGQpKQorI2VuZGlmIC8qICFydGhhbF9pbXVsZGl2ICovCisKKyNpZm5k
-ZWYgcnRoYWxfbGxpbWQKKy8qIERpdmlzaW9uIG9mIGFuIHVuc2lnbmVkIDk2IGJpdHMgKCho
-IDw8IDMyKSArIGwpIGJ5IGFuIHVuc2lnbmVkIDMyIGJpdHMuIAorICAgQnVpbGRpbmcgYmxv
-Y2sgZm9yIGxsaW1kLiBXaXRob3V0IGNvbnN0IHF1YWxpZmllcnMsIGdjYyByZWxvYWQgcmVn
-aXN0ZXJzCisgICBhZnRlciBlYWNoIGNhbGwgdG8gdWxkaXZyZW0uICovCitzdGF0aWMgaW5s
-aW5lIHVuc2lnbmVkIGxvbmcgbG9uZworX19ydGhhbF9nZW5lcmljX2Rpdjk2YnkzMiAoY29u
-c3QgdW5zaWduZWQgbG9uZyBsb25nIGgsCisgICAgICAgICAgICAgICAgICAgICAgICAgICBj
-b25zdCB1bnNpZ25lZCBsLAorICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5z
-aWduZWQgZCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgKmNv
-bnN0IHJwKQoreworICAgIHVuc2lnbmVkIGxvbmcgcmg7CisgICAgY29uc3QgdW5zaWduZWQg
-cWggPSBydGhhbF91bGRpdnJlbShoLCBkLCAmcmgpOworICAgIGNvbnN0IHVuc2lnbmVkIGxv
-bmcgbG9uZyB0ID0gX19ydGhhbF91NjRmcm9tdTMyKHJoLCBsKTsKKyAgICBjb25zdCB1bnNp
-Z25lZCBxbCA9IHJ0aGFsX3VsZGl2cmVtKHQsIGQsIHJwKTsKKworICAgIHJldHVybiBfX3J0
-aGFsX3U2NGZyb211MzIocWgsIHFsKTsKK30KKworc3RhdGljIGlubGluZSBfX2F0dHJpYnV0
-ZV9jb25zdF9fCit1bnNpZ25lZCBsb25nIGxvbmcgX19ydGhhbF9nZW5lcmljX3VsbGltZCAo
-Y29uc3QgdW5zaWduZWQgbG9uZyBsb25nIG9wLAorICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIG0sCisgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWduZWQgZCkKK3sKKyAgICB1
-bnNpZ25lZCBvcGgsIG9wbCwgdGxoLCB0bGw7CisgICAgdW5zaWduZWQgbG9uZyBsb25nIHRo
-LCB0bDsKKworICAgIF9fcnRoYWxfdTY0dG91MzIob3AsIG9waCwgb3BsKTsKKyAgICB0bCA9
-IHJ0aGFsX3VsbG11bChvcGwsIG0pOworICAgIF9fcnRoYWxfdTY0dG91MzIodGwsIHRsaCwg
-dGxsKTsKKyAgICB0aCA9IHJ0aGFsX3VsbG11bChvcGgsIG0pOworICAgIHRoICs9IHRsaDsK
-KworICAgIHJldHVybiBfX3J0aGFsX2dlbmVyaWNfZGl2OTZieTMyKHRoLCB0bGwsIGQsIE5V
-TEwpOworfQorCitzdGF0aWMgaW5saW5lIF9fYXR0cmlidXRlX2NvbnN0X18gbG9uZyBsb25n
-IF9fcnRoYWxfZ2VuZXJpY19sbGltZCAobG9uZyBsb25nIG9wLAorICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVu
-c2lnbmVkIG0sCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgZCkKK3sKKworICAgIGlmKG9wIDwg
-MExMKQorICAgICAgICByZXR1cm4gLV9fcnRoYWxfZ2VuZXJpY191bGxpbWQoLW9wLCBtLCBk
-KTsKKyAgICByZXR1cm4gX19ydGhhbF9nZW5lcmljX3VsbGltZChvcCwgbSwgZCk7Cit9Cisj
-ZGVmaW5lIHJ0aGFsX2xsaW1kKGxsLG0sZCkgX19ydGhhbF9nZW5lcmljX2xsaW1kKChsbCks
-KG0pLChkKSkKKyNlbmRpZiAvKiAhcnRoYWxfbGxpbWQgKi8KKwogdHlwZWRlZiBpcGlwZV9p
-cnFfaGFuZGxlcl90IHJ0aGFsX2lycV9oYW5kbGVyX3Q7CiB0eXBlZGVmIGlwaXBlX2lycV9h
-Y2tmbl90ICAgcnRoYWxfaXJxX2Fja2ZuX3Q7CiAKSW5kZXg6IGluY2x1ZGUvYXNtLWkzODYv
-aGFsLmgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PQotLS0gaW5jbHVkZS9hc20taTM4Ni9oYWwuaAkocmV2aXNp
-b24gNDUzKQorKysgaW5jbHVkZS9hc20taTM4Ni9oYWwuaAkod29ya2luZyBjb3B5KQpAQCAt
-MzcsMTQgKzM3LDYgQEAKICNpZm5kZWYgX1hFTk9fQVNNX0kzODZfSEFMX0gKICNkZWZpbmUg
-X1hFTk9fQVNNX0kzODZfSEFMX0gKIAotI2luY2x1ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkv
-aGFsLmg+ICAgIC8qIFJlYWQgdGhlIGdlbmVyaWMgYml0cy4gKi8KLQotI2lmbmRlZiBDT05G
-SUdfWDg2X1dQX1dPUktTX09LCi0jZXJyb3IgIlhlbm9tYWkgaGFzIHRvIHJlbHkgb24gdGhl
-IFdQIGJpdCwgQ09ORklHX000ODYgb3IgYmV0dGVyIHJlcXVpcmVkIgotI2VuZGlmIC8qIENP
-TkZJR19YODZfV1BfV09SS1NfT0sgKi8KLQotdHlwZWRlZiB1bnNpZ25lZCBsb25nIGxvbmcg
-cnRoYWxfdGltZV90OwotCiAjZGVmaW5lIF9fcnRoYWxfdTY0dG91MzIodWxsLCBoLCBsKSAo
-eyAgICAgICAgICBcCiAgICAgdW5zaWduZWQgbG9uZyBsb25nIF91bGwgPSAodWxsKTsgICAg
-ICAgICAgICBcCiAgICAgKGwpID0gX3VsbCAmIDB4ZmZmZmZmZmY7ICAgICAgICAgICAgICAg
-ICAgICBcCkBAIC01NywxMyArNDksNiBAQAogICAgIF91bGw7ICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgXAogfSkKIAotLyogRmFzdCBsb25ncyBtdWx0aXBsaWNh
-dGlvbi4gKi8KLXN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVfY29uc3RfXyB1bnNpZ25lZCBs
-b25nIGxvbmcKLXJ0aGFsX3VsbG11bCh1bnNpZ25lZCBsb25nIG0xLCB1bnNpZ25lZCBsb25n
-IG0yKSB7Ci0gICAgLyogR2NjIChhdCBsZWFzdCBmb3IgdmVyc2lvbnMgMi45NSBhbmQgaGln
-aGVyKSBvcHRpbWlzZXMgY29ycmVjdGx5IGhlcmUuICovCi0gICAgcmV0dXJuICh1bnNpZ25l
-ZCBsb25nIGxvbmcpIG0xICogbTI7Ci19Ci0KIC8qIGNvbnN0IGhlbHBlciBmb3IgcnRoYWxf
-dWxkaXZyZW0sIHNvIHRoYXQgdGhlIGNvbXBpbGVyIHdpbGwgZWxpbWluYXRlCiAgICBtdWx0
-aXBsZSBjYWxscyB3aXRoIHNhbWUgYXJndW1lbnRzLCBhdCBubyBhZGRpdGlvbm5hbCBjb3N0
-LiAqLwogc3RhdGljIGlubGluZSBfX2F0dHJpYnV0ZV9jb25zdF9fIHVuc2lnbmVkIGxvbmcg
-bG9uZwpAQCAtNzUsMjMgKzYwLDEyIEBACiAgICAgcmV0dXJuIHJldDsKIH0KIAotc3RhdGlj
-IGlubGluZSBfX2F0dHJpYnV0ZV9jb25zdF9fIGludCBydGhhbF9pbXVsZGl2IChjb25zdCBp
-bnQgaSwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgY29uc3QgaW50IG11bHQsCi0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGludCBkaXYpIHsKIAotICAgIC8qIFJldHVy
-bnMgKHVuc2lnbmVkKWkgPQotICAgICAgICAgICAgICAgKHVuc2lnbmVkIGxvbmcgbG9uZylp
-Kih1bnNpZ25lZCkobXVsdCkvKHVuc2lnbmVkKWRpdi4gKi8KLSAgICBjb25zdCB1bnNpZ25l
-ZCBsb25nIHVpID0gKGNvbnN0IHVuc2lnbmVkIGxvbmcpIGk7Ci0gICAgY29uc3QgdW5zaWdu
-ZWQgbG9uZyB1bSA9IChjb25zdCB1bnNpZ25lZCBsb25nKSBtdWx0OwotICAgIHJldHVybiBf
-X3J0aGFsX3VsZGl2cmVtKChjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcpIHVpICogdW0sIGRp
-dik7Ci19CisvKiBGYXN0IGxvbmcgbG9uZyBkaXZpc2lvbjogd2hlbiB0aGUgcXVvdGllbnQg
-YW5kIHJlbWFpbmRlciBmaXQgb24gMzIgYml0cy4gKi8KK3N0YXRpYyBpbmxpbmUgdW5zaWdu
-ZWQgbG9uZyBfX3J0aGFsX2kzODZfdWxkaXZyZW0odW5zaWduZWQgbG9uZyBsb25nIHVsbCwK
-KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29u
-c3QgdW5zaWduZWQgZCwKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgdW5zaWduZWQgbG9uZyAqY29uc3QgcnApIHsKIAotLyogRmFzdCBsb25n
-IGxvbmcgZGl2aXNpb246IHdoZW4gdGhlIHF1b3RpZW50IGFuZCByZW1haW5kZXIgZml0IG9u
-IDMyIGJpdHMuCi0gICBSZWNlbnQgY29tcGlsZXJzIHJlbW92ZSByZWR1bmRhbnQgY2FsbHMg
-dG8gdGhpcyBmdW5jdGlvbi4gKi8KLXN0YXRpYyBpbmxpbmUgdW5zaWduZWQgbG9uZyBydGhh
-bF91bGRpdnJlbSh1bnNpZ25lZCBsb25nIGxvbmcgdWxsLAotICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgZCwKLSAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBsb25nICpj
-b25zdCBycCkgewotCiAgICAgdW5zaWduZWQgbG9uZyBxLCByOwogICAgIHVsbCA9IF9fcnRo
-YWxfdWxkaXZyZW0odWxsLCBkKTsKICAgICBfX2FzbV9fICggIiI6ICI9ZCIociksICI9YSIo
-cSkgOiAiQSIodWxsKSk7CkBAIC05OSwxMCArNzMsMTAgQEAKICAgICAgICAgKnJwID0gcjsK
-ICAgICByZXR1cm4gcTsKIH0KKyNkZWZpbmUgcnRoYWxfdWxkaXZyZW0odWxsLCBkLCBycCkg
-X19ydGhhbF9pMzg2X3VsZGl2cmVtKCh1bGwpLChkKSwocnApKQogCi0KIC8qIERpdmlzaW9u
-IG9mIGFuIHVuc2lnbmVkIDk2IGJpdHMgKChoIDw8IDMyKSArIGwpIGJ5IGFuIHVuc2lnbmVk
-IDMyIGJpdHMuCi0gICBDb21tb24gYnVpbGRpbmcgYmxvY2sgZm9yIHVsbGRpdiBhbmQgbGxp
-bWQuICovCisgICBCdWlsZGluZyBibG9jayBmb3IgdWxsZGl2LiAqLwogc3RhdGljIGlubGlu
-ZSB1bnNpZ25lZCBsb25nIGxvbmcgX19ydGhhbF9kaXY5NmJ5MzIgKGNvbnN0IHVuc2lnbmVk
-IGxvbmcgbG9uZyBoLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgbCwKICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCB1bnNpZ25lZCBsb25n
-IGQsCkBAIC0xMTYsNTMgKzkwLDI3IEBACiAgICAgcmV0dXJuIF9fcnRoYWxfdTY0ZnJvbXUz
-MihxaCwgcWwpOwogfQogCi0KIC8qIFNsb3cgbG9uZyBsb25nIGRpdmlzaW9uLiBVc2VzIHJ0
-aGFsX3VsZGl2cmVtLCBoZW5jZSBoYXMgdGhlIHNhbWUgcHJvcGVydHk6CiAgICB0aGUgY29t
-cGlsZXIgcmVtb3ZlcyByZWR1bmRhbnQgY2FsbHMuICovCi1zdGF0aWMgaW5saW5lIHVuc2ln
-bmVkIGxvbmcgbG9uZyBydGhhbF91bGxkaXYgKGNvbnN0IHVuc2lnbmVkIGxvbmcgbG9uZyB1
-bGwsCi0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNv
-bnN0IHVuc2lnbmVkIGxvbmcgZCwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyAqY29uc3QgcnApIHsKK3N0YXRpYyBpbmxp
-bmUgdW5zaWduZWQgbG9uZyBsb25nCitfX3J0aGFsX2kzODZfdWxsZGl2IChjb25zdCB1bnNp
-Z25lZCBsb25nIGxvbmcgdWxsLAorICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWdu
-ZWQgZCwKKyAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgKmNvbnN0IHJwKSB7
-CiAKICAgICB1bnNpZ25lZCBsb25nIGgsIGw7CiAgICAgX19ydGhhbF91NjR0b3UzMih1bGws
-IGgsIGwpOwogICAgIHJldHVybiBfX3J0aGFsX2Rpdjk2YnkzMihoLCBsLCBkLCBycCk7CiB9
-CisjZGVmaW5lIHJ0aGFsX3VsbGRpdih1bGwsZCxycCkgX19ydGhhbF9pMzg2X3VsbGRpdigo
-dWxsKSwoZCksKHJwKSkKIAotLyogUmVwbGFjZWQgdGhlIGhlbHBlciB3aXRoIHJ0aGFsX3Vs
-bGRpdi4gKi8KLSNkZWZpbmUgcnRoYWxfdTY0ZGl2MzJjIHJ0aGFsX3VsbGRpdgorI2luY2x1
-ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvaGFsLmg+ICAgIC8qIFJlYWQgdGhlIGdlbmVyaWMg
-Yml0cy4gKi8KIAotc3RhdGljIGlubGluZSBfX2F0dHJpYnV0ZV9jb25zdF9fCi11bnNpZ25l
-ZCBsb25nIGxvbmcgX19ydGhhbF91bGxpbWQgKGNvbnN0IHVuc2lnbmVkIGxvbmcgbG9uZyBv
-cCwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWduZWQg
-bG9uZyBtLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCB1bnNp
-Z25lZCBsb25nIGQpIHsKKyNpZm5kZWYgQ09ORklHX1g4Nl9XUF9XT1JLU19PSworI2Vycm9y
-ICJYZW5vbWFpIGhhcyB0byByZWx5IG9uIHRoZSBXUCBiaXQsIENPTkZJR19NNDg2IG9yIGJl
-dHRlciByZXF1aXJlZCIKKyNlbmRpZiAvKiBDT05GSUdfWDg2X1dQX1dPUktTX09LICovCiAK
-LSAgICB1bnNpZ25lZCBsb25nIGxvbmcgdGgsIHRsOwotICAgIHVfbG9uZyBvcGgsIG9wbCwg
-dGxoLCB0bGw7Cit0eXBlZGVmIHVuc2lnbmVkIGxvbmcgbG9uZyBydGhhbF90aW1lX3Q7CiAK
-LSAgICBfX3J0aGFsX3U2NHRvdTMyKG9wLCBvcGgsIG9wbCk7Ci0gICAgdGwgPSAodW5zaWdu
-ZWQgbG9uZyBsb25nKSBvcGwgKiBtOwotICAgIF9fcnRoYWxfdTY0dG91MzIodGwsIHRsaCwg
-dGxsKTsKLSAgICB0aCA9ICh1bnNpZ25lZCBsb25nIGxvbmcpIG9waCAqIG07Ci0gICAgLyog
-b3AgKiBtID09ICgodGggKyB0bGgpIDw8IDMyKSArIHRsbCAqLwotCi0gICAgX19hc21fXyAo
-ICAiYWRkbCAlMSwgJSVlYXhcblx0IgotICAgICAgICAgICAgICAgImFkY2wgJDAsICUlZWR4
-IgotICAgICAgICAgICAgICAgOiAiPUEsQSIodGgpCi0gICAgICAgICAgICAgICA6ICJyLD9t
-Iih0bGgpLCAiQSxBIih0aCkgKTsKLSAgICAvKiBvcCAqIG0gPT0gKHRoIDw8IDMyKSArIHRs
-bCAqLwotCi0gICAgcmV0dXJuIF9fcnRoYWxfZGl2OTZieTMyKHRoLCB0bGwsIGQsIE5VTEwp
-OwotfQotCi1zdGF0aWMgaW5saW5lIF9fYXR0cmlidXRlX2NvbnN0X18gbG9uZyBsb25nIHJ0
-aGFsX2xsaW1kIChjb25zdCBsb25nIGxvbmcgb3AsCi0gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCB1bnNpZ25lZCBsb25n
-IG0sCi0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBjb25zdCB1bnNpZ25lZCBsb25nIGQpIHsKLQotICAgIGlmKG9wIDwgMExMKQot
-ICAgICAgICByZXR1cm4gLV9fcnRoYWxfdWxsaW1kKC1vcCwgbSwgZCk7Ci0gICAgcmV0dXJu
-IF9fcnRoYWxfdWxsaW1kKG9wLCBtLCBkKTsKLX0KLQogc3RhdGljIGlubGluZSBfX2F0dHJp
-YnV0ZV9jb25zdF9fIHVuc2lnbmVkIGxvbmcgZmZueiAodW5zaWduZWQgbG9uZyB1bCkgewog
-ICAgIC8qIERlcml2ZWQgZnJvbSBiaXRvcHMuaCdzIGZmcygpICovCiAgICAgX19hc21fXygi
-YnNmbCAlMSwgJTAiCkluZGV4OiBpbmNsdWRlL2FzbS1pYTY0L2hhbC5oCj09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT0KLS0tIGluY2x1ZGUvYXNtLWlhNjQvaGFsLmgJKHJldmlzaW9uIDQ1MykKKysrIGluY2x1
-ZGUvYXNtLWlhNjQvaGFsLmgJKHdvcmtpbmcgY29weSkKQEAgLTMxLDc2ICszMSw2IEBACiAK
-IHR5cGVkZWYgdW5zaWduZWQgbG9uZyBsb25nIHJ0aGFsX3RpbWVfdDsKIAotI2RlZmluZSBf
-X3J0aGFsX3U2NHRvdTMyKHVsbCwgaCwgbCkgKHsgICAgICAgICAgXAotICAgIHVuc2lnbmVk
-IGxvbmcgbG9uZyBfdWxsID0gKHVsbCk7ICAgICAgICAgICAgXAotICAgIChsKSA9IF91bGwg
-JiAweGZmZmZmZmZmOyAgICAgICAgICAgICAgICAgICAgXAotICAgIChoKSA9IF91bGwgPj4g
-MzI7ICAgICAgICAgICAgICAgICAgICAgICAgICAgXAotfSkKLQotI2RlZmluZSBfX3J0aGFs
-X3U2NGZyb211MzIoaCwgbCkgKHsgICAgICAgICAgICAgXAotICAgICgoKHVuc2lnbmVkIGxv
-bmcgbG9uZykgKGgpKSA8PCAzMikgKyAobCk7ICAgXAotfSkKLQotc3RhdGljIGlubGluZSB1
-bnNpZ25lZCBsb25nIGxvbmcgcnRoYWxfdWxsbXVsKGNvbnN0IHVuc2lnbmVkIG0wLCAKLSAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCB1bnNp
-Z25lZCBtMSkKLXsKLSAgICByZXR1cm4gKHVuc2lnbmVkIGxvbmcgbG9uZykgbTAgKiBtMTsK
-LX0KLQotc3RhdGljIGlubGluZSB1bnNpZ25lZCBsb25nIGxvbmcgcnRoYWxfdWxsZGl2ICh1
-bnNpZ25lZCBsb25nIGxvbmcgdWxsLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBjb25zdCB1bnNpZ25lZCB1bGQsCi0gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGxvbmcgKmNvbnN0IHJw
-KQotewotICAgIGNvbnN0IHVuc2lnbmVkIGxvbmcgbG9uZyByZXN1bHQgPSB1bGwgLyB1bGQ7
-Ci0KLSAgICBpZiAocnApCi0gICAgICAgICpycCA9IHVsbCAlIHVsZDsKLQotICAgIHJldHVy
-biByZXN1bHQ7Ci19Ci0KLSNkZWZpbmUgcnRoYWxfdWxkaXZyZW0odWxsLHVsLHJwKSAoKHVf
-bG9uZykgcnRoYWxfdWxsZGl2KCh1bGwpLCh1bCksKHJwKSkpCi0KLXN0YXRpYyBpbmxpbmUg
-X19hdHRyaWJ1dGVfY29uc3RfXyBpbnQgcnRoYWxfaW11bGRpdiAoY29uc3QgaW50IGksCi0g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNv
-bnN0IGludCBtdWx0LAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBjb25zdCBpbnQgZGl2KSB7Ci0KLSAgICAvKiBSZXR1cm5zIChpbnQp
-aSA9ICh1bnNpZ25lZCBsb25nIGxvbmcpaSoodV9sb25nKShtdWx0KS8odV9sb25nKWRpdi4g
-Ki8KLSAgICBjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcgdWxsID0gcnRoYWxfdWxsbXVsKGks
-IG11bHQpOwotICAgIHJldHVybiBydGhhbF91bGRpdnJlbSh1bGwsIGRpdiwgTlVMTCk7Ci19
-Ci0KLXN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVfY29uc3RfXwotdW5zaWduZWQgbG9uZyBs
-b25nIF9fcnRoYWxfdWxsaW1kIChjb25zdCB1bnNpZ25lZCBsb25nIGxvbmcgb3AsCi0gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIG0sCi0gICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHVuc2lnbmVkIGQpCi17Ci0g
-ICAgdW5zaWduZWQgb3BoLCBvcGwsIHRsaCwgdGxsLCBxaCwgcWw7Ci0gICAgdW5zaWduZWQg
-bG9uZyBsb25nIHRoLCB0bDsKLSAgICB1bnNpZ25lZCBsb25nIHJoOwotCi0gICAgX19ydGhh
-bF91NjR0b3UzMihvcCwgb3BoLCBvcGwpOwotICAgIHRsID0gcnRoYWxfdWxsbXVsKG9wbCwg
-bSk7Ci0gICAgX19ydGhhbF91NjR0b3UzMih0bCwgdGxoLCB0bGwpOwotICAgIHRoID0gcnRo
-YWxfdWxsbXVsKG9waCwgbSk7Ci0gICAgdGggKz0gdGxoOwotCi0gICAgcWggPSBydGhhbF91
-bGRpdnJlbSh0aCwgZCwgJnJoKTsKLSAgICB0aCA9IF9fcnRoYWxfdTY0ZnJvbXUzMihyaCwg
-dGxsKTsKLSAgICBxbCA9IHJ0aGFsX3VsZGl2cmVtKHRoLCBkLCBOVUxMKTsKLSAgICByZXR1
-cm4gX19ydGhhbF91NjRmcm9tdTMyKHFoLCBxbCk7Ci19Ci0KLXN0YXRpYyBpbmxpbmUgbG9u
-ZyBsb25nIHJ0aGFsX2xsaW1kIChsb25nIGxvbmcgb3AsCi0gICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbSwKLSAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB1bnNpZ25lZCBkKQotewotCi0gICAgaWYob3AgPCAwTEwpCi0gICAg
-ICAgIHJldHVybiAtX19ydGhhbF91bGxpbWQoLW9wLCBtLCBkKTsKLSAgICByZXR1cm4gX19y
-dGhhbF91bGxpbWQob3AsIG0sIGQpOwotfQotCiBzdGF0aWMgaW5saW5lIF9fYXR0cmlidXRl
-X2NvbnN0X18gdW5zaWduZWQgbG9uZyBmZm56ICh1bnNpZ25lZCBsb25nIHVsKQogewogICAg
-IHVuc2lnbmVkIGxvbmcgcjsKSW5kZXg6IGluY2x1ZGUvYXNtLXBvd2VycGMvaGFsLmgKPT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PQotLS0gaW5jbHVkZS9hc20tcG93ZXJwYy9oYWwuaAkocmV2aXNpb24gNDUz
-KQorKysgaW5jbHVkZS9hc20tcG93ZXJwYy9oYWwuaAkod29ya2luZyBjb3B5KQpAQCAtMzAs
-ODkgKzMwLDkgQEAKICNkZWZpbmUgX1hFTk9fQVNNX1BPV0VSUENfSEFMX0gKIAogI2luY2x1
-ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvaGFsLmg+CS8qIFJlYWQgdGhlIGdlbmVyaWMgYml0
-cy4gKi8KLSNpbmNsdWRlIDxhc20vZGl2NjQuaD4KIAogdHlwZWRlZiB1bnNpZ25lZCBsb25n
-IGxvbmcgcnRoYWxfdGltZV90OwogCi0jZGVmaW5lIF9fcnRoYWxfdTY0dG91MzIodWxsLCBo
-LCBsKSAoeyAgICAgICAgICAgICAgICAgICAgICAgICAgXAotICAgICAgICB1bmlvbiB7IHVu
-c2lnbmVkIGxvbmcgbG9uZyBfdWxsOyAgICAgICAgICAgICAgICAgICAgICAgIFwKLSAgICAg
-ICAgICAgIHN0cnVjdCB7IHVuc2lnbmVkIF9oOyB1bnNpZ25lZCBfbDsgfSBfczsgfSBfdTsg
-ICAgICBcCi0gICAgICAgIF91Ll91bGwgPSAodWxsKTsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgXAotICAgICAgICAoaCkgPSBfdS5fcy5faDsgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKLSAgICAgICAgKGwpID0gX3UuX3Mu
-X2w7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcCi0gICAgICAg
-IH0pCi0KLSNkZWZpbmUgX19ydGhhbF91NjRmcm9tdTMyKGgsIGwpICh7ICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBcCi0gICAgICAgIHVuaW9uIHsgdW5zaWduZWQgbG9uZyBsb25n
-IF91bGw7ICAgICAgICAgICAgICAgICAgICAgICAgXAotICAgICAgICAgICAgc3RydWN0IHsg
-dW5zaWduZWQgX2g7IHVuc2lnbmVkIF9sOyB9IF9zOyB9IF91OyAgICAgIFwKLSAgICAgICAg
-X3UuX3MuX2ggPSAoaCk7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICBcCi0gICAgICAgIF91Ll9zLl9sID0gKGwpOyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgXAotICAgICAgICBfdS5fdWxsOyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwKLSAgICAgICAgfSkKLQotc3RhdGljIGlu
-bGluZSB1bnNpZ25lZCBsb25nIGxvbmcgcnRoYWxfdWxsbXVsKGNvbnN0IHVuc2lnbmVkIG0w
-LCAKLQkJCQkJICAgICAgY29uc3QgdW5zaWduZWQgbTEpCi17Ci0gICAgcmV0dXJuICh1bnNp
-Z25lZCBsb25nIGxvbmcpIG0wICogbTE7Ci19Ci0KLXN0YXRpYyBpbmxpbmUgdW5zaWduZWQg
-bG9uZyBsb25nIHJ0aGFsX3VsbGRpdiAodW5zaWduZWQgbG9uZyBsb25nIHVsbCwKLQkJCQkJ
-ICAgICAgIGNvbnN0IHVuc2lnbmVkIHVsZCwKLQkJCQkJICAgICAgIHVuc2lnbmVkIGxvbmcg
-KmNvbnN0IHJwKQotewotI2lmIEJJVFNfUEVSX0xPTkcgPT0gMzIKLSAgICBjb25zdCB1bnNp
-Z25lZCBsb25nIHIgPSBfX2RpdjY0XzMyKCZ1bGwsIHVsZCk7Ci0jZWxzZSAvKiBCSVRTX1BF
-Ul9MT05HID09IDY0ICovCi0gICAgY29uc3QgdW5zaWduZWQgbG9uZyByID0gdWxsICUgdWxk
-OwotICAgIHVsbCAvPSB1bGQ7Ci0jZW5kaWYKLQotICAgIGlmIChycCkKLQkqcnAgPSByOwot
-Ci0gICAgcmV0dXJuIHVsbDsKLX0KLQotI2RlZmluZSBydGhhbF91bGRpdnJlbSh1bGwsdWws
-cnApICgodV9sb25nKSBydGhhbF91bGxkaXYoKHVsbCksKHVsKSwocnApKSkKLQotc3RhdGlj
-IGlubGluZSBfX2F0dHJpYnV0ZV9jb25zdF9fIGludCBydGhhbF9pbXVsZGl2IChpbnQgaSwg
-aW50IG11bHQsIGludCBkaXYpIHsKLQotICAgIC8qIFJldHVybnMgKGludClpID0gKHVuc2ln
-bmVkIGxvbmcgbG9uZylpKih1X2xvbmcpKG11bHQpLyh1X2xvbmcpZGl2LiAqLwotICAgIGNv
-bnN0IHVuc2lnbmVkIGxvbmcgbG9uZyB1bGwgPSBydGhhbF91bGxtdWwoaSwgbXVsdCk7Ci0g
-ICAgcmV0dXJuIHJ0aGFsX3VsZGl2cmVtKHVsbCwgZGl2LCBOVUxMKTsKLX0KLQotc3RhdGlj
-IGlubGluZSBfX2F0dHJpYnV0ZV9jb25zdF9fCi11bnNpZ25lZCBsb25nIGxvbmcgX19ydGhh
-bF91bGxpbWQgKGNvbnN0IHVuc2lnbmVkIGxvbmcgbG9uZyBvcCwKLSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWduZWQgbSwKLSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgY29uc3QgdW5zaWduZWQgZCkKLXsKLSAgICB1bnNpZ25l
-ZCBvcGgsIG9wbCwgdGxoLCB0bGwsIHFoLCBxbDsKLSAgICB1bnNpZ25lZCBsb25nIGxvbmcg
-dGgsIHRsOwotICAgIHVuc2lnbmVkIGxvbmcgcmg7Ci0KLSAgICBfX3J0aGFsX3U2NHRvdTMy
-KG9wLCBvcGgsIG9wbCk7Ci0gICAgdGwgPSBydGhhbF91bGxtdWwob3BsLCBtKTsKLSAgICBf
-X3J0aGFsX3U2NHRvdTMyKHRsLCB0bGgsIHRsbCk7Ci0gICAgdGggPSBydGhhbF91bGxtdWwo
-b3BoLCBtKTsKLSAgICB0aCArPSB0bGg7Ci0KLSAgICBxaCA9IHJ0aGFsX3VsZGl2cmVtKHRo
-LCBkLCAmcmgpOwotICAgIHRoID0gX19ydGhhbF91NjRmcm9tdTMyKHJoLCB0bGwpOwotICAg
-IHFsID0gcnRoYWxfdWxkaXZyZW0odGgsIGQsIE5VTEwpOwotICAgIHJldHVybiBfX3J0aGFs
-X3U2NGZyb211MzIocWgsIHFsKTsKLX0KLQotc3RhdGljIGlubGluZSBsb25nIGxvbmcgcnRo
-YWxfbGxpbWQgKGxvbmcgbG9uZyBvcCwKLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB1bnNpZ25lZCBtLAotICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHVuc2lnbmVkIGQpCi17Ci0KLSAgICBpZihvcCA8IDBMTCkKLSAgICAgICAgcmV0dXJu
-IC1fX3J0aGFsX3VsbGltZCgtb3AsIG0sIGQpOwotICAgIHJldHVybiBfX3J0aGFsX3VsbGlt
-ZChvcCwgbSwgZCk7Ci19Ci0KIHN0YXRpYyBpbmxpbmUgX19hdHRyaWJ1dGVfY29uc3RfXyB1
-bnNpZ25lZCBsb25nIGZmbnogKHVuc2lnbmVkIGxvbmcgdWwpIHsKICNpZmRlZiBDT05GSUdf
-UFBDNjQKICAgICBfX2FzbV9fICgiY250bHpkICUwLCAlMSIgOiAiPXIiICh1bCkgOiAiciIg
-KHVsICYgKC11bCkpKTsK
---BImEm2Bm7x--
+Philippe.
 
