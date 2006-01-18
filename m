@@ -1,11 +1,15 @@
-From: Stefan Kisdaroczi <kisda@domain.hid>
-Date: Mon, 30 Jan 2006 23:11:33 +0100
+Message-ID: <43CEA441.8060409@domain.hid>
+Date: Wed, 18 Jan 2006 21:25:37 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1353373.8XjP8BCRun";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
-Content-Transfer-Encoding: 7bit
-Message-Id: <200601302311.48645.kisda@domain.hid>
-Subject: [Xenomai-core] [PATCH] rt_heap reminder
+Subject: Re: [Xenomai-core] Scheduling while atomic
+References: <fd6a47a90601171559x13acf2c2m@domain.hid>	<43CE9FCB.2070305@domain.hid>
+	<43CEA1B4.4010104@domain.hid>
+In-Reply-To: <43CEA1B4.4010104@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig51824F3B2A33C76E02981262"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,127 +21,89 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---nextPart1353373.8XjP8BCRun
-Content-Type: multipart/mixed;
-  boundary="Boundary-01=_V8o3D8BnqRRj8oO"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
---Boundary-01=_V8o3D8BnqRRj8oO
-Content-Type: text/plain;
-  charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig51824F3B2A33C76E02981262
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi all,
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> ...
+>> [Update] While writing this mail and letting your test run for a while=
+,
+>> I *did* get a hard lock-up. Hold on, digging deeper...
+>>
+>=20
+> And here are its last words, spoken via serial console:
+>=20
+> c31dfab0 00000086 c30d1a90 c02a2500 c482a360 00000001 00000001 00200000=
 
-as a reminder (userspace, native skin, shared heap) [1]:
-API documentation: "If the heap is shared, this value can be either zero, o=
-r=20
-the same value given to rt_heap_create()."
-This is not true. As the heapsize gets altered in rt_heap_create for page s=
-ize=20
-alignment, the following call to rt_heap_alloc with the same value will fai=
-l.
+>        c012e564 00000022 ffffffff 00000246 c30d1a90 c4866ce0 00000033
+> c4820000
+>        c482a360 c4866ca0 ffffffff c48293a4 c48524e1 00000000 00000000
+> 00000002
+> Call Trace:
+>  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+>  [<c4820000>] e100_hw_init+0x3ad/0xa81 [e100]
+>  [<c48524e1>] xnpod_suspend_thread+0x714/0x76d [xeno_nucleus]
+>  [<c4856946>] xnsynch_sleep_on+0x76d/0x7a7 [xeno_nucleus]
+>  [<c4a09b29>] rt_sem_p+0xa6/0x10a [xeno_native]
+>  [<c4a03c62>] __rt_sem_p+0x5d/0x66 [xeno_native]
+>  [<c485b207>] hisyscall_event+0x1cb/0x2d3 [xeno_nucleus]
+>  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+>  [<c010b3ea>] __ipipe_syscall_root+0x53/0xbe
+>  [<c01029c0>] system_call+0x20/0x41
+> Xenomai: fatal: blocked thread main[863] rescheduled?! (status=3D0x3000=
+82,
+> sig=3D0, prev=3Dgatekeeper/0[809])
+>  CPU  PID    PRI  TIMEOUT  STAT      NAME
+>>  0  0      30   0        00500080  ROOT
+>    0  864    30   0        00300180  task0
+>    0  865    29   0        00300288  task1
+>    0  863    1    0        00300082  main
+> Timer: oneshot [tickval=3D1 ns, elapsed=3D175144731477]
+>=20
+> c31e1f14 c4860572 c3188000 c31dfab0 00300082 c02a2500 00000286 c02a2500=
 
-Ex:
-rt_heap_create( ..., ..., 10000, ... )
-rt_heap_alloc( ..., 10000, ..., .... ) -> This call fails
+>        c030cbec c012e564 00000022 c02a2500 c30d1a90 c30d1a90 00000022
+> 00000001
+>        c02a2500 c30d1a90 c08e4623 00000028 c31e1fa0 c0266ed5 0000f610
+> c030cd80
+> Call Trace:
+>  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+>  [<c0266ed5>] schedule+0x3ef/0x5ed
+>  [<c485a27c>] gatekeeper_thread+0x0/0x179 [xeno_nucleus]
+>  [<c485a316>] gatekeeper_thread+0x9a/0x179 [xeno_nucleus]
+>  [<c010dd8b>] default_wake_function+0x0/0x12
+>  [<c0124fbc>] kthread+0x68/0x95
+>  [<c0124f54>] kthread+0x0/0x95
+>  [<c0100d71>] kernel_thread_helper+0x5/0xb
+>=20
+> Any bells already ringing?
+>=20
+> Will try Gilles' patch now...
+>=20
 
-I suggest only accepting zero as a valid size for shared heaps.
+Nope, this didn't help.
 
-about attached patch:
-1) not tested
-2) there are possible better names than H_ALL
-3) the comments could be in a better english
-4) i hope you get the idea
+Ok, this is migration magic. Someone around who hacks this part blindly?
 
-thx
-kisda
+Jan
 
-[1] https://mail.gna.org/public/xenomai-core/2006-01/msg00177.html
 
---Boundary-01=_V8o3D8BnqRRj8oO
-Content-Type: text/x-diff;
-  charset="us-ascii";
-  name="rt_heap.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
-	filename="rt_heap.patch"
-
-Index: include/native/heap.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-=2D-- include/native/heap.h	(Revision 465)
-+++ include/native/heap.h	(Arbeitskopie)
-@@ -32,6 +32,9 @@
- #define H_DMA    0x100		/* Use memory suitable for DMA. */
- #define H_SHARED 0x200		/* Use mappable shared memory. */
-=20
-+/* Operation flags. */
-+#define H_ALL    0x0	        /* Entire heap space. */
-+
- typedef struct rt_heap_info {
-=20
-     int nwaiters;		/* !< Number of pending tasks. */
-Index: ksrc/skins/native/heap.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-=2D-- ksrc/skins/native/heap.c	(Revision 465)
-+++ ksrc/skins/native/heap.c	(Arbeitskopie)
-@@ -410,10 +410,9 @@
-  * from.
-  *
-  * @param size The requested size in bytes of the block. If the heap
-=2D * is shared, this value can be either zero, or the same value given
-=2D * to rt_heap_create(). In any case, the same block covering the
-=2D * entire heap space will always be returned to all callers of this
-=2D * service.
-+ * is shared, H_ALL should be passed, as always the same block
-+ * covering the entire heap space will be returned to all callers of
-+ * this service.
-  *
-  * @param timeout The number of clock ticks to wait for a block of
-  * sufficient size to be available from a local heap (see
-@@ -432,8 +431,7 @@
-  * @return 0 is returned upon success. Otherwise:
-  *
-  * - -EINVAL is returned if @a heap is not a heap descriptor, or @a
-=2D * heap is shared (i.e. H_SHARED mode) and @a size is non-zero but
-=2D * does not match the actual heap size passed to rt_heap_create().
-+ * heap is shared (i.e. H_SHARED mode) and @a size is not H_ALL.
-  *
-  * - -EIDRM is returned if @a heap is a deleted heap descriptor.
-  *
-@@ -503,12 +501,7 @@
-=20
- 	if (!block)
- 	    {
-=2D	    /* It's ok to pass zero for size here, since the requested
-=2D	       size is implicitely the whole heap space; but if
-=2D	       non-zero is given, it must match the actual heap
-=2D	       size. */
-=2D
-=2D	    if (size > 0 && size !=3D xnheap_size(&heap->heap_base))
-+	    if (size !=3D H_ALL)
- 		{
- 		err =3D -EINVAL;
- 		goto unlock_and_exit;
-
---Boundary-01=_V8o3D8BnqRRj8oO--
-
---nextPart1353373.8XjP8BCRun
-Content-Type: application/pgp-signature
+--------------enig51824F3B2A33C76E02981262
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQBD3o8kIPTw9rIdn6oRAiowAJ4nUjijNozXZC/ne/5PXyNv9uGTzwCfV7PJ
-f1Ve9NG7dmZfeHAEk15HeZE=
-=Tct/
+iD8DBQFDzqRBniDOoMHTA+kRAs6nAJ98cFHqmEq3NCymiuvTLh0JVV/fJgCfcUBR
+5cZ8/Nt+WXU9cjAmUHEjRw8=
+=NhD5
 -----END PGP SIGNATURE-----
 
---nextPart1353373.8XjP8BCRun--
+--------------enig51824F3B2A33C76E02981262--
 
