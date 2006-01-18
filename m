@@ -1,11 +1,10 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Date: Wed, 18 Jan 2006 19:03:27 -0200
-MIME-Version: 1.0
+Date: Wed, 18 Jan 2006 16:24:07 -0500
+From: Kent Borg <kentborg@domain.hid>
+Message-ID: <20060118162407.A28495@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Message-Id: <200601181903.27928.lbocseg@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] blocked or not blocked call on snippet/shared_mem.c?
+Subject: [Xenomai-help] Signals
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,30 +16,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-I was looking at the xenomai snippets and found the shared_mem.c snippet=20
-confused.
+Thanks for the news that gdb should just work.
 
-Here's a snippet from the snippet ;)
+Now I am wondering about signals.  I want to be able to send a regular
+Linux signal to a userland realtime process.  Do I use the regular
+signal() to install a signal handler?  When would I use
+rt_task_catch() and rt_task_notify()?
 
-/* ...The call will block us until such heap
-       is created with the expected name... */
-
-    err =3D rt_heap_bind(&heap_desc,"SomeShmName",TM_NONBLOCK);
-
-I'm confused. Did you really mean TM_NONBLOCK?
-Am I missing something?
-
-Thanks in advance,
-
-Rodrigo.
-
-=09
-
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
+What about multiple threads?  I have 2 threads running.  It seems that
+the thread that called signal() is the one landing in the handler
+routine.  I would like to set some flags for the second thread to see,
+so it can cleanup things before quiting, but it seems that my second
+thread isn't running after I send the signal.  I also think I am
+corrupting something, because if I set up a loop that launches and
+kills my program, my machine freezes up after a dozen cycles.  I
+commented out most of my guts and it still freezes up.
 
 
+Thanks,
+
+-kb
 
