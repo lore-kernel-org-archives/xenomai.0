@@ -1,49 +1,71 @@
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Subject: Re: [Adeos-main] 2.4.32-i386-1.1-00 vs. 2.6.14-i386-1.1-01
-Date: Sun, 8 Jan 2006 01:35:57 +0100
-References: <43BD8BC0.50503@domain.hid>
-In-Reply-To: <43BD8BC0.50503@domain.hid>
+Message-ID: <fd6a47a90601181417x79837d34h@domain.hid>
+Date: Wed, 18 Jan 2006 23:17:09 +0100
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Subject: Re: [Xenomai-core] Scheduling while atomic
+In-Reply-To: <fd6a47a90601181334y14b06d6an@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_6203_32217840.1137622629396"
+References: <fd6a47a90601181204g4c86f778x@domain.hid>
+	<43CEA323.7000701@domain.hid> <43CEAF25.6010705@domain.hid>
+	<43CEB291.4020609@domain.hid>
+	<fd6a47a90601181334y14b06d6an@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Hannes Mayer <h.mayer@domain.hid>, xenomai@xenomai.org
+
+------=_Part_6203_32217840.1137622629396
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Message-Id: <200601080135.58153.alexis.berlemont@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
 
-Hi,
+When testing, also check the dmesg logs please. When nucleus debugging is
+off, you get only a kernel warning 'scheduling while atomic'.
 
-> Quick question:
-> I just had a quick view, but is the 2.4.32-i386-1.1-00 backport
-> already based on 2.6.14-i386-1.1-01 ?
-> (or on 2.6.14-i386-1.1-00 ?)
+- Could you replace MAXLONG on line 119 with TM_INFINITE and rerun the sem
+test (to avoid printf'ing) You can terminate with Ctrl+C.
+
+> - Could you try to run with tmax somewhat lower (to increase the load):
+> e.g. ./sem 5.0e6 or so. Be careful not to starve Linux. I think 1.0e5 wil=
+l
+> be too low.
 >
-> If the first one is the case, wouldn't it be better to name it
-> 2.4.32-i386-1.1-01 ? Sure 2.4.32-i386-1.1-00 would be missing
-> but people immediately get the idea that the API, the behaviour
-> is the same in the 2.6 version (and it also includes the
-> bug-fixes from 00 to 01).
+> Crashes with me happen within the first 10 secs with 1.0e7
+>
+> Thanks,
+>
+> Jeroen.
+>
+>
 
-2.4.3*-r0 corresponds (uncorrectly) to 2.6.*r9. But just before New Year's 
-Eve, Philippe informed me that he wanted to integrate Dmitry's patch himself 
-in every branch and align release numbers. The point was to recover a xenomai 
-svn stable as soon as possible (with all the modifications in every branch 
-and architecture). 
+------=_Part_6203_32217840.1137622629396
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-So, I am not the most appropriate guy to answer you for the moment. Like you, 
-I am trying to keep informed with the modifications.
+<div>When testing, also check the dmesg logs please. When nucleus debugging=
+ is off, you get only a kernel warning 'scheduling while atomic'.</div>
+<div><br>- Could you replace MAXLONG on line 119 with TM_INFINITE and rerun=
+ the sem test (to avoid printf'ing) You can terminate with Ctrl+C.</div>
+<div>
+<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
+px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>- Could you try to run with tmax somewhat lower (to increase the load)=
+: e.g. ./sem 5.0e6 or so. Be careful not&nbsp;to starve Linux. I think 1.0e=
+5 will be too low.<br>&nbsp;</div>
+<div>Crashes with me happen within the first 10 secs with 1.0e7</div>
+<div>&nbsp;</div>
+<div>Thanks,</div><span class=3D"sg">
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div></span></blockquote></div>
 
-Happy New Year too !
-
-Alexis.
-
-
+------=_Part_6203_32217840.1137622629396--
 
