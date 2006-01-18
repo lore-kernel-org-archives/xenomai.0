@@ -1,17 +1,15 @@
-Message-ID: <b647ffbd0601300337g2387b9f5w@domain.hid>
-Date: Mon, 30 Jan 2006 13:37:07 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
-In-Reply-To: <43D62B07.3030703@domain.hid>
+Message-ID: <43CE895B.9060506@domain.hid>
+Date: Wed, 18 Jan 2006 19:30:51 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_1285_20778180.1138621027107"
-References: <43D21144.8040005@domain.hid>
-	<b647ffbd0601220010x3cc023an@domain.hid>
-	<fd6a47a90601220819n3f4cd382t@domain.hid>
-	<E1F16LA-0001ku-C4@domain.hid>
-	<b647ffbd0601240514m11a11a64u@domain.hid>
-	<43D62B07.3030703@domain.hid>
+References: <43CD16C8.4000009@domain.hid>
+	<17357.6643.403829.486469@domain.hid>
+In-Reply-To: <17357.6643.403829.486469@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig29B0E945C86745ECE32BF71B"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: --enable-linux-build
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,106 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-------=_Part_1285_20778180.1138621027107
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig29B0E945C86745ECE32BF71B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
->> ...
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Hi Gilles,
+>  >=20
+>  > I just tested your new build option. Maybe I'm using it the wrong wa=
+y,
+>  > but I stumbled over two quirks:
+>  >=20
+>  >  o "make install-nodev" fails as it tries to install the kernel with=
+out
+>  >    being root. Actually, I only wanted to install the user space par=
+t,
+>  >    how can I do this separately? Or is this rather a use-case for th=
+e
+>  >    standard build?
+>=20
+> I did not think about this case. Any idea of what would be better ? Not=
 
-> I have not checked it yet but my presupposition that something as easy as
-> :
-> >
-> > preempt_disable()
-> >
-> > wake_up_interruptible_sync();
-> > schedule();
-> >
-> > preempt_enable();
->
-> It's a no-go: "scheduling while atomic". One of my first attempts to
-> solve it.
+> installing kernel when running "make install-nodev" ? Creating=20
+> install-nokernel and install-nokernel-nodev targets ?
 
+I would suggest "make install-user" instead of "make install-nodev",
+combining both -nodev and -nokernel, i.e. excluding everything that
+requires root permissions.
 
-My fault. I meant the way preempt_schedule() and preempt_irq_schedule() cal=
-l
-schedule() while being non-preemptible.
-To this end, ACTIVE_PREEMPT is set up.
-The use of preempt_enable/disable() here is wrong.
-
-
-The only way to enter schedule() without being preemptible is via
-> ACTIVE_PREEMPT. But the effect of that flag should be well-known now.
-> Kind of Gordian knot. :(
-
-
-Maybe I have missed something so just for my curiosity : what does prevent
-the use of PREEMPT_ACTIVE here?
-We don't have a "preempted while atomic" message here as it seems to be a
-legal way to call schedule() with that flag being set up.
-
-
->
-> >
-> > could work... err.. and don't blame me if no, it's some one else who ha=
+>=20
+>  >=20
+>  >  o On every "make", the prepare-kernel script is executed -
+>  >    intentionally? Maybe it would be better to provide a dedicated ma=
+ke
+>  >    target to trigger the update.
+>=20
+> prepare-kernel should be executed whenever any file or directory is
+> added in the ksrc and include dirs. On my own machine, prepare-kernel i=
 s
-> > written that nonsense :o)
-> >
-> > --
-> > Best regards,
-> > Dmitry Adamushko
-> >
->
-> Jan
->
->
->
->
+> much shorter than the kernel build. So, I did not see this as an issue,=
+
+> but I am ready to accept any better solution. Maybe it could depend on
+> maintainer mode ? Since the user-space will work automatically when
+> adding a file or directory only if maintainer mode is enabled.
+>=20
+
+Yes, this looks good - as long as it is still run on the first make or
+during configure.
+
+The point is that I have a non-developer use-case for your build mode in
+mind were you do not constantly add files to the xeno code base, but
+reconfigure your kernel from time to time: We have mini distribution
+here which can optionally be build from source. In that case, you could
+soon decide to build
+ ( ) Vanilla kernel
+ (*) Xenomai-extended kernel and libraries
+instead of
+ ( ) Vanilla kernel
+ (*) Xenomai-extended kernel
+   [*] Xenomai libraries
+(not to speak about what currently happens in the background...)
+
+Could make life of the maintainer and users here a bit easier.
+
+Thanks for caring,
+Jan
 
 
---
-Best regards,
-Dmitry Adamushko
+--------------enig29B0E945C86745ECE32BF71B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_1285_20778180.1138621027107
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<br>&gt;&gt; ...<br>
-<div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid =
-rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; I h=
-ave not checked it yet but my presupposition that something as easy as :<br=
->
-&gt;<br>&gt; preempt_disable()<br>&gt;<br>&gt; wake_up_interruptible_sync()=
-;<br>&gt; schedule();<br>&gt;<br>&gt; preempt_enable();<br><br>It's a no-go=
-: &quot;scheduling while atomic&quot;. One of my first attempts to<br>solve=
- it.
-</blockquote><div><br>
-My fault. I meant the way preempt_schedule() and preempt_irq_schedule() cal=
-l schedule() while being non-preemptible.<br>
-To this end, ACTIVE_PREEMPT is set up.<br>
-The use of preempt_enable/disable() here is wrong.<br>
-&nbsp;</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px=
- solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">T=
-he only way to enter schedule() without being preemptible is via<br>ACTIVE_=
-PREEMPT. But the effect of that flag should be well-known now.
-<br>Kind of Gordian knot. :(</blockquote><div><br>
-Maybe I have missed something so just for my curiosity : what does prevent =
-the use of PREEMPT_ACTIVE here?<br>
-We don't have a &quot;preempted while atomic&quot; message here as it seems=
- to be
-a legal way to call schedule() with that flag being set up.<br>
-&nbsp;</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px=
- solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&=
-gt;<br>&gt;<br>&gt; could work... err.. and don't blame me if no, it's some=
- one else who has
-<br>&gt; written that nonsense :o)<br>&gt;<br>&gt; --<br>&gt; Best regards,=
-<br>&gt; Dmitry Adamushko<br>&gt;<br><br>Jan<br><br><br><br></blockquote></=
-div><br><br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry Adamushko
+iD8DBQFDzolbniDOoMHTA+kRAjNCAJ9g1Y1S5nyLem1k56tYcvnIc4/OsgCfb41h
+Xcb8gTp7I1Har4ptVinB1WE=
+=yQ3E
+-----END PGP SIGNATURE-----
 
-------=_Part_1285_20778180.1138621027107--
+--------------enig29B0E945C86745ECE32BF71B--
 
