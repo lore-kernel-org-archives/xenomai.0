@@ -1,34 +1,54 @@
-Message-ID: <43DE1917.6050306@domain.hid>
-Date: Mon, 30 Jan 2006 14:48:07 +0100
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <fd6a47a90601181549k46cdcd67h@domain.hid>
+Date: Thu, 19 Jan 2006 00:49:21 +0100
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Subject: [Xenomai-core] Scheduling while atomic
+In-Reply-To: <fd6a47a90601181339j138b1071t@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] wake_up_interruptible ?
-References: <43D2B94C.3000202@domain.hid>	<43D65F27.7000908@domain.hid>	<43D67ECD.5020309@domain.hid>	<200601242146.35114.berlemont.hauw@domain.hid>	<43D6992A.60505@domain.hid>
-	<43DA4DE6.3040402@domain.hid> <43DC9DE9.4090900@domain.hid>
-In-Reply-To: <43DC9DE9.4090900@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_7211_507584.1137628161933"
+References: <fd6a47a90601171559x13acf2c2m@domain.hid>
+	<17358.42102.613327.327841@domain.hid>
+	<43CEA56D.8000407@domain.hid>
+	<fd6a47a90601181236u5a482ba5q@domain.hid>
+	<43CEA7AC.9080300@domain.hid>
+	<fd6a47a90601181254s11edbb28l@domain.hid>
+	<43CEADBE.4040802@domain.hid>
+	<fd6a47a90601181311i2e726b46w@domain.hid>
+	<43CEB043.1060303@domain.hid>
+	<fd6a47a90601181339j138b1071t@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-[...]
->> will that affect other HRT interrupt handlers that *must* remain
->> in HRT ?
->>
-> 
-> Nope.
+------=_Part_7211_507584.1137628161933
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Thanks a lot Philippe!
+Hm.
 
-Best regards,
-Hannes.
+When I remove the output() from both tasks, all seems fine.
+
+Jeroen.
+
+------=_Part_7211_507584.1137628161933
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<div>Hm.</div>
+<div>&nbsp;</div>
+<div>When I remove the output() from both tasks, all seems fine.</div><span=
+ class=3D"sg">
+<div>&nbsp;</div>
+<div>Jeroen.<br>&nbsp;</div></span>
+
+------=_Part_7211_507584.1137628161933--
 
