@@ -1,14 +1,14 @@
-Message-ID: <43DDE693.2070702@domain.hid>
-Date: Mon, 30 Jan 2006 11:12:35 +0100
+Message-ID: <43CEA1B4.4010104@domain.hid>
+Date: Wed, 18 Jan 2006 21:14:44 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Missing IRQ end function on PowerPC
-References: <200601300833.k0U8XtG31144@domain.hid>	<43DDDA6A.3080907@domain.hid>
-	<43DDE344.1000900@domain.hid>
-In-Reply-To: <43DDE344.1000900@domain.hid>
+Subject: Re: [Xenomai-core] Scheduling while atomic
+References: <fd6a47a90601171559x13acf2c2m@domain.hid>
+	<43CE9FCB.2070305@domain.hid>
+In-Reply-To: <43CE9FCB.2070305@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig8B504F5E43CB3BC4CC39111D"
+	boundary="------------enig9A637B4A4DE3733647FE4984"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,122 +19,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8B504F5E43CB3BC4CC39111D
+--------------enig9A637B4A4DE3733647FE4984
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Wolfgang Grandegger wrote:
->>
->>>> This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
->>>>
->>>> Philippe Gerum wrote:
->>>>
->>>>> Gilles Chanteperdrix wrote:
->>>>>
->>>>>> Wolfgang Grandegger wrote:
->>>>>> > Therefore we need a dedicated function to re-enable interrupts i=
-n
->>>>>> the  > ISR. We could name it *_end_irq, but maybe *_enable_isr_irq=
- is
->>>>>> more  > obvious. On non-PPC archs it would translate to *_irq_enab=
-le.
->>>>>> I  > realized, that *_irq_enable is used in various place/skins an=
-d
->>>>>> therefore  > I have not yet provided a patch.
->>>>>>
->>>>>> The function xnarch_irq_enable seems to be called in only two
->>>
->>> functions,
->>>
->>>>>> xintr_enable and xnintr_irq_handler when the flag XN_ISR_ENABLE is=
+Jan Kiszka wrote:
+> ...
+> [Update] While writing this mail and letting your test run for a while,=
 
->>>>>> set.
->>>>>>
->>>>>> In any case, since I am not sure if this has to be done at the Ade=
-os
->>>>>> level or in Xenomai, we will wait for Philippe to come back and
->>>>>> decide.
->>>>>>
->>>>>
->>>>> ->enable() and ->end() all mixed up illustrates a silly x86 bias I
->>>>> once
->>>>> had. We do need to differentiate the mere enabling from the IRQ
->>>>> epilogue
->>>>> at PIC level since Linux does it - i.e. we don't want to change the=
-
->>>>> semantics here.
->>>>>
->>>>> I would go for adding xnarch_end_irq -> rthal_irq_end to stick with=
-
->>>>> the
->>>>> Linux naming scheme, and have the proper epilogue done from there o=
-n a
->>>>> per-arch basis.
->>>>>
->>>>> Current uses of xnarch_enable_irq() should be reserved to the
->>>>> non-epilogue case, like xnintr_enable() i.e. forcibly unmasking the=
-
->>>>> IRQ
->>>>> source at PIC level outside of any ISR context for such interrupt (=
-*).
->>>>> XN_ISR_ENABLE would trigger a call to xnarch_end_irq, instead of
->>>>> xnarch_enable_irq. I see no reason for this fix to leak to the Adeo=
-s
->>>>> layer, since the HAL already controls the way interrupts are ended
->>>>> actually; it just does it improperly on some platforms.
->>>>>
->>>>> (*) Jan, does rtdm_irq_enable() have the same meaning, or is it
->>>>> intended
->>>>> to be used from the ISR too in order to revalidate the source at PI=
-C
->>>
->>> level?
->>>
->>>> Nope, rtdm_irq_enable() was never intended to re-enable an IRQ line
->>>> after an interrupt, and the documentation does not suggest this eith=
-er.
->>>> I see no problem here.
->>>
->>> But RTDM needs a rtdm_irq_end() functions as well in case the
->>> user wants to reenable the interrupt outside the ISR, I think.
->>
->>
->> If this is a valid use-case, it should be really straightforward to ad=
-d
->> this abstraction to RTDM. We should just document that rtdm_irq_end()
->> shall not be invoked from IRQ context -
+> I *did* get a hard lock-up. Hold on, digging deeper...
 >=20
-> It's the other way around: ->end() would indeed be called from the ISR
-> epilogue, and ->enable() would not.
 
-I think we are talking about different things: Wolfgang was asking for
-an equivalent of RTDM_IRQ_ENABLE outside the IRQ handler. That's the
-user API. You are now referring to the back-end which had to provide
-some end-mechanism to be used both by the nucleus' ISR epilogue and that
-rtdm_irq_end(), and that mechanism shall be told apart from the IRQ
-enable/disable API. Well, that's at least how I think to have got it...
+And here are its last words, spoken via serial console:
 
->=20
->  to avoid breaking the chain in
->> the shared-IRQ scenario. RTDM_IRQ_ENABLE must remain the way to
->> re-enable the line from the handler.
->>
->> Jan
->>
->>
->=20
->=20
+c31dfab0 00000086 c30d1a90 c02a2500 c482a360 00000001 00000001 00200000
+       c012e564 00000022 ffffffff 00000246 c30d1a90 c4866ce0 00000033
+c4820000
+       c482a360 c4866ca0 ffffffff c48293a4 c48524e1 00000000 00000000
+00000002
+Call Trace:
+ [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+ [<c4820000>] e100_hw_init+0x3ad/0xa81 [e100]
+ [<c48524e1>] xnpod_suspend_thread+0x714/0x76d [xeno_nucleus]
+ [<c4856946>] xnsynch_sleep_on+0x76d/0x7a7 [xeno_nucleus]
+ [<c4a09b29>] rt_sem_p+0xa6/0x10a [xeno_native]
+ [<c4a03c62>] __rt_sem_p+0x5d/0x66 [xeno_native]
+ [<c485b207>] hisyscall_event+0x1cb/0x2d3 [xeno_nucleus]
+ [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+ [<c010b3ea>] __ipipe_syscall_root+0x53/0xbe
+ [<c01029c0>] system_call+0x20/0x41
+Xenomai: fatal: blocked thread main[863] rescheduled?! (status=3D0x300082=
+,
+sig=3D0, prev=3Dgatekeeper/0[809])
+ CPU  PID    PRI  TIMEOUT  STAT      NAME
+>  0  0      30   0        00500080  ROOT
+   0  864    30   0        00300180  task0
+   0  865    29   0        00300288  task1
+   0  863    1    0        00300082  main
+Timer: oneshot [tickval=3D1 ns, elapsed=3D175144731477]
+
+c31e1f14 c4860572 c3188000 c31dfab0 00300082 c02a2500 00000286 c02a2500
+       c030cbec c012e564 00000022 c02a2500 c30d1a90 c30d1a90 00000022
+00000001
+       c02a2500 c30d1a90 c08e4623 00000028 c31e1fa0 c0266ed5 0000f610
+c030cd80
+Call Trace:
+ [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
+ [<c0266ed5>] schedule+0x3ef/0x5ed
+ [<c485a27c>] gatekeeper_thread+0x0/0x179 [xeno_nucleus]
+ [<c485a316>] gatekeeper_thread+0x9a/0x179 [xeno_nucleus]
+ [<c010dd8b>] default_wake_function+0x0/0x12
+ [<c0124fbc>] kthread+0x68/0x95
+ [<c0124f54>] kthread+0x0/0x95
+ [<c0100d71>] kernel_thread_helper+0x5/0xb
+
+Any bells already ringing?
+
+Will try Gilles' patch now...
 
 Jan
 
 
---------------enig8B504F5E43CB3BC4CC39111D
+--------------enig9A637B4A4DE3733647FE4984
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -143,10 +92,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD3eaUniDOoMHTA+kRAgvRAJ4vBMeGWF7BcNXPf2xhamKYlbHktgCeLSh1
-ck9rOO7kmj79tabW8i9VwEY=
-=yydl
+iD8DBQFDzqG0niDOoMHTA+kRAvocAJ9BrT7FL17zMkVXFT7lbyzeFPPQnACdHyoY
+rAKiMfAymVr9So2W2hbdcHA=
+=i6C5
 -----END PGP SIGNATURE-----
 
---------------enig8B504F5E43CB3BC4CC39111D--
+--------------enig9A637B4A4DE3733647FE4984--
 
