@@ -1,10 +1,10 @@
-Message-ID: <43CE1C28.6060001@domain.hid>
-Date: Wed, 18 Jan 2006 11:44:56 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <47338.83.179.137.211.1137593134.squirrel@domain.hid>
+Date: Wed, 18 Jan 2006 15:05:34 +0100 (CET)
+From: "Germain Olivier" <germain.olivier@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Missing IRQ end function on PowerPC
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-core] Initialization of a nucleus pod
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,20 +16,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello,
+Hello
 
-with RTnet over Xenomai and Linux 2.4 on PowerPC I realized that Xenomai 
-does not distinguish between a normal IRQ enable and an IRQ unmask at 
-the end of an ISR (to reenable the IRQ). In the latter case the IRQ 
-should be enabled on PowerPC as shown:
+I am trying to understand how a pod is initialized.
 
-    if (rthal_irq_descp(irq)->handler->end != NULL)
-  	   rthal_irq_descp(irq)->handler->end(irq);
-     else
-	   rthal_irq_descp(irq)->handler->enable(irq);
+I think it start with xncore_attach() from core.c, then with xnpod_init from
+pod.c
+But here (in xnpod_init) there is something not clear about the root thread
+creation.
 
-To handle this case properly, we need to different functions, I think.
+It use xnthread_init(&sched->rootcb, ...), but I don't see where
+&sched->rootcb is initialized
 
-Wolfgang.
+Maybe I don't understand how it works, so the pod don't have his own code
+to run, but this thread will be in fact replaced by the task to run.
 
+I hope my question is clear enough
+
+Thank
+
+Germain
 
