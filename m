@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
+Date: Wed, 18 Jan 2006 14:44:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17358.3884.837199.868705@domain.hid>
-Date: Wed, 18 Jan 2006 10:49:32 +0100
-Subject: Re: [Xenomai-help] Debugging
-In-Reply-To: <20060117142831.M15311@domain.hid>
-References: <20060117142831.M15311@domain.hid>
+Content-Disposition: inline
+Message-Id: <200601181444.51484.s.zimmermann@domain.hid>
+Subject: [Xenomai-help] Meassage Queue c++
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,46 +18,66 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Kent Borg wrote:
- > It occurs to me I have been lax in my understanding of how debugging
- > works with Xenamai.
- > 
- >  - What happens if I just use gdb and pretend I am debugging a regular
- >    program?  (Seems scary, but it seems to work at least somewhat for
- >    me.)
+Hello again,
+still experimenting with Xenomai and C++, I did wrap a class aroud the 
+rt_queue functions. This produces a suspicious bug wich I am unable to track 
+down. Perhaps someone here can help.
 
-It should work. Or at least is it the intention.
+I start two Tasks, both are instances of my Thread-class. Both Tasks call the 
+constructor of my queue-class, creating an queue-object. The first one really 
+creates it, the second one gets an -EEXIST error inside the constructor and 
+does bind to the queue. Now both tasks have their own queue-object, 
+describing the same rt_queue. (in proc everything seems good)
+
+Now, I can write messages to the queue, wich works well. I also can read the 
+queue from the other task without problems. Only if the queue is empty and 
+the task attempts to read from it, my program crashes without any error- or 
+log-message.
+
+A Testprogram in plain C works well, so It must be s.th. with my C++ Classes.
+
+Here is some Code (compiles without warnings):
+
+Constructor:
+
+BM_Queue::BM_Queue(const char* name, size_t size, size_t qlimit, int mode){
+	name = name;
+	size = size;
+	qlimit = qlimit;
+	mode = mode;	
+	int err = rt_queue_create(&q,name,size,qlimit,mode);
+	std::cout << "Constructor queue: create " << err << std::endl;
+	if(err == -EEXIST){
+		err = rt_queue_bind(&q,name,100000000);
+		std::cout << "Konstruktor bm_queue: bind " << err << std::endl;
+	}
+	switch(err){
+		case 0:				usecount++;
+							break;
+		default:				throw queue_exception(err);
+							break;
+	}
+}
 
 
- >  - What is UVM for?  Sounds interesting, but the "make xconfig" help
- >    for it says it is for legacy RTOS APIs and I am mostly doing native
- >    calls.  What is the difference?
+Recieve Function:
 
-To know more about UVMs, have a look at:
-http://download.gna.org/xenomai/documentation/branches/v2.0.x/pdf/Introduction-to-UVMs.pdf
+void* BM_Queue::rcv(unsigned long int timeout){	
+	void* message;
+	void* data;
+	size_t size = rt_queue_recv(&q,&message,TM_INFINITE);	// blocking won't work!
+	std::cout << "Recieve from queue: " << size << std::endl;
+	if(size < 0){
+		std::cout << "ERROR Q throwing exception: " << size << std::endl; 
+		/*--- This exception is not thrown, it simply crashes ---*/
+		throw queue_exception(size);
+	}
+	data = malloc(size);	//using operator new here (and delete there), does not 
+change things
+	memcpy(data,message,size);
+	rt_queue_free(&q,message);
+	return data;
+}
 
-
- > 
- >  - How about MVM?  It sounds interesting too.  Do I just configure it
- >    in and grab it on with gdb??
-
-The MVM is a discrete event simulator, working hand in hand with an
-instrumenting compiler and a "real-time aware" graphical frontend for
-gdb. In order to use it, you first have to configure and install it.
-
-You will have to compile your applications for this simulation
-environment using "gcic" the instrumenting compiler, and run them
-through "xenoscope", the gdb graphical frontend.
-
-For examples of programs using the native skin, which can be compiled
-for MVM, see the directory:
-skins/native/demos
-
-For the MVM full documentation, see:
-sim/doc/mvm-manual.txt
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Any Ideas?
 
