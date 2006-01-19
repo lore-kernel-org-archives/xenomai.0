@@ -2,11 +2,11 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17359.34362.870823.168739@domain.hid>
-Date: Thu, 19 Jan 2006 13:29:46 +0100
-Subject: Re: [Xenomai-core] Missing IRQ end function on PowerPC
-In-Reply-To: <43CE1C28.6060001@domain.hid>
-References: <43CE1C28.6060001@domain.hid>
+Message-ID: <17359.35617.906625.920464@domain.hid>
+Date: Thu, 19 Jan 2006 13:50:41 +0100
+Subject: Re: [Xenomai-core] Initialization of a nucleus pod
+In-Reply-To: <47338.83.179.137.211.1137593134.squirrel@domain.hid>
+References: <47338.83.179.137.211.1137593134.squirrel@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,27 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Germain Olivier <germain.olivier@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
- > Hello,
+Germain Olivier wrote:
+ > Hello
  > 
- > with RTnet over Xenomai and Linux 2.4 on PowerPC I realized that Xenomai 
- > does not distinguish between a normal IRQ enable and an IRQ unmask at 
- > the end of an ISR (to reenable the IRQ). In the latter case the IRQ 
- > should be enabled on PowerPC as shown:
+ > I am trying to understand how a pod is initialized.
  > 
- >     if (rthal_irq_descp(irq)->handler->end != NULL)
- >   	   rthal_irq_descp(irq)->handler->end(irq);
- >      else
- > 	   rthal_irq_descp(irq)->handler->enable(irq);
+ > I think it start with xncore_attach() from core.c, then with xnpod_init from
+ > pod.c
+ > But here (in xnpod_init) there is something not clear about the root thread
+ > creation.
  > 
- > To handle this case properly, we need to different functions, I think.
+ > It use xnthread_init(&sched->rootcb, ...), but I don't see where
+ > &sched->rootcb is initialized
 
-I am not sure I understand what you mean. Would you want functions
-rthal_end_irq and xnarch_end_irq added and that this xnarch_end_irq
-would be called in xnintr_irq_handler when XN_ISR_ENABLE is set ?
+xnthread_init does part of the initialization. The low level part of
+rootcb (its xnarchtcb_t member) is initialized twice, first by the call
+to xnarch_init_tcb in xnthread_init, and then overriden by
+xnarch_init_root_tcb in xnpod_init.
+
+For any other thread than root, the thread would be given a stack and
+entry point by the call to xnarch_init_thread in xnpod_start_thread. But
+the root thread is Xenomai idle task, a placeholder for whatever task
+Linux is currenty running. At the time where xnpod_init is called, the
+root thread is the current context, so already has a stack and is
+already running.
 
 -- 
 
