@@ -1,13 +1,14 @@
-Message-ID: <1596.10.2.100.4.1137683264.squirrel@domain.hid>
-In-Reply-To: <17359.35617.906625.920464@domain.hid>
-References: <47338.83.179.137.211.1137593134.squirrel@domain.hid>
-	<17359.35617.906625.920464@domain.hid>
-Date: Thu, 19 Jan 2006 16:07:44 +0100 (CET)
-Subject: Re: [Xenomai-core] Initialization of a nucleus pod
-From: "Germain Olivier" <germain.olivier@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Thu, 19 Jan 2006 22:12:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200601192212.45556.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Problems generating vxworks/koan in two step: cc and
+	link
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,35 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Thank you for your response
+Hi
 
-So rootcb isn't the "scheduler task".
-I was thinking it was this task which was determining what thread to run,
-depending of its parameters (priority, periodicity, scheduling mode).
+I am trying to bring my build infrastructure up to Xenomai 2.1 and got the 
+following problem:
+I have no problems to generate koan using the following command:
+  cc  -o koan2  /home/hcu/kernel/tst_xeno_ppc/koan.c  -I. \ 
+-I/usr/xenomai/include -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall \
+-pipe -D__XENO_UVM__  -u__xeno_skin_init -L/usr/xenomai/lib -luvm -lnucleus \ 
+-lpthread -lvxworks -lnative
 
-I go back to the code to understand how it work ...
+No in order to be able to compile and link bigger applications my first try 
+was to compile koan first and then to link. However running the following two 
+commands
 
-Germain
+c   -c -I. -I/usr/xenomai/include -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO__ 
+-Wall -pipe -D__XENO_UVM__ -u__xeno_skin_init    
+-I. /home/hcu/project/bb/3_1_x/work/xeno/koan.c  
+-o /home/hcu/project/bb/3_1_x/work/xeno/koan.o
+ld -o koan  -L/usr/xenomai/lib -luvm -lnucleus -lpthread -lvxworks -lnative  
+-e __xeno_skin_init  /home/hcu/project/bb/3_1_x/work/xeno/koan.o
+Now I get the following error output
+ld: warning: cannot find entry symbol __xeno_skin_init; defaulting to 
+00000000100002a0
+/home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function `TaskTest':koan.c:
+(.text+0xbc): undefined reference to `semTake'
+/home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function `CreateTask':koan.c:
+(.text+0x124): undefined reference to `taskSpawn'
+/home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function `usrClock':koan.c:
+(.text+0x1c8): undefined reference to `semGive'
+:koan.c:(.text+0x1f0): undefined reference to `tickAnnounce'
+/home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function 
+`koan_sysClkInit':koan.c:(.text+0x224): undefined reference to `semBCreate'
+:koan.c:(.text+0x23c): undefined reference to `sysClkConnect'
+:koan.c:(.text+0x240): undefined reference to `sysClkEnable'
+/home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function 
+`__xeno_user_exit':koan.c:(.text+0x2c0): undefined reference to `taskDelete'
 
->
-> xnthread_init does part of the initialization. The low level part of
-> rootcb (its xnarchtcb_t member) is initialized twice, first by the call
-> to xnarch_init_tcb in xnthread_init, and then overriden by
-> xnarch_init_root_tcb in xnpod_init.
->
-> For any other thread than root, the thread would be given a stack and
-> entry point by the call to xnarch_init_thread in xnpod_start_thread. But
-> the root thread is Xenomai idle task, a placeholder for whatever task
-> Linux is currenty running. At the time where xnpod_init is called, the
-> root thread is the current context, so already has a stack and is
-> already running.
->
-> --
->
->
-> 					    Gilles Chanteperdrix.
->
+What is wrong with my split?
 
+-- 
+Niklaus Giger
 
