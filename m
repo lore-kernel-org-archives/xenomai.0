@@ -2,11 +2,11 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17359.28959.489093.312753@domain.hid>
-Date: Thu, 19 Jan 2006 11:59:43 +0100
-Subject: Re: [Xenomai-core] RTAI vs XENOMAI
-In-Reply-To: <353F6272FE0A6544AA97D47F761F486B01707E7C@ples506a.stcl.siemens.co.uk>
-References: <353F6272FE0A6544AA97D47F761F486B01707E7C@ples506a.stcl.siemens.co.uk>
+Message-ID: <17359.34362.870823.168739@domain.hid>
+Date: Thu, 19 Jan 2006 13:29:46 +0100
+Subject: Re: [Xenomai-core] Missing IRQ end function on PowerPC
+In-Reply-To: <43CE1C28.6060001@domain.hid>
+References: <43CE1C28.6060001@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,31 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Doyle, Alan (Siemens)" <alan.doyle@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Doyle, Alan \(Siemens\) wrote:
- > Hi,
+Wolfgang Grandegger wrote:
+ > Hello,
  > 
- > I'm looking into porting an embedded application using Accelerated
- > Technologies 'Nucleus' RTOS to a real time Linux variant. RTAI is the
- > preferred approach but on looking into available documentation I have
- > discovered Xenomai which seems to be designed to solve this sort of
- > problem. However as there is no existing emulator for Nucleus on Xenomai
- > I would have to write one so I'm unsure whether there would then be any
- > benefit. Could somebody advise me as to the pros and cons of porting to
- > RTAI or Xenomai.
+ > with RTnet over Xenomai and Linux 2.4 on PowerPC I realized that Xenomai 
+ > does not distinguish between a normal IRQ enable and an IRQ unmask at 
+ > the end of an ISR (to reenable the IRQ). In the latter case the IRQ 
+ > should be enabled on PowerPC as shown:
+ > 
+ >     if (rthal_irq_descp(irq)->handler->end != NULL)
+ >   	   rthal_irq_descp(irq)->handler->end(irq);
+ >      else
+ > 	   rthal_irq_descp(irq)->handler->enable(irq);
+ > 
+ > To handle this case properly, we need to different functions, I think.
 
-Using Xenomai would ease writing a skin for the nucleus RTOS. Philippe
-once wrote a mail on how to write a new skin, which you will find on
-rtai.dk: 
-
-http://rtai.dk/cgi-bin/gratiswiki.pl?How_To_Implement_A_New_Skin
-
-The reasons why the Xenomai project, was made a separate project from
-RTAI is explained in the following post on RTAI mailing list :
-
-https://mail.rtai.org/pipermail/rtai/2005-October/013155.html
+I am not sure I understand what you mean. Would you want functions
+rthal_end_irq and xnarch_end_irq added and that this xnarch_end_irq
+would be called in xnintr_irq_handler when XN_ISR_ENABLE is set ?
 
 -- 
 
