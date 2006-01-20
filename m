@@ -1,64 +1,34 @@
-Message-ID: <43CEB043.1060303@domain.hid>
-Date: Wed, 18 Jan 2006 22:16:51 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
+Subject: Re: [Xenomai-help] Meassage Queue c++
+Date: Fri, 20 Jan 2006 13:13:12 +0100
+References: <43CFC6B5.8080308@domain.hid>
+	<200601200948.09127.s.zimmermann@domain.hid>
+	<43D0AD9C.1030000@domain.hid>
+In-Reply-To: <43D0AD9C.1030000@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Scheduling while atomic
-References: <fd6a47a90601171559x13acf2c2m@domain.hid>	
-	<43CE9FCB.2070305@domain.hid>	
-	<17358.42102.613327.327841@domain.hid>	
-	<43CEA56D.8000407@domain.hid>	
-	<fd6a47a90601181236u5a482ba5q@domain.hid>	
-	<43CEA7AC.9080300@domain.hid>	
-	<fd6a47a90601181254s11edbb28l@domain.hid>	
-	<43CEADBE.4040802@domain.hid>
-	<fd6a47a90601181311i2e726b46w@domain.hid>
-In-Reply-To: <fd6a47a90601181311i2e726b46w@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA8EADA55AE322E1482C297CC"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200601201313.12464.s.zimmermann@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA8EADA55AE322E1482C297CC
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> Would you mind to break out a demonstration code of your problem? Just
+> to check if there is some subtle Xenomai issue hidden or if it's an ugly
+> pitfall when using C++ in hard-RT context.
 
-Jeroen Van den Keybus wrote:
->  Interesting, when writing to 2 different files, I get the same crashes=
-=2E
-> Will test with only one task/fd.
+Can I send the 'demonstration' code as a complete eclipse managed-make project 
+directly to your email address? It is a little to much (make clean && tar.gz 
+~500k) to post here I think, even after a cleanup.
 
-File ops doesn't matter for me. I took them out of task0/1, and I still
-got the crashes. (BTW, this may explain the difference in your backtrace
-you reported privately.)
-
-Jan - now really leaving...
-
-
---------------enigA8EADA55AE322E1482C297CC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDzrBDniDOoMHTA+kRAjcrAJ90XDDZhV2R6FahkkW4RVO0HT+jvgCfR5Q1
-Ol9AAh8SiXdWE9eRDZ+2bBA=
-=sfSC
------END PGP SIGNATURE-----
-
---------------enigA8EADA55AE322E1482C297CC--
+Stephan
 
