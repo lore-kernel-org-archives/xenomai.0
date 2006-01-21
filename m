@@ -1,15 +1,12 @@
-Message-ID: <000d01c61e6b$6eac2ff0$0200a8c0@domain.hid>
-From: "Marco Cavallini" <rtai@domain.hid>
-References: <200601192212.45556.niklaus.giger@domain.hid><17360.3999.645581.227559@domain.hid>
-	<200601202243.46640.niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Problems generating vxworks/koan in two step:
-	ccand link
-Date: Sat, 21 Jan 2006 10:16:56 +0100
+Message-ID: <43D21144.8040005@domain.hid>
+Date: Sat, 21 Jan 2006 11:47:32 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
-Reply-To: Marco Cavallini <rtai@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8924C7F8C9F0537DBAC95345"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,70 +16,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
------ Original Message ----- 
-From: "Niklaus Giger" <niklaus.giger@domain.hid>
-To: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai-core" <xenomai@xenomai.org>
-Sent: Friday, January 20, 2006 10:43 PM
-Subject: Re: [Xenomai-core] Problems generating vxworks/koan in two step: 
-ccand link
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8924C7F8C9F0537DBAC95345
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+well, if I'm not totally wrong, we have a design problem in the
+RT-thread hardening path. I dug into the crash Jeroen reported and I'm
+quite sure that this is the reason.
+
+So that's the bad news. The good one is that we can at least work around
+it by switching off CONFIG_PREEMPT for Linux (this implicitly means that
+it's a 2.6-only issue).
+
+@Jeroen: Did you verify that your setup also works fine without
+CONFIG_PREEMPT?
+
+But let's start with two assumptions my further analysis is based on:
+
+[Xenomai]
+ o Shadow threads have only one stack, i.e. one context. If the
+   real-time part is active (this includes it is blocked on some xnsynch
+   object or delayed), the original Linux task must NEVER EVER be
+   executed, even if it will immediately fall asleep again. That's
+   because the stack is in use by the real-time part at that time. And
+   this condition is checked in do_schedule_event() [1].
+
+[Linux]
+ o A Linux task which has called set_current_state(<blocking_bit>) will
+   remain in the run-queue as long as it calls schedule() on its own.
+   This means that it can be preempted (if CONFIG_PREEMPT is set)
+   between set_current_state() and schedule() and then even be resumed
+   again. Only the explicit call of schedule() will trigger
+   deactivate_task() which will in turn remove current from the
+   run-queue.
+
+Ok, if this is true, let's have a look at xnshadow_harden(): After
+grabbing the gatekeeper sem and putting itself in gk->thread, a task
+going for RT then marks itself TASK_INTERRUPTIBLE and wakes up the
+gatekeeper [2]. This does not include a Linux reschedule due to the
+_sync version of wake_up_interruptible. What can happen now?
+
+1) No interruption until we can called schedule() [3]. All fine as we
+will not be removed from the run-queue before the gatekeeper starts
+kicking our RT part, thus no conflict in using the thread's stack.
+
+3) Interruption by a RT IRQ. This would just delay the path described
+above, even if some RT threads get executed. Once they are finished, we
+continue in xnshadow_harden() - given that the RT part does not trigger
+the following case:
+
+3) Interruption by some Linux IRQ. This may cause other threads to
+become runnable as well, but the gatekeeper has the highest prio and
+will therefore be the next. The problem is that the rescheduling on
+Linux IRQ exit will PREEMPT our task in xnshadow_harden(), it will NOT
+remove it from the Linux run-queue. And now we are in real troubles: The
+gatekeeper will kick off our RT part which will take over the thread's
+stack. As soon as the RT domain falls asleep and Linux takes over again,
+it will continue our non-RT part as well! Actually, this seems to be the
+reason for the panic in do_schedule_event(). Without
+CONFIG_XENO_OPT_DEBUG and this check, we will run both parts AT THE SAME
+TIME now, thus violating my first assumption. The system gets fatally
+corrupted.
+
+Well, I would be happy if someone can prove me wrong here.
+
+The problem is that I don't see a solution because Linux does not
+provide an atomic wake-up + schedule-out under CONFIG_PREEMPT. I'm
+currently considering a hack to remove the migrating Linux thread
+manually from the run-queue, but this could easily break the Linux
+scheduler.
+
+Jan
 
 
-> Am Donnerstag, 19. Januar 2006 23:15 schrieb Gilles Chanteperdrix:
->> Niklaus Giger wrote:
->>  > ld -o koan  -L/usr/xenomai/lib -luvm -lnucleus -lpthread -lvxworks
->>  > -lnative -e __xeno_skin_init
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o Now I get the following
->>  > error output
->>  > ld: warning: cannot find entry symbol __xeno_skin_init; defaulting to
->>  > 00000000100002a0
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function
->>  > `TaskTest':koan.c: (.text+0xbc): undefined reference to `semTake'
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function
->>  > `CreateTask':koan.c: (.text+0x124): undefined reference to `taskSpawn'
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function
->>  > `usrClock':koan.c: (.text+0x1c8): undefined reference to `semGive'
->>  >
->>  > :koan.c:(.text+0x1f0): undefined reference to `tickAnnounce'
->>  >
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function
->>  > `koan_sysClkInit':koan.c:(.text+0x224): undefined reference to
->>  > `semBCreate'
->>  >
->>  > :koan.c:(.text+0x23c): undefined reference to `sysClkConnect'
->>  > :koan.c:(.text+0x240): undefined reference to `sysClkEnable'
->>  >
->>  > /home/hcu/project/bb/3_1_x/work/xeno/koan.o: In function
->>  > `__xeno_user_exit':koan.c:(.text+0x2c0): undefined reference to
->>  > `taskDelete'
->>  >
->>  > What is wrong with my split?
->>
->> What happens if you try :
->>
->> cc -u __xeno_skin_init -o 
->> koan -L/usr/xenomai/lib -luvm -lnucleus -lpthread
->> -lvxworks -lnative /home/hcu/project/bb/3_1_x/work/xeno/koan.o
->>
->> -u seems to be a link-time option.
-> Thanks for the tip. This fixes my problem.
->
+PS: Out of curiosity I also checked RTAI's migration mechanism in this
+regard. It's similar except for the fact that it does the gatekeeper's
+work in the Linux scheduler's tail (i.e. after the next context switch).
+And RTAI seems it suffers from the very same race. So this is either a
+fundamental issue - or I'm fundamentally wrong.
 
 
-Niklaus,
-I never tried building vxworks/koan since fusion-0.9.1 becomed xenomai
-what about building other vxworks sample tests ?
-
-Best regards
-
-
-Marco Cavallini
-Koan s.a.s. - Bergamo - ITALIA
-Embedded and Real-Time Software Engineering
-www.koansoftware.com    |    www.klinux.org
+[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.=
+c?v=3DSVN-trunk#L1573
+[2]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.=
+c?v=3DSVN-trunk#L461
+[3]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.=
+c?v=3DSVN-trunk#L481
 
 
+--------------enig8924C7F8C9F0537DBAC95345
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD0hFHniDOoMHTA+kRAmQKAJ9mzcpfF1ZqZJL3AKecICwwgsTBPgCdGae8
+CrhY6MdrqrMVgi3amTKWQnc=
+=ASws
+-----END PGP SIGNATURE-----
+
+--------------enig8924C7F8C9F0537DBAC95345--
 
