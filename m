@@ -1,10 +1,16 @@
-Message-ID: <fd6a47a90601181204g4c86f778x@domain.hid>
-Date: Wed, 18 Jan 2006 21:04:25 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Message-ID: <43D527AA.8020105@domain.hid>
+Date: Mon, 23 Jan 2006 19:59:54 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_3468_15604445.1137614665749"
-Subject: [Xenomai-core] Scheduling while atomic
+References: <b647ffbd0601180617v38c990f0w@domain.hid>	
+	<43D41364.6000300@domain.hid>
+	<b647ffbd0601230841o51fbc5d2o@domain.hid>
+In-Reply-To: <b647ffbd0601230841o51fbc5d2o@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig387FB402A73C83FF85097C52"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [PATCH] Shared irqs v.5
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,562 +20,240 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_3468_15604445.1137614665749
-Content-Type: text/plain; charset=ISO-8859-1
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig387FB402A73C83FF85097C52
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hello,
-
-
-Apparently, the code I shared with Gilles never made it to this forum.
-Anyway, the issue I'm having here is really a problem and it might be usefu=
-l
-if some of you could try it out or comment on it. I might be making a silly
-programming error here, but the result is invariably erroneous operation or
-kernel crashes.
-
-The program creates a file dump.txt and has two independent threads trying
-to access it and write a one or a zero there. Inside the writing routine,
-which is accessed by both threads, a check is made to see if the access is
-really locked. In my setup, I have tons of ALERTS popping up with this
-program, meaning that something is wrong with my use of mutex. Could anyone
-please check and see if a) it is correctly written and b) it fails as well
-on their machine. It would allow me to focus my actions on the Xenomai setu=
-p
-(which I keep frozen this instant, in order to keep a possible bug
-predictable) or on my own programming.
-
-A second example is also included, which tries to achieve the same goal wit=
-h
-a semaphore (initialized to 1). That seems to work, but under heavy load
-(tmax =3D 1.0e7), the kernel crashes.
-
-Kernel: 2.6.15 Adeos: 1.1-03 gcc: 4.0.2 Ipipe tracing enabled
-
-TIA
-
-Jeroen.
-
-
-
-/* TEST_MUTEX.C */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <math.h>
-#include <values.h>
-
-#include <sys/mman.h>
-
-#include <native/task.h>
-#include <native/mutex.h>
-#include <native/sem.h>
-
-int fd, err;
-RT_MUTEX m;
-RT_SEM s;
-float tmax =3D 1.0e7;
-
-#define CHECK(arg) check(arg, __LINE__)
-
-int check(int r, int n)
-{
-    if (r !=3D 0)
-        fprintf(stderr, "L%d: %s.\n", n, strerror(-r));
-    return(r);
-}
-
-void output(char c) {
-    static int cnt =3D 0;
-    int n;
-    char buf[2];
-    RT_MUTEX_INFO mutexinfo;
-
-    buf[0] =3D c;
-
-    if (cnt =3D=3D 80) {
-        buf[1] =3D '\n';
-        n =3D 2;
-        cnt =3D 0;
-    }
-    else {
-        n =3D 1;
-        cnt++;
-    }
-
-    CHECK(rt_mutex_inquire(&m, &mutexinfo));
-    if (mutexinfo.lockcnt <=3D 0) {
-        RT_TASK_INFO taskinfo;
-        CHECK(rt_task_inquire(NULL, &taskinfo));
-        fprintf(stderr, "ALERT: No lock! (lockcnt=3D%d) Offending task: %s\=
-n",
-                mutexinfo.lockcnt, taskinfo.name);
-    }
-
-    if (write(fd, buf, n) !=3D n) {
-        fprintf(stderr, "File write error.\n");
-        CHECK(rt_sem_v(&s));
-    }
-
-}
-
-void task0(void *arg)
-{
-    CHECK(rt_task_set_mode(T_PRIMARY, 0, NULL));
-    while (1) {
-        CHECK(rt_task_sleep((float)rand()*tmax/(float)RAND_MAX));
-        CHECK(rt_mutex_lock(&m, TM_INFINITE));
-        output('0');
-        CHECK(rt_mutex_unlock(&m));
-    }
-}
-
-void task1(void *arg)
-{
-    CHECK(rt_task_set_mode(T_PRIMARY, 0, NULL));
-    while (1) {
-        CHECK(rt_task_sleep((float)rand()*tmax/(float)RAND_MAX));
-        CHECK(rt_mutex_lock(&m, TM_INFINITE));
-        output('1');
-        CHECK(rt_mutex_unlock(&m));
-    }
-}
-
-void sighandler(int arg)
-{
-    CHECK(rt_sem_v(&s));
-}
-
-int main(int argc, char *argv[])
-{
-    RT_TASK t, t0, t1;
-
-    if ((fd =3D open("dump.txt", O_CREAT | O_TRUNC | O_WRONLY)) < 0)
-        fprintf(stderr, "File open error.\n");
-    else {
-        if (argc =3D=3D 2) {
-            tmax =3D atof(argv[1]);
-            if (tmax =3D=3D 0.0)
-                tmax =3D 1.0e7;
-        }
-        if (mlockall(MCL_CURRENT | MCL_FUTURE) !=3D 0)
-            printf("mlockall() error.\n");
-
-        CHECK(rt_task_shadow(&t, "main", 1, T_FPU));
-
-        CHECK(rt_timer_start(TM_ONESHOT));
-
-        CHECK(rt_mutex_create(&m, "mutex"));
-        CHECK(rt_sem_create(&s, "sem", 0, S_PRIO));
-
-        signal(SIGINT, sighandler);
-
-        CHECK(rt_task_create(&t0, "task0", 0, 30, T_FPU));
-        CHECK(rt_task_start(&t0, task0, NULL));
-        CHECK(rt_task_create(&t1, "task1", 0, 29, T_FPU));
-        CHECK(rt_task_start(&t1, task1, NULL));
-
-        printf("Running for %.2f seconds.\n", (float)MAXLONG/1.0e9);
-        CHECK(rt_sem_p(&s, MAXLONG));
-        signal(SIGINT, SIG_IGN);
-
-        CHECK(rt_task_delete(&t1));
-        CHECK(rt_task_delete(&t1));
-        CHECK(rt_task_delete(&t0));
-
-        CHECK(rt_sem_delete(&s));
-        CHECK(rt_mutex_delete(&m));
-
-        rt_timer_stop();
-
-        close(fd);
-    }
-    return 0;
-}
-
-/**************************************************************************=
-***********/
-
-/* TEST_SEM.C */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <math.h>
-#include <values.h>
-
-#include <sys/mman.h>
-
-#include <native/task.h>
-#include <native/sem.h>
-
-int fd, err;
-RT_SEM s, m;
-float tmax =3D 1.0e9;
-
-#define CHECK(arg) check(arg, __LINE__)
-
-int check(int r, int n)
-{
-    if (r !=3D 0)
-        fprintf(stderr, "L%d: %s.\n", n, strerror(-r));
-    return(r);
-}
-
-void output(char c) {
-    static int cnt =3D 0;
-    int n;
-    char buf[2];
-    RT_SEM_INFO seminfo;
-
-    buf[0] =3D c;
-
-    if (cnt =3D=3D 80) {
-        buf[1] =3D '\n';
-        n =3D 2;
-        cnt =3D 0;
-    }
-    else {
-        n =3D 1;
-        cnt++;
-    }
-
-    CHECK(rt_sem_inquire(&m, &seminfo));
-    if (seminfo.count !=3D 0) {
-        RT_TASK_INFO taskinfo;
-        CHECK(rt_task_inquire(NULL, &taskinfo));
-        fprintf(stderr, "ALERT: No lock! (count=3D%ld) Offending task: %s\n=
-",
-                seminfo.count, taskinfo.name);
-    }
-
-    if (write(fd, buf, n) !=3D n) {
-        fprintf(stderr, "File write error.\n");
-        CHECK(rt_sem_v(&s));
-    }
-
-}
-
-void task0(void *arg)
-{
-    CHECK(rt_task_set_mode(T_PRIMARY, 0, NULL));
-    while (1) {
-        CHECK(rt_task_sleep((float)rand()*tmax/(float)RAND_MAX));
-        CHECK(rt_sem_p(&m, TM_INFINITE));
-        output('0');
-        CHECK(rt_sem_v(&m));
-    }
-}
-
-void task1(void *arg)
-{
-    CHECK(rt_task_set_mode(T_PRIMARY, 0, NULL));
-    while (1) {
-        CHECK(rt_task_sleep((float)rand()*tmax/(float)RAND_MAX));
-        CHECK(rt_sem_p(&m, TM_INFINITE));
-        output('1');
-        CHECK(rt_sem_v(&m));
-    }
-}
-
-void sighandler(int arg)
-{
-    CHECK(rt_sem_v(&s));
-}
-
-int main(int argc, char *argv[])
-{
-    RT_TASK t, t0, t1;
-
-    if ((fd =3D open("dump.txt", O_CREAT | O_TRUNC | O_WRONLY)) < 0)
-        fprintf(stderr, "File open error.\n");
-    else {
-        if (argc =3D=3D 2) {
-            tmax =3D atof(argv[1]);
-            if (tmax =3D=3D 0.0)
-                tmax =3D 1.0e7;
-        }
-        if (mlockall(MCL_CURRENT | MCL_FUTURE) !=3D 0)
-            printf("mlockall() error.\n");
-
-        CHECK(rt_task_shadow(&t, "main", 1, T_FPU));
-
-        CHECK(rt_timer_start(TM_ONESHOT));
-
-        CHECK(rt_sem_create(&m, "mutex", 1, S_PRIO));
-        CHECK(rt_sem_create(&s, "sem", 0, S_PRIO));
-
-        signal(SIGINT, sighandler);
-
-        CHECK(rt_task_create(&t0, "task0", 0, 30, T_FPU));
-        CHECK(rt_task_start(&t0, task0, NULL));
-        CHECK(rt_task_create(&t1, "task1", 0, 29, T_FPU));
-        CHECK(rt_task_start(&t1, task1, NULL));
-
-        printf("Running for %.2f seconds.\n", (float)MAXLONG/1.0e9);
-        CHECK(rt_sem_p(&s, MAXLONG));
-        signal(SIGINT, SIG_IGN);
-
-        CHECK(rt_task_delete(&t1));
-        CHECK(rt_task_delete(&t1));
-        CHECK(rt_task_delete(&t0));
-
-        CHECK(rt_sem_delete(&s));
-        CHECK(rt_sem_delete(&m));
-
-        rt_timer_stop();
-
-        close(fd);
-    }
-    return 0;
-}
-
-------=_Part_3468_15604445.1137614665749
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<div>Hello,</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Apparently, the code I shared with Gilles never made it to this forum.=
- Anyway, the issue I'm having here is really a problem and it might be usef=
-ul if some of you could try it out or comment on it. I might be making a si=
-lly programming error here, but the result is invariably erroneous operatio=
-n or kernel crashes.
-</div>
-<div>&nbsp;</div>
-<div>The program creates a file dump.txt and has two independent threads tr=
-ying to access it and write a one or a zero there. Inside the writing routi=
-ne, which is accessed by both threads, a check is made to see if the access=
- is really locked. In my setup, I have tons of ALERTS popping up with this =
-program, meaning that something is wrong with my use of mutex. Could anyone=
- please check and see if a) it is correctly written and b) it fails as well=
- on their machine. It would allow me to focus my actions on the Xenomai set=
-up (which I keep frozen this instant, in order to keep a possible bug predi=
-ctable) or on my own programming.
-</div>
-<div>&nbsp;</div>
-<div>A second example is also included, which tries to achieve the same goa=
-l with a semaphore (initialized to 1). That seems to work, but under heavy =
-load (tmax =3D 1.0e7), the kernel crashes.</div>
-<div>&nbsp;</div>
-<div>Kernel: 2.6.15 Adeos: 1.1-03 gcc: 4.0.2 Ipipe tracing enabled</div>
-<div>&nbsp;</div>
-<div>TIA</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div><font size=3D"2">
-<p>/* TEST_MUTEX.C */</p>
-<p>#include &lt;stdlib.h&gt;<br>#include &lt;stdio.h&gt;<br>#include &lt;un=
-istd.h&gt;<br>#include &lt;fcntl.h&gt;<br>#include &lt;signal.h&gt;<br>#inc=
-lude &lt;math.h&gt;<br>#include &lt;values.h&gt;</p>
-<p>#include &lt;sys/mman.h&gt;</p>
-<p>#include &lt;native/task.h&gt;<br>#include &lt;native/mutex.h&gt;<br>#in=
-clude &lt;native/sem.h&gt;</p>
-<p>int fd, err;<br>RT_MUTEX m;<br>RT_SEM s;<br>float tmax =3D 1.0e7;</p>
-<p>#define CHECK(arg) check(arg, __LINE__)</p>
-<p>int check(int r, int n)<br>{<br>&nbsp;&nbsp;&nbsp; if (r !=3D 0)<br>&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;L%d: %s.\n&quo=
-t;, n, strerror(-r));<br>&nbsp;&nbsp;&nbsp; return(r);<br>}</p>
-<p>void output(char c) {<br>&nbsp;&nbsp;&nbsp; static int cnt =3D 0;<br>&nb=
-sp;&nbsp;&nbsp; int n;<br>&nbsp;&nbsp;&nbsp; char buf[2];<br>&nbsp;&nbsp;&n=
-bsp; RT_MUTEX_INFO mutexinfo;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; =
-buf[0] =3D c;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if (cnt =3D=3D 8=
-0) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buf[1] =3D '\n';<br>&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n =3D 2;
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnt =3D 0;<br>&nbsp;&nbsp;&n=
-bsp; }<br>&nbsp;&nbsp;&nbsp; else {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp; n =3D 1;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnt++;<br>&nb=
-sp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; CHECK(rt_mut=
-ex_inquire(&amp;m, &amp;mutexinfo));<br>&nbsp;&nbsp;&nbsp; if (mutexinfo.lo=
-ckcnt &lt;=3D 0) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RT_TASK_IN=
-FO taskinfo;
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_inquire(NULL, =
-&amp;taskinfo));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stde=
-rr, &quot;ALERT: No lock! (lockcnt=3D%d) Offending task: %s\n&quot;,<br>&nb=
-sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp; mutexinfo.lockcnt, <a href=3D"http://taskinfo.name">taskinfo.n=
-ame
-</a>);<br>&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if (w=
-rite(fd, buf, n) !=3D n) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fp=
-rintf(stderr, &quot;File write error.\n&quot;);<br>&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp; CHECK(rt_sem_v(&amp;s));<br>&nbsp;&nbsp;&nbsp; }<br>&nbs=
-p;&nbsp;&nbsp; <br>}</p>
-<p>void task0(void *arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_task_set_mode(=
-T_PRIMARY, 0, NULL));<br>&nbsp;&nbsp;&nbsp; while (1) {<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_sleep((float)rand()*tmax/(float)RA=
-ND_MAX));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_lock=
-(&amp;m, TM_INFINITE));
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output('0');<br>&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_unlock(&amp;m));<br>&nbsp;&nb=
-sp;&nbsp; }<br>}</p>
-<p>void task1(void *arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_task_set_mode(=
-T_PRIMARY, 0, NULL));<br>&nbsp;&nbsp;&nbsp; while (1) {<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_sleep((float)rand()*tmax/(float)RA=
-ND_MAX));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_lock=
-(&amp;m, TM_INFINITE));
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output('1');<br>&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_unlock(&amp;m));<br>&nbsp;&nb=
-sp;&nbsp; }<br>}</p>
-<p>void sighandler(int arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_sem_v(&amp;=
-s));<br>}</p>
-<p>int main(int argc, char *argv[])<br>{<br>&nbsp;&nbsp;&nbsp; RT_TASK t, t=
-0, t1;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if ((fd =3D open(&quot;=
-dump.txt&quot;, O_CREAT | O_TRUNC | O_WRONLY)) &lt; 0)<br>&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;File open error.\n&quot;);<=
-br>
-&nbsp;&nbsp;&nbsp; else {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if =
-(argc =3D=3D 2) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp; tmax =3D atof(argv[1]);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (tmax =3D=3D 0.0)<br>&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tma=
-x =3D 1.0e7;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (mlockall(MCL_CURRENT | MCL_FUTURE) !=3D=
- 0)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p=
-rintf(&quot;mlockall() error.\n&quot;);
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp; CHECK(rt_task_shadow(&amp;t, &quot;main&quot;, 1, T_FPU)=
-);</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_timer_start(TM_ONESH=
-OT));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_create(&amp;m, &quot;mutex&quot;));<=
-br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_create(&amp;s, &=
-quot;sem&quot;, 0, S_PRIO));</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; signal(SIGINT, sighandler);<b=
-r>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp; CHECK(rt_task_create(&amp;t0, &quot;task0&quot;, 0, 30, T_=
-FPU));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_start(&a=
-mp;t0, task0, NULL));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(r=
-t_task_create(&amp;t1, &quot;task1&quot;, 0, 29, T_FPU));
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_start(&amp;t1,=
- task1, NULL));</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;Running for %.2f=
- seconds.\n&quot;, (float)MAXLONG/1.0e9);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp; CHECK(rt_sem_p(&amp;s, MAXLONG));<br>&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp; signal(SIGINT, SIG_IGN);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_=
-delete(&amp;t1));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_delete(&amp;t1));<=
-br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_delete(&amp;t0)=
-);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_delete(&amp;s));<br>&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp; CHECK(rt_mutex_delete(&amp;m));<br>&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rt_=
-timer_stop();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp; close(fd);<br>&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; ret=
-urn 0;<br>}</p>
-<p>/***********************************************************************=
-**************/&nbsp;</p></font></div>
-<div><font size=3D"2">
-<p>/* TEST_SEM.C */</p>
-<p>#include &lt;stdlib.h&gt;<br>#include &lt;stdio.h&gt;<br>#include &lt;un=
-istd.h&gt;<br>#include &lt;fcntl.h&gt;<br>#include &lt;signal.h&gt;<br>#inc=
-lude &lt;math.h&gt;<br>#include &lt;values.h&gt;</p>
-<p>#include &lt;sys/mman.h&gt;</p>
-<p>#include &lt;native/task.h&gt;<br>#include &lt;native/sem.h&gt;</p>
-<p>int fd, err;<br>RT_SEM s, m;<br>float tmax =3D 1.0e9;</p>
-<p>#define CHECK(arg) check(arg, __LINE__)</p>
-<p>int check(int r, int n)<br>{<br>&nbsp;&nbsp;&nbsp; if (r !=3D 0)<br>&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;L%d: %s.\n&quo=
-t;, n, strerror(-r));<br>&nbsp;&nbsp;&nbsp; return(r);<br>}</p>
-<p>void output(char c) {<br>&nbsp;&nbsp;&nbsp; static int cnt =3D 0;<br>&nb=
-sp;&nbsp;&nbsp; int n;<br>&nbsp;&nbsp;&nbsp; char buf[2];<br>&nbsp;&nbsp;&n=
-bsp; RT_SEM_INFO seminfo;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; buf[=
-0] =3D c;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if (cnt =3D=3D 80) {=
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; buf[1] =3D '\n';<br>&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n =3D 2;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnt =3D 0;<br>&nbsp;&nbsp;&nbsp;=
- }<br>&nbsp;&nbsp;&nbsp; else {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p; n =3D 1;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cnt++;<br>&nbsp;&=
-nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; CHECK(rt_sem_inq=
-uire(&amp;m, &amp;seminfo));<br>&nbsp;&nbsp;&nbsp; if (seminfo.count !=3D 0=
-) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RT_TASK_INFO taskinfo;<br=
->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_inquire(NULL, &am=
-p;taskinfo));
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;ALERT:=
- No lock! (count=3D%ld) Offending task: %s\n&quot;,<br>&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; semi=
-nfo.count, <a href=3D"http://taskinfo.name">taskinfo.name</a>);<br>&nbsp;&n=
-bsp;&nbsp; }<br>&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if (write(fd, buf, n) !=
-=3D n) {
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;File w=
-rite error.\n&quot;);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(r=
-t_sem_v(&amp;s));<br>&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; <br>}</p>
-<p>void task0(void *arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_task_set_mode(=
-T_PRIMARY, 0, NULL));<br>&nbsp;&nbsp;&nbsp; while (1) {<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_sleep((float)rand()*tmax/(float)RA=
-ND_MAX));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_p(&amp=
-;m, TM_INFINITE));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output('0');<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_v(&amp;m));<br>&nbsp;&nbsp;&nbsp; }=
-<br>}</p>
-<p>void task1(void *arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_task_set_mode(=
-T_PRIMARY, 0, NULL));<br>&nbsp;&nbsp;&nbsp; while (1) {<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_sleep((float)rand()*tmax/(float)RA=
-ND_MAX));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_p(&amp=
-;m, TM_INFINITE));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output('1');<br>&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_v(&amp;m));<br>&nbsp;&nbsp;&nbsp; }=
-<br>}</p>
-<p>void sighandler(int arg)<br>{<br>&nbsp;&nbsp;&nbsp; CHECK(rt_sem_v(&amp;=
-s));<br>}</p>
-<p>int main(int argc, char *argv[])<br>{<br>&nbsp;&nbsp;&nbsp; RT_TASK t, t=
-0, t1;<br>&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; if ((fd =3D open(&quot;=
-dump.txt&quot;, O_CREAT | O_TRUNC | O_WRONLY)) &lt; 0)<br>&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp; fprintf(stderr, &quot;File open error.\n&quot;);<=
-br>
-&nbsp;&nbsp;&nbsp; else {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if =
-(argc =3D=3D 2) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp; tmax =3D atof(argv[1]);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (tmax =3D=3D 0.0)<br>&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tma=
-x =3D 1.0e7;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (mlockall(MCL_CURRENT | MCL_FUTURE) !=3D=
- 0)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; p=
-rintf(&quot;mlockall() error.\n&quot;);
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp; CHECK(rt_task_shadow(&amp;t, &quot;main&quot;, 1, T_FPU)=
-);</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_timer_start(TM_ONESH=
-OT));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_create(&amp;m, &quot;mutex&quot;, 1, S=
-_PRIO));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_create(=
-&amp;s, &quot;sem&quot;, 0, S_PRIO));</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; signal(SIGINT, sighandler);<b=
-r>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp; CHECK(rt_task_create(&amp;t0, &quot;task0&quot;, 0, 30, T_=
-FPU));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_start(&a=
-mp;t0, task0, NULL));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(r=
-t_task_create(&amp;t1, &quot;task1&quot;, 0, 29, T_FPU));
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_start(&amp;t1,=
- task1, NULL));</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf(&quot;Running for %.2f=
- seconds.\n&quot;, (float)MAXLONG/1.0e9);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp; CHECK(rt_sem_p(&amp;s, MAXLONG));<br>&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp; signal(SIGINT, SIG_IGN);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_=
-delete(&amp;t1));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_delete(&amp;t1));<=
-br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CHECK(rt_task_delete(&amp;t0)=
-);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_delete(&amp;s));<br>&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp; CHECK(rt_sem_delete(&amp;m));<br>&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rt_ti=
-mer_stop();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; close(fd);<br>&nbsp;&nbsp;&n=
-bsp; }<br>&nbsp;&nbsp;&nbsp; return 0;<br>}<br></p></font></div>
-
-------=_Part_3468_15604445.1137614665749--
+Dmitry Adamushko wrote:
+> On 23/01/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>> Dmitry Adamushko wrote:
+>>> Hello Jan,
+>>>
+>>> as I promised earlier today, here is the patch.
+>> I finally had a look at your patch (not yet a try), and it looks reall=
+y
+>> nice and light-weight.
+>=20
+>=20
+> I have another version here at hand. The only difference is that
+> xnintr_irq_handler() handles all interrupts and destinguished the timer=
+
+> interrupt via "irq =3D=3D XNARCH_TIMER_IRQ" to handle it appropriately.=
+ This
+> way, the i-cache is, hopefully, used a bit more effectively. But it doe=
+sn't
+> make a big difference in other parts of code so you may start testing w=
+ith
+> the one I posted earlier.
+>=20
+
+I see: hunting the microsecond. ;)
+
+>=20
+> Now I only have two topics on my wish list:
+> o Handling of edge-triggered IRQs (ISA-cards...). As I tried to explain=
+,
+>>   in this case we have to run the IRQ handler list as long as the full=
+
+>>   list completed without any handler reporting XN_ISR_ENABLE back. The=
+n
+>>   and only then we are safe to not stall the IRQ line. See e.g.
+>>   serial8250_interrupt() in linux/drivers/serial/8250.c for a per-driv=
+er
+>>   solution and [1] for some discussion on sharing IRQs (be warned, it'=
+s
+>>   from the evil side ;) ).
+>=20
+>=20
+> Ok. e.g. we may introduce another flag to handle such a special case.
+> Something along XN_ISR_EDGETIRQ and maybe a separate
+> xnintr_etshirq_handler() (xnintr_attach() will set it up properly) so t=
+o
+> avoid interfering with another code. No big overhead I guess.
+> serial8250_interrupt() defines a maximum number of iterations so we sho=
+uld
+> do the same (?) to avoid brain-damaged cases.
+
+Might be useful for post-mortem analysis - most real-time system will
+likely already have caused more or less severe damage after an IRQ
+handler looped for 256 times or so. Anyway, if you are able to read some
+information about this later on your console, it is better than not
+knowing at all why your drilling machine just created an extra-deep hole.=
+
+
+>=20
+>   On our systems we already have two of those use-cases: the xeno_16550=
+A
+>>   handling up to 4 devices on the same IRQ on an ISA card (I don't wan=
+t
+>>   to know what worst-case latency can be caused here...) and our
+>>   SJA-1000 CAN driver for PC/104 ISA card with 2 controllers on the sa=
+me
+>>   interrupt line. So a common solution would reduce the code size and
+>>   potential bug sources.
+>>
+>> o Store and display (/proc) the driver name(s) registered on an IRQ li=
+ne
+>>   somewhere (ipipe?). This is just a nice-to-have. I introduced the RT=
+DM
+>>   API with the required argument in place, would be great if we can us=
+e
+>>   this some day.
+>=20
+>=20
+> Yes, the proper /proc extension should be avalable. Actually, the "nati=
+ve"
+> skin can't be extended to support the shared interrupts only by adding =
+a new
+> flag. The "problem" is the way the /proc/xenomai/registry/interrupts is=
+
+> implemented there (and I assume any other skin follows the same way). T=
+he
+> rt_registry object is created per each RT_INTR structure and, hence, pe=
+r
+> each xnintr_t.
+>=20
+> I'd see the following scheme :
+>=20
+> either
+>=20
+> /proc/xenomai/interrupts lists all interrupts objects registered on the=
+
+> nucleus layer (xnintr_t should have a "name" field).
+>=20
+> IRQN      drivers
+>=20
+> 3              driver1
+> ...
+> 5              driver2, driver3
+>=20
+> and the skin presents per-object information as
+>=20
+> ll /proc/xenomai/registry/interrupts
+>=20
+> driver1
+> driver2
+> driver3
+>=20
+> each of those files contains the same information as now.
+>=20
+> To achieve this,
+>=20
+> 1) xnintr_t should be extended with a "name" field;
+>=20
+> 2) rt_intr_create() should contain a "name" argument and not use
+> auto-generation (as "irqN") any more.
+>=20
+> or
+>=20
+> ll /proc/xenomai/registry/interrupts
+>=20
+> 3
+> 5
+>=20
+> Those are directories and e.g.
+>=20
+> ll /proc/xenomai/registry/interrupts/5
+>=20
+> driver2
+> driver3
+>=20
+> Those are "files" and contain the same information as now.
+>=20
+> This is harder to implement since the registry interface should be exte=
+nded
+> (for each skin).
+
+Isn't just the native skin using this registry? Anyway, as the preferred
+way of registering IRQ handlers should be via RTDM, and RTDM does not
+use the registry, go for the simplest solution. /proc/xenomai/interrupts
+is more important in my eyes.
+
+>=20
+>=20
+>> ...
+>=20
+>> Jan
+>>
+>>
+>> PS: Still at home?
+>=20
+>=20
+> Yes. This week I'm going to Belgium to attend a few meeting with some
+> customers of my potential employer. So my next step for the nearest fut=
+ure
+> will be finally determined there :)
+
+Best wishes! Just avoid too much extra work, here is already enough to
+do. ;)
+
+>=20
+>=20
+> How many degrees Centigrade? I guess our current -9=1B$B!k=1B(BC
+>> here in Hannover must appear ridiculous, almost subtropical warm to yo=
+u.
+>> ;)
+>=20
+>=20
+> Hey, I'm not from Syberia :o) This is a kind of common delusion I guess=
+ as
+> the whole former USSR is assotiated with cold winters, bears, eak.. KGB=
+ etc.
+> :o)
+
+"Former"? Did I missed something? :)
+
+>=20
+> from wikipedia.com (about Belarus) :
+>=20
+> "The climate <http://en.wikipedia.org/wiki/Climate> ranges from harsh
+> winters <http://en.wikipedia.org/wiki/Winter> (average January temperat=
+ures
+> are in the range =1B$B!]=1B(B8 =1B$B!k=1B(BC to =1B$B!]=1B(B2 =1B$B!k=1B=
+(BC) to cool and moist
+> summers<http://en.wikipedia.org/wiki/Summer>(average temperature 15 =1B=
+$B!k=1B(BC
+> to 20 =1B$B!k=1B(BC)."
+>=20
+> Actually, last days it was very cooooold - even about -30C. This happen=
+s
+> from time to time but very rare (once in a few years or so) and it's no=
+t
+> considered as something normal here. e.g. schools were closed a few las=
+t
+> days when the temperature was below -25. Actually, the weather is getti=
+ng
+> crazy last years and not only here :)
+>=20
+> [1] http://www.microsoft.com/whdc/system/sysperf/apic.mspx
+>>
+>>
+>=20
+> --
+> Best regards,
+> Dmitry Adamushko
+>=20
+
+Jan
+
+
+--------------enig387FB402A73C83FF85097C52
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD1SeqniDOoMHTA+kRAn8XAJ98PTEK14ztQj4P8grH3O++oZ11MwCfW7kg
+IRAumWcopbR8FE0PslQguEU=
+=NU/L
+-----END PGP SIGNATURE-----
+
+--------------enig387FB402A73C83FF85097C52--
 
