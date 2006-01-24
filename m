@@ -1,15 +1,15 @@
-From: Alexis Berlemont <berlemont.hauw@domain.hid>
-Subject: Re: [Adeos-main] wake_up_interruptible ?
-Date: Tue, 24 Jan 2006 21:46:34 +0100
-References: <43D2B94C.3000202@domain.hid> <43D65F27.7000908@domain.hid>
-	<43D67ECD.5020309@domain.hid>
-In-Reply-To: <43D67ECD.5020309@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200601242146.35114.berlemont.hauw@domain.hid>
+Message-ID: <17366.38740.873554.911951@domain.hid>
+Date: Tue, 24 Jan 2006 22:08:36 +0100
+Subject: Re: [Adeos-main] wake_up_interruptible ?
+In-Reply-To: <43D67ECD.5020309@domain.hid>
+References: <43D2B94C.3000202@domain.hid>
+	<200601230144.31936.berlemont.hauw@domain.hid>
+	<17364.46664.389729.166491@domain.hid>
+	<43D65F27.7000908@domain.hid> <43D67ECD.5020309@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,53 +18,46 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Hannes Mayer <h.mayer@domain.hid>
+Cc: adeos-main@gna.org
 
-Hi,
+Hannes Mayer wrote:
+ > 
+ > Gilles, now I think I've got what you mean.
+ > 
+ > Something like this ?
+ > 
+ > inter_domain_irq = ipipe_alloc_virq();
+ > ret = request_irq(inter_domain_irq, linux_handler, SA_INTERRUPT, "virtualIRQ", NULL);
+ > enable_irq(inter_domain_irq);
+ > 
+ > void ipipe_handler(unsigned irq) {
+ > 	[...]
+ > 	ipipe_trigger_irq(inter_domain_irq);
+ > 	[...]
+ > }
+ > 
+ > void linux_handler(void) {
+ > 	wake_up_interruptible(&skeleton_wait);
+ > }
+ > 
+ > 
+ > I've tried this, but the linux_handler is never called.
+ > I bet I'm missing something very trivial here, but it
+ > doesn't come to mind...
+ > 
+ > On the other hand, if I request_irq() for the parallelport
+ > INT and pass that INT from IPIPE to linux, the linux_handler
+ > is called. But it doesn't work with a virq.
 
-Sorry for the silly things I said earlier, forgot the most important step : 
-the soft irq... 
+If you have a real irq, you do not need to allocate a virtual irq. 
 
->
-> Something like this ?
->
-> inter_domain_irq = ipipe_alloc_virq();
-> ret = request_irq(inter_domain_irq, linux_handler, SA_INTERRUPT,
-> "virtualIRQ", NULL); enable_irq(inter_domain_irq);
->
-> void ipipe_handler(unsigned irq) {
-> 	[...]
-> 	ipipe_trigger_irq(inter_domain_irq);
-> 	[...]
-> }
->
-> void linux_handler(void) {
-> 	wake_up_interruptible(&skeleton_wait);
-> }
+intall an handler in the HRT domain with ipipe_virtualize_irq(), a
+handler in the Linux domain with request_irq(), and call
+ipipe_propagate_irq() from within the HRT domain interrupt handler.
 
-I think you should not use request_irq() but ipipe_virtualize_irq() :
+-- 
 
-inter_domain_irq = ipipe_alloc_virq();
--ret=request_irq(inter_domain_irq,linux_handler,SA_INTERRUPT,"virtualIRQ",NULL); 
-+ ret = ipipe_virtualize_irq(ipipe_root_domain, 
-				inter_domain_irq, 
-				&ipipe_handler,
-				NULL, NULL,
-				IPIPE_HANDLE_MASK);
--enable_irq(inter_domain_irq);
 
-Your function linux_handler will be called in the root domain (Linux) any time 
-you use the function ipipe_trigger_irq(...inter_domain_irq...) in a non Linux 
-domain.
-
-If you want a good example, you can have a look at the function rthal_init() 
-(in xenomai/ksrc/arch/generic/hal.c) 
-
-I think you should also double-check what I am saying ;) I am bit tired and .. 
-silly.
-
-Thanks Gilles.
-
-Alexis.
-
+					    Gilles Chanteperdrix.
 
