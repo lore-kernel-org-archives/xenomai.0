@@ -1,54 +1,87 @@
-Message-ID: <43CEB291.4020609@domain.hid>
-Date: Wed, 18 Jan 2006 22:26:41 +0100
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <43D6D745.3070701@domain.hid>
+Date: Wed, 25 Jan 2006 02:41:25 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Scheduling while atomic
-References: <fd6a47a90601181204g4c86f778x@domain.hid>
-	<43CEA323.7000701@domain.hid> <43CEAF25.6010705@domain.hid>
-In-Reply-To: <43CEAF25.6010705@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] RTDM and possible bug
+References: <200601242019.05696.lbocseg@domain.hid>
+In-Reply-To: <200601242019.05696.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8CA56C829C5E18CFCBDAFC99"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-[...]
-> Do you (or anybody else) have a running 2.0.x installation? If so,
-> please test that setup as well.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8CA56C829C5E18CFCBDAFC99
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Sure :-)
+Rodrigo Rosenfeld Rosas wrote:
+> Hi Jan,
+>=20
+> I'm getting the following message from kernel:
+> Xenomai: RTDM: no non-RT close handler
+> Error registering RTDM device
+>=20
+> But I am using only a RT open handler and a RT close handler. The=20
+> documentation states:
+> "rtdm_close_handler_t 	close_nrt=09
+>  	Close handler for non-real-time contexts, optional if close_rt is non=
+-NULL."
+> which is my case.
+>=20
+> Am I missing something?
 
-# uname -r
-2.6.13.4-adeos-xenomai
-# cat /proc/xenomai/version
-2.0
-# ./mutex
-Running for 2.15 seconds.
-ALERT: No lock! (lockcnt=0) Offending task: task0
-ALERT: No lock! (lockcnt=0) Offending task: task0
-ALERT: No lock! (lockcnt=0) Offending task: task0
-ALERT: No lock! (lockcnt=0) Offending task: task0
-L121: Connection timed out.
-# cat dump.txt
-1010010010101010110001000010001[...]
+Nope, it's bug in the documentation. Do you actually depend on RT
+context for cleanup?
 
-# ./sem
-Running for 2.15 seconds.
-L119: Connection timed out.
-# cat dump.txt
-101001muon:/home/xenomai/atomic#
+I recently decided to enforce a non-RT closure handler on registration.
+This is required to be able to do the
 
-More tests ?
+    echo file_descriptor > /proc/xenomai/rtdm/open_fildes
 
-Best regards,
-Hannes.
+dance on forgotten file descriptors and to implement on day an automatic
+closure on process termination.
+
+The doc is now fixed, thanks for reporting.
+
+>=20
+> I'll take a closer look at RTDM source-code, but maybe you can enlight =
+me=20
+> until there.
+>=20
+> Thanks,
+>=20
+> Rodrigo.
+>=20
+>=20
+
+Jan
+
+
+--------------enig8CA56C829C5E18CFCBDAFC99
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD1tdGniDOoMHTA+kRAgj5AJ9I0tg9vyhxuaHMszE6UidFgj2/eACdGx97
+dRYBUm+LGDrbudpGeKxaqZA=
+=d5/m
+-----END PGP SIGNATURE-----
+
+--------------enig8CA56C829C5E18CFCBDAFC99--
 
