@@ -1,13 +1,11 @@
 From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-help] RTDM and possible bug
-Date: Wed, 25 Jan 2006 10:08:32 -0200
-References: <200601242019.05696.lbocseg@domain.hid> <43D6D745.3070701@domain.hid>
-In-Reply-To: <43D6D745.3070701@domain.hid>
+Date: Wed, 25 Jan 2006 15:52:10 -0200
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Message-Id: <200601251008.32240.lbocseg@domain.hid>
+Message-Id: <200601251552.10271.lbocseg@domain.hid>
+Subject: [Xenomai-help] RTDM and udelay
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
->Rodrigo Rosenfeld Rosas wrote:
->> Hi Jan,
->>
->> I'm getting the following message from kernel:
->> Xenomai: RTDM: no non-RT close handler
->> Error registering RTDM device
->>
->> But I am using only a RT open handler and a RT close handler. The
->> documentation states:
->> "rtdm_close_handler_t 	close_nrt
->>  	Close handler for non-real-time contexts, optional if close_rt is
->> non-NULL." which is my case.
->>
->> Am I missing something?
->
->Nope, it's bug in the documentation. Do you actually depend on RT
->context for cleanup?
-For now, I can't think a reason I would need RT context for cleaning up.=20
-Actually, I do nothing for now on cleanup.
+Is there any alternative to udelay on RTDM?
 
->I recently decided to enforce a non-RT closure handler on registration.
->This is required to be able to do the
->
->    echo file_descriptor > /proc/xenomai/rtdm/open_fildes
->
->dance on forgotten file descriptors and to implement on day an automatic
->closure on process termination.
->
->The doc is now fixed, thanks for reporting.
+Or should I do something like:
 
-Ok, I'll add a non-RT close handler to my driver.
+void rt_udelay(unsigned int usec) {
+  uint64_t timeout =3D rtdm_clock_read () + usec;
+  while (rtdm_clock_read () < timeout);
+}
+
+Or maybe my design is wrong.
+
+I have a function, say WriteI2C(...). Should I create it as a task and call=
+=20
+rtdm_task_sleep?
 
 Thanks,
 
