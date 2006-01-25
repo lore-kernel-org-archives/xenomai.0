@@ -1,14 +1,12 @@
-Message-ID: <43D9EAE1.70303@domain.hid>
-Date: Fri, 27 Jan 2006 06:41:53 -0300
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Message-ID: <43D7CD2F.9030709@domain.hid>
+Date: Wed, 25 Jan 2006 11:10:39 -0800
+From: Nathaniel Villaume <villaume@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: RTDM and udelay
-References: <200601251552.10271.lbocseg@domain.hid>	<43D7D7E3.3040804@domain.hid>
-	<43D81B11.2020809@domain.hid>	<43D8891D.7000405@domain.hid>
-	<43D8A936.3010500@domain.hid> <43D8E7ED.2030301@domain.hid>
-In-Reply-To: <43D8E7ED.2030301@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+References: <200601251105.k0PB5uPK028509@domain.hid>
+In-Reply-To: <200601251105.k0PB5uPK028509@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Dual Xeon, 2.6.10, adeos-r13
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,21 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thank you Jan! No more questions for now. ;)
+Hi all,
 
-Rodrigo.
+I can't seem to find any info about Dual Xeon and Xenomai (well, ADEOS, 
+really). Is this a configuration that is expected to work?  What about 
+smp Athlon? or DualCore Athlon? (I think Opteron is not in the picture 
+yet, right?)
+
+For the dual Xeon, I'm able to patch and build fine, but boot stalls 
+after the hardware has been initialized by the init process.
+(i.e. The last line I get from Fedora Core 3 Init 2.85 booting says: 
+Initializing hardware... storage network, audio done [ok])
+
+I've done what I think are correct:
+- turned off HyperThreading in both bios and in kernel config
+- disabled REGPARM
+
+The Processor family  is set to Pentium 4 and sub arch is set to Generic 
+architecture (X86_GENERICARCH), but I've also tried Pc Compatible (X86) 
+to  the same effect.
+I used an adeos-r9 patch that came with RTAI, and I at least got the 
+system to boot. But RTAI puked when loading the SMP scheduler....
+
+Is there anything else I might do to make this work?  What is the 
+confidence level in SMP support?
+
+Thanks,
+-Nate
 
 
-=09
-
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
 
 
 
