@@ -1,14 +1,14 @@
-Message-ID: <43D7D7E3.3040804@domain.hid>
-Date: Wed, 25 Jan 2006 20:56:19 +0100
+Message-ID: <43D7DD8C.60306@domain.hid>
+Date: Wed, 25 Jan 2006 21:20:28 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <200601251552.10271.lbocseg@domain.hid>
-In-Reply-To: <200601251552.10271.lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] Signals
+References: <20060118162407.A28495@domain.hid>
+In-Reply-To: <20060118162407.A28495@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0D24E4F347903D906806F470"
+	boundary="------------enig3DC857DE922FC93DFD16F1CA"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: RTDM and udelay
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,45 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Kent Borg <kentborg@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0D24E4F347903D906806F470
+--------------enig3DC857DE922FC93DFD16F1CA
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> Is there any alternative to udelay on RTDM?
+Kent Borg wrote:
+> Thanks for the news that gdb should just work.
 >=20
-> Or should I do something like:
->=20
-> void rt_udelay(unsigned int usec) {
->   uint64_t timeout =3D rtdm_clock_read () + usec;
->   while (rtdm_clock_read () < timeout);
-> }
+> Now I am wondering about signals.  I want to be able to send a regular
+> Linux signal to a userland realtime process.  Do I use the regular
+> signal() to install a signal handler?  When would I use
+> rt_task_catch() and rt_task_notify()?
 
-You mean something like this: =3D:)
-
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtdm/drvlib.=
-c?v=3DSVN-trunk#L366
+Those function are - in contrast to what to doc states - not yet
+available in userspace. So far Xenomai is lacking the infrastructure to
+deliver hard-RT signals to userspace threads, only the Linux signals are
+passed as usual.
 
 >=20
-> Or maybe my design is wrong.
->=20
-> I have a function, say WriteI2C(...). Should I create it as a task and =
-call=20
-> rtdm_task_sleep?
+> What about multiple threads?  I have 2 threads running.  It seems that
+> the thread that called signal() is the one landing in the handler
+> routine.  I would like to set some flags for the second thread to see,
+> so it can cleanup things before quiting, but it seems that my second
+> thread isn't running after I send the signal.  I also think I am
+> corrupting something, because if I set up a loop that launches and
+> kills my program, my machine freezes up after a dozen cycles.  I
+> commented out most of my guts and it still freezes up.
 
-Depending on how long you would like to sleep and if you are not inside
-an IRQ handler, a re-scheduling call like rtdm_task_sleep() can be
-better. If it's just about a few microseconds, busy sleeping should be
-preferred.
+Signals in multithreaded applications are tricky in general, even
+without Xenomai. You may try to play with pthread_kill and
+pthread_sigmask to control which thread receives a specific signal.
+
+When the signal receiver is a Xenomai thread, the usual things happen:
+blocking on RT-resources is cleared, the thread is migrated to secondary
+mode, and the signal handler is invoked as one expects.
 
 Jan
 
 
---------------enig0D24E4F347903D906806F470
+--------------enig3DC857DE922FC93DFD16F1CA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -65,10 +69,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD19fkniDOoMHTA+kRAi2iAJ0SjLbv4LaH6QP/18ZdRXVPZ5CmsgCfXjbj
-v8lD7ekyjX/BgVBbAspzq2Y=
-=7vJM
+iD8DBQFD192MniDOoMHTA+kRAn3OAJ9ylIh9Pkbx6WIGWhciIW5lqQ/vzQCdGE2z
+/NCJO1qgZgISkjTVSGLQSbI=
+=5hXr
 -----END PGP SIGNATURE-----
 
---------------enig0D24E4F347903D906806F470--
+--------------enig3DC857DE922FC93DFD16F1CA--
 
