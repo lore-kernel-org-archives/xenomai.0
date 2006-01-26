@@ -1,15 +1,12 @@
-Message-ID: <43D7FC5B.2040202@domain.hid>
-Date: Wed, 25 Jan 2006 23:31:55 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43D81B11.2020809@domain.hid>
+Date: Wed, 25 Jan 2006 22:42:57 -0200
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Signals
-References: <20060118162407.A28495@domain.hid> <43D7DD8C.60306@domain.hid>
-	<20060125162403.Y17353@domain.hid>
-In-Reply-To: <20060125162403.Y17353@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig427D7C1B72701164CD160073"
-Sender: jan.kiszka@domain.hid
+References: <200601251552.10271.lbocseg@domain.hid> <43D7D7E3.3040804@domain.hid>
+In-Reply-To: <43D7D7E3.3040804@domain.hid>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Re: RTDM and udelay
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,79 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kent Borg <kentborg@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig427D7C1B72701164CD160073
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Rodrigo Rosenfeld Rosas wrote:
 
-Kent Borg wrote:
-> On Wed, Jan 25, 2006 at 09:20:28PM +0100, Jan Kiszka wrote:
->>> rt_task_catch() and rt_task_notify()?
->> Those function are - in contrast to what to doc states - not yet
->> available in userspace.
->=20
-> No wonder information on them is so sparse.
->=20
->> So far Xenomai is lacking the infrastructure to
->> deliver hard-RT signals to userspace threads, only the Linux signals a=
-re
->> passed as usual.
->=20
-> But they are passed, that is good.
->=20
->> Signals in multithreaded applications are tricky in general, even
->> without Xenomai. You may try to play with pthread_kill and
->> pthread_sigmask to control which thread receives a specific signal.
->=20
-> I have a very simple architecture, one thread is launched by regular
-> means, is launches the RT thread.  It is the parent thread that
-> registers for the signal and (I think!) it is the one that gets the
-> interrupt.
+>>Is there any alternative to udelay on RTDM?
+>>
+>>Or should I do something like:
+>>
+>>void rt_udelay(unsigned int usec) {
+>>  uint64_t timeout =3D rtdm_clock_read () + usec;
+>>  while (rtdm_clock_read () < timeout);
+>>}
+>>   =20
+>>
+>
+>You mean something like this: =3D:)
+>
+>http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtdm/drvlib.c=
+?v=3DSVN-trunk#L366
+> =20
+>
+Yes, but it seemed too complex for me, since it disables IRQ and I do=20
+not need this feature. It will no problem if, instead of waiting 2us, I=20
+have to wait 100us because some interrupt has occurred. After I write to=20
+the board i2c registers, I need to wait *at least*, say, 2us before=20
+writing another i2c cycle.
 
-Try printing pthread_self in your signal handler to be sure.
+One more thing: although the name of the function has the word "task", I=20
+think it is not task specific. Documentation even says it can be called=20
+from initialization/cleanup code. But it doesn't say if it can be called=20
+from an ioctl handler or any other context, although I see no problem=20
+when reviewing the code. Thus, I think a better name would be something=20
+like rtdm_busy_sleep() or rtdm_ns_delay(). Just a suggestion.
 
->=20
->> When the signal receiver is a Xenomai thread, the usual things happen:=
+>>Or maybe my design is wrong.
+>>
+>>I have a function, say WriteI2C(...). Should I create it as a task and ca=
+ll=20
+>>rtdm_task_sleep?
+>>   =20
+>>
+>
+>Depending on how long you would like to sleep and if you are not inside
+>an IRQ handler, a re-scheduling call like rtdm_task_sleep() can be
+>better. If it's just about a few microseconds, busy sleeping should be
+>preferred.
+> =20
+>
+Exactly what I had in mind, thanks.
 
->> blocking on RT-resources is cleared, the thread is migrated to seconda=
-ry
->> mode, and the signal handler is invoked as one expects.
->=20
-> Very interesting.  It sounds like Xenomai is doing cleanup I was
-> trying to do by hand.  Maybe that is why I crapped the kernel, I am
-> cleaning up stuff that doesn't exist anymore.  Should I deallocate my
-> RT fifos?
->=20
+Best regards,
 
-No, the native skin does not perform much automatic cleanup, especially
-not for userspace objects. If I'm not overseeing some detail, the only
-thing that gets cleaned up automatically on process termination are
-tasks. Even on unloading the native skin module (when being a module at
-all anymore), no forgotten userspace object gets deleted. The posix skin
-does such cleanup, but only globally, on module unload.
-
-So the rule is the cleanup everything as long as you are able to (i.e.
-your application didn't die due to some bug etc.)
-
-Jan
+Rodrigo.
 
 
---------------enig427D7C1B72701164CD160073
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+=09
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+=09
+	=09
+_______________________________________________________=20
+Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
+http://br.yahoo.com/homepageset.html=20
 
-iD8DBQFD1/xbniDOoMHTA+kRAiM9AJwIFWdb4PxKdbCQ2JGS7MBV3BxCQwCfXvay
-DnLe/OTs4qU1/H0laaAKlPA=
-=k+ui
------END PGP SIGNATURE-----
 
---------------enig427D7C1B72701164CD160073--
 
