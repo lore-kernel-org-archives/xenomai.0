@@ -1,12 +1,11 @@
-Message-ID: <43D8AF10.4030106@domain.hid>
-Date: Thu, 26 Jan 2006 12:14:24 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [BUG] Missing DESTDIR?
-References: <43D8A891.2030700@domain.hid>
-In-Reply-To: <43D8A891.2030700@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C6226D.5F83713A"
+Date: Thu, 26 Jan 2006 11:40:57 -0000
+Message-ID: <353F6272FE0A6544AA97D47F761F486B01707E91@domain.hid>
+From: "Doyle, Alan" <alan.doyle@domain.hid>
+Subject: [Xenomai-core] Sigevent, sigaction
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,17 +17,48 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-Anders Blomdell wrote:
-> in a lot of the Makefile.in files in 2.1-rc2 there are lines like:
-> 
->   test -z "$(somedir)" || $(mkdir_p) "$(DESTDIR)$(somedir)"
-> 
-> shouldn't they read:
-> 
->   test -z "$(DESTDIR)$(somedir)" || $(mkdir_p) "$(DESTDIR)$(somedir)"
-Forget that, confused -z with -d (tired I suppose...)
+This is a multi-part message in MIME format.
 
-Best regards
+------_=_NextPart_001_01C6226D.5F83713A
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-/Anders
+I've downloaded Xenomai-2.0.3 and have been lookingh into signal
+handling. Structs sigevent & sigaction are used in the code but I can't
+find where they are declared. Can anyone help ?
+
+thanks
+
+
+
+------_=_NextPart_001_01C6226D.5F83713A
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7233.28">
+<TITLE>Sigevent, sigaction</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">I've downloaded Xenomai-2.0.3 and have =
+been lookingh into signal handling. Structs sigevent &amp; sigaction are =
+used in the code but I can't find where they are declared. Can anyone =
+help ?</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">thanks</FONT>
+</P>
+<BR>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C6226D.5F83713A--
 
