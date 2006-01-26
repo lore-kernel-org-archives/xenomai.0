@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <43D8F462.2090100@domain.hid>
+Date: Thu, 26 Jan 2006 17:10:10 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6226D.5F83713A"
-Date: Thu, 26 Jan 2006 11:40:57 -0000
-Message-ID: <353F6272FE0A6544AA97D47F761F486B01707E91@domain.hid>
-From: "Doyle, Alan" <alan.doyle@domain.hid>
-Subject: [Xenomai-core] Sigevent, sigaction
+Subject: Re: [Xenomai-core] Sigevent, sigaction
+References: <353F6272FE0A6544AA97D47F761F486B01707E91@domain.hid>
+In-Reply-To: <353F6272FE0A6544AA97D47F761F486B01707E91@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB921B1184C6C07B0F74DF860"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,50 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Doyle, Alan" <alan.doyle@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C6226D.5F83713A
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB921B1184C6C07B0F74DF860
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-I've downloaded Xenomai-2.0.3 and have been lookingh into signal
-handling. Structs sigevent & sigaction are used in the code but I can't
-find where they are declared. Can anyone help ?
+Doyle, Alan wrote:
+> I've downloaded Xenomai-2.0.3 and have been lookingh into signal
+> handling. Structs sigevent & sigaction are used in the code but I can't=
 
-thanks
+> find where they are declared. Can anyone help ?
+
+Maybe browsing for them (identifier or full-text search) on this site
+helps you (I do not understand yet what you are precisely looking for):
+
+http://www.rts.uni-hannover.de/xenomai/lxr
+
+Note that hart-RT signals are not yet supported in user space. RT user
+space threads can only receive Linux signals, which will switch the
+threads to secondary (non-deterministic) mode.
+
+Jan
 
 
+--------------enigB921B1184C6C07B0F74DF860
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------_=_NextPart_001_01C6226D.5F83713A
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7233.28">
-<TITLE>Sigevent, sigaction</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
+iD8DBQFD2PRiniDOoMHTA+kRAn9sAJ9fIJJyy3eVDCghvvde/D85KerMvgCdFlwz
+jPPbnVGxp7WGr0g1CwVcAp0=
+=txo+
+-----END PGP SIGNATURE-----
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">I've downloaded Xenomai-2.0.3 and have =
-been lookingh into signal handling. Structs sigevent &amp; sigaction are =
-used in the code but I can't find where they are declared. Can anyone =
-help ?</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">thanks</FONT>
-</P>
-<BR>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C6226D.5F83713A--
+--------------enigB921B1184C6C07B0F74DF860--
 
