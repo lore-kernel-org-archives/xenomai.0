@@ -1,11 +1,11 @@
-Message-ID: <43DD481B.4010603@domain.hid>
-Date: Sun, 29 Jan 2006 23:56:27 +0100
+Message-ID: <43DD491E.7010601@domain.hid>
+Date: Mon, 30 Jan 2006 00:00:46 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Missing IRQ end function on PowerPC
-References: <43CE1C28.6060001@domain.hid>	<17359.34362.870823.168739@domain.hid>	<43CF8ECF.4020805@domain.hid>
-	<17359.37814.257893.95482@domain.hid>
-In-Reply-To: <17359.37814.257893.95482@domain.hid>
+Subject: Re: [Xenomai-core] Initialization of a nucleus pod
+References: <47338.83.179.137.211.1137593134.squirrel@domain.hid>	<17359.35617.906625.920464@domain.hid>
+	<1596.10.2.100.4.1137683264.squirrel@domain.hid>
+In-Reply-To: <1596.10.2.100.4.1137683264.squirrel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,40 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Germain Olivier <germain.olivier@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->  > Therefore we need a dedicated function to re-enable interrupts in the 
->  > ISR. We could name it *_end_irq, but maybe *_enable_isr_irq is more 
->  > obvious. On non-PPC archs it would translate to *_irq_enable. I 
->  > realized, that *_irq_enable is used in various place/skins and therefore 
->  > I have not yet provided a patch.
+Germain Olivier wrote:
+> Thank you for your response
 > 
-> The function xnarch_irq_enable seems to be called in only two functions,
-> xintr_enable and xnintr_irq_handler when the flag XN_ISR_ENABLE is set.
+> So rootcb isn't the "scheduler task".
+> I was thinking it was this task which was determining what thread to run,
+> depending of its parameters (priority, periodicity, scheduling mode).
 > 
-> In any case, since I am not sure if this has to be done at the Adeos
-> level or in Xenomai, we will wait for Philippe to come back and decide.
+> I go back to the code to understand how it work ...
+>
+
+Use the simulator to understand the dynamics of this code: it brings you 
+single-stepping of the entire Xenomai core over GDB, at source code level.
+
+
+> Germain
+> 
+> 
+>>xnthread_init does part of the initialization. The low level part of
+>>rootcb (its xnarchtcb_t member) is initialized twice, first by the call
+>>to xnarch_init_tcb in xnthread_init, and then overriden by
+>>xnarch_init_root_tcb in xnpod_init.
+>>
+>>For any other thread than root, the thread would be given a stack and
+>>entry point by the call to xnarch_init_thread in xnpod_start_thread. But
+>>the root thread is Xenomai idle task, a placeholder for whatever task
+>>Linux is currenty running. At the time where xnpod_init is called, the
+>>root thread is the current context, so already has a stack and is
+>>already running.
+>>
+>>--
+>>
+>>
+>>					    Gilles Chanteperdrix.
+>>
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 > 
 
-->enable() and ->end() all mixed up illustrates a silly x86 bias I once had. We do 
-need to differentiate the mere enabling from the IRQ epilogue at PIC level since 
-Linux does it - i.e. we don't want to change the semantics here.
-
-I would go for adding xnarch_end_irq -> rthal_irq_end to stick with the Linux 
-naming scheme, and have the proper epilogue done from there on a per-arch basis.
-
-Current uses of xnarch_enable_irq() should be reserved to the non-epilogue case, 
-like xnintr_enable() i.e. forcibly unmasking the IRQ source at PIC level outside 
-of any ISR context for such interrupt (*). XN_ISR_ENABLE would trigger a call to 
-xnarch_end_irq, instead of xnarch_enable_irq. I see no reason for this fix to leak 
-to the Adeos layer, since the HAL already controls the way interrupts are ended 
-actually; it just does it improperly on some platforms.
-
-(*) Jan, does rtdm_irq_enable() have the same meaning, or is it intended to be 
-used from the ISR too in order to revalidate the source at PIC level?
 
 -- 
 
