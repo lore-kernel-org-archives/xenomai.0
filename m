@@ -1,14 +1,13 @@
-Message-ID: <43CE9FCB.2070305@domain.hid>
-Date: Wed, 18 Jan 2006 21:06:35 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43DCA352.60700@domain.hid>
+Date: Sun, 29 Jan 2006 12:13:22 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Scheduling while atomic
-References: <fd6a47a90601171559x13acf2c2m@domain.hid>
-In-Reply-To: <fd6a47a90601171559x13acf2c2m@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA9DD1E321FCAA6E6595D6B5F"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] anonymous user-space tasks (again)
+References: <200601152002.36397.kisda@domain.hid>
+	<17355.32872.996051.514072@domain.hid>
+In-Reply-To: <17355.32872.996051.514072@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,111 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA9DD1E321FCAA6E6595D6B5F
-Content-Type: multipart/mixed; boundary="------------090705050800060206000208"
+Gilles Chanteperdrix wrote:
+> Stefan Kisdaroczi wrote:
+>  > A small program only calling rt_task_shadow with NULL-name fails if i start it 
+>  > a second time. Error EEXIST (-17). Same for a program calling only 
+>  > rt_task_spawn with NULL-name.
+> 
+> I am able to observe this behaviour. I am on it.
+> 
+>  > Apropos registry:
+>  > In the trunk there is no file src/native/registry.c anymore. I do not really 
+>  > miss it, but the API documentation still says these calls can be made from 
+>  > user-space. Should I create a patch to update the docs? Or should it be 
+>  > there?
+> 
+> I will update the doc too. There are no registry syscalls in
+> ksrc/skins/native/syscall.c, and no skins/native/lib/registry.c in 2.0.x
+> branch either, so it looks intentional. Registry services are not
+> accessible from user-space. Philippe will be able to explain here.
 
-This is a multi-part message in MIME format.
---------------090705050800060206000208
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Existing registry calls are intended for use in code implementing RT interfaces in 
+kernel space, not by applications. This is why we do not have any user-space 
+syscalls to reach them.
 
-Jeroen Van den Keybus wrote:
-> Gilles,
->=20
->=20
-> I cannot reproduce those messages after turning nucleus debugging on.
-> Instead, I now either get relatively more failing mutexes or even hard
-> lockups with the test program I sent to you. If the computer didn't cra=
-sh,
-> dmesg contains 3 Xenomai messages relating to a task being movend to
-> secondary domain after exception #14. As when the computer crashes: I h=
-ave
-> written the last kernel panic message on a paper. Please tell if you wa=
-nt
-> also the addresses or (part of) the call stack.
->=20
-> I'm still wondering if there's a programming error in the mutex test
-> program. After I sent my previous message, and before I turned nucleus
-> debugging on, I managed (by reducing the sleeptimes to max. 5.0e4) to
-> fatally crash the computer, while spewing out countless 'scheduling whi=
-le
-> atomic messages'. Is the mutex error reproducible ?
+> 
+> Thanks for reporting.
+> 
 
-I was not able to crash my box or generate that scheduler warnings, but
-the attached patch fixes the false positive warnings of unlocked
-mutexes. We had a "leak" in the unlock path when someone was already
-waiting. Anyway, *this* issues should not have caused any other problems
-then the wrong report of rt_mutex_inquire().
 
-@Gilles: please apply to both trees.
+-- 
 
-[Update] While writing this mail and letting your test run for a while,
-I *did* get a hard lock-up. Hold on, digging deeper...
-
-Jan
-
---------------090705050800060206000208
-Content-Type: text/plain;
- name="mutex-lockcnt.fix"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="mutex-lockcnt.fix"
-
-Index: ChangeLog
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ChangeLog	(revision 465)
-+++ ChangeLog	(working copy)
-@@ -1,3 +1,8 @@
-+2006-01-18  Jan Kiszka  <jan.kiszka@domain.hid>
-+
-+	* ksrc/skins/native/mutex.c (rt_mutex_unlock): Fix leaking lockcnt
-+	on unlock with pending waiters.
-+
- 2006-01-16  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
-=20
- 	* ksrc/skins/native/task.c (rt_task_create): Use a separate string
-Index: ksrc/skins/native/mutex.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/native/mutex.c	(revision 465)
-+++ ksrc/skins/native/mutex.c	(working copy)
-@@ -461,8 +461,11 @@
-     mutex->owner =3D thread2rtask(xnsynch_wakeup_one_sleeper(&mutex->syn=
-ch_base));
-=20
-     if (mutex->owner !=3D NULL)
-+	{
-+	mutex->lockcnt =3D 1;
- 	xnpod_schedule();
--   =20
-+	}
-+
-  unlock_and_exit:
-=20
-     xnlock_put_irqrestore(&nklock,s);
-
---------------090705050800060206000208--
-
---------------enigA9DD1E321FCAA6E6595D6B5F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDzp/LniDOoMHTA+kRAvukAJ0TJIFxtS2XUx8arD35ioYpANzlRwCff/6M
-pFgK6y0SnZ7pwOKTeArVgDE=
-=Twqt
------END PGP SIGNATURE-----
-
---------------enigA9DD1E321FCAA6E6595D6B5F--
+Philippe.
 
