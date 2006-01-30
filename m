@@ -1,13 +1,12 @@
-Message-ID: <43DDF4EE.8060608@domain.hid>
-Date: Mon, 30 Jan 2006 12:13:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Missing IRQ end function on PowerPC
-References: <200601300833.k0U8XtG31144@domain.hid>	<43DDDA6A.3080907@domain.hid>
-	<43DDE344.1000900@domain.hid> <43DDE693.2070702@domain.hid>
-In-Reply-To: <43DDE693.2070702@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17373.63969.941760.677529@domain.hid>
+Date: Mon, 30 Jan 2006 12:34:57 +0100
+Subject: Re: [Xenomai-core] [PATCH] fix pthread cancellation in native skin
+In-Reply-To: <43DB3AB1.5090004@domain.hid>
+References: <43DB3AB1.5090004@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,119 +17,46 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Wolfgang Grandegger wrote:
->>>
->>>
->>>>>This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
->>>>>
->>>>>Philippe Gerum wrote:
->>>>>
->>>>>
->>>>>>Gilles Chanteperdrix wrote:
->>>>>>
->>>>>>
->>>>>>>Wolfgang Grandegger wrote:
->>>>>>>
->>>>>>>>Therefore we need a dedicated function to re-enable interrupts in
->>>>>>>
->>>>>>>the  > ISR. We could name it *_end_irq, but maybe *_enable_isr_irq is
->>>>>>>more  > obvious. On non-PPC archs it would translate to *_irq_enable.
->>>>>>>I  > realized, that *_irq_enable is used in various place/skins and
->>>>>>>therefore  > I have not yet provided a patch.
->>>>>>>
->>>>>>>The function xnarch_irq_enable seems to be called in only two
->>>>
->>>>functions,
->>>>
->>>>
->>>>>>>xintr_enable and xnintr_irq_handler when the flag XN_ISR_ENABLE is
->>>>>>>set.
->>>>>>>
->>>>>>>In any case, since I am not sure if this has to be done at the Adeos
->>>>>>>level or in Xenomai, we will wait for Philippe to come back and
->>>>>>>decide.
->>>>>>>
->>>>>>
->>>>>>->enable() and ->end() all mixed up illustrates a silly x86 bias I
->>>>>>once
->>>>>>had. We do need to differentiate the mere enabling from the IRQ
->>>>>>epilogue
->>>>>>at PIC level since Linux does it - i.e. we don't want to change the
->>>>>>semantics here.
->>>>>>
->>>>>>I would go for adding xnarch_end_irq -> rthal_irq_end to stick with
->>>>>>the
->>>>>>Linux naming scheme, and have the proper epilogue done from there on a
->>>>>>per-arch basis.
->>>>>>
->>>>>>Current uses of xnarch_enable_irq() should be reserved to the
->>>>>>non-epilogue case, like xnintr_enable() i.e. forcibly unmasking the
->>>>>>IRQ
->>>>>>source at PIC level outside of any ISR context for such interrupt (*).
->>>>>>XN_ISR_ENABLE would trigger a call to xnarch_end_irq, instead of
->>>>>>xnarch_enable_irq. I see no reason for this fix to leak to the Adeos
->>>>>>layer, since the HAL already controls the way interrupts are ended
->>>>>>actually; it just does it improperly on some platforms.
->>>>>>
->>>>>>(*) Jan, does rtdm_irq_enable() have the same meaning, or is it
->>>>>>intended
->>>>>>to be used from the ISR too in order to revalidate the source at PIC
->>>>
->>>>level?
->>>>
->>>>
->>>>>Nope, rtdm_irq_enable() was never intended to re-enable an IRQ line
->>>>>after an interrupt, and the documentation does not suggest this either.
->>>>>I see no problem here.
->>>>
->>>>But RTDM needs a rtdm_irq_end() functions as well in case the
->>>>user wants to reenable the interrupt outside the ISR, I think.
->>>
->>>
->>>If this is a valid use-case, it should be really straightforward to add
->>>this abstraction to RTDM. We should just document that rtdm_irq_end()
->>>shall not be invoked from IRQ context -
->>
->>It's the other way around: ->end() would indeed be called from the ISR
->>epilogue, and ->enable() would not.
-> 
-> 
-> I think we are talking about different things: Wolfgang was asking for
-> an equivalent of RTDM_IRQ_ENABLE outside the IRQ handler. That's the
-> user API. You are now referring to the back-end which had to provide
-> some end-mechanism to be used both by the nucleus' ISR epilogue and that
-> rtdm_irq_end(), and that mechanism shall be told apart from the IRQ
-> enable/disable API. Well, that's at least how I think to have got it...
-> 
+ > Hi,
+ > 
+ > Gilles' work on cancellation for the posix skin reminded me of this
+ > issue I once discovered in the native skin:
+ > 
+ > https://mail.gna.org/public/xenomai-core/2005-12/msg00014.html
+ > 
+ > I found out that this can easily be fixed by switching the pthread of a
+ > native task to PTHREAD_CANCEL_ASYNCHRONOUS. See attached patch.
+ > 
+ > 
+ > At this chance I discovered that calling rt_task_delete for a task that
+ > was created and started with T_SUSP mode but was not yet resumed, locks
+ > up the system. More precisely: it raises a fatal warning when
+ > XENO_OPT_DEBUG is on. Might be the case that it just works on system
+ > without this switched on. Either this is a real bug, or the warning
+ > needs to be fixed. (Deleting a task after rt_task_suspend works.)
 
-My point was only about naming here: *_end() should be reserved for the epilogue 
-stuff, hence be callable from ISR context. Aside of that, I'm ok with the 
-abstraction you described though.
+Actually, the fatal warning happens when starting with rt_task_start the
+task which was created with the T_SUSP bit. The task needs to wake-up in
+xnshadow_wait_barrier until it gets really suspended in primary mode by
+the final xnshadow_harden. This situation triggers the fatal, because
+the thread has the nucleus XNSUSP bit and is running in secondary mode.
 
-> 
->> to avoid breaking the chain in
->>
->>>the shared-IRQ scenario. RTDM_IRQ_ENABLE must remain the way to
->>>re-enable the line from the handler.
->>>
->>>Jan
->>>
->>>
->>
->>
-> 
-> Jan
-> 
+This is not the only situation where a thread with a nucleus suspension
+bit need to run shortly in secondary mode: it also occurs when
+suspending with xnpod_suspend_thread() a thread running in secondary
+mode; the thread receives the SIGCHLD signal and need to execute shortly
+with the suspension bit set in order to cause a migration to primary
+mode.
 
+So, the only case when we are sure that a user-space thread can not be
+scheduled by Linux seems to be when this thread does not have the
+XNRELAX bit.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
