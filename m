@@ -1,89 +1,59 @@
-Message-ID: <43CEBD90.7080603@domain.hid>
-Date: Wed, 18 Jan 2006 23:13:36 +0100
-From: Hannes Mayer <h.mayer@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Date: Mon, 30 Jan 2006 16:11:52 -0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Scheduling while atomic
-References: <fd6a47a90601181204g4c86f778x@domain.hid>	
-	<43CEA323.7000701@domain.hid> <43CEAF25.6010705@domain.hid>	
-	<43CEB291.4020609@domain.hid>
-	<fd6a47a90601181334y14b06d6an@domain.hid>
-In-Reply-To: <fd6a47a90601181334y14b06d6an@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200601301611.53089.lbocseg@domain.hid>
+Subject: [Xenomai-help] RTDM timing problems
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jeroen Van den Keybus wrote:
-> - Could you replace MAXLONG on line 119 with TM_INFINITE and rerun the 
-> sem test (to avoid printf'ing) You can terminate with Ctrl+C.
-> - Could you try to run with tmax somewhat lower (to increase the load): 
-> e.g. ./sem 5.0e6 or so. Be careful not to starve Linux. I think 1.0e5 
-> will be too low.
->  
-> Crashes with me happen within the first 10 secs with 1.0e7
+Hi,
 
-On Xeno2.0, kernel 2.6.13.4:
+I just can't understand what is happening.
 
-# ./sem 1.0e5
-Running for 2.15 seconds.
-L119: Operation not permitted.
+The above code on my driver initialization gives the following results.
 
-Kernel.log:
-Unable to handle kernel NULL pointer dereference at virtual address 00000114
-[freeze]
+        start_time =3D rtdm_clock_read();
+	rtdm_task_busy_sleep(43000);
+	temp_time =3D rtdm_clock_read();
+	   rtdm_printk(KERN_INFO "%u - %u =3D %u\n",(unsigned int) temp_time, (uns=
+igned=20
+int) start_time, (unsigned int) (temp_time-start_time));
 
-# ./sem 1.0e4
-Running for 2.15 seconds.
+	   rtdm_printk(KERN_INFO "%u - %u =3D %u\n",(unsigned int)=20
+(temp_time&0xffffffff), (unsigned int) start_time&0xffffffff, (unsigned int=
+)=20
+((temp_time-start_time)&0xffffffff));
 
-Kernel.log:
-(sorry no serial console available yet)
-...default_idle
-...ipipe_supend_domain
-...default_idle
-...cpu_idle
-...start_kernel
-...unknown_bootoption
-Kernel panic
 
-# ./mutex 1.0e5
-ALERT: No lock! (lockcnt=0) Offending task: task0
-ALERT: No lock! (lockcnt=0) Offending task: task0
-ALERT: No lock! (lockcnt=0) Offending task: task0
-[...]
-[freeze]
+As I expected, both printk gave the same (wrong?) result:
+3175950208 - 2800623168 =3D 375327040
 
-kernel.log:
-[off-screen]
-...panic
-...do_exit
-...printk
-...die
-...__ipipe_sync_stage
-...do_page_fault
-...__do_softirw
-...irq_exit
-...do_IRQ
-...restore_raw
-...__ipipe_handle_exception
-...error_code
-...__ipipe_sync_stage
-...default_idle
-...ipipe_supend_domain
-...default_idle
-...cpu_idle
-...start_kernel
-...unknown_bootoption
-Kernel panic
+I was waiting something near to 43000, shouldn't I?
 
-Best regards,
-Hannes.
+Please, can someone explain me what is going on...
+
+Thanks,
+
+Rodrigo.
+
+=09
+
+=09
+	=09
+_______________________________________________________=20
+Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
+http://br.yahoo.com/homepageset.html=20
+
+
 
