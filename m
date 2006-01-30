@@ -1,15 +1,14 @@
-Message-ID: <43CEA441.8060409@domain.hid>
-Date: Wed, 18 Jan 2006 21:25:37 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43DE9CE1.2000602@domain.hid>
+Date: Tue, 31 Jan 2006 00:10:25 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Scheduling while atomic
-References: <fd6a47a90601171559x13acf2c2m@domain.hid>	<43CE9FCB.2070305@domain.hid>
-	<43CEA1B4.4010104@domain.hid>
-In-Reply-To: <43CEA1B4.4010104@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig51824F3B2A33C76E02981262"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
+References: <43D21144.8040005@domain.hid>	<b647ffbd0601220010x3cc023an@domain.hid>	<fd6a47a90601220819n3f4cd382t@domain.hid>	<E1F16LA-0001ku-C4@domain.hid>	<43D52BA3.6020005@domain.hid>
+	<43DE27E5.3010206@domain.hid> <43DE31B8.3070002@domain.hid>
+	<43DE386A.60106@domain.hid>
+In-Reply-To: <43DE386A.60106@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,91 +18,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig51824F3B2A33C76E02981262
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> ...
->> [Update] While writing this mail and letting your test run for a while=
-,
->> I *did* get a hard lock-up. Hold on, digging deeper...
+> Philippe Gerum wrote:
+> 
+>>Philippe Gerum wrote:
 >>
->=20
-> And here are its last words, spoken via serial console:
->=20
-> c31dfab0 00000086 c30d1a90 c02a2500 c482a360 00000001 00000001 00200000=
+>>>Jan Kiszka wrote:
+>>>
+>>>
+>>>>Gilles Chanteperdrix wrote:
+>>>>
+>>>>
+>>>>>Jeroen Van den Keybus wrote:
+>>>>>
+>>>>>>Hello,
+>>>>>>
+>>>>>>>>I'm currently not at a level to participate in your
+>>>>>
+>>>>>discussion. Although I'm
+>>>>>
+>>>>>>willing to supply you with stresstests, I would nevertheless like
+>>>>>
+>>>>>to learn
+>>>>>
+>>>>>>more from task migration as this debugging session proceeds. In
+>>>>>
+>>>>>order to do
+>>>>>
+>>>>>>so, please confirm the following statements or indicate where I
+>>>>>
+>>>>>went wrong.
+>>>>>
+>>>>>>I hope others may learn from this as well.
+>>>>>>
+>>>>>>>xn_shadow_harden(): This is called whenever a Xenomai thread
+>>>>>
+>>>>>performs a
+>>>>>
+>>>>>>Linux (root domain) system call (notified by Adeos ?).
+>>>>>
+>>>>>xnshadow_harden() is called whenever a thread running in secondary
+>>>>>mode (that is, running as a regular Linux thread, handled by Linux
+>>>>>scheduler) is switching to primary mode (where it will run as a Xenomai
+>>>>>thread, handled by Xenomai scheduler). Migrations occur for some system
+>>>>>calls. More precisely, Xenomai skin system calls tables associates a
+>>>>>few
+>>>>>flags with each system call, and some of these flags cause migration of
+>>>>>the caller when it issues the system call.
+>>>>>
+>>>>>Each Xenomai user-space thread has two contexts, a regular Linux
+>>>>>thread context, and a Xenomai thread called "shadow" thread. Both
+>>>>>contexts share the same stack and program counter, so that at any time,
+>>>>>at least one of the two contexts is seen as suspended by the scheduler
+>>>>>which handles it.
+>>>>>
+>>>>>Before xnshadow_harden is called, the Linux thread is running, and its
+>>>>>shadow is seen in suspended state with XNRELAX bit by Xenomai
+>>>>>scheduler. After xnshadow_harden, the Linux context is seen suspended
+>>>>>with INTERRUPTIBLE state by Linux scheduler, and its shadow is seen as
+>>>>>running by Xenomai scheduler.
+>>>>>
+>>>>>The migrating thread
+>>>>>
+>>>>>>(nRT) is marked INTERRUPTIBLE and run by the Linux kernel
+>>>>>>wake_up_interruptible_sync() call. Is this thread actually run or
+>>>>>
+>>>>>does it
+>>>>>
+>>>>>>merely put the thread in some Linux to-do list (I assumed the
+>>>>>
+>>>>>first case) ?
+>>>>>
+>>>>>Here, I am not sure, but it seems that when calling
+>>>>>wake_up_interruptible_sync the woken up task is put in the current CPU
+>>>>>runqueue, and this task (i.e. the gatekeeper), will not run until the
+>>>>>current thread (i.e. the thread running xnshadow_harden) marks
+>>>>>itself as
+>>>>>suspended and calls schedule(). Maybe, marking the running thread as
+>>>>
+>>>>
+>>>>
+>>>>Depends on CONFIG_PREEMPT. If set, we get a preempt_schedule already
+>>>>here - and a switch if the prio of the woken up task is higher.
+>>>>
+>>>>BTW, an easy way to enforce the current trouble is to remove the "_sync"
+>>>>from wake_up_interruptible. As I understand it this _sync is just an
+>>>>optimisation hint for Linux to avoid needless scheduler runs.
+>>>>
+>>>
+>>>You could not guarantee the following execution sequence doing so
+>>>either, i.e.
+>>>
+>>>1- current wakes up the gatekeeper
+>>>2- current goes sleeping to exit the Linux runqueue in schedule()
+>>>3- the gatekeeper resumes the shadow-side of the old current
+>>>
+>>>The point is all about making 100% sure that current is going to be
+>>>unlinked from the Linux runqueue before the gatekeeper processes the
+>>>resumption request, whatever event the kernel is processing
+>>>asynchronously in the meantime. This is the reason why, as you already
+>>>noticed, preempt_schedule_irq() nicely breaks our toy by stealing the
+>>>CPU from the hardening thread whilst keeping it linked to the
+>>>runqueue: upon return from such preemption, the gatekeeper might have
+>>>run already,  hence the newly hardened thread ends up being seen as
+>>>runnable by both the Linux and Xeno schedulers. Rainy day indeed.
+>>>
+>>>We could rely on giving "current" the highest SCHED_FIFO priority in
+>>>xnshadow_harden() before waking up the gk, until the gk eventually
+>>>promotes it to the Xenomai scheduling mode and downgrades this
+>>>priority back to normal, but we would pay additional latencies induced
+>>>by each aborted rescheduling attempt that may occur during the atomic
+>>>path we want to enforce.
+>>>
+>>>The other way is to make sure that no in-kernel preemption of the
+>>>hardening task could occur after step 1) and until step 2) is
+>>>performed, given that we cannot currently call schedule() with
+>>>interrupts or preemption off. I'm on it.
+>>>
+>>
+>>Could anyone interested in this issue test the following couple of patches?
+>>
+>>atomic-switch-state.patch is to be applied against Adeos-1.1-03/x86 for
+>>2.6.15
+>>atomic-wakeup-and-schedule.patch is to be applied against Xeno 2.1-rc2
+>>
+>>Both patches are needed to fix the issue.
+>>
+>>TIA,
+>>
+> 
+> 
+> Looks good. I tried Jeroen's test-case and I was not able to reproduce
+> the crash anymore. I think it's time for a new ipipe-release. ;)
+>
 
->        c012e564 00000022 ffffffff 00000246 c30d1a90 c4866ce0 00000033
-> c4820000
->        c482a360 c4866ca0 ffffffff c48293a4 c48524e1 00000000 00000000
-> 00000002
-> Call Trace:
->  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
->  [<c4820000>] e100_hw_init+0x3ad/0xa81 [e100]
->  [<c48524e1>] xnpod_suspend_thread+0x714/0x76d [xeno_nucleus]
->  [<c4856946>] xnsynch_sleep_on+0x76d/0x7a7 [xeno_nucleus]
->  [<c4a09b29>] rt_sem_p+0xa6/0x10a [xeno_native]
->  [<c4a03c62>] __rt_sem_p+0x5d/0x66 [xeno_native]
->  [<c485b207>] hisyscall_event+0x1cb/0x2d3 [xeno_nucleus]
->  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
->  [<c010b3ea>] __ipipe_syscall_root+0x53/0xbe
->  [<c01029c0>] system_call+0x20/0x41
-> Xenomai: fatal: blocked thread main[863] rescheduled?! (status=3D0x3000=
-82,
-> sig=3D0, prev=3Dgatekeeper/0[809])
->  CPU  PID    PRI  TIMEOUT  STAT      NAME
->>  0  0      30   0        00500080  ROOT
->    0  864    30   0        00300180  task0
->    0  865    29   0        00300288  task1
->    0  863    1    0        00300082  main
-> Timer: oneshot [tickval=3D1 ns, elapsed=3D175144731477]
->=20
-> c31e1f14 c4860572 c3188000 c31dfab0 00300082 c02a2500 00000286 c02a2500=
+Looks like, indeed.
 
->        c030cbec c012e564 00000022 c02a2500 c30d1a90 c30d1a90 00000022
-> 00000001
->        c02a2500 c30d1a90 c08e4623 00000028 c31e1fa0 c0266ed5 0000f610
-> c030cd80
-> Call Trace:
->  [<c012e564>] __ipipe_dispatch_event+0x56/0xdd
->  [<c0266ed5>] schedule+0x3ef/0x5ed
->  [<c485a27c>] gatekeeper_thread+0x0/0x179 [xeno_nucleus]
->  [<c485a316>] gatekeeper_thread+0x9a/0x179 [xeno_nucleus]
->  [<c010dd8b>] default_wake_function+0x0/0x12
->  [<c0124fbc>] kthread+0x68/0x95
->  [<c0124f54>] kthread+0x0/0x95
->  [<c0100d71>] kernel_thread_helper+0x5/0xb
->=20
-> Any bells already ringing?
->=20
-> Will try Gilles' patch now...
->=20
+> At this chance: any comments on the panic-freeze extension for the
+> tracer? I need to rework the Xenomai patch, but the ipipe side should be
+> ready for merge.
+> 
 
-Nope, this didn't help.
+No issue with the ipipe side since it only touches the tracer support code. No 
+issue either at first sight with the Xeno side, aside of the trace being frozen 
+twice in do_schedule_event? (once in this routine, twice in xnpod_fatal); but 
+maybe it's wanted to freeze the situation before the stack is dumped; is it?
 
-Ok, this is migration magic. Someone around who hacks this part blindly?
+I'm queuing the ipipe side patch for 1.2, which will also provide the support we 
+need for atomic scheduling in order to solve the migration bug.
 
-Jan
+-- 
 
-
---------------enig51824F3B2A33C76E02981262
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFDzqRBniDOoMHTA+kRAs6nAJ98cFHqmEq3NCymiuvTLh0JVV/fJgCfcUBR
-5cZ8/Nt+WXU9cjAmUHEjRw8=
-=NhD5
------END PGP SIGNATURE-----
-
---------------enig51824F3B2A33C76E02981262--
+Philippe.
 
