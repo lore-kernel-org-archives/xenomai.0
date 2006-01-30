@@ -1,14 +1,12 @@
-Message-ID: <43DE5E05.1030302@domain.hid>
-Date: Mon, 30 Jan 2006 19:42:13 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <fd6a47a90601301517q77732fabm@domain.hid>
+Date: Tue, 31 Jan 2006 00:17:06 +0100
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Subject: Re: [Xenomai-help] RTDM timing problems
-References: <200601301611.53089.lbocseg@domain.hid>
-In-Reply-To: <200601301611.53089.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8FF3009D2A4DB577F22DA539"
-Sender: jan.kiszka@domain.hid
+In-Reply-To: <43DE5E05.1030302@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_7090_4941810.1138663026187"
+References: <200601301611.53089.lbocseg@domain.hid> <43DE5E05.1030302@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,82 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8FF3009D2A4DB577F22DA539
+------=_Part_7090_4941810.1138663026187
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi,
->=20
-> I just can't understand what is happening.
->=20
-> The above code on my driver initialization gives the following results.=
+ Jan,
 
->=20
->         start_time =3D rtdm_clock_read();
-> 	rtdm_task_busy_sleep(43000);
-> 	temp_time =3D rtdm_clock_read();
-> 	   rtdm_printk(KERN_INFO "%u - %u =3D %u\n",(unsigned int) temp_time, =
-(unsigned=20
-> int) start_time, (unsigned int) (temp_time-start_time));
->=20
-> 	   rtdm_printk(KERN_INFO "%u - %u =3D %u\n",(unsigned int)=20
-> (temp_time&0xffffffff), (unsigned int) start_time&0xffffffff, (unsigned=
- int)=20
-> ((temp_time-start_time)&0xffffffff));
->=20
->=20
-> As I expected, both printk gave the same (wrong?) result:
-> 3175950208 - 2800623168 =3D 375327040
->=20
-> I was waiting something near to 43000, shouldn't I?
->=20
-> Please, can someone explain me what is going on...
->=20
+Can't you start it with a short Linux user-space app upon startup ? Doesn't
+even need to go realtime.
 
-Basically confirmed:
+I'm planning to try this as I want to start two unrelated Xenomai processes
+which need the timer for timeouts (obviously in a perpetual effort to test
+the Xenomai kernel ;-))
 
-I-pipe: Domain Xenomai registered.
-Xenomai: hal/x86 started.
-Xenomai: real-time nucleus v2.1-rc2 (Champagne) loaded.
-Xenomai: starting RTDM services.
-4194262080 - 2680902336 =3D 1513359744
+Jeroen.
 
-
-But when I additionally load xeno_posix to get the system timer started:
-
-Xenomai: starting POSIX services.
-3899754503 - 3899706087 =3D 48416
-
-
-The point is that rtdm_clock_read() relies on the nucleus timer being
-started. Otherwise, it just returns plain wrong numbers.
 
 This makes me scream again for that damn timer being started
-AUTOMATICALLY! I guess Philippe knows what I'm talking about... ;)
-Meanwhile, we should state this in the docs. At least for 2.0.x, this
-will remain true anyway.
+> AUTOMATICALLY! I guess Philippe knows what I'm talking about... ;)
+> Meanwhile, we should state this in the docs. At least for 2.0.x, this
+> will remain true anyway.
+>
 
-Jan
+------=_Part_7090_4941810.1138663026187
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+<div>
+<div>Jan,</div>
+<div>&nbsp;</div>
+<div>Can't you start it with a short Linux user-space app upon startup ? Do=
+esn't even need to go realtime.</div>
+<div>&nbsp;</div>
+<div>I'm planning to try this as I want to start two&nbsp;unrelated Xenomai=
+ processes which&nbsp;need the timer for timeouts (obviously&nbsp;in a perp=
+etual effort to test the Xenomai kernel ;-))</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div><br>
+<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
+px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">This makes me scream again for t=
+hat damn timer being started<br>AUTOMATICALLY! I guess Philippe knows what =
+I'm talking about... ;)
+<br>Meanwhile, we should state this in the docs. At least for 2.0.x, this<b=
+r>will remain true anyway.<br></blockquote></div>
 
---------------enig8FF3009D2A4DB577F22DA539
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD3l4GniDOoMHTA+kRAjUfAKCCiTso3cIYNV6VMPEoh8D4vrteCACfYuaX
-NvC+YC187OUiBQvkP8UqKfc=
-=lwxW
------END PGP SIGNATURE-----
-
---------------enig8FF3009D2A4DB577F22DA539--
+------=_Part_7090_4941810.1138663026187--
 
