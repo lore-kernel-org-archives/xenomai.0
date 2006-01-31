@@ -1,13 +1,12 @@
-Message-ID: <43DF2E8A.8020504@domain.hid>
-Date: Tue, 31 Jan 2006 10:31:54 +0100
+Message-ID: <43DF4DBC.3020303@domain.hid>
+Date: Tue, 31 Jan 2006 12:45:00 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] Shared irqs v.5
-References: <b647ffbd0601180617v38c990f0w@domain.hid>		<43D41364.6000300@domain.hid>	<b647ffbd0601230841o51fbc5d2o@domain.hid>
-	<43D527AA.8020105@domain.hid>
-In-Reply-To: <43D527AA.8020105@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] merge powerpc fpu.S and fpu_64.S
+References: <43C7877E.50509@domain.hid>
+In-Reply-To: <43C7877E.50509@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,134 +16,198 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Heikki Lindholm <holindho@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Dmitry Adamushko wrote:
+Heikki Lindholm wrote:
+> Currently the two powerpc fpu*.S assembly sections are so similar that=20
+> there's really no need for two of them. Merge them into a common fpu.S.=
+=20
+> Tested on a G5.
+>=20
 
-<snip>
+Applied, thanks.
 
->>
->>To achieve this,
->>
->>1) xnintr_t should be extended with a "name" field;
->>
->>2) rt_intr_create() should contain a "name" argument and not use
->>auto-generation (as "irqN") any more.
->>
-
-Ok, sounds reasonable. This said, since this change would alter the interrupt API 
-for the native skin, we should better do it asap, i.e. before 2.1 is out, so that 
-we don't have to break the compatibility again in a few weeks/months. There is no 
-urge to have the shared IRQ support available for 2.1, but the visible changes at 
-the API level needed to have it in the future should be put in place early.
-
->>or
->>
->>ll /proc/xenomai/registry/interrupts
->>
->>3
->>5
->>
->>Those are directories and e.g.
->>
->>ll /proc/xenomai/registry/interrupts/5
->>
->>driver2
->>driver3
->>
->>Those are "files" and contain the same information as now.
->>
->>This is harder to implement since the registry interface should be extended
->>(for each skin).
-> 
-> 
-> Isn't just the native skin using this registry? Anyway, as the preferred
-
-(yep)
-
-> way of registering IRQ handlers should be via RTDM, and RTDM does not
-> use the registry, go for the simplest solution. /proc/xenomai/interrupts
-> is more important in my eyes.
-> 
-
-Ack. The native skin is only one of the available interfaces, and IRQ channels are 
-interface-independent resources, so this would be better controlled at nucleus 
-level. As an aside, the POSIX skin is very important in the picture too, and 
-getting full access to the shared IRQ support/features from there is utterly 
-important.
-
-> 
->>
->>>...
->>
->>>Jan
->>>
->>>
->>>PS: Still at home?
->>
->>
->>Yes. This week I'm going to Belgium to attend a few meeting with some
->>customers of my potential employer. So my next step for the nearest future
->>will be finally determined there :)
-> 
-> 
-> Best wishes! Just avoid too much extra work, here is already enough to
-> do. ;)
-> 
-> 
->>
->>How many degrees Centigrade? I guess our current -9°C
->>
->>>here in Hannover must appear ridiculous, almost subtropical warm to you.
->>>;)
->>
->>
->>Hey, I'm not from Syberia :o) This is a kind of common delusion I guess as
->>the whole former USSR is assotiated with cold winters, bears, eak.. KGB etc.
->>:o)
-> 
-> 
-> "Former"? Did I missed something? :)
-> 
-> 
->>from wikipedia.com (about Belarus) :
->>
->>"The climate <http://en.wikipedia.org/wiki/Climate> ranges from harsh
->>winters <http://en.wikipedia.org/wiki/Winter> (average January temperatures
->>are in the range −8 °C to −2 °C) to cool and moist
->>summers<http://en.wikipedia.org/wiki/Summer>(average temperature 15 °C
->>to 20 °C)."
->>
->>Actually, last days it was very cooooold - even about -30C. This happens
->>from time to time but very rare (once in a few years or so) and it's not
->>considered as something normal here. e.g. schools were closed a few last
->>days when the temperature was below -25. Actually, the weather is getting
->>crazy last years and not only here :)
->>
->>[1] http://www.microsoft.com/whdc/system/sysperf/apic.mspx
->>
->>>
->>--
->>Best regards,
->>Dmitry Adamushko
->>
-> 
-> 
-> Jan
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
+> -- Heikki Lindholm
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> diff -Nru xenomai/ksrc/arch/powerpc/fpu.S xenomai-devel/ksrc/arch/power=
+pc/fpu.S
+> --- xenomai/ksrc/arch/powerpc/fpu.S	2005-11-18 20:55:24.000000000 +0200
+> +++ xenomai-devel/ksrc/arch/powerpc/fpu.S	2006-01-13 12:35:49.000000000=
+ +0200
+> @@ -19,9 +19,24 @@
+> =20
+>  #include <linux/config.h>=20
+>  #include <asm/processor.h>
+> -#include <asm/cputable.h>
+>  #include <asm/ppc_asm.h>
+> =20
+> +#ifdef CONFIG_PPC601_SYNC_FIX
+> +#define SYNC				\
+> +BEGIN_FTR_SECTION			\
+> +	sync;				\
+> +	isync;				\
+> +END_FTR_SECTION_IFSET(CPU_FTR_601)
+> +#else /* !CONFIG_PPC601_SYNC_FIX */
+> +#define	SYNC
+> +#endif /* CONFIG_PPC601_SYNC_FIX */
+> +
+> +#if defined(CONFIG_PPC64) || defined(CONFIG_PPC64BRIDGE)
+> +#define MTMSRD(r)	.long	(0x7c000164 + ((r) << 21))	/* mtmsrd */
+> +#else
+> +#define MTMSRD(r)	mtmsr	r
+> +#endif /* CONFIG_PPC64 || CONFIG_PPC64BRIDGE */
+> +
+>  #define RTHAL_FPSAVE(n, base)	stfd n,8*(n)(base)
+>  #define RTHAL_FPSAVE2(n, base)	RTHAL_FPSAVE(n, base); RTHAL_FPSAVE(n+1=
+, base)
+>  #define RTHAL_FPSAVE4(n, base)	RTHAL_FPSAVE2(n, base); RTHAL_FPSAVE2(n=
++2, base)
+> diff -Nru xenomai/ksrc/arch/powerpc/fpu_64.S xenomai-devel/ksrc/arch/po=
+werpc/fpu_64.S
+> --- xenomai/ksrc/arch/powerpc/fpu_64.S	2005-11-18 20:55:24.000000000 +0=
+200
+> +++ xenomai-devel/ksrc/arch/powerpc/fpu_64.S	1970-01-01 02:00:00.000000=
+000 +0200
+> @@ -1,71 +0,0 @@
+> -/*
+> - * Copyright (C) 2001,2002,2003,2004 Philippe Gerum.
+> - *
+> - * 64-bit PowerPC adoption
+> - *   copyright (C) 2005 Taneli V=C3=A4h=C3=A4kangas and Heikki Lindhol=
+m
+> - *
+> - * This program is free software; you can redistribute it and/or modif=
+y
+> - * it under the terms of the GNU General Public License as published b=
+y
+> - * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 0213=
+9,
+> - * USA; either version 2 of the License, or (at your option) any later
+> - * version.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> - * GNU General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with this program; if not, write to the Free Software
+> - * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-130=
+7, USA.
+> - */
+> -
+> -#include <linux/config.h>=20
+> -#include <asm/processor.h>
+> -#include <asm/ppc_asm.h>
+> -
+> -#define RTHAL_FPSAVE(n, base)	stfd n,8*(n)(base)
+> -#define RTHAL_FPSAVE2(n, base)	RTHAL_FPSAVE(n, base); RTHAL_FPSAVE(n+1=
+, base)
+> -#define RTHAL_FPSAVE4(n, base)	RTHAL_FPSAVE2(n, base); RTHAL_FPSAVE2(n=
++2, base)
+> -#define RTHAL_FPSAVE8(n, base)	RTHAL_FPSAVE4(n, base); RTHAL_FPSAVE4(n=
++4, base)
+> -#define RTHAL_FPSAVE16(n, base)	RTHAL_FPSAVE8(n, base); RTHAL_FPSAVE8(=
+n+8, base)
+> -#define RTHAL_FPSAVE32(n, base)	RTHAL_FPSAVE16(n, base); RTHAL_FPSAVE1=
+6(n+16, base)
+> -
+> -/* r3 =3D &tcb->fpuenv */
+> -_GLOBAL(rthal_save_fpu)
+> -	mfmsr	r5
+> -	ori	r5,r5,MSR_FP		/* Re-enable use of FPU. */
+> -	mtmsrd	r5			/* Enable use of fpu. */
+> -	isync
+> -	RTHAL_FPSAVE32(0,r3)
+> -	mffs	fr0
+> -	stfd	fr0,8*32(r3)
+> -	blr
+> -
+> -#define RTHAL_FPLOAD(n, base)	lfd n,8*(n)(base)
+> -#define RTHAL_FPLOAD2(n, base)	RTHAL_FPLOAD(n, base); RTHAL_FPLOAD(n+1=
+, base)
+> -#define RTHAL_FPLOAD4(n, base)	RTHAL_FPLOAD2(n, base); RTHAL_FPLOAD2(n=
++2, base)
+> -#define RTHAL_FPLOAD8(n, base)	RTHAL_FPLOAD4(n, base); RTHAL_FPLOAD4(n=
++4, base)
+> -#define RTHAL_FPLOAD16(n, base)	RTHAL_FPLOAD8(n, base); RTHAL_FPLOAD8(=
+n+8, base)
+> -#define RTHAL_FPLOAD32(n, base)	RTHAL_FPLOAD16(n, base); RTHAL_FPLOAD1=
+6(n+16, base)
+> -
+> -/* r3 =3D &tcb->fpuenv */
+> -_GLOBAL(rthal_init_fpu)
+> -	mfmsr	r5
+> -	ori	r5,r5,MSR_FP|MSR_FE1	/* RT kernel threads always operate in */
+> -	li	r4,MSR_FE0		/* imprecise non-recoverable exception mode. */
+> -	andc	r5,r5,r4
+> -	mtmsrd	r5
+> -
+> -	/* Fallback wanted. */
+> -=09
+> -/* r3 =3D &tcb->fpuenv */
+> -_GLOBAL(rthal_restore_fpu)
+> -	mfmsr	r5
+> -	ori	r5,r5,MSR_FP		/* Re-enable use of FPU. */
+> -	mtmsrd	r5			/* Enable use of fpu. */
+> -	isync
+> -	lfd	fr0,8*32(r3)
+> -	mtfsf	0xff,0
+> -	RTHAL_FPLOAD32(0,r3)
+> -	blr
+> diff -Nru xenomai/ksrc/arch/powerpc/Makefile xenomai-devel/ksrc/arch/po=
+werpc/Makefile
+> --- xenomai/ksrc/arch/powerpc/Makefile	2006-01-12 15:25:59.000000000 +0=
+200
+> +++ xenomai-devel/ksrc/arch/powerpc/Makefile	2006-01-13 12:23:00.000000=
+000 +0200
+> @@ -5,13 +5,12 @@
+>  obj-$(CONFIG_XENOMAI) +=3D xeno_hal.o
+> =20
+>  xeno_hal-y :=3D hal.o
+> +xeno_hal-$(CONFIG_XENO_HW_FPU) +=3D fpu.o
+> =20
+>  ifeq ($(CONFIG_PPC64),y)
+>  xeno_hal-$(CONFIG_PPC64) +=3D switch_64.o
+> -xeno_hal-$(CONFIG_XENO_HW_FPU) +=3D fpu_64.o
+>  else
+>  xeno_hal-$(CONFIG_PPC) +=3D switch.o
+> -xeno_hal-$(CONFIG_XENO_HW_FPU) +=3D fpu.o
+>  endif
+> =20
+>  else
+> @@ -23,13 +22,12 @@
+>  O_TARGET :=3D built-in.o
+> =20
+>  obj-y :=3D hal.o
+> +obj-$(CONFIG_XENO_HW_FPU) +=3D fpu.o
+> =20
+>  ifeq ($(CONFIG_PPC64),y)
+>  obj-y +=3D switch_64.o
+> -obj-$(CONFIG_XENO_HW_FPU) +=3D fpu_64.o
+>  else
+>  obj-y +=3D switch.o
+> -obj-$(CONFIG_XENO_HW_FPU) +=3D fpu.o
+>  endif
+> =20
+>  export-objs :=3D hal.o
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
 > _______________________________________________
 > Xenomai-core mailing list
 > Xenomai-core@domain.hid
 > https://mail.gna.org/listinfo/xenomai-core
 
 
--- 
+--=20
 
 Philippe.
 
