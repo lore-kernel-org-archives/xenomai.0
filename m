@@ -1,12 +1,15 @@
-Message-ID: <fd6a47a90601301517q77732fabm@domain.hid>
-Date: Tue, 31 Jan 2006 00:17:06 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-help] RTDM timing problems
-In-Reply-To: <43DE5E05.1030302@domain.hid>
+Message-ID: <43DF31EC.9030009@domain.hid>
+Date: Tue, 31 Jan 2006 10:46:20 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_7090_4941810.1138663026187"
+Subject: Re: [Xenomai-help] RTDM timing problems
 References: <200601301611.53089.lbocseg@domain.hid> <43DE5E05.1030302@domain.hid>
+	<fd6a47a90601301517q77732fabm@domain.hid>
+In-Reply-To: <fd6a47a90601301517q77732fabm@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9A1F939B091FEBD1F10795E7"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,55 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_7090_4941810.1138663026187
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9A1F939B091FEBD1F10795E7
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
- Jan,
+Jeroen Van den Keybus wrote:
+>  Jan,
+>=20
+> Can't you start it with a short Linux user-space app upon startup ? Doe=
+sn't
+> even need to go realtime.
+>=20
+> I'm planning to try this as I want to start two unrelated Xenomai proce=
+sses
+> which need the timer for timeouts (obviously in a perpetual effort to t=
+est
+> the Xenomai kernel ;-))
+>=20
 
-Can't you start it with a short Linux user-space app upon startup ? Doesn't
-even need to go realtime.
+Of course, you can. And this is also what we are doing in our software
+so far. Anyway, the point is that this step is superfluous if only
+aperiodic mode is available. Moreover, it's inconsistent compared to
+other skin's interfaces. But there is hope we will overcome it one day. :=
+)
 
-I'm planning to try this as I want to start two unrelated Xenomai processes
-which need the timer for timeouts (obviously in a perpetual effort to test
-the Xenomai kernel ;-))
-
-Jeroen.
+Jan
 
 
-This makes me scream again for that damn timer being started
-> AUTOMATICALLY! I guess Philippe knows what I'm talking about... ;)
-> Meanwhile, we should state this in the docs. At least for 2.0.x, this
-> will remain true anyway.
->
+--------------enig9A1F939B091FEBD1F10795E7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_7090_4941810.1138663026187
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<div>
-<div>Jan,</div>
-<div>&nbsp;</div>
-<div>Can't you start it with a short Linux user-space app upon startup ? Do=
-esn't even need to go realtime.</div>
-<div>&nbsp;</div>
-<div>I'm planning to try this as I want to start two&nbsp;unrelated Xenomai=
- processes which&nbsp;need the timer for timeouts (obviously&nbsp;in a perp=
-etual effort to test the Xenomai kernel ;-))</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div><br>
-<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
-px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">This makes me scream again for t=
-hat damn timer being started<br>AUTOMATICALLY! I guess Philippe knows what =
-I'm talking about... ;)
-<br>Meanwhile, we should state this in the docs. At least for 2.0.x, this<b=
-r>will remain true anyway.<br></blockquote></div>
+iD8DBQFD3zHsniDOoMHTA+kRAheqAJ0Ytn7aMBK0ETc7pGd5gXAAG/xy5ACdGyGG
+wPeCyadABI1y9GSezmY1raI=
+=Rlzi
+-----END PGP SIGNATURE-----
 
-------=_Part_7090_4941810.1138663026187--
+--------------enig9A1F939B091FEBD1F10795E7--
 
