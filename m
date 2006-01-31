@@ -1,10 +1,10 @@
-Message-ID: <43DF72A6.2090805@domain.hid>
-Date: Tue, 31 Jan 2006 15:22:30 +0100
+Message-ID: <43DFA9C9.4000209@domain.hid>
+Date: Tue, 31 Jan 2006 19:17:45 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] rt_heap reminder
-References: <200601302311.48645.kisda@domain.hid>
-In-Reply-To: <200601302311.48645.kisda@domain.hid>
+Subject: Re: [Xenomai-core] rt_heap in userspace, heapsize [patch]
+References: <43CCF7C2.6070403@domain.hid> <200601172237.56905.kisda@domain.hid>
+In-Reply-To: <200601172237.56905.kisda@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -19,42 +19,70 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
-
-Hi,
-
 Stefan Kisdaroczi wrote:
-> Hi all,
+> Hi again,
 > 
-> as a reminder (userspace, native skin, shared heap) [1]:
+> I looked at the sources now...
+> 
+> Am Tuesday 17 January 2006 14:57 schrieb Stefan Kisdaroczi:
+> 
+>>Hi,
+>>
+>>I made a small test with rt_heap_ in userspace,
+>>i think I understood the actual limitations of the userspace support.
+>>I used 10000 as heapsize. Xenomai 2.1-RC2/x86.
+>>
+>>This should alloc the entire heap, according to the API documentation:
+>>rt_heap_create( ..., ..., 10000, ... )
+>>rt_heap_alloc( ..., 10000, ..., .... ) -> This call fails, but it should
+>>work
+> 
 > API documentation: "If the heap is shared, this value can be either zero, or 
 > the same value given to rt_heap_create()."
-> This is not true. As the heapsize gets altered in rt_heap_create for page size 
-> alignment, the following call to rt_heap_alloc with the same value will fail.
 > 
-> Ex:
-> rt_heap_create( ..., ..., 10000, ... )
-> rt_heap_alloc( ..., 10000, ..., .... ) -> This call fails
+> Looking at the code, calculating the right value can be tricky and would 
+> depend on xeno-internals. rt_heap_inquire would be another way to get it.
 > 
-> I suggest only accepting zero as a valid size for shared heaps.
+> Only accepting 0 would be less confusing. See (untested) patch as as 
+> suggestion.
 > 
-> about attached patch:
-> 1) not tested
-> 2) there are possible better names than H_ALL
-> 3) the comments could be in a better english
-> 4) i hope you get the idea
->
 
-The heap support is currently reworked in the native API so that we can access it 
-from user-space without necessarily asking for a single common block, to obtain a 
-shared memory segment, like in the present situation (i.e. the H_ALL mode in your 
-patch). The idea is to decouple the mappable and single-block properties of heaps. 
-Therefore, your patch is actually going to be a subset of this larger update. 
-Thanks for your contribution to this.
+Actually, the idea behind allowing to pass the original heap size is to provide a 
+cheap sanity check to distributed and/or multi-component applications that share a 
+  memory segment to cooperate. If each of them passes the size of the expected shm 
+block, all of them must pass the same value for the application to bootstrap 
+properly. Of course, there is a lot of ways to defeat this simple check,  but if a 
+C struct is used to define the layout of such segment and sizeof(this_struct) is 
+passed to rt_heap_create(), then, trivial discrepancies due to member 
+addition/removal become detectable, at least. This may save some headbanging on 
+one's office walls in case of miscompilation of some sort...
 
-> thx
+> 
+>>Using heapsize 0 it works:
+>>rt_heap_create( ..., ..., 10000, ... )
+>>rt_heap_alloc( ..., 0, ..., .... )
+>>
+>>rt_heap_inquire shows a heapsize of 12228 (IIRC).
+>>So, this would probably work (untested):
+>>rt_heap_create( ..., ..., 10000, ... )
+>>rt_heap_alloc( ..., 12228, ..., .... )
+>>
+>>The 2228 bytes difference seems to be the space needed for the heap control
+>>structures.
+>>
+>>I think the following should be fixed:
+>>1) rt_create_alloc should alter the heapsize the same as rt_heap_create
+>>does 
+> 
+> Makes no sense, after looking at the code.
+> 
+> 
+>>>2) rt_heap_inquire should return the _real_ heapsize 
+> 
+> The real heap space can be bigger than the requested, so this can happen.
+> 
+> thx again
 > kisda
-> 
-> [1] https://mail.gna.org/public/xenomai-core/2006-01/msg00177.html
 > 
 > 
 > ------------------------------------------------------------------------
