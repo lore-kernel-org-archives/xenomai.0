@@ -1,14 +1,13 @@
-Message-ID: <43DFBD14.3090809@domain.hid>
-Date: Tue, 31 Jan 2006 20:40:04 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <b647ffbd0601311150t6092a758w@domain.hid>
+Date: Tue, 31 Jan 2006 21:50:25 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] [PATCH] Shared irqs v.6
+In-Reply-To: <43DFB5F9.50406@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_23465_19887500.1138737025170"
 References: <b647ffbd0601311053s2f9f77c3m@domain.hid>
-In-Reply-To: <b647ffbd0601311053s2f9f77c3m@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7F810CE654C824179E94FE0B"
-Sender: jan.kiszka@domain.hid
+	<43DFB5F9.50406@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,106 +17,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7F810CE654C824179E94FE0B
-Content-Type: multipart/mixed; boundary="------------030104050109080200040605"
-
-This is a multi-part message in MIME format.
---------------030104050109080200040605
+------=_Part_23465_19887500.1138737025170
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Dmitry Adamushko wrote:
-> Hi,
->=20
-> the previous version contained an ugly bug, namely the misuse of the
-> test_and_set/clear_bit interface
-> that led to a broken system from time to time.
->=20
+On 31/01/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Dmitry Adamushko wrote:
+> > Hi,
+> >
+> > the previous version contained an ugly bug, namely the misuse of the
+> > test_and_set/clear_bit interface
+> > that led to a broken system from time to time.
+> >
+>
+> What about the ISA/edge-triggered stuff? :D
+>
+> My problem is that we cannot test here on real hardware because all our
+> shared IRQs reside on PC104 cards.
 
-And here is a tiny patch to make RTDM shared-IRQ-aware. If you release
-another version before a merge, you may include it into your patch.
 
-Note that I struggled a bit with finding the right prefix. I decided to
-separate the namespaces of return flags and creation flags - hopefully
-in a reasonable manner.
+Could you provide me with some real piece of such code as an example?
+
+Anyway, design-wise, it's about introducing a separate xnintr_handler() for
+such a special case to avoid getting a mixture with the rest of "sane" code=
+.
+I mean that the support of shared interrupts for ISA boards (edge-triggered
+stuff) is a kind of emulation to overcome the shortcommings of the initial
+design on the hardware level. The hardware was just not supposed to support
+shared interrupt channels. So, let's keep it a bit aside from another code
+:o)
+
+xnintr_attach() will check for a special flag like XN_ISR_ISASHARED and
+attach e.g. xnintr_isairq_handler() instead of xnintr_irq_handler().
+
+I'll post an extension to the rt_intr_create(..., const char *name, ...)
+tomorrow - made but not tested yet -
+
+as well as the /proc support.
+
 
 Jan
+>
 
---------------030104050109080200040605
-Content-Type: text/plain;
- name="rtdm_shared_irq.patch"
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_23465_19887500.1138737025170
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="rtdm_shared_irq.patch"
+Content-Disposition: inline
 
-Index: ksrc/skins/rtdm/drvlib.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/rtdm/drvlib.c	(revision 503)
-+++ ksrc/skins/rtdm/drvlib.c	(working copy)
-@@ -1200,7 +1200,7 @@
-  * @param[in,out] irq_handle IRQ handle
-  * @param[in] irq_no Line number of the addressed IRQ
-  * @param[in] handler Interrupt handler
-- * @param[in] flags Currently unused, pass 0
-+ * @param[in] flags Registration flags, see @ref RTDM_IRQTYPE_xxx for de=
-tails
-  * @param[in] device_name Optional device name to show up in real-time I=
-RQ
-  * lists (not yet implemented)
-  * @param[in] arg Pointer to be passed to the interrupt handler on invoc=
-ation
-Index: include/rtdm/rtdm_driver.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/rtdm/rtdm_driver.h	(revision 503)
-+++ include/rtdm/rtdm_driver.h	(working copy)
-@@ -693,6 +693,15 @@
-=20
- typedef xnintr_t                    rtdm_irq_t;
-=20
-+/*!
-+ * @anchor RTDM_IRQTYPE_xxx   @name RTDM_IRQTYPE_xxx
-+ * Interrupt registrations flags
-+ * @{
-+ */
-+/** Enable IRQ-sharing with other real-time drivers */
-+#define RTDM_IRQTYPE_SHARED         XN_ISR_SHARED
-+/** @} */
-+
- /**
-  * Interrupt handler
-  *
-@@ -702,7 +711,6 @@
-  */
- typedef int (*rtdm_irq_handler_t)(rtdm_irq_t *irq_handle);
-=20
--
- /*!
-  * @anchor RTDM_IRQ_xxx   @name RTDM_IRQ_xxx
-  * Return flags of interrupt handlers
+<br><div><span class=3D"gmail_quote">On 31/01/06, <b class=3D"gmail_sendern=
+ame">Jan Kiszka</b> &lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid=
+.de</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-=
+left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left=
+: 1ex;">
+Dmitry Adamushko wrote:<br>&gt; Hi,<br>&gt;<br>&gt; the previous version co=
+ntained an ugly bug, namely the misuse of the<br>&gt; test_and_set/clear_bi=
+t interface<br>&gt; that led to a broken system from time to time.<br>&gt;
+<br><br>What about the ISA/edge-triggered stuff? :D<br><br>My problem is th=
+at we cannot test here on real hardware because all our<br>shared IRQs resi=
+de on PC104 cards.</blockquote><div><br>
+Could you provide me with some real piece of such code as an example?<br>
+<br>
+Anyway, design-wise, it's about introducing a separate xnintr_handler()
+for such a special case to avoid getting a mixture with the rest of
+&quot;sane&quot; code. I mean that the support of shared interrupts for ISA
+boards (edge-triggered stuff) is a kind of emulation to overcome the
+shortcommings of the initial design on the hardware level. The hardware
+was just not supposed to support shared interrupt channels. So, let's
+keep it a bit aside from another code :o)<br>
+<br>
+xnintr_attach() will check for a special flag like XN_ISR_ISASHARED and
+attach e.g. xnintr_isairq_handler() instead of xnintr_irq_handler().<br>
+&nbsp;<br>
+I'll post an extension to the rt_intr_create(..., const char *name, ...) to=
+morrow - made but not tested yet -<br>
+<br>
+as well as the /proc support.<br>
+<br>
+</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br>=
+</blockquote></div><br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry Ada=
+mushko
+<br>
+<br>
 
---------------030104050109080200040605--
 
---------------enig7F810CE654C824179E94FE0B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD370VniDOoMHTA+kRAuztAJ46yKEoQ8aNlyQrcTef6OhmPCjfcwCfaB5F
-yH9nJjnerY3k0f9c5sHffZ0=
-=dglc
------END PGP SIGNATURE-----
-
---------------enig7F810CE654C824179E94FE0B--
+------=_Part_23465_19887500.1138737025170--
 
