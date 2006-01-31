@@ -1,13 +1,12 @@
-Message-ID: <43DF381E.5020709@domain.hid>
-Date: Tue, 31 Jan 2006 11:12:46 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Dual Xeon, 2.6.10, adeos-r13
-References: <200601251105.k0PB5uPK028509@domain.hid>
-	<43D7CD2F.9030709@domain.hid>
-In-Reply-To: <43D7CD2F.9030709@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 31 Jan 2006 13:28:13 +0100
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E00430B4@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-help] Event flag anomaly
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,72 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nathaniel Villaume <villaume@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 
-Hi Nate,
 
-Nathaniel Villaume wrote:
-> Hi all,
-> 
-> I can't seem to find any info about Dual Xeon and Xenomai (well, ADEOS, 
-> really). Is this a configuration that is expected to work?  What about 
-> smp Athlon? or DualCore Athlon? (I think Opteron is not in the picture 
-> yet, right?)
-> 
-> For the dual Xeon, I'm able to patch and build fine, but boot stalls 
-> after the hardware has been initialized by the init process.
-> (i.e. The last line I get from Fedora Core 3 Init 2.85 booting says: 
-> Initializing hardware... storage network, audio done [ok])
-> 
-> I've done what I think are correct:
-> - turned off HyperThreading in both bios and in kernel config
-> - disabled REGPARM
-> 
-> The Processor family  is set to Pentium 4 and sub arch is set to Generic 
-> architecture (X86_GENERICARCH), but I've also tried Pc Compatible (X86) 
-> to  the same effect.
-> I used an adeos-r9 patch that came with RTAI,
+Hi,
 
-Old Adeos series (i.e. "oldgen") had a design issue that caused such kind of 
-behaviour, especially on high-end systems with recent PCI hardware. This has been 
-fixed with the Adeos "I-pipe" series, so you should definitely boot your box with 
-one of those patches instead (1.1-03 is a good candidate).
+I've some problems to understand how the event flag semantic is defined.
 
-I don't know if you are actually meaning RTAI, or Xenomai here, but in case it's 
-about Xenomai, you should stick with official Adeos patches [1] which are also 
-shipped with Xenomai distros unmodified. The RTAI project provides its own kernel 
-patches for working with their codebase since 3.2, but internally, Adeos as an 
-interrupt pipeline is not active in those actually.
+In the example below, I just defined a RT_EVENT task which waits on =
+event mask 1.
+(Simply bit 1 has to be set).=20
+When I do a rt_event_signal(&meteoEvents, 1) from another task, the =
+blocking task
+is logically waked up. Fine. On the next iteration, the event bit set is =
+remaining
+unchanged and the rt_event_wait() doesn't wait anymore since the event =
+is activated.
+(please consider the rt_event_clear as commented lines as it is). Well, =
+it seems
+OK. BUT, on the third iteration, the rt_event_wait() is blocking! =
+Actually, the bit
+set has been cleared in the meanwhile.
 
-  and I at least got the
-> system to boot. But RTAI puked when loading the SMP scheduler....
-> 
-> Is there anything else I might do to make this work?  What is the 
-> confidence level in SMP support?
-> 
+Looking at the rt_event_wait() code in native/event.c, it effectively =
+turns out that
+the bit set is cleared according to the mask, if and only if the task =
+doesn't need to wait.
 
-SMP support is fully maintained for both Adeos and Xeno, at the same level than UP 
-is. If you find something wrong there, we are going to fix it.
+Please could you explain me what's the rationale behind this strange =
+behaviour? I would propose that the bits
+remain unchanged until a clear().  (I probably missed something in my =
+reasoning).
 
-[1] http://download.gna.org/adeos/patches/v2.6/i386/
+Here is the example:
+---------------------------
 
-> Thanks,
-> -Nate
-> 
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+void meteoDataAcquisition(void *cookie) {
+
+unsigned long receivedMask;
+
+  while(1) {
+
+    rt_event_wait(&meteoEvents, 1, &receivedMask, EV_ANY, TM_INFINITE);
+    //rt_event_clear(&meteoEvents, 1, &receivedMask);
+   =20
+   =20
+    printk("#Task activated\n");
+  =20
+  }
+ =20
+}
+-------------------------------
+
+And a piece of code from event.c
+
+....
+ if (((mode & EV_ANY) && (mask & event->value) !=3D 0) ||
+        (!(mode & EV_ANY) && ((mask & event->value) =3D=3D mask)))
+        {
+        *mask_r =3D (event->value & mask);
+        event->value &=3D ~mask;        --> this is not done after the =
+thread has been waked up.
+        goto unlock_and_exit;
+        }
+.....
 
 
--- 
-
-Philippe.
 
