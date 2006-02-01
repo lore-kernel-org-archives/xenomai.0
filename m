@@ -1,17 +1,21 @@
-Message-ID: <43EFB868.60305@domain.hid>
-Date: Sun, 12 Feb 2006 23:36:24 +0100
+Message-ID: <43E08762.90306@domain.hid>
+Date: Wed, 01 Feb 2006 11:03:14 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <43ECD570.5000704@domain.hid>	
-	<b647ffbd0602110331i400d7ff5k@domain.hid>	
-	<43EDDF9E.4030309@domain.hid>
-	<b647ffbd0602111058v3e8c6790w@domain.hid>
-In-Reply-To: <b647ffbd0602111058v3e8c6790w@domain.hid>
+Subject: Re: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
+References: <43D21144.8040005@domain.hid>	
+	<b647ffbd0601220010x3cc023an@domain.hid>	
+	<fd6a47a90601220819n3f4cd382t@domain.hid>	
+	<E1F16LA-0001ku-C4@domain.hid> <43D52BA3.6020005@domain.hid>	
+	<43DE27E5.3010206@domain.hid> <43DE3243.8080603@domain.hid>	
+	<fd6a47a90601311309i18d2ab31i@domain.hid>	
+	<43DFDA6E.5000700@domain.hid>
+	<fd6a47a90602010157w57051089p@domain.hid>
+In-Reply-To: <fd6a47a90602010157w57051089p@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig406E89375FC3B37C81C8A2F7"
+	boundary="------------enig0424163FF99709C29E65B1D5"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [shirq] first test results
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,58 +25,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig406E89375FC3B37C81C8A2F7
+--------------enig0424163FF99709C29E65B1D5
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
->>> Then I stumbled over the xnintr structure. Why do you keep a copy of =
-the
->>>> device name?
->>>> A "const char *" should be enough, we just have to demand
->>>> that it will remain valid as long as the xnintr structure itself (i.=
-e.
->>>> during the IRQ being attached). Saves a few bytes. :)
->>> Could be if all the users of it are initially kernel-mode entities.
->>>
->>> But e.g. there is a version of rt_intr_create() that may be called by=
+Jeroen Van den Keybus wrote:
+>>> I've installed both patches and the problem seems to have disappeared=
+=2E
+>>> I'll try it on another machine tomorrow, too. Meanwhile: thanks very
+>>> much for the assistance !
+>=20
+>=20
+> While testing more thoroughly, my triggers for zero mutex values after
+> acquiring the lock are going off again. I was using the SVN xenomai
+> development tree, but I've now switched to the (fixed) 2.1-rc2 in order=
+ to
+> apply the patches. Is Jan's bugfix included in that one ?
 
->>> user-space
->>> apps and I extended it to support the "name" parameter too :
->>>
->>> int rt_intr_create(RT_INTR *intr, const char *name, unsigned irq, int=
-
->> mode);
->>> In such a case, the kernel-side rt_intr_create() is called with the
->> "name"
->>> allocated on the stack in skins/native/syscall.c : __rt_intr_create()=
-)
->>> so the initial copy of the name can not remain valid.
->> But you could create buffer space for a copy of the name in the same
->> block already allocated for RT_INTR. Should be straightforward.
->=20
->=20
-> RT_INTR does not have the "name" field any more. I have removed it afte=
-r
-> adding the same field to the xnintr_t as it became redundant.
->=20
-> To access the "name", any code in native skin does "intr->intr_base.nam=
-e"
-> (intr_base is of "xnintr_t" type).
->=20
-
-I was rather thinking of allocating RT_INTR + some additional space to
-take the name passed from user-space. Then intr_base.name could point to
-this buffer instead of static memory in the kernel use case.
+Revision 466 contains the mutex-info fix, but that is post -rc2. Why not
+switching to SVN head?
 
 Jan
 
 
---------------enig406E89375FC3B37C81C8A2F7
+--------------enig0424163FF99709C29E65B1D5
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -81,10 +61,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD77honiDOoMHTA+kRAruhAJwLIM8DNecvdF9i+q4VhsF8aKJk9gCggXLL
-W3v3yJLe101aLS6krGYCjkA=
-=+z92
+iD8DBQFD4IdjniDOoMHTA+kRAkWcAJ9LfU+d8vGVf/imBSvAYMtEsG5lmwCZAeJp
+0oIuaTbbvPJsWJedo/DVXzc=
+=booy
 -----END PGP SIGNATURE-----
 
---------------enig406E89375FC3B37C81C8A2F7--
+--------------enig0424163FF99709C29E65B1D5--
 
