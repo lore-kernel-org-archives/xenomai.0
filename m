@@ -1,102 +1,76 @@
-Message-ID: <4404B22D.5000906@domain.hid>
-Date: Tue, 28 Feb 2006 21:27:25 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43E006C2.50503@domain.hid>
+Date: Tue, 31 Jan 2006 16:54:26 -0800
+From: Nathaniel Villaume <villaume@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] 16550 compile err: =?ISO-8859-15?Q?=3FRTDM=5F?=
-	=?ISO-8859-15?Q?IRQ=5FENABLE=3F_undeclared_=28first_use_in_thi?=
-	=?ISO-8859-15?Q?s_function=29?=
-References: <4404AE22.3050600@domain.hid>
-In-Reply-To: <4404AE22.3050600@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2AB96DA275AB900616F927BC"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <200601251105.k0PB5uPK028509@domain.hid>
+	<43D7CD2F.9030709@domain.hid> <43DE0955.7060608@domain.hid>
+In-Reply-To: <43DE0955.7060608@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Dual Xeon 2.6.13 SMP config problem
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2AB96DA275AB900616F927BC
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi all,
 
-Jim Cromie wrote:
->  LD      drivers/xenomai/16550A/built-in.o
->  CC [M]  drivers/xenomai/16550A/16550A.o
-> /mnt/dilbert/jimc/dilbert/lxbuild/linux-2.6.15.1-ipipe-121/drivers/xeno=
-mai/16550A/16550A.c:
-> In function ?rt_16550_interrupt?:
-> /mnt/dilbert/jimc/dilbert/lxbuild/linux-2.6.15.1-ipipe-121/drivers/xeno=
-mai/16550A/16550A.c:269:
-> error: ?RTDM_IRQ_ENABLE? undeclared (first use in this function)
-> /mnt/dilbert/jimc/dilbert/lxbuild/linux-2.6.15.1-ipipe-121/drivers/xeno=
-mai/16550A/16550A.c:269:
-> error: (Each undeclared identifier is reported only once
-> /mnt/dilbert/jimc/dilbert/lxbuild/linux-2.6.15.1-ipipe-121/drivers/xeno=
-mai/16550A/16550A.c:269:
-> error: for each function it appears in.)
-> make[4]: *** [drivers/xenomai/16550A/16550A.o] Error 1
-> make[3]: *** [drivers/xenomai/16550A] Error 2
-> make[2]: *** [drivers/xenomai] Error 2
-> make[1]: *** [drivers] Error 2
-> make: *** [_all] Error 2
->=20
->=20
-> I de-configured 16550, it built fine, so I suspect some recent change
-> missed this item.
->=20
-> that said, I havent tried _NOENABLE, since im guessing blind.
->=20
+This email might be slightly off-topic because it's related to getting 
+even a vanilla SMP kernel running (even though I can get the UP version 
+to run Xenomai).
 
-Yeah, I'm on it. Here is half of the patch I'm currently preparing:
+I performed two tests:
 
---- ../ksrc/drivers/16550A/16550A.c     (Revision 624)
-+++ ../ksrc/drivers/16550A/16550A.c     (Arbeitskopie)
-@@ -238,7 +238,7 @@
-     int                     rbytes =3D 0;
-     int                     events =3D 0;
-     int                     modem;
--    int                     ret =3D RTDM_IRQ_PROPAGATE;
-+    int                     ret =3D RTDM_IRQ_NONE;
+My distro is FC3 with linux-2.6.9. I'm trying to get the SMP version of 
+2.6.13 running with Xenomai.
 
+Test #1:
+========
+Use my distro's smp kernel (which boots) config to build the 2.6.13 
+kernel. 
+I ran make oldconfig, then make menuconfig, and turned off Experimental 
+options.
+I can't boot:  mount complains: "mount: error 6 mounting ext3"... etc.
 
-     ctx =3D rtdm_irq_get_arg(irq_context, struct rt_16550_context);
-@@ -266,7 +266,7 @@
-                 events |=3D RTSER_EVENT_MODEMLO;
-         }
+Test #2
+==========
+I used the single CPU kernel config to build the adeos-patched 2.6.13 
+kernel.  This boots and xeno latency runs fine. I had  a problem with 
+`make devices` not making the devices, but I moved on to getting the SMP 
+working.
+If I switch to SMP in the kernel config, the machine doesn't boot.  
+Instead, it complains: "mount: error 6 mounting ext3".
+I checked that the ext3 is being compiled as a module.... I literally 
+only change the SMP option.
 
--        ret =3D RTDM_IRQ_ENABLE | RTDM_IRQ_HANDLED;
-+        ret =3D RTDM_IRQ_HANDLED;
-     }
+I found some things on the internet about the ext3 error meaning that 
+the driver wasn't compiled into the kernel.  I tried this, even though 
+it shouldn't matter.  It doesn't work. I get more details about the 
+kernel panic:
+EIP is at kmem_cache_create
 
-     if (ctx->in_nwait > 0) {
+Looks like the trace/stack is:
+mb_cache_create
+init_ext3_xattr
+init_ext3_fs
+sys_init_module
+sysenter_past_esp
+
+"/bin/lvm exited abnormally."
+
+I feel like I must be missing something obvious, any ideas?  Would my 
+configs be of use?  I've looked through side-by-side diffs and can't see 
+meaningful differences. I saw something about udev --which might explain 
+my inabilty to create /dev/rtp0 with 'make devices'
+
+I'd appreciate any pointers to what might be wrong,
+-Nate
 
 
-Jan
-
-
-
---------------enig2AB96DA275AB900616F927BC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEBLItniDOoMHTA+kRAj51AJ95xDkUuc0+fP8d07SISydp9jkmZgCfZ5vD
-590wRUbM0Y22mzGv0pfjr1M=
-=Heuj
------END PGP SIGNATURE-----
-
---------------enig2AB96DA275AB900616F927BC--
 
