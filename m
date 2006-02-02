@@ -1,80 +1,45 @@
-Message-ID: <fd6a47a90602170849m66b52f20x@domain.hid>
-Date: Fri, 17 Feb 2006 17:49:49 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-In-Reply-To: <43F5F4CE.2000501@domain.hid>
+Message-ID: <43E25495.1050902@domain.hid>
+Date: Thu, 02 Feb 2006 10:51:01 -0800
+From: Nathaniel Villaume <villaume@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_11568_8810928.1140194989704"
-References: <43F447AF.4020604@domain.hid>
-	<000a01c63304$94ee5190$1e01a8c0@domain.hid>
-	<fd6a47a90602170454q1cc93f23h@domain.hid>
-	<43F5CAE8.9010905@domain.hid>
-	<fd6a47a90602170757q15fed14x@domain.hid>
-	<43F5F4CE.2000501@domain.hid>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Dual Xeon 2.6.13 SMP config problem
+References: <23fcc723d285.23d28523fcc7@domain.hid>
+	<43E1BD0E.3080602@domain.hid>
+In-Reply-To: <43E1BD0E.3080602@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-------=_Part_11568_8810928.1140194989704
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi...
+I thought I was going to have to eat my words this morning when my 
+system booted perfectly  (run level 3), multiple times.   I still don't 
+know what changed. To be clear, I no longer see the "hda: interrupt 
+lost"  error.
 
->
-> Ok; unless my brain is completely toast, the last patch I recently posted
-> does the
-> same, but extends the support to the "MSI and MSI-X with masking bit"
-> cases.
+Nevertheless, my computer still hangs when I start X, or when I try and 
+compile xenomai (from the basic terminal, without X)
+ It's a strange type of hang because I can get other terminals 
+(Ctrl-Alt-F2, etc.), but then the login hangs after entering my passwd.  
+When I Ctrl-C the build, I got a message from make, but then the prompt 
+never returned. Numlock key toggles the keyboard light.
 
+Philippe, I'm sending you my config separately.
 
-Correct.
+Please advise. Thanks,
 
- Could you test in on your box with a vanilla 2.6.15 when time allows? If i=
-t
-> works, then
-> I will roll out a new Adeos/x86 patch including this fix. TIA,
-
-
-I'll do that. Give me half an hour.
+-Nate
 
 
-Jeroen.
 
-------=_Part_11568_8810928.1140194989704
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-<div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(=
-204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Ok; unless m=
-y brain is completely toast, the last patch I recently posted does the<br>s=
-ame, but extends the support to the &quot;MSI and MSI-X with masking bit&qu=
-ot; cases.
-</blockquote><div><br>
-Correct. <br>
-<br>
-</div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb=
-(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"> Could you =
-test in on your box with a vanilla 2.6.15 when time allows? If it works, th=
-en
-<br>
-I will roll out a new Adeos/x86 patch including this fix. TIA,</blockquote>=
-<div><br>
-I'll do that. Give me half an hour.<br>
-<br>
-<br>
-Jeroen.<br>
-<br>
-</div></div>
-
-------=_Part_11568_8810928.1140194989704--
 
