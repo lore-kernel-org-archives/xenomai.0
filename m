@@ -1,14 +1,15 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-help] RTDM timing problems
-Date: Thu, 2 Feb 2006 13:23:04 -0200
-References: <200601301611.53089.lbocseg@domain.hid>
-	<200602021046.00546.lbocseg@domain.hid> <43E1FFAC.3040409@domain.hid>
-In-Reply-To: <43E1FFAC.3040409@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200602021323.04666.lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] Three questions about RTDM
+From: Alessio Igor Bogani <abogani@domain.hid>
+In-Reply-To: <43E1E252.8090304@domain.hid>
+References: <1138870064.8753.19.camel@domain.hid>
+	<43E1D0D6.2020003@domain.hid>
+	<1138876539.8753.60.camel@domain.hid>
+	<43E1E252.8090304@domain.hid>
+Content-Type: text/plain
+Date: Thu, 02 Feb 2006 16:27:22 +0100
+Message-Id: <1138894042.8753.105.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,36 +22,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Em Quinta 02 Fevereiro 2006 10:48, voc=3DEA escreveu:
+Hi Jan,
 
->Rodrigo Rosenfeld Rosas wrote:
->> Em Segunda 30 Janeiro 2006 16:42, Jan Kiszka escreveu:
->>> The point is that rtdm_clock_read() relies on the nucleus timer being
->>> started. Otherwise, it just returns plain wrong numbers.
->>>
->>> This makes me scream again for that damn timer being started
->>> AUTOMATICALLY! I guess Philippe knows what I'm talking about... ;)
->>> Meanwhile, we should state this in the docs. At least for 2.0.x, this
->>> will remain true anyway.
->>
->> What can I do for now? What is the relation between the system time and
->> the timer?
->
->Just start the timer before using rtdm_clock_read().
+[RTDM Docs]
+> > I would be very happy to see for RTDM something similar to Xenomai's
+> > Native-API-Tour.
+> 
+> Would be nice - just takes /someone/ to write it... :-/
 
-Sorry, It is not clear to me how can I do that.
+Ok :-)
 
-Regards,
+> Maybe this paper can provide a few further hints meanwhile:
+> 
+> ftp://ftp.realtimelinuxfoundation.org/pub/events/rtlws-2005/JanKiszka.pdf
 
-Rodrigo.
+Wow! Can you put this document in Technical articles section in
+Xenomai's site? I think that this document could be useful for others. 
 
-=09
+[heartbeat example]
+> > Mysteriously heartbeat.ko module resulted is dependent from
+> > latency_rt.ko module (present in testsuite\klatency in Xenomai package)
+> > for a reason that i don't understand. :-(
+> > How can resolve this problem?
+> 
+> Due to which symbol? Which Xenomai version precisely? Indeed very
+> strange. Something must be broken in your build.
 
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
+Xenomai 2.0.3
 
+Heartbeat.ko is loaded but not start and rtdm_task_init() return a -11
+error code (EAGAIN?). If i load latency_rt.ko before to load
+heartbeat.ko this work perfectly.
+I suppose that heartbeat.ko should do start a timer, or not?
+
+Bye,
+Alessio
 
 
