@@ -1,13 +1,12 @@
-Message-ID: <43E256A4.8090801@domain.hid>
-Date: Thu, 02 Feb 2006 19:59:48 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Dual Xeon 2.6.13 SMP config problem
-References: <23fcc723d285.23d28523fcc7@domain.hid>
-	<43E1BD0E.3080602@domain.hid> <43E25495.1050902@domain.hid>
-In-Reply-To: <43E25495.1050902@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17378.27575.207354.948829@domain.hid>
+Date: Thu, 2 Feb 2006 21:29:43 +0100
+Subject: Re: [Xenomai-help] SVN Xenomai posix skin bug
+In-Reply-To: <200602021613.46172.lbocseg@domain.hid>
+References: <200602021613.46172.lbocseg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,39 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nathaniel Villaume <villaume@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Nathaniel Villaume wrote:
-> Hi...
-> I thought I was going to have to eat my words this morning when my 
-> system booted perfectly  (run level 3), multiple times.   I still don't 
-> know what changed. To be clear, I no longer see the "hda: interrupt 
-> lost"  error.
-> 
-> Nevertheless, my computer still hangs when I start X, or when I try and 
-> compile xenomai (from the basic terminal, without X)
-> It's a strange type of hang because I can get other terminals 
-> (Ctrl-Alt-F2, etc.), but then the login hangs after entering my passwd.  
-> When I Ctrl-C the build, I got a message from make, but then the prompt 
-> never returned. Numlock key toggles the keyboard light.
-> 
-> Philippe, I'm sending you my config separately.
+Rodrigo Rosenfeld Rosas wrote:
+ > Hi Phillipe,
+ > 
+ > I've downloaded xenomai from SVN and I couldn't compile the kernel with the 
+ > posix module checked up.
+ > 
+ > Please, let me know when you correct this
 
-Ok. Are you running 2.6.13? If so, which Adeos release is used?
-
-> 
-> Please advise. Thanks,
-> 
-> -Nate
-> 
-> 
-> 
-> 
-> 
+This is fixed in revision 515.
 
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
