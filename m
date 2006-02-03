@@ -1,15 +1,10 @@
+Message-ID: <20060203192739.87567.qmail@domain.hid>
+Date: Fri, 3 Feb 2006 16:27:39 -0300 (ART)
 From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-help] SVN Xenomai posix skin bug
-Date: Fri, 3 Feb 2006 09:30:59 -0200
-References: <200602021613.46172.lbocseg@domain.hid>
-	<17378.27575.207354.948829@domain.hid>
-In-Reply-To: <17378.27575.207354.948829@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200602030930.59951.lbocseg@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] RTDM mmap alternative
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,27 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thank you Gilles.
+Hi Jan, I'm back on this discussion.
+
+At the time I asked you, you told me to do the mmap on driver initializatio=
+n.
+
+But now, I realized that, since I'll be using RTDM, how could I use mmap fr=
+om RTDM, even if in a
+non RT-context?
+
+I'm a bit confusing...
+
+What would be others alternatives for avoid copying the video frames in a R=
+TDM driver?
+
+Thanks,
 
 Rodrigo.
-____________________________________________________________
-Em Quinta 02 Fevereiro 2006 18:29, Gilles Chanteperdrix escreveu:
-
->Rodrigo Rosenfeld Rosas wrote:
-> > Hi Phillipe,
-> >
-> > I've downloaded xenomai from SVN and I couldn't compile the kernel with
-> > the posix module checked up.
-> >
-> > Please, let me know when you correct this
->
->This is fixed in revision 515.
-
-		
-____________________________________________________
 
 
+
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
 
