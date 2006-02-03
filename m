@@ -1,79 +1,52 @@
-Message-ID: <44049F19.3020901@domain.hid>
-Date: Tue, 28 Feb 2006 21:06:01 +0200
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <43E3E4DE.3060308@domain.hid>
+Date: Fri, 03 Feb 2006 18:18:54 -0500
+From: "J.D. Yamokoski" <yamokosk@domain.hid>
 MIME-Version: 1.0
-Subject: Re: AW:
-	[Xenomai-help]	undefinedreference	__xnarch_xchg_called_with_bad_pointer
-References: <5D63919D95F87E4D9D34FF7748CE2C2A1C3DB1@domain.hid>
-	<440479E7.7010800@domain.hid> <44049605.2000108@domain.hid>
-In-Reply-To: <44049605.2000108@domain.hid>
-Content-Type: multipart/mixed; boundary="------------000009080800090008030106"
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
-
-This is a multi-part message in MIME format.
---------------000009080800090008030106
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Problems booting - USB related?
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Philippe Gerum kirjoitti:
-> Heikki Lindholm wrote:
-> 
->> Uh. I guess the compiler isn't killing the *_bad_pointer function as 
->> dead code when debug is enabled (although it is dead-code.)
-> 
-> 
-> The optimizer is disabled by --enable-debug so that we don't get strange 
-> jumps while tracing with GDB, I guess that's why the dead code is not 
-> eliminated. What about just killing this check, since the same code is 
-> already validated when compiling it as a kernel module? (except 
-> asm-uvm/system.h, but that's not important).
+Greetings all,
 
-Yep. That seems like the way to go. I don't see much to gain from the 
-check. Of course, paranoid way would be to add the __bad_ptr() function 
-with abort() or something inside. Quick patch attached for the former case.
+This problem originally started out after applying an RTAI patch. After 
+doing some testing, I have ruled out RTAI for the moment and now down to 
+ADEOS. Here are the details,
 
-- hl
+I have a vanilla kernel version 2.6.12 which I patched with 
+adeos-linux-2.6.12-i386-r13.patch. The make and install went off without 
+a hitch. But when I boot the machine, it hangs while appearently trying 
+to load USB stuff. Here are some of the last lines it prints:
 
---------------000009080800090008030106
-Content-Type: text/plain; x-mac-type="0"; x-mac-creator="0";
-	name="xeno-atomic-badptr.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xeno-atomic-badptr.patch"
 
---- atomic.h.orig	2006-02-28 21:01:59.000000000 +0200
-+++ atomic.h	2006-02-28 21:01:34.000000000 +0200
-@@ -142,12 +142,6 @@
- }
- #endif
- 
--/*
-- * This function doesn't exist, so you'll get a linker error
-- * if something tries to do an invalid xchg().
-- */
--extern void __xnarch_xchg_called_with_bad_pointer(void);
--
- static __inline__ unsigned long
-     __xchg(volatile void *ptr, unsigned long x, unsigned int size)
- {
-@@ -159,7 +153,6 @@
- 	return __xchg_u64(ptr, x);
- #endif
-     }
--    __xnarch_xchg_called_with_bad_pointer();
-     return x;
- }
- 
+Loading uhci-hcd.ko
+USB Universal Host Controller Interface driver v2.2
 
---------------000009080800090008030106--
+... seems to be finding usb devices and then on the third or fourth 
+device ...
+
+ACPI: PCI Interrupt 0000:00:1d.3[D] -> GSI 23 (level, low) -> IRQ 23
+uhci_hcd 0000:00:1d.3: UHCI Host Controller
+usb 1-1: new low speed USB device using uhci_hcd and address 2
+
+
+Just to rule out other possibilities, I compiled a copy of the vanilla 
+kernel without applying the adeos patch - no problems booting this version.
+
+I can't remove USB support from the kernel as the machine I am on only 
+has USB ports (no PS/2 plugs for mice or keyboard..). I also tried a 
+google search to see if there was problems with USB and adeos.. but I 
+found nothing.
+
+Any comments or suggestions would be greatly appreciated!
+
+J.D. Yamokoski
 
