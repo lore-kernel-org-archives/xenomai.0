@@ -1,12 +1,15 @@
-Message-ID: <43E46ADC.7010601@domain.hid>
-Date: Sat, 04 Feb 2006 09:50:36 +0100
+Message-ID: <43E49D07.2070705@domain.hid>
+Date: Sat, 04 Feb 2006 13:24:39 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] broken docs
+References: <FDBBB5CC70676540B3EF7CFE83FD94E0210CE1@domain.hid>	<43DE03CF.3070603@domain.hid>	<17374.2360.273205.998312@domain.hid>
+	<43DE0DA0.2050307@domain.hid>
+In-Reply-To: <43DE0DA0.2050307@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAEEC553850C718F499AE6060"
+	boundary="------------enig38F794CCBAF7683E5F329B89"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] deleting a T_SUSP'ed native task
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,79 +19,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAEEC553850C718F499AE6060
+--------------enig38F794CCBAF7683E5F329B89
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi Gilles,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>  > ROSSIER Daniel wrote:
+>>  > > Dear Xenomai workers,
+>>  > >=20
+>>  > > Would it be possible to have an updated API documentation for Xen=
+omai
+>>  > > 2.0.x ? (I mean with formal parameters in function prototypes)
+>>  > >=20
+>>  > > I tried to regenerate it with make generate-doc, but it seems tha=
+t a
+>>  > > SVN working dir is required.
+>>
+>> make generate-doc is needed for maintenance only. If you want to
+>> generate doxygen documentation, simply add --enable-dox-doc to Xenomai=
 
-were you able to successfully run my T_SUSP test-case after the latest
-changes? For me this code still causes fatal exceptions:
+>> configure command line.
+>>
+>>  > >=20
+>>  > > It would be great.
+>>  >=20
+>>  > I just had a "quick" look at the status of the documentation in
+>>  > SVN-trunk (2.1). Unfortunately, doxygen is a terrible tool (to expr=
+ess
+>>  > it politely) when it comes to tracking down bugs in your formatting=
+=2E
+>>  > Something is broken in all modules except RTDM, and although I spen=
+t *a
+>>  > lot* of time in getting RTDM correctly formatted, I cannot tell wha=
+t's
+>>  > wrong with the rest. This will require some looooong evenings of
+>>  > continuous patching the docs, recompiling, and checking the result.=
+ Any
+>>  > volunteers - I'm lacking the time? :-/
+>>
+>> Looking at the difference between RTDM documentation blocks and the
+>> other modules is that the other modules use the "fn" tag. Removing the=
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <native/task.h>
+>> "fn" tag from other modules documentation blocks seems to solve the
+>> issue.
+>>
+>=20
+> Indeed, works. Amazingly blind I was.
+>=20
+> Anyway, it still needs some work to remove that stuff (I wonder what th=
+e
+> "correct" usage of @fn is...) and to wrap functions without bodies via
+> "#ifdef DOXYGEN_CPP" like RTDM does. At this chance, I would also
+> suggest to replace all \tag by @tag for the sake of a unified style (an=
+d
+> who knows what side effects mixing up both may have).
+>=20
 
-void func(void *arg)
-{
-    printf("you should not see this\n");
-    rt_task_suspend(NULL);
-}
+Here is a shell script aiming at an automated fix for parts of the
+mentioned issues. Anyone with better shell hacking skills may improve it
+(I'm always willing to learn!).
 
-int main(int argc, char **argv)
-{
-    RT_TASK task;
+for file in `find -name "*.[c|h]"`; do
+    mv $file $file.tmp
+    cat $file.tmp | (
+        echo $file
+        while read -r; do
+            # delete " * @fn ..." lines
+            new_line=3D"`echo "$REPLY" | sed 's/\ \*\ @fn[^$]*$//' | \
+                tr -d "\n"`"
+            if echo "$REPLY" | grep -q '\ \*\ @fn[^$]*$'; then
+                # delete empty comment lines succeeding " * @fn ..."
+                read -r
+                if [ "$REPLY" !=3D " *" ]; then
+                    echo "$REPLY" >> $file
+                fi
+            else
+                # convert " * \<tag>" to " * @<tag>"
+                echo "$new_line" | sed 's/\ \*\ \\\([a-z]\)/ * @\1/' \
+                    >> $file
+            fi
+        done
+    )
+    rm $file.tmp
+done
 
-    mlockall(MCL_CURRENT|MCL_FUTURE);
-    rt_task_create(&task, "T_SUSP-test", 0, 10, T_SUSP);
-    rt_task_start(&task, func, NULL);
-    printf("deleting...\n");
-    rt_task_delete(&task);
-    return 0;
-}
 
-
-This is the output of the locked up system:
-
-[  115.263641] Xenomai: fatal: xnshadow_relax() failed for thread
-T_SUSP-test[871]
-[  115.263650]  CPU  PID    PRI  TIMEOUT  STAT      NAME
-[  115.263656]    0  0      10   0        00500088  ROOT
-[  115.263661] >  0  871    10   0        00301880  T_SUSP-test
-[  115.263666] Timer: oneshot [tickval=3D1 ns, elapsed=3D115298322556]
-[  115.263671]
-[  115.300112] ce853f24 d085fa78 c1300000 d08606f8 d0a21d70 00000367
-ce853fbc c0301780
-[  115.309231]        58454e4f ce853f74 d0859cfe 00000001 00000018
-b7db4000 ce853f80 d0a21a60
-[  115.319295]        cf09a570 c04f2d80 c0301780 c04f2d80 ce853fa8
-c013b695 00000021 c04f2d80
-[  115.329359] Call Trace:
-[  115.332497]  [<c0103784>] show_stack+0x94/0xe0
-[  115.337847]  [<d085903a>] xnshadow_relax+0x19a/0x230 [xeno_nucleus]
-[  115.345418]  [<d0859cfe>] hisyscall_event+0xde/0x3a0 [xeno_nucleus]
-[  115.352961]  [<c013b695>] __ipipe_dispatch_event+0x95/0x130
-[  115.359657]  [<c010e571>] __ipipe_syscall_root+0x31/0xf0
-[  115.366038]  [<c0103070>] system_call+0x20/0x41
-
-And then this:
-
-[  115.550244] Xenomai: watchdog triggered -- suspending runaway thread
-'T_SUSP-test'
-[  115.554242] Xenomai: watchdog triggered -- suspending runaway thread
-'T_SUSP-test'
-[  115.558241] Xenomai: watchdog triggered -- suspending runaway thread
-'T_SUSP-test'
-=2E..
+I only tested it on ksrs/skins/native, but it seems to work - for those
+functions with a body :-/. We still need to manually wrap body-less
+function docs as it is done in the rtdm skin. But I think this is a start=
+=2E
 
 Jan
 
 
---------------enigAEEC553850C718F499AE6060
+--------------enig38F794CCBAF7683E5F329B89
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -97,10 +126,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD5GrhniDOoMHTA+kRApsDAJ4rproffRA2iZmuudYuelLt4ykNEACfdsSx
-Deowl6GTVhuN3VeaA5yOnCo=
-=23dV
+iD8DBQFD5J0HniDOoMHTA+kRAlgEAJ0XoF3irh9XSiCfxzcwuG6l+KSwwgCfTPWs
+7ujxjdtIDrz/XszkOvnYv14=
+=A/xg
 -----END PGP SIGNATURE-----
 
---------------enigAEEC553850C718F499AE6060--
+--------------enig38F794CCBAF7683E5F329B89--
 
