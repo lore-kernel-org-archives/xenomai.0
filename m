@@ -1,13 +1,16 @@
-Message-ID: <43E9BC7D.6020803@domain.hid>
-Date: Wed, 08 Feb 2006 10:40:13 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b647ffbd0602080212u70ce25d8q@domain.hid>
+Date: Wed, 8 Feb 2006 12:12:41 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
+In-Reply-To: <43E9AAB3.5020004@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Slow is faster arch/ppc/syslib/open_pic.c
-References: <b647ffbd0601311053s2f9f77c3m@domain.hid>	<43E0BEC1.2060400@domain.hid>	<43E73441.9090702@domain.hid>	<43E8C523.2030107@domain.hid>
-	<43E8C7CB.8050401@domain.hid>
-In-Reply-To: <43E8C7CB.8050401@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_3106_2043373.1139393561101"
+References: <b647ffbd0602070104s63275903q@domain.hid>
+	<43E86F4D.4050400@domain.hid>
+	<43E8DFC4.4010805@domain.hid>
+	<43E99D2F.6040609@domain.hid>
+	<43E9AAB3.5020004@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,79 +20,185 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Anders Blomdell wrote:
-> 
->> When trying to run Xenomai on PowerPC with OpenPIC, I have (finally) 
->> found that interrupt latency is much improved with the following patch:
->>
->>
->>
->> --- arch/ppc/syslib/open_pic.c~ 2006-01-08 03:15:24.000000000 +0100
->> +++ arch/ppc/syslib/open_pic.c  2006-02-07 16:56:14.000000000 +0100
->> @@ -820,7 +820,7 @@
->>   */
->>  static void openpic_ack_irq(unsigned int irq_nr)
->>  {
->> -#ifdef __SLOW_VERSION__
->> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
->>         openpic_disable_irq(irq_nr);
->>         openpic_eoi();
->>  #else
->> @@ -831,7 +831,7 @@
->>
->>  static void openpic_end_irq(unsigned int irq_nr)
->>  {
->> -#ifdef __SLOW_VERSION__
->> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
->>         if (!(irq_desc[irq_nr].status & (IRQ_DISABLED|IRQ_INPROGRESS))
->>             && irq_desc[irq_nr].action)
->>                 openpic_enable_irq(irq_nr);
->>
->>
->>
->> The reason for this, is that the fast version doesn't call openpic_eoi 
->> until the interrupt is ended, which means that all RT-interrupts are 
->> delayed by a pending Linux interrupt.
->>
-> 
-> Gasp. Will check on my Icecube asap, thanks (a lot).
-> 
+------=_Part_3106_2043373.1139393561101
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3107_16791080.1139393561101"
 
-The mpc52xx is using its own version of PIC management - which should not induce 
-such delay on eoi, so I cannot experiment this change yet. However, I've revisited 
-your patch so that the OpenPIC code always sends eoi in fast mode, regardless of 
-the interrupt polarity. Could you try the patch below and let me know of the 
-outcome? TIA,
+------=_Part_3107_16791080.1139393561101
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
---- arch/ppc/syslib/open_pic.c~	2005-10-28 02:02:08.000000000 +0200
-+++ arch/ppc/syslib/open_pic.c	2006-02-08 10:30:22.000000000 +0100
-@@ -824,7 +824,9 @@
-  	openpic_disable_irq(irq_nr);
-  	openpic_eoi();
-  #else
-+#ifndef CONFIG_IPIPE
-  	if ((irq_desc[irq_nr].status & IRQ_LEVEL) == 0)
-+#endif /* CONFIG_IPIPE */
-  		openpic_eoi();
-  #endif
-  }
-@@ -836,8 +838,10 @@
-  	    && irq_desc[irq_nr].action)
-  		openpic_enable_irq(irq_nr);
-  #else
-+#ifndef CONFIG_IPIPE
-  	if ((irq_desc[irq_nr].status & IRQ_LEVEL) != 0)
-  		openpic_eoi();
-+#endif /* CONFIG_IPIPE */
-  #endif
-  }
+On 08/02/06, Jan Kiszka <kiszka@domain.hid> wrote:
+
+> I still prefer configuration options as they also allow to reduce the
+> > overall code size (less cache refills and TLB misses). And shared
+> > interrupts are for x86 only (approximately), I think. Unfortunately, I
+>
+> Ok, that's a good argument. Then make the whole IRQ-sharing stuff
+> compile-time configurable and see how much we can save.
 
 
--- 
 
-Philippe.
+Anyway, I agree that the code which is supposed to be used by only a
+fraction of users (Jan is only interested so far? and esp. in that
+"brain-damaged" edge-triggered stuff) and which is a bit too heavy to
+guarantee a close-to-zero-overhead should be made optional.
+
+Ok, let's go for it upon getting the test results.
+
+Enclosed a small optimization to reduce the code in (optional in future)
+ISR.
+
+
+Jan
+>
+>
+>
+
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_3107_16791080.1139393561101
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<br><br>
+<div><span class=3D"gmail_quote">On 08/02/06, <b class=3D"gmail_sendername"=
+>Jan Kiszka</b> &lt;<a href=3D"mailto:kiszka@domain.hid">kiszka@domain.hid=
+s.uni-hannover.de</a>&gt; wrote:</span> <br>
+<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
+04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; I still =
+prefer configuration options as they also allow to reduce the<br>&gt; overa=
+ll code size (less cache refills and TLB misses). And shared
+<br>&gt; interrupts are for x86 only (approximately), I think. Unfortunatel=
+y, I<br><br>Ok, that's a good argument. Then make the whole IRQ-sharing stu=
+ff<br>compile-time configurable and see how much we can save.</blockquote>
+<div><br>
+<br>
+Anyway, I agree that the code which is supposed to be used by only a
+fraction of users (Jan is only interested so far? and esp. in that
+&quot;brain-damaged&quot; edge-triggered stuff) and which is a bit too heav=
+y to
+guarantee a close-to-zero-overhead should be made optional.<br>
+<br>
+Ok, let's go for it upon getting the test results.<br>
+<br>
+Enclosed a small optimization to reduce the code in (optional in future) IS=
+R.<br>
+<br>
+</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
+ rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br>=
+<br><br>
+</blockquote></div><br><br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry=
+ Adamushko
+
+------=_Part_3107_16791080.1139393561101--
+
+------=_Part_3106_2043373.1139393561101
+Content-Type: application/octet-stream; name=shirq-v9.patch
+Content-Transfer-Encoding: 7bit
+X-Attachment-Id: f_ehu5mrx9
+Content-Disposition: attachment; filename="shirq-v9.patch"
+
+diff -urp xenomai-shirq-ext/include/nucleus/intr.h xenomai-shirq-v9/include/nucleus/intr.h
+--- xenomai-shirq-ext/include/nucleus/intr.h	2006-02-06 15:34:24.000000000 +0100
++++ xenomai-shirq-v9/include/nucleus/intr.h	2006-02-08 09:28:36.000000000 +0100
+@@ -66,6 +66,8 @@ extern "C" {
+ 
+ int xnintr_mount(void);
+ 
++void xnintr_clock_attach(xnintr_t *intr);
++void xnintr_clock_detach(xnintr_t *intr);
+ void xnintr_clock_handler(void);
+ 
+ int xnintr_irq_proc(unsigned int irq, char *str);
+diff -urp xenomai-shirq-ext/ksrc/nucleus/intr.c xenomai-shirq-v9/ksrc/nucleus/intr.c
+--- xenomai-shirq-ext/ksrc/nucleus/intr.c	2006-02-06 15:27:47.000000000 +0100
++++ xenomai-shirq-v9/ksrc/nucleus/intr.c	2006-02-08 09:27:29.000000000 +0100
+@@ -502,6 +502,16 @@ xnarch_cpumask_t xnintr_affinity (xnintr
+     return xnarch_set_irq_affinity(intr->irq,cpumask);
+ }
+ 
++void xnintr_clock_attach(xnintr_t *intr)
++{
++    xnshirqs[intr->irq].handlers = intr;
++}
++
++void xnintr_clock_detach(xnintr_t *intr)
++{
++    xnshirqs[intr->irq].handlers = NULL;
++}
++
+ /* Low-level clock irq handler. */
+ 
+ void xnintr_clock_handler (void)
+@@ -530,28 +540,19 @@ static void xnintr_irq_handler (unsigned
+ 
+     ++sched->inesting;
+ 
+-    if (irq == XNARCH_TIMER_IRQ)
+-	{
+-	intr = (xnintr_t*)cookie;
+-	s = intr->isr(intr);
+-	++intr->hits;
+-	}
+-    else
+-	{
+-	shirq = &xnshirqs[irq];
++    shirq = &xnshirqs[irq];
+ 
+-	xnintr_shirq_lock(shirq);
+-	intr = shirq->handlers;
++    xnintr_shirq_lock(shirq);
++    intr = shirq->handlers;
+ 
+-	while (intr)
+-	    {
+-	    s |= intr->isr(intr);
+-	    ++intr->hits;
++    while (intr)
++        {
++        s |= intr->isr(intr);
++        ++intr->hits;
+ 
+-	    intr = intr->next;
+-	    }
+-	xnintr_shirq_unlock(shirq);
+-	}
++        intr = intr->next;
++        }
++    xnintr_shirq_unlock(shirq);
+ 
+     --sched->inesting;
+ 
+diff -urp xenomai-shirq-ext/ksrc/nucleus/pod.c xenomai-shirq-v9/ksrc/nucleus/pod.c
+--- xenomai-shirq-ext/ksrc/nucleus/pod.c	2006-02-03 15:41:50.000000000 +0100
++++ xenomai-shirq-v9/ksrc/nucleus/pod.c	2006-02-08 09:21:16.000000000 +0100
+@@ -3044,6 +3044,7 @@ unlock_and_exit:
+        (xnarch_start_timer). */
+ 
+     xnintr_init(&nkclock,NULL,XNARCH_TIMER_IRQ,tickhandler,NULL,0);
++    xnintr_clock_attach(&nkclock);
+ 
+     __setbits(nkpod->status,XNTIMED);
+ 
+@@ -3130,6 +3131,8 @@ void xnpod_stop_timer (void)
+ 	xntimer_set_aperiodic_mode();
+         }
+ 
++    xnintr_clock_detach(&nkclock);
++
+  unlock_and_exit:
+ 
+     xnlock_put_irqrestore(&nklock,s);
+
+
+------=_Part_3106_2043373.1139393561101--
 
