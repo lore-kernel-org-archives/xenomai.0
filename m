@@ -1,43 +1,43 @@
-Message-ID: <43F61852.5050404@domain.hid>
-Date: Fri, 17 Feb 2006 19:39:14 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] RTDM mmap alternative
+Date: Wed, 8 Feb 2006 19:28:16 -0200
+References: <20060203192739.87567.qmail@domain.hid>
+	<200602061900.35411.lbocseg@domain.hid>
+	<43E8DB10.5000901@domain.hid>
+In-Reply-To: <43E8DB10.5000901@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-References: <43F447AF.4020604@domain.hid>	
-	<000a01c63304$94ee5190$1e01a8c0@domain.hid>	
-	<fd6a47a90602170454q1cc93f23h@domain.hid>	
-	<43F5CAE8.9010905@domain.hid>	
-	<fd6a47a90602170757q15fed14x@domain.hid>	
-	<43F5F4CE.2000501@domain.hid>	
-	<fd6a47a90602170849m66b52f20x@domain.hid>
-	<fd6a47a90602171037y6ed2e9ffg@domain.hid>
-In-Reply-To: <fd6a47a90602171037y6ed2e9ffg@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200602081928.17224.lbocseg@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jeroen Van den Keybus wrote:
-> Ok, done. The patch works. Took me longer than expected, as I had to 
-> find out that 8 spaces don't make a TAB for 'patch'...
-> 
+One more doubt: how would I munmap that memory? do_munmap and passing=20
+current->mm as the first parameter and the physical address as start? I'm n=
+ot=20
+sure... Maybe the user can call munmap directly since it doesn't need the=20
+file descriptor. But which address should (s)he pass to start parameter, th=
+e=20
+virtual or the physical one?
 
-Perfect. Thanks.
+Thank you again,
 
-> Jeroen.
-> 
+Rodrigo.
 
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
 
--- 
-
-Philippe.
 
