@@ -1,13 +1,14 @@
-Message-ID: <b647ffbd0602071124g2b43366bi@domain.hid>
-Date: Tue, 7 Feb 2006 21:24:49 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
-In-Reply-To: <43E86F4D.4050400@domain.hid>
+Message-ID: <43E99D2F.6040609@domain.hid>
+Date: Wed, 08 Feb 2006 08:26:39 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_23190_7612946.1139340289638"
+Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
 References: <b647ffbd0602070104s63275903q@domain.hid>
 	<43E86F4D.4050400@domain.hid>
+	<43E8DFC4.4010805@domain.hid>
+In-Reply-To: <43E8DFC4.4010805@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,93 +18,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Jan Kiszka <kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_23190_7612946.1139340289638
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Hello,
+>>
+>> Dmitry Adamushko wrote:
+>>> Hi,
+>>>
+>>> this is the final set of patches against the SVN trunk of 2006-02-03.
+>>>
+>>> It addresses mostly remarks concerning naming (XN_ISR_ISA ->
+>>> XN_ISR_EDGE), a few cleanups and updated comments.
+>>>
+>>> Functionally, the support for shared interrupts (a few flags) to the
+> 
+> Not directly your fault: the increasing number of return flags for IRQ
+> handlers makes me worry that they are used correctly. I can figure out
+> what they mean (not yet that clearly from the docs), but does someone
+> else understand all this:
+> 
+> - RT_INTR_HANDLED
+> - RT_INTR_CHAINED
+> - RT_INTR_ENABLE
+> - RT_INTR_NOINT
+> 
+> or
+> 
+> - RTDM_IRQ_PROPAGATE
+> - RTDM_IRQ_ENABLE
+> - RTDM_IRQ_NOINT
+> 
+> Third-party comments / suggestions welcome as well. Maybe I'm too
+> pessimistic.
+> 
+>>> rtdm (Jan's patch) and native skin.
+>>> In the later case, rt_intr_create() now contains the 6-th argument,
+>>> namely "int mode".
+>>>
+>>> Now I'm waiting for the test results from Jan (the previous patch-set
+>>> remains to be suitable for testing too in case you are using it
+>>> already). Upon success, the new code is ready for merging.
+> 
+> Trying to manage the priority list of someone else is tricky - I hope we
+> can see something soon, but I cannot promise anything.
+> 
+>>> the patches have to be applied as follows :
+>>> - shirq-base
+>>> - shirq-v8
+>>> - shirq-proc
+>>> - shirq-edge
+>>> - shirq-ext
+>>>
+>>> Happy testing ! :)
+>> My concern is code size. I see that the patches add substantial amount
+>> of code to the ISR. What about make this feature configurable?
+>>
+> 
+> I would vote for the (already scheduled?) extension to register an
+> optimised IRQ trampoline in case there is actually no sharing taking
+> place. This would also make the "if (irq == XNARCH_TIMER_IRQ)" path
+> obsolete.
 
-On 07/02/06, Wolfgang Grandegger <wg@domain.hid> wrote:
->
-> Hello,
->
-> > [skip-skip-skip]
-> > Happy testing ! :)
->
-> My concern is code size. I see that the patches add substantial amount
-> of code to the ISR. What about make this feature configurable?
-
-
-Yes, I though about making the new stuff optionally configurable.
-
-But another option would be to leave the xnintr_irq_handler() as it was
-before and to introduce a separate handler for the shared interrupts.
-edge-triggeres interrupts already have the distinct handler
-(xnintr_edgeirq_handler()).
-
-I guess the additional code in xnintr_attach/detach() and a few (~1 for UP
-and ~2 for SMP) KBs of data are not that critical taking into account where
-and how they are used, both latency and cache-wise.
-
+I still prefer configuration options as they also allow to reduce the 
+overall code size (less cache refills and TLB misses). And shared 
+interrupts are for x86 only (approximately), I think. Unfortunately, I 
+don't have the time to follow all the details of the rapid Xenomai 
+development and can't therefore judge what is really necessary.
 
 Wolfgang.
->
-> > --
-> > Best regards,
-> > Dmitry Adamushko
-> >
-> >
-> > -----------------------------------------------------------------------=
--
-> >
-> > _______________________________________________
-> > Xenomai-core mailing list
-> > Xenomai-core@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-core
->
->
 
---
-Best regards,
-Dmitry Adamushko
+> Jan
+> 
 
-------=_Part_23190_7612946.1139340289638
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<br><br><div><span class=3D"gmail_quote">On 07/02/06, <b class=3D"gmail_sen=
-dername">Wolfgang Grandegger</b> &lt;<a href=3D"mailto:wg@domain.hid">w=
-g@domain.hid</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" sty=
-le=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex;=
- padding-left: 1ex;">
-Hello,<br><br>&gt; [skip-skip-skip]<br>&gt; Happy testing ! :)<br><br>My co=
-ncern is code size. I see that the patches add substantial amount<br>of cod=
-e to the ISR. What about make this feature configurable?</blockquote><div>
-<br>
-Yes, I though about making the new stuff optionally configurable. <br>
-<br>
-But another option would be to leave the xnintr_irq_handler() as it was
-before and to introduce a separate handler for the shared interrupts.
-edge-triggeres interrupts already have the distinct handler
-(xnintr_edgeirq_handler()).<br>
-<br>
-</div>I guess the additional code in xnintr_attach/detach() and a few
-(~1 for UP and ~2 for SMP) KBs of data are not that critical taking
-into account where and how they are used, both latency and cache-wise.<br>
-<br>
-<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
-04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Wolfgang.<br>=
-<br>&gt; --<br>&gt; Best regards,<br>&gt; Dmitry Adamushko<br>&gt;<br>&gt;
-<br>&gt; ------------------------------------------------------------------=
-------<br>&gt;<br>&gt; _______________________________________________<br>&=
-gt; Xenomai-core mailing list<br>&gt; <a href=3D"mailto:Xenomai-core@domain.hid=
-g">
-Xenomai-core@domain.hid</a><br>&gt; <a href=3D"https://mail.gna.org/listinfo/x=
-enomai-core">https://mail.gna.org/listinfo/xenomai-core</a><br><br></blockq=
-uote></div><br><br clear=3D"all">-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_23190_7612946.1139340289638--
 
