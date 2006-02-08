@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <43EA310D.70807@domain.hid>
+Date: Wed, 08 Feb 2006 18:57:33 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] Watchdog/Interrupt management
-Date: Wed, 8 Feb 2006 13:09:41 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210CFD@EINT11.einet.ad.eivd.ch>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Slow is faster arch/ppc/syslib/open_pic.c
+References: <b647ffbd0601311053s2f9f77c3m@domain.hid>	<43E0BEC1.2060400@domain.hid>	<43E73441.9090702@domain.hid>	<43E8C523.2030107@domain.hid>	<43E8C7CB.8050401@domain.hid>
+	<43E9BC7D.6020803@domain.hid>
+In-Reply-To: <43E9BC7D.6020803@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,80 +20,84 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi Philippe,
+Philippe Gerum wrote:
+> Philippe Gerum wrote:
+> 
+>> Anders Blomdell wrote:
+>>
+>>> When trying to run Xenomai on PowerPC with OpenPIC, I have (finally) 
+>>> found that interrupt latency is much improved with the following patch:
+>>>
+>>>
+>>>
+>>> --- arch/ppc/syslib/open_pic.c~ 2006-01-08 03:15:24.000000000 +0100
+>>> +++ arch/ppc/syslib/open_pic.c  2006-02-07 16:56:14.000000000 +0100
+>>> @@ -820,7 +820,7 @@
+>>>   */
+>>>  static void openpic_ack_irq(unsigned int irq_nr)
+>>>  {
+>>> -#ifdef __SLOW_VERSION__
+>>> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
+>>>         openpic_disable_irq(irq_nr);
+>>>         openpic_eoi();
+>>>  #else
+>>> @@ -831,7 +831,7 @@
+>>>
+>>>  static void openpic_end_irq(unsigned int irq_nr)
+>>>  {
+>>> -#ifdef __SLOW_VERSION__
+>>> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
+>>>         if (!(irq_desc[irq_nr].status & (IRQ_DISABLED|IRQ_INPROGRESS))
+>>>             && irq_desc[irq_nr].action)
+>>>                 openpic_enable_irq(irq_nr);
+>>>
+>>>
+>>>
+>>> The reason for this, is that the fast version doesn't call 
+>>> openpic_eoi until the interrupt is ended, which means that all 
+>>> RT-interrupts are delayed by a pending Linux interrupt.
+>>>
+>>
+>> Gasp. Will check on my Icecube asap, thanks (a lot).
+>>
+> 
+> The mpc52xx is using its own version of PIC management - which should 
+> not induce such delay on eoi, so I cannot experiment this change yet. 
+> However, I've revisited your patch so that the OpenPIC code always sends 
+> eoi in fast mode, regardless of the interrupt polarity. Could you try 
+> the patch below and let me know of the outcome? TIA,
+> 
+
+Ok. Drop this to /dev/null. I've misread the original ->ack() code, and as you 
+pointed out, this patch would not work. -ENOBRAIN again.
+
+> --- arch/ppc/syslib/open_pic.c~    2005-10-28 02:02:08.000000000 +0200
+> +++ arch/ppc/syslib/open_pic.c    2006-02-08 10:30:22.000000000 +0100
+> @@ -824,7 +824,9 @@
+>      openpic_disable_irq(irq_nr);
+>      openpic_eoi();
+>  #else
+> +#ifndef CONFIG_IPIPE
+>      if ((irq_desc[irq_nr].status & IRQ_LEVEL) == 0)
+> +#endif /* CONFIG_IPIPE */
+>          openpic_eoi();
+>  #endif
+>  }
+> @@ -836,8 +838,10 @@
+>          && irq_desc[irq_nr].action)
+>          openpic_enable_irq(irq_nr);
+>  #else
+> +#ifndef CONFIG_IPIPE
+>      if ((irq_desc[irq_nr].status & IRQ_LEVEL) != 0)
+>          openpic_eoi();
+> +#endif /* CONFIG_IPIPE */
+>  #endif
+>  }
+> 
+> 
 
 
-> -----Message d'origine-----
-> De=A0: Philippe Gerum [mailto:rpm@xenomai.org]
-> Envoy=E9=A0: mardi, 7. f=E9vrier 2006 14:45
-> =C0=A0: ROSSIER Daniel
-> Cc=A0: xenomai@xenomai.org
-> Objet=A0: Re: [Xenomai-core] Watchdog/Interrupt management
->=20
-> ROSSIER Daniel wrote:
-> > Hi all,
-> >
-> > I've a - probably small ;-) - issue regarding the way how the =
-watchdog
-> and interrupt management are working together.
-> > I'd like to implement a watchdog in a task to ensure that a task is =
-well
-> alive at periodic interval. For doing some tests, I've
-> > implemented a small ISR which interceipts the keyboard interrupts =
-(IRQ
-> 1). The ISR is simply doing some busy wait burning CPU time,
-> > but with a delay greater than the task period.
-> > I assume that the ISR locks the rescheduling procedure as it is =
-stated
-> in the API doc (BTW; many thanks for having solved the doc issue).
-> > So, the task switching is temporarly suspended and the watchdog =
-should
-> raise up an alarm after the ISR has been completed, right?
-> > It doesn't.
->=20
-> Because Adeos disables interrupts by default when calling an ISR from =
-a
-> non-Linux
-> domain (like Xenomai's). You can re-enable them to get nested =
-interrupts
-> by doing
-> this in your ISR:
->=20
-> unsigned long flags;
->=20
-> rthal_local_irq_sync(flags);
-> <spin>
-> rthal_local_irq_restore(flags);
+-- 
 
-Please, could you just provide me with a small explanation about what =
-the rthal_local_irq_sync() function is doing?=20
-
->=20
-> > I've attached the code below (I've removed the function return check =
-for
-> readibility reasons, but all objects are fine).
-> >
-> > Another question:  the ISR is called on behalf of the interrupted =
-stack
-> context: does it mean that the ISR always runs in the stack context of =
-the
-> highest priority task, i.e. the running task (assume no inversion
-> priority), or could it in some cases the kernel stack context (if =
-ADEOS is
-> currently doing some interruptible stuff..)
-> >
->=20
-> I-pipe Adeos versions always run interrupt handlers over the stack of =
-the
-> preempted context.
->=20
-
-So, I presume I can use the  rt_task_self() function to get the task =
-which has been pre-empted, right? (and I've always a valid task)
-
-
-Thanks for your help.
-
-Daniel
-
+Philippe.
 
