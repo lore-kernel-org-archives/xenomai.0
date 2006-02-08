@@ -1,13 +1,12 @@
-Message-ID: <43E9CE95.3070806@domain.hid>
-Date: Wed, 08 Feb 2006 11:57:25 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
-References: <b647ffbd0602070104s63275903q@domain.hid>	<43E86F4D.4050400@domain.hid>
-	<43E8DFC4.4010805@domain.hid>
-In-Reply-To: <43E8DFC4.4010805@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-core] Watchdog/Interrupt management
+Date: Wed, 8 Feb 2006 13:09:41 +0100
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210CFD@EINT11.einet.ad.eivd.ch>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,126 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
-> 
->>Hello,
->>
->>Dmitry Adamushko wrote:
->>
->>>Hi,
->>>
->>>this is the final set of patches against the SVN trunk of 2006-02-03.
->>>
->>>It addresses mostly remarks concerning naming (XN_ISR_ISA ->
->>>XN_ISR_EDGE), a few cleanups and updated comments.
->>>
->>>Functionally, the support for shared interrupts (a few flags) to the
-> 
-> 
-> Not directly your fault: the increasing number of return flags for IRQ
-> handlers makes me worry that they are used correctly. I can figure out
-> what they mean (not yet that clearly from the docs), but does someone
-> else understand all this:
-> 
-> - RT_INTR_HANDLED
-
-ISR says it has handled the IRQ, and does not want any propagation to take place 
-down the pipeline. IOW, the IRQ processing stops there.
-
-> - RT_INTR_CHAINED
-
-ISR says it wants the IRQ to be propagated down the pipeline. Nothing is said 
-about the fact that the last ISR did or did not handle the IRQ locally; this is 
-irrelevant.
-
-> - RT_INTR_ENABLE
-
-ISR requests the interrupt dispatcher to re-enable the IRQ line upon return 
-(cumulable with HANDLED/CHAINED).
-
-> - RT_INTR_NOINT
-> 
-
-This new one comes from Dmitry's patch for shared IRQ support AFAICS. It would 
-mean to continue processing the chain of handlers because the last ISR invoked was 
-not concerned by the outstanding IRQ.
-
-> or
-> 
-> - RTDM_IRQ_PROPAGATE
-> - RTDM_IRQ_ENABLE
-> - RTDM_IRQ_NOINT
-> 
-> Third-party comments / suggestions welcome as well. Maybe I'm too
-> pessimistic.
-> 
-> 
->>>rtdm (Jan's patch) and native skin.
->>>In the later case, rt_intr_create() now contains the 6-th argument,
->>>namely "int mode".
->>>
->>>Now I'm waiting for the test results from Jan (the previous patch-set
->>>remains to be suitable for testing too in case you are using it
->>>already). Upon success, the new code is ready for merging.
-> 
-> 
-> Trying to manage the priority list of someone else is tricky - I hope we
-> can see something soon, but I cannot promise anything.
-> 
-> 
->>>the patches have to be applied as follows :
->>>- shirq-base
->>>- shirq-v8
->>>- shirq-proc
->>>- shirq-edge
->>>- shirq-ext
->>>
->>>Happy testing ! :)
->>
->>My concern is code size. I see that the patches add substantial amount
->>of code to the ISR. What about make this feature configurable?
->>
-> 
-> 
-> I would vote for the (already scheduled?) extension to register an
-> optimised IRQ trampoline in case there is actually no sharing taking
-> place. This would also make the "if (irq == XNARCH_TIMER_IRQ)" path
-> obsolete.
-
-I support that. Shared interrupts should be handled properly by Xeno since such - 
-I'd say "last resort" - configuration could be needed; this said, we should not 
-see this as the rule but rather as the exception, since this is basically required 
-to solve some underlying hw limitations wrt interrupt management, and definitely 
-has a significant cost on processing each shared IRQ wrt determinism.
-
-Incidentally, there is an interesting optimization on the project's todo list that 
-would allow non-RT interrupts to be masked at IC level when the Xenomai domain is 
-active. We could do that on any arch with civilized interrupt management, and that 
-would prevent any asynchronous diversion from the critical code when Xenomai is 
-running RT tasks (kernel or user-space). Think of this as some hw-controlled 
-interrupt shield. Since this feature requires to be able to individually mask each 
-interrupt source at IC level, there should be no point in sharing fully vectored 
-interrupts in such a configuration anyway. This fact also pleads for having the 
-shared IRQ support as a build-time option.
-
-> 
-> Jan
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+Hi Philippe,
 
 
--- 
+> -----Message d'origine-----
+> De=A0: Philippe Gerum [mailto:rpm@xenomai.org]
+> Envoy=E9=A0: mardi, 7. f=E9vrier 2006 14:45
+> =C0=A0: ROSSIER Daniel
+> Cc=A0: xenomai@xenomai.org
+> Objet=A0: Re: [Xenomai-core] Watchdog/Interrupt management
+>=20
+> ROSSIER Daniel wrote:
+> > Hi all,
+> >
+> > I've a - probably small ;-) - issue regarding the way how the =
+watchdog
+> and interrupt management are working together.
+> > I'd like to implement a watchdog in a task to ensure that a task is =
+well
+> alive at periodic interval. For doing some tests, I've
+> > implemented a small ISR which interceipts the keyboard interrupts =
+(IRQ
+> 1). The ISR is simply doing some busy wait burning CPU time,
+> > but with a delay greater than the task period.
+> > I assume that the ISR locks the rescheduling procedure as it is =
+stated
+> in the API doc (BTW; many thanks for having solved the doc issue).
+> > So, the task switching is temporarly suspended and the watchdog =
+should
+> raise up an alarm after the ISR has been completed, right?
+> > It doesn't.
+>=20
+> Because Adeos disables interrupts by default when calling an ISR from =
+a
+> non-Linux
+> domain (like Xenomai's). You can re-enable them to get nested =
+interrupts
+> by doing
+> this in your ISR:
+>=20
+> unsigned long flags;
+>=20
+> rthal_local_irq_sync(flags);
+> <spin>
+> rthal_local_irq_restore(flags);
 
-Philippe.
+Please, could you just provide me with a small explanation about what =
+the rthal_local_irq_sync() function is doing?=20
+
+>=20
+> > I've attached the code below (I've removed the function return check =
+for
+> readibility reasons, but all objects are fine).
+> >
+> > Another question:  the ISR is called on behalf of the interrupted =
+stack
+> context: does it mean that the ISR always runs in the stack context of =
+the
+> highest priority task, i.e. the running task (assume no inversion
+> priority), or could it in some cases the kernel stack context (if =
+ADEOS is
+> currently doing some interruptible stuff..)
+> >
+>=20
+> I-pipe Adeos versions always run interrupt handlers over the stack of =
+the
+> preempted context.
+>=20
+
+So, I presume I can use the  rt_task_self() function to get the task =
+which has been pre-empted, right? (and I've always a valid task)
+
+
+Thanks for your help.
+
+Daniel
+
 
