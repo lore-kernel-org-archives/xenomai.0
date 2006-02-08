@@ -1,16 +1,13 @@
-Message-ID: <43E9AAB3.5020004@domain.hid>
-Date: Wed, 08 Feb 2006 09:24:19 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <43E9BC7D.6020803@domain.hid>
+Date: Wed, 08 Feb 2006 10:40:13 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
-References: <b647ffbd0602070104s63275903q@domain.hid>
-	<43E86F4D.4050400@domain.hid>
-	<43E8DFC4.4010805@domain.hid>
-	<43E99D2F.6040609@domain.hid>
-In-Reply-To: <43E99D2F.6040609@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE5E8337891BB951A7EDAC5CE"
+Subject: Re: [Xenomai-core] [PATCH] Slow is faster arch/ppc/syslib/open_pic.c
+References: <b647ffbd0601311053s2f9f77c3m@domain.hid>	<43E0BEC1.2060400@domain.hid>	<43E73441.9090702@domain.hid>	<43E8C523.2030107@domain.hid>
+	<43E8C7CB.8050401@domain.hid>
+In-Reply-To: <43E8C7CB.8050401@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,114 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Anders Blomdell <anders.blomdell@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE5E8337891BB951A7EDAC5CE
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Wolfgang Grandegger wrote:
-> Jan Kiszka wrote:
->> Wolfgang Grandegger wrote:
->>> Hello,
->>>
->>> Dmitry Adamushko wrote:
->>>> Hi,
->>>>
->>>> this is the final set of patches against the SVN trunk of 2006-02-03=
-=2E
->>>>
->>>> It addresses mostly remarks concerning naming (XN_ISR_ISA ->
->>>> XN_ISR_EDGE), a few cleanups and updated comments.
->>>>
->>>> Functionally, the support for shared interrupts (a few flags) to the=
-
+Philippe Gerum wrote:
+> Anders Blomdell wrote:
+> 
+>> When trying to run Xenomai on PowerPC with OpenPIC, I have (finally) 
+>> found that interrupt latency is much improved with the following patch:
 >>
->> Not directly your fault: the increasing number of return flags for IRQ=
-
->> handlers makes me worry that they are used correctly. I can figure out=
-
->> what they mean (not yet that clearly from the docs), but does someone
->> else understand all this:
 >>
->> - RT_INTR_HANDLED
->> - RT_INTR_CHAINED
->> - RT_INTR_ENABLE
->> - RT_INTR_NOINT
 >>
->> or
+>> --- arch/ppc/syslib/open_pic.c~ 2006-01-08 03:15:24.000000000 +0100
+>> +++ arch/ppc/syslib/open_pic.c  2006-02-07 16:56:14.000000000 +0100
+>> @@ -820,7 +820,7 @@
+>>   */
+>>  static void openpic_ack_irq(unsigned int irq_nr)
+>>  {
+>> -#ifdef __SLOW_VERSION__
+>> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
+>>         openpic_disable_irq(irq_nr);
+>>         openpic_eoi();
+>>  #else
+>> @@ -831,7 +831,7 @@
 >>
->> - RTDM_IRQ_PROPAGATE
->> - RTDM_IRQ_ENABLE
->> - RTDM_IRQ_NOINT
+>>  static void openpic_end_irq(unsigned int irq_nr)
+>>  {
+>> -#ifdef __SLOW_VERSION__
+>> +#if defined(__SLOW_VERSION__) || defined(CONFIG_IPIPE)
+>>         if (!(irq_desc[irq_nr].status & (IRQ_DISABLED|IRQ_INPROGRESS))
+>>             && irq_desc[irq_nr].action)
+>>                 openpic_enable_irq(irq_nr);
 >>
->> Third-party comments / suggestions welcome as well. Maybe I'm too
->> pessimistic.
 >>
->>>> rtdm (Jan's patch) and native skin.
->>>> In the later case, rt_intr_create() now contains the 6-th argument,
->>>> namely "int mode".
->>>>
->>>> Now I'm waiting for the test results from Jan (the previous patch-se=
-t
->>>> remains to be suitable for testing too in case you are using it
->>>> already). Upon success, the new code is ready for merging.
 >>
->> Trying to manage the priority list of someone else is tricky - I hope =
-we
->> can see something soon, but I cannot promise anything.
+>> The reason for this, is that the fast version doesn't call openpic_eoi 
+>> until the interrupt is ended, which means that all RT-interrupts are 
+>> delayed by a pending Linux interrupt.
 >>
->>>> the patches have to be applied as follows :
->>>> - shirq-base
->>>> - shirq-v8
->>>> - shirq-proc
->>>> - shirq-edge
->>>> - shirq-ext
->>>>
->>>> Happy testing ! :)
->>> My concern is code size. I see that the patches add substantial amoun=
-t
->>> of code to the ISR. What about make this feature configurable?
->>>
->>
->> I would vote for the (already scheduled?) extension to register an
->> optimised IRQ trampoline in case there is actually no sharing taking
->> place. This would also make the "if (irq =3D=3D XNARCH_TIMER_IRQ)" pat=
-h
->> obsolete.
->=20
-> I still prefer configuration options as they also allow to reduce the
-> overall code size (less cache refills and TLB misses). And shared
-> interrupts are for x86 only (approximately), I think. Unfortunately, I
+> 
+> Gasp. Will check on my Icecube asap, thanks (a lot).
+> 
 
-Ok, that's a good argument. Then make the whole IRQ-sharing stuff
-compile-time configurable and see how much we can save.
+The mpc52xx is using its own version of PIC management - which should not induce 
+such delay on eoi, so I cannot experiment this change yet. However, I've revisited 
+your patch so that the OpenPIC code always sends eoi in fast mode, regardless of 
+the interrupt polarity. Could you try the patch below and let me know of the 
+outcome? TIA,
 
-> don't have the time to follow all the details of the rapid Xenomai
-> development and can't therefore judge what is really necessary.
->=20
-> Wolfgang.
->=20
-
-Jan
-
+--- arch/ppc/syslib/open_pic.c~	2005-10-28 02:02:08.000000000 +0200
++++ arch/ppc/syslib/open_pic.c	2006-02-08 10:30:22.000000000 +0100
+@@ -824,7 +824,9 @@
+  	openpic_disable_irq(irq_nr);
+  	openpic_eoi();
+  #else
++#ifndef CONFIG_IPIPE
+  	if ((irq_desc[irq_nr].status & IRQ_LEVEL) == 0)
++#endif /* CONFIG_IPIPE */
+  		openpic_eoi();
+  #endif
+  }
+@@ -836,8 +838,10 @@
+  	    && irq_desc[irq_nr].action)
+  		openpic_enable_irq(irq_nr);
+  #else
++#ifndef CONFIG_IPIPE
+  	if ((irq_desc[irq_nr].status & IRQ_LEVEL) != 0)
+  		openpic_eoi();
++#endif /* CONFIG_IPIPE */
+  #endif
+  }
 
 
---------------enigE5E8337891BB951A7EDAC5CE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD6aqzncNeS9Q0k+IRApz3AKClT07LeT+5/10ZBdbn3VgLUyyrtgCfejzO
-dhFeilmfS9gdkFET1StXDEw=
-=RICO
------END PGP SIGNATURE-----
-
---------------enigE5E8337891BB951A7EDAC5CE--
+Philippe.
 
