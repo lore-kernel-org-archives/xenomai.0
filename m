@@ -1,12 +1,12 @@
-Message-ID: <43EB1279.3040902@domain.hid>
-Date: Thu, 09 Feb 2006 10:59:21 +0100
+Message-ID: <43EB145C.4050902@domain.hid>
+Date: Thu, 09 Feb 2006 11:07:24 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
-References: <b647ffbd0602070104s63275903q@domain.hid>	<43E86F4D.4050400@domain.hid>	<43E8DFC4.4010805@domain.hid>
-	<43E9CE95.3070806@domain.hid> <43EAFD8B.7020400@domain.hid>
-In-Reply-To: <43EAFD8B.7020400@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <b647ffbd0602070104s63275903q@domain.hid>	<43E86F4D.4050400@domain.hid>	<43E8DFC4.4010805@domain.hid>	<43E9CE95.3070806@domain.hid>
+	<43EAFD8B.7020400@domain.hid> <43EB0757.7030508@domain.hid>
+In-Reply-To: <43EB0757.7030508@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,172 +17,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Anders Blomdell wrote:
-> Philippe Gerum wrote:
+Jan Kiszka wrote:
+> Anders Blomdell wrote:
 > 
->> Jan Kiszka wrote:
+>>Philippe Gerum wrote:
 >>
->>> Wolfgang Grandegger wrote:
+>>>Jan Kiszka wrote:
 >>>
->>>> Hello,
+>>>
+>>>>Wolfgang Grandegger wrote:
 >>>>
->>>> Dmitry Adamushko wrote:
 >>>>
->>>>> Hi,
+>>>>>Hello,
 >>>>>
->>>>> this is the final set of patches against the SVN trunk of 2006-02-03.
+>>>>>Dmitry Adamushko wrote:
 >>>>>
->>>>> It addresses mostly remarks concerning naming (XN_ISR_ISA ->
->>>>> XN_ISR_EDGE), a few cleanups and updated comments.
 >>>>>
->>>>> Functionally, the support for shared interrupts (a few flags) to the
+>>>>>>Hi,
+>>>>>>
+>>>>>>this is the final set of patches against the SVN trunk of 2006-02-03.
+>>>>>>
+>>>>>>It addresses mostly remarks concerning naming (XN_ISR_ISA ->
+>>>>>>XN_ISR_EDGE), a few cleanups and updated comments.
+>>>>>>
+>>>>>>Functionally, the support for shared interrupts (a few flags) to the
+>>>>
+>>>>
+>>>>
+>>>>Not directly your fault: the increasing number of return flags for IRQ
+>>>>handlers makes me worry that they are used correctly. I can figure out
+>>>>what they mean (not yet that clearly from the docs), but does someone
+>>>>else understand all this:
+>>>>
+>>>>- RT_INTR_HANDLED
 >>>
 >>>
+>>>ISR says it has handled the IRQ, and does not want any propagation to
+>>>take place down the pipeline. IOW, the IRQ processing stops there.
+>>
+>>This says that the interrupt will be ->end'ed at some later time
+>>(perhaps in the interrupt handler task)
+>>
+>>
+>>>>- RT_INTR_CHAINED
 >>>
 >>>
->>> Not directly your fault: the increasing number of return flags for IRQ
->>> handlers makes me worry that they are used correctly. I can figure out
->>> what they mean (not yet that clearly from the docs), but does someone
->>> else understand all this:
+>>>ISR says it wants the IRQ to be propagated down the pipeline. Nothing
+>>>is said about the fact that the last ISR did or did not handle the IRQ
+>>>locally; this is irrelevant.
+>>
+>>This says that the interrupt will eventually be ->end'ed by some later
+>>stage in the pipeline.
+>>
+>>
+>>>>- RT_INTR_ENABLE
 >>>
->>> - RT_INTR_HANDLED
->>
->>
->>
->> ISR says it has handled the IRQ, and does not want any propagation to 
->> take place down the pipeline. IOW, the IRQ processing stops there.
-> 
-> This says that the interrupt will be ->end'ed at some later time 
-> (perhaps in the interrupt handler task)
-> 
-
-The ISR may end the IRQ before returning, or leave it to the nucleus upon return 
-by adding the ENABLE bit.
-
->>> - RT_INTR_CHAINED
->>
->>
->>
->> ISR says it wants the IRQ to be propagated down the pipeline. Nothing 
->> is said about the fact that the last ISR did or did not handle the IRQ 
->> locally; this is irrelevant.
-> 
-> This says that the interrupt will eventually be ->end'ed by some later 
-> stage in the pipeline.
-> 
->>> - RT_INTR_ENABLE
->>
->>
->>
->> ISR requests the interrupt dispatcher to re-enable the IRQ line upon 
->> return (cumulable with HANDLED/CHAINED).
-> 
-
-This is wrong; we should only associate this to HANDLED; sorry.
-
-> This says that the interrupt will be ->end'ed when this interrupt 
-> handler returns.
-> 
->>
->>> - RT_INTR_NOINT
 >>>
+>>>ISR requests the interrupt dispatcher to re-enable the IRQ line upon
+>>>return (cumulable with HANDLED/CHAINED).
 >>
->> This new one comes from Dmitry's patch for shared IRQ support AFAICS. 
->> It would mean to continue processing the chain of handlers because the 
->> last ISR invoked was not concerned by the outstanding IRQ.
-> 
-> Sounds like RT_INTR_CHAINED, except that it's for the current pipeline 
-> stage?
-> 
-
-Basically, yes.
-
-> Now for the quiz question (powerpc arch):
-> 
->   1. Assume an edge triggered interrupt
->   2. The RT-handler returns RT_INTR_ENABLE | RT_INTR_ENABLE (i.e. shared
->      interrupt, but no problem since it's edge-triggered)
-
-( Assuming RT_INTR_CHAINED | RT_INTR_ENABLE )
-
->   3. Interrupt gets ->end'ed right after RT-handler has returned
->   4. Linux interrupt eventually handler starts its ->end() handler:
->         local_irq_save_hw(flags);
->         if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
->           ipipe_irq_unlock(irq);
->     // Next interrupt occurs here!
-
-It can't occur here: hw interrupts are off after local_irq_save_hw, and unlocking 
-some IRQ does not flush the IRQ log.
-
->         __ipipe_std_irq_dtype[irq].end(irq);
->         local_irq_restore_hw(flags);
-> 
-> 
-> Wouldn't this lead to a lost interrupt? Or am I overly paranoid?
-
-This could happen, yep. Actually, this would be a possible misuse of the ISR 
-return values.
-If one chains the handler Adeos-wise, it is expected to leave the IC in its 
-original state wrt the processed interrupt. CHAINED should be seen as mutually 
-exclusive with ENABLE.
-
-> My distinct feeling is that the return value should be a scalar and not 
-> a set!
-> 
-
-To sum up, the valid return values are HANDLED, HANDLED | ENABLE (*), HANDLED | 
-CHAINED and CHAINED. It's currently a set because I once thought that the 
-"handled" indication (or lack of) could be a valuable information to gather at 
-nucleus level to detect unhandled RT interrupts. Fact is that we currently don't 
-use this information, though. IOW, we could indeed define some enum and have a 
-scalar there instead of a set; or we could just leave this as a set, but whine 
-when detecting the invalid ENABLE | CHAINED combination.
-
-(*) because the handler does not necessary know how to ->end() the current IRQ at 
-IC level, but Xenomai always does.
-
->> ...
->>
->>> I would vote for the (already scheduled?) extension to register an
->>> optimised IRQ trampoline in case there is actually no sharing taking
->>> place. This would also make the "if (irq == XNARCH_TIMER_IRQ)" path
->>> obsolete.
+>>This says that the interrupt will be ->end'ed when this interrupt
+>>handler returns.
 >>
 >>
+>>>>- RT_INTR_NOINT
+>>>>
+>>>
+>>>This new one comes from Dmitry's patch for shared IRQ support AFAICS.
+>>>It would mean to continue processing the chain of handlers because the
+>>>last ISR invoked was not concerned by the outstanding IRQ.
 >>
->> I support that. Shared interrupts should be handled properly by Xeno 
->> since such - I'd say "last resort" - configuration could be needed; 
->> this said, we should not see this as the rule but rather as the 
->> exception, since this is basically required to solve some underlying 
->> hw limitations wrt interrupt management, and definitely has a 
->> significant cost on processing each shared IRQ wrt determinism.
+>>Sounds like RT_INTR_CHAINED, except that it's for the current pipeline
+>>stage?
 >>
->> Incidentally, there is an interesting optimization on the project's 
->> todo list 
+>>Now for the quiz question (powerpc arch):
+>>
+>>  1. Assume an edge triggered interrupt
+>>  2. The RT-handler returns RT_INTR_ENABLE | RT_INTR_ENABLE (i.e. shared
 > 
-> Is this todo list accessible anywhere?
 > 
+> Kind of redundant. What did you really mean?
+> 
+> 
+>>     interrupt, but no problem since it's edge-triggered)
+>>  3. Interrupt gets ->end'ed right after RT-handler has returned
+>>  4. Linux interrupt eventually handler starts its ->end() handler:
+>>        local_irq_save_hw(flags);
+>>        if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
+>>          ipipe_irq_unlock(irq);
+>>    // Next interrupt occurs here!
+>>        __ipipe_std_irq_dtype[irq].end(irq);
+>>        local_irq_restore_hw(flags);
+>>
+>>
+>>Wouldn't this lead to a lost interrupt? Or am I overly paranoid?
+>>My distinct feeling is that the return value should be a scalar and not
+>>a set!
+> 
+> 
+> That's a good idea: only provide valid and reasonable flag combinations
+> to the user!
+> 
+> 
+>>>...
+>>>
+>>>>I would vote for the (already scheduled?) extension to register an
+>>>>optimised IRQ trampoline in case there is actually no sharing taking
+>>>>place. This would also make the "if (irq == XNARCH_TIMER_IRQ)" path
+>>>>obsolete.
+>>>
+>>>
+>>>I support that. Shared interrupts should be handled properly by Xeno
+>>>since such - I'd say "last resort" - configuration could be needed;
+>>>this said, we should not see this as the rule but rather as the
+>>>exception, since this is basically required to solve some underlying
+>>>hw limitations wrt interrupt management, and definitely has a
+>>>significant cost on processing each shared IRQ wrt determinism.
+>>>
+>>>Incidentally, there is an interesting optimization on the project's
+>>>todo list 
+>>
+>>Is this todo list accessible anywhere?
+> 
+> 
+> I did not know of such interesting plans as well. Maybe we should start
+> using more of the feature GNA provide to us (task lists?)...
+> 
+> 
+>>>that would allow non-RT interrupts to be masked at IC level when
+>>>the Xenomai domain is active. We could do that on any arch with
+>>>civilized interrupt management, and that would prevent any
+>>>asynchronous diversion from the critical code when Xenomai is running
+>>>RT tasks (kernel or user-space). Think of this as some hw-controlled
+>>>interrupt shield. Since this feature requires to be able to
+>>>individually mask each interrupt source at IC level, there should be
+>>>no point in sharing fully vectored interrupts in such a configuration
+>>>anyway. This fact also pleads for having the shared IRQ support as a
+>>>build-time option.
+>>
+> 
+> This concept sound really thrilling. I already wondered if this is
+> possible after seeing how many non-RT IRQ stubs can hit between an RT
+> event and the RT task invocation: HD, network, keyboard, mouse, sound,
+> graphic card - and if you are "lucky", a lot of them chain up at the
+> same time. But I thought that such disabling is too costly for being
+> used at every domain switch. Is it not?
+>
 
-There's a roadmap for v2.1 that has been posted to the -core list in 
-October/November. Aside of that, the todos are not maintained in a centralized and 
-accessible way yet. We could perhaps use GNA's task manager for that 
-(http://gna.org/task/?group=xenomai), even if not to the full extent of its features.
+It all depends on the underlying arch. I started to think about this when working
+with the Blackfin, which provides an efficient and fine-grained control over the 
+interrupt system (hey, it's a DSP after all). Anders recently brought up the issue 
+too, waking up the sleeper. Of course, one would not want to try that with a 8259 
+chip over x86...
 
->  > that would allow non-RT interrupts to be masked at IC level when
-> 
->> the Xenomai domain is active. We could do that on any arch with 
->> civilized interrupt management, and that would prevent any 
->> asynchronous diversion from the critical code when Xenomai is running 
->> RT tasks (kernel or user-space). Think of this as some hw-controlled 
->> interrupt shield. Since this feature requires to be able to 
->> individually mask each interrupt source at IC level, there should be 
->> no point in sharing fully vectored interrupts in such a configuration 
->> anyway. This fact also pleads for having the shared IRQ support as a 
->> build-time option.
+> Jan
 > 
 > 
 
