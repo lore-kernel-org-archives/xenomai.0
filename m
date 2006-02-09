@@ -1,12 +1,17 @@
-Message-ID: <43EB56CC.6090609@domain.hid>
-Date: Thu, 09 Feb 2006 15:50:52 +0100
-From: Luotao Fu <devtty0@domain.hid>
+Message-ID: <43EB63D7.2080507@domain.hid>
+Date: Thu, 09 Feb 2006 16:46:31 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Benchmarks
-References: <b647ffbd0602090621o4501fb08t@domain.hid>
-In-Reply-To: <b647ffbd0602090621o4501fb08t@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <b647ffbd0602070104s63275903q@domain.hid>	
+	<43E86F4D.4050400@domain.hid>	
+	<43E8DFC4.4010805@domain.hid>
+	<43E9CE95.3070806@domain.hid>	 <43EAFD8B.7020400@domain.hid>
+	<43EB1279.3040902@domain.hid>	 <43EB1741.9080809@domain.hid>
+	<b647ffbd0602090311x56dbc765x@domain.hid>
+In-Reply-To: <b647ffbd0602090311x56dbc765x@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] More on Shared interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,101 +22,102 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Hi folks,
+For the last few days, I have tried to figure out a good way to share interrupts 
+between RT and non-RT domains. This has included looking through Dmitry's patch, 
+correcting bugs and testing what is possible in my specific case. I'll therefore 
+try to summarize at least a few of my thoughts.
 
-Dmitry Adamushko schrieb:
-> 
-> Hi there,
-> 
-> after a preliminary discussion with Philipe and, well, a few days later
-> than I expected, I'm starting a new effort of writting some simple (i.e.
-> not
-> too complex :) yet, hopefully, useful benchmarking utilites.
-> 
-> The idea of each utility is to emulate a certain use case but
-> at the level which is significant enough to prove that
-> the system is (or is not) working properly latency-wise.
-> This, hopefully, will help to determine some bottlenecks and
-> the parts of code that need to be reworked/tweaked.
-> Then we may use such tests on release-by-release basis as indicators
-> of either progress or regress we are making with a certain release.
+1. When looking through Dmitry's patch I get the impression that the iack 
+handler has very little to do with each interrupt (the test 'prev->iack != 
+intr->iack' is a dead giveaway), but is more of a domain-specific function (or 
+perhaps even just a placeholder for the hijacked Linux ack-function).
 
-Actually, I'm doing here some measurementstuffs to compare the Realtime
-Performance of Xenomai and Preempt-RT stuffs. :-)
 
-> 
-> As an example, the first utility would implement the following use case :
-> 
-> (based on the latency program)
-> 
-> - a given number of periodic threads are running;
-> 
-> - configurable periods (so that e.g. a few threads can become active
->   at the same moment of time). Actually, that's what we would need.
-> 
-> - timer : periodic or apperiodic;
+2. Somewhat inspired by the figure in "Life with Adeos", I have identified the 
+following cases:
 
-I've already implemented something in this way in POSIX. I took the
-accuracy.c out of the posix demo from Gille and changed it. So that you
-can start few threads with different nsleep duration. Except that it
-writes a log, which can be plotted. The util does quite the same stuffs
-like the cyclictest by Thomas Gleixner.
+   irq K  | ----------- | ---o    |   // Linux only
+   ...
+   irq L  | ---o        |         |   // RT-only
+   ...
+   irq M  | ---o------- | ---o    |   // Shared between domains
+   ...
+   irq N  | ---o---o--- |         |   // Shared inside single domain
+   ...
+   irq O  | ---o---o--- | ---o    |   // Shared between and inside single domain
 
-Further I implemented a tool for Interruptmeasurement with rtdm. Still
-tuning on it, because the Pre-RT Kernel get ocassionally problems with
-stability.
+Xenomai currently handles the K & L cases, Dmitrys patch addresses the N case, 
+with edge triggered interrupts the M (and O after Dmitry's patch) case(s) might 
+be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE from the interrupt 
+handler, for level triggered interrupt the M and O cases can't be handled.
 
-I even implemented Rhealstone Benchmark with xenomai-complaint Posix, it
-however provides only middlevalues and might not be very interesting.
+If one looks more closely at the K case (Linux only interrupt), it works by when 
+an interrupt occurs, the call to irq_end is postponed until the Linux interrupt 
+handler has run, i.e. further interrupts are disabled. This can be seen as a 
+lazy version of Philippe's idea of disabling all non-RT interrupts until the 
+RT-domain is idle, i.e. the interrupt is disabled only if it indeed occurs.
 
-> 
-> ...
-> 
-> the utility will not likely produce any screen-output during its work, but
-> rather the comprehensive statistic in a handy form after finishing.
-> 
+If this idea should be generalized to the M (and O) case(s), one can't rely on 
+postponing the irq_end call (since the interrupt is still needed in the 
+RT-domain), but has to rely on some function that disables all non-RT hardware 
+that generates interrupts on that irq-line; such a function naturally has to 
+have intimate knowledge of all hardware that can generate interrupts in order to 
+be able to disable those interrupt sources that are non-RT.
 
-Exactly what I thought :-)
+If we then take Jan's observation about the many (Linux-only) interrupts present 
+in an ordinary PC and add it to Philippe's idea of disabling all non-RT 
+interrupts while executing in the RT-domain, I think that the following is a 
+workable (and fairly efficient) way of handling this:
 
-> ---
-> 
-> other utils could make use of some scenarious where synch. primitives/
-> rt_queue's/pipes could be highly used etc.
-> 
+Add hardware dependent enable/disable functions, where the enable is called just 
+before normal execution in a domain starts (i.e. when playing back interrupts, 
+the disable is still in effect), and disable is called when normal domain 
+execution end. This does effectively handle the K case above, with the added 
+benefit that NO non-RT interrupts will occur during RT execution.
 
-Generally I'm quite interested on some xenomai specific latency
-behaviour caused by i.E. Domain Switching, Function Wrapping and so on.
-I'm still considering on some concrete Workload-scenarious.
+In the 8259 case, the disable function could look something like:
 
-> 
-> I guess, Xenomai already provides a valid amount of functionality and it's
-> quite stable for the time being. So it's time to work on optimizing it!
-> 
-> Everyone is wellcome to come up with any scenarios on which such utilities
-> could be based.
-> 
-> Any comments on the one with a given number of threads are wellcome too.
-> 
+   domain_irq_disable(uint irqmask) {
+     if (irqmask & 0xff00 != 0xff00) {
+       irqmask &= ~0x0004; // Cascaded interrupt is still needed
+       outb(irqmask >> 8, PIC_SLAVE_IMR);
+     }
+     outb(irqmask, PIC_MASTER_IMR);
+   }
 
-I'm now busy writing my stuffs together. no time to debug my hacks. so I
-think I'd release them somehow later some time after I've given them
-first to Jan for quice code review.
+If we should extend this to handle the M (and O) case(s), the disable function 
+could look like:
 
-> 
-> -- 
-> Best regards,
-> Dmitry Adamushko
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+   domain_irq_disable(uint irqmask, shared_irq_t *shared[]) {
+     int i;
 
-Cheers
-Luotao Fu
+     for (i = 0 ; i < MAX_IRQ ; i++) {
+       if (shared[i]) {
+         shared_irq_t *next = shared[i];
+         irqmask &= ~(1<<i);
+         while (next) {
+           next->disable();
+	  next = next->next;
+         }
+       }
+     }
+     if (irqmask & 0xff00 != 0xff00) {
+       irqmask &= ~0x0004; // Cascaded interrupt is still needed
+       outb(irqmask >> 8, PIC_SLAVE_IMR);
+     }
+     outb(irqmask, PIC_MASTER_IMR);
+   }
+
+An obvious optimization of the above scheme, is to never call the disable (or 
+enable) function for the RT-domain, since there all interrupt processing is 
+protected by the hardware.
+
+Comments, anyone?
+
+-- 
+
+Anders
+
 
