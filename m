@@ -1,17 +1,14 @@
-Message-ID: <43E07559.6000003@domain.hid>
-Date: Wed, 01 Feb 2006 09:46:17 +0100
+Message-ID: <43EB1741.9080809@domain.hid>
+Date: Thu, 09 Feb 2006 11:19:45 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Shared irqs v.6
-References: <b647ffbd0601311053s2f9f77c3m@domain.hid>	
-	<43DFB5F9.50406@domain.hid>
-	<b647ffbd0601311150t6092a758w@domain.hid>	
-	<43DFC50B.1090707@domain.hid>
-	<fd6a47a90602010032u3776fd8n@domain.hid>
-In-Reply-To: <fd6a47a90602010032u3776fd8n@domain.hid>
+Subject: Re: [Xenomai-core] [Combo-PATCH] Shared interrupts (final)
+References: <b647ffbd0602070104s63275903q@domain.hid>	<43E86F4D.4050400@domain.hid>	<43E8DFC4.4010805@domain.hid>	<43E9CE95.3070806@domain.hid>
+	<43EAFD8B.7020400@domain.hid> <43EB1279.3040902@domain.hid>
+In-Reply-To: <43EB1279.3040902@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6CB3C7044E2281040BF13AA1"
+	boundary="------------enig8B60916083575364D29942BC"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,90 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6CB3C7044E2281040BF13AA1
+--------------enig8B60916083575364D29942BC
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Jeroen Van den Keybus wrote:
->>> I mean that the support of shared interrupts for ISA boards
->> (edge-triggered
->>> stuff) is a kind of emulation to overcome the shortcommings of the
->> initial
->>> design on the hardware level. The hardware was just not supposed to
->> support
->>> shared interrupt channels. So, let's keep it a bit aside from another=
-
->> code
->>> :o)
->> Unfortunately, this crappy hardware is still quite common in the
->> embedded domain.
+Philippe Gerum wrote:
+> Anders Blomdell wrote:
 >=20
+>> My distinct feeling is that the return value should be a scalar and
+>> not a set!
+>>
 >=20
-> If I've understood correctly, the only reason for having this support i=
-s to
-> avoid - after discovering an interrupting UART - that the IRQ line rema=
-ins
-> high upon exit, which would cause the 8259 not to issue the CPU IRQ for=
- that
-> line anymore ?
+> To sum up, the valid return values are HANDLED, HANDLED | ENABLE (*),
+> HANDLED | CHAINED and CHAINED. It's currently a set because I once
+> thought that the "handled" indication (or lack of) could be a valuable
+> information to gather at nucleus level to detect unhandled RT
+> interrupts. Fact is that we currently don't use this information,
 
-Yep.
+But it is required for the edge-triggered case to detect when the IRQ
+line was at least shortly released. I guess Dmitry introduced that NOINT
+just because HANDLED equals 0 so far. As I would say HANDLED =3D=3D !NOIN=
+T,
+we could avoid this new flag by just making HANDLED non-zero.
 
->=20
-> The proposed solution is therefore to traverse the entire list of
-> UARTs connected to that IRQ line and make sure none of them was interru=
-pting
-> in two consecutive passes (by checking their status registers). That wo=
-uld
-> mean the IRQ line must be deasserted and the 8259 will properly detect =
-any
-> newly arriving interrupts, since the 8259 has been acknowledged before
-> handling the interrupt.
+> though. IOW, we could indeed define some enum and have a scalar there
+> instead of a set; or we could just leave this as a set, but whine when
+> detecting the invalid ENABLE | CHAINED combination.
 
-Yep.
+In combination with the change above and some doc improvement ("valid
+combinations are: ..."), I could also live with keeping the flags. The
+advantage were that we wouldn't break existing applications.
 
 >=20
-> 1. Wouldn't it be more efficient to make this a compile-time option, in=
-stead
-> of burdening the nucleus with it ?
-
-You need this feature per-IRQ as there will always be also usual
-level-triggered IRQs on your system. What Dmitry is now heading for is a
-runtime selection of the fitting IRQ trampoline at nucleus level.
-
-> 2. Would it be an option, in the embedded boards Jan is speaking of, to=
- put
-> the 8259 in level sensitive mode ? Some of the boards I know don't actu=
-ally
-> have this selection logic for the built-in interrupt sources such as th=
-e
-> timer and the IDE I/F and it therefore only applies to the ISA bus.
-
-Might be an option, but I'm not THAT deep into it to asses all possible
-pitfalls of such an approach. Has anyone ever tried this in reality?
-
-> 3. Beware of UARTs that cause interrupts and have a problem that causes=
- them
-> to spuriously return 'all green' upon reading of the IIR register. I ha=
-ve
-> dealt with an integrated ('Super I/O') card with that problem before. T=
-he
-> only solution was to look at LSR and check THRE as well, even when no T=
-X
-> interrupt was seemingly present. Must be a logic race.
-
-Yes, there is always the risk of running onto such hardware. Luckily, we
-haven't "found" any of it on our systems so far (once you picked
-reasonable hardware, you should stay with it - just like we do :) ).
+> (*) because the handler does not necessary know how to ->end() the
+> current IRQ at IC level, but Xenomai always does.
+>=20
 
 Jan
 
 
---------------enig6CB3C7044E2281040BF13AA1
+--------------enig8B60916083575364D29942BC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -114,10 +71,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD4HVaniDOoMHTA+kRAqhkAJ4gCBUDjuoeMKWoddMzx0cbVPI+1wCbBN64
-th64lZNYsImrRSfi66SXTtY=
-=YIwc
+iD8DBQFD6xdBniDOoMHTA+kRAtf6AJ9rBh1LDFeNydlYeW+q+DNhQSbg8gCghSPF
+5QAiiUOoMeRpeWhOUXdo8rk=
+=ZD46
 -----END PGP SIGNATURE-----
 
---------------enig6CB3C7044E2281040BF13AA1--
+--------------enig8B60916083575364D29942BC--
 
