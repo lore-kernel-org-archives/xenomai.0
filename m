@@ -1,14 +1,15 @@
-Message-ID: <43EBE032.40302@domain.hid>
-Date: Fri, 10 Feb 2006 01:37:06 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43EC48FE.705@domain.hid>
+Date: Fri, 10 Feb 2006 09:04:14 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
-References: <43EBD9D6.5090404@domain.hid>
-In-Reply-To: <43EBD9D6.5090404@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDCD55331014F48FD8288305C"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] More on Shared interrupts
+References: <b647ffbd0602070104s63275903q@domain.hid>		<43E86F4D.4050400@domain.hid>		<43E8DFC4.4010805@domain.hid>	<43E9CE95.3070806@domain.hid>	
+	<43EAFD8B.7020400@domain.hid>	<43EB1279.3040902@domain.hid>	
+	<43EB1741.9080809@domain.hid>	<b647ffbd0602090311x56dbc765x@domain.hid>
+	<43EB63D7.2080507@domain.hid> <43EB703C.2090704@domain.hid>
+In-Reply-To: <43EB703C.2090704@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,248 +19,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDCD55331014F48FD8288305C
-Content-Type: multipart/mixed; boundary="------------040408000006030000030909"
-
-This is a multi-part message in MIME format.
---------------040408000006030000030909
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Hi all,
->=20
-> this is a first attempt to add the requested mmap functionality to the
-> RTDM driver API.
+> Anders Blomdell wrote:
+> 
+>>For the last few days, I have tried to figure out a good way to share
+>>interrupts between RT and non-RT domains. This has included looking
+>>through Dmitry's patch, correcting bugs and testing what is possible in
+>>my specific case. I'll therefore try to summarize at least a few of my
+>>thoughts.
+>>
+>>1. When looking through Dmitry's patch I get the impression that the
+>>iack handler has very little to do with each interrupt (the test
+>>'prev->iack != intr->iack' is a dead giveaway), but is more of a
+>>domain-specific function (or perhaps even just a placeholder for the
+>>hijacked Linux ack-function).
+>>
+>>
+>>2. Somewhat inspired by the figure in "Life with Adeos", I have
+>>identified the following cases:
+>>
+>>  irq K  | ----------- | ---o    |   // Linux only
+>>  ...
+>>  irq L  | ---o        |         |   // RT-only
+>>  ...
+>>  irq M  | ---o------- | ---o    |   // Shared between domains
+>>  ...
+>>  irq N  | ---o---o--- |         |   // Shared inside single domain
+>>  ...
+>>  irq O  | ---o---o--- | ---o    |   // Shared between and inside single
+>>domain
+>>
+>>Xenomai currently handles the K & L cases, Dmitrys patch addresses the N
+>>case, with edge triggered interrupts the M (and O after Dmitry's patch)
+>>case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
+>>from the interrupt handler, for level triggered interrupt the M and O
+>>cases can't be handled.
+> 
+> 
+> I guess you mean it the other way around: for the edge-triggered
+> cross-domain case we would actually have to loop over both the RT and
+> the Linux handlers until we are sure, that the IRQ line was released once.
+I obviously has misunderstood edge triggered :-(
 
-=2E.. and this version is even more useful than the previous one (now wit=
-h
-EXPORT_SYMBOL!). Be warned: I just compiled it, I count on third-party
-testers.
+> Luckily, I never saw such a scenario which were unavoidable (it hits you
+> with ISA hardware which tend to have nice IRQ jumpers or other means -
+> it's just that you often cannot divide several controllers on the same
+> extension card IRQ-wise apart).
+> 
+> 
+>>If one looks more closely at the K case (Linux only interrupt), it works
+>>by when an interrupt occurs, the call to irq_end is postponed until the
+>>Linux interrupt handler has run, i.e. further interrupts are disabled.
+>>This can be seen as a lazy version of Philippe's idea of disabling all
+>>non-RT interrupts until the RT-domain is idle, i.e. the interrupt is
+>>disabled only if it indeed occurs.
+>>
+>>If this idea should be generalized to the M (and O) case(s), one can't
+>>rely on postponing the irq_end call (since the interrupt is still needed
+>>in the RT-domain), but has to rely on some function that disables all
+>>non-RT hardware that generates interrupts on that irq-line; such a
+>>function naturally has to have intimate knowledge of all hardware that
+>>can generate interrupts in order to be able to disable those interrupt
+>>sources that are non-RT.
+>>
+>>If we then take Jan's observation about the many (Linux-only) interrupts
+>>present in an ordinary PC and add it to Philippe's idea of disabling all
+>>non-RT interrupts while executing in the RT-domain, I think that the
+>>following is a workable (and fairly efficient) way of handling this:
+>>
+>>Add hardware dependent enable/disable functions, where the enable is
+>>called just before normal execution in a domain starts (i.e. when
+>>playing back interrupts, the disable is still in effect), and disable is
+>>called when normal domain execution end. This does effectively handle
+>>the K case above, with the added benefit that NO non-RT interrupts will
+>>occur during RT execution.
+>>
+>>In the 8259 case, the disable function could look something like:
+>>
+>>  domain_irq_disable(uint irqmask) {
+>>    if (irqmask & 0xff00 != 0xff00) {
+>>      irqmask &= ~0x0004; // Cascaded interrupt is still needed
+>>      outb(irqmask >> 8, PIC_SLAVE_IMR);
+>>    }
+>>    outb(irqmask, PIC_MASTER_IMR);
+>>  }
+>>
+>>If we should extend this to handle the M (and O) case(s), the disable
+>>function could look like:
+>>
+>>  domain_irq_disable(uint irqmask, shared_irq_t *shared[]) {
+>>    int i;
+>>
+>>    for (i = 0 ; i < MAX_IRQ ; i++) {
+>>      if (shared[i]) {
+>>        shared_irq_t *next = shared[i];
+>>        irqmask &= ~(1<<i);
+>>        while (next) {
+>>          next->disable();
+>>      next = next->next;
+>>        }
+> 
+> 
+> This obviously means that all non-RT IRQ handlers sharing a line with
+> the RT domain would have to be registered in that shared[]-list. This
+> gets close to my old suggestion. Just raises the question how to
+> organise these interface, both on the RT and the Linux side.
+> 
+> 
+>>      }
+>>    }
+>>    if (irqmask & 0xff00 != 0xff00) {
+>>      irqmask &= ~0x0004; // Cascaded interrupt is still needed
+>>      outb(irqmask >> 8, PIC_SLAVE_IMR);
+>>    }
+>>    outb(irqmask, PIC_MASTER_IMR);
+>>  }
+>>
+>>An obvious optimization of the above scheme, is to never call the
+>>disable (or enable) function for the RT-domain, since there all
+>>interrupt processing is protected by the hardware.
+> 
+> 
+> Another point is to avoid that looping over disable handlers for IRQs of
+> the K case. Otherwise, too many device-specific disable handlers had to
+> be implemented even if only a single Linux device hogs a RT IRQ.
+You only have to spin over those IRQ that are actually shared across domains 
+(probably just a few in most cases), those IRQ that stays in one domain fets 
+handled in the interrupt controller. Setting up the appropriate [per domain] 
+lists can be done as irqhandlers gets registered/unregistred (which is usually 
+quite seldom).
 
-Jan
+>>Comments, anyone?
+>>
+> 
+> 
+> I see your need, we just have to keep in mind that we are currently
+> discussing the corner case (shared RT/non-RT IRQs) of the corner case
+> (shared RT IRQs). Whatever will be defined, the normal use case should
+> define how an efficient interface has to look like. Or we have to add a
+> lot of #ifdef's...
+My current need can simply be handled by disabling the UART interrupt and have a 
+low priority RT task polling the interrupt and handing it over to Linux. It was 
+just that I thought that now might be a good time to try to bring together those 
+three somewhat overlapping issues:
 
---------------040408000006030000030909
-Content-Type: text/plain;
- name="rtdm_mmap.patch-v2"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="rtdm_mmap.patch-v2"
+   1. Shared RT-interrupts (which Dimitry has already done)
+   2. Philippe's suggestion of disabling all interrupts for lower priority
+      domains.
+   3. Interrupts shared between domains
 
-Index: include/rtdm/rtdm_driver.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/rtdm/rtdm_driver.h	(Revision 556)
-+++ include/rtdm/rtdm_driver.h	(Arbeitskopie)
-@@ -995,6 +995,10 @@
-     xnfree(ptr);
- }
-=20
-+int rtdm_mmap_to_user(rtdm_user_info_t *user_info, void *src_addr, size_=
-t len,
-+                      int prot, void **pptr);
-+int rtdm_munmap(rtdm_user_info_t *user_info, void *ptr, size_t len);
-+
- static inline int rtdm_read_user_ok(rtdm_user_info_t *user_info,
-                                     const void __user *ptr, size_t size)=
+As previously said, my current needs are covered by #3, but since I have RT 
+plans for some of my ordinary PCs as well, I feel that #2 is worth some effort 
+as well. My feeling right now, is that execution time of #2 will be shorter than 
+it takes to handle a single non-RT interrupt in the current codebase, and hence 
+it ought to improve RT performance (avoiding I-cache pressure from non-RT 
+handlers for instance), and #3 is a small addition once #2 is in place.
 
- {
-Index: ksrc/skins/rtdm/drvlib.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/rtdm/drvlib.c	(Revision 556)
-+++ ksrc/skins/rtdm/drvlib.c	(Arbeitskopie)
-@@ -31,7 +31,9 @@
-=20
-=20
- #include <linux/delay.h>
-+#include <linux/mman.h>
-=20
-+#define XENO_HEAP_MODULE
- #include <rtdm/rtdm_driver.h>
-=20
-=20
-@@ -1286,7 +1288,7 @@
-  * Rescheduling: never.
-  */
- int rtdm_irq_disable(rtdm_irq_t *irq_handle);
--/** @} */
-+/** @} Interrupt Management Services */
-=20
-=20
- /*!
-@@ -1358,16 +1360,133 @@
-  * environments.
-  */
- void rtdm_nrtsig_pend(rtdm_nrtsig_t *nrt_sig);
--/** @} */
-+/** @} Non-Real-Time Signalling Services */
-=20
-+#endif /* DOXYGEN_CPP */
-=20
-+
- /*!
-  * @ingroup driverapi
-  * @defgroup util Utility Services
-  * @{
-  */
-=20
-+static int rtdm_mmap_buffer(struct file *filp, struct vm_area_struct *vm=
-a)
-+{
-+    return xnarch_remap_page_range(vma, vma->vm_start,
-+                                   virt_to_phys(filp->private_data),
-+                                   vma->vm_end - vma->vm_start, PAGE_SHA=
-RED);
-+}
-+
-+static struct file_operations rtdm_mmap_fops =3D {
-+    .mmap =3D rtdm_mmap_buffer,
-+};
-+
- /**
-+ * Map a kernel memory range into the address space of the user.
-+ *
-+ * @param[in] user_info User information pointer as passed to the invoke=
-d
-+ * device operation handler
-+ * @param[in] src_addr Kernel address to be mapped
-+ * @param[in] len Length of the memory range
-+ * @param[in] prot Protection flags for the user's memory range, typical=
-ly
-+ * either PROT_READ or PROT_READ|PROT_WRITE
-+ * @param[in,out] pptr Address of a pointer containing the desired user
-+ * address or NULL on entry and the finally assigned address on return
-+ *
-+ * @return 0 on success, otherwise:
-+ *
-+ * - -EXXX is returned if .
-+ *
-+ * @note An RTDM driver is expected to invoke rtdm_munmap on every mappe=
-d
-+ * memory range either when the user requests it explicitly or when the
-+ * related device is closed.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - User-space task (non-RT)
-+ *
-+ * Rescheduling: possible.
-+ */
-+int rtdm_mmap_to_user(rtdm_user_info_t *user_info, void *src_addr, size_=
-t len,
-+                      int prot, void **pptr)
-+{
-+    struct file             *filp;
-+    struct file_operations  *old_fops;
-+    void                    *old_priv_data;
-+    void                    *user_ptr;
-+
-+    filp =3D filp_open("/dev/zero", O_RDWR, 0);
-+    if (IS_ERR(filp))
-+        return PTR_ERR(filp);
-+
-+    old_fops =3D filp->f_op;
-+    filp->f_op =3D &rtdm_mmap_fops;
-+
-+    old_priv_data =3D filp->private_data;
-+    filp->private_data =3D src_addr;
-+
-+    down_write(&user_info->mm->mmap_sem);
-+    user_ptr =3D (void *)do_mmap(filp, (unsigned long)*pptr, len, prot,
-+                               MAP_SHARED, 0);
-+    up_write(&user_info->mm->mmap_sem);
-+
-+    filp->f_op =3D old_fops;
-+    filp->private_data =3D old_priv_data;
-+
-+    filp_close(filp, user_info->files);
-+
-+    if (IS_ERR(user_ptr))
-+        return PTR_ERR(user_ptr);
-+
-+    *pptr =3D user_ptr;
-+    return 0;
-+}
-+
-+EXPORT_SYMBOL(rtdm_mmap_to_user);
-+
-+
-+/**
-+ * Unmap a user memory range.
-+ *
-+ * @param[in] user_info User information pointer as passed to
-+ * rtdm_mmap_to_user() when requesting to map the memory range
-+ * @param[in] ptr User address or the memory range
-+ * @param[in] len Length of the memory range
-+ *
-+ * @return 0 on success, otherwise:
-+ *
-+ * - -EXXX is returned if .
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - User-space task (non-RT)
-+ *
-+ * Rescheduling: possible.
-+ */
-+int rtdm_munmap(rtdm_user_info_t *user_info, void *ptr, size_t len)
-+{
-+    int err;
-+
-+    down_write(&user_info->mm->mmap_sem);
-+    err =3D do_munmap(user_info->mm, (unsigned long)ptr, len);
-+    up_write(&user_info->mm->mmap_sem);
-+
-+    return err;
-+}
-+
-+EXPORT_SYMBOL(rtdm_munmap);
-+
-+
-+#ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
-+
-+/**
-  * Real-time safe message printing on kernel console
-  *
-  * @param[in] format Format string (conforming standard @c printf())
-@@ -1583,6 +1702,6 @@
-  */
- int rtdm_in_rt_context(void);
-=20
--/** @} */
-+#endif /* DOXYGEN_CPP */
-=20
--#endif /* DOXYGEN_CPP */
-+/** @} Utility Services */
 
---------------040408000006030000030909--
+-- 
 
---------------enigDCD55331014F48FD8288305C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD6+AyniDOoMHTA+kRAgK5AJ0Qcnw757zQeERjO2rhHLQMUj1mVwCfbIer
-zxVuizMxwZaM+85y15TmkxA=
-=a8Ao
------END PGP SIGNATURE-----
-
---------------enigDCD55331014F48FD8288305C--
+Anders
 
