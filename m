@@ -1,18 +1,12 @@
-Message-ID: <43EC9C5B.4030501@domain.hid>
-Date: Fri, 10 Feb 2006 14:59:55 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43ECD570.5000704@domain.hid>
+Date: Fri, 10 Feb 2006 19:03:28 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0602070104s63275903q@domain.hid>	
-	<43E86F4D.4050400@domain.hid>	
-	<43E8DFC4.4010805@domain.hid>
-	<43E9CE95.3070806@domain.hid>	 <43EAFD8B.7020400@domain.hid>
-	<43EB1279.3040902@domain.hid>	 <43EB1741.9080809@domain.hid>
-	<b647ffbd0602090311x56dbc765x@domain.hid>
-	<43EB63D7.2080507@domain.hid>
-In-Reply-To: <43EB63D7.2080507@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: More on Shared interrupts
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8F0A195A7CD72DE6BDA35CE2"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [shirq] first test results
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,173 +16,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Anders Blomdell wrote:
-> For the last few days, I have tried to figure out a good way to share 
-> interrupts between RT and non-RT domains. This has included looking 
-> through Dmitry's patch, correcting bugs and testing what is possible in 
-> my specific case. I'll therefore try to summarize at least a few of my 
-> thoughts.
-> 
-> 1. When looking through Dmitry's patch I get the impression that the 
-> iack handler has very little to do with each interrupt (the test 
-> 'prev->iack != intr->iack' is a dead giveaway), but is more of a 
-> domain-specific function (or perhaps even just a placeholder for the 
-> hijacked Linux ack-function).
-> 
-> 
-> 2. Somewhat inspired by the figure in "Life with Adeos", I have 
-> identified the following cases:
-> 
->   irq K  | ----------- | ---o    |   // Linux only
->   ...
->   irq L  | ---o        |         |   // RT-only
->   ...
->   irq M  | ---o------- | ---o    |   // Shared between domains
->   ...
->   irq N  | ---o---o--- |         |   // Shared inside single domain
->   ...
->   irq O  | ---o---o--- | ---o    |   // Shared between and inside single 
-> domain
-> 
-> Xenomai currently handles the K & L cases, Dmitrys patch addresses the N 
-> case, with edge triggered interrupts the M (and O after Dmitry's patch) 
-> case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE 
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8F0A195A7CD72DE6BDA35CE2
+Content-Type: multipart/mixed; boundary="------------080808050501090604050301"
 
-As you pointed out recently, using this combo for M (and thus O) might also be
-unsafe, e.g. causing some implementation to send eoi twice or more (and the second
-time while hw IRQs are off and the second IRQ is still pending) if more than a
-single domain ends the current interrupt. This said, I've never tried that
-actually, but this does seem a bit optimistic to always expect a proper behaviour
-in this case (basically, it all depends on what "ending" the interrupt means hw-wise).
+This is a multi-part message in MIME format.
+--------------080808050501090604050301
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
- > from the interrupt handler, for level triggered interrupt the M and O
-> cases can't be handled.
-> 
-> If one looks more closely at the K case (Linux only interrupt), it works 
-> by when an interrupt occurs, the call to irq_end is postponed until the 
-> Linux interrupt handler has run, i.e. further interrupts are disabled. 
-> This can be seen as a lazy version of Philippe's idea of disabling all 
-> non-RT interrupts until the RT-domain is idle, i.e. the interrupt is 
-> disabled only if it indeed occurs.
-> 
-> If this idea should be generalized to the M (and O) case(s), one can't 
-> rely on postponing the irq_end call (since the interrupt is still needed 
-> in the RT-domain), but has to rely on some function that disables all 
-> non-RT hardware that generates interrupts on that irq-line; such a 
-> function naturally has to have intimate knowledge of all hardware that 
-> can generate interrupts in order to be able to disable those interrupt 
-> sources that are non-RT.
-> 
-> If we then take Jan's observation about the many (Linux-only) interrupts 
-> present in an ordinary PC and add it to Philippe's idea of disabling all 
-> non-RT interrupts while executing in the RT-domain, I think that the 
-> following is a workable (and fairly efficient) way of handling this:
-> 
-> Add hardware dependent enable/disable functions, where the enable is 
-> called just before normal execution in a domain starts (i.e. when 
-> playing back interrupts, the disable is still in effect), and disable is 
-> called when normal domain execution end. This does effectively handle 
-> the K case above, with the added benefit that NO non-RT interrupts will 
-> occur during RT execution.
+Hi Dmitry,
 
-To do that, I'd suggest that we reuse the xnarch_enter_root/xnarch_leave_root 
-hooks the nucleus calls when entering or leaving the Linux domain (i.e. to restart 
-the RT activity). Sharing RT and non-RT interrupts are not that much an Adeos 
-issue, but rather a Xenomai one, since only the latter knows that it must handle 
-real-time constraints, and also knows about the xnintr abstraction we would have 
-to use in order to handle the intra-domain shared IRQs.
+some news from the testing front: It works fairly well - and it doesn't
+crash =3D:). We set up a quite demanding test scenario which consists of
+two Sick Laser scanners feeding two UART ports at 500 Kbit/s. The UARTs
+are on a special PC104 card, sharing the same edge-triggered IRQ line.
+We were able to get data from both devices running at the same time. But
+we noticed some overruns of MAX_EDGEIRQ_COUNTER (a few per second). The
+next step on Monday will be to generate a back-trace with the
+ipipe-tracer to see if the system is "just" overloaded or if we are
+still facing problems with the driver and/or IRQ layer. Will be very
+interesting to see on that radar what's happing.
 
-> 
-> In the 8259 case, the disable function could look something like:
-> 
->   domain_irq_disable(uint irqmask) {
->     if (irqmask & 0xff00 != 0xff00) {
->       irqmask &= ~0x0004; // Cascaded interrupt is still needed
->       outb(irqmask >> 8, PIC_SLAVE_IMR);
->     }
->     outb(irqmask, PIC_MASTER_IMR);
->   }
-> 
-> If we should extend this to handle the M (and O) case(s), the disable 
-> function could look like:
-> 
->   domain_irq_disable(uint irqmask, shared_irq_t *shared[]) {
->     int i;
-> 
->     for (i = 0 ; i < MAX_IRQ ; i++) {
->       if (shared[i]) {
->         shared_irq_t *next = shared[i];
->         irqmask &= ~(1<<i);
->         while (next) {
->           next->disable();
->       next = next->next;
->         }
->       }
->     }
->     if (irqmask & 0xff00 != 0xff00) {
->       irqmask &= ~0x0004; // Cascaded interrupt is still needed
->       outb(irqmask >> 8, PIC_SLAVE_IMR);
->     }
->     outb(irqmask, PIC_MASTER_IMR);
->   }
-> 
-> An obvious optimization of the above scheme, is to never call the 
-> disable (or enable) function for the RT-domain, since there all 
-> interrupt processing is protected by the hardware.
-> 
+I attached two patches. One enables xeno_16550A to use the new features,
+and the other improves the /proc output of your patch slightly.
 
-I'm concerned by the fact that it would cost up to 3-5 us doing so on x86 just for
-handling the cascaded PIC + the cost of each per-IRQ disable call fiddling with
-the HW once again (maybe also through sluggish i/o port accesses), even more 
-during bus saturation, and this intrinsic latency would be added to the fast path, 
-before rescheduling a RT task pending for the incoming interrupt, e.g. after some 
-idle time in the Linux domain. In the later case, which is the most frequent 
-situation, we would not be able to save the disable call for Linux interrupts 
-either since we would be switching domains to Xeno's.
+Furthermore, we noticed that virtual IRQs (namely the printk forwarder)
+get displayed under /proc/xenomai/irq too. Is this useful? We wondered
+what IRQ 34 might be until code analysis of Xenomai and Ipipe revealed
+it (__ipipe_printk_virq). If it is considered useful, we should at least
+mark those irqs virtual in the output or even give them names as well.
 
-I think that we should decouple the hw shield optimization from the RT/non-RT
-sharing issue; if the latter one could be solved by the former, the former also
-requires to have the appropriate IC hw in order to be efficient. However, we
-should be able to deal even with a 8259 for handling the RT/non-RT sharing case.
+Then I stumbled over the xnintr structure. Why do you keep a copy of the
+device name? A "const char *" should be enough, we just have to demand
+that it will remain valid as long as the xnintr structure itself (i.e.
+during the IRQ being attached). Saves a few bytes. :)
 
-Sticking with the inter-domain sharing issue and in the light of the process you 
-described, I would rather go for using the shared acknowledge handling Adeos 
-already provides, for which Xenomai's xnintr abstraction already provides support 
-(i.e. xniack_t parameter). In short, both the Xenomai and Linux domains can 
-already have their own IRQ acknowledge routine defined for any given interrupt, 
-and have them called by priority order over the primary Adeos's handler that 
-collects all raw/hw IRQs before loggin them (see the IPIPE_SHARED mode bit).
+Jan
 
-This way, every domain would have the opportunity to be polled for identifying the 
-source of the interrupt and possibly tell the hw to stop spamming in case of 
-level-triggered IRQs. This would require the per-domain ack handler to understand 
-the logic of the attached devices wrt interrupt handling - maybe by incorporating 
-the ack portion of Linux driver's ISR for the initiating device -, but I see no 
-difference wrt calling disable routines as you described: those would also have to 
-know how to deal with such hw anyway. The problem I see with level-triggered IRQs 
-is that by definition, there is no common/generic way of clearing their cause.
+--------------080808050501090604050301
+Content-Type: text/plain;
+ name="shirq-16550A.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="shirq-16550A.patch"
 
-This said, what we need for sure is Adeos preventing the regular Linux IRQ 
-dispatcher (i.e. __do_IRQS) to end domain-shared IRQs, since we would rightfully 
-assume that someone should have already done that early on.
+Index: ksrc/drivers/16550A/16550A.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/drivers/16550A/16550A.c	(revision 556)
++++ ksrc/drivers/16550A/16550A.c	(working copy)
+@@ -238,7 +238,7 @@
+     int                     rbytes =3D 0;
+     int                     events =3D 0;
+     int                     modem;
+-    int                     ret =3D RTDM_IRQ_PROPAGATE;
++    int                     ret =3D RTDM_IRQ_PROPAGATE | RTDM_IRQ_NOINT;=
 
-> Comments, anyone?
-> 
+=20
+=20
+     ctx =3D rtdm_irq_get_arg(irq_context, struct rt_16550_context);
+@@ -446,7 +446,8 @@
+     ctx =3D (struct rt_16550_context *)context->dev_private;
+=20
+     ret =3D rtdm_irq_request(&ctx->irq_handle, irq[dev_id], rt_16550_int=
+errupt,
+-                           0, context->device->proc_name, ctx);
++                           RTDM_IRQTYPE_SHARED|RTDM_IRQTYPE_EDGE,
++                           context->device->proc_name, ctx);
+     if (ret < 0)
+         return ret;
+=20
 
-To sum up, interrupt handling is one of the worst PITA of the Known Universe, 
-likely because or as a consequence of which it's one of least well-defined area in 
-OS design. As such, I would preferably go for some minimalistic generic support of 
-the IRQ sharing corner case (RT/RT and RT/non-RT, including the polarity issue), 
-so that we don't adversely affect the regular fast path. For that to happen, we 
-might first want to list more precisely the use cases we'd want to support, so 
-that we could somewhat simplify the whole equation.
+--------------080808050501090604050301
+Content-Type: text/plain;
+ name="shirq-timer-name.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="shirq-timer-name.patch"
 
--- 
+--- xenomai/ksrc/nucleus/pod.c.orig	2006-02-10 14:30:32.000000000 +0100
++++ xenomai/ksrc/nucleus/pod.c	2006-02-10 14:30:49.000000000 +0100
+@@ -3071,7 +3071,7 @@ unlock_and_exit:
+        source will be attached directly by the arch-dependent layer
+        (xnarch_start_timer). */
+=20
+-    xnintr_init(&nkclock,NULL,XNARCH_TIMER_IRQ,tickhandler,NULL,0);
++    xnintr_init(&nkclock,"[timer]",XNARCH_TIMER_IRQ,tickhandler,NULL,0);=
 
-Philippe.
+     xnintr_clock_attach(&nkclock);
+=20
+     __setbits(nkpod->status,XNTIMED);
 
+--------------080808050501090604050301--
+
+--------------enig8F0A195A7CD72DE6BDA35CE2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD7NVwniDOoMHTA+kRAq5yAJ0RKqCUQrppxJQCs3wpUSYd2HriUACfcxAV
+K35S0jJtdqa/bG9R9TeA9LQ=
+=uZ8j
+-----END PGP SIGNATURE-----
+
+--------------enig8F0A195A7CD72DE6BDA35CE2--
 
