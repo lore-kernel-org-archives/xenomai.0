@@ -1,12 +1,14 @@
-Message-ID: <43EBD9D6.5090404@domain.hid>
-Date: Fri, 10 Feb 2006 01:09:58 +0100
+Message-ID: <43EBE032.40302@domain.hid>
+Date: Fri, 10 Feb 2006 01:37:06 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
+References: <43EBD9D6.5090404@domain.hid>
+In-Reply-To: <43EBD9D6.5090404@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0252D96B301898EEB0404AEA"
+	boundary="------------enigDCD55331014F48FD8288305C"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,41 +22,39 @@ To: xenomai-core <xenomai@xenomai.org>
 Cc: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0252D96B301898EEB0404AEA
-Content-Type: multipart/mixed; boundary="------------080209010708080905050603"
+--------------enigDCD55331014F48FD8288305C
+Content-Type: multipart/mixed; boundary="------------040408000006030000030909"
 
 This is a multi-part message in MIME format.
---------------080209010708080905050603
+--------------040408000006030000030909
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+Jan Kiszka wrote:
+> Hi all,
+>=20
+> this is a first attempt to add the requested mmap functionality to the
+> RTDM driver API.
 
-this is a first attempt to add the requested mmap functionality to the
-RTDM driver API. Anyone interested in this feature is invited to test my
-patch (Rodrigo... ;) ). Comments on the implementation are welcome as wel=
-l.
-
-Philippe, I need xnarch_remap_page_range for this and added a #define
-XENO_HEAP_MODULE hack to rtdm/drvlib.c therefore. What would you suggest
-as a cleaner approach? Make this function available unconditionally or
-introduce something like XENO_RTDM_MODULE? Moreover, isn't this
-implementation also interesting for nucleus/heap.c?
+=2E.. and this version is even more useful than the previous one (now wit=
+h
+EXPORT_SYMBOL!). Be warned: I just compiled it, I count on third-party
+testers.
 
 Jan
 
---------------080209010708080905050603
-Content-Type: text/x-patch;
- name="rtdm_mmap.patch"
+--------------040408000006030000030909
+Content-Type: text/plain;
+ name="rtdm_mmap.patch-v2"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="rtdm_mmap.patch"
+ filename="rtdm_mmap.patch-v2"
 
 Index: include/rtdm/rtdm_driver.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/rtdm/rtdm_driver.h	(Revision 551)
+--- include/rtdm/rtdm_driver.h	(Revision 556)
 +++ include/rtdm/rtdm_driver.h	(Arbeitskopie)
 @@ -995,6 +995,10 @@
      xnfree(ptr);
@@ -73,7 +73,7 @@ Index: ksrc/skins/rtdm/drvlib.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/rtdm/drvlib.c	(Revision 551)
+--- ksrc/skins/rtdm/drvlib.c	(Revision 556)
 +++ ksrc/skins/rtdm/drvlib.c	(Arbeitskopie)
 @@ -31,7 +31,9 @@
 =20
@@ -94,7 +94,7 @@ Index: ksrc/skins/rtdm/drvlib.c
 =20
 =20
  /*!
-@@ -1358,16 +1360,127 @@
+@@ -1358,16 +1360,133 @@
   * environments.
   */
  void rtdm_nrtsig_pend(rtdm_nrtsig_t *nrt_sig);
@@ -191,6 +191,9 @@ t len,
 +    return 0;
 +}
 +
++EXPORT_SYMBOL(rtdm_mmap_to_user);
++
++
 +/**
 + * Unmap a user memory range.
 + *
@@ -223,13 +226,16 @@ t len,
 +    return err;
 +}
 +
++EXPORT_SYMBOL(rtdm_munmap);
++
++
 +#ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
 +
 +/**
   * Real-time safe message printing on kernel console
   *
   * @param[in] format Format string (conforming standard @c printf())
-@@ -1583,6 +1696,6 @@
+@@ -1583,6 +1702,6 @@
   */
  int rtdm_in_rt_context(void);
 =20
@@ -239,9 +245,9 @@ t len,
 -#endif /* DOXYGEN_CPP */
 +/** @} Utility Services */
 
---------------080209010708080905050603--
+--------------040408000006030000030909--
 
---------------enig0252D96B301898EEB0404AEA
+--------------enigDCD55331014F48FD8288305C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -250,10 +256,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD69nXniDOoMHTA+kRAlw8AJ42sXbM32eFFXFu1FUOtcxvFVua5gCdEZ+e
-LNNqpEI9Mi2tu19q9CXZ6ns=
-=mAgS
+iD8DBQFD6+AyniDOoMHTA+kRAgK5AJ0Qcnw757zQeERjO2rhHLQMUj1mVwCfbIer
+zxVuizMxwZaM+85y15TmkxA=
+=a8Ao
 -----END PGP SIGNATURE-----
 
---------------enig0252D96B301898EEB0404AEA--
+--------------enigDCD55331014F48FD8288305C--
 
