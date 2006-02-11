@@ -1,18 +1,14 @@
-Message-ID: <b647ffbd0602110335u58e2d4cek@domain.hid>
-Date: Sat, 11 Feb 2006 13:35:26 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-In-Reply-To: <43EC9C5B.4030501@domain.hid>
+Message-ID: <43EDE275.5040307@domain.hid>
+Date: Sat, 11 Feb 2006 10:11:17 -0300
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_5362_1783646.1139657726107"
-References: <b647ffbd0602070104s63275903q@domain.hid>
-	<43E86F4D.4050400@domain.hid>
-	<43E8DFC4.4010805@domain.hid> <43E9CE95.3070806@domain.hid>
-	<43EAFD8B.7020400@domain.hid> <43EB1279.3040902@domain.hid>
-	<43EB1741.9080809@domain.hid>
-	<b647ffbd0602090311x56dbc765x@domain.hid>
-	<43EB63D7.2080507@domain.hid> <43EC9C5B.4030501@domain.hid>
-Subject: [Xenomai-core] Re: More on Shared interrupts
+Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
+References: <43EBD9D6.5090404@domain.hid>
+	<43EBE032.40302@domain.hid>	<200602101858.21108.lbocseg@domain.hid>
+	<200602101928.52899.lbocseg@domain.hid> <43ED3165.3090300@domain.hid>
+In-Reply-To: <43ED3165.3090300@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,208 +18,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_5362_1783646.1139657726107
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-> >
-> >   irq K  | ----------- | ---o    |   // Linux only
-> >   ...
-> >   irq L  | ---o        |         |   // RT-only
-> >   ...
-> >   irq M  | ---o------- | ---o    |   // Shared between domains
-> >   ...
-> >   irq N  | ---o---o--- |         |   // Shared inside single domain
-> >   ...
-> >   irq O  | ---o---o--- | ---o    |   // Shared between and inside singl=
-e
-> > domain
-> >
-> > Xenomai currently handles the K & L cases, Dmitrys patch addresses the =
-N
-> > case, with edge triggered interrupts the M (and O after Dmitry's patch)
-> > case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
-> >
+Jan Kiszka escreveu:
+> Rodrigo Rosenfeld Rosas wrote:
+>  =20
+>> Hi Jan, it just happened once and I couldn't reproduce (I didn't want to=
+=20
+>> reproduce it too since I would need to restart my computer because the d=
+river=20
+>> wouldn't unload)...
+>>
+>> When it happened I forgot to start the timer running the latency program=
+ and=20
+>>    =20
 >
-> As you pointed out recently, using this combo for M (and thus O) might
-also be
-> unsafe, e.g. causing some implementation to send eoi twice or more (and
-the second
-> time while hw IRQs are off and the second IRQ is still pending) if more
-than a
-> single domain ends the current interrupt. This said, I've never tried tha=
-t
-> actually, but this does seem a bit optimistic to always expect a proper
-behaviour
-> in this case (basically, it all depends on what "ending" the interrupt
-means hw-wise).
+> Already running latest SVN version?
+Almost there ;) That is why your patch didn't apply cleany, but I just=20
+needed to include two "#include" and "#define" lines to drvlib.c or=20
+something like...
 
+>  rt_timer_start&friends became
+> deprecated last weekend, so you can't forget this step anymore.
+>  =20
+I didn't use rt_timer_start at all. I was doing as you suggested,=20
+calling another program to start the timer, like "latency".
 
-Just to be sure I've got the things more or less clear. I feel there are
-some holes in my understanding of the irq handling stuff, mainly hw-wise.
-
-x86 + i8259A.
-
-In this case, .end handler does nothing more than enabling the IRQ line.
-The "eoi" is sent in .ack right after disabling the IRQ line.
-
-Let's suppose we have the "M" case ("O" makes no difference here).
-
-When the ISR handler in Linux domain gets control :
-
-- the IRQ line is ON (it was already .end-ed in the primary domain in case
-  of XN_ISR_ENABLE | XN_ISR_CHAINED ).
-
-=3D=3D=3D
-  Actually, it's possible to set IPIPE_PASS flag for
-  the primary_domain.irqs[THIS_IRQ].control
-  when THIS_IRQ is shared across domains. This way, there is no need
-  to call propagate_irq() in xnintr_irq_handler(). Ok, it's not
-  that important so far.
-=3D=3D=3D
-
-  This is not how it happens when the IRQ is only handled in the
-  Linux domain. But the ISR is still serialized (need not to be
-  reentrant) because do_IRQ() takes care of it (by means
-  of RUNNING and PENDING flags).
-
-So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that
-case?
-
-In case of a pure Linux :
-
-SMP : I/O APIC + local APICs. As I know, enabling/disabling
-the IRQ line occurs (normally?) on per-local APIC basis. This said, when
-the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents
-(probably, if the IRQ also was .ack-ed by that time?) the same IRQ from
-being signaled on another CPU (even on a few).
-In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run
-handler_IRQ_events() - ISR handlers - once more.
-
-Since PENDING is only a flag (not a counter), the fact that the IRQ was
-signaled
-is not lost but Linux can't know how much time it was signaled.
-I guess, it's not true for devices that e.g. do not rise a new interrupt
-until
-the ISR handler does some special acknowledgement device-wise.
-
-am I right?
-
-
---
-Best regards,
-Dmitry Adamushko
-
-------=_Part_5362_1783646.1139657726107
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<br>
-&gt; &gt;<br>
-&gt; &gt;&nbsp;&nbsp; irq K&nbsp; | ----------- | ---o&nbsp;&nbsp;&nbsp; |&=
-nbsp;&nbsp; // Linux only<br>
-&gt; &gt;&nbsp;&nbsp; ...<br>
-&gt; &gt;&nbsp;&nbsp; irq L&nbsp; |
----o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; //
-RT-only<br>
-&gt; &gt;&nbsp;&nbsp; ...<br>
-&gt; &gt;&nbsp;&nbsp; irq M&nbsp; | ---o------- | ---o&nbsp;&nbsp;&nbsp; |&=
-nbsp;&nbsp; // Shared between domains<br>
-&gt; &gt;&nbsp;&nbsp; ...<br>
-&gt; &gt;&nbsp;&nbsp; irq N&nbsp; | ---o---o---
-|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; //
-Shared inside single domain<br>
-&gt; &gt;&nbsp;&nbsp; ...<br>
-&gt; &gt;&nbsp;&nbsp; irq O&nbsp; | ---o---o--- | ---o&nbsp;&nbsp;&nbsp; |&=
-nbsp;&nbsp; // Shared between and inside single<br>
-&gt; &gt; domain<br>
-&gt; &gt;<br>
-&gt; &gt; Xenomai currently handles the K &amp; L cases, Dmitrys patch addr=
-esses the N<br>
-&gt; &gt; case, with edge triggered interrupts the M (and O after Dmitry's =
-patch)<br>
-&gt; &gt; case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_E=
-NABLE<br>
-&gt; &gt;<br>
-&gt; <br>
-&gt; As you pointed out recently, using this combo for M (and thus O) might=
- also be<br>
-&gt; unsafe, e.g. causing some implementation to send eoi twice or more (an=
-d the second<br>
-&gt; time while hw IRQs are off and the second IRQ is still pending) if mor=
-e than a<br>
-&gt; single domain ends the current interrupt. This said, I've never tried =
-that<br>
-&gt; actually, but this does seem a bit optimistic to always expect a prope=
-r behaviour<br>
-&gt; in this case (basically, it all depends on what &quot;ending&quot; the=
- interrupt means hw-wise).<br>
-<br>
-<br>
-Just to be sure I've got the things more or less clear. I feel there
-are some holes in my understanding of the irq handling stuff, mainly
-hw-wise.<br>
-<br>
-x86 + i8259A.<br>
-<br>
-In this case, .end handler does nothing more than enabling the IRQ line.<br=
+>> my driver failed to load and due to some mistake I've made (I have not=20
+>> indentified it yet), it crashed on rmmoding. I need to check this, but I=
+=20
+>> still think it is a good idea to make the sanity checks...
+>>    =20
 >
-The &quot;eoi&quot; is sent in .ack right after disabling the IRQ line.<br>
-<br>
-Let's suppose we have the &quot;M&quot; case (&quot;O&quot; makes no differ=
-ence here).<br>
-<br>
-When the ISR handler in Linux domain gets control :<br>
-<br>
-- the IRQ line is ON (it was already .end-ed in the primary domain in case<=
-br>
-&nbsp; of XN_ISR_ENABLE | XN_ISR_CHAINED ).<br>
-<br>
-=3D=3D=3D<br>
-&nbsp; Actually, it's possible to set IPIPE_PASS flag for <br>
-&nbsp; the primary_domain.irqs[THIS_IRQ].control<br>
-&nbsp; when THIS_IRQ is shared across domains. This way, there is no need<b=
-r>
-&nbsp; to call propagate_irq() in xnintr_irq_handler(). Ok, it's not<br>
-&nbsp; that important so far.<br>
-=3D=3D=3D<br>
-<br>
-&nbsp; This is not how it happens when the IRQ is only handled in the<br>
-&nbsp; Linux domain. But the ISR is still serialized (need not to be<br>
-&nbsp; reentrant) because do_IRQ() takes care of it (by means<br>
-&nbsp; of RUNNING and PENDING flags).<br>
-<br>
-So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that<=
-br>
-case?<br>
-<br>
-In case of a pure Linux :<br>
-<br>
-SMP : I/O APIC + local APICs. As I know, enabling/disabling<br>
-the IRQ line occurs (normally?) on per-local APIC basis. This said, when<br=
->
-the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents<br=
->
-(probably, if the IRQ also was .ack-ed by that time?) the same IRQ from<br>
-being signaled on another CPU (even on a few).<br>
-In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run<br>
-handler_IRQ_events() - ISR handlers - once more.<br>
-<br>
-Since PENDING is only a flag (not a counter), the fact that the IRQ was sig=
-naled<br>
-is not lost but Linux can't know how much time it was signaled.<br>
-I guess, it's not true for devices that e.g. do not rise a new interrupt un=
-til<br>
-the ISR handler does some special acknowledgement device-wise.<br>
-<br>
-am I right?<br>
-<br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry Adamushko
+> We need some XENO_ASSERT that is only active when CONFIG_XENO_OPT_DEBUG
+> is set. I don't want to put such checks in production code, but I see
+> that they may help debugging early drivers.
+>  =20
+I understand your concernings but I really don't think they are=20
+relevant... This checks will be much faster then the procedure itself=20
+and it would conform to normal munmap behaviour. From man page:
 
-------=_Part_5362_1783646.1139657726107--
+"The address start must be a multiple of the page size. All pages=20
+containing a part of the indicated range are unmapped, and subsequent=20
+references to these pages will generate SIGSEGV. It is not an error if=20
+the indicated range does not contain any mapped pages."
+
+I think that if there was an extra parameter for user_info, it would=20
+also verify for validity. BTW, I think there is missing some=20
+documentation about the user_info parameter. I had to remember our=20
+conversation and look at the code to understand that I should record=20
+"current" on this parameter on the moment I called mmap and passing it=20
+again on munmap. And it would be good to see the rtdm_user_info_t=20
+defined as struct task_struct on the documentation.
+
+>> I have not written the user-space program yet, so you'll have to wait un=
+til=20
+>> monday, when I'll be able to test it, hopefully. But it seems to be=20
+>> working... I changed my driver design. I do the mmap's on driver=20
+>> initialization and just pass the returned addresses on the IOCTL, so I c=
+an do=20
+>> them in a RT-context. The problem is that even if the user call an IOCTL=
+ to=20
+>>    =20
+>
+> Hmm, I guess there is still some lacking documentation about what is
+> possible with RTDM. If you call an IOCTL from RT context, you end up in
+> the _rt-handler the driver of a device may have registered (if there is
+> no _rt-handler at all, the _nrt one is invoked, but this is likely not
+> relevant here).
+>
+> I assume that you were wondering how to call rtdm_mmap_to_user from this
+> real-time handler, right?
+No. I know it is not possible from the moment. I think I did not explain=20
+myself very well. I was wondering how to define a RT mmap like ioctl. As=20
+I know I could not use rtdm_mmap_to_user then, I thought in another way=20
+of doing it. So I mmaped on driver initialization. On the IOCTL I just=20
+passed the already known addresses to the user requesting it. I would=20
+have to explain you how these buffers work on V4L2. It is a bit long=20
+explanation but I can explain it on other message if you wish.
+
+> Well, the trick is to return -ENOSYS for those
+> IOCTL codes that can only be handled by the _nrt-handler. Xenomai will
+> then switch your RT task to secondary mode, restart the IOCTL, and the
+> mmap can safely be executed.
+>  =20
+But as I've said, it is not the behaviour I want :)
+
+> Well, maybe you do not have any arguments for rtdm_mmap_to_user that
+> should be influenced by the user's IOCTL.
+That is my case.
+
+> In this case your current driver design is ok as well. I just wanted to u=
+nderline that it is not necessarily the only way.
+>  =20
+But I couldn't find other way of doing it in a RT-context.
+
+>> munmap, it will still be possible to him to continue using the provided =
+
+>> address and this would result in a problem. But, as in all situations, t=
+here=20
+>>    =20
+>
+> When rtdm_munmap is executed, the virtual address range becomes invalid
+> for the user. Thus any further access to it will raise a segfault.
+> That's the only problem, but it will not influence the driver integrity.
+>  =20
+Yes, that is the problem. Since I only mark as unused on the munmap=20
+IOCTL, it would be possible to the user to continue using that address=20
+even after the munmap IOCTL call. It I was using a really rtdm_munmap,=20
+it wouldn't be possible. It would be a better behaviour, but it would=20
+not be run on RT-context. That is the trade-off.
+
+>> are trade-offs and I prefer to rely on the user, while providing a=20
+>> RT-MMAP-IOCTL. Of course it isn't really a mmap, but if the user don't m=
+ess=20
+>> with the pointers, it will work like if it was...
+>>    =20
+>
+> The user can only access the window you mapped in and only as long as it
+> is mapped.
+In my case, it is always mapped to make possible the RT-IOCTLs.
+> And if you map it read-only, there is even no chance to
+> destroy potential management structures of the hardware or the driver
+> within this range.
+>  =20
+I do not want to make it read-only because it will probably be very=20
+usefull to the user to write on it. The user may want to capture a frame=20
+and do some image processing routines on the same memory area when it is=20
+possible, avoiding to copy that memory region.
+>> Hope you understood me, I wrote it a little confusing... :)
+>>    =20
+>
+> We will see...
+>  =20
+:)
+> Happy WE,
+>  =20
+Happy weekend for you too,
+
+Rodrigo.
+
+
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
+
 
