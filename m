@@ -1,12 +1,18 @@
-Message-ID: <b647ffbd0602110331i400d7ff5k@domain.hid>
-Date: Sat, 11 Feb 2006 13:31:16 +0200
+Message-ID: <b647ffbd0602110335u58e2d4cek@domain.hid>
+Date: Sat, 11 Feb 2006 13:35:26 +0200
 From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-In-Reply-To: <43ECD570.5000704@domain.hid>
+In-Reply-To: <43EC9C5B.4030501@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_5334_4269781.1139657476486"
-References: <43ECD570.5000704@domain.hid>
-Subject: [Xenomai-core] Re: [shirq] first test results
+	boundary="----=_Part_5362_1783646.1139657726107"
+References: <b647ffbd0602070104s63275903q@domain.hid>
+	<43E86F4D.4050400@domain.hid>
+	<43E8DFC4.4010805@domain.hid> <43E9CE95.3070806@domain.hid>
+	<43EAFD8B.7020400@domain.hid> <43EB1279.3040902@domain.hid>
+	<43EB1741.9080809@domain.hid>
+	<b647ffbd0602090311x56dbc765x@domain.hid>
+	<43EB63D7.2080507@domain.hid> <43EC9C5B.4030501@domain.hid>
+Subject: [Xenomai-core] Re: More on Shared interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,256 +22,208 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-------=_Part_5334_4269781.1139657476486
+------=_Part_5362_1783646.1139657726107
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi Jan,
-
-> some news from the testing front: It works fairly well - and it doesn't
-> crash =3D:).
-
-Good news indeed :)
-
-> We set up a quite demanding test scenario which consists of
-> two Sick Laser scanners feeding two UART ports at 500 Kbit/s. The UARTs
-> are on a special PC104 card, sharing the same edge-triggered IRQ line.
-> We were able to get data from both devices running at the same time. But
-> we noticed some overruns of MAX_EDGEIRQ_COUNTER (a few per second). The
-> next step on Monday will be to generate a back-trace with the
-> ipipe-tracer to see if the system is "just" overloaded or if we are
-> still facing problems with the driver and/or IRQ layer. Will be very
-> interesting to see on that radar what's happing.
-
-Yes.
-
-And as an additional option,
-it could be interesting to print out to the log if not all "counter" values
-then min,max,average (the same like for the latency :) per second or per
-1000 interrupts; so to see whether tweaking the MAX_EDGEIRQ_COUNTER may mak=
+> >
+> >   irq K  | ----------- | ---o    |   // Linux only
+> >   ...
+> >   irq L  | ---o        |         |   // RT-only
+> >   ...
+> >   irq M  | ---o------- | ---o    |   // Shared between domains
+> >   ...
+> >   irq N  | ---o---o--- |         |   // Shared inside single domain
+> >   ...
+> >   irq O  | ---o---o--- | ---o    |   // Shared between and inside singl=
 e
-the things better.
-
-
-> I attached two patches. One enables xeno_16550A to use the new features,
-> and the other improves the /proc output of your patch slightly.
+> > domain
+> >
+> > Xenomai currently handles the K & L cases, Dmitrys patch addresses the =
+N
+> > case, with edge triggered interrupts the M (and O after Dmitry's patch)
+> > case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
+> >
 >
-> Furthermore, we noticed that virtual IRQs (namely the printk forwarder)
-> get displayed under /proc/xenomai/irq too. Is this useful? We wondered
-> what IRQ 34 might be until code analysis of Xenomai and Ipipe revealed
-> it (__ipipe_printk_virq). If it is considered useful, we should at least
-> mark those irqs virtual in the output or even give them names as well.
-
-It's a virq but it can not be __ipipe_printk_virq :)
-The latter one is registered in the linux domain while we are
-printing out the irqs of the primary one in /proc/xenomai/irq.
-
-It should be xnarch_escalation_virq.
-
-Probably, BASE_VIRQ =3D=3D 32 (if NR_IRQS =3D=3D 16).
-
-So,
-
-32 -    __ipipe_printk_virq (Linux domain)
-33 -    rthal_apc_virq (Linux domain)
-34 -    xnarch_escalation_virq (Xeno domain)
-
-They are ordered (that's why they have such irq numbers) as
-ipipe_alloc_virq()
-is called for them.
-
-That can be confirmed by :
-
-# cat /proc/ipipe/Xenomai
-
-...
-irq 32-33: passed, virtual
-irq 34: grabbed, virtual    <--- 1 virq is in the primary domain
-...
-
-# cat /proc/ipipe/Linux
-
-irq 32-33: grabbed, virtual    <--- 2 virqs are in the linux domain
-irq 34: passed, virtual
+> As you pointed out recently, using this combo for M (and thus O) might
+also be
+> unsafe, e.g. causing some implementation to send eoi twice or more (and
+the second
+> time while hw IRQs are off and the second IRQ is still pending) if more
+than a
+> single domain ends the current interrupt. This said, I've never tried tha=
+t
+> actually, but this does seem a bit optimistic to always expect a proper
+behaviour
+> in this case (basically, it all depends on what "ending" the interrupt
+means hw-wise).
 
 
-Yep, the output is confusing. At least, we may :
+Just to be sure I've got the things more or less clear. I feel there are
+some holes in my understanding of the irq handling stuff, mainly hw-wise.
 
-1) add "virq" or "virtual" quilification, smth like 34 (virtual);
+x86 + i8259A.
 
-2) not print them out at all.
+In this case, .end handler does nothing more than enabling the IRQ line.
+The "eoi" is sent in .ack right after disabling the IRQ line.
 
-Maybe we'd better go for 1, just in case somebody would like to know
-the actual number of virq occuried. Although, I can imagine that only
-for debugging reasons and of no avail for the normal users, so maybe 2 :)
+Let's suppose we have the "M" case ("O" makes no difference here).
 
+When the ISR handler in Linux domain gets control :
 
-> Then I stumbled over the xnintr structure. Why do you keep a copy of the
-> device name?
-> A "const char *" should be enough, we just have to demand
-> that it will remain valid as long as the xnintr structure itself (i.e.
-> during the IRQ being attached). Saves a few bytes. :)
+- the IRQ line is ON (it was already .end-ed in the primary domain in case
+  of XN_ISR_ENABLE | XN_ISR_CHAINED ).
 
-Could be if all the users of it are initially kernel-mode entities.
+=3D=3D=3D
+  Actually, it's possible to set IPIPE_PASS flag for
+  the primary_domain.irqs[THIS_IRQ].control
+  when THIS_IRQ is shared across domains. This way, there is no need
+  to call propagate_irq() in xnintr_irq_handler(). Ok, it's not
+  that important so far.
+=3D=3D=3D
 
-But e.g. there is a version of rt_intr_create() that may be called by
-user-space
-apps and I extended it to support the "name" parameter too :
+  This is not how it happens when the IRQ is only handled in the
+  Linux domain. But the ISR is still serialized (need not to be
+  reentrant) because do_IRQ() takes care of it (by means
+  of RUNNING and PENDING flags).
 
-int rt_intr_create(RT_INTR *intr, const char *name, unsigned irq, int mode)=
-;
+So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that
+case?
 
-In such a case, the kernel-side rt_intr_create() is called with the "name"
-allocated on the stack in skins/native/syscall.c : __rt_intr_create())
-so the initial copy of the name can not remain valid.
+In case of a pure Linux :
 
+SMP : I/O APIC + local APICs. As I know, enabling/disabling
+the IRQ line occurs (normally?) on per-local APIC basis. This said, when
+the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents
+(probably, if the IRQ also was .ack-ed by that time?) the same IRQ from
+being signaled on another CPU (even on a few).
+In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run
+handler_IRQ_events() - ISR handlers - once more.
 
-Thanks for the patches.
+Since PENDING is only a flag (not a counter), the fact that the IRQ was
+signaled
+is not lost but Linux can't know how much time it was signaled.
+I guess, it's not true for devices that e.g. do not rise a new interrupt
+until
+the ISR handler does some special acknowledgement device-wise.
 
+am I right?
 
-> Jan
 
 --
 Best regards,
 Dmitry Adamushko
 
-------=_Part_5334_4269781.1139657476486
+------=_Part_5362_1783646.1139657726107
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 <br>
-Hi Jan,<br>
-<br>
-&gt; some news from the testing front: It works fairly well - and it doesn'=
-t<br>
-&gt; crash =3D:). <br>
-<br>
-Good news indeed :)<br>
-<br>
-&gt; We set up a quite demanding test scenario which consists of<br>
-&gt; two Sick Laser scanners feeding two UART ports at 500 Kbit/s. The UART=
-s<br>
-&gt; are on a special PC104 card, sharing the same edge-triggered IRQ line.=
-<br>
-&gt; We were able to get data from both devices running at the same time. B=
-ut<br>
-&gt; we noticed some overruns of MAX_EDGEIRQ_COUNTER (a few per second). Th=
-e<br>
-&gt; next step on Monday will be to generate a back-trace with the<br>
-&gt; ipipe-tracer to see if the system is &quot;just&quot; overloaded or if=
- we are<br>
-&gt; still facing problems with the driver and/or IRQ layer. Will be very<b=
-r>
-&gt; interesting to see on that radar what's happing.<br>
-<br>
-Yes.<br>
-<br>
-And as an additional option,<br>
-it could be interesting to print out to the log if not all &quot;counter&qu=
-ot;
-values then min,max,average (the same like for the latency :) per
-second or per 1000 interrupts; so to see whether tweaking the
-MAX_EDGEIRQ_COUNTER may make the things better.<br>
-<br>
-<br>
-&gt; I attached two patches. One enables xeno_16550A to use the new feature=
-s,<br>
-&gt; and the other improves the /proc output of your patch slightly.<br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp; irq K&nbsp; | ----------- | ---o&nbsp;&nbsp;&nbsp; |&=
+nbsp;&nbsp; // Linux only<br>
+&gt; &gt;&nbsp;&nbsp; ...<br>
+&gt; &gt;&nbsp;&nbsp; irq L&nbsp; |
+---o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; //
+RT-only<br>
+&gt; &gt;&nbsp;&nbsp; ...<br>
+&gt; &gt;&nbsp;&nbsp; irq M&nbsp; | ---o------- | ---o&nbsp;&nbsp;&nbsp; |&=
+nbsp;&nbsp; // Shared between domains<br>
+&gt; &gt;&nbsp;&nbsp; ...<br>
+&gt; &gt;&nbsp;&nbsp; irq N&nbsp; | ---o---o---
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; //
+Shared inside single domain<br>
+&gt; &gt;&nbsp;&nbsp; ...<br>
+&gt; &gt;&nbsp;&nbsp; irq O&nbsp; | ---o---o--- | ---o&nbsp;&nbsp;&nbsp; |&=
+nbsp;&nbsp; // Shared between and inside single<br>
+&gt; &gt; domain<br>
+&gt; &gt;<br>
+&gt; &gt; Xenomai currently handles the K &amp; L cases, Dmitrys patch addr=
+esses the N<br>
+&gt; &gt; case, with edge triggered interrupts the M (and O after Dmitry's =
+patch)<br>
+&gt; &gt; case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_E=
+NABLE<br>
+&gt; &gt;<br>
 &gt; <br>
-&gt; Furthermore, we noticed that virtual IRQs (namely the printk forwarder=
-)<br>
-&gt; get displayed under /proc/xenomai/irq too. Is this useful? We wondered=
-<br>
-&gt; what IRQ 34 might be until code analysis of Xenomai and Ipipe revealed=
-<br>
-&gt; it (__ipipe_printk_virq). If it is considered useful, we should at lea=
-st<br>
-&gt; mark those irqs virtual in the output or even give them names as well.=
-<br>
-<br>
-It's a virq but it can not be __ipipe_printk_virq :)<br>
-The latter one is registered in the linux domain while we are<br>
-printing out the irqs of the primary one in /proc/xenomai/irq.<br>
-<br>
-It should be xnarch_escalation_virq.<br>
-<br>
-Probably, BASE_VIRQ =3D=3D 32 (if NR_IRQS =3D=3D 16).<br>
-<br>
-So,<br>
-<br>
-32 -&nbsp;&nbsp;&nbsp; __ipipe_printk_virq (Linux domain)<br>
-33 -&nbsp;&nbsp;&nbsp; rthal_apc_virq (Linux domain)<br>
-34 -&nbsp;&nbsp;&nbsp; xnarch_escalation_virq (Xeno domain)<br>
-<br>
-They are ordered (that's why they have such irq numbers) as ipipe_alloc_vir=
-q()<br>
-is called for them.<br>
-<br>
-That can be confirmed by :<br>
-<br>
-# cat /proc/ipipe/Xenomai<br>
-<br>
-...<br>
-irq 32-33: passed, virtual<br>
-irq 34: grabbed, virtual&nbsp;&nbsp;&nbsp; &lt;--- 1 virq is in the primary=
- domain<br>
-...<br>
-<br>
-# cat /proc/ipipe/Linux<br>
-<br>
-irq 32-33: grabbed, virtual&nbsp;&nbsp;&nbsp; &lt;--- 2 virqs are in the li=
-nux domain<br>
-irq 34: passed, virtual<br>
+&gt; As you pointed out recently, using this combo for M (and thus O) might=
+ also be<br>
+&gt; unsafe, e.g. causing some implementation to send eoi twice or more (an=
+d the second<br>
+&gt; time while hw IRQs are off and the second IRQ is still pending) if mor=
+e than a<br>
+&gt; single domain ends the current interrupt. This said, I've never tried =
+that<br>
+&gt; actually, but this does seem a bit optimistic to always expect a prope=
+r behaviour<br>
+&gt; in this case (basically, it all depends on what &quot;ending&quot; the=
+ interrupt means hw-wise).<br>
 <br>
 <br>
-Yep, the output is confusing. At least, we may :<br>
+Just to be sure I've got the things more or less clear. I feel there
+are some holes in my understanding of the irq handling stuff, mainly
+hw-wise.<br>
 <br>
-1) add &quot;virq&quot; or &quot;virtual&quot; quilification, smth like 34 =
-(virtual);<br>
+x86 + i8259A.<br>
 <br>
-2) not print them out at all.<br>
-<br>
-Maybe we'd better go for 1, just in case somebody would like to know<br>
-the actual number of virq occuried. Although, I can imagine that only<br>
-for debugging reasons and of no avail for the normal users, so maybe 2 :)<b=
-r>
-<br>
-<br>
-&gt; Then I stumbled over the xnintr structure. Why do you keep a copy of t=
-he<br>
-&gt; device name?<br>
-&gt; A &quot;const char *&quot; should be enough, we just have to demand<br=
+In this case, .end handler does nothing more than enabling the IRQ line.<br=
 >
-&gt; that it will remain valid as long as the xnintr structure itself (i.e.=
+The &quot;eoi&quot; is sent in .ack right after disabling the IRQ line.<br>
 <br>
-&gt; during the IRQ being attached). Saves a few bytes. :)<br>
+Let's suppose we have the &quot;M&quot; case (&quot;O&quot; makes no differ=
+ence here).<br>
 <br>
-Could be if all the users of it are initially kernel-mode entities.<br>
+When the ISR handler in Linux domain gets control :<br>
 <br>
-But e.g. there is a version of rt_intr_create() that may be called by user-=
-space<br>
-apps and I extended it to support the &quot;name&quot; parameter too :<br>
+- the IRQ line is ON (it was already .end-ed in the primary domain in case<=
+br>
+&nbsp; of XN_ISR_ENABLE | XN_ISR_CHAINED ).<br>
 <br>
-int rt_intr_create(RT_INTR *intr, const char *name, unsigned irq, int mode)=
-;<br>
+=3D=3D=3D<br>
+&nbsp; Actually, it's possible to set IPIPE_PASS flag for <br>
+&nbsp; the primary_domain.irqs[THIS_IRQ].control<br>
+&nbsp; when THIS_IRQ is shared across domains. This way, there is no need<b=
+r>
+&nbsp; to call propagate_irq() in xnintr_irq_handler(). Ok, it's not<br>
+&nbsp; that important so far.<br>
+=3D=3D=3D<br>
 <br>
-In such a case, the kernel-side rt_intr_create() is called with the &quot;n=
-ame&quot;<br>
-allocated on the stack in skins/native/syscall.c : __rt_intr_create())<br>
-so the initial copy of the name can not remain valid.<br>
+&nbsp; This is not how it happens when the IRQ is only handled in the<br>
+&nbsp; Linux domain. But the ISR is still serialized (need not to be<br>
+&nbsp; reentrant) because do_IRQ() takes care of it (by means<br>
+&nbsp; of RUNNING and PENDING flags).<br>
 <br>
+So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that<=
+br>
+case?<br>
 <br>
-Thanks for the patches.<br>
+In case of a pure Linux :<br>
 <br>
+SMP : I/O APIC + local APICs. As I know, enabling/disabling<br>
+the IRQ line occurs (normally?) on per-local APIC basis. This said, when<br=
+>
+the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents<br=
+>
+(probably, if the IRQ also was .ack-ed by that time?) the same IRQ from<br>
+being signaled on another CPU (even on a few).<br>
+In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run<br>
+handler_IRQ_events() - ISR handlers - once more.<br>
 <br>
-&gt; Jan<br>
+Since PENDING is only a flag (not a counter), the fact that the IRQ was sig=
+naled<br>
+is not lost but Linux can't know how much time it was signaled.<br>
+I guess, it's not true for devices that e.g. do not rise a new interrupt un=
+til<br>
+the ISR handler does some special acknowledgement device-wise.<br>
 <br>
--- <br>Best regards,<br>Dmitry Adamushko
+am I right?<br>
+<br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry Adamushko
 
-------=_Part_5334_4269781.1139657476486--
+------=_Part_5362_1783646.1139657726107--
 
