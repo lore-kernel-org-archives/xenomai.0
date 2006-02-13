@@ -1,17 +1,19 @@
-Message-ID: <43EFFB80.1080104@domain.hid>
-Date: Mon, 13 Feb 2006 00:22:40 -0300
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Message-ID: <43F03A1F.3040206@domain.hid>
+Date: Mon, 13 Feb 2006 08:49:51 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
-References: <43EBD9D6.5090404@domain.hid>
-	<43EBE032.40302@domain.hid>	<200602101858.21108.lbocseg@domain.hid>
-	<200602101928.52899.lbocseg@domain.hid>
-	<43ED3165.3090300@domain.hid> <43EDE275.5040307@domain.hid>
-	<43EDE6D7.8050506@domain.hid> <43EE3E81.80803@domain.hid>
-	<43EFBA92.3030306@domain.hid>
-In-Reply-To: <43EFBA92.3030306@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+References: <b647ffbd0602070104s63275903q@domain.hid>	
+	<43E86F4D.4050400@domain.hid>	
+	<43E8DFC4.4010805@domain.hid>
+	<43E9CE95.3070806@domain.hid>	 <43EAFD8B.7020400@domain.hid>
+	<43EB1279.3040902@domain.hid>	 <43EB1741.9080809@domain.hid>	
+	<b647ffbd0602090311x56dbc765x@domain.hid>	
+	<43EB63D7.2080507@domain.hid> <43EC9C5B.4030501@domain.hid>
+	<b647ffbd0602110335u58e2d4cek@domain.hid>
+In-Reply-To: <b647ffbd0602110335u58e2d4cek@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: More on Shared interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,124 +23,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka escreveu:
-> ...
->> I'm not very sure about that. It can work for most situations but there
->> could be one situation where it would crash just because it was chosen
->> to have a little smaller code size and a little speed gain... I would
->> not like to think in the consequences of a crash in the driver while a
->> RT-system is working on real world...
->>    =20
->
-> And I would not like to think of having instrumented RTOS cores and a
-> drivers in the field. This would rather indicate to me that someone did
-> not do his/her homework: testing and debugging the system before
-> delivering it.
->  =20
-Ok, I'm not really interested on this topic for continue discussing it.=20
-It is fine for me to do that checks on my own code before calling=20
-rtdm_mmap_to_user...
-> ...
-> Via any invocation, just check the handler prototypes:
-> rtdm_open_handler_t, rtdm_close_handler_t, rtdm_ioctl_handler_t, ...
->  =20
-Now I've found them! I think I was a bit lazy at that time... :) Thanks!
+Dmitry Adamushko wrote:
+> 
+>  > >
+>  > >   irq K  | ----------- | ---o    |   // Linux only
+>  > >   ...
+>  > >   irq L  | ---o        |         |   // RT-only
+>  > >   ...
+>  > >   irq M  | ---o------- | ---o    |   // Shared between domains
+>  > >   ...
+>  > >   irq N  | ---o---o--- |         |   // Shared inside single domain
+>  > >   ...
+>  > >   irq O  | ---o---o--- | ---o    |   // Shared between and inside 
+> single
+>  > > domain
+>  > >
+>  > > Xenomai currently handles the K & L cases, Dmitrys patch addresses 
+> the N
+>  > > case, with edge triggered interrupts the M (and O after Dmitry's patch)
+>  > > case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
+>  > >
+>  >
+>  > As you pointed out recently, using this combo for M (and thus O) 
+> might also be
+>  > unsafe, e.g. causing some implementation to send eoi twice or more 
+> (and the second
+>  > time while hw IRQs are off and the second IRQ is still pending) if 
+> more than a
+>  > single domain ends the current interrupt. This said, I've never tried 
+> that
+>  > actually, but this does seem a bit optimistic to always expect a 
+> proper behaviour
+>  > in this case (basically, it all depends on what "ending" the 
+> interrupt means hw-wise).
+> 
+> 
+> Just to be sure I've got the things more or less clear. I feel there are 
+> some holes in my understanding of the irq handling stuff, mainly hw-wise.
+> 
+> x86 + i8259A.
+> 
+> In this case, .end handler does nothing more than enabling the IRQ line.
+> The "eoi" is sent in .ack right after disabling the IRQ line.
+> 
+> Let's suppose we have the "M" case ("O" makes no difference here).
+> 
+> When the ISR handler in Linux domain gets control :
+> 
+> - the IRQ line is ON (it was already .end-ed in the primary domain in case
+>   of XN_ISR_ENABLE | XN_ISR_CHAINED ).
+> 
+> ===
+>   Actually, it's possible to set IPIPE_PASS flag for
+>   the primary_domain.irqs[THIS_IRQ].control
+>   when THIS_IRQ is shared across domains. This way, there is no need
+>   to call propagate_irq() in xnintr_irq_handler(). Ok, it's not
+>   that important so far.
+> ===
+> 
+>   This is not how it happens when the IRQ is only handled in the
+>   Linux domain. But the ISR is still serialized (need not to be
+>   reentrant) because do_IRQ() takes care of it (by means
+>   of RUNNING and PENDING flags).
+> 
+> So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that
+> case?
+Yes, but only if you disable interrupts from the Linux device (i.e. via its 
+control registers, not via the APIC), otherwise the RT-handler will spin since 
+the interrupt will never get deasserted. Then you are faced with finding some 
+place to reenble those interrupts right after the Linux interrupts-handler has run.
 
->>> ... =20
->>>      =20
->> Yes, but it would be simpler for new developers used to the V4L2 API to
->> migrate to a similar RT-Video interface. Anyway, as I've already said, I
->> don't think some users would do any mmap during runtime, but maybe for
->> some reconfiguration for some reason and they would like to make this in
->> a RT-context. I can't really imagine a practical situation from the
->> moment, but I think it is still possible to happen...
->>    =20
->
-> Ok, but then you can still offer mmap via secondary mode even to RT
-> tasks.
-But I would lose the determinism...
-> It's a corner case, and mmap will never have a deterministic
-> execution time without changing the vmm rather fundamentally, so the
-> user can't expect such behaviour. If (s)he does so, the application
-> design is broken anyway.
->  =20
-I agree. That is why I'm trying to provide an alternative solution. It=20
-is not quite a mmap, but it is similar...
-
->>> ... =20
->>>      =20
->> That is something I could change in my driver... Making the mmap on the
->> VIDIOC_REQBUFS ioctl request. But, as a driver could return a different
->> number of buffers than the requested, the user could not be satisfied
->> with the returned buffers and the mmap would have been useless... I
->> still don't know how will the final design be like, but I'm fine with
->> your already provided rtdm_mmap_to_user solution. But I still want to
->> keep the API as closer as possible to V4L2 for facilitating the users to
->> migrate to real-time while taking advantage of the already available
->> V4L2 documentation and examples all over the web and just doing the
->> minimal needed modifications.
->>    =20
->
-> Ok, I see the idea behind it, and under those constraints it does make
-> sense to provide some wrapper for mmap over the RT capturing device.
->
-> ...
-> I think I now got your goals completely:
->
->  1. keep the interface of V4L2
->  =20
-... as closer as possible.
->  2. completely provide it a deterministic way
->  =20
-I'm not really worried about that, but if I could do it in some not very=20
-sofisticated way, I would like to provide such behaviour. But I=20
-recognize that for must situations the user won't need deterministic mmap.
-> I can understand the first goal. Keeping the V4L2 interface for a
-> potential RTDM frame grabbing device profile can make sense if it
-> doesn't complicate the rt-driver internals too much or stresses it
-> rt-guarantees.
->
-> But I still have some doubts that aiming for 2. regarding mmap is worth
-> the effort. The problem is that you cannot predict how many buffers have
-> to be pre-mapped in order to provide them with bounded delay via some
-> rt-mmap. I wouldn't spent time on this.
->  =20
-This could be another module parameter. If the user is not satisfied=20
-with the default limits, (s)he could override them. But I really don't=20
-pretend to spent more time on this... I'm very worried about my=20
-deadline... :( I still have too much to do in 4 months... :((
-> Ok, but even if you decide to let rt-mmap be non-deterministic, you
-> still need some means to prevent the scenario you described above.
-> Actually, all you need is some callback when the mapped memory block was
-> actually released (munmap/application exit). Such a callback can be
-> registered inside the rtdm_mmap handler as a vma_fileop.
-I have never worked with vma_fileop... I would need to learn it first.
->  It will run in
-> non-RT, and could be used to mark the related hardware buffer as finally
-> free for re-allocation.
-Now, I did realize that there is one more problem on my current design.=20
-If the user application exits or is terminated, I'm not sure if the=20
-close handler is called if the user forgot/was not able to. If it is=20
-not, the buffer would be marked as used until I reloaded the driver...=20
-Is the close handler invocated on application termination?
-> I will draft some extension of the current
-> rtdm_mmap_to_user function, but likely not before tomorrow evening or so.
->  =20
-Thank you.
-
-Rodrigo.
+> 
+> In case of a pure Linux :
+> 
+> SMP : I/O APIC + local APICs. As I know, enabling/disabling
+> the IRQ line occurs (normally?) on per-local APIC basis. This said, when
+> the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents
+> (probably, if the IRQ also was .ack-ed by that time?) the same IRQ from
+> being signaled on another CPU (even on a few).
+> In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run
+> handler_IRQ_events() - ISR handlers - once more.
+> 
+> Since PENDING is only a flag (not a counter), the fact that the IRQ was 
+> signaled
+> is not lost but Linux can't know how much time it was signaled.
+> I guess, it's not true for devices that e.g. do not rise a new interrupt 
+> until
+> the ISR handler does some special acknowledgement device-wise.
+Since my knowledge of interrupts in SMPs is essentially nil, I'll have to pass 
+on this one...
 
 
-=09
+-- 
+Best regards
 
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
-
-
+Anders Blomdell
 
