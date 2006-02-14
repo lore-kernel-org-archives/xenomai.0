@@ -1,12 +1,14 @@
-Message-ID: <43F20E47.1070908@domain.hid>
-Date: Tue, 14 Feb 2006 18:07:19 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <43F2131F.4010508@domain.hid>
+Date: Tue, 14 Feb 2006 18:27:59 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Kconfig inconsistencies
-References: <43F08392.3000403@domain.hid>
-In-Reply-To: <43F08392.3000403@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <43F08392.3000403@domain.hid> <43F20E47.1070908@domain.hid>
+In-Reply-To: <43F20E47.1070908@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8B09D3551D0ECA9A0F34A94C"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,70 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Hi,
-> 
-> here are some build screw-ups one can create by switching off the wrong
-> options:
-> 
->  o CONFIG_XENO_OPT_NATIVE_REGISTRY (but CONFIG_XENO_OPT_PERVASIVE
->    remains on): unresolved symbols rt_registry_bind and
->    rt_registry_fetch, several warnings due to "#[el]if CONFIG_XENO_..."
->    instead of "#[el]if defined(CONFIG_XENO_...)"
-> 
->  o CONFIG_XENO_OPT_PERVASIVE: xnheap_init_mapped and
->    xnheap_destroy_mapped become unresolved
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8B09D3551D0ECA9A0F34A94C
+Content-Type: multipart/mixed; boundary="------------000709000206060907000209"
 
-Ok, will fix.
+This is a multi-part message in MIME format.
+--------------000709000206060907000209
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> The first issue reminds me of my unanswered question if
-> (CONFIG_XENO_OPT_PERVASIVE && CONFIG_XENO_SKIN_NATIVE &&
-> !CONFIG_XENO_OPT_NATIVE_REGISTRY) makes any sense at all (kernel objects
-> created from user space are looked up via the registry, right?).
-> 
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>>
+>> I haven't worked out any patch for those issues. Actually, I only want=
+ed
+>> to put this patch forward when stumbling over the other:
+>>
+>> --- ksrc/skins/native/Kconfig   (revision 564)
+>> +++ ksrc/skins/native/Kconfig   (working copy)
+>> @@ -127,7 +127,6 @@
+>>
+>>  config XENO_OPT_NATIVE_INTR
+>>      bool "Interrupts"
+>> -    default y
+>>      help
+>>
+>>      This option provides a simple API to deal with interrupts,
+>>
+>> Rationale: the /default/ way of handling IRQs should be via RTDM-based=
 
-Right, it doesn't make sense.
+>> drivers. Only users who know what they are doing should leave this pat=
+h
+>> and will have to switch on this feature explicitly. If this view can b=
+e
+>> commonly accepted, I will add some lines to the feature's help text as=
 
-> 
-> I haven't worked out any patch for those issues. Actually, I only wanted
-> to put this patch forward when stumbling over the other:
-> 
-> --- ksrc/skins/native/Kconfig   (revision 564)
-> +++ ksrc/skins/native/Kconfig   (working copy)
-> @@ -127,7 +127,6 @@
-> 
->  config XENO_OPT_NATIVE_INTR
->  	bool "Interrupts"
-> -	default y
->  	help
-> 
->  	This option provides a simple API to deal with interrupts,
-> 
-> Rationale: the /default/ way of handling IRQs should be via RTDM-based
-> drivers. Only users who know what they are doing should leave this path
-> and will have to switch on this feature explicitly. If this view can be
-> commonly accepted, I will add some lines to the feature's help text as well.
-> 
+>> well.
+>>
+>=20
+> Agreed.
+>=20
 
-Agreed.
+Then apply this one, please. I noticed that 2.4 does not know default
+values for bool options, correct?
 
-> Jan
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+Jan
 
+--------------000709000206060907000209
+Content-Type: text/plain;
+ name="nat_intr_default.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="nat_intr_default.patch"
 
--- 
+Index: ksrc/skins/native/Kconfig
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/native/Kconfig	(revision 568)
++++ ksrc/skins/native/Kconfig	(working copy)
+@@ -128,11 +128,11 @@
+=20
+ config XENO_OPT_NATIVE_INTR
+ 	bool "Interrupts"
+-	default y
+ 	help
+ =09
+ 	This option provides a simple API to deal with interrupts,
+-	both in kernel and user-space contexts. Registry support is
+-	required.
++	both in kernel and user-space contexts. Note that the preferred
++	way of implementing generic drivers usable across all Xenomai
++	interfaces is defined by the Real-Time Driver Model (RTDM).
+=20
+ endif
 
-Philippe.
+--------------000709000206060907000209--
+
+--------------enig8B09D3551D0ECA9A0F34A94C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD8hMfniDOoMHTA+kRAmgpAJ9lf+UcJwUIT0cX2S40Aac1c9PXqQCdHgVC
+M7F/PJwTKznfVhiCuSaC5wE=
+=AIXg
+-----END PGP SIGNATURE-----
+
+--------------enig8B09D3551D0ECA9A0F34A94C--
 
