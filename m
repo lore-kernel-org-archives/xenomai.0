@@ -1,16 +1,12 @@
-Message-ID: <b647ffbd0602140007l2c8b25bj@domain.hid>
-Date: Tue, 14 Feb 2006 10:07:12 +0200
-From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] Re: [shirq] first test results
-In-Reply-To: <43F0D374.7010801@domain.hid>
+Message-ID: <43F1C095.8030805@domain.hid>
+Date: Tue, 14 Feb 2006 12:35:49 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_15381_24587923.1139904432106"
-References: <43ECD570.5000704@domain.hid>
-	<b647ffbd0602110331i400d7ff5k@domain.hid>
-	<43EDDF9E.4030309@domain.hid>
-	<b647ffbd0602111058v3e8c6790w@domain.hid>
-	<43F0D374.7010801@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFBAEE4805D64635B05011302"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] separate queue debugging switch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,119 +16,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_15381_24587923.1139904432106
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFBAEE4805D64635B05011302
+Content-Type: multipart/mixed; boundary="------------010503010901040801020107"
+
+This is a multi-part message in MIME format.
+--------------010503010901040801020107
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-On 13/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> Dmitry Adamushko wrote:
-> > On 11/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >> Dmitry Adamushko wrote:
-> >>> And as an additional option,
-> >>> it could be interesting to print out to the log if not all "counter"
-> >> values
-> >>> then min,max,average (the same like for the latency :) per second or
-> per
-> >>> 1000 interrupts; so to see whether tweaking the MAX_EDGEIRQ_COUNTER
-> may
-> >> make
-> >>> the things better.
-> >> Yes, maybe it's too small. But this also depends on the absolute time
-> >> required for so many loops, something we should see in the traces then=
-.
-> >> I'm afraid that we will finally have to move the UART's read-from-fifo
-> >> to task context to reduce the time spent in IRQ context.
-> >
-> > Good. Keep me informed as before.
-> >
->
-> We got it working. :)
+Hi,
 
+while XENO_OPT_DEBUG is generally a useful switch for tracing potential
+issues in the core and the skins, it also introduces high latencies via
+the queue debugging feature (due to checks iterating over whole queues).
 
-Great!
+This patch introduces separate control over queue debugging so that you
+can have debug checks without too dramatic slowdowns.
 
+Jan
 
-> Anyway, this works now. But we also found a bug, as usual, a clean-up
-> bug: You released the IRQ line based on the wrong test, see attached
-> patch.
-
-
-Ah... it worked for my test cases since it depended on the order of
-xnintr_detach() calls. Thanks.
-
-
-With this fix applied and the IRQ flags as well as the
-> /proc/xenomai/irq output cleaned up, I would say you great work is ready
-> for merge!
-
-
-So I'll create the final patch and submit it to Philippe for merging.
-One more thing is making all this stuff optional; XENO_OPT_SHIRQ and
-XENO_OPT_SHIRQ_EDGE or something like this.
-
-
-Thanks,
-> Jan
->
->
-
---
-Best regards,
-Dmitry Adamushko
-
-------=_Part_15381_24587923.1139904432106
-Content-Type: text/html; charset=ISO-8859-1
+--------------010503010901040801020107
+Content-Type: text/plain;
+ name="DEBUG_QUEUES.patch"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="DEBUG_QUEUES.patch"
 
-<br><div><span class=3D"gmail_quote">On 13/02/06, <b class=3D"gmail_sendern=
-ame">Jan Kiszka</b> &lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid=
-.de</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-=
-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left=
-: 1ex;">
-Dmitry Adamushko wrote:<br>&gt; On 11/02/06, Jan Kiszka &lt;<a href=3D"mail=
-to:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<br>&gt;&gt; Dmitry A=
-damushko wrote:<br>&gt;&gt;&gt; And as an additional option,<br>&gt;&gt;&gt=
-; it could be interesting to print out to the log if not all &quot;counter&=
-quot;
-<br>&gt;&gt; values<br>&gt;&gt;&gt; then min,max,average (the same like for=
- the latency :) per second or per<br>&gt;&gt;&gt; 1000 interrupts; so to se=
-e whether tweaking the MAX_EDGEIRQ_COUNTER may<br>&gt;&gt; make<br>&gt;&gt;=
-&gt; the things better.
-<br>&gt;&gt; Yes, maybe it's too small. But this also depends on the absolu=
-te time<br>&gt;&gt; required for so many loops, something we should see in =
-the traces then.<br>&gt;&gt; I'm afraid that we will finally have to move t=
-he UART's read-from-fifo
-<br>&gt;&gt; to task context to reduce the time spent in IRQ context.<br>&g=
-t;<br>&gt; Good. Keep me informed as before.<br>&gt;<br><br>We got it worki=
-ng. :)</blockquote><div><br>
-Great! <br>
-</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid=
- rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>Any=
-way, this works now. But we also found a bug, as usual, a clean-up<br>bug: =
-You released the IRQ line based on the wrong test, see attached
-<br>patch.</blockquote><div><br>
-Ah... it worked for my test cases since it depended on the order of xnintr_=
-detach() calls. Thanks.<br>
-</div><br>
-<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
-04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"> With this fi=
-x applied and the IRQ flags as well as the<br>/proc/xenomai/irq output clea=
-ned up, I would say you great work is ready
-<br>for merge!</blockquote><div><br>
-So I'll create the final patch and submit it to Philippe for merging.<br>
-One more thing is making all this stuff optional; XENO_OPT_SHIRQ and XENO_O=
-PT_SHIRQ_EDGE or something like this.<br>
-&nbsp;</div><br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px=
- solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">T=
-hanks,<br>Jan<br><br></blockquote></div><br clear=3D"all"><br>-- <br>Best r=
-egards,
-<br>Dmitry Adamushko
+Index: ksrc/nucleus/Kconfig
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/nucleus/Kconfig	(revision 564)
++++ ksrc/nucleus/Kconfig	(working copy)
+@@ -87,6 +87,15 @@
+ 	Do not switch this option on unless you really know what you
+ 	are doing.
+=20
++config XENO_OPT_DEBUG_QUEUES
++	bool "Queue Debugging support"
++	depends on XENO_OPT_DEBUG
++	help
++=09
++	This option activates debugging checks for all queueing
++	operations of the Xenomai core. It adds even more runtime
++	overhead then CONFIG_XENO_OPT_DEBUG, use with care.
++
+ config XENO_OPT_WATCHDOG
+ 	bool "Watchdog support"
+ 	default n
+Index: include/nucleus/queue.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- include/nucleus/queue.h	(revision 564)
++++ include/nucleus/queue.h	(working copy)
+@@ -57,27 +57,27 @@
+=20
+     xnholder_t head;
+     int elems;
+-#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG) && defined(CON=
+FIG_SMP)
++#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defi=
+ned(CONFIG_SMP)
+     xnlock_t lock;
+-#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
++#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
+=20
+ } xnqueue_t;
+=20
+-#if defined(CONFIG_XENO_OPT_DEBUG) && defined(CONFIG_SMP)
++#if defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defined(CONFIG_SMP)
+ #define DECLARE_XNQUEUE(q) xnqueue_t q =3D { { &(q).head, &(q).head }, 0=
+, XNARCH_LOCK_UNLOCKED }
+-#else /* !(CONFIG_XENO_OPT_DEBUG && CONFIG_SMP) */
++#else /* !(CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP) */
+ #define DECLARE_XNQUEUE(q) xnqueue_t q =3D { { &(q).head, &(q).head }, 0=
+ }
+-#endif /* CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
++#endif /* CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
+=20
+ static inline void initq (xnqueue_t *qslot) {
+     inith(&qslot->head);
+     qslot->elems =3D 0;
+-#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG) && defined(CON=
+FIG_SMP)
++#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defi=
+ned(CONFIG_SMP)
+     xnlock_init(&qslot->lock);
+-#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
++#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
+ }
+=20
+-#ifdef CONFIG_XENO_OPT_DEBUG
++#ifdef CONFIG_XENO_OPT_DEBUG_QUEUES
+=20
+ #if defined(__KERNEL__) || defined(__XENO_UVM__) || defined(__XENO_SIM__=
+)
+=20
+@@ -172,7 +172,7 @@
+    dth(__holder);				\
+    --(__qslot)->elems; })
+=20
+-#else /* !CONFIG_XENO_OPT_DEBUG */
++#else /* !CONFIG_XENO_OPT_DEBUG_QUEUES */
+=20
+ static inline int insertq (xnqueue_t *qslot,
+                            xnholder_t *head,
+@@ -206,7 +206,7 @@
+     return --qslot->elems;
+ }
+=20
+-#endif /* CONFIG_XENO_OPT_DEBUG */
++#endif /* CONFIG_XENO_OPT_DEBUG_QUEUES */
+=20
+ static inline xnholder_t *getheadq (xnqueue_t *qslot)
+ {
 
-------=_Part_15381_24587923.1139904432106--
+--------------010503010901040801020107--
+
+--------------enigFBAEE4805D64635B05011302
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD8cCVniDOoMHTA+kRAvY7AJ9nLj7FhvR861tGf6S7KCcmmUTSsQCfXzNF
+O9HZK6QlVj9E0bjNkEeniO0=
+=icVu
+-----END PGP SIGNATURE-----
+
+--------------enigFBAEE4805D64635B05011302--
 
