@@ -1,18 +1,11 @@
-Message-ID: <fd6a47a90602010423k707ac91bm@domain.hid>
-Date: Wed, 1 Feb 2006 13:23:45 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
-In-Reply-To: <43E08762.90306@domain.hid>
+Message-ID: <43F1D0D7.7040503@domain.hid>
+Date: Tue, 14 Feb 2006 13:45:11 +0100
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_4786_30532824.1138796625225"
-References: <43D21144.8040005@domain.hid>
-	<fd6a47a90601220819n3f4cd382t@domain.hid>
-	<E1F16LA-0001ku-C4@domain.hid> <43D52BA3.6020005@domain.hid>
-	<43DE27E5.3010206@domain.hid> <43DE3243.8080603@domain.hid>
-	<fd6a47a90601311309i18d2ab31i@domain.hid>
-	<43DFDA6E.5000700@domain.hid>
-	<fd6a47a90602010157w57051089p@domain.hid> <43E08762.90306@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA29322859660FF5FF5C39C76"
+Subject: [Xenomai-core] [PATCH] native registry dependencies
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,50 +15,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_4786_30532824.1138796625225
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA29322859660FF5FF5C39C76
+Content-Type: multipart/mixed; boundary="------------060107080305030903050309"
+
+This is a multi-part message in MIME format.
+--------------060107080305030903050309
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
->
-> Revision 466 contains the mutex-info fix, but that is post -rc2. Why not
-> switching to SVN head?
+Hi,
 
+I'm sure now that the native registry is mandatory as soon as
+CONFIG_XENO_OPT_PERVASIVE is selected. This patch enforces the selection
+in such a scenario.
 
-Philippe asked to apply the patch against Xenomai 2.1-rc2. Can I safely
-patch it against the SVN tree ? After that, what will 'svn up' do to the
-patched tree ?
+Jan
 
-Remember I'm quite new to Linux. Actually, I spent half an hour finding out
-how that patch stuff (especially the -p option) works.
-
-
-
-Jeroen.
-
-------=_Part_4786_30532824.1138796625225
-Content-Type: text/html; charset=ISO-8859-1
+--------------060107080305030903050309
+Content-Type: text/plain;
+ name="registry_dep.patch"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="registry_dep.patch"
 
-<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
-px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Revision 466 contains the mutex-=
-info fix, but that is post -rc2. Why not<br>switching to SVN head?</blockqu=
-ote>
+Index: ksrc/skins/native/Kconfig
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/native/Kconfig	(revision 564)
++++ ksrc/skins/native/Kconfig	(working copy)
+@@ -9,7 +9,8 @@
+ if XENO_SKIN_NATIVE !=3D n
+=20
+ config XENO_OPT_NATIVE_REGISTRY
+-	bool "Registry support"
++	bool
++	prompt "Registry support" if !XENO_OPT_PERVASIVE
+ 	default y
+ 	help
+ =09
+Index: ksrc/skins/native/Config.in
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/native/Config.in	(revision 564)
++++ ksrc/skins/native/Config.in	(working copy)
+@@ -7,8 +7,14 @@
+ if [ "$CONFIG_XENO_SKIN_NATIVE" !=3D "n" ]; then
+ 	mainmenu_option next_comment
+ 	comment 'Native interface options'
+-	bool 'Registry support' CONFIG_XENO_OPT_NATIVE_REGISTRY
+-	int 'Number of registry slots' CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS =
+512
++	if [ "$CONFIG_XENO_OPT_PERVASIVE" !=3D "n" ]; then
++		define_bool CONFIG_XENO_OPT_NATIVE_REGISTRY y
++	else
++		bool 'Registry support' CONFIG_XENO_OPT_NATIVE_REGISTRY
++	fi
++	if [ "$CONFIG_XENO_OPT_NATIVE_REGISTRY" !=3D "n" ]; then
++		int 'Number of registry slots' CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS=
+ 512
++	fi
+ 	dep_bool 'Message pipes' CONFIG_XENO_OPT_NATIVE_PIPE $CONFIG_XENO_OPT_P=
+IPE
+ 	if [ "$CONFIG_XENO_OPT_NATIVE_PIPE" !=3D "n" ]; then
+ 		int 'Bytes in buffer space' CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ 4096
 
-<div>&nbsp;</div>
-<div>Philippe asked to apply&nbsp;the patch against Xenomai 2.1-rc2. Can I =
-safely patch it against the SVN tree ? After that,&nbsp;what will 'svn up' =
-do to the patched tree ?</div>
-<div>&nbsp;</div>
-<div>Remember I'm quite new to Linux. Actually, I&nbsp;spent&nbsp;half an h=
-our finding out how that patch stuff (especially the -p option) works.</div=
->
-<p>&nbsp;</p>
-<p>Jeroen.</p>
+--------------060107080305030903050309--
 
-------=_Part_4786_30532824.1138796625225--
+--------------enigA29322859660FF5FF5C39C76
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFD8dDXncNeS9Q0k+IRAjKKAJ48yb7FDwjvF/01j34BhQSwdVIOZgCgxnoL
+XGHsRkEZ0msH89VMoUriFcg=
+=sjf4
+-----END PGP SIGNATURE-----
+
+--------------enigA29322859660FF5FF5C39C76--
 
