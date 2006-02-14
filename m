@@ -1,13 +1,15 @@
-Message-ID: <fd6a47a90602141007g7830d31fu@domain.hid>
-Date: Tue, 14 Feb 2006 19:07:16 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-In-Reply-To: <43F21867.8070002@domain.hid>
+Message-ID: <43F21ED7.3030501@domain.hid>
+Date: Tue, 14 Feb 2006 19:17:59 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_8725_12617585.1139940436600"
-References: <fd6a47a90602140744lc1d4365q@domain.hid>
-	<43F21867.8070002@domain.hid>
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <fd6a47a90602140744lc1d4365q@domain.hid>	<43F21867.8070002@domain.hid>
+	<fd6a47a90602141007g7830d31fu@domain.hid>
+In-Reply-To: <fd6a47a90602141007g7830d31fu@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD48A3A652551F733E9BBD77E"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,34 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_8725_12617585.1139940436600
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD48A3A652551F733E9BBD77E
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-One moment. I'm trying to locate rthal_disable_irq()...
+Jeroen Van den Keybus wrote:
+> One moment. I'm trying to locate rthal_disable_irq()...
+>=20
+>=20
+>> Does calling rthal_disable_irq() instead of returning RTDM_IRQ_ENABLE,=
+ but
+>> rather
+>> 0, prevents the freeze?
+>>
+
+Disable or enable (I guess the latter one)?
+
+In either case, there are equivalent wrappers in RTDM:
+rtdm_irq_enable/disable.
+
+Jan
 
 
-> Does calling rthal_disable_irq() instead of returning RTDM_IRQ_ENABLE, bu=
-t
-> rather
-> 0, prevents the freeze?
->
+--------------enigD48A3A652551F733E9BBD77E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_8725_12617585.1139940436600
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<div><div>One moment. I'm trying to locate rthal_disable_irq()...<br>
-&nbsp;</div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px sol=
-id rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Does =
-calling rthal_disable_irq() instead of returning RTDM_IRQ_ENABLE, but rathe=
-r<br>
-0, prevents the freeze?<br></blockquote></div><br>
+iD8DBQFD8h7XniDOoMHTA+kRAiRmAJ9Sbs2g1JVtytQUjfvb8yg5aQklngCaA1ur
+aSgqnX5so2A8qehyT9At1AU=
+=UfSY
+-----END PGP SIGNATURE-----
 
-------=_Part_8725_12617585.1139940436600--
+--------------enigD48A3A652551F733E9BBD77E--
 
