@@ -1,19 +1,12 @@
-Message-ID: <43F21766.70109@domain.hid>
-Date: Tue, 14 Feb 2006 18:46:14 +0100
+Message-ID: <43F21867.8070002@domain.hid>
+Date: Tue, 14 Feb 2006 18:50:31 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <b647ffbd0602070104s63275903q@domain.hid>	
-	<43E86F4D.4050400@domain.hid>	
-	<43E8DFC4.4010805@domain.hid>
-	<43E9CE95.3070806@domain.hid>	 <43EAFD8B.7020400@domain.hid>
-	<43EB1279.3040902@domain.hid>	 <43EB1741.9080809@domain.hid>	
-	<b647ffbd0602090311x56dbc765x@domain.hid>	
-	<43EB63D7.2080507@domain.hid> <43EC9C5B.4030501@domain.hid>
-	<b647ffbd0602110335u58e2d4cek@domain.hid>
-In-Reply-To: <b647ffbd0602110335u58e2d4cek@domain.hid>
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <fd6a47a90602140744lc1d4365q@domain.hid>
+In-Reply-To: <fd6a47a90602140744lc1d4365q@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: More on Shared interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,104 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Dmitry Adamushko wrote:
+Jeroen Van den Keybus wrote:
+> I'm having problems using MSI interrupts in Xenomai.
 > 
->  > >
->  > >   irq K  | ----------- | ---o    |   // Linux only
->  > >   ...
->  > >   irq L  | ---o        |         |   // RT-only
->  > >   ...
->  > >   irq M  | ---o------- | ---o    |   // Shared between domains
->  > >   ...
->  > >   irq N  | ---o---o--- |         |   // Shared inside single domain
->  > >   ...
->  > >   irq O  | ---o---o--- | ---o    |   // Shared between and inside 
-> single
->  > > domain
->  > >
->  > > Xenomai currently handles the K & L cases, Dmitrys patch addresses 
-> the N
->  > > case, with edge triggered interrupts the M (and O after Dmitry's patch)
->  > > case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
->  > >
->  >
->  > As you pointed out recently, using this combo for M (and thus O) 
-> might also be
->  > unsafe, e.g. causing some implementation to send eoi twice or more 
-> (and the second
->  > time while hw IRQs are off and the second IRQ is still pending) if 
-> more than a
->  > single domain ends the current interrupt. This said, I've never tried 
-> that
->  > actually, but this does seem a bit optimistic to always expect a 
-> proper behaviour
->  > in this case (basically, it all depends on what "ending" the 
-> interrupt means hw-wise).
+> When using normal PCI interrupts, my PCI card + RTDM driver work 
+> flawlessly. However, I noticed the following while trying to enable MSI 
+> (by having Linux do all the administrative register-fill-ins using 
+> pci_enable_msi()):
 > 
+> 1. The kernel is compiled for MSI. (PCI_CONFIG_MSI=yes)
+> 2. My card correctly advertises the MSI capability (checked with 'lspci 
+> -v').
+> 3. I do get a new IRQ number in the pci_dev struct (217 instead of 193) 
+> after invoking pci_enable_msi().
+> 4. After pci_enable_smi(), 'lspci -v' correctly indicates that Message 
+> Signalled Interrupts are now enabled (Enable+).
+> 5. I can register the new IRQ with rtdm_request_irq(). Return value is 0.
+> 6. The IRQ number appears in /proc/xenomai/irq.
+> 7. I can enable the new IRQ with rtdm_irq_enable(). Return value is 0.
+> 8. I can disable the new IRQ with rtdm_irq_disable(). Return value is 0.
+> 9. I can unregister the new IRQ with rtdm_irq_free(). Return value is 0.
+> 10. I'm able to do pci_disable_pci() successfully.
 > 
-> Just to be sure I've got the things more or less clear. I feel there are 
-> some holes in my understanding of the irq handling stuff, mainly hw-wise.
-> 
-> x86 + i8259A.
-> 
-> In this case, .end handler does nothing more than enabling the IRQ line.
-> The "eoi" is sent in .ack right after disabling the IRQ line.
-> 
-> Let's suppose we have the "M" case ("O" makes no difference here).
-> 
-> When the ISR handler in Linux domain gets control :
-> 
-> - the IRQ line is ON (it was already .end-ed in the primary domain in case
->   of XN_ISR_ENABLE | XN_ISR_CHAINED ).
-> 
-> ===
->   Actually, it's possible to set IPIPE_PASS flag for
->   the primary_domain.irqs[THIS_IRQ].control
->   when THIS_IRQ is shared across domains. This way, there is no need
->   to call propagate_irq() in xnintr_irq_handler(). Ok, it's not
->   that important so far.
-> ===
-> 
->   This is not how it happens when the IRQ is only handled in the
->   Linux domain. But the ISR is still serialized (need not to be
->   reentrant) because do_IRQ() takes care of it (by means
->   of RUNNING and PENDING flags).
-> 
-> So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that
-> case?
-> 
-> In case of a pure Linux :
-> 
-> SMP : I/O APIC + local APICs. As I know, enabling/disabling
-> the IRQ line occurs (normally?) on per-local APIC basis. This said, when
-> the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents
-> (probably, if the IRQ also was .ack-ed by that time?) the same IRQ from
-> being signaled on another CPU (even on a few).
-> In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run
-> handler_IRQ_events() - ISR handlers - once more.
-> 
-> Since PENDING is only a flag (not a counter), the fact that the IRQ was 
-> signaled
-> is not lost but Linux can't know how much time it was signaled.
-> I guess, it's not true for devices that e.g. do not rise a new interrupt 
-> until
-> the ISR handler does some special acknowledgement device-wise.
-> 
-> am I right?
-
-Yes. Additionally, the uncertainty about the last issue is one of the reasons why 
-Adeos keeps a count of pending IRQs, and not just a flag; the other being that we 
-do want virtual interrupts to be counted and not just marked so that the software 
-can rely on this.
+> If I actually enable the card interrupt, it goes wrong after 7 after 
+> arrival of the first interrupt. The ISR is executed (checked that), 
+> which checks if the card was actually interrupting and, if so, returns 
+> with RTDM_IRQ_ENABLE. After that, the machine is absolutely dead (frozen).
 
 > 
+> Any hints, suggestions or things I may check ?
+>
+
+Does calling rthal_disable_irq() instead of returning RTDM_IRQ_ENABLE, but rather 
+0, prevents the freeze?
+
+
+> Jeroen.
 > 
-> -- 
-> Best regards,
-> Dmitry Adamushko
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
