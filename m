@@ -1,22 +1,18 @@
-Message-ID: <43E0AAE1.6070600@domain.hid>
-Date: Wed, 01 Feb 2006 13:34:41 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43F2521E.7040200@domain.hid>
+Date: Tue, 14 Feb 2006 22:56:46 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [BUG] racy xnshadow_harden under CONFIG_PREEMPT
-References: <43D21144.8040005@domain.hid>	
-	<fd6a47a90601220819n3f4cd382t@domain.hid>	
-	<E1F16LA-0001ku-C4@domain.hid> <43D52BA3.6020005@domain.hid>	
-	<43DE27E5.3010206@domain.hid> <43DE3243.8080603@domain.hid>	
-	<fd6a47a90601311309i18d2ab31i@domain.hid>	
-	<43DFDA6E.5000700@domain.hid>	
-	<fd6a47a90602010157w57051089p@domain.hid>
-	<43E08762.90306@domain.hid>
-	<fd6a47a90602010423k707ac91bm@domain.hid>
-In-Reply-To: <fd6a47a90602010423k707ac91bm@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8F10AB7578B8D0F27D72817A"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <fd6a47a90602140744lc1d4365q@domain.hid>	
+	<43F21867.8070002@domain.hid>	
+	<fd6a47a90602141007g7830d31fu@domain.hid>	
+	<43F21ED7.3030501@domain.hid> <43F220D7.6040705@domain.hid>	
+	<fd6a47a90602141052u1e136db8y@domain.hid>	
+	<fd6a47a90602141133v6aeae6e1n@domain.hid>
+	<fd6a47a90602141341j21ce1b77l@domain.hid>
+In-Reply-To: <fd6a47a90602141341j21ce1b77l@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,57 +23,44 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8F10AB7578B8D0F27D72817A
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jeroen Van den Keybus wrote:
->> Revision 466 contains the mutex-info fix, but that is post -rc2. Why n=
-ot
->> switching to SVN head?
->=20
->=20
-> Philippe asked to apply the patch against Xenomai 2.1-rc2. Can I safely=
+> I've got some bad news.
+> 
+> I've rewritten (parts of) my driver to operate in native Linux (i.e. no 
+> RTDM, no Xenomai). When I run this in a Xenomai-augmented kernel (with 
+> Adeos, evidently), the machine hangs. However, when the same code is run 
+> in the same but unmodified kernel, the code works as expected. Therefore 
+> it seems that Adeos is to blame here.
 
-> patch it against the SVN tree ? After that, what will 'svn up' do to th=
-e
-> patched tree ?
+Yes, as usual with MSI support, unfortunately.
 
-The CONFIG_PREEMPT fix is already contained in the latest SVN revision,
-no need to patch anymore.
+> 
+> Now, I could try to write a small driver program illustrating the 
+> problem. Of course, it is impossible for you to test on my board. Maybe 
+> we could agree on an MSI capable piece of hardware, that I could write 
+> the code for ?
+>
 
-When unsure if a patch will cleanly apply, try "patch --dry-run" first.
-(Virtually) rejected hunks can then be used to asses if the patch fits -
-without messing up the code base immediately.
+The problem is that I need to put my hands on a new set of MSI capable hw first 
+and divert it for debugging Adeos. The box I've used to fix the first round of MSI 
+issues a few months ago does not exhibit such issues anymore, so I can't reproduce 
+the problem here yet. The only good news for now, is that I won't give up on 
+fixing all of the MSI issues in Adeos.
 
->=20
-> Remember I'm quite new to Linux. Actually, I spent half an hour finding=
- out
-> how that patch stuff (especially the -p option) works.
->=20
+> The reason I would very much like to test this setup is that I look upon 
+> MSI as a very viable alternative to these ever-damned interrupt sharing 
+> mechanisms. It is becoming more and more difficult to find computers 
+> that allow you to reserve (a few) IRQ-lines these days (especially 
+> notebooks and OEM desktops). Additionally, MSI is capable of bypassing 
+> the IO-APIC entirely (although the Linux kernel needs that APIC support 
+> to enable MSI - I've still got to find out why that is).
+> 
+> Jeroen.
 
-:) (it's no problem to ask even these kind of "stupid" questions to the
-list or us directly - no one will bite you!)
 
-Jan
+-- 
 
-
---------------enig8F10AB7578B8D0F27D72817A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD4KrhniDOoMHTA+kRAlFKAJ9k4ys2JsP3KKDUiEmwbOszMmm6rACdEZEs
-tiis/VE4D5UjREis7Jcay7k=
-=yGHT
------END PGP SIGNATURE-----
-
---------------enig8F10AB7578B8D0F27D72817A--
+Philippe.
 
