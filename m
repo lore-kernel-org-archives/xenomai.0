@@ -1,12 +1,14 @@
-Message-ID: <43F1C095.8030805@domain.hid>
-Date: Tue, 14 Feb 2006 12:35:49 +0100
+Message-ID: <43F1CF9F.6020608@domain.hid>
+Date: Tue, 14 Feb 2006 13:39:59 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] separate queue debugging switch
+References: <43F1C095.8030805@domain.hid>
+In-Reply-To: <43F1C095.8030805@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigFBAEE4805D64635B05011302"
+	boundary="------------enig797C5F1E1A30C2BC2C73C683"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] separate queue debugging switch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,31 +21,39 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFBAEE4805D64635B05011302
-Content-Type: multipart/mixed; boundary="------------010503010901040801020107"
+--------------enig797C5F1E1A30C2BC2C73C683
+Content-Type: multipart/mixed; boundary="------------030902040403090508010900"
 
 This is a multi-part message in MIME format.
---------------010503010901040801020107
+--------------030902040403090508010900
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+>=20
+> while XENO_OPT_DEBUG is generally a useful switch for tracing potential=
 
-while XENO_OPT_DEBUG is generally a useful switch for tracing potential
-issues in the core and the skins, it also introduces high latencies via
-the queue debugging feature (due to checks iterating over whole queues).
+> issues in the core and the skins, it also introduces high latencies via=
 
-This patch introduces separate control over queue debugging so that you
-can have debug checks without too dramatic slowdowns.
+> the queue debugging feature (due to checks iterating over whole queues)=
+=2E
+>=20
+> This patch introduces separate control over queue debugging so that you=
+
+> can have debug checks without too dramatic slowdowns.
+>=20
+
+And this revision also takes care of 2.4.
 
 Jan
 
---------------010503010901040801020107
+--------------030902040403090508010900
 Content-Type: text/plain;
- name="DEBUG_QUEUES.patch"
+ name="DEBUG_QUEUE-v2.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="DEBUG_QUEUES.patch"
+ filename="DEBUG_QUEUE-v2.patch"
 
 Index: ksrc/nucleus/Kconfig
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -67,6 +77,22 @@ Index: ksrc/nucleus/Kconfig
  config XENO_OPT_WATCHDOG
  	bool "Watchdog support"
  	default n
+Index: ksrc/nucleus/Config.in
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/nucleus/Config.in	(revision 564)
++++ ksrc/nucleus/Config.in	(working copy)
+@@ -18,6 +18,9 @@
+ 	bool 'Interrupt shield support' CONFIG_XENO_OPT_ISHIELD
+ 	bool 'Statistics collection' CONFIG_XENO_OPT_STATS
+ 	bool 'Debug support' CONFIG_XENO_OPT_DEBUG
++	if [ "$CONFIG_XENO_OPT_DEBUG" =3D "y" ]; then
++		bool 'Queue Debugging support' CONFIG_XENO_OPT_DEBUG_QUEUES
++	fi
+ 	bool 'Watchdog support' CONFIG_XENO_OPT_WATCHDOG
+=20
+ 	bool 'Enable periodic timer support' CONFIG_XENO_OPT_TIMING_PERIODIC
 Index: include/nucleus/queue.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -135,9 +161,9 @@ ned(CONFIG_SMP)
  static inline xnholder_t *getheadq (xnqueue_t *qslot)
  {
 
---------------010503010901040801020107--
+--------------030902040403090508010900--
 
---------------enigFBAEE4805D64635B05011302
+--------------enig797C5F1E1A30C2BC2C73C683
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -146,10 +172,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD8cCVniDOoMHTA+kRAvY7AJ9nLj7FhvR861tGf6S7KCcmmUTSsQCfXzNF
-O9HZK6QlVj9E0bjNkEeniO0=
-=icVu
+iD8DBQFD8c+fniDOoMHTA+kRAsnrAJ0fKeK9seVScyZybZ6hvZ3PTuyWigCfSP7U
+UMqYrwLrsdloVlQBdXwJJKg=
+=8eji
 -----END PGP SIGNATURE-----
 
---------------enigFBAEE4805D64635B05011302--
+--------------enig797C5F1E1A30C2BC2C73C683--
 
