@@ -1,13 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <43F22012.8050706@domain.hid>
+Date: Tue, 14 Feb 2006 19:23:14 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <fd6a47a90602140744lc1d4365q@domain.hid>	
+	<43F21867.8070002@domain.hid>
+	<fd6a47a90602141007g7830d31fu@domain.hid>
+In-Reply-To: <fd6a47a90602141007g7830d31fu@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17394.8014.954661.905966@domain.hid>
-Date: Tue, 14 Feb 2006 19:19:58 +0100
-Subject: Re: [Xenomai-core] Kconfig inconsistencies
-In-Reply-To: <43F20E47.1070908@domain.hid>
-References: <43F08392.3000403@domain.hid>
-	<43F20E47.1070908@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,21 +18,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
- > Jan Kiszka wrote:
- > >  o CONFIG_XENO_OPT_PERVASIVE: xnheap_init_mapped and
- > >    xnheap_destroy_mapped become unresolved
- > > 
- > 
- > Ok, will fix.
+Jeroen Van den Keybus wrote:
+> One moment. I'm trying to locate rthal_disable_irq()...
+>  
+> 
+>     Does calling rthal_disable_irq() instead of returning
+>     RTDM_IRQ_ENABLE, but rather
+>     0, prevents the freeze?
+> 
+> 
 
-This one was in the POSIX skin, and should already be fixed.
+rthal_irq_disable, sorry.
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
