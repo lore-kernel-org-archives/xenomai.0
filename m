@@ -1,12 +1,19 @@
-Message-ID: <43F2161D.9000906@domain.hid>
-Date: Tue, 14 Feb 2006 18:40:45 +0100
+Message-ID: <43F21766.70109@domain.hid>
+Date: Tue, 14 Feb 2006 18:46:14 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] separate queue debugging switch
-References: <43F1C095.8030805@domain.hid>
-In-Reply-To: <43F1C095.8030805@domain.hid>
+References: <b647ffbd0602070104s63275903q@domain.hid>	
+	<43E86F4D.4050400@domain.hid>	
+	<43E8DFC4.4010805@domain.hid>
+	<43E9CE95.3070806@domain.hid>	 <43EAFD8B.7020400@domain.hid>
+	<43EB1279.3040902@domain.hid>	 <43EB1741.9080809@domain.hid>	
+	<b647ffbd0602090311x56dbc765x@domain.hid>	
+	<43EB63D7.2080507@domain.hid> <43EC9C5B.4030501@domain.hid>
+	<b647ffbd0602110335u58e2d4cek@domain.hid>
+In-Reply-To: <b647ffbd0602110335u58e2d4cek@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: More on Shared interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,121 +23,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi,
+Dmitry Adamushko wrote:
 > 
-> while XENO_OPT_DEBUG is generally a useful switch for tracing potential
-> issues in the core and the skins, it also introduces high latencies via
-> the queue debugging feature (due to checks iterating over whole queues).
+>  > >
+>  > >   irq K  | ----------- | ---o    |   // Linux only
+>  > >   ...
+>  > >   irq L  | ---o        |         |   // RT-only
+>  > >   ...
+>  > >   irq M  | ---o------- | ---o    |   // Shared between domains
+>  > >   ...
+>  > >   irq N  | ---o---o--- |         |   // Shared inside single domain
+>  > >   ...
+>  > >   irq O  | ---o---o--- | ---o    |   // Shared between and inside 
+> single
+>  > > domain
+>  > >
+>  > > Xenomai currently handles the K & L cases, Dmitrys patch addresses 
+> the N
+>  > > case, with edge triggered interrupts the M (and O after Dmitry's patch)
+>  > > case(s) might be handled by returning RT_INTR_CHAINED | RT_INTR_ENABLE
+>  > >
+>  >
+>  > As you pointed out recently, using this combo for M (and thus O) 
+> might also be
+>  > unsafe, e.g. causing some implementation to send eoi twice or more 
+> (and the second
+>  > time while hw IRQs are off and the second IRQ is still pending) if 
+> more than a
+>  > single domain ends the current interrupt. This said, I've never tried 
+> that
+>  > actually, but this does seem a bit optimistic to always expect a 
+> proper behaviour
+>  > in this case (basically, it all depends on what "ending" the 
+> interrupt means hw-wise).
 > 
-> This patch introduces separate control over queue debugging so that you
-> can have debug checks without too dramatic slowdowns.
 > 
+> Just to be sure I've got the things more or less clear. I feel there are 
+> some holes in my understanding of the irq handling stuff, mainly hw-wise.
+> 
+> x86 + i8259A.
+> 
+> In this case, .end handler does nothing more than enabling the IRQ line.
+> The "eoi" is sent in .ack right after disabling the IRQ line.
+> 
+> Let's suppose we have the "M" case ("O" makes no difference here).
+> 
+> When the ISR handler in Linux domain gets control :
+> 
+> - the IRQ line is ON (it was already .end-ed in the primary domain in case
+>   of XN_ISR_ENABLE | XN_ISR_CHAINED ).
+> 
+> ===
+>   Actually, it's possible to set IPIPE_PASS flag for
+>   the primary_domain.irqs[THIS_IRQ].control
+>   when THIS_IRQ is shared across domains. This way, there is no need
+>   to call propagate_irq() in xnintr_irq_handler(). Ok, it's not
+>   that important so far.
+> ===
+> 
+>   This is not how it happens when the IRQ is only handled in the
+>   Linux domain. But the ISR is still serialized (need not to be
+>   reentrant) because do_IRQ() takes care of it (by means
+>   of RUNNING and PENDING flags).
+> 
+> So, I suppose, it's possible to use XN_ISR_ENABLE | XN_ISR_CHAINED in that
+> case?
+> 
+> In case of a pure Linux :
+> 
+> SMP : I/O APIC + local APICs. As I know, enabling/disabling
+> the IRQ line occurs (normally?) on per-local APIC basis. This said, when
+> the ISR is running on CPU_0 with the IRQ line disabled, nothing prevents
+> (probably, if the IRQ also was .ack-ed by that time?) the same IRQ from
+> being signaled on another CPU (even on a few).
+> In that case, it gets marked as PENDING and do_IRQ() on CPU_0 will run
+> handler_IRQ_events() - ISR handlers - once more.
+> 
+> Since PENDING is only a flag (not a counter), the fact that the IRQ was 
+> signaled
+> is not lost but Linux can't know how much time it was signaled.
+> I guess, it's not true for devices that e.g. do not rise a new interrupt 
+> until
+> the ISR handler does some special acknowledgement device-wise.
+> 
+> am I right?
 
-Maybe it's time to introduce debug levels, so that we could reuse them in order to
-add more (selectable) debug instrumentation; queue debugging could then be given a
-certain level (likely something like CONFIG_XENO_DEBUG_LEVEL=8712 for this 
-one...), instead of going for a specific conditional each time we introduce new 
-checks?
+Yes. Additionally, the uncertainty about the last issue is one of the reasons why 
+Adeos keeps a count of pending IRQs, and not just a flag; the other being that we 
+do want virtual interrupts to be counted and not just marked so that the software 
+can rely on this.
 
-> Jan
 > 
 > 
-> ------------------------------------------------------------------------
-> 
-> Index: ksrc/nucleus/Kconfig
-> ===================================================================
-> --- ksrc/nucleus/Kconfig	(revision 564)
-> +++ ksrc/nucleus/Kconfig	(working copy)
-> @@ -87,6 +87,15 @@
->  	Do not switch this option on unless you really know what you
->  	are doing.
->  
-> +config XENO_OPT_DEBUG_QUEUES
-> +	bool "Queue Debugging support"
-> +	depends on XENO_OPT_DEBUG
-> +	help
-> +	
-> +	This option activates debugging checks for all queueing
-> +	operations of the Xenomai core. It adds even more runtime
-> +	overhead then CONFIG_XENO_OPT_DEBUG, use with care.
-> +
->  config XENO_OPT_WATCHDOG
->  	bool "Watchdog support"
->  	default n
-> Index: include/nucleus/queue.h
-> ===================================================================
-> --- include/nucleus/queue.h	(revision 564)
-> +++ include/nucleus/queue.h	(working copy)
-> @@ -57,27 +57,27 @@
->  
->      xnholder_t head;
->      int elems;
-> -#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG) && defined(CONFIG_SMP)
-> +#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defined(CONFIG_SMP)
->      xnlock_t lock;
-> -#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
-> +#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
->  
->  } xnqueue_t;
->  
-> -#if defined(CONFIG_XENO_OPT_DEBUG) && defined(CONFIG_SMP)
-> +#if defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defined(CONFIG_SMP)
->  #define DECLARE_XNQUEUE(q) xnqueue_t q = { { &(q).head, &(q).head }, 0, XNARCH_LOCK_UNLOCKED }
-> -#else /* !(CONFIG_XENO_OPT_DEBUG && CONFIG_SMP) */
-> +#else /* !(CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP) */
->  #define DECLARE_XNQUEUE(q) xnqueue_t q = { { &(q).head, &(q).head }, 0 }
-> -#endif /* CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
-> +#endif /* CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
->  
->  static inline void initq (xnqueue_t *qslot) {
->      inith(&qslot->head);
->      qslot->elems = 0;
-> -#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG) && defined(CONFIG_SMP)
-> +#if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_DEBUG_QUEUES) && defined(CONFIG_SMP)
->      xnlock_init(&qslot->lock);
-> -#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG && CONFIG_SMP */
-> +#endif /* __KERNEL__ && CONFIG_XENO_OPT_DEBUG_QUEUES && CONFIG_SMP */
->  }
->  
-> -#ifdef CONFIG_XENO_OPT_DEBUG
-> +#ifdef CONFIG_XENO_OPT_DEBUG_QUEUES
->  
->  #if defined(__KERNEL__) || defined(__XENO_UVM__) || defined(__XENO_SIM__)
->  
-> @@ -172,7 +172,7 @@
->     dth(__holder);				\
->     --(__qslot)->elems; })
->  
-> -#else /* !CONFIG_XENO_OPT_DEBUG */
-> +#else /* !CONFIG_XENO_OPT_DEBUG_QUEUES */
->  
->  static inline int insertq (xnqueue_t *qslot,
->                             xnholder_t *head,
-> @@ -206,7 +206,7 @@
->      return --qslot->elems;
->  }
->  
-> -#endif /* CONFIG_XENO_OPT_DEBUG */
-> +#endif /* CONFIG_XENO_OPT_DEBUG_QUEUES */
->  
->  static inline xnholder_t *getheadq (xnqueue_t *qslot)
->  {
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> -- 
+> Best regards,
+> Dmitry Adamushko
 
 
 -- 
 
 Philippe.
-
 
