@@ -1,13 +1,20 @@
-Message-ID: <43E0BEC1.2060400@domain.hid>
-Date: Wed, 01 Feb 2006 14:59:29 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <fd6a47a90602151002q3f38748ep@domain.hid>
+Date: Wed, 15 Feb 2006 19:02:16 +0100
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+In-Reply-To: <fd6a47a90602150300y5e435a22i@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0601311053s2f9f77c3m@domain.hid>
-In-Reply-To: <b647ffbd0601311053s2f9f77c3m@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Are XN_ISR_CHAINED and XN_ISR_ENABLE mutually
-	exclusive?
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_20175_25599064.1140026536300"
+References: <fd6a47a90602140744lc1d4365q@domain.hid>
+	<43F21867.8070002@domain.hid>
+	<fd6a47a90602141007g7830d31fu@domain.hid>
+	<43F21ED7.3030501@domain.hid> <43F220D7.6040705@domain.hid>
+	<fd6a47a90602141052u1e136db8y@domain.hid>
+	<fd6a47a90602141133v6aeae6e1n@domain.hid>
+	<fd6a47a90602141341j21ce1b77l@domain.hid>
+	<43F2521E.7040200@domain.hid>
+	<fd6a47a90602150300y5e435a22i@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,43 +24,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-While looking into how to implement sharing of interrupts between realtime and 
-non-realtime domains (and applying Wolfgang Grandegger's patch 
-[https://mail.gna.org/public/xenomai-core/2006-01/msg00233.html], which is 
-necessary to make XN_ISR_ENABLE work at all on the PowerPC platform), I'm 
-beginning to think that XN_ISR_CHAINED and XN_ISR_ENABLE are mutually exclusive, 
-since if both are set, desc->handler->end will be called twice:
+------=_Part_20175_25599064.1140026536300
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-   1. When the realtime isr handler returns
-   2. When the Linux domain calls it in __do_IRQ
+At second sight, the patches are ok.
 
-In the solution I have in mind at the moment, I will:
+I=B4ve boiled the problem down to a lack of EOI. If I do __ack_APIC_irq() b=
+y
+hand after the desc->handler->end() has run, the system no longer freezes.
 
-   1. Add an extra iend handler argument to xnintr_init
-   2. If XN_ISR_ENABLE is returned from the isr handler,
-      replace desc->handler->end with the user supplied
-      iend handler.
+I'm finding out why that is.
 
-Hereby I hope to be able to handle interrupts shared between realtime and 
-non-realtime domain, without having the realtime domain wait for all 
-non-realtime interrupts to finish. This is the scenario I'm thinking of:
+Jeroen.
 
-   1. A non-RT interrupt occurs
-   2. The (RT) isr handler detects the non-RT interrupt,
-      disables further non-RT interrupts on that irq-vector, replaces
-      desc->handler->end with the user supplied iend handler,
-      returns XN_ISR_CHAINED | XN_ISR_ENABLE.
-   3. RT interrupts are serviced by the (RT) isr handler,
-      returns XN_ISR_ENABLE
-   4. The Linux domain get a chance to run the chained interrupt,
-      and eventually calls desc->handler->end (supplied iend handler)
-   5. The iend handler reenables non-RT interrupts.
+------=_Part_20175_25599064.1140026536300
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Comments on the above are most welcome!
+At second sight, the patches are ok.<br>
+<br>
+I=B4ve boiled the problem down to a lack of EOI. If I do __ack_APIC_irq()
+by hand after the desc-&gt;handler-&gt;end() has run, the system no
+longer freezes.<br>
+<br>
+I'm finding out why that is.<br>
+<br>
+Jeroen.<br>
 
--- 
-
-Anders Blomdell
+------=_Part_20175_25599064.1140026536300--
 
