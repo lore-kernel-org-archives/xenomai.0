@@ -1,20 +1,13 @@
-Message-ID: <fd6a47a90602151034q8ed6920r@domain.hid>
-Date: Wed, 15 Feb 2006 19:34:21 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-In-Reply-To: <fd6a47a90602151002q3f38748ep@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
+Date: Wed, 15 Feb 2006 12:53:05 -0200
+References: <200602141114.23856.lbocseg@domain.hid> <43F2761D.2050702@domain.hid>
+In-Reply-To: <43F2761D.2050702@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_20411_25695936.1140028461964"
-References: <fd6a47a90602140744lc1d4365q@domain.hid>
-	<fd6a47a90602141007g7830d31fu@domain.hid>
-	<43F21ED7.3030501@domain.hid> <43F220D7.6040705@domain.hid>
-	<fd6a47a90602141052u1e136db8y@domain.hid>
-	<fd6a47a90602141133v6aeae6e1n@domain.hid>
-	<fd6a47a90602141341j21ce1b77l@domain.hid>
-	<43F2521E.7040200@domain.hid>
-	<fd6a47a90602150300y5e435a22i@domain.hid>
-	<fd6a47a90602151002q3f38748ep@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200602151253.05341.lbocseg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,57 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_20411_25695936.1140028461964
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Em Ter=3DE7a 14 Fevereiro 2006 22:30, Jan Kiszka escreveu:
 
-Ok. I=B4ve found it. The MSI interrupt type uses its end() handler to
-acknowledge the interrupt using ack_APIC_irq() (drivers/pci/msi.c). Xenomai
-uses the ack() handler to expedite the acknowledgement of an IRQ. In case o=
-f
-MSI, ack() is a NOP.
+>...
+>>> You cannot mmap before you know precisely for which user this should
+>>> take place.
+>>
+>> Do you mean that if I use the 'current' and current->mm struct of the
+>> driver, when mmaping, the user won't be able to use the returned pointer?
+>
+>To mmap you need to know the target process, more precisely its mm. This
+>is typically derived from the invocation context of the service call
+>("current" is a pointer to the current process). But init_module runs in
+>the context of modprobe. Even worse, the process later opening and
+>mapping some buffer may not even exist at that time!
 
-The main problem is that Xenomai redefines ack_APIC_irq() calls (they becom=
-e
-NOPs, as defined in apic.h). Maybe the ISRs used so far never issued
-ack_APIC_irq() themselves, and used always the IO-APIC (which contains the
-correct __ack_APIC_irq() call) ?
+Right, I've already verified this on practice... I'm mmaping on open handle=
+=3D
+r=3D20
+for now just for testing the mmap, but I'll change it to the ioctl mmap=3D20
+handler.
 
-I feel a bit awkward about changing msi.c .
+It seems to work. I mapped high_memory and could read and modify it from us=
+=3D
+er=3D20
+space. The memory values mantained betweens the many open calls. I read,=3D=
+20
+printed the values and increment them by one. On next time, the value shown=
+=3D
+=3D20
+was incremented... All seems perfect but I still didn't test with real=3D20
+acquire code... When I do so, I'll let you know.
 
-Any opinions about how to change Xenomai / Linux ?
+I still need to test the vmaops. I think I'll test them tomorrow. I need to=
+=3D
+=3D20
+begin writing an article that my advisor asked me to. I need to finish it=
+=3D20
+until march, 10.
 
+Best Regards,
 
+Rodrigo.
 
-Jeroen.
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
 
-------=_Part_20411_25695936.1140028461964
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Ok. I=B4ve found it. The MSI interrupt type uses its end() handler to
-acknowledge the interrupt using ack_APIC_irq() (drivers/pci/msi.c).
-Xenomai uses the ack() handler to expedite the acknowledgement of an
-IRQ. In case of MSI, ack() is a NOP.<br>
-<br>
-The main problem is that Xenomai redefines ack_APIC_irq() calls (they
-become NOPs, as defined in apic.h). Maybe the ISRs used so far never
-issued ack_APIC_irq() themselves, and used always the IO-APIC (which
-contains the correct __ack_APIC_irq() call) ?<br>
-<br>
-I feel a bit awkward about changing msi.c .<br>
-<br>
-Any opinions about how to change Xenomai / Linux ?<br>
-<br>
-<br>
-<br>
-Jeroen.<br>
-<br>
-
-------=_Part_20411_25695936.1140028461964--
 
