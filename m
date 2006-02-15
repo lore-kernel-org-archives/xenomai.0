@@ -1,21 +1,12 @@
-Message-ID: <fd6a47a90602151458sc34625g@domain.hid>
-Date: Wed, 15 Feb 2006 23:58:35 +0100
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-In-Reply-To: <fd6a47a90602151250k4eb0b3b0s@domain.hid>
+From: "Russell Johnson" <rjohnson@domain.hid>
+Subject: RE: [Xenomai-core] Handling PCI MSI interrupts
+Date: Wed, 15 Feb 2006 16:09:55 -0700
+Message-ID: <008501c63284$ef549ed0$1e01a8c0@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_22852_23054282.1140044315452"
-References: <fd6a47a90602140744lc1d4365q@domain.hid>
-	<fd6a47a90602141052u1e136db8y@domain.hid>
-	<fd6a47a90602141133v6aeae6e1n@domain.hid>
-	<fd6a47a90602141341j21ce1b77l@domain.hid>
-	<43F2521E.7040200@domain.hid>
-	<fd6a47a90602150300y5e435a22i@domain.hid>
-	<fd6a47a90602151002q3f38748ep@domain.hid>
-	<fd6a47a90602151034q8ed6920r@domain.hid>
-	<43F38A5E.9030402@domain.hid>
-	<fd6a47a90602151250k4eb0b3b0s@domain.hid>
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <43F38A5E.9030402@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,74 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-------=_Part_22852_23054282.1140044315452
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-> I=B4m also investigating why MSI also doesn=B4t work under RTDM. It=B4s m=
-erely a
-> coincidence that the above bug (MSI interrupts from Linux devices getting
-> blocked) emerged and produced exactly the same behaviour (system hanging)=
-.
+To: 'Philippe Gerum' <rpm@xenomai.org>, 'Jeroen Van den Keybus' <jeroen.vandenkeybus@domain.hid>
+Cc: 'xenomai-core' <xenomai@xenomai.org>
 
 
-It turns out not to be coincidential. rtdm_irq_request() (through passing
-iack=3DNULL to virtualize_irq()) uses the default Linux driver as an
-acknowledgement routine for that interrupt. So fixing regular Linux
-interrupts also fixed RTDM operation.
 
-I'll have to sleep over the best solution in msi.c . For now, I have
-implemented an __ack_APIC_irq() in an routine ack_msi_irq_wo_maskbit(). How
-do I make a patch for that ?
+> It's definitely an Adeos issue and msi.c needs fixing. What=20
+> about this patch, do=20
+> things improve with it (against 2.6.15-ipipe-1.2-00)?
 
-As for the bitmasked varieties, I need to be careful here. First I'll have =
-a
-look at the details of MSI with maskbits. Some of this stuff has actually
-been devised to allow deferral of IRQ acknowledgement. I wouldn't want to
-break that feature.
+I'm currently patching my setup which started with =
+ipipe-2.6.14-i386-1.0-12.
+I've been having no luck with any MSI devices in the system even if they
+have supposedly had MSI disabled.  I'll post my testing results in the =
+next
+day or so.
 
-Anyway, with this simple fix, I'm finally able to use my Dell GX270 without
-IRQ sharing for the first time :-) .
+Russ
 
 
-Jeroen.
-
-------=_Part_22852_23054282.1140044315452
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<br>
-<div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(=
-204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I=B4m also i=
-nvestigating
-why MSI also doesn=B4t work under RTDM. It=B4s merely a coincidence that
-the above bug (MSI interrupts from Linux devices getting blocked)
-emerged and produced exactly the same behaviour (system hanging).</blockquo=
-te><div><br>
-It turns out not to be coincidential. rtdm_irq_request() (through
-passing iack=3DNULL to virtualize_irq()) uses the default Linux driver as
-an acknowledgement routine for that interrupt. So fixing regular Linux
-interrupts also fixed RTDM operation.<br>
-<br>
-I'll have to sleep over the best solution in msi.c . For now, I have
-implemented an __ack_APIC_irq() in an routine ack_msi_irq_wo_maskbit().
-How do I make a patch for that ?<br>
-<br>
-As for the bitmasked varieties, I need to be careful here. First I'll
-have a look at the details of MSI with maskbits. Some of this stuff has
-actually been devised to allow deferral of IRQ acknowledgement. I
-wouldn't want to break that feature.<br>
-<br>
-</div>Anyway, with this simple fix, I'm finally able to use my Dell GX270 w=
-ithout IRQ sharing for the first time :-) .<br>
-<br>
-</div><br>
-Jeroen.<br>
-
-------=_Part_22852_23054282.1140044315452--
 
