@@ -1,15 +1,14 @@
-Message-ID: <43E0CB30.7010102@domain.hid>
-Date: Wed, 01 Feb 2006 15:52:32 +0100
+Message-ID: <43F47705.90309@domain.hid>
+Date: Thu, 16 Feb 2006 13:58:45 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Are XN_ISR_CHAINED and XN_ISR_ENABLE mutually
-	exclusive?
-References: <b647ffbd0601311053s2f9f77c3m@domain.hid>
-	<43E0BEC1.2060400@domain.hid>
-In-Reply-To: <43E0BEC1.2060400@domain.hid>
+Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
+References: <b647ffbd0602150939g59256b2bx@domain.hid>	<43F3C4EA.7050303@domain.hid>
+	<b647ffbd0602160220we254aacx@domain.hid>
+In-Reply-To: <b647ffbd0602160220we254aacx@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5B94F7588B1E4FABBA579351"
+	boundary="------------enig8E7710371EC3785ECC8DD93B"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,80 +19,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5B94F7588B1E4FABBA579351
+--------------enig8E7710371EC3785ECC8DD93B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Anders Blomdell wrote:
-> While looking into how to implement sharing of interrupts between
-> realtime and non-realtime domains (and applying Wolfgang Grandegger's
-> patch [https://mail.gna.org/public/xenomai-core/2006-01/msg00233.html],=
-
-> which is necessary to make XN_ISR_ENABLE work at all on the PowerPC
-> platform), I'm beginning to think that XN_ISR_CHAINED and XN_ISR_ENABLE=
-
-> are mutually exclusive, since if both are set, desc->handler->end will
-> be called twice:
+Dmitry Adamushko wrote:
+> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
 >=20
->   1. When the realtime isr handler returns
->   2. When the Linux domain calls it in __do_IRQ
+> Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve this
+>> before merging (i.e. make XN_ISR_HANDLED non-zero)?
+>=20
+>=20
+> Ok, XN_ISR_NOINT is removed in favor of XN_ISR_HANDLED which is now
+> non-zero.
+> Actually, at first I wanted to make it just the other way about.
+>=20
 
-Yes, those bits are semantically exclusive. Actually, I think passing
-both bits could even cause deadlocks if the RT-IRQ is raised again
-before the non-RT handler got a chance to clear the IRQ source in hardwar=
-e.
+Hmm, thinking about this again, I would like to revert my suggestion in
+favour of a third approach (trying to keep you busy ;) ).
+
+Recommended default values:
+<new>XN_ISR_HANDLED =3D> <old non-zero>XN_ISR_HANDLED | <old>XN_ISR_ENABL=
+E
+
+<new>XN_ISR_NOINT =3D> <new>XN_ISR_NO_ENABLE
+
+
+Additional bits:
+<new>XN_ISR_NO_ENABLE
+ =3D> indicate that <old>XN_ISR_ENABLE is not set
+    (use case: handle but delay re-enable)
+
+<new>XN_ISR_PROPAGATE
+ =3D> <old>XN_ISR_CHAINED (the new name is closer to the related function=
+
+                         calls - at least for me).
+
+
+Not expressible combination:
+<old>XN_ISR_ENABLE | <new>XN_ISR_NOINT
+ =3D> Doesn't make sense, does it?
+
+
+Still expressible invalid combination:
+<new>XN_ISR_HANDLED | <new>XN_ISR_PROPAGATE
+ =3D> The implicit enable request should be easy to ignore at nucleus
+    level.
+
+
+Rational:
+
+Most users will either indicate that an IRQ was handled and should be
+re-enabled as soon as possible or that it was unhandled and should
+better remain masked if no one else cares.
+
+XN_ISR_PROPAGATE (or related skin defines) are only useful for very very
+special corner-case drivers and applications. Normal generic drivers
+should not touch this (including my own xeno_16550A... bah!). BTW, if
+there is some unintentional IRQ sharing so that spurious RT interrupts
+occur, I think we should detect this at nucleus level and bail out.
+Otherwise, systems quickly lock up (I just faced this once again two
+days ago on an old RTAI box).
+
+
+This will break some stuff (RTDM e.g., but we have some version flags
+for such cases), but it takes us closer to the standard Linux API
+without loosing control over the details when required.
+
+Comments?
 
 >=20
-> In the solution I have in mind at the moment, I will:
+> Moreover, I attached an add-on patch to overcome the name buffer in
+>> xnintr_t. Note that this patch is only compile-tested, I have no nativ=
+e
+>> interrupt test-case at hand.
 >=20
->   1. Add an extra iend handler argument to xnintr_init
->   2. If XN_ISR_ENABLE is returned from the isr handler,
->      replace desc->handler->end with the user supplied
->      iend handler.
 >=20
-> Hereby I hope to be able to handle interrupts shared between realtime
-> and non-realtime domain, without having the realtime domain wait for al=
-l
-> non-realtime interrupts to finish. This is the scenario I'm thinking of=
-:
 >=20
->   1. A non-RT interrupt occurs
->   2. The (RT) isr handler detects the non-RT interrupt,
->      disables further non-RT interrupts on that irq-vector, replaces
+> Heh.. someone once suggested the -p key with "diff" to me? :o)
 
-This remains vague to me. How precisely will you disable? I guess at
-hardware level, i.e. in a (non-RT) device-specific way: switch off the
-bit in some hardware register that says "this device can produce IRQs",
-right?
-
->      desc->handler->end with the user supplied iend handler,
->      returns XN_ISR_CHAINED | XN_ISR_ENABLE.
->   3. RT interrupts are serviced by the (RT) isr handler,
->      returns XN_ISR_ENABLE
->   4. The Linux domain get a chance to run the chained interrupt,
->      and eventually calls desc->handler->end (supplied iend handler)
->   5. The iend handler reenables non-RT interrupts.
-
-Then this would switch on that bit again? Note that this may require to
-synchronise the hardware access with parts of the non-RT driver.
-
-Meanwhile I recalled that my hack to realise IRQ sharing between a RT
-device and a non-RT eepro100 is filed on a public archive:
-
-https://mail.gna.org/public/xenomai-core/2005-11/msg00012.html
+Mmpf. Must have been too late, and I was too impressed how interdiff
+worked out this patch. :)
 
 >=20
-> Comments on the above are most welcome!
+> I bet your patch would even work but it's, well, slightly broken indeed=
+ ;-)
 >=20
+> Look at the native/syscall.c : __rt_intr_delete() :
+>=20
+> RT_INTR *intr =3D (RT_INTR *)rt_registry_fetch(ph.opaque);
+> ...
+> xnfree(intr);
+>=20
+> "intr" actually points to intr_buf->intr and it works as expected only
+> because "RT_INTR intr" is the first member of the struct, so that it's
+> address =3D=3D the address of the whole object of this struct.
+
+But this is not an unusual trick, and I see no practical problems.
+
+>=20
+> To do it properly you would need to make your "unnamed" struct visible
+> for both __rt_intr_create() and __rt_intr_delete(). Something like :
+>=20
+> struct RT_INTR_ENV {
+>=20
+> #define link2intr_env(laddr) \
+> ((RT_INTR_ENV *)(((char* )laddr) - (int)(&((RT_INTR_ENV *)0)->intr)))
+>=20
+>     RT_INTR intr;
+>     char name[XNOBJECT_NAME_LEN];
+> };
+>=20
+> and then make use of link2intr_env() in __rt_intr_delet().
+>=20
+>=20
+> Ok, with you approach we would avoid allocating memory
+> for name[XNOBJECT_NAME_LEN] when an object is created in kernel-mode
+> and do it via RT_INTR_ENV only when it's created in user-mode.
+>=20
+> We could even use that approach for all objects in native skin, but we =
+can't
+> because of "anonymous" objects supported in kernel-mode too and, well, =
+I
+> personally would not like those RT_OBJECT_ENV structures all over the m=
+ap in
+> syscall.c :)
+
+Me too.
+
+>=20
+> So I don't want to break the whole picture only for the RT_INTR object =
+(it
+> doesn't support "anonymous" objects now).
+>=20
+> Nevertheless, if you still want to save a hundred bytes of data or so (=
+how
+> many interrupt objects would a normal system have? and I guess the leng=
+ht of
+> name is about 10 symbols on average :)
+
+RT_INTR is now disabled by default in the kernel config. Thus most users
+should not see its code in their kernels, only the additional data and
+code related to xnintr_t.name.
+
+>=20
+> for the users that don't use native skin, then I would suggest the foll=
+owing
+> way :
+>=20
+> xnintr_t contains just the link "char *name" as you suggested but RT_IN=
+TR
+> contains the name[XNOBJECT_NAME_LEN] member (as it was before actually)=
+=2E
+>=20
+> If it's ok,  then I'll send um... yet another final patch that addresse=
+s
+> both issues :)
+
+I'm fine with this as well if you prefer it, no problem.
 
 Jan
 
 
---------------enig5B94F7588B1E4FABBA579351
+--------------enig8E7710371EC3785ECC8DD93B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -102,10 +194,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD4MswniDOoMHTA+kRAkB1AJ41xa7stHjsM6GZju1YWxSwC5tdsACeNf1z
-1auX8wqNcbL1Bf2Dy34WjjY=
-=DW7l
+iD8DBQFD9HcFniDOoMHTA+kRAifrAJ4o320YR254KhBnMHNSixIRhj2OQwCbB6SB
+Z+pB1t5uyFMPm7/sm5HndYs=
+=axcq
 -----END PGP SIGNATURE-----
 
---------------enig5B94F7588B1E4FABBA579351--
+--------------enig8E7710371EC3785ECC8DD93B--
 
