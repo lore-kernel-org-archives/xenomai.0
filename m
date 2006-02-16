@@ -1,14 +1,20 @@
-Content-class: urn:content-classes:message
+Message-ID: <43F4E2D3.4010705@domain.hid>
+Date: Thu, 16 Feb 2006 21:38:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] Timer and calibration
-Date: Tue, 21 Feb 2006 14:34:42 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E00430CE@EINT11.einet.ad.eivd.ch>
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210D26@domain.hid>
-	<43FB003B.1090409@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
+References: <b647ffbd0602150939g59256b2bx@domain.hid>	
+	<43F3C4EA.7050303@domain.hid>
+	<b647ffbd0602160220we254aacx@domain.hid>	
+	<43F47705.90309@domain.hid>
+	<b647ffbd0602160558i4112313an@domain.hid>	
+	<43F48832.7060804@domain.hid>
+	<b647ffbd0602161128t70d1f08ax@domain.hid>
+In-Reply-To: <b647ffbd0602161128t70d1f08ax@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC69392D40289EF3C87079143"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,217 +24,201 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi Philippe,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC69392D40289EF3C87079143
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I perfectly got the point that the pipeline is already up and running =
-when calibrate_delay() is called. On our ARM board, the pipeline seems =
-to work perfectly. I however misunderstands something.
+Dmitry Adamushko wrote:
+> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>> Dmitry Adamushko wrote:
+>>> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>>> Dmitry Adamushko wrote:
+>>>>> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>>>>
+>>>>> Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve thi=
+s
+>>>>>> before merging (i.e. make XN_ISR_HANDLED non-zero)?
+>>>>> Ok, XN_ISR_NOINT is removed in favor of XN_ISR_HANDLED which is now=
 
-The ipipe configures the timer in one-shot mode when ipipe_init is =
-called, right? (also according to what it is mentioned in the =
-Adeos-enhanced configuration file of Linux). Tracing the kernel during =
-the boot process showed us one timer IRQ only; this is coherent.
-
-Is it correct that right after ipipe_init(), there is no realtime =
-scheduler yet? The pipeline doesn't care about the schedule (it's the =
-stuff of the Xenomai pod), and therefore, the pipline doesn't reprogram =
-the timer by itself, right? - and it would be necessary to do that if =
-the timer is in oneshot mode.
-
-So, if calibrate_delay() -not used by Adeos/Xenomai, I agree - is doing =
-a busy loop to evaluate the CPU performance, waiting for the next =
-incoming timer IRQ, the system doesn't exit the loop and freezes. It =
-actually works as long as the timer is in periodic mode.
-It's actually the behaviour we observed on the ARM board with the ARM =
-patch.=20
-
-I probably missed something, please correct me.
-
-
-Thanks again for your input.
-
-Daniel
-
-
------Original Message-----
-From: Philippe Gerum [mailto:rpm@xenomai.org]
-Sent: Tue 2/21/2006 12:57 PM
-To: ROSSIER Daniel
-Subject: Re: [Xenomai-core] Timer and calibration
-=20
-ROSSIER Daniel wrote:
-> Hi Philippe,
->=20
-> Great! Thx a lot for these precisions, it will help us.
->=20
-> But regarding calibrate_delay(), it's still called in the normal boot =
-process of Linux even with the Adeos/Xenomai patch.
-
-Sure it is. The interrupt pipeline is up and running at this point =
-(ipipe_init),=20
-so there is no issue getting IRQs there.
-
-  I've also seen that the boot process on a x86 architecture actually =
-works since=20
-the timer value is read directly from the
-
-timer (calibrate_delay_direct() in init/calibrate.c) and this doesn't =
-need to get=20
-a timer IRQ. But without that,
-
-and if calibrate_delay() is called instead of calibrate_delay_direct(), =
-it fails.
->=20
-
-It actually works in both cases. You do have the IRQ sub-system already=20
-virtualized at that point. ipipe_init has engaged the pipeline, =
-local_irq_enable()=20
-right before the calibration delay unstalls the root domain, so the =
-timer ticks=20
-can flow through the pipeline, and they actually do (well, otherwise, =
-you would=20
-not have a single Adeos-enabled x86 box working since 2002 :o)
-
-You can convince yourself by commenting out the local_irq_enable() =
-statement=20
-before the calibration is started: then your x86 box would completely =
-stall.
-
-> (Sorry for my previous mail; when I talked about timer calibration, it =
-was delay calibration)
->=20
-> Daniel
->=20
->=20
->=20
->>-----Message d'origine-----
->>De : Philippe Gerum [mailto:rpm@xenomai.org]
->>Envoy=E9 : mardi, 21. f=E9vrier 2006 12:41
->>=C0 : ROSSIER Daniel
->>Cc : xenomai@xenomai.org
->>Objet : Re: [Xenomai-core] Timer and calibration
->>
->>ROSSIER Daniel wrote:
->>
->>>Hello,
+>>>>> non-zero.
+>>>>> Actually, at first I wanted to make it just the other way about.
+>>>>>
+>>>> Hmm, thinking about this again, I would like to revert my suggestion=
+ in
+>>>> favour of a third approach (trying to keep you busy ;) ).
 >>>
+>>> Ok, you are wellcome :)
 >>>
+>>> I didn't get it, at least while looking briefly. To make it a bit
+>> easier, at
+>>> least for me, let's go another way.
 >>>
->>>We are currently porting Adeos/Xenomai with Linux 2.6.14 on a =
-ARM9-based
->>>Freescale i.mx21 (litekit) development board.
->>>
->>>We started from the available patch for the ARM-based Integrator =
-board.
->>>
->>>
->>>
->>>We are now facing some interesting problems regarding clock/timer
->>>frequencies with this board, but they are about to be solved J
->>>
->>>
->>>
->>>However, we have a question of understanding; as far as we know, =
-ipipe
->>>starts with an aperiodic (one-shot) timer at the initialization time,
->>>and that before
->>>
->>>the calibrate function has been called. So, we get one interrupt only
->>>since the xenomai scheduler has not been registered (we understand
->>>
->>>that the xenomai scheduler should give the next timer shot, but since =
+>>> At the left is the list of allowed values as Philippe pointed out.
+>>> At the right is another list which corresponds to the left one but wh=
+en
+>>> NOINT is used instead of HANDLED. Moreover, I have added another case=
+ -
+>> pure
+>>> NOINT. The ISR says it's not mine and, well, it doesn't know whether =
 it
->>>is not registered yet, no timer reprogramming is achieved).
+>>> should be propagated or no
+>>> (ok, so far CHAINED standed for NOINT).
 >>>
+>>> 1.) HANDLED                     ->  0
+>>> 2.) HANDLED | ENABLE     ->  ENABLE
+>>> 3.) HANDLED | CHAINED    ->  CHAINED
+>>> 4.) CHAINED                      ->  CHAINED | NOINT
+>>> 5.)                                    ->   NOINT
 >>>
+>>> Could you provide the 3-d corresponding table using your new flags?
 >>>
->>>So, how can the calibrate function can be invoked safely if no timer =
-IRQ
->>>is received since this kind of calibration comes before the xenomai
->>>registration
->>>
->>>(the calibrate function needs IRQ timers to calibrate the number of =
-busy
->>>loops between two jiffies) ?
->>>
+>> Still not 3D, but hopefully clarifying: :)
+>=20
+>=20
+>=20
+> 1.) XN_ISR_HANDLED |XN_ISR_NO_ENABLE
+>> 2.) XN_ISR_HANDLED
+>> 3.) XN_ISR_HANDLED | XN_ISR_PROPAGATE
+>>     (nucleus ignores implicit IRQ enable)
+>> 4.) XN_ISR_NOINT | XN_ISR_PROPAGATE
+>> 5.) XN_ISR_NOINT
+>=20
+>=20
+> Then why do we need XN_ISR_NOINT? is it not just the same as ~HANDLED?
+
+The idea is to have at least a define so that
+
+a) users explicitly have to state what they mean
+b) we can map the define to some other value whenever we may need this
+in the future
+
+The first property could even be used to apply some debug checks in the
+user's return value.
+
+>=20
+> Moreover, I tend to think now that PROPAGATE (CHAINED) should not be
+> normally used by ISRs at all. The only exception would be irq sharing
+> between RT and non-RT domains, but that's of no concern for most part o=
+f rt
+> drivers and, as last events revealed, it's very partially supported at =
+the
+> moment and possible implementations are quite arguable.
+
+Ack. But you should still export this feature for those who think they
+know what they are doing. ;)
+
+>=20
+> So HANDLED means the irq line is .end-ed by xnintr_irq_handler()
+> (xnarch_end_irq(irq)  is called).
+>=20
+> If one wants to do it on his own later, NOENABLE can be returned
+> additionally.
+
+Yep. So let's call it XN_ISR_NOENABLE.
+
+> But then, one must use xnintr_end_irq() and not just xnintr_irq_enable(=
+).
+>=20
+
+Yep, but a different (add-on) topic.
+
+> If xnintr_end_irq() would be always the same as xnintr_irq_enable() or =
+we
+> would decouple ending and enabling operations on the line (don't have
+> sources at hand); we could go Linux way and make use of a "nested" coun=
+ter
+> in xnintr_t, so that xnintr_irq_disable() could be called in a nested w=
+ay.
+> This said, calling xnintr_irq_disable() in ISR leads to the interrupt l=
+ine
+> being still disabled upon return from xnintr_irq_handler() and re-enabl=
+ed
+> again by the user later.
+>=20
+> ~HANDLED means the ISR was not concerned about this interrupt. i.e. :
+>=20
+> - there is ISR in another domain (down the pipeline) which is intereste=
+d in
+> this irq ;
+>=20
+>      well, the designer of the system should be aware of such cases and=
+
+> probably avoid that on hw layer or, at least, to know what she is doing=
+=2E
+>=20
+> - this is a spurious irq.
+>=20
+> So upon getting ~HANDLED, xnintr_irq_handler() does :
+>=20
+> success =3D xnintr_irq_chained(irq);
+
+Only if requested via XN_ISR_PROPAGATE (or _CHAINED)! There is still a
+real-time ISR registered on that IRQ you are about to forward now, and
+you don't know if someone is handling it down the pipeline. Actually,
+this is a fatal situation. The system is broken, bail out, and switch
+this line off.
+
+>=20
+> if (success)
+> {
+> /* i.e. another domain is really interested and got this irq as pending=
+*/
+>=20
+> return without .end-ing
+> }
+> else
+> {
+> /* this is a spurious irq */
+>=20
+> make use of some accounting of spurious interrupts (if we need it)), i.=
+e.
+> keep the irq line disabled if the % of unhandled requests > some limit.=
+
+>=20
+> otherwise
+>=20
+> xnintr_end_irq() and return
+> }
+>=20
+> too long :) ok, it's quite similar indeed to what you have suggested,
+> with the exception that
+>=20
+> - no need for NOINT (if it's really =3D=3D ~HANDLED);
+> - nucleus provides some additional logic while handling ~HANDLED case.
+> - user don't need to return ENABLE explicitly - in most cases, that's w=
+hat
+> he actually needs but sometimes just forgets (I recall a few questions =
+on
+> the mailing list about "only one interrupt".
+>=20
+>=20
+> Jan
 >>
->>Unlike Linux's calibrate_delay loop, Xenomai's timer calibration code =
-does
->>not
->>measure the CPU performance level, but only the average cost of
->>programming the
->>underlying timer hw in oneshot mode (time-wise), so that the nucleus =
-can
->>take this
->>unavoidable delay into account when programming the next shot.
->>
->>Nowadays, this is basically an x86+8254 PIT only issue, since on this
->>platform,
->>one has to go through the ISA bus to (re)program the PIT for the next
->>timer shot,
->>and this is quite expensive (1.5 - 2.5 us for each outb, and you need =
-two
->>of them
->>for programming the shot). Btw, this is the reason why using the APIC =
-when
->>available on x86 is always a good idea, since it only costs ~100 ns to
->>program the
->>timer there through a memory mapped register.
->>
->>IOW, the code does not wait for any timer IRQ, but only measures the
->>average time
->>for setting up the proper hw registers in order to program a timer =
-shot.
->>
->>
->>>
->>>How is it realized with a x86 architecture (another timer source?)
->>>
->>
->>Look at ksrc/arch/*/hal.c, where all archs implement
->>rthal_timer_calibrate() their
->>own way.
->>
->>
->>>
->>>Is there any documentation - or discussion threads - which gives some
->>>information about the use of timers/RTC/TSC with Xenomai?
->>>
->>
->>Maybe. Try browsing the archive.
->>
->>
->>>
->>>Thanks so much for your help
->>>
->>>
->>>
->>>Kind regards
->>>
->>>
->>>
->>>Daniel Rossier
->>>
->>>
->>>----------------------------------------------------------------------=
---
->>>
->>>_______________________________________________
->>>Xenomai-core mailing list
->>>Xenomai-core@domain.hid
->>>https://mail.gna.org/listinfo/xenomai-core
->>
->>
->>--
->>
->>Philippe.
+> --
+> Best regards,
+> Dmitry Adamushko
+>=20
+
+Jan
 
 
---=20
+--------------enigC69392D40289EF3C87079143
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFD9OLTniDOoMHTA+kRAqquAJ4nGnOCdqMD6M117nGAljia1bCNngCcDotr
+T6uSSRcIhB/6bM8bXvbrrpA=
+=4/Sb
+-----END PGP SIGNATURE-----
+
+--------------enigC69392D40289EF3C87079143--
 
