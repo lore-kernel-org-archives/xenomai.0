@@ -1,14 +1,17 @@
-Message-ID: <43F3C4EA.7050303@domain.hid>
-Date: Thu, 16 Feb 2006 01:18:50 +0100
+Message-ID: <43F3CA3D.2080601@domain.hid>
+Date: Thu, 16 Feb 2006 01:41:33 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0602150939g59256b2bx@domain.hid>
-In-Reply-To: <b647ffbd0602150939g59256b2bx@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] separate queue debugging switch
+References: <43F1C095.8030805@domain.hid>
+	<43F2161D.9000906@domain.hid>	<43F219C9.2030903@domain.hid>
+	<43F21F56.4080602@domain.hid> <43F2FABE.7070305@domain.hid>
+	<43F31A6F.3060807@domain.hid>
+In-Reply-To: <43F31A6F.3060807@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig133712627828A20C50812FD2"
+	boundary="------------enig42B20786B0C1708C17805051"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,168 +21,155 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig133712627828A20C50812FD2
-Content-Type: multipart/mixed; boundary="------------080006020606010904060900"
-
-This is a multi-part message in MIME format.
---------------080006020606010904060900
+--------------enig42B20786B0C1708C17805051
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
-> Hello everybody,
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>> Philippe Gerum wrote:
+>>>>
+>>>>
+>>>>> Jan Kiszka wrote:
+>>>>>
+>>>>>
+>>>>>> Hi,
+>>>>>>
+>>>>>> while XENO_OPT_DEBUG is generally a useful switch for tracing
+>>>>>> potential
+>>>>>> issues in the core and the skins, it also introduces high
+>>>>>> latencies via
+>>>>>> the queue debugging feature (due to checks iterating over whole
+>>>>>> queues).
+>>>>>>
+>>>>>> This patch introduces separate control over queue debugging so
+>>>>>> that you
+>>>>>> can have debug checks without too dramatic slowdowns.
+>>>>>>
+>>>>>
+>>>>> Maybe it's time to introduce debug levels, so that we could reuse t=
+hem
+>>>>> in order to
+>>>>> add more (selectable) debug instrumentation; queue debugging could
+>>>>> then
+>>>>> be given a
+>>>>> certain level (likely something like CONFIG_XENO_DEBUG_LEVEL=3D8712=
+ for
+>>>>> this one...), instead of going for a specific conditional each time=
+ we
+>>>>> introduce new checks?
+>>>>>
+>>>>
+>>>>
+>>>> Hmm, this means someone have to define what should be printed at whi=
+ch
+>>>> level - tend to be hard decisions... Often it is at least as much
+>>>> useful
+>>>> to have debug groups so that specific parts can be excluded from
+>>>> debugging. I'm pro such groups (one would be those queues e.g.) but
+>>>> contra too many levels (2, at most 3).
+>>>>
+>>>
+>>> Ack, selection by increasingly verbose/high-overhead groups is what I=
+
+>>> have in mind.
+>>>
+>>>
+>>>> At this chance, I would also suggest to introduce some ASSERT macro
+>>>> (per
+>>>> group, per level). That could be used to instrument the core with
+>>>> runtime checks. But it could also be quickly removed at compilation
+>>>> time, reducing the code size (e.g. checks at the nucleus layer again=
+st
+>>>> buggy skins or at RTDM layer against rough drivers).
+>>>>
+>>>
+>>> I'm not opposed to that, if we keep the noise / signal ratio of those=
+
+>>> assertions at the reasonable low-level throughout the code, and don't=
+
+>>> use this to enforce silly parametrical checks.
+>>>
+>>
+>>
+>> Then let's discuss how to implement and control this. Say we have some=
+
+>> macros for marking code as "depends on debug group X":
+>>
+>> #if XENO_DEBUG_GROUP(group)
+>> code;
+>> #endif /* XENO_DEBUG_GROUP(group) */
+>>
+>> XENO_IF_DEBUG_GROUP(group, code);
+>>
+>> (or do you prefere XNPOD_xxx?)
+>>
 >=20
-> being inspired by successful results of tests conducted recently by Jan=
- &
-> team,
-> I'm presenting the final (yep, yet another final :) combo-patch.
+> This debug code may span feature/component boundaries, so XENO_ is bett=
+er.
 >=20
-> The shirq support now is optional, so that
+>> Additionally, we could introduce that assertion macro:
+>>
+>> XENO_ASSERT(group, expression, failure_code);
+>>
+>> But how to control the groups now? Via Kconfig bool options?
 >=20
-> CONFIG_XENO_OPT_SHIRQ_LEVEL -    enables shirq for level-triggered
-> interrupts;
+> Yes, I think so. From some specialized Debug menu in the generic
+> portion. We would need this to keep the (unused) debug code out of
+> production systems.
 >=20
-> CONFIG_XENO_OPT_SHIRQ_EDGE  -    -//- for edge-triggered ones.
+>  And what
+>> groups to define? Per subsytem? Or per disturbance level (latency
+>> regression)? If we control the group selection via Kconfig, we could
+>> define pseudo bool options like "All debug groups" or "Low-intrusive
+>> debug groups" that select the fitting concrete groups.
+>>
 >=20
-> I addressed all the remarks and now, IMHO, it's (hopefully) ready for m=
-erge.
+> We won't be able to anticipate on each and every debug spots we might
+> need in the future, and in any case, debug triggers may well span
+> multiple sub-systems. I'd go for defining levels depending on the
+> throroughness/complexity of their checks.
 >=20
 
-Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve this
-before merging (i.e. make XN_ISR_HANDLED non-zero)?
+To keep it simple:
 
-Moreover, I attached an add-on patch to overcome the name buffer in
-xnintr_t. Note that this patch is only compile-tested, I have no native
-interrupt test-case at hand.
+XNDBG_LIGHT /* simple checks with low constant overhead */
+XNDBG_HEAVY /* complex checks with high or unknown overhead */
+
+Those two could become #defines and would have to be provide as first
+argument to our debug macros.
+
+Or we directly merge the attribute into the macro name:
+
+XENO_DEBUG_LIGHT, XENO_IF_DEBUG_LIGHT(), XENO_ASSERT_LIGHT()
+XENO_DEBUG_HEAVY, XENO_IF_DEBUG_HEAVY(), XENO_ASSERT_HEAVY()
+
+>> Alternatively, we could make the group selection a runtime switch,
+>> controlled via a global bitmask that can be modified through /proc e.g=
+=2E
+>> Only switching of CONFIG_XENO_OPT_DEBUG would then remove all debuggin=
+g
+>> code, otherwise the execution of the checks would depend on the curren=
+t
+>> bitmask content.
+>=20
+> We could cumulate this with the static selection.
+>=20
+
+Then this is also a perfect add-on - for later work. :)
 
 Jan
 
---------------080006020606010904060900
-Content-Type: text/x-patch;
- name="shirq-name.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="shirq-name.patch"
 
-diff -u include/nucleus/intr.h include/nucleus/intr.h
---- include/nucleus/intr.h	(Arbeitskopie)
-+++ include/nucleus/intr.h	(Arbeitskopie)
-@@ -54,7 +54,7 @@
-=20
-     xniack_t iack;	/* !< Interrupt acknowledge routine. */
-=20
--    char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
-+    const char *name; /* !< Symbolic name. */
-=20
- } xnintr_t;
-=20
-diff -u ksrc/skins/native/syscall.c ksrc/skins/native/syscall.c
---- ksrc/skins/native/syscall.c	(Arbeitskopie)
-+++ ksrc/skins/native/syscall.c	(Arbeitskopie)
-@@ -2883,23 +2883,15 @@
-     char name[XNOBJECT_NAME_LEN];
-     RT_INTR_PLACEHOLDER ph;
-     int err, mode;
--    RT_INTR *intr;
-+    struct {
-+	RT_INTR intr;
-+	char name[XNOBJECT_NAME_LEN];
-+    } *intr_buf;
-     unsigned irq;
-=20
-     if (!__xn_access_ok(curr,VERIFY_WRITE,__xn_reg_arg1(regs),sizeof(ph)=
-))
- 	return -EFAULT;
-=20
--    if (__xn_reg_arg2(regs))
--	{
--	if (!__xn_access_ok(curr,VERIFY_READ,__xn_reg_arg2(regs),sizeof(name)))=
-
--	    return -EFAULT;
--
--	__xn_strncpy_from_user(curr,name,(const char __user *)__xn_reg_arg2(reg=
-s),sizeof(name) - 1);
--	name[sizeof(name) - 1] =3D '\0';
--	}
--    else
--	*name =3D '\0';
--
-     /* Interrupt line number. */
-     irq =3D (unsigned)__xn_reg_arg3(regs);
-=20
-@@ -2909,23 +2901,41 @@
-     if (mode & ~(I_AUTOENA|I_PROPAGATE))
- 	return -EINVAL;
-=20
--    intr =3D (RT_INTR *)xnmalloc(sizeof(*intr));
-+    intr_buf =3D (typeof(intr_buf))xnmalloc(sizeof(*intr_buf));
-=20
--    if (!intr)
-+    if (!intr_buf)
- 	return -ENOMEM;
-=20
--    err =3D rt_intr_create(intr,name,irq,&rt_intr_handler,NULL,0);
-+    if (__xn_reg_arg2(regs))
-+	{
-+	if (!__xn_access_ok(curr,VERIFY_READ,__xn_reg_arg2(regs),sizeof(name)))=
-
-+	    {
-+	    xnfree(intr_buf);
-+	    return -EFAULT;
-+	    }
-+
-+	__xn_strncpy_from_user(curr,
-+	                       intr_buf->name,
-+	                       (const char __user *)__xn_reg_arg2(regs),
-+	                       sizeof(intr_buf->name) - 1);
-+	intr_buf->name[sizeof(intr_buf->name) - 1] =3D '\0';
-+	}
-+    else
-+	intr_buf->name[0] =3D '\0';
-+
-+
-+    err =3D rt_intr_create(&intr_buf->intr,intr_buf->name,irq,&rt_intr_h=
-andler,NULL,0);
-=20
-     if (err =3D=3D 0)
- 	{
--	intr->mode =3D mode;
--	intr->cpid =3D curr->pid;
-+	intr_buf->intr.mode =3D mode;
-+	intr_buf->intr.cpid =3D curr->pid;
- 	/* Copy back the registry handle to the ph struct. */
--	ph.opaque =3D intr->handle;
-+	ph.opaque =3D intr_buf->intr.handle;
- 	__xn_copy_to_user(curr,(void __user *)__xn_reg_arg1(regs),&ph,sizeof(ph=
-));
- 	}
-     else
--	xnfree(intr);
-+	xnfree(intr_buf);
-=20
-     return err;
- }
-diff -u ksrc/nucleus/intr.c ksrc/nucleus/intr.c
---- ksrc/nucleus/intr.c	(Arbeitskopie)
-+++ ksrc/nucleus/intr.c	(Arbeitskopie)
-@@ -148,7 +148,7 @@
-     intr->cookie =3D NULL;
-     intr->hits =3D 0;
-     intr->flags =3D flags;
--    xnobject_copy_name(intr->name,name);
-+    intr->name =3D name;
- #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIR=
-Q_EDGE)
-     intr->next =3D NULL;
- #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
-
---------------080006020606010904060900--
-
---------------enig133712627828A20C50812FD2
+--------------enig42B20786B0C1708C17805051
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -188,10 +178,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFD88TuniDOoMHTA+kRAh8iAJ9+FwCiTMZNbxh96lqp7l5lHHckvwCeKYYv
-cVTPEqcTPr4uYmmvirzz83U=
-=6mLO
+iD8DBQFD88o9niDOoMHTA+kRAlNTAJ42ziDfdzoroelBI7JzwdRv2aSMCACfXSpf
+/mcIecArOVm8uIBg6VzRSHY=
+=xXcT
 -----END PGP SIGNATURE-----
 
---------------enig133712627828A20C50812FD2--
+--------------enig42B20786B0C1708C17805051--
 
