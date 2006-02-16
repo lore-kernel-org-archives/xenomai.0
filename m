@@ -1,15 +1,14 @@
-Message-ID: <43F47705.90309@domain.hid>
-Date: Thu, 16 Feb 2006 13:58:45 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <b647ffbd0602160558i4112313an@domain.hid>
+Date: Thu, 16 Feb 2006 15:58:23 +0200
+From: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
-References: <b647ffbd0602150939g59256b2bx@domain.hid>	<43F3C4EA.7050303@domain.hid>
-	<b647ffbd0602160220we254aacx@domain.hid>
-In-Reply-To: <b647ffbd0602160220we254aacx@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8E7710371EC3785ECC8DD93B"
-Sender: jan.kiszka@domain.hid
+In-Reply-To: <43F47705.90309@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_17236_709045.1140098303189"
+References: <b647ffbd0602150939g59256b2bx@domain.hid>
+	<43F3C4EA.7050303@domain.hid> <b647ffbd0602160220we254aacx@domain.hid>
+	<43F47705.90309@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,185 +18,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8E7710371EC3785ECC8DD93B
+------=_Part_17236_709045.1140098303189
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Dmitry Adamushko wrote:
-> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->=20
-> Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve this
->> before merging (i.e. make XN_ISR_HANDLED non-zero)?
->=20
->=20
-> Ok, XN_ISR_NOINT is removed in favor of XN_ISR_HANDLED which is now
-> non-zero.
-> Actually, at first I wanted to make it just the other way about.
->=20
-
-Hmm, thinking about this again, I would like to revert my suggestion in
-favour of a third approach (trying to keep you busy ;) ).
-
-Recommended default values:
-<new>XN_ISR_HANDLED =3D> <old non-zero>XN_ISR_HANDLED | <old>XN_ISR_ENABL=
-E
-
-<new>XN_ISR_NOINT =3D> <new>XN_ISR_NO_ENABLE
+On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Dmitry Adamushko wrote:
+> > On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> >
+> > Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve this
+> >> before merging (i.e. make XN_ISR_HANDLED non-zero)?
+> >
+> >
+> > Ok, XN_ISR_NOINT is removed in favor of XN_ISR_HANDLED which is now
+> > non-zero.
+> > Actually, at first I wanted to make it just the other way about.
+> >
+>
+> Hmm, thinking about this again, I would like to revert my suggestion in
+> favour of a third approach (trying to keep you busy ;) ).
 
 
-Additional bits:
-<new>XN_ISR_NO_ENABLE
- =3D> indicate that <old>XN_ISR_ENABLE is not set
-    (use case: handle but delay re-enable)
+Ok, you are wellcome :)
 
-<new>XN_ISR_PROPAGATE
- =3D> <old>XN_ISR_CHAINED (the new name is closer to the related function=
+I didn't get it, at least while looking briefly. To make it a bit easier, a=
+t
+least for me, let's go another way.
 
-                         calls - at least for me).
-
-
-Not expressible combination:
-<old>XN_ISR_ENABLE | <new>XN_ISR_NOINT
- =3D> Doesn't make sense, does it?
-
-
-Still expressible invalid combination:
-<new>XN_ISR_HANDLED | <new>XN_ISR_PROPAGATE
- =3D> The implicit enable request should be easy to ignore at nucleus
-    level.
-
-
-Rational:
-
-Most users will either indicate that an IRQ was handled and should be
-re-enabled as soon as possible or that it was unhandled and should
-better remain masked if no one else cares.
-
-XN_ISR_PROPAGATE (or related skin defines) are only useful for very very
-special corner-case drivers and applications. Normal generic drivers
-should not touch this (including my own xeno_16550A... bah!). BTW, if
-there is some unintentional IRQ sharing so that spurious RT interrupts
-occur, I think we should detect this at nucleus level and bail out.
-Otherwise, systems quickly lock up (I just faced this once again two
-days ago on an old RTAI box).
-
-
-This will break some stuff (RTDM e.g., but we have some version flags
-for such cases), but it takes us closer to the standard Linux API
-without loosing control over the details when required.
-
-Comments?
-
->=20
-> Moreover, I attached an add-on patch to overcome the name buffer in
->> xnintr_t. Note that this patch is only compile-tested, I have no nativ=
+At the left is the list of allowed values as Philippe pointed out.
+At the right is another list which corresponds to the left one but when
+NOINT is used instead of HANDLED. Moreover, I have added another case - pur=
 e
->> interrupt test-case at hand.
->=20
->=20
->=20
-> Heh.. someone once suggested the -p key with "diff" to me? :o)
+NOINT. The ISR says it's not mine and, well, it doesn't know whether it
+should be propagated or no
+(ok, so far CHAINED standed for NOINT).
 
-Mmpf. Must have been too late, and I was too impressed how interdiff
-worked out this patch. :)
+HANDLED                     ->  0
+HANDLED | ENABLE     ->  ENABLE
+HANDLED | CHAINED    ->  CHAINED
+CHAINED                      ->  CHAINED | NOINT
+                                    ->   NOINT
 
->=20
-> I bet your patch would even work but it's, well, slightly broken indeed=
- ;-)
->=20
-> Look at the native/syscall.c : __rt_intr_delete() :
->=20
-> RT_INTR *intr =3D (RT_INTR *)rt_registry_fetch(ph.opaque);
-> ...
-> xnfree(intr);
->=20
-> "intr" actually points to intr_buf->intr and it works as expected only
-> because "RT_INTR intr" is the first member of the struct, so that it's
-> address =3D=3D the address of the whole object of this struct.
+Could you provide the 3-d corresponding table using your new flags?
 
-But this is not an unusual trick, and I see no practical problems.
 
->=20
-> To do it properly you would need to make your "unnamed" struct visible
-> for both __rt_intr_create() and __rt_intr_delete(). Something like :
->=20
-> struct RT_INTR_ENV {
->=20
-> #define link2intr_env(laddr) \
-> ((RT_INTR_ENV *)(((char* )laddr) - (int)(&((RT_INTR_ENV *)0)->intr)))
->=20
->     RT_INTR intr;
->     char name[XNOBJECT_NAME_LEN];
-> };
->=20
-> and then make use of link2intr_env() in __rt_intr_delet().
->=20
->=20
-> Ok, with you approach we would avoid allocating memory
-> for name[XNOBJECT_NAME_LEN] when an object is created in kernel-mode
-> and do it via RT_INTR_ENV only when it's created in user-mode.
->=20
-> We could even use that approach for all objects in native skin, but we =
-can't
-> because of "anonymous" objects supported in kernel-mode too and, well, =
-I
-> personally would not like those RT_OBJECT_ENV structures all over the m=
-ap in
-> syscall.c :)
-
-Me too.
-
->=20
-> So I don't want to break the whole picture only for the RT_INTR object =
-(it
-> doesn't support "anonymous" objects now).
->=20
-> Nevertheless, if you still want to save a hundred bytes of data or so (=
-how
-> many interrupt objects would a normal system have? and I guess the leng=
-ht of
-> name is about 10 symbols on average :)
-
-RT_INTR is now disabled by default in the kernel config. Thus most users
-should not see its code in their kernels, only the additional data and
-code related to xnintr_t.name.
-
->=20
-> for the users that don't use native skin, then I would suggest the foll=
-owing
-> way :
->=20
-> xnintr_t contains just the link "char *name" as you suggested but RT_IN=
-TR
-> contains the name[XNOBJECT_NAME_LEN] member (as it was before actually)=
-=2E
->=20
-> If it's ok,  then I'll send um... yet another final patch that addresse=
+> xnintr_t contains just the link "char *name" as you suggested but RT_INTR
+> > contains the name[XNOBJECT_NAME_LEN] member (as it was before actually)=
+.
+> >
+> > If it's ok,  then I'll send um... yet another final patch that addresse=
 s
-> both issues :)
+> > both issues :)
+>
+> I'm fine with this as well if you prefer it, no problem.
 
-I'm fine with this as well if you prefer it, no problem.
+
+Yep, let's go this way.
+
 
 Jan
+>
+>
+>
 
+--
+Best regards,
+Dmitry Adamushko
 
---------------enig8E7710371EC3785ECC8DD93B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------=_Part_17236_709045.1140098303189
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+<br><div><span class=3D"gmail_quote">On 16/02/06, <b class=3D"gmail_sendern=
+ame">Jan Kiszka</b> &lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid=
+.de</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-=
+left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left=
+: 1ex;">
+Dmitry Adamushko wrote:<br>&gt; On 16/02/06, Jan Kiszka &lt;<a href=3D"mail=
+to:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<br>&gt;<br>&gt; Hmm,=
+ I still find XN_ISR_NOINT in the patch. Shouldn't we solve this<br>&gt;&gt=
+; before merging (
+i.e. make XN_ISR_HANDLED non-zero)?<br>&gt;<br>&gt;<br>&gt; Ok, XN_ISR_NOIN=
+T is removed in favor of XN_ISR_HANDLED which is now<br>&gt; non-zero.<br>&=
+gt; Actually, at first I wanted to make it just the other way about.<br>
+&gt;<br><br>Hmm, thinking about this again, I would like to revert my sugge=
+stion in<br>favour of a third approach (trying to keep you busy ;) ).</bloc=
+kquote><div><br>
+Ok, you are wellcome :)<br>
+<br>
+I didn't get it, at least while looking briefly. To make it a bit easier, a=
+t least for me, let's go another way.<br>
+<br>
+At the left is the list of allowed values as Philippe pointed out.<br>
+At the right is another list which corresponds to the left one but when
+NOINT is used instead of HANDLED. Moreover, I have added another case -
+pure NOINT. The ISR says it's not mine and, well, it doesn't know
+whether it should be propagated or no<br>
+(ok, so far CHAINED standed for NOINT).<br>
+<br>
+HANDLED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-&gt;&nbsp; 0<br>
 
-iD8DBQFD9HcFniDOoMHTA+kRAifrAJ4o320YR254KhBnMHNSixIRhj2OQwCbB6SB
-Z+pB1t5uyFMPm7/sm5HndYs=
-=axcq
------END PGP SIGNATURE-----
+HANDLED | ENABLE&nbsp;&nbsp;&nbsp;&nbsp; -&gt;&nbsp; ENABLE<br>
 
---------------enig8E7710371EC3785ECC8DD93B--
+HANDLED | CHAINED&nbsp;&nbsp;&nbsp; -&gt;&nbsp; CHAINED<br>
+CHAINED&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-&gt;&nbsp; CHAINED | NOINT <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-&gt;&nbsp;&nbsp; NOINT<br>
+</div><div><br>
+Could you provide the 3-d corresponding table using your new flags?<br>
+<br>
+<br>
+</div><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb=
+(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; xnintr=
+_t contains just the link &quot;char *name&quot; as you suggested but RT_IN=
+TR
+<br>&gt; contains the name[XNOBJECT_NAME_LEN] member (as it was before actu=
+ally).<br>&gt;<br>&gt; If it's ok,&nbsp;&nbsp;then I'll send um... yet anot=
+her final patch that addresses<br>&gt; both issues :)<br><br>I'm fine with =
+this as well if you prefer it, no problem.
+</blockquote><div><br>
+Yep, let's go this way. <br>
+</div><br>
+<br><blockquote class=3D"gmail_quote" style=3D"border-left: 1px solid rgb(2=
+04, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br><b=
+r>
+</blockquote></div><br clear=3D"all"><br>-- <br>Best regards,<br>Dmitry Ada=
+mushko
+
+------=_Part_17236_709045.1140098303189--
 
