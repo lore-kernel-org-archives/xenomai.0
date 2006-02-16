@@ -1,50 +1,84 @@
-Message-ID: <43FED3F5.2060608@domain.hid>
-Date: Fri, 24 Feb 2006 10:37:57 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] provide rtdm_mmap_to_user / rtdm_munmap
+Date: Thu, 16 Feb 2006 15:14:44 -0200
+References: <200602141114.23856.lbocseg@domain.hid> <43F2761D.2050702@domain.hid>
+	<200602151253.05341.lbocseg@domain.hid>
+In-Reply-To: <200602151253.05341.lbocseg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] problems solved
-References: <C0237ECB.24E3%steve@domain.hid>
-In-Reply-To: <C0237ECB.24E3%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200602161514.44451.lbocseg@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Steven Seeger wrote:
-> Well, I solved my problems by getting rid of the geode. On a 400 mhz celeron
-> board, everything works great. My software used 100% of the CPU on the geode
-> and locked up the Linux side when the stepper motor would run, but on the
-> celeron it uses a negligible amount of the CPU. This is good for me to see
-> that the problem isn't with my code probably, but bad that Xenomai seems to
-> have issues on the Geode that RTAI/fusion did not.
+Em Quarta 15 Fevereiro 2006 12:53, Rodrigo Rosenfeld Rosas escreveu:
 
-Again, the only way to make your point here would be to run the latency test in 
-user-space, disabling the periodic timing at configuration level (v2.1 only), and 
-making sure that no SMI source is active. If the results actually show performance 
-degradation on this board between v2.0 (which is based on the latest fusion code) 
-and v2.1-rc3, then your conclusion would have more weight.
+>Em Ter=3DE7a 14 Fevereiro 2006 22:30, Jan Kiszka escreveu:
+>>...
+>>
+>>>> You cannot mmap before you know precisely for which user this should
+>>>> take place.
+>>>
+>>> Do you mean that if I use the 'current' and current->mm struct of the
+>>> driver, when mmaping, the user won't be able to use the returned pointe=
+=3D
+r?
+>>
+>>To mmap you need to know the target process, more precisely its mm. This
+>>is typically derived from the invocation context of the service call
+>>("current" is a pointer to the current process). But init_module runs in
+>>the context of modprobe. Even worse, the process later opening and
+>>mapping some buffer may not even exist at that time!
+>
+>Right, I've already verified this on practice... I'm mmaping on open handl=
+=3D
+er
+>for now just for testing the mmap, but I'll change it to the ioctl mmap
+>handler.
+>
+>It seems to work. I mapped high_memory and could read and modify it from
+> user space. The memory values mantained betweens the many open calls. I
+> read, printed the values and increment them by one. On next time, the val=
+=3D
+ue
+> shown was incremented... All seems perfect but I still didn't test with
+> real acquire code... When I do so, I'll let you know.
+>
+>I still need to test the vmaops. I think I'll test them tomorrow. I need to
+>begin writing an article that my advisor asked me to. I need to finish it
+>until march, 10.
 
-> 
-> Just giving you all a heads up. The geode sucks anyway.
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+Ok, I tested the vmaops too and it also worked as expected. I think you cou=
+=3D
+ld=3D20
+merge rtdm_mmap and related stuff to mainline RTDM. Thank you for your=3D20
+precious work. Unfortunately you'll need to wait a while until I test them =
+=3D
+on=3D20
+the real video driver. I had to stop working on it for writing the article.=
+=3D
+=3D20
+When I finish the article I'll test them on real hardware but I see no=3D20
+reasons for not working...
 
+Best Regards,
 
--- 
+Rodrigo.
 
-Philippe.
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
+
 
