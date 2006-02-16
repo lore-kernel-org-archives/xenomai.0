@@ -1,18 +1,12 @@
-Message-ID: <43F48832.7060804@domain.hid>
-Date: Thu, 16 Feb 2006 15:12:02 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Russell Johnson" <rjohnson@domain.hid>
+Subject: RE: [Xenomai-core] Handling PCI MSI interrupts
+Date: Thu, 16 Feb 2006 07:23:39 -0700
+Message-ID: <000a01c63304$94ee5190$1e01a8c0@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
-References: <b647ffbd0602150939g59256b2bx@domain.hid>	
-	<43F3C4EA.7050303@domain.hid>
-	<b647ffbd0602160220we254aacx@domain.hid>	
-	<43F47705.90309@domain.hid>
-	<b647ffbd0602160558i4112313an@domain.hid>
-In-Reply-To: <b647ffbd0602160558i4112313an@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB714DF0D430F50D0F452C9DA"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <43F447AF.4020604@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,85 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: 'Philippe Gerum' <rpm@xenomai.org>
+Cc: 'xenomai-core' <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB714DF0D430F50D0F452C9DA
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> The latest patch was incomplete; you might be luckier with=20
+> this one. I've merged Jeroen's last observations on this issue and =
+mine.
 
-Dmitry Adamushko wrote:
-> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Dmitry Adamushko wrote:
->>> On 16/02/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->>>
->>> Hmm, I still find XN_ISR_NOINT in the patch. Shouldn't we solve this
->>>> before merging (i.e. make XN_ISR_HANDLED non-zero)?
->>>
->>> Ok, XN_ISR_NOINT is removed in favor of XN_ISR_HANDLED which is now
->>> non-zero.
->>> Actually, at first I wanted to make it just the other way about.
->>>
->> Hmm, thinking about this again, I would like to revert my suggestion i=
-n
->> favour of a third approach (trying to keep you busy ;) ).
->=20
->=20
-> Ok, you are wellcome :)
->=20
-> I didn't get it, at least while looking briefly. To make it a bit easie=
-r, at
-> least for me, let's go another way.
->=20
-> At the left is the list of allowed values as Philippe pointed out.
-> At the right is another list which corresponds to the left one but when=
+I tried this patch and it doesn't solve the issue I'm facing. With and
+without this patch, my symptoms are the same.
 
-> NOINT is used instead of HANDLED. Moreover, I have added another case -=
- pure
-> NOINT. The ISR says it's not mine and, well, it doesn't know whether it=
+I'm running a Dell 2850, dual CPU machine.  When I build a kernel =
+without
+Adeos then things are fine.  When I build with Adeos and MSI enabled the
+following occurs:
 
-> should be propagated or no
-> (ok, so far CHAINED standed for NOINT).
->=20
-> 1.) HANDLED                     ->  0
-> 2.) HANDLED | ENABLE     ->  ENABLE
-> 3.) HANDLED | CHAINED    ->  CHAINED
-> 4.) CHAINED                      ->  CHAINED | NOINT
-> 5.)                                    ->   NOINT
->=20
-> Could you provide the 3-d corresponding table using your new flags?
->=20
+1) If BIOS has USB disabled then the system will hang without even a
+num-lock respose (i.e. tapping the num-lock key doesn't toggle the =
+light).
+The hang occurs just about the time the E1000 driver would load and =
+enable
+an MSI interrupt.
 
-Still not 3D, but hopefully clarifying: :)
+2) If BIOS has USB enabled then the system will run much longer but may =
+hang
+during heavy interrupt load on the E1000 driver.
 
-1.) XN_ISR_HANDLED |XN_ISR_NO_ENABLE
-2.) XN_ISR_HANDLED
-3.) XN_ISR_HANDLED | XN_ISR_PROPAGATE
-    (nucleus ignores implicit IRQ enable)
-4.) XN_ISR_NOINT | XN_ISR_PROPAGATE
-5.) XN_ISR_NOINT
+My assumption based on past experience is that no num-lock response =
+means an
+infinite interrupt loop.
 
-2.) and 5.) are most common, the others for special scenarios.
-Especially, as long as we have no API for ending IRQs outside the
-handler, 1.) is of limited usage I think.
+When I build a kernel with Adeos but disable MSI then the system works =
+fine
+for the most part.  There is one scenario where the system will still =
+hang
+doing disk and network accesses under a moderate load of I/O.
 
-Jan
+Both of these tests are just to get a stable kernel before I really =
+start
+using Adeos.  So Adeos is in its default configuration and I haven't =
+loaded
+Xenomai modules when these hangs occur.
+
+I'm currently running the 2.6.14.4 kernel with the 2.6.14-1.0-12 patch =
+of
+adeos and then I included your msi.c patch from the previous e-mail.  If =
+you
+have any further hints or suggestions I'll try them.  Meanwhile I'm =
+trying
+different versions of various drivers (e1000 and scsi) as well as =
+updating
+the patch level of the kernel itself.
+
+Russ
 
 
---------------enigB714DF0D430F50D0F452C9DA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD9IgyniDOoMHTA+kRAk2sAJ9EkDsogYo4mwfTM80JvAK3YfQOQgCdEuR7
-nukguiIZpydwZCvfWhQO2bM=
-=VcFn
------END PGP SIGNATURE-----
-
---------------enigB714DF0D430F50D0F452C9DA--
 
