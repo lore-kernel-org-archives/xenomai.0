@@ -1,12 +1,11 @@
-Message-ID: <4402B4D3.4050606@domain.hid>
-Date: Mon, 27 Feb 2006 09:14:11 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <43F5EF88.1080400@domain.hid>
+Date: Fri, 17 Feb 2006 16:45:12 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
-References: <b647ffbd0602150939g59256b2bx@domain.hid>	<b647ffbd0602210254p19086a0au@domain.hid>	<43FAF94C.4080709@domain.hid>	<43FAFE58.5060201@domain.hid>	<b647ffbd0602210848g321ffedei@domain.hid>	<43FB480E.9020808@domain.hid>	<43FB529B.3040207@domain.hid>	<43FB6102.1070004@domain.hid>	<b647ffbd0602220445k749d630j@domain.hid>	<43FDA8E2.5010806@domain.hid>	<b647ffbd0602251214h36768b46o@domain.hid>	<4401F8B4.9090707@domain.hid>
-	<4401FE4A.7010603@domain.hid> <4401FFA6.3010204@domain.hid>
-In-Reply-To: <4401FFA6.3010204@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <001d01c633d0$7a5a7300$1e01a8c0@domain.hid>
+In-Reply-To: <001d01c633d0$7a5a7300$1e01a8c0@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,75 +16,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Russell Johnson <rjohnson@domain.hid>
+Cc: 'xenomai-core' <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Dmitry Adamushko wrote:
->>>
->>>
->>>>...
->>>>This said, I'm going to publish the shirq patch (after finalizing ISR
->>>>return
->>>>bits,
->>>>where I still have some doubts) without enable/disable nesting support.
->>>>It can be supported at some point of time later, if it's really needed.
->>>>
->>>
->>>
->>>Regarding enable/disable nesting and existing driver patterns: I
->>>currently do the following on devices init via RTDM (and users may have
->>>copied this):
->>>
->>>rtdm_irq_request(...);
->>><init_hardware, also clear pending IRQs of the device>
->>>rtdm_irq_enable(...);
->>>
->>>But I do not disable the IRQ before rtdm_irq_free() again. Is this
->>>unbalanced enabling still needed today? Is it even wrong these days?
->>
->>Looks unsafe, since nothing says that freeing the descriptor associated
->>with some IRQ should disable this IRQ line at hw level. However, we
->>would be correct to assume that no IRQ could happen after we have been
->>asked to free its associated descriptor.
->>
->> Is
->>
->>>it arch-dependent?
->>
->>Nope. Both APIs are arch-agnostic anyway.
->>
->> I think the pattern dates back in RTAI times and was
->>
->>>needed for so far unused IRQs. Disabling them on device closure blocked
->>>the line for later use under Linux.
->>>
->>
->>We never had this problem with Xeno, since we always relied on the
->>standard IRQ controllers defined by Linux for managing interrupt lines.
->>IOW, Linux can undo what Xenomai did wrt IRQ line enabling/disabling.
->>
+Russell Johnson wrote:
+>>>I tested (and intended) the patch for MSI (w/o maskbits), not MSI-X.
+>>>What e1000 chip are you using exactly? Easiest way to tell is by using 
+>>>'/sbin/lspci'. I may be able to help you out with MSI-X as well, but in 
+>>>that case, I have no hardware platform to test on.
 > 
 > 
-> So the enable is definitely needed and a disable on release should not
-> cause harm anymore? If that's the case, we could start re-introducing
-> rtdm_irq_disable before rtdm_irq_free again.
-Except for interrupts shared between RT/non-RT, the don't need enable (since 
-they are enabled by Linux already), and probably doesn't fare well with a final 
-disable.
+>>>You can check whether or not MSI is actually being used by doing 
+>>>'/sbin/lspci -v' and look for the Capability: Message Signalled 
+>>>Interrupt. When the driver is running in MSI mode, it should read 
+>>>'Enable+' instead of 'Enable-'.
+> 
+> 
+> This e1000 chip actually doesn't have MSI support.  I had assumed that since
+> the e1000 driver caused the hanging and disabling MSI in the kernel caused
+> the hang to go away that the problem was MSI in the e1000.  The e1000 driver
+> only enables MSI on newer chips than what are in the Dell 28xx machines.
+>
+
+Same problem here actually; the e1000 driver attempts to enable MSI routing for 
+recent adapters (i82547 rev. #2, if I read this code correctly) due to bugs in 
+older revisions. Unfortunately, the dual Xeon I've been using to check for 
+CONFIG_PCI_MSI has an older adapter, so the routing is still done by the IO-APIC, 
+and the bug does not trigger.
 
 > 
+>>>As it's a Dell, I assume there's two Intel Penium CPU's 
+>>>inside. Are you running with SMP enabled ?
 > 
->>>I'm asking now in case we have to change the usage: we may better do it
->>>early (e.g. with the introduction of Xenomai 2.1), so that the number of
->>>surprises can be kept low when the underlying mechanisms get reworked
->>>later.
+> 
+> SMP is enabled.
+> 
+> 
+>>>The local (internal) CPU APIC hasn't been informed that the interrupt 
+>>>has been dealt with and it will therefore allow no other interrupts 
+>>>anymore to arrive in the CPU (including your keyboard's). 
+>>>In fact, your CPU is idle.
+> 
+> 
+> I have used a PCI analyzer to see infinite loops on this machine for past
+> similar kernel issues and assumed it would be the same due to the symptoms.
+> 
+> 
+>>>    When I build a kernel with Adeos but disable MSI then the 
+>>>    system works fine for the most part.  There is one scenario 
+>>>    where the system will still hang
+>>>    doing disk and network accesses under a moderate load of I/O. 
 >>>
+>>>Hm. That may indicate another issue.
+>>
+>>Indeed. This behaviour has not been reported yet with patches 
+>>from the Adeos I-pipe series. Does it also happen with SMP 
+>>disabled, or Hyperthreading disabled?
+> 
+> 
+> It did happen with SMP disabled and I have always left hyperthreading
+> disabled because it is my understanding that hyperthreading is not supported
+> by the adeos patch.
+
+Adeos should not have any problem with HT; actually it has no impact on the 
+interrupt sub-system it deals with, we just happen to see multiple CPUs, which is 
+common case handled by the SMP support.
+
+> 
+> 
+>>>Try upgrading the kernel. The kernel usually comes with updated drivers 
+>>>as well. Currently I'm running 2.6.16-rc2, which I had to patch manually
+> 
+> 
+>>>for Adeos (about 3 'hunks' from the 2.6.15-i386-1.2-00 patch didn't 
+>>>apply properly). By using 2.6.16-rc2, I got much better Intel 
+>>>(especially i865 graphics) chipset support than 2.6.15. Note, however, 
+>>>that I did the bug fixing in this thread on a plain 2.6.15, though (and 
+>>>the msi.c code is nearly identical).
+>>>
+>>>I would recommend upgrading to 2.6.15 with the latest Adeos patch and 
+>>>try to get a stable system before enabling MSI.
+> 
+> 
+> In short, MSI doesn't seem to have been my issue.  I now have a more stable
+> kernel.  Apparently this system had some other faults with the specific
+> configuration options I was using.  I had to patch to the 2.6.14.7 level
+> (was at .4) and change some of the options in my .config.  Specifically, I
+> had to leave ACPI enabled (I had disabled as a test a while back).  With
+> ACPI disabled, the machine would still hang if the USB was disabled in the
+> BIOS.
+
+You might want to try booting with acpi=ht, so that the ACPI kitchen sink is 
+warmed up far enough to enumerate LAPICs but not more.
+
+> 
+> After learning how to check for MSI, no devices in my system seem to
+> actually be using MSI.  The code patches you provided were never actually
+> executed.  Time will tell if my system is stable.
+> 
+> Thanks for your help!
+
+You are welcome.
+
+> Russ
+> 
+> 
+> 
+
+
 -- 
 
-Anders
+Philippe.
 
