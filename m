@@ -1,14 +1,14 @@
-Message-ID: <43FF18FF.20001@domain.hid>
-Date: Fri, 24 Feb 2006 15:32:31 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <43F5CAE8.9010905@domain.hid>
+Date: Fri, 17 Feb 2006 14:08:56 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <43FF13BE.7080505@domain.hid> <43FF166A.1060508@domain.hid>
-In-Reply-To: <43FF166A.1060508@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig092A998BE37E3721193A291D"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: skin libs, libtool warnings, and -module
+Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
+References: <43F447AF.4020604@domain.hid>	
+	<000a01c63304$94ee5190$1e01a8c0@domain.hid>
+	<fd6a47a90602170454q1cc93f23h@domain.hid>
+In-Reply-To: <fd6a47a90602170454q1cc93f23h@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,63 +18,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig092A998BE37E3721193A291D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jeroen Van den Keybus wrote:
+>     I tried this patch and it doesn't solve the issue I'm facing. With and
+>     without this patch, my symptoms are the same. 
+> 
+> 
+> I tested (and intended) the patch for MSI (w/o maskbits), not MSI-X. 
+> What e1000 chip are you using exactly? Easiest way to tell is by using 
+> '/sbin/lspci'. I may be able to help you out with MSI-X as well, but in 
+> that case, I have no hardware platform to test on.
+>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Hi Philippe,
->>
->> I noticed you fixed the libtool warning during xenomai build - by
->> linking the testsuite statically... :-/ This is just a workaround and
->> doesn't help external users.
->=20
-> Yes, it's clearly hacky-patchy, however, I don't see how this would
-> impact external users (yet)?
+Could you post the patch you are successfully using to boot your box? TIA,
 
-Those who also use libtool for their apps...
+> You can check whether or not MSI is actually being used by doing 
+> '/sbin/lspci -v' and look for the Capability: Message Signalled 
+> Interrupt. When the driver is running in MSI mode, it should read 
+> 'Enable+' instead of 'Enable-'.
+> 
+> Finally, verify how interrupts are dispatched. Have a look at 
+> /proc/interrupts for this (cat /proc/interrupts').
+> 
+>     I'm running a Dell 2850, dual CPU machine.
+> 
+> 
+> As it's a Dell, I assume there's two Intel Penium CPU's inside. Are you 
+> running with SMP enabled ?
+> 
+>       When I build a kernel without
+>     Adeos then things are fine.  When I build with Adeos and MSI enabled
+>     the
+>     following occurs:
+> 
+>     1) If BIOS has USB disabled then the system will hang without even a
+>     num-lock respose (i.e. tapping the num-lock key doesn't toggle the
+>     light).
+>     The hang occurs just about the time the E1000 driver would load and
+>     enable
+>     an MSI interrupt.
+> 
+>     2) If BIOS has USB enabled then the system will run much longer but
+>     may hang
+>     during heavy interrupt load on the E1000 driver.
+> 
+> 
+> Are you using the e1000 driver in NAPI mode ? It is recommended to do 
+> this, especially on the preemptible kernel, as it may significantly 
+> reduce the interrupt volume. In that case, I think it is doubtful if 
+> using MSI would give you any benefit at all over normal, shared IRQs.
+> 
+>     My assumption based on past experience is that no num-lock response
+>     means an
+>     infinite interrupt loop. 
+> 
+> 
+> The local (internal) CPU APIC hasn't been informed that the interrupt 
+> has been dealt with and it will therefore allow no other interrupts 
+> anymore to arrive in the CPU (including your keyboard's). In fact, your 
+> CPU is idle.
+> 
+> [The original 8259 was designed to detect the IRET instruction bit 
+> pattern on the databus and use that as an acknowledge signal. Upon 
+> arrival of the second 8259 in the PC/AT, this could no longer be done. I 
+> don't know if the APIC could do it today (it seems possible, 
+> theoretically). ]
+>  
+> When I build a kernel with Adeos but disable MSI then the system works fine
+> 
+>     for the most part.  There is one scenario where the system will
+>     still hang
+>     doing disk and network accesses under a moderate load of I/O. 
+> 
+> 
+> Hm. That may indicate another issue.
 
->=20
->>
->> Isn't the reason for this warnings that "-module" in every skin
->> Makefile.am? At least, removing it also fixes external apps. Do we nee=
-d
->> it? I don't think so: -module is for preparing dlopen usage, but who
->> will use it with skin libs?
->=20
->=20
-> E.g. People who need to do late binding from some interpreter engine to=
+Indeed. This behaviour has not been reported yet with patches from the Adeos 
+I-pipe series. Does it also happen with SMP disabled, or Hyperthreading disabled?
 
-> the routines defined by those APIs.
->=20
+> 
+>     Both of these tests are just to get a stable kernel before I really
+>     start
+>     using Adeos.  So Adeos is in its default configuration and I haven't
+>     loaded
+>     Xenomai modules when these hangs occur.
+> 
+>     I'm currently running the 2.6.14.4 <http://2.6.14.4> kernel with the
+>     2.6.14-1.0-12 patch of
+>     adeos and then I included your msi.c patch from the previous
+>     e-mail.  If you
+>     have any further hints or suggestions I'll try them.  Meanwhile I'm
+>     trying
+>     different versions of various drivers (e1000 and scsi) as well as
+>     updating
+>     the patch level of the kernel itself.
+> 
+> 
+> Try upgrading the kernel. The kernel usually comes with updated drivers 
+> as well. Currently I'm running 2.6.16-rc2, which I had to patch manually 
+> for Adeos (about 3 'hunks' from the 2.6.15-i386-1.2-00 patch didn't 
+> apply properly). By using 2.6.16-rc2, I got much better Intel 
+> (especially i865 graphics) chipset support than 2.6.15. Note, however, 
+> that I did the bug fixing in this thread on a plain 2.6.15, though (and 
+> the msi.c code is nearly identical).
+> 
+> I would recommend upgrading to 2.6.15 with the latest Adeos patch and 
+> try to get a stable system before enabling MSI.
+> 
+> Jeroen.
+> 
 
-Well, then we may better hack the related *.la files when installing
-them ("shouldnotlink=3Dno"). I must confess that I still don't understand=
 
-the reason behind this, but it seems that this warning is really useless
-at least on Linux.
+-- 
 
-Jan
-
-
---------------enig092A998BE37E3721193A291D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFD/xj/niDOoMHTA+kRAoaiAJ46f/g3YzQbLEaDaRfP5VoFVrTiBwCeNlzu
-05TuFNVGa63qwA8/uhy2LvM=
-=k5Sb
------END PGP SIGNATURE-----
-
---------------enig092A998BE37E3721193A291D--
+Philippe.
 
