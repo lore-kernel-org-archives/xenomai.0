@@ -1,12 +1,12 @@
-Message-ID: <43F58683.4020604@domain.hid>
-Date: Fri, 17 Feb 2006 09:17:07 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] no-brainer realtime issue
-References: <C01A170F.241B%steve@domain.hid>
-In-Reply-To: <C01A170F.241B%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 17 Feb 2006 14:41:36 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A1C34FE@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
+Subject: [Xenomai-help] Newbie Question  : Compile test programm
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,63 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-Steven Seeger wrote:
->>Which framebuffer support did you select at kernel level?
->>
->>What is the output of testsuite/latency while using the VT console?
->>
-> 
-> 
-> I'm using the gx1fb framebuffer for the geode. However, since this problem
-> occurs even when the VT outputting the text is not active, I don't think
-> it's fb related.
-> 
-> The latency output is just a bunch of numbers. :P
->
+Dear Gurus,
 
-Until those numbers are sane, there is no point in trying anything else though.
+I simply try to compile a straightforward Xenomai example for the =
+vxWorks-skin like this :
 
-> Here is some output with the latency -p 500 command, and halfway through it
-> I put a 100% load on the cpu.
-> 
+--------------------------------------------------
+#include <nucleus/thread.h>
+#include <nucleus/xenomai.h>
+#include <vxworks/vxworks.h>
+#include <stdio.h>
 
-Ok, the testsuite clearly fails on your board, and something in the current setup 
-prevents any real-time use. .config would help.
+int testtask (int a1, int a2,int a3,int a4,int a5,int a6,int a7,int =
+a8,int a9,int a10)
+{
+   for(;;)
+   {
+      printf("Hello World\n");
+      taskDelay(sysClkRateGet()*1);
+   }
+}
 
-> 
-> == Sampling period: 500 us
-> == Test mode: periodic user-mode task
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 500 us period)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTD|    -2327277|    -1766041|    -1196976|       0|    -2327277|
-> -1196976
-> RTD|    -3443424|    -2882532|    -2293218|       0|    -3443424|
-> -1196976
-> RTD|    -4558603|     3176566|    -3412343|       0|    -4558603|
-> -1196976
-> RTD|    -5663780|     2061495|    -4522950|       0|    -5663780|
-> -1196976
-> RTD|    -6764019|      976449|    -5637527|       0|    -6764019|
-> -1196976
-> RTD|    -7885937|     -137963|    -6750223|       0|    -7885937|
-> -1196976
-> RTD|    -8993661|    -1254331|    -7868111|       0|    -8993661|
-> -1196976
-> RTD|   -10141655|    -2395933|    -8979941|       0|   -10141655|
-> -1196976
-> ---|------------|------------|------------|--------|------------------------
-> -
-> RTS|   -10141655|     -277784|    -1196976|       0|    00:00:08/00:00:08
-> 
-> 
+main(int argc, char **argv)
+{
+   int taskid;
+
+   taskid=3DtaskSpawn( "vxTestTask", 0, 0, 1000, testtask, =
+0,0,0,0,0,0,0,0,0,0);
+   taskDelay(sysClkRateGet()*20);
+
+}
+
+--------------------------------------------------
+
+Not very useful, but good enough as an example.
+
+When I try to (cross-)compile (for PowerPC) this code with the following =
+statement :
+
+> ppc-linux-gcc -I ~/xenomai/_install/include test.c
+
+(_install/include is the directory of the installed (make install) =
+Xenomai header files.) I get the following errormessage (and much more):
+
+In file included from ~/xenomai/_install/include/nucleus/xenomai.h:23,
+                 from test.c:2:
+~/xenomai/_install/include/xenomai/nucleus/pod.h:125: parse error before =
+"xnthread_t"
+~/xenomai/_install/include/xenomai/nucleus/pod.h:125: warning: no =
+semicolon at end of struct or union
+~/xenomai/_install/include/xenomai/nucleus/pod.h:127: warning: data =
+definition has no type or storage class
 
 
--- 
+I tried to find a simple example code for vxworks-skin, but I wasn=B4t =
+succesfull (is there such a code at all and where ?).=20
+Could you please give me a hint, what I is wrong with my code, or where =
+I can find some Xenomai examples (vxWorks-skin).
 
-Philippe.
+Thank you in advance=20
+Roderik
+
 
