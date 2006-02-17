@@ -1,7 +1,7 @@
-Date: Fri, 17 Feb 2006 06:37:41 -0800
+Date: Fri, 17 Feb 2006 07:00:42 -0800
 Subject: Re: [Xenomai-help] no-brainer realtime issue
 From: Steven Seeger <steve@domain.hid>
-Message-ID: <C01B1FB5.2444%steve@domain.hid>
+Message-ID: <C01B251A.2448%steve@domain.hid>
 In-Reply-To: <43F5DD73.2030008@domain.hid>
 Mime-version: 1.0
 Content-type: text/plain;
@@ -19,10 +19,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hehe I misread that option. I read it as "disable SMI" and intended for it
-to be on. I'll try that. :)
+Turning on the SMI disable stuff, rebuilding the kernel and modules, and
+installing everything to my board did not solve the latency problem. My
+numbers keep growing as the latency tester runs.
 
-Steven 
+Any other ideas? I've never had an rtai/xenomai/fusion/whatever system fail
+basic realtime requirements like this before in the 4 years I've been using
+this geode board.
+
+Steven
 
 
 On 2/17/06 6:28 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
