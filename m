@@ -1,12 +1,12 @@
-Message-ID: <43F5DD73.2030008@domain.hid>
-Date: Fri, 17 Feb 2006 15:28:03 +0100
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Date: Fri, 17 Feb 2006 06:37:41 -0800
 Subject: Re: [Xenomai-help] no-brainer realtime issue
-References: <C01B17DA.2441%steve@domain.hid>
-In-Reply-To: <C01B17DA.2441%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Steven Seeger <steve@domain.hid>
+Message-ID: <C01B1FB5.2444%steve@domain.hid>
+In-Reply-To: <43F5DD73.2030008@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Steven Seeger wrote:
-> Maybe I didn't set it up right? I followed the instructions in the
-> README.INSTALL file. Attached is my linux tree's .config.
-> 
+Hehe I misread that option. I read it as "disable SMI" and intended for it
+to be on. I'll try that. :)
 
-Try enabling the SMI workaround (Xeno's "Machine" menu), just in case, since you 
-are running a Geode box.
-
-> Steven
-> 
-> 
->>Until those numbers are sane, there is no point in trying anything else
->>though.
->>
->>Ok, the testsuite clearly fails on your board, and something in the current
->>setup 
->>prevents any real-time use. .config would help.
->>
-> 
-> 
+Steven 
 
 
--- 
+On 2/17/06 6:28 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
 
-Philippe.
+> Steven Seeger wrote:
+>> Maybe I didn't set it up right? I followed the instructions in the
+>> README.INSTALL file. Attached is my linux tree's .config.
+>> 
+> 
+> Try enabling the SMI workaround (Xeno's "Machine" menu), just in case, since
+> you 
+> are running a Geode box.
+> 
+>> Steven
+>> 
+>> 
+>>> Until those numbers are sane, there is no point in trying anything else
+>>> though.
+>>> 
+>>> Ok, the testsuite clearly fails on your board, and something in the current
+>>> setup 
+>>> prevents any real-time use. .config would help.
+>>> 
+>> 
+>> 
+> 
+
 
