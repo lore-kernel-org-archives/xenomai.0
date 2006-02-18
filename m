@@ -1,12 +1,12 @@
-Message-ID: <43F617FE.2040909@domain.hid>
-Date: Fri, 17 Feb 2006 19:37:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] no-brainer realtime issue
-References: <C01B4DA8.245A%steve@domain.hid> <43F61611.7010902@domain.hid>
-In-Reply-To: <43F61611.7010902@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17399.7080.646342.416164@domain.hid>
+Date: Sat, 18 Feb 2006 14:05:44 +0100
+Subject: Re: [Xenomai-help] no-brainer realtime issue
+In-Reply-To: <C01B17DA.2441%steve@domain.hid>
+References: <43F58683.4020604@domain.hid> <C01B17DA.2441%steve@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +16,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Steven Seeger <steve@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Steven Seeger wrote:
-> 
->> Could my problem be caused by me using the latest SVN for xenomai? 
->> Should I
->> try the released version instead?
-> 
-> 
-> You should first try my last suggestion, i.e. disable the forced 
-> periodic support from the configuration. If your application used to 
-> rely on the deprecated rt_timer_start() call for setting the oneshot 
-> mode, then enabling the periodic timing option is inappropriate.
+Steven Seeger wrote:
+ > Maybe I didn't set it up right? I followed the instructions in the
+ > README.INSTALL file. Attached is my linux tree's .config.
 
-At the very least, it is inappropriate for running the latency test and explains 
-the strange results.
-
-> 
->>
->> Steven
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
-> 
-> 
-
+Could you try and configure the timer in aperiodic mode ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
