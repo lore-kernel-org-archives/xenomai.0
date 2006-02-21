@@ -1,11 +1,21 @@
-Content-class: urn:content-classes:message
+Message-ID: <43FAF94C.4080709@domain.hid>
+Date: Tue, 21 Feb 2006 12:28:12 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C636D5.8B72504B"
-Date: Tue, 21 Feb 2006 11:57:02 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210D24@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: [Xenomai-core] Timer and calibration
+Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
+References: <b647ffbd0602150939g59256b2bx@domain.hid>	
+	<b647ffbd0602160558i4112313an@domain.hid>	
+	<43F48832.7060804@domain.hid>	
+	<b647ffbd0602161128t70d1f08ax@domain.hid>	
+	<43F4E2D3.4010705@domain.hid>	
+	<b647ffbd0602181204u518296fev@domain.hid>	
+	<43F793AF.4080805@domain.hid> <43F9C9C1.60101@domain.hid>	
+	<b647ffbd0602200840v5f066d0bv@domain.hid>	
+	<43FAD322.4060001@domain.hid>
+	<b647ffbd0602210254p19086a0au@domain.hid>
+In-Reply-To: <b647ffbd0602210254p19086a0au@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,276 +25,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>, xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Dmitry Adamushko wrote:
+> 
+> On 21/02/06, *Anders Blomdell* <anders.blomdell@domain.hid 
+> <mailto:anders.blomdell@domain.hid>> wrote:
+> 
+>     Dmitry Adamushko wrote:
+>      >
+>      > N.B. Amongst other things, some thoughts about CHAINED with shared
+>      > interrupts.
+>      >
+>      >
+>      > On 20/02/06, *Anders Blomdell* < anders.blomdell@domain.hid
+>     <mailto:anders.blomdell@domain.hid>
+>      > <mailto:anders.blomdell@domain.hid
+>     <mailto:anders.blomdell@domain.hid>>> wrote:
+>      >
+>      >
+>      >
+>      >     A number of questions arise:
+>      >
+>      >     1. What happens if one of the shared handlers leaves the
+>     interrupt
+>      >     asserted,
+>      >     returns NOENABLE|HANDLED and another return only HANDLED?
+>      >
+>      >     2. What happens if one returns PROPAGATE and another returns
+>     HANDLED?
+>      >
+>      >
+>      > Yep, each ISR may return a different value and all of them are
+>      > accumulated in the "s" variable ( s |= intr->isr(intr); ).
+>      >
+>      > So the loop may end up with "s" which contains all of the
+>     possible bits:
+>      >
+>      > (e.g.
+>      >
+>      > isr1 - HANDLED | ENABLE
+>      > isr2 - HANDLED (don't want the irq to be enabled)
+>      > isr3 - CHAINED
+>      >
+>      > )
+>      >
+>      > s = HANDLED | ENABLE | CHAINED;
+>      >
+>      > Then CHAINED will be ignored because of the following code :
+>      >
+>      > +    if (s & XN_ISR_ENABLE)
+>      > +       xnarch_end_irq(irq);
+>      > +    else if (s & XN_ISR_CHAINED)    (*)
+>      > +       xnarch_chain_irq(irq);
+>     Which is the worst way possible of prioritizing them, if a Linux
+>     interrupt is
+>     active when we get there with ENABLE|CHAINED, interrupts will be
+>     enabled with
+>     the Linux interrupt still asserted -> the IRQ-handlers will be
+>     called once more,
+>     probably returning ENABLE|CHAINED again -> infinite loop...
+> 
+>      >
+>      > the current code in the CVS doen not contain "else" in (*), so that
+>      > ENABLE | CHAINED is possible, though it's a wrong combination.
+>      >
+>      > This said, we suppose that one knows what he is doing.
+>      >
+>      > In the case of a single ISR per line, it's not that difficult to
+>      > achieve. But if there are a few ISRs, then one should analize and
+>     take
+>      > into account all possible return values of all the ISRs, as each
+>     of them
+>      > may affect others (e.g. if one returns CHAINED when another -
+>     HANDLED |
+>      > ENABLE).
+>     Which is somewhat contrary to the concept of shared interrupts, if
+>     we have to
+>     take care of the global picture, why make them shared in the first
+>     place?
+>     (I like the concept of shared interrupts, but it is important that
+>     the framework
+>     gives a separation of concerns)
+> 
+> 
+> Unfortunately, it looks to me that the current picture (even with your 
+> scalar values) requires from the user who develops a given IRQ to take 
+> into account the possible return values of other ISRs.
+> 
+> As I pointed out, the situation when 2 ISRs return HANDLED_NOENABLE may 
+> lead to problems on some archs.
+Good point, leaves us with 2 possible return values for shared handlers:
 
-------_=_NextPart_001_01C636D5.8B72504B
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   HANDLED
+   NOT_HANDLED
 
-Hello,
+i.e. shared handlers should never defer the end'ing of the interrupt (which 
+makes sense, since this would affect the other [shared] handlers).
 
-=20
-
-We are currently porting Adeos/Xenomai with Linux 2.6.14 on a ARM9-based
-Freescale i.mx21 (litekit) development board.
-
-We started from the available patch for the ARM-based Integrator board.
-
-=20
-
-We are now facing some interesting problems regarding clock/timer
-frequencies with this board, but they are about to be solved :-)
-
-=20
-
-However, we have a question of understanding; as far as we know, ipipe
-starts with an aperiodic (one-shot) timer at the initialization time,
-and that before
-
-the calibrate function has been called. So, we get one interrupt only
-since the xenomai scheduler has not been registered (we understand
-
-that the xenomai scheduler should give the next timer shot, but since it
-is not registered yet, no timer reprogramming is achieved).
-
-=20
-
-So, how can the calibrate function can be invoked safely if no timer IRQ
-is received since this kind of calibration comes before the xenomai
-registration
-
-(the calibrate function needs IRQ timers to calibrate the number of busy
-loops between two jiffies) ?
-
-=20
-
-How is it realized with a x86 architecture (another timer source?)
-
-=20
-
-Is there any documentation - or discussion threads - which gives some
-information about the use of timers/RTC/TSC with Xenomai?=20
-
-=20
-
-Thanks so much for your help
-
-=20
-
-Kind regards
-
-=20
-
-Daniel Rossier
-
-
-------_=_NextPart_001_01C636D5.8B72504B
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:st1=3D"urn:schemas-microsoft-com:office:smarttags" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<o:SmartTagType =
-namespaceuri=3D"urn:schemas-microsoft-com:office:smarttags"
- name=3D"PersonName"/>
-<!--[if !mso]>
-<style>
-st1\:*{behavior:url(#default#ieooui) }
-</style>
-<![endif]-->
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Wingdings;
-	panose-1:5 0 0 0 0 0 0 0 0 0;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-p
-	{mso-margin-top-alt:auto;
-	margin-right:0cm;
-	mso-margin-bottom-alt:auto;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DFR link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Hello,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>We are currently porting Adeos/Xenomai with =
-Linux
-2.6.14 on a ARM9-based Freescale i.mx21 (litekit) development =
-board.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>We started from the available patch for the =
-ARM-based
-Integrator board.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>We are now facing some interesting problems =
-regarding
-clock/timer frequencies with this board, but they are about to be solved =
-</span></font><font
-size=3D2 face=3DWingdings><span lang=3DEN-GB =
-style=3D'font-size:10.0pt;font-family:
-Wingdings'>J</span></font><font size=3D2 face=3DArial><span lang=3DEN-GB
-style=3D'font-size:10.0pt;font-family:Arial'><o:p></o:p></span></font></p=
->
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>However, we have a question of understanding; =
-as far
-as we know, ipipe starts with an aperiodic (one-shot) timer at the
-initialization time, and that before<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>the calibrate function has been called. So, we =
-get
-one interrupt only since the xenomai scheduler has not been registered =
-(we
-understand<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>that the xenomai scheduler should give the =
-next timer
-shot, but since it is not registered yet, no timer reprogramming is =
-achieved).<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>So, how can the calibrate function can be =
-invoked
-safely if no timer IRQ is received since this kind of calibration comes =
-before
-the xenomai registration<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>(the calibrate function needs IRQ timers to =
-calibrate
-the number of busy loops between two jiffies) =
-?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>How is it realized with a x86 architecture =
-(another
-timer source?)<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Is there any documentation &#8211; or =
-discussion
-threads - which gives some information about the use of timers/RTC/TSC =
-with
-Xenomai? <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Thanks so much for your =
-help<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Kind regards<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><st1:PersonName ProductID=3D"Daniel Rossier" =
-w:st=3D"on"><font
- size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:10.0pt;font-family:Arial'>Daniel
- Rossier</span></font></st1:PersonName><font size=3D2 face=3DArial><span
-lang=3DEN-GB =
-style=3D'font-size:10.0pt;font-family:Arial'><o:p></o:p></span></font></p=
->
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C636D5.8B72504B--
+-- 
+Anders
 
