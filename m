@@ -1,145 +1,106 @@
-Message-ID: <43F9C9C1.60101@domain.hid>
-Date: Mon, 20 Feb 2006 14:53:05 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <43FC7C8E.3040902@domain.hid>
+Date: Wed, 22 Feb 2006 16:00:30 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
-References: <b647ffbd0602150939g59256b2bx@domain.hid>		<43F3C4EA.7050303@domain.hid>	<b647ffbd0602160220we254aacx@domain.hid>		<43F47705.90309@domain.hid>	<b647ffbd0602160558i4112313an@domain.hid>		<43F48832.7060804@domain.hid>		<b647ffbd0602161128t70d1f08ax@domain.hid>		<43F4E2D3.4010705@domain.hid>	<b647ffbd0602181204u518296fev@domain.hid>
-	<43F793AF.4080805@domain.hid>
-In-Reply-To: <43F793AF.4080805@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] no-brainer issue found, but not solved
+References: <C021B37E.24C4%steve@domain.hid>
+In-Reply-To: <C021B37E.24C4%steve@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig19C9CB4356D69A35A1D638BE"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Hi Dmitry,
-> 
-> Dmitry Adamushko wrote:
-> 
->>Hi Jan,
->>
->>let's make yet another revision of the bits :
->>
->>new XN_ISR_HANDLED  == old XN_ISR_HANDLED + old XN_ISR_NO_ENABLE
->>
->>ok.
->>
->>new XN_ISR_NOENABLE == ~ old XN_ISR_ENABLE
->>
->>ok.
->>
->>new XN_ISR_PROPAGATE == XN_ISR_CHAINED
->>
->>ok.
->>
-> 
-> 
-> Just to make sure that you understand my weird ideas: each of the three
-> new XN_ISR_xxx above should be encoded with an individual bit
-> 
-> 
->>new XN_ISR_NOINT == ?
->>
->>does it suppose the interrupt line to be .end-ed (enabled) and irq not to be
->>propagated? Should be so, I guess, if it's different from 5). Then nucleus
->>ignores implicit IRQ enable for 5) as well as for 3).
->>
->>Do we really need that NOINT then, as it seems to be the same as ~HANDLED?
->>
->>or NOINT == 0 and then it's a scalar value, not a bit.
->>
->>So one may consider HANDLED == 1 and NOINT == 0 as really scalar values
->>
->>and
->>
->>NOENABLE and PROPAGATE as additional bits (used only if needed).
->>
-> 
-> 
-> My idea is to urge the user specifying one of the base return types
-> (HANDLED or NOINT) + any of the two additional bits (NOENABLE and
-> PROPAGATE).
-> 
-> For correct drivers NOINT could be 0 indeed, but to check that the user
-> picked a new constant we may want to set NOINT != 0. With the old API
-> "return 0" expressed HANDLED + ~ENABLE for the old API. With the new one
-> the user signals no interest and the nucleus may raise a warning that a
-> spurious IRQ occurred. So I would add a debug bit for NOINT here to
-> optionally (on OPT_XENO_DEBUG) detect old-style usage (return 0).
-> Moreover, we gain freedom to move bits in the future when every state is
-> encoded via constants. Or am I too paranoid here?
-After reading the above discussion (of which I understand very little), and 
-looking at (what I believe to be) the relevant code:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig19C9CB4356D69A35A1D638BE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-+    intr = shirq->handlers;
-+
-+    while (intr)
-+        {
-+        s |= intr->isr(intr);
-+        ++intr->hits;
-+        intr = intr->next;
-+        }
-+    xnintr_shirq_unlock(shirq);
-+
-+    --sched->inesting;
-+
-+    if (s & XN_ISR_ENABLE)
-+       xnarch_end_irq(irq);
-+    else if (s & XN_ISR_CHAINED)
-+       xnarch_chain_irq(irq);
+Steven Seeger wrote:
+> There is a awful amount of code in this project, and I should point out=
+ that
+> this same code did not exhibit these problems under a fusion cvs from
 
-A number of questions arise:
+You code contains a wrong assumption about the execution context. Older
+Xenomai/fusion versions may have concealed this due to different
+internal design.
 
-1. What happens if one of the shared handlers leaves the interrupt asserted, 
-returns NOENABLE|HANDLED and another return only HANDLED?
+> October. I can see about posting the full code, but my supervisors don=B9=
+t
+> want anything having our hardware addresses in it going out.
+>=20
+> This is an x86 board, so inb/outb are just instructions.
 
-2. What happens if one returns PROPAGATE and another returns HANDLED?
+Then please shrink down your scenario so that
 
-As far as I can tell, after all RT handlers havve run, the following scenarios 
-are possible:
+a) no proprietary code or addresses are contained AND
+b) only a minimum of surrounding code is used AND
+c) the problem (timing issues) still show up.
 
-1. The interrupt is deasserted (i.e. it was a RT interrupt)
-2. The interrupt is still asserted, it will be deasserted later
-    by some RT task (i.e. it was a RT interrupt)
-3. The interrupt is still asserted and will be deasserted
-    by the Linux IRQ handler.
+This first of all means to replace the specific detection of deadline
+misses (flickering LEDs) with a generic mechanism - e.g. the latency
+tool. Then we can try to reproduce your problem or already find the
+issue in the test code. As I pointed out: mixing non-RT with RT code is
+feasible but requires careful design.
 
-IMHO that leads to the conclusion that the IRQ handlers should return a scalar
+>=20
+> I know about the volatile thing but that isn=B9t my problem. I=B9m havi=
+ng
+> realtime preemption issues.
+>=20
+> Steven
+>=20
+> On 2/21/06 1:20 PM, "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid.=
+com>
+> wrote:
+>=20
+>> It would be helpful if a complete code could be posted. That means, in=
+cluding
+>> the main() function, in which the task dispatching is done as well.
+>> =20
+>> Furthermore, be sure to declare counting variables inside waiting loop=
+s with
+>> the 'volatile' specifier. The compiler might optimize it away otherwis=
+e.
+>> =20
+>> Another, maybe dumb suggestion: how is inb() / outb() actually impleme=
+nted on
+>> your platform ?
+>> =20
+>> =20
+>> Jeroen.
+>> =20
+>>
+>=20
+>=20
+>=20
 
-#define UNHANDLED 0
-#define HANDLED_ENABLE 1
-#define HANDLED_NOENABLE 2
-#define PROPAGATE 3
+Jan
 
-and the loop should be
 
-     s = UNHANDLED
-     while (intr) {
-       tmp = intr->isr(intr);
-       if (tmp > s) { s = tmp; }
-       intr = intr->next;
-     }
-     if (s == PROPAGATE) {
-       xnarch_chain_irq(irq);
-     } else if (s == HANDLED_ENABLE) {
-       xnarch_end_irq(irq);
-     }
+--------------enig19C9CB4356D69A35A1D638BE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-To be really honest, I think that PROPAGATE should be excluded from the RT 
-IRQ-handlers, since with the current scheme all RT-handlers has to test if the 
-IRQ was a Linux interrupt (otherwise the system will only work when the handler 
-that returns PROPAGATE is installed)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
--- 
+iD8DBQFD/HyOniDOoMHTA+kRAqp+AJ0afzcSOYb6OYz9DBeKXelReTS3ZQCfZKK1
+j0z4Hl1mugZYEIMuFuIVjdo=
+=uMg/
+-----END PGP SIGNATURE-----
 
-Anders
+--------------enig19C9CB4356D69A35A1D638BE--
 
