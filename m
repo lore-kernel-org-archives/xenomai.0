@@ -1,15 +1,11 @@
-Message-ID: <43FC6A37.6030406@domain.hid>
-Date: Wed, 22 Feb 2006 14:42:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Accessing the dev_private field of the RTDM driver
-	context
-References: <fd6a47a90602220529l42118430u@domain.hid>
-In-Reply-To: <fd6a47a90602220529l42118430u@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA54C0F51DB7B506269D098F4"
-Sender: jan.kiszka@domain.hid
+Date: Wed, 22 Feb 2006 06:21:50 -0800
+Subject: Re: [Xenomai-help] no-brainer issue found, but not solved
+From: Steven Seeger <steve@domain.hid>
+Message-ID: <C021B37E.24C4%steve@domain.hid>
+In-Reply-To: <fd6a47a90602211320k21eb3b8w@domain.hid>
+Mime-version: 1.0
+Content-type: multipart/alternative;
+	boundary="B_3223434111_8818570"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,61 +15,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA54C0F51DB7B506269D098F4
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
 
-Jeroen Van den Keybus wrote:
-> The dev_private data field of an rtdm_dev_context is defined as char[0]=
-=2E How
-> do I access such a field properly (given the fact that I defined a nonz=
-ero
-> context_size in the rtdm_device structure during driver registration) ?=
+--B_3223434111_8818570
+Content-type: text/plain;
+	charset="ISO-8859-1"
+Content-transfer-encoding: quoted-printable
 
->=20
-> E.g. trying to do:
->=20
-> (struct my_struct *)context->dev_private =3D NULL;
->=20
-> results in:
->=20
-> error: incompatible types in assignment
->=20
-> I _am_ able to compare though:
->=20
-> if ((struct my_struct *)context->dev_private =3D=3D NULL)
-> ...
->=20
-> seems to compile fine.
->=20
->=20
+There is a awful amount of code in this project, and I should point out tha=
+t
+this same code did not exhibit these problems under a fusion cvs from
+October. I can see about posting the full code, but my supervisors don=B9t
+want anything having our hardware addresses in it going out.
+
+This is an x86 board, so inb/outb are just instructions.
+
+I know about the volatile thing but that isn=B9t my problem. I=B9m having
+realtime preemption issues.
+
+Steven
+
+On 2/21/06 1:20 PM, "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+wrote:
+
+> It would be helpful if a complete code could be posted. That means, inclu=
+ding
+> the main() function, in which the task dispatching is done as well.
+> =20
+> Furthermore, be sure to declare counting variables inside waiting loops w=
+ith
+> the 'volatile' specifier. The compiler might optimize it away otherwise.
+> =20
+> Another, maybe dumb suggestion: how is inb() / outb() actually implemente=
+d on
+> your platform ?
+> =20
+> =20
 > Jeroen.
+> =20
 >=20
 
-context->dev_private does not contain an address, it IS the start
-address of your private date. It's size is specified during device
-registration. See existing drivers for usage examples.
-
-Jan
 
 
---------------enigA54C0F51DB7B506269D098F4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--B_3223434111_8818570
+Content-type: text/html;
+	charset="ISO-8859-1"
+Content-transfer-encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+<HTML>
+<HEAD>
+<TITLE>Re: [Xenomai-help] no-brainer issue found, but not solved</TITLE>
+</HEAD>
+<BODY>
+<FONT FACE=3D"Verdana, Helvetica, Arial"><SPAN STYLE=3D'font-size:12.0px'>There=
+ is a awful amount of code in this project, and I should point out that this=
+ same code did not exhibit these problems under a fusion cvs from October. I=
+ can see about posting the full code, but my supervisors don&#8217;t want an=
+ything having our hardware addresses in it going out.<BR>
+<BR>
+This is an x86 board, so inb/outb are just instructions. <BR>
+<BR>
+I know about the volatile thing but that isn&#8217;t my problem. I&#8217;m =
+having realtime preemption issues.<BR>
+<BR>
+Steven<BR>
+<BR>
+On 2/21/06 1:20 PM, &quot;Jeroen Van den Keybus&quot; &lt;jeroen.vandenkeyb=
+us@domain.hid&gt; wrote:<BR>
+<BR>
+</SPAN></FONT><BLOCKQUOTE><FONT FACE=3D"Verdana, Helvetica, Arial"><SPAN STYL=
+E=3D'font-size:12.0px'>It would be helpful if a complete code could be posted.=
+ That means, including the main() function, in which the task dispatching is=
+ done as well.<BR>
+&nbsp;<BR>
+Furthermore, be sure to declare counting variables inside waiting loops wit=
+h the 'volatile' specifier. The compiler might optimize it away otherwise.<B=
+R>
+&nbsp;<BR>
+Another, maybe dumb suggestion: how is inb() / outb() actually implemented =
+on your platform ?<BR>
+&nbsp;<BR>
+&nbsp;<BR>
+Jeroen.<BR>
+&nbsp;<BR>
+<BR>
+</SPAN></FONT></BLOCKQUOTE><FONT FACE=3D"Verdana, Helvetica, Arial"><SPAN STY=
+LE=3D'font-size:12.0px'><BR>
+</SPAN></FONT>
+</BODY>
+</HTML>
 
-iD8DBQFD/Go3niDOoMHTA+kRAnzaAJ4y/mMiApwFjCoGtrwV/Fok5bhdzQCfV8pa
-kVJtBLzl2jjGM44iRegies0=
-=Ezlk
------END PGP SIGNATURE-----
 
---------------enigA54C0F51DB7B506269D098F4--
+--B_3223434111_8818570--
+
 
