@@ -1,12 +1,11 @@
-Message-ID: <fd6a47a90602211320k21eb3b8w@domain.hid>
-Date: Tue, 21 Feb 2006 22:20:45 +0100
+Message-ID: <fd6a47a90602220529l42118430u@domain.hid>
+Date: Wed, 22 Feb 2006 14:29:40 +0100
 From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-help] no-brainer issue found, but not solved
-In-Reply-To: <43FB5DB1.2000703@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_6297_25822216.1140556845154"
-References: <C02098C9.24B1%steve@domain.hid> <43FB5DB1.2000703@domain.hid>
+	boundary="----=_Part_25_13421988.1140614980174"
+Subject: [Xenomai-help] Accessing the dev_private field of the RTDM driver
+	context
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,47 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-------=_Part_6297_25822216.1140556845154
+------=_Part_25_13421988.1140614980174
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-It would be helpful if a complete code could be posted. That means,
-including the main() function, in which the task dispatching is done as
-well.
+The dev_private data field of an rtdm_dev_context is defined as char[0]. Ho=
+w
+do I access such a field properly (given the fact that I defined a nonzero
+context_size in the rtdm_device structure during driver registration) ?
 
-Furthermore, be sure to declare counting variables inside waiting loops wit=
-h
-the 'volatile' specifier. The compiler might optimize it away otherwise.
+E.g. trying to do:
 
-Another, maybe dumb suggestion: how is inb() / outb() actually implemented
-on your platform ?
+(struct my_struct *)context->dev_private =3D NULL;
+
+results in:
+
+error: incompatible types in assignment
+
+I _am_ able to compare though:
+
+if ((struct my_struct *)context->dev_private =3D=3D NULL)
+...
+
+seems to compile fine.
 
 
 Jeroen.
 
-------=_Part_6297_25822216.1140556845154
+------=_Part_25_13421988.1140614980174
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-<div>It would be helpful if a complete code could be posted. That means, in=
-cluding the main() function, in which the task dispatching is done as well.=
-</div>
-<div>&nbsp;</div>
-<div>Furthermore, be sure to declare counting variables inside&nbsp;waiting=
- loops with the 'volatile' specifier. The compiler might optimize it away o=
-therwise.</div>
-<div>&nbsp;</div>
-<div>Another, maybe&nbsp;dumb suggestion: how is inb() / outb() actually im=
-plemented on your platform ?</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div>
+The dev_private data field of an rtdm_dev_context is defined as
+char[0]. How do I access such a field properly (given the fact that I
+defined a nonzero context_size in the rtdm_device structure during
+driver registration) ?<br>
+<br>
+E.g. trying to do:<br>
+<br>
+(struct my_struct *)context-&gt;dev_private =3D NULL;<br>
+<br>
+results in:<br>
+<br>
+error: incompatible types in assignment<br>
+<br>
+I _am_ able to compare though:<br>
+<br>
+if ((struct my_struct *)context-&gt;dev_private =3D=3D NULL)<br>
+...<br>
+<br>
+seems to compile fine.<br>
+<br>
+<br>
+Jeroen.<br>
 
-------=_Part_6297_25822216.1140556845154--
+------=_Part_25_13421988.1140614980174--
 
