@@ -1,11 +1,15 @@
-Message-ID: <fd6a47a90602220529l42118430u@domain.hid>
-Date: Wed, 22 Feb 2006 14:29:40 +0100
-From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+Message-ID: <43FC6A37.6030406@domain.hid>
+Date: Wed, 22 Feb 2006 14:42:15 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_25_13421988.1140614980174"
-Subject: [Xenomai-help] Accessing the dev_private field of the RTDM driver
+Subject: Re: [Xenomai-help] Accessing the dev_private field of the RTDM driver
 	context
+References: <fd6a47a90602220529l42118430u@domain.hid>
+In-Reply-To: <fd6a47a90602220529l42118430u@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA54C0F51DB7B506269D098F4"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,63 +19,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-------=_Part_25_13421988.1140614980174
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA54C0F51DB7B506269D098F4
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-The dev_private data field of an rtdm_dev_context is defined as char[0]. Ho=
-w
-do I access such a field properly (given the fact that I defined a nonzero
-context_size in the rtdm_device structure during driver registration) ?
+Jeroen Van den Keybus wrote:
+> The dev_private data field of an rtdm_dev_context is defined as char[0]=
+=2E How
+> do I access such a field properly (given the fact that I defined a nonz=
+ero
+> context_size in the rtdm_device structure during driver registration) ?=
 
-E.g. trying to do:
+>=20
+> E.g. trying to do:
+>=20
+> (struct my_struct *)context->dev_private =3D NULL;
+>=20
+> results in:
+>=20
+> error: incompatible types in assignment
+>=20
+> I _am_ able to compare though:
+>=20
+> if ((struct my_struct *)context->dev_private =3D=3D NULL)
+> ...
+>=20
+> seems to compile fine.
+>=20
+>=20
+> Jeroen.
+>=20
 
-(struct my_struct *)context->dev_private =3D NULL;
+context->dev_private does not contain an address, it IS the start
+address of your private date. It's size is specified during device
+registration. See existing drivers for usage examples.
 
-results in:
-
-error: incompatible types in assignment
-
-I _am_ able to compare though:
-
-if ((struct my_struct *)context->dev_private =3D=3D NULL)
-...
-
-seems to compile fine.
+Jan
 
 
-Jeroen.
+--------------enigA54C0F51DB7B506269D098F4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_25_13421988.1140614980174
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-The dev_private data field of an rtdm_dev_context is defined as
-char[0]. How do I access such a field properly (given the fact that I
-defined a nonzero context_size in the rtdm_device structure during
-driver registration) ?<br>
-<br>
-E.g. trying to do:<br>
-<br>
-(struct my_struct *)context-&gt;dev_private =3D NULL;<br>
-<br>
-results in:<br>
-<br>
-error: incompatible types in assignment<br>
-<br>
-I _am_ able to compare though:<br>
-<br>
-if ((struct my_struct *)context-&gt;dev_private =3D=3D NULL)<br>
-...<br>
-<br>
-seems to compile fine.<br>
-<br>
-<br>
-Jeroen.<br>
+iD8DBQFD/Go3niDOoMHTA+kRAnzaAJ4y/mMiApwFjCoGtrwV/Fok5bhdzQCfV8pa
+kVJtBLzl2jjGM44iRegies0=
+=Ezlk
+-----END PGP SIGNATURE-----
 
-------=_Part_25_13421988.1140614980174--
+--------------enigA54C0F51DB7B506269D098F4--
 
