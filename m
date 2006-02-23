@@ -1,14 +1,11 @@
-From: Alessio Igor Bogani <abogani@domain.hid>
-In-Reply-To: <200602161514.44451.lbocseg@domain.hid>
-References: <200602141114.23856.lbocseg@domain.hid>
-	<43F2761D.2050702@domain.hid> <200602151253.05341.lbocseg@domain.hid>
-	<200602161514.44451.lbocseg@domain.hid>
-Content-Type: text/plain
-Date: Thu, 23 Feb 2006 16:07:53 +0100
-Message-Id: <1140707273.8504.27.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] rtdm_mmap_to_user()
+Date: Thu, 23 Feb 2006 15:01:31 -0800
+From: Steven Seeger <steve@domain.hid>
+Message-ID: <C0237ECB.24E3%steve@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
+Subject: [Xenomai-help] problems solved
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,15 +15,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi All,
+Well, I solved my problems by getting rid of the geode. On a 400 mhz celeron
+board, everything works great. My software used 100% of the CPU on the geode
+and locked up the Linux side when the stepper motor would run, but on the
+celeron it uses a negligible amount of the CPU. This is good for me to see
+that the problem isn't with my code probably, but bad that Xenomai seems to
+have issues on the Geode that RTAI/fusion did not.
 
-Someone can post on mailing-list a simple usage example of
-rtdm_mmap_to_user()?
-Thanks.
-
-Best Regards,
-Alessio Igor Bogani
+Just giving you all a heads up. The geode sucks anyway.
 
 
