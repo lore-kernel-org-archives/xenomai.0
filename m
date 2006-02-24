@@ -1,14 +1,12 @@
-Message-ID: <43FE48FA.8000206@domain.hid>
-Date: Fri, 24 Feb 2006 00:44:58 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <fd6a47a90602240001g7e015b21h@domain.hid>
+Date: Fri, 24 Feb 2006 09:01:48 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
 Subject: Re: [Xenomai-help] problems solved
-References: <C0237ECB.24E3%steve@domain.hid>
 In-Reply-To: <C0237ECB.24E3%steve@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5DA5EB2AA054C05C76912296"
-Sender: jan.kiszka@domain.hid
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_20093_9260328.1140768108105"
+References: <C0237ECB.24E3%steve@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,51 +19,53 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Steven Seeger <steve@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5DA5EB2AA054C05C76912296
-Content-Type: text/plain; charset=ISO-8859-15
+------=_Part_20093_9260328.1140768108105
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Steven Seeger wrote:
-> Well, I solved my problems by getting rid of the geode. On a 400 mhz ce=
-leron
-> board, everything works great. My software used 100% of the CPU on the =
-geode
-> and locked up the Linux side when the stepper motor would run, but on t=
-he
-> celeron it uses a negligible amount of the CPU. This is good for me to =
-see
-> that the problem isn't with my code probably, but bad that Xenomai seem=
-s to
-> have issues on the Geode that RTAI/fusion did not.
->=20
-> Just giving you all a heads up. The geode sucks anyway.
->=20
+Have you tried loading the Celeron to 100% as well ? Remember that,
+depending on where your interface resides, inb/outb access to the PCI bus
+or, even worse, the LPC, may be stalled by heavy traffic on the CPU
+front-end bus or the MCH-ICH link.
 
-Well, this "it used to work" doesn't satisfy me. Maybe Geode is
-revealing some subtle bug that only triggers under certain load
-scenarios. That's why it would be really great if you could try to nail
-the issue a bit more down with the suggested steps. When e.g. the tracer
-then shows that your code "hangs" on some inb/outb for too long, we can
-be sure that this is a hardware-related issue.
-
-Thanks,
-Jan
+Just giving you all a heads up. The geode sucks anyway.
 
 
---------------enig5DA5EB2AA054C05C76912296
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Let's cross fingers for the poor Celeron that your software
+never outgrows it.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+BTW, what board were you using ? I'm asking because I may be able to get a
+Geode here for testing but all processors may not be the same.
 
-iD8DBQFD/kj6niDOoMHTA+kRAnKuAJ9FmRaGDlWCjlguVsCGjT3oIUuA9gCfbU/D
-Owu4mz41WbSAbLpZ/4Re5qg=
-=suIh
------END PGP SIGNATURE-----
 
---------------enig5DA5EB2AA054C05C76912296--
+Jeroen.
+
+------=_Part_20093_9260328.1140768108105
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<div>
+<div>&nbsp;</div>
+<div>Have you tried loading the Celeron to 100% as well ? Remember that, de=
+pending on where your interface resides, inb/outb access to the PCI bus or,=
+ even worse, the LPC, may be stalled by heavy traffic on the CPU front-end =
+bus or&nbsp;the MCH-ICH link.
+</div><br>
+<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
+px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Just giving you all a heads up. =
+The geode sucks anyway.</blockquote>
+<div>&nbsp;</div>
+<div>Let's cross fingers for the poor Celeron that your software never&nbsp=
+;outgrows&nbsp;it.</div>
+<div>&nbsp;</div>
+<div>BTW, what board were you using ?&nbsp;I'm asking because I may be able=
+ to get a Geode here for testing but all processors may not be the same.</d=
+iv>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div></div>
+
+------=_Part_20093_9260328.1140768108105--
 
