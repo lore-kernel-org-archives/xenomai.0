@@ -1,14 +1,14 @@
-Message-ID: <43F5CAE8.9010905@domain.hid>
-Date: Fri, 17 Feb 2006 14:08:56 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Romain Lenglet <rlenglet@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai patch packaging concerns
+Date: Sat, 25 Feb 2006 14:13:10 +0900
+References: <200602231224.38519.rlenglet@domain.hid>
+	<200602242056.15814.rlenglet@domain.hid>
+	<17407.3428.428108.146818@domain.hid>
+In-Reply-To: <17407.3428.428108.146818@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Handling PCI MSI interrupts
-References: <43F447AF.4020604@domain.hid>	
-	<000a01c63304$94ee5190$1e01a8c0@domain.hid>
-	<fd6a47a90602170454q1cc93f23h@domain.hid>
-In-Reply-To: <fd6a47a90602170454q1cc93f23h@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_md+/Ds6Sv/a2OI+"
+Message-Id: <200602251413.10410.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,120 +18,425 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jeroen Van den Keybus wrote:
->     I tried this patch and it doesn't solve the issue I'm facing. With and
->     without this patch, my symptoms are the same. 
-> 
-> 
-> I tested (and intended) the patch for MSI (w/o maskbits), not MSI-X. 
-> What e1000 chip are you using exactly? Easiest way to tell is by using 
-> '/sbin/lspci'. I may be able to help you out with MSI-X as well, but in 
-> that case, I have no hardware platform to test on.
+--Boundary-00=_md+/Ds6Sv/a2OI+
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Gilles Chanteperdrix wrote:
+> Romain Lenglet wrote:
+>  > +        while read f; do
+>  > +            f=`echo $f | cut -d/ -f2-`
+>  > +            d=`dirname $f`
+>  > +            if test "x$output_patch" = "x"; then
+>  > +                mkdir -p $linux_tree/$link_dir/$d && \
+>  > +                    rm -f $linux_tree/$link_dir/$f && \
 >
+> Could you remove this rm ? It causes Xenomai to be rebuilt
+> everytime the prepare-kernel is run. And when using configure
+> option --enable-linux-build, prepare-kernel is run for every
+> build.
 
-Could you post the patch you are successfully using to boot your box? TIA,
-
-> You can check whether or not MSI is actually being used by doing 
-> '/sbin/lspci -v' and look for the Capability: Message Signalled 
-> Interrupt. When the driver is running in MSI mode, it should read 
-> 'Enable+' instead of 'Enable-'.
-> 
-> Finally, verify how interrupts are dispatched. Have a look at 
-> /proc/interrupts for this (cat /proc/interrupts').
-> 
->     I'm running a Dell 2850, dual CPU machine.
-> 
-> 
-> As it's a Dell, I assume there's two Intel Penium CPU's inside. Are you 
-> running with SMP enabled ?
-> 
->       When I build a kernel without
->     Adeos then things are fine.  When I build with Adeos and MSI enabled
->     the
->     following occurs:
-> 
->     1) If BIOS has USB disabled then the system will hang without even a
->     num-lock respose (i.e. tapping the num-lock key doesn't toggle the
->     light).
->     The hang occurs just about the time the E1000 driver would load and
->     enable
->     an MSI interrupt.
-> 
->     2) If BIOS has USB enabled then the system will run much longer but
->     may hang
->     during heavy interrupt load on the E1000 driver.
-> 
-> 
-> Are you using the e1000 driver in NAPI mode ? It is recommended to do 
-> this, especially on the preemptible kernel, as it may significantly 
-> reduce the interrupt volume. In that case, I think it is doubtful if 
-> using MSI would give you any benefit at all over normal, shared IRQs.
-> 
->     My assumption based on past experience is that no num-lock response
->     means an
->     infinite interrupt loop. 
-> 
-> 
-> The local (internal) CPU APIC hasn't been informed that the interrupt 
-> has been dealt with and it will therefore allow no other interrupts 
-> anymore to arrive in the CPU (including your keyboard's). In fact, your 
-> CPU is idle.
-> 
-> [The original 8259 was designed to detect the IRET instruction bit 
-> pattern on the databus and use that as an acknowledge signal. Upon 
-> arrival of the second 8259 in the PC/AT, this could no longer be done. I 
-> don't know if the APIC could do it today (it seems possible, 
-> theoretically). ]
->  
-> When I build a kernel with Adeos but disable MSI then the system works fine
-> 
->     for the most part.  There is one scenario where the system will
->     still hang
->     doing disk and network accesses under a moderate load of I/O. 
-> 
-> 
-> Hm. That may indicate another issue.
-
-Indeed. This behaviour has not been reported yet with patches from the Adeos 
-I-pipe series. Does it also happen with SMP disabled, or Hyperthreading disabled?
-
-> 
->     Both of these tests are just to get a stable kernel before I really
->     start
->     using Adeos.  So Adeos is in its default configuration and I haven't
->     loaded
->     Xenomai modules when these hangs occur.
-> 
->     I'm currently running the 2.6.14.4 <http://2.6.14.4> kernel with the
->     2.6.14-1.0-12 patch of
->     adeos and then I included your msi.c patch from the previous
->     e-mail.  If you
->     have any further hints or suggestions I'll try them.  Meanwhile I'm
->     trying
->     different versions of various drivers (e1000 and scsi) as well as
->     updating
->     the patch level of the kernel itself.
-> 
-> 
-> Try upgrading the kernel. The kernel usually comes with updated drivers 
-> as well. Currently I'm running 2.6.16-rc2, which I had to patch manually 
-> for Adeos (about 3 'hunks' from the 2.6.15-i386-1.2-00 patch didn't 
-> apply properly). By using 2.6.16-rc2, I got much better Intel 
-> (especially i865 graphics) chipset support than 2.6.15. Note, however, 
-> that I did the bug fixing in this thread on a plain 2.6.15, though (and 
-> the msi.c code is nearly identical).
-> 
-> I would recommend upgrading to 2.6.15 with the latest Adeos patch and 
-> try to get a stable system before enabling MSI.
-> 
-> Jeroen.
-> 
-
+OK, here is a corrected patch.
 
 -- 
+Romain LENGLET
 
-Philippe.
+--Boundary-00=_md+/Ds6Sv/a2OI+
+Content-Type: text/x-diff; charset="iso-8859-1";
+	name="diffgen_2006-02-25.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="diffgen_2006-02-25.patch"
+
+--- xenomai/ChangeLog	2006-02-25 13:43:31.193371768 +0900
++++ xenomai-new2/ChangeLog	2006-02-25 14:08:09.657611040 +0900
+@@ -1,3 +1,12 @@
++2006-02-25  Romain Lenglet <rlenglet@domain.hid>
++
++	* scripts/prepare-kernel.sh: Added option to generate a diff file
++	instead of actually modifying the Linux source tree. Cleanup to not
++	link / copy files for other architectures than the built architecture,
++	and to not link / copy some files twice. Links to Xenomai files in the
++	Linux tree are no more created by default if they already exists. Added
++	--forcelink option to force the creation of links.
++
+ 2006-02-24  Philippe Gerum  <rpm@xenomai.org>
+ 
+ 	* ksrc/nucleus/pod.c: Make sure that
+--- xenomai/CREDITS	2006-02-22 10:28:53.229253976 +0900
++++ xenomai-new2/CREDITS	2006-02-25 13:34:54.115979480 +0900
+@@ -80,7 +80,7 @@
+ 
+ N: Romain Lenglet
+ E: <rlenglet@domain.hid>
+-D: Man pages.
++D: Man pages, and patch generation script changes.
+ 
+ N: Heikki Lindholm
+ E: holindho@domain.hid
+--- xenomai/scripts/prepare-kernel.sh	2006-02-24 19:48:17.038186464 +0900
++++ xenomai-new2/scripts/prepare-kernel.sh	2006-02-25 14:07:30.838512440 +0900
+@@ -1,38 +1,122 @@
+ #! /bin/bash
+ set -e
+ 
+-do_links() {
+-    ( if test -x $2; then
+-      cd $2 &&
+-      find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
+-      while read f; do
+-        if test ! -e $1/$f; then rm -f $f; fi
+-      done; else true; fi &&
+-      cd $1 &&
+-      find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
+-      while read f; do
+-        f=`echo $f | cut -d/ -f2-`
+-        d=`dirname $f`
+-	mkdir -p $2/$d && ln -sf $1/$f $2/$f
+-      done )
++patch_copytempfile() {
++    file="$1"
++    if ! test -f "$temp_tree/$file"; then
++        subdir=`dirname "$file"`
++        mkdir -p "$temp_tree/$subdir"
++        cp "$linux_tree/$file" "$temp_tree/$file"
++    fi
+ }
+ 
+-usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>]'
++patch_append() {
++    file="$1"
++    if test "x$output_patch" = "x"; then
++        realfile="$linux_tree/$file"
++    else
++        patch_copytempfile "$file"
++        realfile="$temp_tree/$file"
++    fi
++    cat >> "$realfile"
++}
++
++patch_ed() {
++    file="$1"
++    if test "x$output_patch" = "x"; then
++        realfile="$linux_tree/$file"
++    else
++        patch_copytempfile "$file"
++        realfile="$temp_tree/$file"
++    fi
++    ed -s "$realfile" > /dev/null
++}
++
++patch_link() {
++    recursive="$1"              # "r" or "n"
++    link_makefiles="$2"         # "m" or "n"
++    target_dir="$3"
++    link_dir="$4"
++
++    (
++        recursive_opt=""
++        directorytype_opt=""
++        if test x$recursive = xr; then
++            directorytype_opt="\( -type d -mindepth 1 \) -o"
++        else
++            recursive_opt="-maxdepth 1"
++        fi
++        link_makefiles_opt=""
++        if test x$link_makefiles = xm; then
++            link_makefiles_opt="-name Makefile -o"
++        fi
++
++        if test "x$output_patch" = "x"; then
++            cd $linux_tree/$link_dir &&
++	    find . $recursive_opt \( $directorytype_opt \
++                $link_makefiles_opt -name $config_file -o -name '*.[chS]' \) |
++            while read f; do
++                if test ! -e $xenomai_root/$target_dir/$f; then rm -Rf $f; fi
++            done; else true; fi &&
++        fi
++
++        cd $xenomai_root/$target_dir &&
++        find . $recursive_opt \
++            \( $link_makefiles_opt -name $config_file -o -name '*.[chS]' \) |
++        while read f; do
++            f=`echo $f | cut -d/ -f2-`
++            d=`dirname $f`
++            if test "x$output_patch" = "x"; then
++                mkdir -p $linux_tree/$link_dir/$d
++                if test x$forcelink = x1 -o ! -h $linux_tree/$link_dir/$f; then
++                    ln -sf $xenomai_root/$target_dir/$f $linux_tree/$link_dir/$f
++                fi
++            else
++                mkdir -p $temp_tree/$link_dir/$d
++                cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
++            fi
++        done
++    )
++
++}
++
++generate_patch() {
++    (
++    cd "$temp_tree"
++    find . -type f |
++    while read f; do
++        diff -Naurd "$linux_tree/$f" "$f" |
++        sed -e "s,^--- ${linux_tree}/\.\(/.*\)$,--- linux\1," \
++            -e "s,^+++ \.\(/.*\)$,+++ linux-patched\1,"
++    done
++    )
++}
++
++
++usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir>] [--forcelink]'
+ me=`basename $0`
+ 
+ while test $# -gt 0; do
+     case "$1" in
+     --linux=*)
+-	linux_tree=`echo $1|sed -e 's,--linux=\\(.*\\)$,\\1,g'`;
++	linux_tree=`echo $1|sed -e 's,^--linux=\\(.*\\)$,\\1,g'`
+ 	linux_tree=`eval "echo $linux_tree"`
+ 	;;
+     --adeos=*)
+-	adeos_patch=`echo $1|sed -e 's,--adeos=\\(.*\\)$,\\1,g'`;
++	adeos_patch=`echo $1|sed -e 's,^--adeos=\\(.*\\)$,\\1,g'`
+ 	adeos_patch=`eval "echo $adeos_patch"`
+ 	;;
+     --arch=*)
+-	linux_arch=`echo $1|sed -e 's,--arch=\\(.*\\)$,\\1,g'`;
++	linux_arch=`echo $1|sed -e 's,^--arch=\\(.*\\)$,\\1,g'`
++	;;
++    --outpatch=*)
++	output_patch=`echo $1|sed -e 's,^--outpatch=\\(.*\\)$,\\1,g'`
++	shift
++	temp_tree=`echo $1|sed -e 's,^--tempdir=\\(.*\\)$,\\1,g'`
+ 	;;
++    --forcelink)
++        forcelink=1
++        ;;
+     --verbose)
+ 	verbose=1
+ 	;;
+@@ -41,8 +125,8 @@
+ 	exit 0
+ 	;;
+     *)
+-	echo "$me: unknown flag: $1"
+-	echo "$usage"
++	echo "$me: unknown flag: $1" >&2
++	echo "$usage" >&2
+ 	exit 1
+ 	;;
+     esac
+@@ -82,6 +166,22 @@
+    exit 2
+ fi
+ 
++# Create an empty output patch file, and initialize the temporary tree.
++if test "x$output_patch" != "x"; then
++
++    if test ! -d $temp_tree; then
++        echo "$me: $temp_tree (temporary tree) is not an existing directory"
++        exit 2
++    fi
++    temp_tree=`cd $temp_tree && pwd`
++
++    patchdir=`dirname $output_patch`
++    patchdir=`cd $patchdir && pwd`
++    output_patch=$patchdir/`basename $output_patch`
++    echo > "$output_patch"
++
++fi
++
+ # Infer the default architecture if unspecified.
+ 
+ if test x$linux_arch = x; then
+@@ -159,13 +259,17 @@
+ 
+ linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL$linux_EXTRAVERSION"
+ 
++if test x$verbose = x1; then
+ echo "Preparing kernel $linux_version in $linux_tree..."
++fi
+ 
+ if test -r $linux_tree/include/linux/ipipe.h; then
++    if test x$verbose = x1; then
+     echo "Adeos found - bypassing patch."
++    fi
+ elif test -r $linux_tree/include/linux/adeos.h; then
+-   echo "$me: Deprecated Adeos (oldgen) support found in $linux_tree;"
+-   echo "Upgrade required to Adeos/I-pipe (newgen)."
++   echo "$me: Deprecated Adeos (oldgen) support found in $linux_tree;" >&2
++   echo "Upgrade required to Adeos/I-pipe (newgen)." >&2
+    exit 2
+ else
+    if test x$adeos_patch = x; then
+@@ -191,7 +295,7 @@
+    curdir=$PWD
+    cd $linux_tree && patch --dry-run -p1 -f < $adeos_patch || { 
+         cd $curdir;
+-        echo "$me: Unable to patch kernel $linux_version with `basename $adeos_patch`."
++        echo "$me: Unable to patch kernel $linux_version with `basename $adeos_patch`." >&2
+         exit 2;
+    }
+    patch -p1 -f -s < $adeos_patch
+@@ -201,9 +305,11 @@
+ adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $linux_tree/include/asm-$linux_arch/ipipe.h|sed -e 's,.*"\(.*\)"$,\1,'`
+ 
+ if test \! x$adeos_version = x; then
++   if test x$verbose = x1; then
+    echo "Adeos/$linux_arch $adeos_version installed."
++   fi
+ else
+-   echo "$me: $linux_tree has no Adeos support for $linux_arch"
++   echo "$me: $linux_tree has no Adeos support for $linux_arch" >&2
+    exit 2
+ fi
+ 
+@@ -218,22 +324,23 @@
+     config_file=Kconfig
+ 
+     if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
+-	sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag >> $linux_tree/init/Kconfig
++	sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag |
++            patch_append init/Kconfig
+     fi
+ 
+     if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
+ 	p="drivers-\$(CONFIG_XENOMAI)		+= arch/$linux_arch/xenomai/"
+-	( echo ; echo $p ) >> $linux_tree/arch/$linux_arch/Makefile
++	( echo ; echo $p ) | patch_append arch/$linux_arch/Makefile
+     fi
+ 
+     if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
+ 	p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
+-	( echo ; echo $p ) >> $linux_tree/drivers/Makefile
++	( echo ; echo $p ) | patch_append drivers/Makefile
+     fi
+ 
+     if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
+ 	p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
+-	( echo ; echo $p ) >> $linux_tree/kernel/Makefile
++	( echo ; echo $p ) | patch_append kernel/Makefile
+     fi
+     ;;
+ 
+@@ -247,7 +354,7 @@
+     config_file=Config.in
+ 
+     if ! grep -q CONFIG_XENO $linux_tree/Makefile; then
+-	ed -s $linux_tree/Makefile > /dev/null <<EOF
++	patch_ed Makefile <<EOF
+ /DRIVERS := \$(DRIVERS-y)
+ ^r $xenomai_root/scripts/Modules.frag
+ 
+@@ -255,10 +362,10 @@
+ wq
+ EOF
+     fi
+-    for defconfig_file in .config $linux_tree/arch/$linux_arch/defconfig; do
+-       if test -w $defconfig_file; then
+-          if ! grep -q CONFIG_XENO $defconfig_file; then
+-	      ed -s $defconfig_file > /dev/null <<EOF
++    for defconfig_file in .config arch/$linux_arch/defconfig; do
++       if test -w $linux_tree/$defconfig_file; then
++          if ! grep -q CONFIG_XENO $linux_tree/$defconfig_file; then
++	      patch_ed $defconfig_file <<EOF
+ $
+ r $xenomai_root/scripts/defconfig.frag
+ .
+@@ -268,7 +375,7 @@
+        fi
+     done
+     if ! grep -q CONFIG_XENO $linux_tree/arch/$linux_arch/Makefile; then
+-	ed -s $linux_tree/arch/$linux_arch/Makefile > /dev/null <<EOF
++	patch_ed arch/$linux_arch/Makefile <<EOF
+ $
+ a
+ 
+@@ -281,7 +388,7 @@
+ EOF
+     fi
+     if ! grep -q CONFIG_XENO $linux_tree/drivers/Makefile; then
+-	ed -s $linux_tree/drivers/Makefile > /dev/null <<EOF
++	patch_ed drivers/Makefile <<EOF
+ /include \$(TOPDIR)\/Rules.make
+ i
+ mod-subdirs := xenomai
+@@ -292,7 +399,7 @@
+ EOF
+     fi
+     if ! grep -q CONFIG_XENO $linux_tree/kernel/Makefile; then
+-	ed -s $linux_tree/kernel/Makefile > /dev/null <<EOF
++	patch_ed kernel/Makefile <<EOF
+ /include \$(TOPDIR)\/Rules.make
+ i
+ mod-subdirs := xenomai
+@@ -304,7 +411,7 @@
+ EOF
+     fi
+     if ! grep -iq xenomai $linux_tree/arch/$linux_arch/config.in; then
+-	ed -s $linux_tree/arch/$linux_arch/config.in > /dev/null <<EOF
++	patch_ed arch/$linux_arch/config.in <<EOF
+ $
+ a
+ 
+@@ -321,7 +428,7 @@
+ 
+     *)
+ 
+-    echo "$me: Unsupported kernel version $linux_VERSION.$linux_PATCHLEVEL.x"
++    echo "$me: Unsupported kernel version $linux_VERSION.$linux_PATCHLEVEL.x" >&2
+     exit 2
+     ;;
+ 
+@@ -331,15 +438,34 @@
+ # there, so that we don't pollute the Xenomai source tree with
+ # compilation files.
+ 
+-do_links $xenomai_root/ksrc/arch/$xenomai_arch $linux_tree/arch/$linux_arch/xenomai
+-do_links $xenomai_root/ksrc $linux_tree/kernel/xenomai
+-do_links $xenomai_root/ksrc/drivers $linux_tree/drivers/xenomai
+-do_links $xenomai_root/include/asm-$xenomai_arch $linux_tree/include/asm-$linux_arch/xenomai
+-do_links $xenomai_root/include/asm-generic $linux_tree/include/asm-generic/xenomai
+-do_links $xenomai_root/include $linux_tree/include/xenomai
++patch_link r m ksrc/arch/$xenomai_arch arch/$linux_arch/xenomai
++patch_link n m ksrc/ kernel/xenomai
++patch_link n m ksrc/arch kernel/xenomai/arch
++patch_link r m ksrc/arch/generic kernel/xenomai/arch/generic
++patch_link r m ksrc/nucleus kernel/xenomai/nucleus
++patch_link r m ksrc/skins kernel/xenomai/skins
++patch_link r m ksrc/drivers drivers/xenomai
++patch_link r n include/asm-$xenomai_arch include/asm-$linux_arch/xenomai
++patch_link r n include/asm-generic include/asm-generic/xenomai
++patch_link n n include include/xenomai
++for d in include/* ; do
++    if test -d $d -a -z "`echo $d | grep '^include/asm-'`"; then
++        destdir=`echo $d | sed -e 's,^\(include\)\(/.*\)$,\1/xenomai\2,'`
++        patch_link r n $d $destdir
++    fi
++done
+ 
+-echo 'Links installed.'
++if test "x$output_patch" != "x"; then
++    if test x$verbose = x1; then
++    echo 'Generating patch.'
++    fi
++    generate_patch > "$output_patch"
++fi
+ 
++if test x$verbose = x1; then
++echo 'Links installed.'
+ echo 'Build system ready.'
++fi
+ 
+ exit 0
++
+
+--Boundary-00=_md+/Ds6Sv/a2OI+--
 
