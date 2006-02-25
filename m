@@ -1,14 +1,13 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai patch packaging concerns
-Date: Sat, 25 Feb 2006 14:13:10 +0900
-References: <200602231224.38519.rlenglet@domain.hid>
-	<200602242056.15814.rlenglet@domain.hid>
-	<17407.3428.428108.146818@domain.hid>
-In-Reply-To: <17407.3428.428108.146818@domain.hid>
+Message-ID: <440006A7.7050105@domain.hid>
+Date: Sat, 25 Feb 2006 00:26:31 -0700
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_md+/Ds6Sv/a2OI+"
-Message-Id: <200602251413.10410.rlenglet@domain.hid>
+References: <C0244E4B.24F4%steve@domain.hid>
+	<43FF1F62.4070102@domain.hid> <4400033B.8000808@domain.hid>
+In-Reply-To: <4400033B.8000808@domain.hid>
+Content-Type: multipart/mixed; boundary="------------010905050802060007050907"
+Subject: [Xenomai-core] Re: [Xenomai-help] Geode performance (Was: problems
+	solved)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,425 +17,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---Boundary-00=_md+/Ds6Sv/a2OI+
-Content-Type: text/plain;
-  charset="iso-8859-1"
+This is a multi-part message in MIME format.
+--------------010905050802060007050907
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
-> Romain Lenglet wrote:
->  > +        while read f; do
->  > +            f=`echo $f | cut -d/ -f2-`
->  > +            d=`dirname $f`
->  > +            if test "x$output_patch" = "x"; then
->  > +                mkdir -p $linux_tree/$link_dir/$d && \
->  > +                    rm -f $linux_tree/$link_dir/$f && \
+Jim Cromie wrote:
 >
-> Could you remove this rm ? It causes Xenomai to be rebuilt
-> everytime the prepare-kernel is run. And when using configure
-> option --enable-linux-build, prepare-kernel is run for every
-> build.
+> attached is an update to xeno-test which runs latency with -t0 -t1 -t2
+> I think Ive got xeno-test and xeno-test.in sync'd, that doesnt seem to 
+> happen
+> as part of the configure make process for me.
+>
+this ones slightly improved, it greps XENO out of /proc/config.gz if its 
+there.
 
-OK, here is a corrected patch.
+> Fri Feb 24 20:39:14 MST 2006
+> running: zgrep XENO /proc/config.gz
+> CONFIG_XENOMAI=y
+> CONFIG_XENO_OPT_NUCLEUS=y
+> CONFIG_XENO_OPT_PERVASIVE=y
+> CONFIG_XENO_OPT_PIPE=y
+> CONFIG_XENO_OPT_PIPE_NRDEV=32
+> CONFIG_XENO_OPT_SYS_HEAPSZ=128
+> # CONFIG_XENO_OPT_ISHIELD is not set
+> CONFIG_XENO_OPT_STATS=y
+> # CONFIG_XENO_OPT_DEBUG is not set
+> # CONFIG_XENO_OPT_WATCHDOG is not set
+> CONFIG_XENO_OPT_TIMING_PERIODIC=y
+> CONFIG_XENO_OPT_TIMING_PERIOD=0
+> CONFIG_XENO_OPT_TIMING_TIMERLAT=0
+> CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
+> # CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+> CONFIG_XENO_HW_FPU=y
+> # CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
+> CONFIG_XENO_HW_SMI_DETECT=y
+> # CONFIG_XENO_HW_SMI_WORKAROUND is not set
+> CONFIG_XENO_SKIN_NATIVE=y
+> CONFIG_XENO_OPT_NATIVE_REGISTRY=y
+> CONFIG_XENO_OPT_NATIVE_REGISTRY_NRSLOTS=512
+> CONFIG_XENO_OPT_NATIVE_PIPE=y
+> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=4096
+> CONFIG_XENO_OPT_NATIVE_SEM=y
+> CONFIG_XENO_OPT_NATIVE_EVENT=y
+> CONFIG_XENO_OPT_NATIVE_MUTEX=y
+> CONFIG_XENO_OPT_NATIVE_COND=y
+> CONFIG_XENO_OPT_NATIVE_QUEUE=y
+> CONFIG_XENO_OPT_NATIVE_HEAP=y
+> CONFIG_XENO_OPT_NATIVE_ALARM=y
+> CONFIG_XENO_OPT_NATIVE_MPS=y
+> CONFIG_XENO_OPT_NATIVE_INTR=y
+> CONFIG_XENO_SKIN_POSIX=m
+> # CONFIG_XENO_SKIN_PSOS is not set
+> # CONFIG_XENO_SKIN_UITRON is not set
+> # CONFIG_XENO_SKIN_VRTX is not set
+> # CONFIG_XENO_SKIN_VXWORKS is not set
+> # CONFIG_XENO_SKIN_RTAI is not set
+> CONFIG_XENO_SKIN_RTDM=m
+> # CONFIG_XENO_SKIN_UVM is not set
+> CONFIG_XENO_DRIVERS_16550A=m
+> CONFIG_XENO_DRIVERS_TIMERBENCH=m
+>
+> Fri Feb 24 20:39:14 MST 2006
+> running: cat /proc/ipipe/Linux
+> Priority=100, Id=0x00000000
+> irq0-15: accepted
+> irq32-33: grabbed, virtual
+> irq34: passed, virtual
+>
+> Fri Feb 24 20:39:14 MST 2006
+>   
 
--- 
-Romain LENGLET
 
---Boundary-00=_md+/Ds6Sv/a2OI+
-Content-Type: text/x-diff; charset="iso-8859-1";
-	name="diffgen_2006-02-25.patch"
+--------------010905050802060007050907
+Content-Type: text/plain;
+ name="patch-xenotest-2"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="diffgen_2006-02-25.patch"
+Content-Disposition: inline;
+ filename="patch-xenotest-2"
 
---- xenomai/ChangeLog	2006-02-25 13:43:31.193371768 +0900
-+++ xenomai-new2/ChangeLog	2006-02-25 14:08:09.657611040 +0900
-@@ -1,3 +1,12 @@
-+2006-02-25  Romain Lenglet <rlenglet@domain.hid>
+Index: scripts/xeno-test.in
+===================================================================
+--- scripts/xeno-test.in	(revision 591)
++++ scripts/xeno-test.in	(working copy)
+@@ -3,7 +3,7 @@
+ myusage() {
+     cat >&1 <<EOF
+ xeno-test [options]
+-  runs latency and klatency tests
++  runs latency test in all 3 test-modes
+   -w <number>	spawn N workloads (dd if=/dev/zero of=/dev/null) default=1
+   -d <device>	used as alternate src in workload (dd if=$device ..)
+ 		The device must be mounted, and (unfortunately) cannot
+@@ -79,6 +79,8 @@
+     # static info, show once
+     loudly cat /proc/cpuinfo | egrep -v 'bug|wp'
+     loudly cat /proc/meminfo
++    [ -f /proc/config.gz ] && loudly zgrep XENO /proc/config.gz
 +
-+	* scripts/prepare-kernel.sh: Added option to generate a diff file
-+	instead of actually modifying the Linux source tree. Cleanup to not
-+	link / copy files for other architectures than the built architecture,
-+	and to not link / copy some files twice. Links to Xenomai files in the
-+	Linux tree are no more created by default if they already exists. Added
-+	--forcelink option to force the creation of links.
-+
- 2006-02-24  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* ksrc/nucleus/pod.c: Make sure that
---- xenomai/CREDITS	2006-02-22 10:28:53.229253976 +0900
-+++ xenomai-new2/CREDITS	2006-02-25 13:34:54.115979480 +0900
-@@ -80,7 +80,7 @@
- 
- N: Romain Lenglet
- E: <rlenglet@domain.hid>
--D: Man pages.
-+D: Man pages, and patch generation script changes.
- 
- N: Heikki Lindholm
- E: holindho@domain.hid
---- xenomai/scripts/prepare-kernel.sh	2006-02-24 19:48:17.038186464 +0900
-+++ xenomai-new2/scripts/prepare-kernel.sh	2006-02-25 14:07:30.838512440 +0900
-@@ -1,38 +1,122 @@
- #! /bin/bash
- set -e
- 
--do_links() {
--    ( if test -x $2; then
--      cd $2 &&
--      find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
--      while read f; do
--        if test ! -e $1/$f; then rm -f $f; fi
--      done; else true; fi &&
--      cd $1 &&
--      find . \( -name Makefile -o -name $config_file -o -name '*.[chS]' \) |
--      while read f; do
--        f=`echo $f | cut -d/ -f2-`
--        d=`dirname $f`
--	mkdir -p $2/$d && ln -sf $1/$f $2/$f
--      done )
-+patch_copytempfile() {
-+    file="$1"
-+    if ! test -f "$temp_tree/$file"; then
-+        subdir=`dirname "$file"`
-+        mkdir -p "$temp_tree/$subdir"
-+        cp "$linux_tree/$file" "$temp_tree/$file"
-+    fi
+     [ -d /proc/adeos ] && for f in /proc/adeos/*; do loudly cat $f; done
+     [ -d /proc/ipipe ] && for f in /proc/ipipe/*; do loudly cat $f; done
  }
+@@ -101,14 +103,11 @@
+     boxstatus
+     (
+ 	cd ../testsuite/latency
+-	#loudly ./run -- -T 10 -s -l 5
+-	loudly ./run -- -h $opts
  
--usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>]'
-+patch_append() {
-+    file="$1"
-+    if test "x$output_patch" = "x"; then
-+        realfile="$linux_tree/$file"
-+    else
-+        patch_copytempfile "$file"
-+        realfile="$temp_tree/$file"
-+    fi
-+    cat >> "$realfile"
-+}
+-	[ -n "$prepost" ] && loudly $prepost
+-	
+-	cd ../klatency
+-	#loudly ./run -- -T 10 -s -l 5
+-	loudly ./run -- -h $opts;
++	loudly ./run --  $opts -t0
++	loudly ./run --  $opts -t1
++	loudly ./run --  $opts -t2
 +
-+patch_ed() {
-+    file="$1"
-+    if test "x$output_patch" = "x"; then
-+        realfile="$linux_tree/$file"
-+    else
-+        patch_copytempfile "$file"
-+        realfile="$temp_tree/$file"
-+    fi
-+    ed -s "$realfile" > /dev/null
-+}
-+
-+patch_link() {
-+    recursive="$1"              # "r" or "n"
-+    link_makefiles="$2"         # "m" or "n"
-+    target_dir="$3"
-+    link_dir="$4"
-+
-+    (
-+        recursive_opt=""
-+        directorytype_opt=""
-+        if test x$recursive = xr; then
-+            directorytype_opt="\( -type d -mindepth 1 \) -o"
-+        else
-+            recursive_opt="-maxdepth 1"
-+        fi
-+        link_makefiles_opt=""
-+        if test x$link_makefiles = xm; then
-+            link_makefiles_opt="-name Makefile -o"
-+        fi
-+
-+        if test "x$output_patch" = "x"; then
-+            cd $linux_tree/$link_dir &&
-+	    find . $recursive_opt \( $directorytype_opt \
-+                $link_makefiles_opt -name $config_file -o -name '*.[chS]' \) |
-+            while read f; do
-+                if test ! -e $xenomai_root/$target_dir/$f; then rm -Rf $f; fi
-+            done; else true; fi &&
-+        fi
-+
-+        cd $xenomai_root/$target_dir &&
-+        find . $recursive_opt \
-+            \( $link_makefiles_opt -name $config_file -o -name '*.[chS]' \) |
-+        while read f; do
-+            f=`echo $f | cut -d/ -f2-`
-+            d=`dirname $f`
-+            if test "x$output_patch" = "x"; then
-+                mkdir -p $linux_tree/$link_dir/$d
-+                if test x$forcelink = x1 -o ! -h $linux_tree/$link_dir/$f; then
-+                    ln -sf $xenomai_root/$target_dir/$f $linux_tree/$link_dir/$f
-+                fi
-+            else
-+                mkdir -p $temp_tree/$link_dir/$d
-+                cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
-+            fi
-+        done
-+    )
-+
-+}
-+
-+generate_patch() {
-+    (
-+    cd "$temp_tree"
-+    find . -type f |
-+    while read f; do
-+        diff -Naurd "$linux_tree/$f" "$f" |
-+        sed -e "s,^--- ${linux_tree}/\.\(/.*\)$,--- linux\1," \
-+            -e "s,^+++ \.\(/.*\)$,+++ linux-patched\1,"
-+    done
-+    )
-+}
-+
-+
-+usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir>] [--forcelink]'
- me=`basename $0`
+     )
+     boxstatus
+ }
+@@ -129,7 +128,7 @@
+ workload=1	# default = 1 job
  
- while test $# -gt 0; do
-     case "$1" in
-     --linux=*)
--	linux_tree=`echo $1|sed -e 's,--linux=\\(.*\\)$,\\1,g'`;
-+	linux_tree=`echo $1|sed -e 's,^--linux=\\(.*\\)$,\\1,g'`
- 	linux_tree=`eval "echo $linux_tree"`
- 	;;
-     --adeos=*)
--	adeos_patch=`echo $1|sed -e 's,--adeos=\\(.*\\)$,\\1,g'`;
-+	adeos_patch=`echo $1|sed -e 's,^--adeos=\\(.*\\)$,\\1,g'`
- 	adeos_patch=`eval "echo $adeos_patch"`
- 	;;
-     --arch=*)
--	linux_arch=`echo $1|sed -e 's,--arch=\\(.*\\)$,\\1,g'`;
-+	linux_arch=`echo $1|sed -e 's,^--arch=\\(.*\\)$,\\1,g'`
-+	;;
-+    --outpatch=*)
-+	output_patch=`echo $1|sed -e 's,^--outpatch=\\(.*\\)$,\\1,g'`
-+	shift
-+	temp_tree=`echo $1|sed -e 's,^--tempdir=\\(.*\\)$,\\1,g'`
- 	;;
-+    --forcelink)
-+        forcelink=1
-+        ;;
-     --verbose)
- 	verbose=1
- 	;;
-@@ -41,8 +125,8 @@
- 	exit 0
- 	;;
-     *)
--	echo "$me: unknown flag: $1"
--	echo "$usage"
-+	echo "$me: unknown flag: $1" >&2
-+	echo "$usage" >&2
- 	exit 1
- 	;;
-     esac
-@@ -82,6 +166,22 @@
-    exit 2
- fi
+ # *pass get all legit options, except -N, -L
+-pass=		# pass thru to latency, klatency
++pass=		# pass thru to latency
+ loadpass=	# pass thru to subshell, not to actual tests
  
-+# Create an empty output patch file, and initialize the temporary tree.
-+if test "x$output_patch" != "x"; then
-+
-+    if test ! -d $temp_tree; then
-+        echo "$me: $temp_tree (temporary tree) is not an existing directory"
-+        exit 2
-+    fi
-+    temp_tree=`cd $temp_tree && pwd`
-+
-+    patchdir=`dirname $output_patch`
-+    patchdir=`cd $patchdir && pwd`
-+    output_patch=$patchdir/`basename $output_patch`
-+    echo > "$output_patch"
-+
-+fi
-+
- # Infer the default architecture if unspecified.
+ # if both empty means no logging
+@@ -209,7 +208,7 @@
+    previous results.
  
- if test x$linux_arch = x; then
-@@ -159,13 +259,17 @@
+ 3. added -p 'command', which runs command before, between, and after
+-   the latency and klatency tests.
++   the latency tests.
  
- linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL$linux_EXTRAVERSION"
  
-+if test x$verbose = x1; then
- echo "Preparing kernel $linux_version in $linux_tree..."
-+fi
- 
- if test -r $linux_tree/include/linux/ipipe.h; then
-+    if test x$verbose = x1; then
-     echo "Adeos found - bypassing patch."
-+    fi
- elif test -r $linux_tree/include/linux/adeos.h; then
--   echo "$me: Deprecated Adeos (oldgen) support found in $linux_tree;"
--   echo "Upgrade required to Adeos/I-pipe (newgen)."
-+   echo "$me: Deprecated Adeos (oldgen) support found in $linux_tree;" >&2
-+   echo "Upgrade required to Adeos/I-pipe (newgen)." >&2
-    exit 2
- else
-    if test x$adeos_patch = x; then
-@@ -191,7 +295,7 @@
-    curdir=$PWD
-    cd $linux_tree && patch --dry-run -p1 -f < $adeos_patch || { 
-         cd $curdir;
--        echo "$me: Unable to patch kernel $linux_version with `basename $adeos_patch`."
-+        echo "$me: Unable to patch kernel $linux_version with `basename $adeos_patch`." >&2
-         exit 2;
-    }
-    patch -p1 -f -s < $adeos_patch
-@@ -201,9 +305,11 @@
- adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $linux_tree/include/asm-$linux_arch/ipipe.h|sed -e 's,.*"\(.*\)"$,\1,'`
- 
- if test \! x$adeos_version = x; then
-+   if test x$verbose = x1; then
-    echo "Adeos/$linux_arch $adeos_version installed."
-+   fi
- else
--   echo "$me: $linux_tree has no Adeos support for $linux_arch"
-+   echo "$me: $linux_tree has no Adeos support for $linux_arch" >&2
-    exit 2
- fi
- 
-@@ -218,22 +324,23 @@
-     config_file=Kconfig
- 
-     if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
--	sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag >> $linux_tree/init/Kconfig
-+	sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag |
-+            patch_append init/Kconfig
-     fi
- 
-     if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
- 	p="drivers-\$(CONFIG_XENOMAI)		+= arch/$linux_arch/xenomai/"
--	( echo ; echo $p ) >> $linux_tree/arch/$linux_arch/Makefile
-+	( echo ; echo $p ) | patch_append arch/$linux_arch/Makefile
-     fi
- 
-     if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
- 	p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
--	( echo ; echo $p ) >> $linux_tree/drivers/Makefile
-+	( echo ; echo $p ) | patch_append drivers/Makefile
-     fi
- 
-     if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
- 	p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
--	( echo ; echo $p ) >> $linux_tree/kernel/Makefile
-+	( echo ; echo $p ) | patch_append kernel/Makefile
-     fi
-     ;;
- 
-@@ -247,7 +354,7 @@
-     config_file=Config.in
- 
-     if ! grep -q CONFIG_XENO $linux_tree/Makefile; then
--	ed -s $linux_tree/Makefile > /dev/null <<EOF
-+	patch_ed Makefile <<EOF
- /DRIVERS := \$(DRIVERS-y)
- ^r $xenomai_root/scripts/Modules.frag
- 
-@@ -255,10 +362,10 @@
- wq
- EOF
-     fi
--    for defconfig_file in .config $linux_tree/arch/$linux_arch/defconfig; do
--       if test -w $defconfig_file; then
--          if ! grep -q CONFIG_XENO $defconfig_file; then
--	      ed -s $defconfig_file > /dev/null <<EOF
-+    for defconfig_file in .config arch/$linux_arch/defconfig; do
-+       if test -w $linux_tree/$defconfig_file; then
-+          if ! grep -q CONFIG_XENO $linux_tree/$defconfig_file; then
-+	      patch_ed $defconfig_file <<EOF
- $
- r $xenomai_root/scripts/defconfig.frag
- .
-@@ -268,7 +375,7 @@
-        fi
-     done
-     if ! grep -q CONFIG_XENO $linux_tree/arch/$linux_arch/Makefile; then
--	ed -s $linux_tree/arch/$linux_arch/Makefile > /dev/null <<EOF
-+	patch_ed arch/$linux_arch/Makefile <<EOF
- $
- a
- 
-@@ -281,7 +388,7 @@
- EOF
-     fi
-     if ! grep -q CONFIG_XENO $linux_tree/drivers/Makefile; then
--	ed -s $linux_tree/drivers/Makefile > /dev/null <<EOF
-+	patch_ed drivers/Makefile <<EOF
- /include \$(TOPDIR)\/Rules.make
- i
- mod-subdirs := xenomai
-@@ -292,7 +399,7 @@
- EOF
-     fi
-     if ! grep -q CONFIG_XENO $linux_tree/kernel/Makefile; then
--	ed -s $linux_tree/kernel/Makefile > /dev/null <<EOF
-+	patch_ed kernel/Makefile <<EOF
- /include \$(TOPDIR)\/Rules.make
- i
- mod-subdirs := xenomai
-@@ -304,7 +411,7 @@
- EOF
-     fi
-     if ! grep -iq xenomai $linux_tree/arch/$linux_arch/config.in; then
--	ed -s $linux_tree/arch/$linux_arch/config.in > /dev/null <<EOF
-+	patch_ed arch/$linux_arch/config.in <<EOF
- $
- a
- 
-@@ -321,7 +428,7 @@
- 
-     *)
- 
--    echo "$me: Unsupported kernel version $linux_VERSION.$linux_PATCHLEVEL.x"
-+    echo "$me: Unsupported kernel version $linux_VERSION.$linux_PATCHLEVEL.x" >&2
-     exit 2
-     ;;
- 
-@@ -331,15 +438,34 @@
- # there, so that we don't pollute the Xenomai source tree with
- # compilation files.
- 
--do_links $xenomai_root/ksrc/arch/$xenomai_arch $linux_tree/arch/$linux_arch/xenomai
--do_links $xenomai_root/ksrc $linux_tree/kernel/xenomai
--do_links $xenomai_root/ksrc/drivers $linux_tree/drivers/xenomai
--do_links $xenomai_root/include/asm-$xenomai_arch $linux_tree/include/asm-$linux_arch/xenomai
--do_links $xenomai_root/include/asm-generic $linux_tree/include/asm-generic/xenomai
--do_links $xenomai_root/include $linux_tree/include/xenomai
-+patch_link r m ksrc/arch/$xenomai_arch arch/$linux_arch/xenomai
-+patch_link n m ksrc/ kernel/xenomai
-+patch_link n m ksrc/arch kernel/xenomai/arch
-+patch_link r m ksrc/arch/generic kernel/xenomai/arch/generic
-+patch_link r m ksrc/nucleus kernel/xenomai/nucleus
-+patch_link r m ksrc/skins kernel/xenomai/skins
-+patch_link r m ksrc/drivers drivers/xenomai
-+patch_link r n include/asm-$xenomai_arch include/asm-$linux_arch/xenomai
-+patch_link r n include/asm-generic include/asm-generic/xenomai
-+patch_link n n include include/xenomai
-+for d in include/* ; do
-+    if test -d $d -a -z "`echo $d | grep '^include/asm-'`"; then
-+        destdir=`echo $d | sed -e 's,^\(include\)\(/.*\)$,\1/xenomai\2,'`
-+        patch_link r n $d $destdir
-+    fi
-+done
- 
--echo 'Links installed.'
-+if test "x$output_patch" != "x"; then
-+    if test x$verbose = x1; then
-+    echo 'Generating patch.'
-+    fi
-+    generate_patch > "$output_patch"
-+fi
- 
-+if test x$verbose = x1; then
-+echo 'Links installed.'
- echo 'Build system ready.'
-+fi
- 
- exit 0
-+
+ TODO:
 
---Boundary-00=_md+/Ds6Sv/a2OI+--
+--------------010905050802060007050907--
 
