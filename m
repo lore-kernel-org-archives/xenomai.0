@@ -1,12 +1,16 @@
-Message-ID: <440205C3.80900@domain.hid>
-Date: Sun, 26 Feb 2006 20:47:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4402118F.9090109@domain.hid>
+Date: Sun, 26 Feb 2006 21:37:35 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2C957287A118D29284262EBF"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] set VM_RESERVED for remapped mem
+Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
+References: <b647ffbd0602150939g59256b2bx@domain.hid>	<b647ffbd0602210254p19086a0au@domain.hid>	<43FAF94C.4080709@domain.hid>	<43FAFE58.5060201@domain.hid>	<b647ffbd0602210848g321ffedei@domain.hid>	<43FB480E.9020808@domain.hid>
+	<43FB529B.3040207@domain.hid>	<43FB6102.1070004@domain.hid>	<b647ffbd0602220445k749d630j@domain.hid>	<43FDA8E2.5010806@domain.hid>
+	<b647ffbd0602251214h36768b46o@domain.hid>
+	<4401F8B4.9090707@domain.hid> <4401FE4A.7010603@domain.hid>
+	<4401FFA6.3010204@domain.hid>
+In-Reply-To: <4401FFA6.3010204@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,102 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2C957287A118D29284262EBF
-Content-Type: multipart/mixed; boundary="------------000006090807020603080303"
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>Dmitry Adamushko wrote:
+>>>
+>>>
+>>>>...
+>>>>This said, I'm going to publish the shirq patch (after finalizing ISR
+>>>>return
+>>>>bits,
+>>>>where I still have some doubts) without enable/disable nesting support.
+>>>>It can be supported at some point of time later, if it's really needed.
+>>>>
+>>>
+>>>
+>>>Regarding enable/disable nesting and existing driver patterns: I
+>>>currently do the following on devices init via RTDM (and users may have
+>>>copied this):
+>>>
+>>>rtdm_irq_request(...);
+>>><init_hardware, also clear pending IRQs of the device>
+>>>rtdm_irq_enable(...);
+>>>
+>>>But I do not disable the IRQ before rtdm_irq_free() again. Is this
+>>>unbalanced enabling still needed today? Is it even wrong these days?
+>>
+>>Looks unsafe, since nothing says that freeing the descriptor associated
+>>with some IRQ should disable this IRQ line at hw level. However, we
+>>would be correct to assume that no IRQ could happen after we have been
+>>asked to free its associated descriptor.
+>>
+>> Is
+>>
+>>>it arch-dependent?
+>>
+>>Nope. Both APIs are arch-agnostic anyway.
+>>
+>> I think the pattern dates back in RTAI times and was
+>>
+>>>needed for so far unused IRQs. Disabling them on device closure blocked
+>>>the line for later use under Linux.
+>>>
+>>
+>>We never had this problem with Xeno, since we always relied on the
+>>standard IRQ controllers defined by Linux for managing interrupt lines.
+>>IOW, Linux can undo what Xenomai did wrt IRQ line enabling/disabling.
+>>
+> 
+> 
+> So the enable is definitely needed and a disable on release should not
+> cause harm anymore? If that's the case, we could start re-introducing
+> rtdm_irq_disable before rtdm_irq_free again.
+> 
 
-This is a multi-part message in MIME format.
---------------000006090807020603080303
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+It should work that way.
 
-Hi,
+> 
+>>>I'm asking now in case we have to change the usage: we may better do it
+>>>early (e.g. with the introduction of Xenomai 2.1), so that the number of
+>>>surprises can be kept low when the underlying mechanisms get reworked
+>>>later.
+>>>
+>>>Jan
+>>>
+>>
+>>
+> 
+> Jan
+> 
 
-while reviewing my own rtdm_mmap-code again, I noticed that the wrapped
-remap_pfn_range() sets VM_RESERVED (+ some other bits) on the passed vma
-while the compatibility function remap_page_range() doesn't do this.
-This flag seems to exclude the vma from swapping considerations.
 
-Adding the bit to the wrapper appears to me as the best way to catch
-this on older kernels. And this should also make the VM_LOCKED setting
-obsolete in nucleus/heap.c.
+-- 
 
-Feel free to correct/enlighten me.
-
-Jan
-
---------------000006090807020603080303
-Content-Type: text/x-patch;
- name="set-VM_RESERVED.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="set-VM_RESERVED.patch"
-
-Index: include/asm-generic/wrappers.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/asm-generic/wrappers.h	(Revision 600)
-+++ include/asm-generic/wrappers.h	(Arbeitskopie)
-@@ -46,8 +46,10 @@
- #define module_param_named(name,var,type,mode)  module_param(var,type,mo=
-de)
-=20
- /* VM */
--#define wrap_remap_page_range(vma,from,to,size,prot) \
--    remap_page_range(from,to,size,prot)
-+#define wrap_remap_page_range(vma,from,to,size,prot) do { \
-+    vma->flags |=3D VM_RESERVED; \
-+    remap_page_range(from,to,size,prot); \
-+} while (0)
- #define wrap_switch_mm(prev,next,task)	\
-     switch_mm(prev,next,task,(task)->processor)
- #define wrap_enter_lazy_tlb(mm,task)	\
-@@ -145,8 +147,10 @@
- #define wrap_remap_page_range(vma,from,to,size,prot)  \
-     remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,prot)
- #else /* LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10) */
--#define wrap_remap_page_range(vma,from,to,size,prot)  \
--    remap_page_range(vma,from,to,size,prot)
-+#define wrap_remap_page_range(vma,from,to,size,prot) do { \
-+    vma->flags |=3D VM_RESERVED; \
-+    remap_page_range(vma,from,to,size,prot); \
-+} while (0)
- #endif /* LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,10) */
- #define wrap_switch_mm(prev,next,task)	\
-     switch_mm(prev,next,task)
-Index: ksrc/nucleus/heap.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/nucleus/heap.c	(Revision 600)
-+++ ksrc/nucleus/heap.c	(Arbeitskopie)
-@@ -948,7 +948,6 @@
- 	return -ENXIO;	/* Doesn't match the heap size. */
-        =20
-     vma->vm_ops =3D &xnheap_vmops;
--    vma->vm_flags |=3D VM_LOCKED;	/* Don't swap this out. */
-     vma->vm_private_data =3D file->private_data;
-=20
-     vaddr =3D (unsigned long)heap->archdep.heapbase;
-
---------------000006090807020603080303--
-
---------------enig2C957287A118D29284262EBF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEAgXDniDOoMHTA+kRAqinAJ4ymonsv90vAVHv65beBL61iKB8GQCfVSi8
-qOAd6sqEL5Vpb/c31VKhnNk=
-=PNeb
------END PGP SIGNATURE-----
-
---------------enig2C957287A118D29284262EBF--
+Philippe.
 
