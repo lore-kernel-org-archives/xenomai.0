@@ -1,14 +1,11 @@
-Message-ID: <44035219.1020302@domain.hid>
-Date: Mon, 27 Feb 2006 20:25:13 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <b647ffbd0602270656m4719d6aes@domain.hid>
-In-Reply-To: <b647ffbd0602270656m4719d6aes@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7EC18E9898E9F40D867D6863"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [PATCH] Shared interrupts (yet another movie :)
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C63BE6.51CE55C7"
+Date: Mon, 27 Feb 2006 13:39:42 -0800
+Message-ID: <FA9961D07FD27B4EB6058C0F35F3D0D17CD97A@CSGMX.es.xeroxlabs.com>
+From: "Wu, John" <John.Wu@domain.hid>
+Subject: [Xenomai-core] C++ Support for VxWorks Skin of Xenomai?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,88 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: "Chau, Ngaiman" <Ngaiman.Chau@domain.hid>, "Wu,
+	John" <John.Wu@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7EC18E9898E9F40D867D6863
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C63BE6.51CE55C7
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
-> Hi there,
->=20
-> I have explicitly cc'ed Gilles as this patch affects the posix skin.
->=20
-> In the light of the recent discussions, the AUTOENA flag has been conve=
-rted
-> to NOAUTOENA and the IRQ line is re-enabled on return from
-> xnintr_irq_handler() and shirq brothers by default.
-> Also XN_ISR_CHAINED -> XN_ISR_PROPAGATE.
->=20
-> I'm still not sutisfied with results, namely - return values of ISR. Bu=
-t,
-> well, this is a quite separate question to the shirq support so the lat=
-er
-> one should not remain in pending status only because of that.
->=20
-> I still would like to see something along scalar values : NONE, HANDLED=
-,
-> PROPAGATE and xnintr_disable() being called in ISR to defer IRQ line
-> enabling (not .ending -> PROPAGATE does it).
-> (*)
->=20
-> Currently, there is a XN_ISR_NOENABLE bit which asks the real-time laye=
-r to
-> defer the IRQ line, Warning!, .ending (and not just enabling) until lat=
-er.
-> In common case, xnarch_end_irq() must be called by the rt_task that sta=
-nds
-> for a bottom half (and not just xnintr_enable() - this may not work on =
-ppc).
-> This adds a bit of confusion and we will avoid it with (*) scheme. So t=
-his
-> is a subject to change in the future.
-> As I pointed out in another message, the implementation for PPC is not =
-yet
-> clear at the moment. That's it...
->=20
-> Ok, are there any objections as to the current patch? If no, please app=
-ly.
+We at Xerox El Segundo, Calif are new user of VxWork Skin of Xenomai.
+We successfully brought up VxWork skin of xenomai 2.0.1on x86 platform
+and ran VxWork test program in C.=20
+=20
+The question we have is how to build and compile the VxWork skin of
+xenomai to support C++ code?
 
-No objections from my side (I'm overseeing those 2 or 3 white-space
-inconsistencies ;) ), should get applied!
+------_=_NextPart_001_01C63BE6.51CE55C7
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-I will prepare and commit the remaining tiny updates of RTDM and 16550A
-(regarding propagate and re-enable) as soon as this one is merged.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.2900.2802" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><SPAN class=3D561593221-27022006><FONT face=3DArial color=3D#0000ff =
+size=3D2>We at=20
+Xerox El Segundo, Calif are new user of VxWork Skin of Xenomai.&nbsp; We =
 
->=20
-> CHANGELOG.patch is here
-> https://mail.gna.org/public/xenomai-core/2006-02/msg00154.html
->=20
-> --
-> Best regards,
-> Dmitry Adamushko
->=20
+successfully brought up VxWork skin of xenomai 2.0.1on x86 =
+platform&nbsp;and ran=20
+VxWork test program in C. </FONT></SPAN></DIV>
+<DIV><SPAN class=3D561593221-27022006><FONT face=3DArial color=3D#0000ff =
 
-Thanks for all your efforts!
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D561593221-27022006><FONT face=3DArial color=3D#0000ff =
+size=3D2>The=20
+question we have is how to build and compile the VxWork skin of xenomai =
+to=20
+support C++ code?</FONT></SPAN></DIV></BODY></HTML>
 
-Jan
-
-
---------------enig7EC18E9898E9F40D867D6863
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEA1IaniDOoMHTA+kRAq6OAJ9aoZdPHtSu+5xGQ58gW3N+DqZawwCdFQkC
-+TIbtjIVbCnTZEkmARu0O4A=
-=35oh
------END PGP SIGNATURE-----
-
---------------enig7EC18E9898E9F40D867D6863--
+------_=_NextPart_001_01C63BE6.51CE55C7--
 
