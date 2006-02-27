@@ -1,12 +1,15 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4403071A.6010703@domain.hid>
+Date: Mon, 27 Feb 2006 15:05:14 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="B1WOAmzTTz"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17411.1445.159527.784570@domain.hid>
-Date: Mon, 27 Feb 2006 14:59:01 +0100
-Subject: Re: [Xenomai-core] [BUG] prepare-kernel is broken
-In-Reply-To: <4402FA52.3080606@domain.hid>
-References: <4402FA52.3080606@domain.hid>
+Subject: Re: [Xenomai-core] Re: skin libs, libtool warnings, and -module
+References: <43FF13BE.7080505@domain.hid> <43FF166A.1060508@domain.hid>
+	<43FF18FF.20001@domain.hid>
+In-Reply-To: <43FF18FF.20001@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig41EB18C31D32F74D4B80CADE"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,76 +19,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-
---B1WOAmzTTz
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body text
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig41EB18C31D32F74D4B80CADE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
 Jan Kiszka wrote:
- > Hi,
- > 
- > the last check-in seems to have messed something up:
- > 
- > .../xenomai/scripts/prepare-kernel.sh: line 61: syntax error near
- > unexpected token `fi'
- > 
- > I do not understand what's going on here, so I don't want to hack some
- > probably wrong fix for this.
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>> Hi Philippe,
+>>>
+>>> I noticed you fixed the libtool warning during xenomai build - by
+>>> linking the testsuite statically... :-/ This is just a workaround and=
 
-In order to have it work, I had to make the following changes to
-revision 610 :
+>>> doesn't help external users.
+>> Yes, it's clearly hacky-patchy, however, I don't see how this would
+>> impact external users (yet)?
+>=20
+> Those who also use libtool for their apps...
+>=20
+>>> Isn't the reason for this warnings that "-module" in every skin
+>>> Makefile.am? At least, removing it also fixes external apps. Do we ne=
+ed
+>>> it? I don't think so: -module is for preparing dlopen usage, but who
+>>> will use it with skin libs?
+>>
+>> E.g. People who need to do late binding from some interpreter engine t=
+o
+>> the routines defined by those APIs.
+>>
+>=20
+> Well, then we may better hack the related *.la files when installing
+> them ("shouldnotlink=3Dno"). I must confess that I still don't understa=
+nd
+> the reason behind this, but it seems that this warning is really useles=
+s
+> at least on Linux.
+>=20
 
+And this is an attempt to silence them at least for the installed
+libnative.la:
 
---B1WOAmzTTz
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="prepare-kernel.diff"
-Content-Transfer-Encoding: 7bit
+--- src/skins/native/Makefile.am        (revision 612)
++++ src/skins/native/Makefile.am        (working copy)
+@@ -20,3 +20,9 @@
+ libnative_la_CPPFLAGS =3D \
+ 	@XENO_USER_CFLAGS@ \
+ 	-I$(top_srcdir)/include
++
++install-exec-hook:
++	for la in $(lib_LTLIBRARIES); do \
++	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/'
+$(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	done
 
-Index: prepare-kernel.sh
-===================================================================
---- prepare-kernel.sh	(revision 610)
-+++ prepare-kernel.sh	(working copy)
-@@ -42,7 +42,7 @@
-         recursive_opt=""
-         directorytype_opt=""
-         if test x$recursive = xr; then
--            directorytype_opt="\( -type d -mindepth 1 \) -o"
-+            directorytype_opt="( -type d -mindepth 1 ) -o"
-         else
-             recursive_opt="-maxdepth 1"
-         fi
-@@ -51,13 +51,13 @@
-             link_makefiles_opt="-name Makefile -o"
-         fi
- 
--        if test "x$output_patch" = "x"; then
-+        if test "x$output_patch" = "x" -a -e $linux_tree/$link_dir; then
-             cd $linux_tree/$link_dir &&
- 	    find . $recursive_opt \( $directorytype_opt \
-                 $link_makefiles_opt -name $config_file -o -name '*.[chS]' \) |
-             while read f; do
-                 if test ! -e $xenomai_root/$target_dir/$f; then rm -Rf $f; fi
--            done; else true; fi &&
-+            done
-         fi
- 
-         cd $xenomai_root/$target_dir &&
-
---B1WOAmzTTz
-Content-Type: text/plain; charset=us-ascii
-Content-Description: .signature
-Content-Transfer-Encoding: 7bit
+Jan
 
 
--- 
+--------------enig41EB18C31D32F74D4B80CADE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-					    Gilles Chanteperdrix.
+iD8DBQFEAwcaniDOoMHTA+kRAnNNAJ9zq2R3cRsp2ewaGSA8yOf3GN4LUwCfXoLs
+Vy//dJMwjM7+0M4m6Q+1IrA=
+=bIoI
+-----END PGP SIGNATURE-----
 
---B1WOAmzTTz--
+--------------enig41EB18C31D32F74D4B80CADE--
 
