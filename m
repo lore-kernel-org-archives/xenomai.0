@@ -1,15 +1,12 @@
-Message-ID: <440315AC.2000304@domain.hid>
-Date: Mon, 27 Feb 2006 16:07:24 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [BUG] prepare-kernel is broken
-References: <4402FA52.3080606@domain.hid>	<17411.1445.159527.784570@domain.hid>	<44031010.7010407@domain.hid>
-	<17411.5135.897479.800009@domain.hid>
-In-Reply-To: <17411.5135.897479.800009@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigFDB1DE2EA63804CAE8709F6B"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <17411.17370.189222.143661@domain.hid>
+Date: Mon, 27 Feb 2006 19:24:26 +0100
+Subject: Re: AW: [Xenomai-core] vxworks-skin taskSpawn
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C4F@ARVMAIL1.mra.roland-man.biz>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C4F@ARVMAIL1.mra.roland-man.biz>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,59 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Roderik_Wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFDB1DE2EA63804CAE8709F6B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Roderik_Wildenburg@domain.hid wrote:
+ > Dear Gilles,
+ >=20
+ > perhaps I should have mentioned in my earlier postings that I am using=
+ a PowerPC platform. I hope this does not nullify your prior analyses.
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Jan Kiszka wrote:
->  > >  > Hi,
->  > >  >=20
->  > >  > the last check-in seems to have messed something up:
->  > >  >=20
->  > >  > .../xenomai/scripts/prepare-kernel.sh: line 61: syntax error ne=
-ar
->  > >  > unexpected token `fi'
->  > >  >=20
->  > >  > I do not understand what's going on here, so I don't want to ha=
-ck some
->  > >  > probably wrong fix for this.
->  > >=20
->  > > In order to have it work, I had to make the following changes to
->  > > revision 610 :
->  > >=20
->  >=20
->  > We seem to use different find versions:
->=20
-> What about revision 614 ?
->=20
+Everything works fine here with the config files you sent me, so I guess
+the issue is specific to the ppc platform.
 
-Ok, no errors, no warnings, should be ok now (at least for the --linux=3D=
+ > As the following output shows, my timer is running in onshot mode :
+ >=20
+ > ~ # cat /proc/xenomai/timer
+ > status=3Doneshot:setup=3D40:tickval=3D1:jiffies=3D940509634545=20
+ >=20
+ > so, the prerequisites for uvm module should be correct !?
+ > Is the default timing something I can influence with the vxWorks-API ?=
+ In the examples satch.c and koan.c I can=B4t see any function call refer=
+ing to timer mode manipulation.
 
-scenario).
+Timer mode is set at compile-time using kernel configuration menu and
+may be overriden when loading the xeno_nucleus module by using the
+"tick_arg" argument.
 
-Jan
+--=20
 
 
---------------enigFDB1DE2EA63804CAE8709F6B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEAxWsniDOoMHTA+kRAo1oAJ9PprG5ft+MQofYB78VD1mHxEU0JQCfebfu
-14G0S6PFflEhDX+jQ2zxNfw=
-=GVin
------END PGP SIGNATURE-----
-
---------------enigFDB1DE2EA63804CAE8709F6B--
+					    Gilles Chanteperdrix.
 
