@@ -1,13 +1,12 @@
-Message-ID: <4402C45C.10103@domain.hid>
-Date: Mon, 27 Feb 2006 10:20:28 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [PATCH] Shared interrupts (ready to merge)
-References: <b647ffbd0602150939g59256b2bx@domain.hid>	<b647ffbd0602210254p19086a0au@domain.hid>	<43FAF94C.4080709@domain.hid>	<43FAFE58.5060201@domain.hid>	<b647ffbd0602210848g321ffedei@domain.hid>	<43FB480E.9020808@domain.hid>	<43FB529B.3040207@domain.hid>	<43FB6102.1070004@domain.hid>	<b647ffbd0602220445k749d630j@domain.hid>	<43FDA8E2.5010806@domain.hid>	<b647ffbd0602251214h36768b46o@domain.hid>	<4401F8B4.9090707@domain.hid>	<4401FE4A.7010603@domain.hid>
-	<4401FFA6.3010204@domain.hid> <4402B4D3.4050606@domain.hid>
-In-Reply-To: <4402B4D3.4050606@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: [Xenomai-core] vxworks-skin taskSpawn
+Date: Mon, 27 Feb 2006 11:44:50 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C46@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,89 +16,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Anders Blomdell wrote:
-> Jan Kiszka wrote:
-> 
->> Philippe Gerum wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>> Dmitry Adamushko wrote:
->>>>
->>>>
->>>>> ...
->>>>> This said, I'm going to publish the shirq patch (after finalizing ISR
->>>>> return
->>>>> bits,
->>>>> where I still have some doubts) without enable/disable nesting 
->>>>> support.
->>>>> It can be supported at some point of time later, if it's really 
->>>>> needed.
->>>>>
->>>>
->>>>
->>>> Regarding enable/disable nesting and existing driver patterns: I
->>>> currently do the following on devices init via RTDM (and users may have
->>>> copied this):
->>>>
->>>> rtdm_irq_request(...);
->>>> <init_hardware, also clear pending IRQs of the device>
->>>> rtdm_irq_enable(...);
->>>>
->>>> But I do not disable the IRQ before rtdm_irq_free() again. Is this
->>>> unbalanced enabling still needed today? Is it even wrong these days?
->>>
->>>
->>> Looks unsafe, since nothing says that freeing the descriptor associated
->>> with some IRQ should disable this IRQ line at hw level. However, we
->>> would be correct to assume that no IRQ could happen after we have been
->>> asked to free its associated descriptor.
->>>
->>> Is
->>>
->>>> it arch-dependent?
->>>
->>>
->>> Nope. Both APIs are arch-agnostic anyway.
->>>
->>> I think the pattern dates back in RTAI times and was
->>>
->>>> needed for so far unused IRQs. Disabling them on device closure blocked
->>>> the line for later use under Linux.
->>>>
->>>
->>> We never had this problem with Xeno, since we always relied on the
->>> standard IRQ controllers defined by Linux for managing interrupt lines.
->>> IOW, Linux can undo what Xenomai did wrt IRQ line enabling/disabling.
->>>
->>
->>
->> So the enable is definitely needed and a disable on release should not
->> cause harm anymore? If that's the case, we could start re-introducing
->> rtdm_irq_disable before rtdm_irq_free again.
-> 
-> Except for interrupts shared between RT/non-RT, the don't need enable 
-> (since they are enabled by Linux already), and probably doesn't fare 
-> well with a final disable.
-> 
+Thank you for caring about my problem !
+Perhaps I should have mentioned in my earlier postings that I am using a =
+PowerPC platform. I hope this does not nullify your prior analyses.
 
-That's the uncommon case by essence, for which a different set of rules already 
-applies anyway.
+These are the outputs (with some of my debug outputs), when I start =
+satch.
 
->>
->>
->>>> I'm asking now in case we have to change the usage: we may better do it
->>>> early (e.g. with the introduction of Xenomai 2.1), so that the 
->>>> number of
->>>> surprises can be kept low when the underlying mechanisms get reworked
->>>> later.
->>>>
+# ./satch
+Xenomai: UVM skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+(modprobe xeno_uvm?)=20
+
+# insmod xeno_uvm.o
+Using xeno_uvm.o
+Xenomai: starting UVM services.
+Dec 12 06:21:02 trgt user.info kernel: Xenomai: starting UVM services.
+
+# ./satch
+Xenomai/uvm: real-time nucleus v2.1-rc2 (Champagne) loaded.
+starting VxWorks services.
+spawning consumer 805462824
+taskSpawn before TaskInit
+taskInit before xnpod_init_thread
+taskSpawn before TaskActivate
+taskActivate before xnpod_start_thread
+xnpod_start_thread before xnarch_init_thread ConsumerTask
+xnpod_start_thread after xnarch_init_thread
+xnpod_start_thread after xnpod_resume_thread
+xnpod_start_thread before xnpod_schedule
+
+satch stalled !!
+=3D> ouput form an other terminal
+
+~ # cat /proc/xenomai/sched=20
+CPU  PID    PRI  TIMEOUT  STAT       NAME
+  0  0      0    0        R          ROOT
+  0  42     1    0        S          uvm-root
+  0  44     3    0        W          uvm-timer
+~ # cat /proc/xenomai/timer=20
+status=3Doneshot:setup=3D40:tickval=3D1:jiffies=3D940509634545
 
 
--- 
 
-Philippe.
+So far the debug outputs. I never worked with gdb before, but I will try =
+to establish a remote debug session with it, to get some more =
+informations.
+But in the meantime could you perhaps be so kind to answer a questions =
+occured with your answer (thank you) :
+You have written :
+
+> More precisely, the VxWorks API is compiled as a user-space=20
+> library (instead of a kernel module) when using the UVM mode,=20
+> and the VxWorks services are obtained from this library,=20
+> within the Linux process that embodies it. This is why there=20
+> is no point in loading the in-kernel VxWorks module in this case.
+
+O.k., I understand that the vxWorks API is done by some kind of wrapper =
+functionalities provided by the user-space vxworks library. What I =
+don=B4t understand is, why do I need the uvm kernel module for vxWorks =
+but not for the  native xenomai API ? And, what is the vxWorks kernel =
+module (xeno_vxworks.o) for, when do I need it ??
+
+
+Thank you for you patience when answering all these stupid (?) questions
+Roderik
+
+
+
+
+> -----Urspr=FCngliche Nachricht-----
+> Von: Philippe Gerum [mailto:rpm@xenomai.org
+> Gesendet: Samstag, 25. Februar 2006 13:28
+> An: Wildenburg, Roderik RAEK3 MRA
+> Cc: xenomai@xenomai.org
+> Betreff: Re: [Xenomai-core] vxworks-skin taskSpawn
+>=20
+> Roderik_Wildenburg@domain.hid wrote:
+> > I am using xenomai-2.1-rc2 and try to create a task via the=20
+> vxWorks skin function taskSpawn.
+> As I have read that uvm and vxWorks exclude each other, I=20
+> just inserted the xeno_uvm module (not the xeno_vxworks.o module ).
+> No problems so far.
+>=20
+> More precisely, the VxWorks API is compiled as a user-space=20
+> library (instead of a kernel module) when using the UVM mode,=20
+> and the VxWorks services are obtained from this library,=20
+> within the Linux process that embodies it. This is why there=20
+> is no point in loading the in-kernel VxWorks module in this case.
+>=20
+> When I start my application nothing happens (no errormessages=20
+> ...), the application seems to hang. Debugging printf=B4s show=20
+> that the function taskSpawn never returns and the task to be=20
+> spawned (there is no evidence that she is
+> running) never produces any debug output.
+> > This happens with both vxworks skin examples koan.c and satch.c.
+> > Xenomai native skin works, satch and latency are running.
+> > Does anybody have any idea/recomendation about this behavior ?
+>=20
+> After your application has stalled, try dumping the scheduler=20
+> state to get more information on the existing threads:
+> $ cat /proc/xenomai/sched
+>=20
+> The same goes for the timer state:
+> $ cat /proc/xenomai/timer
+>=20
+> Additionally, you may want to load your application with GDB,=20
+> and see which code gets executed using breakpoints.
+>=20
+> --=20
+>=20
+> Philippe.
+>=20
 
