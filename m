@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <4402FA52.3080606@domain.hid>
+Date: Mon, 27 Feb 2006 14:10:42 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: AW: [Xenomai-core] vxworks-skin taskSpawn
-Date: Mon, 27 Feb 2006 11:56:07 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C4F@ARVMAIL1.mra.roland-man.biz>
-From: <Roderik_Wildenburg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigE058FB9EFF2C2B4D796C9F92"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] prepare-kernel is broken
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,38 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Dear Gilles,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigE058FB9EFF2C2B4D796C9F92
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-perhaps I should have mentioned in my earlier postings that I am using a =
-PowerPC platform. I hope this does not nullify your prior analyses.
-As the following output shows, my timer is running in onshot mode :
+Hi,
 
-~ # cat /proc/xenomai/timer
-status=3Doneshot:setup=3D40:tickval=3D1:jiffies=3D940509634545=20
+the last check-in seems to have messed something up:
 
-so, the prerequisites for uvm module should be correct !?
-Is the default timing something I can influence with the vxWorks-API ? =
-In the examples satch.c and koan.c I can=B4t see any function call =
-refering to timer mode manipulation.
+=2E../xenomai/scripts/prepare-kernel.sh: line 61: syntax error near
+unexpected token `fi'
 
-Best regards=20
-Roderik
+I do not understand what's going on here, so I don't want to hack some
+probably wrong fix for this.
 
->=20
-> This looks like a configuration issue: I get a similar=20
-> behaviour when configuring periodic timing by default and=20
-> loading the native module before the uvm module. The uvm skin=20
-> needs aperiodic timing.
->=20
-> The UVM skin should refuse to start with an error instead of=20
-> starting with the wrong timer. I am trying to fix this.
->=20
-> --=20
->=20
->=20
-> 					    Gilles Chanteperdrix.
->=20
+Jan
+
+
+--------------enigE058FB9EFF2C2B4D796C9F92
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEAvpSniDOoMHTA+kRAqx3AJ43j1J/VyURhPmb7BCZmUapGvJbdwCeNWB/
+nMqXC21a4C6160KRgI3pJvA=
+=YyOg
+-----END PGP SIGNATURE-----
+
+--------------enigE058FB9EFF2C2B4D796C9F92--
 
