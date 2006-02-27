@@ -1,52 +1,80 @@
-Message-ID: <43E3E4DE.3060308@domain.hid>
-Date: Fri, 03 Feb 2006 18:18:54 -0500
-From: "J.D. Yamokoski" <yamokosk@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Problems booting - USB related?
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+Date: Mon, 27 Feb 2006 06:20:56 -0800
+From: Steven Seeger <steve@domain.hid>
+Message-ID: <C0284AC8.253E%steve@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
+Subject: [Xenomai-help] resume/suspend periodic timing issue
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Greetings all,
+I seem to have discovered a condition where if I have a thread in periodic
+timing (system tick of 125000 ns) and my thread suspends itself based on
+some condition, when I resume the thread later based on user input,
+rt_task_wait_period() doesn't block until the thread has "caught up" with
+where it should be. In other words, say I have a thread that is supposed to
+run every 2 ms. I suspend it for 1 second, and then resume it.
+rt_task_wait_period() will return immediately 50 times. This can be fixed by
+calling rt_task_set_periodic() again after the thread's suspend call.
 
-This problem originally started out after applying an RTAI patch. After 
-doing some testing, I have ruled out RTAI for the moment and now down to 
-ADEOS. Here are the details,
+Is there any way around this?
 
-I have a vanilla kernel version 2.6.12 which I patched with 
-adeos-linux-2.6.12-i386-r13.patch. The make and install went off without 
-a hitch. But when I boot the machine, it hangs while appearently trying 
-to load USB stuff. Here are some of the last lines it prints:
+Here is the thread in question: (2 ms period)
 
+void meas_data::_meas_thread::task_func(void)
+{
+    meas_data::meas_update_data meas;
+    const int display_hit = 25;
+    
+    int display_count=0;
+        
+    for(;;) {
+        if(!motor->is_moving()) {
+            meas.time = 0.0;
+            display_count = 0;
+            stop();
+            set_period_ns(get_period_ns()); //fixes suspend/resume timing
+        }
+        else rt_task_wait_period();
+        
+        meas.force = motor->get_force();
+        meas.lps = motor->get_linear();
+        meas.sd = motor->get_limit_distal();
+        meas.sp = motor->get_limit_proximal();
+        meas.steps = motor->get_moved_steps();
+        meas.time += 0.01;
+        
+/* log data to file */
+        void *ptr = file_queue.alloc(sizeof(meas));
+        assert(ptr);
+        memcpy(ptr, &meas, sizeof(meas));
+        file_queue.send(ptr, sizeof(meas));
 
-Loading uhci-hcd.ko
-USB Universal Host Controller Interface driver v2.2
+/* display data on screen twice a second */
+        if(++display_count>=display_hit) {
+            display_count = 0;
+            
+            ptr = display_queue.alloc(sizeof(meas));
+            assert(ptr);
+            memcpy(ptr, &meas, sizeof(meas));
+            display_queue.send(ptr, sizeof(meas));
+        }
+    }
+}
 
-... seems to be finding usb devices and then on the third or fourth 
-device ...
+When I resume the thread, I can see the data on the screen come in way too
+fast until the thread "catches up." I have confirmed that it is
+rt_task_wait_period() returning immediately.
 
-ACPI: PCI Interrupt 0000:00:1d.3[D] -> GSI 23 (level, low) -> IRQ 23
-uhci_hcd 0000:00:1d.3: UHCI Host Controller
-usb 1-1: new low speed USB device using uhci_hcd and address 2
+Steven
 
-
-Just to rule out other possibilities, I compiled a copy of the vanilla 
-kernel without applying the adeos patch - no problems booting this version.
-
-I can't remove USB support from the kernel as the machine I am on only 
-has USB ports (no PS/2 plugs for mice or keyboard..). I also tried a 
-google search to see if there was problems with USB and adeos.. but I 
-found nothing.
-
-Any comments or suggestions would be greatly appreciated!
-
-J.D. Yamokoski
 
