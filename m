@@ -1,14 +1,14 @@
-Message-ID: <4403071A.6010703@domain.hid>
-Date: Mon, 27 Feb 2006 15:05:14 +0100
+Message-ID: <44031010.7010407@domain.hid>
+Date: Mon, 27 Feb 2006 15:43:28 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: skin libs, libtool warnings, and -module
-References: <43FF13BE.7080505@domain.hid> <43FF166A.1060508@domain.hid>
-	<43FF18FF.20001@domain.hid>
-In-Reply-To: <43FF18FF.20001@domain.hid>
+Subject: Re: [Xenomai-core] [BUG] prepare-kernel is broken
+References: <4402FA52.3080606@domain.hid>
+	<17411.1445.159527.784570@domain.hid>
+In-Reply-To: <17411.1445.159527.784570@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig41EB18C31D32F74D4B80CADE"
+	boundary="------------enig78DD86B1B062AD56B3C28FEE"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,68 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig41EB18C31D32F74D4B80CADE
+--------------enig78DD86B1B062AD56B3C28FEE
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
->>> Hi Philippe,
->>>
->>> I noticed you fixed the libtool warning during xenomai build - by
->>> linking the testsuite statically... :-/ This is just a workaround and=
-
->>> doesn't help external users.
->> Yes, it's clearly hacky-patchy, however, I don't see how this would
->> impact external users (yet)?
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Hi,
+>  >=20
+>  > the last check-in seems to have messed something up:
+>  >=20
+>  > .../xenomai/scripts/prepare-kernel.sh: line 61: syntax error near
+>  > unexpected token `fi'
+>  >=20
+>  > I do not understand what's going on here, so I don't want to hack so=
+me
+>  > probably wrong fix for this.
 >=20
-> Those who also use libtool for their apps...
->=20
->>> Isn't the reason for this warnings that "-module" in every skin
->>> Makefile.am? At least, removing it also fixes external apps. Do we ne=
-ed
->>> it? I don't think so: -module is for preparing dlopen usage, but who
->>> will use it with skin libs?
->>
->> E.g. People who need to do late binding from some interpreter engine t=
-o
->> the routines defined by those APIs.
->>
->=20
-> Well, then we may better hack the related *.la files when installing
-> them ("shouldnotlink=3Dno"). I must confess that I still don't understa=
-nd
-> the reason behind this, but it seems that this warning is really useles=
-s
-> at least on Linux.
+> In order to have it work, I had to make the following changes to
+> revision 610 :
 >=20
 
-And this is an attempt to silence them at least for the installed
-libnative.la:
+We seem to use different find versions:
 
---- src/skins/native/Makefile.am        (revision 612)
-+++ src/skins/native/Makefile.am        (working copy)
-@@ -20,3 +20,9 @@
- libnative_la_CPPFLAGS =3D \
- 	@XENO_USER_CFLAGS@ \
- 	-I$(top_srcdir)/include
-+
-+install-exec-hook:
-+	for la in $(lib_LTLIBRARIES); do \
-+	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/'
-$(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
-+	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
-+	done
+=2E..
+find: warning: you have specified the -mindepth option after a
+non-option argument (, but options are not positional (-mindepth affects
+tests specified before it as well as those specified after it).  Please
+specify options before other arguments.
+
+[caused by revision 613]
 
 Jan
 
 
---------------enig41EB18C31D32F74D4B80CADE
+--------------enig78DD86B1B062AD56B3C28FEE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -89,10 +66,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEAwcaniDOoMHTA+kRAnNNAJ9zq2R3cRsp2ewaGSA8yOf3GN4LUwCfXoLs
-Vy//dJMwjM7+0M4m6Q+1IrA=
-=bIoI
+iD8DBQFEAxAQniDOoMHTA+kRAg/uAJ9zClKgaJoEwlSO42z2uVYQ7NEPAgCeM5wB
+qM2OjJLUnu0CoAXg/01DLcU=
+=EUub
 -----END PGP SIGNATURE-----
 
---------------enig41EB18C31D32F74D4B80CADE--
+--------------enig78DD86B1B062AD56B3C28FEE--
 
