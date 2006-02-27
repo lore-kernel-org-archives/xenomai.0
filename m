@@ -1,38 +1,47 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Date: Wed, 8 Mar 2006 15:58:01 -0300
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603081558.02034.lbocseg@domain.hid>
-Subject: [Xenomai-core] RTDM mmap and vm_operations
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17411.18293.205947.507401@domain.hid>
+Date: Mon, 27 Feb 2006 19:39:49 +0100
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+In-Reply-To: <C0284AC8.253E%steve@domain.hid>
+References: <C0284AC8.253E%steve@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Jan,
+Steven Seeger wrote:
+ > I seem to have discovered a condition where if I have a thread in periodic
+ > timing (system tick of 125000 ns) and my thread suspends itself based on
+ > some condition, when I resume the thread later based on user input,
+ > rt_task_wait_period() doesn't block until the thread has "caught up" with
+ > where it should be. In other words, say I have a thread that is supposed to
+ > run every 2 ms. I suspend it for 1 second, and then resume it.
+ > rt_task_wait_period() will return immediately 50 times. This can be fixed by
+ > calling rt_task_set_periodic() again after the thread's suspend call.
+ > 
+ > Is there any way around this?
 
-Is there a way of knowing what was the src_addr or pptr data passed to=20
-rtdm_mmap_to_user without using the vm_private_data struct? I mean, can I=20
-obtain those information directly in the vma struct passed to the close=20
-handler? If so, I could pass a more generic struct to vm_private and use=20
-those information,making my life a bit easier... :)
+This behaviour is due to the way the overruns are accounted for: not
+having called rt_task_wait_period while the periodic timer elapses is
+currently considered an abnormal usage of the interface, and counted as
+an overrun.
 
-Thanks in advance,
+A way around this behaviour is to create an alarm object with
+rt_alarm_create, and use rt_alarm_start and rt_alarm_wait for each
+shot.
 
-Rodrigo.
+-- 
 
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
 
+					    Gilles Chanteperdrix.
 
