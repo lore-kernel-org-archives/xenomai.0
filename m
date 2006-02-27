@@ -1,12 +1,13 @@
-Message-ID: <44030109.8050603@domain.hid>
-Date: Mon, 27 Feb 2006 14:39:21 +0100
+Message-ID: <440304D2.2030302@domain.hid>
+Date: Mon, 27 Feb 2006 14:55:30 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-core] vxworks-skin taskSpawn
-References: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C46@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A1C3C46@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai patch packaging concerns
+References: <200602231224.38519.rlenglet@domain.hid>	<200602242056.15814.rlenglet@domain.hid>	<17407.3428.428108.146818@domain.hid>	<200602251413.10410.rlenglet@domain.hid>
+	<4402C1FC.6060005@domain.hid>
+In-Reply-To: <4402C1FC.6060005@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,197 +17,470 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Roderik_Wildenburg@domain.hid wrote:
-> Thank you for caring about my problem !
-> Perhaps I should have mentioned in my earlier postings that I am using =
-a PowerPC platform. I hope this does not nullify your prior analyses.
->=20
-> These are the outputs (with some of my debug outputs), when I start sat=
-ch.
->=20
-> # ./satch
-> Xenomai: UVM skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-> (modprobe xeno_uvm?)=20
->=20
-> # insmod xeno_uvm.o
-> Using xeno_uvm.o
-> Xenomai: starting UVM services.
-> Dec 12 06:21:02 trgt user.info kernel: Xenomai: starting UVM services.
->=20
-> # ./satch
-> Xenomai/uvm: real-time nucleus v2.1-rc2 (Champagne) loaded.
-> starting VxWorks services.
-> spawning consumer 805462824
-> taskSpawn before TaskInit
-> taskInit before xnpod_init_thread
-> taskSpawn before TaskActivate
-> taskActivate before xnpod_start_thread
-> xnpod_start_thread before xnarch_init_thread ConsumerTask
-> xnpod_start_thread after xnarch_init_thread
-> xnpod_start_thread after xnpod_resume_thread
-> xnpod_start_thread before xnpod_schedule
->=20
-> satch stalled !!
-> =3D> ouput form an other terminal
->=20
-> ~ # cat /proc/xenomai/sched=20
-> CPU  PID    PRI  TIMEOUT  STAT       NAME
->   0  0      0    0        R          ROOT
->   0  42     1    0        S          uvm-root
->   0  44     3    0        W          uvm-timer
-> ~ # cat /proc/xenomai/timer=20
-> status=3Doneshot:setup=3D40:tickval=3D1:jiffies=3D940509634545
->=20
+Philippe Gerum wrote:
+> Romain Lenglet wrote:
+> 
+>> Gilles Chanteperdrix wrote:
+>>
+>>> Romain Lenglet wrote:
+>>> > +        while read f; do
+>>> > +            f=`echo $f | cut -d/ -f2-`
+>>> > +            d=`dirname $f`
+>>> > +            if test "x$output_patch" = "x"; then
+>>> > +                mkdir -p $linux_tree/$link_dir/$d && \
+>>> > +                    rm -f $linux_tree/$link_dir/$f && \
+>>>
+>>> Could you remove this rm ? It causes Xenomai to be rebuilt
+>>> everytime the prepare-kernel is run. And when using configure
+>>> option --enable-linux-build, prepare-kernel is run for every
+>>> build.
+>>
+>>
+>>
+>> OK, here is a corrected patch.
+>>
+> 
+> Applied, thanks.
+>
 
-It looks like for some reason, the newly created thread vanishes. I'll ch=
-eck this=20
-on a PPC board later since I cannot reproduce this on x86.
+This patch temporarily reverted; it currently breaks.
 
->=20
->=20
-> So far the debug outputs. I never worked with gdb before, but I will tr=
-y to establish a remote debug session with it, to get some more informati=
-ons.
-> But in the meantime could you perhaps be so kind to answer a questions =
-occured with your answer (thank you) :
-> You have written :
->=20
->=20
->>More precisely, the VxWorks API is compiled as a user-space=20
->>library (instead of a kernel module) when using the UVM mode,=20
->>and the VxWorks services are obtained from this library,=20
->>within the Linux process that embodies it. This is why there=20
->>is no point in loading the in-kernel VxWorks module in this case.
->=20
->=20
-> O.k., I understand that the vxWorks API is done by some kind of wrapper=
- functionalities provided by the
-  user-space vxworks library. What I don=B4t understand is, why do I need=
- the uvm=20
-kernel module for vxWorks
-  but not for the  native xenomai API ?
-And, what is the vxWorks kernel module (xeno_vxworks.o) for, when do I ne=
-ed it ??
->=20
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> --- xenomai/ChangeLog    2006-02-25 13:43:31.193371768 +0900
+>> +++ xenomai-new2/ChangeLog    2006-02-25 14:08:09.657611040 +0900
+>> @@ -1,3 +1,12 @@
+>> +2006-02-25  Romain Lenglet <rlenglet@domain.hid>
+>> +
+>> +    * scripts/prepare-kernel.sh: Added option to generate a diff file
+>> +    instead of actually modifying the Linux source tree. Cleanup to not
+>> +    link / copy files for other architectures than the built 
+>> architecture,
+>> +    and to not link / copy some files twice. Links to Xenomai files 
+>> in the
+>> +    Linux tree are no more created by default if they already exists. 
+>> Added
+>> +    --forcelink option to force the creation of links.
+>> +
+>>  2006-02-24  Philippe Gerum  <rpm@xenomai.org>
+>>  
+>>      * ksrc/nucleus/pod.c: Make sure that
+>> --- xenomai/CREDITS    2006-02-22 10:28:53.229253976 +0900
+>> +++ xenomai-new2/CREDITS    2006-02-25 13:34:54.115979480 +0900
+>> @@ -80,7 +80,7 @@
+>>  
+>>  N: Romain Lenglet
+>>  E: <rlenglet@domain.hid>
+>> -D: Man pages.
+>> +D: Man pages, and patch generation script changes.
+>>  
+>>  N: Heikki Lindholm
+>>  E: holindho@domain.hid
+>> --- xenomai/scripts/prepare-kernel.sh    2006-02-24 19:48:17.038186464 
+>> +0900
+>> +++ xenomai-new2/scripts/prepare-kernel.sh    2006-02-25 
+>> 14:07:30.838512440 +0900
+>> @@ -1,38 +1,122 @@
+>>  #! /bin/bash
+>>  set -e
+>>  
+>> -do_links() {
+>> -    ( if test -x $2; then
+>> -      cd $2 &&
+>> -      find . \( -name Makefile -o -name $config_file -o -name 
+>> '*.[chS]' \) |
+>> -      while read f; do
+>> -        if test ! -e $1/$f; then rm -f $f; fi
+>> -      done; else true; fi &&
+>> -      cd $1 &&
+>> -      find . \( -name Makefile -o -name $config_file -o -name 
+>> '*.[chS]' \) |
+>> -      while read f; do
+>> -        f=`echo $f | cut -d/ -f2-`
+>> -        d=`dirname $f`
+>> -    mkdir -p $2/$d && ln -sf $1/$f $2/$f
+>> -      done )
+>> +patch_copytempfile() {
+>> +    file="$1"
+>> +    if ! test -f "$temp_tree/$file"; then
+>> +        subdir=`dirname "$file"`
+>> +        mkdir -p "$temp_tree/$subdir"
+>> +        cp "$linux_tree/$file" "$temp_tree/$file"
+>> +    fi
+>>  }
+>>  
+>> -usage='usage: prepare-kernel --linux=<linux-tree> 
+>> --adeos=<adeos-patch> [--arch=<arch>]'
+>> +patch_append() {
+>> +    file="$1"
+>> +    if test "x$output_patch" = "x"; then
+>> +        realfile="$linux_tree/$file"
+>> +    else
+>> +        patch_copytempfile "$file"
+>> +        realfile="$temp_tree/$file"
+>> +    fi
+>> +    cat >> "$realfile"
+>> +}
+>> +
+>> +patch_ed() {
+>> +    file="$1"
+>> +    if test "x$output_patch" = "x"; then
+>> +        realfile="$linux_tree/$file"
+>> +    else
+>> +        patch_copytempfile "$file"
+>> +        realfile="$temp_tree/$file"
+>> +    fi
+>> +    ed -s "$realfile" > /dev/null
+>> +}
+>> +
+>> +patch_link() {
+>> +    recursive="$1"              # "r" or "n"
+>> +    link_makefiles="$2"         # "m" or "n"
+>> +    target_dir="$3"
+>> +    link_dir="$4"
+>> +
+>> +    (
+>> +        recursive_opt=""
+>> +        directorytype_opt=""
+>> +        if test x$recursive = xr; then
+>> +            directorytype_opt="\( -type d -mindepth 1 \) -o"
+>> +        else
+>> +            recursive_opt="-maxdepth 1"
+>> +        fi
+>> +        link_makefiles_opt=""
+>> +        if test x$link_makefiles = xm; then
+>> +            link_makefiles_opt="-name Makefile -o"
+>> +        fi
+>> +
+>> +        if test "x$output_patch" = "x"; then
+>> +            cd $linux_tree/$link_dir &&
+>> +        find . $recursive_opt \( $directorytype_opt \
+>> +                $link_makefiles_opt -name $config_file -o -name 
+>> '*.[chS]' \) |
+>> +            while read f; do
+>> +                if test ! -e $xenomai_root/$target_dir/$f; then rm 
+>> -Rf $f; fi
+>> +            done; else true; fi &&
+>> +        fi
+>> +
+>> +        cd $xenomai_root/$target_dir &&
+>> +        find . $recursive_opt \
+>> +            \( $link_makefiles_opt -name $config_file -o -name 
+>> '*.[chS]' \) |
+>> +        while read f; do
+>> +            f=`echo $f | cut -d/ -f2-`
+>> +            d=`dirname $f`
+>> +            if test "x$output_patch" = "x"; then
+>> +                mkdir -p $linux_tree/$link_dir/$d
+>> +                if test x$forcelink = x1 -o ! -h 
+>> $linux_tree/$link_dir/$f; then
+>> +                    ln -sf $xenomai_root/$target_dir/$f 
+>> $linux_tree/$link_dir/$f
+>> +                fi
+>> +            else
+>> +                mkdir -p $temp_tree/$link_dir/$d
+>> +                cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
+>> +            fi
+>> +        done
+>> +    )
+>> +
+>> +}
+>> +
+>> +generate_patch() {
+>> +    (
+>> +    cd "$temp_tree"
+>> +    find . -type f |
+>> +    while read f; do
+>> +        diff -Naurd "$linux_tree/$f" "$f" |
+>> +        sed -e "s,^--- ${linux_tree}/\.\(/.*\)$,--- linux\1," \
+>> +            -e "s,^+++ \.\(/.*\)$,+++ linux-patched\1,"
+>> +    done
+>> +    )
+>> +}
+>> +
+>> +
+>> +usage='usage: prepare-kernel --linux=<linux-tree> 
+>> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir>] 
+>> [--forcelink]'
+>>  me=`basename $0`
+>>  
+>>  while test $# -gt 0; do
+>>      case "$1" in
+>>      --linux=*)
+>> -    linux_tree=`echo $1|sed -e 's,--linux=\\(.*\\)$,\\1,g'`;
+>> +    linux_tree=`echo $1|sed -e 's,^--linux=\\(.*\\)$,\\1,g'`
+>>      linux_tree=`eval "echo $linux_tree"`
+>>      ;;
+>>      --adeos=*)
+>> -    adeos_patch=`echo $1|sed -e 's,--adeos=\\(.*\\)$,\\1,g'`;
+>> +    adeos_patch=`echo $1|sed -e 's,^--adeos=\\(.*\\)$,\\1,g'`
+>>      adeos_patch=`eval "echo $adeos_patch"`
+>>      ;;
+>>      --arch=*)
+>> -    linux_arch=`echo $1|sed -e 's,--arch=\\(.*\\)$,\\1,g'`;
+>> +    linux_arch=`echo $1|sed -e 's,^--arch=\\(.*\\)$,\\1,g'`
+>> +    ;;
+>> +    --outpatch=*)
+>> +    output_patch=`echo $1|sed -e 's,^--outpatch=\\(.*\\)$,\\1,g'`
+>> +    shift
+>> +    temp_tree=`echo $1|sed -e 's,^--tempdir=\\(.*\\)$,\\1,g'`
+>>      ;;
+>> +    --forcelink)
+>> +        forcelink=1
+>> +        ;;
+>>      --verbose)
+>>      verbose=1
+>>      ;;
+>> @@ -41,8 +125,8 @@
+>>      exit 0
+>>      ;;
+>>      *)
+>> -    echo "$me: unknown flag: $1"
+>> -    echo "$usage"
+>> +    echo "$me: unknown flag: $1" >&2
+>> +    echo "$usage" >&2
+>>      exit 1
+>>      ;;
+>>      esac
+>> @@ -82,6 +166,22 @@
+>>     exit 2
+>>  fi
+>>  
+>> +# Create an empty output patch file, and initialize the temporary tree.
+>> +if test "x$output_patch" != "x"; then
+>> +
+>> +    if test ! -d $temp_tree; then
+>> +        echo "$me: $temp_tree (temporary tree) is not an existing 
+>> directory"
+>> +        exit 2
+>> +    fi
+>> +    temp_tree=`cd $temp_tree && pwd`
+>> +
+>> +    patchdir=`dirname $output_patch`
+>> +    patchdir=`cd $patchdir && pwd`
+>> +    output_patch=$patchdir/`basename $output_patch`
+>> +    echo > "$output_patch"
+>> +
+>> +fi
+>> +
+>>  # Infer the default architecture if unspecified.
+>>  
+>>  if test x$linux_arch = x; then
+>> @@ -159,13 +259,17 @@
+>>  
+>>  linux_version="$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL$linux_EXTRAVERSION" 
+>>
+>>  
+>> +if test x$verbose = x1; then
+>>  echo "Preparing kernel $linux_version in $linux_tree..."
+>> +fi
+>>  
+>>  if test -r $linux_tree/include/linux/ipipe.h; then
+>> +    if test x$verbose = x1; then
+>>      echo "Adeos found - bypassing patch."
+>> +    fi
+>>  elif test -r $linux_tree/include/linux/adeos.h; then
+>> -   echo "$me: Deprecated Adeos (oldgen) support found in $linux_tree;"
+>> -   echo "Upgrade required to Adeos/I-pipe (newgen)."
+>> +   echo "$me: Deprecated Adeos (oldgen) support found in 
+>> $linux_tree;" >&2
+>> +   echo "Upgrade required to Adeos/I-pipe (newgen)." >&2
+>>     exit 2
+>>  else
+>>     if test x$adeos_patch = x; then
+>> @@ -191,7 +295,7 @@
+>>     curdir=$PWD
+>>     cd $linux_tree && patch --dry-run -p1 -f < $adeos_patch || { 
+>>          cd $curdir;
+>> -        echo "$me: Unable to patch kernel $linux_version with 
+>> `basename $adeos_patch`."
+>> +        echo "$me: Unable to patch kernel $linux_version with 
+>> `basename $adeos_patch`." >&2
+>>          exit 2;
+>>     }
+>>     patch -p1 -f -s < $adeos_patch
+>> @@ -201,9 +305,11 @@
+>>  adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' 
+>> $linux_tree/include/asm-$linux_arch/ipipe.h|sed -e 's,.*"\(.*\)"$,\1,'`
+>>  
+>>  if test \! x$adeos_version = x; then
+>> +   if test x$verbose = x1; then
+>>     echo "Adeos/$linux_arch $adeos_version installed."
+>> +   fi
+>>  else
+>> -   echo "$me: $linux_tree has no Adeos support for $linux_arch"
+>> +   echo "$me: $linux_tree has no Adeos support for $linux_arch" >&2
+>>     exit 2
+>>  fi
+>>  
+>> @@ -218,22 +324,23 @@
+>>      config_file=Kconfig
+>>  
+>>      if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
+>> -    sed -e "s,@LINUX_ARCH@,$linux_arch,g" 
+>> $xenomai_root/scripts/Kconfig.frag >> $linux_tree/init/Kconfig
+>> +    sed -e "s,@LINUX_ARCH@,$linux_arch,g" 
+>> $xenomai_root/scripts/Kconfig.frag |
+>> +            patch_append init/Kconfig
+>>      fi
+>>  
+>>      if ! grep -q CONFIG_XENOMAI 
+>> $linux_tree/arch/$linux_arch/Makefile; then
+>>      p="drivers-\$(CONFIG_XENOMAI)        += arch/$linux_arch/xenomai/"
+>> -    ( echo ; echo $p ) >> $linux_tree/arch/$linux_arch/Makefile
+>> +    ( echo ; echo $p ) | patch_append arch/$linux_arch/Makefile
+>>      fi
+>>  
+>>      if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
+>>      p="obj-\$(CONFIG_XENOMAI)        += xenomai/"
+>> -    ( echo ; echo $p ) >> $linux_tree/drivers/Makefile
+>> +    ( echo ; echo $p ) | patch_append drivers/Makefile
+>>      fi
+>>  
+>>      if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
+>>      p="obj-\$(CONFIG_XENOMAI)        += xenomai/"
+>> -    ( echo ; echo $p ) >> $linux_tree/kernel/Makefile
+>> +    ( echo ; echo $p ) | patch_append kernel/Makefile
+>>      fi
+>>      ;;
+>>  
+>> @@ -247,7 +354,7 @@
+>>      config_file=Config.in
+>>  
+>>      if ! grep -q CONFIG_XENO $linux_tree/Makefile; then
+>> -    ed -s $linux_tree/Makefile > /dev/null <<EOF
+>> +    patch_ed Makefile <<EOF
+>>  /DRIVERS := \$(DRIVERS-y)
+>>  ^r $xenomai_root/scripts/Modules.frag
+>>  
+>> @@ -255,10 +362,10 @@
+>>  wq
+>>  EOF
+>>      fi
+>> -    for defconfig_file in .config 
+>> $linux_tree/arch/$linux_arch/defconfig; do
+>> -       if test -w $defconfig_file; then
+>> -          if ! grep -q CONFIG_XENO $defconfig_file; then
+>> -          ed -s $defconfig_file > /dev/null <<EOF
+>> +    for defconfig_file in .config arch/$linux_arch/defconfig; do
+>> +       if test -w $linux_tree/$defconfig_file; then
+>> +          if ! grep -q CONFIG_XENO $linux_tree/$defconfig_file; then
+>> +          patch_ed $defconfig_file <<EOF
+>>  $
+>>  r $xenomai_root/scripts/defconfig.frag
+>>  .
+>> @@ -268,7 +375,7 @@
+>>         fi
+>>      done
+>>      if ! grep -q CONFIG_XENO $linux_tree/arch/$linux_arch/Makefile; then
+>> -    ed -s $linux_tree/arch/$linux_arch/Makefile > /dev/null <<EOF
+>> +    patch_ed arch/$linux_arch/Makefile <<EOF
+>>  $
+>>  a
+>>  
+>> @@ -281,7 +388,7 @@
+>>  EOF
+>>      fi
+>>      if ! grep -q CONFIG_XENO $linux_tree/drivers/Makefile; then
+>> -    ed -s $linux_tree/drivers/Makefile > /dev/null <<EOF
+>> +    patch_ed drivers/Makefile <<EOF
+>>  /include \$(TOPDIR)\/Rules.make
+>>  i
+>>  mod-subdirs := xenomai
+>> @@ -292,7 +399,7 @@
+>>  EOF
+>>      fi
+>>      if ! grep -q CONFIG_XENO $linux_tree/kernel/Makefile; then
+>> -    ed -s $linux_tree/kernel/Makefile > /dev/null <<EOF
+>> +    patch_ed kernel/Makefile <<EOF
+>>  /include \$(TOPDIR)\/Rules.make
+>>  i
+>>  mod-subdirs := xenomai
+>> @@ -304,7 +411,7 @@
+>>  EOF
+>>      fi
+>>      if ! grep -iq xenomai $linux_tree/arch/$linux_arch/config.in; then
+>> -    ed -s $linux_tree/arch/$linux_arch/config.in > /dev/null <<EOF
+>> +    patch_ed arch/$linux_arch/config.in <<EOF
+>>  $
+>>  a
+>>  
+>> @@ -321,7 +428,7 @@
+>>  
+>>      *)
+>>  
+>> -    echo "$me: Unsupported kernel version 
+>> $linux_VERSION.$linux_PATCHLEVEL.x"
+>> +    echo "$me: Unsupported kernel version 
+>> $linux_VERSION.$linux_PATCHLEVEL.x" >&2
+>>      exit 2
+>>      ;;
+>>  
+>> @@ -331,15 +438,34 @@
+>>  # there, so that we don't pollute the Xenomai source tree with
+>>  # compilation files.
+>>  
+>> -do_links $xenomai_root/ksrc/arch/$xenomai_arch 
+>> $linux_tree/arch/$linux_arch/xenomai
+>> -do_links $xenomai_root/ksrc $linux_tree/kernel/xenomai
+>> -do_links $xenomai_root/ksrc/drivers $linux_tree/drivers/xenomai
+>> -do_links $xenomai_root/include/asm-$xenomai_arch 
+>> $linux_tree/include/asm-$linux_arch/xenomai
+>> -do_links $xenomai_root/include/asm-generic 
+>> $linux_tree/include/asm-generic/xenomai
+>> -do_links $xenomai_root/include $linux_tree/include/xenomai
+>> +patch_link r m ksrc/arch/$xenomai_arch arch/$linux_arch/xenomai
+>> +patch_link n m ksrc/ kernel/xenomai
+>> +patch_link n m ksrc/arch kernel/xenomai/arch
+>> +patch_link r m ksrc/arch/generic kernel/xenomai/arch/generic
+>> +patch_link r m ksrc/nucleus kernel/xenomai/nucleus
+>> +patch_link r m ksrc/skins kernel/xenomai/skins
+>> +patch_link r m ksrc/drivers drivers/xenomai
+>> +patch_link r n include/asm-$xenomai_arch include/asm-$linux_arch/xenomai
+>> +patch_link r n include/asm-generic include/asm-generic/xenomai
+>> +patch_link n n include include/xenomai
+>> +for d in include/* ; do
+>> +    if test -d $d -a -z "`echo $d | grep '^include/asm-'`"; then
+>> +        destdir=`echo $d | sed -e 
+>> 's,^\(include\)\(/.*\)$,\1/xenomai\2,'`
+>> +        patch_link r n $d $destdir
+>> +    fi
+>> +done
+>>  
+>> -echo 'Links installed.'
+>> +if test "x$output_patch" != "x"; then
+>> +    if test x$verbose = x1; then
+>> +    echo 'Generating patch.'
+>> +    fi
+>> +    generate_patch > "$output_patch"
+>> +fi
+>>  
+>> +if test x$verbose = x1; then
+>> +echo 'Links installed.'
+>>  echo 'Build system ready.'
+>> +fi
+>>  
+>>  exit 0
+>> +
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> Xenomai-core mailing list
+>> Xenomai-core@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-core
+> 
+> 
+> 
 
-Ok, long story:
 
-When I first implemented the pervasive real-time support in user-space fo=
-r Xenomai=20
-at core level, a question arose: how do I make the existing real-time ski=
-ns that=20
-stack over this core (vxworks, psos+, vrtx and uitron at that time) runna=
-ble in=20
-user-space over this new support? Those skins where previously only runna=
-ble in=20
-kernel space, providing their services to applications compiled as kernel=
- modules,=20
-through plain function calls.
-
-Normally, I should have created a library containing all the needed syste=
-m call=20
-wrappers for each skin, allowing user-space applications to link against,=
- and=20
-issue requests to the kernel module implementing the real-time services (=
-e.g.=20
-xeno_vxworks.ko), the same way the glibc exports system call wrappers to=20
-applications for invoking Linux kernel services. But doing so would have =
-required=20
-to code ~300 wrappers (i.e. the sum of all services exported by the four =
-existing=20
-skins) and their associated handlers in kernel space that eventually invo=
-ke the=20
-system call, handling the parameters and the return value. For instance, =
-this is=20
-what has been done for the native and POSIX skins, which do not need the =
-UVM=20
-support to provide their services to user-space applications.
-
-To solve this, and since I'm a lazy bastard with all the required imagina=
-tion to=20
-make an art of procrastination, I devised the UVM support, which allowed =
-to run=20
-the original real-time skins in user-space without having to provide thos=
-e=20
-wrappers. To this end, the UVM requires a copy of the nucleus, the real-t=
-ime skin=20
-and the application to be compiled as user-space code, which ends up bein=
-g=20
-embodied into a single Linux process image. A thin layer is then added to=
- connect=20
-the "local" nucleus to the "global" one running in kernel space. This way=
-, the=20
-embodied skin calls the services of the local nucleus, and each time a sc=
-heduling=20
-decision is taken by the local nucleus as a consequence of such action, i=
-t is=20
-transparently delegated to the global one which actually performs context=
-=20
-switches. Since threads created within the context of a UVM are regular X=
-enomai's=20
-shadow threads (and _not_ some kind of lightweight/green threads), there =
-is no=20
-limitation on what you could do over such context compared to threads cre=
-ated from=20
-the native or POSIX skins [1].
-
-The upside of the UVM is that for the most part, the real-time engine is=20
-self-contained into a single Linux process, so the number of "real" syste=
-m calls=20
-issued by an application is slightly reduced (e.g. if your application gr=
-abs an=20
-uncontended VxWorks semaphore in the context of a UVM, it only costs a fu=
-nction=20
-call and no actual system call, since the operation has no incidence on t=
-he=20
-current scheduling state). The other nice part - out of lazyness - is tha=
-t we=20
-don't have to provide the system call wrappers for each and every service=
- exported=20
-by the skin, but only a few ones implemented by the UVM support, in order=
- to=20
-connect both cores (local and global), so that xeno_uvm.ko can receive re=
-quests=20
-from all running UVMs, and change the scheduling state appropriately, and=
- also=20
-control the timer and a few other specific resources). Therefore, the rea=
-son you=20
-don't need to load xeno_vxworks.ko to run a VxWorks personality over the =
-UVM is=20
-that the VxWorks services are already provided by the same code but compi=
-led as a=20
-user-space library (libvxworks.so). On the other hand, libnative.so (nati=
-ve skin)=20
-or libpthread_rt.so (POSIX skin) only contain system call wrappers invoki=
-ng the=20
-real-time API in kernel space (i.e. xeno_native.ko and xeno_posix.ko).
-
-The downside of the UVM is that your application can trash the runtime=20
-environment, since both are embodied into a single address space; at wors=
-t (maybe=20
-at best, actually) this would "only" cause a process termination, but thi=
-s is=20
-still an issue to keep an eye on. Perhaps more importantly, giving the=20
-applications access to machine-level resources is made much harder by the=
- UVM; for=20
-instance, connecting IRQ handlers is not that fun in this environment.
-
-Incidentally, a significant work toward v2.2 will be to progressively pro=
-vide=20
-fully native user-space support to the skins that currently miss it, like=
- it is=20
-already available for the native and POSIX APIs. This will underly one of=
- v2.2's=20
-major goals: keep improving Xenomai as a system of choice for migrating=20
-applications from proprietary environments to GNU/Linux.
-
-[1] http://download.gna.org/xenomai/documentation/trunk/pdf/Introduction-=
-to-UVMs.pdf
-
---=20
+-- 
 
 Philippe.
 
