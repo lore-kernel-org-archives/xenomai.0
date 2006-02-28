@@ -1,13 +1,15 @@
-Message-ID: <fd6a47a90602280908o5bc3edaam@domain.hid>
-Date: Tue, 28 Feb 2006 18:08:56 +0100
-From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-help] Page faults
-In-Reply-To: <44047AC6.907@domain.hid>
+Message-ID: <440435C3.9070007@domain.hid>
+Date: Tue, 28 Feb 2006 12:36:35 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_14209_6313475.1141146536903"
-References: <fd6a47a90602280622o4cfb2b79g@domain.hid>
-	<44047AC6.907@domain.hid>
+Subject: Re: [Xenomai-help] rtdm_mmap and rt_heap
+References: <b647ffbd0602270656m4719d6aes@domain.hid>	<44035219.1020302@domain.hid>
+	<1141117773.7873.11.camel@domain.hid>
+In-Reply-To: <1141117773.7873.11.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8A21B9C844459697E9606316"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Alessio Igor Bogani <abogani@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_14209_6313475.1141146536903
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8A21B9C844459697E9606316
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Debugging tools also suggested 'normal' pagefaults. Made me look for the
-mlockall() call which turns out to be unsuccessful. I made a mistake in
-evaluating its (non-zero) return value, which caused the error to go by
-unnoticed.
+Alessio Igor Bogani wrote:
+> Hi All,
+>=20
+> Exist differences between RTDM's Memory mapped API
+> (rtdm_mmap()/rtdm_munmap()) and Native's sharing memory API
+> (rt_heap_*())? Which?
 
-The reason mlockall() fails is that I executed the real-time program as
-non-root. (Guess I'll have to figure out that daunting sudoers thing...)
+The RTDM API is intended to be used by portable drivers for all skins
+(even for other RT-Linux extensions) while the native heaps are for
+native skin applications. So, if you are planning to implement a driver
+for some hardware or some communication protocol and you want to map
+e.g. DMA buffers from kernel to user space, use the RTDM API. If you
+want to set up shared memory between native applications (user-user,
+user-kernel), the heaps are your mechanism of choice.
 
-Thanks for your advice, which led me in the right direction.
+Jan
 
 
-Jeroen.
+--------------enig8A21B9C844459697E9606316
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_14209_6313475.1141146536903
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<div>Debugging tools also suggested 'normal' pagefaults. Made me look for t=
-he mlockall() call which turns out to be&nbsp;unsuccessful. I made a mistak=
-e in evaluating its (non-zero) return value, which caused the error to go b=
-y unnoticed.
-</div>
-<div>&nbsp;</div>
-<div>The reason mlockall() fails is that I executed the real-time program a=
-s non-root. (Guess I'll have to figure out that daunting sudoers thing...)<=
-/div>
-<div>&nbsp;</div>
-<div>Thanks for your advice, which led me in the right direction.</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div>
+iD8DBQFEBDXDniDOoMHTA+kRAqWkAJ92a7vcTxgS+6NJ/aVk8L0zI8qNlQCeI/Ab
+WJ6TpAGI0SC9zd/tIBqaq+8=
+=5AVl
+-----END PGP SIGNATURE-----
 
-------=_Part_14209_6313475.1141146536903--
+--------------enig8A21B9C844459697E9606316--
 
