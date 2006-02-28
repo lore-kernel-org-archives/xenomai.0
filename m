@@ -1,10 +1,10 @@
-Message-ID: <44047AC6.907@domain.hid>
-Date: Tue, 28 Feb 2006 17:31:02 +0100
+Message-ID: <44047C3D.40104@domain.hid>
+Date: Tue, 28 Feb 2006 17:37:17 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Page faults
-References: <fd6a47a90602280622o4cfb2b79g@domain.hid>
-In-Reply-To: <fd6a47a90602280622o4cfb2b79g@domain.hid>
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+References: <C029BA24.258F%steve@domain.hid>
+In-Reply-To: <C029BA24.258F%steve@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,42 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-Jeroen Van den Keybus wrote:
-> I'm observing a considerable amount of Page Faults (5090 after an hour 
-> or so), each one associated with a MSW increase in /proc/xenomai/stat. 
-> I'm missing RT deadlines on those occasions and I want to fix it, so I 
-> would like to know what Page Faults actually are.
->  
+Steven Seeger wrote:
+> If time stopped for you, would you be aware of anything?
+> 
 
-Since page faults cause mode switches as you observed, you might want to try using 
-a built-in feature that sends a SIGXCPU signal to a task going back to the Linux 
-domain (e.g. typically relaxing to process a fault). The way to do this is as follows:
+The global timeline the whole RTOS is working on does not stop for suspended 
+threads, this is what you seem to be missing since the very beginning of this 
+discussion. For instance, forcibly suspending a task (e.g. using rt_task_suspend) 
+while it is already undergoing a blocked state with a timeout (e.g. pending on 
+some sempahore to become available, whatever) does not prevent the timeout to be 
+decremented tick after tick. This is called cumulative suspension states, and all 
+the RTOS I know of enforce that. Fortunately.
 
-- set the T_WARNSW bit for your task using the rt_task_set_mode() call. Something 
-like rt_task_set_mode(0,T_WARNSW,NULL) would do.
-
-- code a Linux signal handler, and register it for receiving SIGXCPU.
-
-The signal is always sent on behalf of the relaxing task, so you just need to 
-inspect the backtrace to discover the cause of the mode switch by analysing the 
-inner frames. You may either use GDB and set a breakpoint in the handler, or play 
-with the backtrace_*() routines available from the glibc.
-
-ksrc/skins/native/snippets/sigxcpu.c gives an example of such use.
-
->  
-> Jeroen.
+> On 2/28/06 8:20 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
 > 
 > 
-> ------------------------------------------------------------------------
+>>Precisely not, it should be aware that time keeps advancing regardless of its
+>>own 
+>>status, suspended or not.
 > 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> 
+> 
 
 
 -- 
