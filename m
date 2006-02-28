@@ -1,71 +1,85 @@
-Message-ID: <44169AE8.5080204@domain.hid>
-Date: Tue, 14 Mar 2006 11:28:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44046C40.9020400@domain.hid>
+Date: Tue, 28 Feb 2006 16:29:04 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAD5036C2552973F34DE2AB65"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Spreading Xenomai
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+References: <C029A89A.2576%steve@domain.hid>
+In-Reply-To: <C029A89A.2576%steve@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAD5036C2552973F34DE2AB65
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Steven Seeger wrote:
+> It seems to me that the RTOS should just stop accruing overruns for any
+> suspended thread. What's the point of even allowing it to stay on the old
+> timeline?
 
-Hi,
+Because set_periodic/wait_period are about defining a series of absolute dates 
+forming a continuous timeline, the fact that a thread goes suspending instead of 
+waiting for the next work cycle does not change the fact that the clock is still 
+ticking.
 
-now that 2.1 is out and very likely also very stable, I feel like having
-to bring this topic up again: There should be more announcements of this
-project outside its own circle.
+  This algorithm, albeit implemented in kernel modules with classic
+> RTAI, never had an issue.
+> 
+> Well, everything works now with new set_periodic calls, so I guess we can
+> all be happy now.
+> 
+> Steven
+> 
+> On 2/28/06 7:10 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
+> 
+> 
+>>Steven Seeger wrote:
+>>
+>>>Every other RTOS I've ever used would disagree with you. However, I can wrap
+>>
+>>set_periodic/wait_period are used to define a timeline, with a base period
+>>dedicated to process a bounded work cycle. If your application decides to kill
+>>the 
+>>timeline by skipping work cycles voluntarily in order to process e.g. error
+>>states 
+>>or interactive break, it needs to reset the timeline by calling set_periodic
+>>anew, 
+>>which seems quite reasonable to do, since the old timeline is now dead in the
+>>water. If this is not some error recovery work or break state, but regular
+>>processing, then it should fit in the normal work cycle, otherwise there is no
+>>point in using set_periodic/wait_period to time it in the first place.
+>>
+>>Beyond that, comparing with other RTOS behaviours does not fly that well,
+>>because 
+>>some which actually implement this kind of construct might well raise an
+>>exception 
+>>to some health manager entity for signaling the overrun (e.g. arinc653), in
+>>which 
+>>case, one would end up having to hack the error handler so that it swallows
+>>those 
+>>exceptions silently, for the interesting purpose of making a valid case out of
+>>an 
+>>error case...
+>>
+>>We could pass rt_task_wait_period() a pointer to an integer that would collect
+>>the 
+>>count of overruns, and reset this count after the first overrun has been
+>>signaled. 
+>>But this would not fix the initial problem in the application, though.
+>>
+> 
+> 
+> 
 
-When reading articles about proprietary real-time Linux variants now
-almost once a week on LinuxDevices, I always think that there should be
-at least once some statement about this powerful alternative. Moreover,
-there are certainly dozens of other forums for ringing the bells.
 
-We first need some concept what to present, then maybe a long version
-for forums that give us the space and a shorter one for the rest.
-Philippe recently posted interesting statements, comparing the Xenomai
-and the preemp-rt way - certainly good input. Every skin maintainer
-could contribute a paragraph. References to driver projects could be
-given. Short descriptions of ongoing projects would be nice, including
-commercial ones when possible. And so forth...
+-- 
 
-Well, I would like to trigger this here, I may contribute a few lines
-from my focus, but I can't take over the overall organisation of the
-final writing. But I think that creating such an overview article here
-on this list could reduce the individual effort and would reflect best
-the strong community behind this project.
-
-Comments, suggestions, volunteers?
-
-Jan
-
-
---------------enigAD5036C2552973F34DE2AB65
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEFproniDOoMHTA+kRAqzpAJ9BqiIUxklG9gD9I4titAX89SsaHACeJf3a
-zv4Z+z3vu1xTRT58kWEiuPI=
-=4gm8
------END PGP SIGNATURE-----
-
---------------enigAD5036C2552973F34DE2AB65--
+Philippe.
 
