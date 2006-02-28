@@ -1,90 +1,71 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-core] RTDM and Timer functions
-Date: Mon, 13 Mar 2006 16:31:26 -0300
-References: <200603091443.25714.lbocseg@domain.hid>
-	<200603131431.35216.lbocseg@domain.hid> <4415BB0D.8070808@domain.hid>
-In-Reply-To: <4415BB0D.8070808@domain.hid>
+Message-ID: <44046BF9.6090101@domain.hid>
+Date: Tue, 28 Feb 2006 16:27:53 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603131631.26195.lbocseg@domain.hid>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+References: <C029A89A.2576%steve@domain.hid>
+In-Reply-To: <C029A89A.2576%steve@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9D1E1F7D6CF8FEDAAC770483"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Em Segunda 13 Mar=3DE7o 2006 15:33, Jan Kiszka escreveu:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9D1E1F7D6CF8FEDAAC770483
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
->Rodrigo Rosenfeld Rosas wrote:
->> Em Segunda 13 Mar=3DE7o 2006 14:25, Gilles Chanteperdrix escreveu:
->>> Jan Kiszka wrote:
->>>>> Sometimes the result is "Should be near 84000: 100000", that is kind =
-=3D
-of
->>>>> correct, since the tickval is 100000, although I think that those
->>>>> functions in the RTDM driver context should be independent of the tick
->>>>> value set by the user program... Maybe using oneshot in the driver
->>>>> calls and periodic in the application... I really don't know what wou=
-=3D
+Steven Seeger wrote:
+> It seems to me that the RTOS should just stop accruing overruns for any=
+
+> suspended thread. What's the point of even allowing it to stay on the o=
 ld
->>>>> be the best approach here...
->>>>
->>>> rtdm_clock_read always uses the nucleus clock. Using something differe=
-=3D
-nt
->>>> (e.g. always TSC) would break applications specifying absolute times
->>>> derived from the return values of other skins' functions.
->>>
->>> Maybe adding a service to RTDM would allow users to measure short time
->>> intervals with RTDM using the TSC ?
->>>
->>> The native (rt_timer_tsc()) and posix (clock_gettime(CLOCK_MONOTONIC))
->>> skins have a way to do this.
->>
->> This would fit great for my needs (and most developers I think)!
->
->Will think about it. Actually, I'm not a big fan of this. It creates the
->risk that someone feeds the output of this service into (incompatible)
->timed RTDM services.
+> timeline? This algorithm, albeit implemented in kernel modules with cla=
+ssic
+> RTAI, never had an issue.
 
-Sorry, I couldn't see a practical usage of this. Could you give an example?
+Sorry, wildly suspending a periodic thread remains a very unusual design
+in my eyes, and no RTOS should be hold responsible for this.
 
->Even worse, this would work for aperiodic mode but fail for periodic.
+And "RTAI" is void argument: it's API has too many special
+characteristics anyway to take this as a reference for anything else
+than itself.
 
-Actually it is only necessary on periodic modes as it already works for=3D20
-aperiodic mode.
+>=20
+> Well, everything works now with new set_periodic calls, so I guess we c=
+an
+> all be happy now.
+>=20
 
->We would definitely need a good name for it,
->rtdm_clock_read_ex(<clock-id>), rtdm_clock_read_tsc(),
->rtdm_clock_read_monotonic()? I'm not going to break rtdm_clock_read() by
->adding an argument (otherwise, I would have to fix too many drivers on
->my own... :-/).
+Ack.
 
-That is the idea, I think. I agree that rtdm_clock_read() should be kept as=
-=3D
- it=3D20
-is (the API/definition). No body is asking you to change it. Adding=3D20
-rtdm_clock_read_tsc() would be sufficient in my opinion whilst it maintain=
-=3D
-=3D20
-coherency with other skins.
+Jan
 
-Thank you for considering it.
 
-Rodrigo.
+--------------enig9D1E1F7D6CF8FEDAAC770483
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFEBGv5niDOoMHTA+kRAgJhAJ0ff2/dpr2LaXWYoOacAAk9iQ0/2QCfVCav
+7k/Xfg3FoOHO1+kjv2Wl3Cc=
+=UW5i
+-----END PGP SIGNATURE-----
+
+--------------enig9D1E1F7D6CF8FEDAAC770483--
 
