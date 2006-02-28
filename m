@@ -1,54 +1,43 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-MIME-Version: 1.0
-Date: Thu, 9 Mar 2006 01:30:09 +0100
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_Rc3DEpsCdRRhn06"
-Message-Id: <200603090130.09536.Sebastian.Smolorz@domain.hid>
-Subject: [Xenomai-core] [PATCH] Small doc fix for rtbenchmark.h
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Tue, 28 Feb 2006 06:24:54 -0800
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+From: Steven Seeger <steve@domain.hid>
+Message-ID: <C0299D36.256C%steve@domain.hid>
+In-Reply-To: <44045C75.30107@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="US-ASCII"
+Content-transfer-encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---Boundary-00=_Rc3DEpsCdRRhn06
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Every other RTOS I've ever used would disagree with you. However, I can wrap
+the suspend/resume functions with a call to set period. Thanks for the tip.
 
-Hi Jan,
+Steven
 
-here is a fix for the following doxygen warning:
+On 2/28/06 6:21 AM, "Jan Kiszka" <jan.kiszka@domain.hid> wrote:
 
-xenomai/include/rtdm/rtbenchmark.h:146: Warning: end of file while inside a 
-group
+> Steven Seeger wrote:
+> Just imagine that your task is attached to a continuously running timer
+> as soon as you request this via rt_task_set_periodic. So, if you feel
+> like suspending the task for a while, detach it from that timer again
+> (infinite period). Putting this functionality into the RTOS is a bit
+> overkill in my eyes.
+> 
+> This is a corner use-case, so not everyone should pay for implementing
+> it in a generic way, only the user who really wants it (by having to
+> write a few extra lines).
+> 
+> Jan
+> 
 
-Sebastian
-
---Boundary-00=_Rc3DEpsCdRRhn06
-Content-Type: text/x-diff;
-  charset="us-ascii";
-  name="rtbench.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="rtbench.patch"
-
---- xenomai/include/rtdm/rtbenchmark.h	2006-03-09 01:13:40.000000000 +0100
-+++ rtbenchmark.h	2006-03-09 01:13:24.000000000 +0100
-@@ -138,6 +138,7 @@ typedef struct rtbnch_trace_special {
- 
- #define RTBNCH_RTIOC_SPECIAL_TRACE_EX   \
-     _IOW(RTIOC_TYPE_BENCHMARK, 0x25, struct rtbnch_trace_special)
-+/** @} */
- 
- /** @} */
- 
-
---Boundary-00=_Rc3DEpsCdRRhn06--
 
