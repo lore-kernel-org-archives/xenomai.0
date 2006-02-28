@@ -1,67 +1,129 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <440442FC.8090100@domain.hid>
+Date: Tue, 28 Feb 2006 13:33:00 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17379.60287.425030.644888@domain.hid>
-Date: Sat, 4 Feb 2006 00:47:11 +0100
-Subject: Re: [Adeos-main] Problems booting - USB related?
-In-Reply-To: <43E3E4DE.3060308@domain.hid>
-References: <43E3E4DE.3060308@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: "J.D. Yamokoski" <yamokosk@domain.hid>
-Cc: adeos-main@gna.org
+Subject: Re: [Xenomai-help] negative values of latency/klatency
+References: <440324EE.6030309@domain.hid>
+In-Reply-To: <440324EE.6030309@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB67A1871FA106F628B7921C1"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Rudolf Marek <rudolf.marek@domain.hid>
+Cc: xenomai@xenomai.org
 
-J.D. Yamokoski wrote:
- > Greetings all,
- > 
- > This problem originally started out after applying an RTAI patch. After 
- > doing some testing, I have ruled out RTAI for the moment and now down to 
- > ADEOS. Here are the details,
- > 
- > I have a vanilla kernel version 2.6.12 which I patched with 
- > adeos-linux-2.6.12-i386-r13.patch. The make and install went off without 
- > a hitch. But when I boot the machine, it hangs while appearently trying 
- > to load USB stuff. Here are some of the last lines it prints:
- > 
- > 
- > Loading uhci-hcd.ko
- > USB Universal Host Controller Interface driver v2.2
- > 
- > ... seems to be finding usb devices and then on the third or fourth 
- > device ...
- > 
- > ACPI: PCI Interrupt 0000:00:1d.3[D] -> GSI 23 (level, low) -> IRQ 23
- > uhci_hcd 0000:00:1d.3: UHCI Host Controller
- > usb 1-1: new low speed USB device using uhci_hcd and address 2
- > 
- > 
- > Just to rule out other possibilities, I compiled a copy of the vanilla 
- > kernel without applying the adeos patch - no problems booting this version.
- > 
- > I can't remove USB support from the kernel as the machine I am on only 
- > has USB ports (no PS/2 plugs for mice or keyboard..). I also tried a 
- > google search to see if there was problems with USB and adeos.. but I 
- > found nothing.
- > 
- > Any comments or suggestions would be greatly appreciated!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB67A1871FA106F628B7921C1
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-There is a known issue in the adeos patch, that the I-pipe patch does
-not have. This was discussed several time on RTAI mailing list. You
-should try booting with the pci=routeirq option or disable the IO-APIC
-support.
+Rudolf Marek wrote:
+> Hello all,
+>=20
+> I tried the latency and klatency demo on some PPC procesor(s) (e500 and=
+ 60x) and the measurement results are rather strange.
+> I observed this with arbitrary version of Adeos/ipipe and on Xenomai 2.=
+0.3 older 2.0.x too.
+>=20
+> -sh-3.00# ./run -- -T 10 -h -l 5
+> ...
+> RTT|  00:00:01
+> RTH|----klat min|----klat avg|----klat max| overrun|---klat best|--klat=
+ worst
+> RTD|       -4525|       -4323|        5777|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1777|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|        -565|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1656|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1979|       0|       -4525|      =
+  5777
+> RTT|  00:00:06
+> RTH|----klat min|----klat avg|----klat max| overrun|---klat best|--klat=
+ worst
+> RTD|       -4525|       -4444|       -2020|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1050|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1616|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1898|       0|       -4525|      =
+  5777
+> RTD|       -4525|       -4444|       -1939|       0|       -4525|      =
+  5777
+> ...
+> Well if I set scheduling latency from automatic "0" to "1" I get:
 
-See :
-https://mail.rtai.org/pipermail/rtai/2005-April/010921.html
+0 means automatic latency compensation (which does not seem to work that
+well here, it overcompensates), while 1 effectively means "no
+hardware/software scheduling latency" (=3D> 1 ns). See also help of the
+related kernel configuration parameters.
 
--- 
+>=20
+> -sh-3.00# ./run -- -T 10 -h -l 5
+>=20
+> RTT|  00:00:01
+> RTH|----klat min|----klat avg|----klat max| overrun|---klat best|--klat=
+ worst
+> RTD|        4767|        4929|       15191|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        8282|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        8080|       0|        4767|      =
+ 15191
+> RTD|        4808|        4808|        7838|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        7272|       0|        4767|      =
+ 15191
+> RTT|  00:00:06
+> RTH|----klat min|----klat avg|----klat max| overrun|---klat best|--klat=
+ worst
+> RTD|        4808|        4808|        7555|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        7959|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        7393|       0|        4767|      =
+ 15191
+> RTD|        4808|        4808|        7191|       0|        4767|      =
+ 15191
+> RTD|        4767|        4808|        7313|       0|        4767|      =
+ 15191
+>=20
+> Is this a bug or feature please? Can someone throw the light?
+> Good would be to print the units to the numbers too (ns).
+>=20
+
+That was likely a layout question of the latency tool's output. We could
+simply dump something like "All latencies in nanoseconds" during
+start-up. Would this be more helpful?
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigB67A1871FA106F628B7921C1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEBEL8niDOoMHTA+kRAqhMAJ9NlZwT9/ocriddkuQOe6UiFMbVOACeKk0T
+yT2UxoayMmvHQI4Y8Vh5Mac=
+=gY4I
+-----END PGP SIGNATURE-----
+
+--------------enigB67A1871FA106F628B7921C1--
 
