@@ -1,14 +1,12 @@
-Message-ID: <44048252.2060806@domain.hid>
-Date: Tue, 28 Feb 2006 18:03:14 +0100
+Message-ID: <44048E34.2020207@domain.hid>
+Date: Tue, 28 Feb 2006 18:53:56 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <b647ffbd0602270656m4719d6aes@domain.hid>	
-	<4403891C.5070603@domain.hid>
-	<b647ffbd0602280120k745ee5e6t@domain.hid>
-In-Reply-To: <b647ffbd0602280120k745ee5e6t@domain.hid>
+References: <C029C732.259D%steve@domain.hid>
+In-Reply-To: <C029C732.259D%steve@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [PATCH] Shared interrupts (yet another movie :)
+Subject: [Xenomai-core] rt_task_wait_period() and overruns
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,59 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Dmitry Adamushko wrote:
+Steven Seeger wrote:
+> All right, all right. I surrender. *waves the white flag*
 > 
-> On 28/02/06, *Jan Kiszka* <jan.kiszka@domain.hid <mailto:jan.kiszka@domain.hid>> 
-> wrote:
+> Let's just say that I saw something different from fusion/classic RTAI and
+> was reporting it as a possible bug incorrectly, all right?
 > 
->     Dmitry Adamushko wrote:
->      > ...
->      > Ok, are there any objections as to the current patch? If no,
->     please apply.
->      >
-> 
->     Oops, I found a minor problem:
-> 
->     make[2]: Entering directory `/usr/src/xenomai/build/doc/doxygen'
->     doxygen
->     /usr/src/xenomai/ksrc/skins/native/intr.c:523: Warning: no matching file
->     member found for
->     int rt_intr_create(RT_INTR *intr, unsigned irq, int mode)
->     Possible candidates:
->       int rt_intr_create(RT_INTR *intr, const char *name, unsigned irq, int
->     mode)
-> 
-> 
-> ...
-> 
->     int rt_intr_bind(rt_intr_placeholder *intr, unsigned irq, RTIME timeout)
->     Possible candidates:
->       int rt_intr_bind(RT_INTR *intr, const char *name, RTIME timeout)
->       int rt_intr_bind(RT_INTR *intr, const char *name, RTIME timeout)
-> 
->     Seems the doc is not yet up-to-date.
-> 
-> 
-> Thanks. I have overlooked some parts. This patch fixes it up (should be 
-> applied after the main patch).
-> 
->  
 
-Applied, thanks.
+Right (except that fusion never exhibited the behaviour you described, though). 
+Still, there is an interesting question that remains which you indirectly brought 
+in, and which is the real issue to worry about: does rt_task_wait_period(), as it 
+is now, behave in the best interest of users who happen to use it properly?
 
-> 
-> 
->     Jan
-> 
-> 
-> 
-> -- 
-> Best regards,
-> Dmitry Adamushko
+I mean: if the application misses several deadlines because something is going 
+wild in there, wouldn't the recovery procedure be easier if one knows at once how 
+many deadlines have been missed in a raw, without having to call the RTOS back. 
+IOW, do we want to purge the overrun count after the first notification and make 
+rt_task_wait_period return this count (e.g. ala Chorus/OS's thread pools), or 
+would it be preferable to keep the things the way they are now?
 
+Breaking the API again is also an issue, albeit we already broke it for a few 
+other calls when working on v2.1 anyway.
+
+Open question. Something like a poll, actually.
 
 -- 
 
