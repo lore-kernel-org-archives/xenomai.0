@@ -1,119 +1,78 @@
-Message-ID: <b647ffbd0603110244y64ff4495t@domain.hid>
-Date: Sat, 11 Mar 2006 12:44:27 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Message-ID: <440467F3.7020903@domain.hid>
+Date: Tue, 28 Feb 2006 16:10:43 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_1872_11561502.1142073867586"
-Subject: [Xenomai-core] [PATCH] shirq correction
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+References: <C0299D36.256C%steve@domain.hid>
+In-Reply-To: <C0299D36.256C%steve@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-------=_Part_1872_11561502.1142073867586
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_1873_452694.1142073867586"
+Steven Seeger wrote:
+> Every other RTOS I've ever used would disagree with you. However, I can wrap
 
-------=_Part_1873_452694.1142073867586
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+set_periodic/wait_period are used to define a timeline, with a base period 
+dedicated to process a bounded work cycle. If your application decides to kill the 
+timeline by skipping work cycles voluntarily in order to process e.g. error states 
+or interactive break, it needs to reset the timeline by calling set_periodic anew, 
+which seems quite reasonable to do, since the old timeline is now dead in the 
+water. If this is not some error recovery work or break state, but regular 
+processing, then it should fit in the normal work cycle, otherwise there is no 
+point in using set_periodic/wait_period to time it in the first place.
 
-Hello,
+Beyond that, comparing with other RTOS behaviours does not fly that well, because 
+some which actually implement this kind of construct might well raise an exception 
+to some health manager entity for signaling the overrun (e.g. arinc653), in which 
+case, one would end up having to hack the error handler so that it swallows those 
+exceptions silently, for the interesting purpose of making a valid case out of an 
+error case...
 
-I overlooked that the logic of decrementing the interrupt nesting count has
-been changed recently and
-both xnintr_shirq_handler() and xnintr_edge_shirq_handler() behave wrong in
-this respect.
+We could pass rt_task_wait_period() a pointer to an integer that would collect the 
+count of overruns, and reset this count after the first overrun has been signaled. 
+But this would not fix the initial problem in the application, though.
 
-The attached patch fixes this misbehavior.
-
---
-Best regards,
-Dmitry Adamushko
-
-------=_Part_1873_452694.1142073867586
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<br>
-Hello,<br>
-<br>
-I overlooked that the logic of decrementing the interrupt nesting count has=
- been changed recently and<br>
-both xnintr_shirq_handler() and xnintr_edge_shirq_handler() behave wrong in=
- this respect.<br>
-<br>
-The attached patch fixes this misbehavior.<br clear=3D"all"><br>
--- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
-
-
-------=_Part_1873_452694.1142073867586--
-
-------=_Part_1872_11561502.1142073867586
-Content-Type: application/octet-stream; name=intr.c.patch
-Content-Transfer-Encoding: 7bit
-X-Attachment-Id: f_ek58ta5t
-Content-Disposition: attachment; filename="intr.c.patch"
-
---- intr.c-old	2006-03-10 11:07:42.000000000 +0100
-+++ intr.c	2006-03-10 11:08:47.000000000 +0100
-@@ -493,14 +493,12 @@ static void xnintr_shirq_handler (unsign
-         }
-     xnintr_shirq_unlock(shirq);
- 
--    --sched->inesting;
--
-     if (s & XN_ISR_PROPAGATE)
- 	xnarch_chain_irq(irq);
-     else if (!(s & XN_ISR_NOENABLE))
- 	xnarch_end_irq(irq);
- 
--    if (sched->inesting == 0 && xnsched_resched_p())
-+    if (--sched->inesting == 0 && xnsched_resched_p())
- 	xnpod_schedule();
- 
-     xnltt_log_event(xeno_ev_iexit,irq);
-@@ -557,8 +555,6 @@ static void xnintr_edge_shirq_handler (u
- 
-     xnintr_shirq_unlock(shirq);
- 
--    --sched->inesting;
--
-     if (counter > MAX_EDGEIRQ_COUNTER)
- 	xnlogerr("xnintr_edge_shirq_handler() : failed to get the IRQ%d line free.\n", irq);
- 
-@@ -567,7 +563,7 @@ static void xnintr_edge_shirq_handler (u
-     else if (!(s & XN_ISR_NOENABLE))
- 	xnarch_end_irq(irq);
- 
--    if (sched->inesting == 0 && xnsched_resched_p())
-+    if (--sched->inesting == 0 && xnsched_resched_p())
- 	xnpod_schedule();
- 
-     xnltt_log_event(xeno_ev_iexit,irq);
-
-------=_Part_1872_11561502.1142073867586
-Content-Type: application/octet-stream; name=ChangeLog
-Content-Transfer-Encoding: 7bit
-X-Attachment-Id: f_ek58tnb9
-Content-Disposition: attachment; filename="ChangeLog"
+> the suspend/resume functions with a call to set period. Thanks for the tip.
+> 
+> Steven
+> 
+> On 2/28/06 6:21 AM, "Jan Kiszka" <jan.kiszka@domain.hid> wrote:
+> 
+> 
+>>Steven Seeger wrote:
+>>Just imagine that your task is attached to a continuously running timer
+>>as soon as you request this via rt_task_set_periodic. So, if you feel
+>>like suspending the task for a while, detach it from that timer again
+>>(infinite period). Putting this functionality into the RTOS is a bit
+>>overkill in my eyes.
+>>
+>>This is a corner use-case, so not everyone should pay for implementing
+>>it in a generic way, only the user who really wants it (by having to
+>>write a few extra lines).
+>>
+>>Jan
+>>
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
 
-2006-03-10  Dmitry Adamushko <dmitry.adamushko@domain.hid>
+-- 
 
-	* ksrc/nucleus/intr.c (xnintr_shirq_handler, xintr_edge_shirq_handler):
-	Decrement the interrupt nesting count the same way as xnintr_irq_handler()
-	does it.
-
-------=_Part_1872_11561502.1142073867586--
+Philippe.
 
