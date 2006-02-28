@@ -1,12 +1,13 @@
-Message-ID: <44047C3D.40104@domain.hid>
-Date: Tue, 28 Feb 2006 17:37:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fd6a47a90602280908o5bc3edaam@domain.hid>
+Date: Tue, 28 Feb 2006 18:08:56 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+Subject: Re: [Xenomai-help] Page faults
+In-Reply-To: <44047AC6.907@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
-References: <C029BA24.258F%steve@domain.hid>
-In-Reply-To: <C029BA24.258F%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14209_6313475.1141146536903"
+References: <fd6a47a90602280622o4cfb2b79g@domain.hid>
+	<44047AC6.907@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Steven Seeger wrote:
-> If time stopped for you, would you be aware of anything?
-> 
+------=_Part_14209_6313475.1141146536903
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The global timeline the whole RTOS is working on does not stop for suspended 
-threads, this is what you seem to be missing since the very beginning of this 
-discussion. For instance, forcibly suspending a task (e.g. using rt_task_suspend) 
-while it is already undergoing a blocked state with a timeout (e.g. pending on 
-some sempahore to become available, whatever) does not prevent the timeout to be 
-decremented tick after tick. This is called cumulative suspension states, and all 
-the RTOS I know of enforce that. Fortunately.
+Debugging tools also suggested 'normal' pagefaults. Made me look for the
+mlockall() call which turns out to be unsuccessful. I made a mistake in
+evaluating its (non-zero) return value, which caused the error to go by
+unnoticed.
 
-> On 2/28/06 8:20 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
-> 
-> 
->>Precisely not, it should be aware that time keeps advancing regardless of its
->>own 
->>status, suspended or not.
-> 
-> 
-> 
+The reason mlockall() fails is that I executed the real-time program as
+non-root. (Guess I'll have to figure out that daunting sudoers thing...)
+
+Thanks for your advice, which led me in the right direction.
 
 
--- 
+Jeroen.
 
-Philippe.
+------=_Part_14209_6313475.1141146536903
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<div>Debugging tools also suggested 'normal' pagefaults. Made me look for t=
+he mlockall() call which turns out to be&nbsp;unsuccessful. I made a mistak=
+e in evaluating its (non-zero) return value, which caused the error to go b=
+y unnoticed.
+</div>
+<div>&nbsp;</div>
+<div>The reason mlockall() fails is that I executed the real-time program a=
+s non-root. (Guess I'll have to figure out that daunting sudoers thing...)<=
+/div>
+<div>&nbsp;</div>
+<div>Thanks for your advice, which led me in the right direction.</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div>
+
+------=_Part_14209_6313475.1141146536903--
 
