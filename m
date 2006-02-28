@@ -1,45 +1,35 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Date: Mon, 6 Mar 2006 15:46:53 +0900
-References: <4409B56B.4000501@domain.hid> <4409E28D.90800@domain.hid>
-	<440A2403.6090700@domain.hid>
-In-Reply-To: <440A2403.6090700@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200603061546.53808.rlenglet@domain.hid>
-Subject: [Xenomai-core] Re: [Xenomai-help] Xenomai v2.1-rc4
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <17412.22080.12915.184100@domain.hid>
+Date: Tue, 28 Feb 2006 14:55:12 +0100
+Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
+In-Reply-To: <C0299417.2562%steve@domain.hid>
+References: <17411.18293.205947.507401@domain.hid>
+	<C0299417.2562%steve@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Steven Seeger <steve@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> > During prepare-kernel.sh I noticed that
-> >
-> > Adeos/i386 1.XXXX (newgen) installed.
-> > Links installed.
-> > Build system ready.
-> >
-> > is not printed anymore. Bug or feature ?
->
-> Feature. --verbose brings this message back, IIRC. I guess
-> that's needed for automated Debian packaging stuff Romain is
-> working on.
+Steven Seeger wrote:
+ > I have never see an RTOS exhibit this behavior, and previous versions of
+ > Fusion and the classic RTAI did not.
 
-Well, it was primarily to make it look more like usual Unix 
-tools. And I did not understand why there were messages always 
-printed, and others printed only with --verbose.
-Anyway, now if nothing is printed it is good news. Error messages 
-are always printed on the error output even if --verbose is not 
-set.
+In your opinion, rt_task_wait_period should return -ETIMEDOUT only once
+and reset the overruns count ? How does the application get the overruns
+count then ? With an additional function call ?
 
 -- 
-Romain LENGLET
+
+
+					    Gilles Chanteperdrix.
 
