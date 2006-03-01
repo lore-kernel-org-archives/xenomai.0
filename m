@@ -1,13 +1,12 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17413.53046.678712.9021@domain.hid>
-Date: Wed, 1 Mar 2006 17:43:34 +0100
-Subject: Re: AW: AW: [Xenomai-core] vxworks-skin taskSpawn
-In-Reply-To: <4405A5A3.6020303@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A1C3EE6@domain.hid>
-	<4405A5A3.6020303@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-core] C++ Support for VxWorks Skin of Xenomai?
+Date: Wed, 1 Mar 2006 09:51:27 -0800
+Message-ID: <FA9961D07FD27B4EB6058C0F35F3D0D17CD982@domain.hid>
+From: "Wu, John" <John.Wu@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,34 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Roderik_Wildenburg@domain.hid, xenomai@xenomai.org
+To: jan.kiszka@domain.hid
+Cc: "Chau, Ngaiman" <Ngaiman.Chau@domain.hid>, xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Roderik_Wildenburg@domain.hid wrote:
- > > Philippe Gerum wrote :
- > > 
- > >>I've run the satch example successfully on an Icecube board 
- > >>here using -rc2. 
- > >>What's the status of this issue on your side? Was it a timer 
- > >>configuration issue as suspected by Gilles?
- > >>
- > > 
- > > 
- > > Status is unchanged. I still try to debugg satch with gdb/ddd and have been a little bit successfull with this.
- >   But I face more and more problems the deeper I dig into the system (e.g. 
- > unresolved symbols when compiling vxWorks-examples
- >   with --debug enabled (see other thread)
- > 
- > This has been fixed in the repository:
- > http://mail.gna.org/public/xenomai-help/2006-02/msg00149.html
- > 
+Jan,
 
-The UVM timer configuration issue is also fixed in the repository: uvm
-module insertion fails if the system timer is started in periodic mode.
+We don't know how to compile the VxWork skin of xenomai to support C++
+code.  We need some help!
 
--- 
+Thanks,
+
+John=20
+
+-----Original Message-----
+From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+Sent: Tuesday, February 28, 2006 3:58 AM
+To: Wu, John
+Cc: xenomai@xenomai.org; Chau, Ngaiman
+Subject: Re: [Xenomai-core] C++ Support for VxWorks Skin of Xenomai?
+
+Wu, John wrote:
+> We at Xerox El Segundo, Calif are new user of VxWork Skin of Xenomai.
+> We successfully brought up VxWork skin of xenomai 2.0.1on x86 platform
+
+> and ran VxWork test program in C.
+> =20
+> The question we have is how to build and compile the VxWork skin of=20
+> xenomai to support C++ code?
+>=20
+
+Did you already try to compile some C++ program against the VxWorks
+headers of Xenomai? Kernel or user space? Did you notice any problems?
+Then please post the compiler output or even a demo code.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
 
