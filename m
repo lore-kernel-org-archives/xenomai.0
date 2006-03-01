@@ -1,35 +1,57 @@
-Message-ID: <442958C2.3080800@domain.hid>
-Date: Tue, 28 Mar 2006 10:39:46 -0500
-From: Jim Cromie <jim.cromie@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] errors to console when running xeno-test (latency
-	-t	1)
-References: <44280C96.1030608@domain.hid>
-	<17448.18916.701490.357146@domain.hid>
-In-Reply-To: <17448.18916.701490.357146@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: AW:[Xenomai-help]	undefinedreference	__xnarch_xchg_called_with_bad_pointer
+Date: Wed, 1 Mar 2006 08:20:14 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A1C3DF1@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: holindho@domain.hid, rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jim Cromie wrote:
->  > hello xenophiles,
->  > 
->  > Im getting errors to the console when running latency -t 1.
->  > they also appear in dmesg output
->
-> This should be fixed in revision 807.
->
->   
-807 didnt fix it here.  Its also still present in 815
+Any idea why I don=B4t get this error when compiling the native =
+examples. Isn=B4t atomic.h included with these examples too ?=20
+
+> -----Urspr=FCngliche Nachricht-----
+> Von: xenomai-help-bounces@domain.hid
+> [mailto:xenomai-help-bounces@domain.hid] Im Auftrag von Heikki Lindholm
+> Gesendet: Dienstag, 28. Februar 2006 20:06
+> An: Philippe Gerum
+> Cc: xenomai@xenomai.org
+> Betreff: Re: AW:[Xenomai-help] undefinedreference=20
+> __xnarch_xchg_called_with_bad_pointer
+>=20
+> Philippe Gerum kirjoitti:
+> > Heikki Lindholm wrote:
+> >=20
+> >> Uh. I guess the compiler isn't killing the *_bad_pointer=20
+> function as=20
+> >> dead code when debug is enabled (although it is dead-code.)
+> >=20
+> >=20
+> > The optimizer is disabled by --enable-debug so that we don't get=20
+> > strange jumps while tracing with GDB, I guess that's why=20
+> the dead code=20
+> > is not eliminated. What about just killing this check,=20
+> since the same=20
+> > code is already validated when compiling it as a kernel module?=20
+> > (except asm-uvm/system.h, but that's not important).
+>=20
+> Yep. That seems like the way to go. I don't see much to gain=20
+> from the check. Of course, paranoid way would be to add the=20
+> __bad_ptr() function with abort() or something inside. Quick=20
+> patch attached for the former case.
+>=20
+> - hl
+>=20
 
