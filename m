@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17413.58984.450192.400581@domain.hid>
+Date: Wed, 1 Mar 2006 19:22:32 +0100
 Subject: RE: [Xenomai-core] C++ Support for VxWorks Skin of Xenomai?
-Date: Wed, 1 Mar 2006 09:51:27 -0800
-Message-ID: <FA9961D07FD27B4EB6058C0F35F3D0D17CD982@domain.hid>
-From: "Wu, John" <John.Wu@domain.hid>
+In-Reply-To: <FA9961D07FD27B4EB6058C0F35F3D0D17CD982@domain.hid>
+References: <FA9961D07FD27B4EB6058C0F35F3D0D17CD982@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,40 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: "Chau, Ngaiman" <Ngaiman.Chau@domain.hid>, xenomai@xenomai.org
-
-Jan,
-
-We don't know how to compile the VxWork skin of xenomai to support C++
-code.  We need some help!
-
-Thanks,
-
-John=20
-
------Original Message-----
-From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-Sent: Tuesday, February 28, 2006 3:58 AM
-To: Wu, John
-Cc: xenomai@xenomai.org; Chau, Ngaiman
-Subject: Re: [Xenomai-core] C++ Support for VxWorks Skin of Xenomai?
+To: "Wu, John" <John.Wu@domain.hid>
+Cc: xenomai@xenomai.org
 
 Wu, John wrote:
-> We at Xerox El Segundo, Calif are new user of VxWork Skin of Xenomai.
-> We successfully brought up VxWork skin of xenomai 2.0.1on x86 platform
+ > Jan,
+ > 
+ > We don't know how to compile the VxWork skin of xenomai to support C++
+ > code.  We need some help!
 
-> and ran VxWork test program in C.
-> =20
-> The question we have is how to build and compile the VxWork skin of=20
-> xenomai to support C++ code?
->=20
+Unless we are missing something, there is no need to compile vxworks
+skin in a special way in order to support C++ code.
 
-Did you already try to compile some C++ program against the VxWorks
-headers of Xenomai? Kernel or user space? Did you notice any problems?
-Then please post the compiler output or even a demo code.
+Xenomai vxworks skin functions are declared extern "C" in
+vxworks/vxworks.h when it is included in C++ code.
+So, if you want to call vxworks function from C++ code, all you have to
+do is to include vxworks/vxworks.h.
 
-Jan
+-- 
 
 
+					    Gilles Chanteperdrix.
 
