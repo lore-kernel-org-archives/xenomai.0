@@ -1,12 +1,12 @@
-Message-ID: <4405A5A3.6020303@domain.hid>
-Date: Wed, 01 Mar 2006 14:46:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <b647ffbd0603010725t60066558h@domain.hid>
+Date: Wed, 1 Mar 2006 17:25:58 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <440575EB.4080304@domain.hid>
 MIME-Version: 1.0
-Subject: Re: AW: AW: [Xenomai-core] vxworks-skin taskSpawn
-References: <5D63919D95F87E4D9D34FF7748CE2C2A1C3EE6@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A1C3EE6@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3649_23912633.1141226758945"
+References: <C029D34C.25A3%steve@domain.hid> <440575EB.4080304@domain.hid>
+Subject: [Xenomai-core] Re: [Xenomai-help] rt_task_wait_period() and overruns
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,64 +16,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Roderik_Wildenburg@domain.hid wrote:
-> Philippe Gerum wrote :
->=20
->>I've run the satch example successfully on an Icecube board=20
->>here using -rc2.=20
->>What's the status of this issue on your side? Was it a timer=20
->>configuration issue as suspected by Gilles?
->>
->=20
->=20
-> Status is unchanged. I still try to debugg satch with gdb/ddd and have =
-been a little bit successfull with this.
-  But I face more and more problems the deeper I dig into the system (e.g=
-.=20
-unresolved symbols when compiling vxWorks-examples
-  with --debug enabled (see other thread)
+------=_Part_3649_23912633.1141226758945
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This has been fixed in the repository:
-http://mail.gna.org/public/xenomai-help/2006-02/msg00149.html
-
-  or now, gdb moans about "cannot find bounds of current function" (do yo=
-u have=20
-any idea, what this means ?))
->=20
-
-It means that GDB is confused actually; while stepping into some code, it=
- could=20
-not locate the routine the current text address belongs too. This might h=
-appen=20
-when interrupting the program execution while it was running some code GD=
-B has no=20
-symbolic information about. Nothing to worry about, unless GDB would not =
-find any=20
-symbol at all.
-
-> I don=B4t think it is a timer problem, as my timer is running in onesho=
-t mode and not in
-  continous mode what causes the problem on Gilles system. But I am not s=
-hure.
-
-Could you try running "strace" on your program? TIA,
-
->=20
-> Nevertheless, thank you for asking !! If you have any other suggestions=
- what I can do, please let me know. I will inform you when the status cha=
-nges on my side.
->=20
-> Best Regards
-> Roderik
->=20
->=20
->=20
+On 01/03/06, Philippe Gerum <rpm@xenomai.org> wrote:
 
 
---=20
+ The other option I've described for
+> dealing with overruns in rt_task_wait_period would be as follows:
+>
+> - save the count of overruns
+> - clear the count of overruns  /* i.e. "purge" */
+> - return both the saved count and -ETIMEDOUT to the user.
+>
+> This way, rt_task_wait_period would return only once with an error status=
+,
+> telling
+> the user about the exact count of pending overruns in the same time.
 
-Philippe.
+
+
+I definitely agree with you here.
+
+IMHO, there is no point in calling rt_task_wait_period() a few
+times in a row just to clean up the "poverrun" counter
+(if there were a few overruns) when the whole may be reported at once. This
+former way just gives unnecessary overhead.
+
+
+Actually, there is a kind of application that must not rely on
+the "poverrun" counter, the klatency/latency utility and alike.
+
+They are run normally (at least at the very first time) in the untrusted
+environment
+where SMI or something similar - that may prevent a CPU from handling norma=
+l
+interrupts for quite a long time - make occur happily.
+As the "poeverrun" counting is dependent on the timer interrupt,
+it becomes irrelevant.
+
+Something like
+overruns =3D (real_time_of_wakeup - desired_time_of_wakeup) / period (*)
+should be rather used there (of course, the timing source must not be
+interrupt-dependent).
+
+Other applications may likely rely on the "poverrun" counter
+(returned by rt_task_wait_period(&overrun)) as they normally
+run in the (more or less) studied and tweaked environment.
+
+Ok, some "paranoid" programmers would think differently even then
+but there is always the (*) way :o)
+
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_3649_23912633.1141226758945
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<br><div><span class=3D"gmail_quote">On 01/03/06, <b class=3D"gmail_sendern=
+ame">Philippe Gerum</b> &lt;<a href=3D"mailto:rpm@xenomai.org">rpm@xenomai.org.=
+org</a>&gt; wrote:</span><br>
+<div>&nbsp;</div><br><blockquote class=3D"gmail_quote" style=3D"border-left=
+: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1e=
+x;">&nbsp;The other option I've described for<br>dealing with overruns in r=
+t_task_wait_period would be as follows:
+<br><br>- save the count of overruns<br>- clear the count of overruns&nbsp;=
+&nbsp;/* i.e. &quot;purge&quot; */<br>- return both the saved count and -ET=
+IMEDOUT to the user.<br><br>This way, rt_task_wait_period would return only=
+ once with an error status, telling
+<br>the user about the exact count of pending overruns in the same time. </=
+blockquote><div><br>
+<br>
+I definitely agree with you here.<br>
+<br>
+IMHO, there is no point in calling rt_task_wait_period() a few<br>
+times in a row just to clean up the &quot;poverrun&quot; counter<br>
+(if there were a few overruns) when the whole may be reported at once. This=
+ former way just gives unnecessary overhead.<br>
+<br>
+<br>
+Actually, there is a kind of application that must not rely on<br>
+the &quot;poverrun&quot; counter, the klatency/latency utility and alike.<b=
+r>
+<br>
+They are run normally (at least at the very first time) in the untrusted en=
+vironment<br>
+where SMI or something similar - that may prevent a CPU from handling norma=
+l<br>
+interrupts for quite a long time - make occur happily.<br>
+As the &quot;poeverrun&quot; counting is dependent on the timer interrupt,<=
+br>
+it becomes irrelevant.<br>
+<br>
+Something like<br>
+overruns =3D (real_time_of_wakeup - desired_time_of_wakeup) / period (*)<br=
+>
+should be rather used there (of course, the timing source must not be<br>
+interrupt-dependent).<br>
+<br>
+Other applications may likely rely on the &quot;poverrun&quot; counter<br>
+(returned by rt_task_wait_period(&amp;overrun)) as they normally<br>
+run in the (more or less) studied and tweaked environment.<br>
+<br>
+Ok, some &quot;paranoid&quot; programmers would think differently even then=
+<br>
+but there is always the (*) way :o)<br>
+<br>
+</div></div><br>-- <br>Best regards,<br>Dmitry Adamushko
+
+------=_Part_3649_23912633.1141226758945--
 
