@@ -1,12 +1,12 @@
-Message-ID: <4409E59E.50305@domain.hid>
-Date: Sat, 04 Mar 2006 20:08:14 +0100
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <440A2403.6090700@domain.hid>
+Date: Sun, 05 Mar 2006 00:34:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] v2.1-rc4 RTDM bug
-References: <4409E37A.6090300@domain.hid>
-In-Reply-To: <4409E37A.6090300@domain.hid>
+References: <4409B56B.4000501@domain.hid> <4409E28D.90800@domain.hid>
+In-Reply-To: <4409E28D.90800@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [Xenomai-help] Xenomai v2.1-rc4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,21 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+To: Hannes Mayer <h.mayer@domain.hid>
+Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
 Hannes Mayer wrote:
-> Ciao Jan!
+> Philippe Gerum wrote:
 > 
-> It doesn't seem to make a difference if one uses
-> RTDM_IRQ_NONE or RTDM_IRQ_HANDLED.
-> With RTDM_IRQ_NONE the IRQ should be passed to linux,
-> right ? But it doesn't seem to happen - this brought
-> up the "top" problem I've posted a few days ago.
+>>
+>> This time, the merge window is closed for good; no kidding. This said, 
+>> too many changes since -rc3 have taken place for releasing v2.1 
+>> without one more -rc iteration, so here is -rc4. Major updates are as 
+>> follows:
+>>
+>> - scalable timer management using non-linear access (Gilles)
+>> - shared real-time interrupt support (Dmitry)
+>> - POSIX updates (Gilles)
+>> - UVM fixes (me)
+>> - registry support abstraction (me)
+>> - RTDM updates (Jan)
+>> - building blocks for Debian packaging (Romain Lenglet)
+>>
+>> http://download.gna.org/xenomai/testing/xenomai-2.1-rc4.tar.bz2
+> 
+> 
+> Ciao Philippe!
+> 
+> During prepare-kernel.sh I noticed that
+> 
+> Adeos/i386 1.XXXX (newgen) installed.
+> Links installed.
+> Build system ready.
+> 
+> is not printed anymore. Bug or feature ?
+> 
 
-Returning XN_ISR_PROPAGATE passes the grabbed timer
-interrupt to Linux and "top" works again.
+Feature. --verbose brings this message back, IIRC. I guess that's needed for 
+automated Debian packaging stuff Romain is working on.
 
-Best regards,
-Hannes.
+-- 
+
+Philippe.
 
