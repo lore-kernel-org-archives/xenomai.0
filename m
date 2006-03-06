@@ -1,35 +1,53 @@
+From: Romain Lenglet <rlenglet@domain.hid>
+Date: Mon, 6 Mar 2006 15:59:57 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17412.22080.12915.184100@domain.hid>
-Date: Tue, 28 Feb 2006 14:55:12 +0100
-Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
-In-Reply-To: <C0299417.2562%steve@domain.hid>
-References: <17411.18293.205947.507401@domain.hid>
-	<C0299417.2562%steve@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+Message-Id: <200603061559.57932.rlenglet@domain.hid>
+Subject: [Xenomai-core] About the versioning scheme in the repository
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Steven Seeger wrote:
- > I have never see an RTOS exhibit this behavior, and previous versions of
- > Fusion and the classic RTAI did not.
+Hi,
 
-In your opinion, rt_task_wait_period should return -ETIMEDOUT only once
-and reset the overruns count ? How does the application get the overruns
-count then ? With an additional function call ?
+When is the version number changed in the config/version file?
+Is that value the version 1) of the next release being prepared, 
+or 2) of the last release?
+
+This is a concern for packaging. I would like to make two series 
+of Debian packages: xenomai, libxenomai, etc. for the official 
+releases, and xenomai-svn, libxenomai-svn, etc. for periodical 
+extracts from the svn repository after releases.
+The problem is: what versions to give to the *-svn packages? For 
+instance, the current value in config/version is 2.0.93.
+The current xenomai-svn package would then have version 
+2.0.93+svn20060306 (or something like that).
+
+Using versioning scheme 1), the next xenomai package would have 
+version 2.0.93. This is bad, because the xenomai-svn could not 
+be replaced by the next xenomai package:
+2.0.93 < 2.0.93+svn20060306.
+Even if xenomai (official release package) is more recent.
+
+Using versioning scheme 2) works, because the next xenomai 
+package would have version 2.0.94 (or 2.1 or...), and hence 
+would have priority over the older xenomai-svn packages.
+
+
+So, could someone confirm that what is currently done is scheme 
+2), i.e. the version in config/version is modified just before 
+tagging the repository and releasing?
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Romain LENGLET
 
