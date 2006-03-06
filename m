@@ -1,14 +1,15 @@
-Message-ID: <440AF8EF.3010707@domain.hid>
-Date: Sun, 05 Mar 2006 15:42:55 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Romain Lenglet <rlenglet@domain.hid>
+Date: Mon, 6 Mar 2006 15:46:53 +0900
+References: <4409B56B.4000501@domain.hid> <4409E28D.90800@domain.hid>
+	<440A2403.6090700@domain.hid>
+In-Reply-To: <440A2403.6090700@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] v2.1-rc4 RTDM bug
-References: <4409E37A.6090300@domain.hid> <4409E59E.50305@domain.hid>
-In-Reply-To: <4409E59E.50305@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEBEB1F95F1D7A4715FC862C6"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200603061546.53808.rlenglet@domain.hid>
+Subject: [Xenomai-core] Re: [Xenomai-help] Xenomai v2.1-rc4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,50 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEBEB1F95F1D7A4715FC862C6
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> > During prepare-kernel.sh I noticed that
+> >
+> > Adeos/i386 1.XXXX (newgen) installed.
+> > Links installed.
+> > Build system ready.
+> >
+> > is not printed anymore. Bug or feature ?
+>
+> Feature. --verbose brings this message back, IIRC. I guess
+> that's needed for automated Debian packaging stuff Romain is
+> working on.
 
-Hannes Mayer wrote:
-> Hannes Mayer wrote:
->> Ciao Jan!
->>
->> It doesn't seem to make a difference if one uses
->> RTDM_IRQ_NONE or RTDM_IRQ_HANDLED.
->> With RTDM_IRQ_NONE the IRQ should be passed to linux,
->> right ? But it doesn't seem to happen - this brought
->> up the "top" problem I've posted a few days ago.
->=20
-> Returning XN_ISR_PROPAGATE passes the grabbed timer
-> interrupt to Linux and "top" works again.
->=20
+Well, it was primarily to make it look more like usual Unix 
+tools. And I did not understand why there were messages always 
+printed, and others printed only with --verbose.
+Anyway, now if nothing is printed it is good news. Error messages 
+are always printed on the error output even if --verbose is not 
+set.
 
-As forwarding interrupts to the non-realtime domain is not a common
-use-case of realtime device drivers, I decided to drop the propagation
-support at RTDM level. So if you are including this mechanism in your
-demo, please mark this pattern as something RTDM drivers should normally
-NOT do (and explain what's reason for it here).
-
-Jan
-
-
---------------enigEBEB1F95F1D7A4715FC862C6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFECvjzniDOoMHTA+kRAvFXAJwMZ7/tQbGaQQc5ZEG+YAM0plwX7ACdHbt2
-vqte3RHywVZvo3HQNM/RfDw=
-=+sUD
------END PGP SIGNATURE-----
-
---------------enigEBEB1F95F1D7A4715FC862C6--
+-- 
+Romain LENGLET
 
