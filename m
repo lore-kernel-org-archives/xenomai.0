@@ -1,11 +1,13 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Date: Tue, 7 Mar 2006 21:10:14 +0900
+Message-ID: <b647ffbd0603070648g6a09b3c5s@domain.hid>
+Date: Tue, 7 Mar 2006 16:48:39 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [RFC, Experimental Patch] nested irq disable calls
+In-Reply-To: <440C1C41.5090304@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_mgXDEzfG1NOUo2U"
-Message-Id: <200603072110.14791.rlenglet@domain.hid>
-Subject: [Xenomai-core] prepare-kernel.sh patch to factorize generated
-	patches
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_5974_8196229.1141742919252"
+References: <b647ffbd0603030252h5f54c436l@domain.hid>
+	<440C1C41.5090304@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,278 +17,337 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
---Boundary-00=_mgXDEzfG1NOUo2U
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+------=_Part_5974_8196229.1141742919252
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+> >
+> >     BEFORE
+> >
+> >     static void openpic_end_irq(unsigned int irq_nr)
+> >     {
+> >     if (!(irq_desc[irq_nr].status & (IRQ_DISABLED|IRQ_INPROGRESS))
+> >         && irq_desc[irq_nr].action)
+> >         openpic_enable_irq(irq_nr);
+> >     }
+> >
+> >
+> >     AFTER
+> >
+> >     static void openpic_end_irq(unsigned int irq_nr)
+> >     {
+> >     if (!ipipe_root_domain_p()
+> >         &&
+> >
+!test_bit(IPIPE_DISABLED_FLAG,&ipipe_current_domain->irqs[irq_nr].control))
+> >         return;
+> >
+>
+> -
+!test_bit(IPIPE_DISABLED_FLAG,&ipipe_current_domain->irqs[irq_nr].control))
+> +
+test_bit(IPIPE_DISABLED_FLAG,&ipipe_current_domain->irqs[irq_nr].control))
+>
+> ?
 
-I have added two new command-line options to prepare-kernel.sh to 
-filter the changes to record in the generated patch files.
-The patch to prepare-kernel.sh is attached.
+Yep.
 
-I have observed that most of the changes (95% in size) are not 
-specific to the kernel version or the architecture, so it is a 
-waste of space to include those changes in every patch for every 
-kernel version / architecture combination (every patch file 
-would be about 2Mo!).
 
-With the new options, we can generate four distinct patch files 
-(figures are for 2.6.15 / i386):
-- kernel-specific and arch-specific: 24 lines / 617 bytes
-- kernel-specific and arch-NON-specific: 16 lines / 572 bytes
-- kernel-NON-specific and arch-specific: 3116 lines / 95633 bytes
-- kernel-NON-specific and arch-NON-specific: 77661 lines / 
-2095346 bytes
+> Additionally, there is another issue we discussed once with Anders, which
+is
+> related to not sending EOI twice after the shared IRQ already ended by a
+RT domain
+> has been fully propagated down the pipeline to Linux;
+> some kind of test_and_clear_temporary_disable flag, would do, I guess. Th=
+e
+other way would be
+> to test_and_set some "ended" flag for the outstanding IRQ when the ->end(=
+)
+routine
+> is entered, clearing this flag before pipelining the IRQ in
+__ipipe_walk_pipeline().
+>
+> Actually, I'm now starting to wonder why we would want to permanently
+disable an
+> IRQ line from a RT domain, which is known to be used by Linux.
+> Is this what IPIPE_DISABLED_FLAG is expected to be used for, or is it onl=
+y
+there to handle the
+> transient disabled state discussed above?
 
-total: 80817 lines / 2192168 bytes
+Why "permanently"? I would see the following scenario - an ISR wants to
+_temporary_ defer an IRQ line enabling
+until some later stage (e.g. rt_task which is a bottom half).
+This is the only reason why xnarch_end_irq() or some later step in it (in
+this case ->end() ) must be aware
+of IPIPE_DISABLED_FLAG.
 
-Xenomai supports 6 architectures. Say that we want to generate 
-patches for 10 Linux versions, all patch files now take only 
-about:
-2095346 + 6*95633 + 10*572 + 6*10*617 = 2711884 bytes
+Why the currently used approach is not that good for it (NOENABLE) ?
 
--- 
-Romain LENGLET
+1)   it actually defers (for some PICs) not only "enabling" but sending an
+EOI too;
+    As a consequence :
 
---Boundary-00=_mgXDEzfG1NOUo2U
-Content-Type: text/x-diff; charset="us-ascii";
-	name="patchfilter_2006-03-07.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="patchfilter_2006-03-07.patch"
+2)   rthal_end_irq() (on PPC and not just xnintr_enable() or
+rthal_enable_irq()) must be called in bottom half
+    to re-endable the IRQ line;
 
---- xenomai/ChangeLog	2006-03-07 12:34:36.621119888 +0900
-+++ xenomai-scriptmod/ChangeLog	2006-03-07 20:54:47.705741544 +0900
-@@ -1,3 +1,11 @@
-+2006-02-27  Romain Lenglet <rlenglet@domain.hid>
-+
-+	* scripts/prepare-kernel.sh: Added options to select changes to ignore
-+	and to not include in the output patch file when the --outpatch option
-+	is used: --filterkvers=y|n and --filterarch=y|n.
-+	The ksrc/nucleus/udev/ directory is no more copied into the Linux
-+	tree.
-+
- 2006-03-06  Jan Kiszka  <jan.kiszka@domain.hid>
- 
- 	* src/skins/{native,posix,rtdm}/Makefile.am: Suppress warnings
---- xenomai/scripts/prepare-kernel.sh	2006-02-28 12:11:09.817490880 +0900
-+++ xenomai-scriptmod/scripts/prepare-kernel.sh	2006-03-07 20:54:14.832739000 +0900
-@@ -1,6 +1,29 @@
- #! /bin/bash
- set -e
- 
-+# At all time, this variable must be set to either:
-+# "y" if the changes to the Linux tree are specific to the kernel version;
-+# "n" otherwise.
-+patch_kernelversion_specific="n"
-+
-+# At all time, this variable must be set to either:
-+# "y" if the changes to the Linux tree are specific to the architecture;
-+# "n" otherwise.
-+patch_architecture_specific="n"
-+
-+# At all time, this variable must be set to either:
-+# "y": ignore kernel-version-specific changes;
-+# "n": ignore non-kernel-version-specific changes;
-+# "b": don't filter according to the kernel version.
-+patch_kernelversion_filter="b"
-+
-+# At all time, this variable must be set to either:
-+# "y": ignore architecture-specific changes;
-+# "n": ignore non-architecture-specific changes;
-+# "b": don't filter according to the architecture.
-+patch_architecture_filter="b"
-+
-+
- patch_copytempfile() {
-     file="$1"
-     if ! test -f "$temp_tree/$file"; then
-@@ -10,26 +33,40 @@
-     fi
- }
- 
-+check_filter() {
-+    if test "$patch_kernelversion_specific" != "$patch_kernelversion_filter" \
-+        -a "$patch_architecture_specific" != "$patch_architecture_filter"; then
-+        echo ok
-+    elif test -e "$temp_tree/$1"; then
-+        echo "$me: inconsistent multiple changes to $1 in Linux kernel tree" >&2
-+	echo error
-+    else
-+        echo ignore
-+    fi
-+}
-+
- patch_append() {
-     file="$1"
-     if test "x$output_patch" = "x"; then
--        realfile="$linux_tree/$file"
-+        cat >> "$linux_tree/$file"
-     else
--        patch_copytempfile "$file"
--        realfile="$temp_tree/$file"
-+        if test `check_filter $file` = "ok"; then
-+            patch_copytempfile "$file"
-+            cat >> "$temp_tree/$file"
-+        fi
-     fi
--    cat >> "$realfile"
- }
- 
- patch_ed() {
-     file="$1"
-     if test "x$output_patch" = "x"; then
--        realfile="$linux_tree/$file"
-+        ed -s "$linux_tree/$file" > /dev/null
-     else
--        patch_copytempfile "$file"
--        realfile="$temp_tree/$file"
-+        if test `check_filter $file` = "ok"; then
-+            patch_copytempfile "$file"
-+            ed -s "$temp_tree/$file" > /dev/null
-+        fi
-     fi
--    ed -s "$realfile" > /dev/null
- }
- 
- patch_link() {
-@@ -73,8 +110,10 @@
-                     ln -sf $xenomai_root/$target_dir/$f $linux_tree/$link_dir/$f
-                 fi
-             else
--                mkdir -p $temp_tree/$link_dir/$d
--                cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
-+                if test `check_filter $link_dir/$f` = "ok"; then
-+                    mkdir -p $temp_tree/$link_dir/$d
-+                    cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
-+                fi
-             fi
-         done
-     )
-@@ -94,7 +133,7 @@
- }
- 
- 
--usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir>] [--forcelink]'
-+usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink]'
- me=`basename $0`
- 
- while test $# -gt 0; do
-@@ -115,6 +154,12 @@
- 	shift
- 	temp_tree=`echo $1|sed -e 's,^--tempdir=\\(.*\\)$,\\1,g'`
- 	;;
-+    --filterkvers=*)
-+        patch_kernelversion_filter=`echo $1|sed -e 's,^--filterkvers=\\(.*\\)$,\\1,g'`
-+        ;;
-+    --filterarch=*)
-+        patch_architecture_filter=`echo $1|sed -e 's,^--filterarch=\\(.*\\)$,\\1,g'`
-+        ;;
-     --forcelink)
-         forcelink=1
-         ;;
-@@ -163,13 +208,15 @@
- linux_out=$linux_tree
- 
- if test \! -r $linux_tree/Makefile; then
--   echo "$me: $linux_tree is not a valid Linux kernel tree"
-+   echo "$me: $linux_tree is not a valid Linux kernel tree" >&2
-    exit 2
- fi
- 
- # Create an empty output patch file, and initialize the temporary tree.
- if test "x$output_patch" != "x"; then
- 
-+    # The directory must exist, but should be empty. To lower the risks of data
-+    # loss, the script does not deletes files itself.
-     if test ! -d $temp_tree; then
-         echo "$me: $temp_tree (temporary tree) is not an existing directory" >&2
-         exit 2
-@@ -314,6 +361,8 @@
-    exit 2
- fi
- 
-+patch_kernelversion_specific="y"
-+
- case $linux_VERSION.$linux_PATCHLEVEL in
- 
-     #
-@@ -324,6 +373,8 @@
- 
-     config_file=Kconfig
- 
-+    patch_architecture_specific="y"
-+
-     if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
- 	sed -e "s,@LINUX_ARCH@,$linux_arch,g" $xenomai_root/scripts/Kconfig.frag |
-             patch_append init/Kconfig
-@@ -334,6 +385,8 @@
- 	( echo ; echo $p ) | patch_append arch/$linux_arch/Makefile
-     fi
- 
-+    patch_architecture_specific="n"
-+
-     if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
- 	p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
- 	( echo ; echo $p ) | patch_append drivers/Makefile
-@@ -354,6 +407,7 @@
-     export linux_arch
-     config_file=Config.in
- 
-+    patch_architecture_specific="n"
-     if ! grep -q CONFIG_XENO $linux_tree/Makefile; then
- 	patch_ed Makefile <<EOF
- /DRIVERS := \$(DRIVERS-y)
-@@ -363,6 +417,7 @@
- wq
- EOF
-     fi
-+    patch_architecture_specific="y"
-     for defconfig_file in .config arch/$linux_arch/defconfig; do
-        if test -w $linux_tree/$defconfig_file; then
-           if ! grep -q CONFIG_XENO $linux_tree/$defconfig_file; then
-@@ -388,6 +443,7 @@
- wq
- EOF
-     fi
-+    patch_architecture_specific="n"
-     if ! grep -q CONFIG_XENO $linux_tree/drivers/Makefile; then
- 	patch_ed drivers/Makefile <<EOF
- /include \$(TOPDIR)\/Rules.make
-@@ -411,6 +467,7 @@
- wq
- EOF
-     fi
-+    patch_architecture_specific="y"
-     if ! grep -iq xenomai $linux_tree/arch/$linux_arch/config.in; then
- 	patch_ed arch/$linux_arch/config.in <<EOF
- $
-@@ -439,14 +496,19 @@
- # there, so that we don't pollute the Xenomai source tree with
- # compilation files.
- 
-+patch_kernelversion_specific="n"
-+patch_architecture_specific="y"
- patch_link r m ksrc/arch/$xenomai_arch arch/$linux_arch/xenomai
-+patch_architecture_specific="n"
- patch_link n m ksrc/ kernel/xenomai
- patch_link n m ksrc/arch kernel/xenomai/arch
- patch_link r m ksrc/arch/generic kernel/xenomai/arch/generic
--patch_link r m ksrc/nucleus kernel/xenomai/nucleus
-+patch_link n m ksrc/nucleus kernel/xenomai/nucleus
- patch_link r m ksrc/skins kernel/xenomai/skins
- patch_link r m ksrc/drivers drivers/xenomai
-+patch_architecture_specific="y"
- patch_link r n include/asm-$xenomai_arch include/asm-$linux_arch/xenomai
-+patch_architecture_specific="n"
- patch_link r n include/asm-generic include/asm-generic/xenomai
- patch_link n n include include/xenomai
- patch_link n n include/asm-uvm include/xenomai/asm-uvm
+3)   does not co-exist well with the shared interrupts support (I don't mea=
+n
+sharing between RT and not-RT doamins here).
+    Although it's not a common case if a few ISRs on the same shared line
+want to defer enabling, esp. for
+    real-time domain;
 
---Boundary-00=_mgXDEzfG1NOUo2U--
+4)   it's a bit and if we would like to use only scalar values one day then
+something
+    like HANDLED, HANDLED_NOENABLE would be needed;
+
+The support for nested irq enable/disable calls would resolve all the
+"restrictions" above but the question is
+whether we really need to resolve them.
+
+In the same vein, I'd like to know you vision of the "nested irq
+enable/disable calls support". Any use cases?
+
+>
+> >
+> >     if (!ipipe_root_domain_p() || !(irq_desc[irq_nr].status &
+> > (IRQ_DISABLED|IRQ_INPROGRESS))
+> >         && irq_desc[irq_nr].action)
+> >         openpic_enable_irq(irq_nr);
+> >     }
+> >
+>
+> There is another way for most archs, which is to add such code to the
+->end()
+> routine override in ipipe-root.c; this would be simpler and safer than
+fixing such
+> routine for each and every kind of interrupt controller. x86 directly
+pokes into
+> the PIC code and does not overrides IRQ control routines, though.
+
+I didn't know about them as I mostly looked at the x86 implementation.
+
+This gives as control over per-domain irq locking/unlocking
+(ipipe_irq_lock/unlock()),
+__ipipe_std_irq_dtype[irq].end() is always called unconditionally (as a
+result, .enable() for some PICs).
+That said, the IRQ line is actually on, the interrupts are just not handled
+but accumulated in the pipe-log.
+
+Actually, why is ipipe_irq_unlock(irq) necessary in
+__ipipe_override_irq_end()? ipipe_irq_lock() is not
+called in __ipipe_ack_irq(). Is it locked somewhere else? At least, I
+haven't found explicit ipipe_irq_lock()
+or __ipipe_lock_irq() calls anywhere else.
+
+
+> [skip-skip-skip]
+>
+> >
+> >  >From another point of view, this new feature seems not to be too
+> > intrusive and not something really affecting the "fast path" so it coul=
+d
+> > be used by default, I guess. Or maybe we don't need it at all?
+> >
+>
+> The disable nesting count at Xenomai level is needed to let ISRs act
+independently
+> from each others wrt interrupt masking - or at the very least, to let the=
+m
+think
+> they do. This is strictly a Xenomai issue, not an Adeos one. If we keep i=
+t
+at this
+> level, then using the xnintr struct to store the nesting counter becomes
+an
+> option, I guess.
+
+Let's start from defining possible use cases with nested irq enable/disable
+calls then.
+Maybe we just don't need them at all (at least the same way Linux deals wit=
+h
+them)?
+
+>
+> --
+>
+> Philippe.
+
+
+--
+Best regards,
+Dmitry Adamushko
+
+------=_Part_5974_8196229.1141742919252
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; BEFORE<br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; static void openpic_end_irq(unsigned int =
+irq_nr)<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; if (!(irq_desc[irq_nr].status &amp; (IRQ_=
+DISABLED|IRQ_INPROGRESS))<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; irq_de=
+sc[irq_nr].action)<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; openpic_enable_ir=
+q(irq_nr);<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &gt;<br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; AFTER<br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; static void openpic_end_irq(unsigned int =
+irq_nr)<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; {<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; if (!ipipe_root_domain_p()<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp;<br>
+&gt; &gt; !test_bit(IPIPE_DISABLED_FLAG,&amp;ipipe_current_domain-&gt;irqs[=
+irq_nr].control))<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;<br>
+&gt; &gt;<br>
+&gt; <br>
+&gt; - !test_bit(IPIPE_DISABLED_FLAG,&amp;ipipe_current_domain-&gt;irqs[irq=
+_nr].control))<br>
+&gt; + test_bit(IPIPE_DISABLED_FLAG,&amp;ipipe_current_domain-&gt;irqs[irq_=
+nr].control))<br>
+&gt; <br>
+&gt; ?<br>
+<br>
+Yep.<br>
+<br>
+<br>
+&gt; Additionally, there is another issue we discussed once with Anders, wh=
+ich is<br>
+&gt; related to not sending EOI twice after the shared IRQ already ended by=
+ a RT domain<br>
+&gt; has been fully propagated down the pipeline to Linux;<br>
+&gt; some kind of test_and_clear_temporary_disable flag, would do, I guess.=
+ The other way would be<br>
+&gt; to test_and_set some &quot;ended&quot; flag for the outstanding IRQ wh=
+en the -&gt;end() routine<br>
+&gt; is entered, clearing this flag before pipelining the IRQ in __ipipe_wa=
+lk_pipeline().<br>
+&gt; <br>
+&gt; Actually, I'm now starting to wonder why we would want to permanently =
+disable an<br>
+&gt; IRQ line from a RT domain, which is known to be used by Linux.<br>
+&gt; Is this what IPIPE_DISABLED_FLAG is expected to be used for, or is it =
+only there to handle the<br>
+&gt; transient disabled state discussed above?<br>
+<br>
+Why &quot;permanently&quot;? I would see the following scenario - an ISR wa=
+nts to _temporary_ defer an IRQ line enabling<br>
+until some later stage (e.g. rt_task which is a bottom half).<br>
+This is the only reason why xnarch_end_irq() or some later step in it (in t=
+his case -&gt;end() ) must be aware<br>
+of IPIPE_DISABLED_FLAG.<br>
+<br>
+Why the currently used approach is not that good for it (NOENABLE) ?<br>
+<br>
+1)&nbsp;&nbsp; it actually defers (for some PICs) not only &quot;enabling&q=
+uot; but sending an EOI too;<br>
+&nbsp;&nbsp;&nbsp; As a consequence :<br>
+<br>
+2)&nbsp;&nbsp; rthal_end_irq() (on PPC and not just xnintr_enable() or rtha=
+l_enable_irq()) must be called in bottom half<br>
+&nbsp;&nbsp;&nbsp; to re-endable the IRQ line;<br>
+<br>
+3)&nbsp;&nbsp; does not co-exist well with the shared interrupts
+support (I don't mean sharing between RT and not-RT doamins here).<br>
+&nbsp;&nbsp;&nbsp; Although it's not a common case if a few ISRs on the sam=
+e shared line want to defer enabling, esp. for<br>
+&nbsp;&nbsp;&nbsp; real-time domain;<br>
+<br>
+4)&nbsp;&nbsp; it's a bit and if we would like to use only scalar values on=
+e day then something<br>
+&nbsp;&nbsp;&nbsp; like HANDLED, HANDLED_NOENABLE would be needed;<br>
+<br>
+The support for nested irq enable/disable calls would resolve all the &quot=
+;restrictions&quot; above but the question is<br>
+whether we really need to resolve them.<br>
+<br>
+In the same vein, I'd like to know you vision of the &quot;nested irq enabl=
+e/disable calls support&quot;. Any use cases?<br>
+<br>
+&gt; <br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; if (!ipipe_root_domain_p() || !(irq_desc[=
+irq_nr].status &amp;<br>
+&gt; &gt; (IRQ_DISABLED|IRQ_INPROGRESS))<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp;&amp; irq_de=
+sc[irq_nr].action)<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; openpic_enable_ir=
+q(irq_nr);<br>
+&gt; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&gt; &gt;<br>
+&gt; <br>
+&gt; There is another way for most archs, which is to add such code to the =
+-&gt;end()<br>
+&gt; routine override in ipipe-root.c; this would be simpler and safer than=
+ fixing such<br>
+&gt; routine for each and every kind of interrupt controller. x86 directly =
+pokes into<br>
+&gt; the PIC code and does not overrides IRQ control routines, though.<br>
+<br>
+I didn't know about them as I mostly looked at the x86 implementation.<br>
+<br>
+This gives as control over per-domain irq locking/unlocking (ipipe_irq_lock=
+/unlock()),<br>
+__ipipe_std_irq_dtype[irq].end() is always called unconditionally (as a res=
+ult, .enable() for some PICs).<br>
+That said, the IRQ line is actually on, the interrupts are just not handled=
+ but accumulated in the pipe-log.<br>
+<br>
+Actually, why is ipipe_irq_unlock(irq) necessary in __ipipe_override_irq_en=
+d()? ipipe_irq_lock() is not<br>
+called in __ipipe_ack_irq(). Is it locked somewhere else? At least, I haven=
+'t found explicit ipipe_irq_lock()<br>
+or __ipipe_lock_irq() calls anywhere else.<br>
+&nbsp;<br>
+<br>
+&gt; [skip-skip-skip]<br>
+&gt; <br>
+&gt; &gt;<br>
+&gt; &gt;&nbsp; &gt;From another point of view, this new feature seems not =
+to be too<br>
+&gt; &gt; intrusive and not something really affecting the &quot;fast path&=
+quot; so it could<br>
+&gt; &gt; be used by default, I guess. Or maybe we don't need it at all?<br=
+>
+&gt; &gt;<br>
+&gt; <br>
+&gt; The disable nesting count at Xenomai level is needed to let ISRs act i=
+ndependently<br>
+&gt; from each others wrt interrupt masking - or at the very least, to let =
+them think<br>
+&gt; they do. This is strictly a Xenomai issue, not an Adeos one. If we kee=
+p it at this<br>
+&gt; level, then using the xnintr struct to store the nesting counter becom=
+es an<br>
+&gt; option, I guess.<br>
+<br>
+Let's start from defining possible use cases with nested irq enable/disable=
+ calls then.<br>
+Maybe we just don't need them at all (at least the same way Linux deals wit=
+h them)?<br>
+<br>
+&gt; <br>
+&gt; --<br>
+&gt; <br>
+&gt; Philippe.<br>
+<br>
+<br clear=3D"all">
+-- <br>Best regards,<br>Dmitry Adamushko
+
+------=_Part_5974_8196229.1141742919252--
 
