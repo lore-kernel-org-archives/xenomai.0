@@ -1,72 +1,120 @@
-Message-ID: <442D02CD.6080508@domain.hid>
-Date: Fri, 31 Mar 2006 12:22:05 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_delete() question
-References: <442C19F2.206@domain.hid>
-In-Reply-To: <442C19F2.206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Message-ID: <109d60693d9.damsa.national@domain.hid>
+Date: Tue, 7 Mar 2006 19:44:48 +0100 (GMT+01:00)
+From: damesa national <damsa.national@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain;charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Sean McGranaghan <smm@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: [Adeos-main] =?utf-8?b?QVRURU5USU9OwqHCocKhwqE=?=
+Reply-To: fedincoy11@domain.hid
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 
-Sean McGranaghan wrote:
-> Hello all,
-> 
-> I am posting this for a co-worker who is having problems with killing a 
-> real-time task. (He is joining the email list shortly but for now I will 
-> pass responses on to him.) Here is the scenario:
-> 
-> 1. A Linux process starts up and detaches from the tty (daemon)
-> 2. The daemon creates a xeno message queue
-> 2. The daemon spawns a xeno task
-> 3. The xeno task on startup binds to the queue rt_queue_bind()
-> 4. The xeno task waits on the queue recv with infinite timeout
-> 5. The daemon process goes to sleep in a join, waiting for the task to exit
-> 6. Some time later another program starts
-> 7. The other non-realtime program looks up the xeno task name via 
-> rt_task_bind()
-> 8. The other non-realtime program attempts to delete the task via 
-> rt_task_delete()
->         Failed Attempt #1 - Non-realtime program calls rt_task_delete() 
-> and gets
->                             a segmentation fault
->         Failed Attempt #2 - Non-realtime program spawns a realtime task 
-> which
->                             binds to original task and tries 
-> rt_task_delete().
->                             Also gets segmentation fault.
-> 
+4TH 
+MAR 2006
+ 
+ 
+Dear 
+Winner,                      
+                     
+                 .
+We are pleased to 
+announce 
+you as third category winner of this years 
+annual DAMSA 
+Award. 
+All 
+winning addresses were randomly selected 
+from a batch of 
+50,000,000 
+international emails. Consequently,you 
+have therefore been 
+approved 
+for 
+a total pay out of 250,000.00euros
+(Twohundred and fifty thousand 
+euros)only.
+The following 
+particulars 
+were attached 
+to your 
+lotto 
+payment order
+ 
+(i)Lucky numbers:   
+7-87-
+67-19-14-12
+(ii)  Ticket 
+number:   
+624381734-1113
+(iii) Batch 
+Number: 
+JVHN/21/294/VHIT(iv) 
+Lottery Ref Number:   
+TSR1242-
+BGR1034/06and
+(v) Serial Number: ES- 
+398-4132-16
+ 
+Your 
+security file 
+number is ES-
+423215341P. Please
+ 
+contact the 
+underlisted claims 
+officer as soon as 
+possible for the 
+immediate 
+release of your winnings: 
+Name:Mr.John 
+Carlos
+Fedda 
+Insurance 
+Company
+Email: 
+fedincoy11@domain.hid
+TEL: +34- 651-335-
+021. 
+After the acknowlegement 
+of the receipt of 
+this winning 
+notification you 
+would be sent a 
+lottery claims/Apraisal
+form to 
+fill and submit to 
+our lawyer who 
+will carry out the legalisation of 
+the transfer of 
+your 
+winning.Do not 
+forget to quote your reference 
+number in all 
+correspondence. Your security file number is 
+ES9980973465SD. Please 
+contact the 
+    underlisted claims officer as 
+soon as possible for 
+the 
+immediate release of your 
+    winnings: 
+Please, note that you 
+ 
+Once 
+again on behalf of all 
+our staffs we 
+are 
+wishing you a big 
+CONGRATULATIONS!!!
+Yours sincerely, 
+NORA BRAWN
+For Claims Officer 
+The Lotto Company,Spain..
 
-Eeek... 100% reproducible here. Blatant bug. More later. Thanks for 
-reporting.
-
-> The was attempted one a system running the latest Xenomai 2.1 release.
-> 
-> What is the preferred method to start/join threads from a non-realtime 
-> context?
-> 
-> Any help is appreciated.
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
-
--- 
-
-Philippe.
 
