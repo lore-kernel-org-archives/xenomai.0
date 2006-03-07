@@ -1,14 +1,13 @@
-Message-ID: <440DB5CC.4090303@domain.hid>
-Date: Tue, 07 Mar 2006 17:33:16 +0100
+Message-ID: <440DB608.40900@domain.hid>
+Date: Tue, 07 Mar 2006 17:34:16 +0100
 From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-References: <4409B56B.4000501@domain.hid>
-	<4409E28D.90800@domain.hid>	<440A2403.6090700@domain.hid>
-	<200603061546.53808.rlenglet@domain.hid>
-In-Reply-To: <200603061546.53808.rlenglet@domain.hid>
+Subject: Re: [Xenomai-core] v2.1-rc4 RTDM bug
+References: <4409E37A.6090300@domain.hid> <4409E59E.50305@domain.hid>
+	<440AF8EF.3010707@domain.hid>
+In-Reply-To: <440AF8EF.3010707@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [Xenomai-help] Xenomai v2.1-rc4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,34 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Romain Lenglet wrote:
->>> During prepare-kernel.sh I noticed that
+Jan Kiszka wrote:
+> Hannes Mayer wrote:
+>> Hannes Mayer wrote:
+>>> Ciao Jan!
 >>>
->>> Adeos/i386 1.XXXX (newgen) installed.
->>> Links installed.
->>> Build system ready.
->>>
->>> is not printed anymore. Bug or feature ?
->> Feature. --verbose brings this message back, IIRC. I guess
->> that's needed for automated Debian packaging stuff Romain is
->> working on.
+>>> It doesn't seem to make a difference if one uses
+>>> RTDM_IRQ_NONE or RTDM_IRQ_HANDLED.
+>>> With RTDM_IRQ_NONE the IRQ should be passed to linux,
+>>> right ? But it doesn't seem to happen - this brought
+>>> up the "top" problem I've posted a few days ago.
+>> Returning XN_ISR_PROPAGATE passes the grabbed timer
+>> interrupt to Linux and "top" works again.
+>>
 > 
-> Well, it was primarily to make it look more like usual Unix 
-> tools. And I did not understand why there were messages always 
-> printed, and others printed only with --verbose.
-> Anyway, now if nothing is printed it is good news. Error messages 
-> are always printed on the error output even if --verbose is not 
-> set.
+> As forwarding interrupts to the non-realtime domain is not a common
+> use-case of realtime device drivers, I decided to drop the propagation
+> support at RTDM level. So if you are including this mechanism in your
+> demo, please mark this pattern as something RTDM drivers should normally
+> NOT do (and explain what's reason for it here).
 
-Ciao Philippe! Ciao Romain!
+Thanks Jan!
 
-Thanks!
-Otherwise RC4 works nicely here :-)
+I'll add that in a few.
 
 Best regards,
 Hannes.
-
-
 
