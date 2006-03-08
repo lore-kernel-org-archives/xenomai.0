@@ -1,14 +1,12 @@
-Message-ID: <440F3354.3010106@domain.hid>
-Date: Wed, 08 Mar 2006 20:41:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] RTDM mmap and vm_operations
-References: <200603081558.02034.lbocseg@domain.hid>
-In-Reply-To: <200603081558.02034.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBA5694578D9EC1032E07E4C1"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17423.8047.793660.826276@domain.hid>
+Date: Wed, 8 Mar 2006 19:16:15 +0100
+Subject: Re: [Xenomai-core] Error on rtdm skin with --enable-dox-doc
+In-Reply-To: <440F15C9.1020509@domain.hid>
+References: <200603081421.10284.lbocseg@domain.hid> <440F15C9.1020509@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,50 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBA5694578D9EC1032E07E4C1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+ > Rodrigo Rosenfeld Rosas wrote:
+ > > Hi Jan,
+ > > 
+ > > When compiling svn xenomai I noticed the following error with --enable-dox-doc 
+ > > switch:
+ > > 
+ > > CC [M]  kernel/xenomai/skins/rtdm/drvlib.o
+ > > kernel/xenomai/skins/rtdm/drvlib.c:1513:1: error: unterminated #ifdef
+ > > 
+ > 
+ > I just passed this stage with trunk revision 671 without problems
+ > (doxygen 1.4.4). Moreover, there is no #ifdef or related preprocessor
+ > stuff in the latest drvlib.c at line 1513.
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi Jan,
->=20
-> Is there a way of knowing what was the src_addr or pptr data passed to =
+I have a few warnings with doxygen 1.4.2:
 
-> rtdm_mmap_to_user without using the vm_private_data struct? I mean, can=
- I=20
-> obtain those information directly in the vma struct passed to the close=
-=20
-> handler? If so, I could pass a more generic struct to vm_private and us=
-e=20
-> those information,making my life a bit easier... :)
->=20
+ksrc/skins/rtdm/drvlib.c:151: Warning: Member rtdm_task_destroy found in multiple @defgroup groups! The member will be put in group rtdmtask, and not in group rtdmtask
 
-I do not see a clean, official way right now. It would definitely be
-something you have to obtain via vma_area_struct or something that's
-contained in it. The information is likely there - somewhere. But I
-doubt that obtaining it would make your code very portable across
-different kernel versions.
+But the --enable-dox-doc flag should not have any influence on kernel
+compilation.
 
-Jan
+-- 
 
 
---------------enigBA5694578D9EC1032E07E4C1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEDzNUniDOoMHTA+kRAgW8AJ9b5o8lqDHDvevgOkYerm9/kqZcHACeI70v
-PaQ3qTBqHZftY5kbwliaEZM=
-=bjL+
------END PGP SIGNATURE-----
-
---------------enigBA5694578D9EC1032E07E4C1--
+					    Gilles Chanteperdrix.
 
