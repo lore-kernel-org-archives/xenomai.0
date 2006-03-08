@@ -1,11 +1,14 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Date: Wed, 8 Mar 2006 14:33:02 -0300
+Message-ID: <440F15C9.1020509@domain.hid>
+Date: Wed, 08 Mar 2006 18:35:05 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603081433.02339.lbocseg@domain.hid>
-Subject: [Xenomai-core] Xenomai as module changing bzImage
+Subject: Re: [Xenomai-core] Error on rtdm skin with --enable-dox-doc
+References: <200603081421.10284.lbocseg@domain.hid>
+In-Reply-To: <200603081421.10284.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigE06CBF93A103A9030402777E"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,30 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Philippe,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigE06CBF93A103A9030402777E
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I disabled the kernel .config support, recompiled the kernel with latest ip=
-ipe=20
-patch and rebooted my system (Xenomai configured as a module).
+Rodrigo Rosenfeld Rosas wrote:
+> Hi Jan,
+>=20
+> When compiling svn xenomai I noticed the following error with --enable-=
+dox-doc=20
+> switch:
+>=20
+> CC [M]  kernel/xenomai/skins/rtdm/drvlib.o
+> kernel/xenomai/skins/rtdm/drvlib.c:1513:1: error: unterminated #ifdef
+>=20
 
-Then I downloaded last svn Xenomai. Compiled it (after correcting drvlib.c =
-of=20
-rtdm skin) and noted that it has changed the kernel bzImage too, besides=20
-building the modules. Although I can use the new Xenomai modules without=20
-rebooting my system, I can not understand why should bzImage change. Have y=
-ou=20
-any idea?
+I just passed this stage with trunk revision 671 without problems
+(doxygen 1.4.4). Moreover, there is no #ifdef or related preprocessor
+stuff in the latest drvlib.c at line 1513.
 
-Thanks in advance,
+Jan
 
-Rodrigo.
 
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
+--------------enigE06CBF93A103A9030402777E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEDxXJniDOoMHTA+kRAqr7AJ490r3ywmuxFCk2GbikVJzYm+61bACeI73s
+jtCtcrCd4lIZ5Ty/7ZiZ0KM=
+=H0AF
+-----END PGP SIGNATURE-----
+
+--------------enigE06CBF93A103A9030402777E--
 
