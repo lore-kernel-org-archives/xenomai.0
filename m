@@ -1,12 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <440F340A.9040109@domain.hid>
+Date: Wed, 08 Mar 2006 20:44:10 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17423.8047.793660.826276@domain.hid>
-Date: Wed, 8 Mar 2006 19:16:15 +0100
-Subject: Re: [Xenomai-core] Error on rtdm skin with --enable-dox-doc
-In-Reply-To: <440F15C9.1020509@domain.hid>
-References: <200603081421.10284.lbocseg@domain.hid> <440F15C9.1020509@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai as module changing bzImage
+References: <200603081433.02339.lbocseg@domain.hid>
+In-Reply-To: <200603081433.02339.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig88759E022DD9BA15FF83A0FF"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,33 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
- > Rodrigo Rosenfeld Rosas wrote:
- > > Hi Jan,
- > > 
- > > When compiling svn xenomai I noticed the following error with --enable-dox-doc 
- > > switch:
- > > 
- > > CC [M]  kernel/xenomai/skins/rtdm/drvlib.o
- > > kernel/xenomai/skins/rtdm/drvlib.c:1513:1: error: unterminated #ifdef
- > > 
- > 
- > I just passed this stage with trunk revision 671 without problems
- > (doxygen 1.4.4). Moreover, there is no #ifdef or related preprocessor
- > stuff in the latest drvlib.c at line 1513.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig88759E022DD9BA15FF83A0FF
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have a few warnings with doxygen 1.4.2:
+Rodrigo Rosenfeld Rosas wrote:
+> Hi Philippe,
+>=20
+> I disabled the kernel .config support, recompiled the kernel with lates=
+t ipipe=20
+> patch and rebooted my system (Xenomai configured as a module).
+>=20
+> Then I downloaded last svn Xenomai. Compiled it (after correcting drvli=
+b.c of=20
+> rtdm skin) and noted that it has changed the kernel bzImage too, beside=
+s=20
+> building the modules. Although I can use the new Xenomai modules withou=
+t=20
+> rebooting my system, I can not understand why should bzImage change. Ha=
+ve you=20
+> any idea?
 
-ksrc/skins/rtdm/drvlib.c:151: Warning: Member rtdm_task_destroy found in multiple @defgroup groups! The member will be put in group rtdmtask, and not in group rtdmtask
+Even if you turn on module support for all Xenomai components in the 2.1
+series, there are still some bits (the HAL) being compiled directly into
+kernel. So, any modification of headers etc. may trigger a recompilation
+although the binary output will be the same.
 
-But the --enable-dox-doc flag should not have any influence on kernel
-compilation.
-
--- 
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enig88759E022DD9BA15FF83A0FF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEDzQKniDOoMHTA+kRAvPrAJ4lD2RIqGv6a+qQ2qlg5vcusG+9xgCfQoEj
+6ObeG0S/gyojtnSeYTj7Hu4=
+=3bSS
+-----END PGP SIGNATURE-----
+
+--------------enig88759E022DD9BA15FF83A0FF--
 
