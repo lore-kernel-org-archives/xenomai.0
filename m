@@ -1,12 +1,15 @@
-Message-ID: <441028B3.5020001@domain.hid>
-Date: Thu, 09 Mar 2006 14:08:03 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44100E57.6010506@domain.hid>
+Date: Thu, 09 Mar 2006 12:15:35 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai as module changing bzImage
-References: <200603081433.02339.lbocseg@domain.hid>
-In-Reply-To: <200603081433.02339.lbocseg@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] Error on rtdm skin with --enable-dox-doc
+References: <200603081421.10284.lbocseg@domain.hid>	<440F15C9.1020509@domain.hid>	<17423.8047.793660.826276@domain.hid>	<440F2973.6000408@domain.hid>
+	<17423.19362.464622.738321@domain.hid>
+In-Reply-To: <17423.19362.464622.738321@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0E654E77404777CA1A83ACAE"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,49 +19,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi Philippe,
->=20
-> I disabled the kernel .config support, recompiled the kernel with lates=
-t ipipe=20
-> patch and rebooted my system (Xenomai configured as a module).
->=20
-> Then I downloaded last svn Xenomai. Compiled it (after correcting drvli=
-b.c of=20
-> rtdm skin) and noted that it has changed the kernel bzImage too, beside=
-s=20
-> building the modules. Although I can use the new Xenomai modules withou=
-t=20
-> rebooting my system, I can not understand why should bzImage change. Ha=
-ve you=20
-> any idea?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0E654E77404777CA1A83ACAE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Some changes might impact arch-level headers the static portion of the HA=
-L depends on.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > Rodrigo Rosenfeld Rosas wrote:
+>  > >  > > Hi Jan,
+>  > >  > >=20
+>  > >  > > When compiling svn xenomai I noticed the following error with=
+ --enable-dox-doc=20
+>  > >  > > switch:
+>  > >  > >=20
+>  > >  > > CC [M]  kernel/xenomai/skins/rtdm/drvlib.o
+>  > >  > > kernel/xenomai/skins/rtdm/drvlib.c:1513:1: error: unterminate=
+d #ifdef
+>  > >  > >=20
+>  > >  >=20
+>  > >  > I just passed this stage with trunk revision 671 without proble=
+ms
+>  > >  > (doxygen 1.4.4). Moreover, there is no #ifdef or related prepro=
+cessor
+>  > >  > stuff in the latest drvlib.c at line 1513.
+>  > >=20
+>  > > I have a few warnings with doxygen 1.4.2:
+>  > >=20
+>  > > ksrc/skins/rtdm/drvlib.c:151: Warning: Member rtdm_task_destroy fo=
+und in multiple @defgroup groups! The member will be put in group rtdmtas=
+k, and not in group rtdmtask
+>  >=20
+>  > That's totally weird: "You are in rtdmtask, and not in rtdmtask!?" E=
+ven
+>  > more confusing, there is only a single "@defgroup rtdmtask" in the c=
+ode.
+>  >=20
+>  > I think I said this before: doxygen's error reporting sucks! I'm not=
+
+>  > excluding that something is broken here, but I don't know where to l=
+ook.
+>  > Could anyone of you try some older revisions of drvlib.c and
+>  > rtdm.h/rtdm_driver.h to check where the regression(?) may come from?=
 
 >=20
-> Thanks in advance,
->=20
-> Rodrigo.
->=20
-> 	=09
-> _______________________________________________________
-> Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discad=
-or agora!
-> http://br.acesso.yahoo.com
->=20
->=20
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> I have just checked, the error appears with revision 121, an old
+> one. EXPORT_SYMBOL may be the culprit, again...
 >=20
 
+It seems so. Doxygen 1.4.6, e.g., is messing up the RTDM groups.
 
---=20
+I just played with a few workarounds, this one here seems to have the
+effect we need:
 
-Philippe.
+PREDEFINED             =3D DOXYGEN_CPP \
+        "EXPORT_SYMBOL(symbol)=3Dstruct {}"
+
+Alternatively, I could move EXPORT_SYMBOL in drvlib.c out of all doxygen
+groups, giving up the locality of function definition and symbol export
+again. :(
+
+Jan
+
+
+--------------enig0E654E77404777CA1A83ACAE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEEA5XniDOoMHTA+kRAlI1AJ9WG5FuXI6gxI2jPGDu4en372zPsQCfQOT7
+IZrnEMWUJ1e+XOgoP8qpfO0=
+=Stqv
+-----END PGP SIGNATURE-----
+
+--------------enig0E654E77404777CA1A83ACAE--
 
