@@ -1,43 +1,78 @@
-Date: Tue, 28 Feb 2006 06:24:54 -0800
-Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
-From: Steven Seeger <steve@domain.hid>
-Message-ID: <C0299D36.256C%steve@domain.hid>
-In-Reply-To: <44045C75.30107@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="US-ASCII"
-Content-transfer-encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <440F7CC7.40505@domain.hid>
+Date: Thu, 09 Mar 2006 01:54:31 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] Small doc fix for rtbenchmark.h
+References: <200603090130.09536.Sebastian.Smolorz@domain.hid>
+In-Reply-To: <200603090130.09536.Sebastian.Smolorz@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBB05907D1F7FE8D8CD8F1BC0"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Every other RTOS I've ever used would disagree with you. However, I can wrap
-the suspend/resume functions with a call to set period. Thanks for the tip.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBB05907D1F7FE8D8CD8F1BC0
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Steven
+Sebastian Smolorz wrote:
+> Hi Jan,
+>=20
+> here is a fix for the following doxygen warning:
+>=20
+> xenomai/include/rtdm/rtbenchmark.h:146: Warning: end of file while insi=
+de a=20
+> group
+>=20
+> Sebastian
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> --- xenomai/include/rtdm/rtbenchmark.h	2006-03-09 01:13:40.000000000 +0=
+100
+> +++ rtbenchmark.h	2006-03-09 01:13:24.000000000 +0100
+> @@ -138,6 +138,7 @@ typedef struct rtbnch_trace_special {
+> =20
+>  #define RTBNCH_RTIOC_SPECIAL_TRACE_EX   \
+>      _IOW(RTIOC_TYPE_BENCHMARK, 0x25, struct rtbnch_trace_special)
+> +/** @} */
+> =20
+>  /** @} */
+> =20
 
-On 2/28/06 6:21 AM, "Jan Kiszka" <jan.kiszka@domain.hid> wrote:
+Yep, indeed - fixed. Might explain some of the other problems that
+popped up today, err, yesterday...
 
-> Steven Seeger wrote:
-> Just imagine that your task is attached to a continuously running timer
-> as soon as you request this via rt_task_set_periodic. So, if you feel
-> like suspending the task for a while, detach it from that timer again
-> (infinite period). Putting this functionality into the RTOS is a bit
-> overkill in my eyes.
-> 
-> This is a corner use-case, so not everyone should pay for implementing
-> it in a generic way, only the user who really wants it (by having to
-> write a few extra lines).
-> 
-> Jan
-> 
+Thanks,
+Jan
 
+
+--------------enigBB05907D1F7FE8D8CD8F1BC0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFED3zHniDOoMHTA+kRAoVRAJkBSHEdzLAhD3Oa3wkq6Vb/UKAudgCfcDAi
+3udAPLzP+DaUths+7TioRWM=
+=7wVs
+-----END PGP SIGNATURE-----
+
+--------------enigBB05907D1F7FE8D8CD8F1BC0--
 
