@@ -1,12 +1,13 @@
-Message-ID: <44104044.20606@domain.hid>
-Date: Thu, 09 Mar 2006 11:48:36 -0300
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17424.17324.137254.586833@domain.hid>
+Date: Thu, 9 Mar 2006 16:03:08 +0100
 Subject: Re: [Xenomai-help] Xenomai vs. RTLinux
+In-Reply-To: <44104044.20606@domain.hid>
 References: <006f01c64312$a28ab730$a10a10ac@domain.hid>
-In-Reply-To: <006f01c64312$a28ab730$a10a10ac@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+	<44104044.20606@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Christopher Stone <chris@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Christopher Stone escreveu:
-> ...
-> Vendor specific API's are like drugs, once you get hooked on them, it is
-> difficult to incur the cost of kicking the habit. With Xenomai you can use
-> any of a number of skins, but, would be wise to consider the POSIX skin. =
-By
-> using the industry standard POSIX API your code remains portable and more
-> future proof.=20
->  =20
-Actually it depends. At the moment, as far as I know, RTDM drivers are=20
-not able to communicate to POSIX written programs in every way, like it=20
-does with programs written using the native API. So, if there is any=20
-plan to write real-time driver (and RTDM really makes this process much=20
-easier), so I would recommend using the native API instead. Unless=20
-Xenomai is going to support better intercommunication between different=20
-skins, if it is possible, or if someone will take the effort to maintain=20
-a POSIX version of RTDM...
+Rodrigo Rosenfeld Rosas wrote:
+ > Christopher Stone escreveu:
+ > > ...
+ > > Vendor specific API's are like drugs, once you get hooked on them, it is
+ > > difficult to incur the cost of kicking the habit. With Xenomai you can use
+ > > any of a number of skins, but, would be wise to consider the POSIX skin. By
+ > > using the industry standard POSIX API your code remains portable and more
+ > > future proof. 
+ > >   
+ > Actually it depends. At the moment, as far as I know, RTDM drivers are 
+ > not able to communicate to POSIX written programs in every way, like it 
+ > does with programs written using the native API. 
 
-Rodrigo.
+Actually there is a major change around 2.1-rc3: most services of the
+POSIX skins may be used by threads created by other skins. The exceptions to
+this rule are services which involves the "POSIX skin specific" part of
+Xenomai POSIX skin threads, namely only services involving signals and
+cancellation.
+
+Also note that in user-space, the RTDM and POSIX skins are fully integrated.
+
+-- 
 
 
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
-
+					    Gilles Chanteperdrix.
 
