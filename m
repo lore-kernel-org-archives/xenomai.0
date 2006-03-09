@@ -1,14 +1,12 @@
-Message-ID: <440F7DAD.50108@domain.hid>
-Date: Thu, 09 Mar 2006 01:58:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <440FE276.2080609@domain.hid>
+Date: Thu, 09 Mar 2006 10:08:22 +0200
+From: Heikki Lindholm <holindho@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Xenomai vs. RTLinux
-References: <006f01c64312$a28ab730$a10a10ac@domain.hid>
-In-Reply-To: <006f01c64312$a28ab730$a10a10ac@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig71F9BD311739DA3D8FB64D22"
-Sender: jan.kiszka@domain.hid
+References: <440F5F23.7000703@domain.hid> <440F7B35.1050107@domain.hid>
+In-Reply-To: <440F7B35.1050107@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,44 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Christopher Stone <chris@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig71F9BD311739DA3D8FB64D22
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka kirjoitti:
+> Jeff Webb wrote:
+> 
+>>Xenomai developers and users,
+>>
+>>Our company is looking at the possibility of porting our
+>>hardware-in-the-loop (HWIL) simulations from RTLinuxFree to a new
+>>real-time operating system.  We are currently considering Xenomai and
+>>RTLinuxPro as possible options.  I am personally biased towards free
+>>software, but our customers do not necessarily share this bias.  I am
+>>attempting to put together a presentation comparing the advantages and
+>>disadvantages of the two systems  as they would be used in our HWIL
+>>simulations.  Any comments you have would be appreciated.
+>>
+>>We are currently using RTLinuxFree-3.2-pre3 running on Fedora Core 1
+>>(2.4.22 linux kernel) for our in-house HWIL simulations on rack-mounted
+>>x86 PC hardware.  We have been satisfied with the functionality of
+>>RTLinuxFree over the past few years, although we have been disappointed
+>>by the lack of maintenance and development that has occurred since the
+>>primary developers focused their efforts on developing RTLinuxPro. 
+>>Because there is no RTLinuxFree release that supports the 2.6 kernel,
+> 
+> 
+> Well, I'm not following this in every details, but there is something
+> now for RTLinux/GPL (the independent community RTLinux). Anyway, the
+> maintenance situation is not significantly better there - too few users,
+> too few developers.
 
-Christopher Stone wrote:
->> Is there planned support for native AMD x86_64 support?  We have sever=
-al
->> of these machines on our desktops and would like to upgrade our HWIL
->> machines as well.
->=20
-> [Christopher Stone] I definitely plan to add AMD x86_64 support for my =
-XLM
-> project. I have a dual core AMD X2 chip I want to test XLM on. I don't =
-have
-> specific dates when it will be available yet.
-
-Ha! Wasn't there somebody recently asking what to contribute? ;)
-
-Jan
+I did some investigation of these things last year and at least then 
+only thing available
+for linux 2.6 was a patch from fsmlabs, which (1) didn't work, (2) 
+nobody maintained,
+(3) nobody cared about, (4) was x86 only. The word from rtlinux/gpl folk 
+was that they're probably going to use some more generic virtualizer- 
+type-of-thing for 2.6 support instead of porting the existing rtlinux 
+2.4 stuff over.
 
 
---------------enig71F9BD311739DA3D8FB64D22
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>>I wrote some simple test programs to compare the scheduling jitter and
+>>interrupt latency for RTLinuxFree, Xenomai-kernel-space, and
+>>Xenomai-user-space applications.  My tests are not rigorous by any
+>>means, but it seems that the worst-case measurements are pretty
+>>similar.  Xenomai *may* be slightly better from the limited data I have
+>>taken.  Does anyone care to share their own observations?
+> 
+> 
+> Would surprises me. From what I know of RTLinux/GPL (RTAI is similar
+> here, BTW), the critical paths are involving less code than Xenomai.
+> That's due to the different IRQ redirection layers, the nucleus
+> abstraction of Xenomai, maybe also to some yet missing optimisations.
+> Anyway, Xenomai is favouring flexibility and maintainability here over
+> the last microsecond.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+But if the target platform is something beginning with x86_64, few 
+instructions here and there probably won't matter..
 
-iD8DBQFED32tniDOoMHTA+kRAo1GAJ9NDIVWMUB9gT29o3svph/MYZoW9ACfdpYm
-EUfBjs6QaKLSL4phQHdb314=
-=jJ+M
------END PGP SIGNATURE-----
-
---------------enig71F9BD311739DA3D8FB64D22--
+-- Heikki Lindholm
 
