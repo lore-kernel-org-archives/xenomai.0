@@ -1,13 +1,12 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-core] RTDM and Timer functions
-Date: Fri, 10 Mar 2006 10:54:40 -0300
-References: <200603091443.25714.lbocseg@domain.hid> <4410911F.4070507@domain.hid>
-In-Reply-To: <4410911F.4070507@domain.hid>
+Message-ID: <f48df4840603100819v50aa6c75kdb13421ab5a7792@domain.hid>
+Date: Fri, 10 Mar 2006 17:19:47 +0100
+From: "Bruno Rouchouse" <brouchouse@domain.hid>
+Subject: Re: [Xenomai-core] Planetplanet on the web site?
+In-Reply-To: <200603102000.02421.rlenglet@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603101054.41122.lbocseg@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_20802_30595680.1142007587878"
+References: <200603102000.02421.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,92 +16,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Romain Lenglet <rlenglet@domain.hid>
+Cc: xenomai@xenomai.org
 
-Em Quinta 09 Mar=3DE7o 2006 17:33, Jan Kiszka escreveu:
+------=_Part_20802_30595680.1142007587878
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
->Rodrigo Rosenfeld Rosas wrote:
->> Hi Jan,
->>
->> I'm still concerned about the future of RTDM and timer functions. I think
->> there should be some function for starting the timer manually, since the
->> automatic feature don't work great for RTDM drivers.
->>
->> It is not nice to have to run the latency (or any other) program for
->> starting the timer before I can load my driver. And it is not suffice to
->> run it once I booted. After I open/close my rtdm device and reload my
->> driver the problem will occur again and I'll have to re-run the latency
->> program.
+Hi Romain !
+
+For your information Xenomai website currently uses Joomla CMS framework.
+The website is currently hosted by the fsffrance whose sys admin is really
+careful about security issues. This means that we are advised to use debian
+stable packages only. I don't know if such a package exists for Planet (I
+don't find it via debian search engine.)
+
+I need to check first if it is not possible to register news feeds directly
+with Joomla. Maybe it offers this functionality as a module. I'm quite sure
+though I am going to stick to joomla because I noticed that some browsers
+(Konqueror for example) have problems displaying the website correctly !
+
+By the way I encourage anyone having problems with Xenomai website to send
+me a short email (brouchouse@domain.hid) with the problem(s) encountered and
+the version of browser used.
+
+Thanks for the idea though. I am going to take it into consideration and
+will let you know... In the meantime it is always possible to reference any
+blog (or website) about Xenomaiin the weblink section.
+
+Regards,
+
+--
+Bruno Rouchouse
+
+On 3/10/06, Romain Lenglet <rlenglet@domain.hid> wrote:
 >
->Sorry I don't see the problem here.
+> Hi,
 >
-># modprobe xeno_nucleus; cat /proc/xenomai/timer
->status=3D3Doff:setup=3D3D1392:tickval=3D3D0:jiffies=3D3D0
+> How about installing Planet Planet on the Xenomai.org website, to
+> centralize news feeds about Xenomai? "Planet Xenomai"...
+> Planetplanet is a daemon in Python that can be run periodically
+> using cron, to download several news feeds and fusion them into
+> a single static HTML page.
+> http://www.planetplanet.org/
 >
-># modprobe xeno_rtdm; cat /proc/xenomai/timer
->status=3D3Doneshot:setup=3D3D1392:tickval=3D3D1:jiffies=3D3D8113917792696
+> At least, I propose to register my blog. But I have no idea of
+> how many people actually blog about Xenomai?!
 >
->So the timer is running right since when rtdm is loaded?!
+> --
+> Romain LENGLET
+>
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>
 
-Yes, here too.
+------=_Part_20802_30595680.1142007587878
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
->And that simple heartbeat rtdm example on my rt-addon homepage now
->cleanly runs even without any further helper to start some timer.
+Hi Romain !<br>
+<br>
+For your information Xenomai website currently uses Joomla CMS
+framework. The website is currently hosted by the fsffrance whose sys
+admin is really careful about security issues. This means that we are
+advised to use debian stable packages only. I don't know if such a
+package exists for Planet (I don't find it via debian search engine.)<br>
+<br>
+I need to check first if it is not possible to register news feeds
+directly with Joomla. Maybe it offers this functionality as a module.
+I'm quite sure though I am going to stick to joomla because I noticed
+that some browsers (Konqueror for example) have problems displaying the
+website correctly !<br>
+<br>
+By the way I encourage anyone having problems with Xenomai website to
+send me a short email (<a href=3D"mailto:brouchouse@domain.hid">brouchouse@domain.hid=
+mail.com</a>) with the problem(s)
+encountered and the version of browser used.<br>
+<br>
+Thanks for the idea though. I am going to take it into consideration
+and will let you know... In the meantime it is always possible to
+reference any blog (or website) about Xenomaiin the weblink section. <br>
+<br>
+Regards,<br>
+<br>
+--<br>
+Bruno Rouchouse <br>
+<br><div><span class=3D"gmail_quote">On 3/10/06, <b class=3D"gmail_senderna=
+me">Romain Lenglet</b> &lt;<a href=3D"mailto:rlenglet@domain.hid=
+.org">rlenglet@domain.hid</a>&gt; wrote:</span><blockquote c=
+lass=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); ma=
+rgin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Hi,<br><br>How about installing Planet Planet on the <a href=3D"http://Xeno=
+mai.org">Xenomai.org</a> website, to<br>centralize news feeds about Xenomai=
+? &quot;Planet Xenomai&quot;...<br>Planetplanet is a daemon in Python that =
+can be run periodically
+<br>using cron, to download several news feeds and fusion them into<br>a si=
+ngle static HTML page.<br><a href=3D"http://www.planetplanet.org/">http://w=
+ww.planetplanet.org/</a><br><br>At least, I propose to register my blog. Bu=
+t I have no idea of
+<br>how many people actually blog about Xenomai?!<br><br>--<br>Romain LENGL=
+ET<br><br>_______________________________________________<br>Xenomai-core m=
+ailing list<br><a href=3D"mailto:Xenomai-core@domain.hid">Xenomai-core@domain.hid
+</a><br><a href=3D"https://mail.gna.org/listinfo/xenomai-core">https://mail=
+.gna.org/listinfo/xenomai-core</a><br></blockquote></div><br>
 
-Yes, here too. You are right, once the timer is in oneshot mode. My driver=
-=3D
-=3D20
-loads correctly without the helper. Then I start a user application that=3D=
-20
-changes the timer to periodic mode and uses my driver. When I reload my=3D20
-driver, now in periodic mode, the problem raises.
-
-It seems, there is no problem when the timer is set to oneshot. But when=3D=
-20
-turning it to periodic, at least one of rtdm_task_busy_sleep() or=3D20
-rtdm_clock_read() doesn't seem to work. See below:
-
-cat /proc/xenomai/timer
-  status=3D3Dperiodic:setup=3D3D188:tickval=3D3D100000:jiffies=3D3D19972453
-
-start_time =3D3D rtdm_clock_read();
-rtdm_task_busy_sleep(84000);
-temp_time =3D3D rtdm_clock_read();
-rtdm_printk(KERN_INFO "Should be near 84000: %u\n", (unsigned int)
-                   (temp_time-start_time));
-
-Sometimes the result is "Should be near 84000: 100000", that is kind of=3D20
-correct, since the tickval is 100000, although I think that those functions=
-=3D
-=3D20
-in the RTDM driver context should be independent of the tick value set by t=
-=3D
-he=3D20
-user program... Maybe using oneshot in the driver calls and periodic in the=
-=3D
-=3D20
-application... I really don't know what would be the best approach here...
-
-But the worst case is that sometimes I get "Should be near 84000: 0" which=
-=3D
-=3D20
-clearly is a incorrect result.
-
-After I run the latency program, the timer turns to be oneshot again and=3D=
-20
-everything goes right.
-
-What can I do to solve this problem?
-
-Thanks in advance,
-
-Rodrigo.
-
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
-
+------=_Part_20802_30595680.1142007587878--
 
