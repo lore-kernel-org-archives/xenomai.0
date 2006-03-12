@@ -1,13 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4414A869.5020809@domain.hid>
+Date: Mon, 13 Mar 2006 00:02:01 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17428.19764.670152.736415@domain.hid>
-Date: Sun, 12 Mar 2006 17:32:52 +0100
-Subject: Re: [Xenomai-core] PRNG not seeded on AMD K7
-In-Reply-To: <17428.17217.209048.769283@domain.hid>
-References: <fd6a47a90603120709k2dcc2a4h@domain.hid>
-	<17428.17217.209048.769283@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.1
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,31 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Jeroen Van den Keybus wrote:
- >  > When I try to open an ssh connection to or from a PC running Xenomai, I get
- >  > a 'PRNG not seeded' error. However, it only occurs when an RT application is
- >  > running (such as 'latency'). The computer on which this occurs is an AMD
- >  > K7-650. I've tested on a Pentium III 500 as well (nearly same .config) and
- >  > this error doesn't show up then.
- >  > 
- >  > Any idea of where I should start debugging ? I assume that PRNG stands
- >  > for 'Programmable Random Number Generator' or something like that.
- > 
- > See in kernel configuration if you have the CONFIG_HW_RANDOM option
- > enabled, if the module is loaded when the error occurs, and if
- > /dev/urandom exists.
 
-CONFIG_HW_RANDOM is for the /dev/hwrandom device, and libssl uses
-/dev/random or /dev/urandom. /dev/urandom is seeded at boot-time
-by a script (/etc/init.d/urandom on Debian).
+As Alan B. Shepard once put it, "It's been a long way, but we're here". v2.1 final 
+is now on GNA's download area, with only few changes since -rc4. This milestone is 
+important in that most - if not all - of the annoying legacy inherited from the 
+RTAI/fusion times has been resolutely reworked more sanely. Here are the major 
+evolutions you will find in this release, in no particular order:
 
-So FPU hardware, as mentioned by Philippe, is a better candidate.
+- Complete integration of Xenomai's kernel components into the Linux kernel build 
+system, which among other things, enables static builds of Xenomai within a kernel 
+image, while keeping the modular builds available on option.
+- Complete decoupling between Xenomai's kernel and user-space components, which in 
+turn largely improves friendliness toward other languages than C for application 
+developers, and makes an ABI slowly emerge.
+- Improved scalability for supporting resource consuming applications.
+- Fully compatible backports to Linux 2.4 for x86 and ppc32.
+- Two new architecture ports, to ARM and Blackfin.
+- Significant extension of the POSIX API accessible from user-space (shm, named 
+semaphores, cancellation requests, real-time signals).
+- Shared real-time interrupt support.
+- Improvement of the Native API.
+- Extension of the RTDM support.
+- Upgrade of the Adeos support to the latest I-pipe series for all architectures.
+
+And generally speaking, literally tons of fixes, cleanups, optimizations all over 
+the map.
+
+Special thanks to the increasing number of people who contributed code, ideas, 
+review, documentation, help to newcomers.
+
+http://download.gna.org/xenomai/stable/xenomai-2.1.tar.bz2
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
