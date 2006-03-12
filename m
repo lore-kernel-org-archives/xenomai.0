@@ -1,10 +1,10 @@
-Message-ID: <440DF844.1040204@domain.hid>
-Date: Tue, 07 Mar 2006 22:16:52 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44148118.3030409@domain.hid>
+Date: Sun, 12 Mar 2006 21:14:16 +0100
+From: trem <trem@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Spam issues
+Subject: [Adeos-main] x86_64 and adeos
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,11 +15,16 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
+Hi all
 
-Filters on the Adeos list have just been strengthened in order to solve the issue 
-raised by recent spam messages received on this list. Sorry for the annoyance.
+I've got an amd64, and I don't see any x8_64 port. I've found this :
+http://download.gna.org/adeos/patches/attic/v2.6/x86_64/candidates/
 
--- 
+But nothing else about x86_64.  A port to x86_64 is planned ?
+If yes, may I know who works on it ?
 
-Philippe.
+regards,
+trem
+
+
 
