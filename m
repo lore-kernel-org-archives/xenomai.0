@@ -1,16 +1,15 @@
-Message-ID: <4415BB0D.8070808@domain.hid>
-Date: Mon, 13 Mar 2006 19:33:49 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Subject: Re: [Xenomai-core] RTDM and Timer functions
+Date: Mon, 13 Mar 2006 16:19:02 -0300
 References: <200603091443.25714.lbocseg@domain.hid>
-	<4411C646.80802@domain.hid>	<17429.43814.412464.35016@domain.hid>
-	<200603131431.35216.lbocseg@domain.hid>
-In-Reply-To: <200603131431.35216.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB4FAFC26038DFA45A007DEE3"
-Sender: jan.kiszka@domain.hid
+	<200603131415.49256.lbocseg@domain.hid>
+	<200603131458.09074.lbocseg@domain.hid>
+In-Reply-To: <200603131458.09074.lbocseg@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200603131619.02367.lbocseg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,69 +19,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB4FAFC26038DFA45A007DEE3
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Actually, I noted a minor typo error in the documentation:
 
-Rodrigo Rosenfeld Rosas wrote:
-> Em Segunda 13 Mar=E7o 2006 14:25, Gilles Chanteperdrix escreveu:
->=20
->> Jan Kiszka wrote:
->>>> Sometimes the result is "Should be near 84000: 100000", that is kind=
- of
->>>> correct, since the tickval is 100000, although I think that those
->>>> functions in the RTDM driver context should be independent of the ti=
-ck
->>>> value set by the user program... Maybe using oneshot in the driver
->>>> calls and periodic in the application... I really don't know what wo=
-uld
->>>> be the best approach here...
->>> rtdm_clock_read always uses the nucleus clock. Using something differ=
-ent
->>> (e.g. always TSC) would break applications specifying absolute times
->>> derived from the return values of other skins' functions.
->> Maybe adding a service to RTDM would allow users to measure short time=
+" of the this service" should be " of this service"
 
->> intervals with RTDM using the TSC ?
+Best Regards,
+
+Rodrigo.
+____________________________________________________________
+Em Segunda 13 Mar=3DE7o 2006 14:58, Rodrigo Rosenfeld Rosas escreveu:
+
+>Sorry Jan, I was looking at a different documentation. Now I read the right
+>one. It is good. But I didn't understand why didn't you keep the latter
+> note: "The nucleus timer has to be started to obtain valid results." I
+> would include it before the other note.
+>
+>Thank you,
+>
+>Rodrigo.
+>
+>____________________________________________________________
+>
+>Em Segunda 13 Mar=3DE7o 2006 14:15, Rodrigo Rosenfeld Rosas escreveu:
+>>____________________________________________________________
 >>
->> The native (rt_timer_tsc()) and posix (clock_gettime(CLOCK_MONOTONIC))=
+>>Em Segunda 13 Mar=3DE7o 2006 11:54, Rodrigo Rosenfeld Rosas escreveu:
+>>>I liked the note, but I would include another one:
+>>>"When in periodic mode, the time resolution is limited to the tick set to
+>>> the system timer" or something like. Maybe:
+>>>"[If using periodic mode, note that ]The time resolution is limited by t=
+=3D
+he
+>>>system timer tick". Well my English is not that good, so I think you cou=
+=3D
+ld
+>>>give a better description, but I really need this note is very useful.
+>>
+>>Actually, I would add them to rtdm_task_busy_sleep() documentation too.
+>>
+>>Rodrigo.
+>>
+>>
+>>_______________________________________________________
+>>Yahoo! Acesso Grtis - Internet rpida e grtis. Instale o discador agora!
+>>http://br.acesso.yahoo.com
+>>
+>>
+>>_______________________________________________
+>>Xenomai-core mailing list
+>>Xenomai-core@domain.hid
+>>https://mail.gna.org/listinfo/xenomai-core
+>
+>_______________________________________________________
+>Yahoo! Acesso Grtis - Internet rpida e grtis. Instale o discador agora!
+>http://br.acesso.yahoo.com
+>
+>
+>_______________________________________________
+>Xenomai-core mailing list
+>Xenomai-core@domain.hid
+>https://mail.gna.org/listinfo/xenomai-core
 
->> skins have a way to do this.
->=20
-> This would fit great for my needs (and most developers I think)!
->=20
+=09
 
-Will think about it. Actually, I'm not a big fan of this. It creates the
-risk that someone feeds the output of this service into (incompatible)
-timed RTDM services. Even worse, this would work for aperiodic mode but
-fail for periodic.
-
-We would definitely need a good name for it,
-rtdm_clock_read_ex(<clock-id>), rtdm_clock_read_tsc(),
-rtdm_clock_read_monotonic()? I'm not going to break rtdm_clock_read() by
-adding an argument (otherwise, I would have to fix too many drivers on
-my own... :-/).
-
-Jan
+=09
+	=09
+_______________________________________________________=20
+Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
+http://br.yahoo.com/homepageset.html=20
 
 
---------------enigB4FAFC26038DFA45A007DEE3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEFbsNniDOoMHTA+kRAuYrAJ0fyR6rK8YbUFowtuDTsBFSDcbgCgCdEA/3
-/WuKCuMCABi3kgoVpvJB9zo=
-=1knq
------END PGP SIGNATURE-----
-
---------------enigB4FAFC26038DFA45A007DEE3--
 
