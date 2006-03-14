@@ -1,12 +1,11 @@
-Message-ID: <b647ffbd0603140523x11dfc345n@domain.hid>
-Date: Tue, 14 Mar 2006 15:23:04 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17430.50430.76997.550310@domain.hid>
+Date: Tue, 14 Mar 2006 14:28:30 +0100
 Subject: Re: [Xenomai-help] interrupt wait problem
 In-Reply-To: <44168DA0.3090506@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 References: <44168DA0.3090506@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,35 +19,26 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: marcellin <marcellin.fotze@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 14/03/06, marcellin <marcellin.fotze@domain.hid> wrote:
+marcellin wrote:
+ > 
+ > 
+ > Hi, i'm trying to use the RealTimeClock IRQ 8, with a xenomai real time 
+ > task. I configure the RTC to have a periodic interrupt on it with the 
+ > linux standard API, and it works. After when i want to catch the IRQ 8 
+ > in a xenomai real time task i have a problem a error ( " Operation not 
+ > permitted ") with the " rt_intr_wait " fonction. Is there a special 
+ > initialisation or configuration to make with the kernel or Xenomai ?
 
->
-> //in the irq task
->
->
-> err =3D rt_intr_wait( &intr_desc,TIMEOUT );
->                      if(err){
->            printf("AcqProcess -> failed to wait interrupt :
-> %s",strerror(-err));
->        }
+As mentioned by Jan, rt_intr_wait() and generally every service which
+block its caller may only be called from a real-time task, i.e. a task
+created with rt_task_create() or made real-time with rt_task_shadow().
 
-On success, rt_intr_wait() returns a positive value equal to a number
-of currently pending interrupts and not 0.
+Also note that Xenomai system timer allow high frequency periodic
+tasks without resorting to the RTC, see rt_task_set_periodic() and
+rt_task_wait_period() services.
 
-Although, I don't know how e.g. 1 would be interpreted as "an
-operation not permited" with strerror(). strerror(-1) should have
-given an "unknown error" or smth like this.
-
-Anyway, please take a look at what exactly the return value is :
-negative or positive.
+-- 
 
 
->
-> regards
->
-> Marcell1
-
---
-Best regards,
-Dmitry Adamushko
+					    Gilles Chanteperdrix.
 
