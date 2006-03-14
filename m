@@ -1,10 +1,10 @@
-Message-ID: <44168DA0.3090506@domain.hid>
-Date: Tue, 14 Mar 2006 10:32:16 +0100
+Message-ID: <44169F39.2060904@domain.hid>
+Date: Tue, 14 Mar 2006 11:47:21 +0100
 From: marcellin <marcellin.fotze@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] interrupt wait problem
+Subject: [Xenomai-help] another question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,54 +16,90 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+Sorry, but with this tiny program i have the same error : Operation not 
+permitted. What is wrong ?
+
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+#include <getopt.h>
+#include <time.h>
+#include <native/task.h>
+#include <native/mutex.h>
+#include <native/timer.h>
+#include <native/sem.h>
+#include <native/intr.h>
+#include <native/cond.h>
+#include <rtdm/rtbenchmark.h>
+#include <linux/rtc.h>
+#include <sys/ioctl.h>
+//#include <sys/time.h>
+//#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
-Hi, i'm trying to use the RealTimeClock IRQ 8, with a xenomai real time 
-task. I configure the RTC to have a periodic interrupt on it with the 
-linux standard API, and it works. After when i want to catch the IRQ 8 
-in a xenomai real time task i have a problem a error ( " Operation not 
-permitted ") with the " rt_intr_wait " fonction. Is there a special 
-initialisation or configuration to make with the kernel or Xenomai ?
+RT_TASK task;
 
 
-my conf : kernel 2.6.15.1 , Xenomai-2.1-rc4
+RT_INTR intr_desc;
 
-in my program
+RT_COND cond;
 
-//initialisation
-             err = rt_intr_create(&intr_desc,"IRQ8",IRQ8,I_PROPAGATE);
-             if(err){
-           printf("AcqProcess -> failed to create interupt object : 
-%s",strerror(-err));
-       }
-                  err = rt_intr_enable(&intr_desc);
-             if(err){
-           printf("AcqProcess -> failed to enable interupt object : 
-%s",strerror(-err));
-       }
-             err = 
-rt_task_create(&time_task,"SecondTask",TASK_STKSZ,TASK_PRIO,T_FPU|T_JOINABLE); 
+RT_MUTEX mutextest;
 
-       if(err){
-           printf("AcqProcess -> failed to create task : 
-%s",strerror(-err));
-       }
-              rt_task_start(&time_task,&timer_handler_thread,NULL);
+int err;
 
+void mytask(void * cookie)
+{
+  sleep(1);
+  err = rt_cond_signal(&cond);
+  if(err != 0){
+    printf("\nrt_cond_signal : %s",strerror(-err));
+  }
+         
 
+}
 
+int main (int argc, char **argv)
+{
 
+  mlockall(MCL_CURRENT | MCL_FUTURE);
+   
+  rt_timer_set_mode(TM_ONESHOT);
 
+  err = rt_cond_create(&cond,"condition");
+  if(err != 0){
+    printf("\nrt_cond_create : %s",strerror(-err));
+  }
+  err = rt_mutex_create(&mutextest,"mut");
+  if(err != 0){
+    printf("\nrt_mutex_create : %s",strerror(-err));
+  }
+ 
+  err = rt_task_create(&task,"SecondTask",0,99,0);
+  if(err != 0){
+    printf("\nrt_task_create : %s",strerror(-err));
+  }
+  err = rt_task_start(&task,&mytask,NULL);
+  if(err != 0){
+    printf("\nrt_task_start : %s",strerror(-err));
+  }
+ 
+ 
+  err = rt_cond_wait(&cond,&mutextest,TM_INFINITE);
+  if(err != 0){
+    printf("\nrt_cond_wait : %s",strerror(-err));
+  }
+  printf("\nend \n");
+ 
+  retrurn(0);
 
-//in the irq task
-
-
-err = rt_intr_wait( &intr_desc,TIMEOUT );
-                     if(err){
-           printf("AcqProcess -> failed to wait interrupt : 
-%s",strerror(-err));
-       }
-
+}
 
 regards
 
