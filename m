@@ -1,12 +1,12 @@
-Message-ID: <441455C5.3020808@domain.hid>
-Date: Sun, 12 Mar 2006 18:09:25 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4416888E.1010608@domain.hid>
+Date: Tue, 14 Mar 2006 10:10:38 +0100
+From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] user mode vs. kernel module
 References: <44113E39.1010902@domain.hid> <44140395.7090702@domain.hid>
 In-Reply-To: <44140395.7090702@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,27 +19,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
+Philippe Gerum escribi=F3:
 > Ignacio Garc=EDa P=E9rez wrote:
->=20
 >> Hi,
 >>
->> So far I've had my application implemented entirely as a kernel module=
-=20
->> with some user mode helper programs. I've had in mind changing to user=
-=20
->> mode but never felt compelled enough.
+>> So far I've had my application implemented entirely as a kernel=20
+>> module with some user mode helper programs. I've had in mind changing=20
+>> to user mode but never felt compelled enough.
 >>
->> Now, having a new requirement to implement, I think it's the moment to=
-=20
->> give it a try, and I'm porting it. I have a couple of questions:
+>> Now, having a new requirement to implement, I think it's the moment=20
+>> to give it a try, and I'm porting it. I have a couple of questions:
 >>
->> 1- How significative, in real world terms, is the overhead involved in=
-=20
->> operaing in user mode?. As far as I know all operations are executed=20
->> via "pods" which involve one or more system calls and context=20
->> switches. I'm using a Geode board right now but there are plans to=20
->> move to a more low-end platform (486).
+>> 1- How significative, in real world terms, is the overhead involved=20
+>> in operaing in user mode?. As far as I know all operations are=20
+>> executed via "pods" which involve one or more system calls and=20
+>> context switches. I'm using a Geode board right now but there are=20
+>> plans to move to a more low-end platform (486).
 >>
 >> 2- ioperm. This is a true headache. I've spent countless hours=20
 >> debugging this and banging my head agaist the wall. I'm not 100% sure=20
@@ -62,41 +57,19 @@ Philippe Gerum wrote:
 >> mode so everything works.
 >>
 >> Is this right?
->=20
->=20
+>
 > No.
->=20
+>
 > . If so, I find this extremely inconvenient...
->=20
 >>
->=20
+>
 > Fixed in the repository. Use iopl(3) as a work-around, or resync.
->=20
+Whoa. Now that's a quick fix. I'll go for the cutting edge svn version,=20
+though as pointed out in another message, I must anyway use iopl to=20
+access ports above 0x3FF.
 
-Btw, the fix concerns the active i/o bitmap ownership in the TSS for kern=
-el=20
-versions >=3D 2.6.15, but the segfault you encounter is likely an applica=
-tion error:=20
-ioperm() cannot be used for ports above 0x3ff. You must resort to using i=
-opl() to=20
-access port address 0x443.
+Thank you.
 
->> Nacho.
->>
->>
->>
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->=20
->=20
+Nacho.
 
-
---=20
-
-Philippe.
 
