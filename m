@@ -1,85 +1,88 @@
-Message-ID: <44046C40.9020400@domain.hid>
-Date: Tue, 28 Feb 2006 16:29:04 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] Spreading Xenomai
+Date: Tue, 14 Mar 2006 10:57:12 -0300
+References: <44169AE8.5080204@domain.hid>
+In-Reply-To: <44169AE8.5080204@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
-References: <C029A89A.2576%steve@domain.hid>
-In-Reply-To: <C029A89A.2576%steve@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200603141057.13029.lbocseg@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Steven Seeger <steve@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Steven Seeger wrote:
-> It seems to me that the RTOS should just stop accruing overruns for any
-> suspended thread. What's the point of even allowing it to stay on the old
-> timeline?
+Hi Jan, I liked your idea.
 
-Because set_periodic/wait_period are about defining a series of absolute dates 
-forming a continuous timeline, the fact that a thread goes suspending instead of 
-waiting for the next work cycle does not change the fact that the clock is still 
-ticking.
+I'm finhishing a first version (very limited while conforming to V4L2)=3D20
+framegrabber driver using RTDM and could write about it, but since I cannot=
+=3D
+=3D20
+show the Data Translation specific code, I could not publish the driver=3D20
+source code in any site. But I can still write an idea about the driver if =
+=3D
+it=3D20
+is from interest. But I think, reading the articles on LinuxDevices, that t=
+=3D
+he=3D20
+space is very limited and, from the moment, I think it is more appropriate =
+=3D
+to=3D20
+speak more generally about Xenomai. Cite RTDM as an advantage and you can=
+=3D20
+even say that there are some real-time drivers built into it, like serial,=
+=3D
+=3D20
+framegrabber, etc.
 
-  This algorithm, albeit implemented in kernel modules with classic
-> RTAI, never had an issue.
-> 
-> Well, everything works now with new set_periodic calls, so I guess we can
-> all be happy now.
-> 
-> Steven
-> 
-> On 2/28/06 7:10 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
-> 
-> 
->>Steven Seeger wrote:
->>
->>>Every other RTOS I've ever used would disagree with you. However, I can wrap
->>
->>set_periodic/wait_period are used to define a timeline, with a base period
->>dedicated to process a bounded work cycle. If your application decides to kill
->>the 
->>timeline by skipping work cycles voluntarily in order to process e.g. error
->>states 
->>or interactive break, it needs to reset the timeline by calling set_periodic
->>anew, 
->>which seems quite reasonable to do, since the old timeline is now dead in the
->>water. If this is not some error recovery work or break state, but regular
->>processing, then it should fit in the normal work cycle, otherwise there is no
->>point in using set_periodic/wait_period to time it in the first place.
->>
->>Beyond that, comparing with other RTOS behaviours does not fly that well,
->>because 
->>some which actually implement this kind of construct might well raise an
->>exception 
->>to some health manager entity for signaling the overrun (e.g. arinc653), in
->>which 
->>case, one would end up having to hack the error handler so that it swallows
->>those 
->>exceptions silently, for the interesting purpose of making a valid case out of
->>an 
->>error case...
->>
->>We could pass rt_task_wait_period() a pointer to an integer that would collect
->>the 
->>count of overruns, and reset this count after the first overrun has been
->>signaled. 
->>But this would not fix the initial problem in the application, though.
->>
-> 
-> 
-> 
+Well, if you think I can contribute somehow, feel free to contact me.
 
+Rodrigo.
 
--- 
+____________________________________________________________
+Em Ter=3DE7a 14 Mar=3DE7o 2006 07:28, Jan Kiszka escreveu:
 
-Philippe.
+>Hi,
+>
+>now that 2.1 is out and very likely also very stable, I feel like having
+>to bring this topic up again: There should be more announcements of this
+>project outside its own circle.
+>
+>When reading articles about proprietary real-time Linux variants now
+>almost once a week on LinuxDevices, I always think that there should be
+>at least once some statement about this powerful alternative. Moreover,
+>there are certainly dozens of other forums for ringing the bells.
+>
+>We first need some concept what to present, then maybe a long version
+>for forums that give us the space and a shorter one for the rest.
+>Philippe recently posted interesting statements, comparing the Xenomai
+>and the preemp-rt way - certainly good input. Every skin maintainer
+>could contribute a paragraph. References to driver projects could be
+>given. Short descriptions of ongoing projects would be nice, including
+>commercial ones when possible. And so forth...
+>
+>Well, I would like to trigger this here, I may contribute a few lines
+>from my focus, but I can't take over the overall organisation of the
+>final writing. But I think that creating such an overview article here
+>on this list could reduce the individual effort and would reflect best
+>the strong community behind this project.
+>
+>Comments, suggestions, volunteers?
+>
+>Jan
+
+	=09
+_______________________________________________________=20
+Novo Yahoo! Messenger com voz: Instale agora e fa=E7a liga=E7=F5es de gra=
+=E7a.=20
+http://br.messenger.yahoo.com/
+
 
