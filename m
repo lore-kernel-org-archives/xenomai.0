@@ -1,10 +1,14 @@
-Message-ID: <44169F39.2060904@domain.hid>
-Date: Tue, 14 Mar 2006 11:47:21 +0100
-From: marcellin <marcellin.fotze@domain.hid>
+Message-ID: <4416AD0E.9040703@domain.hid>
+Date: Tue, 14 Mar 2006 12:46:22 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] another question
+Subject: Re: [Xenomai-help] another question
+References: <44169F39.2060904@domain.hid>
+In-Reply-To: <44169F39.2060904@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9BDE82F766E38118F3AF0225"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,94 +18,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: marcellin <marcellin.fotze@domain.hid>
+Cc: xenomai@xenomai.org
 
-Sorry, but with this tiny program i have the same error : Operation not 
-permitted. What is wrong ?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9BDE82F766E38118F3AF0225
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-#include <sys/mman.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <signal.h>
-#include <getopt.h>
-#include <time.h>
-#include <native/task.h>
-#include <native/mutex.h>
-#include <native/timer.h>
-#include <native/sem.h>
-#include <native/intr.h>
-#include <native/cond.h>
-#include <rtdm/rtbenchmark.h>
-#include <linux/rtc.h>
-#include <sys/ioctl.h>
-//#include <sys/time.h>
-//#include <sys/types.h>
-#include <fcntl.h>
-#include <errno.h>
+marcellin wrote:
+> Sorry, but with this tiny program i have the same error : Operation not=
+
+> permitted. What is wrong ?
+>=20
+> ...
+> int main (int argc, char **argv)
+> {
+>=20
+>  mlockall(MCL_CURRENT | MCL_FUTURE);
+>    rt_timer_set_mode(TM_ONESHOT);
+>=20
+>  err =3D rt_cond_create(&cond,"condition");
+>  if(err !=3D 0){
+>    printf("\nrt_cond_create : %s",strerror(-err));
+>  }
+>  err =3D rt_mutex_create(&mutextest,"mut");
+>  if(err !=3D 0){
+>    printf("\nrt_mutex_create : %s",strerror(-err));
+>  }
+>=20
+>  err =3D rt_task_create(&task,"SecondTask",0,99,0);
+>  if(err !=3D 0){
+>    printf("\nrt_task_create : %s",strerror(-err));
+>  }
+>  err =3D rt_task_start(&task,&mytask,NULL);
+>  if(err !=3D 0){
+>    printf("\nrt_task_start : %s",strerror(-err));
+>  }
+>=20
+>=20
+>  err =3D rt_cond_wait(&cond,&mutextest,TM_INFINITE);
+
+You have to map your main thread to a native thread before you can
+invoke a blocking RT service. Check rt_task_shadow() (and don't forget
+to clean it up on exit).
+
+>  if(err !=3D 0){
+>    printf("\nrt_cond_wait : %s",strerror(-err));
+>  }
+>  printf("\nend \n");
+>=20
+>  retrurn(0);
+>=20
+> }
+>=20
+> regards
+>=20
+> Marcell1
+>=20
+
+Jan
 
 
-RT_TASK task;
+--------------enig9BDE82F766E38118F3AF0225
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-RT_INTR intr_desc;
+iD8DBQFEFq0OniDOoMHTA+kRAo+gAJ97UZY5mHhyw+2GOgNxtUmYDRKN4wCeLWJT
+HZ2PZlhQz1cf7lhs2iJDBVY=
+=3cvl
+-----END PGP SIGNATURE-----
 
-RT_COND cond;
-
-RT_MUTEX mutextest;
-
-int err;
-
-void mytask(void * cookie)
-{
-  sleep(1);
-  err = rt_cond_signal(&cond);
-  if(err != 0){
-    printf("\nrt_cond_signal : %s",strerror(-err));
-  }
-         
-
-}
-
-int main (int argc, char **argv)
-{
-
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-   
-  rt_timer_set_mode(TM_ONESHOT);
-
-  err = rt_cond_create(&cond,"condition");
-  if(err != 0){
-    printf("\nrt_cond_create : %s",strerror(-err));
-  }
-  err = rt_mutex_create(&mutextest,"mut");
-  if(err != 0){
-    printf("\nrt_mutex_create : %s",strerror(-err));
-  }
- 
-  err = rt_task_create(&task,"SecondTask",0,99,0);
-  if(err != 0){
-    printf("\nrt_task_create : %s",strerror(-err));
-  }
-  err = rt_task_start(&task,&mytask,NULL);
-  if(err != 0){
-    printf("\nrt_task_start : %s",strerror(-err));
-  }
- 
- 
-  err = rt_cond_wait(&cond,&mutextest,TM_INFINITE);
-  if(err != 0){
-    printf("\nrt_cond_wait : %s",strerror(-err));
-  }
-  printf("\nend \n");
- 
-  retrurn(0);
-
-}
-
-regards
-
-Marcell1
+--------------enig9BDE82F766E38118F3AF0225--
 
