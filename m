@@ -1,79 +1,89 @@
-Message-ID: <fd6a47a90602280729xb39e0f4l@domain.hid>
-Date: Tue, 28 Feb 2006 16:29:52 +0100
-From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
-Subject: Re: [Xenomai-help] Page faults
-In-Reply-To: <440466C6.9050706@domain.hid>
+Message-ID: <44184CEA.2000901@domain.hid>
+Date: Wed, 15 Mar 2006 18:20:42 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_12941_15140911.1141140592823"
-References: <fd6a47a90602280622o4cfb2b79g@domain.hid>
-	<440466C6.9050706@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <1CFEB358338412458B21FAA0D78FE86D02CABF1C@rennsmail02.eu.thmulti.com>
+In-Reply-To: <1CFEB358338412458B21FAA0D78FE86D02CABF1C@rennsmail02.eu.thmulti.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig440CA6F5E6EA052D7F99C7BD"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Fillod Stephane <stephane.fillod@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_12941_15140911.1141140592823
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig440CA6F5E6EA052D7F99C7BD
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
->
-> Maybe not all of your user memory is cleanly locked and got swapped out
-> (swapping activated?). If you don't see kernel oopses and your programs
-> don't receive segfaults, these faults are references to swapped out or
-> not yet mapped in pages. BTW, what does the kernel console tell you?
+Fillod Stephane wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>  > Likely too simple: The periodic IRQ seems to pop up on every CPU
+> so that
+>>>  > the TSC could be recorded, but will this happen synchronously? At
+> least
+>>>  > we will see (IRQ) jitters, and those jitters could already create
+> in the
+>>>  > single-CPU case a non-monotonic clock...
+>>>
+>>> I do not know how this issue is solved in Linux, but there seem to be=
+
+> a
+>>> simple solution: before adding the tsc offset to the last tick time,
+>>> this tsc offset should be compared with the tick duration in tsc
+>>> counts; if it is greater, then replace with the tick duration in tsc.=
+
+>>>
+>> Hmm, I would rather express it in absolute tsc values, i.e. always sav=
+e
+>> the tuple (absolute_tsc, jiffies):
+>>
+>> [timer IRQ]
+>> new_tsc =3D read_rsc() - old_tsc;
+>> if (new_tsc < old_tsc + period_in_tsc_ticks)
+>> 	new_tsc =3D old_tsc + period_in_tsc;
+>> old_tsc =3D new_tsc;
+>>
+>> Disclaimer: I haven't thought about potential accuracy side effects of=
+
+>> this implementation, e.g. what would happen over the long term if the
+>> condition is always fulfilled and executed...
+>=20
+> Aha! the wonderful world of PLL's :-)
+>=20
+
+Yes! I was waiting for someone to throw this in ;). But do we really
+need them, or are there so cheap implementations that the overhead
+doesn't matter?
+
+Jan
 
 
-I have a mlockall(MCL_CURRENT | MCL_FUTURE) in my main() (non-RT) task
-alright. Do I need to repeat that for the real-time tasks as well ?
+--------------enig440CA6F5E6EA052D7F99C7BD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-I'm quite certain that my kernel is configured for swapping. I did not see
-any harm in it, as a mlockall() was given. Should I try turning it off (if
-so, where) ?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-I do not see 'oopses' and the dmesg log is clean, apart from one
-incidental spurious IRQ7 interrupt. Is 'dmesg' what you mean by 'kernel
-console' ?
+iD8DBQFEGEzqniDOoMHTA+kRAp3pAJ4gwbVHac3yruhDfnk+sccJ5QEoqwCfT5fF
+94W/PLn0XiT+RXVTjuIpU2Y=
+=Hou0
+-----END PGP SIGNATURE-----
 
-
-Jeroen.
-
-------=_Part_12941_15140911.1141140592823
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<div>
-<blockquote class=3D"gmail_quote" style=3D"PADDING-LEFT: 1ex; MARGIN: 0px 0=
-px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Maybe not all of your user memor=
-y is cleanly locked and got swapped out<br>(swapping activated?). If you do=
-n't see kernel oopses and your programs
-<br>don't receive segfaults, these faults are references to swapped out or<=
-br>not yet mapped in pages. BTW, what does the kernel console tell you?</bl=
-ockquote>
-<div>&nbsp;</div>
-<div>I have a mlockall(MCL_CURRENT | MCL_FUTURE) in my main() (non-RT) task=
- alright. Do I need to repeat that for the real-time tasks as well ?</div>
-<div>&nbsp;</div>
-<div>I'm quite certain that my kernel is configured for swapping. I did not=
- see any harm in it, as a mlockall() was given. Should I try turning it off=
- (if so, where) ?</div>
-<div>&nbsp;</div>
-<div>I do not see 'oopses' and the dmesg log is clean, apart from one incid=
-ental&nbsp;spurious IRQ7 interrupt. Is 'dmesg' what you mean by 'kernel con=
-sole' ?</div>
-<div>&nbsp;</div>
-<div>&nbsp;</div>
-<div>Jeroen.</div>
-<div>&nbsp;</div></div>
-
-------=_Part_12941_15140911.1141140592823--
+--------------enig440CA6F5E6EA052D7F99C7BD--
 
