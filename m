@@ -1,12 +1,13 @@
-From: "Christopher Stone" <chris@domain.hid>
-Subject: RE: [Xenomai-core] Spreading Xenomai
-Date: Wed, 15 Mar 2006 12:31:17 -0500
-Message-ID: <009301c64856$45edfd90$a10a10ac@domain.hid>
+Message-ID: <44189C13.3010301@domain.hid>
+Date: Wed, 15 Mar 2006 23:58:27 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>	<44180FB8.7080200@domain.hid>
+	<17432.5656.591747.248941@domain.hid>
+In-Reply-To: <17432.5656.591747.248941@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <44169AE8.5080204@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,70 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: 'xenomai-core' <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-I will volunteer to put together this article. Due to my current work
-schedule, I will not be able to do it until the second week of April.
-However, this gives some time for those that want to contribute to put
-something together and send it to me at chris@domain.hid.
-
-My concept for the article would be:
-1) A high level overview of what is Xenomai.
-2) The roadmap for Xenomai and it's enablement of Industrial Grade Linux.
-2a) Dispel the myth about the mutual exclusion of Xenomai and rt-preempt
-3) Real world examples of Xenomai in use.
-
-In order to do this, I need input from contributors as follows:
-1) I need to know the roadmap for Xenomai. I can use Philippe's posting
-concerning rt-preempt, but, I need to know more about the vision for
-Xenomai.
-2) I need descriptions of real world users of Xenomai, both commercial and
-research.
-
-I also welcome any input on the proposed content of the article.
-
-----------------------------------------
-Christopher Stone
-Principal
-Sombrio Systems Inc.
-www.openembedded.biz
-613-831-1892
-
-> -----Original Message-----
-> From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
-> Sent: March 14, 2006 5:29 AM
-> To: xenomai-core
-> Subject: [Xenomai-core] Spreading Xenomai
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > At worst, you would see an old timestamp from a previous shot while the timer IRQ 
+>  > announcing the most accurate one is still outstanding but untaken, but I think 
+>  > that you would still have something behaving in a monotonic way though.
+>  > 
+>  > > Does anyone ever studied if and how Linux synchronises across CPUs?
+>  > > There was some activity around the problematic AMD64 multicores, but I
+>  > > haven't looked at the details and if it's actually solved now.
+>  > > 
+>  > 
+>  > Only once during boot AFAICT, see arch/i386/kernel/smpboot.c. This said, TSC 
+>  > synchronization would not work on NUMA boxen.
 > 
-> Hi,
+> I think Jan is talking about using TSC to get intra-ticks precise clock,
+> by adding tsc offsets to the time derived from the clock irqs count.
+> This would allow, for example, to run the "latency" test with the timer
+> set in periodic mode.
 > 
-> now that 2.1 is out and very likely also very stable, I feel like having
-> to bring this topic up again: There should be more announcements of this
-> project outside its own circle.
+> The issue with non-monotonic values happens if two clock interrupts are
+> distant from a bit more than one tick, because of the jitter. Reading
+> the time just before the second irq then yield a greater value than the
+> one read just after the second irq.
 > 
-> When reading articles about proprietary real-time Linux variants now
-> almost once a week on LinuxDevices, I always think that there should be
-> at least once some statement about this powerful alternative. Moreover,
-> there are certainly dozens of other forums for ringing the bells.
-> 
-> We first need some concept what to present, then maybe a long version
-> for forums that give us the space and a shorter one for the rest.
-> Philippe recently posted interesting statements, comparing the Xenomai
-> and the preemp-rt way - certainly good input. Every skin maintainer
-> could contribute a paragraph. References to driver projects could be
-> given. Short descriptions of ongoing projects would be nice, including
-> commercial ones when possible. And so forth...
-> 
-> Well, I would like to trigger this here, I may contribute a few lines
-> from my focus, but I can't take over the overall organisation of the
-> final writing. But I think that creating such an overview article here
-> on this list could reduce the individual effort and would reflect best
-> the strong community behind this project.
-> 
-> Comments, suggestions, volunteers?
-> 
-> Jan
 
+The issue that worries me - provided that we bound the adjustment offset to the 
+duration of one tick after some jittery - is that any attempt to get intra-tick 
+precision would lead to a possible discrepancy regarding the elapsed time 
+according to those two different scales, between the actual count of jiffies 
+tracked by the timer ISR on the timekeeper CPU, and the corrected time value 
+returned by rtdm_read_clock. And this discrepancy would last for the total 
+duration of the jitter. E.g., for a 100 us period, xnpod_get_time() could return 2 
+albeit rtdm_read_clock returns 300, instead of 200. Spuriously mixing both units 
+in applications would lead to some funky chaos.
 
+-- 
 
+Philippe.
 
