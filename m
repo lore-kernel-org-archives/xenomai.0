@@ -1,10 +1,15 @@
-Message-ID: <44182400.1050907@domain.hid>
-Date: Wed, 15 Mar 2006 15:26:08 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <441845EA.3070602@domain.hid>
+Date: Wed, 15 Mar 2006 17:50:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] SVN usage
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>
+	<17432.6129.478721.712374@domain.hid>
+In-Reply-To: <17432.6129.478721.712374@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF767431C791BB64E7A8A4F12"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,51 +19,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF767431C791BB64E7A8A4F12
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Likely too simple: The periodic IRQ seems to pop up on every CPU so =
+that
+>  > the TSC could be recorded, but will this happen synchronously? At le=
+ast
+>  > we will see (IRQ) jitters, and those jitters could already create in=
+ the
+>  > single-CPU case a non-monotonic clock...
+>=20
+> I do not know how this issue is solved in Linux, but there seem to be a=
+
+> simple solution: before adding the tsc offset to the last tick time,
+> this tsc offset should be compared with the tick duration in tsc
+> counts; if it is greater, then replace with the tick duration in tsc.
+>=20
+
+Hmm, I would rather express it in absolute tsc values, i.e. always save
+the tuple (absolute_tsc, jiffies):
+
+[timer IRQ]
+new_tsc =3D read_rsc() - old_tsc;
+if (new_tsc < old_tsc + period_in_tsc_ticks)
+	new_tsc =3D old_tsc + period_in_tsc;
+old_tsc =3D new_tsc;
+
+Disclaimer: I haven't thought about potential accuracy side effects of
+this implementation, e.g. what would happen over the long term if the
+condition is always fulfilled and executed...
+
+Jan
 
 
-This is a quick note to provide everyone using Xenomai's SVN repositories the 
-basic survival kit:
+--------------enigF767431C791BB64E7A8A4F12
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-- Our repositories are hosted on the GNA site, which provides us with all the 
-needed SCM infrastructure, among other things. The proper URL to visit in order to 
-get started is this one: http://gna.org/svn/?group=xenomai
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-- The SCM we use there is Subversion ("SVN"). Subversion does not really impose 
-any directory layout to hold its contents, but strongly recommends using one in 
-particular, though. And since we are good boys, we use it too. The directories 
-below can be found at the top of our SVN area, and we use them as follows:
-	
-	trunk/ is used for bleeding edge Xenomai development toward the next version, 
-major or minor (e.g. from 1.x -> 2.x, or 2.x -> 2.y). Contributors with SVN write 
-access try to keep this tree in a reasonably good shape, usually in a compilable 
-state at least, but it's not always possible to only commit tested and validated 
-code in this branch. Actually, it would even be counter-productive, since new 
-developments need to have [brave] contributors giving them hell, and as many 
-eyeballs as possible reviewing them. Therefore, don't use this tree for production 
-or otherwise required-to-be-stable systems, unless you really, really know what 
-you are doing. The trunk is currently heading to v2.2.
+iD8DBQFEGEXqniDOoMHTA+kRAlFZAJ4k5SZx6//H6JoyHZWgIiCqn9jiggCfQrXV
+X/KoWAKil8eE8e0UUk3yedQ=
+=yuB2
+-----END PGP SIGNATURE-----
 
-	tags/ is used to hold frozen snapshots of the trunk or maintenance branches, 
-taken at the exact moment each release is made. At any point in time, when you 
-need an older or the most recent release of Xenomai - for which you can also find 
-an archive on the project's download area with the very same contents -, just tap 
-into this directory. You will likely find what you are looking for. Both testing 
-(i.e. -rc) and deemed stable versions are available from there.
-
-	branches/ is used to hold the maintenance branches, i.e. SVN trees of released 
-stable versions that entered a maintenance cycle. Those trees get updated over 
-time with important/desirable fixes. Those updates never alter the functionalities 
-or API specs of the base version, they are only there to fix stability or code 
-correctness issues. For instance, v2.1 has now entered the maintenance cycle since 
-it has been released as being the most recent stable Xenomai version. To this end, 
-the 2.1.x tree has appeared under the branches/ top-level directory. Fixes for 
-v2.1 will be done on this tree, and from time to time, a snapshot of it will be 
-taken and copied to the tags/ top-level, leading to v2.1.1, v2.1.2 and so on. We 
-currently have two maintenance branches, respectively for the v2.0 and v2.1 base 
-versions.
-
--- 
-
-Philippe.
+--------------enigF767431C791BB64E7A8A4F12--
 
