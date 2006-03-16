@@ -1,10 +1,12 @@
-Message-ID: <44196DD8.8040500@domain.hid>
-Date: Thu, 16 Mar 2006 14:53:28 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] VxWorks skin improvement
+Message-ID: <17433.32628.931757.165635@domain.hid>
+Date: Thu, 16 Mar 2006 16:08:36 +0100
+In-Reply-To: <44195924.9090709@domain.hid>
+References: <44195924.9090709@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai-core] Re: POSIX include problem
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,35 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
+Jan Kiszka wrote:
+ > Hi Gilles,
+ > 
+ > don't know yet what's going wrong, but the following demo code doesn't
+ > compile against the POSIX skin due to unresolved SIG_BLOCK:
+ > 
+ > #include <pthread.h>
+ > #include <signal.h>
+ > 
+ > int main()
+ > {
+ >         return SIG_BLOCK;
+ > }
+ > 
+ > Comment out the pthread include, and it will work again. Any ideas?
 
-I'm currently working on extending the VxWorks skin so that it is going to be 
-callable from user-space directly, without needing the UVM environment. This will 
-also make its functional extension easier in the future, especially with respect 
-to bsp-related services.
-
-While I'm at it, I'd also like to polish a few corner cases, so that we have the 
-closest possible emulation of the original RTOS services. Unfortunately, the 
-VxWorks documentation is rather terse on some behavioural aspects, and I have no 
-VxWorks target at hand to test and check them. Therefore, I definitely need help 
-from people reading this list who also happen to be VxWorks users, for providing 
-the following missing bits of information:
-
-- How does taskName() behave when passed a null task id? Is it equivalent to 
-specifying taskIdSelf(), or does it lead to a NULL error return?
-
-- How does msgQSend() behave when passed an invalid message priority, i.e. neither 
-MSG_PRI_NORMAL nor MSG_PRI_URGENT?
-
-- How does taskInit() behave when passed an invalid set of task options? Are the 
-invalid flags ignored, or does the routine return an error status?
-
-If you happen to have a VxWorks target at hand regardless of the architecture, and 
-are willing to help improving the behavioural correctness of the VxWorks skin, 
-then your input will be most welcome.
+Maybe pthread.h includes signal.h for a side effect, in such a case, you
+should #include_next <signal.h> twice in Xeno signal.h
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
