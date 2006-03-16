@@ -1,8 +1,8 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17433.32628.931757.165635@domain.hid>
-Date: Thu, 16 Mar 2006 16:08:36 +0100
+Message-ID: <17433.35726.567615.125720@domain.hid>
+Date: Thu, 16 Mar 2006 17:00:14 +0100
 In-Reply-To: <44195924.9090709@domain.hid>
 References: <44195924.9090709@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
@@ -35,8 +35,7 @@ Jan Kiszka wrote:
  > 
  > Comment out the pthread include, and it will work again. Any ideas?
 
-Maybe pthread.h includes signal.h for a side effect, in such a case, you
-should #include_next <signal.h> twice in Xeno signal.h
+Fixed in revision 714
 
 -- 
 
