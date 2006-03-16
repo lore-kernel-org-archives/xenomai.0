@@ -1,13 +1,12 @@
-Message-ID: <44195B05.2080900@domain.hid>
-Date: Thu, 16 Mar 2006 13:33:09 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
+Subject: RE: [Xenomai-help] xenoami task pids
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] newbie question
-References: <0915ad1443edb7af745736fe4aaf3551@domain.hid>	<441949A0.8060100@domain.hid>
-	<44194E3E.6040905@domain.hid>
-In-Reply-To: <44194E3E.6040905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 16 Mar 2006 08:47:33 -0500
+Message-ID: <067C9A1F6AFEB643895EA4513E116884178FC1@domain.hid>
+From: "Moser, Dan" <DMoser@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,41 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniele Lugli <daniele.lugli@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Daniele Lugli wrote:
->>
->>>Hello all,
->>>I am new to xenomai although I have already used rtai.
->>>I see that xenomai has a user mode which looks equivalent to rtai's lxrt.
->>>What about calling real-time functions implemented in a module
->>>(rtai_lxrt call, rt_fun_entry table and so on)?
->>>Thank you,
->>>Daniele Lugli
->>>
->>>
->>
->>Have a look at the way a simple skin does it, e.g. ksrc/skins/uvm.
->>[...]
-> 
-> 
-> But before going this way, first consider what kind of functions you
-> exported so far via rt_fun_entry. If it was a driver API, you should
-> better have a look at RTDM now.
-> 
+> Looks like one box uses an old glibc with LinuxThreads=20
+> support (multiple pids are visible from the application, one=20
+> for each created thread including the main one), and the=20
+> other one a more recent NPTL-based pthread support (getpid()=20
+> returns a single "main" pid per process, although the NTPL=20
+> still enforces a 1:1 mapping between user-space and kernel=20
+> threads that support them). This is not a Xenomai issue in=20
+> fact, but rather a glibc one, given that Xenomai relies on=20
+> the glibc to create user-space threads before promoting them=20
+> to the real-time domain it controls.
+>=20
+> Reading this may help:
+> http://publib.boulder.ibm.com/infocenter/wasinfo/v5r1//index.j
+> sp?topic=3D/com.ibm.websphere.base.doc/info/aes/ae/cins_nptl.html
+>=20
+> Philippe.
+>
 
-Yep. To be precise, RTDM is a particular skin in Xenomai terminology, that aims at 
-providing a consistent interface and behaviour for writing real-time device 
-drivers for Xenomai, so that at some point in time, we will hopefully have 
-something resembling a standardized device driver factory. RTDM support is 
-particularly well integrated with Xeno's POSIX real-time interface in user-space 
-for instance.
+Philippe,
 
--- 
+What you described above is exactly what my issue was.
 
-Philippe.
+Also, the article link you provided was a great help.
+
+Thanks VERY MUCH!
+
+Dan
 
