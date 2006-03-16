@@ -1,12 +1,10 @@
-From: Alessandro Pittaluga <xpit@domain.hid>
-Date: Thu, 16 Mar 2006 21:15:19 +0100
+Message-ID: <4419D38E.7060007@domain.hid>
+Date: Thu, 16 Mar 2006 16:07:26 -0500
+From: Josh Bowman <jbowman@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200603162115.20077.xpit@domain.hid>
-Subject: [Xenomai-help] rt_task_catch and rt_hook in user space?
+Subject: [Xenomai-help] Valgrind and xenomai?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,23 +16,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi to everybody,
+Has anyone made Valgrind work on a xenomai user-space application?
 
-Anyone knows why the rt_task_catch and rt_hook is not available in the native
-library?
+My attempts so far (with valgrind 2.4.0 and 3.1.0 from gentoo) has lead to:
 
-rt_task_catch seems to me the only clean way to define signal handlers on 
-per-thread basis, but it is not included in the user space lib, although the 
-doc states that the service should be available to user space tasks.
+  --25174-- WARNING: unhandled syscall: 555
+  --25174-- Do not panic.  You may be able to fix this easily.
+  --25174-- Read the file README_MISSING_SYSCALL_OR_IOCTL.
+  Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+  (modprobe xeno_native?)
 
-The hooks (registered on context switch) are very useful to calculate number 
-of switches, consumed cpu time and so on..
+The native skin *was* loaded (the program runs without valgrind).  I
+think this means that valgrind needs to have code added to handle the
+xenomai system calls-- but I could find no mention of xenomai on
+valgrind.org (including the release notes archives).
 
-Is there any plan to implement them in user space?
+Thanks in advance!
+Josh Bowman
 
- 
-Many Thanks
-
-Alessandro
 
 
