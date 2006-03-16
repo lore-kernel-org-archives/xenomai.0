@@ -1,39 +1,66 @@
-Date: Tue, 28 Feb 2006 07:31:46 -0800
-Subject: Re: [Xenomai-help] resume/suspend periodic timing issue
-From: Steven Seeger <steve@domain.hid>
-Message-ID: <C029ACE2.257E%steve@domain.hid>
-In-Reply-To: <44046C40.9020400@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="US-ASCII"
-Content-transfer-encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17433.33699.571482.467675@domain.hid>
+Date: Thu, 16 Mar 2006 16:26:27 +0100
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+In-Reply-To: <441845EA.3070602@domain.hid>
+References: <44172B67.2000609@domain.hid> <4417C14A.2010900@domain.hid>
+	<17432.6129.478721.712374@domain.hid>
+	<441845EA.3070602@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Right, so if a thread is suspended voluntarily it should just ignore the
-clock tick. I think I will read more about RTOSs and see if I change my
-mind, but for now I think that this is a poor design on our part. However,
-xenomai is what I fought hard to use for these projects, so I guess I'll
-have to stick with it. :)
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Jan Kiszka wrote:
+ > >  > Likely too simple: The periodic IRQ seems to pop up on every CPU so that
+ > >  > the TSC could be recorded, but will this happen synchronously? At least
+ > >  > we will see (IRQ) jitters, and those jitters could already create in the
+ > >  > single-CPU case a non-monotonic clock...
+ > > 
+ > > I do not know how this issue is solved in Linux, but there seem to be a
+ > > simple solution: before adding the tsc offset to the last tick time,
+ > > this tsc offset should be compared with the tick duration in tsc
+ > > counts; if it is greater, then replace with the tick duration in tsc.
+ > > 
+ > 
+ > Hmm, I would rather express it in absolute tsc values, i.e. always save
+ > the tuple (absolute_tsc, jiffies):
+ > 
+ > [timer IRQ]
+ > new_tsc = read_rsc() - old_tsc;
+ > if (new_tsc < old_tsc + period_in_tsc_ticks)
+ > 	new_tsc = old_tsc + period_in_tsc;
+ > old_tsc = new_tsc;
+ > 
+ > Disclaimer: I haven't thought about potential accuracy side effects of
+ > this implementation, e.g. what would happen over the long term if the
+ > condition is always fulfilled and executed...
 
-Steven
+Here is what I meant:
 
-On 2/28/06 7:29 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
+[timer IRQ]
+irq_tsc = rdtsc();
+irq_jitter_ns = read_8254()
 
-> Because set_periodic/wait_period are about defining a series of absolute dates
-> forming a continuous timeline, the fact that a thread goes suspending instead
-> of 
-> waiting for the next work cycle does not change the fact that the clock is
-> still 
-> ticking.
+[xnpod_gettime_offset]
+offset_ns = tsc2ns(rdtsc() - irq_tsc()) + irq_jitter_ns
+if (offset_ns > period_ns)
+    offset_ns = period_ns; /* Avoid non monotonic clock. */
 
+-- 
+
+
+					    Gilles Chanteperdrix.
 
