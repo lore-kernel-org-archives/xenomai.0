@@ -1,12 +1,10 @@
-Message-ID: <44195924.9090709@domain.hid>
-Date: Thu, 16 Mar 2006 13:25:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44196DD8.8040500@domain.hid>
+Date: Thu, 16 Mar 2006 14:53:28 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigABB49EC2E24C6118443C92C4"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] POSIX include problem
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] VxWorks skin improvement
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,45 +14,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigABB49EC2E24C6118443C92C4
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi Gilles,
-
-don't know yet what's going wrong, but the following demo code doesn't
-compile against the POSIX skin due to unresolved SIG_BLOCK:
-
-#include <pthread.h>
-#include <signal.h>
-
-int main()
-{
-        return SIG_BLOCK;
-}
-
-Comment out the pthread include, and it will work again. Any ideas?
-
-Jan
+To: xenomai@xenomai.org, xenomai@xenomai.org
 
 
---------------enigABB49EC2E24C6118443C92C4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I'm currently working on extending the VxWorks skin so that it is going to be 
+callable from user-space directly, without needing the UVM environment. This will 
+also make its functional extension easier in the future, especially with respect 
+to bsp-related services.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+While I'm at it, I'd also like to polish a few corner cases, so that we have the 
+closest possible emulation of the original RTOS services. Unfortunately, the 
+VxWorks documentation is rather terse on some behavioural aspects, and I have no 
+VxWorks target at hand to test and check them. Therefore, I definitely need help 
+from people reading this list who also happen to be VxWorks users, for providing 
+the following missing bits of information:
 
-iD8DBQFEGVkkniDOoMHTA+kRAjJdAJ48gsok3F1UmvAMoII+mWOVKu+I9gCfRiVF
-HryE1Hb+AspZUn0KVQYFIFo=
-=tRNi
------END PGP SIGNATURE-----
+- How does taskName() behave when passed a null task id? Is it equivalent to 
+specifying taskIdSelf(), or does it lead to a NULL error return?
 
---------------enigABB49EC2E24C6118443C92C4--
+- How does msgQSend() behave when passed an invalid message priority, i.e. neither 
+MSG_PRI_NORMAL nor MSG_PRI_URGENT?
+
+- How does taskInit() behave when passed an invalid set of task options? Are the 
+invalid flags ignored, or does the routine return an error status?
+
+If you happen to have a VxWorks target at hand regardless of the architecture, and 
+are willing to help improving the behavioural correctness of the VxWorks skin, 
+then your input will be most welcome.
+
+-- 
+
+Philippe.
 
