@@ -1,12 +1,10 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 15 Mar 2006 16:06:23 -0500
-Message-ID: <067C9A1F6AFEB643895EA4513E116884178FC0@domain.hid>
-From: "Moser, Dan" <DMoser@domain.hid>
-Subject: [Xenomai-help] Xenomai thread runtime statistics
+Mime-Version: 1.0 (Apple Message framework v623)
+Content-Transfer-Encoding: 7bit
+Message-Id: <0915ad1443edb7af745736fe4aaf3551@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+From: Daniele Lugli <daniele.lugli@domain.hid>
+Date: Thu, 16 Mar 2006 11:46:39 +0100
+Subject: [Xenomai-help] newbie question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,18 +16,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+Hello all,
+I am new to xenomai although I have already used rtai.
+I see that xenomai has a user mode which looks equivalent to rtai's 
+lxrt.
+What about calling real-time functions implemented in a module 
+(rtai_lxrt call, rt_fun_entry table and so on)?
+Thank you,
+Daniele Lugli
 
-I am seeking whatever information is available regarding Xenomai task
-runtime statistics.  Things such as thread real-time usage, CPU usage,
-etc. and how to access that information from within an application.
-
-In particular, I would like to find out things such as how long (in
-real-time) each iteration of a given periodic task takes to run.  I
-ultimately want to use this info to figure out how much "head room" I
-have left in a given rate group of a multi-rate/multi-tasking control
-system.
-
-Thanks in advance,
-Dan
 
