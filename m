@@ -1,5 +1,5 @@
-Message-ID: <441AC769.20001@domain.hid>
-Date: Fri, 17 Mar 2006 15:27:53 +0100
+Message-ID: <441AC7D5.1040106@domain.hid>
+Date: Fri, 17 Mar 2006 15:29:41 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [RFC][PATCH] security check for skin access
@@ -37,7 +37,7 @@ Jan Kiszka wrote:
 > I would suggest to merge it, either as an option (with default=y), or
 > unconditionally (it's just a tiny additional check in the syscall path).
 
-Applied, thanks.
+Also added the CONFIG_OPT_SECURITY_ACCESS switch to make this check conditional.
 
 > 
 > Jan
