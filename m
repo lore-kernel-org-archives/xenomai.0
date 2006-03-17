@@ -1,16 +1,12 @@
-Message-ID: <441AE25F.7040903@domain.hid>
-Date: Fri, 17 Mar 2006 17:22:55 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <441AE2D7.2070605@domain.hid>
+Date: Fri, 17 Mar 2006 17:24:55 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: FW: [Xenomai-help] Xenomai thread runtime statistics
-References: <067C9A1F6AFEB643895EA4513E116884178FC4@domain.hid>
-	<441ADC6B.5010909@domain.hid> <441ADFAA.9040602@domain.hid>
-	<441AE047.6020505@domain.hid>
-In-Reply-To: <441AE047.6020505@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC5754F7691802163D7BC7C62"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Xenomai & RTAI question
+References: <5eb4b0650603170807x3a5d3d0oecd9e2ce4ba6a29c@domain.hid>
+In-Reply-To: <5eb4b0650603170807x3a5d3d0oecd9e2ce4ba6a29c@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,76 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, "Moser, Dan" <DMoser@domain.hid>
+To: KC <kcc1967@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC5754F7691802163D7BC7C62
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+KC wrote:
+> Hi,
+> 
+> Just some simple questions,
+> 
+> - do I need RTAI to run Xenomai ?
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>
->>> Moser, Dan wrote:
->>>
->>>> Hi,
->>>>
->>>> I am still searching for ways (hopefully via some API(s)) to get
->>>> Xenomai
->>>> run-time thread execution info (my original post is below).
->>>>
->>>> Being a newbie, I apologize if the answer "should be obvious".  I am=
+No.
 
->>>> still getting up to speed with both Linux and Xenomai.
->>>>
->>>> Is there a better list on which I should post this question?
->>>>
->>>
->>> This question is perfectly relevant to this list, the thing is that
->>> there's no simple, built-in way of getting execution stats for real-t=
-ime
->>> threads yet. The best way to find out the execution time of your work=
+> - Can I have RTAI and Xenomai installed together ?
 
->>> cycle would be to measure it using the high precision clock informati=
-on.
->>
->>
->> Hmm, wouldn't it be feasible to add such statistics to I-pipe level? I=
-'m
->> thinking of something like time spent in domain X, Y, Z vs. the overal=
-l
->> runtime, preferably converted to percentage usage.
->>
->=20
-> This would be nice, but only part of the issue, since you might have
-> several real-time context switches occurring in a single Xenomai domain=
+If by "installed" you mean running side-by-side safely, then the answer is no. 
+RTAI would need to be fixed not to bypass the Adeos virtualization layer.
 
-> activation.
+> - Is Xenomai a real real-time OS or just a emulator ?
+> 
 
-You mean per-thread statistics? For sure, but a very common question is:
-"How much remains for Linux?" And this feature could give a general hint
-(although detailed benchmarking will typically be required as well, as
-the effect of Xenomai+RT-load on application-specific Linux service may
-have to be analysed more thoroughly).
+A real-time framework, including a real-time core, to build the real-time OS of 
+your dreams, or use a pre-canned one that's already available with it.
+Aside of this, I don't understand how one could properly emulate a RTOS without 
+any real-time capabilities under the hood. Quite frankly, syntactical 
+compatibility using API wrappers without actual behavioural compatibility with the 
+source RTOS is just silly marketing mumbo-jumbo in action.
 
-Jan
+> Thanks
+> KC
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
 
---------------enigC5754F7691802163D7BC7C62
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEGuJfniDOoMHTA+kRAlr7AJ9lBAXPK8yLh2B4dhv35V+G40ExxgCePQhS
-l8xYLdHzpjc/lNF2WInDPL4=
-=hrNx
------END PGP SIGNATURE-----
-
---------------enigC5754F7691802163D7BC7C62--
+Philippe.
 
