@@ -1,14 +1,12 @@
-Message-ID: <441AE319.8060102@domain.hid>
-Date: Fri, 17 Mar 2006 17:26:01 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Christopher Stone" <chris@domain.hid>
+Subject: RE: [Xenomai-help] Xenomai & RTAI question
+Date: Fri, 17 Mar 2006 11:29:48 -0500
+Message-ID: <010001c649e0$03ab55a0$a10a10ac@domain.hid>
 MIME-Version: 1.0
-Subject: Re: FW: [Xenomai-help] Xenomai thread runtime statistics
-References: <067C9A1F6AFEB643895EA4513E116884178FC4@domain.hid>
-	<441ADC6B.5010909@domain.hid> <441ADFAA.9040602@domain.hid>
-	<441AE047.6020505@domain.hid> <441AE25F.7040903@domain.hid>
-In-Reply-To: <441AE25F.7040903@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+In-Reply-To: <5eb4b0650603170807x3a5d3d0oecd9e2ce4ba6a29c@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,66 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, "Moser, Dan" <DMoser@domain.hid>
+To: 'KC' <kcc1967@domain.hid>, xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
+
+> -----Original Message-----
+> From: KC [mailto:kcc1967@domain.hid]
+> Sent: March 17, 2006 11:08 AM
+> To: xenomai@xenomai.org
+> Subject: [Xenomai-help] Xenomai & RTAI question
 > 
->>Jan Kiszka wrote:
->>
->>>Philippe Gerum wrote:
->>>
->>>
->>>>Moser, Dan wrote:
->>>>
->>>>
->>>>>Hi,
->>>>>
->>>>>I am still searching for ways (hopefully via some API(s)) to get
->>>>>Xenomai
->>>>>run-time thread execution info (my original post is below).
->>>>>
->>>>>Being a newbie, I apologize if the answer "should be obvious".  I am
->>>>>still getting up to speed with both Linux and Xenomai.
->>>>>
->>>>>Is there a better list on which I should post this question?
->>>>>
->>>>
->>>>This question is perfectly relevant to this list, the thing is that
->>>>there's no simple, built-in way of getting execution stats for real-time
->>>>threads yet. The best way to find out the execution time of your work
->>>>cycle would be to measure it using the high precision clock information.
->>>
->>>
->>>Hmm, wouldn't it be feasible to add such statistics to I-pipe level? I'm
->>>thinking of something like time spent in domain X, Y, Z vs. the overall
->>>runtime, preferably converted to percentage usage.
->>>
->>
->>This would be nice, but only part of the issue, since you might have
->>several real-time context switches occurring in a single Xenomai domain
->>activation.
+> Hi,
 > 
+> Just some simple questions,
 > 
-> You mean per-thread statistics?
+> - do I need RTAI to run Xenomai ?
+[Christopher Stone] No, you do not.
 
-Yes, like in Dan's case, I guess.
-
-  For sure, but a very common question is:
-> "How much remains for Linux?" And this feature could give a general hint
-> (although detailed benchmarking will typically be required as well, as
-> the effect of Xenomai+RT-load on application-specific Linux service may
-> have to be analysed more thoroughly).
+> - Can I have RTAI and Xenomai installed together ?
+[Christopher Stone] I don't think this would be a very good idea. You don't
+really want to have a hard real time task running in Xenomai to get
+interrupted by a hard real time task in RTAI. 
+> - Is Xenomai a real real-time OS or just a emulator ?
+[Christopher Stone] Xenomai is a real-time framework for Linux. It makes
+Linux into a real-time OS.
 > 
-
-Also true.
-
-> Jan
+> Thanks
+> KC
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 > 
 
 
--- 
 
-Philippe.
 
