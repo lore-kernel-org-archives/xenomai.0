@@ -1,11 +1,12 @@
-Message-Id: <1142608418.28368.256877984@domain.hid>
-From: "Alessandro Pittaluga" <xpit@domain.hid>
-Content-Disposition: inline
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="ISO-8859-1"
+Message-ID: <441ADC6B.5010909@domain.hid>
+Date: Fri, 17 Mar 2006 16:57:31 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 17 Mar 2006 16:13:38 +0100
-Subject: [Xenomai-help] Re: [Xenomai-core] VxWorks skin improvement
+Subject: Re: FW: [Xenomai-help] Xenomai thread runtime statistics
+References: <067C9A1F6AFEB643895EA4513E116884178FC4@domain.hid>
+In-Reply-To: <067C9A1F6AFEB643895EA4513E116884178FC4@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,159 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: "Moser, Dan" <DMoser@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe, 
-Here follow some tests carried on by my SW lab.
-Hoping this may help.
+Moser, Dan wrote:
+> Hi,
+> 
+> I am still searching for ways (hopefully via some API(s)) to get Xenomai
+> run-time thread execution info (my original post is below).
+> 
+> Being a newbie, I apologize if the answer "should be obvious".  I am
+> still getting up to speed with both Linux and Xenomai.
+> 
+> Is there a better list on which I should post this question?
+>
 
-Regards
+This question is perfectly relevant to this list, the thing is that there's no 
+simple, built-in way of getting execution stats for real-time threads yet. The 
+best way to find out the execution time of your work cycle would be to measure it 
+using the high precision clock information.
 
-Alessandro
+With the Xenomai-enabled POSIX API, you can use clock_gettime(CLOCK_MONOTONIC) to 
+get a precise timestamp derived from the onboard TSC. With the native API, 
+rt_timer_tsc() returns the same information.
 
-ANSWER 1
-As shown below calling taskName with a null argument will return the
-same result returned by taskName called with the return value of
-taskIdSelf().
-	OUTPUT:
-	Spawned task xeno_test taskId=0x01a59a48
-	    This is task_entry_pnt() of task 0x01a59a48
-        	taskName(0)=xeno_test  taskName(taskIdSelf())=xeno_test
-        	taskName(0x01a59a48)=xeno_test
+e.g.
 
+    for (;;) {
+    struct timespec ts_start, ts_end;
+    clock_gettime(CLOCK_MONOTONIC,&ts_start);
+	<work>
+    clock_gettime(CLOCK_MONOTONIC,&ts_end);
+    /* work cycle consumption: ts_end - ts_start */
+    }
 
-ANSWER 2
-MSG_PRI_NORMAL is defined 0 and MSG_PRI_URGENT is defined 1. It seems
-that all non 0 priority
-messages are managed as urgent. The first message extracted from the
-queue by a receiver is
-the last inserted into the queue with a non 0 priority.
-The following 7 cases show the calling sequence of a sending task and
-the received message
-lengths of a receiving task.
-
-CASE 1
-	[Sending task]: [msgQSend(qid,"a"         , 1, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-	[Sending task]: [msgQSend(qid,"ab"        , 2, NO_WAIT, MSG_PRI_URGENT)] returned OK
-	[Sending task]: [msgQSend(qid,"abc"       , 3, NO_WAIT, 2)] returned OK
-	[Sending task]: [msgQSend(qid,"abcd"      , 4, NO_WAIT, 3)] returned OK
-	[Sending task]: [msgQSend(qid,"abcde"     , 5, NO_WAIT, 4)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdef"    , 6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefg"   , 7, NO_WAIT, 6)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefgh"  , 8, NO_WAIT, 7)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefghi" , 9, NO_WAIT, 8)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefghij",10, NO_WAIT, 9)] returned OK
-
-	[Receiving task]: Received 10 bytes from queue
-	[Receiving task]: Received  9 bytes from queue
-	[Receiving task]: Received  8 bytes from queue
-	[Receiving task]: Received  7 bytes from queue
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  5 bytes from queue
-	[Receiving task]: Received  4 bytes from queue
-	[Receiving task]: Received  3 bytes from queue
-	[Receiving task]: Received  2 bytes from queue
-	[Receiving task]: Received  1 bytes from queue
-
-CASE 2
-	[Sending task]: [msgQSend(qid,"abcdefghij",10, NO_WAIT, 9)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefghi" , 9, NO_WAIT, 8)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefgh"  , 8, NO_WAIT, 7)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefg"   , 7, NO_WAIT, 6)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdef"    , 6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"abcde"     , 5, NO_WAIT, 4)] returned OK
-	[Sending task]: [msgQSend(qid,"abcd"      , 4, NO_WAIT, 3)] returned OK
-	[Sending task]: [msgQSend(qid,"abc"       , 3, NO_WAIT, 2)] returned OK
-	[Sending task]: [msgQSend(qid,"ab"        , 2, NO_WAIT, MSG_PRI_URGENT)] returned OK
-	[Sending task]: [msgQSend(qid,"a"         , 1, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-
-	[Receiving task]: Received  2 bytes from queue
-	[Receiving task]: Received  3 bytes from queue
-	[Receiving task]: Received  4 bytes from queue
-	[Receiving task]: Received  5 bytes from queue
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  7 bytes from queue
-	[Receiving task]: Received  8 bytes from queue
-	[Receiving task]: Received  9 bytes from queue
-	[Receiving task]: Received 10 bytes from queue
-	[Receiving task]: Received  1 bytes from queue
-
-CASE 3
-	[Sending task]: [msgQSend(qid,"abcdef"    ,6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefgh"  ,8, NO_WAIT, 7)] returned OK
-
-	[Receiving task]: Received  8 bytes from queue
-	[Receiving task]: Received  6 bytes from queue
-
-CASE 4
-	[Sending task]: [msgQSend(qid,"abcdefgh"  ,8, NO_WAIT, 7)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdef"    ,6, NO_WAIT, 5)] returned OK
-
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  8 bytes from queue
-
-CASE 5
-	[Sending task]: [msgQSend(qid,"abcdef"    ,6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"a"         ,1, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefgh"  ,8, NO_WAIT, 7)] returned OK
-
-	[Receiving task]: Received  8 bytes from queue
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  1 bytes from queue
-
-CASE 6
-	[Sending task]: [msgQSend(qid,"abcdef"    ,6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"a"         ,1, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-	[Sending task]: [msgQSend(qid,"ab"        ,2, NO_WAIT,-1)] returned OK
-
-	[Receiving task]: Received  2 bytes from queue
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  1 bytes from queue
-
-CASE 7
-	[Sending task]: [msgQSend(qid,"abcdef"    ,6, NO_WAIT, 5)] returned OK
-	[Sending task]: [msgQSend(qid,"a"         ,1, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-	[Sending task]: [msgQSend(qid,"abcdefgh"  ,8, NO_WAIT, MSG_PRI_NORMAL)] returned OK
-	
-	[Receiving task]: Received  6 bytes from queue
-	[Receiving task]: Received  1 bytes from queue
-	[Receiving task]: Received  8 bytes from queue
-
-ANSWER 3
-Calling taskInit() with invalid flags won't return any error code.
-
-SPAWN:  taskInit(&tcb, "xeno_test3", 113, 0xffffffff,
-stack+TASK_STACK_SIZE, 
-		 TASK_STACK_SIZE, (FUNCPTR)task_entry_pnt, 0,0,0,0,0,0,0,0,0,0)
-INFO:   taskInfoGet((int)&tcb, &td)  ---> td.td_options = 0xffffffff
-
-The ti funcion returns the following outoput
--> ti "xeno_test3"
-
-  NAME        ENTRY       TID    PRI   STATUS      PC       SP     ERRNO
-   DELAY
----------- ------------ -------- --- ---------- -------- --------
-------- -----
-xeno_test3 task_entry_p  1b66090 113 SUSPEND      1969f8  1b6a250      
-0     0
-
-stack: base 0x1b6a290  end 0x1b66290  size 16104  high   ???  margin  
-???
-
-options: 0xffffffff
-VX_SUPERVISOR_MODE  VX_UNBREAKABLE      VX_DEALLOC_STACK    VX_FP_TASK  
-       VX_STDIO            VX_ADA_DEBUG        VX_FORTRAN         
-VX_PRIVATE_ENV     VX_NO_STACK_FILL
-
+> Hope to hear from someone.
+> 
+> 
+> Thanks,
+> Dan
+> 
+> 
+> 
+> 
+>>-----Original Message-----
+>>From: xenomai-help-bounces@domain.hid 
+>>[mailto:xenomai-help-bounces@domain.hid] On Behalf Of Moser, Dan
+>>Sent: Wednesday, March 15, 2006 4:06 PM
+>>To: xenomai@xenomai.org
+>>Subject: [Xenomai-help] Xenomai thread runtime statistics
+>>
+>>Hi,
+>>
+>>I am seeking whatever information is available regarding 
+>>Xenomai task runtime statistics.  Things such as thread 
+>>real-time usage, CPU usage, etc. and how to access that 
+>>information from within an application.
+>>
+>>In particular, I would like to find out things such as how long (in
+>>real-time) each iteration of a given periodic task takes to 
+>>run.  I ultimately want to use this info to figure out how 
+>>much "head room" I have left in a given rate group of a 
+>>multi-rate/multi-tasking control system.
+>>
+>>Thanks in advance,
+>>Dan
+>>
+>>_______________________________________________
+>>Xenomai-help mailing list
+>>Xenomai-help@domain.hid
+>>https://mail.gna.org/listinfo/xenomai-help
+>>
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
 
 -- 
-  Alessandro Pittaluga
-  al.pittaluga@domain.hid
 
--- 
-http://www.fastmail.fm - One of many happy users:
-  http://www.fastmail.fm/docs/quotes.html
-
+Philippe.
 
