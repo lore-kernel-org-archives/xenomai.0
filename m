@@ -1,14 +1,14 @@
-Message-ID: <441A0DEE.2060702@domain.hid>
-Date: Fri, 17 Mar 2006 02:16:30 +0100
+Message-ID: <441A105B.9070907@domain.hid>
+Date: Fri, 17 Mar 2006 02:26:51 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-References: <44172B67.2000609@domain.hid>
-	<4417C14A.2010900@domain.hid>	<17432.6129.478721.712374@domain.hid>	<441845EA.3070602@domain.hid>
-	<17433.33699.571482.467675@domain.hid>
-In-Reply-To: <17433.33699.571482.467675@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Re: POSIX include problem
+References: <44195924.9090709@domain.hid>	<17433.35726.567615.125720@domain.hid>	<4419A7B0.6000003@domain.hid>
+	<17433.46842.657384.406082@domain.hid>
+In-Reply-To: <17433.46842.657384.406082@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA4F447B8981249E0D0957B58"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,50 +22,73 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA4F447B8981249E0D0957B58
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
 Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Jan Kiszka wrote:
->  > >  > Likely too simple: The periodic IRQ seems to pop up on every CPU so that
->  > >  > the TSC could be recorded, but will this happen synchronously? At least
->  > >  > we will see (IRQ) jitters, and those jitters could already create in the
->  > >  > single-CPU case a non-monotonic clock...
->  > > 
->  > > I do not know how this issue is solved in Linux, but there seem to be a
->  > > simple solution: before adding the tsc offset to the last tick time,
->  > > this tsc offset should be compared with the tick duration in tsc
->  > > counts; if it is greater, then replace with the tick duration in tsc.
->  > > 
->  > 
->  > Hmm, I would rather express it in absolute tsc values, i.e. always save
->  > the tuple (absolute_tsc, jiffies):
->  > 
->  > [timer IRQ]
->  > new_tsc = read_rsc() - old_tsc;
->  > if (new_tsc < old_tsc + period_in_tsc_ticks)
->  > 	new_tsc = old_tsc + period_in_tsc;
->  > old_tsc = new_tsc;
->  > 
->  > Disclaimer: I haven't thought about potential accuracy side effects of
->  > this implementation, e.g. what would happen over the long term if the
->  > condition is always fulfilled and executed...
-> 
-> Here is what I meant:
-> 
-> [timer IRQ]
-> irq_tsc = rdtsc();
-> irq_jitter_ns = read_8254()
-> 
-> [xnpod_gettime_offset]
-> offset_ns = tsc2ns(rdtsc() - irq_tsc()) + irq_jitter_ns
-> if (offset_ns > period_ns)
->     offset_ns = period_ns; /* Avoid non monotonic clock. */
-> 
+>  > ...
+>  > I found this while trying Thomas Gleixner's cyclic test over the POS=
+IX
+>  > skin (http://www.tglx.de/projects/misc/cyclictest). After fixing a
+>  > rather ugly bug in his code (missing mlockall) I ran into a yet unkn=
+own
+>  > issue with the POSIX skin: the code just hangs when wrapped to Xenom=
+ai.
+>  >=20
+>  > Compilation:
+>  > gcc -o cyclictest cyclictest.c <posix-cflags> <posix-ldflags>
+>  >=20
+>  > Invocation:
+>  > cyclictest -n -p 99
+>  >=20
+>  > Maybe its just real-time starvation (but the watchdog doesn't trigge=
+r,
+>  > and I do not see why it should starve), maybe its a crash (will try =
+to
+>  > attach a serial console later). Anyway, it's an easy test case (and =
+also
+>  > a nice tool), so you may want to have a look as well.
+>=20
+> A second, better guess: the created thread is not a Xenomai realtime
+> thread, so never suspends (Xenomai calls return EPERM when not called
+> from a real-time thread) and hangs. Replacing sched_setscheduler with
+> pthread_setschedparam should solve this issue.
 
-Ah, I see. Hmm, wouldn't this create some "resolution hole" between the
-time offset_ns exceeds a precise period and the time the next IRQ
-actually strikes? The returned timestamps would then just stick to last
-(irq_tsc + irq_jitter_ns) until the next update occurs.
+Haven't tried this yet, but I'm quite sure that this is the reason. Then
+this must have been a classic Linux SCHED_FIFO lock-up.
+
+>=20
+> I would not be surprised if, with NPTL, sched_setscheduler had an effec=
+t
+> on the whole process, i.e. set the priority of all the threads in the
+> process.
+>=20
+
+=46rom reading the POSIX spec, I would say the calling sched_setscheduler=
+
+multiple times in individual threads indicates a wrong usage, doesn't
+it? And what NPTL does with it, specifically in the presence of multiple
+threads, is a good questions...
 
 Jan
+
+
+--------------enigA4F447B8981249E0D0957B58
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEGhBbniDOoMHTA+kRAvlZAJkBPr3OHOFC9KgGXZcFBaHJpInPkQCeLnZB
+19pTmkVsXSX4KzJRGtxu7PU=
+=8r2d
+-----END PGP SIGNATURE-----
+
+--------------enigA4F447B8981249E0D0957B58--
 
