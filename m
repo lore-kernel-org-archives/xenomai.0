@@ -1,5 +1,5 @@
-Message-ID: <441AE434.6070408@domain.hid>
-Date: Fri, 17 Mar 2006 17:30:44 +0100
+Message-ID: <441AE652.701@domain.hid>
+Date: Fri, 17 Mar 2006 17:39:46 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] broken svn
@@ -25,7 +25,7 @@ Jan Kiszka wrote:
 > latest src/skin/uvm and src/skin/vxworks doesn't build. Work in progress
 > or broken check-in?
 
-Work in slow progress.
+Should be ok now.
 
 > 
 > Jan
