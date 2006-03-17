@@ -1,173 +1,73 @@
-Message-ID: <441D530D.1030805@domain.hid>
-Date: Sun, 19 Mar 2006 13:48:13 +0100
+Message-ID: <441ADFAA.9040602@domain.hid>
+Date: Fri, 17 Mar 2006 17:11:22 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: get the simulator running...
-References: <441C2574.4030901@domain.hid> <441C4279.10800@domain.hid>
-	<441C4460.9030103@domain.hid> <441C5371.1080208@domain.hid>
-	<441C5562.7000800@domain.hid> <441C57DA.8080708@domain.hid>
-	<441D49AD.4050006@domain.hid>
-In-Reply-To: <441D49AD.4050006@domain.hid>
+Subject: Re: FW: [Xenomai-help] Xenomai thread runtime statistics
+References: <067C9A1F6AFEB643895EA4513E116884178FC4@domain.hid>
+	<441ADC6B.5010909@domain.hid>
+In-Reply-To: <441ADC6B.5010909@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6EA68C841C88B29292623191"
+	boundary="------------enigEE48E77052266EBE06767CE0"
 Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org, "Moser, Dan" <DMoser@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6EA68C841C88B29292623191
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enigEE48E77052266EBE06767CE0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
+> Moser, Dan wrote:
+>> Hi,
 >>
->>> Jan Kiszka wrote:
->>>
->>>> Philippe Gerum wrote:
->>>>
->>>>
->>>>> Philippe Gerum wrote:
->>>>>
->>>>>
->>>>>> Jan Kiszka wrote:
->>>>>> Fortunately, I had that demo I once produced
->>>>>>
->>>>>>
->>>>>>
->>>>>>> (last year), but that one was easier to build. I first had to
->>>>>>> drag in
->>>>>>> the libs and includes of both the simulator and a regular xenomai=
-
->>>>>>> installation (I think to remember this once worked without this
->>>>>>> add-ons). Then I need this additional trick in the simulators
->>>>>>> include
->>>>>>> dir:
->>>>>>>
->>>>>>> mkdir asm
->>>>>>> ln -s <xeno-inst-dir>/include/asm-sim asm/xenomai
->>>>>>>
->>>>>>> This maps #include <asm/xenomai/system.h> to the correct "arch".
->>>>>>> Shouldn't this be created automatically during the simulator
->>>>>>> installation? Or is something else broken on my box?
->>>>>>>
->>>>>>
->>>>>> You clearly should not need this trick to compile apps against the=
-
->>>>>> simulation environment; the instrumenter (gcic) sets the proper
->>>>>> flags.
->>>>>> I'm going to rebuild one and let you know.
->>>>>
->>>>> Confirmed. You don't need this hand-made link.
->>>>>
->>>>
->>>>
->>>> Err, "confirmed" means that it works for you without the link and th=
+>> I am still searching for ways (hopefully via some API(s)) to get Xenom=
+ai
+>> run-time thread execution info (my original post is below).
+>>
+>> Being a newbie, I apologize if the answer "should be obvious".  I am
+>> still getting up to speed with both Linux and Xenomai.
+>>
+>> Is there a better list on which I should post this question?
+>>
+>=20
+> This question is perfectly relevant to this list, the thing is that
+> there's no simple, built-in way of getting execution stats for real-tim=
 e
->>>> extra paths for gcic?
->>>
->>> Yes (actually, it has always worked for me this way).
->>>
->>> The compilation of the simulator runs fine with
->>>
->>>> latest SVN here, but gcic still does not know any include paths.
->>>> Attached is the native skin demo I tried.
->>>
->>> gcic explicitely sets -I<install-dir>/include/asm-sim before invoking=
+> threads yet. The best way to find out the execution time of your work
+> cycle would be to measure it using the high precision clock information=
+=2E
 
->>> the gcc toolchain. Try adding --verbose to see what's passed.
->>>
->>
->>
->> kiszka@domain.hid> ../inst/bin/gcic -c nat-demo.c -=
-o
->> nat-demo_sim.o --verbose
->> /usr/src/xeno-sim/inst/libexec/gcic/bin/gcc  -isystem
->> /usr/src/xeno-sim/inst/libexec/gcic/i686-pc-linux-gnu/include -isystem=
+Hmm, wouldn't it be feasible to add such statistics to I-pipe level? I'm
+thinking of something like time spent in domain X, Y, Z vs. the overall
+runtime, preferably converted to percentage usage.
 
->> /usr/src/xeno-sim/inst/libexec/gcic/lib/gcc-lib/i686-pc-linux-gnu/2.95=
-=2E3/include
->>
->> -E -B/usr/src/xeno-sim/inst/libexec/gcic/lib/gcc-lib/ -D__GCIC__
->> -D__XENO_SIM__ -D__XENO__
-> -I/usr/src/xeno-sim/inst/include/asm-sim
-> (1)
->> -I/usr/src/xeno-sim/inst/include
-> (2)
->  nat-demo.c > /tmp/ic0@domain.hid
->> nat-demo.c:22: native/task.h: Datei oder Verzeichnis nicht gefunden
->> nat-demo.c:23: native/sem.h: Datei oder Verzeichnis nicht gefunden
->> gcic: failed to preprocess nat-demo.c.
->>
->> I only see the simulator include paths, no link to the xenomai source
->> base (here: /usr/src/xenomai) or its installation
->> (/usr/src/xenomai/inst, but I haven't submitted this anyway).
->>
->=20
-> But you don't need any link to the source base, since you should be abl=
-e
-> to compile simulation stuff against a self-contained install dir. gcic
-> makes sure that you can reach the internal headers (1) and the
-> definitions for the exported API (2), so that #include
-> <some_skin/file.h> works. Normally, you should first build and install
-> the regular Xenomai support in user-space, then build and install the
-> simulator to the same installation directory. E.g. /usr/xenomai should
-
-Ah, that was the missing piece! Then we should better strike out that
-"usually" in sim/README:
-
-# $sim_installdir: Installation directory for the simulator;
-# (usually, the same place than used for Xenomai's main system).
-
-At least I interpreted this as on option, not a must.
-
-> both hold the regular and exported simulation-related files, things hav=
-e
-> been crafted so that there is no namespace conflict.
->=20
-> To sum up:
->=20
-> mkdir buildtree && cd buildtree
-> /usr/src/xenomai/configure --prefix=3D/usr/src/xenomai/inst
-> make install
-> mkdir sim && cd sim
-> /usr/src/xenomai/sim/configure --prefix=3D/usr/src/xenomai/inst
-> make install
->=20
-> The simulation support is seen as just another architecture Xenomai
-> provides, except that it is shipped in a separate tarball
-> (xenosim-*.tar) you need to dump to a regular Xenomai source tree
-> (xenomai-*.tar) before building it.
->=20
-
-Thanks,
 Jan
 
 
---------------enig6EA68C841C88B29292623191
+--------------enigEE48E77052266EBE06767CE0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEHVMRniDOoMHTA+kRApvgAJ0T/c3X1nCdOROaMu801kR0x5LNfQCfS3oY
-sORP+moNMf57hca0ky95dWU=
-=SbHb
+iD8DBQFEGt+qniDOoMHTA+kRAgvOAJ9wmP4rdrbfas7akqI23qruSkTtSgCfR0E/
+yZ8dLwciMxf0EJwn//Fvyag=
+=yuha
 -----END PGP SIGNATURE-----
 
---------------enig6EA68C841C88B29292623191--
+--------------enigEE48E77052266EBE06767CE0--
 
