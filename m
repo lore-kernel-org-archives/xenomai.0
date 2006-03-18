@@ -1,13 +1,12 @@
-Message-ID: <4426DD07.9040904@domain.hid>
-Date: Sun, 26 Mar 2006 20:27:19 +0200
+Message-ID: <441C4279.10800@domain.hid>
+Date: Sat, 18 Mar 2006 18:25:13 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Timer IRQ propagation
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210D6B@EINT11.einet.ad.eivd.ch>
-	<FDBBB5CC70676540B3EF7CFE83FD94E004310B@EINT11.einet.ad.eivd.ch>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E004310B@EINT11.einet.ad.eivd.ch>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <441C2574.4030901@domain.hid>
+In-Reply-To: <441C2574.4030901@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: get the simulator running...
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,66 +16,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-ROSSIER Daniel wrote:
+Jan Kiszka wrote:
+> Philippe,
+> 
+> here are some patches and comments on the simulator "quick"-start
+> process. I guess the patches are due to latest changes in trunk, and I
+> cannot guarantee that they are clean - but the simulator compiles now.
+> 
+> Regarding the rest of its build and start process: There are two hidden
+> requirements, namely gcc < 4 (due to -fwritable-strings)
+
+Normally, availability of --fwritable-strings should be auto-detected by 
+the configure script. So there is something wrong going there, I will 
+look at it.
+
+  and gdb 5.x. A
+
+I've been unlucky with GDB 6.x too, but did not check the latest 
+release; I'm currently using 5.3 when running simulations.
+
+> note in sim/README about them would be great. Or do you have a fix for
+> those issues scheduled?
+
+--fwritable-strings should be fixed. I'm not sure if the requirement for 
+GDB 5.x still applies though.
+> 
+> Well, once you got this far (i.e. the xenoscope is built and an ancient
+> gdb has been prepared), the next step is to produce a test program. Am I
+> overseeing some example?
+
+Look into ksrc/skins/{vxworks,psos+}/demos. The Makefile also produces a 
+simulation executable for satch. Then run "xenoscope satch_sim"
+
+  Fortunately, I had that demo I once produced
+> (last year), but that one was easier to build. I first had to drag in
+> the libs and includes of both the simulator and a regular xenomai
+> installation (I think to remember this once worked without this
+> add-ons). Then I need this additional trick in the simulators include dir:
+> 
+> mkdir asm
+> ln -s <xeno-inst-dir>/include/asm-sim asm/xenomai
+> 
+> This maps #include <asm/xenomai/system.h> to the correct "arch".
+> Shouldn't this be created automatically during the simulator
+> installation? Or is something else broken on my box?
+> 
+
+You clearly should not need this trick to compile apps against the 
+simulation environment; the instrumenter (gcic) sets the proper flags. 
+I'm going to rebuild one and let you know.
+
+> In case there is no demo prepared, I could pack my own tiny stuff and
+> submit it.
+> 
+> Jan
 > 
 > 
-> 2-       When a timer IRQ is received, we understood that the IRQ is ack'd and masked by handle_irq()
-and sent to the domains through walk_pipeline() including Linux; but we 
-have some doubts about that since
-  the timer ISR of Linux first acknowledges the interrupt, and it seems 
-that it acknowledges physically (hw ack);
-  we expected that the acknowledgement would be a virtual ack in the 
-Linux domain since the ack has been made
-  previously by handle_irq(). In our case (ARM arch), the ack actually 
-corresponds to a mask and therefore the
-  timer IRQ is masked by Linux once it gets,  and we then suspect some 
-loss of timer interrupts.
+> ------------------------------------------------------------------------
 > 
-> have we understood correctly the mechanism? Any idea about this behaviour? Is it normal?
-> 
+> Index: ksrc/skins/vxworks/msgQLib.c
+> ===================================================================
+> --- ksrc/skins/vxworks/msgQLib.c	(Revision 742)
+> +++ ksrc/skins/vxworks/msgQLib.c	(Arbeitskopie)
+> @@ -199,7 +199,7 @@
+>      appendq(&wind_msgq_q, &queue->link);
+>      xnlock_put_irqrestore(&nklock, s);
+>      
+> -#ifdef CONFIG_XENO_OPT_REGISTRY
+> +#ifdef CONFIG_XENO_EXPORT_REGISTRY
+>      sprintf(queue->name,"mq%lu",msgq_ids++);
 >  
-> 
->>Still unclear to me; the ack would be done in the timer ISR; however in the (ARM) patch we have,
-ipipe performs a hardware ack; I've seen in the x86 patch that adeos 
-makes nothing within __ipipe_ack_system_irq().
+>      if (xnregistry_enter(queue->name,queue,&queue->handle,&msgq_pnode))
+> @@ -208,7 +208,7 @@
+>  	msgQDelete((MSG_Q_ID)queue);
+>  	return 0;
+>  	}
+> -#endif /* CONFIG_XENO_OPT_REGISTRY */
+> +#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+>  
+>      return (MSG_Q_ID) queue;
+>  }
+> Index: ksrc/skins/vxworks/wdLib.c
+> ===================================================================
+> --- ksrc/skins/vxworks/wdLib.c	(Revision 742)
+> +++ ksrc/skins/vxworks/wdLib.c	(Arbeitskopie)
+> @@ -123,7 +123,7 @@
+>      appendq(&wind_wd_q,&wd->link);
+>      xnlock_put_irqrestore(&nklock, s);
+>  
+> -#ifdef CONFIG_XENO_OPT_REGISTRY
+> +#ifdef CONFIG_XENO_EXPORT_REGISTRY
+>      sprintf(wd->name,"wd%lu",wd_ids++);
+>  
+>      if (xnregistry_enter(wd->name,wd,&wd->handle,&wd_pnode))
+> @@ -132,7 +132,7 @@
+>  	wdDelete((WDOG_ID)wd);
+>  	return 0;
+>  	}
+> -#endif /* CONFIG_XENO_OPT_REGISTRY */
+> +#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+>  
+>      return (WDOG_ID) wd;
+>  }
+> Index: ksrc/skins/vxworks/semLib.c
+> ===================================================================
+> --- ksrc/skins/vxworks/semLib.c	(Revision 742)
+> +++ ksrc/skins/vxworks/semLib.c	(Arbeitskopie)
+> @@ -479,7 +479,7 @@
+>      xnlock_get_irqsave(&nklock, s);
+>      appendq(&wind_sem_q,&sem->link);
+>      xnlock_put_irqrestore(&nklock, s);
+> -#ifdef CONFIG_XENO_OPT_REGISTRY
+> +#ifdef CONFIG_XENO_EXPORT_REGISTRY
+>      sprintf(sem->name,"sem%lu",sem_ids++);
+>  
+>      if (xnregistry_enter(sem->name,sem,&sem->handle,&sem_pnode))
+> @@ -488,7 +488,7 @@
+>  	semDelete((SEM_ID)sem);
+>  	return 0;
+>  	}
+> -#endif /* CONFIG_XENO_OPT_REGISTRY */
+> +#endif /* CONFIG_XENO_EXPORT_REGISTRY */
+>  
+>      return (SEM_ID) sem;
+>  }
+> Index: include/asm-sim/system.h
+> ===================================================================
+> --- include/asm-sim/system.h	(Revision 742)
+> +++ include/asm-sim/system.h	(Arbeitskopie)
+> @@ -80,6 +80,7 @@
+>  
+>  #define XNARCH_DEFAULT_TICK         10000000 /* ns, i.e. 10ms */
+>  #define XNARCH_HOST_TICK            0 /* No host ticking service. */
+> +#define HZ                          0 /* dummy define for HZ */
+>  
+>  #define XNARCH_THREAD_STACKSZ 0 /* Let the simulator choose. */
+>  #define XNARCH_ROOT_STACKSZ   0	/* Only a placeholder -- no stack */
 
-Yes, it does actually, it's even its role as a fast acknowledge Adeos 
-handler for incoming hw IRQs. It acks the APIC when the APIC support is 
-built-in (I should have made the entire routine conditionally compiled 
-on CONFIG_X86_LOCAL_APIC actually). Since __ipipe_ack_system_irq() is 
-only called for APIC-controlled IRQs, this routine always touches the hw.
-
-  I guess the last behaviour is correct, isn't it?
-> 
-
-Looking at Stelian's code in arm/mach-integrator/core.c, I see that 
-integrator_timer_interrupt does not acknowledge the timer IRQ, despite 
-the misleading comment. It only makes some bookkeeping for TSC emulation 
-when some higher domain in the pipeline has stolen the timer (e.g. 
-Xenomai). Otherwise, when the Ipipe is compiled in, the regular timer 
-tick handler does not touch the hw at all.
-
-The logic is this one for all Adeos ports:
-
-- some code intercepts the hw IRQs before they are passed to the regular 
-Linux handlers, and feeds __ipipe_handle_irq() with those.
-- __ipipe_handle_irq() calls the fast acknowledge handler for the 
-incoming hw IRQ, which ends up being, e.g. __ipipe_ack_system_irq() for 
-APIC-controlled IRQs on x86 systems, or __ipipe_ack_timerirq() for the 
-timer IRQ in the ARM Integrator/CP port. Some IRQs might need different 
-fast ack handlers depending on their respective type.
-- IRQs are virtualized, which means that they are marked for delivery in 
-the interrupt log, where they might linger for some time before the 
-I-pipe is allowed to dispatch them to the proper handler eventually.
-- At some point in time, Linux ends up being notified of the IRQ, when 
-higher priority domains are done with it (e.g. Xenomai). This means that 
-the regular handler gets called, but Adeos ports always disable the 
-vanilla acknowledge code from such handlers, so that we always have one 
-and only one ack cycle for any given IRQ (i.e. the fast ack one from 
-__ipipe_handle_irq).
 
 -- 
 
