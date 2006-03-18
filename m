@@ -1,38 +1,74 @@
-Message-ID: <2cf1ee820603280009r5adec759h99aa69809f68b457@domain.hid>
-Date: Tue, 28 Mar 2006 11:09:50 +0300
-From: "emin ak" <eminak71@domain.hid>
+Message-ID: <441C1B9D.70107@domain.hid>
+Date: Sat, 18 Mar 2006 15:39:25 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: [Xenomai-help] gigabit rate packet processing with xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] O(1) scheduler broken
+References: <441B2204.1070406@domain.hid> <441BD80D.4030700@domain.hid>
+In-Reply-To: <441BD80D.4030700@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Dear All;
-I'am new with xenomai (and also adeos), firstly I would like to thank=20
-who contributed to this project for this  high quality job. I have an
-project that needs gigabit rate ethernet packet processing in user
-space and need your recommendations.
-I want to archive this with minimal kernel level device driver changes.
- According to my plan, I'll create a realtime user level thread and
-this thread sleeps (with the mutex machanism in the native api) until
-receiving a valid ethernet packet on ethernet interface that is
-working regular linux domain. After receiving the packet, ethernet
-driver releases the lock and sends packet to user level thread (with
-shared memory or an other way).With this way, I have left the device
-driver in linux domain, I'll only need to add locking and shared
-memory system in the device driver.Does this system work? Does the
-user level thread affect the functionallty of ethernet interface?Do I
-need to implement all my user space thread and kernel level driver in
-primaly domain?
-Thanks again and B/regards.
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+> 
+>> Hi,
+>>
+>> I just wanted to test how much the worst-cast jitters improve when
+>> running multiple timed threads over the O(1) scheduler instead of the
+>> default one. 
+> 
+> 
+> It really depends whether your threads actually wake up simultaneously 
+> or not.
+> The scalable scheduler solves the pathological case where your 
+> application has
+> an insane number of threads _actually_ competing for the current CPU, 
+> i.e. all being in a runnable state at the same time or within a short 
+> window of time. IOW, it implements O(1) for the ready queue. We don't 
+> use any sequential access for the suspended thread queue, and beyond 
+> that, I'm even going to kill the latter since it's actually useless.
+> 
+> Unfortunately, it already crashes my box with the standard
+> 
+>> latency test. All debug stuff on and serial console attached still does
+>> not give any output. Looks like a really fatal scheduler crash. :(
+>>
+>> Anyone any ideas?
+> 
+> 
+> It breaks with the development trunk/ because we are extending the 
+> ability of
+> the core pod to provide a larger priority scale, so that we can provide
+> VxWorks et al. with a native syscall interface. The new scale likely 
+> messes up with the priority bitmaps used in the scalable sched. Will fix.
+> 
+
+This should fix the current issue.
+
+--- include/nucleus/queue.h	(revision 741)
++++ include/nucleus/queue.h	(working copy)
+@@ -580,7 +580,7 @@
+
+  /* Multi-level priority queue */
+
+-#define XNSPQUEUE_PRIOS      (XNCORE_MAX_PRIO + 1)
++#define XNSPQUEUE_PRIOS      (XNCORE_MAX_PRIO + 2)
+  #define XNSPQUEUE_BITMAPSIZE ((XNSPQUEUE_PRIOS + BITS_PER_LONG - 1) / BITS_PER_LONG)
+
+  typedef struct xnspqueue {
+
+-- 
+
+Philippe.
 
