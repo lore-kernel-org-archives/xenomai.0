@@ -1,57 +1,85 @@
-Content-class: urn:content-classes:message
+Message-ID: <441C4460.9030103@domain.hid>
+Date: Sat, 18 Mar 2006 18:33:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: AW: AW:[Xenomai-help]	undefinedreference	__xnarch_xchg_called_with_bad_pointer
-Date: Wed, 1 Mar 2006 08:20:14 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A1C3DF1@domain.hid>
-From: <Roderik_Wildenburg@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Re: get the simulator running...
+References: <441C2574.4030901@domain.hid> <441C4279.10800@domain.hid>
+In-Reply-To: <441C4279.10800@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: holindho@domain.hid, rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Any idea why I don=B4t get this error when compiling the native =
-examples. Isn=B4t atomic.h included with these examples too ?=20
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+> 
+>> Philippe,
+>>
+>> here are some patches and comments on the simulator "quick"-start
+>> process. I guess the patches are due to latest changes in trunk, and I
+>> cannot guarantee that they are clean - but the simulator compiles now.
+>>
+>> Regarding the rest of its build and start process: There are two hidden
+>> requirements, namely gcc < 4 (due to -fwritable-strings)
+> 
+> 
+> Normally, availability of --fwritable-strings should be auto-detected by 
+> the configure script. So there is something wrong going there, I will 
+> look at it.
+> 
+>  and gdb 5.x. A
+> 
+> I've been unlucky with GDB 6.x too, but did not check the latest 
+> release; I'm currently using 5.3 when running simulations.
+> 
+>> note in sim/README about them would be great. Or do you have a fix for
+>> those issues scheduled?
+> 
+> 
+> --fwritable-strings should be fixed. I'm not sure if the requirement for 
+> GDB 5.x still applies though.
+> 
+>>
+>> Well, once you got this far (i.e. the xenoscope is built and an ancient
+>> gdb has been prepared), the next step is to produce a test program. Am I
+>> overseeing some example?
+> 
+> 
+> Look into ksrc/skins/{vxworks,psos+}/demos. The Makefile also produces a 
+> simulation executable for satch. Then run "xenoscope satch_sim"
+> 
+>  Fortunately, I had that demo I once produced
+> 
+>> (last year), but that one was easier to build. I first had to drag in
+>> the libs and includes of both the simulator and a regular xenomai
+>> installation (I think to remember this once worked without this
+>> add-ons). Then I need this additional trick in the simulators include 
+>> dir:
+>>
+>> mkdir asm
+>> ln -s <xeno-inst-dir>/include/asm-sim asm/xenomai
+>>
+>> This maps #include <asm/xenomai/system.h> to the correct "arch".
+>> Shouldn't this be created automatically during the simulator
+>> installation? Or is something else broken on my box?
+>>
+> 
+> You clearly should not need this trick to compile apps against the 
+> simulation environment; the instrumenter (gcic) sets the proper flags. 
+> I'm going to rebuild one and let you know.
 
-> -----Urspr=FCngliche Nachricht-----
-> Von: xenomai-help-bounces@domain.hid
-> [mailto:xenomai-help-bounces@domain.hid] Im Auftrag von Heikki Lindholm
-> Gesendet: Dienstag, 28. Februar 2006 20:06
-> An: Philippe Gerum
-> Cc: xenomai@xenomai.org
-> Betreff: Re: AW:[Xenomai-help] undefinedreference=20
-> __xnarch_xchg_called_with_bad_pointer
->=20
-> Philippe Gerum kirjoitti:
-> > Heikki Lindholm wrote:
-> >=20
-> >> Uh. I guess the compiler isn't killing the *_bad_pointer=20
-> function as=20
-> >> dead code when debug is enabled (although it is dead-code.)
-> >=20
-> >=20
-> > The optimizer is disabled by --enable-debug so that we don't get=20
-> > strange jumps while tracing with GDB, I guess that's why=20
-> the dead code=20
-> > is not eliminated. What about just killing this check,=20
-> since the same=20
-> > code is already validated when compiling it as a kernel module?=20
-> > (except asm-uvm/system.h, but that's not important).
->=20
-> Yep. That seems like the way to go. I don't see much to gain=20
-> from the check. Of course, paranoid way would be to add the=20
-> __bad_ptr() function with abort() or something inside. Quick=20
-> patch attached for the former case.
->=20
-> - hl
->=20
+Confirmed. You don't need this hand-made link.
+
+-- 
+
+Philippe.
 
