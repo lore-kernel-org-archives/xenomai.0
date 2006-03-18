@@ -1,56 +1,60 @@
-Message-ID: <441AE2D7.2070605@domain.hid>
-Date: Fri, 17 Mar 2006 17:24:55 +0100
+Message-ID: <441BD80D.4030700@domain.hid>
+Date: Sat, 18 Mar 2006 10:51:09 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai & RTAI question
-References: <5eb4b0650603170807x3a5d3d0oecd9e2ce4ba6a29c@domain.hid>
-In-Reply-To: <5eb4b0650603170807x3a5d3d0oecd9e2ce4ba6a29c@domain.hid>
+Subject: Re: [Xenomai-core] O(1) scheduler broken
+References: <441B2204.1070406@domain.hid>
+In-Reply-To: <441B2204.1070406@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: KC <kcc1967@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-KC wrote:
+Jan Kiszka wrote:
 > Hi,
 > 
-> Just some simple questions,
+> I just wanted to test how much the worst-cast jitters improve when
+> running multiple timed threads over the O(1) scheduler instead of the
+> default one. 
+
+It really depends whether your threads actually wake up simultaneously or not.
+The scalable scheduler solves the pathological case where your application has
+an insane number of threads _actually_ competing for the current CPU, i.e. all 
+being in a runnable state at the same time or within a short window of time. IOW, 
+it implements O(1) for the ready queue. We don't use any sequential access for the 
+suspended thread queue, and beyond that, I'm even going to kill the latter since 
+it's actually useless.
+
+Unfortunately, it already crashes my box with the standard
+> latency test. All debug stuff on and serial console attached still does
+> not give any output. Looks like a really fatal scheduler crash. :(
+>
+> Anyone any ideas?
+
+It breaks with the development trunk/ because we are extending the ability of
+the core pod to provide a larger priority scale, so that we can provide
+VxWorks et al. with a native syscall interface. The new scale likely messes up 
+with the priority bitmaps used in the scalable sched. Will fix.
+
+> Jan
 > 
-> - do I need RTAI to run Xenomai ?
-
-No.
-
-> - Can I have RTAI and Xenomai installed together ?
-
-If by "installed" you mean running side-by-side safely, then the answer is no. 
-RTAI would need to be fixed not to bypass the Adeos virtualization layer.
-
-> - Is Xenomai a real real-time OS or just a emulator ?
 > 
-
-A real-time framework, including a real-time core, to build the real-time OS of 
-your dreams, or use a pre-canned one that's already available with it.
-Aside of this, I don't understand how one could properly emulate a RTOS without 
-any real-time capabilities under the hood. Quite frankly, syntactical 
-compatibility using API wrappers without actual behavioural compatibility with the 
-source RTOS is just silly marketing mumbo-jumbo in action.
-
-> Thanks
-> KC
+> 
+> ------------------------------------------------------------------------
 > 
 > _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
