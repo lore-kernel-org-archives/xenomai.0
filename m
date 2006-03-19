@@ -1,82 +1,115 @@
-Message-ID: <442018FE.3020906@domain.hid>
-Date: Tue, 21 Mar 2006 16:17:18 +0100
+Message-ID: <441DD89A.4000501@domain.hid>
+Date: Sun, 19 Mar 2006 23:18:02 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rtdm_event_timedwait hang-up - SOLVED
-References: 00603201434.15258@domain.hid> <200603201434.15258@domain.hid>
-	<441ED657.1080405@domain.hid> <200603201901.3123@domain.hid>
-	<441F3476.1080003@domain.hid> <200603211503.22918@domain.hid>
-In-Reply-To: <200603211503.22918@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0F844B36A00D352123012A11"
+Content-Type: multipart/mixed; boundary="------------070504030401090904010202"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] yet another test tool
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0F844B36A00D352123012A11
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------070504030401090904010202
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8bit
 
-Petr Cervenka wrote:
-> The problem was in my calling "RT" task. I forgot to switch the new
-> created task to PRIMARY MODE, because I didn't know it's neccessary.
+Hi,
 
-As Philippe said, it isn't usually required - with exceptions. Let me
-first sketch the standard situation: You registered a read_rt handler
-with your device, but no read_nrt. If your application now calls
-rt_dev_read (or just read() for the POSIX skin) from the "wrong"
-context, RTDM will detect the missing _nrt handler and trigger an
-automatic switch to primary mode (and vice versa). So, no need for
-manual switching in the standard case.
+as I already mentioned, I experimented with the cyclictest-0.5 by Thomas
+Gleixner (http://www.tglx.de/projects/misc/cyclictest), one of the
+PREEMPT_RT developers. The attached patch fixes the scheduling policy
+setup and locks the whole test into memory.
 
-But if you had registered handlers for both contexts, RTDM will always
-invoke the one for your current mode. This means your _nrt handler must
-handle this mode correctly! This "sticky" behaviour was invented to
-allow providing services both with and without strict determinism. RT
-handler may allocate required resources from pre-allocated but limited
-pools, NRT handlers are free to use Linux services for this. This is
-used in practice e.g. by the 16550A driver or RTnet.
+This tool is quite handy for running more than one timed thread, and for
+basic testing of the POSIX skin. As Xenomai does not support hard-RT
+signal delivery yet, the only relevant mode is -n, i.e. delaying via
+clock_nanosleep. From the bugs I fixed I would say that not every
+feature may work yet, but running with -n, -p 99 (highest priority
+used), and -t 10 (create e.g. 10 cascading threads) looks fine to me.
 
-It may appear a bit tricky for IOCTL handlers to implement this scheme,
-as the actual service demultiplexing happens inside the handler, and
-there might be some IOCTLs exclusively for RT and some only for NRT. In
-this case, just reject wrong context invocations by returning -ENOSYS.
-RTDM will then re-invoke the service after toggling the context. See the
-IOCTL handling of the timerbench driver as example.
-
-> I still have same problems with porting the driver, but I think I can
-> handle them myself.
-> Thanks for your help.
-> Petr Cervenka
->=20
+What do you think, is it worth including as a POSIX counterpart for
+testsuite/latency?
 
 Jan
 
+--------------070504030401090904010202
+Content-Type: text/plain;
+ name="cyclic.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="cyclic.patch"
 
---------------enig0F844B36A00D352123012A11
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--- cyclictest.c.orig	2005-11-24 13:33:21.000000000 +0100
++++ cyclictest.c	2006-03-17 10:50:26.000000000 +0100
+@@ -24,12 +24,14 @@
+ #include <string.h>
+ #include <time.h>
+ #include <unistd.h>
++#include <limits.h>
+=20
+ #include <linux/unistd.h>
+=20
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <sys/time.h>
++#include <sys/mman.h>
+=20
+ /* Ugly, but .... */
+ #define gettid() syscall(__NR_gettid)
+@@ -158,7 +160,7 @@ void *timerthread(void *param)
+=20
+ 	memset(&schedp, 0, sizeof(schedp));
+ 	schedp.sched_priority =3D par->prio;
+-	sched_setscheduler(0, policy, &schedp);
++	pthread_setschedparam(pthread_self(), policy, &schedp);
+=20
+ 	/* Get current time */
+ 	clock_gettime(par->clock, &now);
+@@ -265,7 +267,7 @@ out:	=09
+=20
+ 	/* switch to normal */
+ 	schedp.sched_priority =3D 0;
+-	sched_setscheduler(0, SCHED_OTHER, &schedp);=09
++	pthread_setschedparam(pthread_self(), SCHED_OTHER, &schedp);
+=20
+ 	stat->threadstarted =3D -1;
+=20
+@@ -396,6 +398,7 @@ int main(int argc, char **argv)
+ 	int mode;
+ 	struct thread_param *par;
+ 	struct thread_stat *stat;
++	pthread_attr_t thattr;
+ 	int i, ret =3D -1;
+=20
+ 	if (geteuid()) {
+@@ -403,6 +406,8 @@ int main(int argc, char **argv)
+ 		exit(-1);
+ 	}
+=20
++	mlockall(MCL_CURRENT | MCL_FUTURE);
++
+ 	process_options(argc, argv);
+=20
+ 	mode =3D use_nanosleep + use_system;
+@@ -442,7 +447,9 @@ int main(int argc, char **argv)
+ 		par[i].stats =3D &stat[i];
+ 		stat[i].min =3D 1000000;
+ 		stat[i].max =3D -1000000;
+-		pthread_create(&stat[i].thread, NULL, timerthread, &par[i]);
++		pthread_attr_init(&thattr);
++		pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
++		pthread_create(&stat[i].thread, &thattr, timerthread, &par[i]);
+ 		stat[i].threadstarted =3D 1;
+ 	}
+ =09
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEIBj/niDOoMHTA+kRAksHAJwN2pgYhX3CwTJm612n46Tds0AvkACdEMUS
-lA47di0ik9jFexAy8QrA+YY=
-=xPZK
------END PGP SIGNATURE-----
-
---------------enig0F844B36A00D352123012A11--
+--------------070504030401090904010202--
 
