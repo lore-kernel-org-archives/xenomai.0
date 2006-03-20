@@ -1,11 +1,11 @@
-Message-ID: <441F10FF.2040201@domain.hid>
-Date: Mon, 20 Mar 2006 14:30:55 -0600
-From: Jeff Webb <jeff.webb@domain.hid>
+Message-ID: <441F1675.1010703@domain.hid>
+Date: Mon, 20 Mar 2006 21:54:13 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] adding xenomai MLs to Gmane
-References: <441F0A00.1050308@domain.hid>
-In-Reply-To: <441F0A00.1050308@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] CONFIG_XENO_OPT_DEBUG_LEVEL
+References: <441EFB6D.8000507@domain.hid>
+In-Reply-To: <441EFB6D.8000507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,20 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jim wrote:
-> Philippe,
+Jan Kiszka wrote:
+> Hi,
 > 
-> any objection to my requesting that Gmane.org
-> add the xenomai MLs to their site ?
-> They will probably want to hear from you
-> on this, I'll forward your response if ok.
+> as I started to actually use XENO_ASSERT, I noticed that there is no
+> infrastructure yet to enable it. CONFIG_XENO_OPT_DEBUG_LEVEL is nowhere
+> defined. Add this as integer to Kconfig? Or better convert
+> nucleus/assert.h to CONFIG_OPT_DEBUG for now until we really feel like
+> we need more than on/off for this? I would vote for the latter ATM.
 
-This list has already been added.  I found the archive at gmane the other day.  In fact, your message has already been archived there!
+Actually, we already need more than a simple switch: I'd really like the 
+queue debugging option to become a level on its own (say, 4294967295?). 
+I'll add this tomorrow.
 
-http://www.mail-archive.com/xenomai@xenomai.org
-http://dir.gmane.org/gmane.linux.real-time.xenomai.devel
+> 
+> Jan
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
--Jeff
+
+-- 
+
+Philippe.
 
