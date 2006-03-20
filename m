@@ -1,68 +1,124 @@
-Message-ID: <20060322203422.2866.qmail@domain.hid>
-Date: Wed, 22 Mar 2006 17:34:22 -0300 (ART)
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Message-ID: <441E65DB.6080106@domain.hid>
+Date: Mon, 20 Mar 2006 09:20:43 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Hard real-time and C++
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] yet another test tool
+References: <441DD89A.4000501@domain.hid>
+In-Reply-To: <441DD89A.4000501@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+> 
+> as I already mentioned, I experimented with the cyclictest-0.5 by Thomas
+> Gleixner (http://www.tglx.de/projects/misc/cyclictest), one of the
+> PREEMPT_RT developers. The attached patch fixes the scheduling policy
+> setup and locks the whole test into memory.
+> 
+> This tool is quite handy for running more than one timed thread, and for
+> basic testing of the POSIX skin. As Xenomai does not support hard-RT
+> signal delivery yet, the only relevant mode is -n, i.e. delaying via
+> clock_nanosleep. From the bugs I fixed I would say that not every
+> feature may work yet, but running with -n, -p 99 (highest priority
+> used), and -t 10 (create e.g. 10 cascading threads) looks fine to me.
+> 
+> What do you think, is it worth including as a POSIX counterpart for
+> testsuite/latency?
 
-I'm willing to develop a framework for helping people to program mobile rob=
-ots for doing hard
-real-time tasks. Assuming most of them will have a limitated knowledge both=
- to RTOS and
-programming, I would like to keep it simple to use.
+Yes indeed, e.g. testsuite/cyclic.
 
-I think that developing it using a object-oriented methodology is crucial f=
-or achieving my
-objectives. But I have some challenges then. And some questions too.
+> 
+> Jan
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> --- cyclictest.c.orig	2005-11-24 13:33:21.000000000 +0100
+> +++ cyclictest.c	2006-03-17 10:50:26.000000000 +0100
+> @@ -24,12 +24,14 @@
+>  #include <string.h>
+>  #include <time.h>
+>  #include <unistd.h>
+> +#include <limits.h>
+>  
+>  #include <linux/unistd.h>
+>  
+>  #include <sys/stat.h>
+>  #include <sys/types.h>
+>  #include <sys/time.h>
+> +#include <sys/mman.h>
+>  
+>  /* Ugly, but .... */
+>  #define gettid() syscall(__NR_gettid)
+> @@ -158,7 +160,7 @@ void *timerthread(void *param)
+>  
+>  	memset(&schedp, 0, sizeof(schedp));
+>  	schedp.sched_priority = par->prio;
+> -	sched_setscheduler(0, policy, &schedp);
+> +	pthread_setschedparam(pthread_self(), policy, &schedp);
+>  
+>  	/* Get current time */
+>  	clock_gettime(par->clock, &now);
+> @@ -265,7 +267,7 @@ out:		
+>  
+>  	/* switch to normal */
+>  	schedp.sched_priority = 0;
+> -	sched_setscheduler(0, SCHED_OTHER, &schedp);	
+> +	pthread_setschedparam(pthread_self(), SCHED_OTHER, &schedp);
+>  
+>  	stat->threadstarted = -1;
+>  
+> @@ -396,6 +398,7 @@ int main(int argc, char **argv)
+>  	int mode;
+>  	struct thread_param *par;
+>  	struct thread_stat *stat;
+> +	pthread_attr_t thattr;
+>  	int i, ret = -1;
+>  
+>  	if (geteuid()) {
+> @@ -403,6 +406,8 @@ int main(int argc, char **argv)
+>  		exit(-1);
+>  	}
+>  
+> +	mlockall(MCL_CURRENT | MCL_FUTURE);
+> +
+>  	process_options(argc, argv);
+>  
+>  	mode = use_nanosleep + use_system;
+> @@ -442,7 +447,9 @@ int main(int argc, char **argv)
+>  		par[i].stats = &stat[i];
+>  		stat[i].min = 1000000;
+>  		stat[i].max = -1000000;
+> -		pthread_create(&stat[i].thread, NULL, timerthread, &par[i]);
+> +		pthread_attr_init(&thattr);
+> +		pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
+> +		pthread_create(&stat[i].thread, &thattr, timerthread, &par[i]);
+>  		stat[i].threadstarted = 1;
+>  	}
+>  	
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-Since Xenomai and Linux will be built using gcc, I'm willing to use it too.=
- So, I would need to
-choose between C++ and C (through the Object Oriented C - OOC - approach). =
-I didn't like very much
-the OOC aproaches I've seen. I would like to understand better what would b=
-e the C++ problems
-before I can choose between these alternatives.
 
-I know about the new/delete problems that use the malloc like functions, th=
-at runs on secondary
-mode. I was wondering if there is an elegant way of changing these call to =
-some Xenomai memory
-allocation functions. Maybe overriding new() methods... Any more suggestion?
+-- 
 
-Please, if someone could list me a list of disadvantages of C++ use on hard=
- real-time systems,
-requiring object oriented approach, I would be very glad to read it. Better=
- yet if it comes with
-the possible solutions to each problem or pointing out that there is no sol=
-ution at all.
-
-Thanks in advance,
-
-Rodrigo.
-
-
-
-=09
-
-
-
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
-
+Philippe.
 
