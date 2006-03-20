@@ -1,14 +1,12 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-Date: Mon, 20 Mar 2006 11:42:27 -0300
-References: <44172B67.2000609@domain.hid> <441E9698.5080506@domain.hid>
-	<441EAD78.3030007@domain.hid>
-In-Reply-To: <441EAD78.3030007@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603201142.27591.lbocseg@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17438.51347.702261.525919@domain.hid>
+Date: Mon, 20 Mar 2006 16:21:55 +0100
+Subject: Re: [Xenomai-core] yet another test tool
+In-Reply-To: <441DD89A.4000501@domain.hid>
+References: <441DD89A.4000501@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,51 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
->...
->Given the description above, just that some skin might return either
->nucleus ticks or corrected timestamps to the applications, which would
->in turn do some arithmetics for converting values they got from the skin
->between both scales internally, and mistakenly use the result while
->assuming that both scales are always in sync. In this situation, and
->during a fraction of the time (i.e. the jitter), both scales might not
->be in sync, and the result would be unusable.
+Jan Kiszka wrote:
+ > (...)As Xenomai does not support hard-RT signal delivery yet (...)
 
-But I still can't find a real situation where the user would need these val=
-ues=20
-to be in sync...
+This is the next feature missing to the POSIX skin. I would like to
+implement this, but I am not sure which way to go :
+- either, if it is possible, getting Linux signals services to run in
+  every domain at Adeos level, by replacing spinlocks with spinlocks_hw
+  and such kind of tricks;
+- or adding a generic service at the adeos layer (a hook called when
+  returning to user-space), building a generic user-space signals
+  service at the nucleus level, and finally building all posix signals
+  services on top of this.
 
->...
->But maybe we are still discussing different issues actually, so it would
->be useful that the core issue that triggered the discussion about
->periodic mode precision be exposed again.
+The first approach guarantees the best integration with Linux, but
+potentially add sections in Linux that are not preemptible by any
+Xenomai skin. With the second approach, all services related to signals
+have to be reimplemented plus some shortcuts to have standard user-space
+tools such as "kill" working.
 
-The core issue is that:
-I think the driver development should be kind of independent from the user =
 
-programs. That said, if the driver needs a precise timestamp, it should be =
+ > 
+ > What do you think, is it worth including as a POSIX counterpart for
+ > testsuite/latency?
 
-able to get it, even if the user is fine with a, say, 100ms periodic tick. =
-If=20
-the user have a loop with a deadline of 100ms, and if it takes two=20
-consecutive images for estimating speed in the same loop, the user will nee=
-d=20
-to have a higher precision timestamps for the images. So, the driver will=20
-need a high precision timer reading for making possible to provide those=20
-timestamps...
+There are a few details that I do not like about this tool, but we may
+take it, and fix the details later.
 
-I hope that was what you were asking for...
 
-Regards,
+-- 
 
-Rodrigo.
 
-	=09
-_______________________________________________________
-Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
-gora!
-http://br.acesso.yahoo.com
-
+					    Gilles Chanteperdrix.
 
