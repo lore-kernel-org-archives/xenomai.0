@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17435.1835.845947.604189@domain.hid>
-Date: Fri, 17 Mar 2006 19:59:55 +0100
-Subject: Re: [Xenomai-help] Valgrind and xenomai?
-In-Reply-To: <4419D38E.7060007@domain.hid>
-References: <4419D38E.7060007@domain.hid>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 20 Mar 2006 10:14:12 +0100
+Message-ID: <6591E9FA8C2F3E4D8BF2229E26AC2FF246A5@domain.hid>
+From: "Martijn Hazenberg" <Martijn@domain.hid>
+Subject: [Xenomai-help] intel PXA255
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +16,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Josh Bowman <jbowman@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Josh Bowman wrote:
- > Has anyone made Valgrind work on a xenomai user-space application?
- > 
- > My attempts so far (with valgrind 2.4.0 and 3.1.0 from gentoo) has lead to:
- > 
- >   --25174-- WARNING: unhandled syscall: 555
- >   --25174-- Do not panic.  You may be able to fix this easily.
- >   --25174-- Read the file README_MISSING_SYSCALL_OR_IOCTL.
- >   Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
- >   (modprobe xeno_native?)
- > 
- > The native skin *was* loaded (the program runs without valgrind).  I
- > think this means that valgrind needs to have code added to handle the
- > xenomai system calls
+Hi,
+=20
+Would it be possible to use Xenomai on this platform :=20
+http://www.gumstix.com/spexconnex-xm.html   ?
+=20
+its a Intel XScale(r) PXA255 400MHz with 64mb ram and 16mb flash ...
 
-Yes, I am afraid. And looking at README_MISSING_SYSCALL_OR_IOCTL, there
-is a lot of code to add.
+Has anyone tried it ?
 
-But there is a way to run your programs with valgrind: use Xenomai
-discrete event simulator, configured with the --enable-atomic-core
-flag.
+Best regards,
+Martijn
 
--- 
-
-
-					    Gilles Chanteperdrix.
 
