@@ -1,13 +1,15 @@
-Message-ID: <441F1B05.1090505@domain.hid>
-Date: Mon, 20 Mar 2006 22:13:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+Date: Mon, 20 Mar 2006 16:01:07 -0300
+References: <44172B67.2000609@domain.hid>
+	<200603201137.12548.rosenfeld@domain.hid>
+	<441EC906.3050104@domain.hid>
+In-Reply-To: <441EC906.3050104@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] yet another test tool
-References: <441DD89A.4000501@domain.hid>	<17438.51347.702261.525919@domain.hid>	<441EDA08.7050900@domain.hid>
-	<17438.65058.166546.339686@domain.hid>
-In-Reply-To: <17438.65058.166546.339686@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200603201601.07420.lbocseg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,48 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > As a first step, I would vote for establishing that generic service to
->  > redirect the userspace return path to some arbitrary handler in hard-RT
->  > context. Then we can think about how to handle signal injection from
->  > Linux vs. injection from Xenomai gracefully.
-> 
-> Ok, the first idea was a bad idea. Will try the second, or the
-> alternative proposed by Philippe.
-> 
->  > 
->  > > 
->  > >  > 
->  > >  > What do you think, is it worth including as a POSIX counterpart for
->  > >  > testsuite/latency?
->  > > 
->  > > There are a few details that I do not like about this tool, but we may
->  > > take it, and fix the details later.
->  > 
->  > It's a real hack, isn't it ;)? But what precisely do you mean?
-> 
-> What I dislike most, is the lack of return values check. This may work
-> well with Linux, but not with Xenomai. I would also prefer a clean
-> shutdown using pthread_cancel, after all sigwait and *nanosleep are
-> cancellation points, so it should work even without resorting to cleanup
-> handlers.
-> 
+Em Segunda 20 Mar=3DE7o 2006 12:23, Philippe Gerum escreveu:
 
-The current implementation is one thing (we could fix it), the purpose 
-of the tool is another, and actually, this is the latter which seems 
-useful to me. By sharing some common tests between native preemption and 
-real-time sub-systems like Xeno, we would make performance comparisons 
-more relevant. Additionally, I'm convinced that the POSIX skin is an 
-underutilized goodie albeit it works damn well and obviously favours a 
-close integration within the Linux environment, simply because there is 
-a lack of explanation about it. Illustrating how one could leverage it 
-is always a good thing.
+>...
+>It's not a matter of dealing with users always doing The Right Thing,
+>but preferably preventing people from doing the wrong one.
 
--- 
+But we then have two problems and there are tradeoffs here. In one hand we=
+=3D
+=3D20
+want to avoid users from making mistakes. In the other hand we want to=3D20
+provide a way for solving the issue that generated this thread.
 
-Philippe.
+A solution for the last one would be to have a function that would return a=
+=3D
+=3D20
+high-precision timestamp, not necessarily in sync with xenomai's timer, sin=
+=3D
+ce=3D20
+it would be used for relative time calculations, but should be in sync=3D20
+between multiple CPUs. But this solution would rise the possibility for a=
+=3D20
+user to do a wrong thing. Of course, the functions should be well documente=
+=3D
+d=3D20
+and states the lack of sync if it is the case. So, we have to choose betwee=
+=3D
+n=3D20
+turning it possible to have such design (as the example I have last message=
+=3D
+)=3D20
+or avoid people from doing the wrong thing. I would choose the first case,=
+=3D
+=3D20
+since I think all rt-programmers are smarter (or should be) then the averag=
+=3D
+e=3D20
+programmer. They must have attention when dealing with rt-programming. So,=
+=3D
+=3D20
+reading a documentation and understanding it should not be a hard task for=
+=3D
+=3D20
+them... In the other hand, if the second approach was chosen, a user wantin=
+=3D
+g=3D20
+to use a rt-video interface will be forced to use the aperiodic timer for=
+=3D20
+having reliable timestamps...
+
+Rodrigo.
+
+	=09
+_______________________________________________________
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!
+http://br.acesso.yahoo.com
+
 
