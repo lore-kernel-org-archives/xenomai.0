@@ -1,12 +1,10 @@
-Content-class: urn:content-classes:message
+Date: Mon, 20 Mar 2006 14:34:51 +0100
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 20 Mar 2006 10:14:12 +0100
-Message-ID: <6591E9FA8C2F3E4D8BF2229E26AC2FF246A5@domain.hid>
-From: "Martijn Hazenberg" <Martijn@domain.hid>
-Subject: [Xenomai-help] intel PXA255
+Message-ID: <200603201434.15258@domain.hid>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Subject: [Xenomai-help] rtdm_event_timedwait hang-up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,16 +16,16 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
-=20
-Would it be possible to use Xenomai on this platform :=20
-http://www.gumstix.com/spexconnex-xm.html   ?
-=20
-its a Intel XScale(r) PXA255 400MHz with 64mb ram and 16mb flash ...
+Hello,
+I'm trying to port a  driver of a AD card to RTDM.
+When I use rtdm_event_timedwait in IOCTL handler (called from NRT user app), the system will hang-up immediately.
+Does it have something to do with: https://mail.gna.org/public/xenomai-help/2006-03/msg00035.html
+, ie. it's not possible to call wait /caller blocking functions from non-real-time, is it?
+Is there a posibility to do some workaround to solve this or other alternative. I need to wait couple of seconds for IRQ from device.
 
-Has anyone tried it ?
+My configuration: kernel-2.6.15.6, adeos-ipipe-2.6.15-i386-1.2-01, xenomai-2.1.0
+Thanks for any help
 
-Best regards,
-Martijn
+Petr Cervenka
 
 
