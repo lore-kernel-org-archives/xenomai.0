@@ -1,57 +1,74 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-help] Hard real-time and C++
-Date: Mon, 27 Mar 2006 11:50:58 -0300
-References: <20060322203422.2866.qmail@domain.hid>
-	<442666D5.4080700@domain.hid>
-In-Reply-To: <442666D5.4080700@domain.hid>
+Message-ID: <441E9698.5080506@domain.hid>
+Date: Mon, 20 Mar 2006 12:48:40 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603271150.58299.lbocseg@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>	<44180FB8.7080200@domain.hid>	<17432.5656.591747.248941@domain.hid>
+	<44189C13.3010301@domain.hid>
+In-Reply-To: <44189C13.3010301@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig246EBD19905C3E10121CB80B"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Em Domingo 26 Mar=3DE7o 2006 07:03, Jan Kiszka escreveu:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig246EBD19905C3E10121CB80B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
->...
->Note that this is what our RACK (Robotic Application Construction Kit)
->aims for. It comes with a simple modular concept for input, output, and
->processing components, is written in C++ over Xenomai, contains a lot of
->abstractions for typical component classes in mobile service robotics,
->and supports both RT (=3D3D>RTnet) and non-RT (=3D3D>TCP/IP) distribution.
->
->As my colleagues are currently porting a lot of old components from the
->previous framework to RACK, there has been no time to finalise the
->release of the core as open source. Well, we have no fixed schedule for
->this release unfortunately, only schedules for two upcoming robotic
->challenges within the next two months...
->
->If you are interested in a sneak-preview, I could try to arrange
->something next week.
+Philippe Gerum wrote:
+> ...
+> The issue that worries me - provided that we bound the adjustment offse=
+t
+> to the duration of one tick after some jittery - is that any attempt to=
 
-Yes, I would really like to see your design. I would be very glad if you co=
-=3D
-uld=3D20
-be that kind. :)
+> get intra-tick precision would lead to a possible discrepancy regarding=
 
-Thank you,
+> the elapsed time according to those two different scales, between the
+> actual count of jiffies tracked by the timer ISR on the timekeeper CPU,=
 
-Rodrigo.
+> and the corrected time value returned by rtdm_read_clock. And this
+> discrepancy would last for the total duration of the jitter. E.g., for =
+a
+> 100 us period, xnpod_get_time() could return 2 albeit rtdm_read_clock
+> returns 300, instead of 200. Spuriously mixing both units in
+> applications would lead to some funky chaos.
+>=20
 
-	=09
-_______________________________________________________=20
-Novo Yahoo! Messenger com voz: Instale agora e fa=E7a liga=E7=F5es de gra=
-=E7a.=20
-http://br.messenger.yahoo.com/
+Trying to pick up this thread again, I just tried to understand your
+concerns, but failed so far to imagine a concrete scenario. Could you
+sketch such a "funky chaotic" situation from the application point of
+view? And what would prevent us from improving the accuracy of other
+timestamping API functions beyond RTDM as well, e.g. on converting from
+ticks to nanos in rt_timer_ticks2ns()?
 
+Jan
+
+
+--------------enig246EBD19905C3E10121CB80B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEHpaYniDOoMHTA+kRAmGaAJ46W1mE2vY/RVA8nzDaLU01x6KToACdGVJB
+xMRgYYTwKkYO+OwLqsuJLgo=
+=XWUJ
+-----END PGP SIGNATURE-----
+
+--------------enig246EBD19905C3E10121CB80B--
 
