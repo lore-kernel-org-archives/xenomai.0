@@ -1,15 +1,14 @@
-Message-ID: <441EDA08.7050900@domain.hid>
-Date: Mon, 20 Mar 2006 17:36:24 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <441EDD9B.20708@domain.hid>
+Date: Mon, 20 Mar 2006 17:51:39 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] yet another test tool
-References: <441DD89A.4000501@domain.hid>
-	<17438.51347.702261.525919@domain.hid>
-In-Reply-To: <17438.51347.702261.525919@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig285556D83F5765B264B5CD81"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>
+	<441E9698.5080506@domain.hid>	<441EAD78.3030007@domain.hid>
+	<200603201142.27591.lbocseg@domain.hid>
+In-Reply-To: <200603201142.27591.lbocseg@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,76 +18,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig285556D83F5765B264B5CD81
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > (...)As Xenomai does not support hard-RT signal delivery yet (...)
+Rodrigo Rosenfeld Rosas wrote:
+> Philippe Gerum wrote:
 >=20
-> This is the next feature missing to the POSIX skin. I would like to
-> implement this, but I am not sure which way to go :
-> - either, if it is possible, getting Linux signals services to run in
->   every domain at Adeos level, by replacing spinlocks with spinlocks_hw=
-
->   and such kind of tricks;
-> - or adding a generic service at the adeos layer (a hook called when
->   returning to user-space), building a generic user-space signals
->   service at the nucleus level, and finally building all posix signals
->   services on top of this.
+>>...
+>>Given the description above, just that some skin might return either
+>>nucleus ticks or corrected timestamps to the applications, which would
+>>in turn do some arithmetics for converting values they got from the ski=
+n
+>>between both scales internally, and mistakenly use the result while
+>>assuming that both scales are always in sync. In this situation, and
+>>during a fraction of the time (i.e. the jitter), both scales might not
+>>be in sync, and the result would be unusable.
 >=20
-> The first approach guarantees the best integration with Linux, but
-> potentially add sections in Linux that are not preemptible by any
-> Xenomai skin. With the second approach, all services related to signals=
-
-> have to be reimplemented plus some shortcuts to have standard user-spac=
-e
-> tools such as "kill" working.
+>=20
+> But I still can't find a real situation where the user would need these=
+ values=20
+> to be in sync...
+>=20
+>=20
+>>...
+>>But maybe we are still discussing different issues actually, so it woul=
+d
+>>be useful that the core issue that triggered the discussion about
+>>periodic mode precision be exposed again.
+>=20
+>=20
+> The core issue is that:
+> I think the driver development should be kind of independent from the u=
+ser=20
+> programs. That said, if the driver needs a precise timestamp, it should=
+ be=20
+> able to get it, even if the user is fine with a, say, 100ms periodic ti=
+ck. If=20
+> the user have a loop with a deadline of 100ms, and if it takes two=20
+> consecutive images for estimating speed in the same loop, the user will=
+ need=20
+> to have a higher precision timestamps for the images. So, the driver wi=
+ll=20
+> need a high precision timer reading for making possible to provide thos=
+e=20
+> timestamps...
 >=20
 
-The preemptibility of the Linux signal code path heavily depends on the
-tasklist_lock, and that was still an issue even for PREEMPT_RT with all
-their modifications the last time I checked their code more thoroughly
-(~2 months ago). Meanwhile, things may have improved for that tree, but
-I doubt that this is already in mainline, not to speak of older 2.6 or
-even 2.4 kernels.
+This is exactely what rt_timer_tsc() or clock_gettime(CLOCK_MONOTONIC)=20
+[or whatever ends up calling xnarch_get_cpu_tsc() from the underlying=20
+architecture] are there for.
 
-As a first step, I would vote for establishing that generic service to
-redirect the userspace return path to some arbitrary handler in hard-RT
-context. Then we can think about how to handle signal injection from
-Linux vs. injection from Xenomai gracefully.
+The thing is that rt_timer_read() is expected to return values=20
+compatible with the timer mode, always. But rt_timer_tsc() is there to=20
+return the most precise timestamp available from the underlying=20
+architecture, regardless of the current timing mode. If no TSC exists on=20
+x86, then it is going to be emulated (using the PIT's channel #2), but=20
+in any case, you will get a high precision timestamp, up to the best=20
+precision the architecture can provide, that is.
 
+The key issue is to acknowledge the fact that periodic ticks and precise=20
+timestamps are two _unrelated_ units. What I'm reluctant to is to try=20
+finding some artificial binding between both units, because there is=20
+none (being stable, that is).
+
+In your example above, you would be able to estimate the elapsed time=20
+using something like rt_timer_tsc(), and convert this to ticks using=20
+rt_timer_ns2ticks(rt_timer_tsc2ns(timestamp)). The main problem would be=20
+the rounding here, and work around the lack of precision the periodic=20
+mode currently exhibits due to the constant delay between timer shots.
+
+I think that you should try convincing Jan that rtdm_clock_tsc() might=20
+be a good idea to provide, instead of tweaking rtdm_clock_read() in a=20
+way which changes its underlying logic. ;o)
+
+
+> I hope that was what you were asking for...
 >=20
->  >=20
->  > What do you think, is it worth including as a POSIX counterpart for
->  > testsuite/latency?
+> Regards,
 >=20
-> There are a few details that I do not like about this tool, but we may
-> take it, and fix the details later.
+> Rodrigo.
+>=20
+> 	=09
+> _______________________________________________________
+> Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discad=
+or agora!
+> http://br.acesso.yahoo.com
+>=20
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>=20
 
-It's a real hack, isn't it ;)? But what precisely do you mean?
 
-Jan
+--=20
 
-
---------------enig285556D83F5765B264B5CD81
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEHtoIniDOoMHTA+kRAh+oAJ0QAzEF1e9tt16x1FgobHoXZZsUfQCfRAta
-CO91aZ4zXERPW7UMiHyqgjg=
-=Q7LH
------END PGP SIGNATURE-----
-
---------------enig285556D83F5765B264B5CD81--
+Philippe.
 
