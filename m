@@ -1,12 +1,14 @@
-Message-ID: <441EFB6D.8000507@domain.hid>
-Date: Mon, 20 Mar 2006 19:58:53 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig864B01FB8031003186271E25"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] CONFIG_XENO_OPT_DEBUG_LEVEL
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17438.65058.166546.339686@domain.hid>
+Date: Mon, 20 Mar 2006 20:10:26 +0100
+Subject: Re: [Xenomai-core] yet another test tool
+In-Reply-To: <441EDA08.7050900@domain.hid>
+References: <441DD89A.4000501@domain.hid>
+	<17438.51347.702261.525919@domain.hid>
+	<441EDA08.7050900@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,37 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig864B01FB8031003186271E25
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+ > As a first step, I would vote for establishing that generic service to
+ > redirect the userspace return path to some arbitrary handler in hard-RT
+ > context. Then we can think about how to handle signal injection from
+ > Linux vs. injection from Xenomai gracefully.
 
-Hi,
+Ok, the first idea was a bad idea. Will try the second, or the
+alternative proposed by Philippe.
 
-as I started to actually use XENO_ASSERT, I noticed that there is no
-infrastructure yet to enable it. CONFIG_XENO_OPT_DEBUG_LEVEL is nowhere
-defined. Add this as integer to Kconfig? Or better convert
-nucleus/assert.h to CONFIG_OPT_DEBUG for now until we really feel like
-we need more than on/off for this? I would vote for the latter ATM.
+ > 
+ > > 
+ > >  > 
+ > >  > What do you think, is it worth including as a POSIX counterpart for
+ > >  > testsuite/latency?
+ > > 
+ > > There are a few details that I do not like about this tool, but we may
+ > > take it, and fix the details later.
+ > 
+ > It's a real hack, isn't it ;)? But what precisely do you mean?
 
-Jan
+What I dislike most, is the lack of return values check. This may work
+well with Linux, but not with Xenomai. I would also prefer a clean
+shutdown using pthread_cancel, after all sigwait and *nanosleep are
+cancellation points, so it should work even without resorting to cleanup
+handlers.
+
+-- 
 
 
---------------enig864B01FB8031003186271E25
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEHvttniDOoMHTA+kRAkqrAJ9gZYTY5yRslhjMtOLFHrh5HqG59wCfYHx5
-Zd70KxoRQeQpvpuaq2ln6YI=
-=uzmF
------END PGP SIGNATURE-----
-
---------------enig864B01FB8031003186271E25--
+					    Gilles Chanteperdrix.
 
