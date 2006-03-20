@@ -1,11 +1,11 @@
 From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Date: Mon, 20 Mar 2006 16:47:51 -0300
+Date: Mon, 20 Mar 2006 17:15:08 -0300
 MIME-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Message-Id: <200603201647.51941.lbocseg@domain.hid>
-Subject: [Xenomai-core] Interrupt priorities
+Message-Id: <200603201715.08482.lbocseg@domain.hid>
+Subject: [Xenomai-core] rt-video interface
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,56 +17,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-Hi Philippe.
+Hi Jan and others interested.
 
-I was wondering if there are any plans to provide an option to Xenomai to=20
-allow the use of interrupt priorities. I mean, by having the timer source a=
-s=20
-the most prioritary interrupt so that the scheduler could preempt the=20
-interrupt.
+I've finally got my driver in a usable condition. It lacks a lot of=20
+functionalities yet, but it aplies to my needs.
 
-Let me explain why such option would be good. When I was testing my=20
-framegrabber driver, I had to reboot my PC about 10 times until I could=20
-identificate what was causing total freeze of the system. The problem was o=
-n=20
-the interrupt handler. One of the problems was that I was not clearing the =
+I would like to propose a real-time video interface for using with RTDM.
 
-interrupt events correctly so that the handler was in loop. The other probl=
-em=20
-was a crash inside the interrupt due to something like:
+For making it simple to port Linux applications to Xenomai, I tried to make=
+ it=20
+as close as possible to Video for Linux 2 API. I didn't see any serious=20
+problem regarding its use on real-time environments in the specification. S=
+o,=20
+the changes I think that would be necessary are:
 
-uint64_t timestamp=3Drtdm_clock_read();
-b.timestamp =3D *((struct timeval *) timestamp);
+o Change open/fopen to rtdm_dev_open
+o Implement MMAP/MUNMAP as an IOCTL (while it can not be done in a rt-conte=
+xt=20
+in the mean time, nor should be necessary)
+o Implement also as IOCTLs: select and poll (I didn't implement them on my =
 
-Where it should be
-b.timestamp =3D *((struct timeval *) &timestamp);
-
-I forgot the '&' char.
-
-If it was possible to preempt the interrupt, by a task of greater priority,=
- I=20
-could write a watchdog that would disable the interrupt in case the system =
-
-stops responding.
-
-Do you think it would worth providing such option to Xenomai, at least as a=
+driver because I didn't need them, but it should be necessary accordling to=
 =20
-debug feature?
+specs)
+o Change all timeval structs to uint64_t or some typedef to it for making i=
+t=20
+easier to store the timestamps (we use rtdm_clock_read() instead of=20
+gettimeofday())
 
-Best Regards,
+I can't remember of another issue now. I think these changes would be enoug=
+h.
+
+Any ideas?
 
 Rodrigo.
-
-P.S: BTW, I think my driver is usable now, so that you (or someone else) co=
-uld=20
-cite it in some article or documentation. When I finish my master thesis (m=
-y=20
-deadline is the end of June ), I think I'll have time to comment it better =
-
-and to remove the Data Translation specific code so that it can me made=20
-available as a template for real-time video interfaces. Or maybe you could =
-
-convince Data Translation to allow me to show all the code! ;)
 
 	=09
 _______________________________________________________
