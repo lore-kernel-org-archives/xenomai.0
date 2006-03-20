@@ -1,45 +1,61 @@
-Message-Id: <1143279446.13244.257499314@domain.hid>
-From: "Alessandro Pittaluga" <xpit@domain.hid>
-Content-Disposition: inline
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="ISO-8859-1"
+Message-ID: <441E71BB.6010906@domain.hid>
+Date: Mon, 20 Mar 2006 10:11:23 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Date: Sat, 25 Mar 2006 10:37:26 +0100
-Subject: [Xenomai-help] gdb and heaps
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] 2.6.16-rc6 support
+References: <441DD358.8010307@domain.hid>
+In-Reply-To: <441DD358.8010307@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4C607EB1BA5927ED9335726E"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4C607EB1BA5927ED9335726E
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-When trying to access with gdb to variables allocated on a shared heap,
-the following message is returned:
-(gdb) print mypointer
-$5 = (MYTYPE *) 0xb7dc4020
-(gdb) print *mypointer
-Cannot access memory at address 0xb7dc4020
+Jan Kiszka wrote:
+> Hi,
+>=20
+> Jeroen reported success much earlier, now I had to rebase my box on
+> upcoming 2.6.16. So I would like to post the result, maybe others are
+> interested in starting an early test as well. Attached is a cleanly
+> applying Ipipe patch for -rc6 and a fix for a name collision in
+> posix/syscall.c (there are other mutex functions in the kernel now...).=
 
-All the applications (kernel and userland) are accessing correctly to
-the  heap-allocated memory. 
+>=20
 
-Is this the expected behaviour or there's something wrong in my
-installation?
+Uups, someone must have whispered to me that 2.6.16 will come out very
+soon, and now it happened. The final patch seems to cause no problems to
+the ipipe patch as well.
 
-Many Thanks
-Alessandro
--- 
-  Alessandro Pittaluga
-  al.pittaluga@domain.hid
+Jan
 
--- 
-http://www.fastmail.fm - One of many happy users:
-  http://www.fastmail.fm/docs/quotes.html
 
+--------------enig4C607EB1BA5927ED9335726E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEHnG7niDOoMHTA+kRAv4dAJ9Vdp+vJBDzn16OCx71i6xsffe8RQCfT3qv
+eudp/a/SgovJVPVzZRHCuIU=
+=hCmz
+-----END PGP SIGNATURE-----
+
+--------------enig4C607EB1BA5927ED9335726E--
 
