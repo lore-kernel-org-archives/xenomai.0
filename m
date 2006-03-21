@@ -1,12 +1,16 @@
-Message-ID: <441C2574.4030901@domain.hid>
-Date: Sat, 18 Mar 2006 16:21:24 +0100
+Message-ID: <441F4494.5010803@domain.hid>
+Date: Tue, 21 Mar 2006 01:11:00 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>
+	<200603201142.27591.lbocseg@domain.hid>	<441EDD9B.20708@domain.hid>
+	<200603201627.54738.lbocseg@domain.hid>
+In-Reply-To: <200603201627.54738.lbocseg@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC85EA80B53828A49A00915F2"
+	boundary="------------enigE4174A90E63F83A43FFAE62A"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] get the simulator running...
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,147 +20,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC85EA80B53828A49A00915F2
-Content-Type: multipart/mixed; boundary="------------020404050107090103010401"
-
-This is a multi-part message in MIME format.
---------------020404050107090103010401
+--------------enigE4174A90E63F83A43FFAE62A
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Philippe,
+Rodrigo Rosenfeld Rosas wrote:
+> Em Segunda 20 Mar=E7o 2006 13:51, Philippe Gerum escreveu:
+>=20
+>> ...
+>> I think that you should try convincing Jan that rtdm_clock_tsc() might=
 
-here are some patches and comments on the simulator "quick"-start
-process. I guess the patches are due to latest changes in trunk, and I
-cannot guarantee that they are clean - but the simulator compiles now.
+>> be a good idea to provide, instead of tweaking rtdm_clock_read() in a
+>> way which changes its underlying logic. ;o)
+>=20
+> Yes, that is exactly what I want! :)
+> I don't see any reason for changing rtdm_timer_read() neither. I think =
+that=20
+> the most common usage of high-precision timestamps is for relative time=
+=20
+> cases. It doesn't need to be in sync with Xenomai's timer... It is best=
+ to=20
+> keep things simple.
+>=20
+> What do you think Jan?
 
-Regarding the rest of its build and start process: There are two hidden
-requirements, namely gcc < 4 (due to -fwritable-strings) and gdb 5.x. A
-note in sim/README about them would be great. Or do you have a fix for
-those issues scheduled?
+We discussed a lot about how to prevent the user shooting him/herself in
+the knee with inter-tick timestamps, but I still think that
+rtdm_clock_read_tsc() would even be worse in this regard.
 
-Well, once you got this far (i.e. the xenoscope is built and an ancient
-gdb has been prepared), the next step is to produce a test program. Am I
-overseeing some example? Fortunately, I had that demo I once produced
-(last year), but that one was easier to build. I first had to drag in
-the libs and includes of both the simulator and a regular xenomai
-installation (I think to remember this once worked without this
-add-ons). Then I need this additional trick in the simulators include dir=
-:
+xnarch_get_cpu_tsc() and derived skin services are not supposed to
+deliver consistent results across multiple CPUs, are they? While the
+user could avoid such scenarios by locking tasks on a specific CPU,
+drivers cannot - at least so far. So, to safely introduce such a
+low-level service for RTDM, I think we need
 
-mkdir asm
-ln -s <xeno-inst-dir>/include/asm-sim asm/xenomai
+A) CPU affinity for RTDM-registered IRQs
+B) CPU affinity for RTDM kernel tasks
+C) Some well written docs, explaining how to safely use TSCs at driver
+level and how to provide them to the user (the latter aspect makes me
+worry most)
 
-This maps #include <asm/xenomai/system.h> to the correct "arch".
-Shouldn't this be created automatically during the simulator
-installation? Or is something else broken on my box?
+While A) and B) might be useful for other (though rare) scenarios as
+well, C) will still require a very good understanding and interface
+design from the driver writer, while I don't see comparable error
+dimensions with the improved rtdm_clock_read(). Comparing apples
+(rtdm_clock_read()) to oranges (rt_timer_read()), there will be some
+error around a tick period. But comparing apple[0]
+(rtdm_clock_read_tsc() on CPU#0) to apple[1] (rtdm_clock_read_tsc() on
+CPU#1), the error could become *much* larger and the design and
+documentation effort to avoid this will be significant.
 
-In case there is no demo prepared, I could pack my own tiny stuff and
-submit it.
+Ok, as a simple resolution for this problem, I could imagine introducing
+a TSC timestamping service to RTDM that always fall back to that level
+of accuracy which is guaranteed to be consistent - either because we run
+in aperiodic mode, or on uniprocessor, or thanks to some magic
+synchronisation between all CPU clocks. This would have to be decided at
+build time, in the first version likely by checking for (multiprocessor
+|| aperiodic) to switch to xnpod_get_time().
 
 Jan
 
---------------020404050107090103010401
-Content-Type: text/x-patch;
- name="sim-fixes.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="sim-fixes.patch"
 
-Index: ksrc/skins/vxworks/msgQLib.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/vxworks/msgQLib.c	(Revision 742)
-+++ ksrc/skins/vxworks/msgQLib.c	(Arbeitskopie)
-@@ -199,7 +199,7 @@
-     appendq(&wind_msgq_q, &queue->link);
-     xnlock_put_irqrestore(&nklock, s);
-    =20
--#ifdef CONFIG_XENO_OPT_REGISTRY
-+#ifdef CONFIG_XENO_EXPORT_REGISTRY
-     sprintf(queue->name,"mq%lu",msgq_ids++);
-=20
-     if (xnregistry_enter(queue->name,queue,&queue->handle,&msgq_pnode))
-@@ -208,7 +208,7 @@
- 	msgQDelete((MSG_Q_ID)queue);
- 	return 0;
- 	}
--#endif /* CONFIG_XENO_OPT_REGISTRY */
-+#endif /* CONFIG_XENO_EXPORT_REGISTRY */
-=20
-     return (MSG_Q_ID) queue;
- }
-Index: ksrc/skins/vxworks/wdLib.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/vxworks/wdLib.c	(Revision 742)
-+++ ksrc/skins/vxworks/wdLib.c	(Arbeitskopie)
-@@ -123,7 +123,7 @@
-     appendq(&wind_wd_q,&wd->link);
-     xnlock_put_irqrestore(&nklock, s);
-=20
--#ifdef CONFIG_XENO_OPT_REGISTRY
-+#ifdef CONFIG_XENO_EXPORT_REGISTRY
-     sprintf(wd->name,"wd%lu",wd_ids++);
-=20
-     if (xnregistry_enter(wd->name,wd,&wd->handle,&wd_pnode))
-@@ -132,7 +132,7 @@
- 	wdDelete((WDOG_ID)wd);
- 	return 0;
- 	}
--#endif /* CONFIG_XENO_OPT_REGISTRY */
-+#endif /* CONFIG_XENO_EXPORT_REGISTRY */
-=20
-     return (WDOG_ID) wd;
- }
-Index: ksrc/skins/vxworks/semLib.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/vxworks/semLib.c	(Revision 742)
-+++ ksrc/skins/vxworks/semLib.c	(Arbeitskopie)
-@@ -479,7 +479,7 @@
-     xnlock_get_irqsave(&nklock, s);
-     appendq(&wind_sem_q,&sem->link);
-     xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_REGISTRY
-+#ifdef CONFIG_XENO_EXPORT_REGISTRY
-     sprintf(sem->name,"sem%lu",sem_ids++);
-=20
-     if (xnregistry_enter(sem->name,sem,&sem->handle,&sem_pnode))
-@@ -488,7 +488,7 @@
- 	semDelete((SEM_ID)sem);
- 	return 0;
- 	}
--#endif /* CONFIG_XENO_OPT_REGISTRY */
-+#endif /* CONFIG_XENO_EXPORT_REGISTRY */
-=20
-     return (SEM_ID) sem;
- }
-Index: include/asm-sim/system.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/asm-sim/system.h	(Revision 742)
-+++ include/asm-sim/system.h	(Arbeitskopie)
-@@ -80,6 +80,7 @@
-=20
- #define XNARCH_DEFAULT_TICK         10000000 /* ns, i.e. 10ms */
- #define XNARCH_HOST_TICK            0 /* No host ticking service. */
-+#define HZ                          0 /* dummy define for HZ */
-=20
- #define XNARCH_THREAD_STACKSZ 0 /* Let the simulator choose. */
- #define XNARCH_ROOT_STACKSZ   0	/* Only a placeholder -- no stack */
-
---------------020404050107090103010401--
-
---------------enigC85EA80B53828A49A00915F2
+--------------enigE4174A90E63F83A43FFAE62A
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -165,10 +94,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEHCV5niDOoMHTA+kRAg9HAJ9OvY5tOSrofrwWmDqVl1j7AJ44UACeL76c
-0UCj3tKsLHEiqkJj32lVjNk=
-=k5n6
+iD8DBQFEH0SVniDOoMHTA+kRAqr2AJ9ybpbrRcBpKOnhFLz1si+thFaoNACfTJbD
+15PVCirsWJan+4e+SR4fV4c=
+=EHis
 -----END PGP SIGNATURE-----
 
---------------enigC85EA80B53828A49A00915F2--
+--------------enigE4174A90E63F83A43FFAE62A--
 
