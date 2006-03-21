@@ -1,15 +1,13 @@
-Message-ID: <441F4494.5010803@domain.hid>
-Date: Tue, 21 Mar 2006 01:11:00 +0100
+Message-ID: <441F47C6.9080108@domain.hid>
+Date: Tue, 21 Mar 2006 01:24:38 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-References: <44172B67.2000609@domain.hid>
-	<200603201142.27591.lbocseg@domain.hid>	<441EDD9B.20708@domain.hid>
-	<200603201627.54738.lbocseg@domain.hid>
-In-Reply-To: <200603201627.54738.lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] rt-video interface
+References: <200603201715.08482.lbocseg@domain.hid>
+In-Reply-To: <200603201715.08482.lbocseg@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE4174A90E63F83A43FFAE62A"
+	boundary="------------enig3C3F2BDAA9CE255F22D44339"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,71 +19,70 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE4174A90E63F83A43FFAE62A
+--------------enig3C3F2BDAA9CE255F22D44339
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Rodrigo Rosenfeld Rosas wrote:
-> Em Segunda 20 Mar=E7o 2006 13:51, Philippe Gerum escreveu:
+> Hi Jan and others interested.
 >=20
->> ...
->> I think that you should try convincing Jan that rtdm_clock_tsc() might=
-
->> be a good idea to provide, instead of tweaking rtdm_clock_read() in a
->> way which changes its underlying logic. ;o)
+> I've finally got my driver in a usable condition. It lacks a lot of=20
+> functionalities yet, but it aplies to my needs.
 >=20
-> Yes, that is exactly what I want! :)
-> I don't see any reason for changing rtdm_timer_read() neither. I think =
-that=20
-> the most common usage of high-precision timestamps is for relative time=
+> I would like to propose a real-time video interface for using with RTDM=
+=2E
+>=20
+> For making it simple to port Linux applications to Xenomai, I tried to =
+make it=20
+> as close as possible to Video for Linux 2 API. I didn't see any serious=
 =20
-> cases. It doesn't need to be in sync with Xenomai's timer... It is best=
- to=20
-> keep things simple.
+> problem regarding its use on real-time environments in the specificatio=
+n. So,=20
+> the changes I think that would be necessary are:
 >=20
-> What do you think Jan?
+> o Change open/fopen to rtdm_dev_open
+> o Implement MMAP/MUNMAP as an IOCTL (while it can not be done in a rt-c=
+ontext=20
+> in the mean time, nor should be necessary)
+> o Implement also as IOCTLs: select and poll (I didn't implement them on=
+ my=20
+> driver because I didn't need them, but it should be necessary accordlin=
+g to=20
+> specs)
 
-We discussed a lot about how to prevent the user shooting him/herself in
-the knee with inter-tick timestamps, but I still think that
-rtdm_clock_read_tsc() would even be worse in this regard.
+You may want to have a look at this thread regarding poll/select and RT:
 
-xnarch_get_cpu_tsc() and derived skin services are not supposed to
-deliver consistent results across multiple CPUs, are they? While the
-user could avoid such scenarios by locking tasks on a specific CPU,
-drivers cannot - at least so far. So, to safely introduce such a
-low-level service for RTDM, I think we need
+http://www.mail-archive.com/rtnet-users%40lists.sourceforge.net/msg00968.=
+htm
 
-A) CPU affinity for RTDM-registered IRQs
-B) CPU affinity for RTDM kernel tasks
-C) Some well written docs, explaining how to safely use TSCs at driver
-level and how to provide them to the user (the latter aspect makes me
-worry most)
+Do video capturing applications tend to have to observe multiple
+channels asynchronously via a single thread? If so, my statement about
+how often poll/select is actually required in RT-applications may have
+to be reconsidered.
 
-While A) and B) might be useful for other (though rare) scenarios as
-well, C) will still require a very good understanding and interface
-design from the driver writer, while I don't see comparable error
-dimensions with the improved rtdm_clock_read(). Comparing apples
-(rtdm_clock_read()) to oranges (rt_timer_read()), there will be some
-error around a tick period. But comparing apple[0]
-(rtdm_clock_read_tsc() on CPU#0) to apple[1] (rtdm_clock_read_tsc() on
-CPU#1), the error could become *much* larger and the design and
-documentation effort to avoid this will be significant.
+> o Change all timeval structs to uint64_t or some typedef to it for maki=
+ng it=20
+> easier to store the timestamps (we use rtdm_clock_read() instead of=20
+> gettimeofday())
+>=20
+> I can't remember of another issue now. I think these changes would be e=
+nough.
+>=20
+> Any ideas?
 
-Ok, as a simple resolution for this problem, I could imagine introducing
-a TSC timestamping service to RTDM that always fall back to that level
-of accuracy which is guaranteed to be consistent - either because we run
-in aperiodic mode, or on uniprocessor, or thanks to some magic
-synchronisation between all CPU clocks. This would have to be decided at
-build time, in the first version likely by checking for (multiprocessor
-|| aperiodic) to switch to xnpod_get_time().
+Does your time allow to list the minimal generic services a RTDM video
+capturing driver has to provide in a similar fashion like the serial or
+the CAN profile? If it's mostly about copying existing Linux API specs,
+feel free to just reference them. But the differences should certainly
+fill up a RT-video (or so) profile, and that would be great!
 
 Jan
 
 
---------------enigE4174A90E63F83A43FFAE62A
+--------------enig3C3F2BDAA9CE255F22D44339
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -94,10 +91,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEH0SVniDOoMHTA+kRAqr2AJ9ybpbrRcBpKOnhFLz1si+thFaoNACfTJbD
-15PVCirsWJan+4e+SR4fV4c=
-=EHis
+iD8DBQFEH0fGniDOoMHTA+kRAhkJAJ9lPo4mHgTzIr4eJJeap8F1+yBV6gCdHZwE
+73Ji3qJxJhalLFl2kR7ZGSQ=
+=8meQ
 -----END PGP SIGNATURE-----
 
---------------enigE4174A90E63F83A43FFAE62A--
+--------------enig3C3F2BDAA9CE255F22D44339--
 
