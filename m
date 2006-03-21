@@ -1,14 +1,13 @@
-Message-ID: <441F6EDC.6020502@domain.hid>
-Date: Tue, 21 Mar 2006 00:11:24 -0300
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Message-ID: <441FB2F3.8090202@domain.hid>
+Date: Tue, 21 Mar 2006 09:01:55 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-References: <44172B67.2000609@domain.hid>
-	<200603201142.27591.lbocseg@domain.hid>	<441EDD9B.20708@domain.hid>
-	<200603201627.54738.lbocseg@domain.hid> <441F4494.5010803@domain.hid>
-In-Reply-To: <441F4494.5010803@domain.hid>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] CONFIG_XENO_OPT_DEBUG_LEVEL
+References: <441EFB6D.8000507@domain.hid> <441F1675.1010703@domain.hid>
+	<441F3BE9.5010409@domain.hid>
+In-Reply-To: <441F3BE9.5010409@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,42 +18,62 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka escreveu:
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>Hi,
+>>>
+>>>as I started to actually use XENO_ASSERT, I noticed that there is no
+>>>infrastructure yet to enable it. CONFIG_XENO_OPT_DEBUG_LEVEL is nowhere
+>>>defined. Add this as integer to Kconfig? Or better convert
+>>>nucleus/assert.h to CONFIG_OPT_DEBUG for now until we really feel like
+>>>we need more than on/off for this? I would vote for the latter ATM.
+>>
+>>Actually, we already need more than a simple switch: I'd really like the
+>>queue debugging option to become a level on its own (say, 4294967295?).
+>>I'll add this tomorrow.
+> 
+> 
+> Hmm, raises my old concern again: this "vertical" debugging implies to
+> switch everything on when you only want queue debugging. I still think
+> we rather need "horizontal" control: switch on queues, asserts, ...
 
->We discussed a lot about how to prevent the user shooting him/herself in
->the knee with inter-tick timestamps, but I still think that
->rtdm_clock_read_tsc() would even be worse in this regard.
-> =20
->
-What do you think abou this documentation:
-"This function is meant to be used in periodic mode for getting a high=20
-timestamp, independently from the system timer's tick.
-Its return values should not be used mixed with rtdm_clock_read() values=20
-because they are not syncronised.
-Driver authors[developers?] are advised to state this on driver=20
-documentation for the final users where returning these values to them=20
-for avoiding confusion.
+It just depends whether we want to make the assertion mechanism a 
+formalized exported feature or not. If there is a limited number of 
+"clients", the simpler the better. This said, implementing sub-system 
+debug switches instead of global debug levels would still be pretty 
+trivial, provided we keep the number of sub-systems within reasonable 
+limits (e.g. <= 64).
 
-Note: This function is available for uniprocessor systems only in the=20
-meantime."
-
-I think it explains and will not make confusion in driver developers...=20
-If sometime someone give a good solution to the syncronisation problem=20
-between multiple processors, this can be changed...
-
- > ...
-
-Rodrigo.
-
-=09
-
-=09
-	=09
-_______________________________________________________=20
-Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
-http://br.yahoo.com/homepageset.html=20
+> 
+> This level "4294967295" indicates for me where we may end with: dozens
+> of debug levels no one can tell apart, and you have to switch them all
+> on to gain the relevant pieces or to be sure that you didn't missed
+> anything. I always have the mess in mind we once had in ndiswrapper: for
+> serious debugging of the USB layer you had to raise the debug level
+> which dragged in bulks of (in this case) useless reports from other
+> subsystems.
+> 
+> A student (Marc Kleine-Budde) once ported some nice debug subsystem into
+> an internal project that requested a subsystem ID for every debug
+> statement (I think it came from kaffe). At compilation time or even
+> later during runtime you could easily select which subsystem should
+> start babbling and checking and which one is not that interesting for a
+> specific test. I think this is far more useful than debug levels. Queues
+> could become such a subsystem, RTDM (with its asserts) another, and so
+> forth. Of course, this means maintaining those subsystem IDs at a
+> central place, but it's clearer than deciding which level to pick for a
+> new debug code.
+> 
+> Jan
+> 
 
 
+-- 
+
+Philippe.
 
