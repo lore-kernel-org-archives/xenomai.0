@@ -1,14 +1,13 @@
-Message-ID: <441FF539.5050704@domain.hid>
-Date: Tue, 21 Mar 2006 13:44:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-core] rt-video interface
+Date: Tue, 21 Mar 2006 14:34:02 -0300
+References: <200603201715.08482.lbocseg@domain.hid> <441F47C6.9080108@domain.hid>
+In-Reply-To: <441F47C6.9080108@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>	<44180FB8.7080200@domain.hid>	<17432.5656.591747.248941@domain.hid>	<44189C13.3010301@domain.hid>
-	<441E9698.5080506@domain.hid> <441EAD78.3030007@domain.hid>
-	<441EC03B.9000809@domain.hid>
-In-Reply-To: <441EC03B.9000809@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200603211434.03185.lbocseg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,153 +20,211 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->>Given the description above, just that some skin might return either
->>nucleus ticks or corrected timestamps to the applications, which would
->>in turn do some arithmetics for converting values they got from the skin
->>between both scales internally, and mistakenly use the result while
->>assuming that both scales are always in sync. In this situation, and
->>during a fraction of the time (i.e. the jitter), both scales might not
->>be in sync, and the result would be unusable. This said, this kind of
->>issue could be solved by big fat warnings in documentation, explicitely
->>saying that conversions between both scales might be meaningless.
-> 
-> 
-> So the worst-case is when a user derives some relative times from two
-> different time sources, one purely tick-base, the other improved by
-> inter-tick TSC (when available on that arch)?
-> 
-> Let's say the user takes timestamp t1 = rtdm_clock_read() (via some
-> driver) and a bit later t2 = rt_timer_tick2ns(rt_timer_read()). t1 was
-> set to the last tick Tn + the number of TSC ticks since then:
-> 
->     t1 = Tn * tick_period + TSC_offset
-> 
-> With, e.g., Tn=1001, tick_period = 1000 us, and TSC_offset = 589 us:
-> 
->     t1 = 1001 * 1000 us + 589 us = 1001569 us
-> 
-> As the next tick may have not stroke yet when taking t2, that value
-> converted to us can be smaller:
-> 
->     t2 = Tn * tick_period = 1001000
-> 
-> Now the difference between t2 and t1 becomes negative (-589 us),
-> although the user may expect it t2-t1 >= 0. Is this non-monotony your
-> concern?
->
+Em Segunda 20 Mar=3DE7o 2006 21:24, Jan Kiszka escreveu:
+>...
+>Does your time allow to list the minimal generic services a RTDM video
+>capturing driver has to provide in a similar fashion like the serial or
+>the CAN profile? If it's mostly about copying existing Linux API specs,
+>feel free to just reference them. But the differences should certainly
+>fill up a RT-video (or so) profile, and that would be great!
 
-No, because both are sourced from xnpod_get_time(). My concern is that
-the offset correction is going to cause situations where actual count of
-ticks kept by the nucleus might be different from corrected_time /
-period, due to the jitter issue, albeit the corrected timestamp is
-expected to depend on the count of ticks. So you end up having two time
-scales which are expected to be in sync, albeit there might not under
-certain conditions.
+If we're going to try to be as near as possible of the V4L2 API draft, the=
+=3D
+=3D20
+minimal generic services is a lot to implement.
 
-> 
-> On the other hand, the advantage of TSC-based synchronised inter-tick
-> timestamps is that you can do things like
-> 
->     sleep_until(rt_timer_ns2ticks(rtdm_clock_read() + 1000000))
-> 
-> without risking an error beyond +/- 1 tick (+jitter). With current
-> jiffies vs. TSC in periodic mode, this is not easily possible. You have
-> to sync in the application, creating another error source when the delay
-> between acquiring the TSC and sync'ing the TSC on jiffies is too long.
-> 
+Actually, I don't know if implementing a V4L2 variant would be a good idea.=
+=3D
+=3D2E.=3D20
+Maybe there are designs better suited to real-time applications. I need tim=
+=3D
+e=3D20
+to investigate it more. My advisor asked me for. It's becoming really hard =
+=3D
+to=3D20
+finish my master Thesis until June 15... :(
 
-The proper way to solve this is rather to emulate the periodic mode over
-the oneshot machinery, so that we stop having this +/- 1 tick error
-margin. The periodic mode as it is now is purely a x86 legacy; even on
-some ppc boards where the auto-reload feature is available from the
-decrementer, Xeno doesn't use it.
+Basically I would need to have it clearer the most common use cases in real=
+=3D
+=3D20
+situations... From the moment, here is my design (from a user point of view=
+=3D
+=3D20
+of one kind of application): I'm using images to estimate speed of a robot=
+=3D
+=3D20
+and identifying objects. I need the timestamps between both images and all=
+=3D
+=3D20
+processes must be deterministic. I process the images and do the=3D20
+calculations.
 
-The more I think of the x86 situation, the more I find it quite silly. I
-mean, picking the periodic mode means that 1) all delays can be
-expressed as multiples of a given constant interval, 2) the constant
-interval must be large enough so that you don't put your board on its
-knees, by processing useless ticks most of the time. What one saves here
-- using periodic mode - is a couple of outb's per tick on the ISA bus,
-since the PIT handles this automatically without software intervention
-once set up properly. We already know that the programming overhead
-(i.e. introduced by those outb's) is perfectly bearable even for high
-frequency sampling like 10Khz loops in aperiodic mode. So why on earth
-do we care about saving two outb's and get a lousy timing accuracy in
-the same move, for constant interval delays which are necessarily going
-to be much larger than those already supported by the aperiodic mode? Er...
+=3D46or avoid copying, I'm using the mmap facility. I process the image in =
+th=3D
+e=3D20
+same memory region when possible for avoidind the need of allocating more=
+=3D20
+memory. When using a NTSC camera, we have 60Hz frames, being 30 odds and 30=
+=3D
+=3D20
+evens in a second. It means that a full frame (odd+even) would take about=
+=3D20
+33ms to complete. It is common, though, to use only half a frame in=3D20
+processing not only because it is faster to acquire (17ms) but it is also=
+=3D20
+faster to process and acceptable in most cases. So, instead of 640x480 fram=
+=3D
+es=3D20
+we would process 640x240 frames. If the proportion is important, the user c=
+=3D
+an=3D20
+do something like:
 
-This is a shift in the underlying logic of the periodic mode we are
-discussing here actually. It used to be a mode where timing accuracy was
-only approximate, mostly to deal with timeouts, in the watchdog sense.
-Now, it is becoming a way to rely on a constant interval unit, while
-still keeping a high timing accuracy. I'm ok with this, since we don't
-rely on true PIT (except for x86, which is fixable) when running in
-periodic mode, so I see no problem in raising the level of timing
-accuracy of such mode. Existing stuff would not break because of such
-change, but improve instead for people who care for exact durations in
-periodic mode.
+for (w1=3D3D0,w=3D3D0; w1<640; w1+=3D3D2, w++)
+ for(h=3D3D0; h<240; h++)
+ {
+   process_pixel(w,h);
+ }
 
-> 
->>And what would prevent us from improving the accuracy of other
->>
->>>timestamping API functions beyond RTDM as well, e.g. on converting from
->>>ticks to nanos in rt_timer_ticks2ns()?
->>>
->>
->>I don't understand why rt_timer_ticks2ns() should be impacted by such
->>extension. This service must keep a constant behaviour, regardless of
->>any outstanding timing issue. I mean, 3 ticks from a 1Khz clock rate
->>must always return 3,000,000 nanos, unless you stop passing count of
->>ticks but fractional/compound values instead.
-> 
-> 
-> Forget about this, it was (pre-lunch) nonsense.
-> 
-> 
->>The bottom-line is that we should not blur the line between periodic and
->>aperiodic timing modes, just for getting precise timestamps in the
->>former case. Additionally, and x86-wise, when no TSC is available on the
->>target system, rt_timer_tsc() already returns a timestamp obtained from
->>the 8254's channel #2 we use as a free running counter, which is the
->>most precise source we have at hand to do so.
->>
->>Periodic mode bears its own limitation, which is basically a loss of
->>accuracy we trade against a lower overhead (even if that does not mean
->>much except perhaps on x86). What we could do is reducing the jittery
->>involved in periodic ticks, by always emulating periodic mode over
->>aperiodic shots instead of using e.g. the 8254 in PIT mode (and remove
->>the need for the double scale on x86, tsc + 8254 channel #1), but not
->>change the basic meaning of periodic timing.
-> 
-> 
-> Hmm, interesting, and it also reminds of a long pending (slightly OT)
-> question I have: why not creating the infrastructure (a dedicated
-> periodic timer) for providing round-robin scheduling even in aperiodic mode?
-> 
+If all the processing can me made in 17ms, we could process the odd field w=
+=3D
+hen=3D20
+acquiring the even and vice-versa. Otherwise, we could have a buffer with t=
+=3D
+he=3D20
+latest acquires so that we wouldn't need to wait until a frame is completed.
 
-To do that, we would need to decouple the timing policy from any
-particular scheduling policy. Therefore, we would need to remove the
-round-robin management from the timer code, and move it to a particular
-scheduling policy implementation. Which in turn would require to
-implement a pluggable scheduler infrastructure, in the first place.
+ In summary, my control loop would be something like:
 
-> 
->>But maybe we are still discussing different issues actually, so it would
->>be useful that the core issue that triggered the discussion about
->>periodic mode precision be exposed again.
-> 
-> 
-> Yep, Rodrigo...?
-> 
-> Jan
-> 
+task_acquire
+{
+	new_image=3D3Dacquire_image();
+	speed=3D3Dget_speed(new_image,old_image);
+	old_image =3D3D new_image;
+}
 
+task_do_pid_control=3D20
+{
+	drive_motors(speed, desired_speed);
+}
 
--- 
+Well, that is a use case and I can get this behaviour with the V4L2 API,=3D=
+20
+although I don't know if it is the best suited API. Let me introduce the V4=
+=3D
+L2=3D20
+API and then (in other messages) we can discuss others approaches.
 
-Philippe.
+There are some interfaces available in V4L2: capture, overlay and output. I=
+=3D
+'ll=3D20
+discuss only capture here that I think it is the most relevant for=3D20
+rt-applications.
+
+There are four IO modes: read/write, streaming I/O (memory mapping or user=
+=3D
+=3D20
+pointer) and asyncronous I/O.
+
+The read/write mode is the simplest but also the less efficient, since it=
+=3D20
+copies the buffer content to the user. It works like it is expected to. On=
+=3D
+=3D20
+V4L2 API it requires the poll and select implementation but we could adapt=
+=3D
+=3D20
+them to a simpler and more efficient way.
+
+The user pointer approach has no sense for PCI framegrabbers on x86, since=
+=3D
+=3D20
+these boards need a physical contiguous memory region for doing DMA. This=
+=3D20
+method consists on the user allocating the memory on userspace and passing=
+=3D
+=3D20
+the pointers to the drivers.
+
+The asyncronous I/O is not defined yer, so there are three and not four I/O=
+=3D
+=3D20
+modes.
+
+The third is the most useful for real-time applications and is what I'm=3D20
+currently using: streaming by memory mapping.
+See http://www.linuxtv.org/downloads/video4linux/API/V4L2_API/spec/x3303.htm
+
+In short, the user request a number of buffers in VIDIOC_REQBUFS ioctl and =
+=3D
+the=3D20
+driver allocate or reserve them and return the number of actual allocated=
+=3D20
+buffers.
+
+There is another ioctl (VIDIOC_QUERYBUF) for querying each buffer. Along wi=
+=3D
+th=3D20
+other information, the user gets a memory offset to be used in a mmap call.=
+=3D
+=3D20
+Then the buffers will be queued in a input buffer with the VIDIOC_QBUF ioct=
+=3D
+l.=3D20
+When the VIDIOC_STREAMON ioctl is called, the board begins capturing in FIF=
+=3D
+O=3D20
+order of the input buffer and as the acquires are done the buffers are move=
+=3D
+d=3D20
+to an output buffer also in FIFO order. The user dequeue a buffer from the=
+=3D
+=3D20
+output buffer with the VIDIOC_DQBUF ioctl. When the user has finished using=
+=3D
+=3D20
+the result of that buffer (s)he will enqueues it again. When stop processin=
+=3D
+g,=3D20
+a VIDIOC_STREAMOFF ioctl call is made and cleans all buffers besides stoppi=
+=3D
+ng=3D20
+capture.
+
+This method also requires poll and select to be implemented in V4L2. We sho=
+=3D
+uld=3D20
+discuss how to deal with it if we stick with the V4L2 variant idea.
+
+I would like to understand what would be other possible usages of real-time=
+=3D
+=3D20
+vision before I could propose another approach so we can discuss what would=
+=3D
+=3D20
+be better for us.
+
+Besides the API issue, we should think also on the API implementation. I th=
+=3D
+ink=3D20
+we should create a skeleton, common to all drivers to facilitate the driver=
+=3D
+=3D20
+building process.
+
+Well, too much for a first message, I think... :)
+
+Which vision applications do you have in mind?
+
+Rodrigo.
+
+=09
+
+=09
+	=09
+_______________________________________________________=20
+Yahoo! doce lar. Fa=E7a do Yahoo! sua homepage.=20
+http://br.yahoo.com/homepageset.html=20
 
 
 
