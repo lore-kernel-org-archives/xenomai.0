@@ -1,14 +1,16 @@
-Message-ID: <441F47C6.9080108@domain.hid>
-Date: Tue, 21 Mar 2006 01:24:38 +0100
+Message-ID: <441F5F31.70206@domain.hid>
+Date: Tue, 21 Mar 2006 03:04:33 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] rt-video interface
-References: <200603201715.08482.lbocseg@domain.hid>
-In-Reply-To: <200603201715.08482.lbocseg@domain.hid>
+References: <200603201434.15258@domain.hid> <441EE01D.6020400@domain.hid>
+	<441EE5D4.9000204@domain.hid>
+	<200603210148.11118.berlemont.hauw@domain.hid>
+In-Reply-To: <200603210148.11118.berlemont.hauw@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3C3F2BDAA9CE255F22D44339"
+	boundary="------------enigE4DADECA836243BF4875EFB2"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] COMEDI over RTDM (was: rtdm_event_timedwait hang-up)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,71 +20,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3C3F2BDAA9CE255F22D44339
+--------------enigE4DADECA836243BF4875EFB2
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi Jan and others interested.
+Hi Alexis,
+
+as this discussion starts to become architectural and low-level, I think
+we should move it to xenomai-core and give people who are interested a
+chance to jump onto it again there.
+
+Alexis Berlemont wrote:
+> Hi,
 >=20
-> I've finally got my driver in a usable condition. It lacks a lot of=20
-> functionalities yet, but it aplies to my needs.
+>>>>> I heard rumours of some COMEDI (www.comedi.org) port over RTDM rece=
+ntly,
+>>>>> don't know the current status.
+>>>> Indeed. The rumour is called Alex.
+>>> Yes, I know. I just don't wanted to drag someone to public, saying: "=
+Hey
+>>> man, already doing your job?" ;)
+>> It's part of the anti-shyness treatment I'm administering to Alex...
+>>
+>>> But, as we all know him now, what is the current status then?
 >=20
-> I would like to propose a real-time video interface for using with RTDM=
-=2E
->=20
-> For making it simple to port Linux applications to Xenomai, I tried to =
-make it=20
-> as close as possible to Video for Linux 2 API. I didn't see any serious=
+> My comedi port over RTDM is not completely over (and far from perfect).=
+ The=20
+> mmap functionnalities have not been rewritten yet. However, I have been=
 =20
-> problem regarding its use on real-time environments in the specificatio=
-n. So,=20
-> the changes I think that would be necessary are:
+> working on
+> -> the port of the comedi infrastructure layer (comedi/comedi_fops.c=20
+> comedi/drivers.c comedi/range.c comedidev.h etc.)=20
+> -> the rewriting of the driver comedi_test.c (which becomes comedi_test=
+1.c)
+> -> other test stuff has been written in comedi_test2.c (replications fu=
+nctions=20
+> to test comedi_write operations)
+> -> the ports of comedi_config and comedilib (partially done for comedil=
+ib),=20
+> etc.
 >=20
-> o Change open/fopen to rtdm_dev_open
-> o Implement MMAP/MUNMAP as an IOCTL (while it can not be done in a rt-c=
-ontext=20
-> in the mean time, nor should be necessary)
-> o Implement also as IOCTLs: select and poll (I didn't implement them on=
- my=20
-> driver because I didn't need them, but it should be necessary accordlin=
-g to=20
-> specs)
-
-You may want to have a look at this thread regarding poll/select and RT:
-
-http://www.mail-archive.com/rtnet-users%40lists.sourceforge.net/msg00968.=
-htm
-
-Do video capturing applications tend to have to observe multiple
-channels asynchronously via a single thread? If so, my statement about
-how often poll/select is actually required in RT-applications may have
-to be reconsidered.
-
-> o Change all timeval structs to uint64_t or some typedef to it for maki=
-ng it=20
-> easier to store the timestamps (we use rtdm_clock_read() instead of=20
-> gettimeofday())
+> This stuff is working (minor bugs appart) and I could give you a versio=
+n in=20
+> the next few days (I have to check "make dist" ;) and minor things).
 >=20
-> I can't remember of another issue now. I think these changes would be e=
-nough.
->=20
-> Any ideas?
+> But there are plenty of things I am not happy with :
+> -> the original comedilib version is not really well suited for rtdm. I=
+n this=20
+> library for many reasons; for example, you can find calls to malloc/fre=
+e=20
 
-Does your time allow to list the minimal generic services a RTDM video
-capturing driver has to provide in a similar fashion like the serial or
-the CAN profile? If it's mostly about copying existing Linux API specs,
-feel free to just reference them. But the differences should certainly
-fill up a RT-video (or so) profile, and that would be great!
+Oops, not so nice.
+
+> functions. If I stick to the original implementation, I have to either =
+to ask=20
+> for adding alloc stuff in user mode in rtdm skin or use another skin to=
+=20
+> manage allocations. None of these solutions seems interesting for me fo=
+r many=20
+> reasons. A lot of people  must be thinking I am overkill, it is true th=
+at the=20
+> comedilib allocations should be done at init time (comedi_open, comedi_=
+close)=20
+> then no need to fulfull real-time constraints but I think comedi should=
+ be=20
+> fully rtdm compliant; this would avoid tricky corner cases for=20
+> developpers/users. The best and simplest solution for me would be some =
+slight=20
+> modifications in the comedilib API but I doubt everyone is OK with that=
+=2E
+
+Could you give some concrete use cases of the comedilib where dynamic
+allocation is involved? I don't know that library actually. What does it
+manage beyond calling the driver core?
+
+>=20
+> -> I think the comedi structures organization (comedi_device, subdevice=
+,=20
+> async, etc.) should be reviewed considering the rtdm architecture. Of c=
+ourse,=20
+> these modifications should not induce big changes in the comedi drivers=
+=20
+> source.
+
+Please also give concrete examples here. RTDM devices should be
+manageable by the user via file descriptors, just like normal devices.
+What is different, what extra information is needed?
+
+>=20
+> -> etc.
+>=20
+> In fact, I wanted to propose two versions :
+> -> a first implementation as close as possible from the original=20
+> implementation and API.
+> -> a second one a bit more adapted for rtdm.
+
+What would be different with RTDM compared to the existing RTLinux and
+RTAI support of comedi? Don't they use comedilib at all? Isn't there
+some LXRT adoption in RTAI? Is it providing a different API?
+
+>=20
+> Thus, we could have compared the two versions and see if everyone agree=
+s with=20
+> the idea of adapting comedi infrastructure. It would have been a good=20
+> opportunity to work closely with comedi developers community.
+
+Yes, that would be best. But I guess it will not be too easy, as there
+seems to exist a limited interest in RT on their side. Maybe it just
+takes some (more) users explaining the requirements and the need. ;)
+
+>=20
+> Unfortunately, my second version is not finished yet. I still have some=
+ work=20
+> on it (non negligible). (I know I know I am slower than a turtle which =
+learns=20
+> programming with an amstrad cpc 6128 and damaged floppy disks ).=20
+>=20
+> If someone is interested in getting a version right now, I will try to =
+send to=20
+> him a tarball as soon as possible. Compared to original comedi deliveri=
+es, I=20
+> have not created two autotools tarballs (comedi and comedilib) but only=
+ one.
+
+Release early, release often ;). I would offer to have a look, maybe it
+will clarify where the RTDM-specific problems are.
 
 Jan
 
 
---------------enig3C3F2BDAA9CE255F22D44339
+--------------enigE4DADECA836243BF4875EFB2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -91,10 +162,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEH0fGniDOoMHTA+kRAhkJAJ9lPo4mHgTzIr4eJJeap8F1+yBV6gCdHZwE
-73Ji3qJxJhalLFl2kR7ZGSQ=
-=8meQ
+iD8DBQFEH18xniDOoMHTA+kRAm33AJ9aNzZVICFamYo7YnPYzeSTOYnFTwCfaDQU
+SY4FP+m7fLCvZi7orVAZ5as=
+=5xOv
 -----END PGP SIGNATURE-----
 
---------------enig3C3F2BDAA9CE255F22D44339--
+--------------enigE4DADECA836243BF4875EFB2--
 
