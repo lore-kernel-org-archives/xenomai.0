@@ -1,14 +1,13 @@
-From: Marco Jackel <ich@domain.hid>
-Date: Thu, 23 Mar 2006 13:56:46 +0100
-Message-ID: <dvu5ud$90v$1@domain.hid>
-References: <dvrrgc$g2a$1@domain.hid> <dvu50v$5pq$1@domain.hid>
-	<44229953.3090002@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <44229953.3090002@domain.hid>
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: read data from serial device
+Message-ID: <17442.39678.261159.421057@domain.hid>
+Date: Thu, 23 Mar 2006 13:56:30 +0100
+Subject: Re: [Xenomai-help] Re: read data from serial device
+In-Reply-To: <dvu50v$5pq$1@domain.hid>
+References: <dvrrgc$g2a$1@domain.hid>
+	<dvu50v$5pq$1@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,19 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Marco Jackel <ich@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Marco Jackel wrote:
+ > "rt_dev_read" gives negative Results. Whats wrong?
 
-Philippe Gerum wrote:
-> Marco Jackel wrote:
->> "rt_dev_read" gives negative Results. Whats wrong?
-> Which negative code is returned exactely?
-It returns -5
+It depends on the return value, see:
 
-Are the error-codes documented somewehere?
+http://download.gna.org/xenomai/documentation/trunk/html/api/group__rtserial.html
 
-Thanks
-Maggo
+-- 
 
+
+					    Gilles Chanteperdrix.
 
