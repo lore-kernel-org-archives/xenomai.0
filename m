@@ -1,13 +1,16 @@
-Content-class: urn:content-classes:message
+Message-ID: <4423F0B1.5010402@domain.hid>
+Date: Fri, 24 Mar 2006 14:14:25 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] IRQ latency with the ARM-9 based i.MXL/i.MX21
-	from	Freescale
-Date: Thu, 23 Mar 2006 16:46:22 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210D67@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
+References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>	<44180FB8.7080200@domain.hid>	<17432.5656.591747.248941@domain.hid>	<44189C13.3010301@domain.hid>
+	<441E9698.5080506@domain.hid> <441EAD78.3030007@domain.hid>
+	<441EC03B.9000809@domain.hid> <441FF539.5050704@domain.hid>
+In-Reply-To: <441FF539.5050704@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFD78D712F5F9C6DEAD81BFEB"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,131 +21,86 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFD78D712F5F9C6DEAD81BFEB
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> ...
+>> On the other hand, the advantage of TSC-based synchronised inter-tick
+>> timestamps is that you can do things like
+>>
+>>     sleep_until(rt_timer_ns2ticks(rtdm_clock_read() + 1000000))
+>>
+>> without risking an error beyond +/- 1 tick (+jitter). With current
+>> jiffies vs. TSC in periodic mode, this is not easily possible. You hav=
+e
+>> to sync in the application, creating another error source when the del=
+ay
+>> between acquiring the TSC and sync'ing the TSC on jiffies is too long.=
 
-> -----Message d'origine-----
-> De=A0: Philippe Gerum [mailto:rpm@xenomai.org]
-> Envoy=E9=A0: jeudi, 23. mars 2006 16:08
-> =C0=A0: ROSSIER Daniel
-> Cc=A0: xenomai@xenomai.org
-> Objet=A0: Re: [Xenomai-core] IRQ latency with the ARM-9 based =
-i.MXL/i.MX21
-> from Freescale
+>>
 >=20
-> ROSSIER Daniel wrote:
-> > Hello,
-> >
-> > We are still about to fix some timing issues with our Freescale
-> i.MXL/i.MX21.
-> >
-> > With our current port, we measured a delay between 6-7us between the
-> timer IRQ and
-> > its reprogramming; this actually corresponds more or less to the IRQ
-> latency which is inherent to the
-> > IRQ handling layer. However, with a simple Linux without Xenomai, we =
-got
-> a latency of 5 us.
-> >
-> > Having a deep look at the IRQ entry point in ipipe-root.c - the =
-patch we
-> used comes from
-> > the patch for ARM available in the CVS - we discovered that
-> __ipipe_handle_irq is performed before
-> > the timer reprogramming (i.e., before __ipipe_mach_set_dec()).
-> > We moved the call to __ipipe_handle_irq() at the end of the =
-function,
-> and we then got a latency of 2us; this is great, but....
-> >
+> The proper way to solve this is rather to emulate the periodic mode ove=
+r
+> the oneshot machinery, so that we stop having this +/- 1 tick error
+> margin. The periodic mode as it is now is purely a x86 legacy; even on
+> some ppc boards where the auto-reload feature is available from the
+> decrementer, Xeno doesn't use it.
 >=20
-> This is more a matter of accuracy in programming the timer shot than
-> mere latency, since the code you are currently hacking is only used =
-when
-> Adeos helps emulating a periodic clock at a frequency different from =
-the
-> regular Linux one. IOW, this code is not used when running over =
-Xenomai
+> The more I think of the x86 situation, the more I find it quite silly. =
+I
+> mean, picking the periodic mode means that 1) all delays can be
+> expressed as multiples of a given constant interval, 2) the constant
+> interval must be large enough so that you don't put your board on its
+> knees, by processing useless ticks most of the time. What one saves her=
+e
+> - using periodic mode - is a couple of outb's per tick on the ISA bus,
+> since the PIT handles this automatically without software intervention
+> once set up properly. We already know that the programming overhead
+> (i.e. introduced by those outb's) is perfectly bearable even for high
+> frequency sampling like 10Khz loops in aperiodic mode. So why on earth
+> do we care about saving two outb's and get a lousy timing accuracy in
+> the same move, for constant interval delays which are necessarily going=
 
-Ok, I agree; latency would be more a low-level latency in this special =
-case.
+> to be much larger than those already supported by the aperiodic mode? E=
+r...
+>=20
+> This is a shift in the underlying logic of the periodic mode we are
+> discussing here actually. It used to be a mode where timing accuracy wa=
+s
+> only approximate, mostly to deal with timeouts, in the watchdog sense.
+> Now, it is becoming a way to rely on a constant interval unit, while
+> still keeping a high timing accuracy. I'm ok with this, since we don't
+> rely on true PIT (except for x86, which is fixable) when running in
+> periodic mode, so I see no problem in raising the level of timing
+> accuracy of such mode. Existing stuff would not break because of such
+> change, but improve instead for people who care for exact durations in
+> periodic mode.
 
-> in oneshot mode, but only in periodic timing mode.
-> Since the delay is constant and does not account for the drift caused =
-by
-> the additional work done before reprogramming the next periodic shot,
-> the loss of timing accuracy is explainable.
->=20
-> > Does this change have an impact on the upper layers of Adeos? Timer
-> reprogramming at this level shouldn't be affected
-> > by other tasks, right? Can anybody confirm or not this?
-> >
->=20
-> This is going to work, and this seems to be a correct fix. Any plans =
-to
-> post the full code of this port?
->=20
+Yep, getting rid of as much periodic mode limitations as reasonable in a
+transparent way sounds very good to me.
 
-Thanks for your feedback. We actually plan to release the patch for =
-Linux 2.6.14 via this mailing-list (if it's ok with you) by end of =
-March.
+Jan
 
-> > I attached the function below.
-> >
-> > Thanks a lot for your inputs.
-> >
-> > Daniel
-> >
-> > ----------------
-> >
-> > asmlinkage int __ipipe_grab_irq(int irq, struct pt_regs *regs)
-> > {
-> > 	ipipe_declare_cpuid;
-> >
-> > 	if (irq =3D=3D __ipipe_mach_timerint) {
-> >
-> > 		__ipipe_tick_regs[cpuid].ARM_cpsr =3D regs->ARM_cpsr;
-> > 		__ipipe_tick_regs[cpuid].ARM_pc =3D regs->ARM_pc;
-> >
-> > 		__ipipe_handle_irq(irq, regs);
-> >
-> > 		ipipe_load_cpuid();
-> >
-> > 		if (__ipipe_decr_ticks !=3D __ipipe_mach_ticks_per_jiffy) {
-> > 			unsigned long long next_date, now;
-> >
-> > 			next_date =3D __ipipe_decr_next[cpuid];
-> >
-> > 			while ((now =3D __ipipe_read_timebase()) >=3D next_date)
-> > 				next_date +=3D __ipipe_decr_ticks;
-> >
-> > 			__ipipe_mach_set_dec(next_date - now);
-> >
-> > 			__ipipe_decr_next[cpuid] =3D next_date;
-> > 		}
-> > 	}
-> > 	else {
-> > 		__ipipe_handle_irq(irq, regs);
-> >
-> > 		ipipe_load_cpuid();
-> > 	}
-> >
-> > 	return (ipipe_percpu_domain[cpuid] =3D=3D ipipe_root_domain &&
-> > 		!test_bit(IPIPE_STALL_FLAG,
-> > 			  &ipipe_root_domain->cpudata[cpuid].status));
-> > }
-> >
-> > _______________________________________________
-> > Xenomai-core mailing list
-> > Xenomai-core@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-core
-> >
->=20
->=20
-> --
->=20
-> Philippe.
 
-Daniel
+--------------enigFD78D712F5F9C6DEAD81BFEB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEI/CyniDOoMHTA+kRAp35AJ9HUbtXDsR+m18+Ik4CKmYnL4E2OgCfTkWG
+mSizJgExBoCeKlWfdcqVXnQ=
+=NjoU
+-----END PGP SIGNATURE-----
+
+--------------enigFD78D712F5F9C6DEAD81BFEB--
 
