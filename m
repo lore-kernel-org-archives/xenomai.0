@@ -1,14 +1,13 @@
-Message-ID: <4423E7CE.3000105@domain.hid>
-Date: Fri, 24 Mar 2006 13:36:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 24 Mar 2006 15:59:07 +0100 (CET)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Subject: Re: [Xenomai-help] Hard real-time and C++
+In-Reply-To: <200603231404.30513.lbocseg@domain.hid>
+Message-ID: <Pine.LNX.4.63.0603241555380.22865@domain.hid>
+References: <20060322203422.2866.qmail@domain.hid>
+	<Pine.LNX.4.63.0603230852070.18530@domain.hid>
+	<200603231404.30513.lbocseg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] read data from serial device
-References: <dvrrgc$g2a$1@domain.hid>
-In-Reply-To: <dvrrgc$g2a$1@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA8EBF30F336C761B9B41B715"
-Sender: jan.kiszka@domain.hid
+Content-Type: MULTIPART/MIXED; BOUNDARY="8323328-703928996-1143212347=:22865"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,111 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marco Jackel <ich@domain.hid>
-Cc: xenomai@xenomai.org
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA8EBF30F336C761B9B41B715
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Marco Jackel wrote:
-> Hi there,
->=20
-> ATTENTION: I'm a xenomai-newbie
-> I want to read data from the serial device
->=20
-> I got the serial driver loop demo from
-> http://www.captain.at/xenomai-serial-port-example.php
+--8323328-703928996-1143212347=:22865
+Content-Type: TEXT/PLAIN; charset=X-UNKNOWN; format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Unfortunately outdated, no longer compiles against recent Xenomai 2.1.
-See the recent version at
-http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon instead.
+On Thu, 23 Mar 2006, Rodrigo Rosenfeld Rosas wrote:
+> Em Quinta 23 Mar=E7o 2006 04:55, Klaas Gadeyne escreveu:
+[...]
+>> Do you know <http://www.orocos.org>?
+>
+> Yes, I didn't like the idea of using RT-CORBA. But I won't discuss this t=
+opic
+> here neither. At least in the moment since I'm very worried about my
+> deadline...
 
-@Hannes: Please update your site to avoid confusion!
+<Off-topic>Orocos !=3D RT-CORBA</Off-topic>
 
-> It worked without any problems.
-> Then I modified the demo to read data only (remove all the write_task
-> stuff).
->=20
-> But I get this error when I do a "echo 123 > /dev/ttyS0" on a other
-> computer connected with a serial cable.
->=20
->> voyage:/usr/src/tests/getserial# ./getserial
->> rt_serial_uprog: PRESS CTRL-C to EXIT
->> rt_serial_uprog: timer started
->> rt_serial_uprog: rtser_file opened
->> rt_serial_uprog: serial-port-config written
->> rt_serial_uprog: read-task created
->> rt_serial_uprog: starting read-task
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (1 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (2 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (3 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (4 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (5 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (6 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (7 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (8 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (9 times)
->> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (10 times)
->> rt_serial_uprog: delete write_task
->> rt_serial_uprog: stop timer
->> rt_serial_uprog: exit
->=20
-> and:
->=20
->> Mar 22 15:02:46 voyage kernel: 00000000
->> Mar 22 15:02:46 voyage kernel: PREEMPT
->> Mar 22 15:02:46 voyage kernel: Modules linked in: xeno_16550A xeno_rtd=
-m ohci_hcd usbcore sis900 mii dm_mod
->> Mar 22 15:02:46 voyage kernel: CPU:    0
->> Mar 22 15:02:46 voyage kernel: EIP:    0060:[<00000000>]    Not tainte=
-d VLI
->> Mar 22 15:02:46 voyage kernel: EFLAGS: 00010002   (2.6.15.4-gx1-25)
->> Mar 22 15:02:46 voyage kernel: EIP is at _stext+0x3feffdc0/0xb4
->> Mar 22 15:02:46 voyage kernel: eax: c0316b80   ebx: c03168e0   ecx: c0=
-3173a0   edx: c03168e0
->> Mar 22 15:02:46 voyage kernel: esi: 00000004   edi: c03168e8   ebp: c0=
-3173d0   esp: cdc8ddd4
->> Mar 22 15:02:46 voyage kernel: ds: 007b   es: 007b   ss: 0068
->> Mar 22 15:02:46 voyage kernel: Process read_task (pid: 1320, threadinf=
-o=3Dcdc8c000 task=3Dce951a50)
->> Mar 22 15:02:46 voyage kernel: Stack: c010c6ad 00000004 00000000 cffdf=
-2fa 00000048 c03173e0 00000000 c03168e0
->> Mar 22 15:02:46 voyage kernel:        ffffffff 00000001 00000000 00000=
-002 c03168e0 c03168e0 00000046 c012f6fe
->> Mar 22 15:02:46 voyage kernel:        018f7a35 00000048 00000000 00000=
-000 ffffffd5 ce84a110 d0054c07 c02482c6
->> Mar 22 15:02:46 voyage kernel: Call Trace:
->> Mar 22 15:02:46 voyage kernel:  [__ipipe_sync_stage+468/606] __ipipe_s=
-ync_stage+0x1d4/0x25e
->> Mar 22 15:02:46 voyage kernel:  [ipipe_unstall_pipeline_from+196/238] =
-ipipe_unstall_pipeline_from+0xc4/0xee
->> Mar 22 15:02:46 voyage kernel:  [pg0+265423879/1070375936] rtdm_event_=
-timedwait+0x167/0x171 [xeno_rtdm]
+>>> Please, if someone could list me a list of disadvantages of C++ use on
+>>> hard real-time systems, requiring object oriented approach, I would be
+>>> very glad to read it. Better yet if it comes with the possible solution=
+s
+>>> to each problem or pointing out that there is no solution at all.
+>>
+>> <http://people.mech.kuleuven.be/~psoetens/orocos/doc/orocos-faq.html#id2=
+451300>
+>
+> Thank you very much, specially for the technical report. BTW, in section
+> 4.2.2.2 (Dynamic Memory Allocation), what the IS-5.3.4 means? Where do I =
+find
+> it? And the other references too...
 
-Which Xenomai version, which xeno_16550A version (/proc/xenomai/rtdm/)?
-I think we have fixed such an issue some time back, and this should at
-least made it into Xenomai 2.1. Please confirm that it's an issue
-persisting with xeno_16550A version 1.2.6.
+It refers to the C++ standard I guess.  I doubt it's on the web though.
 
-Thanks,
-Jan
+> How is dynamic memory management done in OROCO's classes? Do you override=
+ all
+> new() methods?
 
+Never.  Just don't allocate memory in the real-time parts of your
+code.
 
---------------enigA8EBF30F336C761B9B41B715
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEI+fOniDOoMHTA+kRAtC2AJ9s5a+iIZgRx2Fq7ISKsPG8yKvmLACeMsZX
-Uj9jTjnIbpCLTXNm5a+lKa4=
-=OoOu
------END PGP SIGNATURE-----
-
---------------enigA8EBF30F336C761B9B41B715--
+Klaas
+--8323328-703928996-1143212347=:22865--
 
