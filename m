@@ -1,14 +1,15 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-help] Hard real-time and C++
-Date: Thu, 23 Mar 2006 14:04:29 -0300
-References: <20060322203422.2866.qmail@domain.hid>
-	<Pine.LNX.4.63.0603230852070.18530@domain.hid>
-In-Reply-To: <Pine.LNX.4.63.0603230852070.18530@domain.hid>
+Message-ID: <4423E426.1010206@domain.hid>
+Date: Fri, 24 Mar 2006 13:20:54 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200603231404.30513.lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] Re: read data from serial device
+References: <dvrrgc$g2a$1@domain.hid>	<dvu50v$5pq$1@domain.hid>	<44229953.3090002@domain.hid>	<dvu5ud$90v$1@domain.hid>
+	<4422A10B.90508@domain.hid>
+In-Reply-To: <4422A10B.90508@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig16B7FA0567487966E82FCB9C"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,58 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Marco Jackel <ich@domain.hid>
+Cc: xenomai@xenomai.org
 
-Em Quinta 23 Mar=3DE7o 2006 04:55, Klaas Gadeyne escreveu:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig16B7FA0567487966E82FCB9C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
->> I'm willing to develop a framework for helping people to program mobile
->> robots for doing hard real-time tasks. Assuming most of them will have a
->> limitated knowledge both to RTOS and programming, I would like to keep it
->> simple to use.
->
->Do you know <http://www.orocos.org>?
+Philippe Gerum wrote:
+> Marco Jackel wrote:
+>> Hi,
+>>
+>> Philippe Gerum wrote:
+>>
+>>> Marco Jackel wrote:
+>>>
+>>>> "rt_dev_read" gives negative Results. Whats wrong?
+>>>
+>>> Which negative code is returned exactely?
+>>
+>> It returns -5
+>=20
+> -EIO. Except for traditional RTOS skins like VxWorks, VRTX and so on
+> which have their own error list, we tend to normalize on POSIX error
+> codes in all other parts of the codebase.
+>=20
+> Regarding the EIO issue, it looks like a transmission error has been
+> detected on the read-side by the 16650A driver. Jan will likely tell yo=
+u
+> more when time allows.
 
-Yes, I didn't like the idea of using RT-CORBA. But I won't discuss this top=
-=3D
-ic=3D20
-here neither. At least in the moment since I'm very worried about my=3D20
-deadline...
+Are you sure that you transmit with the correct baud rate and line
+settings? In your rtser_config I see that you use odd parity. I think
+Linux default is no parity bit.
 
->> Please, if someone could list me a list of disadvantages of C++ use on
->> hard real-time systems, requiring object oriented approach, I would be
->> very glad to read it. Better yet if it comes with the possible solutions
->> to each problem or pointing out that there is no solution at all.
->
-><http://people.mech.kuleuven.be/~psoetens/orocos/doc/orocos-faq.html#id245=
-=3D
-1300>
+>=20
+>>
+>> Are the error-codes documented somewehere?
+>>
+>=20
+> Yes, the documentation link on our website is a good starting point. Fo=
+r
+> the particular EIO issue on the serial driver, I'm not sure there is a
+> lot more explanations than the one above, though.
 
-Thank you very much, specially for the technical report. BTW, in section=3D=
-20
-4.2.2.2 (Dynamic Memory Allocation), what the IS-5.3.4 means? Where do I fi=
-=3D
-nd=3D20
-it? And the other references too...
+Oops, undocumented return code in the profile. Need to be fixed. Yes,
+it's indeed some hardware/bit error that is expressed with EIO.
 
->ps.  There's experimental (i.e. untested) xenomai support in the latest
->orocos release.
+Jan
 
-How is dynamic memory management done in OROCO's classes? Do you override a=
-=3D
-ll=3D20
-new() methods?
 
-Thanks,
+PS: A cleaned-up version of the serial port demo code can currently be
+found at http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon.
 
-Best Regards,
+PPS: I'm examining the reason for your crash ATM. Should not happen.
 
-Rodrigo.
 
-	=09
-_______________________________________________________=20
-Novo Yahoo! Messenger com voz: Instale agora e fa=E7a liga=E7=F5es de gra=
-=E7a.=20
-http://br.messenger.yahoo.com/
+--------------enig16B7FA0567487966E82FCB9C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEI+QmniDOoMHTA+kRAu64AJ9cGcPnqM370zFyddYICksMs58CEQCfXGCo
+iSGGv1VQkCiBHkPC5c5Xl8U=
+=CheK
+-----END PGP SIGNATURE-----
+
+--------------enig16B7FA0567487966E82FCB9C--
 
