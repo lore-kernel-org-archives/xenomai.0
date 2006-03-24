@@ -1,11 +1,16 @@
-Content-class: urn:content-classes:message
+Message-ID: <44242CD7.7080409@domain.hid>
+Date: Fri, 24 Mar 2006 18:31:03 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C64F59.092DD16B"
-Date: Fri, 24 Mar 2006 16:38:45 +0100
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210D6B@EINT11.einet.ad.eivd.ch>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: [Xenomai-core] Timer IRQ propagation
+References: <200603201434.15258@domain.hid>
+	<200603210148.11118.berlemont.hauw@domain.hid> <441F5F31.70206@domain.hid>
+	<200603220224.48468.berlemont.hauw@domain.hid>
+In-Reply-To: <200603220224.48468.berlemont.hauw@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig27600BD85CB3B19AF8E6AC5B"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: COMEDI over RTDM
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,280 +20,206 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Alexis Berlemont <berlemont.hauw@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C64F59.092DD16B
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig27600BD85CB3B19AF8E6AC5B
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
+Alexis Berlemont wrote:
+> Hi,
+>=20
+>>> But there are plenty of things I am not happy with :
+>>> -> the original comedilib version is not really well suited for rtdm.=
+ In
+>>> this library for many reasons; for example, you can find calls to
+>>> malloc/free
+>> Oops, not so nice.
+>>
+>>> functions. If I stick to the original implementation, I have to eithe=
+r to
+>>> ask for adding alloc stuff in user mode in rtdm skin or use another s=
+kin
+>>> to manage allocations. None of these solutions seems interesting for =
+me
+>>> for many reasons. A lot of people  must be thinking I am overkill, it=
+ is
+>>> true that the comedilib allocations should be done at init time
+>>> (comedi_open, comedi_close) then no need to fulfull real-time constra=
+ints
+>>> but I think comedi should be fully rtdm compliant; this would avoid
+>>> tricky corner cases for
+>>> developpers/users. The best and simplest solution for me would be som=
+e
+>>> slight modifications in the comedilib API but I doubt everyone is OK =
+with
+>>> that.
+>> Could you give some concrete use cases of the comedilib where dynamic
+>> allocation is involved? I don't know that library actually. What does =
+it
+>> manage beyond calling the driver core?
+>=20
+> In the function comedi_open() :=20
+>=20
+>   if(!(it=3Dmalloc(sizeof(comedi_t))))
+>     goto cleanup;
+>   memset(it,0,sizeof(comedi_t));
+>=20
+>   if((it->fd=3Drt_dev_open(fn,0))<0)
+>   {
+>     fprintf(stderr, "comedi_open: rt_dev_open failed (ret=3D%d)\n",
+> 	    it->fd);
+>     goto cleanup;
+>   }
+>=20
+>   if(comedi_ioctl(it->fd, COMEDI_DEVINFO,=20
+> 		  (unsigned long)&it->devinfo)<0)
+>     goto cleanup;
+>=20
+>   it->n_subdevices=3Dit->devinfo.n_subdevs;
+>=20
+>   get_subdevices(it);
+>=20
+> ...
+>=20
+> We can see an allocation for a structure which will contain the result =
+("fd")=20
+> of rt_dev_open(). And this is not over, the function "get_subdevices()"=
+ will=20
+> make another allocation to keep info about the driver (subdevice, numbe=
+r of=20
+> channels, etc.). And this function "get_subdevices()" will trigger more=
 =20
+> allocations by calling "get_rangeinfo()". In fact, "malloc()" is called=
+ eight=20
+> times.
+>=20
+> All disallocations are done in "comedi_close()".
 
-Hi,
+Ok, then opening and closing comedi devices is not deterministic and
+must not happen when strict timing requirements exist - but that's a
+rather unlikely scenario anyway. As long as there is no
+allocation/release in the acquisition code path...
 
-=20
+>=20
+> Starting from here, we have two alternatives:
+> -> preallocate enough structs the first time "comedi_open()" is called.=
+ mmh...
+> -> modify the comedilib API to let the developper handle the allocation=
+s.
+>=20
+>>> -> I think the comedi structures organization (comedi_device, subdevi=
+ce,
+>>> async, etc.) should be reviewed considering the rtdm architecture. Of=
 
-We have some doubts about how the things work between i-pipe & xenomai
-regarding the timer.
+>>> course, these modifications should not induce big changes in the come=
+di
+>>> drivers source.
+>> Please also give concrete examples here. RTDM devices should be
+>> manageable by the user via file descriptors, just like normal devices.=
 
-=20
+>=20
+> There is a little difference with normal devices and classical drivers.=
+ The=20
+> link between a device and a driver is not direct. The comedi layer affe=
+cts a=20
+> comedi device (/dev/comedi0..9 or comedi0..9) to a specific driver at r=
+untime=20
+> thanks to a specific ioctl (cf. comedi_config in comedilib). This is th=
+e=20
+> comedi attach stuff.
 
-1-  First, when Xenomai is registered, the 10ms timer of Linux is stolen
-by the Xenomai domain. How
+Then what does comedi0..9 stand for, some interface channel?
 
-is the 10ms timer preserved? is it registered as a timer by the pod ?
+>=20
+> At this level, I may think it would be interesting to consider quite pr=
+ecisely=20
+> the layer organization. I have not well understood the architectural bo=
+rder=20
+> between what must be done by the driver and what must be done by the ab=
+stract=20
+> layer.
+>=20
+> For example, here is a description of the attaching procedure:=20
+> 1) the devconfig ioctl is received by the abstract comedi layer;
+> 2) the abstract layer (in comedi/drivers.c) calls do_devconfig_ioctl() =
+which=20
+> makes some allocations and a few setups in the structure comedi_device,=
+ the=20
+> the function comedi_device_attach() is called;
+> 3)In comedi_device_attach(), we check if the proper driver whether avai=
+lable=20
+> (insmoded), if so a driver specific function is called;
+> 4) in this driver function, we have access to the structures of the abs=
+tract=20
+> layer and we modify them (comedi_subdevice);
+> 5) back in the abstract layer, the function "postconfig() is called to =
+setup=20
+> the struct "comedi_async" (this struct belongs to a comedi_subdevice).
+>=20
+> To sum up:=20
+> -> comedi_device { (managed by the abstract layer)
+> 	-> comedi_subdevice { (managed by the driver)
+> 		-> comedi_async (managed by the abstract layer)
+> 	}
+> }
+>=20
+> I am not sure I am clear (it is quite hard to explain without source co=
+de),=20
+> but I think the drivers should not get direct access to the structures =
+of the=20
+> abstract layer.=20
+>=20
+> You may find this points useless, all this stuff is not directly relate=
+d with=20
+> rtdm functionnalities, I just thought the rtdm port would be a good=20
+> opportunity to think about that.=20
 
-=20
+Yes, certainly. And as it's not related to real-time or RTDM, this
+should definitely raise the interest of the comedi developers as well. I
+can only recommend torturing them with questions about why things are
+the way they are!
 
-2-       When a timer IRQ is received, we understood that the IRQ is
-ack'd and masked by handle_irq() and sent to the domains
+>=20
+>> What is different, what extra information is needed?
+>=20
+> . I just think some fields could be removed or grouped in comedi_subdev=
+ice=20
+> (lock, busy, etc.) and we could integrate in comedi_async the nonblocki=
+ng=20
+> info. This is minor.
+>=20
+> I may have some more points to share with you but I have to keep them f=
+or=20
+> tomorrow night.
+>=20
+>> Release early, release often ;). I would offer to have a look, maybe i=
+t
+>> will clarify where the RTDM-specific problems are.
+>=20
+> OK sorry for tonight, hard day...
+>=20
+> Alexis.
+>=20
 
-through walk_pipeline() including Linux; but we have some doubts about
-that since the timer ISR of Linux first acknowledges the interrupt, and
-
-it seems that it acknowledges physically (hw ack); we expected that the
-acknowledgement would be a virtual ack in the Linux domain since the ack
-
-has been made previously by handle_irq(). In our case (ARM arch), the
-ack actually corresponds to a mask and therefore the timer IRQ is masked
-
-by Linux once it gets,  and we then suspect some loss of timer
-interrupts.
-
-have we understood correctly the mechanism? Any idea about this
-behaviour? Is it normal?
-
-=20
-
-Thanks in advance
-
-=20
-
-Daniel
-
-=20
-
-=20
-
-=20
+Jan
 
 
-------_=_NextPart_001_01C64F59.092DD16B
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--------------enig27600BD85CB3B19AF8E6AC5B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-p
-	{mso-margin-top-alt:auto;
-	margin-right:0cm;
-	mso-margin-bottom-alt:auto;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
- /* List Definitions */
- @list l0
-	{mso-list-id:1636450315;
-	mso-list-type:hybrid;
-	mso-list-template-ids:-360270154 67895313 67895321 67895323 67895311 =
-67895321 67895323 67895311 67895321 67895323;}
-@list l0:level1
-	{mso-level-text:"%1\)";
-	mso-level-tab-stop:36.0pt;
-	mso-level-number-position:left;
-	text-indent:-18.0pt;}
-@list l1
-	{mso-list-id:1791240125;
-	mso-list-type:hybrid;
-	mso-list-template-ids:-853094142 -552450000 67895321 67895323 67895311 =
-67895321 67895323 67895311 67895321 67895323;}
-@list l1:level1
-	{mso-level-start-at:2;
-	mso-level-text:%1-;
-	mso-level-tab-stop:36.0pt;
-	mso-level-number-position:left;
-	text-indent:-18.0pt;}
-@list l2
-	{mso-list-id:1833831387;
-	mso-list-type:hybrid;
-	mso-list-template-ids:52067206 -711791698 67895321 67895323 67895311 =
-67895321 67895323 67895311 67895321 67895323;}
-@list l2:level1
-	{mso-level-start-at:2;
-	mso-level-text:%1-;
-	mso-level-tab-stop:18.0pt;
-	mso-level-number-position:left;
-	margin-left:18.0pt;
-	text-indent:-18.0pt;}
-ol
-	{margin-bottom:0cm;}
-ul
-	{margin-bottom:0cm;}
--->
-</style>
+iD8DBQFEJCzXniDOoMHTA+kRArGVAJ9H0k01M2tk+VXzJYYbXg/s5dT/9QCeKD9m
+MnQkj4Tqv8SJEDK8CAwpQd4=
+=nj3u
+-----END PGP SIGNATURE-----
 
-</head>
-
-<body lang=3DFR link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Hi,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>We have some doubts about how the things work =
-between
-i-pipe &amp; xenomai regarding the timer.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>1-&nbsp; First, when Xenomai is registered, =
-the 10ms timer
-of Linux is stolen by the Xenomai domain. =
-How<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>is the 10ms timer preserved? is it registered =
-as a
-timer by the pod ?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal =
-style=3D'margin-left:18.0pt;text-indent:-18.0pt;mso-list:l2 level1 =
-lfo3'><![if !supportLists]><font
-size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:10.0pt;font-family:Arial'><span
-style=3D'mso-list:Ignore'>2-<font size=3D1 face=3D"Times New =
-Roman"><span
-style=3D'font:7.0pt "Times New =
-Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
-</span></font></span></span></font><![endif]><font
-size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:10.0pt;font-family:Arial'>When
-a timer IRQ is received, we understood that the IRQ is ack'd and masked =
-by
-handle_irq() and sent to the domains<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>through walk_pipeline() including Linux; but =
-we have
-some doubts about that since the timer ISR of Linux first acknowledges =
-the
-interrupt, and<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>it seems that it acknowledges physically (hw =
-ack); we
-expected that the acknowledgement would be a virtual ack in the Linux =
-domain
-since the ack<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>has been made previously by handle_irq(). In =
-our case
-(ARM arch), the ack actually corresponds to a mask and therefore the =
-timer IRQ is
-masked<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>by Linux once it gets, &nbsp;and we then =
-suspect some loss
-of timer interrupts.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>have we understood correctly the mechanism? =
-Any idea
-about this behaviour? Is it normal?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Thanks in advance<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Daniel<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C64F59.092DD16B--
+--------------enig27600BD85CB3B19AF8E6AC5B--
 
