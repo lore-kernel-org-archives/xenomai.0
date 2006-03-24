@@ -1,14 +1,13 @@
-Message-ID: <4423E426.1010206@domain.hid>
-Date: Fri, 24 Mar 2006 13:20:54 +0100
+Message-ID: <4423E7CE.3000105@domain.hid>
+Date: Fri, 24 Mar 2006 13:36:30 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: read data from serial device
-References: <dvrrgc$g2a$1@domain.hid>	<dvu50v$5pq$1@domain.hid>	<44229953.3090002@domain.hid>	<dvu5ud$90v$1@domain.hid>
-	<4422A10B.90508@domain.hid>
-In-Reply-To: <4422A10B.90508@domain.hid>
+Subject: Re: [Xenomai-help] read data from serial device
+References: <dvrrgc$g2a$1@domain.hid>
+In-Reply-To: <dvrrgc$g2a$1@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig16B7FA0567487966E82FCB9C"
+	boundary="------------enigA8EBF30F336C761B9B41B715"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,60 +22,95 @@ To: Marco Jackel <ich@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig16B7FA0567487966E82FCB9C
+--------------enigA8EBF30F336C761B9B41B715
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> Marco Jackel wrote:
->> Hi,
->>
->> Philippe Gerum wrote:
->>
->>> Marco Jackel wrote:
->>>
->>>> "rt_dev_read" gives negative Results. Whats wrong?
->>>
->>> Which negative code is returned exactely?
->>
->> It returns -5
+Marco Jackel wrote:
+> Hi there,
 >=20
-> -EIO. Except for traditional RTOS skins like VxWorks, VRTX and so on
-> which have their own error list, we tend to normalize on POSIX error
-> codes in all other parts of the codebase.
+> ATTENTION: I'm a xenomai-newbie
+> I want to read data from the serial device
 >=20
-> Regarding the EIO issue, it looks like a transmission error has been
-> detected on the read-side by the 16650A driver. Jan will likely tell yo=
-u
-> more when time allows.
+> I got the serial driver loop demo from
+> http://www.captain.at/xenomai-serial-port-example.php
 
-Are you sure that you transmit with the correct baud rate and line
-settings? In your rtser_config I see that you use odd parity. I think
-Linux default is no parity bit.
+Unfortunately outdated, no longer compiles against recent Xenomai 2.1.
+See the recent version at
+http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon instead.
 
+@Hannes: Please update your site to avoid confusion!
+
+> It worked without any problems.
+> Then I modified the demo to read data only (remove all the write_task
+> stuff).
 >=20
->>
->> Are the error-codes documented somewehere?
->>
+> But I get this error when I do a "echo 123 > /dev/ttyS0" on a other
+> computer connected with a serial cable.
 >=20
-> Yes, the documentation link on our website is a good starting point. Fo=
-r
-> the particular EIO issue on the serial driver, I'm not sure there is a
-> lot more explanations than the one above, though.
+>> voyage:/usr/src/tests/getserial# ./getserial
+>> rt_serial_uprog: PRESS CTRL-C to EXIT
+>> rt_serial_uprog: timer started
+>> rt_serial_uprog: rtser_file opened
+>> rt_serial_uprog: serial-port-config written
+>> rt_serial_uprog: read-task created
+>> rt_serial_uprog: starting read-task
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (1 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (2 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (3 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (4 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (5 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (6 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (7 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (8 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (9 times)
+>> rt_serial_uprog: rtser0 (rtser) -> EAGAIN (10 times)
+>> rt_serial_uprog: delete write_task
+>> rt_serial_uprog: stop timer
+>> rt_serial_uprog: exit
+>=20
+> and:
+>=20
+>> Mar 22 15:02:46 voyage kernel: 00000000
+>> Mar 22 15:02:46 voyage kernel: PREEMPT
+>> Mar 22 15:02:46 voyage kernel: Modules linked in: xeno_16550A xeno_rtd=
+m ohci_hcd usbcore sis900 mii dm_mod
+>> Mar 22 15:02:46 voyage kernel: CPU:    0
+>> Mar 22 15:02:46 voyage kernel: EIP:    0060:[<00000000>]    Not tainte=
+d VLI
+>> Mar 22 15:02:46 voyage kernel: EFLAGS: 00010002   (2.6.15.4-gx1-25)
+>> Mar 22 15:02:46 voyage kernel: EIP is at _stext+0x3feffdc0/0xb4
+>> Mar 22 15:02:46 voyage kernel: eax: c0316b80   ebx: c03168e0   ecx: c0=
+3173a0   edx: c03168e0
+>> Mar 22 15:02:46 voyage kernel: esi: 00000004   edi: c03168e8   ebp: c0=
+3173d0   esp: cdc8ddd4
+>> Mar 22 15:02:46 voyage kernel: ds: 007b   es: 007b   ss: 0068
+>> Mar 22 15:02:46 voyage kernel: Process read_task (pid: 1320, threadinf=
+o=3Dcdc8c000 task=3Dce951a50)
+>> Mar 22 15:02:46 voyage kernel: Stack: c010c6ad 00000004 00000000 cffdf=
+2fa 00000048 c03173e0 00000000 c03168e0
+>> Mar 22 15:02:46 voyage kernel:        ffffffff 00000001 00000000 00000=
+002 c03168e0 c03168e0 00000046 c012f6fe
+>> Mar 22 15:02:46 voyage kernel:        018f7a35 00000048 00000000 00000=
+000 ffffffd5 ce84a110 d0054c07 c02482c6
+>> Mar 22 15:02:46 voyage kernel: Call Trace:
+>> Mar 22 15:02:46 voyage kernel:  [__ipipe_sync_stage+468/606] __ipipe_s=
+ync_stage+0x1d4/0x25e
+>> Mar 22 15:02:46 voyage kernel:  [ipipe_unstall_pipeline_from+196/238] =
+ipipe_unstall_pipeline_from+0xc4/0xee
+>> Mar 22 15:02:46 voyage kernel:  [pg0+265423879/1070375936] rtdm_event_=
+timedwait+0x167/0x171 [xeno_rtdm]
 
-Oops, undocumented return code in the profile. Need to be fixed. Yes,
-it's indeed some hardware/bit error that is expressed with EIO.
+Which Xenomai version, which xeno_16550A version (/proc/xenomai/rtdm/)?
+I think we have fixed such an issue some time back, and this should at
+least made it into Xenomai 2.1. Please confirm that it's an issue
+persisting with xeno_16550A version 1.2.6.
 
+Thanks,
 Jan
 
 
-PS: A cleaned-up version of the serial port demo code can currently be
-found at http://www.rts.uni-hannover.de/mitarbeiter/kiszka/rtaddon.
-
-PPS: I'm examining the reason for your crash ATM. Should not happen.
-
-
---------------enig16B7FA0567487966E82FCB9C
+--------------enigA8EBF30F336C761B9B41B715
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -85,10 +119,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEI+QmniDOoMHTA+kRAu64AJ9cGcPnqM370zFyddYICksMs58CEQCfXGCo
-iSGGv1VQkCiBHkPC5c5Xl8U=
-=CheK
+iD8DBQFEI+fOniDOoMHTA+kRAtC2AJ9s5a+iIZgRx2Fq7ISKsPG8yKvmLACeMsZX
+Uj9jTjnIbpCLTXNm5a+lKa4=
+=OoOu
 -----END PGP SIGNATURE-----
 
---------------enig16B7FA0567487966E82FCB9C--
+--------------enigA8EBF30F336C761B9B41B715--
 
