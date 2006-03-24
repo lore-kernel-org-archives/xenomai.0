@@ -1,13 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <61528.205.250.209.80.1143235839.squirrel@domain.hid>
+Date: Fri, 24 Mar 2006 13:30:39 -0800 (GMT+8)
+From: "Igor Cheifot" <icheifot@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17444.19510.452560.852068@domain.hid>
-Date: Fri, 24 Mar 2006 20:44:54 +0100
-Subject: Re: [Xenomai-help] Crashing at boot with 2.6.15.4
-In-Reply-To: <4424264F.7090401@domain.hid>
-References: <440DA975.50002@domain.hid> <440DAC21.9030801@domain.hid>
-	<44241F36.40201@domain.hid> <4424264F.7090401@domain.hid>
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Arm + Xenomai linux kernel + cross compilation
+	environment
+Reply-To: icheifot@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,23 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > > divide error: 0000 [#1]
- > > Modules linked in:
- > > CPU:    0
- > > EIP:    0060:[<c014243a>]    Not tainted VLI
- > > EFLAGS: 00010246   (2.6.15.6-ipipe)
- > > EIP is at xntimer_get_jiffies_aperiodic+0x5a/0xf0
- > 
- > This is not ok, but should be easy to fix.
-
-Fixed by revision 786 in trunk and revision 787 in branch 2.1.
+Hi
+I've tryed to compile several linux kernels with Xenomai support for the
+last 2 days and i just don't succeeded.
+Did anybody do this before if they did, can you please post what linux
+kernel did you use (preferably 2.6.xx) and which versions of adeos patch,
+compiler, binutils etc were used in the cross compilation process
+thanx a lot in advance
 
 -- 
+Igor Cheifot
+President/CEO
+Concept17 Studios
+tel: 604-377-4901
 
 
-					    Gilles Chanteperdrix.
 
