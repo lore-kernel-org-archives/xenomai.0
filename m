@@ -1,61 +1,63 @@
-Message-ID: <441E71BB.6010906@domain.hid>
-Date: Mon, 20 Mar 2006 10:11:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44251658.9040707@domain.hid>
+Date: Sat, 25 Mar 2006 11:07:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] 2.6.16-rc6 support
-References: <441DD358.8010307@domain.hid>
-In-Reply-To: <441DD358.8010307@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4C607EB1BA5927ED9335726E"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] RT_TASK descriptor question
+References: <1143280058.14325.257499491@domain.hid>
+In-Reply-To: <1143280058.14325.257499491@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Alessandro Pittaluga <xpit@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4C607EB1BA5927ED9335726E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Jan Kiszka wrote:
+Alessandro Pittaluga wrote:
 > Hi,
->=20
-> Jeroen reported success much earlier, now I had to rebase my box on
-> upcoming 2.6.16. So I would like to post the result, maybe others are
-> interested in starting an early test as well. Attached is a cleanly
-> applying Ipipe patch for -rc6 and a fix for a name collision in
-> posix/syscall.c (there are other mutex functions in the kernel now...).=
+> 
+> In the native skin rt_task_create receives a pointer to a RT_TASK struct
+> which must be allocated in permanent memory.
+> So I thought that the address of this struct would be the task
+> identifier used to be passed to the other rt_task functions.
+> And it works in this way.
+> 
+> The strange thing is that rt_task_self does not return the same value of
+> RT_TASK*, but allocates a new RT_TASK structure the first time it is
+> called in a new task context.
+> 
+> Why? 
+> 
 
->=20
+Because the relevant bit of information is not the descriptor struct per 
+se, but rather its contents. This way, one can point to the same object 
+using a descriptor struct, regardless of the allocation context of such 
+struct. This is particularly useful for sharing objects between 
+different execution spaces: regardless of the layout of the descriptor 
+or the context it has been created, one only has to know that the 
+descriptor contains enough information to point back to the registered 
+object; IOW, the descriptor address is not part of the indexing information.
 
-Uups, someone must have whispered to me that 2.6.16 will come out very
-soon, and now it happened. The final patch seems to cause no problems to
-the ipipe patch as well.
+Using this property, rt_task_self() can simply fill any descriptor 
+_struct_ once, at the time of the first call for any given thread. The 
+struct itself is part of TSD/PTD information, and has been pre-allocated 
+at thread creation. This way, the kernel is only asked once for filling 
+the struct on a pre-allocated memory area, and subsequent calls to 
+rt_task_self() just return the PTD value associated with the descriptor 
+struct key.
 
-Jan
+> Many thanks
+> 
+> Alessandro
 
 
---------------enig4C607EB1BA5927ED9335726E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEHnG7niDOoMHTA+kRAv4dAJ9Vdp+vJBDzn16OCx71i6xsffe8RQCfT3qv
-eudp/a/SgovJVPVzZRHCuIU=
-=hCmz
------END PGP SIGNATURE-----
-
---------------enig4C607EB1BA5927ED9335726E--
+Philippe.
 
