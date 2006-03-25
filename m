@@ -1,11 +1,11 @@
-Message-Id: <1143280058.14325.257499491@domain.hid>
+Message-Id: <1143279446.13244.257499314@domain.hid>
 From: "Alessandro Pittaluga" <xpit@domain.hid>
 Content-Disposition: inline
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="ISO-8859-1"
 MIME-Version: 1.0
-Date: Sat, 25 Mar 2006 10:47:38 +0100
-Subject: [Xenomai-help] RT_TASK descriptor question
+Date: Sat, 25 Mar 2006 10:37:26 +0100
+Subject: [Xenomai-help] gdb and heaps
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,26 +19,27 @@ To: xenomai@xenomai.org
 
 Hi,
 
-In the native skin rt_task_create receives a pointer to a RT_TASK struct
-which must be allocated in permanent memory.
-So I thought that the address of this struct would be the task
-identifier used to be passed to the other rt_task functions.
-And it works in this way.
+When trying to access with gdb to variables allocated on a shared heap,
+the following message is returned:
+(gdb) print mypointer
+$5 = (MYTYPE *) 0xb7dc4020
+(gdb) print *mypointer
+Cannot access memory at address 0xb7dc4020
 
-The strange thing is that rt_task_self does not return the same value of
-RT_TASK*, but allocates a new RT_TASK structure the first time it is
-called in a new task context.
+All the applications (kernel and userland) are accessing correctly to
+the  heap-allocated memory. 
 
-Why? 
+Is this the expected behaviour or there's something wrong in my
+installation?
 
-Many thanks
-
+Many Thanks
 Alessandro
 -- 
   Alessandro Pittaluga
   al.pittaluga@domain.hid
 
 -- 
-http://www.fastmail.fm - A fast, anti-spam email service.
+http://www.fastmail.fm - One of many happy users:
+  http://www.fastmail.fm/docs/quotes.html
 
 
