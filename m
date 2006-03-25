@@ -1,10 +1,10 @@
-Message-ID: <44251658.9040707@domain.hid>
-Date: Sat, 25 Mar 2006 11:07:20 +0100
+Message-ID: <44252103.2010604@domain.hid>
+Date: Sat, 25 Mar 2006 11:52:51 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RT_TASK descriptor question
-References: <1143280058.14325.257499491@domain.hid>
-In-Reply-To: <1143280058.14325.257499491@domain.hid>
+Subject: Re: [Xenomai-help] gdb and heaps
+References: <1143279446.13244.257499314@domain.hid>
+In-Reply-To: <1143279446.13244.257499314@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -22,38 +22,45 @@ Cc: xenomai@xenomai.org
 Alessandro Pittaluga wrote:
 > Hi,
 > 
-> In the native skin rt_task_create receives a pointer to a RT_TASK struct
-> which must be allocated in permanent memory.
-> So I thought that the address of this struct would be the task
-> identifier used to be passed to the other rt_task functions.
-> And it works in this way.
+> When trying to access with gdb to variables allocated on a shared heap,
+> the following message is returned:
+> (gdb) print mypointer
+> $5 = (MYTYPE *) 0xb7dc4020
+> (gdb) print *mypointer
+> Cannot access memory at address 0xb7dc4020
 > 
-> The strange thing is that rt_task_self does not return the same value of
-> RT_TASK*, but allocates a new RT_TASK structure the first time it is
-> called in a new task context.
+> All the applications (kernel and userland) are accessing correctly to
+> the  heap-allocated memory. 
 > 
-> Why? 
-> 
+> Is this the expected behaviour or there's something wrong in my
+> installation?
+>
 
-Because the relevant bit of information is not the descriptor struct per 
-se, but rather its contents. This way, one can point to the same object 
-using a descriptor struct, regardless of the allocation context of such 
-struct. This is particularly useful for sharing objects between 
-different execution spaces: regardless of the layout of the descriptor 
-or the context it has been created, one only has to know that the 
-descriptor contains enough information to point back to the registered 
-object; IOW, the descriptor address is not part of the indexing information.
+Your installation is correct, GDB and Xenomai are too; unfortunately, 
+the following explanation is still accurate, i.e. a restriction in the 
+ptrace support:
+http://sourceware.redhat.com/ml/gdb/2004-01/msg00152.html
 
-Using this property, rt_task_self() can simply fill any descriptor 
-_struct_ once, at the time of the first call for any given thread. The 
-struct itself is part of TSD/PTD information, and has been pre-allocated 
-at thread creation. This way, the kernel is only asked once for filling 
-the struct on a pre-allocated memory area, and subsequent calls to 
-rt_task_self() just return the PTD value associated with the descriptor 
-struct key.
+Since you can call routines inside your program from the GDB cli, the 
+best solution at hand would be to implement the suggestion found in this 
+post: e.g.
 
-> Many thanks
-> 
+void print_heap (void)
+{
+	... output the heap contents...
+}
+
+and,
+
+(gdb) call print_heap()
+
+You could even pass arguments to print_heap() for customizing your output.
+
+A possible option to work around that would be to stop having heaps 
+marked as I/O regions though, but the kernel-provided remapping helper 
+we use currently forces this property. I'll look at this when time allows.
+
+> Many Thanks
 > Alessandro
 
 
