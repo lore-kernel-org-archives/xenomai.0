@@ -1,11 +1,15 @@
-Message-ID: <61632.205.250.209.80.1143238337.squirrel@domain.hid>
-Date: Fri, 24 Mar 2006 14:12:17 -0800 (GMT+8)
-From: "Igor Cheifot" <icheifot@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Cross Compilation Error
-Reply-To: icheifot@domain.hid
+From: Marco Jackel <ich@domain.hid>
+Date: Sat, 25 Mar 2006 02:06:28 +0100
+Message-ID: <e0250r$omd$1@domain.hid>
+References: <dvrrgc$g2a$1@domain.hid>
+	<4423E7CE.3000105@domain.hid>	<e0192l$re8$1@domain.hid>
+	<44242B28.9020807@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <44242B28.9020807@domain.hid>
+Sender: news <news@domain.hid>
+Subject: [Xenomai-help] Re: read data from serial device
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +21,17 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi
-I'm trying to compile the 2.6.14 Xenomai patch kernel for ARM architechture.
-I'm using arm-linux-gcc version 3.4.2 and i get the following error
+Jan Kiszka wrote:
+> Hmm, there were changes between 1.2.5 and .6, but no fix that should
+> relate to your crash.
+> 
+> If you happen to reproduce it somehow, please post the program and
+> describe the precise setup (used port settings on both sides e.g.).
 
-make[1]: Entering directory `/usr/src/linux-2.6.14.7-ARM'
-  CHK     include/linux/version.h
-make[2]: `include/asm-arm/mach-types.h' is up to date.
-  CHK     include/linux/compile.h
-  CHK     usr/initramfs_list
-  GEN     .version
-  CHK     include/linux/compile.h
-  UPD     include/linux/compile.h
-  CC      init/version.o
-  LD      init/built-in.o
-  LD      .tmp_vmlinux1
-arm-linux-ld:arch/arm/kernel/vmlinux.lds:730: parse error
-make[1]: *** [.tmp_vmlinux1] Error 1
-make[1]: Leaving directory `/usr/src/linux-2.6.14.7-ARM'
-make: *** [stamp-build] Error 2
+With the serial-test-program (rt_serial_uprog) from your site and recent
+xenomai/rtdm versions, reading from the serial device is know working.
 
-Any ideas how to fix this?
-Thanx a lot in advance
-
--- 
-Igor Cheifot
-President/CEO
-Concept17 Studios
-tel: 604-377-4901
-
+Thanks
+Marco
 
 
