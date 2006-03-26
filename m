@@ -1,15 +1,13 @@
-Message-ID: <4426865D.6050901@domain.hid>
-Date: Sun, 26 Mar 2006 14:17:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4426DD07.9040904@domain.hid>
+Date: Sun, 26 Mar 2006 20:27:19 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Timer IRQ propagation
 References: <FDBBB5CC70676540B3EF7CFE83FD94E0210D6B@EINT11.einet.ad.eivd.ch>
 	<FDBBB5CC70676540B3EF7CFE83FD94E004310B@EINT11.einet.ad.eivd.ch>
 In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E004310B@EINT11.einet.ad.eivd.ch>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig891F8CAA4DE25A39F71952B9"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,89 +20,65 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig891F8CAA4DE25A39F71952B9
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
 ROSSIER Daniel wrote:
-> Just to stimulate some discussions, I tried to bring some pieces of
-> answers.
->=20
->=20
-> -----Original Message----- From: xenomai-core-bounces@domain.hid on
-> behalf of ROSSIER Daniel Sent: Fri 3/24/2006 4:38 PM To:
-> xenomai@xenomai.org Subject: [Xenomai-core] Timer IRQ propagation
->=20
->=20
->=20
-> Hi,
->=20
->=20
->=20
-> We have some doubts about how the things work between i-pipe &
-> xenomai regarding the timer.
->=20
->=20
->=20
-> 1-  First, when Xenomai is registered, the 10ms timer of Linux is
-> stolen by the Xenomai domain. How
->=20
-> is the 10ms timer preserved? is it registered as a timer by the pod ?
->=20
->=20
->=20
->> Ok, silly question: the 10ms timer (or 1ms timer) is managed by
->> Linux directly with its own list of timers; this doesn't affect
->> Xenomai's timer list.
+> 
+> 
+> 2-       When a timer IRQ is received, we understood that the IRQ is ack'd and masked by handle_irq()
+and sent to the domains through walk_pipeline() including Linux; but we 
+have some doubts about that since
+  the timer ISR of Linux first acknowledges the interrupt, and it seems 
+that it acknowledges physically (hw ack);
+  we expected that the acknowledgement would be a virtual ack in the 
+Linux domain since the ack has been made
+  previously by handle_irq(). In our case (ARM arch), the ack actually 
+corresponds to a mask and therefore the
+  timer IRQ is masked by Linux once it gets,  and we then suspect some 
+loss of timer interrupts.
+> 
+> have we understood correctly the mechanism? Any idea about this behaviour? Is it normal?
+> 
+>  
+> 
+>>Still unclear to me; the ack would be done in the timer ISR; however in the (ARM) patch we have,
+ipipe performs a hardware ack; I've seen in the x86 patch that adeos 
+makes nothing within __ipipe_ack_system_irq().
 
-Under Xenomai, there is the host timer (nkpod-htimer) representing the
-Linux timer interrupt - with lowest prio and only propagated when the RT
-domain allows it.
+Yes, it does actually, it's even its role as a fast acknowledge Adeos 
+handler for incoming hw IRQs. It acks the APIC when the APIC support is 
+built-in (I should have made the entire routine conditionally compiled 
+on CONFIG_X86_LOCAL_APIC actually). Since __ipipe_ack_system_irq() is 
+only called for APIC-controlled IRQs, this routine always touches the hw.
 
->=20
-> 2-       When a timer IRQ is received, we understood that the IRQ is
-> ack'd and masked by handle_irq() and sent to the domains through
-> walk_pipeline() including Linux; but we have some doubts about that
-> since the timer ISR of Linux first acknowledges the interrupt, and it
-> seems that it acknowledges physically (hw ack); we expected that the
-> acknowledgement would be a virtual ack in the Linux domain since the
-> ack has been made previously by handle_irq(). In our case (ARM arch),
-> the ack actually corresponds to a mask and therefore the timer IRQ is
-> masked by Linux once it gets,  and we then suspect some loss of timer
-> interrupts.
->=20
-> have we understood correctly the mechanism? Any idea about this
-> behaviour? Is it normal?
->=20
->=20
->> Still unclear to me; the ack would be done in the timer ISR;
->> however in the (ARM) patch we have, ipipe performs a hardware ack;
->> I've seen in the x86 patch that adeos makes nothing within
->> __ipipe_ack_system_irq(). I guess the last behaviour is correct,
->> isn't it?
->=20
+  I guess the last behaviour is correct, isn't it?
+> 
 
-That's something the ARM people here can better comment on. I would only
-say that physically ack'ing the shared timer IRQ twice or masking it
-under Linux would be a bug - if it actually happens this way.
+Looking at Stelian's code in arm/mach-integrator/core.c, I see that 
+integrator_timer_interrupt does not acknowledge the timer IRQ, despite 
+the misleading comment. It only makes some bookkeeping for TSC emulation 
+when some higher domain in the pipeline has stolen the timer (e.g. 
+Xenomai). Otherwise, when the Ipipe is compiled in, the regular timer 
+tick handler does not touch the hw at all.
 
-Jan
+The logic is this one for all Adeos ports:
 
+- some code intercepts the hw IRQs before they are passed to the regular 
+Linux handlers, and feeds __ipipe_handle_irq() with those.
+- __ipipe_handle_irq() calls the fast acknowledge handler for the 
+incoming hw IRQ, which ends up being, e.g. __ipipe_ack_system_irq() for 
+APIC-controlled IRQs on x86 systems, or __ipipe_ack_timerirq() for the 
+timer IRQ in the ARM Integrator/CP port. Some IRQs might need different 
+fast ack handlers depending on their respective type.
+- IRQs are virtualized, which means that they are marked for delivery in 
+the interrupt log, where they might linger for some time before the 
+I-pipe is allowed to dispatch them to the proper handler eventually.
+- At some point in time, Linux ends up being notified of the IRQ, when 
+higher priority domains are done with it (e.g. Xenomai). This means that 
+the regular handler gets called, but Adeos ports always disable the 
+vanilla acknowledge code from such handlers, so that we always have one 
+and only one ack cycle for any given IRQ (i.e. the fast ack one from 
+__ipipe_handle_irq).
 
---------------enig891F8CAA4DE25A39F71952B9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEJoZdniDOoMHTA+kRApnMAJ905mNEqxaGDHRHahFyi5gsZIEs1wCfdqRQ
-WhmYNXjB4PFPXVC5gC4xXtY=
-=avr9
------END PGP SIGNATURE-----
-
---------------enig891F8CAA4DE25A39F71952B9--
+Philippe.
 
