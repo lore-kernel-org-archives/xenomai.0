@@ -1,74 +1,38 @@
-Message-ID: <441E9698.5080506@domain.hid>
-Date: Mon, 20 Mar 2006 12:48:40 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2cf1ee820603280009r5adec759h99aa69809f68b457@domain.hid>
+Date: Tue, 28 Mar 2006 11:09:50 +0300
+From: "emin ak" <eminak71@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Synchronising TSC and periodic timer
-References: <44172B67.2000609@domain.hid>	<4417C14A.2010900@domain.hid>	<44180FB8.7080200@domain.hid>	<17432.5656.591747.248941@domain.hid>
-	<44189C13.3010301@domain.hid>
-In-Reply-To: <44189C13.3010301@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig246EBD19905C3E10121CB80B"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig246EBD19905C3E10121CB80B
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Xenomai-help] gigabit rate packet processing with xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> ...
-> The issue that worries me - provided that we bound the adjustment offse=
-t
-> to the duration of one tick after some jittery - is that any attempt to=
-
-> get intra-tick precision would lead to a possible discrepancy regarding=
-
-> the elapsed time according to those two different scales, between the
-> actual count of jiffies tracked by the timer ISR on the timekeeper CPU,=
-
-> and the corrected time value returned by rtdm_read_clock. And this
-> discrepancy would last for the total duration of the jitter. E.g., for =
-a
-> 100 us period, xnpod_get_time() could return 2 albeit rtdm_read_clock
-> returns 300, instead of 200. Spuriously mixing both units in
-> applications would lead to some funky chaos.
->=20
-
-Trying to pick up this thread again, I just tried to understand your
-concerns, but failed so far to imagine a concrete scenario. Could you
-sketch such a "funky chaotic" situation from the application point of
-view? And what would prevent us from improving the accuracy of other
-timestamping API functions beyond RTDM as well, e.g. on converting from
-ticks to nanos in rt_timer_ticks2ns()?
-
-Jan
-
-
---------------enig246EBD19905C3E10121CB80B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEHpaYniDOoMHTA+kRAmGaAJ46W1mE2vY/RVA8nzDaLU01x6KToACdGVJB
-xMRgYYTwKkYO+OwLqsuJLgo=
-=XWUJ
------END PGP SIGNATURE-----
-
---------------enig246EBD19905C3E10121CB80B--
+Dear All;
+I'am new with xenomai (and also adeos), firstly I would like to thank=20
+who contributed to this project for this  high quality job. I have an
+project that needs gigabit rate ethernet packet processing in user
+space and need your recommendations.
+I want to archive this with minimal kernel level device driver changes.
+ According to my plan, I'll create a realtime user level thread and
+this thread sleeps (with the mutex machanism in the native api) until
+receiving a valid ethernet packet on ethernet interface that is
+working regular linux domain. After receiving the packet, ethernet
+driver releases the lock and sends packet to user level thread (with
+shared memory or an other way).With this way, I have left the device
+driver in linux domain, I'll only need to add locking and shared
+memory system in the device driver.Does this system work? Does the
+user level thread affect the functionallty of ethernet interface?Do I
+need to implement all my user space thread and kernel level driver in
+primaly domain?
+Thanks again and B/regards.
 
