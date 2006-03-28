@@ -1,12 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <44296668.10300@domain.hid>
+Date: Tue, 28 Mar 2006 18:38:00 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] document on running Xenomai on Blackfin 533
-Date: Tue, 28 Mar 2006 09:40:57 -0500
-Message-ID: <D3664A3D9376A94BB603EE19E4AA246D02CCDA0E@nwd2exm4.ad.analog.com>
-From: "Li, Yi" <Yi.Li@domain.hid>
+Subject: Re: [Xenomai-help] gigabit rate packet processing with xenomai
+References: <2cf1ee820603280009r5adec759h99aa69809f68b457@domain.hid>
+In-Reply-To: <2cf1ee820603280009r5adec759h99aa69809f68b457@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFEEF7EDA1DF96746A258C600"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,68 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bruno Rouchouse <brouchouse@domain.hid>, xenomai@xenomai.org
-
-Bruno,
-=20
-That is great. As you can see, the document is part of the =
-blackfin-uclinux open source project. So please feel free to use it. =
-Also I am planning to add more content (e.g, enable more realtime =
-applications, and performance data) to the page. Hoping to see your =
-document soon.
-=20
-Thanks,
--Adam
-
-________________________________
-
-From: xenomai-help-bounces@domain.hid on behalf of Bruno Rouchouse
-Sent: Mon 3/27/2006 4:59 AM
-To: xenomai@xenomai.org
+To: emin ak <eminak71@domain.hid>
 Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] document on running Xenomai on Blackfin 533
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFEEF7EDA1DF96746A258C600
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+emin ak wrote:
+> Dear All;
+> I'am new with xenomai (and also adeos), firstly I would like to thank=20
+> who contributed to this project for this  high quality job. I have an
+> project that needs gigabit rate ethernet packet processing in user
+> space and need your recommendations.
+> I want to archive this with minimal kernel level device driver changes.=
+
+>  According to my plan, I'll create a realtime user level thread and
+> this thread sleeps (with the mutex machanism in the native api) until
+
+In general, mutexes are not the right mechanism to wait on a specific
+event, they are used to synchronise concurrent access to resources. What
+you are likely looking for are e.g. semaphores.
+
+> receiving a valid ethernet packet on ethernet interface that is
+> working regular linux domain. After receiving the packet, ethernet
+> driver releases the lock and sends packet to user level thread (with
+> shared memory or an other way).With this way, I have left the device
+> driver in linux domain, I'll only need to add locking and shared
+> memory system in the device driver.Does this system work? Does the
+
+Not very well (which means: not deterministically). You need to put the
+driver under Xenomai control to achieve predictable latencies.
+
+> user level thread affect the functionallty of ethernet interface?Do I
+> need to implement all my user space thread and kernel level driver in
+> primaly domain?
+
+Yep, but you might be lucky: there is one Gigabit Ethernet driver
+already available with RTnet (Realtek 8169). If you are only looking for
+deterministic packet processing in an arbitrary network, you just have
+to load the RTnet core and the rt_r8169 driver, and then you can
+register your protocol types for sending and receiving (via rt-packet
+sockets). There are also examples available with RTnet. Feel free to ask
+for more details on the RTnet list.
+
+Jan
 
 
-Hi Adam,
+--------------enigFEEF7EDA1DF96746A258C600
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-I'm currently revamping the documentation framework. The core stuff is =
-already there but it still needs some customization to generate =
-acceptable and publishable documents. Should be ready within a week I =
-hope as far as html output is concerned.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-I will then migrate all available documents to xml docbook to finally =
-obtain a real documentation base for the project. I will start with a =
-"Getting Started" document and also technical article already published =
-by Philippe. The first one has the priority and all my attention at the =
-moment though. I think your document could be part of it as architecture =
-dependent section (if you agree of course ;).
+iD8DBQFEKWZoniDOoMHTA+kRAj5nAJ9DlwRaT3VdKgj1aOnBQ7cW06aSwgCfbKSM
+c1Y9mPJuiWF1+3PR53OZl0M=
+=rZxZ
+-----END PGP SIGNATURE-----
 
-All documents will finally be accessible from the website.
-
-Regards,
-
-Bruno Rouchouse
-
-
-On 3/27/06, adam li <yi.li@domain.hid> wrote:=20
-
-	Hi,
-=09
-	I have played with Xenomai on Blackfin 533. Here is a step by step
-	document on how to enable Xenomai on Blackfin 533 with uClinux for your
-	interest: http://docs.blackfin.uclinux.org/doku.php?id=3Dadeos
-=09
-	Thanks,
-=09
-	-Adam
-=09
-=09
-=09
-	_______________________________________________
-	Xenomai-help mailing list
-	Xenomai-help@domain.hid
-	https://mail.gna.org/listinfo/xenomai-help
-=09
-
-
+--------------enigFEEF7EDA1DF96746A258C600--
 
