@@ -1,109 +1,84 @@
-Message-ID: <4438E90F.6070304@domain.hid>
-Date: Sun, 09 Apr 2006 12:59:27 +0200
+Message-ID: <4429C177.2050009@domain.hid>
+Date: Wed, 29 Mar 2006 01:06:31 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Proposal to use buildbot for Xenomai
-References: <200604072337.48181.niklaus.giger@domain.hid>
-	<443777D4.3030002@domain.hid>
-	<200604081223.11896.niklaus.giger@domain.hid>
-In-Reply-To: <200604081223.11896.niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai run-time problem
+References: <7C4B97D3898FED44BC087D25490A44A1B6BB64@domain.hid>
+In-Reply-To: <7C4B97D3898FED44BC087D25490A44A1B6BB64@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE0FC418A278E0C3109D1E0FB"
+	boundary="------------enigF2B78C9413435B0854E779D1"
 Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?ISO-8859-1?Q?Hans_J=F8rgen_Olsen?= <HansJoergen.Olsen@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE0FC418A278E0C3109D1E0FB
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enigF2B78C9413435B0854E779D1
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Niklaus Giger wrote:
-> Am Samstag, 8. April 2006 10:44 schrieb Jan Kiszka:
->> Niklaus Giger wrote:
->>> Hi everybody
-> <..>
->> This is a really great idea! Of course, I already have another test
->> candidate in mind: RTnet 8). Specifically the PPC environment would be=
-
->> interesting, as our "buildbot" (sorry, Wolfgang G. ;) ) is typically
->> very busy so that build regressions are sometimes only detected with
->> delay on that platform. Is it also possible to explicitly trigger an
->> update and rebuild?
-> Yes of course. Just select a buildslave (e.g. ppc or hcu3 ->=20
-> http://ngiger.dyndns.org/buildbot/hcu3) and you may manually trigger it=
-=2E I=20
-> intentionally left this facility open for everybody to test it. But it =
-would=20
-> of course be possible to restrict it only to a few selected developers.=
-=20
+Hans J=F8rgen Olsen wrote:
+> Hi.
 >=20
-> If you want, I can help you to setup the master.cfg for a rtnet buildbo=
-t.
-
-I would love to, but you know - time...
-
+> =20
 >=20
->> But also for Xenomai I would see this as a very useful tool, e.g. for
->> 2.4 build tests (I must confess I only test sporadically against this
->> kernel).
-> I will add one. Could you please e-mail me (privately if you want) a wo=
-rking=20
-> config (ppc, no cross compiling if possible). Or do you want to add a b=
-uild=20
-> slave under your control?
-
-Hmm, I would prefer to just use something, especially as my PPC
-experiences are quite limited :). But I guess here are qualified people
-listening who can quickly dig out some config.
-
-> <..>
->> Is there no reset button you could control via a master station, e.g. =
-by
->> attaching some cheap electronic to a parallel or serial port?
-> There is a reset button, but then you have it running and consuming=20
-> electricity all the times.
-
-Yep, understandable.
-
->> I just remember that DENX once had or still have a remote PPC test-lab=
-
->> running. I CC'ed Wolfgang, maybe he could comment on this if and how i=
-t
->> could be used.
-> I would be willing to setup a buildbot for the u-boot, too, as my board=
- boots=20
-> with a very outdated version of u-boot.
+> First: I'm new to Xenomai and slowly becoming a not_so_new linux user m=
+igrating from - aaah, what was it? - win-something, I think it was.
 >=20
-> Best regards
+> =20
 >=20
+> I have successfully installed Xenomai 2.1 following Hannes Mayer's exce=
+llent guide.
+>=20
+> =20
+>=20
+> Everything looks fine until testing using the programs in testsuite. Th=
+en the process stops with the message:
+>=20
+> Xenomai: incompatible feature set
+>=20
+> (required=3D"sep tsc", present=3D"sep", missing=3D"tsc").
+>=20
+> =20
+>=20
+> A simple program of my own compile fine but stops running with the same=
+ error.
+>=20
+> =20
+>=20
+> I have configured Xenomai with options:
+>=20
+> --enable-x86-sep -enable-x86-tsc
+>=20
+
+Are those two flags authentic? In this case you are simply lacking a "-"
+in front of the second one: --enable-x86-tsc :)
 
 Jan
 
 
---------------enigE0FC418A278E0C3109D1E0FB
+--------------enigF2B78C9413435B0854E779D1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEOOkQniDOoMHTA+kRAjfXAJoCi+JCNdmnH8BZSejOKpx2hrZ8RQCfTVL0
-OQvreUsAR2syT8VLQleLsJU=
-=WbYU
+iD8DBQFEKcF4niDOoMHTA+kRAqOpAJ947HmQlwB6/6dpoZVHCy4IJlMfgACfeqer
+qa+ctfa6rZ7T4JbJyJgSwuQ=
+=H2TT
 -----END PGP SIGNATURE-----
 
---------------enigE0FC418A278E0C3109D1E0FB--
+--------------enigF2B78C9413435B0854E779D1--
 
