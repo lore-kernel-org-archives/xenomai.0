@@ -1,105 +1,109 @@
-Message-ID: <443C1D29.5020105@domain.hid>
-Date: Tue, 11 Apr 2006 23:18:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <442A7D19.2000009@domain.hid>
+Date: Wed, 29 Mar 2006 14:27:05 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [draft PATCH] nested enable/disable irq calls
-References: <b647ffbd0604070805k32dc185fu4d3705906ffcbc2f@domain.hid>
-In-Reply-To: <b647ffbd0604070805k32dc185fu4d3705906ffcbc2f@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig07DA81C59FEEA8AB9CE8DA67"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
+References: <1143612388.32703.257789950@domain.hid>
+In-Reply-To: <1143612388.32703.257789950@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Saul <xeno@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig07DA81C59FEEA8AB9CE8DA67
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Hi Dmitry,
-
-Dmitry Adamushko wrote:
+Saul wrote:
 > Hi,
->=20
-> yep, this is yet another draft patch which aims at supporting the
-> nested irq disable/enable calls for the primary domain.
->=20
-> o  no changes on the adeos-ipipe layer, hence it's much cleaner and
-> smaller that the one I have posted last time;
->=20
-> o  eliminates the need for XN_ISR_NOENABLE flag;
->=20
-> o  but is based on the presupposition (otherwise it's wrong) that for
-> all acrhitectures that support Xenomai the following is true :
->=20
-> 	pic_handler->ack :
-> 	    * mask
-> 	    * eoi
-> =09
-> 	pic_handler->end :
-> 	    * unmask
-> =09
-> Philippe told me some time ago that this is a _must_ now for any arch
-> to be compatible with adeos-ipipe.
->=20
-> If so, with some minor cleanups (XN_ISR_NOENABLE should be removed all
-> over the map,
-> docs fixes, ...) and testing the patch may hopefully find its way into
-> the codebase.
->=20
-> Any feedback? =09
->=20
+> 
+> I'm trying to run a short test program, just to get into the swing
+> of this shiny new real-time system. I'm running Xenomai 2.1.0 on
+> kernel 2.6.15.6
+> 
+> The following program runs a busy delay in primary mode (verified by
+> enabling the primary mode switch warning) and calculates the time taken.
+> Another task is resumed and prints the time.
+> 
+> I get output something like this:
+>   1:  40.017 ms
+>   2:  40.017 ms
+>   3:  53.357 ms
+>   4:  53.356 ms
+>   5:  40.017 ms
+>   6:  40.020 ms
+>   7:  53.355 ms
+>   8:  40.020 ms
+>   9:  40.017 ms
+>  10:  53.356 ms
+>  11:  40.020 ms
+>  12:  40.019 ms
+>  13:  106.710 ms
+>  14:  40.017 ms
+>  15:  40.018 ms ...
+> 
+> I assume I've done something silly but I can't find anything wrong. My
+> computer is a 3GHz P4. Xenomai is built-in statically, and at boot says
+> "Xenomai: SMI-enabled Intel chipset found, enabling SMI workaround."
+> 
 
-Yes, I do have some remarks: due to legacy issues (I think to remember),
-we have a lot of unbalanced irq-enable/disable code out there. IRQs are
-currently enabled after registering a handler, but are not disabled on
-detach. That's because of problems with Linux when letting it take over
-a disabled IRQ, and for the sake of shared-irqs. Thus, if we introduce
-such a nestable enable/disable, we _must_ think about managing the side
-effects in legacy code (I haven't thought about this in details yet).
+It would be nice to known whether the latency test from the testsuite 
+has correct latency figures, so that we could rule out any SMI issue.
 
+> Anyway, the erratic execution times come and go with the smallest
+> changes in the program e.g. moving the delay into it's own function or
+> creating functions for timing the delay loop, so I wouldn't be too
+> surprised if the problem can't be reproduced.
+> 
 
-Another thing I have on my mind ATM is providing an additional IRQ
-model: threaded IRQs. This is certainly not the best default model, but
-it could help in certain scenarios to reduce prio-inversions due to
-overloaded IRQ handler jobs (like we face from time to time with devices
-on the slow ISA-bus...).
+What /proc/xenomai/stat says during execution btw?
 
-I think this should be rather simple to implement with the existing
-infrastructure. I'm just wondering if it should become a RTDM or a
-nucleus feature. Any opinions? [I'm currently in favour of RTDM.]
+> Also, I found that using rt_timer_spin() instead of a real busy loop
+> does not have the same problem, which indicates that the simple busy
+> loop is in fact being interrupted during execution.
+> 
 
-A nice add-on to this model would be to capture timestamps in the hard
-stub and to distribute it to the threaded handlers. That's quite
-egoistic, as it would perfectly fit our needs again: low timestamp
-jitter but schedulable IRQ jobs. :)
+Just to rule this out, maybe you could try something along these lines:
 
-Jan
+		iopl(3)
+...
+		asm("cli");
+                  RTIME prev_tsc = rt_timer_tsc();
+                  my_processing();
+                  RTIME tsc = rt_timer_tsc();
+		asm("sti");
 
+Out of curiosity, I'd also be interested in looking at the assembly dump 
+of my_process in the working and non-working cases.
 
---------------enig07DA81C59FEEA8AB9CE8DA67
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> Is it a problem that I'm not explicitly destroying the tasks? They don't
+> linger in /proc/xenomai/sched once the program is killed. How much
+> is automatically cleaned up upon process exit?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Only tasks are automatically wiped out by the nucleus, basically because 
+they could not exist anymore after their parent process terminates. 
+OTOH, other objects of the native API can linger since they do not 
+depend on process resources, until they are explicitely destroyed or the 
+API module is unloaded.
 
-iD8DBQFEPB0pniDOoMHTA+kRAqPkAJ9UQf/PMPN9wZkHxNoKiylonAd5YQCfcdUW
-7q1vkoE6SeNgjxUVsPp4DYs=
-=51en
------END PGP SIGNATURE-----
+> 
+> #include <stdio.h>
+> #include <stdlib.h> // exit
+> #include <unistd.h> // pause
+> #include <sys/mman.h> // mlockall
+> #include <signal.h>
+> #include <xenomai/native/task.h>
+> #include <xenomai/native/timer.h>
+> 
 
---------------enig07DA81C59FEEA8AB9CE8DA67--
+I'll look at this on my side too.
+
+-- 
+
+Philippe.
 
