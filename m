@@ -1,12 +1,11 @@
-Message-ID: <442D4D73.9030101@domain.hid>
-Date: Fri, 31 Mar 2006 17:40:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <442D8580.9020507@domain.hid>
+Date: Fri, 31 Mar 2006 14:39:44 -0500
+From: Randy Smith <rsmith@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] gdb and latency
-References: <71356528500.20060331105826@domain.hid>
-In-Reply-To: <71356528500.20060331105826@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Questions porting existing rtai-24.1.12 app to
+	xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,52 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ew@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-ew@domain.hid wrote:
-> Dear Xenomai team,
-> 
-> We're using Xenomai 2.1.0 on an PPC based Freescale controller. Kernel
-> Version is 2.4.25. Testsuite's latency works fine, except when using GDB.
-> While debugging the program, the semaphore in line 220 is not caught and
-> line 225 prints  "failed to pend on semaphore, code -512".
-> Breakpoints set in this vicinity are ignored. We've tried GDB 5.1 and 6.4.
-> Do you have an explanation for this bevaviour?
+Hello list,
 
-Bug confirmed here. This is a 2.4-specific issue which needs to be fixed.
-After a few tests, 2.6-based configurations seem to be immune to this bug.
+I'm confused and I hope someone can illuminate a path to enlightenment.  
+Please be gentle. :-)
 
-> 
-> Thanks in advance
-> 
-> O. Flick
-> 
-> ---------------------------------------------
-> 
-> ADC GmbH
-> Systems for industry and automation
-> 
-> Kringelsburg
-> 21379 Scharnebeck
-> Germany
-> 
-> Tel. +49 4136/90 00-0
-> Fax  +49 4136/90 00-21
-> 
-> eMail ew@domain.hid
-> web   http://www.adcgmbh.de
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+I have inherited some linux 2.4.25 kernel module code for a powerpc that 
+uses rtai-24.1.12.  In my xenomai enabled kernel, I have disabled native 
+support and enabled the RTAI emulator.  This works as far as I know.  I 
+can insmod it at least but to test it, I need some user mode code and 
+that is where I am running into problems.
 
+The kernel module runs as a periodic task and uses kernel mode shared 
+memory to communicate with the user mode application.  The user mode 
+application uses rtai_malloc to allocate the shared memory that the 
+kernel module created with rtai_kmalloc.  My application fails to link 
+since librtai.so cannot resolve the call to rtai_malloc.  What should I 
+migrate the rtai_malloc call to in order to use the rtai skin with xenomai??
 
--- 
+Can I not communicate kernel to user via shared memory in that skin?
 
-Philippe.
+I get the feeling that this is an old api that xenomai doesn't support, 
+is this the case?
+
+Any help would be appreciated.
+
+Thanks,
+
+-Randy Smith
+Software Engineer
+ImageMap, Inc.
 
