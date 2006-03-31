@@ -1,17 +1,12 @@
+Message-ID: <442D4D73.9030101@domain.hid>
+Date: Fri, 31 Mar 2006 17:40:35 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] gdb and latency
+References: <71356528500.20060331105826@domain.hid>
+In-Reply-To: <71356528500.20060331105826@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17453.19513.723459.198259@domain.hid>
-Date: Fri, 31 Mar 2006 17:35:21 +0200
-Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
-In-Reply-To: <442CFCA3.4070704@domain.hid>
-References: <1143612388.32703.257789950@domain.hid>
-	<442A7D19.2000009@domain.hid>
-	<1143694058.30209.257882137@domain.hid>
-	<442C46EC.6000605@domain.hid>
-	<1143790982.14016.257982746@domain.hid>
-	<442CFCA3.4070704@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,59 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: ew@domain.hid
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Saul wrote:
- > > Philippe Gerum wrote:
- > > 
- > >>Mm, this really looks like some firmware/BIOS cyclic activity, that 
- > >>would hit the busy loop more or less frequently, depending on the 
- > >>internal timing of the outer loop. This reminds me that some recent 
- > >>Intel chipset are known to prevent global SMI disabling actually, maybe 
- > >>this is the case here, so our work-around would be basically useless. 
- > >>Another usual suspect is NMI handling (which the Adeos layer does not 
- > >>pipeline but rather delivers immediately), but I guess that you did not 
- > >>activate the NMI watchdog anyway, so back to square #1, I guess.
- > > 
- > > 
- > > No, I never enabled the NMI watchdog.
- > > 
- > > Yeah, that doesn't sound good for me. I just tried, for the first time,
- > > allowing SMI to remain enabled. Behaves exactly the same :(  A failure
- > > to disable SMI would also explain why none of my peripherals were ever
- > > affected.
- > > 
- > > I thought SMI was supposed to increase latencies, but I only see
- > > latencies < 60us at any load, unless I start video capture. Does the
- > > latency test absolutely rule out SMI as the cause?
- > 
- > Not really, e.g. if the video capture device is USB-attached, then SMI 
- > could possibly remain in the picture.
+ew@domain.hid wrote:
+> Dear Xenomai team,
+> 
+> We're using Xenomai 2.1.0 on an PPC based Freescale controller. Kernel
+> Version is 2.4.25. Testsuite's latency works fine, except when using GDB.
+> While debugging the program, the semaphore in line 220 is not caught and
+> line 225 prints  "failed to pend on semaphore, code -512".
+> Breakpoints set in this vicinity are ignored. We've tried GDB 5.1 and 6.4.
+> Do you have an explanation for this bevaviour?
 
-I have used the bttv driver with xawtv or mythtv and nvidia proprietary
-drivers on a dual pIII machine running latency and the maximum latency
-was far less than 100 us. What produces large spots, however, is
-switching virtual terminals or changing resolution. Doesn't xawtv change
-resolution for full screen mode ? Did not you use the 768x576 modeline
-hack ?
+Bug confirmed here. This is a 2.4-specific issue which needs to be fixed.
+After a few tests, 2.6-based configurations seem to be immune to this bug.
 
- > 
- >   Is there any way to
- > > check whether SMI is actually disabled?
- > > 
- > 
- > Gilles will likely have more clue here, but I guess that reading back 
- > the  state of the GBL_SMI_EN_BIT from the SMI's MMIO space would 
- > probably tell us if a previous request to disable SMI globally did 
- > succeed or not. The code in question is in ksrc/arch/i386/smi.c.
+> 
+> Thanks in advance
+> 
+> O. Flick
+> 
+> ---------------------------------------------
+> 
+> ADC GmbH
+> Systems for industry and automation
+> 
+> Kringelsburg
+> 21379 Scharnebeck
+> Germany
+> 
+> Tel. +49 4136/90 00-0
+> Fax  +49 4136/90 00-21
+> 
+> eMail ew@domain.hid
+> web   http://www.adcgmbh.de
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
-That is a good idea. Another idea would also be to read the state of the
-lock bit (named SMI_LOCK).
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
