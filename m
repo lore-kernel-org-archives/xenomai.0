@@ -1,13 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <442CC760.3070506@domain.hid>
+Date: Fri, 31 Mar 2006 01:08:32 -0500
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] errors to console when running xeno-test (latency
+	-t	1)
+References: <44280C96.1030608@domain.hid>	<17448.18916.701490.357146@domain.hid>	<442958C2.3080800@domain.hid>
+	<17450.38539.674211.828082@domain.hid>
+In-Reply-To: <17450.38539.674211.828082@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17462.27062.971201.82560@domain.hid>
-Date: Fri, 7 Apr 2006 15:31:34 +0200
-Subject: Re: [Xenomai-core] nkpod->watchdog_trigger per CPU?
-In-Reply-To: <44361D46.9080003@domain.hid>
-References: <44361837.9080206@domain.hid>
-	<44361D46.9080003@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,29 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Jan Kiszka wrote:
- > > Hi,
- > > 
- > > analysing the watchdog characteristics in our scenarios, I just wondered
- > > if it is SMP-aware (we have no SMP in use, it's a pure analytical concern).
- > > 
- > > The watchdog timeout is stored system-wide in nkpod->watchdog_trigger,
- > > but it is based on a per-CPU clock (TSC). Is the tick IRQ bound to a
- > > specific CPU in SMP scenarios so that this doesn't matter? Or am I just
- > > overseeing some detail?
- > > 
- > 
- > Good catch. This code was written before per-CPU ticking became the 
- > "official" implementation, so it needs to be updated.
-
-The watchdog is handled on a per-cpu basis with revision 901.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Gilles Chanteperdrix wrote:
+> Jim Cromie wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jim Cromie wrote:
+>  > >  > hello xenophiles,
+>  > >  > 
+>  > >  > Im getting errors to the console when running latency -t 1.
+>  > >  > they also appear in dmesg output
+>  > >
+>  > > This should be fixed in revision 807.
+>  > >
+>  > >   
+>  > 807 didnt fix it here.  Its also still present in 815
+>
+> Reverting 807 produces a bug on my test box identical to the one you are
+> reporting. Merging 807 again make the bug disappear. Could you double
+> check ? If the bug persists, could you send me privately your .config
+> file ?
+>
+>   
+yes, now works. 
+My err was not recompiling the kernel too.
+sorry for the noise.
 
