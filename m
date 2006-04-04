@@ -1,10 +1,12 @@
-Message-ID: <44329929.2090905@domain.hid>
-Date: Tue, 04 Apr 2006 18:04:57 +0200
+Message-ID: <44329D27.1000400@domain.hid>
+Date: Tue, 04 Apr 2006 18:21:59 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] (no subject)
-References: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D85@domain.hid>
-In-Reply-To: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D85@domain.hid>
+Subject: Re: [Xenomai-help] Questions porting existing rtai-24.1.12 app to
+	xenomai (PART II)
+References: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>	<44328187.6080005@domain.hid>
+	<44327F66.10800@domain.hid> <44329186.3080908@domain.hid>
+In-Reply-To: <44329186.3080908@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,177 +18,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Behre, Frederik - LT" <Behre.Frederik@domain.hid>
+To: Randy Smith <rsmith@domain.hid>
 Cc: xenomai@xenomai.org
 
-Behre, Frederik - LT wrote:
-> Hello
+Randy Smith wrote:
 > 
-> I have following Problem when I Build my uImage from my kernel.
 > 
-> But first my configuration
+> Philippe Gerum wrote:
 > 
-> Host system:
-> ix86
-> Suse Linux 10.0 32bit
+>>
+>> Make sure to read this then (also includes simple porting tips from 
+>> RTAI to the native API):
+>>
+>> http://download.gna.org/xenomai/documentation/branches/v2.1.x/pdf/Native-API-Tour.pdf 
+>>
 > 
-> Cross Compiler
-> Denx eldk ver. 3.11
-> (_www.denx.de_ <file://www.denx.de>)
 > 
-> Target System
-> PPC (MPC8270) on Microsys PM827 Board.
-> linuxppc_2_4_devel-2005-10-25-1440
-> xenomai-2.1
-> adeos-ipipe-2.4.25-ppc-denx-1.0-03.patch
+> Thanks...Already been looking it over.
 > 
-> I did following Steps
+>>
+>>> I must have installed xenomai incorrectly as my code is not compiling 
+>>> without some header files complaining about basic types like atomic_t 
+>>> not being defined.  I have a kernel source tree installed in a 
+>>> non-standard place, lets call it /home/randy/linux and the xenomai 
+>>> package under /home/randy/xenomai-2.1.0.  I have applied the adios 
+>>> patch and done the prepare_kernel.sh thing.  So far so good.  I can 
+>>> then do make menuconfig and setup the realtime stuff then make uImage 
+>>> and the kernel builds correctly (yes, I am cross-compiling for a 
+>>> powerpc).  That all works ok.
+>>>
+>>> Where I'm confused is this.  Do I then do something like
+>>>
+>>> $ cd /home/randy
+>>> $ mkdir xenomai && cd xenomai
+>>> $ ../xenomai-2.1.0/configure --build=i686-linux --host=ppc-linux 
+>>> --prefix=/home/randy
+>>> $ make all
+>>> $ make install
+>>
+>>
+>> Make sure reading configure's output that the right ppc 
+>> (cross-)compiler is found and used.
 > 
-> installing the eldk
-> export Path to the Cross compiler to system Path
-> extrakt linux and xenomai
-> copy adeos
+> Yes, the correct cross-compiler is being used.
 > 
-> THEN
->  >./xenomai-2.1.0/scripts/prepare-kernel.sh --arch=powerpc \
->         --adeos=adeos-ipipe-2.4.25-ppc-denx-1.0-03patch  \
->         --linux=linuxppc_2_4_devel-2005-10-25-1440/
-> patching file arch/ppc/config.in
-> patching file arch/ppc/kernel/Makefile
-> patching file arch/ppc/kernel/entry.S
-> patching file arch/ppc/kernel/head.S
-> patching file arch/ppc/kernel/head_440.S
-> patching file arch/ppc/kernel/head_44x.S
-> patching file arch/ppc/kernel/head_4xx.S
-> patching file arch/ppc/kernel/head_8xx.S
-> patching file arch/ppc/kernel/head_e500.S
-> patching file arch/ppc/kernel/idle.c
-> patching file arch/ppc/kernel/ipipe-core.c
-> patching file arch/ppc/kernel/ipipe-root.c
-> patching file arch/ppc/kernel/irq.c
-> patching file arch/ppc/kernel/ppc_ksyms.c
-> patching file arch/ppc/kernel/traps.c
-> patching file arch/ppc/mm/fault.c
-> patching file include/asm-ppc/hw_irq.h
-> patching file include/asm-ppc/ipipe.h
-> patching file include/asm-ppc/mmu_context.h
-> patching file include/asm-ppc/system.h
-> patching file include/linux/ipipe.h
-> patching file include/linux/sched.h
-> patching file init/main.c
-> patching file kernel/Makefile
-> patching file kernel/exit.c
-> patching file kernel/fork.c
-> patching file kernel/ipipe/Makefile
-> patching file kernel/ipipe/core.c
-> patching file kernel/ipipe/generic.c
-> patching file kernel/printk.c
-> patching file kernel/sched.c
-> patching file kernel/signal.c
+>>
+>>>
+>>> OR should I be in the kernel tree such as
+>>>
+>>> $ cd /home/randy/linux
+>>> $ ../xenomai-2.1.0/configure --build=i686-linux --host=ppc-linux 
+>>> --prefix=/home/randy/linux
+>>>
+>>
+>> This part is to build the user-space (only) support, so #1 is the 
+>> right one. Since 2.1, Xenomai clearly splits the kernel side from the 
+>> user-space support, so building the RT subsystem is just a matter of 
+>> configuring yet-another-linux-subsystem using the regular Linux 
+>> Kconfig interface, instead of fiddling with 
+>> yet-another-nonstandard-kconfig. It also makes possible to build such 
+>> RT subsystem statically into the kernel, and not only as external 
+>> modules, which is good for our poor TLBs.
+>>
+>> If we keep on being good boys in the future and don't change the skin 
+>> system call numbers and prototypes each time at full moon, we might 
+>> even reach some kind of reasonably stable ABI, so that the user-space 
+>> stuff could run on the largest possible set of older versions of the 
+>> kernel side.
+>>
+>> README.INSTALL gives simple examples for building the user-space 
+>> support for various archs; maybe this would help.
 > 
-> # I think I is ok ???
+> It got me started, but I was unsure (since my case is such a unique one 
+> of cross-compiling and source tree in non-standard place) of what to do.
 > 
+>>
+>>> ???
+>>>
+>>> One of the problems I am seeing is that after the make all and make 
+>>> install, there is built, an include file tree under 
+>>> /home/randy/include and when I include this path on the compiler 
+>>> command line, I get circular references such as
+>>>
+>>> #include <asm/atomic.h> from line 29 of /home/randy/include/asm/atomic.h
+>>>
+>>> which should refer to the kernel include of 
+>>> /home/randy/linux/include/asm/atomic.h but instead picks up itself 
+>>> again and doesn't define the atomic_t (among other things)
+>>>
+>>> Obviously I'm doing something wrong and any help would be appreciated.
+>>>
+>>
+>> Something looks like being badly trashed in your source tree, which 
+>> would be quite possible if #2 is current.
+> 
+> No, I haven't done the second case yet.  I am having so many problems 
+> compiling the kernel modules with case #1 that I thought I did something 
+> wrong.
 
-Yes.
+Ok, just to be 100% sure, I've just tried the following on a stock 2.1.0 
+grabbed from the mirror:
 
->  >cd linuxppc_2_4_devel-2005-10-25-1440
->  >make ARCH=ppc CROSS_COMPILE=ppc_82xx- PM825config
-> /bin/sh: ppc-82xx-gcc: command not found
-> make: *** No rule to make target `PM825config'.  Stop.
-> 
-> # default settings for my board
-> 
->  >make ARCH=ppc CROSS_COMPILE=ppc_82xx- menuconfig
-> #
-> # Turn off PCI because my targetboard does not support PCI
-> # activate Xenomai and Nucleus
-> # nothing more, the rest I leave in default settings
-> #
-> # Exit and Save
-> #
->  >make ARCH=ppc CROSS_COMPILE=ppc_82xx- uImage
-> 
-> make[5]: Entering directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel/xenomai/arch/generic' 
-> 
-> ppc_82xx-gcc -D__KERNEL__ 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include 
-> -Wall -Wstrict-prototypes -Wno-trigraphs -O2 -fno-strict-aliasing 
-> -fno-common -fomit-frame-pointer 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/arch/ppc 
-> -fsigned-char -msoft-float -pipe -ffixed-r2 -Wno-uninitialized 
-> -mmultiple -mstring  
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/xenomai 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/xenomai/compat 
-> -nostdinc -I /root/eldk/311/usr/lib/gcc-lib/ppc-linux/3.3.3/include 
-> -DKBUILD_BASENAME=hal  -c -o hal.o hal.c
-> 
-> In file included from 
-> /root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm/xenomai/hal.h:32, 
->
+../somewhere/xenomai-2.1.0/configure --build=i686-linux --host=ppc-linux 
+--prefix=$HOME/xenomai-install  CC=ppc_82xx-gcc CXX=ppc_82xx-gcc 
+AR=ppc_82xx-ar LD=ppc_82xx-ld
 
-You did not switch on the I-pipe support in your kernel configuration, 
-see "General setup".
-
->                  from hal.c:43:
-> /eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm-generic/xenomai/hal.h:60:2: 
-> #error "Adeos kernel support is required to run this software."
-> 
-> /eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm-generic/xenomai/hal.h:61:2: 
-> #error "See _http://download.gna.org/adeos/patches/_"
-> 
-> In file included from 
-> /root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm/xenomai/hal.h:32, 
-> 
->                  from hal.c:43:
-> /eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm-generic/xenomai/hal.h: 
-> In function `rthal_get_cpufreq':
-> 
-> /eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm-generic/xenomai/hal.h:171: 
-> error: storage size of `sysinfo' isn't known
-> 
-> ...
-> ...
-> ...ect...
-> ...
-> ...
-> make[5]: *** [hal.o] Error 1
-> make[5]: Leaving directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel/xenomai/arch/generic' 
-> 
-> make[4]: *** [first_rule] Error 2
-> make[4]: Leaving directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel/xenomai/arch/generic' 
-> 
-> make[3]: *** [_subdir_generic] Error 2
-> make[3]: Leaving directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel/xenomai/arch' 
-> 
-> make[2]: *** [_subdir_arch] Error 2
-> make[2]: Leaving directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel/xenomai'
-> make[1]: *** [_subdir_xenomai] Error 2
-> make[1]: Leaving directory 
-> `/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/kernel'
-> make: *** [_dir_kernel] Error 2
-> 
-> #
-> # and here is my problem
-> # what did I make wrong ??
-> 
-> 
-> Thanks a lot for Helping me.
-> 
-> Greetz Freddy'xenomai@xenomai.org'
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
+The resulting tree builds and install fine under $HOME/xenomai-install 
+afterwards. There is no kernel dependency whatsoever since the 
+user-space support does not even know about the kernel version which is 
+going to be used in the first place, so we should be able to get the 
+same user-space setup. Could you try rebuilding in a clean build tree 
+using equivalent switches at config time, and let me know of the 
+outcome? TIA,
 
 -- 
 
