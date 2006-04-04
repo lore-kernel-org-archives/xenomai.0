@@ -1,11 +1,11 @@
 content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C657F9.0FB03205"
-Date: Tue, 4 Apr 2006 17:04:24 +0200
-Message-ID: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D85@domain.hid>
+	boundary="----_=_NextPart_001_01C657F9.2C85965D"
+Date: Tue, 4 Apr 2006 17:05:13 +0200
+Message-ID: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D87@domain.hid>
 From: "Behre, Frederik - LT" <Behre.Frederik@domain.hid>
-Subject: [Xenomai-help] (no subject)
+Subject: [Xenomai-help] Xenomai on PPC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,7 +19,7 @@ To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C657F9.0FB03205
+------_=_NextPart_001_01C657F9.2C85965D
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -173,9 +173,10 @@ make: *** [_dir_kernel] Error 2
 
 Thanks a lot for Helping me.
 
-Greetz Freddy'xenomai@xenomai.org'
+Greetz Freddy
 
-------_=_NextPart_001_01C657F9.0FB03205
+
+------_=_NextPart_001_01C657F9.2C85965D
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -187,7 +188,7 @@ Content-Transfer-Encoding: quoted-printable
 charset=3Dus-ascii">
 <META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
 6.0.6603.0">
-<TITLE></TITLE>
+<TITLE>Xenomai on PPC</TITLE>
 </HEAD>
 <BODY>
 <!-- Converted from text/rtf format -->
@@ -506,11 +507,10 @@ known</FONT></P>
 <P><FONT SIZE=3D2 FACE=3D"Arial">Thanks a lot for Helping me.</FONT>
 </P>
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Greetz =
-Freddy'xenomai@xenomai.org'</FONT>
+<P><FONT SIZE=3D2 FACE=3D"Arial">Greetz Freddy</FONT>
 </P>
 
 </BODY>
 </HTML>
-------_=_NextPart_001_01C657F9.0FB03205--
+------_=_NextPart_001_01C657F9.2C85965D--
 
