@@ -1,12 +1,16 @@
-Message-ID: <44326F6D.8030802@domain.hid>
-Date: Tue, 04 Apr 2006 15:06:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44326FBB.9070405@domain.hid>
+Date: Tue, 04 Apr 2006 15:08:11 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Panic in rt_queue_create: bug or misuse?
-References: <6ee4c8380604032304h2de399c6geffbbae78ab6124b@domain.hid>
-In-Reply-To: <6ee4c8380604032304h2de399c6geffbbae78ab6124b@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <6ee4c8380604032304h2de399c6geffbbae78ab6124b@domain.hid>	<443225ED.6070104@domain.hid>
+	<44322BDD.8010706@domain.hid>
+	<6ee4c8380604040553t1ece4750waa548d1715be3e30@domain.hid>
+In-Reply-To: <6ee4c8380604040553t1ece4750waa548d1715be3e30@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF4EBB5784066663CAB39F1CF"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,66 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Brian L." <bluczkie@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF4EBB5784066663CAB39F1CF
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
 Brian L. wrote:
-> I apologize for not including the panic here. I will be obtaining a
-> serial cable tomorrow and accessing panic text should become much
-> simpler. Since the panic is several screen-fulls long, even if I were
-> to painstakingly type it in, it would be missing vital information.
-> 
-> I'm posting this now in case this is a known issue with a simple fix.
-> Newsgroup history doesn't turn up any messages with rt_queue_create
-> and panic in the past few months. I am running xenomai 2.1.0 on linux
-> 2.6.15 with APIC disabled in kernel config on a celeron 566/440bx.
-> 
-> Code:
-> ======
-> int main() {
-> RT_TASK main_task;
-> RT_QUEUE queue;
-> RT_MUTEX lock;
-> 
-> if (0 != rt_task_shadow(&main_task,"MAIN",1,T_FPU)) {
->    die("Couldn't Shadow Main Task\n");
-> }
-> 
-> rt_mutex_create(&lock,0);
-> rt_queue_create(&queue,"log_queue",8192,100,Q_FIFO);
-> ...
-> }
-> ======
-> 
-> The kernel panics and freezes the test machine in rt_queue_create. I
-> will post panic text as soon as it is accessible to me. The panic
-> occurs whether or not I shadow the main task and whether or not the
-> mutex is named. Am I misusing an API or am I possibly looking at a
-> bug?
+> How could I forget mlockall? I've been calling it in rtai forever...Is
+> there any other neccessary boilerplate?
 
-No API misuse should cause a crash anyway. I cannot reproduce the issue 
-locally by just copy/pasting the code fragment above; does this exact 
-code alone crash your box?
+This is a very frequently made mistake. Philippe, is there a chance add
+some simple debug check for this situation? Something to check when the
+first shadow thread is created for a process?
 
-> 
-> The bottom 25 lines of the panic seem to involve a call to the ipipe
-> exception handler every 6-8 lines. It doesn't look like endless
-> recursion, though, so we could just be walking up an exception tree.
-> I'm missing the top of the trace and the panic type because it doesn't
-> get logged and I can't scroll a frozen machine.
-> 
-> Thanks,
-> 
-> Brian
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+Jan
 
 
--- 
+--------------enigF4EBB5784066663CAB39F1CF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEMm+7niDOoMHTA+kRAjwyAJ4/ACbyyAT6DK1bUjMyngqUCbGSiwCcDmvL
+etGJjf4JyPBpb/JIQiDbDzI=
+=LRyk
+-----END PGP SIGNATURE-----
+
+--------------enigF4EBB5784066663CAB39F1CF--
 
