@@ -1,15 +1,13 @@
-Message-ID: <44322BDD.8010706@domain.hid>
-Date: Tue, 04 Apr 2006 10:18:37 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Panic in rt_queue_create: bug or misuse?
-References: <6ee4c8380604032304h2de399c6geffbbae78ab6124b@domain.hid>
-	<443225ED.6070104@domain.hid>
-In-Reply-To: <443225ED.6070104@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig71AAD30BB76633732955D76C"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] Questions porting existing rtai-24.1.12 app
+	toxenomai
+Date: Tue, 4 Apr 2006 10:32:28 +0200
+Message-ID: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,89 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, "Brian L." <bluczkie@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig71AAD30BB76633732955D76C
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+To: Philippe Gerum <rpm@xenomai.org>, Randy Smith <rsmith@domain.hid>
+Cc: xenomai@xenomai.org
 
 Philippe Gerum wrote:
-> Brian L. wrote:
->> I apologize for not including the panic here. I will be obtaining a
->> serial cable tomorrow and accessing panic text should become much
->> simpler. Since the panic is several screen-fulls long, even if I were
->> to painstakingly type it in, it would be missing vital information.
->>
->> I'm posting this now in case this is a known issue with a simple fix.
->> Newsgroup history doesn't turn up any messages with rt_queue_create
->> and panic in the past few months. I am running xenomai 2.1.0 on linux
->> 2.6.15 with APIC disabled in kernel config on a celeron 566/440bx.
->>
->> Code:
->> =3D=3D=3D=3D=3D=3D
->> int main() {
->> RT_TASK main_task;
->> RT_QUEUE queue;
->> RT_MUTEX lock;
->>
->=20
->    mlockall(MCL_CURRENT|...) ?
+>Randy Smith wrote:
+>> I have inherited some linux 2.4.25 kernel module code for a powerpc
+that=20
+>> uses rtai-24.1.12.  In my xenomai enabled kernel, I have disabled
+native=20
+>> support and enabled the RTAI emulator.  This works as far as I know.
+I=20
+>> can insmod it at least but to test it, I need some user mode code and
 
-Would this excuse the panic?
+>> that is where I am running into problems.
+>>=20
+>> The kernel module runs as a periodic task and uses kernel mode shared
 
->=20
->> if (0 !=3D rt_task_shadow(&main_task,"MAIN",1,T_FPU)) {
->>    die("Couldn't Shadow Main Task\n");
->> }
->>
->> rt_mutex_create(&lock,0);
->> rt_queue_create(&queue,"log_queue",8192,100,Q_FIFO);
->> ...
->> }
->> =3D=3D=3D=3D=3D=3D
->>
->> The kernel panics and freezes the test machine in rt_queue_create. I
->> will post panic text as soon as it is accessible to me. The panic
->> occurs whether or not I shadow the main task and whether or not the
->> mutex is named. Am I misusing an API or am I possibly looking at a
->> bug?
->>
->> The bottom 25 lines of the panic seem to involve a call to the ipipe
->> exception handler every 6-8 lines. It doesn't look like endless
->> recursion, though, so we could just be walking up an exception tree.
->> I'm missing the top of the trace and the panic type because it doesn't=
+>> memory to communicate with the user mode application.  The user mode=20
+>> application uses rtai_malloc to allocate the shared memory that the=20
+>> kernel module created with rtai_kmalloc.  My application fails to
+link=20
+>> since librtai.so cannot resolve the call to rtai_malloc.  What should
+I=20
+>> migrate the rtai_malloc call to in order to use the rtai skin with=20
+>> xenomai??
+>
+>The thing is that the RTAI emulator provided currently covers a minimal
 
->> get logged and I can't scroll a frozen machine.
->>
->> Thanks,
->>
->> Brian
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->=20
+>set of kernel-space only RTAI services, and does not provide any=20
+>user-space interface to these calls. The librtai.so library that would=20
+>contain the user-space interface mimicking LXRT is actually empty, and=20
+>basically a placeholder, waiting for someone to be motivated enough to=20
+>extend the existing support and flesh it. (hint, hint...).
+
+Ok, got the hint ;-)
+
+> Can I not communicate kernel to user via shared memory in that skin?
 >=20
 
+RTAI shared memory access from user space works here. Just let me some
+time
+to make up the patch and post it to GNA. I have a RT-fifo patch also
+that=20
+removes the I/O size limitation (reader<write) that will make Philippe=20
+scream.
 
+>In fact, it's just that the RTAI emulator over Xenomai currently=20
+>provides only a small subset of the > 300 routines the original RTAI
+API=20
+>exports, and solely in kernel space. The reason for that is likely that
 
---------------enig71AAD30BB76633732955D76C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>people porting from the RTAI API to Xeno usually switch to Xeno's
+native=20
+>API directly.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Indeed, switching directly to Xeno native is worth the advice (sigh).
 
-iD8DBQFEMiveniDOoMHTA+kRAu/qAJsGOwycilOXgZffdpD5G7QfmRX99gCfaZbt
-RVXhDYaCO/4PrIMzDPOhnx8=
-=SVQQ
------END PGP SIGNATURE-----
+--=20
+Stephane
 
---------------enig71AAD30BB76633732955D76C--
 
