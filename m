@@ -1,50 +1,47 @@
-Message-ID: <44149B38.8080800@domain.hid>
-Date: Sun, 12 Mar 2006 23:05:44 +0100
+Message-ID: <4433B83A.20409@domain.hid>
+Date: Wed, 05 Apr 2006 14:29:46 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] x86_64 and adeos
-References: <44148118.3030409@domain.hid>
-In-Reply-To: <44148118.3030409@domain.hid>
+Subject: Re: [Xenomai-core] Frozen timer IRQ
+References: <4432E540.1010108@domain.hid>
+	<17459.46030.997560.684058@domain.hid>
+In-Reply-To: <17459.46030.997560.684058@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: trem <trem@domain.hid>
-Cc: adeos-main@gna.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-trem wrote:
-> Hi all
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Hi,
+>  > 
+>  > my colleagues and I need some hint where to continue our search for the
+>  > cause of a weird cleanup issue:
+>  > 
+>  > An application of our robotics framework sometimes terminates (though
+>  > successfully) in a way that the system timer IRQ no longer arrives
+>  > afterwards or no re-program takes place anymore. All other Linux IRQs
+>  > are fine (Ethernet, keyboard, etc.). I cannot provide an easy test case
+>  > yet as besides the framework some expensive gyroscope and the 16550A
+>  > driver are involved.
 > 
-> I've got an amd64, and I don't see any x8_64 port. I've found this :
-> http://download.gna.org/adeos/patches/attic/v2.6/x86_64/candidates/
-> 
-
-It's an old prototype patch from the pre-Ipipe times. It's said to be unstable, 
-and works in uniprocessor mode only. I've never tried it personally, this said.
-
-> But nothing else about x86_64.  A port to x86_64 is planned ?
-
-Not yet.
-
-> If yes, may I know who works on it ?
-> 
-> regards,
-> trem
-> 
-> 
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+> I observed a similar issue when xnpod_stop_timer was called when
+> shutting down the posix skin. I assumed that the problem was that
+> xnpod_shutdown already called xnpod_stop_timer, so xnpod_stop_timer (and
+> in particular xnarch_stop_timer) ended up being called twice.
 > 
 
+The XNTIMED bit from the pod's status is checked to trap multiple 
+invocations, so this should not -normally- cause any issue.
 
 -- 
 
