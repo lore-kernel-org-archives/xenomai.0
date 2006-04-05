@@ -1,5 +1,5 @@
-Message-ID: <4433B83A.20409@domain.hid>
-Date: Wed, 05 Apr 2006 14:29:46 +0200
+Message-ID: <4433BA43.7000807@domain.hid>
+Date: Wed, 05 Apr 2006 14:38:27 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Frozen timer IRQ
@@ -40,8 +40,10 @@ Gilles Chanteperdrix wrote:
 > in particular xnarch_stop_timer) ended up being called twice.
 > 
 
-The XNTIMED bit from the pod's status is checked to trap multiple 
-invocations, so this should not -normally- cause any issue.
+Err, sorry. Forget about my previous reply: xnarch_stop_timer is _not_ 
+protected by the XNTIMED flag, but only the last part of the 
+housekeeping chores performed upon stopping the systimer are. IOW, this 
+is a latent bug, and xnpod_stop_timer should be fixed.
 
 -- 
 
