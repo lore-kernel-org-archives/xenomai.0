@@ -1,12 +1,12 @@
-Message-ID: <4433A190.3040702@domain.hid>
-Date: Wed, 05 Apr 2006 12:53:04 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: RESEND: [Xenomai-help] Xenomai on PPC
-References: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D85@domain.hid>
-In-Reply-To: <CC692F5386B0AA47A62B7484A7CA2B6D027A2D85@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 5 Apr 2006 17:33:57 +0300
+Message-ID: <02AA386EB831044F8537A696BA785C78A664EF@ILEX5.IL.NDS.COM>
+From: "Landau, Bracha" <BLandau@domain.hid>
+Subject: [Xenomai-help] problems building xenomai 2.1 for ppc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,41 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Behre, Frederik - LT" <Behre.Frederik@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Behre, Frederik - LT wrote:
-> Hello
-> 
-> I have following Problem when I Build my uImage from my kernel.
-> 
-> 
-> ppc_82xx-gcc -D__KERNEL__ 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include 
-> -Wall -Wstrict-prototypes -Wno-trigraphs -O2 -fno-strict-aliasing 
-> -fno-common -fomit-frame-pointer 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/arch/ppc 
-> -fsigned-char -msoft-float -pipe -ffixed-r2 -Wno-uninitialized 
-> -mmultiple -mstring  
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/xenomai 
-> -I/root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/xenomai/compat 
-> -nostdinc -I /root/eldk/311/usr/lib/gcc-lib/ppc-linux/3.3.3/include 
-> -DKBUILD_BASENAME=hal  -c -o hal.o hal.c
-> 
-> In file included from 
-> /root/eldk/311/usr/src/linuxppc_2_4_devel-2005-10-25-1440/include/asm/xenomai/hal.h:32, 
->
+I'm trying to build xenomai 2.1 for an 8272 architecture using kernel 2.6=
+=2E14.
+I've successfully put in the adeos patch.
+Here are the problems I've encountered.
 
-You did not switch on the I-pipe support in your kernel configuration,
-see "General setup".
+1) When doing ./scripts/prepare-kernel.sh I get an error that it can't fi=
+nd the file /include/asm-powerpc/ipipe.h.
+I copied the file ipipe.h from /include/asm-ppc and reran prepare-kernel.=
+sh with no errors.
 
--- 
+2) After doing the above and configuring the "prepared" kernel for runnin=
+g with xenomai, I tried to build the kernel. I got link errors doing it. =
+An example of such a link error is:
 
-Philippe.
+kernel/built-in.o: In function 'rthal_init':
+:undefined reference to 'rthal_arch_init'
 
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
 
+(The list is much longer - many undefined references of this sort.)
+
+Any ideas what the problem may be?
+
+*************************************************************************=
+**********
+This email message and any attachments thereto are intended only for use =
+by the addressee(s) named above, and may contain legally privileged and/o=
+r confidential information. If the reader of this message is not the inte=
+nded recipient, or the employee or agent responsible to deliver it to the=
+ intended recipient, you are hereby notified that any dissemination, dist=
+ribution or copying of this communication is strictly prohibited. If you =
+have received this communication in error, please immediately notify the =
+postmaster@domain.hid and destroy the original message.
+*************************************************************************=
+**********
 
