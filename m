@@ -1,12 +1,14 @@
-Message-ID: <44354113.9060208@domain.hid>
-Date: Thu, 06 Apr 2006 18:25:55 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44354B75.5070101@domain.hid>
+Date: Thu, 06 Apr 2006 19:10:13 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCB0E0FE253F2333F1C34D17F"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Important fix for 16550A driver
+Subject: Re: [Xenomai-core] Frozen timer IRQ
+References: <4432E540.1010108@domain.hid>	<17459.46030.997560.684058@domain.hid>
+	<4433BA43.7000807@domain.hid> <4433C087.3020403@domain.hid>
+	<44341AE6.5030804@domain.hid>
+In-Reply-To: <44341AE6.5030804@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,42 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCB0E0FE253F2333F1C34D17F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Philippe Gerum wrote:
+>>
+>>>Gilles Chanteperdrix wrote:
+>>>
+>>>
+>>>>Jan Kiszka wrote:
+>>>> > Hi,
+>>>> >  > my colleagues and I need some hint where to continue our search
+>>>>for the
+>>>> > cause of a weird cleanup issue:
+>>>> >  > An application of our robotics framework sometimes terminates
+>>>>(though
+>>>> > successfully) in a way that the system timer IRQ no longer arrives
+>>>> > afterwards or no re-program takes place anymore. All other Linux IRQs
+>>>> > are fine (Ethernet, keyboard, etc.). I cannot provide an easy test
+>>>>case
+>>>> > yet as besides the framework some expensive gyroscope and the 16550A
+>>>> > driver are involved.
+>>>>
+>>>>I observed a similar issue when xnpod_stop_timer was called when
+>>>>shutting down the posix skin. I assumed that the problem was that
+>>>>xnpod_shutdown already called xnpod_stop_timer, so xnpod_stop_timer (and
+>>>>in particular xnarch_stop_timer) ended up being called twice.
+>>>>
+>>>
+>>>Err, sorry. Forget about my previous reply: xnarch_stop_timer is _not_
+>>>protected by the XNTIMED flag, but only the last part of the
+>>>housekeeping chores performed upon stopping the systimer are. IOW,
+>>>this is a latent bug, and xnpod_stop_timer should be fixed.
+>>>
+>>
+>>Commit 884 should do that.
+>>
+> 
+> 
+> Sorry for replying late: nope, this has no influence on our issue.
+> 
 
-Hi,
+This fix was not intended to address this issue, but rather to cleanup 
+the timer management code so that multiple releases as described by 
+Gilles don't cause havoc anymore, hopefully. So that's ok.
 
-all users of the xeno_16550A driver: I found an awkward bug in the
-driver's interrupt handling which could cause deadlocks in that routine
-- and lock-up your machine. This is fixed now both in trunk and the
-2.1.x-branch (driver version 1.3.1).
+-- 
 
-The new version also contains a useful new IOCTL to purge the input and
-output queues (generic RTIOC_PURGE, update of the serial profile is yet
-pending). Specifically, if you have babbling serial devices which cannot
-be stopped (like we here...), this helps to flush the queues and error
-states in order to start over with synchronising on the stream.
-
-Jan
-
-
---------------enigCB0E0FE253F2333F1C34D17F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFENUETniDOoMHTA+kRAjPyAJ9gwimIqpWmG/HPzRJ7dVXc7q+uPgCfZDSZ
-r6QcQ8ArZXevrtEHAPsjxnA=
-=5LGg
------END PGP SIGNATURE-----
-
---------------enigCB0E0FE253F2333F1C34D17F--
+Philippe.
 
