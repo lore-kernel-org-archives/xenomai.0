@@ -1,15 +1,10 @@
-Message-ID: <44357E5F.9020907@domain.hid>
-Date: Thu, 06 Apr 2006 22:47:27 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <f48df4840604061547i4ed0ed5bp32babb8a79138ccd@domain.hid>
+Date: Fri, 7 Apr 2006 00:47:17 +0200
+From: "Bruno Rouchouse" <brouchouse@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Preventing kernel misconfiguration.
-References: <17461.19934.435991.242022@domain.hid>
-	<44354FDB.9060106@domain.hid>
-In-Reply-To: <44354FDB.9060106@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig39428B70B3800B88E6BF0B92"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_28262_16099049.1144363637729"
+Subject: [Xenomai-core] [Xenoscope] GDB error
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,43 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig39428B70B3800B88E6BF0B92
+------=_Part_28262_16099049.1144363637729
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Philippe Gerum wrote:
-> Gilles Chanteperdrix wrote:
->> Here is a patch that "selects" the I-pipe option when Xenomai is
->> enabled, it should help preventing kernel misconfigurations.
->>
->=20
-> We definitely need this.
->=20
+Hi,
 
-What about thinking further: warn in the Xenomai menu (via "comment ...
-if") when problematic switches like power management are on? Just a
-quick idea.
+someone using xenoscope for running simulation ?
 
-Jan
+I'm getting a "GDB error: No symbol "mvm_bp" in current context." while
+launching my simulation under the xenoscope.
 
+Other information: I'm using GNU gdb 6.3-debian and simulation process work=
+s
+fine directly under gdb (can break in code, run simulation etc.)
 
---------------enig39428B70B3800B88E6BF0B92
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I'm investigating but just in case someone has already stumbled over that !
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Thanks.
 
-iD8DBQFENX5fniDOoMHTA+kRAmxdAJ4gJb+dLjwozZxAYT4vM1o2yuUa8wCbBf44
-A2DPlzqYJueosoGjOUet6Gk=
-=l/nw
------END PGP SIGNATURE-----
+--
+Bruno Rouchouse
 
---------------enig39428B70B3800B88E6BF0B92--
+------=_Part_28262_16099049.1144363637729
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,<br>
+<br>
+someone using xenoscope for running simulation ?<br>
+<br>
+I'm getting a &quot;GDB error: No symbol &quot;mvm_bp&quot; in current cont=
+ext.&quot; while launching my simulation under the xenoscope.<br>
+<br>
+Other information: I'm using GNU gdb 6.3-debian and simulation process
+works fine directly under gdb (can break in code, run simulation etc.)<br>
+<br>
+I'm investigating but just in case someone has already stumbled over that !=
+<br>
+<br>
+Thanks.<br>
+<br>
+--<br>
+Bruno Rouchouse<br>
+
+------=_Part_28262_16099049.1144363637729--
 
