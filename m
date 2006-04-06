@@ -1,10 +1,11 @@
-Message-ID: <f48df4840604061547i4ed0ed5bp32babb8a79138ccd@domain.hid>
-Date: Fri, 7 Apr 2006 00:47:17 +0200
-From: "Bruno Rouchouse" <brouchouse@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Date: Thu, 6 Apr 2006 13:42:41 -0300
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_28262_16099049.1144363637729"
-Subject: [Xenomai-core] [Xenoscope] GDB error
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200604061342.41254.lbocseg@domain.hid>
+Subject: [Xenomai-core] SIGXCPU snippet not working
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,53 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
-------=_Part_28262_16099049.1144363637729
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Philippe,
 
-Hi,
+I think I've found another bug on SVN. When trying to run the sigxcpu snipp=
+et=20
+provided with Xenomai I received only the following lines:
 
-someone using xenoscope for running simulation ?
+Switched to secondary mode
+Switched to secondary mode
+Switched to secondary mode
+...
 
-I'm getting a "GDB error: No symbol "mvm_bp" in current context." while
-launching my simulation under the xenoscope.
+The backtrace was not shown. Actually warn_upon_switch wasn't been called, =
+so=20
+I think the application was not receiving the signals correctly.
 
-Other information: I'm using GNU gdb 6.3-debian and simulation process work=
-s
-fine directly under gdb (can break in code, run simulation etc.)
+This is how I compiled it:
+cc `xeno-config --xeno-cflags`  `xeno-config --xeno-ldflags` -lnative =20
+sigxcpu.c   -o sigxcpu
 
-I'm investigating but just in case someone has already stumbled over that !
+Could you please verify this?
 
-Thanks.
+Thanks again,
 
---
-Bruno Rouchouse
+Rodrigo.
 
-------=_Part_28262_16099049.1144363637729
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+	=09
+_______________________________________________________=20
+Abra sua conta no Yahoo! Mail: 1GB de espa=E7o, alertas de e-mail no celula=
+r e anti-spam realmente eficaz.=20
+http://br.info.mail.yahoo.com/
 
-Hi,<br>
-<br>
-someone using xenoscope for running simulation ?<br>
-<br>
-I'm getting a &quot;GDB error: No symbol &quot;mvm_bp&quot; in current cont=
-ext.&quot; while launching my simulation under the xenoscope.<br>
-<br>
-Other information: I'm using GNU gdb 6.3-debian and simulation process
-works fine directly under gdb (can break in code, run simulation etc.)<br>
-<br>
-I'm investigating but just in case someone has already stumbled over that !=
-<br>
-<br>
-Thanks.<br>
-<br>
---<br>
-Bruno Rouchouse<br>
-
-------=_Part_28262_16099049.1144363637729--
 
