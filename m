@@ -1,15 +1,10 @@
-Message-ID: <44354CC5.8080405@domain.hid>
-Date: Thu, 06 Apr 2006 19:15:49 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Frozen timer IRQ
-References: <4432E540.1010108@domain.hid>	<17459.46030.997560.684058@domain.hid>	<4433BA43.7000807@domain.hid>	<4433C087.3020403@domain.hid>
-	<44341AE6.5030804@domain.hid>	<44343CF6.4090500@domain.hid>
-	<44352E12.1000502@domain.hid> <443533E3.6080305@domain.hid>
-	<4435363B.50701@domain.hid> <443537C5.1080801@domain.hid>
-In-Reply-To: <443537C5.1080801@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: multipart/mixed; boundary="1F5IC5qvf0"
 Content-Transfer-Encoding: 7bit
+Message-ID: <17461.19934.435991.242022@domain.hid>
+Date: Thu, 6 Apr 2006 19:20:30 +0200
+Subject: [Xenomai-core] Preventing kernel misconfiguration.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,101 +14,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Philippe Gerum wrote:
->>>
->>>
->>>>Jan Kiszka wrote:
->>>>
->>>>
->>>>>Attached is an ipipe-freeze of the frozen system. It's taken at the
->>>>>time
->>>>>the main thread of the terminating application has successfully
->>>>>rt_task_join'ed the last remaining RT-thread. I took 2000 trace points
->>>>>before and after that point and additionally instrumented
->>>>>rthal_timer_program_shot() (special trace 0x01, the argument is the
->>>>>delay). The interesting stuff happens around 600 us after the
->>>>>freeze: it
->>>>>seems the scheduled Linux timer arrives then but doesn't get much
->>>>>attention beyond from ipipe.
->>>>>
->>>>>Any idea what to look for next? I have a "perfect" test system now,
->>>>>though I still see no light at the end of the tunnel how to export
->>>>>it to
->>>>>other boxes.
->>>>>
->>>>>Enough for today.
->>>>>
->>>>>Jan
->>>>>
->>>>>
->>>>>PS: This trace was taken over 2.6.15 to exclude any issues with the new
->>>>>2.6.16. Both kernels show the same effect.
->>>>>
->>>>
->>>>Does this patch make any difference?
->>>>
->>>>--- ipipe-root.c~    2006-01-31 09:55:44.000000000 +0100
->>>>+++ ipipe-root.c    2006-04-06 17:01:49.000000000 +0200
->>>>@@ -328,9 +328,8 @@
->>>>        /* Only sync virtual IRQs here, so that we don't recurse
->>>>           indefinitely in case of an external interrupt flood. */
->>>>
->>>>-        if ((ipipe_root_domain->cpudata[cpuid].
->>>>-             irq_pending_hi & IPIPE_IRQMASK_VIRT) != 0)
->>>>-            __ipipe_sync_stage(IPIPE_IRQMASK_VIRT);
->>>>+        if (ipipe_root_domain->cpudata[cpuid].irq_pending_hi != 0)
->>>>+            __ipipe_sync_stage(IPIPE_IRQMASK_ANY);
->>>>    }
->>>>#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
->>>>    ipipe_trace_end(0x8000000D);
->>>
->>>
->>>Nope.
->>
->>That's good news, actually. I would have been quite embarrased if it did
->>it.
->>
->>
->>>Where should I put my finger on to find out what's happening?
->>>
->>
->>It seems that the pipeline log is not synced by __ipipe_unstall_iret_root.
->>We need to know why. Question: is the root stage stalled or unstalled by
->>this
->>routine during the latest call before the box freezes?
-> 
-> 
-> I'm currently switching my brain between to many tasks: Could you simply
-> tell me what variable to check so that I can hack some
-> ipipe_trace_special into the kernel?
 
-The value of the IPIPE_STALL_FLAG for the root domain upon exit from 
-__ipipe_unstall_iret_root.
+--1F5IC5qvf0
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
-> 
-> 
->>PS: it would be nice to display the status of the current stage
->>(stalled/unstalled) and the one of the hw interrupt bit, for each trace.
-> 
-> 
-> Patches are welcome :) - wait, you are the Adeos maintainer! ;)
-> 
-> Actually, the hw-irq state is already expressed by "|" at the head of
-> each line ("|" means "hw-IRQs off").
-> 
 
-Ok, I'm rather short in time too, so let's drop this for now and keep it 
-on the todo list so that we get back to this when time allows.
+Here is a patch that "selects" the I-pipe option when Xenomai is
+enabled, it should help preventing kernel misconfigurations.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
+
+--1F5IC5qvf0
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="Kconfig.patch"
+Content-Transfer-Encoding: 7bit
+
+Index: scripts/Kconfig.frag
+===================================================================
+--- scripts/Kconfig.frag	(revision 895)
++++ scripts/Kconfig.frag	(working copy)
+@@ -4,7 +4,14 @@
+ config XENOMAI
+ 	bool "Xenomai"
+ 	default y
++        select IPIPE
+ 
++        help
++          Xenomai is a real-time extension to the Linux kernel. Note 
++          that Xenomai relies on Adeos interrupt pipeline (CONFIG_IPIPE 
++          option) to be enabled, so enabling this option selects the
++          CONFIG_IPIPE option.
++
+ source "arch/@LINUX_ARCH@/xenomai/Kconfig"
+ 
+ endmenu
+Index: ksrc/arch/powerpc/Config.in
+===================================================================
+--- ksrc/arch/powerpc/Config.in	(revision 895)
++++ ksrc/arch/powerpc/Config.in	(working copy)
+@@ -1,15 +1,19 @@
+ mainmenu_option next_comment
+ comment 'Real-time sub-system'
+ 
+-bool 'Xenomai' CONFIG_XENOMAI
++if [ "$CONFIG_IPIPE" = "n" ]; then
++    comment "Xenomai depends on Adeos interrupt pipeline"
++else
++    bool 'Xenomai' CONFIG_XENOMAI
+ 
+-source kernel/xenomai/Config.in
++    source kernel/xenomai/Config.in
+ 
+-if [ "$CONFIG_XENOMAI" = "y" -a "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]; then
++    if [ "$CONFIG_XENOMAI" = "y" -a "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]; then
+ 	mainmenu_option next_comment
+ 	comment 'Machine'
+ 	bool 'Enable FPU support' CONFIG_XENO_HW_FPU
+ 	endmenu
++    fi
+ fi
+ 
+ endmenu
+Index: ksrc/arch/i386/Config.in
+===================================================================
+--- ksrc/arch/i386/Config.in	(revision 895)
++++ ksrc/arch/i386/Config.in	(working copy)
+@@ -1,11 +1,14 @@
+ mainmenu_option next_comment
+ comment 'Real-time sub-system'
+ 
+-bool 'Xenomai' CONFIG_XENOMAI
++if [ "$CONFIG_IPIPE" = "n" ]; then
++    comment "Xenomai depends on Adeos interrupt pipeline"
++else
++    bool 'Xenomai' CONFIG_XENOMAI
+ 
+-source kernel/xenomai/Config.in
++    source kernel/xenomai/Config.in
+ 
+-if [ "$CONFIG_XENOMAI" = "y" -a "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]; then
++    if [ "$CONFIG_XENOMAI" = "y" -a "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]; then
+ 
+ 	mainmenu_option next_comment
+ 	comment 'Machine'
+@@ -42,6 +45,7 @@
+ 	fi
+ 	endmenu
+ 	endmenu
++    fi
+ fi
+ 
+ endmenu
+
+--1F5IC5qvf0--
 
