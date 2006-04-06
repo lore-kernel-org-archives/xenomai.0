@@ -1,12 +1,14 @@
-Message-ID: <442C05B4.5080606@domain.hid>
-Date: Thu, 30 Mar 2006 10:22:12 -0600
-From: Jeff Webb <jeff.webb@domain.hid>
+Message-ID: <4435363B.50701@domain.hid>
+Date: Thu, 06 Apr 2006 17:39:39 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <006f01c64312$a28ab730$a10a10ac@domain.hid>
-In-Reply-To: <006f01c64312$a28ab730$a10a10ac@domain.hid>
+Subject: Re: [Xenomai-core] Frozen timer IRQ
+References: <4432E540.1010108@domain.hid>	<17459.46030.997560.684058@domain.hid>	<4433BA43.7000807@domain.hid>	<4433C087.3020403@domain.hid>
+	<44341AE6.5030804@domain.hid>	<44343CF6.4090500@domain.hid>
+	<44352E12.1000502@domain.hid> <443533E3.6080305@domain.hid>
+In-Reply-To: <443533E3.6080305@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] AMD x86_64 support
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,23 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Christopher Stone wrote:
->> Is there planned support for native AMD x86_64 support?  We have several
->> of these machines on our desktops and would like to upgrade our HWIL
->> machines as well.
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
 > 
-> [Christopher Stone] I definitely plan to add AMD x86_64 support for my XLM
-> project. I have a dual core AMD X2 chip I want to test XLM on. I don't have
-> specific dates when it will be available yet.
+>>Jan Kiszka wrote:
+>>
+>>>Attached is an ipipe-freeze of the frozen system. It's taken at the time
+>>>the main thread of the terminating application has successfully
+>>>rt_task_join'ed the last remaining RT-thread. I took 2000 trace points
+>>>before and after that point and additionally instrumented
+>>>rthal_timer_program_shot() (special trace 0x01, the argument is the
+>>>delay). The interesting stuff happens around 600 us after the freeze: it
+>>>seems the scheduled Linux timer arrives then but doesn't get much
+>>>attention beyond from ipipe.
+>>>
+>>>Any idea what to look for next? I have a "perfect" test system now,
+>>>though I still see no light at the end of the tunnel how to export it to
+>>>other boxes.
+>>>
+>>>Enough for today.
+>>>
+>>>Jan
+>>>
+>>>
+>>>PS: This trace was taken over 2.6.15 to exclude any issues with the new
+>>>2.6.16. Both kernels show the same effect.
+>>>
+>>
+>>Does this patch make any difference?
+>>
+>>--- ipipe-root.c~    2006-01-31 09:55:44.000000000 +0100
+>>+++ ipipe-root.c    2006-04-06 17:01:49.000000000 +0200
+>>@@ -328,9 +328,8 @@
+>>         /* Only sync virtual IRQs here, so that we don't recurse
+>>            indefinitely in case of an external interrupt flood. */
+>>
+>>-        if ((ipipe_root_domain->cpudata[cpuid].
+>>-             irq_pending_hi & IPIPE_IRQMASK_VIRT) != 0)
+>>-            __ipipe_sync_stage(IPIPE_IRQMASK_VIRT);
+>>+        if (ipipe_root_domain->cpudata[cpuid].irq_pending_hi != 0)
+>>+            __ipipe_sync_stage(IPIPE_IRQMASK_ANY);
+>>     }
+>> #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+>>     ipipe_trace_end(0x8000000D);
+> 
+> 
+> Nope.
+
+That's good news, actually. I would have been quite embarrased if it did it.
+
+> 
+> Where should I put my finger on to find out what's happening?
 > 
 
-Thanks again for the helpful input you all gave me several weeks ago.  Since that time, I put together a presentation for my coworkers and customers on migrating our current hardware-in-the-loop simulation framework to a new RTOS.  We primarily discussed the advantages and disadvantages of Xenomai and RTLinuxPro.  In the end, everyone seemed to agree with my conclusion that Xenomai appears to be the best solution for us, with one qualification.  My boss is not comfortable with the decision until there is x86_64 support.
+It seems that the pipeline log is not synced by __ipipe_unstall_iret_root.
+We need to know why. Question: is the root stage stalled or unstalled by this
+routine during the latest call before the box freezes?
 
-If no one is planning to add support for the x86_64 platform in the near future, it is possible that we may be able to provide some funding to help make this happen.  Could someone provide an estimate of the level of effort required (man-hours/length of time) to port Xenomai to this architecture?  Unfortunately, I believe our current contract may limit us to hiring U.S. citizens, which may prove to be a problem, judging by the traffic on this email list.  None of this is a certainty at this point, and I will investigate things further.  At this time, I just want to see if anyone would be interested in doing such work, if our customers are able to fund it.
+PS: it would be nice to display the status of the current stage
+(stalled/unstalled) and the one of the hw interrupt bit, for each trace.
 
-Thanks,
+> Jan
+> 
 
-Jeff Webb
+
+-- 
+
+Philippe.
 
