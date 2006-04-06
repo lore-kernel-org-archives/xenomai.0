@@ -1,68 +1,29 @@
-Message-ID: <44527E39.7090501@domain.hid>
-Date: Fri, 28 Apr 2006 22:42:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Have condition variables Priority Inheritance
-	Protection (PIP)?
-References: <200604281736.28169.lbocseg@domain.hid>
-In-Reply-To: <200604281736.28169.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCF928EFEF6E38D6F9B507857"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+Date: Thu, 6 Apr 2006 14:16:33 -0400 (EDT)
+Message-Id: <200604061816.k36IGXbw022749@domain.hid>
+From: Gary Wallace <wallace@domain.hid>
+Subject: [Adeos-main] adeos-ipipe-2.6.14-ppc-1.2-01
+Reply-To: wallace@domain.hid
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCF928EFEF6E38D6F9B507857
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+  I am trying to use a 2.6.14.6 kernel with ipipe on a motorola
+mvme5500 board.  The kernel will boot and run fine with ipipe
+disabled, but it hangs in the boot sequence when ipipe is enabled.
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi,
-> Having a look at cond.c in the native skin, I didn't understand why it =
-is not=20
-> passed the PIP flag to xnsynch_init(). I mean, why the code is not=20
-> xnsynch_init(&cond->synch_base,XNSYNCH_PIP);
->=20
-> instead of
->=20
-> xnsynch_init(&cond->synch_base,XNSYNCH_PRIO);
->=20
-> ?
->=20
-> Could someone please point me the reason?
->=20
+  I patched a vanilla 2.6.14 kernel with the mvme5500 patch from
+motorola computer group and the adeos-ipipe-2.6.14-ppc-1.2-01 patch.
+Now the kernel hangs in the boot sequence about the time the
+networking is being configured.
 
-Just as with semaphores: there is no ownership concept for condition
-variables. Thus, who should be boosted to your priority in case you
-decide to wait on such a resource?
+  Has anyone got ipipe working on a mvme5500?
 
-Jan
-
-
---------------enigCF928EFEF6E38D6F9B507857
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEUn45niDOoMHTA+kRAgfQAJ9I5GuFsYJ1IFs9+6haa9aEfPbN/wCcDTDw
-QD4A8njhfv3be74QwzXFs4A=
-=4aY3
------END PGP SIGNATURE-----
-
---------------enigCF928EFEF6E38D6F9B507857--
+Thanks,
+Gary
 
