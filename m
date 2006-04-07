@@ -1,10 +1,14 @@
-Message-ID: <443683A3.4000300@domain.hid>
-Date: Fri, 07 Apr 2006 17:22:11 +0200
+Message-ID: <44369320.6030406@domain.hid>
+Date: Fri, 07 Apr 2006 18:28:16 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [draft PATCH] nested enable/disable irq calls
-References: <b647ffbd0604070805k32dc185fu4d3705906ffcbc2f@domain.hid>
-In-Reply-To: <b647ffbd0604070805k32dc185fu4d3705906ffcbc2f@domain.hid>
+Subject: Re: [Xenomai-core] Frozen timer IRQ
+References: <4432E540.1010108@domain.hid>	<17459.46030.997560.684058@domain.hid>	<4433BA43.7000807@domain.hid>	<4433C087.3020403@domain.hid>
+	<44341AE6.5030804@domain.hid>	<44343CF6.4090500@domain.hid>
+	<44352E12.1000502@domain.hid> <443533E3.6080305@domain.hid>
+	<4435363B.50701@domain.hid> <443537C5.1080801@domain.hid>
+	<44354CC5.8080405@domain.hid> <443662DE.8020804@domain.hid>
+In-Reply-To: <443662DE.8020804@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,59 +20,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Dmitry Adamushko wrote:
-> Hi,
+Jan Kiszka wrote:
 > 
-> yep, this is yet another draft patch which aims at supporting the
-> nested irq disable/enable calls for the primary domain.
-> 
-> o  no changes on the adeos-ipipe layer, hence it's much cleaner and
-> smaller that the one I have posted last time;
-> 
-> o  eliminates the need for XN_ISR_NOENABLE flag;
-> 
-> o  but is based on the presupposition (otherwise it's wrong) that for
-> all acrhitectures that support Xenomai the following is true :
-> 
-> 	pic_handler->ack :
-> 	    * mask
-> 	    * eoi
-> 	
-> 	pic_handler->end :
-> 	    * unmask
-> 	
-> Philippe told me some time ago that this is a _must_ now for any arch
-> to be compatible with adeos-ipipe.
+> BTW, that trace hacking reminds me that we should really think about
+> making a kernel debugger run. I recently noticed that latest kgdb
+> applied with a single failing hunk on top of ipipe (2.6.15, x86). Maybe
+> it is just about making kgdb's irq-locks ipipe-aware and bypassing the
+> ipipe for int3 and the serial IRQ (so that ipipe can be debugged as
+> well) and catching the relevant exceptions. Hmm, the debugger seems to
+> get initialised in the "early" stage. Is this before or after ipipe setup?
 > 
 
-Ack, but with the special exception of the timer IRQ on x86 which is not 
-masked but only acked, since we can skip this while keeping the PIT 
-happy, and acknowledging the PIC through the ISA bus is so sloooow...
-
-> If so, with some minor cleanups (XN_ISR_NOENABLE should be removed all
-> over the map,
-> docs fixes, ...) and testing the patch may hopefully find its way into
-> the codebase.
-> 
-> Any feedback? 	
-> 
-> TIA,
-> 
-> --
-> Best regards,
-> Dmitry Adamushko
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-
+It depends. If "kgdbwait" is set in the bootargs to halt the kernel 
+waiting for the remote GDB to connect to the target, kgdb starts before 
+the ipipe. Otherwise, it's a late init, and kgdb starts after the ipipe 
+is fully initialized.
 
 -- 
 
