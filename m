@@ -1,14 +1,12 @@
-Message-ID: <4437782C.9030203@domain.hid>
-Date: Sat, 08 Apr 2006 10:45:32 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44377E8B.7080301@domain.hid>
+Date: Sat, 08 Apr 2006 11:12:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] bad/slow TSC hw  detected by  2.6.17-rc1-mm1
-References: <4436C5DF.6060005@domain.hid>
-In-Reply-To: <4436C5DF.6060005@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7F3950146C01F82E32BFD785"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Xenosim 2.1 Compile Fixes
+References: <hsuig3-5kl.ln1@domain.hid>
+In-Reply-To: <hsuig3-5kl.ln1@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,74 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
+To: Bernhard Walle <bernhard.walle@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7F3950146C01F82E32BFD785
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Bernhard Walle wrote:
+> Hello,
+> 
+> following fixes were necessary to compile Xenosim 2.1 together with
+> Xenomai 2.1 on SUSE 10.0 with gcc 4.0.2. I hope it can be applied to
+> SVN. (If generated files are in SVN, autoreconf must be run.)
+> 
 
-Jim Cromie wrote:
-> FYI,
->=20
-> Ive just built 17-rc1-mm1, and noted that the new time-keeping-system
-> http://lwn.net/Articles/176837/
->=20
-> can now detect the buggy TSC on my GEODE-sc1100 cpu,
-> and also that its apparently fixable by adding 'idle=3Dpoll' to
-> kernel-boot-line.
+Fixed in both the maintenance branch and trunk/. Thanks.
 
-Keeps your CPU safe and warm, I guess. ;)
+> Thanks.
+> 
+> 
+> Regards,
+>   Bernhard
+> 
+> diff -Nur xenosim-2.1.0.orig/acinclude.m4 xenosim-2.1.0/acinclude.m4
+> --- xenosim-2.1.0.orig/acinclude.m4	2006-03-11 23:09:35.000000000 +0100
+> +++ xenosim-2.1.0/acinclude.m4	2006-04-07 21:48:59.000000000 +0200
+> @@ -76,13 +76,13 @@
+>  ac_cv_using_gcc_for_mvm_c=no, ac_cv_using_gcc_for_mvm_c=yes)])dnl
+>  if test $ac_cv_using_gcc_for_mvm_c = yes; then
+>  AC_MSG_RESULT(yes)
+> -AC_MSG_CHECKING([if C compiler supports -fwritable-strings -fdollars-in-identifiers])
+> +AC_MSG_CHECKING([if C compiler supports -fdollars-in-identifiers])
+>  save_CFLAGS="$CFLAGS"
+> -CFLAGS="-fwritable-strings -fdollars-in-identifiers -Werror"
+> +CFLAGS="-fdollars-in-identifiers -Werror"
+>  AC_CACHE_VAL(ac_cv_cc_mvm_moreflags,
+>  [AC_TRY_COMPILE([],
+>  [int i = 0; return i; ],
+> -ac_cv_cc_mvm_moreflags="-fwritable-strings -fdollars-in-identifiers", ac_cv_cc_mvm_moreflags="")])dnl
+> +ac_cv_cc_mvm_moreflags="-fdollars-in-identifiers", ac_cv_cc_mvm_moreflags="")])dnl
+>  MVM_CFLAGS="$ac_cv_cc_mvm_moreflags"
+>  CFLAGS="$save_CFLAGS"
+>  else
+> @@ -126,7 +126,7 @@
+>  else
+>  AC_MSG_RESULT(yes)
+>  fi
+> -MVM_CXXFLAGS="-fwritable-strings -fdollars-in-identifiers $ac_cv_cxx_mvm_noex $ac_cv_cxx_mvm_nonnull"
+> +MVM_CXXFLAGS="-fdollars-in-identifiers $ac_cv_cxx_mvm_noex $ac_cv_cxx_mvm_nonnull"
+>  CXXFLAGS="$save_CXXFLAGS"
+>  else
+>  AC_MSG_RESULT(no)
+> diff -Nur xenosim-2.1.0.orig/vmutils/statobj.h xenosim-2.1.0/vmutils/statobj.h
+> --- xenosim-2.1.0.orig/vmutils/statobj.h	2006-02-03 23:34:12.000000000 +0100
+> +++ xenosim-2.1.0/vmutils/statobj.h	2006-04-07 22:00:19.000000000 +0200
+> @@ -55,6 +55,9 @@
+>  class MvmFilter;
+>  class MvmScaler;
+>  class MvmTimeGraph;
+> +struct MvmHistogramExportMsg;
+> +struct MvmTimeGraphExportMsg;
+> +struct MvmStateDiagramExportMsg;
+>  
+>  extern double variance(double,
+>  		       double,
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
 
->=20
-> Apr  7 11:42:01 truck kernel: [   19.160016] Kernel command line:
-> console=3DttyS0,115200n81 root=3D/dev/nfs
-> nfsroot=3D192.168.42.1:/nfshost/truck
-> nfsaddrs=3D192.168.42.100:192.168.42.1:192.168.42.1:255.255.255.0:soekr=
-is:eth0
-> panic=3D5 initrd=3Dinitrd-2.6.17-rc1-mm1-sk.img=20
-> BOOT_IMAGE=3Dvmlinuz-2.6.17-rc1-mm1-sk
-> Apr  7 11:42:01 truck kernel: [   24.314851] Time: tsc clocksource has
-> been installed.
-> Apr  7 11:42:01 truck kernel: [   29.977802] TSC appears to be running
-> slowly. Marking it as unstable
-> Apr  7 11:42:01 truck kernel: [   20.460000] Time: pit clocksource has
-> been installed.
->=20
-> Apr  7 12:35:56 truck kernel: [   21.562573] Kernel command line:
-> console=3DttyS0,115200n81 root=3D/dev/nfs
-> nfsroot=3D192.168.42.1:/nfshost/truck
-> nfsaddrs=3D192.168.42.100:192.168.42.1:192.168.42.1:255.255.255.0:soekr=
-is:eth0
-> panic=3D5 initrd=3Dinitrd-2.6.17-rc1-mm1-sk.img idle=3Dpoll
-> BOOT_IMAGE=3Dvmlinuz-2.6.17-rc1-mm1-sk
-> Apr  7 12:35:56 truck kernel: [   21.563049] using polling idle threads=
-=2E
-> Apr  7 12:35:56 truck kernel: [   28.393469] Time: tsc clocksource has
-> been installed.
->=20
->=20
-> hope this is useful,
-> jimc
->=20
 
-Jan
+-- 
 
-
---------------enig7F3950146C01F82E32BFD785
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEN3gsniDOoMHTA+kRAqNlAJ9k4IwbGzwrdVuVX2IdfJ6qniUtMgCfVCA2
-Iq+3B/Gpla2p+KiFthyM0jg=
-=+tQf
------END PGP SIGNATURE-----
-
---------------enig7F3950146C01F82E32BFD785--
+Philippe.
 
