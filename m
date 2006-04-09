@@ -1,10 +1,12 @@
-Message-ID: <443941A3.20909@domain.hid>
-Date: Sun, 09 Apr 2006 19:17:23 +0200
+Message-ID: <44394A9E.80309@domain.hid>
+Date: Sun, 09 Apr 2006 19:55:42 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Proposal to use buildbot for Xenomai
+References: <200604072337.48181.niklaus.giger@domain.hid>
+In-Reply-To: <200604072337.48181.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] GDB 6.x + simulator
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,49 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
+Niklaus Giger wrote:
+> Hi everybody
+> 
+> If you point your browser at http://ngiger.dyndns.org/buildbot/ (with ending 
+> slash please), you will find a first prototype of the continuos integration 
+> tool buildbot (http://buildbot.sourceforge.net/)
+> 
 
-The following patch enables GDB 6.x for the simulator. Please give this
-a try if you happen to use the Xenosim. TIA,
+Great stuff.
 
---- sim/scope/gdbhelper.cc	(revision 904)
-+++ sim/scope/gdbhelper.cc	(working copy)
-@@ -423,6 +423,8 @@
+> It proves that it possible to automatically retrieve each revison of the 
+> Xenomai and compile it for (at the moment) two targets, a stock PPC and a 
+> custom PPC405 board (cross-compiling).
+> 
+> At the moment it already is useful for me, but I would like to ask your 
+> opinion about its usefulness. Would this be useful for you too? Do you have a 
+> special target to propose (other architectures, other target like skins, all 
+> xenomai components as modules/built-ins, mvm simulator)?
+> 
 
-      char *ibuf = gdb_ibuf.gets(), *estart = gdb_ibuf.gets();
+With the growing number of supported archs, not to speak of the two 
+major kernel versions supported (2.4/2.6) for some of them, a tool 
+providing continuous integration is clearly extremely useful, since it's 
+now virtually impossible for all developers to systematically check 
+their work against all possible arch/config combinations.
 
-+    Tcl_ResetResult(tclInterp);
-+
-      for (;;)
-  	{
-  	if (*ibuf == '\0' || *ibuf == '\n')
-@@ -504,7 +506,7 @@
-  		// the contents of the log did not match anything known to
-  		// the caller. We cannot return -1, which value is reserved
-  		// to indicate that the connection with GDB has been lost.
--		
-+
-  		Tcl_AppendElement(tclInterp,CString(rc2 ? rc2 : nre).gets());
-  		Tcl_AppendElement(tclInterp,matched);
-  		Tcl_AppendElement(tclInterp,Tcl_DStringValue(&gdb_ilog));
-Index: sim/scope/tcl/gdb.tcl
-===================================================================
---- sim/scope/tcl/gdb.tcl	(revision 904)
-+++ sim/scope/tcl/gdb.tcl	(working copy)
-@@ -850,8 +850,10 @@
-  	regexp "\[^\"\]+.(\[^\"\]+).*" $matched mvar curfocus
-      }
+Additionally, setting up a build slave for any particular arch of 
+interest is something users wanting to contribute back could do rather 
+easily, and specifically companies who happen to be happy Xenomai users.
 
--    # query stack information
--    set rl [gdb:command where ls]
-+    # query stack information -- auto-limit to the inner last 32
-+    # frames in order to work-around the issue GDB 6.x has with
-+    # ucontext(2) driven co-routines.
-+    set rl [gdb:command "where 32" ls]
-      set stackinfo [lindex $rl 2]
-
-      if {$stackinfo == {}} {
+AFAIC, the upside would be to be able to produce performance numbers 
+after the builds by running regression tests, so that we could evaluate 
+the impact of core changes almost immediately.
 
 -- 
 
