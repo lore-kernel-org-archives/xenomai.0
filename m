@@ -1,12 +1,10 @@
-Message-ID: <44390326.8020301@domain.hid>
-Date: Sun, 09 Apr 2006 14:50:46 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4438F951.5010507@domain.hid>
-In-Reply-To: <4438F951.5010507@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [PATCH] trigger I-pipe trace freezing via proc
+Message-ID: <17465.8101.106079.634470@domain.hid>
+Date: Sun, 9 Apr 2006 16:52:21 +0200
+Subject: [Xenomai-core] latency -t 1 crashes on SMP.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,23 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> here is a tiny patch to re-trigger trace freezing by writing a positive
-> number to /proc/ipipe/trace/frozen. Writing 0 provides the old
-> behaviour, i.e. resets the frozen trace so that ipipe_trace_freeze() can
-> capture a new trace.
-> 
-> Please apply.
-> 
 
-Applied, thanks.
+I tried latency -t 1 on an SMP machines, and observed a very
+reproducible crash. Most of the time, the machine locks up
+completely. The rest of the time, I get :
+
+Xenomai: suspending kernel thread e7559044 ('timerbench') at 0xb01051f2 after ex
+ception #14
+
+And the system remains runnable, but 0xb01051f2 is not a valid kernel
+module text address.
+
+The lock up does not seem to be detected by any Xenomai or Linux
+debug or watchdog. Only enabling the NMI watchdog seems to
+systematically produce the exception 14 instead of the lockup.
+
+I ve tried to put a printk at the beginning of timer_task_proc outer
+loop. It get printed once when getting the exception 14, and twice when
+getting the lock up.
+
+Any idea where to look ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
