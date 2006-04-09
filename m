@@ -1,14 +1,10 @@
-Message-ID: <4439233D.4050800@domain.hid>
-Date: Sun, 09 Apr 2006 17:07:41 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <443941A3.20909@domain.hid>
+Date: Sun, 09 Apr 2006 19:17:23 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] latency -t 1 crashes on SMP.
-References: <17465.8101.106079.634470@domain.hid>
-In-Reply-To: <17465.8101.106079.634470@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC242D75A6E8CDA55E4810947"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] GDB 6.x + simulator
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,60 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC242D75A6E8CDA55E4810947
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Gilles Chanteperdrix wrote:
-> I tried latency -t 1 on an SMP machines, and observed a very
-> reproducible crash. Most of the time, the machine locks up
-> completely. The rest of the time, I get :
->=20
-> Xenomai: suspending kernel thread e7559044 ('timerbench') at 0xb01051f2=
- after ex
-> ception #14
->=20
-> And the system remains runnable, but 0xb01051f2 is not a valid kernel
-> module text address.
->=20
-> The lock up does not seem to be detected by any Xenomai or Linux
-> debug or watchdog. Only enabling the NMI watchdog seems to
-> systematically produce the exception 14 instead of the lockup.
->=20
-> I ve tried to put a printk at the beginning of timer_task_proc outer
-> loop. It get printed once when getting the exception 14, and twice when=
-
-> getting the lock up.
->=20
-> Any idea where to look ?
->=20
-
-Two proposals to collect information:
-
-o give KGDB a try
-o instrument the xenomai exception handler with an ipipe_trace_freeze()
-  (something which should be merged into SVN later)
-
-Jan
+To: xenomai@xenomai.org
 
 
---------------enigC242D75A6E8CDA55E4810947
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+The following patch enables GDB 6.x for the simulator. Please give this
+a try if you happen to use the Xenosim. TIA,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+--- sim/scope/gdbhelper.cc	(revision 904)
++++ sim/scope/gdbhelper.cc	(working copy)
+@@ -423,6 +423,8 @@
 
-iD8DBQFEOSM9niDOoMHTA+kRAmEbAJwMuog2DZxGTyDbgwiIhZpFkWqquwCeO81s
-xNTcVk1LDYjiWNQ3unHiaaU=
-=Gsju
------END PGP SIGNATURE-----
+      char *ibuf = gdb_ibuf.gets(), *estart = gdb_ibuf.gets();
 
---------------enigC242D75A6E8CDA55E4810947--
++    Tcl_ResetResult(tclInterp);
++
+      for (;;)
+  	{
+  	if (*ibuf == '\0' || *ibuf == '\n')
+@@ -504,7 +506,7 @@
+  		// the contents of the log did not match anything known to
+  		// the caller. We cannot return -1, which value is reserved
+  		// to indicate that the connection with GDB has been lost.
+-		
++
+  		Tcl_AppendElement(tclInterp,CString(rc2 ? rc2 : nre).gets());
+  		Tcl_AppendElement(tclInterp,matched);
+  		Tcl_AppendElement(tclInterp,Tcl_DStringValue(&gdb_ilog));
+Index: sim/scope/tcl/gdb.tcl
+===================================================================
+--- sim/scope/tcl/gdb.tcl	(revision 904)
++++ sim/scope/tcl/gdb.tcl	(working copy)
+@@ -850,8 +850,10 @@
+  	regexp "\[^\"\]+.(\[^\"\]+).*" $matched mvar curfocus
+      }
+
+-    # query stack information
+-    set rl [gdb:command where ls]
++    # query stack information -- auto-limit to the inner last 32
++    # frames in order to work-around the issue GDB 6.x has with
++    # ucontext(2) driven co-routines.
++    set rl [gdb:command "where 32" ls]
+      set stackinfo [lindex $rl 2]
+
+      if {$stackinfo == {}} {
+
+-- 
+
+Philippe.
 
