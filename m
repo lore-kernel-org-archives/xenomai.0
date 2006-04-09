@@ -1,12 +1,13 @@
-Message-ID: <443826D4.9070507@domain.hid>
-Date: Sat, 08 Apr 2006 23:10:44 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems using Xenoscope
+From: Bernhard Walle <bernhard.walle@domain.hid>
+Date: Sun, 9 Apr 2006 11:00:58 +0200
+Message-ID: <a3vmg3-6is.ln1@domain.hid>
 References: <91clg3-vfp.ln1@domain.hid>
-In-Reply-To: <91clg3-vfp.ln1@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<443826D4.9070507@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Sender: news <news@domain.hid>
+Subject: [Xenomai-help] Re: Problems using Xenoscope
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bernhard Walle <bernhard.walle@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Bernhard Walle wrote:
-> Hello,
+Hello,
+
+Philippe Gerum <rpm@xenomai.org> [2006-04-08]:
+> Bernhard Walle wrote:
+> > Hello,
+> > 
+> > I have problems using Xenoscope (Xenomai 2.1.0, Xenosim 2.1). The
+> > simulation works, i.e. text messages are printed on the console. I use
+> > the example from
+> > http://www.mail-archive.com/xenomai@xenomai.org.
+> > 
+> > The problem is that the traces dialog is empty, there are also no items
+> > in the tree, only
+> > 
+> >   - System
+> >      -RT/Interfaces
+> >
 > 
-> I have problems using Xenoscope (Xenomai 2.1.0, Xenosim 2.1). The
-> simulation works, i.e. text messages are printed on the console. I use
-> the example from
-> http://www.mail-archive.com/xenomai@xenomai.org.
-> 
-> The problem is that the traces dialog is empty, there are also no items
-> in the tree, only
-> 
->   - System
->      -RT/Interfaces
->
+> It's not a bug, it's just that the tracer and some other interface 
+> objects are still missing.
 
-It's not a bug, it's just that the tracer and some other interface 
-objects are still missing.
-
-> Debugging with GDB seems to work. I used 6.4 and 5.3. I use Debian
-> GNU/Linux 3.1 with gcc 3.x.
-> 
-> 
-> Regards,
->   Bernhard
+Just wondering at
+http://www.linux-automation.de/konferenz/papers/Jan_Kiszka_UNI-HANNOVER_RTAI/RTAI-fusion.pdf
+I can see more functionality? Is this because this is RTAI Fusion 0.9
+and I'm trying Xenomai 2.1?
 
 
--- 
+Regards,
+  Bernhard
 
-Philippe.
 
