@@ -1,11 +1,11 @@
-Message-ID: <4439791B.7060003@domain.hid>
-Date: Sun, 09 Apr 2006 23:14:03 +0200
+Message-ID: <44397CBF.905@domain.hid>
+Date: Sun, 09 Apr 2006 23:29:35 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] latency -t 1 crashes on SMP.
-References: <17465.8101.106079.634470@domain.hid>
-In-Reply-To: <17465.8101.106079.634470@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Adeos-main] Re: [Xenomai-core] kgdb over ipipe
+References: <44377F75.9030707@domain.hid> <4438FAFA.3020105@domain.hid>
+In-Reply-To: <4438FAFA.3020105@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,21 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> I tried latency -t 1 on an SMP machines, and observed a very
-> reproducible crash. Most of the time, the machine locks up
-> completely. The rest of the time, I get :
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
 > 
-> Xenomai: suspending kernel thread e7559044 ('timerbench') at 0xb01051f2 after ex
-> ception #14
+>>Hi,
+>>
+>>this is the preliminary, though already usable result of my recent
+>>effort to extend the tool situation for Xenomai: A kgdb patch series for
+>>2.6.15 on x86. It already works quite well but likely does not yet catch
+>>all fatal scenarios (e.g. page faults in the Xenomai domain).
+>>
 > 
-> And the system remains runnable, but 0xb01051f2 is not a valid kernel
-> module text address.
+> 
+> And here comes another revision (prepare patch remains unmodified).
+> 
+> It gets closer to what Philippe also just suggested in the original
+> thread: hook KGDB into I-pipe in favour of registering a dedicated
+> domain. The latter approach modifies the I-pipe state in a way which may
+> blur the picture of I-pipe itself to the debugger. This revision hooks
+> exception events into the I-pipe core so that they are delivered the
+> normal way when the root domain is active, but get catched early for
+> higher domains like Xenomai. I'm just not sure about the best way to
+> handle the serial line IRQ. Philippe, do you see problems with current
+> approach? Should we better hook into __ipipe_handle_irq (which would
+> make things more complicated, I'm afraid)?
+> 
 
-Looks like a kernel-based task stack address on x86.
+The current approach works fine unless a runaway thread goes wild with 
+interrupts disabled (i.e. stall bit set) in the root stage or in any 
+higher priority domain regardless of the root domain state, in which 
+case the serial IRQ won't make it through the pipeline to KGDB.
+
+> In contrast to the first version, exceptions happening in the Xenomai
+> domain now also get reported to KGDB. Debugging mostly works fine, I'm
+> just facing unknown problems with intercepting and then continuing
+> kernel-only RT threads. KGDB sometimes reports "E22" back in this case,
+> but always locks up. Maybe it gets confused by the fact the there is no
+> Linux task behind Xenomai kernel threads? I tested this by putting a
+> breakpoint into xnpod_suspend_thread and running latency in mode 0 and
+> 1. 0 works fine, 1 not.
+> 
+
+KGDB is relying on "current", so it's reading garbage over Xenomai's 
+kernel threads.
 
 -- 
 
