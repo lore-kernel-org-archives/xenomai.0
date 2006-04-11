@@ -1,69 +1,59 @@
-Message-ID: <44450CC2.4080505@domain.hid>
-Date: Tue, 18 Apr 2006 17:58:58 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [patch] xeno-test email addition
-References: <200604171047.51730.niklaus.giger@domain.hid>	<44444AB2.9020305@domain.hid>
-	<4445068A.8000008@domain.hid>
-In-Reply-To: <4445068A.8000008@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <17467.39989.698322.9385@domain.hid>
+Date: Tue, 11 Apr 2006 14:08:21 +0200
+Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
+In-Reply-To: <1144724767.27088.258799393@domain.hid>
+References: <1143612388.32703.257789950@domain.hid>
+	<442A7D19.2000009@domain.hid>
+	<1143694058.30209.257882137@domain.hid>
+	<442C46EC.6000605@domain.hid>
+	<1143790982.14016.257982746@domain.hid>
+	<442CFCA3.4070704@domain.hid>
+	<17453.19513.723459.198259@domain.hid>
+	<1144724767.27088.258799393@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Saul <xeno@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jim Cromie wrote:
-> Jim Cromie wrote:
-> 
->> Niklaus Giger wrote:
->>
->>> Hi
->>>
->>> Following a suggestion from Philippe Gerum I propose to collect and 
->>> prepare like this:
->>>
->>> a) Make it easy to collect information
->>>
->>> add -s/-c option to xeno-test, help text would look like -s         
->>> send output of xeno-test to xeno-stat@domain.hid
->>> -c <name>  if -s, send also kernel config file to xeno-stat@domain.hid
->>>   
->>
->> attached patch adds new -m -M flags for xeno-test, (-s flag is taken, 
->> for statistics)
->> former for a fixed addy (to be patched later), latter taking any email 
->> as arg.
->>
->> I didnt add -c <name>, since xeno-test already does something similar;
->> if you build with CONFIG_IKCONFIG_PROC=y, xeno-test greps XENO out of 
->> /proc/config.gz
->> (probably needs a few more grep terms, and perhaps a -verbose mode which
->> cats the whole thing.)
->>
->> The -M option works, since I just received an email Id sent earlier,
->> but I also sent one to xenomai-core, and it hasnt shown up yet.
->> I suspect that the mail looks like spam, and has been rejected,
->> since my hostname is not a real FQDN.
->> So Im not so sure that email is the best way here, but it is 
->> conceptually simple.
-> 
-> 
-> 
-> 
-> Oof.  Now attached.
-> 
+Saul wrote:
+ > >  > > I thought SMI was supposed to increase latencies, but I only see
+ > >  > > latencies < 60us at any load, unless I start video capture. Does
+ > >  > > the latency test absolutely rule out SMI as the cause?
+ > >  >
+ > >  > Not really, e.g. if the video capture device is USB-attached, then
+ > >  > SMI could possibly remain in the picture.
+ > >
+ > > I have used the bttv driver with xawtv or mythtv and nvidia
+ > > proprietary drivers on a dual pIII machine running latency and the
+ > > maximum latency was far less than 100 us. What produces large spots,
+ > > however, is switching virtual terminals or changing resolution.
+ > > Doesn't xawtv change resolution for full screen mode ? Did not you use
+ > > the 768x576 modeline hack ?
+ > 
+ > 
+ > The video capture is not USB, it's a PCI card. Since I don't see poor
+ > latencies I'm guessing my problem is *not* SMI related.
 
-Applied, thanks.
+The latencies above 100us that you observe when starting video capture
+are abnormal. I was suggesting that these latencies are not due to video
+capture but to the fact that xawtv change resolution. Big latencies
+when switching virtual terminal are a well-known issue, not related to
+SMI. So my question was: is xawtv configured on your machine to change
+resolution when starting capture ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
