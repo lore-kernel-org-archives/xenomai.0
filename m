@@ -1,16 +1,15 @@
-Message-ID: <443C1F49.30002@domain.hid>
-Date: Tue, 11 Apr 2006 23:27:37 +0200
+Message-ID: <443C20D4.1090801@domain.hid>
+Date: Tue, 11 Apr 2006 23:34:12 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Fixs doxygen doc
-	on	rt_queue_read	in	ksrc/native/queue.c (for SVN version)
-References: <200604101640.04255.lbocseg@domain.hid>	<443BA12F.9020505@domain.hid>
-	<443BB6B3.8060601@domain.hid> <443C109F.5080208@domain.hid>
-	<443C148C.1060504@domain.hid>
-In-Reply-To: <443C148C.1060504@domain.hid>
+Subject: Re: [Adeos-main] Re: [Xenomai-core] kgdb over ipipe
+References: <44377F75.9030707@domain.hid> <4438FAFA.3020105@domain.hid>
+	<44397CBF.905@domain.hid> <443C0A34.70107@domain.hid>
+	<443C0F80.7070600@domain.hid>
+In-Reply-To: <443C0F80.7070600@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig226AF97B1EE959B61DF7E7BD"
+	boundary="------------enig4890163F77D49D666B7C1AA2"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,111 +21,135 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig226AF97B1EE959B61DF7E7BD
+--------------enig4890163F77D49D666B7C1AA2
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Philippe Gerum wrote:
-> Philippe Gerum wrote:
->> Jan Kiszka wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
 >>
->>> [a few interruptions later]
->>>
 >>> Jan Kiszka wrote:
 >>>
->>>> Rodrigo Rosenfeld Rosas wrote:
->>>>
->>>>> BTW, please, could someone confirm the rt_task_delete(NULL) bug in
->>>>> SVN?
+>>>> Jan Kiszka wrote:
 >>>>
 >>>>
->>>> Half-confirmed, there is something fishy. I'm struggling with the
->>>> debugger ATM, not sure yet who's wrong ;). It tells me
->>>> rt_task_delete of
->>>> the skin module is entered with task !=3D NULL...
->>>
->>>
->>>
->>> ...which turns out to be fine, just appears redundant to me when
->>> comparing __rt_task_delete and rt_task_delete for the task=3DNULL cas=
-e.
->>>
->>> Anyway, leaving a native task with rt_task_delete(NULL) raises SIGKIL=
-L
->>> to the whole process instead of just the task (pthread). This lets yo=
-ur
->>> program terminate unexpectedly - I would say: a bug. And this doesn't=
+>>>>> Hi,
+>>>>>
+>>>>> this is the preliminary, though already usable result of my recent
+>>>>> effort to extend the tool situation for Xenomai: A kgdb patch
+>>>>> series for
+>>>>> 2.6.15 on x86. It already works quite well but likely does not yet
+>>>>> catch
+>>>>> all fatal scenarios (e.g. page faults in the Xenomai domain).
+>>>>>
+>>>>
+>>>>
+>>>> And here comes another revision (prepare patch remains unmodified).
+>>>>
+>>>> It gets closer to what Philippe also just suggested in the original
+>>>> thread: hook KGDB into I-pipe in favour of registering a dedicated
+>>>> domain. The latter approach modifies the I-pipe state in a way which=
 
->>> happen with 2.1?
+>>>> may
+>>>> blur the picture of I-pipe itself to the debugger. This revision hoo=
+ks
+>>>> exception events into the I-pipe core so that they are delivered the=
+
+>>>> normal way when the root domain is active, but get catched early for=
+
+>>>> higher domains like Xenomai. I'm just not sure about the best way to=
+
+>>>> handle the serial line IRQ. Philippe, do you see problems with curre=
+nt
+>>>> approach? Should we better hook into __ipipe_handle_irq (which would=
+
+>>>> make things more complicated, I'm afraid)?
+>>>>
 >>>
+>>> The current approach works fine unless a runaway thread goes wild wit=
+h
+>>> interrupts disabled (i.e. stall bit set) in the root stage or in any
+>>> higher priority domain regardless of the root domain state, in which
+>>> case the serial IRQ won't make it through the pipeline to KGDB.
 >>
->> It's a side-effect of a recent bug fix in ksrc/nucleus/shadow.c; now
->> killing
+>>
+>> But catching this would mean to change the behaviour of ipipe regardin=
+g
+>> the highest priority domain from hard to soft masking of IRQs. Hmm,
+>> should be made at least optional to catch scenarios where this change
+>> makes bugs move (away...).
+>>
+>> Would be the easiest way to achieve this to register a dummy domain
+>> ahead of Xenomai (i.e. with higher prio)?
 >=20
-> Er, "deleting" is the right word here. Sending a thread a termination
-> signal must kill the entire process as per POSIX, and will continue to
-> do so. Calling rt_task_delete() to explicitely delete a single thread
-> from within the containing process is another story. The current issue
-> is due to the fact that no distinction is made on the caller:
-> rt_task_delete() targeting a thread from another process should wipe ou=
+> This would be the theoretically "normal" way to do this, but this comes=
+
+> with the undesirable side-effect of losing the hw masking of interrupts=
+
+> for the Xenomai domain, since you stack another domain on top.
+>=20
+>  Additionally, we would have to
+>> modify the IRQ pipeline in a way that, e.g., some flag makes an IRQ no=
 t
-> the entire target process; otherwise, only the local target thread
-> should be deleted. It's not clear whether we should still wipe out the
-> entire process when the target thread is not the current one, regardles=
-s
-> of the fact such thread is a member of the same process or not.
-> I'm open to suggestions.
+>> only sticky but also "non-maskable" (I would make this also an option =
+to
+>> avoid overhead for non-debugging scenarios).
+>>
+>=20
+> By non-maskable, you mean at PIC-level?
 
-Killing other threads within the same process currently only works due
-to pthread_cancel. I don't see a portable equivalent for foreign
-processes yet as well. :-/
-
-I guess the thread termination signal sent by pthread_cancel depends on
-glibc internals, specifically its variant (NTPL or linux-threads),
-doesn't it? Didn't we already have this discussion??
-
-For now I would say the best we can do is to avoid the
-rt_task_delete(NULL) side effect in userspace (as I suggested) and live
-with the limitation of terminating the whole process when using the
-(rather unusual) cross-process rt_task_delete.
+Nope, at software-level. I mean that such IRQs would always be passed
+down the pipeline, even through stalled domains.
 
 >=20
->  a thread raises a group signal wiping out the entire process.
->> Ok, it's a bit drastic, will fix.
->>
->>> I guess the easiest way to solve this is to catch NULL in userspace a=
-nd
->>> call pthread_exit() in favour of the skin service (the POSIX skin use=
-s
->>> pthread_exit anyway), see attached patch. Someone just has to confirm=
-
->>> that there will be no problem hidden by this approach.
->>
->>
->> Passing NULL needs to work including from user-space; the kernel-space=
-
->> is ok with this, and the API must behave the same way regardless of
->> the execution space. Should fix as needed.
->>
->>>
->>> Jan
->>>
->>>
->>> PS: What's the reason for "if (err =3D=3D -ESRCH) return 0" in
->>> src/skins/native/task.c, rt_task_delete? Why is that error generate i=
+>> Well, not yet an essential feature for me, because we still have the N=
+MI
+>> watchdog and the option to spread breakpoints. But we should keep it i=
 n
->>> the first place if it is zeroed out here?
->>>
+>> mind.
+>>
+>>
+>>>> In contrast to the first version, exceptions happening in the Xenoma=
+i
+>>>> domain now also get reported to KGDB. Debugging mostly works fine, I=
+'m
+>>>> just facing unknown problems with intercepting and then continuing
+>>>> kernel-only RT threads. KGDB sometimes reports "E22" back in this ca=
+se,
+>>>> but always locks up. Maybe it gets confused by the fact the there is=
+ no
+>>>> Linux task behind Xenomai kernel threads? I tested this by putting a=
 
-<attention: unanswered question above> ;)
+>>>> breakpoint into xnpod_suspend_thread and running latency in mode 0 a=
+nd
+>>>> 1. 0 works fine, 1 not.
+>>>>
+>>>
+>>> KGDB is relying on "current", so it's reading garbage over Xenomai's
+>>> kernel threads.
+>>>
+>>
+>>
+>> Attached is an improved version of the kgdb-ipipe.patch that copes wit=
+h
+>> this situation by mapping invalid currents to init_task. Kernel thread=
+s
+>> are nicely debuggable now. =3D8)
+>>
+>=20
+> Ok, queued.
+>=20
+
+As an add-on patch like the tracer?
 
 Jan
 
 
---------------enig226AF97B1EE959B61DF7E7BD
+--------------enig4890163F77D49D666B7C1AA2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -135,10 +158,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEPB9JniDOoMHTA+kRAhtfAJoDaqSNFm60+8RM+pglEOSW8XvTDQCeOdrl
-VT7VhATOSStYKMQD81KQTHA=
-=2RZK
+iD8DBQFEPCDUniDOoMHTA+kRAgnkAJ9EVVrkI5C9DrKad7ZXPmQLfUV27gCffOu6
+qx9LkR0fItUBZuwyoSzyeaw=
+=rb0Z
 -----END PGP SIGNATURE-----
 
---------------enig226AF97B1EE959B61DF7E7BD--
+--------------enig4890163F77D49D666B7C1AA2--
 
