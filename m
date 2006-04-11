@@ -1,109 +1,144 @@
-Message-ID: <442A7D19.2000009@domain.hid>
-Date: Wed, 29 Mar 2006 14:27:05 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <443C1F49.30002@domain.hid>
+Date: Tue, 11 Apr 2006 23:27:37 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
-References: <1143612388.32703.257789950@domain.hid>
-In-Reply-To: <1143612388.32703.257789950@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Fixs doxygen doc
+	on	rt_queue_read	in	ksrc/native/queue.c (for SVN version)
+References: <200604101640.04255.lbocseg@domain.hid>	<443BA12F.9020505@domain.hid>
+	<443BB6B3.8060601@domain.hid> <443C109F.5080208@domain.hid>
+	<443C148C.1060504@domain.hid>
+In-Reply-To: <443C148C.1060504@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig226AF97B1EE959B61DF7E7BD"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Saul <xeno@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Saul wrote:
-> Hi,
-> 
-> I'm trying to run a short test program, just to get into the swing
-> of this shiny new real-time system. I'm running Xenomai 2.1.0 on
-> kernel 2.6.15.6
-> 
-> The following program runs a busy delay in primary mode (verified by
-> enabling the primary mode switch warning) and calculates the time taken.
-> Another task is resumed and prints the time.
-> 
-> I get output something like this:
->   1:  40.017 ms
->   2:  40.017 ms
->   3:  53.357 ms
->   4:  53.356 ms
->   5:  40.017 ms
->   6:  40.020 ms
->   7:  53.355 ms
->   8:  40.020 ms
->   9:  40.017 ms
->  10:  53.356 ms
->  11:  40.020 ms
->  12:  40.019 ms
->  13:  106.710 ms
->  14:  40.017 ms
->  15:  40.018 ms ...
-> 
-> I assume I've done something silly but I can't find anything wrong. My
-> computer is a 3GHz P4. Xenomai is built-in statically, and at boot says
-> "Xenomai: SMI-enabled Intel chipset found, enabling SMI workaround."
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig226AF97B1EE959B61DF7E7BD
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-It would be nice to known whether the latency test from the testsuite 
-has correct latency figures, so that we could rule out any SMI issue.
+Philippe Gerum wrote:
+> Philippe Gerum wrote:
+>> Jan Kiszka wrote:
+>>
+>>> [a few interruptions later]
+>>>
+>>> Jan Kiszka wrote:
+>>>
+>>>> Rodrigo Rosenfeld Rosas wrote:
+>>>>
+>>>>> BTW, please, could someone confirm the rt_task_delete(NULL) bug in
+>>>>> SVN?
+>>>>
+>>>>
+>>>> Half-confirmed, there is something fishy. I'm struggling with the
+>>>> debugger ATM, not sure yet who's wrong ;). It tells me
+>>>> rt_task_delete of
+>>>> the skin module is entered with task !=3D NULL...
+>>>
+>>>
+>>>
+>>> ...which turns out to be fine, just appears redundant to me when
+>>> comparing __rt_task_delete and rt_task_delete for the task=3DNULL cas=
+e.
+>>>
+>>> Anyway, leaving a native task with rt_task_delete(NULL) raises SIGKIL=
+L
+>>> to the whole process instead of just the task (pthread). This lets yo=
+ur
+>>> program terminate unexpectedly - I would say: a bug. And this doesn't=
 
-> Anyway, the erratic execution times come and go with the smallest
-> changes in the program e.g. moving the delay into it's own function or
-> creating functions for timing the delay loop, so I wouldn't be too
-> surprised if the problem can't be reproduced.
-> 
+>>> happen with 2.1?
+>>>
+>>
+>> It's a side-effect of a recent bug fix in ksrc/nucleus/shadow.c; now
+>> killing
+>=20
+> Er, "deleting" is the right word here. Sending a thread a termination
+> signal must kill the entire process as per POSIX, and will continue to
+> do so. Calling rt_task_delete() to explicitely delete a single thread
+> from within the containing process is another story. The current issue
+> is due to the fact that no distinction is made on the caller:
+> rt_task_delete() targeting a thread from another process should wipe ou=
+t
+> the entire target process; otherwise, only the local target thread
+> should be deleted. It's not clear whether we should still wipe out the
+> entire process when the target thread is not the current one, regardles=
+s
+> of the fact such thread is a member of the same process or not.
+> I'm open to suggestions.
 
-What /proc/xenomai/stat says during execution btw?
+Killing other threads within the same process currently only works due
+to pthread_cancel. I don't see a portable equivalent for foreign
+processes yet as well. :-/
 
-> Also, I found that using rt_timer_spin() instead of a real busy loop
-> does not have the same problem, which indicates that the simple busy
-> loop is in fact being interrupted during execution.
-> 
+I guess the thread termination signal sent by pthread_cancel depends on
+glibc internals, specifically its variant (NTPL or linux-threads),
+doesn't it? Didn't we already have this discussion??
 
-Just to rule this out, maybe you could try something along these lines:
+For now I would say the best we can do is to avoid the
+rt_task_delete(NULL) side effect in userspace (as I suggested) and live
+with the limitation of terminating the whole process when using the
+(rather unusual) cross-process rt_task_delete.
 
-		iopl(3)
-...
-		asm("cli");
-                  RTIME prev_tsc = rt_timer_tsc();
-                  my_processing();
-                  RTIME tsc = rt_timer_tsc();
-		asm("sti");
+>=20
+>  a thread raises a group signal wiping out the entire process.
+>> Ok, it's a bit drastic, will fix.
+>>
+>>> I guess the easiest way to solve this is to catch NULL in userspace a=
+nd
+>>> call pthread_exit() in favour of the skin service (the POSIX skin use=
+s
+>>> pthread_exit anyway), see attached patch. Someone just has to confirm=
 
-Out of curiosity, I'd also be interested in looking at the assembly dump 
-of my_process in the working and non-working cases.
+>>> that there will be no problem hidden by this approach.
+>>
+>>
+>> Passing NULL needs to work including from user-space; the kernel-space=
 
-> Is it a problem that I'm not explicitly destroying the tasks? They don't
-> linger in /proc/xenomai/sched once the program is killed. How much
-> is automatically cleaned up upon process exit?
+>> is ok with this, and the API must behave the same way regardless of
+>> the execution space. Should fix as needed.
+>>
+>>>
+>>> Jan
+>>>
+>>>
+>>> PS: What's the reason for "if (err =3D=3D -ESRCH) return 0" in
+>>> src/skins/native/task.c, rt_task_delete? Why is that error generate i=
+n
+>>> the first place if it is zeroed out here?
+>>>
 
-Only tasks are automatically wiped out by the nucleus, basically because 
-they could not exist anymore after their parent process terminates. 
-OTOH, other objects of the native API can linger since they do not 
-depend on process resources, until they are explicitely destroyed or the 
-API module is unloaded.
+<attention: unanswered question above> ;)
 
-> 
-> #include <stdio.h>
-> #include <stdlib.h> // exit
-> #include <unistd.h> // pause
-> #include <sys/mman.h> // mlockall
-> #include <signal.h>
-> #include <xenomai/native/task.h>
-> #include <xenomai/native/timer.h>
-> 
+Jan
 
-I'll look at this on my side too.
 
--- 
+--------------enig226AF97B1EE959B61DF7E7BD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEPB9JniDOoMHTA+kRAhtfAJoDaqSNFm60+8RM+pglEOSW8XvTDQCeOdrl
+VT7VhATOSStYKMQD81KQTHA=
+=2RZK
+-----END PGP SIGNATURE-----
+
+--------------enig226AF97B1EE959B61DF7E7BD--
 
