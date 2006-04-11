@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <443C11CF.7030905@domain.hid>
+Date: Tue, 11 Apr 2006 22:30:07 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] deleting a left over heap (shared memory segment)
+References: <067C9A1F6AFEB643895EA4513E116884178FF2@domain.hid>
+In-Reply-To: <067C9A1F6AFEB643895EA4513E116884178FF2@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17467.53942.273504.865219@domain.hid>
-Date: Tue, 11 Apr 2006 18:00:54 +0200
-Subject: Re: [Xenomai-help] Vxworks skin & Task priority
-In-Reply-To: <5B122FD931231D408AC32630D1B1F7290AA05846@domain.hid>
-References: <5B122FD931231D408AC32630D1B1F7290AA05846@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,31 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Thomas, Brieuc (GE Healthcare)" <Brieuc.Thomas@domain.hid>
+To: "Moser, Dan" <DMoser@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thomas, Brieuc \(GE Healthcare\) wrote:
- > Hello,    
- > 
- > I'm trying to use the Vxworks skin,  with RealTime task. But I've got a
- > problem during a task test.
- > 
- > I would like to configure the scheduler in Round Robin mode and launch a
- > first blocking task, and a second one, with an higher priority, which
- > kill the first one after a while. But the first task never give back the
- > CPU and my computer freeze !    
+Moser, Dan wrote:
+> Hi,
+> 
+> I was wondering if there was a command line method for deleting left
+> over heaps (i.e., those that were not properly deleted with a call to
+> rt_heap_delete()) from /proc/xenomai/registry/native/heaps.
+> 
+> Just a simple rm command (as root) yields the following:
+> 
+> # rm -f myshmem
+> cannot remove `myshmem': Operation not permitted
+> 
 
-Your code does not make what you believe: the first created task
-preempts the module init code immediately, which never has a chance to
-create a second task.
+For the moment, there is way to remove lingering native API objects from 
+the /proc interface. On the other hand, the RTDM API allows this for 
+some of its objects by writing a magic value to the proper /proc entry, 
+and we might use the same technique to provide this feature to the 
+native one.
 
- > (...)
- >    xnpod_activate_rr(SSEXEC_TIMESLICE);
+> Thanks in advance for any help/insight,
+> Dan
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
-You are supposed to use kernelTimeSlice() to enable round-robin.
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
