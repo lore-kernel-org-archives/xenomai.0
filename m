@@ -1,14 +1,11 @@
-Message-ID: <443A9A2D.8000405@domain.hid>
-Date: Mon, 10 Apr 2006 19:47:25 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <443B1991.9070206@domain.hid>
+Date: Mon, 10 Apr 2006 22:50:57 -0400
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [BUG?] stalled xeno domain
-References: <4437D2EE.4040902@domain.hid>
-	<4437E704.4010607@domain.hid>	<443A437B.6010403@domain.hid>
-	<443A5212.7020001@domain.hid> <443A56E2.1010204@domain.hid>
-	<443A5D7B.2040707@domain.hid> <443A9410.50402@domain.hid>
-In-Reply-To: <443A9410.50402@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] bad/slow TSC hw  detected by  2.6.17-rc1-mm1
+References: <4436C5DF.6060005@domain.hid> <4437782C.9030203@domain.hid>
+In-Reply-To: <4437782C.9030203@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,88 +16,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Jan Kiszka wrote:
+> Jim Cromie wrote:
+>   
+>> FYI,
 >>
->>>>>Philippe, do you see any remaining issues, e.g. that the leak survived
->>>>>the task termination? Does this have any meaning for correct driver and
->>>>>skin code?
->>>>>
->>>>
->>>>The only way I could see this leakage survive a switch transition would
->>>>require it to happen over the root context, not over a primary context.
->>>>Was it the case?
->>>>
->>>
->>>
->>>The task had to leave from primary mode. If I forced it to secondary
->>>before terminating, the problem did not show up.
->>>
+>> Ive just built 17-rc1-mm1, and noted that the new time-keeping-system
+>> http://lwn.net/Articles/176837/
 >>
->>But does the code causing the leakage could have been run by different
->>contexts in sequence, including the root one?
->>
-> 
-> 
-> I don't think so. Bugs in our software aside, there should be no switch
-> to secondary mode until termination. Moreover, we installed a SIGXCPU
-> handler, and that one didn't trigger as well.
-> 
-> 
-> I just constructed a simple test by placing rthal_local_irq_disable() in
-> rt_timer_spin and setting up this user space app:
-> 
-> #include <stdio.h>
-> #include <signal.h>
-> #include <native/task.h>
-> #include <native/timer.h>
-> 
-> RT_TASK task;
-> 
-> void func(void *arg)
-> {
->     rt_timer_spin(0);
-> }
-> 
-> 
-> void terminate(int sig)
-> {
->     printf("joining...\n");
->     rt_task_join(&task);
->     rt_task_delete(&task);
->     printf("done\n");
-> }
-> 
-> 
-> int main()
-> {
->     signal(SIGINT, terminate);
->     rt_task_spawn(&task, "lockup", 0, 10, T_FPU | T_JOINABLE | T_WARNSW,
->                   func, NULL);
->     pause();
->     return 0;
-> }
-> 
-> 
-> Should this lock up (as it currently does) or rather continue to run
-> normally after the RT-task terminated? BTW, I'm still not sure if we are
-> hunting shadows (is IRQs off a legal state for user space in some skin?)
-> or a real problem - i.e. is it worth the time.
-> 
+>> can now detect the buggy TSC on my GEODE-sc1100 cpu,
+>> and also that its apparently fixable by adding 'idle=poll' to
+>> kernel-boot-line.
+>>     
+>
+> Keeps your CPU safe and warm, I guess. ;)
+>
+>   
+for me personally, its the new-found certainty that the bug is 
+repeatedly observable and correctable :-)
 
-IRQS off in user-space - aside of the particular semantics introduced by 
-the interrupt shielding - is not a correct state, but it is for kernel 
-based RT threads, so I would expect the real-time core to be robust wrt 
-this kind of situation. I'm going to put this issue on my work queue 
-anyway, I don't like unexplained software thingies getting too close to 
-the Twilight Zone...
+Ive historically had an issue with  my ntp-server on this box,
+which slips badly when running latency tests under certain conditions
+(ie, the dd workload is using /dev/hda, a real interrupt source, rather 
+than /dev/zero)
 
--- 
+FWIW, my 2.6.16-ipipe-122 kernel takes a *long* time to boot,
+even while printk numbers look good.
 
-Philippe.
+The delays/pauses are in several subsystems, most notably after these 
+dmesg lines:
+
+[   30.768098] Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
+[   30.775141] ide: Assuming 33MHz system bus speed for PIO modes; 
+override with idebus=xx
+
+(1 min pause)
+
+[   31.209246] hda: SanDisk SDCFB-512, CFA DISK drive
+
+[   30.561093] Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ 
+sharing disabled
+
+30.574876] serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
+[   30.586719] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
+
+(more delays, in various spots, and Im now much more aware of them..)
+
+FWIW, before now, Ive never needed idle=poll, so it seems that 
+adeos/xenomai
+is more sensitive to these long delays than vanilla linux,  (same for more
+recent versions of kernel & adeos).  OTOH, Ive only recently added 
+timestamps to
+printks, and Im also a bit more sensitive now than I once was ..
+
+
+Does it make any sense that adeos / xenomai is more sensitive to a bad TSC
+than it used to be ?
+
+thanks
+jimc
 
