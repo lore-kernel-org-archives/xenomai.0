@@ -1,12 +1,15 @@
-Message-ID: <443B1991.9070206@domain.hid>
-Date: Mon, 10 Apr 2006 22:50:57 -0400
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <443BA12F.9020505@domain.hid>
+Date: Tue, 11 Apr 2006 14:29:35 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] bad/slow TSC hw  detected by  2.6.17-rc1-mm1
-References: <4436C5DF.6060005@domain.hid> <4437782C.9030203@domain.hid>
-In-Reply-To: <4437782C.9030203@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] Fixs doxygen doc on rt_queue_read
+	in	ksrc/native/queue.c (for SVN version)
+References: <200604101640.04255.lbocseg@domain.hid>
+In-Reply-To: <200604101640.04255.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF25E35105147A9647E81F3DE"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,65 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-Cc: xenomai@xenomai.org
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Jim Cromie wrote:
->   
->> FYI,
->>
->> Ive just built 17-rc1-mm1, and noted that the new time-keeping-system
->> http://lwn.net/Articles/176837/
->>
->> can now detect the buggy TSC on my GEODE-sc1100 cpu,
->> and also that its apparently fixable by adding 'idle=poll' to
->> kernel-boot-line.
->>     
->
-> Keeps your CPU safe and warm, I guess. ;)
->
->   
-for me personally, its the new-found certainty that the bug is 
-repeatedly observable and correctable :-)
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF25E35105147A9647E81F3DE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ive historically had an issue with  my ntp-server on this box,
-which slips badly when running latency tests under certain conditions
-(ie, the dd workload is using /dev/hda, a real interrupt source, rather 
-than /dev/zero)
-
-FWIW, my 2.6.16-ipipe-122 kernel takes a *long* time to boot,
-even while printk numbers look good.
-
-The delays/pauses are in several subsystems, most notably after these 
-dmesg lines:
-
-[   30.768098] Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
-[   30.775141] ide: Assuming 33MHz system bus speed for PIO modes; 
-override with idebus=xx
-
-(1 min pause)
-
-[   31.209246] hda: SanDisk SDCFB-512, CFA DISK drive
-
-[   30.561093] Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ 
-sharing disabled
-
-30.574876] serial8250: ttyS0 at I/O 0x3f8 (irq = 4) is a 16550A
-[   30.586719] serial8250: ttyS1 at I/O 0x2f8 (irq = 3) is a 16550A
-
-(more delays, in various spots, and Im now much more aware of them..)
-
-FWIW, before now, Ive never needed idle=poll, so it seems that 
-adeos/xenomai
-is more sensitive to these long delays than vanilla linux,  (same for more
-recent versions of kernel & adeos).  OTOH, Ive only recently added 
-timestamps to
-printks, and Im also a bit more sensitive now than I once was ..
+Rodrigo Rosenfeld Rosas wrote:
+> BTW, please, could someone confirm the rt_task_delete(NULL) bug in SVN?=
 
 
-Does it make any sense that adeos / xenomai is more sensitive to a bad TSC
-than it used to be ?
+Half-confirmed, there is something fishy. I'm struggling with the
+debugger ATM, not sure yet who's wrong ;). It tells me rt_task_delete of
+the skin module is entered with task !=3D NULL...
 
-thanks
-jimc
+Jan
+
+
+--------------enigF25E35105147A9647E81F3DE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEO6EwniDOoMHTA+kRAuuIAJwIybKFjAlHO6bcUnOlGd/fMTvLnQCfdQj3
+ptZiespgEXs023DDz16+h7s=
+=vWwI
+-----END PGP SIGNATURE-----
+
+--------------enigF25E35105147A9647E81F3DE--
 
