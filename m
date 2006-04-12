@@ -1,16 +1,14 @@
-Message-ID: <443CB06C.2080202@domain.hid>
-Date: Wed, 12 Apr 2006 09:46:52 +0200
+Message-ID: <443CB0F7.9060503@domain.hid>
+Date: Wed, 12 Apr 2006 09:49:11 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] question about the latency test running on	Blackfin
-References: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>	<1144294706.12272.32.camel@domain.hid>
-	<4434BDBD.9060102@domain.hid>	<1144412822.21632.10.camel@domain.hid>
-	<44365CFA.1020506@domain.hid>
-	<1144809772.7286.47.camel@domain.hid>
-In-Reply-To: <1144809772.7286.47.camel@domain.hid>
+Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
+References: <1143612388.32703.257789950@domain.hid>	<442A7D19.2000009@domain.hid>	<1143694058.30209.257882137@domain.hid>	<442C46EC.6000605@domain.hid>	<1143790982.14016.257982746@domain.hid>	<442CFCA3.4070704@domain.hid>	<17453.19513.723459.198259@domain.hid>	<1144724767.27088.258799393@domain.hid>	<17467.39989.698322.9385@domain.hid>
+	<1144803396.21432.258890893@domain.hid>
+In-Reply-To: <1144803396.21432.258890893@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig9D6E4E6CC4D1DCD4919E177C"
+	boundary="------------enig0011FD8CDA30DE71D1921FBC"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,67 +19,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Li Yi <yi.li@domain.hid>
+To: Saul <xeno@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9D6E4E6CC4D1DCD4919E177C
+--------------enig0011FD8CDA30DE71D1921FBC
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Li Yi wrote:
-> Hi Philippe,
+Saul wrote:
+> Gilles Chanteperdrix wrote:
+>>  > >  > > I thought SMI was supposed to increase latencies, but I only=
+
+>>  > >  > > see latencies < 60us at any load, unless I start video
+>>  > >  > > capture. Does the latency test absolutely rule out SMI as
+>>  > >  > > the cause?
+>>  > >  >
+>>  > >  > Not really, e.g. if the video capture device is USB-attached,
+>>  > >  > then SMI could possibly remain in the picture.
+>>  > >
+>>  > > I have used the bttv driver with xawtv or mythtv and nvidia
+>>  > > proprietary drivers on a dual pIII machine running latency and
+>>  > > the maximum latency was far less than 100 us. What produces large=
+
+>>  > > spots, however, is switching virtual terminals or changing
+>>  > > resolution. Doesn't xawtv change resolution for full screen mode
+>>  > > ? Did not you use the 768x576 modeline hack ?
+>>  >
+>>  >
+>>  > The video capture is not USB, it's a PCI card. Since I don't see
+>>  > poor latencies I'm guessing my problem is *not* SMI related.
+>>
+>> The latencies above 100us that you observe when starting video capture=
+
+>> are abnormal. I was suggesting that these latencies are not due to
+>> video capture but to the fact that xawtv change resolution. Big
+>> latencies when switching virtual terminal are a well-known issue, not
+>> related to SMI. So my question was: is xawtv configured on your
+>> machine to change resolution when starting capture ?
 >=20
-> According to your answers, I updated the document on Xenomai on
-> Blackfin: (http://docs.blackfin.uclinux.org/doku.php?id=3Dadeos) with t=
-he
-> test result of different modes, setting  XENO_OPT_TIMING_SCHEDLAT =3D 1=
-=2E
-> But I still have some question about the test result, hoping for your
-> help:
+> Oh, well xawtv starts up in a window and does not change the screen
+> resolution. The large latencies occur during program startup. I
+> have seen no other program produce poor latencies in the latency
+> test program.
 >=20
-> When running this test in mode 0, the worst case latency is 65 us, (HSD=
-|
-> max| 65 - 66 | 1). This result is get when there is no workload. Can I
-> say this system is "Hard Real-time" because most of the latency samples=
 
-> are in a  limited range? =20
+There is a way to narrow down your issue: apply the ipipe latency tracer
+patch on top of your current Xenomai kernel, switch tracing on in the
+config (ipipe feature), and recompile the kernel. Then you should run
+the latency test with the -f parameter.
 
-Soft RT: the more samples remain under the required limit the higher is
-         the quality of the system
+After hitting a high latency, grab the content of
+/proc/ipipe/trace/frozen. This back-trace is taken always for the
+highest latency the test tool measured.
 
-Hard RT: ALL samples must be below the limit
-
-So, for hard RT, those 65 us is the interesting number. How did you
-create the system load? Typical tests contain some cache benchmarking
-tool (I prefer calibrator: http://www.cwi.nl/~manegold/Calibrator) +
-network load (e.g. ping -f) + hard disk or other persistent storage
-access (e.g. dd if=3D<your-disk> of=3D/dev/null).
-
-How much MHz does your board have, and to what can it be compared when
-looking at other architectures. 65 us looks quite (too?) good for
-low-end, but maybe the blackfin isn't actually low-end.
-
->=20
-> That is, from the test result:
-> HSS|    min|        59|     31.746|      0.632
-> HSS|    avg|    599965|     33.365|      2.151
-> HSS|    max|        59|     53.339|      2.739
->=20
-> Can I make the conclusion that the schedule latency is "determinative" =
-and the system is "hard real-time"? If not,
-> what is the expected test result? Xenomai is able to provide hard real-=
-time, right?
-
-Yes, Xenomai is a hard-RT system. But this doesn't depend on a specific
-worst-case latency number, rather on the fact that a hardware-dependent
-upper limit can be provided that is independent of the (here:) Linux load=
-=2E
+You may want to play with /proc/ipipe/trace/back_trace_points (even
+belatedly), or .../verbose to see more details. Look for high delays
+before or after the timer interrupt - or post a (packed) version of the
+trace to the list.
 
 Jan
 
 
---------------enig9D6E4E6CC4D1DCD4919E177C
+--------------enig0011FD8CDA30DE71D1921FBC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -90,10 +90,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEPLBsniDOoMHTA+kRAvZIAJwM5+zHvBXlcRD85C7DPJu576qZ/gCaAy9R
-b0zJa0mekAgV4GwV4yWxS4Q=
-=2gKo
+iD8DBQFEPLD3niDOoMHTA+kRAqL8AJ0QaCDHaUy3ledZEL9ze0jDfbpqggCdF+pG
+mQNlZEUoJaPWinzoqKi496o=
+=t8nH
 -----END PGP SIGNATURE-----
 
---------------enig9D6E4E6CC4D1DCD4919E177C--
+--------------enig0011FD8CDA30DE71D1921FBC--
 
