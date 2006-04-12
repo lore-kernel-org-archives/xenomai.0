@@ -1,15 +1,15 @@
-Message-ID: <443CB0F7.9060503@domain.hid>
-Date: Wed, 12 Apr 2006 09:49:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
-References: <1143612388.32703.257789950@domain.hid>	<442A7D19.2000009@domain.hid>	<1143694058.30209.257882137@domain.hid>	<442C46EC.6000605@domain.hid>	<1143790982.14016.257982746@domain.hid>	<442CFCA3.4070704@domain.hid>	<17453.19513.723459.198259@domain.hid>	<1144724767.27088.258799393@domain.hid>	<17467.39989.698322.9385@domain.hid>
-	<1144803396.21432.258890893@domain.hid>
-In-Reply-To: <1144803396.21432.258890893@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0011FD8CDA30DE71D1921FBC"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] question about the latency test running on	Blackfin
+From: adam li <yi.li@domain.hid>
+In-Reply-To: <443CB06C.2080202@domain.hid>
+References: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>
+	<1144294706.12272.32.camel@domain.hid>  <4434BDBD.9060102@domain.hid>
+	<1144412822.21632.10.camel@domain.hid>  <44365CFA.1020506@domain.hid>
+	<1144809772.7286.47.camel@domain.hid>  <443CB06C.2080202@domain.hid>
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+Date: Wed, 12 Apr 2006 20:28:16 +0800
+Message-Id: <1144844898.7808.34.camel@domain.hid>
+Mime-Version: 1.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,81 +19,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Saul <xeno@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0011FD8CDA30DE71D1921FBC
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Thanks for the suggestions. 
 
-Saul wrote:
-> Gilles Chanteperdrix wrote:
->>  > >  > > I thought SMI was supposed to increase latencies, but I only=
+I am using Blackfin 533 on the STAMP board. The core frequency is 398
+MHz.These data are got when there is not special workload, only uClinux
+running.
 
->>  > >  > > see latencies < 60us at any load, unless I start video
->>  > >  > > capture. Does the latency test absolutely rule out SMI as
->>  > >  > > the cause?
->>  > >  >
->>  > >  > Not really, e.g. if the video capture device is USB-attached,
->>  > >  > then SMI could possibly remain in the picture.
->>  > >
->>  > > I have used the bttv driver with xawtv or mythtv and nvidia
->>  > > proprietary drivers on a dual pIII machine running latency and
->>  > > the maximum latency was far less than 100 us. What produces large=
+I tried to run "latency" test in Mode 0 (user space task) for 60 sec,
+with the "calibrator" as work load, this time the worst case schedule
+latency becomes 82 us. 
 
->>  > > spots, however, is switching virtual terminals or changing
->>  > > resolution. Doesn't xawtv change resolution for full screen mode
->>  > > ? Did not you use the 768x576 modeline hack ?
->>  >
->>  >
->>  > The video capture is not USB, it's a PCI card. Since I don't see
->>  > poor latencies I'm guessing my problem is *not* SMI related.
->>
->> The latencies above 100us that you observe when starting video capture=
+As you mentioned:
 
->> are abnormal. I was suggesting that these latencies are not due to
->> video capture but to the fact that xawtv change resolution. Big
->> latencies when switching virtual terminal are a well-known issue, not
->> related to SMI. So my question was: is xawtv configured on your
->> machine to change resolution when starting capture ?
->=20
-> Oh, well xawtv starts up in a window and does not change the screen
-> resolution. The large latencies occur during program startup. I
-> have seen no other program produce poor latencies in the latency
-> test program.
->=20
+">Yes, Xenomai is a hard-RT system. But this doesn't depend on a
+specific
+> worst-case latency number, rather on the fact that a hardware-dependent
+> upper limit can be provided that is independent of the (here:) Linux load"
 
-There is a way to narrow down your issue: apply the ipipe latency tracer
-patch on top of your current Xenomai kernel, switch tracing on in the
-config (ipipe feature), and recompile the kernel. Then you should run
-the latency test with the -f parameter.
+Can I understand like this: Given the hardware and the workload, the
+upper limit (worst case latency) is "determinative", regardless of what
+is happening in Linux?
 
-After hitting a high latency, grab the content of
-/proc/ipipe/trace/frozen. This back-trace is taken always for the
-highest latency the test tool measured.
+But still another confusion, as we can see from the test result, given
+the hardware and the workload, each time running the "latency" test case
+will result in an average latency and a worst case value, but how can we
+"make sure" that using such hardware and such workload, the worst case
+latency is "sure" to bellow certain upper limit? In other words, is it
+possible that in some case, the worst case latency may go beyond the
+observed upper limit? Or can I say that, there is such possibility, but
+the probability is rare (statistically).
 
-You may want to play with /proc/ipipe/trace/back_trace_points (even
-belatedly), or .../verbose to see more details. Look for high delays
-before or after the timer interrupt - or post a (packed) version of the
-trace to the list.
-
-Jan
+Thanks,
+-Li Yi
 
 
---------------enig0011FD8CDA30DE71D1921FBC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+ 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEPLD3niDOoMHTA+kRAqL8AJ0QaCDHaUy3ledZEL9ze0jDfbpqggCdF+pG
-mQNlZEUoJaPWinzoqKi496o=
-=t8nH
------END PGP SIGNATURE-----
 
---------------enig0011FD8CDA30DE71D1921FBC--
+
+On Wed, 2006-04-12 at 09:46 +0200, Jan Kiszka wrote:
+> Li Yi wrote:
+> > Hi Philippe,
+> > 
+> > According to your answers, I updated the document on Xenomai on
+> > Blackfin: (http://docs.blackfin.uclinux.org/doku.php?id=adeos) with the
+> > test result of different modes, setting  XENO_OPT_TIMING_SCHEDLAT = 1.
+> > But I still have some question about the test result, hoping for your
+> > help:
+> > 
+> > When running this test in mode 0, the worst case latency is 65 us, (HSD|
+> > max| 65 - 66 | 1). This result is get when there is no workload. Can I
+> > say this system is "Hard Real-time" because most of the latency samples
+> > are in a  limited range?  
+> 
+> Soft RT: the more samples remain under the required limit the higher is
+>          the quality of the system
+> 
+> Hard RT: ALL samples must be below the limit
+> 
+> So, for hard RT, those 65 us is the interesting number. How did you
+> create the system load? Typical tests contain some cache benchmarking
+> tool (I prefer calibrator: http://www.cwi.nl/~manegold/Calibrator) +
+> network load (e.g. ping -f) + hard disk or other persistent storage
+> access (e.g. dd if=<your-disk> of=/dev/null).
+> 
+> How much MHz does your board have, and to what can it be compared when
+> looking at other architectures. 65 us looks quite (too?) good for
+> low-end, but maybe the blackfin isn't actually low-end.
+> 
+> > 
+> > That is, from the test result:
+> > HSS|    min|        59|     31.746|      0.632
+> > HSS|    avg|    599965|     33.365|      2.151
+> > HSS|    max|        59|     53.339|      2.739
+> > 
+> > Can I make the conclusion that the schedule latency is "determinative" and the system is "hard real-time"? If not,
+> > what is the expected test result? Xenomai is able to provide hard real-time, right?
+> 
+> Yes, Xenomai is a hard-RT system. But this doesn't depend on a specific
+> worst-case latency number, rather on the fact that a hardware-dependent
+> upper limit can be provided that is independent of the (here:) Linux load.
+> 
+> Jan
+> 
 
