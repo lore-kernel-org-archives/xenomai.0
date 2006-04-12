@@ -1,21 +1,14 @@
-Message-Id: <1144803396.21432.258890893@domain.hid>
-From: "Saul" <xeno@domain.hid>
-Content-Disposition: inline
+Subject: Re: [Xenomai-help] question about the latency test running on	Blackfin
+From: Li Yi <yi.li@domain.hid>
+In-Reply-To: <44365CFA.1020506@domain.hid>
+References: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>
+	<1144294706.12272.32.camel@domain.hid>  <4434BDBD.9060102@domain.hid>
+	<1144412822.21632.10.camel@domain.hid>  <44365CFA.1020506@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="ISO-8859-1"
-MIME-Version: 1.0
-References: <1143612388.32703.257789950@domain.hid>
-	<442A7D19.2000009@domain.hid>
-	<1143694058.30209.257882137@domain.hid>
-	<442C46EC.6000605@domain.hid>
-	<1143790982.14016.257982746@domain.hid>
-	<442CFCA3.4070704@domain.hid>
-	<17453.19513.723459.198259@domain.hid>
-	<1144724767.27088.258799393@domain.hid>
-	<17467.39989.698322.9385@domain.hid>
-Subject: Re: [Xenomai-help] Non-deterministic behaviour in primary mode
-In-Reply-To: <17467.39989.698322.9385@domain.hid>
-Date: Wed, 12 Apr 2006 10:56:36 +1000
+Date: Wed, 12 Apr 2006 10:42:52 +0800
+Message-Id: <1144809772.7286.47.camel@domain.hid>
+Mime-Version: 1.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,39 +18,210 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
->  > >  > > I thought SMI was supposed to increase latencies, but I only
->  > >  > > see latencies < 60us at any load, unless I start video
->  > >  > > capture. Does the latency test absolutely rule out SMI as
->  > >  > > the cause?
->  > >  >
->  > >  > Not really, e.g. if the video capture device is USB-attached,
->  > >  > then SMI could possibly remain in the picture.
->  > >
->  > > I have used the bttv driver with xawtv or mythtv and nvidia
->  > > proprietary drivers on a dual pIII machine running latency and
->  > > the maximum latency was far less than 100 us. What produces large
->  > > spots, however, is switching virtual terminals or changing
->  > > resolution. Doesn't xawtv change resolution for full screen mode
->  > > ? Did not you use the 768x576 modeline hack ?
->  >
->  >
->  > The video capture is not USB, it's a PCI card. Since I don't see
->  > poor latencies I'm guessing my problem is *not* SMI related.
->
-> The latencies above 100us that you observe when starting video capture
-> are abnormal. I was suggesting that these latencies are not due to
-> video capture but to the fact that xawtv change resolution. Big
-> latencies when switching virtual terminal are a well-known issue, not
-> related to SMI. So my question was: is xawtv configured on your
-> machine to change resolution when starting capture ?
 
-Oh, well xawtv starts up in a window and does not change the screen
-resolution. The large latencies occur during program startup. I
-have seen no other program produce poor latencies in the latency
-test program.
+Hi Philippe,
 
-Saul.
+According to your answers, I updated the document on Xenomai on
+Blackfin: (http://docs.blackfin.uclinux.org/doku.php?id=adeos) with the
+test result of different modes, setting  XENO_OPT_TIMING_SCHEDLAT = 1.
+But I still have some question about the test result, hoping for your
+help:
+
+When running this test in mode 0, the worst case latency is 65 us, (HSD|
+max| 65 - 66 | 1). This result is get when there is no workload. Can I
+say this system is "Hard Real-time" because most of the latency samples
+are in a  limited range?  
+
+That is, from the test result:
+HSS|    min|        59|     31.746|      0.632
+HSS|    avg|    599965|     33.365|      2.151
+HSS|    max|        59|     53.339|      2.739
+
+Can I make the conclusion that the schedule latency is "determinative" and the system is "hard real-time"? If not,
+what is the expected test result? Xenomai is able to provide hard real-time, right?
+
+Thanks,
+-Li Yi
+
+
+On Fri, 2006-04-07 at 14:37 +0200, Philippe Gerum wrote:
+> adam li wrote:
+> > Thanks for the reply. 
+> > 
+> > I tried to set "CONFIG_XENO_OPT_TIMING_SCHEDLAT=10000" and run the test
+> > in Mode 2 again:
+> > # ./latency -t2 -h -T30
+> > == Sampling period: 100 us
+> > == Test mode: in-kernel timer handler
+> > == All results in microseconds
+> > warming up...
+> > RTT|  00:00:01  (in-kernel timer handler, 100 us period)
+> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+> > worst
+> > RTD|       4.878|       6.021|      16.922|       0|       4.878|
+> > 16.922
+> > RTD|       4.992|       6.199|      22.921|       0|       4.878|
+> > 22.921
+> > RTD|       4.927|       6.258|      27.482|       0|       4.878|
+> > 27.482
+> > ...
+> > HSH|--param|--samples-|--average--|---stddev--
+> > HSS|    min|        29|      3.724|      0.591
+> > HSS|    avg|    299981|      5.538|      1.196
+> > HSS|    max|        29|     24.379|      5.192
+> > 
+> > But since the output test result depends on the
+> > "CONFIG_XENO_OPT_TIMING_SCHEDLAT" and "CONFIG_XENO_OPT_TIMING_TIMERLAT",
+> > how do I know the "actual" interrupt latency? That is, what is the
+> > average interrupt latency in this case?
+> > 
+> 
+> Set the schedlat to 1 (ns) to cancel the compensation and re-run the test.
+> 
+> > Thanks,
+> > 
+> > -Li Yi
+> > 
+> > 
+> > On Thu, 2006-04-06 at 09:05 +0200, Philippe Gerum wrote:
+> > 
+> >>adam li wrote:
+> >>
+> >>>Hi,
+> >>>
+> >>>I tried to run the "latency" test on Blackfin 533-STAMP board, in
+> >>>different modes. Here is the output of the test result:
+> >>>
+> >>>(I am using xenomai-2.1.0 with default configuration,(adding "timer
+> >>>benchmark" driver)).
+> >>>
+> >>>1. # latency -h -t0 -T30
+> >>>HSH|--param|--samples-|--average--|---stddev--
+> >>>HSS|    min|        29|      9.862|      0.581
+> >>>HSS|    avg|    299964|     11.380|      2.676
+> >>>HSS|    max|        29|     49.759|      5.296
+> >>>
+> >>># cat /proc/xenomai/stat
+> >>>CPU  PID    MSW        CSW        PF    STAT      NAME
+> >>>  0  0      0/0        288239     0     00400080  ROOT
+> >>>  0  47     23/22      145        0     00300082  display
+> >>>  0  48     1/0        220501     0     00300084  sampling
+> >>>
+> >>>
+> >>>2. # latency -h -t1 -T30
+> >>>HSH|--param|--samples-|--average--|---stddev--
+> >>>HSS|    min|        29|      6.552|      0.686
+> >>>HSS|    avg|    299985|      8.849|      1.601
+> >>>HSS|    max|        29|     35.379|      6.383
+> >>>
+> >>>cat /proc/xenomai/stat
+> >>>CPU  PID    MSW        CSW        PF    STAT      NAME
+> >>>  0  0      0/0        436079     0     00400080  ROOT
+> >>>  0  58     6/5        42         0     00300082  display
+> >>>  0  0      0/0        57685      0     00000084  timerbench
+> >>>
+> >>>
+> >>>3. # latency -h -t2 -T30
+> >>>== Sampling period: 100 us
+> >>>== Test mode: in-kernel timer handler
+> >>>== All results in microseconds
+> >>>warming up...
+> >>>RTT|  00:00:01  (in-kernel timer handler, 100 us period)
+> >>>RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+> >>>worst
+> >>>RTD|      -5.340|      -4.385|       8.064|       0|      -5.340|
+> >>>8.064
+> >>>RTD|      -6.848|      -4.359|       8.907|       0|      -6.848|
+> >>>8.907
+> >>>RTD|      -6.443|      -4.518|      23.878|       0|      -6.848|
+> >>>23.878
+> >>>RTD|      -5.757|      -4.240|      23.377|       0|      -6.848|
+> >>>23.878
+> >>>RTD|      -6.153|      -4.144|      24.107|       0|      -6.848|
+> >>>24.107
+> >>>RTD|      -5.446|      -4.040|      18.754|       0|      -6.848|
+> >>>24.107
+> >>>RTD|      -7.697|      -4.690|      20.319|       0|      -7.697|
+> >>>24.107
+> >>>
+> >>>HSH|--param|--samples-|--average--|---stddev--
+> >>>HSS|    min|        29|      5.621|      0.820
+> >>>HSS|    avg|    299979|      3.990|      0.774
+> >>>HSS|    max|        29|     15.966|      6.248
+> >>>
+> >>>
+> >>>And my questions are:
+> >>>
+> >>>1). Compared the output of Mode 0 (user space task) and Mode 1 (kernel
+> >>>space task), the average latency of Mode 1 is shorter. In Mode 1, the
+> >>>"timerbench" thread is running in primary mode, but what makes the
+> >>>latency in secondary mode longer?
+> >>>
+> >>
+> >>Both modes 0 and 1 exhibit threads running in primary mode. The 
+> >>difference is that mode 1 runs kernel based threads which are mostly 
+> >>seen as co-routines, whilst mode 0 runs user-space based ones. Mode 0 
+> >>involves the additional cost of dealing with full user-space context 
+> >>switches.
+> >>
+> >>
+> >>>2) From the output of Mode 0, the "MSW" field of "sampling" thread is
+> >>>always 1/0, does that mean the "sampling" thread will switch to primary
+> >>>mode and keep stay in primary mode throughout the test?
+> >>>
+> >>
+> >>Yes.
+> >>
+> >>
+> >>>3) In Mode 2 (timer handler in kernel space), the "lat min" and "lat
+> >>>avg" is negative, is this correct?
+> >>
+> >>Yes, it only means that your pre-calibrated jitter compensation value is 
+> >>over-pessimistic, and could be lowered. This value is substracted from 
+> >>timer shot dates in order to take into account the intrinsic latency of 
+> >>your board and of Xenomai-related scheduling latency. See 
+> >>ksrc/include/asm-blackfin/calibration.h. You can override this value 
+> >>using the "timing" configuration menu.
+> >>
+> >>  If it is correct, why the latency is
+> >>
+> >>>much shorter than mode 1(kernel space task)?
+> >>>
+> >>
+> >>Because mode 1 measures the scheduling latency, whilst mode 2 only 
+> >>measures the interrupt latency.
+> >>
+> >>
+> >>>And finally a general question:
+> >>>4) why there is RTDM? What is the design purpose?
+> >>
+> >>It's a unifying, RTOS-agnostic, driver-class agnostic, API-agnostic 
+> >>framework for building real-time device drivers. It's the cornerstone of 
+> >>  Xenomai's real-time device support.
+> >>
+> >>  If I were to write
+> >>
+> >>>Realtime device drivers, shall I use RTDM?
+> >>>
+> >>
+> >>Yes, definitely.
+> >>
+> >>
+> >>>Thanks,
+> >>>
+> >>>-Li Yi
+> >>>
+> >>>_______________________________________________
+> >>>Xenomai-help mailing list
+> >>>Xenomai-help@domain.hid
+> >>>https://mail.gna.org/listinfo/xenomai-help
+> >>>
+> >>
+> >>
+> > 
+> 
+> 
 
