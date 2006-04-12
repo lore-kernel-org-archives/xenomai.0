@@ -1,13 +1,12 @@
-Message-ID: <443C14BB.5030401@domain.hid>
-Date: Tue, 11 Apr 2006 22:42:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] deleting a left over heap (shared memory segment)
-References: <067C9A1F6AFEB643895EA4513E116884178FF2@domain.hid>
-	<443C11CF.7030905@domain.hid>
-In-Reply-To: <443C11CF.7030905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Message-Id: <1144804249.25393.258891255@domain.hid>
+From: "Saul" <xeno@domain.hid>
+Content-Disposition: inline
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="ISO-8859-1"
+MIME-Version: 1.0
+Date: Wed, 12 Apr 2006 11:10:49 +1000
+Subject: [Xenomai-help] Reliable PC suggestions (was Non-deterministic
+ behaviour in primary mode)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,45 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, "Moser, Dan" <DMoser@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Moser, Dan wrote:
-> 
->> Hi,
->>
->> I was wondering if there was a command line method for deleting left
->> over heaps (i.e., those that were not properly deleted with a call to
->> rt_heap_delete()) from /proc/xenomai/registry/native/heaps.
->>
->> Just a simple rm command (as root) yields the following:
->>
->> # rm -f myshmem
->> cannot remove `myshmem': Operation not permitted
->>
-> 
-> For the moment, there is 
-+ no
-way to remove lingering native API objects from
-> the /proc interface. On the other hand, the RTDM API allows this for 
-> some of its objects by writing a magic value to the proper /proc entry, 
-> and we might use the same technique to provide this feature to the 
-> native one.
-> 
->> Thanks in advance for any help/insight,
->> Dan
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
-> 
-> 
+Hi,
 
+The unresolved problems I'm having with my brand-new Intel PC and
+Xenomai have forced me to consider purchasing a new PC specifically for
+use on RT projects.
 
--- 
+I would be interested in hearing from people about the PC's that you use
+that are known to work well with Xenomai. I'd be looking for a fast new
+desktop PC for image processing and aircraft control tasks. Is AMD a
+better bet? I deliberately avoided AMD when purchasing my current
+machine since new AMD PC's have always given me trouble in Linux with
+I/O controller drivers lagging behind hardware changes. By the way, the
+Intel I/O controller I currently have is ICH6, but I still don't know if
+my problems are SMI related.
 
-Philippe.
+Any suggestions much appreciated.
+
+Saul.
 
