@@ -1,11 +1,12 @@
-Content-class: urn:content-classes:message
+From: Tobias Marschall <tmarscha@domain.hid>
+Date: Thu, 13 Apr 2006 11:49:40 +0200
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C65ED6.6C071A98"
-Date: Thu, 13 Apr 2006 10:44:05 +0200
-Message-ID: <5B122FD931231D408AC32630D1B1F7290AAB13BC@BUDMLVEM03.e2k.ad.ge.com>
-From: "Thomas, Brieuc \(GE Healthcare\)" <Brieuc.Thomas@domain.hid>
-Subject: [Xenomai-help] Re: Vxworks skin & Task priority 
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200604131149.40706.tmarscha@domain.hid>
+Subject: [Xenomai-help] Problems running testsuite
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,456 +18,348 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Hallo,
 
-------_=_NextPart_001_01C65ED6.6C071A98
-Content-Type: text/plain;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+I've been using rtai until now and decided to give xenomai (release 2.1) a 
+try. I followed the instructions from README.INSTALL, and everything (kernel 
+patching, compilation, etc.) went fine. Then I tried to run the latency test, 
+which failed:
 
-Thank you for your explanation about thread !
-=20
-Always in the same bug, I'll try to test my configuration with this
-program.
-RR timeslice =3D10ms ticks=3D1/ms
-and  two task (with same priority) that increase a counter variable each
-time that it takes again the cpu.
-We can See the result see bellow:
-=20
-    Xenomai/uvm: real-time nucleus v2.1 (Champagne) loaded.
-    starting VxWorks services.
-    Start 0 taskChanged 0
-    Start testRun1 0 taskChanged 0
-    Run testRun1 0 taskChanged 1
-    Start testRun2 10 taskChanged 1
-    Run testRun2 10 taskChanged 2
-    Run testRun1 20 taskChanged 3
-    Run testRun2 30 taskChanged 4
-    Run testRun1 40 taskChanged 5
-    Run testRun2 50 taskChanged 6
-    End testRun1 60 taskChanged 6
-    End testRun2 60 taskChanged 6
-    End 150 taskChanged 6
-=20
-The period is put to 500ms (taskPeriod =3D50), and we can see than every
-10ms the context change. OK
-But now my problem is: If I change the number of my period "taskPeriod".
-My computer freezes  without any print.
-So, It's this problem than I don't understand. Can anybody help me?=20
-=20
-#include "vxworks/vxworks.h"=20
-#define CLK_RATE 50
-#define SSEXEC_SYSCLKRATE 1000=20
-#define SSEXEC_TIMESLICE 10=20
-=20
-static SEM_ID _semaphoreId;
-static int taskRunning =3D 0;
-static int taskChanged =3D 0;
-#define taskPeriod 50               // <<<<<<<<<<<<<<<<<
-=20
-void testRun1()
-{
-    printf("Start testRun1 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-    const unsigned int taskId =3D 1;
-    unsigned int startTime1 =3D tickGet();
-=20
-    while(tickGet() < (startTime1 + taskPeriod))
-    {
-        if(semTake(_semaphoreId, WAIT_FOREVER) !=3D OK) return;
-        if(taskRunning !=3D taskId)
-        {
-            taskRunning =3D taskId;
-            taskChanged++;
-            printf("Run testRun1 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-        }
-        if(semGive(_semaphoreId) !=3D OK) return;
-    }
-    printf("End testRun1 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-}
-=20
-void testRun2()
-{
-    printf("Start testRun2 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-    const unsigned int taskId =3D 2;
-    unsigned int startTime1 =3D tickGet();
-=20
-    while(tickGet() < (startTime1 + taskPeriod))
-    {
-        if(semTake(_semaphoreId, WAIT_FOREVER) !=3D OK) return;
-        if(taskRunning !=3D taskId)
-        {
-            taskRunning =3D taskId;
-            taskChanged++;
-            printf("Run testRun2 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-        }
-        if(semGive(_semaphoreId) !=3D OK) return;
-    }
-    printf("End testRun2 %d taskChanged %d\n", (int)tickGet(),
-taskChanged);
-}
-=20
-int CreateTask(void)
-{
-    _semaphoreId =3D semMCreate(SEM_Q_PRIORITY);
-    printf("Start %d taskChanged %d\n", (int)tickGet(), taskChanged);
-=20
-    int taskRun1 =3D taskSpawn("testRun1",100, VX_FP_TASK,
-0x5000,(FUNCPTR)testRun1, 0,1,2,3,4,5,6,7,8,9 );
-    int taskRun2 =3D taskSpawn("testRun2",100, VX_FP_TASK,
-0x5000,(FUNCPTR)testRun2, 0,1,2,3,4,5,6,7,8,9 );
-    taskDelay(taskPeriod + 100);
-=20
-    printf("End %d taskChanged %d\n", (int)tickGet(), taskChanged);
-    return OK;
-}
-=20
-int rootTask (void)
-{=20
-    sysClkRateSet(SSEXEC_SYSCLKRATE);
-    tickSet(0);
-    kernelTimeSlice(SSEXEC_TIMESLICE);=20
-    CreateTask();
-    return OK;
-}
-=20
-int root_thread_init (void)
-{
-    return !taskSpawn("root",0,VX_FP_TASK,0x5000,(FUNCPTR)rootTask,
-0,0,0,0,0,0,0,0,0,0 );
-}
-=20
+-----------
+/usr/xenomai/testsuite/latency $ ./run
+head: `-1' option is obsolete; use `-n 1' since this will be removed in the 
+future
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+/usr/xenomai/bin/xeno-load: line 178:  5936 Killed                  $suflag $* 
+$cmdargs
+-----------
 
-------_=_NextPart_001_01C65ED6.6C071A98
-Content-Type: text/html;
-	charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+The same for "switch", the same if I call ./latency directly.
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<META content=3D"MSHTML 6.00.2800.1528" name=3DGENERATOR></HEAD>
-<BODY>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D250220207-13042006>Thank =
-you&nbsp;for=20
-your explanation about thread !</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><FONT face=3DArial size=3D2><SPAN =
+Is it correct that the xeno_timerbench module is required for the latency 
+test? I get the same result wheter or not I load the module.
 
-class=3D250220207-13042006></SPAN></FONT></FONT></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D250220207-13042006>Always =
-in the same=20
-bug, I'll try to test my configuration with this =
-program.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D250220207-13042006>RR =
-timeslice =3D10ms=20
-ticks=3D1/ms</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>and&nbsp; two task=20
-(with same priority)&nbsp;that increase a counter variable&nbsp;each =
-time that=20
-it takes again the cpu.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>We&nbsp;can See the=20
-result see bellow:</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><FONT><SPAN =
-class=3D250220207-13042006><FONT=20
-face=3DArial size=3D2></FONT></FONT></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Xenomai/uvm: =
-real-time=20
-nucleus v2.1 (Champagne) loaded.</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>starting VxWorks=20
-services.</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Start 0 taskChanged =
+What am I doing wrong?
 
-0</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Start testRun1 0 =
-taskChanged=20
-0</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun1 0 =
-taskChanged=20
-1</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Start testRun2 10 =
-taskChanged=20
-1</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun2 10 =
-taskChanged=20
-2</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun1 20 =
-taskChanged=20
-3</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun2 30 =
-taskChanged=20
-4</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun1 40 =
-taskChanged=20
-5</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>Run testRun2 50 =
-taskChanged=20
-6</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>End testRun1 60 =
-taskChanged=20
-6</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>End testRun2 60 =
-taskChanged=20
-6</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>End 150 taskChanged =
+Thanks in advance and best regards,
+Tobias
 
-6</FONT></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><FONT face=3DArial=20
-size=3D2></FONT></SPAN></FONT></FONT></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D250220207-13042006>The =
-period is put to=20
-500ms (taskPeriod =3D50), and we can see than every 10ms the context =
-change.=20
-OK</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN class=3D250220207-13042006>But =
-now my problem=20
-is: If I change the number of my period "taskPeriod". My computer =
-freezes&nbsp;=20
-without any print.</SPAN></FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><FONT face=3DArial size=3D2><SPAN =
+Some (hopefully useful) information follows:
+-----------
+/usr/xenomai/bin $ ./xeno-info
+If some fields are empty or look unusual you may have an old version.
+Compare to the current minimal requirements in Documentation/Changes.
 
-class=3D250220207-13042006>So, It's this problem than I don't =
-understand. Can=20
-anybody help me?&nbsp;</SPAN></FONT></FONT></FONT></DIV>
-<DIV><FONT><SPAN class=3D250220207-13042006><FONT face=3DArial=20
-size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>#include "vxworks/vxworks.h" =
-</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>#define CLK_RATE 50</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>#define SSEXEC_SYSCLKRATE 1000 =
-</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>#define SSEXEC_TIMESLICE 10 =
-</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>static SEM_ID =
-_semaphoreId;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>static int taskRunning =3D =
-0;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>static int taskChanged =3D =
-0;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>#define taskPeriod 50&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
-</SPAN>//=20
-&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</FON=
-T></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>void testRun1()</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>{</FONT></DIV>
-<DIV><FONT face=3DArial><FONT size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; </SPAN>printf("Start =
-testRun1 %d=20
-taskChanged %d\n", (int)tickGet(), taskChanged);</FONT></FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>const unsigned int taskId =3D 1;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>unsigned int startTime1 =3D tickGet();</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>while(tickGet() &lt; (startTime1 + taskPeriod))</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN>if(semTake(_semaphoreId, WAIT_FOREVER) !=3D OK) =
-return;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>if(taskRunning !=3D=20
-taskId)</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN></SPAN>taskRunning =3D=20
-taskId;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN></SPAN>taskChanged++;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN></SPAN>printf("Run=20
-testRun1 %d taskChanged %d\n", (int)tickGet(), =
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN>if(semGive(_semaphoreId) !=3D OK) return;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>printf("End testRun1 %d taskChanged %d\n", (int)tickGet(),=20
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>void testRun2()</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>printf("Start testRun2 %d taskChanged %d\n", (int)tickGet(),=20
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>const unsigned int taskId =3D 2;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>unsigned int startTime1 =3D tickGet();</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>while(tickGet() &lt; (startTime1 + taskPeriod))</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN>if(semTake(_semaphoreId, WAIT_FOREVER) !=3D OK) =
-return;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>if(taskRunning !=3D=20
-taskId)</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN></SPAN>taskRunning =3D=20
-taskId;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN></SPAN>taskChanged++;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN></SPAN>printf("Run=20
-testRun2 %d taskChanged %d\n", (int)tickGet(), =
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp; =
-</SPAN></SPAN>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN></SPAN>if(semGive(_semaphoreId) !=3D OK) return;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;&nbsp;</SPAN>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>printf("End testRun2 %d taskChanged %d\n", (int)tickGet(),=20
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>int CreateTask(void)</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>_semaphoreId =3D semMCreate(SEM_Q_PRIORITY);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>printf("Start %d taskChanged %d\n", (int)tickGet(),=20
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>int taskRun1 =3D taskSpawn("testRun1",100, VX_FP_TASK,=20
-0x5000,(FUNCPTR)testRun1, 0,1,2,3,4,5,6,7,8,9 );</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>int taskRun2 =3D taskSpawn("testRun2",100, VX_FP_TASK,=20
-0x5000,(FUNCPTR)testRun2, 0,1,2,3,4,5,6,7,8,9 );</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>taskDelay(taskPeriod + 100);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN=20
-class=3D250220207-13042006></SPAN></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>printf("End %d taskChanged %d\n", (int)tickGet(),=20
-taskChanged);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>return OK;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>int rootTask (void)</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>{ </FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>sysClkRateSet(SSEXEC_SYSCLKRATE);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>tickSet(0);</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>kernelTimeSlice(SSEXEC_TIMESLICE); </FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>CreateTask();</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>return OK;</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>}</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
-<DIV><FONT face=3DArial size=3D2>int root_thread_init =
-(void)</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>{</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2><SPAN =
-class=3D250220207-13042006>&nbsp;&nbsp;&nbsp;=20
-</SPAN>return !taskSpawn("root",0,VX_FP_TASK,0x5000,(FUNCPTR)rootTask,=20
-0,0,0,0,0,0,0,0,0,0 );</FONT></DIV>
-<DIV><FONT face=3DArial size=3D2>}</FONT></DIV>
-<DIV><FONT face=3DArial =
-size=3D2></FONT></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
+Linux tobi 2.6.14 #3 PREEMPT Thu Apr 13 09:13:53 CEST 2006 i686 AMD Athlon(tm) 
+XP 1600+ AuthenticAMD GNU/Linux
 
-------_=_NextPart_001_01C65ED6.6C071A98--
+Gnu C                  3.3.6
+Gnu make               3.80
+util-linux             2.12r
+mount                  2.12r
+module-init-tools      3.2.1
+e2fsprogs              1.38
+Linux C Library        2.3.5
+head: `-1' option is obsolete; use `-n 1' since this will be removed in the 
+future
+Dynamic linker (ldd)   2.3.5
+Procps                 3.2.5
+Net-tools              1.60
+Kbd                    1.12
+Sh-utils               5.2.1
+Modules Loaded         xeno_timerbench
+-----------
+~ $ dmesg|grep -i xenomai
+I-pipe: Domain Xenomai registered.
+Xenomai: hal/x86 started.
+Xenomai: real-time nucleus v2.1 (Champagne) loaded.
+Xenomai: starting native API services.
+Xenomai: starting RTDM services.
+-----------
+/usr/src/linux $ grep -3i xeno .config
+#
+# Real-time sub-system
+#
+CONFIG_XENOMAI=y
+CONFIG_XENO_OPT_NUCLEUS=y
+CONFIG_XENO_OPT_PERVASIVE=y
+CONFIG_XENO_OPT_PIPE=y
+CONFIG_XENO_OPT_PIPE_NRDEV=32
+CONFIG_XENO_OPT_REGISTRY=y
+CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
+CONFIG_XENO_OPT_SYS_HEAPSZ=128
+# CONFIG_XENO_OPT_ISHIELD is not set
+CONFIG_XENO_OPT_STATS=y
+# CONFIG_XENO_OPT_DEBUG is not set
+# CONFIG_XENO_OPT_WATCHDOG is not set
+
+#
+# Timing
+#
+CONFIG_XENO_OPT_TIMING_PERIODIC=y
+CONFIG_XENO_OPT_TIMING_PERIOD=0
+CONFIG_XENO_OPT_TIMING_TIMERLAT=0
+CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
+
+#
+# Scalability
+#
+# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+CONFIG_XENO_OPT_TIMER_LIST=y
+# CONFIG_XENO_OPT_TIMER_HEAP is not set
+
+#
+# Shared interrupts
+#
+# CONFIG_XENO_OPT_SHIRQ_LEVEL is not set
+# CONFIG_XENO_OPT_SHIRQ_EDGE is not set
+
+#
+# Machine
+#
+CONFIG_XENO_HW_FPU=y
+
+#
+# NMI watchdog
+#
+# CONFIG_XENO_HW_NMI_DEBUG_LATENCY is not set
+
+#
+# SMI workaround
+#
+# CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
+CONFIG_XENO_HW_SMI_DETECT=y
+# CONFIG_XENO_HW_SMI_WORKAROUND is not set
+
+#
+# Interfaces
+#
+CONFIG_XENO_SKIN_NATIVE=y
+CONFIG_XENO_OPT_NATIVE_PIPE=y
+CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=4096
+CONFIG_XENO_OPT_NATIVE_SEM=y
+CONFIG_XENO_OPT_NATIVE_EVENT=y
+CONFIG_XENO_OPT_NATIVE_MUTEX=y
+CONFIG_XENO_OPT_NATIVE_COND=y
+CONFIG_XENO_OPT_NATIVE_QUEUE=y
+CONFIG_XENO_OPT_NATIVE_HEAP=y
+CONFIG_XENO_OPT_NATIVE_ALARM=y
+CONFIG_XENO_OPT_NATIVE_MPS=y
+# CONFIG_XENO_OPT_NATIVE_INTR is not set
+CONFIG_XENO_SKIN_POSIX=m
+CONFIG_XENO_SKIN_PSOS=m
+CONFIG_XENO_SKIN_UITRON=m
+CONFIG_XENO_SKIN_VRTX=m
+CONFIG_XENO_SKIN_VXWORKS=m
+CONFIG_XENO_SKIN_RTAI=m
+CONFIG_XENO_OPT_RTAI_FIFO=y
+CONFIG_XENO_OPT_RTAI_SEM=y
+CONFIG_XENO_OPT_RTAI_SHM=y
+CONFIG_XENO_SKIN_RTDM=y
+CONFIG_XENO_SKIN_UVM=m
+
+#
+# Drivers
+#
+# CONFIG_XENO_DRIVERS_16550A is not set
+CONFIG_XENO_DRIVERS_TIMERBENCH=m
+-----------
+/usr/xenomai/bin $ ./xeno-test
+running ./xeno-test
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/cpuinfo
+processor       : 0
+vendor_id       : AuthenticAMD
+cpu family      : 6
+model           : 6
+model name      : AMD Athlon(tm) XP 1600+
+stepping        : 2
+cpu MHz         : 1400.291
+cache size      : 256 KB
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 1
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca 
+cmov pat pse36 mmx fxsr sse syscall mp mmxext 3dnowext 3dnow
+bogomips        : 2804.44
+
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/meminfo
+MemTotal:       774728 kB
+MemFree:        744832 kB
+Buffers:          3000 kB
+Cached:          12284 kB
+SwapCached:          0 kB
+Active:          11200 kB
+Inactive:         6328 kB
+HighTotal:           0 kB
+HighFree:            0 kB
+LowTotal:       774728 kB
+LowFree:        744832 kB
+SwapTotal:     1959920 kB
+SwapFree:      1959920 kB
+Dirty:               0 kB
+Writeback:           0 kB
+Mapped:           4804 kB
+Slab:             8512 kB
+CommitLimit:   2347284 kB
+Committed_AS:     8200 kB
+PageTables:        196 kB
+VmallocTotal:   253924 kB
+VmallocUsed:      2100 kB
+VmallocChunk:   251804 kB
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/ipipe/Linux
+Priority=100, Id=0x00000000
+irq0-15: accepted
+irq16-206: passed
+irq207-208: accepted
+irq209-212: passed
+irq213-216: accepted
+irq217-221: passed
+irq222-223: accepted
+irq224-225: grabbed, virtual
+irq226: passed, virtual
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/ipipe/Xenomai
+Priority=200, Id=0x58454e4f
+irq0-215: passed
+irq216: grabbed
+irq217-223: passed
+irq224-225: passed, virtual
+irq226: grabbed, virtual
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/ipipe/version
+1.2-01
+
+Thu Apr 13 09:37:38 CEST 2006
+running: generate_loads 1
+dd workload started, pids 5785
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/interrupts
+           CPU0
+  0:     169640          XT-PIC  timer, rthal_broadcast_timer
+  1:          8          XT-PIC  i8042
+  2:          0          XT-PIC  cascade
+  9:          0          XT-PIC  uhci_hcd:usb1, uhci_hcd:usb2, uhci_hcd:usb3
+ 11:       1956          XT-PIC  eth0
+ 12:        127          XT-PIC  i8042
+ 14:       1246          XT-PIC  ide0
+ 15:         16          XT-PIC  ide1
+NMI:          0
+LOC:     169605
+ERR:          2
+
+Thu Apr 13 09:37:38 CEST 2006
+running: cat /proc/loadavg
+0.16 0.03 0.01 2/33 5789
+head: `-13' option is obsolete; use `-n 13' since this will be removed in the 
+future
+
+Thu Apr 13 09:37:38 CEST 2006
+running: top -bn1c
+top - 09:37:39 up 11 min,  1 user,  load average: 0.16, 0.03, 0.01
+Tasks:  35 total,   2 running,  33 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.8% us,  0.8% sy,  0.0% ni, 97.4% id,  1.1% wa,  0.0% hi,  0.0% si
+Mem:    774728k total,    30400k used,   744328k free,     3008k buffers
+Swap:  1959920k total,        0k used,  1959920k free,    12344k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+ 5785 root      25   0  1464  356  292 R 98.4  0.0   0:00.63 dd if /dev/zero 
+of /dev/null
+    1 root      16   0  1460  488  428 S  0.0  0.1   0:00.06 init [3]
+    2 root      39  19     0    0    0 S  0.0  0.0   0:00.00 [ksoftirqd/0]
+
+Thu Apr 13 09:37:39 CEST 2006
+running: ./run -- -q -s -T 10 -t0
+head: `-1' option is obsolete; use `-n 1' since this will be removed in the 
+future
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+/usr/xenomai/bin/xeno-load: line 178:  5865 Killed                  $suflag $* 
+$cmdargs
+
+Thu Apr 13 09:37:40 CEST 2006
+running: ./run -- -q -s -T 10 -t1
+head: `-1' option is obsolete; use `-n 1' since this will be removed in the 
+future
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel periodic task
+== All results in microseconds
+/usr/xenomai/bin/xeno-load: line 178:  5944 Killed                  $suflag $* 
+$cmdargs
+
+Thu Apr 13 09:37:41 CEST 2006
+running: ./run -- -q -s -T 10 -t2
+head: `-1' option is obsolete; use `-n 1' since this will be removed in the 
+future
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel timer handler
+== All results in microseconds
+latency: failed to open benchmark device, code -16
+(modprobe xeno_timerbench?)
+
+Thu Apr 13 09:37:42 CEST 2006
+running: cat /proc/interrupts
+           CPU0
+  0:     170509          XT-PIC  timer, rthal_broadcast_timer
+  1:          8          XT-PIC  i8042
+  2:          0          XT-PIC  cascade
+  9:          0          XT-PIC  uhci_hcd:usb1, uhci_hcd:usb2, uhci_hcd:usb3
+ 11:       2055          XT-PIC  eth0
+ 12:        127          XT-PIC  i8042
+ 14:       1260          XT-PIC  ide0
+ 15:         16          XT-PIC  ide1
+NMI:          0
+LOC:     170474
+ERR:          2
+
+Thu Apr 13 09:37:42 CEST 2006
+running: cat /proc/loadavg
+0.16 0.03 0.01 4/33 6033
+head: `-13' option is obsolete; use `-n 13' since this will be removed in the 
+future
+
+Thu Apr 13 09:37:42 CEST 2006
+running: top -bn1c
+top - 09:37:42 up 11 min,  1 user,  load average: 0.16, 0.03, 0.01
+Tasks:  35 total,   2 running,  33 sleeping,   0 stopped,   0 zombie
+Cpu(s):  1.0% us,  1.1% sy,  0.0% ni, 96.9% id,  1.1% wa,  0.0% hi,  0.0% si
+Mem:    774728k total,    30556k used,   744172k free,     3044k buffers
+Swap:  1959920k total,        0k used,  1959920k free,    12344k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+ 5785 root      25   0  1464  356  292 R 98.9  0.0   0:03.70 dd if /dev/zero 
+of /dev/null
+    1 root      19   0  1460  488  428 S  0.0  0.1   0:00.06 init [3]
+    2 root      39  19     0    0    0 S  0.0  0.0   0:00.00 [ksoftirqd/0]
 
