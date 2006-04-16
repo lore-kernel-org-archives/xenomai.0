@@ -1,12 +1,13 @@
+Message-ID: <444289D4.3020700@domain.hid>
+Date: Sun, 16 Apr 2006 20:15:48 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="y/THTjQb6h"
+Subject: Re: [Xenomai-help] Problems running testsuite
+References: <200604131149.40706.tmarscha@domain.hid>	<443E9FD2.6070807@domain.hid>	<200604141342.40129.tmarscha@domain.hid>	<17471.38482.617361.14216@domain.hid>	<443FB0BA.5060404@domain.hid>	<44427E26.6040608@domain.hid>
+	<17474.34228.663482.766745@domain.hid>
+In-Reply-To: <17474.34228.663482.766745@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17480.58521.376174.197532@domain.hid>
-Date: Fri, 21 Apr 2006 15:56:41 +0200
-Subject: RE: [Xenomai-help] my tick takes a break !! 
-In-Reply-To: <5B122FD931231D408AC32630D1B1F7290AC5B129@domain.hid>
-References: <5B122FD931231D408AC32630D1B1F7290AC5B129@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Thomas, Brieuc (GE Healthcare)" <Brieuc.Thomas@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > > Maybe we need a script thats run on the target box, that collects
+>  > > the needed configuration factors; presumably including:
+>  > > CPUFLAGS=`grep flags /proc/cpuinfo`
+>  > > NPTL_AVAIL=`getconf GNU_LIBPTHREAD_VERSION`
+>  > > 
+>  > 
+>  > The problem is that we might not always have the target at hand when 
+>  > building the user-space support (e.g. LiveCD, deployment distro stuff). 
+>  > Therefore it could only be some optional helper, but not part of the 
+>  > regular build process.
+> 
+> Maybe we could modify skins user-space initialization so that they test
+> whether running NPTL if SEP is enabled ? Here is an example, doing
+> this in plain C :
+> 
+> https://listman.redhat.com/archives/phil-list/2003-April/msg00036.html
+> 
 
---y/THTjQb6h
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
-
-Thomas, Brieuc \(GE Healthcare\) wrote:
- > Oh no! Sorry, I mean the real-time tick counter!
-
-Could you try the attached patch ?
+Looks good. Additionally, we might end up moving common portions of the 
+various library constructors into a single file in order to reduce code 
+duplication.
 
 -- 
 
-
-					    Gilles Chanteperdrix.
-
---y/THTjQb6h
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="uvm-prio.diff"
-Content-Transfer-Encoding: 7bit
-
---- include/asm-uvm/system.h~	2006-04-05 15:08:08.000000000 +0200
-+++ include/asm-uvm/system.h	2006-04-21 15:54:24.000000000 +0200
-@@ -594,7 +594,7 @@ static void *xnarch_thread_trampoline (v
- 	{
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
- 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
--	sched_setscheduler(0,SCHED_FIFO,&param);
-+        pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
- 	uvm_thread_create(tcb->name,tcb,&tcb->completion,&tcb->khandle);
- 	err = uvm_thread_barrier();	/* Wait for start. */
- 	if (err)
-
---y/THTjQb6h--
+Philippe.
 
