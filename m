@@ -1,16 +1,12 @@
+Message-ID: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>
+Date: Sun, 16 Apr 2006 14:10:55 -0400
+From: "Brian L." <bluczkie@domain.hid>
+Sender: zorander@domain.hid
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17474.34228.663482.766745@domain.hid>
-Date: Sun, 16 Apr 2006 19:58:12 +0200
-Subject: Re: [Xenomai-help] Problems running testsuite
-In-Reply-To: <44427E26.6040608@domain.hid>
-References: <200604131149.40706.tmarscha@domain.hid>
-	<443E9FD2.6070807@domain.hid>
-	<200604141342.40129.tmarscha@domain.hid>
-	<17471.38482.617361.14216@domain.hid>
-	<443FB0BA.5060404@domain.hid> <44427E26.6040608@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Xenomai-help] General question on Native Skin tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,29 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > > Maybe we need a script thats run on the target box, that collects
- > > the needed configuration factors; presumably including:
- > > CPUFLAGS=`grep flags /proc/cpuinfo`
- > > NPTL_AVAIL=`getconf GNU_LIBPTHREAD_VERSION`
- > > 
- > 
- > The problem is that we might not always have the target at hand when 
- > building the user-space support (e.g. LiveCD, deployment distro stuff). 
- > Therefore it could only be some optional helper, but not part of the 
- > regular build process.
+If I create a native-skin RT_TASK from userspace with no flags, i.e.
 
-Maybe we could modify skins user-space initialization so that they test
-whether running NPTL if SEP is enabled ? Here is an example, doing
-this in plain C :
+void task(void*)
+{
+    for (;;) ;
+}
+int main()
+{
+   RT_TASK t;
+   rt_task_create(&t, 0, 3, 0);
+   rt_task_start(&t,task,0);
+   (do something which blocks)
+}
 
-https://listman.redhat.com/archives/phil-list/2003-April/msg00036.html
+Should that task starve all other tasks? In what ways is it different
+behaviorally from an ordinary posix thread? I ask because I have a
+thread that might be spinning and a frozen system (back in the rtlinux
+days, spinning in the real-time domain was a surefire way to freeze
+without any other sign of trouble). If it is the case that this task
+outweighs an ordinary linux thread/task, how can I make it the same?
 
--- 
+Also,  I haven't completely tracked this down yet, but xenomai seems
+to be page-faulting in a loop and exploding rather spectacularly in a
+native-skin multithreaded program that doesn't do anything outside of
+relatively ordinary queue/mutex/task stuff. I'm upgrading to trunk to
+see if it goes away.
 
-
-					    Gilles Chanteperdrix.
+Short of a serial cable, is there a way to capture Oops/Panic text as
+it flies by?
 
