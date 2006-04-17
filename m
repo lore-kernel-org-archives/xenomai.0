@@ -1,56 +1,32 @@
-Message-ID: <444F9DDA.7000400@domain.hid>
-Date: Wed, 26 Apr 2006 18:20:42 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Date: Mon, 17 Apr 2006 11:23:14 -0300
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: Adeos-cvs Digest, Vol 10, Issue 11
-References: <E1FYmA5-0003S9-00@domain.hid> <444F9BDB.200@domain.hid>
-In-Reply-To: <444F9BDB.200@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200604171123.14192.lbocseg@domain.hid>
+Subject: [Xenomai-help] MSW and CSW meanings
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> adeos-cvs-request@domain.hid wrote:
-> 
->>...
->>Commit from rpm (2006-04-26 17:41 CEST)
->>---------------
->>
->>Make IPIPE_TRACE_PATHS configurable
->>
->>  ipipe  v2.6/common/kernel/ipipe/tracer.c       1.10
->>  ipipe  v2.6/common/kernel/ipipe/Kconfig.trace  1.4
-> 
-> 
-> From a quick glance it appears to me you provided a nice interface to
-> break some stuff :). At least the explanation is not correct.
-> 
-> Those four paths are required to 1) always have an active path at hand
-> for recording, 2+3) keep the latest max or frozen path, and 4) escape
-> with to an alternative slot during max/frozen updates in case the
-> previous one is currently locked for output or whatever and cannot
-> become the new active path.
-> 
-> So, the absolute minimum is 3 when there is definitely no concurrent
-> usage of ipipe_trace_begin/end vs. ipipe_trace_freeze (remember that
-> users may want to define their own begin/end points if
-> IPIPE_TRACE_IRQSOFF is not set). Raising it above 4 is of no practical
-> use so far.
-> 
+Please, what do MSW and CSW mean on /proc/xenomai/stats?
 
-Oh, wait, you've just explained why passing -f to the latency test 
-freezes my board! Thanks :o)
+Sorry if it is documented somewhere but I didn't find it on docs...
 
--- 
+Rodrigo.
 
-Philippe.
+	=09
+_______________________________________________________=20
+Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discador a=
+gora!=20
+http://br.acesso.yahoo.com
+
 
