@@ -1,11 +1,13 @@
-Message-ID: <004a01c663c0$7db19ae0$1701a8c0@domain.hid>
-From: "Kiichi Kameda" <k-kameda@domain.hid>
-References: <009601c662f1$f164e700$1701a8c0@domain.hid> <4443AB94.50508@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai port to SH4
-Date: Wed, 19 Apr 2006 23:49:41 +0900
+Message-ID: <44435524.4040209@domain.hid>
+Date: Mon, 17 Apr 2006 10:43:16 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-15"
+Subject: Re: [Xenomai-help] Problems running testsuite
+References: <200604131149.40706.tmarscha@domain.hid>	<443E9FD2.6070807@domain.hid>	<200604141342.40129.tmarscha@domain.hid>	<17471.38482.617361.14216@domain.hid>
+	<443FB0BA.5060404@domain.hid> <44427E26.6040608@domain.hid>
+	<4442B118.4070300@domain.hid>
+In-Reply-To: <4442B118.4070300@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,37 +18,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Jim Cromie <jim.cromie@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,
+Jim Cromie wrote:
+> Philippe Gerum wrote:
+> 
+>> Jim Cromie wrote:
+>>
+>>> Gilles Chanteperdrix wrote:
+>>>
+>>>> Tobias Marschall wrote:
+>>>>  > Hello,
+>>>>  >  > On Thursday 13 April 2006 21:00, you wrote:
+>>>>  > > I saw a similar error when using --enable-x86-sep and not 
+>>>> having NPTL
+>>>>  > > enabled in glibc.
+>>>>  > > Try configuring without --enable-x86-sep (used in the 
+>>>> README.INSTALL
+>>>>  > > Pentium x86 example, the default is disabled).
+>>>>  > that did the trick, thank you for the hint! I did check that the 
+>>>> cpu supported  > the sep instruction, but I wasn't aware that NPTL 
+>>>> is required in this case.
+>>>>  >  > Mentioning this in README.INSTALL would be helpful. I wonder 
+>>>> if that mistake  > could be caught by configure.
+>>>> It could be caught by configure, at least if not cross-compiling, by
+>>>> running getconf GNU_LIBPTHREAD_VERSION.
+>>>>
+>>>>   
+>>>
+>>>
+>>> ie:
+>>> [jimc@domain.hid xenomai]$ getconf GNU_LIBPTHREAD_VERSION
+>>> NPTL 2.3.6
+>>>
+>>> doesnt /proc/cpuinfo, flags entry, indicate whether the cpu supports 
+>>> SEP ?
+>>>
+>>
+>> It should, yes.
+>>
+>>> flags           : fpu vme de pse tsc msr mce cx8 apic mtrr pge mca 
+>>> cmov pat clflush dts acpi mmx fxsr sse sse2 ss tm pbe est tm2
+>>>
+>>
+>> Strange indeed, if that's a recent genuine Intel CPU.
+>>
+> 
+> Well, Im not *stoned*, but it clearly looks like I am..
+> heres the whole thing:
+> 
+> [jimc@domain.hid linux-2.6.16]$ cat /proc/cpuinfo
+> processor       : 0
+> vendor_id       : GenuineIntel
+> cpu family      : 6
+> model           : 13
+> model name      : Intel(R) Pentium(R) M processor 1.70GHz
+> stepping        : 6
+> cpu MHz         : 600.000
+> cache size      : 2048 KB
+> fdiv_bug        : no
+> hlt_bug         : no
+> f00f_bug        : no
+> coma_bug        : no
+> fpu             : yes
+> fpu_exception   : yes
+> cpuid level     : 2
+> wp              : yes
+> flags           : fpu vme de pse tsc msr mce cx8 apic mtrr pge mca cmov 
+> pat clflush dts acpi mmx fxsr sse sse2 ss tm pbe est tm2
+> bogomips        : 1198.01
+> 
+> 
+> very strange.   Ive seen someone elses P-4 cpuinfo, flag is there, 
+> spelled 'sep'
+> 
 
-> If you are looking for real heavy load: cache benchmarks tend to stress
-> your system most (e.g. http://www.cwi.nl/~manegold/Calibrator). Combine
-> them with heavy i/o load (flood ping etc.).
+Same here.
+
+> 
+>>>
+>>> what x86 processors support --enable-x86-sep ?   Pentium-4 ?  Xeon ? 
+>>> Athlon ?
+>>> my Pentium-M apparently doesnt.
+>>
+>>
+>> AFAIK, Intel supports sysenter/sysexit since the PII, and AMD 
+>> introduced them with the K7. The genuine Pentium M does support them, 
+>> no doubt.
+>>
+> Perhaps I need to email LKML.
+> What would you expect if I built with --enable-sep (for my laptop) ?
+> success / illegal-instruction exception / undefined-wierd behavior ?
 >
-> Anyway, 200 us for a 240 MHz system doesn't sound totally unrealistic.
-> But I do not know the sh4 architecture to give a reliable estimation.
+
+Success or illegal instruction, I guess.
+
+<snip>
+
+>>> Maybe we need a script thats run on the target box, that collects
+>>> the needed configuration factors; presumably including:
+>>> CPUFLAGS=`grep flags /proc/cpuinfo`
+>>> NPTL_AVAIL=`getconf GNU_LIBPTHREAD_VERSION`
+>>>
+>>
+>> The problem is that we might not always have the target at hand when 
+>> building the user-space support (e.g. LiveCD, deployment distro 
+>> stuff). Therefore it could only be some optional helper, but not part 
+>> of the regular build process.
+>>
+> Ack. I was thinking in terms of a script run on target, which produces 
+> an .rc file,
+> which defines the factor=value pairs needed.
+> that file, if supplied to prepare-kernel as  --target-info=<foo>
+> would supply the customizations.
+> Yes, somewhat cumbersome..
 >
-> What are your numbers when running latency in the other modes, i.e.
-> without the need to switch to user space (mode 1, "-t1") or even without
-> any context switch at all (mode 2, "-t2")?
 
-The machine is a small embedded device that has various IOs, and I expect
-my user space application program runs 1ms periodically.
-So jitter is important  when I execute telnet login and run common linux
-commands.
+Yep; Gilles's approach looking for potential configuration mismatch 
+dynamically when running the target code seems easier to implement, and 
+would provide a better coverage (e.g. building Xenomai for a 'generic' 
+target).
 
-By the way,  the latency was improved a little.
-I found linux system call handler run with interrupt masked.
-By adding the code to enable interrupt to entry.S which is architecture
-specific,
- the latency is no more than 150us  on the same conditions as in my last
-mail.
+> Perhaps Ive just been lucky, 'cross-compiling' for 586 on 686.
+> Ill try hacking prepare-kernel and re-building.
+> 
+>>>
+>>> Somewhat related: prepare-kernel asks me for target architecture, I 
+>>> started by entering i586 explicitly,
+>>> but after a while, just took the i686 default.  Ive not noticed 
+>>> anything different/wrong,
+>>> but would appreciate confirmation/explanation.
+>>>
+>>
+>> Which information did you look at to determine that it was using the 
+>> 686 profile?
+> 
+> The script output told me.  In response to my post, Gilles sent me the 
+> snippet
+> from scripts/prepare-kernel where all x86) select i386.
+> 
+> Im not sure what youre asking, so I'll answer something (hopefully) close:
+> config/config.guess is providing the basis for the answer
+> 
+> if test x$linux_arch = x; then
+>   build_arch=`$xenomai_root/config/config.guess`
+>   default_linux_arch=`echo $build_arch|cut -f1 -d-`
+> fi
+> 
+> which 'returns' this:
+>        test x"${LIBC}" != x && echo "${UNAME_MACHINE}-pc-linux-${LIBC}" 
+> && exit 0
+> 
+> ie
+> sh -vx config/config.guess
+> ...
+> + eval LIBC=gnu
+> LIBC=gnu
+> ++ LIBC=gnu
+> + test xgnu '!=' x
+> + echo i686-pc-linux-gnu
+> i686-pc-linux-gnu
+> 
+
+Ok, that is intended, but only if --arch is unspecified on the command 
+line. Passing --arch=i586 should select i386 as the kernel architecture, 
+which in turn causes the exact CPU profile to be obtained from Kconfig's 
+current 'processor type and features' selection. The latter is what 
+actually defines the arch-dependent compiler flags for the kernel (i.e. 
+arch/i386/Makefile.cpu).
+
+> 
+>>
+>>> thanks
+>>> jimc
+>>>
+>>>
+>>> PS.  attached is an attempt to improve README.INSTALL along these and 
+>>> other lines.
+> 
+> will redo per your comments
+> 
 
 
-Thanks,
+-- 
 
-Kiichi Kameda
-
+Philippe.
 
