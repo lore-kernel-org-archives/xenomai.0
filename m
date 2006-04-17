@@ -1,13 +1,18 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Mon, 17 Apr 2006 10:47:51 +0200
+Message-ID: <4443BB41.1030002@domain.hid>
+Date: Mon, 17 Apr 2006 17:58:57 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200604171047.51730.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] [RFC] collecting xenomai statistics
-Reply-To: niklaus.giger@domain.hid
+Subject: Re: [Xenomai-core] [BUG?] stalled xeno domain
+References: <4437D2EE.4040902@domain.hid>
+	<4437E704.4010607@domain.hid>	<443A437B.6010403@domain.hid>
+	<443A5212.7020001@domain.hid> <443A56E2.1010204@domain.hid>
+	<443A5D7B.2040707@domain.hid> <443A9410.50402@domain.hid>
+	<44427A4A.9050208@domain.hid>
+In-Reply-To: <44427A4A.9050208@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7577A2DADF00E93EB4B41FB0"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,53 +22,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7577A2DADF00E93EB4B41FB0
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Following a suggestion from Philippe Gerum I propose to collect and prepare 
-like this:
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>>>> Philippe, do you see any remaining issues, e.g. that the leak
+>>>>>> survived
+>>>>>> the task termination? Does this have any meaning for correct
+>>>>>> driver and
+>>>>>> skin code?
+>>>>>>
+>>>>>
+>>>>> The only way I could see this leakage survive a switch transition
+>>>>> would
+>>>>> require it to happen over the root context, not over a primary
+>>>>> context.
+>>>>> Was it the case?
+>>>>>
+>>>>
+>>>>
+>>>> The task had to leave from primary mode. If I forced it to secondary=
 
-a) Make it easy to collect information
+>>>> before terminating, the problem did not show up.
+>>>>
+>>>
+>>> But does the code causing the leakage could have been run by differen=
+t
+>>> contexts in sequence, including the root one?
+>>>
+>>
+>>
+>> I don't think so. Bugs in our software aside, there should be no switc=
+h
+>> to secondary mode until termination. Moreover, we installed a SIGXCPU
+>> handler, and that one didn't trigger as well.
+>>
+>>
+>> I just constructed a simple test by placing rthal_local_irq_disable() =
+in
+>> rt_timer_spin and setting up this user space app:
+>>
+>> #include <stdio.h>
+>> #include <signal.h>
+>> #include <native/task.h>
+>> #include <native/timer.h>
+>>
+>> RT_TASK task;
+>>
+>> void func(void *arg)
+>> {
+>>     rt_timer_spin(0);
+>> }
+>>
+>>
+>> void terminate(int sig)
+>> {
+>>     printf("joining...\n");
+>>     rt_task_join(&task);
+>>     rt_task_delete(&task);
+>>     printf("done\n");
+>> }
+>>
+>>
+>> int main()
+>> {
+>>     signal(SIGINT, terminate);
+>>     rt_task_spawn(&task, "lockup", 0, 10, T_FPU | T_JOINABLE | T_WARNS=
+W,
+>>                   func, NULL);
+>>     pause();
+>>     return 0;
+>> }
+>>
+>>
+>> Should this lock up (as it currently does) or rather continue to run
+>> normally after the RT-task terminated? BTW, I'm still not sure if we a=
+re
+>> hunting shadows (is IRQs off a legal state for user space in some skin=
+?)
+>> or a real problem - i.e. is it worth the time.
+>>
+>=20
+> I've just tested this frag against the current SVN head, patching
+> rt_timer_spin() as required, and cannot reproduce the lockup. As
 
-add -s/-c option to xeno-test, help text would look like 
--s         send output of xeno-test to xeno-stat@domain.hid
--c <name>  if -s, send also kernel config file to xeno-stat@domain.hid
-(May be patch xeno-config to emit also the revision of the svn checkout?)
+Are you sure that you actually used the modified native skin for the test=
+?
 
-b) Setup an e-mail account xeno-stat@domain.hid.
+> expected, the incoming root thread reinstates the correct stall bit
+> (i.e. clears it) after the RT thread terminates. Any chance some
+> potentially troublesome stuff exists in your setup?
+>=20
 
-c) Add a archiver which generates daily a gzipped tar file of all messages 
-ever sent to xeno-stat@domain.hid (e.g. of its mbox). Make it available 
-somewhere on the internet.
+I just re-verified this behaviour on a slightly different setup (still
+2.6.15-ipipe-1.2-02, xeno trunk), and I'm going to try this on a third
+box with 2.6.16+tracing soon. So far I still have a stuck timer IRQ
+after the test.
 
-d) Write a converter the raw messages into more suitable representation, eg. a 
-MySQL-DB, a spreadsheet format. Extract the raw message and kernel config and 
-store the publicly accessible on the internet. The DB/spreadsheet will 
-contain pointers (URLs) to the raw message/kernel config.
+Jan
 
-e) Write viewers which present interesting statistics. E.g. X/HTML pages to 
-present a ordered (by architecture, board, version, etc) view of the 
-available  results.
 
-I would like to advance like this:
+--------------enig7577A2DADF00E93EB4B41FB0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-I am not interested in step a), as it is easy for me just to write a trivial 
-script to sent the xeno-test output to any address. Also adding the revision 
-of svn checkout is not very difficult.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-For point b+c) I am lacking the necessary rights, but it easy for me to setup 
-a similar account for my tests here. But I would appreciate, if somebody of 
-the core team would help me to get this work done.
+iD8DBQFEQ7tCniDOoMHTA+kRAqvxAJ9CAW2l28+U12tU3cywA7X8YbdcEQCffWyo
+rsyhDSX3HQ0CGLFXOcfVMa8=
+=gW/p
+-----END PGP SIGNATURE-----
 
-For point d+e) I will (after a week of vacation with my son) invest some work. 
-But I would be very interested in knowing exactly which kind of information 
-the core developers are interested in. How should it be presented? In tabular 
-form? Graphs, which ones? And kind of feedback will be evaluated and 
-integrated.
-
-Best regards
-
--- 
-Niklaus Giger
+--------------enig7577A2DADF00E93EB4B41FB0--
 
