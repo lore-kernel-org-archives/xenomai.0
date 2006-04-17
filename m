@@ -1,15 +1,14 @@
-Subject: Re: [Xenomai-help] Will Linux kernel lose timer ticks when
-	RT	thread is	running
-From: adam li <yi.li@domain.hid>
-In-Reply-To: <44478290.3040805@domain.hid>
-References: <4546494d0604191120r75d3d5bbs40e37292121f01ed@domain.hid>
-	<44474183.8080303@domain.hid>  <4447441C.3070400@domain.hid>
-	<1145531108.16603.79.camel@domain.hid> <44478290.3040805@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Thu, 20 Apr 2006 21:43:33 +0800
-Message-Id: <1145540615.22770.49.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4443992C.5000808@domain.hid>
+Date: Mon, 17 Apr 2006 15:33:32 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] General question on Native Skin tasks
+References: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>
+In-Reply-To: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC92AE77BD5F2F8E2D0F6A4E8"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,53 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: "Brian L." <bluczkie@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-04-20 at 14:46 +0200, Philippe Gerum wrote:
-> Li Yi wrote:
-> > Thanks for the clarification.
-> >  
-> > I added a sleep(1) before read the "/proc/interrupts", and the timer
-> > interrupts for Linux kernel really got "Replayed". The system time
-> > catches up with the wall clock.
-> > 
-> > But still some question:
-> > 
-> > On Thu, 2006-04-20 at 10:19 +0200, Philippe Gerum wrote:
-> > 
-> > 
-> >>>In the particular case of multi-ms processing, I would likely suggest to
-> >>>move it to a thread running in secondary mode without interrupt
-> >>>shielding, so that Linux asynchronous activities such as interrupt
-> >>>handling would still be possible, at the expense of a lesser execution
-> >>>time predictability of such processing though.
-> >>>
-> >>>
-> > 
-> > 
-> > In my test, I am using rt_timer_spin() to simulate the real-time
-> > workload. And "/proc/xenomai/stat" shows "MSW" as "1/1", and in one test
-> > loop, there is no change for "MSW". So I concluded my test case is
-> > running in secondary mode. And my "Interrupt shield support"
-> > configuration is _not_ select. But it looks the Linux kernel does _not_
-> > handle timer interrupt while the real-time task is running. Did I miss
-> > anything? 
-> >
-> 
-> rt_timer_spin() is a busy-waiting service, and your measurement task 
-> never relinquishes the CPU while processing. I would bet that you set up 
-> a very high (maximum?) SCHED_FIFO priority to the Xenomai task, which 
-> did not allow the IRQ thread to run.
-> 
-> i.e. On the Blackfin architecture, Adeos scales the IRQ thread priority 
-> from SCHED_FIFO(50) to SCHED_FIFO(50 + (IVG13-IVG7)), which would have a 
-> lesser priority than anything above SCHED_FIFO(56).
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC92AE77BD5F2F8E2D0F6A4E8
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes. I set the the priority to be 99 - the highest. I tried to lower the
-priority of the thread to 40, and the Linux kernel handles timer
-ticks.  
+Brian L. wrote:
+> If I create a native-skin RT_TASK from userspace with no flags, i.e.
+>=20
+> void task(void*)
+> {
+>     for (;;) ;
+> }
+> int main()
+> {
+>    RT_TASK t;
+>    rt_task_create(&t, 0, 3, 0);
+>    rt_task_start(&t,task,0);
+>    (do something which blocks)
+> }
 
-Thanks for the answer.
+mlockall left out for simplicity? Or is it also missing on your real
+test? In the latter case, occasional application crashes are "normal"
+(as described below).
+
+Philippe, you suggested some code for detecting this. We should really,
+really add this soon (maybe to the exception path)!
+
+>=20
+> Should that task starve all other tasks? In what ways is it different
+> behaviorally from an ordinary posix thread? I ask because I have a
+> thread that might be spinning and a frozen system (back in the rtlinux
+> days, spinning in the real-time domain was a surefire way to freeze
+> without any other sign of trouble). If it is the case that this task
+> outweighs an ordinary linux thread/task, how can I make it the same?
+
+A task that has high priority than other system tasks has to outweigh
+them. This has nothing to to with POSIX (standard Linux included!),
+RTLinux, Xenomai, or whatever. But Xenomai has a simple watchdog to
+recover from run-away RT threads.
+
+>=20
+> Also,  I haven't completely tracked this down yet, but xenomai seems
+> to be page-faulting in a loop and exploding rather spectacularly in a
+> native-skin multithreaded program that doesn't do anything outside of
+> relatively ordinary queue/mutex/task stuff. I'm upgrading to trunk to
+> see if it goes away.
+>=20
+> Short of a serial cable, is there a way to capture Oops/Panic text as
+> it flies by?
+
+linux/Documentation/networking/netconsole.txt is another option.
+
+Jan
+
+
+--------------enigC92AE77BD5F2F8E2D0F6A4E8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEQ5ksniDOoMHTA+kRApjtAJ0TlXFOzOV+xZQDHg55Fyx9CyqzMwCggsI3
+LpyGLOTx/Ilu5gu0kv83rCE=
+=lcwe
+-----END PGP SIGNATURE-----
+
+--------------enigC92AE77BD5F2F8E2D0F6A4E8--
 
