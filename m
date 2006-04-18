@@ -1,5 +1,5 @@
-Message-ID: <4444E330.60709@domain.hid>
-Date: Tue, 18 Apr 2006 15:01:36 +0200
+Message-ID: <4444F0E3.80204@domain.hid>
+Date: Tue, 18 Apr 2006 16:00:03 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Adeos-main] CONFIG_PREEMPT doesn't work with ADEOS
@@ -31,13 +31,20 @@ Bernhard Walle wrote:
 > 
 > Do you know what's wrong?
 > 
-> 
 
-Ok, bug confirmed and spotted. It's an x86 specific issue that impacts 
-Adeos back in the pre-Ipipe times. An updated patch will follow once I 
-made sure that the fix does not cause any regression, especially on SMP 
-systems. Thanks for reporting this way, the quality of your testcase 
-made a real difference to locate the issue rapidly.
+This should improve things quite a bit:
+
+--- arch/i386/kernel/entry.S~	2006-03-21 14:34:51.000000000 +0100
++++ arch/i386/kernel/entry.S	2006-04-18 15:38:50.000000000 +0200
+@@ -231,7 +231,7 @@
+
+  #ifdef CONFIG_PREEMPT
+  ENTRY(resume_kernel)
+-	CLI
++	cli
+  	cmpl $0,TI_preempt_count(%ebp)	# non-zero preempt_count ?
+  	jnz restore_nocheck
+  need_resched:
 
 -- 
 
