@@ -1,12 +1,11 @@
-Message-ID: <4443899A.4010004@domain.hid>
-Date: Mon, 17 Apr 2006 08:27:06 -0400
-From: Sean McGranaghan <smm@domain.hid>
+Message-ID: <44453E0B.8030509@domain.hid>
+Date: Tue, 18 Apr 2006 15:29:15 -0400
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Getting calling task id inside RTDM driver
-References: <443FB205.6010400@domain.hid>
-	<200604142155.12772.Sebastian.Smolorz@domain.hid>
-In-Reply-To: <200604142155.12772.Sebastian.Smolorz@domain.hid>
-Content-Type: text/html; charset=iso-8859-15
+Subject: Re: [Xenomai-help] PC suggestions for visual control
+References: <1145337376.31480.259295744@domain.hid>
+In-Reply-To: <1145337376.31480.259295744@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,58 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Cc: xenomai@xenomai.org
+To: Saul <xeno@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-  <meta content="text/html;charset=iso-8859-15"
- http-equiv="Content-Type">
-</head>
-<body bgcolor="#ffffff" text="#000000">
-<font size="-1"><font face="Helvetica, Arial, sans-serif">After posting
-I performed a two tests, first using an RTDM event and then using a
-semaphore as described below. The synchronization worked in both cases,
-but I think I have another problem. On exit my test application
-generates a segmentation fault, but only occasionally. I do not get a
-stack dump in the kernel log and the system does not seem to become
-unstable. I tried running my test application under strace and gdb. In
-both cases I could not reproduce the error. I am installing the latest
-version of Xenomai and adding debugging options to the build. I will
-post when I know more.<br>
-<br>
-Any suggestions on which Xenomai and kernel options to set for
-debugging?<br>
-<br>
-Thanks,<br>
-Sean<br>
-<br>
-</font></font>Sebastian Smolorz wrote:
-<blockquote
- cite="mid200604142155.12772.Sebastian.Smolorz@domain.hid"
- type="cite">
-  <pre wrap="">Am Freitag 14. April 2006 16:30 schrieb Sean McGranaghan:
-
-  </pre>
-  <blockquote type="cite">
-    <pre wrap="">I am writing an RTDM driver that needs a simple task suspend/resume. I
-have a simple ioctl() that needs to initiate some io and then sleep
-until an interrupt occurs. I have been trying to use rt_task_suspend()
-and rt_task_resume().
-    </pre>
-  </blockquote>
-  <pre wrap=""><!---->
-Try to avoid using skin functions other than those of RTDM inside drivers. 
-Your problem can be solved with a semaphore with an initial value of 0. A  
-rtdm_sem_down will make your task sleep. Inside the interrupt handler a 
-rtdm_sem_up will wake up your task (after the interrupt handler has exited).
-
-Sebastian
+Saul wrote:
+> Hi,
+>
+> I would be interested in hearing from people about the PC's that you use
+> that are known to work well with Xenomai. I'd be looking for a fast new
+> desktop PC for image processing and aircraft control tasks. Is AMD a
+> better bet?
+>
+> Any suggestions much appreciated.
+>
+> Saul.
+>
+>   
 
 
-  </pre>
-</blockquote>
-</body>
-</html>
+Can you describe the workload a bit more fully ?
+
+images - size, bpp, FPS, processing tasks ( FFTs, blurring, convolving, 
+smoothing, etc) ?
+control tasks - latency reqs, control-loop frequency,
+
+I recall hearing that RTAI can run at audio rates (44 khz),
+but its unclear what the workload is (small FIRs IIRs ??)
+RTAI plays some 'tricks' that are counter to xenomai's goals
+of clean, tight integration with linux, so it may not get the same khz 
+numbers.
+
+since you said FAST, you should look at a dual-core -
+this gives you some room to assign your workloads to the cores,
+thus better controlling context switching.  This could be important
+for your image processing task thruput, and for latency too, since
+the rt tasks wont have to reclaim the cpu just to resume their work.
+
+
+BTW - I cant help but observe:
+Id be leery of recommending any PC architecture for autopilot duties on 
+an Airbus A-380.
+Maybe its just the MS legacy dragging down the ole  PC-XT reputation ;-)
+Ctrl-Alt-Delete is not an option :-D
 
