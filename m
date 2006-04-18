@@ -1,14 +1,12 @@
-Message-ID: <44455545.2010008@domain.hid>
-Date: Tue, 18 Apr 2006 23:08:21 +0200
+Message-ID: <44455949.4030403@domain.hid>
+Date: Tue, 18 Apr 2006 23:25:29 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Kernel becomes 2.6.17
-References: <200604181344.59202.lbocseg@domain.hid>
-In-Reply-To: <200604181344.59202.lbocseg@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1FDC348C27B70C26943B031C"
+	boundary="------------enig87D91D178A015A870A5139B6"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATH] fix pthread.h include
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,40 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1FDC348C27B70C26943B031C
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig87D91D178A015A870A5139B6
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> Just informing... (in the hope of downloading a new adeos patch soon ;)=
- )
->=20
+--- include/posix/pthread.h     (revision 946)
++++ include/posix/pthread.h     (working copy)
+@@ -137,6 +137,7 @@ typedef struct
 
-Go ahead and give it a try: my "port" for x86 to 2.6.16 was about fixing
-4 failing hunks in the 2.6.15-patch (+ some minor namespace collision in
-the posix skin).
+ #include <sched.h>
+ #include_next <pthread.h>
++#include <nucleus/thread.h>
+
+ struct timespec;
+
+
+[In order to use PTHREAD_WARNSW in userspace.]
 
 Jan
 
 
-
---------------enig1FDC348C27B70C26943B031C
+--------------enig87D91D178A015A870A5139B6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFERVVJniDOoMHTA+kRAiwyAKCB9xMPRKyghbfX2uzSCAHNVUJoMQCfYrHL
-oz8HQeMLso93QDwXX5LELOU=
-=GmzS
+iD8DBQFERVlJniDOoMHTA+kRAsJKAJ9QLYuMfjrJm57FJLuX1VVb+P+54QCfYadv
+6xhgQqT6oyvLNF5F3qLhVyM=
+=w1aV
 -----END PGP SIGNATURE-----
 
---------------enig1FDC348C27B70C26943B031C--
+--------------enig87D91D178A015A870A5139B6--
 
