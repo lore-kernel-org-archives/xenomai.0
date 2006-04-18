@@ -1,63 +1,119 @@
-Message-ID: <44343E71.30807@domain.hid>
-Date: Thu, 06 Apr 2006 00:02:25 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4445068A.8000008@domain.hid>
+Date: Tue, 18 Apr 2006 11:32:26 -0400
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Questions porting existing rtai-24.1.12 app to
-	xenomai (PART II)
-References: <1CFEB358338412458B21FAA0D78FE86D042A2FEE@rennsmail02.eu.thmulti.com>	<44328187.6080005@domain.hid>	<44327F66.10800@domain.hid>	<44329186.3080908@domain.hid>	<44329D27.1000400@domain.hid>	<4433DC01.6060104@domain.hid>
-	<4433F441.2080309@domain.hid> <44342E91.4080007@domain.hid>
-In-Reply-To: <44342E91.4080007@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <200604171047.51730.niklaus.giger@domain.hid>
+	<44444AB2.9020305@domain.hid>
+In-Reply-To: <44444AB2.9020305@domain.hid>
+Content-Type: multipart/mixed; boundary="------------000207090406040807080509"
+Subject: [Xenomai-core] [patch] xeno-test email addition
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Randy Smith <rsmith@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Randy Smith wrote:
->=20
->=20
-> Philippe Gerum wrote:
->=20
->> Wrt 2.4 kernels, the project provides patches against snapshots of=20
->> Denx's development tree, accessible from=20
->> http://www.denx.de/en/Software/CVS. The date of the snapshot was=20
->> missing in the patch filenames, which introduced a fair amount of=20
->> confusion; this has been fixed in the repository. All 2.4-based Adeos=20
->> patches for ppc have been built against Denx's devel tree as of=20
->> 2005-11-09 so far. The Adeos version is always given by the trailing=20
->> rev. number of any patch filename, e.g. 1.0-04 is the latest Adeos=20
->> rev. for 2.4/ppc kernels.
+This is a multi-part message in MIME format.
+--------------000207090406040807080509
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Jim Cromie wrote:
+> Niklaus Giger wrote:
+>> Hi
 >>
->> For 2.6/ppc kernels, we provide patches against vanilla kernel trees=20
->> as released by kernel.org.
->=20
-> Thanks,  That clears that up.
->=20
+>> Following a suggestion from Philippe Gerum I propose to collect and 
+>> prepare like this:
 >>
->> Ok, it's a bit early for Xmas gifts, but anyway, try this patch on=20
->> 2.4.25-11 as shipped with the ELDK 3.1:
+>> a) Make it easy to collect information
 >>
->> http://download.gna.org/adeos/patches/v2.4/ppc/adeos-ipipe-2.4.25-11-p=
-pc-denx-1.0-04.patch=20
->>
->>
-> I have downloaded the patch and will try it over the next few days and=20
-> report back.  Thanks again and Feliz Navidad or perhaps I should say=20
-> Joyeux No=EBl?
+>> add -s/-c option to xeno-test, help text would look like -s         
+>> send output of xeno-test to xeno-stat@domain.hid
+>> -c <name>  if -s, send also kernel config file to xeno-stat@domain.hid
+>>   
+> attached patch adds new -m -M flags for xeno-test, (-s flag is taken, 
+> for statistics)
+> former for a fixed addy (to be patched later), latter taking any email 
+> as arg.
 >
+> I didnt add -c <name>, since xeno-test already does something similar;
+> if you build with CONFIG_IKCONFIG_PROC=y, xeno-test greps XENO out of 
+> /proc/config.gz
+> (probably needs a few more grep terms, and perhaps a -verbose mode which
+> cats the whole thing.)
+>
+> The -M option works, since I just received an email Id sent earlier,
+> but I also sent one to xenomai-core, and it hasnt shown up yet.
+> I suspect that the mail looks like spam, and has been rejected,
+> since my hostname is not a real FQDN.
+> So Im not so sure that email is the best way here, but it is 
+> conceptually simple.
 
-Joyeux No=EBl would be perfect. Merry Christmas to you too.
-[Redshift effect is ongoing on Xenomai-core]
 
---=20
 
-Philippe.
+Oof.  Now attached.
+
+--------------000207090406040807080509
+Content-Type: text/plain;
+ name="patch-mail"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="patch-mail"
+
+Index: scripts/xeno-test.in
+===================================================================
+--- scripts/xeno-test.in	(revision 943)
++++ scripts/xeno-test.in	(working copy)
+@@ -17,6 +17,8 @@
+   -L	     	writes to logfile (default "test-`uname -r`") (via script)
+   -N <name>	same as -L, but prepend "$name-" (without -L, logname="$name-")
+ 		prepending allows you to give a full path.
++  -m		sends output file to xeno-test@domain.hid
++  -M <email>	sends output file to given addy
+ 
+   # following options are passed thru to latency, klatency
+   -s	print statistics of sampled data (default on)
+@@ -136,8 +138,11 @@
+ logprefix=
+ prepost=	# command to run pre, and post test (ex ntpq -p)
+ 
+-while getopts 'd:shqT:l:H:B:uLN:w:W:p:' FOO ; do
++email='xeno-test@domain.hid'
++sendit=
+ 
++while getopts 'd:shqT:l:H:B:uLN:w:W:p:mM:' FOO ; do
++
+     case $FOO in
+ 	s|h|q)
+ 	    pass="$pass -$FOO" ;;
+@@ -166,6 +171,11 @@
+ 	p)
+ 	    prepost=$OPTARG 
+ 	    loadpass="$loadpass -p '$OPTARG'"  ;;
++	M)
++	    email=$OPTARG 
++	    sendit=1 ;;
++	m)
++	    sendit=1 ;;
+ 	?)
+ 	    myusage ;;
+     esac
+@@ -179,6 +189,10 @@
+     # restart inside a script invocation, passing all
+     date=`date +%y%m%d.%H%M%S`
+     script -c "./xeno-test $loadpass $pass $*" "$logprefix$logfile-$date"
++    if [ $sendit == 1 ]; then
++	echo "mailing $logprefix$logfile-$date to $email"
++	mail -s 'xeno-test results' $email < "$logprefix$logfile-$date"
++    fi
+ else
+     if [ "$altwork" != "" ]; then
+ 	mkload() { exec $altwork; }
+
+--------------000207090406040807080509--
 
