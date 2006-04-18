@@ -1,10 +1,14 @@
-Message-ID: <44506E05.3060104@domain.hid>
-Date: Thu, 27 Apr 2006 09:08:53 +0200
+Message-ID: <4444D98D.2070106@domain.hid>
+Date: Tue, 18 Apr 2006 14:20:29 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [PATCH] let skins select nucleus features
+References: <443E99C5.70202@domain.hid> <4442786B.40301@domain.hid>
+	<444419E1.6040100@domain.hid> <4444C45A.7050308@domain.hid>
+	<4444D810.1020002@domain.hid>
+In-Reply-To: <4444D810.1020002@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Last round before v2.1.1
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,10 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>Philippe Gerum wrote:
+>>>
+>>>
+>>>>Jan Kiszka wrote:
+>>>>
+>>>>
+>>>>>Hi,
+>>>>>
+>>>>>this patch aims at avoiding to select unneeded nucleus features if no
+>>>>>user is requiring it in the skins. Particularly, it addresses the
+>>>>>nucleus registry and the pipes.
+>>>>>
+>>>>>I have spent no effort on 2.4 yet as I first want to wait for comments.
+>>>>>Furthermore, 2.4. is lacking "select", so the feature selection has to
+>>>>>remain manually there anyway.
+>>>>
+>>>>Looks good. Merged, thanks.
+>>>>
+>>>
+>>>
+>>>In the same sense, but not that comfortable, here is the a 2.4 variant
+>>>of the patch.
+>>
+>>I don't agree with the logic of this patch. All user-space enabled skins
+>>may also run in pure kernel-space in non pervasive mode. A core
+>>dependency exists from CONFIG_XENO_OPT_REGISTRY on
+>>CONFIG_XENO_OPT_PERVASIVE, and it should be defined explicitely. In any
+>>case, maybe it's not worth trying to be too smart with the 2.4
+>>configuration system when it comes to dealing with features
+>>inter-dependencies, since we really miss the proper support to do that.
+>>
+> 
+> 
+> Sorry, doesn't parse for me yet. You that when CONFIG_XENO_OPT_PERVASIVE
+> is enabled CONFIG_XENO_OPT_REGISTRY is required (which was not correct,
+> see POSIX skin)?
 
-Maintainers, please resync for the final tests if needed.
+The POSIX skin is an exception, since it implemented its own registry 
+support before the native registry was moved as a generic nucleus 
+feature; at some point in time, the POSIX registry should be rebased on 
+the nucleus support. We must now consider that having 
+CONFIG_XENO_OPT_PERVASIVE set requires CONFIG_XENO_OPT_REGISTRY to be 
+set too. OTOH, you can have CONFIG_XENO_OPT_REGISTRY set without 
+CONFIG_XENO_OPT_PERVASIVE, if you want to run skins in kernel space 
+only, whilst still providing registry support for inter-modules requests.
 
 -- 
 
