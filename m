@@ -1,14 +1,13 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17477.7184.378815.330824@domain.hid>
-Date: Tue, 18 Apr 2006 19:04:16 +0200
-Subject: Re: [Xenomai-core] [PATCH] Check for NPTL and factor user-space skins
-	initialization.
-In-Reply-To: <444509F1.5090107@domain.hid>
-References: <17476.64062.107556.216362@domain.hid>
-	<44450359.2090203@domain.hid> <444509F1.5090107@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <17477.7886.244387.688290@domain.hid>
+Date: Tue, 18 Apr 2006 19:15:58 +0200
+Subject: Re: [Xenomai-core] [RFC] collecting xenomai statistics
+In-Reply-To: <44444AB2.9020305@domain.hid>
+References: <200604171047.51730.niklaus.giger@domain.hid>
+	<44444AB2.9020305@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,17 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
- > > Is this worth doing also ?
+Jim Cromie wrote:
+ > perhaps as a 4th number on the version, that way xeno-config can stay as is.
  > 
- > Some deeply embedded stuff (something like buried in the silicon 
- > actually...) might configure out CONFIG_PROC_FS, so we can't rely on 
- > this pseudo-fs to be always present.
+ > [root@domain.hid bin]# ./xeno-config --version
+ > 2.1.50
+ > Id like instead:
+ > 2.1.50.941
+ > 
+ > This seems better than pokinh around a filesystem, looking for the 
+ > xenomai svn
+ > (which may be on the build-host, not the run-host)
 
-Maybe we could use the information if available?
+If you want to change the version returned by xeno-config, simply modify
+config/version and re-run scripts/bootstrap before building Xenomai.
 
 -- 
 
