@@ -1,47 +1,34 @@
-Message-ID: <443E9B5C.90109@domain.hid>
-Date: Thu, 13 Apr 2006 20:41:32 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems running testsuite
-References: <200604131149.40706.tmarscha@domain.hid>
-	<443E4F7D.6090103@domain.hid>
-In-Reply-To: <443E4F7D.6090103@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <17477.7055.204848.774434@domain.hid>
+Date: Tue, 18 Apr 2006 19:02:07 +0200
+Subject: Re: [Xenomai-core] [RFC] collecting xenomai statistics
+In-Reply-To: <44444AB2.9020305@domain.hid>
+References: <200604171047.51730.niklaus.giger@domain.hid>
+	<44444AB2.9020305@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Jim Cromie <jim.cromie@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jim Cromie wrote:
-> Tobias Marschall wrote:
-> 
->> Hallo,
->>
->> I've been using rtai until now and decided to give xenomai (release 
->> 2.1) a try. I followed the instructions from README.INSTALL, and 
->> everything (kernel patching, compilation, etc.) went fine. Then I 
->> tried to run the latency test, which failed:
->>
->> -----------
->> /usr/xenomai/testsuite/latency $ ./run
->> head: `-1' option is obsolete; use `-n 1' since this will be removed 
->> in the   
-> 
-> 
-> this particular error is patched, attached.
-> 
+ > The -M option works, since I just received an email Id sent earlier,
+ > but I also sent one to xenomai-core, and it hasnt shown up yet.
 
-Applied, Thanks.
+In order to avoid spam, the xenomai-core list probably only accept mail
+from registered members.
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
 
