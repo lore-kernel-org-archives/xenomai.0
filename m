@@ -1,70 +1,30 @@
-Message-ID: <445F4E8E.2090007@domain.hid>
-Date: Mon, 08 May 2006 15:58:38 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] /native/demos/satch hangs
-References: <20060505121832.7e4ca460@domain.hid>
-In-Reply-To: <20060505121832.7e4ca460@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Message-Id: <1145337376.31480.259295744@domain.hid>
+From: "Saul" <xeno@domain.hid>
+Content-Disposition: inline
 Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset="ISO-8859-1"
+MIME-Version: 1.0
+Date: Tue, 18 Apr 2006 15:16:16 +1000
+Subject: [Xenomai-help] PC suggestions for visual control
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Daniel Simon <Daniel.Simon@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Daniel Simon wrote:
-> Hello,
-> 
-> I am trying xenomai on a Compaq N600c laptop, kernel 2.6.15 patched
-> against xenomai-2.1.0 (config file attached).
-> 
-> Most tests run succesfully (i.e., /usr/xenomai/testsuite/*  and
-> xenomai/ksrc/skins/posix/demos/accuracy*)
-> 
-> However, (and after complaining about libnative.so.0 and running
-> ldconfig) the satch test found in $xenomai/ksrc/skins/native/demos/
-> immediately hangs the pc... It seems to be definitively locked despite
-> the watchdog.
-> 
-> What may be the reason?
+Hi,
 
-The warnings when compiling the example give the answer. The patch below 
-makes this code work; it has been fixed in later releases.
+I would be interested in hearing from people about the PC's that you use
+that are known to work well with Xenomai. I'd be looking for a fast new
+desktop PC for image processing and aircraft control tasks. Is AMD a
+better bet?
 
---- xenomai-2.1.0/ksrc/skins/native/demos/satch.c       2006-02-03 
-23:34:14.000000000 +0100
-+++ xenomai-2.1.50/ksrc/skins/native/demos/satch.c      2006-03-19 
-18:30:34.000000000 +0100
-@@ -1,3 +1,4 @@
-+#include <sys/mman.h>
-  #include <stdio.h>
-  #include <unistd.h>
-  #include <string.h>
-@@ -88,7 +89,7 @@
-  int root_thread_init (void)
+Any suggestions much appreciated.
 
-  {
--    rt_timer_start(1000000);   /* 1ms periodic tick. */
-+    rt_timer_set_mode(1000000);        /* Forc 1ms periodic tick. */
-
-      rt_task_spawn(&consumer_task,
-                   "ConsumerTask",
-@@ -120,6 +121,7 @@
-  int main (int ac, char *av[])
-
-  {
-+    mlockall(MCL_CURRENT|MCL_FUTURE);
-      root_thread_init();
-      pause();
-      root_thread_exit();
--- 
-
-Philippe.
+Saul.
 
