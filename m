@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17475.54588.216703.656939@domain.hid>
-Date: Mon, 17 Apr 2006 19:49:48 +0200
-Subject: Re: [Adeos-main] Re: [PATCH] clean up latest ipipe-tracing changes
-In-Reply-To: <4443CA1B.3010504@domain.hid>
-References: <4443BF6E.907@domain.hid>
-	<17475.49504.514098.178400@domain.hid>
-	<4443CA1B.3010504@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 18 Apr 2006 13:14:28 +0200
+From: Bernhard Walle <bernhard.walle@domain.hid>
+Message-ID: <20060418131428.31f735e9@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: [Adeos-main] CONFIG_PREEMPT doesn't work with ADEOS
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,31 +13,25 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > (...). Finally, I do not see a need for marking a static inline function
- > >  > non-traced. (...)
- > > 
- > > Marking a function inline does not guarantee that the said function will
- > > always be inlined, especially since with 2.6.16, inline no longer
- > > necessary means __attribute__((always_inline)).
- > > 
- > 
- > Yep, correct, though this particular function should only be non-inlined
- > by a confused compiler. So, shouldn't we rather convert this function
- > into a macro or mark it as always_inline? A review of the tracer for
- > further clarifications is required, I guess.
+Hello,
 
-In my humble opinion, the function should not be instrumented. This way,
-the tracer will continue to work if the function happens to not been
-inlined.
+I have a kernel 2.6.15.6 with
+http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.15-i386-1.2-03.patch
+patch. In this configuration, CONFIG_PREEMPT doesn't work any more,
+i.e. the kernel is not preempted.
 
+With the kernel without ADEOS patch, it works fine. A test program is
+at http://www.bwalle.de/temp/kern-preempt.tar.bz2.
+
+Do you know what's wrong?
+
+
+Regards,
+  Bernhard
 -- 
-
-
-					    Gilles Chanteperdrix.
+Bei der Eroberung des Weltraums sind zwei Probleme zu lösen: die
+Schwerkraft und der Papierkrieg. Mit der Schwerkraft wären wir fertig
+geworden. -- Wernher von Braun
 
