@@ -1,12 +1,12 @@
-Message-ID: <4444F0E3.80204@domain.hid>
-Date: Tue, 18 Apr 2006 16:00:03 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <444530EA.4020005@domain.hid>
+Date: Tue, 18 Apr 2006 20:33:14 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] CONFIG_PREEMPT doesn't work with ADEOS
-References: <20060418131428.31f735e9@domain.hid>
-In-Reply-To: <20060418131428.31f735e9@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig44BF1726606F3E4C64455098"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] ipipe-2.6.15-i386-1.2-04 is lacking notrace
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,38 +15,36 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Bernhard Walle <bernhard.walle@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main@gna.org
 
-Bernhard Walle wrote:
-> Hello,
-> 
-> I have a kernel 2.6.15.6 with
-> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.15-i386-1.2-03.patch
-> patch. In this configuration, CONFIG_PREEMPT doesn't work any more,
-> i.e. the kernel is not preempted.
-> 
-> With the kernel without ADEOS patch, it works fine. A test program is
-> at http://www.bwalle.de/temp/kern-preempt.tar.bz2.
-> 
-> Do you know what's wrong?
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig44BF1726606F3E4C64455098
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This should improve things quite a bit:
+Hi Philippe,
 
---- arch/i386/kernel/entry.S~	2006-03-21 14:34:51.000000000 +0100
-+++ arch/i386/kernel/entry.S	2006-04-18 15:38:50.000000000 +0200
-@@ -231,7 +231,7 @@
+your generation script for the 2.6.15 patch seems to lack the
+include/linux/compiler.h patch for notrace - doesn't build with the
+tracer switched on.
 
-  #ifdef CONFIG_PREEMPT
-  ENTRY(resume_kernel)
--	CLI
-+	cli
-  	cmpl $0,TI_preempt_count(%ebp)	# non-zero preempt_count ?
-  	jnz restore_nocheck
-  need_resched:
+Jan
 
--- 
 
-Philippe.
+--------------enig44BF1726606F3E4C64455098
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFERTDqniDOoMHTA+kRAlAPAJ0fL8j4qqGbKMGHxdQ1b520LKzbEACfUlPK
+xntvygfmWSlj/+1g5pYKUwQ=
+=aGX1
+-----END PGP SIGNATURE-----
+
+--------------enig44BF1726606F3E4C64455098--
 
