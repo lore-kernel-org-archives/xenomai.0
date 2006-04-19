@@ -1,12 +1,17 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <6ee4c8380604190827q76a1442du59c90b2515f71cdd@domain.hid>
+Date: Wed, 19 Apr 2006 11:27:00 -0400
+From: "Brian L." <bluczkie@domain.hid>
+Sender: zorander@domain.hid
+Subject: Re: [Xenomai-help] General question on Native Skin tasks
+In-Reply-To: <44455471.8090001@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17478.21685.31999.896405@domain.hid>
-Date: Wed, 19 Apr 2006 17:18:13 +0200
-Subject: Re: [Xenomai-help] my tick takes a break !! 
-In-Reply-To: <5B122FD931231D408AC32630D1B1F7290AC5AE4B@BUDMLVEM03.e2k.ad.ge.com>
-References: <5B122FD931231D408AC32630D1B1F7290AC5AE4B@BUDMLVEM03.e2k.ad.ge.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>
+	<4443992C.5000808@domain.hid>
+	<6ee4c8380604181253t235363a9v79d91b57bea4575a@domain.hid>
+	<44455471.8090001@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +21,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Thomas, Brieuc (GE Healthcare)" <Brieuc.Thomas@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thomas, Brieuc \(GE Healthcare\) wrote:
- > Hi every one !
- > 
- > I really don't understand, my porting of application works very well
- > (under vxworks skin), message, semaphore, timer... Except the task !!
- > I've got a curious behaviour, when I've got a heavy task, the kernel
- > tick counter stop during the process!!
- > 
- > And take back when this one is finish.
- > 
- > Therefore the other tasks are freeze and my application crash.
- > 
- >  
- > 
- > have You already seen this case?
+> Why do you create the non-rt threads also via rt_task_create? This just
+> introduces unneeded load on the RT subsystem.
 
-I do not know if it is what you mean, but when running Xenomai, your
-tasks are supposed to suspend sufficiently frequently to leave Linux
-tick normally. This means that if you configured CONFIG_HZ=100, your
-real-time activity (including kernel-space tasks and user-space tasks in
-primary mode) is supposed to take a break at least once every 1/100
-second.
+I was under the impression that to interact with xenomai objects
+(RT_QUEUE, RT_MUTEX, etc), I needed to be in a xenomai thread. I
+assumed that because every mutex implementation I've seen has relied
+heavily on the underlying thread library (i.e. to sleep or yield) and
+mixing thread libraries seemed like a bad idea.
 
--- 
+So, is this what you're suggesting:
 
+- Link against pthreads AND native
+- Start non-realtime threads using pthread_create and real-time
+threads using rt_task_create/rt_task_start
+- use RT_MUTEX's/RT_QUEUE's for situations in which there is
+contention/communication among realtime and nonrealtime threads
+- use pthreads mutexes/queues for situations of
+contention/communication among non-realtime threads
 
-					    Gilles Chanteperdrix.
+It sounds workable to me, assuming the queues/mutexes/etc. don't stop
+working when both threading libraries are involved.
 
