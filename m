@@ -1,15 +1,12 @@
-Message-ID: <44465A4A.8070609@domain.hid>
-Date: Wed, 19 Apr 2006 17:42:02 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] strangeness at kernel configuration
-References: <20060418144146.GA4482@domain.hid>
-	<20060418153508.GB4482@domain.hid>
-	<44450DDF.9080205@domain.hid>
-	<20060419152914.GB13542@domain.hid>
-In-Reply-To: <20060419152914.GB13542@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] my tick takes a break !! 
+Date: Wed, 19 Apr 2006 18:55:06 +0200
+Message-ID: <5B122FD931231D408AC32630D1B1F7290AC5B129@domain.hid>
+From: "Thomas, Brieuc \(GE Healthcare\)" <Brieuc.Thomas@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,46 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Luotao Fu <l.fu@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Luotao Fu wrote:
-> Hi Philipe,
-> 
-> On Tue, Apr 18, 2006 at 06:03:43PM +0200, Philippe Gerum wrote:
-> 
->>Luotao Fu wrote:
->>Your configuration works perfectly here over #944. You might want to 
->>restart building from a freshly patched kernel anew, there seems to be 
->>something badly broken in your current tree, perhaps some mismatching 
->>modules that have not been recompiled properly?
->>
->>-- 
->>
->>Philippe.
-> 
-> Thanx for testing. I, however could locate the problem at the APIC
-> Timer function in the kernel: With 
-> ......
-> CONFIG_X86_UP_APIC=y
-> CONFIG_X86_UP_IOAPIC=y
-> CONFIG_X86_LOCAL_APIC=y
-> CONFIG_X86_IO_APIC=y
-> ......
-> I could reproduce the problem (loading rtdm driver causes oops, cannot run
-> any application using native or posix skin) reliably on my machine. 
-> (Celeron 733MHz. 256MB RAM...a normal PC) Shutting off the APIC stuffs,
-> however, solves the problem........ Have I overlooked
-> anything or does Xenomai have problems with the apic controller on
-> celeron (since it seems to work for you)?
+=20
+Thomas, Brieuc \(GE Healthcare\) wrote:
+ > Hi every one !
+ >
+ > I really don't understand, my porting of application works very well
+> (under vxworks skin), message, semaphore, timer... Except the task !!
+ > I've got a curious behaviour, when I've got a heavy task, the kernel
+> tick counter stop during the process!!
+ >
+ > And take back when this one is finish.
+ >
+ > Therefore the other tasks are freeze and my application crash.
+ >
+ >
+ >
+ > have You already seen this case?
 
-There is no known issue with the [IO-]APIC (I actually tested your 
-config on a PIII Celeron), it's even recommended to use it with Xenomai. 
-The symptoms you describe are typical of a build problem, e.g. module / 
-static kernel mismatching and so on, but unfortunately, I have no clue 
-since I cannot reproduce it on any x86 I have at hand.
+I do not know if it is what you mean, but when running Xenomai, your
+tasks are supposed to suspend sufficiently frequently to leave Linux
+tick normally. This means that if you configured CONFIG_HZ=3D100, your
+real-time activity (including kernel-space tasks and user-space tasks in
+primary mode) is supposed to take a break at least once every 1/100
+second.
 
--- 
+--=20
 
-Philippe.
+
+					    Gilles Chanteperdrix.
+
+Oh no! Sorry, I mean the real-time tick counter!
+But if my real-time activity don't take a break during a while (more
+than 1/100 second), Is it dangerous for my real-time activity?=20
+
+Brieuc THOMAS.
 
