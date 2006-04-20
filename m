@@ -1,12 +1,15 @@
-From: Stefan Eletzhofer <stefan.eletzhofer@domain.hid>
-Date: Thu, 20 Apr 2006 14:42:18 +0200
+Message-ID: <44478290.3040805@domain.hid>
+Date: Thu, 20 Apr 2006 14:46:08 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2068742.mVHV7YX7Rc";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
+Subject: Re: [Xenomai-help] Will Linux kernel lose timer ticks when RT	thread
+	is	running
+References: <4546494d0604191120r75d3d5bbs40e37292121f01ed@domain.hid>	
+	<44474183.8080303@domain.hid> <4447441C.3070400@domain.hid>
+	<1145531108.16603.79.camel@domain.hid>
+In-Reply-To: <1145531108.16603.79.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <200604201442.18803.stefan.eletzhofer@domain.hid>
-Subject: [Xenomai-help] rt_heap_bind in kernel module
-Reply-To: stefan.eletzhofer@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,55 +19,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Li Yi <yi.li@domain.hid>
+Cc: xenomai@xenomai.org
 
---nextPart2068742.mVHV7YX7Rc
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Li Yi wrote:
+> Thanks for the clarification.
+>  
+> I added a sleep(1) before read the "/proc/interrupts", and the timer
+> interrupts for Linux kernel really got "Replayed". The system time
+> catches up with the wall clock.
+> 
+> But still some question:
+> 
+> On Thu, 2006-04-20 at 10:19 +0200, Philippe Gerum wrote:
+> 
+> 
+>>>In the particular case of multi-ms processing, I would likely suggest to
+>>>move it to a thread running in secondary mode without interrupt
+>>>shielding, so that Linux asynchronous activities such as interrupt
+>>>handling would still be possible, at the expense of a lesser execution
+>>>time predictability of such processing though.
+>>>
+>>>
+> 
+> 
+> In my test, I am using rt_timer_spin() to simulate the real-time
+> workload. And "/proc/xenomai/stat" shows "MSW" as "1/1", and in one test
+> loop, there is no change for "MSW". So I concluded my test case is
+> running in secondary mode. And my "Interrupt shield support"
+> configuration is _not_ select. But it looks the Linux kernel does _not_
+> handle timer interrupt while the real-time task is running. Did I miss
+> anything? 
+>
 
-Hi,
-reading the API docs (2.1.0) of the xenomai native API I noticed that the=20
-rt_heap_bind() call is a userspace-only call and i'm wondering why that is
-the case? Or am I missing something here?
+rt_timer_spin() is a busy-waiting service, and your measurement task 
+never relinquishes the CPU while processing. I would bet that you set up 
+a very high (maximum?) SCHED_FIFO priority to the Xenomai task, which 
+did not allow the IRQ thread to run.
 
-I'm in the process of porting applications which use the RTAI shm module
-in both user space and kernel space; these applications basically allocate=
-=20
-the shared memory chunks in user space and then have kernel modules dump
-data into these areas.
+i.e. On the Blackfin architecture, Adeos scales the IRQ thread priority 
+from SCHED_FIFO(50) to SCHED_FIFO(50 + (IVG13-IVG7)), which would have a 
+lesser priority than anything above SCHED_FIFO(56).
 
-To port things, I've coded a rt_heap_bind() for kernel space modelled after=
-=20
-the code in skins/native/syscalls.c using the nucleus registry API, and tha=
-t=20
-seems to work. So, is this missing call just laziness, then I'd post a patc=
-h.
+> 
+> 
+>>>You may want to make your measurement thread sleep() for a while before
+>>>looking at the final tick counter; this would make sure that the IRQ
+>>>threads have been given enough time to catch up and process all pending
+>>>ticks they have in their log. Btw, did you activate CONFIG_PREEMPT?
+>>>
+>>
+>>Er, sorry. There's no CONFIG_PREEMPT on Blackfin yet.
+> 
+> 
+> 
+> Thanks,
+> 
+> -Li Yi (Adam)
+> 
 
-Thanks,
-Stefan E.
-=2D-=20
-Stefan Eletzhofer
-InQuant GmbH
-Bahnhofstra=DFe 11
-D-88214 Ravensburg
-http://www.inquant.de
-http://www.eletztrick.de
-+49 (0) 751 35 44 112
-+49 (0) 171 23 24 529 (Mobil)
-+49 (0) 751 35 44 115 (FAX)
 
---nextPart2068742.mVHV7YX7Rc
-Content-Type: application/pgp-signature
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2.2 (GNU/Linux)
-
-iD8DBQBER4Gq20PMGlcwuNARAgsEAJ951WJBvYrxNObNfMAiO1v5y/a5eQCgtJuH
-nwYZIEfbr1nVlXXTCc6B09I=
-=uoj6
------END PGP SIGNATURE-----
-
---nextPart2068742.mVHV7YX7Rc--
+Philippe.
 
