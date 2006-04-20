@@ -1,14 +1,12 @@
-Message-ID: <4447AA62.6080506@domain.hid>
-Date: Thu, 20 Apr 2006 17:36:02 +0200
-From: Marco Cavallini <rtai@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0043151@domain.hid>
-	<44478FFE.2050608@domain.hid>
-In-Reply-To: <44478FFE.2050608@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rtai@domain.hid
+Message-ID: <17479.47900.969096.984078@domain.hid>
+Date: Thu, 20 Apr 2006 18:47:24 +0200
+Subject: Re: [Xenomai-core] [patch] readme.install & troubleshooting
+In-Reply-To: <44454FB1.4090304@domain.hid>
+References: <44454FB1.4090304@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,23 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-> ROSSIER Daniel wrote:
->>
->> Dear all,
->>
->> We finally succeeded in the port of Xenomai on our Freescale i.MX21 
->> board (ARM-926J);
->> (The board used is the CSB535FS issued from Cogent with the BSP from 
->> Microcross)
+Jim Cromie wrote:
+ > 
+ > heres another try, adjusting per Rodrigo's, Gilles' feedback,
+ > and filling in from linux Kconfig and wikipedia on ACPI.
+ > FYI, the latter is quite informative, esp on sleep states.
+
+Applied, thanks.
+
+-- 
 
 
-Daniel,
-thank you and congratulations for this great work!
-I wonder how many man/hours have you spent to reach this goal ?
-TIA
-
-/marco
+					    Gilles Chanteperdrix.
 
