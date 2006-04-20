@@ -1,14 +1,15 @@
-Subject: Re: [Xenomai-help] Will Linux kernel lose timer ticks when RT
-	thread is	running
-From: Li Yi <yi.li@domain.hid>
-In-Reply-To: <4447441C.3070400@domain.hid>
-References: <4546494d0604191120r75d3d5bbs40e37292121f01ed@domain.hid>
-	<44474183.8080303@domain.hid>  <4447441C.3070400@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Thu, 20 Apr 2006 19:05:08 +0800
-Message-Id: <1145531108.16603.79.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <44477688.3070505@domain.hid>
+Date: Thu, 20 Apr 2006 13:54:48 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] strangeness at kernel configuration
+References: <20060418144146.GA4482@domain.hid>	<20060418153508.GB4482@domain.hid>	<44450DDF.9080205@domain.hid>
+	<20060419152914.GB13542@domain.hid>
+In-Reply-To: <20060419152914.GB13542@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0CE8557D6B6073D786D50786"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,48 +19,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Luotao Fu <l.fu@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thanks for the clarification.
- 
-I added a sleep(1) before read the "/proc/interrupts", and the timer
-interrupts for Linux kernel really got "Replayed". The system time
-catches up with the wall clock.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0CE8557D6B6073D786D50786
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-But still some question:
+Luotao Fu wrote:
+> Hi Philipe,
+>=20
+> On Tue, Apr 18, 2006 at 06:03:43PM +0200, Philippe Gerum wrote:
+>> Luotao Fu wrote:
+>> Your configuration works perfectly here over #944. You might want to=20
+>> restart building from a freshly patched kernel anew, there seems to be=
+=20
+>> something badly broken in your current tree, perhaps some mismatching =
 
-On Thu, 2006-04-20 at 10:19 +0200, Philippe Gerum wrote:
+>> modules that have not been recompiled properly?
+>>
+>> --=20
+>>
+>> Philippe.
+> Thanx for testing. I, however could locate the problem at the APIC
+> Timer function in the kernel: With=20
+> ......
+> CONFIG_X86_UP_APIC=3Dy
+> CONFIG_X86_UP_IOAPIC=3Dy
+> CONFIG_X86_LOCAL_APIC=3Dy
+> CONFIG_X86_IO_APIC=3Dy
+> ......
+> I could reproduce the problem (loading rtdm driver causes oops, cannot =
+run
+> any application using native or posix skin) reliably on my machine.=20
+> (Celeron 733MHz. 256MB RAM...a normal PC) Shutting off the APIC stuffs,=
 
-> > 
-> > In the particular case of multi-ms processing, I would likely suggest to
-> > move it to a thread running in secondary mode without interrupt
-> > shielding, so that Linux asynchronous activities such as interrupt
-> > handling would still be possible, at the expense of a lesser execution
-> > time predictability of such processing though.
-> > 
-> >
+> however, solves the problem........ Have I overlooked
+> anything or does Xenomai have problems with the apic controller on
+> celeron (since it seems to work for you)?
+>=20
 
-In my test, I am using rt_timer_spin() to simulate the real-time
-workload. And "/proc/xenomai/stat" shows "MSW" as "1/1", and in one test
-loop, there is no change for "MSW". So I concluded my test case is
-running in secondary mode. And my "Interrupt shield support"
-configuration is _not_ select. But it looks the Linux kernel does _not_
-handle timer interrupt while the real-time task is running. Did I miss
-anything? 
+Do you pass "lapic" via the kernel command line? If lapic is missing,
+this would not work anyway. This illegal combination used to cause
+crashes, but the detection should have been fixed some weeks ago.
+
+I just tried to reproduce your scenario - and I was "successful": All
+APIC stuff on, up to RTDM all xeno stuff built in, "forgotten" lapic in
+bootparam, and then modprobe xeno_timerbench, oops.
+
+The oops is a minor issue which I will try to address more gracefully
+later. The major issue is that missing lapic. You should have this in
+your kernel log:
+
+=2E..
+Xenomai: Local APIC absent or disabled!
+         Disable APIC support or pass "lapic=3D1" as bootparam.
+Xenomai: system init failed, code -19.
+Xenomai: starting POSIX services.
+Xenomai: POSIX skin init failed, code -19.
+Xenomai: RTDM skin init failed, code -19.
+=2E..
+
+So, all fine from the xenomai POV, except for that bug in
+rtdm_dev_register().
+
+Jan
 
 
-> > 
-> > You may want to make your measurement thread sleep() for a while before
-> > looking at the final tick counter; this would make sure that the IRQ
-> > threads have been given enough time to catch up and process all pending
-> > ticks they have in their log. Btw, did you activate CONFIG_PREEMPT?
-> > 
-> 
-> Er, sorry. There's no CONFIG_PREEMPT on Blackfin yet.
+--------------enig0CE8557D6B6073D786D50786
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Thanks,
+iD8DBQFER3aIniDOoMHTA+kRAj9JAJ4t+3/4ZHMEdce+a/NmZLmhFjTbtACfQMIn
+8N4ojZMVDegIWxWSutQdciU=
+=1OQT
+-----END PGP SIGNATURE-----
 
--Li Yi (Adam)
+--------------enig0CE8557D6B6073D786D50786--
 
