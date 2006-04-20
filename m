@@ -1,14 +1,12 @@
-Message-ID: <4447441C.3070400@domain.hid>
-Date: Thu, 20 Apr 2006 10:19:40 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Will Linux kernel lose timer ticks when RT thread
-	is	running
-References: <4546494d0604191120r75d3d5bbs40e37292121f01ed@domain.hid>
-	<44474183.8080303@domain.hid>
-In-Reply-To: <44474183.8080303@domain.hid>
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] my tick takes a break !! 
+Date: Thu, 20 Apr 2006 11:23:08 +0200
+Message-ID: <5B122FD931231D408AC32630D1B1F7290ACAB6B6@domain.hid>
+From: "Thomas, Brieuc \(GE Healthcare\)" <Brieuc.Thomas@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,95 +16,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Li Yi (Adam) wrote:
-> 
->>Hi,
->> 
->>When a real-time thread is running, the Linux kernel will lose Timer 
->>Tick (and lose timer interrupts), is this the expected behavior?
->> 
-> 
-> 
-> No, it should not lose any tick, regardless of the Xenomai port. You are
-> likely observing a pecularity of the Blackfin port where Adeos moves
-> Linux IRQ handlers (top-halves) in thread context to work-around a high
-> scheduling latency source which is Blackfin specific.
-> 
-> 
->>If yes, in this case,  no interrupts will be passed to Linux domain? 
->>This may cause some services depending on timing in Linux domain do not 
->>work correctly. In another thread I read:
->> 
->>"
->>I do not know if it is what you mean, but when running Xenomai, your
->>tasks are supposed to suspend sufficiently frequently to leave Linux
->>tick normally. This means that if you configured CONFIG_HZ=100, your
->>real-time activity (including kernel-space tasks and user-space tasks in
->>primary mode) is supposed to take a break at least once every 1/100
->>second.
->>--
->>                                           Gilles Chanteperdrix.  
->>"
->>Is this the best solution? Since there may be possibility that a 
->>real-time thread keep running for severl hundred ms (e.g, processing 
->>large block of data).
->> 
-> 
-> 
-> Keep in mind that real-time using a co-scheduling infrastructure in
-> Linux is not a matter of pure RTOS design, but rather an issue involving
->  a GPOS+RTOS combination. For this reason, you just should not starve
-> the GPOS from the critical resources it needs, and time ticks are some
-> of these. If you do so though, what will happen is that the ticks will
-> be logged at Adeos level in the various pipeline logs, and played when
-> Linux eventually gets back in control as the active Adeos domain. If the
-> starvation did not last beyond Linux's robustness to such event, then
-> the kernel will catch up with the pending ticks and the system will
-> continue normally. IOW, it's not impossible to do lengthy real-time
-> processing that might delay/unsynchronize Linux ticks, and this might
-> work properly if some breathing time is left to the kernel, but you
-> cannot ask the real-time system to drop the determinism just for the
-> sake of allowing Linux to tick regularly. It's up to the application
-> designer to properly evaluate the real-time load which is going to be
-> bearable by the underlying architecture & kernel combo.
-> 
-> In the particular case of multi-ms processing, I would likely suggest to
-> move it to a thread running in secondary mode without interrupt
-> shielding, so that Linux asynchronous activities such as interrupt
-> handling would still be possible, at the expense of a lesser execution
-> time predictability of such processing though.
-> 
-> 
->> 
->>I tried to run a test on Xenomai-2.1.0 on Blackfin. This test looks like:
->> 
-> 
-> 
-> <snip>
-> 
-> 
->>+++++++++ end test +++++++++++++++++
->>
->> From the test result, " 23:  BFIN Timer Tick", changed from "33531" to
->>"33732", that is "201 * 10 ＝ 2010 ms". And the "up time" is changed
->>from "335.41 to 337.42", although in fact that "2 + 6 = 8 sec" has
->>passed.
->>
-> 
-> 
-> You may want to make your measurement thread sleep() for a while before
-> looking at the final tick counter; this would make sure that the IRQ
-> threads have been given enough time to catch up and process all pending
-> ticks they have in their log. Btw, did you activate CONFIG_PREEMPT?
-> 
+> > Thomas, Brieuc \(GE Healthcare\) wrote:
+> >  > Hi every one !
+> >  >
+> >  > I really don't understand, my porting of application works very
+well
+> >  > (under vxworks skin), message, semaphore, timer... Except the
+task !!
+> >  > I've got a curious behaviour, when I've got a heavy task, the
+kernel
+> >  > tick counter stop during the process!!
+> >  >
+> >  > And take back when this one is finish.
+> >  >
+> >  > Therefore the other tasks are freeze and my application crash.
+> >  >
+> >  >
+> >  >
+> >  > have You already seen this case?
+> >
+> > I do not know if it is what you mean, but when running Xenomai, your
+>> tasks are supposed to suspend sufficiently frequently to leave Linux
+> > tick normally. This means that if you configured CONFIG_HZ=3D100, =
+your
+> > real-time activity (including kernel-space tasks and user-space
+tasks in > > primary mode) is supposed to take a break at least once
+every 1/100 > > second.
+> >
+> > --
+> >
+> >=20
+> > 					    Gilles Chanteperdrix.
+> >
+> > Oh no! Sorry, I mean the real-time tick counter!
+>
+>If the heavy task is using intLock() then yes, it will prevent the
+timer from ticking. If >you are observing something else, could you send
+to this mailing list a minimal test case >illustrating what you are
+observing?
+>
+> > But if my real-time activity don't take a break during a while (more
+> than 1/100 >second), Is it dangerous for my real-time activity?=20
+>
+>If you do not let Linux run often enough, it will crash, and this is
+dangerous for your >real-time activity.=20
+>I do not know exactly how much is "often enough", and it probably
+depends on many >factors, but if you want Linux timed services to work
+normally, you should let Linux timer >tick regularly.
+>--=20
+>
+>					    Gilles Chanteperdrix.
+>
 
-Er, sorry. There's no CONFIG_PREEMPT on Blackfin yet.
+No I don't use intLock().
+I use this test to observe the tasks behaviour, with two same priority
+tasks.
+The first task "testRun1" print the tick number, the number of the task
+changed and if it's the same task (between my task) since last
+timeslice.
+The second one is the heavy task, it's print the tick number, the number
+of the task changed and if it's the same task (between my task) since
+last timeslice. And also some information about the progression task
+(here the number of the loop with the tick number).
 
--- 
+void testRun1()
+{	printf("Start testRun1 %d taskChanged %d\n", (int)tickGet(),
+taskChanged);
+	const unsigned int taskId =3D 1;
+	unsigned int startTime1 =3D tickGet();
 
-Philippe.
+	while(1)
+	{	taskDelay(100);
+	=09
+		if(taskRunning !=3D taskId)
+		{
+			taskRunning =3D taskId;
+			taskChanged++;
+			printf("Run testRun1 %d taskChanged %d\n",
+(int)tickGet(), taskChanged);
+		}
+		else printf("Run testRun1 %d No changed\n",
+(int)tickGet());
+	}
+	printf("End testRun1 %d taskChanged %d\n", (int)tickGet(),
+taskChanged);
+}
+
+void testRun2()
+{	printf("Start testRun2 %d taskChanged %d\n", (int)tickGet(),
+taskChanged);
+	const unsigned int taskId =3D 2;
+	unsigned int startTime1 =3D tickGet();
+	taskDelay(100);
+
+	while( //ten times for example )
+	{=09
+		printf("Start while tick: %d \n",(int)tickGet());
+		while(//var)	// take around one second
+		{	// workout
+			if(taskRunning !=3D taskId)
+			{
+				taskRunning =3D taskId;
+				taskChanged++;
+				printf("Run testRun2 %d taskChanged
+%d\n", (int)tickGet(), taskChanged);
+			}
+		}
+	}
+	printf("End testRun2 %d taskChanged %d\n", (int)tickGet(),
+taskChanged);=20
+}
+***
+The result see below:
+***
+Start testRun1 0 taskChanged 0    <--
+Start testRun2 0 taskChanged 0      |
+Run testRun1 100 taskChanged 1      |
+Start while 1 tick: 100 NO changed  |- Changing OK, every 100ms
+Run testRun2 100 taskChanged 2      |
+Run testRun1 200 taskChanged 3      |
+Run testRun2 200 taskChanged 4    <-- =20
+Start while 2 tick: 200     <--
+Start while 3 tick: 200       |
+Start while 4 tick: 200       |
+Start while 5 tick: 200       |- ticks break, while 10 second=20
+Start while 6 tick: 200       |=20
+Start while 7 tick: 200       |=20
+Start while 8 tick: 200       |
+Start while 9 tick: 200     <--       |
+End testRun2 200 taskChanged 4
+Run testRun1 300 taskChanged 5
+End testRun2 30010 taskChanged 5
+
 
