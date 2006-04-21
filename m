@@ -1,13 +1,15 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4448FC77.5000608@domain.hid>
+Date: Fri, 21 Apr 2006 17:38:31 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17480.63623.600656.828303@domain.hid>
-Date: Fri, 21 Apr 2006 17:21:43 +0200
-Subject: Re: [Xenomai-core] [RFC] shadow threads with prio 0 / SCHED_NORMAL
-In-Reply-To: <4448B81E.3090605@domain.hid>
-References: <4446B348.10403@domain.hid>
-	<4448B81E.3090605@domain.hid>
+References: <4448EE7D.1020003@domain.hid> <4448F656.6070101@domain.hid>
+In-Reply-To: <4448F656.6070101@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC6FFDCEE0175CAE8F648A799"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [Adeos-main] [PATCH] let ipipe_catch_event
+	return old handler
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,43 +20,74 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: adeos-main@gna.org, xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC6FFDCEE0175CAE8F648A799
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
 Philippe Gerum wrote:
- > Jan Kiszka wrote:
- > > Hi,
- > > 
- > > this is an experimental hack to open the non-rt priority levels of Linux
- > > to Xenomai shadow threads, i.e. allow shadows to be scheduled under
- > > SCHED_NORMAL when in secondary mode. The scenario are typical borderline
- > > threads between RT and non-RT: they share a critical code path with RT
- > > threads, maybe mutex protected, but they are mostly time-sharing threads
- > > which do not need SCHED_FIFO for this.
- > > 
- > > The patch (be careful, quick-hack!) addresses the prio level 0 in the
- > > ipipe patch, the nucleus/shadow subsystem, and the native skin. A quick
- > > test with the attached demo showed the expected behaviour so far: no
- > > lock-up during busy-waiting in secondary mode, prio-boost when holding
- > > the lock (visible via /proc/xenomai/sched), no obvious side effects.
- > > 
- > > Any comments? Does this break other things in a subtle way?
- > 
- > An initial comment on the general usage of this extension: since the 
- > threads running in SCHED_OTHER/SCHED_NORMAL mode are expected to run 
- > non-RT workloads while still being able to use the RT infrastructure for 
- >   communicating with the rest of the RT system, I think that the best 
- > places for creating such hybrids are in the rt_task_shadow (native skin) 
- > and pthread_setschedparam (POSIX skin) calls, which would make it clear 
- > that a regular Linux thread is involved [and as such needs to be created 
- > by a normal call to pthread_create()], which also happens to benefit 
- > from the RT infrastructure mainly for communication/sychronization purpose.
+> Jan Kiszka wrote:
+>=20
+> <snip>
+>=20
+> Don't you mean this instead?
+>=20
+>> -int ipipe_catch_event(struct ipipe_domain *ipd,
+>> -              unsigned event,
+>> -              int (*handler)(unsigned event, struct ipipe_domain
+>> *ipd, void *data))
+>> +ipipe_event_handler_t ipipe_catch_event(struct ipipe_domain *ipd,
+>> +                    unsigned event,
+>> +                    ipipe_event_handler_t handler)
+>>  {
+> +       ipipe_event_handler_t old_handler;
+>>      int self =3D 0;
+>> =20
+>> @@ -278,7 +278,7 @@
+>>      }
+>> =20
+>>      if (event >=3D IPIPE_NR_EVENTS)
+>> -        return -EINVAL;
+>> +        return NULL;
+>> =20
+> -      if (!xchg(&ipd->evhand[event],handler))    {
+> +      if (!(old_handler =3D xchg(&ipd->evhand[event],handler)))    {
+>>          if (handler) {
+>> @@ -301,7 +301,7 @@
+>>              ipd->evself |=3D (1LL << event);
+>>      }
+>> =20
+>> -    return 0;
+>> +    return handler;
+> -    return handler;
+> +    return old_handler;
+>>  }
+>> =20
+>>  cpumask_t ipipe_set_irq_affinity (unsigned irq, cpumask_t cpumask)
+>>
+>>
 
-What about keeping SCHED_RR as the default scheduling policy and
-requiring users to manually select SCHED_NORMAL in thread creation
-attributes in order to create hybrid threads with pthread_create ?
+Ouch, obviously. A quick hack which was only tested for not breaking
+existing software.
 
--- 
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigC6FFDCEE0175CAE8F648A799
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFESPx3niDOoMHTA+kRAiP2AJ9avRleXcYegwpOOlh92XzKLnDncACfTS86
+PeEsTjlTm5owsEkdf77fEOg=
+=pXlO
+-----END PGP SIGNATURE-----
+
+--------------enigC6FFDCEE0175CAE8F648A799--
 
