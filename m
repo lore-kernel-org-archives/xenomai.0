@@ -1,16 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <44489D3B.9010200@domain.hid>
+Date: Fri, 21 Apr 2006 10:52:11 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE : RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
-Date: Fri, 21 Apr 2006 10:44:58 +0200
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0043160@domain.hid>
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0043151@domain.hid>	<44478FFE.2050608@domain.hid>
-	<4447AA62.6080506@domain.hid>
-	<FDBBB5CC70676540B3EF7CFE83FD94E0043154@domain.hid>
-	<44488A37.80700@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Check for NPTL and factor user-space skins
+	initialization.
+References: <17476.64062.107556.216362@domain.hid>	<4444FF94.7050209@domain.hid>	<17477.247.209915.347304@domain.hid>	<44450481.3070102@domain.hid>
+	<17477.6782.665009.909109@domain.hid>
+In-Reply-To: <17477.6782.665009.909109@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,69 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Philippe Gerum wrote:
+>  > >  > 
+>  > >  > -ENOPARSE here. Which code is expected to call xeno_mlock_alert_end()?
+>  > > 
+>  > > pthread_set_mode_np and rt_task_set_mode. Sorry.
+>  > 
+>  > The issue I see doing so, is that you are going to trigger a SIGXCPU 
+>  > right after setting the XNTRAPSW bit for the current thread, as a result 
+>  > of calling sigaction and friends. This is why I used a plain and dumb 
+>  > memory flag instead, the logic being:
+>  > 
+>  > - first, trap SIGXCPU in the library ctor to detect the lack of process 
+>  > memory locking when mapping a shadow thread, and emit an explanatory 
+>  > message when caught.
+>  > 
+>  > - as soon as a thread succeeds in setting modes (set_mode_np and 
+>  > friends), then we know that a previous shadow mapping for the current 
+>  > Linux task has succeeded, otherwise the nucleus would not have been able 
+>  > to carry out the set_mode request. In such a case, make sure to cause 
+>  > our internal SIGXCPU handler to switch to the default behaviour, in case 
+>  > we did set the WARNSW bit for the current thread successfully. In all 
+>  > other cases, either the user has set its own SIGXCPU handler overriding 
+>  > our internal one, and we have no part in the play, or she did not and we 
+>  > won't spuriously emit the "missing mlock" message.
+> 
+> Ok. Another try.
+> 
 
-Yes indeed; we actually intend to implement some interaction protocols =
-between
-the processor and an FPGA as realtime tasks for cryptographic =
-operations. We
-therefore try to have some minimal overhead.
-Right now, we focus on the iMX21 proc. and since we're bound to some =
-industrial projects,
-we won't have much time to have a look at other archs, although we are, =
-of course, very
-interested in getting some feedback on other archs and we're ready to =
-provide some help as much as we can.
-We stay in touch :-) (i look forward to having further details about =
-your micro-optimisation
-approach in the user space; at the moment, we mainly work RT tasks in =
-the kernel space for architectural reasons,
-but migrating the code to a more convenient execution environment in the =
-user space definitively retains our attention).
+Looks good. Merged, thanks.
 
-By the way, I have a student who will work on an extension of LTTng =
-(Linux trace toolkit) in order to support Xenomai, in the context of his =
-diploma work. Examining the RT traces, filtering events, tracking RT =
-activities in user/kernel space, detecting priority inversions, etc. are =
-some interesting topics we're promoting in our Institute. Any =
-ideas/suggestions about features and extensions to improve such =
-visualization tools are also welcome :-) (we will publish everything as =
-soon as we have some substantial results, but the student work is mainly =
-on the second half of the Year at Montreal to the originator's =
-premises).
+-- 
 
-Daniel
-
-
--------- Message d'origine--------
-De: Jan Kiszka [mailto:jan.kiszka@domain.hid]
-Date: ven. 21.04.2006 09:31
-=C0: ROSSIER Daniel
-Cc: rtai@domain.hid; xenomai@xenomai.org
-Objet : Re: RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
-=20
-ROSSIER Daniel wrote:
-> Hi Marco,
->=20
-> Two of our soft/hard engineers (S=E9bastien Gerber & Guillaume
-> Boutillier) have worked quite a lot over these last 6 months for this
-> port.
-> These last weeks, they spent much work on measuring the response time
-> (by means of a digital analyzer) and trying to move some piece of
-> code and re-work out a bit the current patch in order to make the IRQ
-> virtualization as clean as possible and to get very low latency.
-> Thanks to them :-)
->=20
-
-I guess this significant effort was related to the fact that you were
-hunting nanoseconds, aren't you? Well, that's great! Can we hire you for
-other archs as well? ;) [I also have some weird ideas regarding
-micro-optimisations of the user space interface.]
-
-Jan
-
-
-
+Philippe.
 
