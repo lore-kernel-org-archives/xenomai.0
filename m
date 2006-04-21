@@ -1,13 +1,14 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Subject: Re: [Xenomai-core] xeno-test updates [rfc patch]
-Date: Fri, 21 Apr 2006 13:26:07 +0900
-References: <4447D9CA.9010809@domain.hid>
-	<200604211253.44735.rlenglet@domain.hid>
-In-Reply-To: <200604211253.44735.rlenglet@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_f7FSE04Li0j5QYp"
-Message-Id: <200604211326.07401.rlenglet@domain.hid>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+Date: Fri, 21 Apr 2006 08:55:58 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0043154@domain.hid>
+References: <FDBBB5CC70676540B3EF7CFE83FD94E0043151@domain.hid>
+	<44478FFE.2050608@domain.hid> <4447AA62.6080506@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,92 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: rtai@domain.hid, xenomai@xenomai.org
 
---Boundary-00=_f7FSE04Li0j5QYp
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Le Vendredi 21 Avril 2006 12:53, Romain Lenglet a =C3=A9crit=C2=A0:
-> Jim Cromie wrote:
-> > Ive started adding to xeno-test, as outlined previously
-> > (plus some)
->
-> [...]
->
-> > - -v flag gets whole config (from either source)
->
-> [...]
->
-> > Dont apply yet, not tested recently.
->
-> [...]
->
-> When this patch is applied, please also apply the attached
-> patch to the manpage for the new -v option.
+Hi Marco,
 
-Oops. Sorry, I made a typo in the synopsis line.
-Please apply this patch instead.
+Two of our soft/hard engineers (S=E9bastien Gerber & Guillaume =
+Boutillier) have worked quite a lot over these last 6 months for this =
+port.
+These last weeks, they spent much work on measuring the response time =
+(by means of a digital analyzer) and trying to move some piece of code =
+and re-work out a bit the current patch in order to make the IRQ =
+virtualization as clean as possible and to get very low latency. Thanks =
+to them :-)
 
-=2D-=20
-Romain LENGLET
+Daniel
 
---Boundary-00=_f7FSE04Li0j5QYp
-Content-Type: text/x-diff; charset="utf-8";
-	name="xeno-test-verboseoptiondoc_2006-04-21.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="xeno-test-verboseoptiondoc_2006-04-21.patch"
+-------- Message d'origine--------
+De: Marco Cavallini [mailto:rtai@domain.hid]
+Date: jeu. 20.04.2006 17:36
+=C0: xenomai@xenomai.org
+Cc: ROSSIER Daniel
+Objet : Re: [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+=20
+> ROSSIER Daniel wrote:
+>>
+>> Dear all,
+>>
+>> We finally succeeded in the port of Xenomai on our Freescale i.MX21=20
+>> board (ARM-926J);
+>> (The board used is the CSB535FS issued from Cogent with the BSP from=20
+>> Microcross)
 
---- xenomai/ChangeLog	2006-04-21 12:39:16.309296664 +0900
-+++ xenomai-take2/ChangeLog	2006-04-21 13:20:44.888975048 +0900
-@@ -1,3 +1,8 @@
-+2006-04-21  Romain Lenglet <rlenglet@domain.hid>
-+
-+	* doc/man/xeno-test.man.in: Add documentation for the new -v option
-+	added to the xeno-test script.
-+
- 2006-04-20  Jan Kiszka  <jan.kiszka@domain.hid>
- 
- 	* ksrc/skins/rtdm/device.[ch], ksrc/skins/rtdm/module.c: Catch
---- xenomai/doc/man/xeno-test.man.in	2006-04-19 18:06:11.448935160 +0900
-+++ xenomai-take2/doc/man/xeno-test.man.in	2006-04-21 13:22:04.486874328 +0900
-@@ -9,11 +9,11 @@
- .\" Xenomai distribution.
- .\"
- .pc
--.TH XENO-TEST 1 "2006-04-19" "@PACKAGE_VERSION@" "Xenomai"
-+.TH XENO-TEST 1 "2006-04-21" "@PACKAGE_VERSION@" "Xenomai"
- .SH NAME
- xeno\-test \- Tests and measures the performance of a Xenomai installation
- .SH SYNOPSIS
--\fBxeno\-test\fP [\fB\-w\fP \fIworkloads\fP] [\fB\-d\fP \fIdevice\fP] [\fB\-W\fP \fIcommand\fP] [\fB\-p\fP \fIcommand\fP] [\fB\-L\fP [\fB\-N\fP \fIprefix\fP]] [\fB\-m\fP | \fB\-M\fP \fIemail\fP] [\fB\-s\fP] [\fB\-l\fP \fIsamples\fP] [\fB\-h\fP [\fB\-H\fP \fIcategories\fP] [\fB\-B\fP \fIgranularity\fP]] [\fB\-T\fP \fIseconds\fP [\fB\-q\fP]] [\fB\-\-\fP] [\fIargs\fP] ...
-+\fBxeno\-test\fP [\fB\-v\fP] [\fB\-w\fP \fIworkloads\fP] [\fB\-d\fP \fIdevice\fP] [\fB\-W\fP \fIcommand\fP] [\fB\-p\fP \fIcommand\fP] [\fB\-L\fP [\fB\-N\fP \fIprefix\fP]] [\fB\-m\fP | \fB\-M\fP \fIemail\fP] [\fB\-s\fP] [\fB\-l\fP \fIsamples\fP] [\fB\-h\fP [\fB\-H\fP \fIcategories\fP] [\fB\-B\fP \fIgranularity\fP]] [\fB\-T\fP \fIseconds\fP [\fB\-q\fP]] [\fB\-\-\fP] [\fIargs\fP] ...
- .SH DESCRIPTION
- \fBxeno\-test\fP measures the performance of Xenomai, by executing Xenomai's \fBlatency\fP and \fBklatency\fP tests while generating a high workload on the system.
- The default command that is executed to simulate workload (if no alternate command is specified with a \fB-W\fP \fIcommand\fP option) is:
-@@ -34,6 +34,9 @@
- .SH OPTIONS
- These following options are specific to \fBxeno\-test\fP:
- .TP
-+\fB\-v\fP
-+Produces more verbose tests results.
-+.TP
- \fB\-w\fP \fIworkloads\fP
- The number of workload commands to execute simultaneously. By default, this number is \fB1\fP.
- .TP
-@@ -119,6 +122,9 @@
- .BR uname (1)
- .SH HISTORY
- .TP
-+2006-04-21
-+Updated to document the new -v option.
-+.TP
- 2006-04-19
- Updated to document the new -m and -M options.
- .TP
 
---Boundary-00=_f7FSE04Li0j5QYp--
+Daniel,
+thank you and congratulations for this great work!
+I wonder how many man/hours have you spent to reach this goal ?
+TIA
+
+/marco
+
 
