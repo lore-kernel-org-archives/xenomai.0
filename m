@@ -1,12 +1,12 @@
-Message-ID: <4447982A.9060409@domain.hid>
-Date: Thu, 20 Apr 2006 16:18:18 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_heap_bind in kernel module
-References: <200604201442.18803.stefan.eletzhofer@domain.hid>
-In-Reply-To: <200604201442.18803.stefan.eletzhofer@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: multipart/mixed; boundary="y/THTjQb6h"
 Content-Transfer-Encoding: 7bit
+Message-ID: <17480.58521.376174.197532@domain.hid>
+Date: Fri, 21 Apr 2006 15:56:41 +0200
+Subject: RE: [Xenomai-help] my tick takes a break !! 
+In-Reply-To: <5B122FD931231D408AC32630D1B1F7290AC5B129@domain.hid>
+References: <5B122FD931231D408AC32630D1B1F7290AC5B129@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,44 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: stefan.eletzhofer@domain.hid
+To: "Thomas, Brieuc (GE Healthcare)" <Brieuc.Thomas@domain.hid>
 Cc: xenomai@xenomai.org
 
-Stefan Eletzhofer wrote:
-> Hi,
-> reading the API docs (2.1.0) of the xenomai native API I noticed that the 
-> rt_heap_bind() call is a userspace-only call and i'm wondering why that is
-> the case? Or am I missing something here?
-> 
 
-Binding op are not supported in kernel space, basically because one sees 
-a single address space there, and it's always possible to share the 
-original object descriptor directly between modules as a plain memory 
-area. The synchronization the binding ops provide between the creator 
-and the users of a given resource has been ignored for kernel space.
+--y/THTjQb6h
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
-> I'm in the process of porting applications which use the RTAI shm module
-> in both user space and kernel space; these applications basically allocate 
-> the shared memory chunks in user space and then have kernel modules dump
-> data into these areas.
-> 
-> To port things, I've coded a rt_heap_bind() for kernel space modelled after 
-> the code in skins/native/syscalls.c using the nucleus registry API, and that 
-> seems to work. So, is this missing call just laziness, then I'd post a patch.
-> 
-> Thanks,
-> Stefan E.
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Thomas, Brieuc \(GE Healthcare\) wrote:
+ > Oh no! Sorry, I mean the real-time tick counter!
 
+Could you try the attached patch ?
 
 -- 
 
-Philippe.
+
+					    Gilles Chanteperdrix.
+
+--y/THTjQb6h
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="uvm-prio.diff"
+Content-Transfer-Encoding: 7bit
+
+--- include/asm-uvm/system.h~	2006-04-05 15:08:08.000000000 +0200
++++ include/asm-uvm/system.h	2006-04-21 15:54:24.000000000 +0200
+@@ -594,7 +594,7 @@ static void *xnarch_thread_trampoline (v
+ 	{
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+ 	param.sched_priority = sched_get_priority_min(SCHED_FIFO) + 1;
+-	sched_setscheduler(0,SCHED_FIFO,&param);
++        pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+ 	uvm_thread_create(tcb->name,tcb,&tcb->completion,&tcb->khandle);
+ 	err = uvm_thread_barrier();	/* Wait for start. */
+ 	if (err)
+
+--y/THTjQb6h--
 
