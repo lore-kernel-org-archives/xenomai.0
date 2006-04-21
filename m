@@ -1,13 +1,11 @@
-Message-ID: <44489D3B.9010200@domain.hid>
-Date: Fri, 21 Apr 2006 10:52:11 +0200
+Message-ID: <4448B81E.3090605@domain.hid>
+Date: Fri, 21 Apr 2006 12:46:54 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Check for NPTL and factor user-space skins
-	initialization.
-References: <17476.64062.107556.216362@domain.hid>	<4444FF94.7050209@domain.hid>	<17477.247.209915.347304@domain.hid>	<44450481.3070102@domain.hid>
-	<17477.6782.665009.909109@domain.hid>
-In-Reply-To: <17477.6782.665009.909109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [RFC] shadow threads with prio 0 / SCHED_NORMAL
+References: <4446B348.10403@domain.hid>
+In-Reply-To: <4446B348.10403@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,41 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Philippe Gerum wrote:
->  > >  > 
->  > >  > -ENOPARSE here. Which code is expected to call xeno_mlock_alert_end()?
->  > > 
->  > > pthread_set_mode_np and rt_task_set_mode. Sorry.
->  > 
->  > The issue I see doing so, is that you are going to trigger a SIGXCPU 
->  > right after setting the XNTRAPSW bit for the current thread, as a result 
->  > of calling sigaction and friends. This is why I used a plain and dumb 
->  > memory flag instead, the logic being:
->  > 
->  > - first, trap SIGXCPU in the library ctor to detect the lack of process 
->  > memory locking when mapping a shadow thread, and emit an explanatory 
->  > message when caught.
->  > 
->  > - as soon as a thread succeeds in setting modes (set_mode_np and 
->  > friends), then we know that a previous shadow mapping for the current 
->  > Linux task has succeeded, otherwise the nucleus would not have been able 
->  > to carry out the set_mode request. In such a case, make sure to cause 
->  > our internal SIGXCPU handler to switch to the default behaviour, in case 
->  > we did set the WARNSW bit for the current thread successfully. In all 
->  > other cases, either the user has set its own SIGXCPU handler overriding 
->  > our internal one, and we have no part in the play, or she did not and we 
->  > won't spuriously emit the "missing mlock" message.
+Jan Kiszka wrote:
+> Hi,
 > 
-> Ok. Another try.
+> this is an experimental hack to open the non-rt priority levels of Linux
+> to Xenomai shadow threads, i.e. allow shadows to be scheduled under
+> SCHED_NORMAL when in secondary mode. The scenario are typical borderline
+> threads between RT and non-RT: they share a critical code path with RT
+> threads, maybe mutex protected, but they are mostly time-sharing threads
+> which do not need SCHED_FIFO for this.
 > 
+> The patch (be careful, quick-hack!) addresses the prio level 0 in the
+> ipipe patch, the nucleus/shadow subsystem, and the native skin. A quick
+> test with the attached demo showed the expected behaviour so far: no
+> lock-up during busy-waiting in secondary mode, prio-boost when holding
+> the lock (visible via /proc/xenomai/sched), no obvious side effects.
+> 
+> Any comments? Does this break other things in a subtle way?
 
-Looks good. Merged, thanks.
+An initial comment on the general usage of this extension: since the 
+threads running in SCHED_OTHER/SCHED_NORMAL mode are expected to run 
+non-RT workloads while still being able to use the RT infrastructure for 
+  communicating with the rest of the RT system, I think that the best 
+places for creating such hybrids are in the rt_task_shadow (native skin) 
+and pthread_setschedparam (POSIX skin) calls, which would make it clear 
+that a regular Linux thread is involved [and as such needs to be created 
+by a normal call to pthread_create()], which also happens to benefit 
+from the RT infrastructure mainly for communication/sychronization purpose.
 
 -- 
 
