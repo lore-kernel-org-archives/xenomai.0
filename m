@@ -1,16 +1,16 @@
-Message-ID: <44488A37.80700@domain.hid>
-Date: Fri, 21 Apr 2006 09:31:03 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE : RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+Date: Fri, 21 Apr 2006 10:44:58 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0043160@domain.hid>
 References: <FDBBB5CC70676540B3EF7CFE83FD94E0043151@domain.hid>	<44478FFE.2050608@domain.hid>
 	<4447AA62.6080506@domain.hid>
 	<FDBBB5CC70676540B3EF7CFE83FD94E0043154@domain.hid>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0043154@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD38563B3F3F7616744C645C8"
-Sender: jan.kiszka@domain.hid
+	<44488A37.80700@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,14 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD38563B3F3F7616744C645C8
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
 
+Yes indeed; we actually intend to implement some interaction protocols =
+between
+the processor and an FPGA as realtime tasks for cryptographic =
+operations. We
+therefore try to have some minimal overhead.
+Right now, we focus on the iMX21 proc. and since we're bound to some =
+industrial projects,
+we won't have much time to have a look at other archs, although we are, =
+of course, very
+interested in getting some feedback on other archs and we're ready to =
+provide some help as much as we can.
+We stay in touch :-) (i look forward to having further details about =
+your micro-optimisation
+approach in the user space; at the moment, we mainly work RT tasks in =
+the kernel space for architectural reasons,
+but migrating the code to a more convenient execution environment in the =
+user space definitively retains our attention).
+
+By the way, I have a student who will work on an extension of LTTng =
+(Linux trace toolkit) in order to support Xenomai, in the context of his =
+diploma work. Examining the RT traces, filtering events, tracking RT =
+activities in user/kernel space, detecting priority inversions, etc. are =
+some interesting topics we're promoting in our Institute. Any =
+ideas/suggestions about features and extensions to improve such =
+visualization tools are also welcome :-) (we will publish everything as =
+soon as we have some substantial results, but the student work is mainly =
+on the second half of the Year at Montreal to the originator's =
+premises).
+
+Daniel
+
+
+-------- Message d'origine--------
+De: Jan Kiszka [mailto:jan.kiszka@domain.hid]
+Date: ven. 21.04.2006 09:31
+=C0: ROSSIER Daniel
+Cc: rtai@domain.hid; xenomai@xenomai.org
+Objet : Re: RE : [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+=20
 ROSSIER Daniel wrote:
 > Hi Marco,
 >=20
@@ -49,19 +84,5 @@ micro-optimisations of the user space interface.]
 Jan
 
 
---------------enigD38563B3F3F7616744C645C8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFESIo3niDOoMHTA+kRAtnwAJ46LlO6+K7cUvg+rae+LBhl8UDspQCdFixA
-V0XU75sNMTD48QfjqseJQgE=
-=F0OD
------END PGP SIGNATURE-----
-
---------------enigD38563B3F3F7616744C645C8--
 
