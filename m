@@ -1,17 +1,12 @@
-Message-ID: <b647ffbd0604240228sb8d58a3kc3b780a576c2d95a@domain.hid>
-Date: Mon, 24 Apr 2006 12:28:18 +0300
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <444C89F4.3040302@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-References: <b647ffbd0604120138p5088006aqf074c711a0478487@domain.hid>
-	<44416943.4070702@domain.hid>
-	<b647ffbd0604220254l154fcc7dh462c7d45bcd2c441@domain.hid>
-	<444C89F4.3040302@domain.hid>
-Subject: [Xenomai-core] Re: [REQUEST] eliminate the
-	rthal_critical_enter/exit() from rthal_irq_request()
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17484.54103.464630.986240@domain.hid>
+Date: Mon, 24 Apr 2006 15:32:07 +0200
+Subject: Re: [Xenomai-core] xenomai thread interuption
+In-Reply-To: <20060424080113.84106.qmail@domain.hid>
+References: <20060424080113.84106.qmail@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,31 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: gilles mendes <mendesgilles@domain.hid>
 Cc: xenomai@xenomai.org
 
-> > Another approach would be to introduce a service like
-> > xnintr_synchronize() and enfource the upper interfaces (e.g. skins) to
-> > make use of it in their _delete() methods.
->
-> That would be useful too for solving the "concurrent ISR while deleting
-> issue", but would not enforce single deletion in the SMP case, I guess.
+gilles mendes wrote:
+ > i have a linux kernel 2.6.15 patch with  xenomai, i wanted to compile
+ > vxWorks's aplications on my real time kernel, but when a system task
+ > is running the real time threads are blocked during the system task.
 
-I actually want to introduce this call anyway. The nucleus then
-provides single xnintr_disabe (nosync) interface +
-xnintr_synchronize() and a skin is free to introduce both sync and
-nosync versions on its own. Otherwise, there will be the same problem
-as with xnintr_detach() - i.e. xnintr_disable (sync) can't be called
-from a locked section as it's actually done in rt_intr_delete() (of
-course, if we do really need the atomicy in the later one).
+What is a "system task"?
+
+ > what can i do for solve this fonctionement of my kernel ? 
+
+Please send the code, as short as possible, of an example illustrating
+the issue you are facing. And tell us a bit more about your setup, are
+you using vxworks skin in simulator, in kernel-space, in user-space, or
+vxworks UVM?
+
+-- 
 
 
-> --
->
-> Philippe.
->
-
---
-Best regards,
-Dmitry Adamushko
+					    Gilles Chanteperdrix.
 
