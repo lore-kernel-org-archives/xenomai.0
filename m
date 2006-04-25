@@ -1,12 +1,13 @@
-Message-ID: <444E61F0.9000606@domain.hid>
-Date: Tue, 25 Apr 2006 19:52:48 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
+Date: Tue, 25 Apr 2006 14:37:11 -0400
+From: Kent Borg <kentborg@domain.hid>
 Subject: Re: [Xenomai-help] syslog safe?
-References: <20060425134048.D5934@domain.hid>
-In-Reply-To: <20060425134048.D5934@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <20060425143711.E5934@domain.hid>
+References: <20060425134048.D5934@domain.hid> <444E61F0.9000606@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <444E61F0.9000606@domain.hid>;
+	from rpm@xenomai.org on Tue, Apr 25, 2006 at 07:52:48PM +0200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,19 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kent Borg <kentborg@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Kent Borg wrote:
-> Is syslog() safe to call from real time userland code?  (If not, what
-> is the right way to do such output?)
+On Tue, Apr 25, 2006 at 07:52:48PM +0200, Philippe Gerum wrote:
+> No problem using it, but it will trigger an automatic switch to 
+> secondary mode in order to issue the right Linux syscalls. The thread 
+> will switch back to primary automatically again as soon as a (usually 
+> blocking) Xenomai syscall is issued.
 
-No problem using it, but it will trigger an automatic switch to 
-secondary mode in order to issue the right Linux syscalls. The thread 
-will switch back to primary automatically again as soon as a (usually 
-blocking) Xenomai syscall is issued.
+And, looking at strace output, it appears that is a syslog() is too
+low a priority to be logged it doesn't make a system call and so will
+not drop us out of realtime.
 
--- 
 
-Philippe.
+Thanks,
+
+-kb
+
 
