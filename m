@@ -1,15 +1,12 @@
-Message-ID: <4444D810.1020002@domain.hid>
-Date: Tue, 18 Apr 2006 14:14:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] let skins select nucleus features
-References: <443E99C5.70202@domain.hid> <4442786B.40301@domain.hid>
-	<444419E1.6040100@domain.hid> <4444C45A.7050308@domain.hid>
-In-Reply-To: <4444C45A.7050308@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig88875A9B1798238BAAF80234"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
+Date: Tue, 25 Apr 2006 15:16:37 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210DCE@EINT11.einet.ad.eivd.ch>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,72 +17,153 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig88875A9B1798238BAAF80234
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>> Hi,
->>>>
->>>> this patch aims at avoiding to select unneeded nucleus features if n=
-o
->>>> user is requiring it in the skins. Particularly, it addresses the
->>>> nucleus registry and the pipes.
->>>>
->>>> I have spent no effort on 2.4 yet as I first want to wait for commen=
-ts.
->>>> Furthermore, 2.4. is lacking "select", so the feature selection has =
-to
->>>> remain manually there anyway.
->>>
->>> Looks good. Merged, thanks.
->>>
->>
->>
->> In the same sense, but not that comfortable, here is the a 2.4 variant=
 
->> of the patch.
+> -----Message d'origine-----
+> De=A0: Philippe Gerum [mailto:rpm@xenomai.org]
+> Envoy=E9=A0: jeudi, 20. avril 2006 15:43
+> =C0=A0: ROSSIER Daniel
+> Cc=A0: xenomai@xenomai.org
+> Objet=A0: Re: [Xenomai-core] Xenomai on Freescale i.MX21 (ARM926J)
 >=20
-> I don't agree with the logic of this patch. All user-space enabled skin=
-s
-> may also run in pure kernel-space in non pervasive mode. A core
-> dependency exists from CONFIG_XENO_OPT_REGISTRY on
-> CONFIG_XENO_OPT_PERVASIVE, and it should be defined explicitely. In any=
-
-> case, maybe it's not worth trying to be too smart with the 2.4
-> configuration system when it comes to dealing with features
-> inter-dependencies, since we really miss the proper support to do that.=
-
+> ROSSIER Daniel wrote:
+> >
+> > Dear all,
+> >
+> > We finally succeeded in the port of Xenomai on our Freescale i.MX21
+> board (ARM-926J);
+> > (The board used is the CSB535FS issued from Cogent with the BSP from
+> Microcross)
+> >
+> > To have further technical references, please see there:
+> =
+http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=3Di.MX_LIT=
+EKI
+> T&parentCode=3Di.MX21&nodeId=3D0162468rH31143ZrDR
+> >
+> > So, you will find two patches: the first one (patch-linux-
+> 2.6.14.imx21_1.0.0) is used to patch the Linux 2.6.14 for supporting =
+the
+> board. Then, the second one =
+(adeos-ipipe-2.6.14-arm-imx21-0.1.00.patch)
+> can be used against the imx21-enabled kernel for Xenomai, simply using =
+the
+> prepare-kernel.sh script. The patch was originally inspired from the
+> Integrator/ARM11 patch; thanks to its author :-)
+> >
+> > We will publish soon some results regarding the different latencies, =
+but
+> so far we measured about 2us between the IRQ and the timer =
+reprogramming
+> (at the ipipe level). The problem now is the jitter which is pretty =
+high:
+> about 1-2us, with some occasional peaks up to 5us.
+> > Having quite a few experience with this kind of board, we don't know =
+if
+> it comes from the code itself, or purely from the hardware. Any
+> idea/suggestions would be welcome. For periodic tasks around 20us,
+> everything works perfecly.
+> >
+>=20
+> Those results are pretty impressive actually. Assuming that you =
+compare
+> those figures with those obtained from traditional standalone RTOS =
+e.g.
+> VxWorks on the same board, the critical difference with Xenomai is =
+that
+> Linux is competing for the hw resources, and for instance, happily
+> trashes the cache under Xenomai's feet when scheduling its own tasks
+> during Xeno's idle time. Additionally, Adeos adds a small overhead due
+> to the interrupt virtualization, in exchange of real-time =
+predictability
+> for their delivery. Therefore, in this respect, 5 us does not look =
+that
+> bad already.
+>=20
+> Are 20 us a measure of the worst-case interrupt latency (i.e. running
+> latency -t2), or scheduling latency in user-space (i.e. running =
+latency
+> -t0)?
 >=20
 
-Sorry, doesn't parse for me yet. You that when CONFIG_XENO_OPT_PERVASIVE
-is enabled CONFIG_XENO_OPT_REGISTRY is required (which was not correct,
-see POSIX skin)?
+No, I think we can go lower; the measure we actually got between the IRQ =
+and the timer reprogramming is about 2 us with some jitters up to 5 us; =
+we could
+normally guarantee not to exceed 5 us between the IRQ and timer =
+reprogramming. Now, considering the ISR itself, we could get some time =
+under 10us provided that the ISR remains short.
 
-Jan
+So far, we measured the reaction time with the oscillo; we are now about =
+to check the latencies with the latency utility from Xenomai.
 
+> > I don't know to what extent this (1 or 2) patch(es) can be =
+integrated in
+> the official distribution;
+> but of course we are willing to make any adaptations to fulfill the
+> requirements for that.
+>=20
+> For the technical part, I guess that anyone interested in the ARM
+> support for Adeos/Xenomai will review this code; I'll be one of these
+> people, for sure. The usefulness of such contribution looks obvious to =
+me.
+>=20
+> For the non-technical part, a pre-requisite for adding code to the =
+Adeos
+> or Xenomai codebases is to properly identify it as coming from a
+> legitimate source, so if you, as a submitter, can confirm that you may
+> freely contribute it on behalf of the HEIG-VD (I guess?) or yourself,
+> that's fine with us. Btw, at first glance, I did not find any =
+additional
+> GPL copyrights coming with your changes in the patches, it would be
+> better to have them, so that we always know who contributed to what, =
+as
+> much as possible.
 
---------------enig88875A9B1798238BAAF80234
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Yes, it's ok. HEIG-VD is the University of Applied Sciences of Western =
+Switzerland in Yverdon (http://www.heig-vd.ch) and I'm working at
+the REDS Institute (http://reds.eivd.ch, unfortunately in French only at =
+the moment). We are granted to publish our work, at least
+all part which are not directly bound to some industrial projects (I'm=20
+trying to keep the stuff as open and public as possible ;-).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+>=20
+> >
+> > It's a first step; I hope it will help some other ARM9 developers =
+and
+> look forward to reading some feedbacks.
+> >
+> > I profit to thank a lot the Xenomai team (Philippe, Jan, Gilles and =
+the
+> others) for their excellent work and support).
+> >
+>=20
+> Xenomai exists because people participate in the Sisyphean task of
+> making it better, like you just did. In other words, welcome to the
+> band. Let's roll the rock.
+>=20
 
-iD8DBQFERNgQniDOoMHTA+kRAuocAJ9Ocez6HlhmSoiHaB1caYhg7rOBwACeNlqG
-+Yv+hEUYmXWZ8ynKcDDfvDI=
-=tD/d
------END PGP SIGNATURE-----
+Cool.
 
---------------enig88875A9B1798238BAAF80234--
+> > Kind regards
+> >
+> > Daniel
+> >
+> >
+> >
+> > =
+------------------------------------------------------------------------
+> >
+> > _______________________________________________
+> > Xenomai-core mailing list
+> > Xenomai-core@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-core
+>=20
+>=20
+> --
+>=20
+> Philippe.
+
+Daniel
 
