@@ -1,12 +1,14 @@
-Message-ID: <4443A725.5060102@domain.hid>
-Date: Mon, 17 Apr 2006 16:33:09 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <3e9157940604250015oace0df7wed795eabb6a49da0@domain.hid>
+Date: Tue, 25 Apr 2006 12:45:50 +0530
+From: "Deepak Joglekar" <joglekar.deepak@domain.hid>
+Subject: Re: [Xenomai-help] Error while running test suit (required="sep tsc",
+	present="sep", missing="tsc").
+In-Reply-To: <444D0C45.1040300@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai port to SH4
-References: <009601c662f1$f164e700$1701a8c0@domain.hid>
-In-Reply-To: <009601c662f1$f164e700$1701a8c0@domain.hid>
-Content-Type: text/plain; charset=ISO-2022-JP
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_37090_16450382.1145949350697"
+References: <3e9157940604240829u22307f54v2108ff8744c4ebeb@domain.hid>
+	<444D0C45.1040300@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,137 +18,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kiichi Kameda <k-kameda@domain.hid>
+To: Jim Cromie <jim.cromie@domain.hid>
 Cc: xenomai@xenomai.org
 
-Kiichi Kameda wrote:
-> I have been porting Xenomai-2.0.2 to SH(SuperH) architecture.
-> Currently almost all functions work well. And, I am mesuring the performance
-> from user-space program using posix skin on a 240MHz SH7750R(SH4) machine,
-> mainly 1 ms periodic dispatch latency. The measured data shows small
-> latency(tens of micro seconds) when system has a light workload.
-> In case of heavy workload such as frequent linux command input, the latency
-> increases to some 200 micro seconds, though.
-> 
-> Following is the testsuit/latency/latency program(using native skin -
-> slightly modified) output with comment.
-> In case of posix skin, the data shows similar tendency.
-> 
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> ...(no workload)
-> RTD|         333|        1400|        9733|       0|         333|
-> 27066
-> RTD|         333|        1466|       34533|       0|         333|
-> 34533
-> RTD|         266|        1400|       14533|       0|         266|
-> 34533
-> RTD|         400|        1400|       14466|       0|         266|
-> 34533
-> RTD|         333|        1333|        7533|       0|         266|
-> 34533
-> RTD|         266|        1400|       14333|       0|         266|
-> 34533
-> RTD|         333|        1400|       40866|       0|         266|
-> 40866
-> RTD|         333|        1466|       25533|       0|         266|
-> 40866
-> RTD|         266|        1400|       14400|       0|         266|
-> 40866
-> RTD|         400|        1400|       13600|       0|         266|
-> 40866
-> RTD|         266|        1400|        7466|       0|         266|
-> 40866
-> RTD|         333|        1466|       40800|       0|         266|
-> 40866
-> RTD|         333|        1400|       18466|       0|         266|
-> 40866
-> RTD|         333|        1400|       13533|       0|         266|
-> 40866
-> ...
-> RTD|         333|        1333|        7133|       0|         266|
-> 40866
-> (telnet login)
-> RTD|         266|        4400|      111000|       0|         266|
-> 111000
-> RTD|         333|        1400|       27266|       0|         266|
-> 111000
-> RTD|         333|        1466|       28000|       0|         266|
-> 111000
-> 
-> RTD|         333|        1466|       33133|       0|         266|
-> 111000
-> RTD|         333|        1466|       26800|       0|         266|
-> 111000
-> (single ps aux command)
-> RTD|         333|       22800|      112533|       0|         266|
-> 112533
-> RTD|         333|        1400|       19400|       0|         266|
-> 112533
-> RTD|         266|        1466|       35000|       0|         266|
-> 112533
-> RTD|         333|        1400|        7533|       0|         266|
-> 112533
-> RTD|         333|        1400|       15733|       0|         266|
-> 112533
-> RTD|         266|        1866|       71333|       0|         266|
-> 112533
-> RTD|         333|        9866|      105866|       0|         266|
-> 112533
-> RTD|         266|        1400|       14400|       0|         266|
-> 112533
-> 
-> RTD|         266|        1400|       11266|       0|         266|
-> 112533
-> RTD|         400|        1466|       50133|       0|         266|
-> 112533
-> RTD|         333|        3066|      116866|       0|         266|
-> 116866
-> (successive ps aux command)
-> RTD|        1266|       15933|      218866|       0|         266|
-> 218866
-> RTD|        1266|        2400|       76666|       0|         266|
-> 218866
-> RTD|         333|        1400|       15000|       0|         266|
-> 218866
-> RTD|         266|        1400|       27600|       0|         266|
-> 218866
-> RTD|         400|        1400|       15333|       0|         266|
-> 218866
-> RTD|         266|        1333|        6933|       0|         266|
-> 218866
-> RTD|         333|        1400|       16533|       0|         266|
-> 218866
-> RTD|         400|        1800|       75933|       0|         266|
-> 218866
-> 
-> 
-> It is enough possible I have misported the Xenomai to SH, but I also think
-> Xenomai user-space program(primary mode) suffers such extra latency when
-> Linux kernel runs Linux programs.
-> 
+------=_Part_37090_16450382.1145949350697
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Likely cache management issues.
+Hi,
 
-> I will appreciate any suggestion for latency improvement.
-> 
+For record complete results.
 
-Any code to share with us, Adeos/sh4 for instance?
+1. Initally I chose i686 processor family in kernel config. and followed
+instructions for kernel and xenomai compile and install.
+My processor is Pentium IV on build system. My Target processor will be AMD
+Geode.
 
-> Thank you,
-> 
-> Kiichi Kameda
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
+I was getting following error message while running xeno-test.
+-----------------------------------------------------------
+Xenomai: incompatible feature set
+(required=3D"sep tsc", present=3D"sep", missing=3D"tsc").
+-----------------------------------------------------------
+
+I checked /proc/cpuinfo
+--------------------------------
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca
+cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm pni
+monitor ds_cpl est cid cx16 xtpr
+--------------------------------
+
+Then I was bit confused.
+
+Gilles Chanteperdrix correctly pointed out error.
+
+You should have "CONFIG_X86_TSC=3Dy" in kernel ".config" file.  It will be
+selected automatically based on the Processor selected for kernel
+compilation.
+
+If you don't have this line in ".config" then one should configure the
+Xenomai as
+-----------------------------------
+./configure --disable-tsc
+-----------------------------------
+
+When CONFIG_X86_TSC is available in kernel then on "./configure" will work
+for Xenomai.
+
+Thanks.
 
 
--- 
+On 4/24/06, Jim Cromie <jim.cromie@domain.hid> wrote:
+>
+> Deepak Joglekar wrote:
+> > Hi,
+> >
+> hi.
+>
+> For the Record, can you post your actual error messages, in context,
+> so that folks who search the ML (gasp) for the "exact error message
+> string"
+> will find it in your post ?
+>
+> And it would be good to post the answer youve recieved also.
+>
+> tia
+>
 
-Philippe.
+------=_Part_37090_16450382.1145949350697
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,<br>
+<br>
+For record complete results.<br>
+<br>
+1. Initally I chose i686 processor family in kernel config. and
+followed instructions for kernel and xenomai compile and install.<br>
+My processor is Pentium IV on build system. My Target processor will be AMD=
+ Geode. <br>
+<br>
+I was getting following error message while running xeno-test.<br>
+-----------------------------------------------------------<br>
+Xenomai: incompatible feature set<br>
+(required=3D&quot;sep tsc&quot;, present=3D&quot;sep&quot;,=20
+missing=3D&quot;tsc&quot;).<br>
+-----------------------------------------------------------<br>
+<br>
+I checked /proc/cpuinfo<br>
+--------------------------------<br>
+flags&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : fpu vme=
+ de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov=20
+pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx lm pni monitor=
+=20
+ds_cpl est cid cx16 xtpr <br>
+--------------------------------<br>
+<br>
+Then I was bit confused.<br>
+<br>
+Gilles Chanteperdrix correctly pointed out error.<br>
+<br>
+You should have &quot;CONFIG_X86_TSC=3Dy&quot; in kernel &quot;.config&quot=
+; file.&nbsp; It will
+be selected automatically based on the Processor selected for kernel&nbsp;
+compilation. <br>
+<br>
+If you don't have this line in &quot;.config&quot; then one should configur=
+e the Xenomai as<br>
+-----------------------------------<br>
+./configure --disable-tsc<br>
+-----------------------------------<br>
+<br>
+When CONFIG_X86_TSC is available in kernel then on &quot;./configure&quot; =
+will work for Xenomai.<br>
+<br>
+Thanks.<br>
+<br><br><div><span class=3D"gmail_quote">On 4/24/06, <b class=3D"gmail_send=
+ername">Jim Cromie</b> &lt;<a href=3D"mailto:jim.cromie@domain.hid">jim.crom=
+ie@domain.hid</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=
+=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; p=
+adding-left: 1ex;">
+Deepak Joglekar wrote:<br>&gt; Hi,<br>&gt;<br>hi.<br><br>For the Record, ca=
+n you post your actual error messages, in context,<br>so that folks who sea=
+rch the ML (gasp) for the &quot;exact error message string&quot;<br>will fi=
+nd it in your post ?
+<br><br>And it would be good to post the answer youve recieved also.<br><br=
+>tia<br></blockquote></div><br>
+
+------=_Part_37090_16450382.1145949350697--
 
