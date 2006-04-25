@@ -1,11 +1,10 @@
-Message-ID: <444E8D7A.30900@domain.hid>
-Date: Tue, 25 Apr 2006 22:58:34 +0200
+Message-ID: <444E8E99.2050805@domain.hid>
+Date: Tue, 25 Apr 2006 23:03:21 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] syslog safe?
-References: <20060425134048.D5934@domain.hid> <444E61F0.9000606@domain.hid>
-	<20060425143711.E5934@domain.hid>
-In-Reply-To: <20060425143711.E5934@domain.hid>
+Subject: Re: [Xenomai-help] Profiling software
+References: <hlb2i3-ur5.ln1@domain.hid>
+In-Reply-To: <hlb2i3-ur5.ln1@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,30 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kent Borg <kentborg@domain.hid>
+To: Bernhard Walle <bernhard.walle@domain.hid>
 Cc: xenomai@xenomai.org
 
-Kent Borg wrote:
-> On Tue, Apr 25, 2006 at 07:52:48PM +0200, Philippe Gerum wrote:
+Bernhard Walle wrote:
+> Hello,
 > 
->>No problem using it, but it will trigger an automatic switch to 
->>secondary mode in order to issue the right Linux syscalls. The thread 
->>will switch back to primary automatically again as soon as a (usually 
->>blocking) Xenomai syscall is issued.
-> 
-> 
-> And, looking at strace output, it appears that is a syslog() is too
-> low a priority to be logged it doesn't make a system call and so will
-> not drop us out of realtime.
+> is it possible to run LTTng together with Xenomai? Or is there any
+> other profiling software that works with Xenomai? Thanks.
 > 
 > 
 
-Do not trust strace there, it heavily relies on other glibc services, 
-like buffered I/O, which might issue syscalls under various conditions. 
-For instance, internal mutex locking might cause a syscall to deal with 
-any contended request, or malloc called indirectly might ask for 
-extending the caller's data segment, and so on. Additionally, some 
-syslog flags, like LOG_CONS, do cause file I/O.
+Xenomai supports LTT oldgen on x86 for now, over 2.6.9 IIRC, since it's 
+the latest kernel LTT did support.
+
+For performance profiling, oprofile over a Xenomai-enabled kernel works.
 
 -- 
 
