@@ -1,65 +1,34 @@
-Message-ID: <4443D1E0.5020708@domain.hid>
-Date: Mon, 17 Apr 2006 19:35:28 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <20060425144447.68645.qmail@domain.hid>
+Date: Tue, 25 Apr 2006 07:44:47 -0700 (PDT)
+From: Tom Graves <tgraves_cs@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] General question on Native Skin tasks
-References: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>	<4443992C.5000808@domain.hid>
-	<4443AB1F.2060405@domain.hid>
-In-Reply-To: <4443AB1F.2060405@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, "Brian L." <bluczkie@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Adeos-main] test adeos patch
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
-> 
->> Brian L. wrote:
->>
->>> If I create a native-skin RT_TASK from userspace with no flags, i.e.
->>>
->>> void task(void*)
->>> {
->>>    for (;;) ;
->>> }
->>> int main()
->>> {
->>>   RT_TASK t;
->>>   rt_task_create(&t, 0, 3, 0);
->>>   rt_task_start(&t,task,0);
->>>   (do something which blocks)
->>> }
->>
->>
->>
->> mlockall left out for simplicity? Or is it also missing on your real
->> test? In the latter case, occasional application crashes are "normal"
->> (as described below).
->>
->> Philippe, you suggested some code for detecting this. We should really,
->> really add this soon (maybe to the exception path)!
->>
-> 
-> The submitted patch works pretty well detecting unlocked memory, I'm 
-> using it right now, but I'd like something a bit more self-explanatory 
-> than just receiving SIGXCPU. I don't think the execption path is the 
-> right place to put this, since the mlockall issue causes random bugs, 
-> and you likely want to detect them early and unconditionally.
-> 
+Hello all,
 
-Commit #941 should provide a reliable guard against lack of process 
-memory locking.
+I am new to this mailing list and adeos in general.
 
--- 
+I was wondering if there are any test programs out
+there to verify the adeos patch is applied properly? 
+I am applying it to a kernel running on an arm
+processor.
 
-Philippe.
+Thanks,
+Tom 
+
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
 
