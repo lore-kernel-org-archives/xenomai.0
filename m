@@ -1,12 +1,11 @@
-Message-ID: <444F3201.2080302@domain.hid>
-Date: Wed, 26 Apr 2006 10:40:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Latencies for the Freescale i.MX21/CSB535FS
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD0@domain.hid>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD0@domain.hid>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C66916.641B086D"
+Date: Wed, 26 Apr 2006 11:47:11 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD1@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-core] Xen/Xenomai
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,62 +15,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-ROSSIER Daniel wrote:
-> Hi all,
->=20
-> =20
->=20
-> As promised, you can find the latency results (latency =96t0/-t1/-t2) a=
-s=20
-> well as the
->=20
-> stats from the switch utility for the performance of our Xenomai port=20
-> onto the i.MX21 board.
->=20
-> =20
->=20
-> These are fesh results J and we didn't have time to analyze them yet.
->=20
-> =20
->=20
-> Thanks for any feedback=85
+This is a multi-part message in MIME format.
 
-The tests have not been run long enough under load to get a reliable=20
-measure of the real worst-case figures, but still, the data sets seem=20
-consistent.
+------_=_NextPart_001_01C66916.641B086D
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-- the test run of latency -t2 (in-kernel timer handler) shows equivalent=20
-worst-case figures than the -t1 form (in-kernel thread), which means=20
-that most of the latency hit is taken at the Adeos level, i.e. in-kernel=20
-scheduling adds little in the picture. Room for improvement is primarily=20
-hiding somewhere in the Adeos layer, I think.
+Hi All,
 
-- comparing the min latency observed in the -t1 and -t2 forms, it looks=20
-like the inherent cost of traversing the rescheduling path would be=20
-close to ~10 us.
+=20
 
-- comparing the min latency observed in the -t0 and -t1 forms, there is=20
-another 10+ us consumed in switching mm contexts, and paying the=20
-involved cache penalties. The way to measure the level of perturbation=20
-Linux adds by switching its own tasks is to write a simple kernel module=20
-embodying a Xenomai thread that keeps the CPU busy while the performance=20
-  test is running at a higher priority.
+Is there any relationship between Xenomai and the Xen virtualization
+monitor(http://www.cl.cam.ac.uk/Research/SRG/netos/xen/)?=20
 
-I'd say that the most efficient way to reduce those latencies would=20
-require to first identify the source of the 40+ us spot observed with=20
-the -t2 form on an idle system. For that, I'm convinced that porting the=20
-I-pipe tracer to ARM would be the best option, since this tool would be=20
-of great help there.
+=20
 
-This port basically requires 1) to code the mcount() routine supporting=20
-gcc's -pg option, 2) to solve early boot issues so that mcount() does=20
-not attempt to trace anything while the memory environment has not been=20
-fully set up. The rest is pretty generic.
+Would it make sense to port (or to integrate) Xenomai in such virtual
+environment? (the notion of a Xenomai domain might correspond to a
+virtual machine).
 
---=20
+=20
 
-Philippe.
+Daniel
+
+=20
+
+
+------_=_NextPart_001_01C66916.641B086D
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Hi All,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Is there any relationship between Xenomai and =
+the Xen
+virtualization monitor(http://www.cl.cam.ac.uk/Research/SRG/netos/xen/)? =
+<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Would it make sense to port (or to integrate) =
+Xenomai
+in such virtual environment? (the notion of a Xenomai domain might =
+correspond
+to a virtual machine).<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Daniel<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------_=_NextPart_001_01C66916.641B086D--
 
