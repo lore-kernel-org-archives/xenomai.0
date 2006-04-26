@@ -1,13 +1,13 @@
-Message-ID: <444FA217.70102@domain.hid>
-Date: Wed, 26 Apr 2006 18:38:47 +0200
+Message-ID: <444FA268.8060306@domain.hid>
+Date: Wed, 26 Apr 2006 18:40:08 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: Adeos-cvs Digest, Vol 10, Issue 11
 References: <E1FYmA5-0003S9-00@domain.hid> <444F9BDB.200@domain.hid>
-	<444F9DDA.7000400@domain.hid> <444F9FBE.8030506@domain.hid>
-In-Reply-To: <444F9FBE.8030506@domain.hid>
+	<444F9DA7.2060402@domain.hid> <444F9F39.6080606@domain.hid>
+In-Reply-To: <444F9F39.6080606@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Re: Adeos-cvs Digest, Vol 10, Issue 11
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -52,19 +52,23 @@ Jan Kiszka wrote:
 >>>IPIPE_TRACE_IRQSOFF is not set). Raising it above 4 is of no practical
 >>>use so far.
 >>>
+>>>What is your idea behind it?
+>>>
 >>
->>Oh, wait, you've just explained why passing -f to the latency test
->>freezes my board! Thanks :o)
+>>My idea is that 4 paths consume way too much memory and causes my
+>>embedded ppc setup to choke at boot. The usual culprits like a bad
+>>download address passed to u-boot and friends are not involved this
+>>time, so until I figure out what on earth is causing this havoc, I'd
+>>like to be able to lower this value to 2 by configuration.
 >>
 > 
 > 
-> Famous last words while reaching out the finger:
-> 
-> "Hey, what is this knob for?" :)
+> Then better make IPIPE_TRACE_POINTS configurable. Also the whole
+> ipipe_trace_begin/end interface could be made optional so that the
+> number of paths could be reduced by _1_ (not more...).
 > 
 
-Yeah, hopefully, next time I'm naive and optimistic, the fine print on 
-the button won't say "ejection seat"...
+Ok, I'll do that. Hopefully, this will help the boot issue too.
 
 -- 
 
