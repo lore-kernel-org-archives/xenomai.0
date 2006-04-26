@@ -1,11 +1,14 @@
-Message-ID: <444E383B.6010908@domain.hid>
-Date: Tue, 25 Apr 2006 16:54:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <444F9BDB.200@domain.hid>
+Date: Wed, 26 Apr 2006 18:12:11 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] test adeos patch
-References: <20060425144447.68645.qmail@domain.hid>
-In-Reply-To: <20060425144447.68645.qmail@domain.hid>
-Content-Type: multipart/mixed; boundary="------------090707030903000905040408"
+References: <E1FYmA5-0003S9-00@domain.hid>
+In-Reply-To: <E1FYmA5-0003S9-00@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6A0B2E63D773291519E85821"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] Re: Adeos-cvs Digest, Vol 10, Issue 11
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,132 +17,57 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Tom Graves <tgraves_cs@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main@gna.org
 
-This is a multi-part message in MIME format.
---------------090707030903000905040408
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6A0B2E63D773291519E85821
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Tom Graves wrote:
-> Hello all,
-> 
-> I am new to this mailing list and adeos in general.
-> 
-> I was wondering if there are any test programs out
-> there to verify the adeos patch is applied properly? 
-> I am applying it to a kernel running on an arm
-> processor.
-> 
+adeos-cvs-request@domain.hid wrote:
+> ...
+> Commit from rpm (2006-04-26 17:41 CEST)
+> ---------------
+>=20
+> Make IPIPE_TRACE_PATHS configurable
+>=20
+>   ipipe  v2.6/common/kernel/ipipe/tracer.c       1.10
+>   ipipe  v2.6/common/kernel/ipipe/Kconfig.trace  1.4
 
-Attached a trivial test intercepting the timer IRQ, which at least 
-demonstrates that the pipeline core works properly.
+=46rom a quick glance it appears to me you provided a nice interface to
+break some stuff :). At least the explanation is not correct.
 
-The definitive test would be to run a complete RTOS like this one over 
-the patched kernel:
-http://download.gna.org/xenomai/stable/xenomai-2.1.tar.bz2
+Those four paths are required to 1) always have an active path at hand
+for recording, 2+3) keep the latest max or frozen path, and 4) escape
+with to an alternative slot during max/frozen updates in case the
+previous one is currently locked for output or whatever and cannot
+become the new active path.
 
--- 
+So, the absolute minimum is 3 when there is definitely no concurrent
+usage of ipipe_trace_begin/end vs. ipipe_trace_freeze (remember that
+users may want to define their own begin/end points if
+IPIPE_TRACE_IRQSOFF is not set). Raising it above 4 is of no practical
+use so far.
 
-Philippe.
+What is your idea behind it?
 
---------------090707030903000905040408
-Content-Type: text/x-csrc;
- name="ipipe_test.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="ipipe_test.c"
+Jan
 
-/*
- *   A simple I-PIPE test module.
- *
- *   Copyright (C) 2005 Philippe Gerum.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, Inc., 675 Mass Ave, Cambridge MA 02139,
- *   USA; either version 2 of the License, or (at your option) any later
- *   version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- *   This module implements a trivial IPIPE client domain. Basically,
- *   it creates an IPIPE domain which has a higher priority in the
- *   pipeline than the root (i.e. Linux) domain, then virtualizes the
- *   timer interrupt for it. As a result of this, each timer tick is
- *   first processed by this domain's timer_tick() routine, then by
- *   the Linux domain handler.
- */
 
-#include <linux/module.h>
-#include <asm/system.h>
+--------------enig6A0B2E63D773291519E85821
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-MODULE_LICENSE("GPL");
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-static struct ipipe_sysinfo sys_info;
+iD8DBQFET5vbniDOoMHTA+kRAp3nAJ433YB9xPNUHGWaD5bXSVMAX6bv4gCdF+j3
+68bLj9geDlIvjqkQWshP8nw=
+=9ZSj
+-----END PGP SIGNATURE-----
 
-static struct ipipe_domain this_domain;
-
-static int timer_hits[IPIPE_NR_CPUS];
-
-void timer_tick (unsigned irq)
-{
-    timer_hits[ipipe_processor_id()]++;
-    ipipe_propagate_irq(irq);
-}
-
-void domain_entry (void)
-{
-    printk("Domain %s started on CPU#%d.\n",
-	   ipipe_current_domain->name,
-	   ipipe_processor_id());
-
-    ipipe_get_sysinfo(&sys_info);
-
-    ipipe_virtualize_irq(sys_info.archdep.tmirq,
-			 &timer_tick,
-			 NULL,
-			 IPIPE_DYNAMIC_MASK);
-}
-
-static int __init __ipipe_domain_init (void)
-{
-    struct ipipe_domain_attr attr;
-
-    ipipe_init_attr(&attr);
-
-    attr.name = "TestDomain";
-    attr.domid = 1;
-    attr.entry = &domain_entry;
-    attr.priority = IPIPE_ROOT_PRI + 1;
- 
-    return ipipe_register_domain(&this_domain,&attr);
-}
-
-static void __exit __ipipe_domain_exit (void)
-
-{
-    int cpu;
-
-    ipipe_unregister_domain(&this_domain);
-
-    for (cpu = 0; cpu < sys_info.ncpus; cpu++)
-	{
-	printk("IPIPE TEST ON CPU #%d:\n",cpu);
-	printk("       %d TIMER TICKS ON IRQ #%d\n",timer_hits[cpu],sys_info.archdep.tmirq);
-	}
-}
-
-module_init(__ipipe_domain_init);
-module_exit(__ipipe_domain_exit);
-
---------------090707030903000905040408--
+--------------enig6A0B2E63D773291519E85821--
 
