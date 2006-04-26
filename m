@@ -1,14 +1,10 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Subject: Re: [Xenomai-core] Xen/Xenomai
-Date: Wed, 26 Apr 2006 18:57:03 +0900
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD1@domain.hid>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD1@domain.hid>
+Message-ID: <444FF092.2010002@domain.hid>
+Date: Thu, 27 Apr 2006 00:13:38 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200604261857.03441.rlenglet@domain.hid>
+Subject: [Xenomai-core] I-pipe latency tracer for ppc
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,22 +15,22 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
-Cc: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: adeos-main@gna.org
 
-> Is there any relationship between Xenomai and the Xen
-> virtualization
-> monitor(http://www.cl.cam.ac.uk/Research/SRG/netos/xen/)?
->
-> Would it make sense to port (or to integrate) Xenomai in such
-> virtual environment? (the notion of a Xenomai domain might
-> correspond to a virtual machine).
 
-I would rather say that both are means to create domains (in the 
-general sense of the term, cf. ISO RM-ODP), but of a different 
-nature. In Xenomai objects in domains are tasks, in Xen objects 
-are operating systems / virtual machines. IMHO, I don't see how 
-they could fit together.
+As promised, the I-pipe tracer has been ported to ppc. People working on 
+this architecture are invited to give it a try, it's a great tool to 
+find out where the cycles are actually going.
+
+Just apply the tracer patch on top of the Adeos patch bearing the same 
+revision number, and select the feature from the kernel configuration. 
+If you happen to have some issue while booting the instrumented kernel 
+on embedded setups (e.g. freeze after kernel decompression), try 
+reducing the size of the trace log (CONFIG_IPIPE_TRACE_SHIFT).
+
+http://download.gna.org/adeos/patches/v2.6/ppc/tracer/
 
 -- 
-Romain LENGLET
+
+Philippe.
 
