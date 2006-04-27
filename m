@@ -1,5 +1,5 @@
-Message-ID: <4450B194.4030707@domain.hid>
-Date: Thu, 27 Apr 2006 13:57:08 +0200
+Message-ID: <4450B232.5010609@domain.hid>
+Date: Thu, 27 Apr 2006 13:59:46 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] IRQ1 forwarded to Linux?
@@ -26,10 +26,15 @@ ROSSIER Daniel wrote:
 >=20
 > We have a small Xeno application which implements an interrupt service=20
 > (ISR) on IRQ 1 (keyboard) =96 quite stupid, but
->
+>=20
 
-What does the following say?
-$ cat /proc/ipipe/Linux
+Sorry,
+
+- $ cat /proc/ipipe/Linux
++ $ cat /proc/ipipe/Xenomai
+
+when your test is loaded would be useful to understand why Linux still=20
+gets the kbd IRQs.
 
 > just for testing. If we understand well, returning from the ISR with=20
 > RET_INTR_HANDLED should not propagate the
@@ -42,7 +47,10 @@ $ cat /proc/ipipe/Linux
 > =20
 >=20
 > Does Xenomai patch the keyb driver?
->=20
+>
+
+No.
+
 > =20
 >=20
 > (We've seen that on /proc/xenomai/irq, we get the IRQ1 count, but NOT o=
