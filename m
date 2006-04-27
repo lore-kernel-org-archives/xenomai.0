@@ -1,13 +1,18 @@
-Message-ID: <4450B563.9020100@domain.hid>
-Date: Thu, 27 Apr 2006 14:13:23 +0200
+Message-ID: <4450B760.4060201@domain.hid>
+Date: Thu, 27 Apr 2006 14:21:52 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Latencies for the Freescale i.MX21/CSB535FS
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD6@domain.hid>
-	<4450B2B8.1060800@domain.hid>
-In-Reply-To: <4450B2B8.1060800@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <b647ffbd0604120138p5088006aqf074c711a0478487@domain.hid>	
+	<44416943.4070702@domain.hid>	
+	<b647ffbd0604220254l154fcc7dh462c7d45bcd2c441@domain.hid>	
+	<444C89F4.3040302@domain.hid>	
+	<b647ffbd0604240228sb8d58a3kc3b780a576c2d95a@domain.hid>
+	<b647ffbd0604270116j5a32bb22j26e3317488ec8f42@domain.hid>
+In-Reply-To: <b647ffbd0604270116j5a32bb22j26e3317488ec8f42@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [REQUEST] eliminate the
+	rthal_critical_enter/exit() from rthal_irq_request()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,45 +22,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: ROSSIER Daniel <Daniel.Rossier@domain.hid>, xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> ROSSIER Daniel wrote:
+Dmitry Adamushko wrote:
+> Hello,
 > 
->>>I'd say that the most efficient way to reduce those latencies would
->>>require to first identify the source of the 40+ us spot observed with
->>>the -t2 form on an idle system. For that, I'm convinced that porting the
->>>I-pipe tracer to ARM would be the best option, since this tool would be
->>>of great help there.
->>>
->>
->>Thanks for the hint; we will spend some time on the tracer in the coming days. We keep you informed.
->>
-> 
-> 
-> Cool, tracing also for ARM!
-> 
-> 
->>>This port basically requires 1) to code the mcount() routine supporting
->>>gcc's -pg option, 2) to solve early boot issues so that mcount() does
->>>not attempt to trace anything while the memory environment has not been
->>>fully set up. The rest is pretty generic.
->>>
-> 
-> 
-> Regarding a mcount() implementation and other details, the original
-> tracer effort by Ingo Molnar may give useful hints (at least it did for me):
-> 
-> http://people.redhat.com/mingo/latency-tracing-patches/
-> 
-> I remember the ARM part not being that simple as x86. I think this was
-> also due to lacking stack unwinding support on that arch.
-> 
+> this fix prevents possible deadlocks in rt_intr_delete() vs. ISR
+> handlers that I have mentioned earlier.
 
-There's a said to be working replacement for __builtin_return_address 
-provided by mingo's patch.
-http://people.redhat.com/mingo/latency-tracing-patches/patches/latency-tracing.patch
+Applied, thanks.
 
 -- 
 
