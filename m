@@ -1,12 +1,11 @@
+Message-ID: <44508610.8090103@domain.hid>
+Date: Thu, 27 Apr 2006 10:51:28 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Xen/Xenomai
-From: Alessio Igor Bogani <abogani@domain.hid>
-In-Reply-To: <200604261857.03441.rlenglet@domain.hid>
 References: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD1@domain.hid>
-	<200604261857.03441.rlenglet@domain.hid>
-Content-Type: text/plain
-Date: Thu, 27 Apr 2006 10:29:10 +0200
-Message-Id: <1146126550.8136.15.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0210DD1@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,24 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
-
-> > Would it make sense to port (or to integrate) Xenomai in such
-> > virtual environment? (the notion of a Xenomai domain might
-> > correspond to a virtual machine).
+ROSSIER Daniel wrote:
+> Hi All,
 > 
-> I would rather say that both are means to create domains (in the 
-> general sense of the term, cf. ISO RM-ODP), but of a different 
-> nature. In Xenomai objects in domains are tasks, in Xen objects 
-> are operating systems / virtual machines. IMHO, I don't see how 
-> they could fit together.
+>  
+> 
+> Is there any relationship between Xenomai and the Xen virtualization 
+> monitor(http://www.cl.cam.ac.uk/Research/SRG/netos/xen/)?
+> 
 
-Why you think that Xen and Xenomai can't fit together?
-As far as i know Xen and Adeos are very similar goals.
+None, except that both provide virtualization services, but on a 
+different scale.
 
-Regards,
-Alessio
+>  
+> 
+> Would it make sense to port (or to integrate) Xenomai in such virtual 
+> environment? (the notion of a Xenomai domain might correspond to a 
+> virtual machine).
+> 
 
+Running Xenomai in a Xen domain aside of Linux should be possible 
+without much trouble by connecting the HAL to the hypervisor, I think. 
+Maybe another option would be to keep Xenomai as a Linux sub-system like 
+now, but use Xen's paravirtualization to provide what's currently 
+obtained from Adeos.
+
+IIRC, people at Sombrio Systems are working on providing RTOS 
+virtualization services on top of either Xen or Xenomai for embedded 
+systems: http://www.linuxdevices.com/news/NS3509840836.html.
+
+-- 
+
+Philippe.
 
