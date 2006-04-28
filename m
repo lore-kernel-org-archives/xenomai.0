@@ -1,14 +1,12 @@
-Message-ID: <4443AB94.50508@domain.hid>
-Date: Mon, 17 Apr 2006 16:52:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <6ee4c8380604272202q3109a3b9n71e0327de76730b8@domain.hid>
+Date: Fri, 28 Apr 2006 01:02:55 -0400
+From: "Brian L." <bluczkie@domain.hid>
+Sender: zorander@domain.hid
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai port to SH4
-References: <009601c662f1$f164e700$1701a8c0@domain.hid>
-In-Reply-To: <009601c662f1$f164e700$1701a8c0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC5DCE87912387438D03BBD06"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: [Xenomai-help] Buffer Overrun -> Kernel Explosion
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,168 +16,229 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kiichi Kameda <k-kameda@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC5DCE87912387438D03BBD06
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I'm finally set up with netconsole to catch panics/crashes when they
+happen so now I can report more information on the one I alluded to a
+week or two ago in my "General Question.." thread.
 
-Kiichi Kameda wrote:
-> I have been porting Xenomai-2.0.2 to SH(SuperH) architecture.
+What I did to cause it was write past the end of a buffer returned by
+rt_queue_alloc. I'm not entirely sure if this message came at the
+moment of the write (unlikely, IMHO) or later when more xnheap
+activity took place. The crash popped up in several different ways
+depending on what code paths I enabled/disabled.
 
-Cool!
+What concerns me is that polluting an xnheap can bring the system to
+its knees so harshly. I can see why it could be *very* hard to police
+this sort of problem without destroying the performance of xnheap, so
+it wouldn't surprise me if this is "normal". Still, though, it's sad
+that user-space code can bring the system down after something as
+innocent as a fencepost error in a string copy routine...
 
-> Currently almost all functions work well. And, I am mesuring the perfor=
-mance
-> from user-space program using posix skin on a 240MHz SH7750R(SH4) machi=
-ne,
-> mainly 1 ms periodic dispatch latency. The measured data shows small
-> latency(tens of micro seconds) when system has a light workload.
-> In case of heavy workload such as frequent linux command input, the lat=
-ency
-> increases to some 200 micro seconds, though.
-
-If you are looking for real heavy load: cache benchmarks tend to stress
-your system most (e.g. http://www.cwi.nl/~manegold/Calibrator). Combine
-them with heavy i/o load (flood ping etc.).
-
-Anyway, 200 us for a 240 MHz system doesn't sound totally unrealistic.
-But I do not know the sh4 architecture to give a reliable estimation.
-
-What are your numbers when running latency in the other modes, i.e.
-without the need to switch to user space (mode 1, "-t1") or even without
-any context switch at all (mode 2, "-t2")?
-
->=20
-> Following is the testsuit/latency/latency program(using native skin -
-> slightly modified) output with comment.
-> In case of posix skin, the data shows similar tendency.
->=20
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat=
-
-> worst
-> ...(no workload)
-> RTD|         333|        1400|        9733|       0|         333|
-> 27066
-> RTD|         333|        1466|       34533|       0|         333|
-> 34533
-> RTD|         266|        1400|       14533|       0|         266|
-> 34533
-> RTD|         400|        1400|       14466|       0|         266|
-> 34533
-> RTD|         333|        1333|        7533|       0|         266|
-> 34533
-> RTD|         266|        1400|       14333|       0|         266|
-> 34533
-> RTD|         333|        1400|       40866|       0|         266|
-> 40866
-> RTD|         333|        1466|       25533|       0|         266|
-> 40866
-> RTD|         266|        1400|       14400|       0|         266|
-> 40866
-> RTD|         400|        1400|       13600|       0|         266|
-> 40866
-> RTD|         266|        1400|        7466|       0|         266|
-> 40866
-> RTD|         333|        1466|       40800|       0|         266|
-> 40866
-> RTD|         333|        1400|       18466|       0|         266|
-> 40866
-> RTD|         333|        1400|       13533|       0|         266|
-> 40866
-> ...
-> RTD|         333|        1333|        7133|       0|         266|
-> 40866
-> (telnet login)
-> RTD|         266|        4400|      111000|       0|         266|
-> 111000
-> RTD|         333|        1400|       27266|       0|         266|
-> 111000
-> RTD|         333|        1466|       28000|       0|         266|
-> 111000
->=20
-> RTD|         333|        1466|       33133|       0|         266|
-> 111000
-> RTD|         333|        1466|       26800|       0|         266|
-> 111000
-> (single ps aux command)
-> RTD|         333|       22800|      112533|       0|         266|
-> 112533
-> RTD|         333|        1400|       19400|       0|         266|
-> 112533
-> RTD|         266|        1466|       35000|       0|         266|
-> 112533
-> RTD|         333|        1400|        7533|       0|         266|
-> 112533
-> RTD|         333|        1400|       15733|       0|         266|
-> 112533
-> RTD|         266|        1866|       71333|       0|         266|
-> 112533
-> RTD|         333|        9866|      105866|       0|         266|
-> 112533
-> RTD|         266|        1400|       14400|       0|         266|
-> 112533
->=20
-> RTD|         266|        1400|       11266|       0|         266|
-> 112533
-> RTD|         400|        1466|       50133|       0|         266|
-> 112533
-> RTD|         333|        3066|      116866|       0|         266|
-> 116866
-> (successive ps aux command)
-> RTD|        1266|       15933|      218866|       0|         266|
-> 218866
-> RTD|        1266|        2400|       76666|       0|         266|
-> 218866
-> RTD|         333|        1400|       15000|       0|         266|
-> 218866
-> RTD|         266|        1400|       27600|       0|         266|
-> 218866
-> RTD|         400|        1400|       15333|       0|         266|
-> 218866
-> RTD|         266|        1333|        6933|       0|         266|
-> 218866
-> RTD|         333|        1400|       16533|       0|         266|
-> 218866
-> RTD|         400|        1800|       75933|       0|         266|
-> 218866
->=20
->=20
-> It is enough possible I have misported the Xenomai to SH, but I also th=
-ink
-> Xenomai user-space program(primary mode) suffers such extra latency whe=
-n
-> Linux kernel runs Linux programs.
->=20
-> I will appreciate any suggestion for latency improvement.
-
-Very helpful for understanding what happens on your system is the ipipe
-latency tracer. We have support for x86 and ppc so far, and there are
-"templates" for porting it to other archs available from Ingo Molnar's
-original patch. Unfortunately, even the latter does not yet include sh4
-support, so porting it would be a real pioneer work. :)
-
-But, basically, it can be as simple as writing an mcount stub in
-assembly to call the actual tracing function. See x86 on this.
-
-Jan
+Thoughts? I've pasted the console dump below.
 
 
---------------enigC5DCE87912387438D03BBD06
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Unable to handle kernel paging request at virtual address 29343231
+ printing eip:
+c013b8dc
+*pde =3D 00000000
+Oops: 0000 [#1]
+PREEMPT
+Modules linked in: intel_agp agpgart
+CPU:    0
+EIP:    0060:[<c013b8dc>]    Not tainted VLI
+EFLAGS: 00010002   (2.6.15-ipipe)
+EIP is at xnheap_alloc+0x9c/0x170
+eax: d0800d54   ebx: 00000020   ecx: d0800d54   edx: c03d5740
+ds: 007b   es: 007b   ss: 0068
+I-pipe domain Xenomai
+Stack: cf913a50 00000001 00000092 00000001 00000005 d0800d20 00000001 c03d5=
+740
+       ce52bf0c c015fda6 d0800d54 00000015 d0800d20 ce52bfbc 00000000 ce52b=
+f40
+       c015ab10 d0800d20 00000005 00000010 00000000 00000003 d0800d54 b7f0c=
+000
+Call Trace:
+ [<c010375f>] show_stack+0x7f/0xa0
+ [<c01038fe>] show_registers+0x14e/0x1f0
+ [<c0103b45>] die+0xf5/0x1c0
+ [<c010ea8e>] do_page_fault+0x2ee/0x5bc
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c015fda6>] rt_queue_alloc+0x56/0xd0
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEQ6uUniDOoMHTA+kRAnD5AJwOFBqsdScJJPbe9yP3fFjhk0eiBgCfdz0N
-5s4sel9ZQr+xsEW7zRdeUo4=
-=XzGp
------END PGP SIGNATURE-----
-
---------------enigC5DCE87912387438D03BBD06--
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c010ea8e>] do_page_fault+0x2ee/0x5bc
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c015fda6>] rt_queue_alloc+0x56/0xd0
+ [<c015ab10>] __rt_queue_alloc+0xb0/0x130
+ [<c014d0fa>] hisyscall_event+0x29a/0x3a0
+ [<c0139cd3>] __ipipe_dispatch_event+0xe3/0x100
+ [<c010d6e0>] __ipipe_syscall_root+0x30/0xe0
+ [<c0103138>] system_call+0x20/0x41
+Code: 74 33 8b 46 0c a8 08 75 22 83 c8 08 89 46 0c ff ff 21 e0 ff 40 14 eb
+------------[ cut here ]------------
+kernel BUG at kernel/exit.c:877!
+invalid operand: 0000 [#5]
+PREEMPT
+Modules linked in: intel_agp agpgart
+CPU:    0
+EIP:    0060:[<c01183f2>]    Not tainted VLI
+EFLAGS: 00010202   (2.6.15-ipipe)
+EIP is at do_exit+0x302/0x5f0
+eax: 0080200c   ebx: 00000000   ecx: ce52b8c0   edx: ce52b8c0
+ds: 007b   es: 007b   ss: 0068
+I-pipe domain Xenomai
+Stack: cf64d570 c03d5740 ffffffff ce52ba48 00000001 00000000 ffffffff 00000=
+000
+       ce52b93c c0103c0d 00000000 00000001 ce52b914 00000004 ce52ba48 c031b=
+cd0
+       00000000 000000ff 0000000b ce52ba48 ce52b93c
+CPU:    0
+EIP:    0060:[<c01183f2>]    Not tainted VLI
+EFLAGS: 00010202   (2.6.15-ipipe)
+EIP is at do_exit+0x302/0x5f0
+eax: 0080200c   ebx: 00000000   ecx: ce52b720   edx: ce52b720
+esi: cf64d570   edi: 0000000b   ebp: ce52b75c   esp: ce52b73c
+ds: 007b   es: 007b   ss: 0068
+I-pipe domain Xenomai
+Stack: cf64d570 c03d5740 ffffffff ce52b8a8 00000000 00000000 ffffffff 00000=
+000
+       ce52b79c c0103c0d 00000000 00000001 ce52b774 00000005 ce52b8a8 c031b=
+cd0
+       00000000 000000ff 0000000b ce52b8a8 ce52b79c c010f3a7 cf64d570 ce52b=
+8a8
+Call Trace:
+ [<c010375f>] show_stack+0x7f/0xa0
+ [<c01038fe>] show_registers+0x14e/0x1f0
+ [<c0103b45>] die+0xf5/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+<0f> 0b 6d 03 27 cf 31 c0 eb d4 b8 00 e0 ff ff 21 e0 ff 40 14 eb
+------------[ cut here ]------------
+kernel BUG at kernel/exit.c:877!
+invalid operand: 0000 [#7]
+PREEMPT
+Modules linked in: intel_agp agpgart
+CPU:    0
+EIP:    0060:[<c01183f2>]    Not tainted VLI
+EFLAGS: 00010202   (2.6.15-ipipe)
+EIP is at do_exit+0x302/0x5f0
+eax: 0080200c   ebx: 00000000   ecx: ce52b580   edx: ce52b580
+esi: cf64d570   edi: 0000000b   ebp: ce52b5bc   esp: ce52b59c
+ds: 007b   es: 007b   ss: 0068
+I-pipe domain Xenomai
+Stack:  [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c010ea8e>] do_page_fault+0x2ee/0x5bc
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c015fda6>] rt_queue_alloc+0x56/0xd0
+ [<c015ab10>] __rt_queue_alloc+0xb0/0x130
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0c0 eb b8 00 e0 ff ff 21 e0 ff 40 14 eb
+------------[ cut here ]------------
+kernel BUG at kernel/exit.c:877!
+invalid operand: 0000 [#13]
+PREEMPT
+Modules linked in: intel_agp agpgart
+CPU:    0
+EIP:    0060:[<c01183f2>]    Not tainted VLI
+die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c000 eb fe <0f> 0b 6d 03 27 cf 31 c0 eb d4
+b8 00 e0 ff ff 21 e0 ff 40 14 eb
+------------[ cut here ]-------- [<c010d7df>] __ipipe_handle_exception+0x3f=
+/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>] do_invalid_op+0xbc/0xd0
+ [<c010d7df>] __ipipe_handle_exception+0x3f/0xc0
+ [<c01033b0>] error_code+0x54/0x64
+ [<c0103c0d>] die+0x1bd/0x1c0
+ [<c0103cc5>] do_trap+0xb5/0xc0
+ [<c010400c>]  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+03 27 cf 31 c0 8d b6 00 00 00 00 8d bc 27 00 00 00 00 eb fe <0f> 0b 6d
+03 27 cf 31 c0 eb
 
