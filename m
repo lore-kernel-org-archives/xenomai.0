@@ -1,53 +1,56 @@
-Message-ID: <4443DA12.9000503@domain.hid>
-Date: Mon, 17 Apr 2006 20:10:26 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4455E3D4.8060007@domain.hid>
+Date: Mon, 01 May 2006 12:32:52 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] MSW and CSW meanings
-References: <200604171123.14192.lbocseg@domain.hid>
-In-Reply-To: <200604171123.14192.lbocseg@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] UVM build error in todays head of SVN
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Rodrigo Rosenfeld Rosas wrote:
-> Please, what do MSW and CSW mean on /proc/xenomai/stats?
->=20
+Hello,
 
-MSW =3D Mode switches: primary->secondary/secondary->primary (actually,=20
-I'm going to only leave the first one)
+I just checked out Xenomai and realized the UVM build error below (while 
+building for PPC 405 with IPIPE tracer).  "xnlock_put/get" seems not to 
+be dummy without SMP.
 
-CSW =3D Context switches (operated by Xenomai for real-time threads,=20
-kernel + user-space).
-
-> Sorry if it is documented somewhere but I didn't find it on docs...
->=20
-> Rodrigo.
->=20
-> 	=09
-> _______________________________________________________=20
-> Yahoo! Acesso Gr=E1tis - Internet r=E1pida e gr=E1tis. Instale o discad=
-or agora!=20
-> http://br.acesso.yahoo.com
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
+Wolfgang.
 
 
---=20
+if ppc-linux-gcc -DHAVE_CONFIG_H -I. -I. -I../../../../src/include  -O2 
+-D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -pipe -D__IN_XENO__ 
+-Wstrict-prototypes -I../../../../include -D__XENO_UVM__    -MT pod.o 
+-MD -MP -MF ".deps/pod.Tpo" -c -o pod.o pod.c; \
+then mv -f ".deps/pod.Tpo" ".deps/pod.Po"; else rm -f ".deps/pod.Tpo"; 
+exit 1; fi
+pod.c: In function 'xnpod_announce_tick':
+pod.c:3304: warning: implicit declaration of function 'xnlock_get'
+pod.c:3304: error: 'nklock' undeclared (first use in this function)
+pod.c:3304: error: (Each undeclared identifier is reported only once
+pod.c:3304: error: for each function it appears in.)
+pod.c:3365: warning: implicit declaration of function 'xnlock_put'
+make[4]: *** [pod.o] Error 1
+make[4]: Leaving directory 
+`/.automount/castor-vlab/root/home/wolf/rt/xenomai/src/skins/uvm/nucleus'
+make[3]: *** [all-recursive] Error 1
+make[3]: Leaving directory 
+`/.automount/castor-vlab/root/home/wolf/rt/xenomai/src/skins/uvm'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory 
+`/.automount/castor-vlab/root/home/wolf/rt/xenomai/src/skins'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory 
+`/.automount/castor-vlab/root/home/wolf/rt/xenomai/src'
+make: *** [all-recursive] Error 1
 
-Philippe.
+
+
 
