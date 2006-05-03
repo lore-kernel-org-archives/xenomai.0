@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <44589824.1080204@domain.hid>
+Date: Wed, 03 May 2006 13:46:44 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C66E9D.DD2CAFC6"
-Date: Wed, 3 May 2006 12:39:32 +0200
-Message-ID: <AD78122AD7C05B4B936EBAD7F49738C0AB2B39@domain.hid>
-From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
-Subject: [Adeos-main] ipipe/tracer.c compiling error
+Subject: Re: [Adeos-main] ipipe/tracer.c compiling error
+References: <AD78122AD7C05B4B936EBAD7F49738C0AB2B39@domain.hid>
+In-Reply-To: <AD78122AD7C05B4B936EBAD7F49738C0AB2B39@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig261C3669FF9FCB94FF5C9D40"
+Sender: jan.kiszka@domain.hid
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,61 +17,58 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Lauener Nathan <Nathan.Lauener@domain.hid>
+Cc: adeos-main@gna.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C66E9D.DD2CAFC6
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig261C3669FF9FCB94FF5C9D40
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi,=20
-I just patched my adeos enhanced kernel with
-"ipipe-tracer-2.6.15-i386-1.3.0-00.patch". When compiling the kernel
-with the tracer switched on I get the following compile error:
-kernel/ipipe/tracer.c:122: error: bad syntax before "void". It seems the
-compiler does not recognice "notrace". Did I miss something when
-patching the kernel?
-Thanks for your help=20
-Nathan=20
+Lauener Nathan wrote:
+> Hi,=20
+> I just patched my adeos enhanced kernel with
+> "ipipe-tracer-2.6.15-i386-1.3.0-00.patch". When compiling the kernel
+> with the tracer switched on I get the following compile error:
+> kernel/ipipe/tracer.c:122: error: bad syntax before "void". It seems th=
+e
+> compiler does not recognice "notrace". Did I miss something when
+> patching the kernel?
+
+notrace is defined in the patched linkage.h, and this one comes with
+your patch revision:
+
+--- 2.6.15/include/linux/linkage.h
++++ 2.6.15-ipipe/include/linux/linkage.h
+@@ -51,4 +51,8 @@
+ #define fastcall
+ #endif
+
++#ifndef notrace
++#define notrace		__attribute__((no_instrument_function))
++#endif
++
+ #endif
+
+Moreover, just yesterday I compiled a 2.6.15.3 kernel with that revision
++ tracer but without problems... strange.
+
+Jan
 
 
-------_=_NextPart_001_01C66E9D.DD2CAFC6
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--------------enig261C3669FF9FCB94FF5C9D40
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7638.1">
-<TITLE>ipipe/tracer.c compiling error</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT><FONT FACE=3D"Times New =
-Roman"> </FONT>
+iD8DBQFEWJgkniDOoMHTA+kRAtk8AJ9iRxBKuBXTDJdNj9N0IgSZx3rv7ACdFuuB
+Ed0umwRVZ57JRsuNSjK36WM=
+=6gwM
+-----END PGP SIGNATURE-----
 
-<BR><FONT SIZE=3D2 FACE=3D"Arial">I just patched my adeos enhanced =
-kernel with &quot;ipipe-tracer-2.6.15-i386-1.3.0-00.patch&quot;. When =
-compiling the kernel with the tracer switched on I get the following =
-compile error: kernel/ipipe/tracer.c:122: error: bad syntax before =
-&quot;void&quot;. It seems the compiler does not recognice =
-&quot;notrace&quot;. Did I miss something when patching the =
-kernel?</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Thanks for your help</FONT><FONT =
-FACE=3D"Times New Roman"> </FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Nathan</FONT>=20
-</P>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C66E9D.DD2CAFC6--
+--------------enig261C3669FF9FCB94FF5C9D40--
 
