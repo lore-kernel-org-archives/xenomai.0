@@ -1,13 +1,13 @@
-Message-ID: <44589281.1000501@domain.hid>
-Date: Wed, 03 May 2006 13:22:41 +0200
+Message-ID: <4458949A.10606@domain.hid>
+Date: Wed, 03 May 2006 13:31:38 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problem with kernel module and Xenomai 2.1
-References: <FB64A9A42E10824EAC3F78D6A2CD596E04DBD144@domain.hid>
-In-Reply-To: <FB64A9A42E10824EAC3F78D6A2CD596E04DBD144@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai in a VM
+References: <6ee4c8380605012208xf8f9bb6p5eb542d8fb8da567@domain.hid>
+In-Reply-To: <6ee4c8380605012208xf8f9bb6p5eb542d8fb8da567@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig957254B13F91D7C6662D1031"
+	boundary="------------enigD1221302A07708862CCA7166"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,37 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Antoine.BRUGEAS@fr.thalesgroup.com
-Cc: Xenomai-help@domain.hid
+To: "Brian L." <bluczkie@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig957254B13F91D7C6662D1031
+--------------enigD1221302A07708862CCA7166
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Antoine.BRUGEAS@fr.thalesgroup.com wrote:
-> Hello,
+Brian L. wrote:
+> Has anyone tried running Xenomai inside a virtual machine (i.e. Qemu,
+> Parallels, VMWare, bochs, simics)? Is there any reason to expect this
+> to fail? In theory, the virtualization software should appear as a
+> vanilla x86 to the OS running inside of it, but I'd imagine xenomai
+> could potentially tweak bits of the cpu/architecture that are not as
+> supported by the virtualization software .
 >=20
-> I have a problem, i can't find the following modules on my PC : Xeno_ha=
-l.ko, Xeno_nucleus.ko and Xeno_native.ko.=20
-
-Already looked for xeno_*.ko (note the lower case)? Or did you compiled
-Xenomai directly into the kernel? Then there are of course no modules.
-
+> Of course, I wouldn't expect any real-time characteristics or
+> performance to speak of. This would be for development/testing only.
 >=20
-> I forgot to do something during the installation??=20
->=20
-> Moreover, I search an example of a "Makefile" to compile a kernel modul=
-e with xenomai 2.1
+> Thoughts?
 
-Hannes has a nice universal Makefile on his page:
+Should work, just give it a try. We once started to play with our full
+embedded distro under bochs, but I do not recall right now how far we
+came - need to check with the person who actually did the work.
 
-http://www.captain.at/xenomai-real-time-driver-example-extra.php
+Anyway, RTAI used to run fine under ancient VMware, I do not see any
+reason why this shouldn't work for Xenomai as well. If it breaks and
+Xenomai crashes, please post the results. If your VM goes South - switch
+to another product. ;)
 
 Jan
 
 
---------------enig957254B13F91D7C6662D1031
+--------------enigD1221302A07708862CCA7166
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -57,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEWJKEniDOoMHTA+kRAlTiAJ9EOFifZlGtxNzpWMSIZ9RVqPg38wCeJJKx
-q0WKn3S1PKuCcJ60WNdmiko=
-=9E4Z
+iD8DBQFEWJSaniDOoMHTA+kRAjyJAKCEeHUSht4jWXuZp6qH1iKMgIEBJACfQLDu
+cAAP+bsRKQeyEdG150kswlM=
+=0Tf7
 -----END PGP SIGNATURE-----
 
---------------enig957254B13F91D7C6662D1031--
+--------------enigD1221302A07708862CCA7166--
 
