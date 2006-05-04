@@ -1,14 +1,10 @@
-Message-ID: <4458A62B.1040409@domain.hid>
-Date: Wed, 03 May 2006 14:46:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <20060504113947.98923.qmail@domain.hid>
+Date: Thu, 4 May 2006 11:39:47 +0000 (GMT)
+From: gilles mendes <mendesgilles@domain.hid>
 MIME-Version: 1.0
-References: <200604171123.14192.lbocseg@domain.hid>
-	<4443DA12.9000503@domain.hid>
-	<200605021948.38480.lbocseg@domain.hid>
-In-Reply-To: <200605021948.38480.lbocseg@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] Re: [Xenomai-help] [PATCH] MSW and CSW meanings
+Content-Type: multipart/alternative; boundary="0-469992444-1146742787=:98878"
+Subject: [Xenomai-core] linker: undefined reference to `nktickdef'
+Reply-To: gilles mendes <mendesgilles@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,88 +14,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi Philippe,
->=20
-> How about this patch? Or something like, if you prefer...
->
+--0-469992444-1146742787=:98878
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I really think that we should keep the /proc output as terse as
-possible, but properly documenting the corresponding information in the
-same move (which is not the case yet), so that we don't embed excessive
-"dead" data into the kernel, but rather have a some accurate
-documentation about it.
+hi,
 
-> Best Regards,
->=20
-> Rodrigo.
->=20
-> ____________________________________________________________
-> Em Segunda 17 Abril 2006 15:10, Philippe Gerum escreveu:
->=20
->=20
->>Rodrigo Rosenfeld Rosas wrote:
->>
->>>Please, what do MSW and CSW mean on /proc/xenomai/stats?
->>
->>MSW =3D Mode switches: primary->secondary/secondary->primary (actually,
->>I'm going to only leave the first one)
->>
->>CSW =3D Context switches (operated by Xenomai for real-time threads,
->>kernel + user-space).
->>
->>
->>>Sorry if it is documented somewhere but I didn't find it on docs...
->>>
->>>Rodrigo.
->>>
->>>
->>>----------------------------------------------------------------------=
---
->>>
->>>Index: ksrc/nucleus/module.c
->>>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>--- ksrc/nucleus/module.c	(revis=C3=A3o 1024)
->>>+++ ksrc/nucleus/module.c	(c=C3=B3pia de trabalho)
->>>@@ -252,8 +252,8 @@
->>> 	pid_t pid;
->>> 	xnflags_t status;
->>> 	const char *name;
->>>-	unsigned long ssw;
->>>-	unsigned long csw;
->>>+	unsigned long ssw; /* mode switch: primary->secondary/secondary->pri=
-mary */
->>>+	unsigned long csw; /* context switches */
->>> 	unsigned long pf;
->>>     } stat_info[1];
->>> };
->>>@@ -293,8 +293,13 @@
->>> static int stat_seq_show(struct seq_file *seq, void *v)
->>> {
->>>     if (v =3D=3D SEQ_START_TOKEN)
->>>-	seq_printf(seq,"%-3s  %-6s %-10s %-10s %-4s  %-8s  %s\n",
->>>-		   "CPU","PID","MSW","CSW","PF","STAT","NAME");
->>>+	{
->>>+		seq_printf(seq, "MSW - Mode Switches (primary->secondary/secondary-=
->primary)\n"
->>>+			        "CSW - Context switches (operated by Xenomai for real-time=
- threads, kernel + user-space)\n"
->>>+			        "PF  - Page faults\n");
->>>+		seq_printf(seq,"%-3s  %-6s %-10s %-10s %-4s  %-8s  %s\n",
->>>+			   "CPU","PID","MSW","CSW","PF","STAT","NAME");
->>>+	}
->>>     else
->>> 	{
->>> 	struct stat_seq_info *p =3D (struct stat_seq_info *)v;
+I have a kernel 2.6.14 patched whit xenomai-2.1-rc2, i do real time applica=
+tions in user space, i want to compil a program whit eclipse (SDK),  i have=
+ no errors on my program file but i have an error whit the linker, i have :
+
+Building file: ../Util.c
+Invoking: GCC C Compiler
+gcc -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/usr/xenomai/include -I/Hpci/w=
+orkspace/cible2_linux/H -I/usr/include -O0 -g3 -Wall -c -fmessage-length=3D=
+0 -oUtil.o ../Util.c
+Finished building: ../Util.c
+=20
+Building file: ../main_hpci.c
+Invoking: GCC C Compiler
+gcc -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/usr/xenomai/include -I/Hpci/w=
+orkspace/cible2_linux/H -I/usr/include -O0 -g3 -Wall -c -fmessage-length=3D=
+0 -omain_hpci.o ../main_hpci.c
+../main_hpci.c: Dans la fonction =AB main_task =BB:
+../main_hpci.c:85: attention : implicit declaration of function `kbhit'
+../main_hpci.c:59: attention : unused variable `cmd_line'
+Finished building: ../main_hpci.c
+=20
+Building file: ../rtai_util.c
+Invoking: GCC C Compiler
+gcc -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/usr/xenomai/include -I/Hpci/w=
+orkspace/cible2_linux/H -I/usr/include -O0 -g3 -Wall -c -fmessage-length=3D=
+0 -ortai_util.o ../rtai_util.c
+Finished building: ../rtai_util.c
+=20
+Building target: test2
+Invoking: GCC C Linker
+gcc -L/usr/xenomai/lib --uvm-ldflags -otest2 ./Util.o ./main_hpci.o ./rtai_=
+util.o -luvm -lnucleus -lpthread -lvxworks
+/usr/xenomai/lib/libvxworks.a(module.o)(.text+0xb1): dans la fonction =AB _=
+_xeno_skin_init =BB:
+: undefined reference to `nktickdef'
+collect2: ld a retourn=E9 1 code d'=E9tat d'ex=E9cution
+make: *** [test2] Erreur 1
+make: La cible `all' n'a pas pu =EAtre refabriqu=E9e =E0 cause d'erreurs.
+Build complete for project test2
 
 
---=20
+what can i do solve it.
 
-Philippe.
+THANKS
 
+Gilles
+
+
+--0-469992444-1146742787=:98878
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><style type=3D"text/css"><!-- DIV {margin:0px} --></style></hea=
+d><body><div style=3D"font-family:times new roman, new york, times, serif;f=
+ont-size:12pt"><div>hi,<br><br>I have a kernel 2.6.14 patched whit xenomai-=
+2.1-rc2, i do real time applications in user space, i want to compil a prog=
+ram whit eclipse (SDK),  i have no errors on my program file but i have an =
+error whit the linker, i have :<br><br>Building file: ../Util.c<br>Invoking=
+: GCC C Compiler<br>gcc -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/usr/xenom=
+ai/include -I/Hpci/workspace/cible2_linux/H -I/usr/include -O0 -g3 -Wall -c=
+ -fmessage-length=3D0 -oUtil.o ../Util.c<br>Finished building: ../Util.c<br=
+>&nbsp;<br>Building file: ../main_hpci.c<br>Invoking: GCC C Compiler<br>gcc=
+ -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/usr/xenomai/include -I/Hpci/work=
+space/cible2_linux/H -I/usr/include -O0 -g3 -Wall -c -fmessage-length=3D0 -=
+omain_hpci.o ../main_hpci.c<br>../main_hpci.c: Dans la fonction =AB main_ta=
+sk
+ =BB:<br>../main_hpci.c:85: attention : implicit declaration of function `k=
+bhit'<br>../main_hpci.c:59: attention : unused variable `cmd_line'<br>Finis=
+hed building: ../main_hpci.c<br>&nbsp;<br>Building file: ../rtai_util.c<br>=
+Invoking: GCC C Compiler<br>gcc -D__XENO__ -D__XENO_UVM__ -DHPCi_linux -I/u=
+sr/xenomai/include -I/Hpci/workspace/cible2_linux/H -I/usr/include -O0 -g3 =
+-Wall -c -fmessage-length=3D0 -ortai_util.o ../rtai_util.c<br>Finished buil=
+ding: ../rtai_util.c<br>&nbsp;<br>Building target: test2<br>Invoking: GCC C=
+ Linker<br>gcc -L/usr/xenomai/lib --uvm-ldflags -otest2 ./Util.o ./main_hpc=
+i.o ./rtai_util.o -luvm -lnucleus -lpthread -lvxworks<br>/usr/xenomai/lib/l=
+ibvxworks.a(module.o)(.text+0xb1): dans la fonction =AB __xeno_skin_init =
+=BB:<br>: undefined reference to `nktickdef'<br>collect2: ld a retourn=E9 1=
+ code d'=E9tat d'ex=E9cution<br>make: *** [test2] Erreur 1<br>make: La cibl=
+e `all' n'a pas pu =EAtre refabriqu=E9e =E0 cause d'erreurs.<br>Build compl=
+ete for project
+ test2<br><br><br>what can i do solve it.<br><br>THANKS<br><br>Gilles<br></=
+div></div></body></html>
+--0-469992444-1146742787=:98878--
 
