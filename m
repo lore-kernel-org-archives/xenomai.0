@@ -1,74 +1,280 @@
-Message-ID: <44623377.2090801@domain.hid>
-Date: Wed, 10 May 2006 20:39:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44597D0700060D0D@n120.sc0.cp.net> (added by
+	postmaster@domain.hid)
+From: "Prashanti Bedapudi" <pbedapudi@domain.hid>
+Date: Fri, 5 May 2006 14:24:42 -0500
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Pending ownership and resource stealing
-References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>	<4461BB5A.3010403@domain.hid>	<44621B00.7090703@domain.hid>
-	<17506.9231.555209.471522@domain.hid>
-In-Reply-To: <17506.9231.555209.471522@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0000_01C6704F.C7DACB50"
+In-Reply-To: 
+Subject: [Xenomai-help] help with alarams
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > This means that skins now _must_ fix their internal state when unblocked 
->  > from xnsynch_sleep_on() if they happen to track their own resource owner 
->  > field for instance, since they might become the owner of such resource 
->  > without any unlock/release/whatever routine being called at the said 
->  > skin level. I've fixed a couple of skins for that purpose (not checked 
->  > RTDM btw), but it would be safer if you could double-check the impact of 
->  > such change on the interfaces you've crafted.
-> 
-> When waking up, how do we know that we are in the problematic situation
-> ?
+This is a multi-part message in MIME format.
 
-The only possible issue with the new implementation is when the skin 
-maintains its own specific data for tracking ownership of a resource, 
-that complements the synch::owner field of the core nucleus resource 
-object. The example code Jan has posted lately to raise the concern 
-about the XNBREAK issue is also demonstrative of the issue of pending 
-ownership, i.e.:
+------=_NextPart_000_0000_01C6704F.C7DACB50
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-prio(task1) > prio(task2)
+ 
 
-1. task1 grabs a resource
-2. task1 sleeps for some time
-3. task2 blocks requesting the resource
-4. task1 wakes up from the sleep and releases the resource to task2
-5. task1 wants the resource back immediately and calls 
-xnsynch_sleep_on() since the ownership has been transferred to task2 
-since step 4.
-6a. old way: task1 would block and task2 would run anyway, with a PIP 
-boost, blocking task1 until the resource is released
-6b. new way: task1 steals the resource previously granted to task2 
-directly from xnsynch_sleep_on(), but doing so, nobody downstream has 
-had a chance to update any skin-specific data, such as an additional 
-"owner" field.
+Hi,
 
-The caller of xnsynch_sleep_on() in native/mutex.c illustrates this 
-(i.e. grab_mutex label).
+I am new to xenomai and linux. I am having some problems with alarms. Here
+is a sample piece of code that I am using.
 
-  Can we do the house keeping in the callback registered with
-> xnsynch_register_cleanup, or are you talking of a different situation ?
-> 
-> 
+If you look at the main function, I have a while(!quit_now)  and I am
+setting this flag in the alarm_handler. I am seeing some weird results. When
+I have a printf statement in the while(!quit_now) loop as I have below, it
+works as expected and the program terminates when the quit_flag is set. But
+if I remove the printf() the program never terminates, it just hangs, even
+if the quit_now flag is set. 
 
-It's different. The cleanup handler as described by Jan is only there to 
-perform some housekeeping chores on synch objects which get forcibly 
-released because their previous owner went away (typically xnpod_delete()).
+Any insight into this problem will be greatly appreciated.
 
--- 
+ 
 
-Philippe.
+ 
+
+alarm_handler()
+{
+        for(;;)
+        {
+           rt_alarm_wait();
+           do_processing();
+           if(condition met)
+           {
+               quit_now = TRUE;  /* global variable */
+               break;
+           }
+        }
+}
+ 
+main()
+{
+        rt_alarm_create;
+        rt_task_spawn();
+        rt_alarm_start();
+ 
+        while(!quit_now)
+          printf("Inside while\n");
+}
+ 
+
+ 
+
+ 
+
+ 
+
+thanks in advance,
+
+Shanti
+
+
+------=_NextPart_000_0000_01C6704F.C7DACB50
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+pre
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	color:black;}
+span.EmailStyle18
+	{mso-style-type:personal;
+	font-family:Arial;
+	color:windowtext;}
+span.EmailStyle19
+	{mso-style-type:personal-reply;
+	font-family:Arial;
+	color:navy;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
+style=3D'font-size:
+12.0pt'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Hi,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>I am new to xenomai and linux. I am having some =
+problems
+with alarms. Here is a sample piece of code that I am =
+using.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>If you look at the main function, I have a
+while(!quit_now)&nbsp; and I am setting this flag in the alarm_handler. =
+I am
+seeing some weird results. When I have a printf statement in the
+while(!quit_now) loop as I have below, it works as expected and the =
+program
+terminates when the quit_flag is set. But if I remove the printf() the =
+program
+never terminates, it just hangs, even if the quit_now flag is set. =
+<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Any insight into this problem will be greatly =
+appreciated.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<pre><font size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>alarm_handler()<o:p></o:p></span></font></pre>=
+<pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>{<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+for(;;)<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+{<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp; rt_alarm_wait();<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp; do_processing();<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp; if(condition met)<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp; {<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; quit_now =3D TRUE;&nbsp; /* =
+global variable */<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+break;<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp;&nbsp; }<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+}<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>}<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'><o:p>&nbsp;</o:p></span></font></pre><pre><fon=
+t
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>main()<o:p></o:p></span></font></pre><pre><fon=
+t
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>{<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_alarm_create;<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_task_spawn();<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+rt_alarm_start();<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'><o:p>&nbsp;</o:p></span></font></pre><pre><fon=
+t
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+while(!quit_now)<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+&nbsp; printf(&quot;Inside =
+while\n&quot;);<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'>}<o:p></o:p></span></font></pre><pre><font
+size=3D2 color=3Dblack face=3D"Courier New"><span =
+style=3D'font-size:10.0pt'><o:p>&nbsp;</o:p></span></font></pre>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>thanks in advance,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>Shanti<o:p></o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0000_01C6704F.C7DACB50--
+
+
 
