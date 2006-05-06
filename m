@@ -1,11 +1,12 @@
-Date: 6 May 2006 12:20:42 -0000
-Message-ID: <20060506122042.1029.qmail@domain.hid>
+Message-ID: <445C9E98.5000602@domain.hid>
+Date: Sat, 06 May 2006 15:03:20 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-From: "santhosh kumar" <santhoshkk01@domain.hid>
-Content-type: multipart/alternative;
-	boundary="Next_1146918042---0-203.199.83.148-1021"
-Subject: [Xenomai-help] problem with vxworks skin
-Reply-To: santhosh kumar <santhoshkk01@domain.hid>
+Subject: Re: [Xenomai-help] problem with vxworks skin
+References: <20060506122042.1029.qmail@domain.hid>
+In-Reply-To: <20060506122042.1029.qmail@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,32 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: santhosh kumar <santhoshkk01@domain.hid>
+Cc: Xenomai-help@domain.hid
 
- This is a multipart mime message
+santhosh kumar wrote:
+> I am always getting a message
+> error inserting module : device or resource busy.
+> 
+
+Did you look at your kernel log?
+
+Somebody please help me
+> 
+> Thanking you
+> 
+> 
+> 
+> <http://adworks.rediff.com/cgi-bin/AdWorks/sigclick.cgi/www.rediff.com/signature-home.htm/1507191490@domain.hid> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
---Next_1146918042---0-203.199.83.148-1021
-Content-type: text/plain;
-	charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-- 
 
-I am always getting a message=0Aerror inserting module : device or resource=
- busy.=0ASomebody please help me=0A=0AThanking you
---Next_1146918042---0-203.199.83.148-1021
-Content-type: text/html;
-	charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-<P>=0AI am always getting a message<BR>=0Aerror inserting module : device o=
-r resource busy.<BR>=0ASomebody please help me<BR>=0A<BR>=0AThanking you=0A=
-</P>=0A<br><br>=0A<a href=3D"http://adworks.rediff.com/cgi-bin/AdWorks/sigc=
-lick.cgi/www.rediff.com/signature-home.htm/1507191490@domain.hid">=
-<IMG SRC=3D"http://adworks.rediff.com/cgi-bin/AdWorks/sigimpress.cgi/www.re=
-diff.com/signature-home.htm/1963059423@domain.hid&PARTNER=3D3=
-" BORDER=3D0 VSPACE=3D0 HSPACE=3D0></a>=0A
---Next_1146918042---0-203.199.83.148-1021--
-
+Philippe.
 
