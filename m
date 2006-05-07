@@ -1,13 +1,12 @@
-From: "Christopher Stone" <chris@domain.hid>
-Subject: RE: [Xenomai-help] help with using alarams
-Date: Sun, 7 May 2006 12:15:37 -0400
-Message-ID: <001601c671f1$7ae3e310$a10a10ac@domain.hid>
+Message-ID: <445C2D1700022E97@domain.hid> (added by
+	postmaster@domain.hid)
+From: "Prashanti Bedapudi" <pbedapudi@domain.hid>
+Date: Sun, 7 May 2006 15:33:47 -0500
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <445C34C100012AEC@n016.sc0.cp.net> (added
-	bypostmaster@domain.hid)
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0005_01C671EB.A5F025B0"
+In-Reply-To: <mailman.271.1146850846.2786.xenomai@xenomai.org>
+Subject: [Xenomai-help] help on alarms..
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,100 +18,121 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Is this the actual code you are using? It looks like pseudo code to me.
-Please do not post pseudo or sample code, post the actual code you are
-using, and then we can help you.
+This is a multi-part message in MIME format.
 
-If this is the actual code then I can see these problems:
-1) if (condition met) is not good programming because the actual =
-condition
-is hidden by the definitions of 'condition' and 'met', which makes the
-program too hard to read. I would replace this with the actual condition =
-you
-are testing.
-2) alarm_handler is never called from the main program. Thus, the while
-statement is an infinite loop.
+------=_NextPart_000_0005_01C671EB.A5F025B0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Cheers,
-   Chris.
+Attached is a piece of code using alarms, but I am seeing some unexpected
+behavior.  Any help will be appreciated.
 
-----------------------------------------
-Christopher Stone
-Principal
-Sombrio Systems Inc.
-www.openembedded.biz
-613-831-1892
+in function main() the program behaves two different ways depending on where
+I have the last printf()
 
-> -----Original Message-----
-> From: Prashanti Bedapudi [mailto:pbedapudi@domain.hid]
-> Sent: May 6, 2006 10:30 PM
-> To: xenomai@xenomai.org
-> Subject: [Xenomai-help] help with using alarams
->=20
-> Hi,
-> I am new to xenomai and linux. I am having some problems with alarms. =
-Here
-> is a sample piece of code that I am using.
-> If you look at the main function, I have a while(!quit_now)=A0 and I =
-am
-> setting this flag in the alarm_handler. I am seeing some weird =
-results.
-> When
-> I have a printf statement in the while(!quit_now) loop as I have =
-below, it
-> works as expected and the program terminates when the quit_flag is =
-set.
-> But
-> if I remove the printf() the program never terminates, it just hangs, =
-even
-> if the quit_now flag is set.
-> Any insight into this problem will be greatly appreciated.
->=20
-> I posted this message 2 days ago..but I got a reply with message =
-saying
-> 'HTML attachment has been scrubbed'. Not sure what that meant, so I am
-> posting it again..
->=20
->=20
-> alarm_handler()
-> {
-> =A0=A0=A0=A0=A0=A0=A0 for(;;)
-> =A0=A0=A0=A0=A0=A0=A0 {
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0 rt_alarm_wait();
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0 do_processing();
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0 if(condition met)
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0 {
-> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 quit_now =3D TRUE;=A0 /* =
-global variable */
-> =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 break;
-> =A0=A0=A0=A0=A0=A0=A0 =A0=A0 }
-> =A0=A0=A0=A0=A0=A0=A0 }
-> }
->=20
-> main()
-> {
-> =A0=A0=A0=A0=A0=A0=A0 rt_alarm_create;
-> =A0=A0=A0=A0=A0=A0=A0 rt_task_spawn();
-> =A0=A0=A0=A0=A0=A0=A0 rt_alarm_start();
->=20
-> =A0=A0=A0=A0=A0=A0=A0 while(!quit_now)
-> =A0=A0=A0=A0=A0=A0=A0 =A0 printf("Inside while\n");
-> }
->=20
->=20
->=20
->=20
-> thanks in advance,
-> Shanti
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
+1. It works fine and terminates as expected if I have it like this
+	while(!quit_now)
+	   printf("quit_now = %d\n", quit_now);
 
+2. It does not terminate if I have it this way. I know quit_now is set to 1,
+since the last statement printed is 'quit_now is set to 1'.
+
+	while(!quit_now);
+	printf("quit_now = %d\n", quit_now);
+
+thanks,
+Shanti
+
+
+------=_NextPart_000_0005_01C671EB.A5F025B0
+Content-Type: text/plain;
+	name="alarmtest.cpp"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="alarmtest.cpp"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <native/types.h>
+#include <native/alarm.h>
+#include <native/task.h>
+
+
+#define ALARM_NAME  "dl_alarm2"
+#define ALARM_TASK_NAME	"dl_alarm_task"
+#define ALARM_TIME 500000
+#define ALARM_INTERVAL 250000
+#define ALARM_TASK_PRIO  20
+
+RT_ALARM dl_alarm;
+RT_TASK alarm_task;
+bool quit_now =3D 0;
+
+
+void catch_signal(int sig)
+{
+	rt_alarm_stop(&dl_alarm);
+	rt_alarm_delete(&dl_alarm);
+	rt_task_delete(&alarm_task);
+	exit(0);
+}
+
+
+
+static void alarm_handler(void *cookie)
+{
+	int i =3D0;
+
+	printf("Inside alarm handler\n ");
+	for(i =3D 0; i<100; i++){
+		rt_alarm_wait(&dl_alarm);
+		printf("i =3D %d\n",i);
+	}
+
+	quit_now =3D 1;
+	printf("quit_now is set to %d\n",quit_now);
+	return;
+=09
+}
+
+int main()
+{
+	int ret =3D 0;
+
+	signal(SIGTERM, catch_signal);=0A=
+    signal(SIGINT, catch_signal);
+
+	ret =3D rt_alarm_create(&dl_alarm, ALARM_NAME) ;
+	if (ret)
+		printf("\ncannot create alarm %d\n", ret);
+=09
+	ret =3D  rt_task_spawn(&alarm_task, ALARM_TASK_NAME, 0, =
+ALARM_TASK_PRIO, 0, &alarm_handler, NULL);
+	if(ret)
+		exit(0);
+
+	rt_alarm_start(&dl_alarm, ALARM_TIME, ALARM_INTERVAL);
+=09
+
+	while(!quit_now);
+		printf("quit_now =3D %d\n",quit_now);
+
+
+	rt_alarm_stop(&dl_alarm);
+	rt_alarm_delete(&dl_alarm);
+	rt_task_delete(&alarm_task);
+
+	return 0;
+}
+
+------=_NextPart_000_0005_01C671EB.A5F025B0--
 
 
 
