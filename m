@@ -1,12 +1,13 @@
-Message-ID: <445C9E98.5000602@domain.hid>
-Date: Sat, 06 May 2006 15:03:20 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <445C34C100012AEC@n016.sc0.cp.net> (added by
+	postmaster@domain.hid)
+From: "Prashanti Bedapudi" <pbedapudi@domain.hid>
+Date: Sat, 6 May 2006 21:30:23 -0500
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] problem with vxworks skin
-References: <20060506122042.1029.qmail@domain.hid>
-In-Reply-To: <20060506122042.1029.qmail@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: 
+Subject: [Xenomai-help] help with using alarams
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,35 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: santhosh kumar <santhoshkk01@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-santhosh kumar wrote:
-> I am always getting a message
-> error inserting module : device or resource busy.
-> 
+Hi,
+I am new to xenomai and linux. I am having some problems with alarms. =
+Here
+is a sample piece of code that I am using.
+If you look at the main function, I have a while(!quit_now)=A0 and I am
+setting this flag in the alarm_handler. I am seeing some weird results. =
+When
+I have a printf statement in the while(!quit_now) loop as I have below, =
+it
+works as expected and the program terminates when the quit_flag is set. =
+But
+if I remove the printf() the program never terminates, it just hangs, =
+even
+if the quit_now flag is set.=20
+Any insight into this problem will be greatly appreciated.
 
-Did you look at your kernel log?
-
-Somebody please help me
-> 
-> Thanking you
-> 
-> 
-> 
-> <http://adworks.rediff.com/cgi-bin/AdWorks/sigclick.cgi/www.rediff.com/signature-home.htm/1507191490@domain.hid> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+I posted this message 2 days ago..but I got a reply with message saying
+'HTML attachment has been scrubbed'. Not sure what that meant, so I am
+posting it again..
 
 
--- 
+alarm_handler()
+{
+=A0=A0=A0=A0=A0=A0=A0 for(;;)
+=A0=A0=A0=A0=A0=A0=A0 {
+=A0=A0=A0=A0=A0=A0=A0 =A0=A0 rt_alarm_wait();
+=A0=A0=A0=A0=A0=A0=A0 =A0=A0 do_processing();
+=A0=A0=A0=A0=A0=A0=A0 =A0=A0 if(condition met)
+=A0=A0=A0=A0=A0=A0=A0 =A0=A0 {
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 quit_now =3D TRUE;=A0 /* =
+global variable */
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 break;
+=A0=A0=A0=A0=A0=A0=A0 =A0=A0 }
+=A0=A0=A0=A0=A0=A0=A0 }
+}
 
-Philippe.
+main()
+{
+=A0=A0=A0=A0=A0=A0=A0 rt_alarm_create;
+=A0=A0=A0=A0=A0=A0=A0 rt_task_spawn();
+=A0=A0=A0=A0=A0=A0=A0 rt_alarm_start();
+
+=A0=A0=A0=A0=A0=A0=A0 while(!quit_now)
+=A0=A0=A0=A0=A0=A0=A0 =A0 printf("Inside while\n");
+}
+
+
+
+
+thanks in advance,
+Shanti
+
+
 
