@@ -1,14 +1,13 @@
-Message-ID: <445E637A.5080706@domain.hid>
-Date: Sun, 07 May 2006 23:15:38 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17502.32006.418774.459215@domain.hid>
+Date: Mon, 8 May 2006 01:04:38 +0200
 Subject: Re: [Xenomai-core] [RFC][patch] per-process data.
+In-Reply-To: <445E637A.5080706@domain.hid>
 References: <17502.13773.674199.219762@domain.hid>
-In-Reply-To: <17502.13773.674199.219762@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAC63BEE4D490B51AE39D0E5A"
-Sender: jan.kiszka@domain.hid
+	<445E637A.5080706@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,69 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAC63BEE4D490B51AE39D0E5A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+ > Likely I did not yet get the full picture: What prevents using another
+ > adeos per-task key for this? 
 
-Gilles Chanteperdrix wrote:
-> Hi,
->=20
-> for review, here are patches that provide Xenomai skins with a
-> per-process per-skin data structures. It will allow skins to do
-> per-process cleanup for example, or the posix skin to maintain a
-> per-process signal mask.
+We would need a per-task key for every skin that needs a per-process
+data, but more importantly, we would need to track the clone syscalls
+(that would be another adeos event) in order to propagate the per-task
+data to each thread of the process. Or maybe ptds are inherited upon
+clone ?
 
-That sounds promising!
+And why is it required to establish a new
+ > termination hook? Are there scenarios where the existing
+ > task-termination hook is not suited for the planned cleanup work?
 
->=20
-> In order to use it, the skins must pass an eventcb function to the
-> xnshadow_register_interface service. This eventcb function gets called
-> when:
-> - a process bind the interfaces, the eventcb has to allocate the
->   per-process structure and must return a pointer to an xnppd_holder_t
->   member of this structure;=20
-> - the process exits, the eventcb function is then passed the
->   xnppd_holder_t pointer and may free the container structure.
->=20
-> The patch also add a service called xnppd_get, which must be passed the=
+Because the existing hook is called once for every thread exit, whereas
+the pexit event get triggered when the last thread of a process exits,
+this is the only moment we are sure we can destroy per-process data.
 
-> skin magic, and returns the xnppd_holder_t pointer attached to the
-> current process.
->=20
-> This support relies on a new adeos event called "PEXIT" for
-> process-exit, that get triggered in the mmput function when a process
-> mm_struct get deallocated.
+Using the existing hook, we would need to decrement a reference counter
+in the hook, but then we would (again) need to track the clone syscalls
+in order to increment the reference counter.
 
-Likely I did not yet get the full picture: What prevents using another
-adeos per-task key for this? And why is it required to establish a new
-termination hook? Are there scenarios where the existing
-task-termination hook is not suited for the planned cleanup work?
+Both implementations require to add an adeos event, the one I chose, if
+it works, avoid reference counting.
 
->=20
-> These patches are not ready for inclusion, they are not tested
-> yet.
->=20
-
-Jan
+-- 
 
 
---------------enigAC63BEE4D490B51AE39D0E5A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEXmOAniDOoMHTA+kRAk8bAJ4mzhYcR42+azgvs8octul3EeuHHgCfQay1
-FMH191bCB20oje6BjFsVhTs=
-=WEgW
------END PGP SIGNATURE-----
-
---------------enigAC63BEE4D490B51AE39D0E5A--
+					    Gilles Chanteperdrix.
 
