@@ -1,102 +1,46 @@
-Message-ID: <4443FE3B.9090905@domain.hid>
-Date: Mon, 17 Apr 2006 22:44:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0605080318q390fea8dm9ab67da488d6488b@domain.hid>
+Date: Mon, 8 May 2006 12:18:42 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [RFC][patch] per-process data.
+In-Reply-To: <17502.32006.418774.459215@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] General question on Native Skin tasks
-References: <6ee4c8380604161110y3c937a74t9186bad2d9af2058@domain.hid>	<4443992C.5000808@domain.hid>	<4443AB1F.2060405@domain.hid>
-	<4443D1E0.5020708@domain.hid> <4443F498.6020404@domain.hid>
-In-Reply-To: <4443F498.6020404@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDA16C8C1D0206D26965C787E"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, "Brian L." <bluczkie@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA16C8C1D0206D26965C787E
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <17502.13773.674199.219762@domain.hid>
+	<445E637A.5080706@domain.hid>
+	<17502.32006.418774.459215@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Philippe Gerum wrote:
->>> Jan Kiszka wrote:
->>>
->>>> Brian L. wrote:
->>>>
->>>>> If I create a native-skin RT_TASK from userspace with no flags, i.e=
-=2E
->>>>>
->>>>> void task(void*)
->>>>> {
->>>>>    for (;;) ;
->>>>> }
->>>>> int main()
->>>>> {
->>>>>   RT_TASK t;
->>>>>   rt_task_create(&t, 0, 3, 0);
->>>>>   rt_task_start(&t,task,0);
->>>>>   (do something which blocks)
->>>>> }
->>>>
->>>>
->>>> mlockall left out for simplicity? Or is it also missing on your real=
+On 08/05/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Jan Kiszka wrote:
+>  > Likely I did not yet get the full picture: What prevents using another
+>  > adeos per-task key for this?
+>
+> We would need a per-task key for every skin that needs a per-process
+> data, but more importantly, we would need to track the clone syscalls
+> (that would be another adeos event) in order to propagate the per-task
+> data to each thread of the process. Or maybe ptds are inherited upon
+> clone ?
 
->>>> test? In the latter case, occasional application crashes are "normal=
-"
->>>> (as described below).
->>>>
->>>> Philippe, you suggested some code for detecting this. We should real=
-ly,
->>>> really add this soon (maybe to the exception path)!
->>>>
->>> The submitted patch works pretty well detecting unlocked memory, I'm
->>> using it right now, but I'd like something a bit more self-explanator=
-y
->>> than just receiving SIGXCPU. I don't think the execption path is the
->>> right place to put this, since the mlockall issue causes random bugs,=
+All of them are cleared in kernel/fork.c :: copy_process(). At least,
+the one pointed by "nkgkptd" (keeps shadow's xnthread_t *) must be
+cleared. Another logic could be applied for the rest, I guess.
 
->>> and you likely want to detect them early and unconditionally.
->>>
->> Commit #941 should provide a reliable guard against lack of process
->> memory locking.
->>
->=20
-> Hmm, a simple test using the latency tool with disabled mlockall did no=
-t
-> yet show any effect on my system. Shouldn't there pop up some message
-> when starting such a "broken" program?
->=20
+p.s. I haven't read you patch yet so all said above is out of current conte=
+xt :)
 
-The usual "rebuild your stuff before you try" (I missed a kernel
-rebuild). Works very nicely!
-
-Jan
-
-
---------------enigDA16C8C1D0206D26965C787E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEQ/4/niDOoMHTA+kRAg5AAJ4jNogkLxBBjZFIDPJqT8shjAFMvwCfQPlI
-E1lffx5O7AD9+vpszK/RO7o=
-=Wxg1
------END PGP SIGNATURE-----
-
---------------enigDA16C8C1D0206D26965C787E--
+--
+Best regards,
+Dmitry Adamushko
 
