@@ -1,10 +1,10 @@
-Message-ID: <445EB95C.6050302@domain.hid>
-Date: Sun, 07 May 2006 23:22:04 -0400
+Message-ID: <445EBCFC.2010604@domain.hid>
+Date: Sun, 07 May 2006 23:37:32 -0400
 From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] kconfig help questions
+Content-Type: multipart/mixed; boundary="------------050209010707030506000607"
+Subject: [Xenomai-core] [patch] prepare-kernel shouldnt alter files thru
+	links
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,71 +16,44 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-
-Going thru xenomai Kconfig again, some observations/uncertainties came up.
-I'll make a patch, given feedback.
-
-XENO_OPT_TIMING_PERIODIC
-
-"Aperiodic mode provides for non-constant delays between timer ticks,"
-
-the wording here (non-constant delays) left me momentarily wondering
-if _APERIODIC was bad (this, despite the use of 'provides'). 
-Maybe "sub-tick delays" makes some sense ..
-
-XENO_OPT_SHIRQ_LEVEL
-
-Are there any decent estimates or examples of the latency / jitter increases
-if this is enabled ?  Is it highly cpu or chipset dependent ?
-I presume /proc/interrupts is the place to look to see if you might need it,
-iff any of the devices of interest are shared.
-my laptop shows sharing, my soekris does not
-
-  3:          5          XT-PIC  ehci_hcd:usb1, ohci1394
-  4:          0          XT-PIC  uhci_hcd:usb6
-  7:     708975          XT-PIC  ipw2200, ehci_hcd:usb2, uhci_hcd:usb7
-  8:          1          XT-PIC  rtc
-  9:     437509          XT-PIC  acpi, Intel 82801DB-ICH4, Intel 
-82801DB-ICH4 Modem, ohci_hcd:usb3, ohci_hcd:usb4, uhci_hcd:usb5, yenta, eth0
-
-# cat /proc/interrupts
-           CPU0
-  0:   13148086          XT-PIC  timer
-  2:          0          XT-PIC  cascade
-  4:      33084          XT-PIC  serial
-  8:          4          XT-PIC  rtc
- 10:     337134          XT-PIC  eth0
- 11:     926639          XT-PIC  ndiswrapper
- 14:         11          XT-PIC  ide0
-NMI:          0
+This is a multi-part message in MIME format.
+--------------050209010707030506000607
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
-XENO_OPT_SHIRQ_EDGE
+attached patch corrects a mistake in rev 985, which chmod'd a read-only 
+file,
+even if it was a symlink from a kernel-tree cloned with lndir.
+This resulted in a bad original tree for use in building vanilla kernels.
 
-does this only apply to ISA bus ?
-
-XENO_SKIN_NATIVE
-
-will add module name
-
-XENO_OPT_NATIVE_INTR
-
-Note that the preferred
-way of implementing generic drivers usable across all Xenomai
-interfaces is defined by the Real-Time Driver Model (RTDM).
-
-It doesnt say theyre (in)?compatible, should it ?
+with patch, script renames the symlink, copies it to the expected name,
+and *then* chmods it, and appends to it.   Now vanilla kernel builds also
+using same tree re-make w/o actually recompiling anything.
 
 
-SUMMARY
+--------------050209010707030506000607
+Content-Type: text/plain;
+ name="patch-prep-kernel"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="patch-prep-kernel"
 
-Id like to see estimates of the latency costs associated with each choice,
-where its practical to do so (given the current unknowables, like 
-variations across
-cpus, chipsets etc).  I recognize that such numbers are the hoped-for
-end result of the xenomai-data ML, and perhaps nothing real can be said
-yet (or ever) in Kconfig, except in (overly?) broad statements.
+Index: scripts/prepare-kernel.sh
+===================================================================
+--- scripts/prepare-kernel.sh	(revision 1029)
++++ scripts/prepare-kernel.sh	(working copy)
+@@ -48,6 +48,10 @@
+ patch_append() {
+     file="$1"
+     if test "x$output_patch" = "x"; then
++	if test -L "$linux_tree/$file" ; then
++	    mv "$linux_tree/$file" "$linux_tree/$file.orig"
++	    cp "$linux_tree/$file.orig" "$linux_tree/$file"
++	fi
+ 	chmod +w "$linux_tree/$file"
+         cat >> "$linux_tree/$file"
+     else
 
-
-
+--------------050209010707030506000607--
 
