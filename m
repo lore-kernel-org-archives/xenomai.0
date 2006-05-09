@@ -1,11 +1,10 @@
-Message-ID: <20060503173929.46955.qmail@domain.hid>
-Date: Thu, 04 May 2006 01:39:29 +0800 
-From: panpan0000@domain.hid
+Date: Tue, 09 May 2006 16:17:41 +0200
+From: Florian Pose <florian@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="=-sina_alt_13d4b229fdcabc682fe6ab3be5c0d0a8"
-Subject: [Adeos-main] Adeos for arm patch:kernel compiling error (lubbock
-	board)
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Message-Id: <E1FdT2V-00013a-Lm@domain.hid>
+Subject: [Adeos-main] IPIPE mutex?
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,132 +15,20 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
---=-sina_alt_13d4b229fdcabc682fe6ab3be5c0d0a8
-Content-Type: text/plain;
-	charset="gb2312"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+Hello everybody,
 
-DUhpLGFsbDoNSSdtIGEgdW5kZXJncmFkdWF0ZSBzdHVkZW50IGZyb20gQ2hpbmEuSSdtIHRyeWlu
+I'm using an IPIPE domain for a cyclic realtime task and I have a cyclic
+kernel timer applet running in the default domain. This two processes
+now share a common resource. So I have to use some locking method, that
+ensures, that if the process with the lower priority (e. g. the kernel
+timer) holds the lock and the process with the higher priority (RT task)
+is scheduled, the first one is scheduled again until it releases the lock.
 
-ZyB0byB1c2UgQWRlb3Mgb24gbHViYm9jayBib2FyZCAoWHNjYWxlIFB4YTI1eCApYWN0dWFsbHks
+In ADEOS there is a adeos_mutex_lock() call seeming to do exactly what I
+want. Unfortunately IPIPE  doesn't seem to have such a call.
 
-IEl0IHdpbGwgYmUgdXNlZCBvbiBza3lleWUgKGFuIEFybSBzaW11bGF0b3IgICAgLS0tLS0gaHR0
+How do I solve the problem with IPIPE?
 
-cDovL3d3dy5za3lleWUub3JnLykNU28gSSdtIHRyaW5nIGFkZW9zLWlwaXBlLTIuNi4xNS1hcm0t
-
-MS4yLTAxLnBhdGNoLg1CdXQgd2hlbiBJIDoxLnBhdGNoIHRoZSBhZGVvcyBwYXRjaDIubW9kaWZ5
-
-IHRoZSBNYWtlZmlsZSBmb3IgYXJjaCBhcm0zLm1ha2UgbHViYm9ja19kZWZjb25maWc0Lm1ha2Ug
-
-eGNvbmZpZyA6IHRvIG1vZGlmeSBzdGggYmFzZSBvbiAic2t5ZXllIidzIHJlcXVlc3QgLjUubWFr
-
-ZSAgKCB0byBnZXQgdGhlIHZtbGludXggb3IgekltYWdlICkNQnV0IHdoZW4gIm1ha2UiIGdvZXMg
-
-dG8gdGhlIHN0ZXAgLS0gICIgTEQodGVtLnZtbGludXgxKSAiIExvdHMgb2YgZXJyb3IgYXBwZWFy
-
-cyA6IEFsbCBvZiB0aGVtIGFyZSBzdWNoIGxpY2sgIG1hbnkgICJpcGlwZV8iIGZ1bmN0aW9ucyBv
-
-ciB2YXJpYWJsZXMgdW5kZWZpbmVkICENImFkZW9zLWlwaXBlLTIuNi4xNS1hcm0tMS4yLTAwLnBh
-
-dGNoIiAgYW5kICIuLi4xLjItMDIiICBhbmQgIi4uLjEuMy4wMCIgICBhbHNvIGJyaW5nIGVycm9y
-
-cy4gIFRoZXNlIHBhdGNoZXMncyBlcnJvcnMgYXBwZWFyIGp1c3QgYWZ0ZXIgIm1ha2UiIHRoZSBr
-
-ZXJuZWwgLg0gYWRlb3MgcGF0Y2ggZm9yIDIuNi4xNCBhbHNvIGZhaWxlZCAhDSBIYXMgYW55Ym9k
-
-eSBzdWNjZXNzZnVsbHkgYXBwbGllZCB0aGUgYWRlb3MtaXBpcGUtMi42LjF4LWFybSBwYXRjaCA/
-
-IGZvciBsdWJib2NrIG9yIHNvbWUgb3RoZXIgYXJtIHBsYXRmb3JtID8NIEJlc2lkZSxJIHVzZSBh
-
-cm0tZ2NjLWxpbnV4LTMuNC4gDSBUSGFua3MgdmVyeSBtdWNoIGZvciB5b3VyIGhlbHBzICENICAg
-
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-
-ICAgcGV0ZXJwYW4gaW4gWE1VIAoKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrXorLh0MLAyzJHw+K30dPKz+SjqCBodHRw
-
-Oi8vbWFpbC5zaW5hLmNvbS5jbi9jaG9vc2VNb2RlLmh0bWwgo6k=
-
-
-
---=-sina_alt_13d4b229fdcabc682fe6ab3be5c0d0a8
-Content-Type: text/html; 
-	charset="gb2312"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-PHN0eWxlPnB7bWFyZ2luOjB9aW1ne2JvcmRlcjowfTwvc3R5bGU+DQo8Zm9udCBzdHlsZT0nZm9u
-
-dC1zaXplOjEycHgnPjxQPkhpLGFsbDo8L1A+DQo8UD5JJ20gYSB1bmRlcmdyYWR1YXRlIHN0dWRl
-
-bnQgZnJvbSBDaGluYS48QlI+SSdtIHRyeWluZyB0byB1c2UgQWRlb3Mgb24gbHViYm9jayBib2Fy
-
-ZCAoWHNjYWxlIFB4YTI1eCApPEJSPmFjdHVhbGx5LCBJdCB3aWxsIGJlIHVzZWQgb24gc2t5ZXll
-
-IChhbiBBcm0gc2ltdWxhdG9yJm5ic3A7Jm5ic3A7Jm5ic3A7IC0tLS0tIDxBIGhyZWY9Imh0dHA6
-
-Ly93d3cuc2t5ZXllLm9yZy8iPmh0dHA6Ly93d3cuc2t5ZXllLm9yZy88L0E+KTwvUD4NCjxQPlNv
-
-IEknbSB0cmluZyBhZGVvcy1pcGlwZS0yLjYuMTUtYXJtLTEuMi0wMS5wYXRjaC48L1A+DQo8UD5C
-
-dXQgd2hlbiBJIDo8QlI+MS5wYXRjaCB0aGUgYWRlb3MgcGF0Y2g8QlI+Mi5tb2RpZnkgdGhlIE1h
-
-a2VmaWxlIGZvciBhcmNoIGFybTxCUj4zLm1ha2UgbHViYm9ja19kZWZjb25maWc8QlI+NC5tYWtl
-
-IHhjb25maWcgOiB0byBtb2RpZnkgc3RoIGJhc2Ugb24gInNreWV5ZSIncyByZXF1ZXN0IC48QlI+
-
-NS5tYWtlJm5ic3A7ICggdG8gZ2V0IHRoZSB2bWxpbnV4IG9yIHpJbWFnZSApPC9QPg0KPFA+QnV0
-
-IHdoZW4gIm1ha2UiIGdvZXMgdG8gdGhlIHN0ZXAgLS0mbmJzcDsgIiBMRCh0ZW0udm1saW51eDEp
-
-ICIgPEJSPkxvdHMgb2YgZXJyb3IgYXBwZWFycyA6IEFsbCBvZiB0aGVtIGFyZSBzdWNoIGxpY2sm
-
-bmJzcDsgbWFueSZuYnNwOyAiaXBpcGVfIiBmdW5jdGlvbnMgb3IgdmFyaWFibGVzIHVuZGVmaW5l
-
-ZCAhPC9QPg0KPFA+ImFkZW9zLWlwaXBlLTIuNi4xNS1hcm0tMS4yLTAwLnBhdGNoIiA8QlI+Jm5i
-
-c3A7YW5kICIuLi4xLjItMDIiIDxCUj4mbmJzcDthbmQgIi4uLjEuMy4wMCImbmJzcDsmbmJzcDsg
-
-YWxzbyBicmluZyBlcnJvcnMuIDxCUj4mbmJzcDtUaGVzZSBwYXRjaGVzJ3MgZXJyb3JzIGFwcGVh
-
-ciBqdXN0IGFmdGVyICJtYWtlIiB0aGUga2VybmVsIC48L1A+DQo8UD4mbmJzcDthZGVvcyBwYXRj
-
-aCBmb3IgMi42LjE0IGFsc28gZmFpbGVkICE8L1A+DQo8UD4mbmJzcDtIYXMgYW55Ym9keSBzdWNj
-
-ZXNzZnVsbHkgYXBwbGllZCB0aGUgYWRlb3MtaXBpcGUtMi42LjF4LWFybSBwYXRjaCA/IGZvciBs
-
-dWJib2NrIG9yIHNvbWUgb3RoZXIgYXJtIHBsYXRmb3JtID88L1A+DQo8UD4mbmJzcDtCZXNpZGUs
-
-SSB1c2UgYXJtLWdjYy1saW51eC0zLjQuIDwvUD4NCjxQPiZuYnNwO1RIYW5rcyB2ZXJ5IG11Y2gg
-
-Zm9yIHlvdXIgaGVscHMgITwvUD4NCjxQPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZu
-
-YnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNw
-
-OyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyBw
-
-ZXRlcnBhbiBpbiBYTVU8QlI+Jm5iPGJyIC8+CjxiciAvPgo9PT09PT09PT09PT09PT09PT09PT09
-
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PGJyIC8+CteisuHQ
-
-wsDLMkfD4rfR08rP5KOoIDxhIGhyZWY9aHR0cDovL21haWwuc2luYS5jb20uY24vY2hvb3NlTW9k
-
-ZS5odG1sIHRhcmdldD1fYmxhbms+aHR0cDovL21haWwuc2luYS5jb20uY24vY2hvb3NlTW9kZS5o
-
-dG1sPC9hPiCjqXNwOzwvUD48L2ZvbnQ+
-
-
-
---=-sina_alt_13d4b229fdcabc682fe6ab3be5c0d0a8--
-
+Thanks a lot,
+Florian
 
