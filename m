@@ -1,179 +1,34 @@
-Message-ID: <001301c663b9$958a3480$1701a8c0@domain.hid>
-From: "Kiichi Kameda" <k-kameda@domain.hid>
-References: <009601c662f1$f164e700$1701a8c0@domain.hid> <4443A725.5060102@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai port to SH4
-Date: Wed, 19 Apr 2006 23:00:15 +0900
+Message-ID: <44610E1C.8030807@domain.hid>
+Date: Tue, 09 May 2006 23:48:12 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-2022-jp"
+Subject: Re: [Xenomai-core] [bug] lock-up by failing rt_task_spawn/create
+References: <4460FC50.6030904@domain.hid>
+In-Reply-To: <4460FC50.6030904@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
->
-> Any code to share with us, Adeos/sh4 for instance?
->
+Jan Kiszka wrote:
+> 
+> BTW, this reminds me the ask for a merging plan of the kgdb support for
+> ipipe - this bug was tracked down via kgdb...
+> 
 
-I think so. but please wait for a while,
-Although current code is enough for my application, there are a couple of
-features
-that has to be tested or implemented to be available for you.
-  CONFIG_PREEMPT
-  Floating Point register context
-  oneshot timer
-When finished, SH3 will also be supported.
+It's queued with some changes planned (specifically removing any 
+Xenomai-specifics from the patch).
 
+-- 
 
------ Original Message ----- 
-From: "Philippe Gerum" <rpm@xenomai.org>
-To: "Kiichi Kameda" <k-kameda@domain.hid>
-Cc: <xenomai@xenomai.org>
-Sent: Monday, April 17, 2006 11:33 PM
-Subject: Re: [Xenomai-help] Xenomai port to SH4
-
-
-> Kiichi Kameda wrote:
-> > I have been porting Xenomai-2.0.2 to SH(SuperH) architecture.
-> > Currently almost all functions work well. And, I am mesuring the
-performance
-> > from user-space program using posix skin on a 240MHz SH7750R(SH4)
-machine,
-> > mainly 1 ms periodic dispatch latency. The measured data shows small
-> > latency(tens of micro seconds) when system has a light workload.
-> > In case of heavy workload such as frequent linux command input, the
-latency
-> > increases to some 200 micro seconds, though.
-> >
-> > Following is the testsuit/latency/latency program(using native skin -
-> > slightly modified) output with comment.
-> > In case of posix skin, the data shows similar tendency.
-> >
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> > worst
-> > ...(no workload)
-> > RTD|         333|        1400|        9733|       0|         333|
-> > 27066
-> > RTD|         333|        1466|       34533|       0|         333|
-> > 34533
-> > RTD|         266|        1400|       14533|       0|         266|
-> > 34533
-> > RTD|         400|        1400|       14466|       0|         266|
-> > 34533
-> > RTD|         333|        1333|        7533|       0|         266|
-> > 34533
-> > RTD|         266|        1400|       14333|       0|         266|
-> > 34533
-> > RTD|         333|        1400|       40866|       0|         266|
-> > 40866
-> > RTD|         333|        1466|       25533|       0|         266|
-> > 40866
-> > RTD|         266|        1400|       14400|       0|         266|
-> > 40866
-> > RTD|         400|        1400|       13600|       0|         266|
-> > 40866
-> > RTD|         266|        1400|        7466|       0|         266|
-> > 40866
-> > RTD|         333|        1466|       40800|       0|         266|
-> > 40866
-> > RTD|         333|        1400|       18466|       0|         266|
-> > 40866
-> > RTD|         333|        1400|       13533|       0|         266|
-> > 40866
-> > ...
-> > RTD|         333|        1333|        7133|       0|         266|
-> > 40866
-> > (telnet login)
-> > RTD|         266|        4400|      111000|       0|         266|
-> > 111000
-> > RTD|         333|        1400|       27266|       0|         266|
-> > 111000
-> > RTD|         333|        1466|       28000|       0|         266|
-> > 111000
-> >
-> > RTD|         333|        1466|       33133|       0|         266|
-> > 111000
-> > RTD|         333|        1466|       26800|       0|         266|
-> > 111000
-> > (single ps aux command)
-> > RTD|         333|       22800|      112533|       0|         266|
-> > 112533
-> > RTD|         333|        1400|       19400|       0|         266|
-> > 112533
-> > RTD|         266|        1466|       35000|       0|         266|
-> > 112533
-> > RTD|         333|        1400|        7533|       0|         266|
-> > 112533
-> > RTD|         333|        1400|       15733|       0|         266|
-> > 112533
-> > RTD|         266|        1866|       71333|       0|         266|
-> > 112533
-> > RTD|         333|        9866|      105866|       0|         266|
-> > 112533
-> > RTD|         266|        1400|       14400|       0|         266|
-> > 112533
-> >
-> > RTD|         266|        1400|       11266|       0|         266|
-> > 112533
-> > RTD|         400|        1466|       50133|       0|         266|
-> > 112533
-> > RTD|         333|        3066|      116866|       0|         266|
-> > 116866
-> > (successive ps aux command)
-> > RTD|        1266|       15933|      218866|       0|         266|
-> > 218866
-> > RTD|        1266|        2400|       76666|       0|         266|
-> > 218866
-> > RTD|         333|        1400|       15000|       0|         266|
-> > 218866
-> > RTD|         266|        1400|       27600|       0|         266|
-> > 218866
-> > RTD|         400|        1400|       15333|       0|         266|
-> > 218866
-> > RTD|         266|        1333|        6933|       0|         266|
-> > 218866
-> > RTD|         333|        1400|       16533|       0|         266|
-> > 218866
-> > RTD|         400|        1800|       75933|       0|         266|
-> > 218866
-> >
-> >
-> > It is enough possible I have misported the Xenomai to SH, but I also
-think
-> > Xenomai user-space program(primary mode) suffers such extra latency when
-> > Linux kernel runs Linux programs.
-> >
->
-> Likely cache management issues.
->
-> > I will appreciate any suggestion for latency improvement.
-> >
->
-> Any code to share with us, Adeos/sh4 for instance?
->
-> > Thank you,
-> >
-> > Kiichi Kameda
-> >
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> >
->
->
-> -- 
->
-> Philippe.
->
-
+Philippe.
 
