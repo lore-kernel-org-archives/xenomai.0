@@ -1,42 +1,52 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44625A66.307@domain.hid>
+Date: Wed, 10 May 2006 23:25:58 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Pending ownership and resource stealing
+References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>	<4461BB5A.3010403@domain.hid>	<44621B00.7090703@domain.hid>	<17506.9231.555209.471522@domain.hid>	<44623377.2090801@domain.hid>
+	<17506.18027.836408.819871@domain.hid>
+In-Reply-To: <17506.18027.836408.819871@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17512.27312.732005.286673@domain.hid>
-Date: Mon, 15 May 2006 13:49:04 +0200
-Subject: Re: [Xenomai-help] mutex_init() error when build
-In-Reply-To: <4468652B.1050704@domain.hid>
-References: <4546494d0605150250h350fa8c6me325b6d7a73a6d6f@domain.hid>
-	<4468652B.1050704@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai-help@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Li Yi (Adam) wrote:
- > > Hi,
- > > 
- > > I am using Xenomai-2.1.0 on Blackfin uClinux. When enabling "POSIX" 
- > > interface and build the kernel, I got error message:
- > > 
- > 
- > It's a known issue involving a naming conflict between 2.6.16 and Xeno 
- > 2.1.x. This has been fixed in 2.2, but we will likely have to backport 
- > this fix.
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > prio(task1) > prio(task2)
+>  > 
+>  > 1. task1 grabs a resource
+>  > 2. task1 sleeps for some time
+>  > 3. task2 blocks requesting the resource
+>  > 4. task1 wakes up from the sleep and releases the resource to task2
+>  > 5. task1 wants the resource back immediately and calls 
+>  > xnsynch_sleep_on() since the ownership has been transferred to task2 
+>  > since step 4.
+>  > 6a. old way: task1 would block and task2 would run anyway, with a PIP 
+>  > boost, blocking task1 until the resource is released
+>  > 6b. new way: task1 steals the resource previously granted to task2 
+>  > directly from xnsynch_sleep_on(), but doing so, nobody downstream has 
+>  > had a chance to update any skin-specific data, such as an additional 
+>  > "owner" field.
+> 
+> Posix skin mutexes work the new way without calling xnsynch_sleep_on, so
+> probably need fixing.
+> 
 
-The fix was backported, commit 772, and is included in release v2.1.1:
-http://download.gna.org/xenomai/stable/xenomai-2.1.1.tar.bz2
+I don't see any additional information maintained by the skin, aside of 
+the sem->count field, so that should be ok as it is. Is there anything 
+else recorded for tracking the current ownership of a sem-mutex object?
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
