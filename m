@@ -1,16 +1,13 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Kernel panic on rmmod xeno_vxworks
-Date: Thu, 11 May 2006 13:15:18 +0200
-References: <200605102227.09892.niklaus.giger@domain.hid>
-	<17506.23072.289428.72701@domain.hid>
-In-Reply-To: <17506.23072.289428.72701@domain.hid>
+Message-ID: <b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
+Date: Wed, 10 May 2006 11:16:44 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] [bug] zombie mutex owners
+In-Reply-To: <44619D0B.1080402@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Message-Id: <200605111315.19638.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+References: <44619D0B.1080402@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,74 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Am Mittwoch, 10. Mai 2006 23:24 schrieb Gilles Chanteperdrix:
-> Niklaus Giger wrote:
->  > Hi
->  >
->  > I compiled and started my test with a recent xenomai/trunk (revision
->  > 1068). I booted into single user mode, did a "modprobe xeno_vxworks" (no
->  > problem) and then a "rmmod xeno_vxworks" and got as response on my
->  > PowerBook only "Kernel panic: -not syncing: Aiee, killing interrupt
->  > handler".
->  >
->  >
->  > Also when I try to run ksrc/skins/vxworks/demos/satch (after a make std)
->  > I get the following info (using gdb):
->  > (gdb) run
->  > Starting
->  > program:
->  > /mnt/data.ng/hcu/kernel/xenomai-head/ksrc/skins/vxworks/demos/satch
->  > [Thread debugging using libthread_db enabled]
->  > [New Thread 805415264 (LWP 4168)]
->  > [New Thread 805434592 (LWP 4171)]
->  > [New Thread 805450976 (LWP 4172)]
->  >
->  > Program received signal SIGSEGV, Segmentation fault.
->  > [Switching to Thread 805434592 (LWP 4171)]
->  > 0x0fe76094 in vfprintf () from /lib/tls/libc.so.6
->  > (gdb) info stack
->  > #0  0x0fe76094 in vfprintf () from /lib/tls/libc.so.6
->  > #1  0x0fe7e760 in printf () from /lib/tls/libc.so.6
->  > #2  0x10001a6c in consumer_task (a0=269287424, a1=268894208,
->  > a2=269477288, a3=0, a4=0, a5=0, a6=269482760, a7=805474048,
->  >     a8=2144297840, a9=268064096) at satch.c:99
->  > #3  0x0ffa7714 in wind_task_trampoline (cookie=0x7fcf632c)
->  > at /mnt/data.ng/hcu/kernel/xenomai-head/src/skins/vxworks/taskLib.c:99
->  > #4  0x0ffd08e8 in start_thread () from /lib/tls/libpthread.so.0
->  > #5  0x0ffd08e8 in start_thread () from /lib/tls/libpthread.so.0
->  > Previous frame inner to this frame (corrupt stack?)
+Hi Jan,
+
 >
-> I observed such an error when the stack size is to small, I guess
-> vfprintf uses alloca.
-This fixed my problem. Task crashes with 18 kB stack, but not with
-20 kB. Therefore I propose 24 kB to have some margine for the future.
+> running the attached test case for the native skin, you will get an ugly
+> lock-up on probably all Xenomai versions. Granted, this code is a bit
+> synthetic. I originally thought I could trigger the bug also via
+> timeouts when waiting on mutexes, but this scenario is safe (the timeout
+> is cleared before being able to cause harm).
+>
 
-Please apply the following patch:
-Index: ksrc/skins/vxworks/demos/satch.c
-===================================================================
---- ksrc/skins/vxworks/demos/satch.c    (Revision 1068)
-+++ ksrc/skins/vxworks/demos/satch.c    (Arbeitskopie)
-@@ -21,10 +21,10 @@
- #include <vxworks/vxworks.h>
+just in order to educate me as probably I might have got something
+wrong at the first glance :)
 
- #define CONSUMER_TASK_PRI    115
--#define CONSUMER_STACK_SIZE  8192
-+#define CONSUMER_STACK_SIZE  24*1024
+if we take this one:
 
- #define PRODUCER_TASK_PRI    110
--#define PRODUCER_STACK_SIZE  8192
-+#define PRODUCER_STACK_SIZE  24*1024
+--- mutex.c=092006-02-27 15:34:58.000000000 +0100
++++ mutex-NEW.c=092006-05-10 11:55:25.000000000 +0200
+@@ -391,7 +391,7 @@ int rt_mutex_lock (RT_MUTEX *mutex,
+ =09err =3D -EIDRM; /* Mutex deleted while pending. */
+     else if (xnthread_test_flags(&task->thread_base,XNTIMEO))
+ =09err =3D -ETIMEDOUT; /* Timeout.*/
+-    else if (xnthread_test_flags(&task->thread_base,XNBREAK))
++    else if (xnthread_test_flags(&task->thread_base,XNBREAK) &&
+mutex->owner !=3D task)
+ =09err =3D -EINTR; /* Unblocked.*/
 
- #define CONSUMER_WAIT 150
- #define PRODUCER_TRIG 40
+  unlock_and_exit:
 
-Thanks in advance.
+As I understand task2 has a lower prio and that's why
 
-Best regards
+[task1] rt_mutex_unlock
+[task 1] rt_task_unblock(task1)
 
--- 
-Niklaus Giger
+are called in a row.
+
+ok, task2 wakes up in rt_mutex_unlock() (when task1 is blocked on
+rt_mutex_lock()) and finds XNBREAK flag but,
+
+[doc] -EINTR is returned if rt_task_unblock() has been called for the
+waiting task (1) before the mutex has become available (2).
+
+(1) it's true, task2 was still waiting at that time;
+(2) it's wrong, task2 was already the owner.
+
+So why just not to bail out XNBREAK and continue task2 as it has a
+mutex (as shown above) ?
+
+--
+Best regards,
+Dmitry Adamushko
 
