@@ -1,71 +1,63 @@
-Message-ID: <44658F8A.6090709@domain.hid>
-Date: Sat, 13 May 2006 09:49:30 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai in a VM
-References: <6ee4c8380605012208xf8f9bb6p5eb542d8fb8da567@domain.hid>
-	<4458949A.10606@domain.hid>
-In-Reply-To: <4458949A.10606@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig688D9BD62391BC45109B768E"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17506.23072.289428.72701@domain.hid>
+Date: Wed, 10 May 2006 23:24:48 +0200
+Subject: Re: [Xenomai-core] Kernel panic on rmmod xeno_vxworks
+In-Reply-To: <200605102227.09892.niklaus.giger@domain.hid>
+References: <200605102227.09892.niklaus.giger@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Brian L." <bluczkie@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig688D9BD62391BC45109B768E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Niklaus Giger wrote:
+ > Hi
+ > 
+ > I compiled and started my test with a recent xenomai/trunk (revision 1068).
+ > I booted into single user mode, did a "modprobe xeno_vxworks" (no problem) and 
+ > then a "rmmod xeno_vxworks" and got as response on my PowerBook only
+ > "Kernel panic: -not syncing: Aiee, killing interrupt handler".
+ > 
+ > 
+ > Also when I try to run ksrc/skins/vxworks/demos/satch (after a make std)
+ > I get the following info (using gdb):
+ > (gdb) run
+ > Starting 
+ > program: /mnt/data.ng/hcu/kernel/xenomai-head/ksrc/skins/vxworks/demos/satch
+ > [Thread debugging using libthread_db enabled]
+ > [New Thread 805415264 (LWP 4168)]
+ > [New Thread 805434592 (LWP 4171)]
+ > [New Thread 805450976 (LWP 4172)]
+ > 
+ > Program received signal SIGSEGV, Segmentation fault.
+ > [Switching to Thread 805434592 (LWP 4171)]
+ > 0x0fe76094 in vfprintf () from /lib/tls/libc.so.6
+ > (gdb) info stack
+ > #0  0x0fe76094 in vfprintf () from /lib/tls/libc.so.6
+ > #1  0x0fe7e760 in printf () from /lib/tls/libc.so.6
+ > #2  0x10001a6c in consumer_task (a0=269287424, a1=268894208, a2=269477288, 
+ > a3=0, a4=0, a5=0, a6=269482760, a7=805474048,
+ >     a8=2144297840, a9=268064096) at satch.c:99
+ > #3  0x0ffa7714 in wind_task_trampoline (cookie=0x7fcf632c) 
+ > at /mnt/data.ng/hcu/kernel/xenomai-head/src/skins/vxworks/taskLib.c:99
+ > #4  0x0ffd08e8 in start_thread () from /lib/tls/libpthread.so.0
+ > #5  0x0ffd08e8 in start_thread () from /lib/tls/libpthread.so.0
+ > Previous frame inner to this frame (corrupt stack?)
 
-Jan Kiszka wrote:
-> Brian L. wrote:
->> Has anyone tried running Xenomai inside a virtual machine (i.e. Qemu,
->> Parallels, VMWare, bochs, simics)? Is there any reason to expect this
->> to fail? In theory, the virtualization software should appear as a
->> vanilla x86 to the OS running inside of it, but I'd imagine xenomai
->> could potentially tweak bits of the cpu/architecture that are not as
->> supported by the virtualization software .
->>
->> Of course, I wouldn't expect any real-time characteristics or
->> performance to speak of. This would be for development/testing only.
->>
->> Thoughts?
->=20
-> Should work, just give it a try. We once started to play with our full
-> embedded distro under bochs, but I do not recall right now how far we
-> came - need to check with the person who actually did the work.
->=20
+I observed such an error when the stack size is to small, I guess
+vfprintf uses alloca.
 
-Meanwhile I'm running a VM myself: QEMU. No problems, it just works
-without any trick, also with RT software or with kgdb attached to the
-Xenomai kernel.
-
-Jan
+-- 
 
 
---------------enig688D9BD62391BC45109B768E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEZY+KniDOoMHTA+kRAu/RAJ463HTzugwfHHDacmfhfGG+UnhAiwCfSzTg
-GemZ0ur8GQXh9xA3Obc81q4=
-=B7pW
------END PGP SIGNATURE-----
-
---------------enig688D9BD62391BC45109B768E--
+					    Gilles Chanteperdrix.
 
