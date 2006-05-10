@@ -1,14 +1,13 @@
-Message-ID: <44678805.2000904@domain.hid>
-Date: Sun, 14 May 2006 21:41:57 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4461C318.5070207@domain.hid>
+Date: Wed, 10 May 2006 12:40:24 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4467860A.9020103@domain.hid>
-In-Reply-To: <4467860A.9020103@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4FEDA74111FAB3166D36CB14"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [patch] kgdb for ipipe - updated version
+Subject: Re: [Xenomai-core] [bug] zombie mutex owners
+References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
+	<4461BB5A.3010403@domain.hid>
+In-Reply-To: <4461BB5A.3010403@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,131 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: adeos-main@gna.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4FEDA74111FAB3166D36CB14
-Content-Type: multipart/mixed; boundary="------------000505010904060306070405"
-
-This is a multi-part message in MIME format.
---------------000505010904060306070405
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
 Jan Kiszka wrote:
-> Hi all,
->=20
-> here is an improved version of the kgdb-over-ipipe patch. This version
-> specifically addresses the concerns Gilles brought up recently:
->=20
-> o No more dependencies on Xenomai, thus also no need to have the nucleu=
-s
->   compiled into the kernel. There is now a registrable handler,
->   ipipe_safe_current, which is invoked by the kgdb code to obtain
->   "current". When the xeno nucleus arms its services, it overloads this=
+> Dmitry Adamushko wrote:
+> 
+>>Hi Jan,
+>>
+>>
+>>>running the attached test case for the native skin, you will get an ugly
+>>>lock-up on probably all Xenomai versions. Granted, this code is a bit
+>>>synthetic. I originally thought I could trigger the bug also via
+>>>timeouts when waiting on mutexes, but this scenario is safe (the timeout
+>>>is cleared before being able to cause harm).
+>>>
+>>
+>>just in order to educate me as probably I might have got something
+>>wrong at the first glance :)
+>>
+>>if we take this one:
+>>
+>>--- mutex.c    2006-02-27 15:34:58.000000000 +0100
+>>+++ mutex-NEW.c    2006-05-10 11:55:25.000000000 +0200
+>>@@ -391,7 +391,7 @@ int rt_mutex_lock (RT_MUTEX *mutex,
+>>    err = -EIDRM; /* Mutex deleted while pending. */
+>>    else if (xnthread_test_flags(&task->thread_base,XNTIMEO))
+>>    err = -ETIMEDOUT; /* Timeout.*/
+>>-    else if (xnthread_test_flags(&task->thread_base,XNBREAK))
+>>+    else if (xnthread_test_flags(&task->thread_base,XNBREAK) &&
+>>mutex->owner != task)
+>>    err = -EINTR; /* Unblocked.*/
+>>
+>> unlock_and_exit:
+>>
+>>As I understand task2 has a lower prio and that's why
+>>
+>>[task1] rt_mutex_unlock
+>>[task 1] rt_task_unblock(task1)
+>>
+>>are called in a row.
+>>
+>>ok, task2 wakes up in rt_mutex_unlock() (when task1 is blocked on
+>>rt_mutex_lock()) and finds XNBREAK flag but,
+>>
+>>[doc] -EINTR is returned if rt_task_unblock() has been called for the
+>>waiting task (1) before the mutex has become available (2).
+>>
+>>(1) it's true, task2 was still waiting at that time;
+>>(2) it's wrong, task2 was already the owner.
+>>
+>>So why just not to bail out XNBREAK and continue task2 as it has a
+>>mutex (as shown above) ?
+> 
+> 
+> Indeed, this solves the issue more gracefully.
+> 
+> Looking at this again from a different perspective and running the test
+> case with your patch in a slightly different way, I think I
+> misinterpreted the crash. If I modify task2 like this
+> 
+> void task2_fnc(void *arg)
+> {
+>         printf("started task2\n");
+>         if (rt_mutex_lock(&mtx, 0) < 0) {
+>                 printf("lock failed in task2\n");
+>                 return;
+>         }
+> //        rt_mutex_unlock(&mtx);
+> 
+>         printf("done task2\n");
+> }
+> 
+> I'm also getting a crash. So the problem seems to be releasing a mutex
+> ownership on task termination. Well, this needs further examination.
+> 
+> Looks like the issue is limited to cleanup problems and is not that
+> widespread to other skins as I thought. RTDM is not involved as it does
+> not know EINTR for rtdm_mutex_lock. The POSIX skins runs in a loop on
+> interruption and should recover from this.
+> 
+> Besides this, we then may want to consider if introducing a pending
+> ownership of synch objects is worthwhile to improve efficiency of PIP
+> users. Not critical, but if it comes at a reasonable price... Will try
+> to draft something.
+> 
 
->   handler to always provide a valid current (either the real one or
->   init_task for kernel-only threads).
->=20
-> o Replaced smp_processor_id with ipipe_processor_id in critical kgdb
->   code. I haven't tested this replacement, so no guarantees here. But s=
-o
->   far it looks consistent - at least for me.
->=20
-> To use the kernel debugger with Xenomai, you need the latest kgdb
-> patches [1] and have to follow the attached patch series.
->=20
+I've planned to work over the simulator asap to implement the stealing 
+of ownership at the nucleus level, so that this kind of issue will 
+become history.
 
-Oops, one patch was missing: the one to add the handler registration to
-Xenomai. See attachment.
+-- 
 
-Jan
-
---------------000505010904060306070405
-Content-Type: text/x-patch;
- name="xeno-kgdb.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="xeno-kgdb.patch"
-
-Index: ksrc/nucleus/pod.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/nucleus/pod.c	(Revision 1095)
-+++ ksrc/nucleus/pod.c	(Arbeitskopie)
-@@ -43,6 +43,9 @@
- #include <nucleus/registry.h>
- #include <nucleus/module.h>
- #include <nucleus/ltt.h>
-+#ifdef CONFIG_KGDB
-+#include <linux/kgdb.h>
-+#endif /* CONFIG_KGDB */
-=20
- /* NOTE: We need to initialize the globals: remember that this code
-    also runs over user-space VMs... */
-@@ -234,6 +237,13 @@ static void xnpod_flush_heap(xnheap_t *=20
-     xnarch_sysfree(extaddr, extsize);
- }
-=20
-+#ifdef CONFIG_KGDB
-+static struct task_struct *xnpod_safe_current(void)
-+{
-+    return xnpod_userspace_p() ? current : &init_task;
-+}
-+#endif /* CONFIG_KGDB */
-+
- /*!=20
-  * \fn int xnpod_init(xnpod_t *pod,int minpri,int maxpri,xnflags_t flags=
-)
-  * \brief Initialize a new pod.
-@@ -373,6 +383,9 @@ int xnpod_init(xnpod_t *pod, int minpri,
-        the remaining operations. */
-=20
-     nkpod =3D pod;
-+#ifdef CONFIG_KGDB
-+    ipipe_safe_current =3D xnpod_safe_current;
-+#endif /* CONFIG_KGDB */
-=20
-     /* No direct handler here since the host timer processing is
-        postponed to xnintr_irq_handler(), as part of the interrupt
-@@ -477,6 +490,9 @@ int xnpod_init(xnpod_t *pod, int minpri,
-=20
-         if (err) {
-           fail:
-+#ifdef CONFIG_KGDB
-+            ipipe_safe_current =3D ipipe_default_current;
-+#endif /* CONFIG_KGDB */
-             nkpod =3D NULL;
-             return err;
-         }
-@@ -607,6 +623,9 @@ void xnpod_shutdown(int xtype)
-=20
-     xnheap_destroy(&kheap, &xnpod_flush_heap, NULL);
-=20
-+#ifdef CONFIG_KGDB
-+    ipipe_safe_current =3D ipipe_default_current;
-+#endif /* CONFIG_KGDB */
-     nkpod =3D NULL;
-=20
-   unlock_and_exit:
-
---------------000505010904060306070405--
-
---------------enig4FEDA74111FAB3166D36CB14
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEZ4gFniDOoMHTA+kRAoJCAJ0Um2OWjJC1A7EGh9N76gXrpeh7cgCfV3Fr
-OyY5rYk0oXyCFtYnK3piooo=
-=eBHw
------END PGP SIGNATURE-----
-
---------------enig4FEDA74111FAB3166D36CB14--
+Philippe.
 
