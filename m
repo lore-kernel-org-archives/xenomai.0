@@ -1,13 +1,15 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4461BB5A.3010403@domain.hid>
+Date: Wed, 10 May 2006 12:07:22 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17507.30574.767081.244257@domain.hid>
-Date: Thu, 11 May 2006 19:42:06 +0200
-Subject: Re: [Xenomai-core] Errors running sim testsuite for vxWorks
-In-Reply-To: <17507.27519.455277.534105@domain.hid>
-References: <200605111823.51650.niklaus.giger@domain.hid>
-	<17507.27519.455277.534105@domain.hid>
+Subject: Re: [Xenomai-core] [bug] zombie mutex owners
+References: <44619D0B.1080402@domain.hid>
+	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
+In-Reply-To: <b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig777070B4F7866DE56B1E0A41"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,41 +19,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid, xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Niklaus Giger wrote:
- >  > Hi
- >  > 
- >  > Running the sim testsuite vxworks (revision 1078) (using the attached script) 
- >  > I get the following a few failures and memory corruption:
- >  > 
- >  > trestart.c:46, taskSpawn("nop", 19, 0, 32768, nopTask, 0,0,0,0,0,0,0,0,0,0) != 
- >  > ERROR
- >  > *** glibc detected *** malloc(): memory corruption: 0x100bf000 ***
- >  > 
- >  > t010726-1.log:t010726-1.c:106, test finished: 4 failures/ 15 tests
- >  > t010726-2.log:t010726-2.c:224, test finished: 0 failures/ 82 tests
- >  > t010728.log:t010728.c:119, test finished: 0 failures/ 4 tests
- >  > t010820-1.log:t010820-1.c:90, test finished: 0 failures/ 23 tests
- >  > t010820-2.log:t010820-2.c:81, test finished: 0 failures/ 11 tests
- >  > t010823-1.log:t010823-1.c:114, test finished: 0 failures/ 16 tests
- >  > t010823-2.log:t010823-2.c:166, test finished: 1 failures/ 33 tests
- >  > 
- >  > Is this normal or a powerpc specific error of the Xenomai simulator?
- > 
- > The tests run here without any failure, however the round-robin test
- > relies on a precise number of "virtual cycles" which is probably
- > architecture dependent.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig777070B4F7866DE56B1E0A41
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Ok, I get the errors too.
+Dmitry Adamushko wrote:
+> Hi Jan,
+>=20
+>>
+>> running the attached test case for the native skin, you will get an ug=
+ly
+>> lock-up on probably all Xenomai versions. Granted, this code is a bit
+>> synthetic. I originally thought I could trigger the bug also via
+>> timeouts when waiting on mutexes, but this scenario is safe (the timeo=
+ut
+>> is cleared before being able to cause harm).
+>>
+>=20
+> just in order to educate me as probably I might have got something
+> wrong at the first glance :)
+>=20
+> if we take this one:
+>=20
+> --- mutex.c    2006-02-27 15:34:58.000000000 +0100
+> +++ mutex-NEW.c    2006-05-10 11:55:25.000000000 +0200
+> @@ -391,7 +391,7 @@ int rt_mutex_lock (RT_MUTEX *mutex,
+>     err =3D -EIDRM; /* Mutex deleted while pending. */
+>     else if (xnthread_test_flags(&task->thread_base,XNTIMEO))
+>     err =3D -ETIMEDOUT; /* Timeout.*/
+> -    else if (xnthread_test_flags(&task->thread_base,XNBREAK))
+> +    else if (xnthread_test_flags(&task->thread_base,XNBREAK) &&
+> mutex->owner !=3D task)
+>     err =3D -EINTR; /* Unblocked.*/
+>=20
+>  unlock_and_exit:
+>=20
+> As I understand task2 has a lower prio and that's why
+>=20
+> [task1] rt_mutex_unlock
+> [task 1] rt_task_unblock(task1)
+>=20
+> are called in a row.
+>=20
+> ok, task2 wakes up in rt_mutex_unlock() (when task1 is blocked on
+> rt_mutex_lock()) and finds XNBREAK flag but,
+>=20
+> [doc] -EINTR is returned if rt_task_unblock() has been called for the
+> waiting task (1) before the mutex has become available (2).
+>=20
+> (1) it's true, task2 was still waiting at that time;
+> (2) it's wrong, task2 was already the owner.
+>=20
+> So why just not to bail out XNBREAK and continue task2 as it has a
+> mutex (as shown above) ?
 
-Counts of "virtual cycles" depend on the count of lines in the source
-program, so are architecture independent. But they have been divided by
-ten, because vxworks tick rate is now 1000 whereas it used to be 100.
+Indeed, this solves the issue more gracefully.
 
--- 
+Looking at this again from a different perspective and running the test
+case with your patch in a slightly different way, I think I
+misinterpreted the crash. If I modify task2 like this
+
+void task2_fnc(void *arg)
+{
+        printf("started task2\n");
+        if (rt_mutex_lock(&mtx, 0) < 0) {
+                printf("lock failed in task2\n");
+                return;
+        }
+//        rt_mutex_unlock(&mtx);
+
+        printf("done task2\n");
+}
+
+I'm also getting a crash. So the problem seems to be releasing a mutex
+ownership on task termination. Well, this needs further examination.
+
+Looks like the issue is limited to cleanup problems and is not that
+widespread to other skins as I thought. RTDM is not involved as it does
+not know EINTR for rtdm_mutex_lock. The POSIX skins runs in a loop on
+interruption and should recover from this.
+
+Besides this, we then may want to consider if introducing a pending
+ownership of synch objects is worthwhile to improve efficiency of PIP
+users. Not critical, but if it comes at a reasonable price... Will try
+to draft something.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enig777070B4F7866DE56B1E0A41
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEYbtaniDOoMHTA+kRApjAAJ9OuW8mbBArRt6m1Uuotn8eDG+O1gCbBQsC
+v4uHFfiB3O5+L82ZBDusQBY=
+=nL8Z
+-----END PGP SIGNATURE-----
+
+--------------enig777070B4F7866DE56B1E0A41--
 
