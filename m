@@ -1,10 +1,10 @@
-Message-ID: <4461A73C.1020605@domain.hid>
-Date: Wed, 10 May 2006 10:41:32 +0200
+Message-ID: <4461B9E8.7000105@domain.hid>
+Date: Wed, 10 May 2006 12:01:12 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Unknown symbol xnshadow_send_sig
-References: <Pine.LNX.4.63.0605101025370.11844@domain.hid>
-In-Reply-To: <Pine.LNX.4.63.0605101025370.11844@domain.hid>
+Subject: Re: [Xenomai-help] T_JOINABLE flag and task creation in userspace
+References: <CAD034EB-5B5C-4E38-9C26-BA4D2157C8AA@inquant.de>
+In-Reply-To: <CAD034EB-5B5C-4E38-9C26-BA4D2157C8AA@inquant.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,65 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+To: Stefan Eletzhofer <stefan.eletzhofer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Klaas Gadeyne wrote:
-> Hi,
+Stefan Eletzhofer wrote:
+> Hello,
+> I've just tried to create a task in user space with the T_JOINABLE  flag 
+> set,
+> as I wanted to rt_task_join() to that thread later on.
 > 
-> When using the xenomai-v2.1.x branch (tested with r1058, and a
-> snapshot from a couple of days ago, using the "Champagne" version of
-> the nucleus IIRC), I get the above error while trying to load the
-> xeno_native kernel module.  Relevant data is below:
+> Unfortunately, as soon as I set that flag, the task does'nt get started
+> at all (i.e. its task body is not reached). Is that a known BUG/ 
+> limitation or am I missing
+> something? The same program works if I pass 0 instead of T_JOINABLE  (of 
+> course the
+> rt_task_jolin() fails to join, then, using pause() in that case ;)
 > 
-> [kgad@domain.hid /lib/modules/2.6.16adeos-ipipe-1.2-05]$
->  lsmod | grep xeno_nucleus
-> xeno_nucleus          222112  0
-> [kgad@domain.hid /lib/modules/2.6.16adeos-ipipe-1.2-05]$
->  sudo modprobe xeno_native
-> FATAL: Error inserting xeno_native
->  (/lib/modules/2.6.16adeos-ipipe-1.2-05/kernel/kernel/xenomai/skins/native/xeno_native.ko): 
-> 
->  Unknown symbol in module, or unknown parameter (see dmesg)
-> [kgad@domain.hid /lib/modules/2.6.16adeos-ipipe-1.2-05]$
->  dmesg | tail -n 5
-> Xenomai: hal/x86 started.
-> I-pipe: Domain IShield registered.
-> Xenomai: real-time nucleus v2.1.1 (Trundrumbalind) loaded.
-> xeno_native: Unknown symbol xnshadow_send_sig
-> xeno_native: Unknown symbol xnshadow_send_sig
-> 
-> [kgad@domain.hid /lib/modules/2.6.16adeos-ipipe-1.2-05]$
->  nm --defined-only
->  /lib/modules/2.6.16adeos-ipipe-1.2-05/kernel/kernel/xenomai/nucleus/xeno_nucleus.ko 
-> 
->  | grep xnshadow_send_sig
-> 0000e050 T xnshadow_send_sig
-> [kgad@domain.hid /lib/modules/2.6.16adeos-ipipe-1.2-05]$
->  nm
->  /lib/modules/2.6.16adeos-ipipe-1.2-05/kernel/kernel/xenomai/skins/native/xeno_native.ko 
-> 
->  | grep xnshadow_send_sig
->          U xnshadow_send_sig
-> 
-> 
-> The signatures of the function seem to match to and I don't get the
-> error when using xenomai-trunk with 2.6.16adeos-ipipe-1.3-01.
+> I'm using Xenomai 2.1 on a custom PPC board running a 2.4.25 kernel.  
+> The latency tests
+> look OKish to me.
 > 
 
-Missing export inthe v2.1 branch which has been fixed in the v2.2 one, 
-the patch below fixes it. A work-around is to build the native interface 
-statically into the kernel, and not as a module.
-
---- ksrc/nucleus/shadow.c	(revision 1000)
-+++ ksrc/nucleus/shadow.c	(working copy)
-@@ -1898,4 +1898,5 @@
-  EXPORT_SYMBOL(xnshadow_unregister_interface);
-  EXPORT_SYMBOL(xnshadow_wait_barrier);
-  EXPORT_SYMBOL(xnshadow_suspend);
-+EXPORT_SYMBOL(xnshadow_send_sig);
-  EXPORT_SYMBOL(nkgkptd);
-
+A conflict has been detected between the T_JOINABLE bit and the CPU 
+affinity bits for the native skin, which caused rt_task_start() to fail 
+silently. Fixed in the SVN repository for both the stable and dev 
+branches (commits #1062 and #1063).
 
 -- 
 
