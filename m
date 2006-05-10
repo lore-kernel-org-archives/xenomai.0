@@ -1,17 +1,12 @@
-Message-ID: <44797F49.7020705@domain.hid>
-Date: Sun, 28 May 2006 12:45:29 +0200
+Message-ID: <44619D0B.1080402@domain.hid>
+Date: Wed, 10 May 2006 09:58:03 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Porting xeno-{info|load|test} to a busybox system
-References: <200605252134.08614.niklaus.giger@domain.hid>
-	<200605261852.45980.niklaus.giger@domain.hid>
-	<44788191.2000405@domain.hid>
-	<200605281200.18974.niklaus.giger@domain.hid>
-In-Reply-To: <200605281200.18974.niklaus.giger@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE3AAC57C575B68CF868FC8DB"
+	boundary="------------enig5FE0ACF3E1F0C662AD925C5D"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [bug] zombie mutex owners
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,140 +16,184 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE3AAC57C575B68CF868FC8DB
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig5FE0ACF3E1F0C662AD925C5D
+Content-Type: multipart/mixed; boundary="------------070704070506020903070402"
+
+This is a multi-part message in MIME format.
+--------------070704070506020903070402
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Niklaus Giger wrote:
-> Am Samstag, 27. Mai 2006 18:42 schrieb Jan Kiszka:
->> Niklaus Giger wrote:
-> <..>
->> Still broken:
-> <..>
-> Sorry for not catching this part, but my kernel config did not set=20
-> CONFIG_IKCONFIG. Fixed now.
->> Resolves to "zcat | grep -E '...' /proc/config.gz" or to "cat
->> /proc/config.gz". Both doesn't work. I would suggest this:
->>
->>     local filter=3D"| grep -E '$whatconf'"
->>     [ "$verbose" =3D 1 ] && filter=3D
->>
->>     if [ -f /proc/config.gz ]; then     # get the config
->>         loudly zcat /proc/config.gz $filter
->>
->>>     elif [ -f /lib/modules/`uname -r`/build/.config ]; then
->>>         loudly $cmd /lib/modules/`uname -r`/build/.config
->> And here we need
->>
->>     loudly cat /lib/modules/`uname -r`/build/.config $filter
->>
->>>     fi
-> Should be fixed with the attached patch
->> There is another occurrence of "zcat | grep" which needs fixing.
-> This one too.
->>>>> /bin/xeno-test: /bin/xeno-test: 264: getopts: not found
-> <..>
->> Did so, and also awk need to be switched on. What about testing for
->> those features when bb was detected? Anyway, the latency tests work no=
-w
->> (in my qemu box). But I do not find the workload (dd?) in the process =
-list:
-> Added to procedure checkUtilities and checkHelpers (after having parsed=
- the=20
-> options). Added them unconditionally as there might be even *nix system=
-s=20
-> around which are lacking coreutilities like awk, cut, curl, mail, scrip=
-t.
->=20
-> Added a "ps | grep $_j" to show whether a dd job is still running befor=
-e=20
-> killing it. Now, at least running under the busybox. the dd jobs get ki=
-lled=20
-> as they should. Therefore I added a "killall dd" for the case the dd_jo=
-bs=20
-> variable is empty.
+Hi,
 
-But there is still no load during the tests, correct?
+running the attached test case for the native skin, you will get an ugly
+lock-up on probably all Xenomai versions. Granted, this code is a bit
+synthetic. I originally thought I could trigger the bug also via
+timeouts when waiting on mutexes, but this scenario is safe (the timeout
+is cleared before being able to cause harm).
 
->=20
-> You should be able to xeno-test under the BusyBox without any parameter=
-, I=20
-> added however often a "-T 1" to make them run faster.=20
->=20
-> Could you give this patch another try? Thanks for your patience, but th=
-e=20
-> variability is very high as both the kernel and the busybox have a lot =
-of=20
-> config options.
+What we see here is that task1 forwards the ownership of the mutex to
+task2 on its first unlock invocation. Then we interrupt task2, making it
+drop its wish to acquire the lock - but it already has it! Now weird
+things happen on cleanup of task2 (likely also when trying to require
+the lock via task1 beforehand).
 
-Yeah, I know. Therefore it takes someone looking at it from different
-perspectives. :)
+The attached fix solves at least the crash but still gives an
+unsatisfying result:
 
-Basically works now, but I found two oddities:
+: fn      -158+  __rt_mutex_lock (hisyscall_event)
+: fn      -156+  __copy_from_user_ll (__rt_mutex_lock)
+: fn      -154+  xnregistry_fetch (__rt_mutex_lock)
+:|fn      -151+  __ipipe_restore_pipeline_head (xnregistry_fetch)
+: fn      -148+  rt_mutex_lock (__rt_mutex_lock)
+:|fn      -144+  xnsynch_sleep_on (rt_mutex_lock)
+:|fn      -134+  xnpod_resume_thread (xnsynch_sleep_on)
+:|fn      -130+  xnpod_suspend_thread (xnsynch_sleep_on)
+:|fn      -125+  xnpod_schedule (xnpod_suspend_thread)
+:|fn      -116!  __switch_to (xnpod_schedule)
+:|fn      -103+  rt_mutex_unlock (rt_mutex_lock)
+:|fn      -100+  xnsynch_wakeup_one_sleeper (rt_mutex_unlock)
+:|fn       -98+  xnpod_resume_thread (xnsynch_wakeup_one_sleeper)
+:|fn       -95+  xnsynch_clear_boost (xnsynch_wakeup_one_sleeper)
+:|fn       -89+  xnpod_schedule (rt_mutex_unlock)
+:|fn       -85+  __switch_to (xnpod_schedule)
+:|fn       -79!  __ipipe_restore_pipeline_head (rt_mutex_lock)
 
-- special characters in line 152 of xeno-test:
+This means that task2 needs to be woken up in order to let task1
+re-acquire the mutex. What would be more efficient for task1 is to
+"steal" the granted lock again (that's what the preempt-rt people do in
+their rtmutex code - and this is where I stumbled over our issues).
 
-> @@ -83,20 +141,19 @@
->
->
->  boxinfo() { # static info, show once
-> +    loudly `dirname $0`/xeno-config --verbose
-> +    loudly `dirname $0`/xeno-info
->
-> -    loudly ./xeno-config --verbose
-> -    loudly ./xeno-info
-> -
->      loudly cat /proc/cpuinfo	# bogomips changes under CPU_FREQ
->
->      # how much of the config do we want ?
-> -    local cmd=3D"zgrep -E '$whatconf'"
-> -    [ "$verbose" =3D 1 ] && cmd=3Dcat
-> -
-> -    if [ -f /proc/config.gz ]; then	# get the config
-> -	loudly $cmd /proc/config.gz
-> -    elif [ -f /lib/modules/`uname -r`/build/.config ]; then
-> -	loudly $cmd /lib/modules/`uname -r`/build/.config
-> +    local filter=3D" grep -E '$whatconf'"
-> +    [ "$verbose" =3D 1 ] && filter=3D
-> +    if test -f /proc/config.gz; then =C2  =C2  # get the config
-                                        ^^^^
-
-- the output of xeno-test contains this error:
-
-running: cat /proc/cpuinfo
-processor       : 0
-[...]
-bogomips        : 2628.76
-
-/bin/xeno-test: /bin/xeno-test: 325:  : not found
-# CONFIG_PREEMPT_NONE is not set
-# CONFIG_PREEMPT_VOLUNTARY is not set
-CONFIG_PREEMPT=3Dy
-CONFIG_PREEMPT_BKL=3Dy
-CONFIG_IPIPE=3Dy
-
-???
+I haven't tried to construct test cases for other skins yet, but in
+theory at least POSIX and RTDM should suffer from the same issue. This
+raises the question if there might be some generic solution at nucleus
+level for this, also improving the re-acquire path. But I have nothing
+at hand so far.
 
 Jan
 
+--------------070704070506020903070402
+Content-Type: text/x-patch;
+ name="native-mutex-relock.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="native-mutex-relock.patch"
 
---------------enigE3AAC57C575B68CF868FC8DB
+Index: ksrc/skins/native/mutex.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/native/mutex.c	(Revision 1058)
++++ ksrc/skins/native/mutex.c	(Arbeitskopie)
+@@ -375,12 +375,17 @@ int rt_mutex_lock(RT_MUTEX *mutex, RTIME
+=20
+     xnsynch_sleep_on(&mutex->synch_base, timeout);
+=20
+-    if (xnthread_test_flags(&task->thread_base, XNRMID))
+-        err =3D -EIDRM;           /* Mutex deleted while pending. */
+-    else if (xnthread_test_flags(&task->thread_base, XNTIMEO))
+-        err =3D -ETIMEDOUT;       /* Timeout. */
+-    else if (xnthread_test_flags(&task->thread_base, XNBREAK))
+-        err =3D -EINTR;           /* Unblocked. */
++    if (xnthread_test_flags(&task->thread_base, XNRMID | XNTIMEO | XNBRE=
+AK)) {
++        if (xnthread_test_flags(&task->thread_base, XNRMID))
++            err =3D -EIDRM;           /* Mutex deleted while pending. */=
+
++        else if (xnthread_test_flags(&task->thread_base, XNTIMEO))
++            err =3D -ETIMEDOUT;       /* Timeout. */
++        else
++            err =3D -EINTR;           /* Unblocked. */
++
++        if (mutex->owner =3D=3D task)
++            rt_mutex_unlock(mutex);
++    }
+=20
+   unlock_and_exit:
+=20
+
+--------------070704070506020903070402
+Content-Type: text/plain;
+ name="mutex-relock.c"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="mutex-relock.c"
+
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/mutex.h>
+#include <native/timer.h>
+#include <rtdm/rtbenchmark.h>
+
+RT_TASK task1, task2;
+RT_MUTEX mtx;
+int fd;
+
+void task1_fnc(void *arg)
+{
+        printf("started task1\n");
+        rt_mutex_lock(&mtx, 0);
+        rt_task_sleep(1000000000LL);
+        rt_mutex_unlock(&mtx);
+
+        rt_task_unblock(&task2);
+
+        rt_mutex_lock(&mtx, 0);
+        rt_dev_ioctl(fd, RTBNCH_RTIOC_REFREEZE_TRACE, 0);
+        rt_dev_close(fd);
+        rt_mutex_unlock(&mtx);
+        printf("done task1\n");
+}
+
+void task2_fnc(void *arg)
+{
+        printf("started task2\n");
+        if (rt_mutex_lock(&mtx, 0) < 0) {
+                printf("lock failed in task2\n");
+                return;
+        }
+        rt_mutex_unlock(&mtx);
+
+        printf("done task2\n");
+}
+
+int main()
+{
+        mlockall(MCL_CURRENT | MCL_FUTURE);
+
+        fd =3D rt_dev_open("rtbenchmark0", 0);
+        rt_mutex_create(&mtx, NULL);
+
+        rt_task_spawn(&task1, "task1", 0, 20, T_JOINABLE, task1_fnc, 0);
+        rt_task_spawn(&task2, "task2", 0, 10, T_JOINABLE, task2_fnc, 0);
+
+        rt_task_join(&task1);
+        rt_task_join(&task2);
+
+        rt_mutex_delete(&mtx);
+
+        return 0;
+}
+
+--------------070704070506020903070402--
+
+--------------enig5FE0ACF3E1F0C662AD925C5D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEeX9JniDOoMHTA+kRAkLAAJ9MsmPHFz33FqSa8LapnqQhbWRnpgCfRezO
-KkQuP8UyG64daXbZYLAibBE=
-=egeL
+iD8DBQFEYZ0LniDOoMHTA+kRAsrdAJsGPx7b5qLs+/RtsnQUNU0kcR04WACfVnR/
+b3+VewazX6eInHL35Ci6MD4=
+=maln
 -----END PGP SIGNATURE-----
 
---------------enigE3AAC57C575B68CF868FC8DB--
+--------------enig5FE0ACF3E1F0C662AD925C5D--
 
