@@ -1,12 +1,13 @@
-Message-ID: <4463BB6F.8050008@domain.hid>
-Date: Fri, 12 May 2006 00:32:15 +0200
+Message-ID: <4463BD10.9060200@domain.hid>
+Date: Fri, 12 May 2006 00:39:12 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <446364DB.50908@domain.hid>
-In-Reply-To: <446364DB.50908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-core] Pending ownership and resource stealing
+References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>	<4461BB5A.3010403@domain.hid>	<44621B00.7090703@domain.hid>	<17506.9231.555209.471522@domain.hid>	<44623377.2090801@domain.hid>	<17506.18027.836408.819871@domain.hid>	<44625A66.307@domain.hid>
+	<17507.29090.396675.139304@domain.hid>
+In-Reply-To: <17507.29090.396675.139304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: Stalled xenomai domain with head-optimisation
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,53 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi Philippe,
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Philippe Gerum wrote:
+>  > >  > prio(task1) > prio(task2)
+>  > >  > 
+>  > >  > 1. task1 grabs a resource
+>  > >  > 2. task1 sleeps for some time
+>  > >  > 3. task2 blocks requesting the resource
+>  > >  > 4. task1 wakes up from the sleep and releases the resource to task2
+>  > >  > 5. task1 wants the resource back immediately and calls 
+>  > >  > xnsynch_sleep_on() since the ownership has been transferred to task2 
+>  > >  > since step 4.
+>  > >  > 6a. old way: task1 would block and task2 would run anyway, with a PIP 
+>  > >  > boost, blocking task1 until the resource is released
+>  > >  > 6b. new way: task1 steals the resource previously granted to task2 
+>  > >  > directly from xnsynch_sleep_on(), but doing so, nobody downstream has 
+>  > >  > had a chance to update any skin-specific data, such as an additional 
+>  > >  > "owner" field.
+>  > > 
+>  > > Posix skin mutexes work the new way without calling xnsynch_sleep_on, so
+>  > > probably need fixing.
+>  > > 
+>  > 
+>  > I don't see any additional information maintained by the skin, aside of 
+>  > the sem->count field, so that should be ok as it is. Is there anything 
+>  > else recorded for tracking the current ownership of a sem-mutex object?
 > 
-> I had a bit "fun" today trying to get some of our robotic hardware
-> running with latest Xenomai / Ipipe, also in order to test recent RTDM
-> fixes. It turned out that the head-optimised variant easily creates that
-> infamous stalled Xenomai domain, e.g. like this one:
+> The mutex->count field is unconditionnaly set to 0 and task2 woken up
+> when task1 releases the mutex, so that when task1 want the mutex again,
+> it will appear as free, and task1 will get it without calling
+> xnsynch_sleep_on, task2 will eventually wakeup spuriously or not
+> depending on whether the mutex is free. So, setting the count to 0 when
+> waking up seems wrong.
+>
+
+We just need to set it to 1 instead, just like if we were returning from
+mutex_trylock_internal() successfully.
+
+> In a nut shell, the posix skin should be changed to use the new feature
+> instead of implementing its own behaviour.
 > 
 
-Eeek... Ok, two things come to my mind for debugging this issue. The first one is
-to make sure the assumption in ipipe_restore_pipeline_head() is a good one, so could
-you try please testing the patch below, and see if the situation improves (it cannot
-worsen anyway):
-
---- include/linux/ipipe.h~	2006-05-08 12:17:06.000000000 +0200
-+++ include/linux/ipipe.h	2006-05-12 00:17:00.000000000 +0200
-@@ -563,7 +563,9 @@
-  static inline void ipipe_restore_pipeline_head(unsigned long x)
-  {
-  	struct ipipe_domain *head = __ipipe_pipeline_head();
-+#if 0
-  	if (x != test_bit(IPIPE_STALL_FLAG, &head->cpudata[ipipe_processor_id()].status))
-+#endif
-  		__ipipe_restore_pipeline_head(head,x);
-  }
-
-
-Second, if the first try is unsuccessful, could you try disabling the wired
-interrupt support the way below, keeping the rest of the invariant pipeline
-head optimizations active?
-
---- kernel/ipipe/core.c~	2006-05-07 18:05:28.000000000 +0200
-+++ kernel/ipipe/core.c	2006-05-11 18:34:57.000000000 +0200
-@@ -482,8 +482,10 @@
-  	if (ipd->irqs[irq].control & IPIPE_SYSTEM_MASK)
-  		return -EPERM;
-
-+#if 0
-  	if (!test_bit(IPIPE_AHEAD_FLAG, &ipd->flags))
-  		/* Silently unwire interrupts for non-heading domains. */
-+#endif
-  		modemask &= ~IPIPE_WIRED_MASK;
-
-  	spin_lock_irqsave_hw(&__ipipe_pipelock, flags);
+There is no new feature per se, just an additional case upon return from
+xnsynch_sleep_on() to take into account.
 
 -- 
 
