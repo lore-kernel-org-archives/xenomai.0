@@ -1,18 +1,13 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17507.29090.396675.139304@domain.hid>
-Date: Thu, 11 May 2006 19:17:22 +0200
-Subject: Re: [Xenomai-core] Pending ownership and resource stealing
-In-Reply-To: <44625A66.307@domain.hid>
-References: <44619D0B.1080402@domain.hid>
-	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
-	<4461BB5A.3010403@domain.hid> <44621B00.7090703@domain.hid>
-	<17506.9231.555209.471522@domain.hid>
-	<44623377.2090801@domain.hid>
-	<17506.18027.836408.819871@domain.hid>
-	<44625A66.307@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <17507.30574.767081.244257@domain.hid>
+Date: Thu, 11 May 2006 19:42:06 +0200
+Subject: Re: [Xenomai-core] Errors running sim testsuite for vxWorks
+In-Reply-To: <17507.27519.455277.534105@domain.hid>
+References: <200605111823.51650.niklaus.giger@domain.hid>
+	<17507.27519.455277.534105@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,45 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: niklaus.giger@domain.hid, xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > Gilles Chanteperdrix wrote:
- > > Philippe Gerum wrote:
- > >  > prio(task1) > prio(task2)
- > >  > 
- > >  > 1. task1 grabs a resource
- > >  > 2. task1 sleeps for some time
- > >  > 3. task2 blocks requesting the resource
- > >  > 4. task1 wakes up from the sleep and releases the resource to task2
- > >  > 5. task1 wants the resource back immediately and calls 
- > >  > xnsynch_sleep_on() since the ownership has been transferred to task2 
- > >  > since step 4.
- > >  > 6a. old way: task1 would block and task2 would run anyway, with a PIP 
- > >  > boost, blocking task1 until the resource is released
- > >  > 6b. new way: task1 steals the resource previously granted to task2 
- > >  > directly from xnsynch_sleep_on(), but doing so, nobody downstream has 
- > >  > had a chance to update any skin-specific data, such as an additional 
- > >  > "owner" field.
- > > 
- > > Posix skin mutexes work the new way without calling xnsynch_sleep_on, so
- > > probably need fixing.
- > > 
+Gilles Chanteperdrix wrote:
+ > Niklaus Giger wrote:
+ >  > Hi
+ >  > 
+ >  > Running the sim testsuite vxworks (revision 1078) (using the attached script) 
+ >  > I get the following a few failures and memory corruption:
+ >  > 
+ >  > trestart.c:46, taskSpawn("nop", 19, 0, 32768, nopTask, 0,0,0,0,0,0,0,0,0,0) != 
+ >  > ERROR
+ >  > *** glibc detected *** malloc(): memory corruption: 0x100bf000 ***
+ >  > 
+ >  > t010726-1.log:t010726-1.c:106, test finished: 4 failures/ 15 tests
+ >  > t010726-2.log:t010726-2.c:224, test finished: 0 failures/ 82 tests
+ >  > t010728.log:t010728.c:119, test finished: 0 failures/ 4 tests
+ >  > t010820-1.log:t010820-1.c:90, test finished: 0 failures/ 23 tests
+ >  > t010820-2.log:t010820-2.c:81, test finished: 0 failures/ 11 tests
+ >  > t010823-1.log:t010823-1.c:114, test finished: 0 failures/ 16 tests
+ >  > t010823-2.log:t010823-2.c:166, test finished: 1 failures/ 33 tests
+ >  > 
+ >  > Is this normal or a powerpc specific error of the Xenomai simulator?
  > 
- > I don't see any additional information maintained by the skin, aside of 
- > the sem->count field, so that should be ok as it is. Is there anything 
- > else recorded for tracking the current ownership of a sem-mutex object?
+ > The tests run here without any failure, however the round-robin test
+ > relies on a precise number of "virtual cycles" which is probably
+ > architecture dependent.
 
-The mutex->count field is unconditionnaly set to 0 and task2 woken up
-when task1 releases the mutex, so that when task1 want the mutex again,
-it will appear as free, and task1 will get it without calling
-xnsynch_sleep_on, task2 will eventually wakeup spuriously or not
-depending on whether the mutex is free. So, setting the count to 0 when
-waking up seems wrong.
+Ok, I get the errors too.
 
-In a nut shell, the posix skin should be changed to use the new feature
-instead of implementing its own behaviour.
+Counts of "virtual cycles" depend on the count of lines in the source
+program, so are architecture independent. But they have been divided by
+ten, because vxworks tick rate is now 1000 whereas it used to be 100.
 
 -- 
 
