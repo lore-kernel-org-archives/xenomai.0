@@ -1,11 +1,11 @@
-Message-ID: <4463BD9C.8030505@domain.hid>
-Date: Fri, 12 May 2006 00:41:32 +0200
+Message-ID: <4463C090.8050309@domain.hid>
+Date: Fri, 12 May 2006 00:54:08 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Errors running sim testsuite for vxWorks
-References: <200605111823.51650.niklaus.giger@domain.hid>
-	<17507.27519.455277.534105@domain.hid>
-In-Reply-To: <17507.27519.455277.534105@domain.hid>
+References: <200605111823.51650.niklaus.giger@domain.hid>	<17507.27519.455277.534105@domain.hid>	<200605111956.57892.niklaus.giger@domain.hid>
+	<17507.39938.328795.132737@domain.hid>
+In-Reply-To: <17507.39938.328795.132737@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -21,16 +21,20 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
-
+> Niklaus Giger wrote:
+>  > Do you have any ideas? Thanks in advance.
 > 
->  > Is it normal that a "make check" only works, if one builds the simulator 
->  > inside the source code?
+> No idea, the x86 version does not seem to have the same problem, but
+> valgrind give many errors.
 > 
-> Last time I checked it worked when built out-of-tree, but you must build
-> the simulator in the sim subdirectory of a xenomai build directory.
 
-It should not be necessary, at least I don't build it this way and it 
-works. This is not a guarantee of success for the "make check" issue though.
+Valgrind chokes on the co-routine switching code, which is fair enough, 
+since it's quite hard for it to track stack context changes the way 
+setcontext/getcontext do it.
+
+However, like for the previous stack size issue with satch.c, I wonder 
+if the fixed-size stacks allocated by the simulator for its threads are 
+not overflowed.
 
 -- 
 
