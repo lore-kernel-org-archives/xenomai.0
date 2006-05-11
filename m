@@ -1,5 +1,5 @@
-Message-ID: <446303BF.40906@domain.hid>
-Date: Thu, 11 May 2006 11:28:31 +0200
+Message-ID: <44630BF3.5010203@domain.hid>
+Date: Thu, 11 May 2006 12:03:31 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Kernel panic on rmmod xeno_vxworks
@@ -28,8 +28,8 @@ Niklaus Giger wrote:
 > "Kernel panic: -not syncing: Aiee, killing interrupt handler".
 > 
 
-Confirmed, and it seems configuration-dependent, but not arch-dependent. 
-I'm on it, more later.
+It's the VxWorks tick handler that's still called after the module is 
+unloaded. Oops, rainy day indeed. I will send a fix for that. Thanks.
 
 -- 
 
