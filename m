@@ -1,13 +1,13 @@
-Message-ID: <4463CF17.8070901@domain.hid>
-Date: Fri, 12 May 2006 01:56:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44642811.20500@domain.hid>
+Date: Fri, 12 May 2006 08:15:45 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Re: Stalled xenomai domain with head-optimisation
 References: <446364DB.50908@domain.hid> <4463BB6F.8050008@domain.hid>
-In-Reply-To: <4463BB6F.8050008@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+	<4463CF17.8070901@domain.hid>
+In-Reply-To: <4463CF17.8070901@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,62 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Hi Philippe,
->>
->> I had a bit "fun" today trying to get some of our robotic hardware
->> running with latest Xenomai / Ipipe, also in order to test recent RTDM
->> fixes. It turned out that the head-optimised variant easily creates that
->> infamous stalled Xenomai domain, e.g. like this one:
->>
+Jan Kiszka wrote:
 > 
-> Eeek... Ok, two things come to my mind for debugging this issue. The
-> first one is
-> to make sure the assumption in ipipe_restore_pipeline_head() is a good
-> one, so could
-> you try please testing the patch below, and see if the situation
-> improves (it cannot
-> worsen anyway):
-> 
-> --- include/linux/ipipe.h~    2006-05-08 12:17:06.000000000 +0200
-> +++ include/linux/ipipe.h    2006-05-12 00:17:00.000000000 +0200
-> @@ -563,7 +563,9 @@
->  static inline void ipipe_restore_pipeline_head(unsigned long x)
->  {
->      struct ipipe_domain *head = __ipipe_pipeline_head();
-> +#if 0
->      if (x != test_bit(IPIPE_STALL_FLAG,
-> &head->cpudata[ipipe_processor_id()].status))
-> +#endif
->          __ipipe_restore_pipeline_head(head,x);
->  }
-> 
-> 
-> Second, if the first try is unsuccessful, could you try disabling the wired
-> interrupt support the way below, keeping the rest of the invariant pipeline
-> head optimizations active?
-> 
-> --- kernel/ipipe/core.c~    2006-05-07 18:05:28.000000000 +0200
-> +++ kernel/ipipe/core.c    2006-05-11 18:34:57.000000000 +0200
-> @@ -482,8 +482,10 @@
->      if (ipd->irqs[irq].control & IPIPE_SYSTEM_MASK)
->          return -EPERM;
-> 
-> +#if 0
->      if (!test_bit(IPIPE_AHEAD_FLAG, &ipd->flags))
->          /* Silently unwire interrupts for non-heading domains. */
-> +#endif
->          modemask &= ~IPIPE_WIRED_MASK;
-> 
->      spin_lock_irqsave_hw(&__ipipe_pipelock, flags);
+> As long as I didn't messed my build up (it's late...): no effect for
+> both patches.
 > 
 
-As long as I didn't messed my build up (it's late...): no effect for
-both patches.
+Ok, thanks. So does the following patch on the trunk/ make the bug
+disappear, when using a vanilla Adeos support?
 
-Jan
+--- include/asm-generic/hal.h	(revision 1078)
++++ include/asm-generic/hal.h	(working copy)
+@@ -118,7 +118,7 @@
+  /* Obsolete Adeos patches do not support the invariant pipeline head
+     optimization, so we check for the presence of __ipipe_pipeline_head
+     to detect it. */
+-#if defined(CONFIG_XENO_OPT_PIPELINE_HEAD) && defined(__ipipe_pipeline_head)
++#if defined(CONFIG_XENO_OPT_PIPELINE_HEAD) && defined(__ipipe_pipeline_head) && 0
+  #define rthal_local_irq_disable()	ipipe_stall_pipeline_head()
+  #define rthal_local_irq_enable()	ipipe_unstall_pipeline_head()
+  #define rthal_local_irq_save(x)		((x) = !!ipipe_test_and_stall_pipeline_head())
+
+-- 
+
+Philippe.
 
