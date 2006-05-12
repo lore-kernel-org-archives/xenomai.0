@@ -1,12 +1,10 @@
-Message-ID: <44635D1B.6020807@domain.hid>
-Date: Thu, 11 May 2006 17:49:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Some basic questions
-References: <4546494d0605110704k32c1e7c8qa7d1f1dbbf23ceb5@domain.hid>
-In-Reply-To: <4546494d0605110704k32c1e7c8qa7d1f1dbbf23ceb5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Date: Fri, 12 May 2006 17:24:56 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Message-ID: <20060512172456.555caf51@domain.hid>
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary=Multipart_Fri__12_May_2006_17_24_56_+0200_5Mrwxo00f0bShb3q
+Subject: [Xenomai-help] starnge latencies with native
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,153 +14,267 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Li Yi (Adam)" <liyiadam@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Xenomai-help@domain.hid
 
-Li Yi (Adam) wrote:
-> Hi,
->=20
-> I have been getting touch with Xenomai for some time, but I still has=20
-> some basic confusions (and I think these questions may be common for ne=
-w=20
-> users starting to write real-time application using Xenomai).
->=20
-> 1. If my real-time task want to access the HW resource, like DMA,=20
-> memory, Network,etc, does the task has to access through Linux kernel=20
-> service of allocating DMA or allocating memory, etc. Xenomai itself doe=
-s=20
-> not provide HW management services, except interrupt and timer. But by=20
-> using Linux kernel service, the task may suffer from the=20
-> non-determinstic (non-preemptive) of Linux kernel? Is there any solutio=
-n=20
-> for this?
->
+--Multipart_Fri__12_May_2006_17_24_56_+0200_5Mrwxo00f0bShb3q
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Xenomai is there to 1) complement Linux when it fails to be=20
-deterministic, 2) provide foreign real-time API emulation unknown from=20
-the Linux environment to port legacy applications. The solution is to=20
-analyze the requirements of your application, so that you should be able=20
-to determine which services are really required to be deterministic, and=20
-in which (calling) contexts.
+Hi all,
 
-Some Linux services are inherently non-deterministic, e.g. you can't=20
-rely on blockable kernel memory allocation requests, or on the TCP=20
-protocol to get such guarantee. Once you have identified the=20
-requirements, then you can pick the right tools to fulfill them in the=20
-Xenomai framework, like the POSIX skin which impersonates most of the=20
-RT-significant services of the regular POSIX API. If you can afford=20
-calling the plain Linux services wrt induced latency, Xenomai helps by=20
-allowing such call seamlessly. Said differently, the fact that an=20
-application runs over an RTOS does not make it real-time, it's because=20
-it properly defines its own real-time requirements that such application=20
-can properly use the RTOS.
+I'm doing some tests with the native skins. The attached program uses
+an alarm to trigger a periodic task and measures the sampling latency. 
 
-> 2. When writing a real-time task dealing with HW (that is, a real-time=20
-> driver), is the RTDM the prefered interface to use? If I am to make an=20
-> existing linux driver (for example, an A/D converter driver) real-time,=
-=20
-> and I don't want to change the code a lot, beside RTDM, what other=20
-> Xenomai service (API) can I use?
+Initial latencies are in the range of tens of millisecs. and then
+decrease slowly to the range of microsecs:
 
-Use RTDM, really.
+rt_timer_set_mode(TM_ONESHOT) started 
+alarm started with period 1000000000 ns 
+increment 1124642266 absjitter 124642266  
+increment 937743828 absjitter 62256172  
+increment 1031095424 absjitter 31095424  
+increment 984466651 absjitter 15533349  
+increment 1007758686 absjitter 7758686  
+increment 996126407 absjitter 3873593  
+increment 1001934707 absjitter 1934707  
+increment 999039749 absjitter 960251  
+increment 1000477139 absjitter 477139  
+increment 999759707 absjitter 240293  
+increment 1000119631 absjitter 119631  
+increment 999938964 absjitter 61036  
+increment 1000029816 absjitter 29816  
+increment 999985508 absjitter 14492  
+increment 1000004750 absjitter 4750  
+increment 999998882 absjitter 1118  
+increment 1000000946 absjitter 946  
+increment 999998780 absjitter 1220  
+increment 1000001951 absjitter 1951  
+increment 999999514 absjitter 486  
+increment 999998746 absjitter 1254  
+[...]
 
->=20
-> 3. Does it make sense that I start a real-time task using the Xenomai=20
-> native API, while the task calling into Linux network stack (e.g, open =
-a=20
-> TCP socket)? Since the Linux network stack is not determinstic, the=20
-> result is the same as I start a normal real-time linux task with=20
-> SCHED_FIFO or SCHED_RR, that is, the task can be only soft-rt?
->=20
+ What may be wrong? 
 
-First, I would preferably use the POSIX skin and not the native API, to=20
-keep my application portable from Xenomai to another RT system at low=20
-cost. Yes, you read me well: Xeno strives to provide doors to get in=20
-through API-agnosticism, and others to get out through deep integration=20
-within the Linux environment. This is why the POSIX skin is very=20
-actively enhanced and maintained.
+I observe the same behaviour if the periodic sampling is given by a
+rt_periodic task or by a rt_sleep_until in the clock loop...
 
-Aside of this, yes, your analysis is mostly correct, except that TCP is=20
-a no go for any real-time purpose anyway. To get a deterministic UDP/IP=20
-network stack, you should have a look at RTNet.
+	Daniel
 
-> 4. To create a task to be fully determinstic, I need to make sure the=20
-> task running in Xonomai domain. When the task need to acess HW, it=20
-> should not use Linux service. Is that right?
->=20
-
-Yes, but since RTDM provides a deterministic impersonation of the basic=20
-file I/O services, you could just write a RTDM-compliant driver and=20
-access it normally. Additionally, when MMIO are involved, nothing=20
-prevents you from dealing with your HW from user-space directly.
-
-> 5. What is the scheduling policy for Xenomai rt task? SCHED_RR or=20
-> SCHED_FIFO? Sorry I did not found it in the document.
->=20
-
-SCHED_FIFO when it is running under the control of the Linux kernel,=20
-otherwise, it's not applicable since the Xenomai scheduler is=20
-independent from the latter. The priority level is shared and consistent=20
-between both execution modes though (primary-Xenomai and secondary-Linux)=
-.
-
-> 6. And finally a question specific to Blackfin: What is the purpose of=20
-> starting a kernel thread for each interrupt handler in Linux kernel?
->
-
-That's a long story, but since you asked for it, here is the main reason:
-
-The culprit is, at your option, either my brain, or the way the Blackfin=20
-determines the current execution mode of the CPU, either supervisor or=20
-user, through the IPEND register. As you already know, this register=20
-tracks the currently processed interrupts, by priority level, and the=20
-CPU is switched to supervisor mode when at least one interrupt is marked=20
-as being processed in IPEND. In consequence of what, and due to some=20
-additional algorithmic hell, one must never perform context switching as=20
-soon as more than a single interrupt is marked as being processed in=20
-this register, which conversely means that we must wait for all=20
-interrupts but the outer one to exit _before_ ever trying to call the=20
-rescheduling procedure, and this also concerns Xenomai user-space tasks,=20
-which are initially built over Linux tasks, then put on stero=EFds afterw=
-ards.
-
-If you don't respect this basic "don't schedule in nested interrupt=20
-context" principle, the kernel will soon end up rescheduling some random=20
-kernel thread while IPEND is cleared, i.e. out of the supervisor mode,=20
-which means that the "Illegal use of supervisor resource" fatal=20
-exception is not far away.
-
-Now, the famous "Houston, we have a problem" episode: then, how are we=20
-expected to schedule a Xenomai thread asap upon a real-time event, if we=20
-are required to wait for all the currently nested non-realtime Linux=20
-ISRs to finish, i.e. the ones that have precisely been preempted by the=20
-real-time event? The only way I have been able to come up with was to=20
-move the non-realtime Linux IRQ handlers over threads, and make all=20
-Linux interrupt top-halves as short as possible, basically posting a=20
-semaphore in order to wake the associated IRQ thread up. This way, the=20
-Xenomai rescheduling would only be postponed for a few microseconds in a=20
-time-bounded way during the execution of the short top-halves, and not=20
-for a long and unbounded period of time depending on the vanilla kernel=20
-ISRs.
-
-> Sorry about so many questions and many thanks in advance!
->=20
-> -Li Yi
->=20
->=20
->=20
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+-- 
+      Daniel SIMON    Projet POP ART  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://pop-art.inrialpes.fr/people/simon/
 
 
---=20
 
-Philippe.
+--Multipart_Fri__12_May_2006_17_24_56_+0200_5Mrwxo00f0bShb3q
+Content-Type: text/x-csrc; name=orcalarm.c
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename=orcalarm.c
+
+//#include "orcnative.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+#include <native/types.h>
+#include <native/task.h>
+#include <native/queue.h>
+#include <native/intr.h>
+#include <native/timer.h>
+#include <native/sem.h>
+#include <native/alarm.h>
+#include <native/heap.h>
+#include <native/queue.h>
+#include <native/syscall.h>
+#define STACK_SIZE 8192
+#define MIN_PRIO 1
+#define MAX_PRIO 99
+
+typedef void * (*FUNCPTR) (void *);
+typedef void * (*SOSO) (void *); /**< Special type to be used for casting in pthread_create() */
+//                     --s-ms-us-ns
+RTIME task_period_ns = 1000000000llu;
+#define NSEC_PER_SEC 1000000000
+#define NBCLKS 3
+#define BASECLK 0.001 //seconds !!!
+
+#define OK 0
+#define ERROR -1
+#define STATUS int
+
+#define FALSE 0
+#define TRUE 1
+#define POLICY 1
+
+static int ji = 0;
+//static int togparport = 0;
+static RTIME startime, now, inittime, nexttime;
+static long long hjitter, jinc, max, moy, drift, jitter;
+struct timespec clock_resolution;
+
+RT_SEM mainSem;
+RT_SEM handSem;
+RT_ALARM BaseClk;
+int status, err, end = 0;
+//pthread_t * tid;
+char *dummy;
+RT_TASK thr_clockit;
+
+
+///Function that returns the cpu time in nanoseconds
+inline long long GetCpuTime(void)
+{
+    return (long long)rt_timer_read();
+}
+
+// Trap Ctrl C Interruption
+void clean_exit(int dummy)
+{
+    printf("Ctrl C Interrupt\n");
+/*     printf("rt_sem_v(mainSem); \n"); */
+/*     rt_sem_v(&mainSem); */
+    end = 1;
+    err = rt_task_join(&thr_clockit);
+    if (err != 0)printf("rt_task_join() error %d \n", err);
+
+    printf("deleting rt devices \n");
+    rt_alarm_delete(&BaseClk);
+    rt_task_delete(&thr_clockit);
+    //rt_sem_delete(&mainSem);
+    return ;
+}
+
+int orcTimerSigMask(void)
+{
+    sigset_t set;
+    sigfillset(&set);
+    if ((err = pthread_sigmask(SIG_BLOCK, &set, NULL)) != OK)
+    {
+        printf("pthread_sigmask Failed %d \n", err);
+        return ERROR;
+    }
+    sigemptyset(&set);
+    sigaddset(&set, SIGINT);
+    sigaddset(&set, SIGTERM);
+    if ((err = pthread_sigmask(SIG_UNBLOCK, &set, NULL)) != OK)
+    {
+        printf("pthread_sigmask Failed %d \n", err);
+        return ERROR;
+    }
+
+    return OK;
+}
+
+void setTimer(void)
+{
+    /***starting timer ***/
+    err = rt_timer_set_mode(TM_ONESHOT);
+    if (err != 0)perror("rt_timer_set_mode()");
+    else printf("rt_timer_set_mode(TM_ONESHOT) started \n");
+    err = rt_alarm_create(&BaseClk, "BaseClock");
+    if (err != 0)printf("rt_alarm_create() error %d \n", err);
+    err = rt_alarm_start(&BaseClk,
+                         task_period_ns,
+                         task_period_ns);
+    if (err != 0)printf("rt_alarm_start() error %d \n", err);
+
+    else printf("alarm started with period %llu ns \n", task_period_ns);
+    return ;
+
+}
+
+void clock_it(void *cookie)
+{
+  int ret;
+    while (!end)
+    {
+        ret = rt_task_set_mode(0, T_PRIMARY, NULL);
+        if (ret)
+        {
+            printf("error while rt_task_set_mode, code %d\n", ret);
+            return ;
+        }
+/* #ifdef DEBUG */
+/*         printf("before alarm_wait \n"); */
+/* #endif */
+        err = rt_alarm_wait(&BaseClk);
+        now = GetCpuTime();
+/* #ifdef DEBUG */
+/*         printf("clock_it loop\n"); */
+/* #endif */
+        if (ji == 0)
+        {
+            max = moy = drift = 0;
+            startime = now;
+            ji++;
+        }
+        else if (ji == 1)
+        {
+            ji++;startime = now;
+        }
+        else
+        {
+            jinc = (long long)(now - startime);
+            jitter = (jinc - (long long)task_period_ns );
+            drift += jitter;
+            hjitter = abs(jitter);
+            moy += hjitter;
+            ji++;
+            if (hjitter > max) max = hjitter;
+#ifdef DEBUG
+            printf("increment %ld absjitter %ld  \n", (long)jinc, (long) hjitter);
+#endif
+            startime = now;
+        }
+    }
+    printf ("jittermoy = %ld, jittermax = %ld \n", (long)moy / ji, (long)max);
+    return ;
+}
+
+int main(void)
+{
+
+    orcTimerSigMask();
+
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+
+    signal(SIGTERM, clean_exit);
+    signal(SIGINT, clean_exit);
+
+    setTimer();
+
+    err = rt_task_spawn(&thr_clockit,
+                        "MyAlarmServer",
+                        0,
+                        MAX_PRIO,
+                        T_FPU|T_JOINABLE,
+                        &clock_it,
+                        NULL);
+
+    if (err != 0) printf("rt_task_spawn error %d \n", err);
+
+/*     err = rt_sem_create(&mainSem, "MainSem", 0, S_FIFO); */
+/*     if (err != 0) printf("rt_sem_create error %d \n", err); */
+
+/*     err = rt_sem_p(&mainSem, TM_INFINITE); */
+/*     if (err != 0) printf("rt_sem_p error %d \n", err); */
+
+
+    pause();
+    fflush(NULL);
+
+    return 0;
+}
+
+
+
+
+--Multipart_Fri__12_May_2006_17_24_56_+0200_5Mrwxo00f0bShb3q--
 
