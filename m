@@ -1,13 +1,13 @@
-Message-ID: <44648D1F.8080300@domain.hid>
-Date: Fri, 12 May 2006 15:26:55 +0200
+Message-ID: <44648D36.1000707@domain.hid>
+Date: Fri, 12 May 2006 15:27:18 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [BUG] kernel oops on registry duplicate names
-References: <44646131.9090600@domain.hid> <44646BEB.5030708@domain.hid>
-	<44646CB9.9070906@domain.hid>
-In-Reply-To: <44646CB9.9070906@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] Errors running sim testsuite for vxWorks
+References: <200605111823.51650.niklaus.giger@domain.hid>	<17507.27519.455277.534105@domain.hid>	<4463BD9C.8030505@domain.hid>
+	<17508.33832.185306.126423@domain.hid>
+In-Reply-To: <17508.33832.185306.126423@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,35 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
+Gilles Chanteperdrix wrote:
 > Philippe Gerum wrote:
->=20
->>Ignacio Garc=EDa P=E9rez wrote:
->>
->>>The subject pretty much explains it all.
->>>
->>>Just try to create a task named "foo" and a queue also named "foo".
->>>
->>>Tested in 2.1.1 and svn HEAD.
->>>
->>
->>Ok, that's the other way around, you first create the queue, then the
->>task, and the error path of the task creation routine seems to go wild
->>afterwards when it detects the registry error.
->>
->=20
->=20
-> That's obviously the same issue I reported a few days ago about creatin=
-g
-> two tasks with identical names.
->=20
+>  > Gilles Chanteperdrix wrote:
+>  > 
+>  > > 
+>  > >  > Is it normal that a "make check" only works, if one builds the simulator 
+>  > >  > inside the source code?
+>  > > 
+>  > > Last time I checked it worked when built out-of-tree, but you must build
+>  > > the simulator in the sim subdirectory of a xenomai build directory.
+>  > 
+>  > It should not be necessary, at least I don't build it this way and it 
+>  > works. This is not a guarantee of success for the "make check" issue though.
+> 
+> out of tree make check works here. It is the simulator _sources_ that must
+> be put in a sub-directory of the xenomai sources.
+> 
 
-This went unnoticed from me. Could you resend this? TIA,
+Yep.
 
---=20
+-- 
 
 Philippe.
 
