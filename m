@@ -1,13 +1,13 @@
-Message-ID: <4464976B.30309@domain.hid>
-Date: Fri, 12 May 2006 16:10:51 +0200
+Message-ID: <4464A58A.9070401@domain.hid>
+Date: Fri, 12 May 2006 17:11:06 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [BUG] kernel oops on registry duplicate names
-References: <44646131.9090600@domain.hid> <44646BEB.5030708@domain.hid>
-	<44646CB9.9070906@domain.hid>
-In-Reply-To: <44646CB9.9070906@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] Errors running sim testsuite for vxWorks
+References: <200605111823.51650.niklaus.giger@domain.hid>	<17507.27519.455277.534105@domain.hid>	<200605111956.57892.niklaus.giger@domain.hid>	<17507.39938.328795.132737@domain.hid>
+	<4463C090.8050309@domain.hid>
+In-Reply-To: <4463C090.8050309@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,35 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->=20
->>Ignacio Garc=EDa P=E9rez wrote:
+Philippe Gerum wrote:
+> Gilles Chanteperdrix wrote:
+> 
+>> Niklaus Giger wrote:
+>>  > Do you have any ideas? Thanks in advance.
 >>
->>>The subject pretty much explains it all.
->>>
->>>Just try to create a task named "foo" and a queue also named "foo".
->>>
->>>Tested in 2.1.1 and svn HEAD.
->>>
+>> No idea, the x86 version does not seem to have the same problem, but
+>> valgrind give many errors.
 >>
->>Ok, that's the other way around, you first create the queue, then the
->>task, and the error path of the task creation routine seems to go wild
->>afterwards when it detects the registry error.
->>
->=20
->=20
-> That's obviously the same issue I reported a few days ago about creatin=
-g
-> two tasks with identical names.
->=20
+> 
+> Valgrind chokes on the co-routine switching code, which is fair enough, 
+> since it's quite hard for it to track stack context changes the way 
+> setcontext/getcontext do it.
+> 
+> However, like for the previous stack size issue with satch.c, I wonder 
+> if the fixed-size stacks allocated by the simulator for its threads are 
+> not overflowed.
+> 
 
-Fixed by commits #1084 and #1085 in both branches.
+Does this patch make the situation any better?
 
---=20
+--- sim/vm/thread.cc	(revision 1083)
++++ sim/vm/thread.cc	(working copy)
+@@ -900,7 +900,7 @@
+  			void *_faddr,
+  			int _pflags,
+  			const char *_name) :
+-    MvmThread(_name,_pflags|MVM_THREAD_CLIENT,16384)
++    MvmThread(_name,_pflags|MVM_THREAD_CLIENT,32768)
+  {
+      tcbarg = _tcbarg;
+      faddr = _faddr;
+
+-- 
 
 Philippe.
 
