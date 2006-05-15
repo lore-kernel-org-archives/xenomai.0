@@ -1,11 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <4468652B.1050704@domain.hid>
+Date: Mon, 15 May 2006 13:25:31 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C67807.6796EDF9"
-Date: Mon, 15 May 2006 12:07:42 +0200
-Message-ID: <AD78122AD7C05B4B936EBAD7F49738C0AB2B3D@square.bfh.ch>
-From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
-Subject: [Xenomai-help] CPU load over 90%
+Subject: Re: [Xenomai-help] mutex_init() error when build
+References: <4546494d0605150250h350fa8c6me325b6d7a73a6d6f@domain.hid>
+In-Reply-To: <4546494d0605150250h350fa8c6me325b6d7a73a6d6f@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,81 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Li Yi (Adam)" <liyiadam@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-This is a multi-part message in MIME format.
+Li Yi (Adam) wrote:
+> Hi,
+> 
+> I am using Xenomai-2.1.0 on Blackfin uClinux. When enabling "POSIX" 
+> interface and build the kernel, I got error message:
+> 
 
-------_=_NextPart_001_01C67807.6796EDF9
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+It's a known issue involving a naming conflict between 2.6.16 and Xeno 
+2.1.x. This has been fixed in 2.2, but we will likely have to backport 
+this fix.
 
-Hi,=20
-I am using Xenomai to read data from different sensors in real time from
-user space. So far I am reading position data from a device attached to
-a serial port. The CPU load is at about 1%. I also have a
-microcontroller attached via USB to read encoder data. The USB device is
-a USB-to-serial converter. As soon as I open the (USB-)serial port with
-normal systemcalls and read the incoming data my CPU load skyrockets to
-over 90%. I only read about 30 bytes every 100ms.
-I ran the application on a much newer computer also to rule out any
-buggy hardware. The results stayed the same. Intensively searching the
-mailing list and provided documentation have not helped solve the
-problem.=20
-I'm using Xenomai 2.1.0 with kernel 2.6.15.6. Xenomai is compiled into
-the kernel. I also use the driver xeno_16550A loaded as module. The
-USB-to-serial bridge used is a CP2101 from Silabs.=20
-Regards,=20
-Nathan=20
+> "make
+> make ARCH=blackfin CROSS_COMPILE=bfin-uclinux- -C linux-2.6.x  || exit 1
+> make[1]: Entering directory 
+> `/home/adam/workspace/kernel/adeos/uClinux-dist_0425/linux-2.6.x'
+>   CHK     include/linux/version.h
+>   CHK     include/linux/compile.h
+>   CHK     usr/initramfs_list
+>   CC      kernel/xenomai/skins/posix/syscall.o
+> kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for 
+> '__mutex_init'
+> include/linux/mutex.h:94: error: previous declaration of '__mutex_init' 
+> was here
+> kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for 
+> '__mutex_init'
+> include/linux/mutex.h:94: error: previous declaration of '__mutex_init' 
+> was here
+> make[5]: *** [kernel/xenomai/skins/posix/syscall.o] Error 1
+> make[4]: *** [kernel/xenomai/skins/posix] Error 2
+> make[3]: *** [kernel/xenomai/skins] Error 2
+> make[2]: *** [kernel/xenomai] Error 2
+> make[1]: *** [kernel] Error 2
+> "
+> 
+> include/linux/mutex.h:
+> 
+> extern void fastcall __mutex_init(struct mutex *lock, const char *name);
+> 
+> The function definition is different. I tried to add "static" in 
+> syscall.c: __mutex_init(), still cannot work. Could you please help?
+> 
+> Thanks,
+> -Yi
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
-------_=_NextPart_001_01C67807.6796EDF9
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+-- 
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7638.1">
-<TITLE>CPU load over 90%</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT><FONT FACE=3D"Times New =
-Roman"> </FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">I am using Xenomai to read data from =
-different sensors in real time from user space. So far I am reading =
-position data from a device attached to a serial port. The CPU load is =
-at about 1%. I also have a microcontroller attached via USB to read =
-encoder data. The USB device is a USB-to-serial converter. As soon as I =
-open the (USB-)serial port with normal systemcalls and read the incoming =
-data my CPU load skyrockets to over 90%. I only read about 30 bytes =
-every 100ms.</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">I ran the application on a much newer =
-computer also to rule out any buggy hardware. The results stayed the =
-same. Intensively searching the mailing list and provided documentation =
-have not helped solve the problem.</FONT> </P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">I'm using Xenomai 2.1.0 with kernel =
-2.6.15.6. Xenomai is compiled into the kernel. I also use the driver =
-xeno_16550A loaded as module. The USB-to-serial bridge used is a CP2101 =
-from Silabs.</FONT> </P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Regards,</FONT><FONT FACE=3D"Times New =
-Roman"> </FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Nathan</FONT><FONT FACE=3D"Times New =
-Roman"> </FONT>
-</P>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C67807.6796EDF9--
+Philippe.
 
