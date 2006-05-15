@@ -1,10 +1,11 @@
-Message-ID: <4546494d0605150250h350fa8c6me325b6d7a73a6d6f@domain.hid>
-Date: Mon, 15 May 2006 17:50:49 +0800
-From: "Li Yi (Adam)" <liyiadam@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_25174_27937868.1147686649127"
-Subject: [Xenomai-help] mutex_init() error when build
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C67807.6796EDF9"
+Date: Mon, 15 May 2006 12:07:42 +0200
+Message-ID: <AD78122AD7C05B4B936EBAD7F49738C0AB2B3D@square.bfh.ch>
+From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
+Subject: [Xenomai-help] CPU load over 90%
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,97 +15,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-------=_Part_25174_27937868.1147686649127
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C67807.6796EDF9
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Hi,=20
+I am using Xenomai to read data from different sensors in real time from
+user space. So far I am reading position data from a device attached to
+a serial port. The CPU load is at about 1%. I also have a
+microcontroller attached via USB to read encoder data. The USB device is
+a USB-to-serial converter. As soon as I open the (USB-)serial port with
+normal systemcalls and read the incoming data my CPU load skyrockets to
+over 90%. I only read about 30 bytes every 100ms.
+I ran the application on a much newer computer also to rule out any
+buggy hardware. The results stayed the same. Intensively searching the
+mailing list and provided documentation have not helped solve the
+problem.=20
+I'm using Xenomai 2.1.0 with kernel 2.6.15.6. Xenomai is compiled into
+the kernel. I also use the driver xeno_16550A loaded as module. The
+USB-to-serial bridge used is a CP2101 from Silabs.=20
+Regards,=20
+Nathan=20
 
-I am using Xenomai-2.1.0 on Blackfin uClinux. When enabling "POSIX"
-interface and build the kernel, I got error message:
 
-"make
-make ARCH=3Dblackfin CROSS_COMPILE=3Dbfin-uclinux- -C linux-2.6.x  || exit =
-1
-make[1]: Entering directory
-`/home/adam/workspace/kernel/adeos/uClinux-dist_0425/linux-2.6.x'
-  CHK     include/linux/version.h
-  CHK     include/linux/compile.h
-  CHK     usr/initramfs_list
-  CC      kernel/xenomai/skins/posix/syscall.o
-kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for
-'__mutex_init'
-include/linux/mutex.h:94: error: previous declaration of '__mutex_init' was
-here
-kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for
-'__mutex_init'
-include/linux/mutex.h:94: error: previous declaration of '__mutex_init' was
-here
-make[5]: *** [kernel/xenomai/skins/posix/syscall.o] Error 1
-make[4]: *** [kernel/xenomai/skins/posix] Error 2
-make[3]: *** [kernel/xenomai/skins] Error 2
-make[2]: *** [kernel/xenomai] Error 2
-make[1]: *** [kernel] Error 2
-"
-
-include/linux/mutex.h:
-
-extern void fastcall __mutex_init(struct mutex *lock, const char *name);
-
-The function definition is different. I tried to add "static" in syscall.c:
-__mutex_init(), still cannot work. Could you please help?
-
-Thanks,
--Yi
-
-------=_Part_25174_27937868.1147686649127
-Content-Type: text/html; charset=ISO-8859-1
+------_=_NextPart_001_01C67807.6796EDF9
+Content-Type: text/html;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,<br>
-<br>
-I am using Xenomai-2.1.0 on Blackfin uClinux. When enabling &quot;POSIX&quo=
-t; interface and build the kernel, I got error message:<br>
-<br>
-&quot;make<br>
-make ARCH=3Dblackfin CROSS_COMPILE=3Dbfin-uclinux- -C linux-2.6.x&nbsp; || =
-exit 1<br>
-make[1]: Entering directory `/home/adam/workspace/kernel/adeos/uClinux-dist=
-_0425/linux-2.6.x'<br>
-&nbsp; CHK&nbsp;&nbsp;&nbsp;&nbsp; include/linux/version.h<br>
-&nbsp; CHK&nbsp;&nbsp;&nbsp;&nbsp; include/linux/compile.h<br>
-&nbsp; CHK&nbsp;&nbsp;&nbsp;&nbsp; usr/initramfs_list<br>
-&nbsp; CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kernel/xenomai/skins/posix/syscall.=
-o<br>
-kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for '__m=
-utex_init'<br>
-include/linux/mutex.h:94: error: previous declaration of '__mutex_init' was=
- here<br>
-kernel/xenomai/skins/posix/syscall.c:810: error: conflicting types for '__m=
-utex_init'<br>
-include/linux/mutex.h:94: error: previous declaration of '__mutex_init' was=
- here<br>
-make[5]: *** [kernel/xenomai/skins/posix/syscall.o] Error 1<br>
-make[4]: *** [kernel/xenomai/skins/posix] Error 2<br>
-make[3]: *** [kernel/xenomai/skins] Error 2<br>
-make[2]: *** [kernel/xenomai] Error 2<br>
-make[1]: *** [kernel] Error 2<br>
-&quot;<br>
-<br>
-include/linux/mutex.h: <br>
-<br>
-extern void fastcall __mutex_init(struct mutex *lock, const char *name);<br=
->
-<br>
-The function definition is different. I tried to add &quot;static&quot; in
-syscall.c: __mutex_init(), still cannot work. Could you please help?<br>
-<br>
-Thanks,<br>
--Yi<br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7638.1">
+<TITLE>CPU load over 90%</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
 
-------=_Part_25174_27937868.1147686649127--
+<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT><FONT FACE=3D"Times New =
+Roman"> </FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">I am using Xenomai to read data from =
+different sensors in real time from user space. So far I am reading =
+position data from a device attached to a serial port. The CPU load is =
+at about 1%. I also have a microcontroller attached via USB to read =
+encoder data. The USB device is a USB-to-serial converter. As soon as I =
+open the (USB-)serial port with normal systemcalls and read the incoming =
+data my CPU load skyrockets to over 90%. I only read about 30 bytes =
+every 100ms.</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">I ran the application on a much newer =
+computer also to rule out any buggy hardware. The results stayed the =
+same. Intensively searching the mailing list and provided documentation =
+have not helped solve the problem.</FONT> </P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">I'm using Xenomai 2.1.0 with kernel =
+2.6.15.6. Xenomai is compiled into the kernel. I also use the driver =
+xeno_16550A loaded as module. The USB-to-serial bridge used is a CP2101 =
+from Silabs.</FONT> </P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Regards,</FONT><FONT FACE=3D"Times New =
+Roman"> </FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Nathan</FONT><FONT FACE=3D"Times New =
+Roman"> </FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C67807.6796EDF9--
 
