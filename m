@@ -1,14 +1,16 @@
-Message-ID: <4469B31E.60506@domain.hid>
-Date: Tue, 16 May 2006 13:10:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-Class: urn:content-classes:message
+Message-ID: <4469C85C.7060900@domain.hid>
+Date: Tue, 16 May 2006 14:41:00 +0200
+From: "Nathan Lauener" <nathan.lauener@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rtdm_event_timedwait non-realtime alternative
-References: <200605161221.11119@domain.hid>
-In-Reply-To: <200605161221.11119@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA61AA82A4F539DABED58333A"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] CPU load over 90%[Scanned]
+References: <AD78122AD7C05B4B936EBAD7F49738C0AB2B3D@square.bfh.ch>
+	<44686D9B.2010509@domain.hid>
+In-Reply-To: <44686D9B.2010509@domain.hid>
+Content-Type: text/plain;
+	format=flowed;
+	charset="ISO-8859-15"
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,52 +20,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA61AA82A4F539DABED58333A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
 
-Petr Cervenka wrote:
-> Hello,
-> I need to wait in my ioctl handler for an interrrupt. Is it possible to=
- use some rtdm_event_timedwait alternative in non-realtime?
-> I'm thinking about using wait_event_interruptible_timeout. Is it a good=
- idea or is there a better solution (e.g. rtdm_event compatible))?
+>Lauener Nathan wrote:
+>  
+>
+>>Hi, 
+>>I am using Xenomai to read data from different sensors in real time from
+>>user space. So far I am reading position data from a device attached to
+>>a serial port. The CPU load is at about 1%. I also have a
+>>microcontroller attached via USB to read encoder data. The USB device is
+>>a USB-to-serial converter. As soon as I open the (USB-)serial port with
+>>normal systemcalls and read the incoming data my CPU load skyrockets to
+>>over 90%. I only read about 30 bytes every 100ms.
+>>I ran the application on a much newer computer also to rule out any
+>>buggy hardware. The results stayed the same. Intensively searching the
+>>mailing list and provided documentation have not helped solve the
+>>problem. 
+>>I'm using Xenomai 2.1.0 with kernel 2.6.15.6. Xenomai is compiled into
+>>the kernel. I also use the driver xeno_16550A loaded as module. The
+>>USB-to-serial bridge used is a CP2101 from Silabs. 
+>>    
+>>
+>
+>Is there any IRQ conflict between the USB host controller and some
+>RT-device? Please check /proc/interrupts and /proc/xenomai/irq.
+>  
+>
+There is no conflict (interrupt 0 (timer) is the only interrupt 
+mentioned in both listings).
 
-So your interrupt is RT while one of your waiters is non-RT? Then you
-have to forward the RT event (i.e. the IRQ occurrence) via an
-rtdm_nrtsig_t from the IRQ handler to an nrtsig-event handler in non-RT
-context. This handler can then wakeup non-RT waiters.
+>Which process is consuming your CPU time? At system or at user level?
+>  
+>
+It seems that the system consumes the CPU time. Here are the first few 
+lines from opreport
 
-This may sound a bit complicated, but you have to remind that there is
-no safe way to schedule a non-RT (Linux) thread directly from the RT
-(Xenomai) domain, because all Linux scheduling services are fully
-preemptible by Xenomai at any time (including the RT IRQ handler).
+CPU: CPU with timer interrupt, speed 0 MHz (estimated)
+Profiling through timer interrupt
+samples  %        image name               app name                 
+symbol name
+1733     31.9742  vmlinux                  vmlinux                  
+default_idle
+1151     21.2362  vmlinux                  vmlinux                  
+__ipipe_trace
+601      11.0886  libqt-mt.so.3.3.3        libqt-mt.so.3.3.3        (no 
+symbols)
+528       9.7417  libc-2.3.2.so            libc-2.3.2.so            (no 
+symbols)
+305       5.6273  vmlinux                  vmlinux                  
+__ipipe_unstall_root
+184       3.3948  vmlinux                  vmlinux                  
+__ipipe_dispatch_event
+122       2.2509  anon (tgid:4322 range:0x81fb000-0x89b2000) 
+Xorg                     (no symbols)
+100       1.8450  libstdc++.so.5.0.7       libstdc++.so.5.0.7       (no 
+symbols)
+97        1.7897  vmlinux                  vmlinux                  mcount
 
-Hmm, as you were asking for a non-RT-safe rtdm_event now: the pattern I
-described above might be generalisable to an extended rtdm_event
-supporting both RT and non-RT waiters (non-RT wakers already work). Need
-to think about this...
+It looks like the systems gets stuck on the idle task. I do not know 
+what __ipipe_trace exactly does.
 
-Jan
+>Jan
+>
+>  
+>
+In my current design I acquire and process the data in the same programm 
+using the Xenomai native skin from user space. This means I link the 
+Xenomai-native and rtdm libraries with several graphics and mathematical 
+libraries. Could this lead to conflicts or problems with Xenomai? 
 
-
---------------enigA61AA82A4F539DABED58333A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD4DBQFEabMeniDOoMHTA+kRAmKDAJ9KoGyrhxDsq3rSCaKv2TE00Q2DSQCYuMMT
-wLkKxi68TrXylr/IwQT0fQ==
-=CThh
------END PGP SIGNATURE-----
-
---------------enigA61AA82A4F539DABED58333A--
+Nathan
 
