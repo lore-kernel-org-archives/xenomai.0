@@ -1,10 +1,11 @@
-Message-ID: <44743475.4070108@domain.hid>
-Date: Wed, 24 May 2006 12:24:53 +0200
-From: Nicola Pace <nicola@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+From: Alessio Igor Bogani <abogani@domain.hid>
+Content-Type: text/plain
+Date: Wed, 17 May 2006 16:51:59 +0200
+Message-Id: <1147877519.8428.17.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Error compiling posix skin
+Subject: [Xenomai-help] Xenomai: suspending kernel thread [...] after
+	exception #14
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +17,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-I am trying to compile xenomai.2.2-rc1, but compiling the posix skin I 
-get the error :
+Hi All,
 
-/usr/src/xenomai-2.2-rc1/include/posix/time.h:103: parse error before 
-'clock_id'
+I apologize for my (very) bad english.
 
-Some Suggestions ?
+I received this error:
 
-Regards
-Nicola
+Xenomai: suspending kernel thread c8818a50 ('Test') at 0xc881707b after
+exception #14
 
--- 
-*Ing. Nicola Pace *
-Technical Department
-*
+Somebody can indicate me where may i found information about "exception
+#14"?
 
-TDEMACNO Spa (VICENZA)
+Best Regards,
+Alessio
 
-* <http://www.tdemacno.it> tel: 0444 343555
-fax: 0444 343509
-mail: nicola@domain.hid
-Skype:
-*
-Riservatezza / Confidentiality*/
-In ottemperanza al D.L. n. 196 del 30/6/2003 in materia di protezione 
-dei dati personali, le informazioni contenute in questo messaggio sono 
-strettamente riservate ed esclusivamente indirizzate al destinatario 
-indicato (oppure alla persona responsabile di rimetterlo al 
-destinatario). Vogliate tener presente che qualsiasi uso, riproduzione o 
-divulgazione di questo messaggio e' vietata. Nel caso in cui aveste 
-ricevuto questa mail/fax per errore, vogliate cortesemente avvertire il 
-mittente e distruggere il presente messaggio.
-Accordingly to italian law D.L. 196/2003 concerning privacy, if you are 
-not the adressee (or responsible for delivery of the message to such 
-person) you are hereby notified that any disclosure, reproduction, 
-distribution or other dissemination or use of this communication is 
-strictly prohibited. If you have received this message in error, you 
-should destroy it and please notify us by email. /
 
