@@ -1,63 +1,75 @@
-Message-ID: <448B3001.9020502@domain.hid>
-Date: Sat, 10 Jun 2006 23:48:01 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Add fptest for powerpc
-References: <448AF791.8080707@domain.hid>
-	<17547.1818.52887.185464@domain.hid>
-In-Reply-To: <17547.1818.52887.185464@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
+	at	kernel/sched.c:2819!
+Date: Fri, 19 May 2006 13:28:59 -0500
+Message-ID: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
+From: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
+
+Sorry for the missing history.
+
+I started with a vanilla 2.6.14-7 kernel from kernel.org, I patched it
+with a Motorola patch to enable the features specific to the mvme5500.
+I built under ELDK 4.0 and the kernel ran just fine.
+
+Next I retrieved xenomai-2.1.1 and followed the install instructions.
+The adeos version adeos-ipipe-2.6.14-1.2.03.patch.  This patch applied
+and I rebuilt the kernel.  I ran into a problem with xmon not compiling
+so I removed that switch from the kernel hacking menu and it built fine.
+
+That brings us to now.
+
+In reference to your recommendation, can I simply disable ipipe and
+leave xenomai enabled and expect the kernel to run?  I thought there was
+a pretty close coupling between the two.
+
+Thanks for the help.
+
+Jim
+
+-----Original Message-----
+From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+Sent: May 19, 2006 1:05 PM
+To: Rosenow, Jim
 Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Almost running - kernel BUG in
+add_preempt_count at kernel/sched.c:2819!
 
-Gilles Chanteperdrix kirjoitti:
-> Heikki Lindholm wrote:
->  > This adds powerpc version of fptest.h. It just stores and loads the raw 
->  > integer into/from FPU registers without converting to proper IEEE form. 
->  > Converting would have added unneccessary complexity. As a side note, the 
->  > ppc barfs on the test with "1000 != 10". :I
-> 
-> Ok, this test tool is far from being user-friendly :-)
-> 
-> Just to be sure, I have tested the latest revision on x86 and it still
-> runs fine, so I guess there really is a bug in power pc fpu switching
-> code.
-> 
-> Now, if we decode a bit, the integer passed to fp_regs_set and
-> fp_regs_check are 1000 * iterations + task_index, so
-> 1000 is task 0, iteration 1
-> 10 is task 10, iteration 0.
-> It means that task 10 after returning from its first context 
-> switch, is getting the context of task 0 before its second context
-> switch.
-> 
-> Now the thing to try is to reduce the number of threads involved, since
-> by default there are 23 threads, so you should add a printk for each
-> context switch in the kernel driver (and now that I think about it this
-> printk should be activable with an ioctl), and try and reduce the list
-> of threads by removing threads which do not appear between the serie of
-> switches from task 0 to task 10. The correspondance between the task
-> numbers and their type is not easy, but /proc/xenomai/sched and switch
-> --help should help... 
-> 
-> Task 0 is the "idle" taks, an ordinary Linux task
-> Task 10 is of type "rtup_ufpp" here, which means that it is a real-time
-> task in primary mode using the FPU in primary mode.
+Rosenow, Jim wrote:
+> Hi,
+>=20
+> I've almost got my mvme5500 running.  I get the following error when
+booting up.
+>=20
+> kernel BUG in add_preempt_count at kernel/sched.c:2819!
+>=20
+> Oops: kernel access of bad area, sig: 11 [#1]
+>=20
+> I'm a little new at this and don't know whether I'm looking at a
+xenomai problem, an adeos problem, or something else.
+>=20
+> Any help and direction would be appreciated.
+>=20
 
-I probably don't have time for debugging for some days now, but if any 
-of the code goes through sigreturn path, it might be a kernel bug that's 
-fixed in 2.6.16.
+If unsure where the problem comes from, try to boot a clean kernel
+(unpatched) first, then a patched one but with disabled ipipe, and then
+one with disabled xenomai. If the bug seems to be ipipe/xeno-related,
+please report the patch and the xenomai versions, and also any potential
+board-specific patches.
 
--- hl
+Jan
 
 
