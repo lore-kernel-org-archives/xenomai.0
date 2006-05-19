@@ -1,44 +1,33 @@
-Message-ID: <4460AEA5.2060201@domain.hid>
-Date: Tue, 09 May 2006 17:00:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 19 May 2006 09:43:56 +0200
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] IPIPE mutex?
-References: <E1FdT2V-00013a-Lm@domain.hid>
-In-Reply-To: <E1FdT2V-00013a-Lm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Florian Pose <florian@domain.hid>
-Cc: adeos-main@gna.org
+Message-ID: <200605190943.31667@domain.hid>
+References: 446C264A.7040206@domain.hid> <200605181426.8240@domain.hid>
+	<446C6C1C.2010902@domain.hid>
+In-Reply-To: <446C6C1C.2010902@domain.hid>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+Subject: [Xenomai-help] Xenomai: binding failed: Operation not permitted.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Florian Pose wrote:
-> Hello everybody,
-> 
-> I'm using an IPIPE domain for a cyclic realtime task and I have a cyclic
-> kernel timer applet running in the default domain. This two processes
-> now share a common resource. So I have to use some locking method, that
-> ensures, that if the process with the lower priority (e. g. the kernel
-> timer) holds the lock and the process with the higher priority (RT task)
-> is scheduled, the first one is scheduled again until it releases the lock.
-> 
-> In ADEOS there is a adeos_mutex_lock() call seeming to do exactly what I
-> want. Unfortunately IPIPE  doesn't seem to have such a call.
-> 
-> How do I solve the problem with IPIPE?
-> 
+Hi,
+When I try to run realtime application under lesser than root rights, I get this strange error:
+Xenomai: binding failed: Operation not permitted.
 
-The only way is to provide your own support for that. The I-pipe is just 
-a simple and straightforward real-time enabler a RTOS can use to build 
-complex services. E.g. www.xenomai.org.
+Error showed after kernel update 2.6.15.6 -> 2.6.16.16 and xenomai update 2.1.1 -> daily snapshot (2006/05/18)
+Changing of the rights of the /dev/rt* dousn't help.
 
--- 
+Any suggestions?
 
-Philippe.
+Petr Cervenka
+
 
