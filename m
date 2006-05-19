@@ -1,55 +1,75 @@
-From: Wolfgang Denk <wd@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Date: Sat, 03 Jun 2006 00:41:19 +0200
-Sender: wd@domain.hid
-Message-Id: <20060602224119.9F22D353A57@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] Trivial patch
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <446DDA56.3050209@domain.hid>
+Date: Fri, 19 May 2006 16:46:46 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] rt_task_delete behavior
+References: <6ee4c8380605172215i34e83797i709de4a314412618@domain.hid>	
+	<446C29A9.3030508@domain.hid>
+	<6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>
+In-Reply-To: <6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Brian L." <bluczkie@domain.hid>
+Cc: xenomai@xenomai.org
 
-Please consider applying the following trivial patch:
+Brian L. wrote:
+> CPU   PID   PRI   TIMEOUT   STAT   NAME
+> 0     0        0     0      R      ROOT
+> 
 
-Index: scripts/prepare-kernel.sh
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- scripts/prepare-kernel.sh	(revision 585)
-+++ scripts/prepare-kernel.sh	(working copy)
-@@ -1,6 +1,8 @@
- #! /bin/bash
- set -e
-=20
-+unset CDPATH
-+
- do_links() {
-     ( if test -x $2; then
-       cd $2 &&
+Is this snapshot obtained while the application is still hanging?
+
+> 
+> On 5/18/06, Philippe Gerum <rpm@xenomai.org> wrote:
+> 
+>> Brian L. wrote:
+>> > I'm calling what amounts to rt_task_delete(rt_task_self()) and the
+>> > task simply hangs, with this call never returning.
+>> > rt_task_delete(NULL) behaves identically.
+>> >
+>> > What could cause this behavior? The problem is embedded within a
+>> > nontrivial application, but it seems that it's not behaving according
+>> > to spec which says that the caller will only block when:
+>> >
+>> > 1. The target is in a "safe section"
+>> >
+>> > and
+>> >
+>> > 2. The caller is not the target
+>> >
+>> > Any ideas?
+>> >
+>>
+>> Could you post the output of
+>>
+>> $ cat /proc/xenomai/sched
+>>
+>> TIA,
+>>
+>> > _______________________________________________
+>> > Xenomai-help mailing list
+>> > Xenomai-help@domain.hid
+>> > https://mail.gna.org/listinfo/xenomai-help
+>> >
+>>
+>>
+>> -- 
+>>
+>> Philippe.
+>>
+> 
 
 
-This fixes a problem when you have CDPATH set in your  shell  -  then
-bash  will  (under certain conditions) print the absolute pathname of
-the new working directory on standard  output.  This  will  seriously
-confuse constructs like   xenomai_root=3D`cd $xenomai_root && pwd`
+-- 
 
-
-Thanks.
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Of course there's no reason for it, it's just our policy.
+Philippe.
 
