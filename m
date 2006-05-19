@@ -1,11 +1,13 @@
-Date: Fri, 19 May 2006 16:19:19 -0400 (EDT)
-Message-Id: <200605192019.k4JKJJFN007810@domain.hid>
-From: Gary Wallace <wallace@domain.hid>
+Message-ID: <446E372B.2020007@domain.hid>
+Date: Fri, 19 May 2006 23:22:51 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
 	at	kernel/sched.c:2819!
-References: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
-	<446E2107.8060504@domain.hid>
-Reply-To: wallace@domain.hid
+References: <B4D14EA407C38B4DAF92B8EAC9249D7F0179D3BC@mspex01.go.mts.com>
+In-Reply-To: <B4D14EA407C38B4DAF92B8EAC9249D7F0179D3BC@mspex01.go.mts.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,128 +17,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, xenomai@xenomai.org
-Cc: Jim.Rosenow@domain.hid
+To: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
+Cc: xenomai@xenomai.org
 
-  My story is the same as Jim's except I used 2.6.16.6 and a gcc 3.3.3
-cross compiler.  The ipipe patch applies just fine after the motorola
-patch.  Building with ipipe disabled results in a kernel that boots
-and runs just fine.  When ipipe is enabled, I sometimes get the error
-Jim received, sometimes the kernel just hangs.  There is never a stack
-trace on the console.  I've tried ipipe versions 1.2-01, 1.2-03,
-1.3-00, 1.3-02, and 1.3-03, all with the same results (either the
-kernel hangs or I get the kernel BUG error).
+Rosenow, Jim wrote:
+> Hi,
+> 
+> I've almost got my mvme5500 running.  I get the following error when 
+> booting up.
+> 
+> kernel BUG in add_preempt_count at kernel/sched.c:2819!
+> 
+> Oops: kernel access of bad area, sig: 11 [#1]
+> 
+> I'm a little new at this and don't know whether I'm looking at a xenomai 
+> problem, an adeos problem, or something else.
+> 
+> Any help and direction would be appreciated.
+> 
+>  
+> 
+> Jim
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Linux/PPC load: console=ttyS0,9600 root=/dev/nfs rw ip=bootp
+> Uncompressing Linux...done.
+> Now booting the kernel
+> Total memory = 512MB; using 1024kB for hash table (at a0400000)
+> Linux version 2.6.14.7 (root@domain.hid) (gcc version 4.0.0 (DENX ELD6
+> Motorola Computer Group MVME5500  Board
+> MVME5500 port (C) 2003-2006 Motorola, Inc.
+> Built 1 zonelists
+> Kernel command line: console=ttyS0,9600 root=/dev/nfs rw ip=bootp
+> PID hash table entries: 4096 (order: 12, 65536 bytes)
+> time_init: decrementer frequency = 33.333175 MHz
+> I-pipe 1.2-03: pipeline enabled.
+> Console: colour dummy device 80x25
+> Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+> Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+> Memory: 514176k available (2952k kernel code, 936k data, 164k init, 0k highmem)
+> Mount-cache hash table entries: 512
+> softlockup thread 0 started up.
+> NET: Registered protocol family 16
+> PCI: Probing PCI hardware
+> SCSI subsystem initialized
+> I-pipe: Domain Xenomai registered.
+> Xenomai: hal/powerpc started.
+> Xenomai: real-time nucleus v2.1.1 (Trundrumbalind) loaded.
+> Xenomai: starting native API services.
+> Xenomai: starting RTDM services.
+> Installing knfsd (copyright (C) 1996 okir@domain.hid).
+> JFFS2 version 2.2. (NAND) (C) 2001-2003 Red Hat, Inc.
+> Initializing Cryptographic API
+> Generic RTC Driver v1.07
+> Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
+> ttyS0 at MMIO 0x0 (irq = 64) is a 16550A
+> ttyS1 at MMIO 0x0 (irq = 64) is a 16550A
+> io scheduler noop registered
+> io scheduler anticipatory registered
+> io scheduler deadline registered
+> io scheduler cfq registered
+> RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
+> loop: loaded (max 8 devices)
+> nbd: registered device at major 43
+> Intel(R) PRO/1000 Network Driver - version 6.0.60-k2
+> Copyright (c) 1999-2005 Intel Corporation.
+> e1000: eth0: e1000_probe: Intel(R) PRO/1000 Network Connection
+> Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
+> ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
+> mvme5500-flash0: Found 2 x16 devices at 0x0 in 32-bit bank
+>  Intel/Sharp Extended Query Table at 0x0031
+> Using buffer write method
+> cfi_cmdset_0001: Erase suspend on write enabled
+> Creating 3 MTD partitions on "mvme5500-flash0":
+> 0x00000000-0x01400000 : "Linux Kernel + INITRD"
+> 0x01400000-0x01f00000 : "Linux JFFS2 Filesystem"
+> 0x01f00000-0x02000000 : "Bootloader Flash 0"
+> mvme5500-flash1: Found 2 x16 devices at 0x0 in 32-bit bank
+>  Intel/Sharp Extended Query Table at 0x0031
+> Using buffer write method
+> cfi_cmdset_0001: Erase suspend on write enabled
+> Creating 2 MTD partitions on "mvme5500-flash1":
+> 0x00000000-0x00700000 : "Linux JFFS2 Filesystem"
+> 0x00700000-0x00800000 : "Bootloader Flash 1"
+> mice: PS/2 mouse device common for all mice
+> Tundra TSI148/CA91C042 PCI-VME Bridge Driver 3.5 03/24/2006
+> Bad VME slot #00
+> i2c /dev entries driver
+> kernel BUG in add_preempt_count at kernel/sched.c:2819!
+> Oops: kernel access of bad area, sig: 11 [#1]
+> 
 
-  I haven't been able to get the board to boot without using the
-motorola patch.
+This bug is triggered by CONFIG_DEBUG_PREEMPT. The pipeline must be 
+indirectly using the preemption locks over an invalid context somewhere 
+on ppc. I'll try to build a similar setup on my lite5200 in the next 
+days. More later. Thanks for reporting this.
 
-  I have tried building with ipipe-tracer, but this results in compile
-errors (the tracer patch applies just fine).  Here are the compile
-errors when ipipe-tracer is enabled:
+-- 
 
-# make
-  CHK     include/linux/version.h
-  CHK     include/linux/compile.h
-  CHK     usr/initramfs_list
-  UIMAGE  arch/ppc/boot/images/uImage
-"mkimage" command not found - U-Boot images will not be built
-  Image: arch/ppc/boot/images/uImage not made
-  AS      arch/ppc/boot/simple/head.o
-  AS      arch/ppc/boot/simple/relocate.o
-  CC      arch/ppc/boot/simple/misc.o
-  CC      arch/ppc/boot/simple/misc-mv64x60.o
-powerpc-750-linux-gnu-objcopy -O elf32-powerpc \
-        --add-section=.image=arch/ppc/boot/images/vmlinux.gz \
-        --set-section-flags=.image=contents,alloc,load,readonly,data \
-        arch/ppc/boot/simple/dummy.o arch/ppc/boot/simple/image.o
-powerpc-750-linux-gnu-ld -T /usr/src/linux-2.6.14.6-ppc/arch/ppc/boot/ld.script -Ttext 0x00800000 -Bstatic -o arch/ppc/boot/simple/zvmlinux arch/ppc/boot/simple/head.o arch/ppc/boot/simple/relocate.o arch/ppc/boot/simple/misc.o arch/ppc/boot/simple/misc-mv64x60.o arch/ppc/boot/simple/image.o arch/ppc/boot/common/lib.a arch/ppc/boot/lib/lib.a
-arch/ppc/boot/simple/misc.o(.text+0x10): In function `get_mem_size':
-arch/ppc/boot/simple/misc.c:87: undefined reference to `_mcount'
-arch/ppc/boot/simple/misc.o(.text+0x54): In function `decompress_kernel':
-arch/ppc/boot/simple/misc.c:93: undefined reference to `_mcount'
-arch/ppc/boot/simple/misc.o(.text+0x4b8): In function `board_isa_init':
-arch/ppc/boot/simple/misc.c:274: undefined reference to `_mcount'
-arch/ppc/boot/simple/misc.o(.text+0x4f8): In function `load_kernel':
-arch/ppc/boot/simple/misc.c:281: undefined reference to `_mcount'
-arch/ppc/boot/simple/misc-mv64x60.o(.text+0x10): In function `mv64360_get_mem_size':
-arch/ppc/boot/simple/misc-mv64x60.c:31: undefined reference to `_mcount'
-arch/ppc/boot/simple/misc-mv64x60.o(.text+0xbc):arch/ppc/boot/simple/misc-mv64x60.c:51: more undefined references to `_mcount' follow
-make[2]: *** [arch/ppc/boot/simple/zvmlinux] Error 1
-make[1]: *** [simple] Error 2
-make: *** [zImage] Error 2
-# 
-
-  Thanks for your help.
-
-Gary
-
---------------------------------
-
->Date: Fri, 19 May 2006 21:48:23 +0200
->From: Jan Kiszka <jan.kiszka@domain.hid>
->
->Rosenow, Jim wrote:
->> Sorry for the missing history.
->>=20
->> I started with a vanilla 2.6.14-7 kernel from kernel.org, I patched it
->> with a Motorola patch to enable the features specific to the mvme5500.
->> I built under ELDK 4.0 and the kernel ran just fine.
->>=20
->> Next I retrieved xenomai-2.1.1 and followed the install instructions.
->> The adeos version adeos-ipipe-2.6.14-1.2.03.patch.  This patch applied
->> and I rebuilt the kernel.  I ran into a problem with xmon not compiling=
->
->> so I removed that switch from the kernel hacking menu and it built fine=
->=2E
->>=20
->> That brings us to now.
->>=20
->> In reference to your recommendation, can I simply disable ipipe and
->> leave xenomai enabled and expect the kernel to run?  I thought there wa=
->s
->> a pretty close coupling between the two.
->
->No, you are right, this is not possible. I meant booting with both ipipe
->and xenomai disabled.
->
->Is your board able to boot without the Motorola patches? If yes, does
->the problem persist? BTW, did the ipipe patch apply cleanly on top of
->the Motorola patch or did you have to fix some hunks?
->
->
->@all: What will help to track this down are back-traces of the crash.
->Does the console contain a stack trace as well? If not, try using the
->ipipe-tracer (additional patch [1]) and put an
->ipipe_trace_panic_freeze() + ipipe_trace_panic_dump() before that BUG()
->(with the same condition, of course). Actually, this tool can report
->more than a stack trace. It records a full function call history and may
->reveal where the ipipe patch left the correct path.
->
->Jan
->
->
->PS: Just in case you thought about this, switching the ipipe patch to
->1.3 may only hide the problem. The newer patches contain optimisations,
->not bug fixes of the 1.2 series.
->
->
->[1] http://download.gna.org/adeos/patches/v2.6/ppc/tracer
->
->
->--------------enig3E9EB408FAB645DA563A41F7
->Content-Type: application/pgp-signature; name="signature.asc"
->Content-Description: OpenPGP digital signature
->Content-Disposition: attachment; filename="signature.asc"
->
->-----BEGIN PGP SIGNATURE-----
->Version: GnuPG v1.4.2 (GNU/Linux)
->Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
->
->iD8DBQFEbiEHniDOoMHTA+kRAsQcAJ9XRpE7p4B9NnJGhXt3pYuR0GIy7gCfaVTM
->p53WAlSlQn1qptZIMkKmGO4=
->=YWny
->-----END PGP SIGNATURE-----
->
->--------------enig3E9EB408FAB645DA563A41F7--
->
+Philippe.
 
