@@ -1,95 +1,93 @@
-Message-ID: <448DCF9F.807@domain.hid>
-Date: Mon, 12 Jun 2006 22:33:35 +0200
+Message-ID: <446E2107.8060504@domain.hid>
+Date: Fri, 19 May 2006 21:48:23 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Porting xeno-{info|load|test} to a busybox system
-References: <200605252134.08614.niklaus.giger@domain.hid>
-	<44770814.5040009@domain.hid>
-	<200605261852.45980.niklaus.giger@domain.hid>
-	<4485E647.7010205@domain.hid>
-In-Reply-To: <4485E647.7010205@domain.hid>
+Subject: Re: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
+	at	kernel/sched.c:2819!
+References: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
+In-Reply-To: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig278740BFB0405BDA5E7E07DE"
+	boundary="------------enig3E9EB408FAB645DA563A41F7"
 Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
+Cc: xenomai@xenomai.org, wallace@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig278740BFB0405BDA5E7E07DE
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig3E9EB408FAB645DA563A41F7
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jim Cromie wrote:
-> Niklaus Giger wrote:
->> Am Freitag, 26. Mai 2006 15:52 schrieb Jan Kiszka:
->> =20
->>> Niklaus Giger wrote:    ...
->>> If anybody has a working target with a Xenomai + BusyBox combination =
-and
->>> would be willing to test drive my changes, I would appreciate a feedb=
-ack
->>> enormously.
->>>  =20
+Rosenow, Jim wrote:
+> Sorry for the missing history.
 >=20
-> I hope this isnt waiting on my 'approval'.
-> I think its a great idea, and has been on my (way too stagnant) list fo=
-r
-> a while.
-> Your work has at least urged me to install busybox on my xeno-box. ;-)
+> I started with a vanilla 2.6.14-7 kernel from kernel.org, I patched it
+> with a Motorola patch to enable the features specific to the mvme5500.
+> I built under ELDK 4.0 and the kernel ran just fine.
 >=20
-> My only concern is whether we've sufficiently distinguished the issues:=
+> Next I retrieved xenomai-2.1.1 and followed the install instructions.
+> The adeos version adeos-ipipe-2.6.14-1.2.03.patch.  This patch applied
+> and I rebuilt the kernel.  I ran into a problem with xmon not compiling=
 
+> so I removed that switch from the kernel hacking menu and it built fine=
+=2E
 >=20
-> 1 - ash vs bash
+> That brings us to now.
 >=20
-> Its not entirely clear to me which flavors of sh busybox has:
->     ash / dash / not-bash
-> I gather u worked with ash, and it seems most valuable sh features
-> work there just fine ( shell-functions, even 'job-control' of a fashion=
-)
->=20
-> 2 - busybox 'executables' only
->=20
-> I coded in a lot of 'full linux' gimme's, like zgrep, script, etc.
-> Niklaus has repaired many of these.  I think a more thorough cleanup is=
-
-> possible,
-> esp if things like 'script' are jettisoned for a simpler shell-function=
+> In reference to your recommendation, can I simply disable ipipe and
+> leave xenomai enabled and expect the kernel to run?  I thought there wa=
 s
-> or helper scripts.
-> This all implies a re-write, which is on my list...
-> (esp the job-control testing and repair)
+> a pretty close coupling between the two.
 
-Just stumbled over this again while cleaning up my mailbox. What's the
-status? Waiting for improvements, or waiting for /someone/ to type svn
-ci (and improve the topics above later)?
+No, you are right, this is not possible. I meant booting with both ipipe
+and xenomai disabled.
+
+Is your board able to boot without the Motorola patches? If yes, does
+the problem persist? BTW, did the ipipe patch apply cleanly on top of
+the Motorola patch or did you have to fix some hunks?
+
+
+@all: What will help to track this down are back-traces of the crash.
+Does the console contain a stack trace as well? If not, try using the
+ipipe-tracer (additional patch [1]) and put an
+ipipe_trace_panic_freeze() + ipipe_trace_panic_dump() before that BUG()
+(with the same condition, of course). Actually, this tool can report
+more than a stack trace. It records a full function call history and may
+reveal where the ipipe patch left the correct path.
 
 Jan
 
 
---------------enig278740BFB0405BDA5E7E07DE
+PS: Just in case you thought about this, switching the ipipe patch to
+1.3 may only hide the problem. The newer patches contain optimisations,
+not bug fixes of the 1.2 series.
+
+
+[1] http://download.gna.org/adeos/patches/v2.6/ppc/tracer
+
+
+--------------enig3E9EB408FAB645DA563A41F7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
+Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEjc+fniDOoMHTA+kRAuXIAJ4xDkTqzvpaqcFj1CP5yLYzaFrKSwCbB1Oq
-6TqHOTxlyoYLXxxZzh94maQ=
-=fDlc
+iD8DBQFEbiEHniDOoMHTA+kRAsQcAJ9XRpE7p4B9NnJGhXt3pYuR0GIy7gCfaVTM
+p53WAlSlQn1qptZIMkKmGO4=
+=YWny
 -----END PGP SIGNATURE-----
 
---------------enig278740BFB0405BDA5E7E07DE--
+--------------enig3E9EB408FAB645DA563A41F7--
 
