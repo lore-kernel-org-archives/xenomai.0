@@ -1,15 +1,12 @@
-Message-ID: <4461D331.8040906@domain.hid>
-Date: Wed, 10 May 2006 13:49:05 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <446F09B8.6000609@domain.hid>
+Date: Sat, 20 May 2006 14:21:12 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [bug] zombie mutex owners
-References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
-	<4461BB5A.3010403@domain.hid> <4461C5D9.3060705@domain.hid>
-In-Reply-To: <4461C5D9.3060705@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF8105D2768B6CEEE035AC1BA"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [RFC] non-RT-safe rtdm_event_*wait
+References: <446C264A.7040206@domain.hid>
+In-Reply-To: <446C264A.7040206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,65 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: grugh@domain.hid, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF8105D2768B6CEEE035AC1BA
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Hi,
+> 
+> attached is an experimental patch to allow blocking from non-RT context
+> on RTDM events. Petr Cervenka made me think about this extension which
+> could partially open RTDM drivers also for non-shadowed, i.e. standard
+> Linux tasks.
+> 
+> Why not simply shadowing non-RT waiters? Because this kind of sync
+> support should be cheaper than adding yet another (though low-prio) task
+> to the real-time domain ("should" == I didn't benchmark my believe). And
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Dmitry Adamushko wrote:
->>
->> Indeed, this solves the issue more gracefully.
->>
->> Looking at this again from a different perspective and running the tes=
-t
->> case with your patch in a slightly different way, I think I
->> misinterpreted the crash. If I modify task2 like this
->>
->> void task2_fnc(void *arg)
->> {
->>         printf("started task2\n");
->>         if (rt_mutex_lock(&mtx, 0) < 0) {
->>                 printf("lock failed in task2\n");
->>                 return;
->>         }
->> //        rt_mutex_unlock(&mtx);
->>
->>         printf("done task2\n");
->> }
->>
->> I'm also getting a crash. So the problem seems to be releasing a mutex=
+I would rather move the logic to the sync object at nucleus level since 
+it's a useful feature for all skins, but doing so, we would also drag a 
+fair amount of complexity just for the sake of not having to shadow a 
+Linux task. IMHO, leaving this at the skin level forks the 
+implementation of the synchronization management, which raises the issue 
+of duplicating functionalities only depending on the calling context.
 
->> ownership on task termination. Well, this needs further examination.
->>
->=20
-> The native skin does not implement robust mutex, indeed.
+Looking at the issue differently, we already know that we could shadow 
+SCHED_NORMAL/SCHED_OTHER threads without promoting them to the 
+SCHED_FIFO class - you actually submitted this patch, and it's waiting 
+for -rc2 to be released before I merge it into mainline.
 
-Yeah, lunch opened my eyes: the skin data structure (RT_MUTEX) is not
-updated appropriately on task cleanup. What about some callback hook in
-xnsynch_t to invoke a per-skin cleanup handler when running
-xnsynch_release_all_ownerships?
+Given that, a shadow thread which remains in secondary mode is seen as 
+suspended by the Xenomai scheduler, which means that the additional 
+overhead is close to nil (aside of an additional shadow tcb), until it 
+tries to grab the resource and thus moves to the primary domain, just 
+for going to sleep.
 
-Jan
+IOW, I would rather use the allow-non-SCHED_FIFO-shadow patch to allow 
+regular Linux tasks to pend seamlessly on Xenomai sync objects as true 
+shadows, and add to the rtdm blocking syscall handler some code that 
+would transparently promote any calling regular task as a Xenomai shadow 
+on the fly, before undergoing the request. The other advantage of such 
+approach is that the non-RT pending task is still known from the Xenomai 
+sub-system (/proc/xenomai/ interface and so on), which may be useful 
+given that it interacts with it. You could still apply a FIFO pending 
+order with mixed RT and non-RT tasks the same way.
 
+Moving RTDM to native preemption would also be simpler, since RTDM would 
+expect the issue to be handled at core level directly, and in the 
+preempt-rt case, the issue of the caller's domain is actually a non-issue.
 
---------------enigF8105D2768B6CEEE035AC1BA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEYdMxniDOoMHTA+kRAlG7AJ9PKR2Bs34A2vmOe06vDp0n9TlNcQCfUts4
-qt0TpgNirXJY1gjEeyy4qik=
-=ix3v
------END PGP SIGNATURE-----
-
---------------enigF8105D2768B6CEEE035AC1BA--
+Philippe.
 
