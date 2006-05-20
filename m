@@ -1,13 +1,17 @@
-Message-ID: <446F2ED7.7030701@domain.hid>
-Date: Sat, 20 May 2006 16:59:35 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <446F5803.8030607@domain.hid>
+Date: Sat, 20 May 2006 19:55:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
 	at	kernel/sched.c:2819!
-References: <B4D14EA407C38B4DAF92B8EAC9249D7F0179D3BC@mspex01.go.mts.com>
-In-Reply-To: <B4D14EA407C38B4DAF92B8EAC9249D7F0179D3BC@mspex01.go.mts.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
+	<446E2107.8060504@domain.hid>
+	<200605192019.k4JKJJFN007810@domain.hid>
+In-Reply-To: <200605192019.k4JKJJFN007810@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig68595AC7403A26BF2CDBB8C3"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,133 +21,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, wallace@domain.hid
+Cc: xenomai@xenomai.org, Jim.Rosenow@domain.hid
 
-Rosenow, Jim wrote:
-> Hi,
-> 
-> I've almost got my mvme5500 running.  I get the following error when 
-> booting up.
-> 
-> kernel BUG in add_preempt_count at kernel/sched.c:2819!
-> 
-> Oops: kernel access of bad area, sig: 11 [#1]
-> 
-> I'm a little new at this and don't know whether I'm looking at a xenomai 
-> problem, an adeos problem, or something else.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig68595AC7403A26BF2CDBB8C3
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I can't reproduce it on 2.6.14.7 compiled for an icecube target, which 
-means that this issue is likely triggered by some code which is 
-specifically enabled by the MVME5500 configuration, and/or added by the 
-Motorola patch (could not find a public access to it, btw). I suspect an 
-issue in the network support this board uses given the boot sequence 
-before the oops, but I'm just taking a wild guess.
+Gary Wallace wrote:
+>   My story is the same as Jim's except I used 2.6.16.6 and a gcc 3.3.3
+> cross compiler.  The ipipe patch applies just fine after the motorola
+> patch.  Building with ipipe disabled results in a kernel that boots
+> and runs just fine.  When ipipe is enabled, I sometimes get the error
+> Jim received, sometimes the kernel just hangs.  There is never a stack
+> trace on the console.  I've tried ipipe versions 1.2-01, 1.2-03,
+> 1.3-00, 1.3-02, and 1.3-03, all with the same results (either the
+> kernel hangs or I get the kernel BUG error).
+>=20
+>   I haven't been able to get the board to boot without using the
+> motorola patch.
+>=20
+>   I have tried building with ipipe-tracer, but this results in compile
+> errors (the tracer patch applies just fine).  Here are the compile
+> errors when ipipe-tracer is enabled:
+>=20
+> # make
+>   CHK     include/linux/version.h
+>   CHK     include/linux/compile.h
+>   CHK     usr/initramfs_list
+>   UIMAGE  arch/ppc/boot/images/uImage
+> "mkimage" command not found - U-Boot images will not be built
+>   Image: arch/ppc/boot/images/uImage not made
+>   AS      arch/ppc/boot/simple/head.o
+>   AS      arch/ppc/boot/simple/relocate.o
+>   CC      arch/ppc/boot/simple/misc.o
+>   CC      arch/ppc/boot/simple/misc-mv64x60.o
+> powerpc-750-linux-gnu-objcopy -O elf32-powerpc \
+>         --add-section=3D.image=3Darch/ppc/boot/images/vmlinux.gz \
+>         --set-section-flags=3D.image=3Dcontents,alloc,load,readonly,dat=
+a \
+>         arch/ppc/boot/simple/dummy.o arch/ppc/boot/simple/image.o
+> powerpc-750-linux-gnu-ld -T /usr/src/linux-2.6.14.6-ppc/arch/ppc/boot/l=
+d.script -Ttext 0x00800000 -Bstatic -o arch/ppc/boot/simple/zvmlinux arch=
+/ppc/boot/simple/head.o arch/ppc/boot/simple/relocate.o arch/ppc/boot/sim=
+ple/misc.o arch/ppc/boot/simple/misc-mv64x60.o arch/ppc/boot/simple/image=
+=2Eo arch/ppc/boot/common/lib.a arch/ppc/boot/lib/lib.a
+> arch/ppc/boot/simple/misc.o(.text+0x10): In function `get_mem_size':
+> arch/ppc/boot/simple/misc.c:87: undefined reference to `_mcount'
+> arch/ppc/boot/simple/misc.o(.text+0x54): In function `decompress_kernel=
+':
+> arch/ppc/boot/simple/misc.c:93: undefined reference to `_mcount'
+> arch/ppc/boot/simple/misc.o(.text+0x4b8): In function `board_isa_init':=
 
-As Jan suggested, we need to get a usable backtrace for this bug. Try 
-applying this patch, along with the ipipe tracer patch.
+> arch/ppc/boot/simple/misc.c:274: undefined reference to `_mcount'
+> arch/ppc/boot/simple/misc.o(.text+0x4f8): In function `load_kernel':
+> arch/ppc/boot/simple/misc.c:281: undefined reference to `_mcount'
+> arch/ppc/boot/simple/misc-mv64x60.o(.text+0x10): In function `mv64360_g=
+et_mem_size':
+> arch/ppc/boot/simple/misc-mv64x60.c:31: undefined reference to `_mcount=
+'
+> arch/ppc/boot/simple/misc-mv64x60.o(.text+0xbc):arch/ppc/boot/simple/mi=
+sc-mv64x60.c:51: more undefined references to `_mcount' follow
+> make[2]: *** [arch/ppc/boot/simple/zvmlinux] Error 1
+> make[1]: *** [simple] Error 2
+> make: *** [zImage] Error 2
+> #=20
+>=20
 
---- kernel/sched.c~	2006-05-20 12:05:50.000000000 +0200
-+++ kernel/sched.c	2006-05-20 16:45:33.000000000 +0200
-@@ -2816,6 +2816,10 @@
-  	/*
-  	 * Underflow?
-  	 */
-+        if (preempt_count() < 0) {
-+	    ipipe_ipipe_trace_panic_freeze();
-+	    ipipe_ipipe_trace_panic_dump();
-+	}
-  	BUG_ON((preempt_count() < 0));
-  	preempt_count() += val;
-  	/*
-> 
-> Any help and direction would be appreciated.
-> 
->  
-> 
-> Jim
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> Linux/PPC load: console=ttyS0,9600 root=/dev/nfs rw ip=bootp
-> Uncompressing Linux...done.
-> Now booting the kernel
-> Total memory = 512MB; using 1024kB for hash table (at a0400000)
-> Linux version 2.6.14.7 (root@domain.hid) (gcc version 4.0.0 (DENX ELD6
-> Motorola Computer Group MVME5500  Board
-> MVME5500 port (C) 2003-2006 Motorola, Inc.
-> Built 1 zonelists
-> Kernel command line: console=ttyS0,9600 root=/dev/nfs rw ip=bootp
-> PID hash table entries: 4096 (order: 12, 65536 bytes)
-> time_init: decrementer frequency = 33.333175 MHz
-> I-pipe 1.2-03: pipeline enabled.
-> Console: colour dummy device 80x25
-> Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
-> Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
-> Memory: 514176k available (2952k kernel code, 936k data, 164k init, 0k highmem)
-> Mount-cache hash table entries: 512
-> softlockup thread 0 started up.
-> NET: Registered protocol family 16
-> PCI: Probing PCI hardware
-> SCSI subsystem initialized
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/powerpc started.
-> Xenomai: real-time nucleus v2.1.1 (Trundrumbalind) loaded.
-> Xenomai: starting native API services.
-> Xenomai: starting RTDM services.
-> Installing knfsd (copyright (C) 1996 okir@domain.hid).
-> JFFS2 version 2.2. (NAND) (C) 2001-2003 Red Hat, Inc.
-> Initializing Cryptographic API
-> Generic RTC Driver v1.07
-> Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
-> ttyS0 at MMIO 0x0 (irq = 64) is a 16550A
-> ttyS1 at MMIO 0x0 (irq = 64) is a 16550A
-> io scheduler noop registered
-> io scheduler anticipatory registered
-> io scheduler deadline registered
-> io scheduler cfq registered
-> RAMDISK driver initialized: 16 RAM disks of 4096K size 1024 blocksize
-> loop: loaded (max 8 devices)
-> nbd: registered device at major 43
-> Intel(R) PRO/1000 Network Driver - version 6.0.60-k2
-> Copyright (c) 1999-2005 Intel Corporation.
-> e1000: eth0: e1000_probe: Intel(R) PRO/1000 Network Connection
-> Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
-> ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
-> mvme5500-flash0: Found 2 x16 devices at 0x0 in 32-bit bank
->  Intel/Sharp Extended Query Table at 0x0031
-> Using buffer write method
-> cfi_cmdset_0001: Erase suspend on write enabled
-> Creating 3 MTD partitions on "mvme5500-flash0":
-> 0x00000000-0x01400000 : "Linux Kernel + INITRD"
-> 0x01400000-0x01f00000 : "Linux JFFS2 Filesystem"
-> 0x01f00000-0x02000000 : "Bootloader Flash 0"
-> mvme5500-flash1: Found 2 x16 devices at 0x0 in 32-bit bank
->  Intel/Sharp Extended Query Table at 0x0031
-> Using buffer write method
-> cfi_cmdset_0001: Erase suspend on write enabled
-> Creating 2 MTD partitions on "mvme5500-flash1":
-> 0x00000000-0x00700000 : "Linux JFFS2 Filesystem"
-> 0x00700000-0x00800000 : "Bootloader Flash 1"
-> mice: PS/2 mouse device common for all mice
-> Tundra TSI148/CA91C042 PCI-VME Bridge Driver 3.5 03/24/2006
-> Bad VME slot #00
-> i2c /dev entries driver
-> kernel BUG in add_preempt_count at kernel/sched.c:2819!
-> Oops: kernel access of bad area, sig: 11 [#1]
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Philippe, can you comment on this? I do not have an PPC build
+environment at hand.
+
+@Gary: Do you get the same error without the Motorola patch?
+
+Jan
 
 
--- 
+--------------enig68595AC7403A26BF2CDBB8C3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEb1gDniDOoMHTA+kRAraTAJ9mo2/LOEzYhaNCtloffaeV9vgdygCfSv5Q
+odCfyQJNAi1kysgs/4JyEgM=
+=+FYJ
+-----END PGP SIGNATURE-----
+
+--------------enig68595AC7403A26BF2CDBB8C3--
 
