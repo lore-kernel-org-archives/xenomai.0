@@ -1,5 +1,5 @@
-Message-ID: <446E372B.2020007@domain.hid>
-Date: Fri, 19 May 2006 23:22:51 +0200
+Message-ID: <446F2ED7.7030701@domain.hid>
+Date: Sat, 20 May 2006 16:59:35 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
@@ -32,6 +32,30 @@ Rosenow, Jim wrote:
 > 
 > I'm a little new at this and don't know whether I'm looking at a xenomai 
 > problem, an adeos problem, or something else.
+
+I can't reproduce it on 2.6.14.7 compiled for an icecube target, which 
+means that this issue is likely triggered by some code which is 
+specifically enabled by the MVME5500 configuration, and/or added by the 
+Motorola patch (could not find a public access to it, btw). I suspect an 
+issue in the network support this board uses given the boot sequence 
+before the oops, but I'm just taking a wild guess.
+
+As Jan suggested, we need to get a usable backtrace for this bug. Try 
+applying this patch, along with the ipipe tracer patch.
+
+--- kernel/sched.c~	2006-05-20 12:05:50.000000000 +0200
++++ kernel/sched.c	2006-05-20 16:45:33.000000000 +0200
+@@ -2816,6 +2816,10 @@
+  	/*
+  	 * Underflow?
+  	 */
++        if (preempt_count() < 0) {
++	    ipipe_ipipe_trace_panic_freeze();
++	    ipipe_ipipe_trace_panic_dump();
++	}
+  	BUG_ON((preempt_count() < 0));
+  	preempt_count() += val;
+  	/*
 > 
 > Any help and direction would be appreciated.
 > 
@@ -109,11 +133,15 @@ Rosenow, Jim wrote:
 > kernel BUG in add_preempt_count at kernel/sched.c:2819!
 > Oops: kernel access of bad area, sig: 11 [#1]
 > 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-This bug is triggered by CONFIG_DEBUG_PREEMPT. The pipeline must be 
-indirectly using the preemption locks over an invalid context somewhere 
-on ppc. I'll try to build a similar setup on my lite5200 in the next 
-days. More later. Thanks for reporting this.
 
 -- 
 
