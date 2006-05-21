@@ -1,16 +1,17 @@
-Message-ID: <446F8606.90704@domain.hid>
-Date: Sat, 20 May 2006 23:11:34 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <6ee4c8380605202203w74a3c04j912d5e4e543f8433@domain.hid>
+Date: Sun, 21 May 2006 01:03:38 -0400
+From: "Brian L." <bluczkie@domain.hid>
+Sender: zorander@domain.hid
+Subject: Re: [Xenomai-help] rt_task_delete behavior
+In-Reply-To: <446DDA56.3050209@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Almost running - kernel BUG in add_preempt_count
-	at	kernel/sched.c:2819!
-References: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F285@domain.hid>
-	<446E2107.8060504@domain.hid>
-	<200605192019.k4JKJJFN007810@domain.hid>
-	<446F5803.8030607@domain.hid>
-In-Reply-To: <446F5803.8030607@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <6ee4c8380605172215i34e83797i709de4a314412618@domain.hid>
+	<446C29A9.3030508@domain.hid>
+	<6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>
+	<446DDA56.3050209@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,75 +21,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, wallace@domain.hid, Jim.Rosenow@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gary Wallace wrote:
-> 
->>  My story is the same as Jim's except I used 2.6.16.6 and a gcc 3.3.3
->>cross compiler.  The ipipe patch applies just fine after the motorola
->>patch.  Building with ipipe disabled results in a kernel that boots
->>and runs just fine.  When ipipe is enabled, I sometimes get the error
->>Jim received, sometimes the kernel just hangs.  There is never a stack
->>trace on the console.  I've tried ipipe versions 1.2-01, 1.2-03,
->>1.3-00, 1.3-02, and 1.3-03, all with the same results (either the
->>kernel hangs or I get the kernel BUG error).
->>
->>  I haven't been able to get the board to boot without using the
->>motorola patch.
->>
->>  I have tried building with ipipe-tracer, but this results in compile
->>errors (the tracer patch applies just fine).  Here are the compile
->>errors when ipipe-tracer is enabled:
->>
->># make
->>  CHK     include/linux/version.h
->>  CHK     include/linux/compile.h
->>  CHK     usr/initramfs_list
->>  UIMAGE  arch/ppc/boot/images/uImage
->>"mkimage" command not found - U-Boot images will not be built
->>  Image: arch/ppc/boot/images/uImage not made
->>  AS      arch/ppc/boot/simple/head.o
->>  AS      arch/ppc/boot/simple/relocate.o
->>  CC      arch/ppc/boot/simple/misc.o
->>  CC      arch/ppc/boot/simple/misc-mv64x60.o
->>powerpc-750-linux-gnu-objcopy -O elf32-powerpc \
->>        --add-section=.image=arch/ppc/boot/images/vmlinux.gz \
->>        --set-section-flags=.image=contents,alloc,load,readonly,data \
->>        arch/ppc/boot/simple/dummy.o arch/ppc/boot/simple/image.o
->>powerpc-750-linux-gnu-ld -T /usr/src/linux-2.6.14.6-ppc/arch/ppc/boot/ld.script -Ttext 0x00800000 -Bstatic -o arch/ppc/boot/simple/zvmlinux arch/ppc/boot/simple/head.o arch/ppc/boot/simple/relocate.o arch/ppc/boot/simple/misc.o arch/ppc/boot/simple/misc-mv64x60.o arch/ppc/boot/simple/image.o arch/ppc/boot/common/lib.a arch/ppc/boot/lib/lib.a
->>arch/ppc/boot/simple/misc.o(.text+0x10): In function `get_mem_size':
->>arch/ppc/boot/simple/misc.c:87: undefined reference to `_mcount'
->>arch/ppc/boot/simple/misc.o(.text+0x54): In function `decompress_kernel':
->>arch/ppc/boot/simple/misc.c:93: undefined reference to `_mcount'
->>arch/ppc/boot/simple/misc.o(.text+0x4b8): In function `board_isa_init':
->>arch/ppc/boot/simple/misc.c:274: undefined reference to `_mcount'
->>arch/ppc/boot/simple/misc.o(.text+0x4f8): In function `load_kernel':
->>arch/ppc/boot/simple/misc.c:281: undefined reference to `_mcount'
->>arch/ppc/boot/simple/misc-mv64x60.o(.text+0x10): In function `mv64360_get_mem_size':
->>arch/ppc/boot/simple/misc-mv64x60.c:31: undefined reference to `_mcount'
->>arch/ppc/boot/simple/misc-mv64x60.o(.text+0xbc):arch/ppc/boot/simple/misc-mv64x60.c:51: more undefined references to `_mcount' follow
->>make[2]: *** [arch/ppc/boot/simple/zvmlinux] Error 1
->>make[1]: *** [simple] Error 2
->>make: *** [zImage] Error 2
->># 
->>
-> 
-> 
-> Philippe, can you comment on this? I do not have an PPC build
-> environment at hand.
+No...
+
+hold on--self-destruction should never return. The calling task
+destroys itself then ceases to continue executing, right?
+
+I suspect that late at night, three days ago, I confused 'not
+returning since the calling context is gone' with 'hanging'.
+
+If a thread's function (the one passed to rt_task_start) returns, is
+it cleaned up, or is it still neccesary to call rt_task_delete on it?
+
+On 5/19/06, Philippe Gerum <rpm@xenomai.org> wrote:
+> Brian L. wrote:
+> > CPU   PID   PRI   TIMEOUT   STAT   NAME
+> > 0     0        0     0      R      ROOT
+> >
 >
-
-I can't reproduce it here, but that does not mean much, since I can't 
-select the same setup anyway, due to the missing patch. Is the file 
-arch/ppc/ipipe-mcount.S listed as being compiled during the kernel build?
-
-> @Gary: Do you get the same error without the Motorola patch?
-> 
-
-
--- 
-
-Philippe.
+> Is this snapshot obtained while the application is still hanging?
+>
+> >
+> > On 5/18/06, Philippe Gerum <rpm@xenomai.org> wrote:
+> >
+> >> Brian L. wrote:
+> >> > I'm calling what amounts to rt_task_delete(rt_task_self()) and the
+> >> > task simply hangs, with this call never returning.
+> >> > rt_task_delete(NULL) behaves identically.
+> >> >
+> >> > What could cause this behavior? The problem is embedded within a
+> >> > nontrivial application, but it seems that it's not behaving accordin=
+g
+> >> > to spec which says that the caller will only block when:
+> >> >
+> >> > 1. The target is in a "safe section"
+> >> >
+> >> > and
+> >> >
+> >> > 2. The caller is not the target
+> >> >
+> >> > Any ideas?
+> >> >
+> >>
+> >> Could you post the output of
+> >>
+> >> $ cat /proc/xenomai/sched
+> >>
+> >> TIA,
+> >>
+> >> > _______________________________________________
+> >> > Xenomai-help mailing list
+> >> > Xenomai-help@domain.hid
+> >> > https://mail.gna.org/listinfo/xenomai-help
+> >> >
+> >>
+> >>
+> >> --
+> >>
+> >> Philippe.
+> >>
+> >
+>
+>
+> --
+>
+> Philippe.
+>
 
