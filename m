@@ -1,16 +1,17 @@
-Message-ID: <447042ED.5090806@domain.hid>
-Date: Sun, 21 May 2006 12:37:33 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Thomas Witzel <witzel.thomas@domain.hid>
+Subject: Re: [Xenomai-help] Re: RTDM driver questions
+Date: Sun, 21 May 2006 21:19:53 +0000
+References: <050720061514.21865.445E0ED2000D33230000556922058863609C0E0301089BD2040A969B0799@domain.hid>
+	<200605072202.22555.witzel.thomas@domain.hid>
+	<if82j3-9ug.ln1@domain.hid>
+In-Reply-To: <if82j3-9ug.ln1@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_delete behavior
-References: <6ee4c8380605172215i34e83797i709de4a314412618@domain.hid>	
-	<446C29A9.3030508@domain.hid>	
-	<6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>	
-	<446DDA56.3050209@domain.hid>
-	<6ee4c8380605202203w74a3c04j912d5e4e543f8433@domain.hid>
-In-Reply-To: <6ee4c8380605202203w74a3c04j912d5e4e543f8433@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200605212119.53330.witzel.thomas@domain.hid>
+Reply-To: witzel.thomas@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,89 +21,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Brian L." <bluczkie@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Brian L. wrote:
-> No...
-> 
-> hold on--self-destruction should never return. The calling task
-> destroys itself then ceases to continue executing, right?
-> 
+I have that now, but I'm not really sure how to synchronize the user space 
+application with the driver, since the driver has of course only a limited 
+buffer. Practically now I have a 512 sample buffer in the driver that I use 
+as a double buffer and I copy blocks of 256 to the user on read. 
+Isn't there a way to have a FIFO between driver and user application and is 
+there an example somewhere, where I can see how this is done properly ?
 
-Yes.
+Independently of that, if the user space application dies, how can I remove 
+the driver then ?
 
-> I suspect that late at night, three days ago, I confused 'not
-> returning since the calling context is gone' with 'hanging'.
-> 
-> If a thread's function (the one passed to rt_task_start) returns, is
-> it cleaned up, or is it still neccesary to call rt_task_delete on it?
-> 
+Thank you,
 
-It's cleanup up automatically. This explains the output of 
-/proc/xenomai/sched below; the task has indeed gone away, and the only 
-remaining thread which keeps the process from exiting is likely the main 
-- non-Xenomai - one which is somehow paused or blocked.
-
-> On 5/19/06, Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->> Brian L. wrote:
->> > CPU   PID   PRI   TIMEOUT   STAT   NAME
->> > 0     0        0     0      R      ROOT
->> >
->>
->> Is this snapshot obtained while the application is still hanging?
->>
->> >
->> > On 5/18/06, Philippe Gerum <rpm@xenomai.org> wrote:
->> >
->> >> Brian L. wrote:
->> >> > I'm calling what amounts to rt_task_delete(rt_task_self()) and the
->> >> > task simply hangs, with this call never returning.
->> >> > rt_task_delete(NULL) behaves identically.
->> >> >
->> >> > What could cause this behavior? The problem is embedded within a
->> >> > nontrivial application, but it seems that it's not behaving 
->> according
->> >> > to spec which says that the caller will only block when:
->> >> >
->> >> > 1. The target is in a "safe section"
->> >> >
->> >> > and
->> >> >
->> >> > 2. The caller is not the target
->> >> >
->> >> > Any ideas?
->> >> >
->> >>
->> >> Could you post the output of
->> >>
->> >> $ cat /proc/xenomai/sched
->> >>
->> >> TIA,
->> >>
->> >> > _______________________________________________
->> >> > Xenomai-help mailing list
->> >> > Xenomai-help@domain.hid
->> >> > https://mail.gna.org/listinfo/xenomai-help
->> >> >
->> >>
->> >>
->> >> --
->> >>
->> >> Philippe.
->> >>
->> >
->>
->>
->> -- 
->>
->> Philippe.
->>
-> 
+Thomas
 
 
--- 
-
-Philippe.
+On Sunday 07 May 2006 22:21, Bernhard Walle wrote:
+> Hi Thomas,
+>
+> Thomas Witzel <witzel.thomas@domain.hid> [2006-05-07]:
+> > > Generally spoken, mmap can make sense if you have a significant amount
+> > > of data to transfer, not "just" a few kbyte/s. RTDM has the elementary
+> > > support for such device interfaces now, and this has already been used
+> > > for a frame-grabbing driver.
+> >
+> > What would be the proper procedure for just a few kbytes ? I expect less
+> > than 500 kB./second in my application.
+>
+> Simply read() / write() ?
+>
+>
+> Regards,
+>   Bernhard
 
