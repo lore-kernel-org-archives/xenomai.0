@@ -1,13 +1,14 @@
-Message-ID: <44718DC4.10009@domain.hid>
-Date: Mon, 22 May 2006 12:09:08 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44719697.4080408@domain.hid>
+Date: Mon, 22 May 2006 12:46:47 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC] non-RT-safe rtdm_event_*wait
-References: <446C264A.7040206@domain.hid> <446F09B8.6000609@domain.hid>
-	<44716DC0.7080709@domain.hid>
-In-Reply-To: <44716DC0.7080709@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] timer optimisations
+References: <44717FBA.1030207@domain.hid> <447188F9.60905@domain.hid>
+In-Reply-To: <447188F9.60905@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB50E7A7C9422687A85D01F51"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,75 +18,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: grugh@domain.hid, xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> 
->>Given that, a shadow thread which remains in secondary mode is seen as
->>suspended by the Xenomai scheduler, which means that the additional
->>overhead is close to nil (aside of an additional shadow tcb), until it
->>tries to grab the resource and thus moves to the primary domain, just
->>for going to sleep.
-> 
-> 
-> I'm not concerned about a passive shadow, my aim is to reduce the impact
-> of active shadow threads without strict timing requirements. When there
-> is a larger number of them, they should not influence RT scheduling
-> significantly for just being woken up.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB50E7A7C9422687A85D01F51
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-This issue already exists now, since interrupts are off when Linux 
-performs a context switch, so that we can't wreck the whole thing by 
-allowing a shadow to preempt it in the middle of the mm switch. Since 
-non-RT shadow would run at priority level 0, my feeling is that it would 
-not change the current situation, except perhaps on SMP where the nklock 
-would be held a little more.
-
-> The other point might be the code path length of both non-RT wakeup
-> suspend/wakeup mechanisms. It's only an assessment, but I think this way
-> would be shorter. Anyway, numbers would speak clearer, and I guess this
-> should be done first before any further design decision.
-> 
-
-Agreed.
-
-> 
->>IOW, I would rather use the allow-non-SCHED_FIFO-shadow patch to allow
->>regular Linux tasks to pend seamlessly on Xenomai sync objects as true
->>shadows, and add to the rtdm blocking syscall handler some code that
->>would transparently promote any calling regular task as a Xenomai shadow
->>on the fly, before undergoing the request. The other advantage of such
->>approach is that the non-RT pending task is still known from the Xenomai
->>sub-system (/proc/xenomai/ interface and so on), which may be useful
->>given that it interacts with it. You could still apply a FIFO pending
->>order with mixed RT and non-RT tasks the same way.
-> 
-> 
-> Hmm, on-demand shadowing might be an option. Ok, once non-SCHED_FIFO is
-> merged, we should have a look at both approaches from the performance
-> POV and compare potential differences with the required additional code.
-> 
-> 
->>Moving RTDM to native preemption would also be simpler, since RTDM would
->>expect the issue to be handled at core level directly, and in the
->>preempt-rt case, the issue of the caller's domain is actually a non-issue.
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Hi,
 >>
-> 
-> 
-> Well, this is already the case for my proposal: no special handling of
-> rtdm_event_* depending on the caller's context anymore.
-> 
+>> while I originally only wanted to add timer abstraction to RTDM, I now=
 
-But still, you have to change RTDM's code do implement that, more than 
-you would have to do in promoting a regular task as a non-RT shadow.
+>> have patch series for xntimer pending on my box pushing this layer
+>> closer to hrtimer.
+>>
+>> But before posting it for discussion (needs further testing anyway), I=
 
-> Jan
-> 
+>> have two questions regarding some minor though not totally uninteresti=
+ng
+>> optimisation possibilities:
+>>
+>> 1. Is calling xntimer_start() with value=3DXN_INFINITE a real use case=
+?
+>>    It's not documented explicitly. The effect of such an invocation
+>>    looks a bit like xntimer_stop(), but I didn't find a real caller so=
+
+>>    far to asses it's relevance.
+>=20
+> xnpod_start_timer() uses this property to start the host tick relay
+> timer. If XNARCH_HOST_TICK is zero, then no relay is required, and the
+> timer should remain passive.
+
+I see, but there is likely some other way to achieve this.
+
+The point I'm having in mind is heavy usage of xntimer_start, e.g. from
+inside some timer handler. RTnet could become such a user one day when
+we may migrate the TDMA scheduler from thread context to a timer handler.=
 
 
--- 
+>=20
+>>
+>>    If it is not used and could rather be declared illegal, we could sa=
+fe
+>>    the related code in the do_timer_start handlers.
+>>
+>=20
+> Dunno. To do that, we would need to carefully inspect each and every
+> caller, especially for the various skins, which implies to analyze the
+> requirements of the mimicked API too.
 
-Philippe.
+For sure, but we will have to review and test some stuff anyway with my
+patches. :)
+
+>=20
+>> 2. rthal_timer_program_shot() uses explicit rthal_local_irq_save_hw on=
+
+>>    ia64 and i386. Given the head optimisation, IRQs should already be
+>>    disabled when calling this service. So, can this IRQ masking be mad=
+e
+>>    depending on !CONFIG_XENO_OPT_PIPELINE_HEAD?
+>>
+>=20
+> Yes.
+
+Ok, will get integrated.
+
+Jan
+
+
+--------------enigB50E7A7C9422687A85D01F51
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEcZaXniDOoMHTA+kRAokPAJwPOYQckeo7pAS5zD/C1Rc76mkjVQCfXq6e
+Y/ACik5dnZ63i9o6PI3ybDg=
+=Ko24
+-----END PGP SIGNATURE-----
+
+--------------enigB50E7A7C9422687A85D01F51--
 
