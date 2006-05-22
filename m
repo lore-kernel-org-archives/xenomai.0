@@ -1,13 +1,14 @@
-Message-ID: <4461DC6D.7020100@domain.hid>
-Date: Wed, 10 May 2006 14:28:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <44716DC0.7080709@domain.hid>
+Date: Mon, 22 May 2006 09:52:32 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [bug] zombie mutex owners
-References: <44619D0B.1080402@domain.hid>	<b647ffbd0605100216p7ba1d67eu7afc8df4fb29d828@domain.hid>
-	<4461BB5A.3010403@domain.hid>
-In-Reply-To: <4461BB5A.3010403@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC] non-RT-safe rtdm_event_*wait
+References: <446C264A.7040206@domain.hid> <446F09B8.6000609@domain.hid>
+In-Reply-To: <446F09B8.6000609@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAB6830BFEFD36CF9ABACEBB6"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,76 +18,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: grugh@domain.hid, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Dmitry Adamushko wrote:
-> 
->>Hi Jan,
->>
->>
->>>running the attached test case for the native skin, you will get an ugly
->>>lock-up on probably all Xenomai versions. Granted, this code is a bit
->>>synthetic. I originally thought I could trigger the bug also via
->>>timeouts when waiting on mutexes, but this scenario is safe (the timeout
->>>is cleared before being able to cause harm).
->>>
->>
->>just in order to educate me as probably I might have got something
->>wrong at the first glance :)
->>
->>if we take this one:
->>
->>--- mutex.c    2006-02-27 15:34:58.000000000 +0100
->>+++ mutex-NEW.c    2006-05-10 11:55:25.000000000 +0200
->>@@ -391,7 +391,7 @@ int rt_mutex_lock (RT_MUTEX *mutex,
->>    err = -EIDRM; /* Mutex deleted while pending. */
->>    else if (xnthread_test_flags(&task->thread_base,XNTIMEO))
->>    err = -ETIMEDOUT; /* Timeout.*/
->>-    else if (xnthread_test_flags(&task->thread_base,XNBREAK))
->>+    else if (xnthread_test_flags(&task->thread_base,XNBREAK) &&
->>mutex->owner != task)
->>    err = -EINTR; /* Unblocked.*/
->>
->> unlock_and_exit:
->>
->>As I understand task2 has a lower prio and that's why
->>
->>[task1] rt_mutex_unlock
->>[task 1] rt_task_unblock(task1)
->>
->>are called in a row.
->>
->>ok, task2 wakes up in rt_mutex_unlock() (when task1 is blocked on
->>rt_mutex_lock()) and finds XNBREAK flag but,
->>
->>[doc] -EINTR is returned if rt_task_unblock() has been called for the
->>waiting task (1) before the mutex has become available (2).
->>
->>(1) it's true, task2 was still waiting at that time;
->>(2) it's wrong, task2 was already the owner.
->>
->>So why just not to bail out XNBREAK and continue task2 as it has a
->>mutex (as shown above) ?
-> 
-> 
-> Indeed, this solves the issue more gracefully.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAB6830BFEFD36CF9ABACEBB6
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The real issue with the XNBREAK bit is that xnpod_unblock_thread() 
-should only raise it for threads which it does actually awake, and not 
-for those which are already resumed, e.g. by a call to 
-xnsynch_wakeup_sleeper().
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Hi,
+>>
+>> attached is an experimental patch to allow blocking from non-RT contex=
+t
+>> on RTDM events. Petr Cervenka made me think about this extension which=
 
-This explains why task2 gets -EINTR from rt_mutex_lock() albeit the 
-syscall has indeed succeeded, so that the next rt_mutex_unlock() was ok, 
-but the downstream code might clearly be confused by such behaviour. It 
-should get a success code instead, since it has been resumed by 
-xnsynch_wakeup_sleeper() _before_ xnpod_unblock_thread() has been called 
-against it. Fixed in the repository.
+>> could partially open RTDM drivers also for non-shadowed, i.e. standard=
 
--- 
+>> Linux tasks.
+>>
+>> Why not simply shadowing non-RT waiters? Because this kind of sync
+>> support should be cheaper than adding yet another (though low-prio) ta=
+sk
+>> to the real-time domain ("should" =3D=3D I didn't benchmark my believe=
+). And
+>=20
+> I would rather move the logic to the sync object at nucleus level since=
 
-Philippe.
+> it's a useful feature for all skins, but doing so, we would also drag a=
+
+> fair amount of complexity just for the sake of not having to shadow a
+> Linux task. IMHO, leaving this at the skin level forks the
+> implementation of the synchronization management, which raises the issu=
+e
+> of duplicating functionalities only depending on the calling context.
+>=20
+> Looking at the issue differently, we already know that we could shadow
+> SCHED_NORMAL/SCHED_OTHER threads without promoting them to the
+> SCHED_FIFO class - you actually submitted this patch, and it's waiting
+> for -rc2 to be released before I merge it into mainline.
+>=20
+> Given that, a shadow thread which remains in secondary mode is seen as
+> suspended by the Xenomai scheduler, which means that the additional
+> overhead is close to nil (aside of an additional shadow tcb), until it
+> tries to grab the resource and thus moves to the primary domain, just
+> for going to sleep.
+
+I'm not concerned about a passive shadow, my aim is to reduce the impact
+of active shadow threads without strict timing requirements. When there
+is a larger number of them, they should not influence RT scheduling
+significantly for just being woken up.
+
+The other point might be the code path length of both non-RT wakeup
+suspend/wakeup mechanisms. It's only an assessment, but I think this way
+would be shorter. Anyway, numbers would speak clearer, and I guess this
+should be done first before any further design decision.
+
+>=20
+> IOW, I would rather use the allow-non-SCHED_FIFO-shadow patch to allow
+> regular Linux tasks to pend seamlessly on Xenomai sync objects as true
+> shadows, and add to the rtdm blocking syscall handler some code that
+> would transparently promote any calling regular task as a Xenomai shado=
+w
+> on the fly, before undergoing the request. The other advantage of such
+> approach is that the non-RT pending task is still known from the Xenoma=
+i
+> sub-system (/proc/xenomai/ interface and so on), which may be useful
+> given that it interacts with it. You could still apply a FIFO pending
+> order with mixed RT and non-RT tasks the same way.
+
+Hmm, on-demand shadowing might be an option. Ok, once non-SCHED_FIFO is
+merged, we should have a look at both approaches from the performance
+POV and compare potential differences with the required additional code.
+
+>=20
+> Moving RTDM to native preemption would also be simpler, since RTDM woul=
+d
+> expect the issue to be handled at core level directly, and in the
+> preempt-rt case, the issue of the caller's domain is actually a non-iss=
+ue.
+>=20
+
+Well, this is already the case for my proposal: no special handling of
+rtdm_event_* depending on the caller's context anymore.
+
+Jan
+
+
+--------------enigAB6830BFEFD36CF9ABACEBB6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEcW3AniDOoMHTA+kRAt/jAKCBMmGT0W3xP1c9gDaq5Ri5bAECpQCfa1tV
+gvH3iJ4ayF1TWTlYWhOgpsI=
+=mXWI
+-----END PGP SIGNATURE-----
+
+--------------enigAB6830BFEFD36CF9ABACEBB6--
 
