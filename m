@@ -1,10 +1,11 @@
-Message-ID: <447188F9.60905@domain.hid>
-Date: Mon, 22 May 2006 11:48:41 +0200
+Message-ID: <44718DC4.10009@domain.hid>
+Date: Mon, 22 May 2006 12:09:08 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] timer optimisations
-References: <44717FBA.1030207@domain.hid>
-In-Reply-To: <44717FBA.1030207@domain.hid>
+Subject: Re: [Xenomai-core] [RFC] non-RT-safe rtdm_event_*wait
+References: <446C264A.7040206@domain.hid> <446F09B8.6000609@domain.hid>
+	<44716DC0.7080709@domain.hid>
+In-Reply-To: <44716DC0.7080709@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,59 +18,71 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: grugh@domain.hid, xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Hi,
+> Philippe Gerum wrote:
 > 
-> while I originally only wanted to add timer abstraction to RTDM, I now
-> have patch series for xntimer pending on my box pushing this layer
-> closer to hrtimer.
+>>Given that, a shadow thread which remains in secondary mode is seen as
+>>suspended by the Xenomai scheduler, which means that the additional
+>>overhead is close to nil (aside of an additional shadow tcb), until it
+>>tries to grab the resource and thus moves to the primary domain, just
+>>for going to sleep.
 > 
-> But before posting it for discussion (needs further testing anyway), I
-> have two questions regarding some minor though not totally uninteresting
-> optimisation possibilities:
 > 
-> 1. Is calling xntimer_start() with value=XN_INFINITE a real use case?
->    It's not documented explicitly. The effect of such an invocation
->    looks a bit like xntimer_stop(), but I didn't find a real caller so
->    far to asses it's relevance.
-
-xnpod_start_timer() uses this property to start the host tick relay 
-timer. If XNARCH_HOST_TICK is zero, then no relay is required, and the 
-timer should remain passive.
-
-> 
->    If it is not used and could rather be declared illegal, we could safe
->    the related code in the do_timer_start handlers.
+> I'm not concerned about a passive shadow, my aim is to reduce the impact
+> of active shadow threads without strict timing requirements. When there
+> is a larger number of them, they should not influence RT scheduling
+> significantly for just being woken up.
 > 
 
-Dunno. To do that, we would need to carefully inspect each and every 
-caller, especially for the various skins, which implies to analyze the 
-requirements of the mimicked API too.
+This issue already exists now, since interrupts are off when Linux 
+performs a context switch, so that we can't wreck the whole thing by 
+allowing a shadow to preempt it in the middle of the mm switch. Since 
+non-RT shadow would run at priority level 0, my feeling is that it would 
+not change the current situation, except perhaps on SMP where the nklock 
+would be held a little more.
 
-> 2. rthal_timer_program_shot() uses explicit rthal_local_irq_save_hw on
->    ia64 and i386. Given the head optimisation, IRQs should already be
->    disabled when calling this service. So, can this IRQ masking be made
->    depending on !CONFIG_XENO_OPT_PIPELINE_HEAD?
+> The other point might be the code path length of both non-RT wakeup
+> suspend/wakeup mechanisms. It's only an assessment, but I think this way
+> would be shorter. Anyway, numbers would speak clearer, and I guess this
+> should be done first before any further design decision.
 > 
 
-Yes.
+Agreed.
 
->    ARM uses an additional lock as well, but it's hidden inside the ipipe
->    patch and is likely required to remain independent of the caller's
->    properties.
 > 
+>>IOW, I would rather use the allow-non-SCHED_FIFO-shadow patch to allow
+>>regular Linux tasks to pend seamlessly on Xenomai sync objects as true
+>>shadows, and add to the rtdm blocking syscall handler some code that
+>>would transparently promote any calling regular task as a Xenomai shadow
+>>on the fly, before undergoing the request. The other advantage of such
+>>approach is that the non-RT pending task is still known from the Xenomai
+>>sub-system (/proc/xenomai/ interface and so on), which may be useful
+>>given that it interacts with it. You could still apply a FIFO pending
+>>order with mixed RT and non-RT tasks the same way.
+> 
+> 
+> Hmm, on-demand shadowing might be an option. Ok, once non-SCHED_FIFO is
+> merged, we should have a look at both approaches from the performance
+> POV and compare potential differences with the required additional code.
+> 
+> 
+>>Moving RTDM to native preemption would also be simpler, since RTDM would
+>>expect the issue to be handled at core level directly, and in the
+>>preempt-rt case, the issue of the caller's domain is actually a non-issue.
+>>
+> 
+> 
+> Well, this is already the case for my proposal: no special handling of
+> rtdm_event_* depending on the caller's context anymore.
+> 
+
+But still, you have to change RTDM's code do implement that, more than 
+you would have to do in promoting a regular task as a non-RT shadow.
+
 > Jan
 > 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 
 
 -- 
