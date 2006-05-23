@@ -1,16 +1,12 @@
-Message-ID: <44722DCF.80208@domain.hid>
-Date: Mon, 22 May 2006 23:31:59 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <447364FD.9090305@domain.hid>
+Date: Tue, 23 May 2006 21:39:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Xenomai v2.2-rc2. PowerPC 405GPr board does
-	not start up
-References: <446F852B.7090400@domain.hid>
-	<200605221808.38756.niklaus.giger@domain.hid>
-	<4471EB2C.5050402@domain.hid>
-	<200605222208.15908.niklaus.giger@domain.hid>
-In-Reply-To: <200605222208.15908.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig49FC0F7EA87427FE16A75C33"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [patch] fix nmi for gcc-4.1
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,77 +16,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Niklaus Giger wrote:
-> Hi
-> 
-> Am Montag, 22. Mai 2006 18:47 schrieb Philippe Gerum:
-> 
->>Niklaus Giger wrote:
->>
->>>Am Montag, 22. Mai 2006 17:40 schrieb Philippe Gerum:
->>>
->>>>Niklaus Giger wrote:
->>>>
->>>>>Hi everybody
->>>>>
->>>>>Philippe Gerum wrote:
->>>>>
->>>>>>Here is the second release candidate for the v2.2 branch. Short log
->>>>>>follows:
->>>
->>><...>
->>>
->>>>Could you try building all skins as modules with only the nucleus
->>>>statically built into the kernel? I'd like to know whether the lockup
->>>>occurs when one of the skin attempts to initialize, or if the problem is
->>>>in the early Xenomai bootstrap. TIA,
->>>
->>>Okay. With the following .config XENOMAI settings my target starts up
->>>without any problem till the login:
->>
->>Does the board still boot with only the native skin enabled statically?
-> 
-> No. It does not.
-> 
->>If it does not, wild guess: does the following patch prevent the lockup
->>in the latter case?
->>
->>--- pod.c~	2006-05-15 15:03:52.000000000 +0200
->>+++ pod.c	2006-05-22 18:45:21.000000000 +0200
->>@@ -509,12 +509,14 @@
->>
->>      xnarch_notify_ready();
->>
->>+#if 0
->>      err = xnpod_reset_timer();
->>
->>      if (err) {
->>          xnpod_shutdown(XNPOD_FATAL_EXIT);
->>          return err;
->>      }
->>+#endif
->>
->>      return 0;
->>  }
-> 
-> Excellent wild guess! With this patch I get my target up and running. First 
-> test is with only the native skin worked. Then I restore my original .config, 
-> touched it and rebuilt. Still boots without any problems.
->
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig49FC0F7EA87427FE16A75C33
+Content-Type: multipart/mixed; boundary="------------010400070406030602030605"
 
-Ok, relatively good news. Now I need to find why starting the timer 
-early breaks the system...
+This is a multi-part message in MIME format.
+--------------010400070406030602030605
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> Thanks a lot for your help.
-> 
-> Best regards
-> 
+Hi,
 
+this patch fixes a gcc-4.1 error in the nmi watchdog code on i386.
 
--- 
+Jan
 
-Philippe.
+--------------010400070406030602030605
+Content-Type: text/plain;
+ name="nmi-wd-align.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="nmi-wd-align.patch"
+
+Index: ksrc/arch/i386/nmi.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/arch/i386/nmi.c	(Revision 1135)
++++ ksrc/arch/i386/nmi.c	(Arbeitskopie)
+@@ -54,12 +54,15 @@
+     (P4_CCCR_OVF_PMI0|P4_CCCR_THRESHOLD(15)|P4_CCCR_COMPLEMENT|         =
+\
+      P4_CCCR_COMPARE|P4_CCCR_REQUIRED|P4_CCCR_ESCR_SELECT(4)|P4_CCCR_ENA=
+BLE)
+=20
+-typedef struct {
+-    /* Xenomai watchdog data. */
+-    unsigned armed;
+-    unsigned long perfctr_msr;
+-    unsigned long long next_linux_check;
+-    unsigned int p4_cccr_val;
++typedef union {
++    struct {
++        /* Xenomai watchdog data. */
++        unsigned armed;
++        unsigned long perfctr_msr;
++        unsigned long long next_linux_check;
++        unsigned int p4_cccr_val;
++    };
++    char __pad[SMP_CACHE_BYTES];
+ } rthal_nmi_wd_t ____cacheline_aligned;
+=20
+ static rthal_nmi_wd_t rthal_nmi_wds[NR_CPUS];
+
+--------------010400070406030602030605--
+
+--------------enig49FC0F7EA87427FE16A75C33
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEc2T9niDOoMHTA+kRAkvXAJ9kiNaBLCOvmNxPhxB8umAbFQdmXQCcC56K
+QLDaPOtnHpAE8R47VHdVaCQ=
+=Ptoo
+-----END PGP SIGNATURE-----
+
+--------------enig49FC0F7EA87427FE16A75C33--
 
