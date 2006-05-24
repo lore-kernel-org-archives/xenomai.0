@@ -1,10 +1,12 @@
-Message-ID: <34641.155.98.4.39.1148488917.squirrel@domain.hid>
-Date: Wed, 24 May 2006 10:41:57 -0600 (MDT)
-From: "Brandt Erickson" <brandt@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] installing Xenomai on an AMD64
+Content-Type: multipart/mixed; boundary="n3/KqVxevN"
+Content-Transfer-Encoding: 7bit
+Message-ID: <17524.40722.711406.322672@domain.hid>
+Date: Wed, 24 May 2006 19:59:46 +0200
+Subject: Re: [Xenomai-help] Error compiling posix skin
+In-Reply-To: <44743475.4070108@domain.hid>
+References: <44743475.4070108@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,24 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Nicola Pace <nicola@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hey all,
-I'm trying to install xenomai-2.1.2 on a system running ubuntu configured
-for AMD64.  Since xenomai doesn't currently support x86_64, I patched it
-for i386.  Unfortunately, when I go to compile the kernel, I get an error,
 
-  CHK     include/linux/version.h
-  CC      arch/x86_64/kernel/asm-offsets.s
-In file included from include/linux/sched.h:7,
-                 from arch/x86_64/kernel/asm-offsets.c:7:
-include/linux/ipipe.h:28:23: error: asm/ipipe.h: No such file or directory
-make[1]: *** [arch/x86_64/kernel/asm-offsets.s] Error 1
-make: *** [prepare0] Error 2
+--n3/KqVxevN
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
-could anyone fill me in on how to setup and compile xenomai on an x86_64
-system?  I could overwrite the OS with a generic x86 version of ubuntu,
-but that would preferably be a last resort.  Thanks.
--Brandt
+Nicola Pace wrote:
+ > I am trying to compile xenomai.2.2-rc1, but compiling the posix skin I 
+ > get the error :
+ > 
+ > /usr/src/xenomai-2.2-rc1/include/posix/time.h:103: parse error before 
+ > 'clock_id'
+ > 
+ > Some Suggestions ?
 
+Your libc is likely a bit old and does not define clockid_t, what
+version of glibc are you using ? Could you try the attached patch ?
+Maybe other definitions than clockid_t are missing, timer_t for
+example.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
+
+--n3/KqVxevN
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="xeno-posix-time-h.diff"
+Content-Transfer-Encoding: 7bit
+
+Index: include/posix/time.h
+===================================================================
+--- include/posix/time.h	(revision 1135)
++++ include/posix/time.h	(working copy)
+@@ -48,6 +48,11 @@
+ #define CLOCK_MONOTONIC 1
+ #endif /* CLOCK_MONOTONIC */
+ 
++#ifndef __clockid_t_defined
++#define __clockid_t_defined 1
++typedef int clockid_t;
++#endif /* !__clockid_t_defined */
++
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
+ 
+ struct sigevent;
+
+--n3/KqVxevN--
 
