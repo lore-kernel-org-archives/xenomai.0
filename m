@@ -1,12 +1,12 @@
-Message-ID: <f48df4840605241128p6b4547ffv85882b89c9c4382a@domain.hid>
-Date: Wed, 24 May 2006 20:28:45 +0200
-From: "Bruno Rouchouse" <brouchouse@domain.hid>
-Subject: Re: [Xenomai-help] installing Xenomai on an AMD64
-In-Reply-To: <34641.155.98.4.39.1148488917.squirrel@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_7518_24532518.1148495325494"
-References: <34641.155.98.4.39.1148488917.squirrel@domain.hid>
+Date: Wed, 24 May 2006 16:19:00 -0400 (EDT)
+Message-Id: <200605242019.k4OKJ0pj027954@domain.hid>
+From: Gary Wallace <wallace@domain.hid>
+Subject: Re: [Xenomai-help] Almost running - kernel BUG in
+	add_preempt_countat	kernel/sched.c:2819!
+References: <447231CC.9080708@domain.hid><44732162.8050606@domain.hid><200605232248.k4NMmtqC024042@domain.hid>
+	<447404E7.3030804@domain.hid>
+	<EF12971F23B6EE48803C4991CDAF3C8002FD2658@domain.hid>
+Reply-To: wallace@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,71 +16,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Brandt Erickson <brandt@domain.hid>
-Cc: xenomai@xenomai.org
+To: Harshad.Kharche@domain.hid
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid, Jim.Rosenow@domain.hid
 
-------=_Part_7518_24532518.1148495325494
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+  Same results here.  Unfortunately reducing CONFIG_IPIPE_TRACE_SHIFT
+to 12 or 10 doesn't prevent the uncompress error.
 
-Hi Brandlt,
+Gary
 
-On 5/24/06, Brandt Erickson <brandt@domain.hid> wrote:
+------------------------------------
+
+>Date: Wed, 24 May 2006 08:11:44 -0500
+>From: "Kharche, Harshad" <Harshad.Kharche@domain.hid>
 >
-> Hey all,
-> I'm trying to install xenomai-2.1.2 on a system running ubuntu configured
-> for AMD64.  Since xenomai doesn't currently support x86_64, I patched it
-> for i386.  Unfortunately, when I go to compile the kernel, I get an error,
+>I got the same error when i applied the patch and changed
+>CONFIG_IPIPE_TRACE_SHIFT to 12 or 10.
 >
->   CHK     include/linux/version.h
->   CC      arch/x86_64/kernel/asm-offsets.s
-> In file included from include/linux/sched.h:7,
->                  from arch/x86_64/kernel/asm-offsets.c:7:
-> include/linux/ipipe.h:28:23: error: asm/ipipe.h: No such file or directory
-> make[1]: *** [arch/x86_64/kernel/asm-offsets.s] Error 1
-> make: *** [prepare0] Error 2
-
-
-I did get Xenomai compiled on AMD64 but not to work ! Did you compile in 32
-bit mode ?
-What I did is a make ARCH=i386 xconfig to configure my kernel in 32 bit
-mode. The compilation goes then fine but when I boot on my new kernel, I get
-the following error message : "request-module: runaway loop modprobe
-binfmt-464c"
-
-The xenomai patch is not the problem here. In fact I tried to compile my
-Linux kernel for x86 architecture just passing the i386 architecture to
-make. I get the same error message and I'm stuck here atm. I didn't have
-time to investigate more on this problem.
-
-could anyone fill me in on how to setup and compile xenomai on an x86_64
-> system?  I could overwrite the OS with a generic x86 version of ubuntu,
-> but that would preferably be a last resort.  Thanks.
-
-
-I'll let you know if I get any success with it.
-
--Brandt
-
-
-
---
-Bruno Rouchouse
-
-------=_Part_7518_24532518.1148495325494
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi Brandlt,<br><br><div><span class="gmail_quote">On 5/24/06, <b class="gmail_sendername">Brandt Erickson</b> &lt;<a href="mailto:brandt@domain.hid">brandt@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Hey all,<br>I'm trying to install xenomai-2.1.2 on a system running ubuntu configured<br>for AMD64.&nbsp;&nbsp;Since xenomai doesn't currently support x86_64, I patched it<br>for i386.&nbsp;&nbsp;Unfortunately, when I go to compile the kernel, I get an error,
-<br><br>&nbsp;&nbsp;CHK&nbsp;&nbsp;&nbsp;&nbsp; include/linux/version.h<br>&nbsp;&nbsp;CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arch/x86_64/kernel/asm-offsets.s<br>In file included from include/linux/sched.h:7,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from arch/x86_64/kernel/asm-offsets.c:7:<br>include/linux/ipipe.h:28:23: error: asm/ipipe.h: No such file or directory
-<br>make[1]: *** [arch/x86_64/kernel/asm-offsets.s] Error 1<br>make: *** [prepare0] Error 2</blockquote><div><br>I did get Xenomai compiled on AMD64 but not to work ! Did you compile in 32 bit mode ?<br>What I did is a make ARCH=i386 xconfig to configure my kernel in 32 bit mode. The compilation goes then fine but when I boot on my new kernel, I get the following error message : &quot;request-module: runaway loop modprobe binfmt-464c&quot;
-<br><br>The xenomai patch is not the problem here. In fact I tried to compile my Linux kernel for x86 architecture just passing the i386 architecture to make. I get the same error message and I'm stuck here atm. I didn't have time to investigate more on this problem.
-<br></div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">could anyone fill me in on how to setup and compile xenomai on an x86_64<br>system?&nbsp;&nbsp;I could overwrite the OS with a generic x86 version of ubuntu,
-<br>but that would preferably be a last resort.&nbsp;&nbsp;Thanks.</blockquote><div><br>I'll let you know if I get any success with it.<br></div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
--Brandt</blockquote><div><br><br>--<br>Bruno Rouchouse<br><br></div></div>
-
-------=_Part_7518_24532518.1148495325494--
+>    Uncompressing Linux...inflate returned FFFFFFFB
+>   exit
+>
+>- Harshad
+>
+>________________________________
+>
+>From: xenomai-help-bounces@domain.hid on behalf of Philippe Gerum
+>Sent: Wed 5/24/2006 2:01 AM
+>To: wallace@domain.hid
+>Cc: xenomai@xenomai.org; jan.kiszka@domain.hid; Rosenow, Jim
+>Subject: Re: [Xenomai-help] Almost running - kernel BUG in =
+>add_preempt_countat kernel/sched.c:2819!
+>
+>
+>
+>Gary Wallace wrote:
+>>   Thanks for the Makefile patch.  The kernel successfully compiles
+>> with the tracer enabled after applying this.  Unfortunately I am now
+>> getting a different error at boot time.
+>>
+>>   The image file downloads and starts executing but fails with:
+>>
+>> Uncompressing Linux...inflate returned FFFFFFFB
+>> exit
+>
+>Try lowering CONFIG_IPIPE_TRACE_SHIFT to 12.
+>
+>>
+>> Gary
+>>
+>> ------------------------------------
+>>
+>>
+>>>Date: Tue, 23 May 2006 16:51:14 +0200
+>>>From: Philippe Gerum <rpm@xenomai.org>
+>>>
+>>>Gary Wallace wrote:
+>>>
+>>>>  I've attached first the config file used without the motorola
+>>>>patches, and then the config file used with a motorola patched
+>>>>kernel.
+>>>
+>>>Try this:
+>>>
+>>>--- arch/ppc/boot/Makefile~   2006-01-31 07:52:07.000000000 +0100
+>>>+++ arch/ppc/boot/Makefile    2006-05-23 16:49:46.000000000 +0200
+>>>@@ -13,6 +13,14 @@
+>>> CFLAGS               +=3D -fno-builtin -D__BOOTER__ =
+>-Iarch/$(ARCH)/boot/include
+>>> HOSTCFLAGS   +=3D -Iarch/$(ARCH)/boot/include
+>>>
+>>>+ifdef CONFIG_IPIPE_TRACE
+>>>+# do not trace the boot loader
+>>>+nullstring :=3D
+>>>+space      :=3D $(nullstring) # end of the line
+>>>+pg_flag     =3D $(nullstring) -pg # end of the line
+>>>+CFLAGS     :=3D $(subst ${pg_flag},${space},${CFLAGS})
+>>>+endif
+>>>+
+>>> BOOT_TARGETS =3D zImage zImage.initrd znetboot znetboot.initrd
+>>>
+>>> bootdir-y                    :=3D simple
+>>>
+>>>--
+>>>
+>>>Philippe.
+>>>
+>>
+>>
+>
+>
+>--
+>
+>Philippe.
+>
+>_______________________________________________
+>Xenomai-help mailing list
+>Xenomai-help@domain.hid
+>https://mail.gna.org/listinfo/xenomai-help
+>
+>
+>
+>
+>------_=_NextPart_001_01C67F33.FB8CA2D9
+>Content-Type: text/html;
+>	charset="iso-8859-1"
+>Content-Transfer-Encoding: quoted-printable
+>
+><META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+>charset=3Diso-8859-1">=0A=
+><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">=0A=
+><HTML>=0A=
+><HEAD>=0A=
+>=0A=
+><META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+>6.5.7638.1">=0A=
+><TITLE>Re: [Xenomai-help] Almost running - kernel BUG in =
+>add_preempt_countat	kernel/sched.c:2819!</TITLE>=0A=
+></HEAD>=0A=
+><BODY>=0A=
+><DIV dir=3Dltr><FONT face=3D"Trebuchet MS" color=3D#000000 size=3D2>I =
+>got the same error =0A=
+>when i applied the patch and changed <FONT =
+>size=3D2>CONFIG_IPIPE_TRACE_SHIFT to =0A=
+>12&nbsp;or 10.</FONT></FONT></DIV>=0A=
+><DIV dir=3Dltr><FONT face=3D"Trebuchet MS" size=3D2></FONT>&nbsp;</DIV>=0A=
+><DIV dir=3Dltr><FONT size=3D2>&nbsp;&nbsp;&nbsp; Uncompressing =
+>Linux...inflate =0A=
+>returned FFFFFFFB</FONT><BR>&nbsp;&nbsp; exit</DIV>=0A=
+><DIV dir=3Dltr>&nbsp;</DIV>=0A=
+><DIV dir=3Dltr>- Harshad</DIV>=0A=
+><DIV dir=3Dltr><BR></DIV>=0A=
+><DIV dir=3Dltr>=0A=
+><HR tabIndex=3D-1>=0A=
+></DIV>=0A=
+><DIV dir=3Dltr><FONT face=3DTahoma size=3D2><B>From:</B> =
+>xenomai-help-bounces@domain.hid =0A=
+>on behalf of Philippe Gerum<BR><B>Sent:</B> Wed 5/24/2006 2:01 =
+>AM<BR><B>To:</B> =0A=
+>wallace@domain.hid<BR><B>Cc:</B> xenomai@xenomai.org; =
+>jan.kiszka@domain.hid; =0A=
+>Rosenow, Jim<BR><B>Subject:</B> Re: [Xenomai-help] Almost running - =
+>kernel BUG =0A=
+>in add_preempt_countat kernel/sched.c:2819!<BR></FONT><BR></DIV>=0A=
+><DIV>=0A=
+><P><FONT size=3D2>Gary Wallace wrote:<BR>&gt;&nbsp;&nbsp; Thanks for the =
+>Makefile =0A=
+>patch.&nbsp; The kernel successfully compiles<BR>&gt; with the tracer =
+>enabled =0A=
+>after applying this.&nbsp; Unfortunately I am now<BR>&gt; getting a =
+>different =0A=
+>error at boot time.<BR>&gt;<BR>&gt;&nbsp;&nbsp; The image file downloads =
+>and =0A=
+>starts executing but fails with:<BR>&gt;<BR>&gt; Uncompressing =
+>Linux...inflate =0A=
+>returned FFFFFFFB<BR>&gt; exit<BR><BR>Try lowering =
+>CONFIG_IPIPE_TRACE_SHIFT to =0A=
+>12.<BR><BR>&gt;<BR>&gt; Gary<BR>&gt;<BR>&gt; =0A=
+>------------------------------------<BR>&gt;<BR>&gt;<BR>&gt;&gt;Date: =
+>Tue, 23 =0A=
+>May 2006 16:51:14 +0200<BR>&gt;&gt;From: Philippe Gerum =0A=
+>&lt;rpm@xenomai.org&gt;<BR>&gt;&gt;<BR>&gt;&gt;Gary Wallace =0A=
+>wrote:<BR>&gt;&gt;<BR>&gt;&gt;&gt;&nbsp; I've attached first the config =
+>file =0A=
+>used without the motorola<BR>&gt;&gt;&gt;patches, and then the config =
+>file used =0A=
+>with a motorola =
+>patched<BR>&gt;&gt;&gt;kernel.<BR>&gt;&gt;<BR>&gt;&gt;Try =0A=
+>this:<BR>&gt;&gt;<BR>&gt;&gt;--- arch/ppc/boot/Makefile~&nbsp;&nbsp; =
+>2006-01-31 =0A=
+>07:52:07.000000000 +0100<BR>&gt;&gt;+++ =
+>arch/ppc/boot/Makefile&nbsp;&nbsp;&nbsp; =0A=
+>2006-05-23 16:49:46.000000000 +0200<BR>&gt;&gt;@@ -13,6 +13,14 =
+>@@<BR>&gt;&gt; =0A=
+>CFLAGS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =0A=
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +=3D -fno-builtin -D__BOOTER__ =0A=
+>-Iarch/$(ARCH)/boot/include<BR>&gt;&gt; HOSTCFLAGS&nbsp;&nbsp; +=3D =0A=
+>-Iarch/$(ARCH)/boot/include<BR>&gt;&gt;<BR>&gt;&gt;+ifdef =0A=
+>CONFIG_IPIPE_TRACE<BR>&gt;&gt;+# do not trace the boot =0A=
+>loader<BR>&gt;&gt;+nullstring =
+>:=3D<BR>&gt;&gt;+space&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =0A=
+>:=3D $(nullstring) # end of the =
+>line<BR>&gt;&gt;+pg_flag&nbsp;&nbsp;&nbsp;&nbsp; =3D =0A=
+>$(nullstring) -pg # end of the =
+>line<BR>&gt;&gt;+CFLAGS&nbsp;&nbsp;&nbsp;&nbsp; =0A=
+>:=3D $(subst =0A=
+>${pg_flag},${space},${CFLAGS})<BR>&gt;&gt;+endif<BR>&gt;&gt;+<BR>&gt;&gt;=
+> =0A=
+>BOOT_TARGETS =3D zImage zImage.initrd znetboot =0A=
+>znetboot.initrd<BR>&gt;&gt;<BR>&gt;&gt; bootdir-y&nbsp;&nbsp;&nbsp; =0A=
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =0A=
+>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :=3D =0A=
+>simple<BR>&gt;&gt;<BR>&gt;&gt;--<BR>&gt;&gt;<BR>&gt;&gt;Philippe.<BR>&gt;=
+>&gt;<BR>&gt;<BR>&gt;<BR><BR><BR>--<BR><BR>Philippe.<BR><BR>______________=
+>_________________________________<BR>Xenomai-help =0A=
+>mailing list<BR>Xenomai-help@domain.hid<BR><A =0A=
+>href=3D"https://mail.gna.org/listinfo/xenomai-help">https://mail.gna.org/=
+>listinfo/xenomai-help</A><BR><BR></FONT></P></DIV>=0A=
+>=0A=
+></BODY>=0A=
+></HTML>
+>------_=_NextPart_001_01C67F33.FB8CA2D9--
+>
 
