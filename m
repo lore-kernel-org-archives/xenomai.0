@@ -1,10 +1,10 @@
-From: Bart Jonkers <jonkersbart@domain.hid>
-Content-Type: text/plain
-Date: Thu, 25 May 2006 10:47:38 +0200
-Message-Id: <1148546858.9498.5.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <44763D2B.30007@domain.hid>
+Date: Thu, 25 May 2006 16:26:35 -0700
+From: Nathaniel Villaume <villaume@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Xenomai in PXA255
+Subject: [Xenomai-help] VxWorks side-by-side with POSIX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,18 +16,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hey,
+Hello all,
 
-I'm trying to run Xenomai enabled kernel on the PXA255 (arm). When I
-compile the patched kernel, I get some undefined references errors.
-When I search through the patched kernel, I found the functions an
-variables defined for the integrator architecture.
+Pardon my ignorance, and please tolerate my sloth, but is it possible 
+(and easy) to run skins side-by-side and have them communicate through 
+IPCs? So I'd like to run a process that uses VxWorks calls, and then 
+another one that uses POSIX, and yet have them communicate via one or 
+two semaphores and shared memory.
 
-Which functions and variables need I to define for the PXA255 and what
-are there purpose, so I can add support for the PXA255 processor.
-Or are there some patches around to support the PXA255.
-
-Thanks,
-Bart
+TIA,
+-Nate
 
 
