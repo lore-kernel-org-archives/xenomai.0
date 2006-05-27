@@ -1,15 +1,12 @@
+Message-ID: <44786C8F.9070201@domain.hid>
+Date: Sat, 27 May 2006 17:13:19 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17528.22828.865403.975935@domain.hid>
-Date: Sat, 27 May 2006 15:50:36 +0200
-Subject: Re: [Xenomai-core] Xenomai v2.2-rc2
-In-Reply-To: <200605261944.18514.niklaus.giger@domain.hid>
-References: <446F852B.7090400@domain.hid>
-	<200605240721.24897.niklaus.giger@domain.hid>
-	<17527.11352.471153.316802@domain.hid>
-	<200605261944.18514.niklaus.giger@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7472B0FD30EC8FDCD68E15FE"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [sim] ... doesn't build
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,50 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Niklaus Giger wrote:
- > posix->tthread:: tthread.c:91 pthread_join(child1, &tmp) == ESRCH
- > tthread.c:91 pthread_join(child1, &tmp) == ESRCH
- > 
- > Running libtool --mode=execute gdb ./tthread I can give you the following call 
- > stack:
- > tthread.c:89 TEST passed.
- > tthread.c:91 pthread_join(child1, &tmp) == ESRCH
- > 
- > Program received signal SIGSEGV, Segmentation fault.
- > 0x1000e81c in pse51_thread_join (thread=0x6061ff71, value_ptr=0x100f9f00) 
- > at ../../../ksrc/skins/posix/thread.c:409
- > 409         if (!pse51_obj_active(thread, PSE51_THREAD_MAGIC, struct 
- > pse51_thread)
- > (gdb) info stack
- > #0  0x1000e81c in pse51_thread_join (thread=0x6061ff71, value_ptr=0x100f9f00) 
- > at ../../../ksrc/skins/posix/thread.c:409
- > #1  0x10006734 in root_thread (cookie=0x0) at tthread.c:91
- > #2  0x1000d728 in thread_trampoline (cookie=0x100d1838) 
- > at ../../../ksrc/skins/posix/thread.c:56
- > #3  0x10050f78 in mvm_thread_trampoline_kroot_ ()
- > #4  0x0ffd10b4 in XenoThread::trampoline_kroot_ () 
- > from /home/buildslave/buildbot/quick-sim/build/sim/vm/.libs/libmvm.so.2
- > #5  0x0ffd1150 in XenoThread::body () 
- > from /home/buildslave/buildbot/quick-sim/build/sim/vm/.libs/libmvm.so.2
- > #6  0x0ffd2c58 in MvmThread::life () 
- > from /home/buildslave/buildbot/quick-sim/build/sim/vm/.libs/libmvm.so.2
- > #7  0x0fba6ad0 in makecontext () from /lib/tls/libc.so.6
- > Previous frame inner to this frame (corrupt stack?)
- > (gdb)                                                
- > 
- > Do you have any clue? (Doubling the stack in vm/thread.cc didn't help.)
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7472B0FD30EC8FDCD68E15FE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This test is really questionable, it tests that pthread_join returns
-ESRCH when passed a pthread_t argument that is not yet initialized. But
-if the not yet initialized pthread_t value is an invalid address, it
-may cause a segmentation fault. The best thing to do is to remove this
-test.
+Hi,
 
--- 
+I just tried to get the simulator from trunk built but failed here:
+
+In file included from ../../../../xenomai/sim/../include/posix/posix.h:29=
+,
+                 from
+=2E./../../../xenomai/sim/../ksrc/skins/posix/internal.h:24,
+                 from
+=2E./../../../xenomai/sim/../ksrc/skins/posix/thread.h:23,
+                 from
+=2E./../../../xenomai/sim/../ksrc/skins/posix/sched.c:48:
+=2E./../../../xenomai/sim/../include/posix/pthread.h:246: conflicting
+types for `pthread_attr_getaffinity_np'
+/usr/include/pthread.h:383: previous declaration of
+`pthread_attr_getaffinity_np'
+=2E./../../../xenomai/sim/../include/posix/pthread.h:249: conflicting
+types for `pthread_attr_setaffinity_np'
+/usr/include/pthread.h:377: previous declaration of
+`pthread_attr_setaffinity_np'
+
+Looks like glibc-2.4 (that one comes with my opensuse 10.1) now also
+knows get/setaffinity. Prototypes of glibc:
+
+extern int pthread_attr_setaffinity_np (pthread_attr_t *__attr,
+                                        size_t __cpusetsize,
+                                        __const cpu_set_t *__cpuset)
+__THROW;
+extern int pthread_attr_getaffinity_np (__const pthread_attr_t *__attr,
+                                        size_t __cpusetsize,
+                                        cpu_set_t *__cpuset) __THROW;
+
+Moreover, I get tons of this warning:
+
+/usr/include/bits/pthreadtypes.h:69: warning: unnamed struct/union that
+defines no instances
+
+But this is an "imported" issue, isn't it? Likely due to some picky gcc
+switch during the simulator build.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+PS: I already committed this tiny fix to make gcc-4.1 happy:
+
+--- sim/vm/interrupt.h  (Revision 1140)
++++ sim/vm/interrupt.h  (Arbeitskopie)
+@@ -145,7 +145,7 @@ public:
+        return currentIrq;
+     }
+
+-    int MvmIrqManager::onHandlerP () {
++    int onHandlerP () {
+        return !!getCurrentIrq();
+     }
+
+
+--------------enig7472B0FD30EC8FDCD68E15FE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFEeGyjniDOoMHTA+kRAjfIAJ47HV7KJ34YO8JAAr7f6dihC8kLEgCeKfrC
+u3VR4pfXjQukRdgktnbvhUU=
+=0LI7
+-----END PGP SIGNATURE-----
+
+--------------enig7472B0FD30EC8FDCD68E15FE--
 
