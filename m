@@ -1,13 +1,13 @@
-From: Marco Jackel <ich@domain.hid>
-Date: Tue, 16 May 2006 20:56:15 +0200
-Message-ID: <e4d78d$pc4$1@domain.hid>
-References: <e4c3bv$829$1@domain.hid> <44699D5A.9070806@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4479EA8E.5090607@domain.hid>
+Date: Sun, 28 May 2006 20:23:10 +0200
+From: Jean-Olivier Villemure <jean-olivier.villemure@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Best way to identify a Xenomai task
+References: <44781751.30705@domain.hid>
+	<17528.17846.771613.406263@domain.hid>
+In-Reply-To: <17528.17846.771613.406263@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <44699D5A.9070806@domain.hid>
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: [RTDM] best strategy for periodic reading
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi Jan,
+Gilles Chanteperdrix wrote:
+> The task Id of a new task is also returned by the task creation
+> services:
+> - rt_task_create for the native skin
+>   
+Thank you for your answer!
 
-Jan Kiszka wrote:
-  > What is the usage model of your driver? Is there an application thread
-> associated to each frequency or even each channel? Or is there a single
-> reader which gets woken up once some channel finishes the conversion? Or
-> does the application requests a bulk of samples from multiple channels?
+Looking at the API, i see that rt_task_create returns:
+- 0 is returned upon success. Otherwise:
+- ENOMEM is returned if the system fails to get enough dynamic memory 
+from the global real-time heap in order to create or register the task.
+- EEXIST is returned if the /name/ is already in use by some registered 
+object.
+- EPERM is returned if this service was called from an asynchronous context.
 
-I want to implement this as a single reader. The only thing I've to do 
-is to log the data from the different channels to one or more file(s).
+So according to this, no TaskId is returned by this function since 0 is 
+returned upon success. But according to the EEXIST error, can we 
+considerate that the name of the task is unique? So I could simply use 
+this information to identify my tasks ?
 
-> Depending on that usage model, an alternative way to implement your
-> driver is to let the application generate the conversion clock, i.e. let
-> it poll the data (maybe just blocking on the conversion completion).
+Thank you again :-)
 
-I'll try that.
-
-> On the other hand, if the acquisition job currently performed in
-> rtdm_tasks is rather light-weight,
-
-I think so, only a few small macros with bit-operations that set/read 
-the register from the ISA-card
-
-> maybe timers would help you to reduce
-> the overhead involved in multiple threads reading from the same device
-> (including locking etc.). Unfortunately, an RTDM interface for direct
-> timer usage has not yet been fully specified. Some preliminary patch
-> hangs around on my box for quite a few months now. Do you see advantages
-> for your scenario when using timers, i.e. executing the periodic jobs
-> directly in the context of the timer IRQ handler? If yes, I could try to
-> accelerate the finalisation of this patch.
-
-There are some sensors on the serial device, too, and the event-driven 
-programming is a very elegant way (using xeno_16550A with 
-"rt_dev_ioctl(imu_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event );". So I 
-thought it would be nice to implement the driver for the ISA-card in a 
-similar way.
-
-Thanks
-Maggo
-
+Jean-Olivier
 
