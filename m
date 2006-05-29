@@ -1,14 +1,15 @@
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17531.5942.353611.748409@domain.hid>
+Date: Mon, 29 May 2006 17:45:58 +0200
 Subject: Re: [Xenomai-core] Xenomai on PXA255
-From: Stelian Pop <stelian.pop@domain.hid>
-In-Reply-To: <1148912044.9574.30.camel@domain.hid>
+In-Reply-To: <1148913934.5494.15.camel@domain.hid>
 References: <1148554757.9498.19.camel@domain.hid>
 	<17530.65147.519598.892978@domain.hid>
 	<1148912044.9574.30.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Mon, 29 May 2006 16:45:33 +0200
-Message-Id: <1148913934.5494.15.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+	<1148913934.5494.15.camel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,55 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bart Jonkers <jonkersbart@domain.hid>
+To: Stelian Pop <stelian.pop@domain.hid>
 Cc: xenomai@xenomai.org
 
-Le lundi 29 mai 2006 =E0 16:14 +0200, Bart Jonkers a =E9crit :
+Stelian Pop wrote:
+ > If you have specific questions feel free to ask. But I suggest you read
+ > and try to understand the code first.
 
-> > The Ipipe patch for ARM only support the integrator platform for
-> > now. There exist patch for another ARM platform, but it exist only as
-> > a separated patch. Looking at the patch contents it seems that the on=
-ly
-> > patched files specific to the integrator architecture are :
-> > arch/arm/mach-integrator/core.c
-> > arch/arm/mach-integrator/integrator_cp.c
-> > include/asm-arm/arch-integrator/entry-macro.S
-> > include/asm-arm/arch-integrator/platform.h
-> > include/asm-arm/arch-integrator/timex.h
-> >=20
-> > Looking rapidly at these files, it seems that the machine specific
-> > functions and variables are reduced to:
-> >=20
-> > int __ipipe_mach_timerint;
-> > int __ipipe_mach_timerstolen;
-> > unsigned int __ipipe_mach_ticks_per_jiffy;
-> >=20
-> > void __ipipe_mach_acktimer(void);
-> > unsigned long long __ipipe_mach_get_tsc(void);
-> > void __ipipe_mach_set_dec(unsigned long reload);
-> > unsigned long __ipipe_mach_get_dec(void);
-> >=20
-> > If you provide the same variables and functions for the PXA platform,=
- I
-> > think there is no modification to be done at Xenomai level.
+Maybe we could provide a quick overview of how this works, Stelian,
+please correct me if I am wrong. 
 
-Gilles is 100% correct. All the platform specific code has to do is
-provide the low level timer manipulation functions.
+If we start before rthal_timer_request is called, when the timer is
+handled by Linux, we see that __ipipe_decr_ticks is set to
+__ipipe_mach_ticks_per_jiffy, so that __ipipe_grab_irq does not
+reprogram the timer. But __ipipe_mach_timerstolen is set to 0, so
+integrator_timer_interrupt reprogram the timer at each tick.
 
-> I found this out already. But it would be a easier to implement this
-> functions if I know what they have to do. So could somebody give an
-> explanation of this variables and functions?
+Now, when rthal_timer_request (defined in  ksrc/arch/arm/hal.c) is
+called when Xenomai start handling the timer, we can see the two
+different modes:
 
-Well, __ipipe_mach_acktimer acks the timer, __ipipe_mach_get_tsc returns
-the TSC of the platform, __ipipe_mach_set_dec sets the decrementer etc.
-Should I go on ?
+- in periodic mode, ipipe_tune_timer get called (indirectly via
+  rthal_set_timer, defined in include/asm-generic/hal.h), so
+  the proper value of __ipipe_decr_ticks is computed using
+  __ipipe_mach_ticks_per_jiffy, and __ipipe_mach_set_dec get called by
+  __ipipe_grab_irq at each tick to reprogram the timer
 
-If you have specific questions feel free to ask. But I suggest you read
-and try to understand the code first.
+- in aperiodic (aka one-shot) mode, ipipe_tune_timer does not get
+  called, so __ipipe_decr_ticks remains set to
+  __ipipe_mach_ticks_per_jiffy and __ipipe_grab_irq does not call
+  __ipipe_mach_set_dec. Instead, __ipipe_mach_set_dec is called for
+  each shot by Xenomai (function rthal_timer_program_shot in
+  include/asm-arm/hal.h)
 
-Stelian.
---=20
-Stelian Pop <stelian.pop@domain.hid>
+In both modes, __ipipe_mach_timerstolen is set to 1, so that
+integrator_timer_interrupt never reprograms the timer. 
+
+When CONFIG_IPIPE is set, integrator_timer_interrupt never acks the
+timer interrupt, instead, it gets ack'ed and unmasked in
+__ipipe_ack_timerirq, installed as an acknowledge function for the timer
+IRQ in __ipipe_enable_pipeline.
+
+-- 
 
 
+					    Gilles Chanteperdrix.
 
