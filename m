@@ -1,15 +1,16 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17531.5942.353611.748409@domain.hid>
-Date: Mon, 29 May 2006 17:45:58 +0200
 Subject: Re: [Xenomai-core] Xenomai on PXA255
-In-Reply-To: <1148913934.5494.15.camel@domain.hid>
+From: Stelian Pop <stelian.pop@domain.hid>
+In-Reply-To: <17531.5942.353611.748409@domain.hid>
 References: <1148554757.9498.19.camel@domain.hid>
 	<17530.65147.519598.892978@domain.hid>
 	<1148912044.9574.30.camel@domain.hid>
 	<1148913934.5494.15.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+	<17531.5942.353611.748409@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Date: Mon, 29 May 2006 21:17:55 +0200
+Message-Id: <1148930275.3483.8.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,49 +20,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stelian Pop <stelian.pop@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Stelian Pop wrote:
- > If you have specific questions feel free to ask. But I suggest you read
- > and try to understand the code first.
+Le lundi 29 mai 2006 =E0 17:45 +0200, Gilles Chanteperdrix a =E9crit :
+> Stelian Pop wrote:
+>  > If you have specific questions feel free to ask. But I suggest you r=
+ead
+>  > and try to understand the code first.
+>=20
+> Maybe we could provide a quick overview of how this works, Stelian,
+> please correct me if I am wrong.=20
 
-Maybe we could provide a quick overview of how this works, Stelian,
-please correct me if I am wrong. 
+Your description is accurate. However, such deep knowledge on the inner
+workings should not be needed to port Xenomai to a new ARM platform.
+(well, in case it works immediately. Debugging the port could need more
+knowledge :) ).
 
-If we start before rthal_timer_request is called, when the timer is
-handled by Linux, we see that __ipipe_decr_ticks is set to
-__ipipe_mach_ticks_per_jiffy, so that __ipipe_grab_irq does not
-reprogram the timer. But __ipipe_mach_timerstolen is set to 0, so
-integrator_timer_interrupt reprogram the timer at each tick.
+In the list of 'undocumented' functions there is also
+__ipipe_mach_get_tsc() which should return some accurate time
+information. Most of the ARM platforms do not have a special Time Stamp
+Clock register, so most of the time the tick count is used instead
+(giving a TSC resolution of one microsecond). This is what standard
+Linux also use.
 
-Now, when rthal_timer_request (defined in  ksrc/arch/arm/hal.c) is
-called when Xenomai start handling the timer, we can see the two
-different modes:
+If the platform has something more appropriate than the core timer for
+measuring the time, this function is where you need to wire it.
 
-- in periodic mode, ipipe_tune_timer get called (indirectly via
-  rthal_set_timer, defined in include/asm-generic/hal.h), so
-  the proper value of __ipipe_decr_ticks is computed using
-  __ipipe_mach_ticks_per_jiffy, and __ipipe_mach_set_dec get called by
-  __ipipe_grab_irq at each tick to reprogram the timer
+Stelian.
+--=20
+Stelian Pop <stelian.pop@domain.hid>
+Open Wide
 
-- in aperiodic (aka one-shot) mode, ipipe_tune_timer does not get
-  called, so __ipipe_decr_ticks remains set to
-  __ipipe_mach_ticks_per_jiffy and __ipipe_grab_irq does not call
-  __ipipe_mach_set_dec. Instead, __ipipe_mach_set_dec is called for
-  each shot by Xenomai (function rthal_timer_program_shot in
-  include/asm-arm/hal.h)
-
-In both modes, __ipipe_mach_timerstolen is set to 1, so that
-integrator_timer_interrupt never reprograms the timer. 
-
-When CONFIG_IPIPE is set, integrator_timer_interrupt never acks the
-timer interrupt, instead, it gets ack'ed and unmasked in
-__ipipe_ack_timerirq, installed as an acknowledge function for the timer
-IRQ in __ipipe_enable_pipeline.
-
--- 
-
-
-					    Gilles Chanteperdrix.
 
