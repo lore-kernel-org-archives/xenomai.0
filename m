@@ -1,15 +1,9 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <39142.155.98.4.39.1149186052.squirrel@domain.hid>
+Date: Thu, 1 Jun 2006 12:20:52 -0600 (MDT)
+From: "Brandt Erickson" <brandt@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17534.51974.92955.465953@domain.hid>
-Date: Thu, 1 Jun 2006 13:09:58 +0200
-Subject: Re: [Xenomai-help] How to make main sleep ? clock_nanosleep
-	?	rt_alarm_wait ?
-In-Reply-To: <447EB4A8.5090809@domain.hid>
-References: <447E9A1B.10507@domain.hid>
-	<17534.43220.103310.355438@domain.hid>
-	<447EB4A8.5090809@domain.hid>
+Content-Type: multipart/mixed;boundary="----=_20060601122052_91268"
+Subject: [Xenomai-help] xnpod help
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,62 +13,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Lionel Perrin <perrin@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Lionel Perrin wrote:
- > Thanks for your answer. That's really great to have support so quickly. :)
- > >  > I got some difficulties to use either rt_alarm_wait or clock_nanosleep.
- > >  > It seems i haven't understood what's a "context that can sleep".
- > >  > 
- > >  > First of all, what do we need to use clock_nanosleep ?
- > >  > Is it impossible to use this function in the main thread ?
- > >
- > > Xenomai clock_nanosleep, nanosleep or rt_alarm_wait services are
- > > reserved to Xenomai real-time threads, and will return an error of EPERM
- > > otherwise.
- > >   
- > Ok. So the thread "main" is not a Xenomai real-time,  right ?
- > 
- > > If you want to obtain a Xenomai real-time thread using the posix skin
- > > you have to make it use the SCHED_FIFO policy, either by creating it
- > > with the pthread_create service, specifying non null creation attributes
- > > or by changing the scheduling policy of an existing thread with
- > > the pthread_setschedparam service.
- > >   
- > Is it possible to apply those methods to the thread "main" ?
+------=_20060601122052_91268
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
 
-You can not create the main thread with pthread_create, but you can make
-it real-time with pthread_setschedparam.
+Hey,
+I'm trying to write a simple looping module to test out xenomai nucleus
+usage.  The problem is, when I insert the module (code attached), only the
+printks from the initialization function ever get displayed and none from
+the indefinite loop.  All the pod startup functions return success, so is
+the thread working and just not successfully sending the messages out or
+is the thread not starting up at all?  Could someone tell me if I'm using
+the xenomai nucleus correctly?  Thanks.
+-Brandt
+
+------=_20060601122052_91268
+Content-Type: text/x-csrc; name="runloop.c"
+Content-Transfer-Encoding: 8bit
+Content-Disposition: attachment; filename="runloop.c"
 
 
- > There's still my sched_setscheduler enigma.
- > Why the following program need the commented line to run perfectly, and 
- > why nanosleep failed without those lines  ?
-
-Maybe because the default value of the inheritsched attribute is not
-what you expect ? You can check if a thread uses a real-time scheduling
-policy with pthread_getschedparam.
-
- > (...)
- >     if(pthread_attr_init(&th_attr))
- >         perror("pthead_attr_init");
- >    
- >     if (pthread_attr_setschedpolicy(&th_attr, SCHED_FIFO))
- >         perror("pthread_attr_setschedpolicy");
- >    
- >     if (pthread_create(&th, &th_attr, task, NULL))
- >         perror("pthread_create");;
- >    
- >     if(pthread_join(th, NULL))
- >         perror("pthread_join");
- > (...)
-
-perror will not work with pthread_* services: they do not use errno,
-they return errors directly.
-
--- 
+////// Standard C/C++ headers //////
+#include <linux/module.h>       
+#include <linux/kernel.h>       
 
 
-					    Gilles Chanteperdrix.
+////// Xenomai (real-time) headers //////
+#include <nucleus/xenomai.h>
+
+
+////// Self-Header //////
+#include "runloop.h"  //Right now an empty header
+
+
+////// Global Variables for this Module //////
+xnthread_t thread;
+
+
+////// Loop Function Declaration //////
+void runloop_fcn(int arg);
+
+
+////// Module Initialization //////
+int init_module(void) {
+
+
+  /*
+  int xnpod_init_thread(xnthread_t *thread,
+			const char *name,
+			int prio,
+			xnflags_t flags,
+			unsigned stacksize);
+  */
+
+  printk("Thread Initialization ...\n");
+  switch (xnpod_init_thread(&thread, "Control Thread", 0, XNFPU, 0)) {
+  case EINVAL:
+  case -EINVAL:
+    printk("EINVAL\n");
+    break;
+  case ENOMEM:
+  case -ENOMEM:
+    printk("ENOMEM\n");
+    break;
+  case 0:
+    printk("Success.\n");
+    break;
+  default:
+    printk("Unknown error.\n");
+  }
+
+
+  /*
+  int xnpod_start_thread(xnthread_t *thread,
+			 xnflags_t mode,
+			 int imask,
+			 xnarch_cpumask_t affinity,
+			 void(*)(void *cookie) entry,
+			 void * cookie);
+  */
+  printk("Starting Thread ...\n");
+  switch (xnpod_start_thread(&thread, 0, 1, XNPOD_ALL_CPUS,
+			     runloop_fcn, NULL)) {
+  case EBUSY:
+  case -EBUSY:
+    printk("EBUSY\n");
+    break;
+  case EINVAL:
+  case -EINVAL:
+    printk("EINVAL\n");
+    break;
+  case 0:
+    printk("Success.\n");
+    break;
+  default:
+    printk("Unknown error.\n");
+  }
+
+
+  /*
+  int xnpod_start_timer(u_long nstick,
+			xnisr_t tickhandler);
+  */
+
+  
+  printk("Starting Timer ...\n");
+  switch (xnpod_start_timer(1, XNPOD_DEFAULT_TICKHANDLER)) {
+  case EBUSY:
+  case -EBUSY:
+    printk("EBUSY\n");
+    break;
+  case EINVAL:
+  case -EINVAL:
+    printk("EINVAL\n");
+    break;
+  case ENODEV:
+  case -ENODEV:
+    printk("ENODEV\n");
+    break;
+  case ENOSYS:
+  case -ENOSYS:
+    printk("ENOSYS\n");
+    break;
+  case 0:
+    printk("Success.\n");
+    break;
+  default:
+    printk("Unknown error.\n");
+  }
+  
+
+
+
+  /*
+  int xnpod_set_thread_periodic(xnthread_t *thread,
+				xnticks_t idate,
+				xnticks_t period);
+  */
+
+  
+  printk("Setting periodic behavior  ...\n");
+  switch (xnpod_set_thread_periodic(&thread, xnpod_get_time() + 1000000, 
+				    1000000)) {
+  case ETIMEDOUT:
+  case -ETIMEDOUT:
+    printk("ETIMEOUT\n");
+    break;
+    
+  case EWOULDBLOCK:
+  case -EWOULDBLOCK:
+    printk("EWOULDBLOCK\n");
+    break;
+
+  case 0:
+    printk("Success.\n");
+    break;
+  default:
+    printk("Unknown error.\n");
+  }
+
+  xnpod_unblock_thread(&thread);
+
+  return 0;
+}
+
+
+////// Module Cleanup //////
+void cleanup_module(void) {
+  xnpod_stop_timer();
+  xnpod_delete_thread(&thread);
+}
+
+
+
+////// Realtime Loop Function //////
+void runloop_fcn(int arg) {
+  printk("Loop Thread Started.\n");
+  while (1) {
+    xnpod_wait_thread_period(NULL);
+    printk("Timer: %d\n", (int)xnpod_get_time());
+  }
+}
+------=_20060601122052_91268--
+
+
 
