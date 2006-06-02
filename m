@@ -1,75 +1,41 @@
-Message-ID: <446DDA56.3050209@domain.hid>
-Date: Fri, 19 May 2006 16:46:46 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4480CEE3.40309@domain.hid>
+Date: Fri, 02 Jun 2006 17:50:59 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_delete behavior
-References: <6ee4c8380605172215i34e83797i709de4a314412618@domain.hid>	
-	<446C29A9.3030508@domain.hid>
-	<6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>
-In-Reply-To: <6ee4c8380605190702l323f5d57v234d055b1cfeff5a@domain.hid>
+Subject: Re: [Xenomai-core] [rfc] unit testing context switches.
+References: <17536.40316.183366.284818@domain.hid>
+In-Reply-To: <17536.40316.183366.284818@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Brian L." <bluczkie@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Brian L. wrote:
-> CPU   PID   PRI   TIMEOUT   STAT   NAME
-> 0     0        0     0      R      ROOT
-> 
+Gilles Chanteperdrix wrote:
+> Now that the big context switches bugs have been solved, here is a patch
+> that adds a unit test for context switches and FPU switches
+> with various type of threads (kernel, user, user in secondary mode,
+> not using FPU, using FPU, etc...). As is the case of the latency test
+> there is a small RTDM driver in kernel-space, put in the benchmark
+> class, even though this test is for unit testing, not for benchmarking.
+>
+> The FPU switches need a small piece of code architecture dependent,
+> put in <asm/xenomai/fptest.h>, currently only implemented for x86.
+>
+> The kernel-space driver is called xeno_switchtest.ko, the user-space
+> testing tool is called switchtest, because there is already a context
+> switch benchmarking tool called "switch".
+>
+>   
 
-Is this snapshot obtained while the application is still hanging?
-
-> 
-> On 5/18/06, Philippe Gerum <rpm@xenomai.org> wrote:
-> 
->> Brian L. wrote:
->> > I'm calling what amounts to rt_task_delete(rt_task_self()) and the
->> > task simply hangs, with this call never returning.
->> > rt_task_delete(NULL) behaves identically.
->> >
->> > What could cause this behavior? The problem is embedded within a
->> > nontrivial application, but it seems that it's not behaving according
->> > to spec which says that the caller will only block when:
->> >
->> > 1. The target is in a "safe section"
->> >
->> > and
->> >
->> > 2. The caller is not the target
->> >
->> > Any ideas?
->> >
->>
->> Could you post the output of
->>
->> $ cat /proc/xenomai/sched
->>
->> TIA,
->>
->> > _______________________________________________
->> > Xenomai-help mailing list
->> > Xenomai-help@domain.hid
->> > https://mail.gna.org/listinfo/xenomai-help
->> >
->>
->>
->> -- 
->>
->> Philippe.
->>
-> 
-
-
--- 
-
-Philippe.
+does this maybe warrant a rename of both, to preclude the inevitable
+'whats the difference between' Qs (sent or unsent) ?
 
