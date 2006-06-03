@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17537.47534.76660.971270@domain.hid>
-Date: Sat, 3 Jun 2006 18:32:46 +0200
-Subject: Re: [Xenomai-core] Trivial patch
-In-Reply-To: <20060602224119.9F22D353A57@domain.hid>
-References: <20060602224119.9F22D353A57@domain.hid>
+Message-ID: <17537.48372.286093.220257@domain.hid>
+Date: Sat, 3 Jun 2006 18:46:44 +0200
+Subject: Re: [Xenomai-core] [rfc] unit testing context switches.
+In-Reply-To: <44813683.9040202@domain.hid>
+References: <17536.40316.183366.284818@domain.hid>
+	<44813683.9040202@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,13 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
+To: Heikki Lindholm <holindho@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wolfgang Denk wrote:
- > Please consider applying the following trivial patch:
+Heikki Lindholm wrote:
+ > Gilles Chanteperdrix kirjoitti:
+ > > Now that the big context switches bugs have been solved, here is a patch
+ > > that adds a unit test for context switches and FPU switches
+ > > with various type of threads (kernel, user, user in secondary mode,
+ > > not using FPU, using FPU, etc...). As is the case of the latency test
+ > > there is a small RTDM driver in kernel-space, put in the benchmark
+ > > class, even though this test is for unit testing, not for benchmarking.
+ > 
+ > Some months back when I was debugging an FPU bug on the ppc, I made 
+ > similar test cases. Do you test the Linux side at all (does linux 
+ > user/kernel task's fpu state get messed)? 
 
-Applied, thanks.
+No, currently the only Linux regular task, the idle task, does not use
+FPU, but it may be changed easily.
+
+ > Though, I'm not sure if any 
+ > driver uses FPU in linux kernel, but at least the PPC Altivec unit is 
+ > used by RAID drivers. Btw. at least back then, Xenomai would have messed 
+ > FPU state for a linux kernel task.
+
+x86 has the same issue: RAID driver use mmx, sse or sse2, and manually
+disable preemption, clear the ts bit, save the FPU registers
+contents before using mmx, sse or sse2, and restore the original state
+when done. If Xenomai ever preempts at that point, and the underlying
+task has not use its FPU, the contents of the FPU registers will be
+lost.
+
+The only fix I see is to change the FPU switching code to only rely on
+the state of the FPU hardware FPU bits, and not on the status bits of
+the interrupted task.
+
 
 -- 
 
