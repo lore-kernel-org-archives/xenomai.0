@@ -1,13 +1,10 @@
-Message-ID: <4483444E.20304@domain.hid>
-Date: Sun, 04 Jun 2006 22:36:30 +0200
+Message-ID: <4483EA60.3030702@domain.hid>
+Date: Mon, 05 Jun 2006 10:25:04 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai v2.2-rc2
-References: <446F852B.7090400@domain.hid>
-	<200605211642.40509.niklaus.giger@domain.hid>
-In-Reply-To: <200605211642.40509.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Blackfin upgrade notification
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,56 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
+To: adeos-main@gna.org
 Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Am Samstag, 20. Mai 2006 23:07 schrieb Philippe Gerum:
-> 
->>Here is the second release candidate for the v2.2 branch. Short log
->>follows:
-> 
-> Could you please apply the patch below to make xeno-test send e-mails to 
-> xenomai-data@domain.hid.
-> 
-> I am unsure whether setting sentby='xenotest.sender@domain.hid' is a good 
-> idea. Or is this a way to accept e-mails from unkown senders? In any way I 
-> think it would be nice if one could accept xeno-test messages from 
-> unsubscribed senders.
-> 
-> I really would like to collect some real data.
-> 
 
-Applied, thanks.
+This is a note to the Xenomai and/or Adeos users over the Blackfin 
+architecture. A very annoying issue (aka brown-paperbag bug) has just 
+been fixed in the Adeos/blackfin support, which basically made all POSIX 
+timing services inaccurate. Upgrading to the newest patch is strongly 
+recommended.
 
-> Thanks in advance.
-> 
-> Niklaus Giger
-> 
-> Index: scripts/xeno-test.in
-> ===================================================================
-> --- scripts/xeno-test.in        (Revision 1135)
-> +++ scripts/xeno-test.in        (Arbeitskopie)
-> @@ -19,7 +19,7 @@
->                 name can be full or relative pathname
->    -v           verbose
->    -M <email>   sends output to given addr
-> -  -m           sends output to xenotest.output@domain.hid
-> +  -m           sends output to xenomai-data@domain.hid
->    -U <url>     uploads output to given URL
-> 
->    # following options are passed thru to latency
-> @@ -167,7 +167,7 @@
->  logprefix=/tmp/        # someplace usually there
->  prepost=       # command to run pre, and post test (ex ntpq -p)
-> 
-> -email='xenotest.output@domain.hid'      # until formalized
-> +email='xenomai-data@domain.hid'
->  sentby='xenotest.sender@domain.hid'
->  url=
->  sendit=                # send it by m-mail, u-url
-> 
+The following patch is based on the 2.6.16 kernel shipped with the 
+latest uClinux for Blackfin release R2006R1-RC2:
+http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-R06R1RC2-bf53x-1.4-03.patch
 
+This one is based on the CVS head from 
+cvs.blackfin.uclinux.org:/cvsroot/uclinux533, as of yesterday:
+http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-cvs-20060604-bf53x-1.4-03.patch
+
+Both patches work for the bf533 and bf537 boards. Those patches have 
+also been committed to the v2.1.x and trunk SVN branches of the Xenomai 
+project.
 
 -- 
 
