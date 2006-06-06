@@ -1,10 +1,10 @@
-Message-ID: <44855B98.6070406@domain.hid>
-Date: Tue, 06 Jun 2006 12:40:24 +0200
+Message-ID: <44855CA0.1060203@domain.hid>
+Date: Tue, 06 Jun 2006 12:44:48 +0200
 From: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] rt_task_wait_period returning -ETIMEDOUT
+Subject: [Xenomai-core] rt_task_wait_period returning -ETIMEDOUT (2)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,14 +18,12 @@ To: xenomai-core <xenomai@xenomai.org>
 
 Hi,
 
-rt_task_wait_period() is spuriously returning -ETIMEDOUT.
+Sorry for the misread of the documentation. -ETIMEDOUT is obviously 
+mentioned as a return code from rt_task_wait_period.
 
-(spuriously = maybe once every two hours with period = 500us)
+Question is... why am I getting this error?
 
-I'm using the trunk code and that error code is not mentioned in the 
-rt_task_wait_period documentation.
-
-Any clues?
+Maybe a SMI thing?
 
 Nacho.
 
