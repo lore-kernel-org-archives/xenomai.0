@@ -1,16 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44859D3F.50800@domain.hid>
+Date: Tue, 06 Jun 2006 15:20:31 +0000
+From: "s.a." <sancelot@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] Xenomai: binding failed: Operation not permitted.
+References: 446C264A.7040206@domain.hid>	<200605181426.8240@domain.hid>	<446C6C1C.2010902@domain.hid>	<200605190943.31667@domain.hid>
+	<446D7DE6.10402@domain.hid>
+In-Reply-To: <446D7DE6.10402@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Message-ID: <17541.29542.312486.329018@domain.hid>
-Date: Tue, 6 Jun 2006 14:21:58 +0200
-Subject: Re: [Xenomai-help] shm_open, ftruncate
-In-Reply-To: <44856CA7.30802@domain.hid>
-References: <4480595D.7040203@domain.hid>
-	<17536.29324.723709.385494@domain.hid>
-	<4484365A.7090007@domain.hid>
-	<17540.21517.871383.751462@domain.hid>
-	<44856CA7.30802@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,37 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Lionel Perrin <perrin@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Petr Cervenka <grugh@domain.hid>, xenomai@xenomai.org
 
-Lionel Perrin wrote:
- > 
- > >  > - Will this shared memory be accessible to non rt-task ?
- > >  > - What's the simplest way to share information with a non rt-task ?
- > >
- > > Shared memory are also accessible to non-rt tasks. Since user-space
- > > realtime and non-realtime threads from the same process reside in the
- > > same address space, the simplest way to share information from rt to
- > > non-rt tasks is to create them as threads of the same process.
- > >   
- > Ok, but I figure out that it's possible to share memory between 
- > processes ? (rt and non rt?)
- > For the moment, i focus on sharing between two rt tasks, but in vain :(
- > I still have a ftruncate error (EBADF) when i launch two rt processes...
- > I explain :
- > I've tried the attached program. I've added a sleep(1) between mmap and 
- > munmap. I launch this appli twice with
- >  >> shm_test &
- >  >> shm_test &
- > For the second one, I got "ftruncate: Invalid argument". Am I the only 
- > one to have this problem ?
+Hi,
 
-Using trunk, your example run fine. Which version of Xenomai are you
-using ? If not trunk, did you apply the patch I sent ? 
+Okay, but in this case, why do we need  root permissions for programs
+accessing that "only" access shared memory area (heaps)????
+
+Best Regards
+Steph
 
 
--- 
+Jan Kiszka wrote
 
+>Petr Cervenka wrote:
+>  
+>
+>>Hi,
+>>When I try to run realtime application under lesser than root rights, I get this strange error:
+>>Xenomai: binding failed: Operation not permitted.
+>>
+>>Error showed after kernel update 2.6.15.6 -> 2.6.16.16 and xenomai update 2.1.1 -> daily snapshot (2006/05/18)
+>>Changing of the rights of the /dev/rt* dousn't help.
+>>
+>>Any suggestions?
+>>
+>>    
+>>
+>
+>That's intended. Real-time means real power, so all skin syscalls now
+>require root privileges (more precisely CAP_SYS_NICE). This can be
+>switched off, but standard syscalls like mlockall may still demand root
+>power (mlock'ing is at least size-limited for normal users on recent
+>kernels). And with current real-time APIs, it makes no sense anyway to
+>restrict the real-time user's permission by turning his account into a
+>non-root one.
+>
+>Jan
+>
+>  
+>
+>------------------------------------------------------------------------
+>
+>_______________________________________________
+>Xenomai-help mailing list
+>Xenomai-help@domain.hid
+>https://mail.gna.org/listinfo/xenomai-help
+>  
+>
 
-					    Gilles Chanteperdrix.
 
