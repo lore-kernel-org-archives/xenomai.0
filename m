@@ -1,14 +1,15 @@
-Message-ID: <44870010.5050602@domain.hid>
-Date: Wed, 07 Jun 2006 18:34:24 +0200
+Message-ID: <448703C2.8030601@domain.hid>
+Date: Wed, 07 Jun 2006 18:50:10 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Porting xenomai to AT91RM9200
-References: <OF63DA82CD.5D290237-ONC1257186.00524ADB-C1257186.0054CC4F@wavecom.fr>
-In-Reply-To: <OF63DA82CD.5D290237-ONC1257186.00524ADB-C1257186.0054CC4F@wavecom.fr>
+References: <44720BD1.805@domain.hid> <447E9E9E.6070301@domain.hid>
+	<4486FCA3.2070501@domain.hid>
+In-Reply-To: <4486FCA3.2070501@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAD3DC8A7F8E86054CF065F89"
+	boundary="------------enig9F599BB24A975E32AE019E38"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [PATCH] kgdb/x86 over I-pipe
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,84 +19,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Yann.LEPROVOST@wavecom.fr
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAD3DC8A7F8E86054CF065F89
+--------------enig9F599BB24A975E32AE019E38
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Yann.LEPROVOST@wavecom.fr wrote:
-> Hi marco,
+Philippe Gerum wrote:
 >=20
-> There is an issue with porting adeos to AT91RM9200. As i understood, ad=
-eos
-> handles system timer interrupt directly to keep real time "tsc" up to d=
-ate.
-> To do that, porting xenomai to AT91RM9200 means coding the correct tsc
-> handling functions in arch/arm/mach-at91rm9200/time.c (in the same way =
-as
-> integrator board).
-> That's what i tried to do...
+> Hi Jan,
 >=20
-> But on AT91RM9200, the system interrupt timer line is shared among othe=
-r
-> system peripherals such as watchdog, serial debug unit, memory controll=
-er,
-> ...
-> I try to demux the interrupt sharing by modifying code of adeos irq
-> handling but there are specificities with the interrupt controller I ca=
-n't
-> deal with...
-> I have lots of difficulties to understand the overall architecture of t=
-he
-> adeos/xenomai source code...
+> Based on your previous work, here is a set of patches coupling KGDB and=
 
-Then please ask questions.
+> the I-pipe. Basically, I've attempted to shrink the extra patches neede=
+d
+> against the original KGDB + I-pipe ones to the bare minimum. This has
+> been obtained by having the I-pipe provide ipipe_current_safe(), and
+> drastically reduce the amount of fiddling with smp_processor_id().
+>=20
+> The key difference with the former implementation is that a domain (e.g=
+=2E
+> Xenomai) is now expected to tell the I-pipe when it's switching to a
+> non-Linux stack, and the I-pipe makes good use of this information to
+> return the proper "current" value when asked to through
+> ipipe_safe_current() from the KGDB code. The issue of swapping
+
+This looks nice.
+
+> smp_processor_id() with ipipe_processor_id() has been addressed the har=
+d
+> way: smp_processor_id() is simply defined as ipipe_processor_id() when
+> CONFIG_IPIPE and CONFIG_KGDB are both enabled in include/linux/smp.h.
+> This approach was actually used during the old Adeos times when pipelin=
+e
+> domain had their own separate stack. I take for granted that the CPU
+> penalty taken in doing this is perfectly acceptable, since well, we are=
+
+> debugging after all.
+
+There is only one drawback: we will not be able to debug
+smp_processor_id-related bugs in ipipe/Xenomai anymore...
 
 >=20
-> At this time, I have an adeos/xenomai patched kernel which freezes when=
-
-> launching the idle process... and I 'm a bit lost !?!
-> Probably something wrong with the interrupt timer handling...
-> I'd like to continue to work on xenomai port to AT91RM9200 but I need
-> support from people with good knowledge of adeos internals... or a good=
-
-> documentation starting point on adeos internal.
+> Aside of the small patches attached, you will need the latest I-pipe
+> 1.3-05 patch for x86, adding the foreign stack notifier and the
+> ipipe_safe_current() support:
+> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.16-i386=
+-1.3-05.patch
 >=20
-> I currently stopped working on xenomai/adeos to study ingo molnar
-> patches...
+>=20
+> Patches should be applied in this order on a vanilla 2.6.16 kernel:
+>=20
+> - KGDB 2.4 patch series over 2.6.16 (quilt)
+> - pre-kgdb-ipipe-i386.patch
+> - adeos-ipipe-2.6.16-i386-1.3-05.patch
+> - kgdb-ipipe.patch
+> - post-kgdb-ipipe-i386.patch
+>=20
+> Xenomai's trunk/ should be used. Older code won't work and likely crash=
 
-Ah, I just remembered your thread on LKML. Then you may know that the
-problem is the same with PREEMPT_RT. Thomas pointed out the only
-solution: Write stubs to manage shared non-RT IRQ sources in RT context
-(in PREEMPT_RT terms: create SA_NODELAY stubs for the otherwise threaded
-drivers).
+> since the I-pipe would not be notified about foreign stack switches.
+>=20
+> Now the surprise: I did not test this stuff, I mean, at all. Eh. :o)
 
-This problem pops up quite regularly, here is my standard reference for
-a realisation of such a stub. It actually worked once over RTAI:
+That's fair: leave the head banging while debugging debuggers (*) up to
+me. ;)
 
-http://www.mail-archive.com/xenomai@xenomai.org
-(grab the idea, not the API from this code)
+Will try to let this fly, likely not before the weekend.
 
-The way I would go today: register a real-time IRQ handler for the
-non-RT driver, silence the IRQ source in that handler (switch off IRQ
-generation for the particular piece of hardware), save any required
-information, and issue a soft-IRQ to the Linux domain. Attach the Linux
-IRQ handler to the soft-IRQ then. In that handler, you could pick up the
-reasons for the suppressed IRQ, handle it as usual and re-enable the IRQ
-generation by the hardware. This way, the influence on the RT part
-remains bounded.
-
-The reason why this never made it into some real-time Linux variant:
-it's too-hardware specific, there is not much you can do in the OS to
-help solving this issue.
+BTW, there is one pending issue of gcc-4.1 which popped up under kgdb,
+see [1] (also for a workaround).
 
 Jan
 
 
---------------enigAD3DC8A7F8E86054CF065F89
+(*) Actually, that's feasible: kgdb-patched kernel inside qemu - already
+done this (to find [1]), it's just a bit sloooow.
+
+[1]http://sourceforge.net/mailarchive/forum.php?thread_id=3D10452132&foru=
+m_id=3D5557
+
+
+--------------enig9F599BB24A975E32AE019E38
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -104,10 +111,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEhwAQniDOoMHTA+kRAiknAJ4rUn62t0PtRwWTwJpfO9BUlSJNZwCfcMLP
-QQtuEcv2RBLXDPUO6MXfcPo=
-=dsi4
+iD8DBQFEhwPCniDOoMHTA+kRAjFDAJ43YHbAsimkEq7m6fjo3LjdGSxgSACfUx54
++souzKy/m+3i0Pp+aAaRVJI=
+=ZjxL
 -----END PGP SIGNATURE-----
 
---------------enigAD3DC8A7F8E86054CF065F89--
+--------------enig9F599BB24A975E32AE019E38--
 
