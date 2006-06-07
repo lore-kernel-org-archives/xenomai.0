@@ -1,13 +1,11 @@
-Message-ID: <4486F497.8060201@domain.hid>
-Date: Wed, 07 Jun 2006 17:45:27 +0200
-From: Marco Cavallini <rtai@domain.hid>
+Message-ID: <4486FCA3.2070501@domain.hid>
+Date: Wed, 07 Jun 2006 18:19:47 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Porting xenomai to AT91RM9200
-References: <OF63DA82CD.5D290237-ONC1257186.00524ADB-C1257186.0054CC4F@wavecom.fr>
-In-Reply-To: <OF63DA82CD.5D290237-ONC1257186.00524ADB-C1257186.0054CC4F@wavecom.fr>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Reply-To: rtai@domain.hid
+References: <44720BD1.805@domain.hid> <447E9E9E.6070301@domain.hid>
+In-Reply-To: <447E9E9E.6070301@domain.hid>
+Content-Type: multipart/mixed; boundary="------------070709060107050508000809"
+Subject: [Xenomai-core] [PATCH] kgdb/x86 over I-pipe
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,37 +15,330 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Yann.LEPROVOST@wavecom.fr
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Yann.LEPROVOST@wavecom.fr ha scritto:
-> Hi marco,
-> 
-> There is an issue with porting adeos to AT91RM9200. As i understood, adeos
-> handles system timer interrupt directly to keep real time "tsc" up to date.
-> To do that, porting xenomai to AT91RM9200 means coding the correct tsc
-> handling functions in arch/arm/mach-at91rm9200/time.c (in the same way as
-> integrator board).
-> That's what i tried to do...
-> 
-> But on AT91RM9200, the system interrupt timer line is shared among other
-> system peripherals such as watchdog, serial debug unit, memory controller,
-> ...
-> I try to demux the interrupt sharing by modifying code of adeos irq
-> handling but there are specificities with the interrupt controller I can't
-> deal with...
-> I have lots of difficulties to understand the overall architecture of the
-> adeos/xenomai source code...
-> 
-> At this time, I have an adeos/xenomai patched kernel which freezes when
-> launching the idle process... and I 'm a bit lost !?!
+This is a multi-part message in MIME format.
+--------------070709060107050508000809
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Could I please try testing your patch here ?
 
-TIA
+Hi Jan,
+
+Based on your previous work, here is a set of patches coupling KGDB and 
+the I-pipe. Basically, I've attempted to shrink the extra patches needed 
+against the original KGDB + I-pipe ones to the bare minimum. This has 
+been obtained by having the I-pipe provide ipipe_current_safe(), and 
+drastically reduce the amount of fiddling with smp_processor_id().
+
+The key difference with the former implementation is that a domain (e.g. 
+Xenomai) is now expected to tell the I-pipe when it's switching to a 
+non-Linux stack, and the I-pipe makes good use of this information to 
+return the proper "current" value when asked to through 
+ipipe_safe_current() from the KGDB code. The issue of swapping 
+smp_processor_id() with ipipe_processor_id() has been addressed the hard 
+way: smp_processor_id() is simply defined as ipipe_processor_id() when 
+CONFIG_IPIPE and CONFIG_KGDB are both enabled in include/linux/smp.h. 
+This approach was actually used during the old Adeos times when pipeline 
+domain had their own separate stack. I take for granted that the CPU 
+penalty taken in doing this is perfectly acceptable, since well, we are 
+debugging after all.
+
+Aside of the small patches attached, you will need the latest I-pipe 
+1.3-05 patch for x86, adding the foreign stack notifier and the 
+ipipe_safe_current() support:
+http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.16-i386-1.3-05.patch
+
+Patches should be applied in this order on a vanilla 2.6.16 kernel:
+
+- KGDB 2.4 patch series over 2.6.16 (quilt)
+- pre-kgdb-ipipe-i386.patch
+- adeos-ipipe-2.6.16-i386-1.3-05.patch
+- kgdb-ipipe.patch
+- post-kgdb-ipipe-i386.patch
+
+Xenomai's trunk/ should be used. Older code won't work and likely crash 
+since the I-pipe would not be notified about foreign stack switches.
+
+Now the surprise: I did not test this stuff, I mean, at all. Eh. :o)
+
 -- 
-Marco Cavallini
-Koan s.a.s. - Bergamo - ITALIA
-Embedded and Real-Time Software Engineering
-www.KoanSoftware.com   |    www.KaeilOS.com
+
+Philippe.
+
+--------------070709060107050508000809
+Content-Type: text/x-patch;
+ name="kgdb-ipipe.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="kgdb-ipipe.patch"
+
+--- 2.6.16-base/kernel/kgdb.c	2006-06-07 16:40:21.000000000 +0200
++++ 2.6.16-kgdb/kernel/kgdb.c	2006-06-07 16:43:36.000000000 +0200
+@@ -740,10 +740,10 @@
+ 	unsigned long flags;
+ 	int processor;
+ 
+-	local_irq_save(flags);
++	local_irq_save_hw(flags);
+ 	processor = smp_processor_id();
+ 	kgdb_info[processor].debuggerinfo = regs;
+-	kgdb_info[processor].task = current;
++	kgdb_info[processor].task = ipipe_safe_current();
+ 	atomic_set(&procindebug[processor], 1);
+ 
+ 	/* Wait till master processor goes completely into the debugger.
+@@ -769,7 +769,7 @@
+ 	/* Signal the master processor that we are done */
+ 	atomic_set(&procindebug[processor], 0);
+ 	spin_unlock(&slavecpulocks[processor]);
+-	local_irq_restore(flags);
++	local_irq_restore_hw(flags);
+ }
+ #endif
+ 
+@@ -883,8 +883,8 @@
+ 					kgdb_break[i].saved_instr)))
+ 			return error;
+ 
+-		if (CACHE_FLUSH_IS_SAFE && current->mm &&
+-				addr < TASK_SIZE)
++		if (CACHE_FLUSH_IS_SAFE && ipipe_safe_current() == current &&
++				current->mm && addr < TASK_SIZE)
+ 			flush_cache_range(current->mm->mmap_cache,
+ 					addr, addr + BREAK_INSTR_SIZE);
+ 		else if (CACHE_FLUSH_IS_SAFE)
+@@ -1032,7 +1032,7 @@
+ 	 * Interrupts will be restored by the 'trap return' code, except when
+ 	 * single stepping.
+ 	 */
+-	local_irq_save(flags);
++	local_irq_save_hw(flags);
+ 
+ 	/* Hold debugger_active */
+ 	procid = smp_processor_id();
+@@ -1055,7 +1055,7 @@
+ 	if (atomic_read(&cpu_doing_single_step) != -1 &&
+ 	    atomic_read(&cpu_doing_single_step) != procid) {
+ 		atomic_set(&debugger_active, 0);
+-		local_irq_restore(flags);
++		local_irq_restore_hw(flags);
+ 		goto acquirelock;
+ 	}
+ 
+@@ -1068,7 +1068,7 @@
+ 		goto kgdb_restore;
+ 
+ 	kgdb_info[processor].debuggerinfo = linux_regs;
+-	kgdb_info[processor].task = current;
++	kgdb_info[processor].task = ipipe_safe_current();
+ 
+ 	kgdb_disable_hw_debug(linux_regs);
+ 
+@@ -1120,7 +1120,8 @@
+ 		*ptr++ = hexchars[(signo >> 4) % 16];
+ 		*ptr++ = hexchars[signo % 16];
+ 		ptr += strlen(strcpy(ptr, "thread:"));
+-		int_to_threadref(&thref, shadow_pid(current->pid));
++		int_to_threadref(&thref,
++		                 shadow_pid(ipipe_safe_current()->pid));
+ 		ptr = pack_threadid(ptr, &thref);
+ 		*ptr++ = ';';
+ 
+@@ -1212,7 +1213,8 @@
+ 			kgdb_hex2mem(&remcom_in_buffer[1], (char *)gdb_regs,
+ 				     NUMREGBYTES);
+ 
+-			if (kgdb_usethread && kgdb_usethread != current)
++			if (kgdb_usethread &&
++			    kgdb_usethread != ipipe_safe_current())
+ 				error_packet(remcom_out_buffer, -EINVAL);
+ 			else {
+ 				gdb_regs_to_regs(gdb_regs, linux_regs);
+@@ -1333,7 +1335,8 @@
+ 				/* Current thread id */
+ 				strcpy(remcom_out_buffer, "QC");
+ 
+-				threadid = shadow_pid(current->pid);
++				threadid =
++					shadow_pid(ipipe_safe_current()->pid);
+ 
+ 				int_to_threadref(&thref, threadid);
+ 				pack_threadid(remcom_out_buffer + 2, &thref);
+@@ -1487,7 +1490,8 @@
+ 			break;
+ 		case 'c':
+ 		case 's':
+-			if (kgdb_contthread && kgdb_contthread != current) {
++			if (kgdb_contthread &&
++			    kgdb_contthread != ipipe_safe_current()) {
+ 				/* Can't switch threads in kgdb */
+ 				error_packet(remcom_out_buffer, -EINVAL);
+ 				break;
+@@ -1555,7 +1559,7 @@
+ kgdb_restore:
+ 	/* Free debugger_active */
+ 	atomic_set(&debugger_active, 0);
+-	local_irq_restore(flags);
++	local_irq_restore_hw(flags);
+ 
+ 	return error;
+ }
+@@ -1924,9 +1928,9 @@
+ 	if (!kgdb_connected || atomic_read(&debugger_active) != 0)
+ 		return 0;
+ 	if ((code == SYS_RESTART) || (code == SYS_HALT) || (code == SYS_POWER_OFF)){
+-		local_irq_save(flags);
++		local_irq_save_hw(flags);
+ 		put_packet("X00");
+-		local_irq_restore(flags);
++		local_irq_restore_hw(flags);
+ 	}
+ 	return NOTIFY_DONE;
+ }		
+@@ -1941,10 +1945,10 @@
+ 	if (!kgdb_connected || atomic_read(&debugger_active) != 0)
+ 		return;
+ 
+-	local_irq_save(flags);
++	local_irq_save_hw(flags);
+ 	kgdb_msg_write(s, count);
+-	local_irq_restore(flags);
++	local_irq_restore_hw(flags);
+ }
+ 
+ static struct console kgdbcons = {
+--- 2.6.16-base/lib/Kconfig.debug	2006-06-07 16:40:21.000000000 +0200
++++ 2.6.16-kgdb/lib/Kconfig.debug	2006-06-06 16:01:26.000000000 +0200
+@@ -250,7 +250,7 @@
+ 
+ config KGDB_ONLY_MODULES
+ 	bool "KGDB: Use only kernel modules for I/O"
+-	depends on MODULES
++	depends on MODULES && !IPIPE
+ 	help
+ 	  Use only kernel modules to configure KGDB I/O after the
+ 	  kernel is booted.
+@@ -295,8 +295,8 @@
+ endchoice
+ 
+ config KGDBOE
+-	tristate "KGDB: On ethernet" if !KGDBOE_NOMODULE
++	tristate "KGDB: On ethernet" if !KGDBOE_NOMODULE && !IPIPE
+ 	depends on m && KGDB
+ 	select NETPOLL
+ 	select NETPOLL_TRAP
+--- 2.6.16-base/drivers/serial/8250_kgdb.c	2006-06-07 16:40:20.000000000 +0200
++++ 2.6.16-kgdb/drivers/serial/8250_kgdb.c	2006-06-06 16:01:26.000000000 +0200
+@@ -301,6 +301,10 @@
+ 			"GDB-stub", current_port) < 0)
+ 		printk(KERN_ERR "KGDB failed to request the serial IRQ (%d)\n",
+ 		       current_port->irq);
++#ifdef CONFIG_IPIPE
++	ipipe_control_irq(current_port->irq, 0,
++			IPIPE_HANDLE_MASK|IPIPE_STICKY_MASK|IPIPE_SYSTEM_MASK);
++#endif /* CONFIG_IPIPE */
+ }
+ 
+ static __init int kgdb_init_io(void)
+--- 2.6.16/include/linux/smp.h	2006-03-20 06:53:29.000000000 +0100
++++ 2.6.16-kgdb/include/linux/smp.h	2006-06-07 17:59:13.000000000 +0200
+@@ -116,12 +116,16 @@
+  * which use for some reason is legal). Don't use this to hack around
+  * the warning message, as your code might not work under PREEMPT.
+  */
++#if defined(CONFIG_KGDB) && defined(CONFIG_IPIPE)
++#define smp_processor_id() ipipe_processor_id()
++#else /* CONFIG_KGDB && CONFIG_IPIPE */
+ #ifdef CONFIG_DEBUG_PREEMPT
+   extern unsigned int debug_smp_processor_id(void);
+ # define smp_processor_id() debug_smp_processor_id()
+ #else
+ # define smp_processor_id() raw_smp_processor_id()
+ #endif
++#endif
+ 
+ #define get_cpu()		({ preempt_disable(); smp_processor_id(); })
+ #define put_cpu()		preempt_enable()
+
+--------------070709060107050508000809
+Content-Type: text/x-patch;
+ name="post-kgdb-ipipe-i386.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="post-kgdb-ipipe-i386.patch"
+
+Index: linux-2.6.16.16/arch/i386/kernel/entry.S
+===================================================================
+--- linux-2.6.16.16.orig/arch/i386/kernel/entry.S
++++ linux-2.6.16.16/arch/i386/kernel/entry.S
+@@ -194,7 +194,7 @@ VM_MASK		= 0x00020000
+ .previous
+ 
+ 
+-ENTRY(ret_from_fork)
++KPROBE_ENTRY(ret_from_fork)
+ 	STI_COND_HW
+ 	pushl %eax
+ 	call schedule_tail
+@@ -584,7 +584,7 @@ ENTRY(simd_coprocessor_error)
+ 	PUSH_XCODE(do_simd_coprocessor_error)
+ 	jmp error_code
+ 
+-ENTRY(device_not_available)
++KPROBE_ENTRY(device_not_available)
+ 	pushl $-1			# mark this as an int
+ 	SAVE_ALL
+ 	DIVERT_EXCEPTION(device_not_available)
+@@ -769,7 +769,7 @@ ENTRY(machine_check)
+ 	jmp error_code
+ #endif
+ 
+-ENTRY(spurious_interrupt_bug)
++KPROBE_ENTRY(spurious_interrupt_bug)
+ 	pushl $0
+ 	PUSH_XCODE(do_spurious_interrupt_bug)
+ 	jmp error_code
+
+--------------070709060107050508000809
+Content-Type: text/x-patch;
+ name="pre-kgdb-ipipe-i386.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="pre-kgdb-ipipe-i386.patch"
+
+Index: linux-2.6.16.16/arch/i386/kernel/entry.S
+===================================================================
+--- linux-2.6.16.16.orig/arch/i386/kernel/entry.S
++++ linux-2.6.16.16/arch/i386/kernel/entry.S
+@@ -123,7 +123,7 @@ VM_MASK		= 0x00020000
+ .previous
+ 
+ 
+-KPROBE_ENTRY(ret_from_fork)
++ENTRY(ret_from_fork)
+ 	pushl %eax
+ 	call schedule_tail
+ 	GET_THREAD_INFO(%ebp)
+@@ -472,7 +472,7 @@ ENTRY(simd_coprocessor_error)
+ 	pushl $do_simd_coprocessor_error
+ 	jmp error_code
+ 
+-KPROBE_ENTRY(device_not_available)
++ENTRY(device_not_available)
+ 	pushl $-1			# mark this as an int
+ 	SAVE_ALL
+ 	movl %cr0, %eax
+@@ -654,7 +654,7 @@ ENTRY(machine_check)
+ 	jmp error_code
+ #endif
+ 
+-KPROBE_ENTRY(spurious_interrupt_bug)
++ENTRY(spurious_interrupt_bug)
+ 	pushl $0
+ 	pushl $do_spurious_interrupt_bug
+ 	jmp error_code
+
+--------------070709060107050508000809--
 
