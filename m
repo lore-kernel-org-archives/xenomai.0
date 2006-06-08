@@ -1,13 +1,10 @@
-Content-class: urn:content-classes:message
+Message-ID: <44883438.1090709@domain.hid>
+Date: Thu, 08 Jun 2006 16:29:12 +0200
+From: Nicola Pace <nicola@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] xenomai and ppc issues
-Date: Thu, 8 Jun 2006 14:45:41 +0200
-Message-ID: <756DFD3DE8F1D411A59A00306E06E84704707D06@domain.hid>
-In-Reply-To: <448808E2.3050900@domain.hid>
-From: "GUARDIOLA-FALCO Sebastien 204282" <Sebastien.GUARDIOLA-FALCO@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] rt_receive / rt_reply
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,59 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thanks, I guess the 2.1.2 release works with 2.4 kernel.
+After an rt_receive, is it possible to defer the rt_reply to a later 
+time and in the meantime to do other rt_receive ? In other words, is the 
+following sequence right ?
 
-I will post PPC results when I have it, for sure.
+rt_receive
+  ... something received from Task A
+rt_receive
+  ... something received from Task B
+rt_receive
+  ... something received from Task C
+      reply to Task A
+      reply to Task C
+    .
+    .
+    .. and so on  .
 
-Regards,
+Regards
+ 
 
-S=E9bastien.
+-- 
+*Ing. Nicola Pace *
+Technical Department
+*
 
------Message d'origine-----
-De : jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
-Envoy=E9 : jeudi 8 juin 2006 13:24
-=C0 : GUARDIOLA-FALCO Sebastien 204282
-Cc : xenomai@xenomai.org
-Objet : Re: [Xenomai-help] xenomai and ppc issues
+TDEMACNO Spa (VICENZA)
 
-
-GUARDIOLA-FALCO Sebastien 204282 wrote:
-> Hello,
->=20
-> I'm involved in a real-time project for a PPC mvme2700 target, and I =
-need hard real-time tasks that can be executed in user-space. Seems that =
-only Xenomai can meet the requirements.
-> My first question is to have confirmation that RTAI or LXRT are x86 =
-based and can not help me.
-
-RTAI used to support other archs as well, but the situation has changed
-AFAIK.
-
-> The second issue is to know how I can install Xenomai (do I need to =
-install Adeos kernel first? which version should I download?)
-
-Start with the latest stable release (2.1.2) and follow README.INSTALL.
-
-> and to know how far Xenomai goes in hard real-time (better preemption =
-latency that RTAI?).
-
-Cannot comment on this as I do not have comparable numbers for PPC. Once
-you have 2.1.2 running, check the testsuite (xeno-test script or
-individual tests) to get an impression of what is possible. You are
-invited to post results here in order to let other PPC user
-cross-check/comment (an automated test with online result database is
-under development).
-
-Xenomai constantly improves with respect to worst-case latency and
-overall performance. Upcoming version 2.2 will introduce, e.g.,
-additional optimisations which can reduce user space scheduling
-latencies by ~20%. But, of course, the closer your design requirements
-get to the benchmark results, the more careful and intensive your
-performance analysis of the final system has to be.
-
-Jan
-
+* <http://www.tdemacno.it> tel: 0444 343555
+fax: 0444 343509
+mail: nicola@domain.hid
+Skype:
+*
+Riservatezza / Confidentiality*/
+In ottemperanza al D.L. n. 196 del 30/6/2003 in materia di protezione 
+dei dati personali, le informazioni contenute in questo messaggio sono 
+strettamente riservate ed esclusivamente indirizzate al destinatario 
+indicato (oppure alla persona responsabile di rimetterlo al 
+destinatario). Vogliate tener presente che qualsiasi uso, riproduzione o 
+divulgazione di questo messaggio e' vietata. Nel caso in cui aveste 
+ricevuto questa mail/fax per errore, vogliate cortesemente avvertire il 
+mittente e distruggere il presente messaggio.
+Accordingly to italian law D.L. 196/2003 concerning privacy, if you are 
+not the adressee (or responsible for delivery of the message to such 
+person) you are hereby notified that any disclosure, reproduction, 
+distribution or other dissemination or use of this communication is 
+strictly prohibited. If you have received this message in error, you 
+should destroy it and please notify us by email. /
 
