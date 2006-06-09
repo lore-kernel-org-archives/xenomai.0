@@ -1,18 +1,12 @@
+Message-ID: <44892EF4.4070402@domain.hid>
+Date: Fri, 09 Jun 2006 10:19:00 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] rt-exec test tool on LKML
+References: <44888B79.1010309@domain.hid>
+In-Reply-To: <44888B79.1010309@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17544.35914.790308.357011@domain.hid>
-Date: Thu, 8 Jun 2006 22:44:58 +0200
-Subject: Re: [Xenomai-core] [rfc] unit testing context switches.
-In-Reply-To: <44887A1F.20003@domain.hid>
-References: <17536.40316.183366.284818@domain.hid>
-	<17543.5163.684144.582942@domain.hid>
-	<44871DF8.9010903@domain.hid>
-	<17544.6126.256649.862048@domain.hid>
-	<44885FDA.8080301@domain.hid>
-	<17544.28567.517655.60691@domain.hid>
-	<44887A1F.20003@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,21 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
- > One more thing though: Having always the same values doesn't tell if the 
- > task's state is overwritten with some "older generation" of its state or 
- > something odd like that. The state-saving will only need to work once 
- > and if it sucks rest of the time nobody knows. Or was that accounted for 
- > in the code? (Didn't read it all that carefully, lazy me)
+Jan Kiszka wrote:
+> Hi,
+> 
+> just stumbled over this (and before I forget again):
+> 
+> http://marc.theaimsgroup.com/?l=linux-kernel&m=114979411309740&w=2
+> 
+> Maybe of some interest for us as well (POSIX skin...).
+>
 
-That is right, the new implementation compute a different value for each
-switch.
+Looking at this code, this reminds me that I need to work on providing 
+the RT signal infrastructure so that the POSIX skin can leverage it for 
+its own purpose without requiring a switch to secondary mode. 2.2 needs 
+to be released first, but the latter has just gotten a priority boost.
+
+> Jan
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
