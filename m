@@ -1,10 +1,10 @@
-Date: Wed, 21 Jun 2006 11:58:02 +0200
-Message-Id: <216537120@domain.hid>
+Message-ID: <4489C553.2040502@domain.hid>
+Date: Fri, 09 Jun 2006 15:00:35 -0400
+From: Brian Hughner <brh@domain.hid>
 MIME-Version: 1.0
-From: =?iso-8859-15?Q?Tobias_B=E4r?= <Tobias.Baer@domain.hid>
-Subject: Re: [Xenomai-help] mutex locking
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Can I profile a Xenomai app?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,30 +16,12 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+Hi!
 
-> Try this, it's safe from such races:
-> 
-> /* returns -EWOULDBLOCK if the mutex is locked */
-> if (rt_mutex_lock(&write_mutex,TM_NONBLOCK) == 0)
-> {
->       // do sth.
-> 
->       rt_mutex_unlock(&mutex);
-> }
+I've been working with Xenomai 2.1 and 2.2 and would like to profile a 
+daemon that I wrote. Is it possible to profile Xenomai threads in a daemon?
 
-Thank's for the quick reply! But another question: How could it be that a mutex is locked twice?
-
-if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) == 0)
-  {
-    if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) == 0)
-      printf("Mutex is locked twice!\n");
-
-   rt_mutex_unlock(&mutex);
-  }
-
-Is it locked by the ID of the thread?
-
-Tobias
+Brian Hughner
 
 
 
