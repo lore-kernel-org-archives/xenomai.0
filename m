@@ -1,72 +1,82 @@
-Message-ID: <44C3B1DB.2040807@domain.hid>
-Date: Sun, 23 Jul 2006 19:28:59 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDB201E23020683AEB3E71BD0"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] x86 TSC emulation broken
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17545.26998.683843.924195@domain.hid>
+Date: Fri, 9 Jun 2006 14:28:38 +0200
+Subject: Re: [Xenomai-help] shm_open, ftruncate
+In-Reply-To: <448937A5.7080701@domain.hid>
+References: <4480595D.7040203@domain.hid>
+	<17536.29324.723709.385494@domain.hid>
+	<4484365A.7090007@domain.hid>
+	<17540.21517.871383.751462@domain.hid>
+	<44856CA7.30802@domain.hid>
+	<17541.29542.312486.329018@domain.hid>
+	<44859C28.3090600@domain.hid>
+	<17541.49945.431732.834139@domain.hid>
+	<4486CCDF.2070409@domain.hid>
+	<17542.59422.109900.142889@domain.hid>
+	<448937A5.7080701@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Lionel Perrin <perrin@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDB201E23020683AEB3E71BD0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Lionel Perrin wrote:
+ > // 	/* the following lines shouldn't be commented but xenomai... */
+ > // 	else
+ > // 	{
+ > // 		/* a new shm_file has been created, we need to truncate it */
+ > // 		if (ftruncate(h_shm, nbvalues * sizeof(double))==-1)
+ > // 		{
+ > // 			printf("truncate failed\n");
+ > // 			goto close_and_unlink;
+ > // 		}
+ > // 	}
 
-Hi,
+Do you still have an issue with ftruncate ? 
 
-I happened to switch on some CPU type that enabled the Xenomai's TSC
-emulation code. The result was an ugly lock-up: endless loop in the
-timer IRQ handler.
+Note that it is better to always call ftruncate even in a process that
+is not creating the shared memory, this avoid the race condition where
+the process that created the shared memory is about to truncate it and
+is interrupted by the second process which did not create it but want to
+mmap it.
 
-The reason: the TSC emulation collides with the VT sound output / the PC
-speaker driver. Over 2.6, one can easily avoid this my switching off
-CONFIG_INPUT_PCSPKR. 2.4 requires to export and than manipulate
-kb_mksound (the pointer to the sound generating code).
-
-The latter pointer rang some bell. I once fixed a broken RTAI build due
-to that code. So I pulled out vulcano and actually found the related
-code + an extension of the original ipipe patch to export kb_mksound. I
-guess it would have been too complicated for Paolo to explain the reason
-of this export to us...
-
-Anyway, this digging revealed another potential breakage in the
-emulation code: RTAI takes care to read the emulated TSC at least once
-per 50 ms, to avoid overflows I assume. Xenomai does not.
-
-Before spending "some" time on a clean (in contrast to what I just read
-in foreign code...) fix for Xenomai, I would like to cross-check if this
-emulation is still considered useful. No one seems to use it, otherwise
-we should have received complaints much earlier.
-
-Fix it or drop it?
-
-Jan
+ > 	mem->h_mut = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+ > 	pthread_mutex_init(mem->h_mut, NULL);
 
 
---------------enigDB201E23020683AEB3E71BD0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Note that if you want to share the mem structure between several
+processes, you should put the mutex on the shared memory, doing for
+example:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+typedef struct {
+    pthread_mutex_t mutex;
+    int nbaccess;
+    double values[0]
+} myshm_t;
 
-iD8DBQFEw7HbniDOoMHTA+kRAsi/AJ9u1bvSjOcDjIQgPHUkTYEp3BLScwCfXrC0
-dPAiQ9jiMkfh+9F6bVpJZvA=
-=im58
------END PGP SIGNATURE-----
+myshm_t *myshm;
 
---------------enigDB201E23020683AEB3E71BD0--
+myshm = (myshm_t *) mmap(...);
+
+mem->h_mut = &myshm->mutex;
+mem->ptr = &myshm->values;
+
+pthread_mutex_init(mem->h_mut, NULL);
+
+Xenomai should detect that you are initializing a mutex that was already
+initialized and return EBUSY that you can safely ignore.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
