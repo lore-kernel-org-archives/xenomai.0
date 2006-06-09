@@ -1,11 +1,16 @@
-Message-ID: <20060613184708.6958.qmail@domain.hid>
-Date: Tue, 13 Jun 2006 11:47:08 -0700 (PDT)
-From: Cedric Herreman <glocker50@domain.hid>
-Subject: Re: [Xenomai-help] Compaq nc6120 timer frequency
-In-Reply-To: <17549.52124.344294.89351@domain.hid>
+Message-ID: <44897763.5080902@domain.hid>
+Date: Fri, 09 Jun 2006 15:28:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1624889140-1150224428=:5468"
-Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Xenomai: binding failed: Operation not permitted.
+References: 446C264A.7040206@domain.hid>	<200605181426.8240@domain.hid>	<446C6C1C.2010902@domain.hid>	<200605190943.31667@domain.hid>	<446D7DE6.10402@domain.hid>	<44859D3F.50800@domain.hid>
+	<44858228.40508@domain.hid>	<448696E8.10405@domain.hid>
+	<44869F86.4090106@domain.hid>
+In-Reply-To: <44869F86.4090106@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5D998C6C8F0D4D1323FACD00"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,43 +20,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "s.a." <sancelot@domain.hid>
+Cc: Petr Cervenka <grugh@domain.hid>, xenomai@xenomai.org
 
---0-1624889140-1150224428=:5468
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5D998C6C8F0D4D1323FACD00
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Gilles,
- 
- Disabling ACPI fixed the problem. Thanks for your help.
- 
- Cedric.
+Jan Kiszka wrote:
+> s.a. wrote:
+>> Hi,
+>>
+>> In my mind , one or more rt process manages everything critical, need
+>> root access for resources reasons , other processes are things like gu=
+i
+>> to interact with realtime world, including  X11 applications (I know ,=
+ I
+>> will hurt some people, but this is the truth : X11 !) .....
+>>
+>=20
+> My point is: what do you gain by separating the RT core from the loggin=
+g
+> or gui application? Not much as long as the interface is not robust.
+> This means that your uncritical part must not be able to interfere with=
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote: Cedric Herreman wrote:
- > I disabled CPU Frequency Scaling and recompiled kernel + modules, but the problem remains.
- >  
+> the critical one, e.g. by acquiring some common lock or messing up a
+> shared memory which is used blindly by the RT code. If your application=
 
-If it is not done, please also disable CONFIG_ACPI_PROCESSOR.
+> design can guarantee this, ok.
+>=20
+> But then note that Xenomai heaps are unsuited for being shared with not=
 
-Do you observe the same behaviour with the latency test ? If yes, could
-you send us your .config, if not, could you show us a minimal piece of
-code which has a problem ?
+> fully trusted parties: management structures reside next to the data,
+> write permission is always acquired (and is required for
+> allocation/release operations), access control beyond go/no-go is not
+> supported. Better use "standard" (Linux) shared memory for this: Invoke=
 
--- 
+> shm_open("myshm", ...), adapt the access rights of the newly created
+> /dev/shm/myshm, and let the unprivileged process attach to it.
+>=20
+
+I haven't looked at this module so far in details, but from the first
+quick glance I just took it looks like a simple way to open realtime
+access to specific groups:
+
+http://sourceforge.net/projects/realtime-lsm/
+
+This still provides no privilege separation with respect to realtime
+(note the comments in the README), but it doesn't enforce you to run all
+RT-apps under root. So you keep at least the file system secure...
+
+Given that this module plays with capabilities, it should work fine with
+Xenomai as well (untested...).
+
+Jan
 
 
-         Gilles Chanteperdrix.
+--------------enig5D998C6C8F0D4D1323FACD00
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
- __________________________________________________
-Do You Yahoo!?
-Tired of spam?  Yahoo! Mail has the best spam protection around 
-http://mail.yahoo.com 
---0-1624889140-1150224428=:5468
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+iD8DBQFEiXdjniDOoMHTA+kRAlmnAJsEF/ycwpIAwwzCrRWdHhlNsWlZkACdEtvP
+9/YWEbNpkHEkA4HL6yQJxsA=
+=T0KA
+-----END PGP SIGNATURE-----
 
-Gilles,<br> <br> Disabling ACPI fixed the problem. Thanks for your help.<br> <br> Cedric.<br><br><b><i>Gilles Chanteperdrix &lt;gilles.chanteperdrix@xenomai.org&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;"> Cedric Herreman wrote:<br> &gt; I disabled CPU Frequency Scaling and recompiled kernel + modules, but the problem remains.<br> &gt;  <br><br>If it is not done, please also disable CONFIG_ACPI_PROCESSOR.<br><br>Do you observe the same behaviour with the latency test ? If yes, could<br>you send us your .config, if not, could you show us a minimal piece of<br>code which has a problem ?<br><br>-- <br><br><br>         Gilles Chanteperdrix.<br></blockquote><br><p>&#32;__________________________________________________<br>Do You Yahoo!?<br>Tired of spam?  Yahoo! Mail has the best spam protection around <br>http://mail.yahoo.com 
---0-1624889140-1150224428=:5468--
+--------------enig5D998C6C8F0D4D1323FACD00--
 
