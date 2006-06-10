@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 10 Jun 2006 22:00:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17547.1818.52887.185464@domain.hid>
-Date: Sat, 10 Jun 2006 19:53:30 +0200
-Subject: Re: [Xenomai-core] [PATCH] Add fptest for powerpc
-In-Reply-To: <448AF791.8080707@domain.hid>
-References: <448AF791.8080707@domain.hid>
+Content-Disposition: inline
+Message-Id: <200606102200.17991.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Revision 1182 broke compiling PPC
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,45 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Heikki Lindholm <holindho@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Heikki Lindholm wrote:
- > This adds powerpc version of fptest.h. It just stores and loads the raw 
- > integer into/from FPU registers without converting to proper IEEE form. 
- > Converting would have added unneccessary complexity. As a side note, the 
- > ppc barfs on the test with "1000 != 10". :I
+Hi Philippe
 
-Ok, this test tool is far from being user-friendly :-)
+Your change seems to be broken (at least on PPC). In 
+http://ngiger.dyndns.org/buildbot/hcu3/builds/71/step-mk_xeno/0
+you will notice near the end
+ 
+gcc -DHAVE_CONFIG_H -I. -I../../../../../build/xenomai/src/skins/vrtx -I../../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -pipe -D__IN_XENO__ -Wstrict-prototypes -I../../../../../build/xenomai/include -MT 
+libvrtx_la-task.lo -MD -MP -MF .deps/libvrtx_la-task.Tpo -c ../../../../../build/xenomai/src/skins/vrtx/task.c  -fPIC -DPIC -o .libs/libvrtx_la-task.o
+../../../../../build/xenomai/src/skins/vrtx/task.c:250:21: error: 
+macro "XENOMAI_SKINCALL1" requires 3 arguments, but only 2 given
+../../../../../build/xenomai/src/skins/vrtx/task.c: In function 'sc_delay':
+../../../../../build/xenomai/src/skins/vrtx/task.c:249: 
+error: 'XENOMAI_SKINCALL1' undeclared (first use in this function)
+../../../../../build/xenomai/src/skins/vrtx/task.c:249: error: (Each 
+undeclared identifier is reported only once
+../../../../../build/xenomai/src/skins/vrtx/task.c:249: error: for each 
+function it appears in.)
+make[4]: *** [libvrtx_la-task.lo] Error 1
+make[4]: Leaving directory 
+`/mnt/data.ng/buildslave/buildbot/quick-hcu3/build/hcu/src/skins/vrtx'
 
-Just to be sure, I have tested the latest revision on x86 and it still
-runs fine, so I guess there really is a bug in power pc fpu switching
-code.
+Could you please take a look at it?
 
-Now, if we decode a bit, the integer passed to fp_regs_set and
-fp_regs_check are 1000 * iterations + task_index, so
-1000 is task 0, iteration 1
-10 is task 10, iteration 0.
-It means that task 10 after returning from its first context 
-switch, is getting the context of task 0 before its second context
-switch.
-
-Now the thing to try is to reduce the number of threads involved, since
-by default there are 23 threads, so you should add a printk for each
-context switch in the kernel driver (and now that I think about it this
-printk should be activable with an ioctl), and try and reduce the list
-of threads by removing threads which do not appear between the serie of
-switches from task 0 to task 10. The correspondance between the task
-numbers and their type is not easy, but /proc/xenomai/sched and switch
---help should help... 
-
-Task 0 is the "idle" taks, an ordinary Linux task
-Task 10 is of type "rtup_ufpp" here, which means that it is a real-time
-task in primary mode using the FPU in primary mode.
-
+Best regards
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Niklaus Giger
 
