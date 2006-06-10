@@ -1,10 +1,10 @@
-Message-ID: <448B419F.8040107@domain.hid>
-Date: Sun, 11 Jun 2006 00:03:11 +0200
+Message-ID: <448B4204.9050302@domain.hid>
+Date: Sun, 11 Jun 2006 00:04:52 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Revision 1182 broke compiling PPC
-References: <200606102200.17991.niklaus.giger@domain.hid>
-In-Reply-To: <200606102200.17991.niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] fix breakage by #1185
+References: <448AF8B0.4090505@domain.hid>
+In-Reply-To: <448AF8B0.4090505@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,35 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Niklaus Giger wrote:
-> Hi Philippe
+Jan Kiszka wrote:
+> Hi,
 > 
-> Your change seems to be broken (at least on PPC). In 
-> http://ngiger.dyndns.org/buildbot/hcu3/builds/71/step-mk_xeno/0
-> you will notice near the end
->  
-> gcc -DHAVE_CONFIG_H -I. -I../../../../../build/xenomai/src/skins/vrtx -I../../../src/include -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -pipe -D__IN_XENO__ -Wstrict-prototypes -I../../../../../build/xenomai/include -MT 
-> libvrtx_la-task.lo -MD -MP -MF .deps/libvrtx_la-task.Tpo -c ../../../../../build/xenomai/src/skins/vrtx/task.c  -fPIC -DPIC -o .libs/libvrtx_la-task.o
-> ../../../../../build/xenomai/src/skins/vrtx/task.c:250:21: error: 
-> macro "XENOMAI_SKINCALL1" requires 3 arguments, but only 2 given
-> ../../../../../build/xenomai/src/skins/vrtx/task.c: In function 'sc_delay':
-> ../../../../../build/xenomai/src/skins/vrtx/task.c:249: 
-> error: 'XENOMAI_SKINCALL1' undeclared (first use in this function)
-> ../../../../../build/xenomai/src/skins/vrtx/task.c:249: error: (Each 
-> undeclared identifier is reported only once
-> ../../../../../build/xenomai/src/skins/vrtx/task.c:249: error: for each 
-> function it appears in.)
-> make[4]: *** [libvrtx_la-task.lo] Error 1
-> make[4]: Leaving directory 
-> `/mnt/data.ng/buildslave/buildbot/quick-hcu3/build/hcu/src/skins/vrtx'
+> I guess this is more like what check-in #1185 wanted to achieve:
 > 
-> Could you please take a look at it?
+> --- src/skins/vrtx/task.c       (Revision 1186)
+> +++ src/skins/vrtx/task.c       (Arbeitskopie)
+> @@ -247,5 +247,6 @@ void sc_unlock (void)
+>  void sc_delay (long timeout)
+>  {
+>      XENOMAI_SKINCALL1(__vrtx_muxid,
+> -                     __vrtx_delay);
+> +                     __vrtx_delay,
+> +                     timeout);
+>  }
 > 
+> Jan
+> 
+> 
+> PS: Is this distribution of sc_delay() intended: src/skins/vrtx/task.c
+> vs. ksrc/skins/vrtx/time.c?
+>
 
-Fixed by 1187, thanks.
+Not really, but I will reorganize this stuff as work progresses on the 
+VRTX skin.
+
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+
 
 -- 
 
