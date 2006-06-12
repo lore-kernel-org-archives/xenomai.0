@@ -1,16 +1,16 @@
-Message-ID: <448D337F.9060002@domain.hid>
-Date: Mon, 12 Jun 2006 11:27:27 +0200
+Message-ID: <448D366E.20802@domain.hid>
+Date: Mon, 12 Jun 2006 11:39:58 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <44720BD1.805@domain.hid>
-	<447E9E9E.6070301@domain.hid>	<4486FCA3.2070501@domain.hid>
-	<448703C2.8030601@domain.hid> <4487DEC5.50705@domain.hid>
-	<448B4589.6030101@domain.hid> <448D2574.1000204@domain.hid>
-	<448D2861.9010704@domain.hid>
-In-Reply-To: <448D2861.9010704@domain.hid>
+Subject: Re: [Xenomai-core] Re: Xenomai v2.2-rc2. PowerPC 405GPr board does
+	not start up
+References: <446F852B.7090400@domain.hid>
+	<200605222208.15908.niklaus.giger@domain.hid>
+	<44722DCF.80208@domain.hid>
+	<200606120708.52090.niklaus.giger@domain.hid>
+In-Reply-To: <200606120708.52090.niklaus.giger@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [PATCH] kgdb/x86 over I-pipe
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,118 +20,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
+Niklaus Giger wrote:
+> Hi Philippe
 > 
->>Jan Kiszka wrote:
->>
->>>Philippe Gerum wrote:
->>>
->>>
->>>>Jan Kiszka wrote:
->>>>
->>>>
->>>>>Philippe Gerum wrote:
->>>>>
->>>>>
->>>>>
->>>>>>Hi Jan,
->>>>>>
->>>>>>Based on your previous work, here is a set of patches coupling KGDB
->>>>>>and
->>>>>>the I-pipe. Basically, I've attempted to shrink the extra patches
->>>>>>needed
->>>>>>against the original KGDB + I-pipe ones to the bare minimum. This has
->>>>>>been obtained by having the I-pipe provide ipipe_current_safe(), and
->>>>>>drastically reduce the amount of fiddling with smp_processor_id().
->>>>>>
->>>>>>The key difference with the former implementation is that a domain
->>>>>>(e.g.
->>>>>>Xenomai) is now expected to tell the I-pipe when it's switching to a
->>>>>>non-Linux stack, and the I-pipe makes good use of this information to
->>>>>>return the proper "current" value when asked to through
->>>>>>ipipe_safe_current() from the KGDB code. The issue of swapping
->>>>>
->>>>>
->>>>>This looks nice.
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>>smp_processor_id() with ipipe_processor_id() has been addressed the
->>>>>>hard
->>>>>>way: smp_processor_id() is simply defined as ipipe_processor_id() when
->>>>>>CONFIG_IPIPE and CONFIG_KGDB are both enabled in include/linux/smp.h.
->>>>>>This approach was actually used during the old Adeos times when
->>>>>>pipeline
->>>>>>domain had their own separate stack. I take for granted that the CPU
->>>>>>penalty taken in doing this is perfectly acceptable, since well, we
->>>>>>are
->>>>>>debugging after all.
->>>>>
->>>>>
->>>>>There is only one drawback: we will not be able to debug
->>>>>smp_processor_id-related bugs in ipipe/Xenomai anymore...
->>>>>
->>>>
->>>>Good point. Here is an updated patch.
->>>>
->>>
->>>
->>>Nope that's not the point I meant. I was referring to bugs like the
->>>missing smp_processor_id patch in asm-i386/mmu_context.h. Your way makes
->>>such problems disappear once you switch on the debugger. Remember that
->>>we spotted the mmu_context issue via kgdb.
->>>
->>
->>Got it now. Indeed, making such kind of bugs disappear would be a very
->>undesirable side-effect of enabling KGDB.
->>
->>
->>>The attached kgdb-ipipe patch (which also updates to kgdb-CVS head)
->>>addresses maintenance and smp-safeness by redefining the involved
->>>services only per source file, not kernel-wide. What's do you think
->>>about this approach?
->>>
->>
->>Mixed feelings. On one hand, it locally fixes the issue without masking
->>any bugs and that's good. On the other hand, I've been bitten using this
->>kind of tricks in earlier Adeos releases for patching printk() the same
->>way, substituting it with spin_lock_irqsave_hw. At some point,
->>spin_lock_irqsave became local_irq_save + spin_lock in the vanilla code,
->>making the substitution of the former pointless, and opening a
->>preemption hole in the code. This said, no spinlock macros are involved
->>in the substitution you are suggesting, so there is no such risk, and in
->>any case, the risk is confined to one file and not spread all over the
->>place like with the raw_smp_processor_id() substitution. IOW, let's go
->>your way.
+> I redid my testing wit revision 1188 (+ modification from me for the 
+> xeno-test). 
 > 
+> The lockup at startup is still there if CONFIG_XENO_OPT_TIMING_PERIOD !=  0 
+> and if the skins native, posix, rtdm, uvm and skins skins are compiled in.
+> Timing settings was always CONFIG_XENO_OPT_TIMING_PERIODIC=y.
 > 
-> I agree that it's kind of fragile, but we need to check on kgdb updates
-> anyway. I hope for kgdb becoming mainline one day. Then the code should
-> stabilise (if it hasn't already), and we can track it via ipipe directly
-> - without tricks. So far, this should help to keep efforts lower for us.
+> Linux version 2.6.14-1188M-hcu3 (root@domain.hid) (gcc version 3.4.4) #4 Sun Jun 11 
+> 19:45:36 CEST 2006
+> HCU3 Netstal Maschinen AG with U-Boot 1.1.2.
+> Built 1 zonelists
+> Kernel command line: console=ttyS0,9600 root=/dev/nfs rw 
+> nfsroot=172.25.1.58:/home/hcu/rootfs ip=172.25.1.5:172.15.1.58:::hcu4::off 
+> panic=30
+> PID hash table entries: 256 (order: 8, 4096 bytes)
+> I-pipe 1.3-03: pipeline enabled.
+> Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
+> Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
+> Memory: 29884k available (1740k kernel code, 608k data, 92k init, 0k highmem)
+> Mount-cache hash table entries: 512
+> softlockup thread 0 started up.
+> NET: Registered protocol family 16
 > 
+> I-pipe: Domain Xenomai registered.
+> Xenomai: hal/powerpc started.
+> Xenomai: real-time nucleus v2.2-rc2 (Engines Of Creation) loaded.
+> Xenomai: starting native API services.
+> Xenomai: starting POSIX services.
+> Xenomai: starting RTDM services.
+> Xenomai: starting UVM services.
+> Xenomai: incompatible timer mode (aperiodic found, need periodic).
+> Xenomai: VxWorks skin init failed, code -16.
+
+This error (-EBUSY) is expected, since native, posix and uvm need 
+aperiodic setup and vxworks wants periodic. Since all are built-ins and 
+initialize immediately during the kernel boot up, a conflict arises.
+
+I initially thought reading your post about the issue a few weeks ago 
+that a lockup would occur even with:
+
+CONFIG_XENO_SKIN_NATIVE=y
+CONFIG_XENO_OPT_TIMING_PERIODIC=y
+# CONFIG_XENO_SKIN_POSIX is unset
+# CONFIG_XENO_SKIN_UVM is unset
+# CONFIG_XENO_SKIN_VXWORKS is unset
+# CONFIG_XENO_SKIN_PSOS is unset
+# CONFIG_XENO_SKIN_VRTX is unset
+# CONFIG_XENO_SKIN_UITRON is unset
+
+but would not with:
+
+CONFIG_XENO_SKIN_NATIVE=m
+CONFIG_XENO_OPT_TIMING_PERIODIC=y
+# CONFIG_XENO_SKIN_POSIX is unset
+# CONFIG_XENO_SKIN_UVM is unset
+# CONFIG_XENO_SKIN_VXWORKS is unset
+# CONFIG_XENO_SKIN_PSOS is unset
+# CONFIG_XENO_SKIN_VRTX is unset
+# CONFIG_XENO_SKIN_UITRON is unset
+
+Is it the case, or is the VxWorks skin always involved when the lockup 
+occurs?
+
+> Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing disabled
+> <..>
 > 
->>While we are at it,
->>#define current ipipe_safe_current() /* ? */
-> 
-> 
-> Nope, there is the need for some special changes.
+> Best regards 
 > 
 
-If you refer to the cache flushing issue, then it would be better to 
-actually check for foreign stacks explicitely, so that you could 
-substitute current globally:
-
--	if (CACHE_FLUSH_IS_SAFE && current->mm &&
--			addr < TASK_SIZE)
-+	if (CACHE_FLUSH_IS_SAFE && !testbit(IPIPE_NOSTACK_FLAG,  		+	 
-&ipipe_percpu_domain[cpuid]->cpudata[cpuid].status) &&
-+			current->mm && addr < TASK_SIZE)
 
 -- 
 
