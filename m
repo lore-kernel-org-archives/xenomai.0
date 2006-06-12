@@ -1,18 +1,15 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Re: Xenomai v2.2-rc2. PowerPC 405GPr board does
-	not start up
-Date: Mon, 12 Jun 2006 07:08:51 +0200
-References: <446F852B.7090400@domain.hid>
-	<200605222208.15908.niklaus.giger@domain.hid>
-	<44722DCF.80208@domain.hid>
-In-Reply-To: <44722DCF.80208@domain.hid>
+Message-ID: <448D2574.1000204@domain.hid>
+Date: Mon, 12 Jun 2006 10:27:32 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+References: <44720BD1.805@domain.hid>
+	<447E9E9E.6070301@domain.hid>	<4486FCA3.2070501@domain.hid>
+	<448703C2.8030601@domain.hid> <4487DEC5.50705@domain.hid>
+	<448B4589.6030101@domain.hid>
+In-Reply-To: <448B4589.6030101@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200606120708.52090.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+Subject: [Xenomai-core] Re: [PATCH] kgdb/x86 over I-pipe
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,48 +19,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Philippe
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>Philippe Gerum wrote:
+>>>
+>>>
+>>>>Hi Jan,
+>>>>
+>>>>Based on your previous work, here is a set of patches coupling KGDB and
+>>>>the I-pipe. Basically, I've attempted to shrink the extra patches needed
+>>>>against the original KGDB + I-pipe ones to the bare minimum. This has
+>>>>been obtained by having the I-pipe provide ipipe_current_safe(), and
+>>>>drastically reduce the amount of fiddling with smp_processor_id().
+>>>>
+>>>>The key difference with the former implementation is that a domain (e.g.
+>>>>Xenomai) is now expected to tell the I-pipe when it's switching to a
+>>>>non-Linux stack, and the I-pipe makes good use of this information to
+>>>>return the proper "current" value when asked to through
+>>>>ipipe_safe_current() from the KGDB code. The issue of swapping
+>>>
+>>>
+>>>This looks nice.
+>>>
+>>>
+>>>
+>>>>smp_processor_id() with ipipe_processor_id() has been addressed the hard
+>>>>way: smp_processor_id() is simply defined as ipipe_processor_id() when
+>>>>CONFIG_IPIPE and CONFIG_KGDB are both enabled in include/linux/smp.h.
+>>>>This approach was actually used during the old Adeos times when pipeline
+>>>>domain had their own separate stack. I take for granted that the CPU
+>>>>penalty taken in doing this is perfectly acceptable, since well, we are
+>>>>debugging after all.
+>>>
+>>>
+>>>There is only one drawback: we will not be able to debug
+>>>smp_processor_id-related bugs in ipipe/Xenomai anymore...
+>>>
+>>
+>>Good point. Here is an updated patch.
+>>
+> 
+> 
+> Nope that's not the point I meant. I was referring to bugs like the
+> missing smp_processor_id patch in asm-i386/mmu_context.h. Your way makes
+> such problems disappear once you switch on the debugger. Remember that
+> we spotted the mmu_context issue via kgdb.
+>
 
-I redid my testing wit revision 1188 (+ modification from me for the 
-xeno-test). 
+Got it now. Indeed, making such kind of bugs disappear would be a very 
+undesirable side-effect of enabling KGDB.
 
-The lockup at startup is still there if CONFIG_XENO_OPT_TIMING_PERIOD !=  0 
-and if the skins native, posix, rtdm, uvm and skins skins are compiled in.
-Timing settings was always CONFIG_XENO_OPT_TIMING_PERIODIC=y.
+> The attached kgdb-ipipe patch (which also updates to kgdb-CVS head)
+> addresses maintenance and smp-safeness by redefining the involved
+> services only per source file, not kernel-wide. What's do you think
+> about this approach?
+> 
 
-Linux version 2.6.14-1188M-hcu3 (root@domain.hid) (gcc version 3.4.4) #4 Sun Jun 11 
-19:45:36 CEST 2006
-HCU3 Netstal Maschinen AG with U-Boot 1.1.2.
-Built 1 zonelists
-Kernel command line: console=ttyS0,9600 root=/dev/nfs rw 
-nfsroot=172.25.1.58:/home/hcu/rootfs ip=172.25.1.5:172.15.1.58:::hcu4::off 
-panic=30
-PID hash table entries: 256 (order: 8, 4096 bytes)
-I-pipe 1.3-03: pipeline enabled.
-Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)
-Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)
-Memory: 29884k available (1740k kernel code, 608k data, 92k init, 0k highmem)
-Mount-cache hash table entries: 512
-softlockup thread 0 started up.
-NET: Registered protocol family 16
+Mixed feelings. On one hand, it locally fixes the issue without masking 
+any bugs and that's good. On the other hand, I've been bitten using this 
+kind of tricks in earlier Adeos releases for patching printk() the same 
+way, substituting it with spin_lock_irqsave_hw. At some point, 
+spin_lock_irqsave became local_irq_save + spin_lock in the vanilla code, 
+making the substitution of the former pointless, and opening a 
+preemption hole in the code. This said, no spinlock macros are involved 
+in the substitution you are suggesting, so there is no such risk, and in 
+any case, the risk is confined to one file and not spread all over the 
+place like with the raw_smp_processor_id() substitution. IOW, let's go 
+your way.
 
-I-pipe: Domain Xenomai registered.
-Xenomai: hal/powerpc started.
-Xenomai: real-time nucleus v2.2-rc2 (Engines Of Creation) loaded.
-Xenomai: starting native API services.
-Xenomai: starting POSIX services.
-Xenomai: starting RTDM services.
-Xenomai: starting UVM services.
-Xenomai: incompatible timer mode (aperiodic found, need periodic).
-Xenomai: VxWorks skin init failed, code -16.
-Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing disabled
-<..>
+While we are at it,
+#define current ipipe_safe_current() /* ? */
 
-Best regards 
+> I'm also posting two fixes for ipipe itself to 1) make kgdb work over
+> SMP and 2) fix a compiler warning.
+> 
+> This version works fine for me, at least in qemu. I tried to check SMP
+> as well, but qemu obviously lacks support for NMIs raised via IPI, and
+> this is used by kgdb to sync all CPUs on debugging events (vanilla kgdb
+> suffers too).
+> 
 
 -- 
-Niklaus Giger
+
+Philippe.
 
