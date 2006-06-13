@@ -1,14 +1,13 @@
-Resent-Message-ID: <17550.44528.674284.147085@domain.hid>
-Resent-To: xenomai@xenomai.org
+Message-ID: <448EB038.8070802@domain.hid>
+Date: Tue, 13 Jun 2006 14:31:52 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17550.43146.445745.213316@domain.hid>
-In-Reply-To: <448E98A3.6080707@domain.hid>
-References: <448E98A3.6080707@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-Date: Tue, 13 Jun 2006 13:59:06 +0200
+References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
+	<448EA7F7.5000802@domain.hid>
+In-Reply-To: <448EA7F7.5000802@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,98 +18,154 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
- > Hi,
- > 
- > between some football half-times of the last days ;), I played a bit
- > with a hand-optimised xnarch_tsc_to_ns() for x86. Using scaled math, I
- > achieved between 3 (P-I 133 MHz) to 4 times (P-M 1.3 GHz) faster
- > conversions than with the current variant. While this optimisation only
- > saves a few ten nanoseconds on high-end, slow processors can gain
- > several hundreds of nanos per conversion (my P-133: -600 ns).
+> Philippe Gerum wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>Hi,
+>>>
+>>>between some football half-times of the last days ;), I played a bit
+>>>with a hand-optimised xnarch_tsc_to_ns() for x86. Using scaled math, I
+>>>achieved between 3 (P-I 133 MHz) to 4 times (P-M 1.3 GHz) faster
+>>>conversions than with the current variant. While this optimisation only
+>>>saves a few ten nanoseconds on high-end, slow processors can gain
+>>>several hundreds of nanos per conversion (my P-133: -600 ns).
+>>>
+>>
+>>I did exactely the same a few weeks ago, based on Anzinger's scaled math
+> 
+> 
+> :) We should coordinate better.
+> 
 
-Some time ago, I did also some experiment on avoiding divisions. I came
-to a solution that precompute fractions using a real division, and that
-only use additions, multiplication and shifts for imuldiv and ullimd. I
-thought there would be no loss in accuracy, but well, sometimes the last
-bit is wrong.
+The answer is published roadmap + todo list, but this requires some 
+organisation we have not been able to setup yet.
 
-Anyway, here is the code if you want to benchmark it, div96by32 and
-u64(to|from)u32 are defined in asm-i386/hal.h or asm-generic/hal.h:
+> 
+>>from i386/kernel/timers/timer_tsc.c. And indeed, I had x 20 performance
+>>improvements in some cases.
+> 
+> 
+> Oops, that sounds like a bit too extreme optimisations. Is the original
+> version varying that much? I didn't observe this.
+> 
+> Here is my current version, BTW:
+> 
+> long tsc_scale;
+> unsigned int tsc_shift = 31;
+> 
+> static inline long long fast_tsc_to_ns(long long ts)
+> {
+>     long long ret;
+> 
+>     __asm__ (
+>         /* HI = HIWORD(ts) * tsc_scale */
+>         "mov  %%eax,%%ebx\n\t"
+>         "mov  %%edx,%%eax\n\t"
+>         "imull %2\n\t"
+>         "mov  %%eax,%%esi\n\t"
+>         "mov  %%edx,%%edi\n\t"
+> 
+>         /* LO = LOWORD(ts) * tsc_scale */
+>         "mov  %%ebx,%%eax\n\t"
+>         "mull %2\n\t"
+> 
+>         /* ret = (HI << 32) + LO */
+>         "add  %%esi,%%edx\n\t"
+>         "adc  $0,%%edi\n\t"
+> 
+>         /* ret = ret >> tsc_shift */
+>         "shrd %%cl,%%edx,%%eax\n\t"
+>         "shrd %%cl,%%edi,%%edx\n\t"
+>         : "=A"(ret)
+>         : "A" (ts), "m" (tsc_scale), "c" (tsc_shift)
+>         : "ebx", "esi", "edi");
+> 
+>     return ret;
+> }
+> 
+> void init_tsc(unsigned long cpu_freq)
+> {
+>     unsigned long long scale;
+> 
+>     while (1) {
+>         scale = do_div(1000000000LL << tsc_shift, cpu_freq);
+>         if (scale <= 0x7FFFFFFF)
+>             break;
+>         tsc_shift--;
+>     }
+>     tsc_scale = scale;
+> }
+> 
+> This version will use 31 (GHz cpu_freq) to 26 (~32 MHz) shifts, i.e. a
+> bit more than the Linux kernel's 22 bits.
+>
 
-typedef struct {
-    unsigned long long frac;    /* Fractionary part. */
-    unsigned long integ;        /* Integer part. */
-} u32frac_t;
+Here is likely why we have different levels of accuracy and performance, 
+  firstly my version is bluntly based on the khz freq, secondly it 
+calculates the other way around, i.e. ns2tsc, so that tsc are keep in 
+the inner code, but more efficiently converted from ns counts passed to 
+the outer interface:
 
-/* m/d == integ + frac / 2^64 */
-void precalc(u32frac_t *const f,
-             const unsigned long m,
-             const unsigned long d)
+static unsigned long ns2cyc_scale;
+#define NS2CYC_SCALE_FACTOR 10 /* 2^10, carefully chosen */
+
+static inline void set_ns2cyc_scale(unsigned long cpu_khz)
 {
-    f->integ = m > d ? m / d :0;
-    f->frac = div96by32(u64fromu32(m % d, 0), 0, d, NULL);
+     ns2cyc_scale = (cpu_khz << NS2CYC_SCALE_FACTOR) / 1000000;
 }
 
-inline unsigned long nodiv_imuldiv(unsigned long op, u32frac_t f)
+static inline unsigned long long ns_2_cycles(unsigned long long ns)
 {
-    const unsigned long tmp = (ullmul(op, f.frac >> 32)) >> 32;
-
-    if(f.integ)
-        return tmp + op * f.integ;
-
-    return tmp;
+     return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
 }
 
-#define add64and32(h, l, s) do {                \
-    __asm__ ("addl %2, %1\n\t"                  \
-             "adcl $0, %0"                      \
-             : "+r"(h), "+r"(l)                 \
-             : "r"(s));                         \
-    } while(0)
+>>
+>>TSC are not the whole nucleus time base, but only the timer management
+>>one. The motivation to use TSCs in nucleus/timer.c was to pick a unit
+>>which would not require any conversion beyond the initial one in
+>>xntimer_start.
+> 
+> 
+> That helps strictly periodic application timers, not aperiodic ones like
+> timeouts.
+>
 
-#define add96and64(l0, l1, l2, s0, s1) do {     \
-    __asm__ ("addl %4, %2\n\t"                  \
-             "adcl %3, %1\n\t"                  \
-             "adcl $0, %0\n\t"                  \
-             : "+r"(l0), "+r"(l1), "+r"(l2)     \
-             : "r"(s0), "r"(s1));               \
-    } while(0)
+It depends, periodic timers usually exhibit larger delays, so the gain 
+is more significant with oneshot timings incurring smaller delays, hence 
+a higher number of calculations.
 
-inline unsigned long long mul64by64_high(const unsigned long long op,
-                                      const unsigned long long m)
-{
-    /* Compute high 64 bits of multiplication 64 bits x 64 bits. */
-    unsigned long long t1, t2, t3;
-    u_long oph, opl, mh, ml, t0, t1h, t1l, t2h, t2l, t3h, t3l;
+> 
+>>>Any pitfalls down the road (except introducing regressions)?
+>>
+>>Well, pitfalls expected from changing the core idea of time of the timer
+>>management code... :o>
+>>
+> 
+> You mean turning
+> 
+> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,RTHAL_CPU_FREQ));
+> 
+> into
+> 
+> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,1000000000));
+> 
 
-    u64tou32(op, oph, opl);
-    u64tou32(m, mh, ml);
-    t0 = ullmul(opl, ml) >> 32;
-    t1 = ullmul(oph, ml); u64tou32(t1, t1h, t1l);
-    add64and32(t1h, t1l, t0);
-    t2 = ullmul(opl, mh); u64tou32(t2, t2h, t2l);
-    t3 = ullmul(oph, mh); u64tou32(t3, t3h, t3l);
-    add64and32(t3h, t3l, t2h);
-    add96and64(t3h, t3l, t2l, t1h, t1l);
+Not really, it was a general remark about changing a code that might 
+have some assumtions on using TSCs. Additionally, only x86 needs to 
+rescale TSC values to the timer frequency, other archs use the same unit 
+on both sides, and such unit might even have nothing to do with any CPU 
+accounting (e.g. blackfin uses a free running timer, ppc uses the 
+internal timebase, etc).
 
-    return u64fromu32(t3h, t3l);
-}
-
-inline unsigned long long nodiv_ullimd(const unsigned long long op,
-                                   const u32frac_t f)
-{
-    const unsigned long long tmp = mul64by64_high(op, f.frac);
-
-    if(f.integ)
-        return tmp + op * f.integ;
-
-    return tmp;
-}
+This said, it should not have that many assumptions, and in any case, 
+they should be confined to nucleus/timers.c. I think we should give this 
+kind of optimization a try.
 
 -- 
 
-
-					    Gilles Chanteperdrix.
+Philippe.
 
