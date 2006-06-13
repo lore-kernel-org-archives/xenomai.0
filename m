@@ -1,14 +1,12 @@
-Message-ID: <448E9E24.50207@domain.hid>
-Date: Tue, 13 Jun 2006 13:14:44 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <448E9E8B.70809@domain.hid>
+Date: Tue, 13 Jun 2006 13:16:27 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai integration to LTTng and LTTV
-References: <448E7C42.3030504@domain.hid>
-In-Reply-To: <448E7C42.3030504@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig43C1881D8CE94589A8B6BDC6"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+References: <448E98A3.6080707@domain.hid>
+In-Reply-To: <448E98A3.6080707@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,71 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jean-Olivier Villemure <jean-olivier.villemure@domain.hid>
-Cc: ltt-dev@domain.hid, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig43C1881D8CE94589A8B6BDC6
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Hi,
+> 
+> between some football half-times of the last days ;), I played a bit
+> with a hand-optimised xnarch_tsc_to_ns() for x86. Using scaled math, I
+> achieved between 3 (P-I 133 MHz) to 4 times (P-M 1.3 GHz) faster
+> conversions than with the current variant. While this optimisation only
+> saves a few ten nanoseconds on high-end, slow processors can gain
+> several hundreds of nanos per conversion (my P-133: -600 ns).
+> 
 
-Jean-Olivier Villemure wrote:
-> Hello,
->=20
-> I'm currently working on my diploma thesis which will finish in Decembe=
-r
-> 2006. The first goal of my project is to integrate Xenomai events to
-> LTTng, a task quite simple since creating new events in LTTng is not
-> very difficult.
+I did exactely the same a few weeks ago, based on Anzinger's scaled math 
+from i386/kernel/timers/timer_tsc.c. And indeed, I had x 20 performance 
+improvements in some cases.
 
-Does this mean we will see a basic but usable LTTng over recent
-I-pipe/Xenomai soon? I'm only curious... 8)
+> This does not come for free: accuracy of very large values is slightly
+> worse, but that's likely negligible compared to the clock accuracy of
+> TSCs (does anyone have any real numbers on the latter, BTW?).
+> 
 
-> The second goal is to create a new module in the viewer,
-> LTTV, to analyse these specifics events.
->=20
-> Our idea about the LTTV module is to create a new controlflow module
-> representing realtime task behavior by identifying the start, end,
-> suspend, resume, period, etc...The difference with the current
-> controlflow is that we will not be showing the states of the process,
-> but there will be a line for each task (multiple realtime tasks by
-> process) and identifiers for each important events. Eventualy it will b=
-e
-> good to detected problems relating to periodic tasks. If I have enough
-> time, it could also be a good idea to add some statistics.
+We do start losing significant precision for 2 ms delays and above, 
+IIRC. This could be an issue for some events in aperiodic mode, albeit 
+we could use a plain divide for those. The cost of conditionally doing 
+this remains to be evaluated though.
 
-Could such an extension also be interesting for the native real-time
-Linux project (PREEMPT_RT)? I'm asking because, if yes, you may try to
-gain input from that community as well (=3D>LKML). This doesn't mean that=
+> As we loose some bits the one way, converting back still requires "real"
+> division (i.e. the use of the existing slower xnarch_ns_to_tsc).
+> Otherwise, we would get significant errors already for small intervals.
+> 
+> To avoid loosing the optimisation again in ns_to_tsc, I thought about
+> basing the whole internal timer arithmetics on nanoseconds instead of
+> TSCs as it is now. Although I dug quite a lot in the current timer
+> subsystem the last weeks, I may still oversee aspects and I'm
+> x86-biased. Therefore my question before thinking or even patching
+> further this way: What was the motivation to choose TSCs as internal
+> time base?
 
-you have to implement such support, just keeping the approach open for
-an integration. Finding and meeting common requirements is always a good
-thing and can help even more people.
+TSC are not the whole nucleus time base, but only the timer management 
+one. The motivation to use TSCs in nucleus/timer.c was to pick a unit 
+which would not require any conversion beyond the initial one in 
+xntimer_start.
 
->=20
-> If you have any idea relating to Xenomai or LTTng/LTTV, I will
-> considerate them.
->=20
-> Thank you!
-> Jean-Olivier Villemure
->=20
+> Any pitfalls down the road (except introducing regressions)?
 
-Jan
+Well, pitfalls expected from changing the core idea of time of the timer 
+management code... :o>
+
+> 
+> Jan
+> 
+> 
+> PS: All this would be 2.3-stuff, for sure.
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
---------------enig43C1881D8CE94589A8B6BDC6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEjp4kniDOoMHTA+kRAlVKAJ9cShdQvdTLaAXIBK34500oSk8pxgCggk36
-/FRnaN1oMhfJUaovhipLGzw=
-=x0/9
------END PGP SIGNATURE-----
-
---------------enig43C1881D8CE94589A8B6BDC6--
+Philippe.
 
