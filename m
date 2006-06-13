@@ -1,12 +1,14 @@
-Message-ID: <44A1608B.3090605@domain.hid>
-Date: Tue, 27 Jun 2006 18:44:59 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <448EF022.1040901@domain.hid>
+Date: Tue, 13 Jun 2006 19:04:34 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2082CD1469FF10729EBC441D"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Prio-inversion on cleanup?
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+References: <448E98A3.6080707@domain.hid>
+	<448E9E8B.70809@domain.hid>	<448EA7F7.5000802@domain.hid>
+	<448EB038.8070802@domain.hid> <448EE593.7010809@domain.hid>
+In-Reply-To: <448EE593.7010809@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,48 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2082CD1469FF10729EBC441D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>Here is likely why we have different levels of accuracy and performance,
+>> firstly my version is bluntly based on the khz freq, secondly it
+>>calculates the other way around, i.e. ns2tsc, so that tsc are keep in
+>>the inner code, but more efficiently converted from ns counts passed to
+>>the outer interface:
+>>
+>>static unsigned long ns2cyc_scale;
+>>#define NS2CYC_SCALE_FACTOR 10 /* 2^10, carefully chosen */
+>>
+>>static inline void set_ns2cyc_scale(unsigned long cpu_khz)
+>>{
+>>    ns2cyc_scale = (cpu_khz << NS2CYC_SCALE_FACTOR) / 1000000;
+>>}
+>>
+>>static inline unsigned long long ns_2_cycles(unsigned long long ns)
+>>{
+>>    return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
+>>}
+> 
+> 
+> Your version performs ~50% better than mine (outperforming the original
+> version by factor 7 on a 1 GHz box, vs. 4.8). I think you compared
+> non-optimised code, didn't you?
 
-Hi,
+Nah, I'm not that drunk!
 
-could someone give this scenario a try (requires my recent patch series)
-and tell me if you are also seeing excessive latencies:
+  Without -O2, I see 15 times better
+> performance.
 
-Start:
-irqloop (+xeno_irqbench) -P 99 -t 0
-latency -p 200 -P 50
+Redone the check here on a Centrino 1.6Mhz, and still have roughly x20 
+improvement (a bit better actually). I'm using Debian/sarge gcc 3.3.5.
 
-Terminate:
-irqloop
-
-The termination seems to cause high latencies to the (then highest-prio)
-periodic timer test. This does not happen with irqloop -t 1
-(kernel-based task), and I can reduce the effect by invoking
-pthread_setschedparam(SCHED_NORMAL) for the irqloop test thread right
-before termination. Also, running and terminating another latency
-instance with prio 99 does not have this effect.
-
-Jan
+> 
+> [Gilles variant yet refuses the get benchmarked.]
+> 
+> Jan
+> 
 
 
---------------enig2082CD1469FF10729EBC441D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFEoWCQniDOoMHTA+kRAtedAKCEdLorY6hZyzMbNKQpAyhK0up+cACbBlMu
-FOhEU9Y8a+HX175q4XQiWzM=
-=m86K
------END PGP SIGNATURE-----
-
---------------enig2082CD1469FF10729EBC441D--
+Philippe.
 
