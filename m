@@ -1,13 +1,15 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Sun, 18 Jun 2006 01:38:18 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-Id: <200606180138.20289.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Buildbot progress: runs xeno-test on one board
-Reply-To: niklaus.giger@domain.hid
+Message-ID: <17550.48848.368995.713681@domain.hid>
+Date: Tue, 13 Jun 2006 15:34:08 +0200
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+In-Reply-To: <448EBD89.4060003@domain.hid>
+References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
+	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
+	<17550.47269.736193.860722@domain.hid>
+	<448EBD89.4060003@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,90 +19,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi
+Philippe Gerum wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Philippe Gerum wrote:
+ > >  > static inline unsigned long long ns_2_cycles(unsigned long long ns)
+ > >  > {
+ > >  >      return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
+ > > 
+ > > This multiplication is 64 bits * 32 bits, the intermediate result may
+ > > need more than 64 bits, so you should compute it the same way as the
+ > > beginning of ullimd. Something like:
+ > 
+ > Sure, but the point is that if we were to use such code, we should bound 
+ > the 64bit operand and would not use it beyond the tolerable loss of 
+ > accuracy on output (e.g. 2ms).  This would require to break longer shots 
+ > in several smaller ones, relying on the internal timer management logic 
+ > to redo the shot until it has actually elapsed (which should be a rare 
+ > case for oneshot timing), a bit like we are currently doing in bounding 
+ > the values to 2^32-1 right now. Going for ullimd alike implementation 
+ > somehow impedes the overall effort in reducing the CPU footprint, I 
+ > guess. This said, I have still no clue if the gain in computation cycles 
+ > is worth the additional overhead of dealing with possibly early shots - 
+ > I tend to think it would be better on average though.
 
-I just managed to put my newest version of the buildbot online. The following 
-new features are present:
-- Updated to buildbot 0.7.3.
-- Generate a file "localversion" in the build directory which contains the
-  svn revision number (using the new got_revision property in buildbot 0.7.3)
-- For my embedded target HCU I build now two variants:
-  a) hcu3: with APERIODIC timer and the skins native, uvm, posix, psos 
-     (as modules)
-  b) hcu_vx: with PERIODIC timer and the skins native, vrtx and vxworks
-     (built-in). This variant has known startup problems, see:
-     http://ngiger.dyndns.org/buildbot/hcu_vx/builds/7/step-xeno-test/0
-- After compiling and installing the new kernel, modules and xenomai into
-  a nfs-root on the server, the last step calls a Ruby script. It patches
-  xeno-* to use my busybox variants. Then it powers the target on, waits till
-  it is ready, logs in.  and calls xeno-test. Logs are not yet mailed to
-  xenomai-data, as there are still some unresolved problems with this
-  particular board.
+Ok, we could then write:
 
-An example output may be found going to:
-http://ngiger.dyndns.org/buildbot/hcu3/builds/101/step-xeno-test/0
-
-I hope this will generate a few more visit to the buildbot to verify whether 
-your changes broke something or not.
-
-Specifying this test is done by the following Ruby code snippet:
-
-    # DefaultTTY  = "/dev/ttyUSB0"
-    # DefaultPM   = ["172.25.1.211", 2]
-  def runTest(device=DefaultTTY, pmIp = DefaultPM )
-    res = false
-    checkXenoTestPatch
-    pm211 = PowerModule.new(pmIp[0], pmIp[1])
-    scc   = File.open(device, "w+")
-    CommDevice::setHCU3(scc)
-    hcu3  = RmtTstRunner.new(scc, pm211, LogName)
-    hcu3_steps = 
-      [ TestStep.new("U-Boot", 5, nil),                        # Wait till 
-U-Boot is awake
-	TestStep.new("main_loop", 10, nil),                    # Wait till U-Boot 
-loads kernel
-	TestStep.new("Transferring control to Linux", 10),     # U-Boots job is 
-finished now 
-	TestStep.new("Linux version", 5, nil),                 # Linux is alive!
-	TestStep.new("Freeing unused kernel memo", 10, nil),   # Linux init finished
-	TestStep.new("Willkommen", 10, nil),
-	TestStep.new("login", 5, "root"),
-	TestStep.new("/usr/xenomai/bin $", 5, "cd /usr/xenomai/bin"), 
-	TestStep.new("xeno-test: started", 5, "./xeno-test -T #{XenoRunTime}"),
-	TestStep.new("xeno-test: finished", (30 + XenoRunTime)*NrXenoTests, nil)
-      ]
-    res = hcu3.runTest(hcu3_steps)
-    hcu3.power.power(false)
-    puts "#{Time.now.strftime("%H:%M:%S")}: Running xeno-test reported #{res}. 
-Will dump output"
-    system "cat #{LogName}"
-    return res
-  end
-end
-
-If you are interested in more details, take a look at 
-http://ngiger.dyndns.org/xenomai-date. The API of the used Ruby code is found 
-at http://ngiger.dyndns.org/xenomai-data/doc
-All the sources (and the a little bit outdated documentation of the buildbot 
-setup) can be checkedout via
-http://ngiger.dyndns.org/svn/admin/hcu3_linux/doc/buildbot/.
-
-Next steps will be documentation cleanup, improving xeno-test and adding a x86 
-slave. (I just receveived an old x86-pc box, which I hope to make it boot via 
-NFS.) But do not expect a lot of progress in the next 6 weeks as in 10 day I 
-will leave for a 3 week vacation to Korea.
-
-I am just puzzled that during the test, I get
->cat: /proc/xenomai/sched: No such process
->Sat Jun 17 21:48:53 UTC 2006
->running: cat /proc/xenomai/stat
->cat: /proc/xenomai/stat: No such process
-Why do I get this answer? (xeno-test calls cat only for existing files?)
-
-Best regards
+static inline unsigned long long ns_2_cycles(unsigned ns)
+{
+    return (unsigned long long) ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
+}
 
 -- 
-Niklaus Giger
+
+
+					    Gilles Chanteperdrix.
 
