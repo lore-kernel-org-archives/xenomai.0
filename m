@@ -1,16 +1,10 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Mon, 12 Jun 2006 23:23:36 +0200
-Message-ID: <e6km0o$d6p$1@domain.hid>
-References: <200605252134.08614.niklaus.giger@domain.hid>
-	<44770814.5040009@domain.hid>
-	<200605261852.45980.niklaus.giger@domain.hid>
-	<4485E647.7010205@domain.hid> <448DCF9F.807@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
-Sender: news <news@domain.hid>
-Subject: [Xenomai-core] Re: Porting xeno-{info|load|test} to a busybox system
-Reply-To: niklaus.giger@domain.hid
+Message-ID: <448E7C42.3030504@domain.hid>
+Date: Tue, 13 Jun 2006 10:50:10 +0200
+From: Jean-Olivier Villemure <jean-olivier.villemure@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai integration to LTTng and LTTV
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,33 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, ltt-dev@domain.hid
 
-Jan Kiszka wrote:
-<..> 
-> Just stumbled over this again while cleaning up my mailbox. What's the
-> status? Waiting for improvements, or waiting for /someone/ to type svn
-> ci (and improve the topics above later)?
+Hello,
 
-Yes and no. As I told there is no urgent need to apply this before 2.2.
-And improvement/more insight into the whole busybox would be a great idea.
+I'm currently working on my diploma thesis which will finish in December 
+2006. The first goal of my project is to integrate Xenomai events to 
+LTTng, a task quite simple since creating new events in LTTng is not 
+very difficult. The second goal is to create a new module in the viewer, 
+LTTV, to analyse these specifics events.
 
-I am busy preparing the next step for the whole xeno-test/buildbot
-infrastructure, which will feature:
-- Small additions to my patch for xeno-test (done)
-- Buildbot will run automatically xeno-test on my PPC405 board as the last
-  build step (done). But it will at the moment only show, that there are
-  problems with my PPC405 target (see a separat thread).
-- Documentation rework (mostly done)
-- Adding a test script to test xeno-test (may be a overkill, but xeno-test
-  accumulated a lot of options, and I like unit test).
+Our idea about the LTTV module is to create a new controlflow module 
+representing realtime task behavior by identifying the start, end, 
+suspend, resume, period, etc...The difference with the current 
+controlflow is that we will not be showing the states of the process, 
+but there will be a line for each task (multiple realtime tasks by 
+process) and identifiers for each important events. Eventualy it will be 
+good to detected problems relating to periodic tasks. If I have enough 
+time, it could also be a good idea to add some statistics.
 
-As nobody committed my patch, I will be much more confident to propose a
-patch as soon as the unit tests for xeno-test work.
+If you have any idea relating to Xenomai or LTTng/LTTV, I will 
+considerate them.
 
-Best regards
----
-
-Niklaus Giger
-
+Thank you!
+Jean-Olivier Villemure
 
