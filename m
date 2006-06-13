@@ -1,12 +1,13 @@
-Message-ID: <449AC16F.3020708@domain.hid>
-Date: Thu, 22 Jun 2006 18:12:31 +0200
+Message-ID: <448EBEC0.5070203@domain.hid>
+Date: Tue, 13 Jun 2006 15:33:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig34F56C9B13E84E2033F8152B"
+	boundary="------------enig208EF4661238B61B3D13500D"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] normal pthreads broken
+Subject: [Xenomai-core] public roadmap/todo list (was: ns vs. tsc as
+	internal timer base)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,59 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig34F56C9B13E84E2033F8152B
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig208EF4661238B61B3D13500D
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi Gilles,
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>>
+>> :) We should coordinate better.
+>>
+>
+> The answer is published roadmap + todo list, but this requires some
+> organisation we have not been able to setup yet.
 
-I think some regression slipped into the rt-pthread lib. This example no
-longer works on my box (thread is not executed):
+Indeed.
 
-#include <pthread.h>
-#include <stdio.h>
-#include <sys/mman.h>
+I think this is first of all a technical issue: lowering the convenience
+barrier for entering/updating stuff within the team. Spontaneously, I
+have two options in mind:
 
-void *thread(void *arg)
-{
-        printf("thread\n");
-        return 0;
-}
+ - existing bug/feature tracking system on gna.org
+ - non-existent wiki with one or more dedicated pages about this,
+   following some loose convention on the item structure
 
-main()
-{
-        pthread_t thr;
-
-        mlockall(MCL_CURRENT|MCL_FUTURE);
-
-        printf("create =3D %d\n",
-               pthread_create(&thr, NULL, thread, NULL));
-        pause();
-}
-
-
-This also explains why the cyclic test is broken.
+Any other suggestions? Any preferences? How to proceed?
 
 Jan
 
 
---------------enig34F56C9B13E84E2033F8152B
+--------------enig208EF4661238B61B3D13500D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEmsFvniDOoMHTA+kRAtilAJ9BJ4s4HOTIEJX3iEwRBf+hAyArLACeNMT0
-8SaeIEZcf8UidN48PfURzBQ=
-=LmXx
+iD8DBQFEjr7AniDOoMHTA+kRArKPAJ9OzHyaGgG659q+2m+1UqwbGhWlJwCdHvBE
+elgsGXPdNHF4qmsZQ7jfTD4=
+=xOu1
 -----END PGP SIGNATURE-----
 
---------------enig34F56C9B13E84E2033F8152B--
+--------------enig208EF4661238B61B3D13500D--
 
