@@ -1,12 +1,12 @@
-Message-ID: <44A2DACA.5050401@domain.hid>
-Date: Wed, 28 Jun 2006 21:38:50 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <448F2A93.6010601@domain.hid>
+Date: Tue, 13 Jun 2006 23:13:55 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 5/6] Overread dev-prefix on posix open
-References: <20060626172116.019532000@domain.hid> <20060626172119.882570000@domain.hid>
-In-Reply-To: <20060626172119.882570000@domain.hid>
-Content-Type: multipart/mixed; boundary="------------020509070406030609000303"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Breakage in trunk
+References: <200606132257.00974.niklaus.giger@domain.hid>
+In-Reply-To: <200606132257.00974.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,53 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------020509070406030609000303
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Niklaus Giger wrote:
+> Hi 
+> 
+> I noticed that, eg.  
+> http://ngiger.dyndns.org/buildbot/hcu3/builds/80/step-mk_xeno/0
+> there are build failures. It tells me
+> Making install in vrtx
+> make[4]: Entering directory 
+> `/mnt/data.ng/buildslave/buildbot/quick-hcu3/build/hcu/src/skins/vrtx'
+> make[4]: *** No rule to make target `event.c', needed by 
+> `libvrtx_la-event.lo'.  Stop.
+> 
+> Last successfull build for hcu3 was with Revision: 1195
+> 
+> tqm860 still failes as  shown in
+> http://ngiger.dyndns.org/buildbot/tqm860/builds/97/step-mk_kernel/0
+> with
+> gcc -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer -I/home/buildslave/buildbot/quick-tqm860/build/linuxppc_2_4_devel-2006-04-06-1735/arch/ppc -o 
+> scripts/split-include scripts/split-include.c
+> make: *** No rule to make target `include/linux/autoconf.h', needed by 
+> `include/config/MARKER'.  Stop.
+> 
+> Could someone looking at these failures, please?
 
-Update to fix a compiler warning (char * vs. const char *).
+I forgot to commit two new files. Fixed, thanks.
 
-Jan
+-- 
 
---------------020509070406030609000303
-Content-Type: text/x-patch;
- name="accept-rtdm-dev-prefix.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="accept-rtdm-dev-prefix.patch"
+Philippe.
 
-Subject: Overread dev-prefix on posix open
-
-Adds support to the posix user-space lib to address RTDM-devices also with a (here meaningless) "/dev/" name prefix. Intended to increase user convenience slightly.
-
----
- src/skins/posix/rtdm.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-Index: xenomai/src/skins/posix/rtdm.c
-===================================================================
---- xenomai.orig/src/skins/posix/rtdm.c
-+++ xenomai/src/skins/posix/rtdm.c
-@@ -41,10 +41,15 @@ static inline int set_errno(int ret)
- int __wrap_open(const char *path, int oflag, ...)
- {
- 	int ret, oldtype;
-+	const char *rtdm_path = path;
- 
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
- 
--	ret = XENOMAI_SKINCALL2(__rtdm_muxid, __rtdm_open, path, oflag);
-+	/* skip path prefix for RTDM invocation */
-+	if (strncmp(path, "/dev/", 5) == 0)
-+		rtdm_path += 5;
-+
-+	ret = XENOMAI_SKINCALL2(__rtdm_muxid, __rtdm_open, rtdm_path, oflag);
- 
- 	pthread_setcanceltype(oldtype, NULL);
- 
-
---------------020509070406030609000303--
 
