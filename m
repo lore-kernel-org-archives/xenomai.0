@@ -1,173 +1,101 @@
-Message-ID: <44B8A951.7010701@domain.hid>
-Date: Sat, 15 Jul 2006 10:37:37 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <36429.155.98.4.39.1150216385.squirrel@domain.hid>
+In-Reply-To: <448EDECA.7030302@domain.hid>
+References: <45045.155.98.4.39.1150149018.squirrel@domain.hid>   
+	<448E5A2B.9060606@domain.hid>
+	<3384.206.81.135.88.1150211884.squirrel@domain.hid>
+	<448EDECA.7030302@domain.hid>
+Date: Tue, 13 Jun 2006 10:33:05 -0600 (MDT)
+Subject: Re: [Xenomai-help] strange periodic behavior
+From: "Brandt Erickson" <brandt@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] optimise syscall mux-code calculation
-References: <44B62AE7.8080503@domain.hid> <1152930271.5027.69.camel@domain.hid>	
-	<44B8A1E9.7080004@domain.hid> <1152952260.5057.15.camel@domain.hid>
-In-Reply-To: <1152952260.5057.15.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5DEF97F683D32BB513F87CC8"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/mixed;boundary="----=_20060613103305_24237"
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5DEF97F683D32BB513F87CC8
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_20060613103305_24237
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
 
-Philippe Gerum wrote:
-> On Sat, 2006-07-15 at 10:06 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Thu, 2006-07-13 at 13:13 +0200, Jan Kiszka wrote:
->>>> Hi,
->>>>
->>>> some may recall the "micro-optimisation" thread I once started. Here=
- is
->>>> now a simple approach to deal with the yet suboptimal mux-code
->>>> calculation in user-space. Code saving:
->>>>
->>>> Before:
->>>>    text    data     bss     dec     hex filename
->>>>   18004     476       8   18488    4838 native/.libs/libnative.so
->>>>   27445     696       4   28145    6df1 posix/.libs/libpthread_rt.so=
+> Sure your kernel was updated? Check /proc/cpuinfo for varying numbers
+> with and without system load.
 
->>>>
->>>> After:
->>>>    text    data     bss     dec     hex filename
->>>>   17172     476       8   17656    44f8 native/.libs/libnative.so
->>>>   26805     696       4   27505    6b71 posix/.libs/libpthread_rt.so=
+Yes, the kernel is up-to-date.  The config file on /boot confirms and
+there is no variation in frequency going from and idle load to ~full load.
 
->>>>
->>>> Of course, this also results in a few ops less being executed on eac=
-h
->>>> Xenomai syscall invocation (not many cycles, though).
->>>>
->>>> Tested without problems on x86 so far.
->>>>
->>> This is post 2.2 stuff since we need to check this critical change
->>> against each and every supported arch.=20
->> Agree, there is no need to hurry in 2.2.
->>
->>> Since this breaks the ABI
->>> including the ascending compatibility between old apps and new kernel=
+> But maybe it is better to post a simple excerpt of your test which shows
+> your problem and let us cross-check.
 
->>> support, this won't make it during the v2 series either.
->> The ABI chance just took place due to my laziness - I didn't want to
->> touch every skin library. Anyway, this ABI breakage can be avoided wit=
-h
->> slightly more effort, i.e. by doing the shift in user-space during the=
+sample output from the latency program is attached.  Thanks for the help.
+-Brandt
+------=_20060613103305_24237
+Content-Type: application/octet-stream; name="latency.output"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="latency.output"
 
->> binding.
->>
->=20
-> Yes, the mangling should be done in xeno_user_skin_init().
-
-Oh, great, I forgot the new common init code for the skin. This will help=
-=2E
-
->=20
->>>> Jan
->>>> plain text document attachment (optimise-muxcode-calculation.patch)
->>>> ---
->>>>  include/asm-arm/syscall.h      |   25 +++++++++++++------------
->>>>  include/asm-blackfin/syscall.h |    4 +++-
->>>>  include/asm-i386/syscall.h     |    3 ++-
->>>>  include/asm-ia64/syscall.h     |   23 ++++++++++++-----------
->>>>  include/asm-powerpc/syscall.h  |    3 ++-
->>>>  ksrc/nucleus/shadow.c          |    3 ++-
->>>>  6 files changed, 34 insertions(+), 27 deletions(-)
->>>>
->>>> Index: xenomai/include/asm-arm/syscall.h
->>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>> --- xenomai.orig/include/asm-arm/syscall.h
->>>> +++ xenomai/include/asm-arm/syscall.h
->>>> @@ -26,6 +26,7 @@
->>>>  #include <asm-generic/xenomai/syscall.h>
->>>> =20
->>>>  #define __xn_mux_code(id,op)    ((op << 24)|((id << 16) & 0xff0000)=
-|(__xn_sys_mux & 0xffff))
->>>> +#define __xn_mux_code_shft(shifted_id,op) ((op << 24)|shifted_id|(_=
-_xn_sys_mux & 0xffff))
->>> +#define __xn_mux_code_shft(shifted_id,op) ((op << 24)|shifted_id)
->>>
->>> should be enough.
->> Given my current calculation of the muxid in the kernel, yes. But the
->> original variant has zero effect on the code and looks more consistent=
-
->> to me.
->=20
-> I don't get why actually. If the point is about reducing the number of
-> micro operations per syscall, then leaving this redundancy is pointless=
-=2E
-
-As "op" is typically, well, always constant, that __xn_sys_mux bits are
-just merge during compile time into the same constant.
-
-> The relative obfuscation this optimization brings to the code is alread=
-y
-> there, regardless of when the mux tag is crammed into the syscall code:=
-
-> in any case, we have an half-baked syscall code which is going to be
-> adjusted at invocation time.
-
-My second approach will likely only shift the muxid ahead-of-time, thus
-reduce obfuscation a bit again.
-
->=20
->>> <snip>
->>>
->>>> Index: xenomai/include/asm-blackfin/syscall.h
->>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>>> --- xenomai.orig/include/asm-blackfin/syscall.h
->>>> +++ xenomai/include/asm-blackfin/syscall.h
->>>> @@ -27,6 +27,7 @@
->>>>     (i.e. negative syscall number in orig_p0 meaning "non-syscall
->>>>     entry"). */
->>>>  #define __xn_mux_code(id,op)   ((id << 24)|((op << 16) & 0xff0000)|=
-(__xn_sys_mux & 0xffff))
->>>> +#define __xn_mux_code_fast(shifted_id,op) ((op << 24)|shifted_id|(_=
-_xn_sys_mux & 0xffff))
->>>> =20
->>> Breakage alert.
->>>
->> Oops.
->>
->> Ok, I will rework this patch.
->>
->> Jan
->>
+PT0gU2FtcGxpbmcgcGVyaW9kOiAxMDAgdXMKPT0gVGVzdCBtb2RlOiBwZXJpb2RpYyB1c2VyLW1v
+ZGUgdGFzawo9PSBBbGwgcmVzdWx0cyBpbiBtaWNyb3NlY29uZHMKd2FybWluZyB1cC4uLgpSVFR8
+ICAwMDowMDowMSAgKHBlcmlvZGljIHVzZXItbW9kZSB0YXNrLCAxMDAgdXMgcGVyaW9kKQpSVEh8
+LS0tLS1sYXQgbWlufC0tLS0tbGF0IGF2Z3wtLS0tLWxhdCBtYXh8LW92ZXJydW58LS0tLWxhdCBi
+ZXN0fC0tLWxhdCB3b3JzdApSVER8ICAgICAgLTEuMzE0fCAgICAgIC0xLjAxMXwgICAgICAgMi42
+MjB8ICAgICAgIDB8ICAgICAgLTEuMzE0fCAgICAgICAyLjYyMApSVER8ICAgICAgLTEuMzE0fCAg
+ICAgIC0xLjAxMnwgICAgICAgMy43MTB8ICAgICAgIDB8ICAgICAgLTEuMzE0fCAgICAgICAzLjcx
+MApSVER8ICAgICAgLTEuMzQ3fCAgICAgIC0xLjAxM3wgICAgICAgMi4xMTl8ICAgICAgIDB8ICAg
+ICAgLTEuMzQ3fCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzQ3fCAgICAgIC0xLjAxNHwgICAg
+ICAgMi4xODB8ICAgICAgIDB8ICAgICAgLTEuMzQ3fCAgICAgICAzLjcxMApSVER8ICAgICAgLTEu
+MzE1fCAgICAgIC0xLjAxMnwgICAgICAgMS43MTl8ICAgICAgIDB8ICAgICAgLTEuMzQ3fCAgICAg
+ICAzLjcxMApSVER8ICAgICAgLTEuMzQxfCAgICAgIC0xLjAxM3wgICAgICAgMS44ODJ8ICAgICAg
+IDB8ICAgICAgLTEuMzQ3fCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAx
+M3wgICAgICAgMi4wNDB8ICAgICAgIDB8ICAgICAgLTEuMzQ3fCAgICAgICAzLjcxMApSVER8ICAg
+ICAgLTEuMzYwfCAgICAgIC0xLjAxM3wgICAgICAgMi4xODF8ICAgICAgIDB8ICAgICAgLTEuMzYw
+fCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAxM3wgICAgICAgMS42MzN8
+ICAgICAgIDB8ICAgICAgLTEuMzYwfCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzE0fCAgICAg
+IC0xLjAwNnwgICAgICAgMS44OTJ8ICAgICAgIDB8ICAgICAgLTEuMzYwfCAgICAgICAzLjcxMApS
+VER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAxM3wgICAgICAgMS42MTh8ICAgICAgIDB8ICAgICAg
+LTEuMzYwfCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzE5fCAgICAgIC0xLjAxMnwgICAgICAg
+MS43NjB8ICAgICAgIDB8ICAgICAgLTEuMzYwfCAgICAgICAzLjcxMApSVER8ICAgICAgLTEuMzE2
+fCAgICAgIC0xLjAxMnwgICAgICAgMS45MzJ8ICAgICAgIDB8ICAgICAgLTEuMzYwfCAgICAgICAz
+LjcxMApSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAwMHwgICAgICAgNC43OTl8ICAgICAgIDB8
+ICAgICAgLTEuMzYwfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE2fCAgICAgIC0xLjAxMnwg
+ICAgICAgMS44NDh8ICAgICAgIDB8ICAgICAgLTEuMzYwfCAgICAgICA0Ljc5OQpSVER8ICAgICAg
+LTEuMzE4fCAgICAgIC0xLjAxM3wgICAgICAgMS42NzR8ICAgICAgIDB8ICAgICAgLTEuMzYwfCAg
+ICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzYyfCAgICAgIC0xLjAxMnwgICAgICAgMS44NTB8ICAg
+ICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE2fCAgICAgIC0x
+LjAxM3wgICAgICAgMS40Mjh8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8
+ICAgICAgLTEuMzE0fCAgICAgIC0xLjAxNHwgICAgICAgMS41NDR8ICAgICAgIDB8ICAgICAgLTEu
+MzYyfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzEzfCAgICAgIC0xLjAxM3wgICAgICAgMS4z
+ODR8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE0fCAg
+ICAgIC0xLjAxM3wgICAgICAgMS41MjN8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5
+OQpSVFR8ICAwMDowMDoyMiAgKHBlcmlvZGljIHVzZXItbW9kZSB0YXNrLCAxMDAgdXMgcGVyaW9k
+KQpSVEh8LS0tLS1sYXQgbWlufC0tLS0tbGF0IGF2Z3wtLS0tLWxhdCBtYXh8LW92ZXJydW58LS0t
+LWxhdCBiZXN0fC0tLWxhdCB3b3JzdApSVER8ICAgICAgLTEuMzEzfCAgICAgIC0xLjAxM3wgICAg
+ICAgMS42Nzd8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEu
+MzE2fCAgICAgIC0xLjAxMnwgICAgICAgMi4wNjJ8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAg
+ICA0Ljc5OQpSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAwN3wgICAgICAgMi40NDR8ICAgICAg
+IDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAw
+NHwgICAgICAgMS44NDF8ICAgICAgIDB8ICAgICAgLTEuMzYyfCAgICAgICA0Ljc5OQpSVER8ICAg
+ICAgLTEuMzYzfCAgICAgIC0xLjAxMXwgICAgICAgMi4yMjZ8ICAgICAgIDB8ICAgICAgLTEuMzYz
+fCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzEzfCAgICAgIC0xLjAxMXwgICAgICAgNC41NDJ8
+ICAgICAgIDB8ICAgICAgLTEuMzYzfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE0fCAgICAg
+IC0xLjAxMnwgICAgICAgMi4yMzB8ICAgICAgIDB8ICAgICAgLTEuMzYzfCAgICAgICA0Ljc5OQpS
+VER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAxMXwgICAgICAgMS43NTV8ICAgICAgIDB8ICAgICAg
+LTEuMzYzfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzMzfCAgICAgIC0xLjAxMnwgICAgICAg
+Mi4yMzF8ICAgICAgIDB8ICAgICAgLTEuMzYzfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE1
+fCAgICAgIC0xLjAxMnwgICAgICAgMS45NzF8ICAgICAgIDB8ICAgICAgLTEuMzYzfCAgICAgICA0
+Ljc5OQpSVER8ICAgICAgLTEuMzE1fCAgICAgIC0xLjAxMnwgICAgICAgMi4xNDJ8ICAgICAgIDB8
+ICAgICAgLTEuMzYzfCAgICAgICA0Ljc5OQpSVER8ICAgICAgLTEuMzE0fCAgICAgIC0xLjAxMnwg
+ICAgICAgMS43MjR8ICAgICAgIDB8ICAgICAgLTEuMzYzfCAgICAgICA0Ljc5OQotLS18LS0tLS0t
+LS0tLS0tfC0tLS0tLS0tLS0tLXwtLS0tLS0tLS0tLS18LS0tLS0tLS18LS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQoK
+------=_20060613103305_24237--
 
 
-
---------------enig5DEF97F683D32BB513F87CC8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEuKlRniDOoMHTA+kRArOQAJ90ECd3S2de+2RH1NMWikQviWah1QCfUZLU
-A2AWPijC4YCgZw1/cUikch4=
-=r5s7
------END PGP SIGNATURE-----
-
---------------enig5DEF97F683D32BB513F87CC8--
 
