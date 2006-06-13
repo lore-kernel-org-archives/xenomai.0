@@ -1,14 +1,11 @@
-Message-ID: <448EF56D.1030101@domain.hid>
-Date: Tue, 13 Jun 2006 19:27:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <20060613184708.6958.qmail@domain.hid>
+Date: Tue, 13 Jun 2006 11:47:08 -0700 (PDT)
+From: Cedric Herreman <glocker50@domain.hid>
+Subject: Re: [Xenomai-help] Compaq nc6120 timer frequency
+In-Reply-To: <17549.52124.344294.89351@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Interrupt handler assistance
-References: <1150219056.10703.1.camel@domain.hid>
-In-Reply-To: <1150219056.10703.1.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAD9B34F015C8BA6FA34129D9"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; boundary="0-1624889140-1150224428=:5468"
+Content-Transfer-Encoding: 8bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,46 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marcelo Coelho <mjcoelho@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAD9B34F015C8BA6FA34129D9
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+--0-1624889140-1150224428=:5468
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-Marcelo Coelho wrote:
-> Hi!
->=20
-> I'm porting a driver to RTAI, using RTDM. The original driver uses
-> Workqueues to process the data received by the interrupt handler. What
-> method does RTDM in a this situation?
->=20
+Gilles,
+ 
+ Disabling ACPI fixed the problem. Thanks for your help.
+ 
+ Cedric.
 
-RTDM doesn't provide an explicit queuing API, you may design a specific
-one for your scenario (or keep the original one if it was not
-RTAI-specific). What RTDM offers is locking (rtdm_lock_xxx) and
-signalling (rtdm_event_xxx or rtdm_sem_xxx).
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote: Cedric Herreman wrote:
+ > I disabled CPU Frequency Scaling and recompiled kernel + modules, but the problem remains.
+ >  
 
-Patterns can be found e.g. in the serial driver (ring buffer with
-rtdm_event) or in RTnet (packet queue with rtdm_event or rtdm_sem).
+If it is not done, please also disable CONFIG_ACPI_PROCESSOR.
 
-Jan
+Do you observe the same behaviour with the latency test ? If yes, could
+you send us your .config, if not, could you show us a minimal piece of
+code which has a problem ?
+
+-- 
 
 
---------------enigAD9B34F015C8BA6FA34129D9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+         Gilles Chanteperdrix.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEjvVtniDOoMHTA+kRAglVAJ9d9ic5HVOzWcBm1jgUpmjomdz8/QCdFO/q
-utWp2JnxFFsYDfei+I1L1ZM=
-=ztjZ
------END PGP SIGNATURE-----
+ __________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+--0-1624889140-1150224428=:5468
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
---------------enigAD9B34F015C8BA6FA34129D9--
+Gilles,<br> <br> Disabling ACPI fixed the problem. Thanks for your help.<br> <br> Cedric.<br><br><b><i>Gilles Chanteperdrix &lt;gilles.chanteperdrix@xenomai.org&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;"> Cedric Herreman wrote:<br> &gt; I disabled CPU Frequency Scaling and recompiled kernel + modules, but the problem remains.<br> &gt;  <br><br>If it is not done, please also disable CONFIG_ACPI_PROCESSOR.<br><br>Do you observe the same behaviour with the latency test ? If yes, could<br>you send us your .config, if not, could you show us a minimal piece of<br>code which has a problem ?<br><br>-- <br><br><br>         Gilles Chanteperdrix.<br></blockquote><br><p>&#32;__________________________________________________<br>Do You Yahoo!?<br>Tired of spam?  Yahoo! Mail has the best spam protection around <br>http://mail.yahoo.com 
+--0-1624889140-1150224428=:5468--
 
