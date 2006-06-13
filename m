@@ -1,12 +1,15 @@
-Message-ID: <4491426B.50508@domain.hid>
-Date: Thu, 15 Jun 2006 13:20:11 +0200
+Message-ID: <448EBE8C.60900@domain.hid>
+Date: Tue, 13 Jun 2006 15:33:00 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
+	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
+In-Reply-To: <448EB038.8070802@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigA2AA3949CF4D14B0F8F8DF28"
+	boundary="------------enig5C3DBC900FD03E92B0377009"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] use vmalloc'ed trace buffer
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,178 +20,172 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA2AA3949CF4D14B0F8F8DF28
-Content-Type: multipart/mixed; boundary="------------090604080803040202080704"
-
-This is a multi-part message in MIME format.
---------------090604080803040202080704
+--------------enig5C3DBC900FD03E92B0377009
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi Philippe,
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> from i386/kernel/timers/timer_tsc.c. And indeed, I had x 20 performan=
+ce
+>>> improvements in some cases.
+>>
+>> Oops, that sounds like a bit too extreme optimisations. Is the origina=
+l
+>> version varying that much? I didn't observe this.
+>>
+>> Here is my current version, BTW:
+>>
+>> long tsc_scale;
+>> unsigned int tsc_shift =3D 31;
+>>
+>> static inline long long fast_tsc_to_ns(long long ts)
+>> {
+>>     long long ret;
+>>
+>>     __asm__ (
+>>         /* HI =3D HIWORD(ts) * tsc_scale */
+>>         "mov  %%eax,%%ebx\n\t"
+>>         "mov  %%edx,%%eax\n\t"
+>>         "imull %2\n\t"
+>>         "mov  %%eax,%%esi\n\t"
+>>         "mov  %%edx,%%edi\n\t"
+>>
+>>         /* LO =3D LOWORD(ts) * tsc_scale */
+>>         "mov  %%ebx,%%eax\n\t"
+>>         "mull %2\n\t"
+>>
+>>         /* ret =3D (HI << 32) + LO */
+>>         "add  %%esi,%%edx\n\t"
+>>         "adc  $0,%%edi\n\t"
+>>
+>>         /* ret =3D ret >> tsc_shift */
+>>         "shrd %%cl,%%edx,%%eax\n\t"
+>>         "shrd %%cl,%%edi,%%edx\n\t"
+>>         : "=3DA"(ret)
+>>         : "A" (ts), "m" (tsc_scale), "c" (tsc_shift)
+>>         : "ebx", "esi", "edi");
+>>
+>>     return ret;
+>> }
+>>
+>> void init_tsc(unsigned long cpu_freq)
+>> {
+>>     unsigned long long scale;
+>>
+>>     while (1) {
+>>         scale =3D do_div(1000000000LL << tsc_shift, cpu_freq);
+>>         if (scale <=3D 0x7FFFFFFF)
+>>             break;
+>>         tsc_shift--;
+>>     }
+>>     tsc_scale =3D scale;
+>> }
+>>
+>> This version will use 31 (GHz cpu_freq) to 26 (~32 MHz) shifts, i.e. a=
 
-here is the cleaned up and configurable version of my vmalloc hack for
-the I-pipe tracer.
+>> bit more than the Linux kernel's 22 bits.
+>>
+>=20
+> Here is likely why we have different levels of accuracy and performance=
+,
+>  firstly my version is bluntly based on the khz freq, secondly it
+> calculates the other way around, i.e. ns2tsc, so that tsc are keep in
+> the inner code, but more efficiently converted from ns counts passed to=
 
-As it has a slight performance impact to use virtual memory for the
-trace buffer (running "hackbench 10" in parallel to "latency -p 100" on
-a 266 MHz P-MMX: 227 vs. 244 s hackbench runtime), I left this option
-off by default. If there is any kind of CONFIG combination that cries
-for default on, we can easily add it.
+> the outer interface:
+>=20
+> static unsigned long ns2cyc_scale;
+> #define NS2CYC_SCALE_FACTOR 10 /* 2^10, carefully chosen */
+
+Linux only uses 10 bits for scheduling time calculation, which is
+tick-based (low-res) anyway. The tsc clock_source uses 22 bits. The
+latter overflows after an hour or so, because they drop all bits > 64
+after the multiplication - insignificantly faster when using optimised
+code anyway.
+
+>=20
+> static inline void set_ns2cyc_scale(unsigned long cpu_khz)
+> {
+>     ns2cyc_scale =3D (cpu_khz << NS2CYC_SCALE_FACTOR) / 1000000;
+> }
+>=20
+> static inline unsigned long long ns_2_cycles(unsigned long long ns)
+> {
+>     return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
+> }
+>=20
+>>>
+>>> TSC are not the whole nucleus time base, but only the timer managemen=
+t
+>>> one. The motivation to use TSCs in nucleus/timer.c was to pick a unit=
+
+>>> which would not require any conversion beyond the initial one in
+>>> xntimer_start.
+>>
+>>
+>> That helps strictly periodic application timers, not aperiodic ones li=
+ke
+>> timeouts.
+>>
+>=20
+> It depends, periodic timers usually exhibit larger delays, so the gain
+> is more significant with oneshot timings incurring smaller delays, henc=
+e
+> a higher number of calculations.
+>=20
+>>
+>>>> Any pitfalls down the road (except introducing regressions)?
+>>>
+>>> Well, pitfalls expected from changing the core idea of time of the ti=
+mer
+>>> management code... :o>
+>>>
+>>
+>> You mean turning
+>>
+>> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,RTHAL_CP=
+U_FREQ));
+>>
+>>
+>> into
+>>
+>> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,10000000=
+00));
+>>
+>>
+>=20
+> Not really, it was a general remark about changing a code that might
+> have some assumtions on using TSCs. Additionally, only x86 needs to
+> rescale TSC values to the timer frequency, other archs use the same uni=
+t
+> on both sides, and such unit might even have nothing to do with any CPU=
+
+> accounting (e.g. blackfin uses a free running timer, ppc uses the
+> internal timebase, etc).
+
+Ok, an interesting aspect I already assumed but didn't check in details
+yet. That makes dealing with TSCs interesting again on !=3D x86. In
+contrast, on x86, there is the aspect of frequency scaling that Anders
+brought up and which would speak pro nanos.
+
+>=20
+> This said, it should not have that many assumptions, and in any case,
+> they should be confined to nucleus/timers.c. I think we should give thi=
+s
+> kind of optimization a try.
+>=20
+
+Yep, it just needs some more brain cycles how to do this precisely.
 
 Jan
 
---------------090604080803040202080704
-Content-Type: text/plain;
- name="tracer-dyn-buffer-v2.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="tracer-dyn-buffer-v2.patch"
 
-Index: linux-2.6.16.1/kernel/ipipe/Kconfig
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.16.1.orig/kernel/ipipe/Kconfig
-+++ linux-2.6.16.1/kernel/ipipe/Kconfig
-@@ -34,3 +34,12 @@ config IPIPE_TRACE_SHIFT
- 	---help---
- 	  The number of trace points to hold tracing data for each
- 	  trace path, as a power of 2.
-+
-+config IPIPE_TRACE_VMALLOC
-+	bool "Use vmalloc'ed trace buffer"
-+	depends on IPIPE_TRACE
-+	---help---
-+	  Instead of reserving static kernel data, the required buffer
-+	  is allocated via vmalloc during boot-up when this option is
-+	  enabled. This can help to start systems that are low on memory,
-+	  but it slightly degrades overall performance.
-Index: linux-2.6.16.1/kernel/ipipe/tracer.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.16.1.orig/kernel/ipipe/tracer.c
-+++ linux-2.6.16.1/kernel/ipipe/tracer.c
-@@ -2,7 +2,7 @@
-  * kernel/ipipe/tracer.c
-  *
-  * Copyright (C) 2005 Luotao Fu.
-- *               2005 Jan Kiszka.
-+ *               2005, 2006 Jan Kiszka.
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-@@ -27,6 +27,7 @@
- #include <linux/seq_file.h>
- #include <linux/proc_fs.h>
- #include <linux/ctype.h>
-+#include <linux/vmalloc.h>
- #include <linux/ipipe_trace.h>
- #include <asm/uaccess.h>
-=20
-@@ -86,7 +87,13 @@ enum ipipe_trace_type
- };
-=20
-=20
--int ipipe_trace_enable =3D 1;
-+#ifdef CONFIG_IPIPE_TRACE_VMALLOC
-+#define IPIPE_DEFAULT_TRACE_STATE   0
-+
-+static struct ipipe_trace_path *trace_paths[NR_CPUS];
-+
-+#else /* !CONFIG_IPIPE_TRACE_VMALLOC */
-+#define IPIPE_DEFAULT_TRACE_STATE   1
-=20
- static struct ipipe_trace_path trace_paths[NR_CPUS][IPIPE_TRACE_PATHS] =3D=
-
- 	{ [0 ... NR_CPUS-1] =3D
-@@ -94,6 +101,10 @@ static struct ipipe_trace_path trace_pat
- 			{ .begin =3D -1, .end =3D -1 }
- 		}
- 	};
-+#endif /* CONFIG_IPIPE_TRACE_VMALLOC */
-+
-+int ipipe_trace_enable =3D IPIPE_DEFAULT_TRACE_STATE;
-+
- static int active_path[NR_CPUS] =3D
- 	{ [0 ... NR_CPUS-1] =3D IPIPE_DEFAULT_ACTIVE };
- static int max_path[NR_CPUS] =3D
-@@ -1097,10 +1108,30 @@ __ipipe_create_trace_proc_val(struct pro
- 	}
- }
-=20
--void __init __ipipe_init_trace_proc(void)
-+void __init __ipipe_init_tracer(void)
- {
- 	struct proc_dir_entry *trace_dir;
- 	struct proc_dir_entry *entry;
-+#ifdef CONFIG_IPIPE_TRACE_VMALLOC
-+	int cpu, path;
-+
-+	for (cpu =3D 0; cpu < NR_CPUS; cpu++) {
-+		trace_paths[cpu] =3D vmalloc(
-+			sizeof(struct ipipe_trace_path) * IPIPE_TRACE_PATHS);
-+		if (!trace_paths) {
-+			printk(KERN_ERR "I-pipe: "
-+			       "insufficient memory for trace buffer.\n");
-+			return;
-+		}
-+		memset(trace_paths[cpu], 0,
-+			sizeof(struct ipipe_trace_path) * IPIPE_TRACE_PATHS);
-+		for (path =3D 0; path < IPIPE_TRACE_PATHS; path++) {
-+			trace_paths[cpu][path].begin =3D -1;
-+			trace_paths[cpu][path].end   =3D -1;
-+		}
-+	}
-+	ipipe_trace_enable =3D 1;
-+#endif /* CONFIG_IPIPE_TRACE_VMALLOC */
-=20
- 	trace_dir =3D create_proc_entry("trace", S_IFDIR, ipipe_proc_root);
-=20
-Index: linux-2.6.16.1/include/linux/ipipe.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.16.1.orig/include/linux/ipipe.h
-+++ linux-2.6.16.1/include/linux/ipipe.h
-@@ -329,9 +329,9 @@ void ipipe_init(void);
- void ipipe_init_proc(void);
-=20
- #ifdef CONFIG_IPIPE_TRACE
--void __ipipe_init_trace_proc(void);
-+void __ipipe_init_tracer(void);
- #else /* !CONFIG_IPIPE_TRACE */
--#define __ipipe_init_trace_proc()   do { } while(0)
-+#define __ipipe_init_tracer()       do { } while(0)
- #endif /* CONFIG_IPIPE_TRACE */
-=20
- #else	/* !CONFIG_PROC_FS */
-Index: linux-2.6.16.1/kernel/ipipe/core.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.16.1.orig/kernel/ipipe/core.c
-+++ linux-2.6.16.1/kernel/ipipe/core.c
-@@ -1012,8 +1012,9 @@ void ipipe_init_proc(void)
- {
- 	ipipe_proc_root =3D create_proc_entry("ipipe",S_IFDIR, 0);
- 	create_proc_read_entry("version",0444,ipipe_proc_root,&__ipipe_version_=
-info_proc,NULL);
--	__ipipe_init_trace_proc();
- 	__ipipe_add_domain_proc(ipipe_root_domain);
-+
-+	__ipipe_init_tracer();
- }
-=20
- #endif	/* CONFIG_PROC_FS */
-
---------------090604080803040202080704--
-
---------------enigA2AA3949CF4D14B0F8F8DF28
+--------------enig5C3DBC900FD03E92B0377009
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -197,10 +194,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEkUJrniDOoMHTA+kRAsgOAJ9+wqcPHj4rwTrMWYR88NCJSYUtMACcDmpV
-dektwc6L75syA2UqDmT/4Vg=
-=0Wyk
+iD8DBQFEjr6MniDOoMHTA+kRAqc9AJsGjS8Klfw4owwc99SighKt+3PTGgCeLiyT
+NZBKIFtChlAhg/W/CVhNN2k=
+=3gIc
 -----END PGP SIGNATURE-----
 
---------------enigA2AA3949CF4D14B0F8F8DF28--
+--------------enig5C3DBC900FD03E92B0377009--
 
