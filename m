@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] Prio-inversion on cleanup?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44A39C3C.1080508@domain.hid>
-References: <44A1608B.3090605@domain.hid> <44A295ED.2080306@domain.hid>
-	<44A39C3C.1080508@domain.hid>
-Content-Type: text/plain
-Date: Thu, 29 Jun 2006 12:14:42 +0200
-Message-Id: <1151576082.5291.41.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <448FD5EC.4060109@domain.hid>
+Date: Wed, 14 Jun 2006 03:25:00 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+References: <448E98A3.6080707@domain.hid>	<448E9E8B.70809@domain.hid>	<448EA7F7.5000802@domain.hid>	<448EB038.8070802@domain.hid>	<448EE593.7010809@domain.hid>	<448EF022.1040901@domain.hid>	<17550.61982.685449.470866@domain.hid>
+	<448EFCC5.60308@domain.hid>
+In-Reply-To: <448EFCC5.60308@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,71 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Thu, 2006-06-29 at 11:24 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > ...
-> > The pthread is blocked on the irqbench device ioctl. On hitting ^C,
-> > close() is invoked from the main thread for that device. The pthread is
-> > woken up and obviously relaxed on some linux syscall (after being
-> > interrupted twice by the periodic timer event of a "latency -p 300 -P
-> > 50" instance). This passes the control over to the main thread while
-> > keeping the pthread prio of 99. And this prio seems to survive for the
-> > following 11 ms (full trace available on request).
-> > 
-> > Any ideas what's going on?
-> > 
-> 
-> Ok, I think I finally understood the issue. It seems to lie deep in the
-> POSIX user-space lib, specifically its use of standard pthread services.
-> Let me first clarify my scenario:
-> 
-> A high-prio pthread of known and (theoretically) bounded workload shall
-> be started and stopped while a low-prio thread is already running. The
-> low-prio thread shall only be impacted by the real workload of the
-> high-prio one, not by its creation/destruction - at least not
-> significantly. To achieve this with the POSIX skin (actually this
-> applies to preempt-rt in theory as well), I have to create the thread
-> under SCHED_OTHER, raise its priority right before entering the
-> workload, and lower it again before leaving the thread.
-> 
-> But, unfortunately, __wrap_pthread_setschedparam() depends on some
-> real_pthread functions to be called. One of them is
-> __real_pthread_setschedparam, and this one issues a linux syscall for
-> obvious reasons. When lowering the thread to SCHED_OTHER, this syscall
-> is still issued under the original priority. And here we get bitten by
-> the prio-inheritance feature of the nucleus which, in my case, lets
-> significant parts of standard Linux execute under high priority,
-> delaying my other real-time threads.
-> 
-> Now I wonder how to resolve this, how to make pthread_setschedparam (a
-> rather central RT-service) really real-time safe? I would say we need
-> something like a lazy schedparam propagation to Linux which only takes
-> place when the thread enters secondary mode intentionally or no other RT
-> thread is ready. But I do not have a design for this at hand. Nasty.
-> 
-> [My preferred way for every setup != CONFIG_PREEMPT_RT + CONFIG_XENOMAI
-> would still be to switch this prio-inheritance off for the root thread.
-> But this was nack'ed by Philippe several times before... ;)]
-> 
+Philippe Gerum wrote:
+> Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>  > Redone the check here on a Centrino 1.6Mhz, and still have roughly 
+>> x20  > improvement (a bit better actually). I'm using Debian/sarge 
+>> gcc 3.3.5.
+>>
+>> I think I remember that Pentium M has a much shorter mull instruction
+>> than other processors of the family.
+>>
+>
+> That would explain. Anyway, as John Stulz put it:
+> "math is hard, lets go shopping!"
+>
 
-I nacked the proposal to _always_ switch it off. Some applications
-deeply need this.
+Heh.  Appropriate that his name (Stultz) comes up here, as his 
+generic-time (GTOD)
+patchset looks headed for 2.6.18, bringing with it a full re-working
+of linux timers / timeofday.  IN this new world, time is kept on 
+free-running counters.
 
-> Side note: the native skin does not seem to suffer from this effect as
-> it only tracks the current prio at Xenomai level.
-> 
+Ive been running this patchset on my soekris for some time, since
+GTOD detects that the TSC counts slowly, calls it insane, and does timing
+with the PIT.
 
-Switching off priority adjustment for the root thread before moving a
-SCHED_FIFO shadow to SCHED_OTHER would prevent this side-effect. We'd
-need to add a per-thread status bit to check whether we should run
-xnpod_renice_root() or not for any given thread, and switch it on/off
-from __wrap_pthread_setschedparam.
+With GTOD, writing a new clocksource driver is easy, enough so I could 
+do it.
+My clocksource patch uses the 27 mhz timer on the Geode CPU.
+Once the TSC is de-rated, mine becomes the best clocksource, and GTOD 
+switches to it.
 
--- 
-Philippe.
-
-
+All of which is to say ..
+new mainline code is coming, should this current rework notion wait,
+given that its will all need revisited again later
 
