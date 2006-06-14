@@ -1,10 +1,16 @@
-Message-ID: <44A519C4.3080900@domain.hid>
-Date: Fri, 30 Jun 2006 12:32:04 +0000
-From: "s.a." <sancelot@domain.hid>
+Message-ID: <44900A19.1040702@domain.hid>
+Date: Wed, 14 Jun 2006 15:07:37 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] xeno task debigging 
+Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
+References: <448E98A3.6080707@domain.hid>	<448E9E8B.70809@domain.hid>	<448EA7F7.5000802@domain.hid>	<448EB038.8070802@domain.hid>	<448EE593.7010809@domain.hid>	<448EF022.1040901@domain.hid>	<17550.61982.685449.470866@domain.hid>
+	<448EFCC5.60308@domain.hid> <448FD5EC.4060109@domain.hid>
+	<44900143.50806@domain.hid>
+In-Reply-To: <44900143.50806@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD8FFE2A0E19C20E554BD905F"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,58 +20,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
-I have got the following kernel message in a process that crashes sometimes
-the action to obtain it is console switching with ctrl alt  Fx
-the two processes are xeno tasks
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD8FFE2A0E19C20E554BD905F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-any idea about the problem ?
+Philippe Gerum wrote:
+> Jim Cromie wrote:
+>> Philippe Gerum wrote:
+>>
+>>> Gilles Chanteperdrix wrote:
+>>>
+>>>> Philippe Gerum wrote:
+>>>>  > Redone the check here on a Centrino 1.6Mhz, and still have
+>>>> roughly x20  > improvement (a bit better actually). I'm using
+>>>> Debian/sarge gcc 3.3.5.
+>>>>
+>>>> I think I remember that Pentium M has a much shorter mull instructio=
+n
+>>>> than other processors of the family.
+>>>>
+>>>
+>>> That would explain. Anyway, as John Stulz put it:
+>>> "math is hard, lets go shopping!"
+>>>
+>>
+>> Heh.  Appropriate that his name (Stultz) comes up here, as his
+>> generic-time (GTOD)
+>> patchset looks headed for 2.6.18, bringing with it a full re-working
+>> of linux timers / timeofday.  IN this new world, time is kept on
+>> free-running counters.
+>>
+>> Ive been running this patchset on my soekris for some time, since
+>> GTOD detects that the TSC counts slowly, calls it insane, and does tim=
+ing
+>> with the PIT.
+>>
+>> With GTOD, writing a new clocksource driver is easy, enough so I could=
 
-how to debug this in xenomai ?
-is there a workaround ?
+>> do it.
+>> My clocksource patch uses the 27 mhz timer on the Geode CPU.
+>> Once the TSC is de-rated, mine becomes the best clocksource, and GTOD
+>> switches to it.
+>>
+>> All of which is to say ..
+>> new mainline code is coming, should this current rework notion wait,
+>> given that its will all need revisited again later
+>>
+>=20
+> Clearly yes, since this is going to impact Adeos too. GTOD is going to
+> fiddle with the PIT channels in a way Adeos needs to be aware of, in
+> order for the client RTOS to reuse such timer. Added to the flow of
+> other core changes planned for 2.6.18, this is likely going to be funky=
+=2E
+>=20
+> "Find wall. Beat head against same."
+>=20
 
-general protection fault: 0000 [#1]
-PREEMPT
-Modules linked in: nls_iso8859_1 nls_cp437 i915 rtcan_sja1000 e100
-usb_storage eepro100 mii rtc unix
-CPU:    0
-EIP:    0060:[<c0103112>]    Not tainted VLI
-EFLAGS: 00010246   (2.6.16.19-ipipe #1)
-EIP is at sysenter_exit+0xf/0x11
-eax: 00000010   ebx: 00000000   ecx: b7d1223c   edx: ffffe410
-esi: b7d122cc   edi: 00000000   ebp: 00000000   esp: dc1a7fbc
-ds: 007b   es: 007b   ss: 0068
-Process EnvoiPDO0 (pid: 1879, threadinfo=dc1a6000 task=de35d030)
-Stack: <0>00000000 b7d122cc 00000000 b7d122cc 00000000 b7d12268 00000010
-0000007b
-       0000007b 0802022b ffffe410 00000073 00000206 b7d1223c 0000007b
-00000000
-       00000000
-Call Trace:
-Code: 44 24 18 e8 81 ca 03 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 4e 01 00
-00 e8 ed ea 00 00 8b 44 24 18 8b 54 24 28 8b 4c 24 34 31 ed fb <0f> 35
-50 fc 06 1e 50 55 57 56 52 51 53 ba 7b 00 00 00 8e da 8e
- <0>general protection fault: 0000 [#2]
-PREEMPT
-Modules linked in: nls_iso8859_1 nls_cp437 i915 rtcan_sja1000 e100
-usb_storage eepro100 mii rtc unix
-CPU:    0
-EIP:    0060:[<c0103112>]    Not tainted VLI
-EFLAGS: 00010246   (2.6.16.19-ipipe #1)
-EIP is at sysenter_exit+0xf/0x11
-eax: 00000000   ebx: 00000000   ecx: b7ce6a2c   edx: ffffe410
-esi: 00669627   edi: 00000000   ebp: 00000000   esp: d704ffbc
-ds: 007b   es: 007b   ss: 0068
-Process Automat (pid: 1882, threadinfo=d704e000 task=d701b030)
-Stack: <0>00000000 00000001 b7d8a660 00669627 00000000 b7ce6a58 00000000
-2801007b
-       0000007b 0801022b ffffe410 00000073 00000206 b7ce6a2c 0000007b
-00000000
-       00000000
-Call Trace:
-Code: 44 24 18 e8 81 ca 03 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 4e 01 00
-00 e8 ed ea 00 00 8b 44 24 18 8b 54 24 28 8b 4c 24 34 31 ed fb <0f> 35
-50 fc 06 1e 50 55 57 56 52 51 53 ba 7b 00 00 00 8e da 8e
+May not be required: the GTOD and clocksource abstractions could provide
+a clean way to register some virtual, Adeos- or RTOS-provided clock with
+Linux. And that clock may even lose ticks without Linux losing its
+system time! So far for the theory, practice may still require walls...
+
+Jan
+
+
+--------------enigD8FFE2A0E19C20E554BD905F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEkAodniDOoMHTA+kRAgHMAJ9+1GN/pn+zWIPEIZYP6PgGTjnOTwCfcO2I
+mQZuqAIzEeqlkbXHlWVPAkQ=
+=ynjz
+-----END PGP SIGNATURE-----
+
+--------------enigD8FFE2A0E19C20E554BD905F--
 
