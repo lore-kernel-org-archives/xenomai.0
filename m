@@ -1,15 +1,14 @@
-Message-ID: <448EBE8C.60900@domain.hid>
-Date: Tue, 13 Jun 2006 15:33:00 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] Some new test cases for the vxWorks skin
+Date: Thu, 15 Jun 2006 13:40:54 +0200
+References: <200606122058.18019.niklaus.giger@domain.hid>
+	<17552.3527.468486.973862@domain.hid>
+In-Reply-To: <17552.3527.468486.973862@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
-In-Reply-To: <448EB038.8070802@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5C3DBC900FD03E92B0377009"
-Sender: jan.kiszka@domain.hid
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_HdUkE2n1GQOGIeZ"
+Message-Id: <200606151340.55710.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,185 +18,380 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5C3DBC900FD03E92B0377009
-Content-Type: text/plain; charset=ISO-8859-15
+--Boundary-00=_HdUkE2n1GQOGIeZ
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> from i386/kernel/timers/timer_tsc.c. And indeed, I had x 20 performan=
-ce
->>> improvements in some cases.
->>
->> Oops, that sounds like a bit too extreme optimisations. Is the origina=
-l
->> version varying that much? I didn't observe this.
->>
->> Here is my current version, BTW:
->>
->> long tsc_scale;
->> unsigned int tsc_shift =3D 31;
->>
->> static inline long long fast_tsc_to_ns(long long ts)
->> {
->>     long long ret;
->>
->>     __asm__ (
->>         /* HI =3D HIWORD(ts) * tsc_scale */
->>         "mov  %%eax,%%ebx\n\t"
->>         "mov  %%edx,%%eax\n\t"
->>         "imull %2\n\t"
->>         "mov  %%eax,%%esi\n\t"
->>         "mov  %%edx,%%edi\n\t"
->>
->>         /* LO =3D LOWORD(ts) * tsc_scale */
->>         "mov  %%ebx,%%eax\n\t"
->>         "mull %2\n\t"
->>
->>         /* ret =3D (HI << 32) + LO */
->>         "add  %%esi,%%edx\n\t"
->>         "adc  $0,%%edi\n\t"
->>
->>         /* ret =3D ret >> tsc_shift */
->>         "shrd %%cl,%%edx,%%eax\n\t"
->>         "shrd %%cl,%%edi,%%edx\n\t"
->>         : "=3DA"(ret)
->>         : "A" (ts), "m" (tsc_scale), "c" (tsc_shift)
->>         : "ebx", "esi", "edi");
->>
->>     return ret;
->> }
->>
->> void init_tsc(unsigned long cpu_freq)
->> {
->>     unsigned long long scale;
->>
->>     while (1) {
->>         scale =3D do_div(1000000000LL << tsc_shift, cpu_freq);
->>         if (scale <=3D 0x7FFFFFFF)
->>             break;
->>         tsc_shift--;
->>     }
->>     tsc_scale =3D scale;
->> }
->>
->> This version will use 31 (GHz cpu_freq) to 26 (~32 MHz) shifts, i.e. a=
+Hi
 
->> bit more than the Linux kernel's 22 bits.
->>
->=20
-> Here is likely why we have different levels of accuracy and performance=
-,
->  firstly my version is bluntly based on the khz freq, secondly it
-> calculates the other way around, i.e. ns2tsc, so that tsc are keep in
-> the inner code, but more efficiently converted from ns counts passed to=
+Here the reworked patch.
 
-> the outer interface:
->=20
-> static unsigned long ns2cyc_scale;
-> #define NS2CYC_SCALE_FACTOR 10 /* 2^10, carefully chosen */
+vxWorks supports empty messages. Only one at a time can be received.
 
-Linux only uses 10 bits for scheduling time calculation, which is
-tick-based (low-res) anyway. The tsc clock_source uses 22 bits. The
-latter overflows after an hour or so, because they drop all bits > 64
-after the multiplication - insignificantly faster when using optimised
-code anyway.
+Test log of running t010726-2 under vxWorks and the simulator are below:
+(vxWorks target)
+0x1e268a8 (root): t010726-2.c:180: TEST failed: qid =3D=3D 0 && errno =3D=3D
+S_msgQLib_INVALID_QUEUE_TYPE
+0x1e268a8 (): task deadt010726-2.c:337 Correct sequence: SEQ("root",1)
+0x1e268a8 (): task deadt010726-2.c:338 Correct sequence: SEQ("Peer",2)
+0x1e268a8 (): task deadt010726-2.c:339 Correct sequence:
+SEQ("root",10)
+0x1e268a8 (): task deadt010726-2.c:340 Correct sequence: SEQ("Peer",2)
+0x1e268a8 (): task deadt010726-2.c:341 Correct sequence: SEQ("root",8)
+0x1e268a8 (): task deadt010726-2.c:342 Correct sequence:
+SEQ("Peer",14)
+0x1e268a8 (): task deadt010726-2.c:343 Correct sequence: SEQ("root",6)
+0x1e268a8 (): task deadt010726-2.c:348, test finished: 1 failures/ 111
+tests =A0 =A0 =A0
 
->=20
-> static inline void set_ns2cyc_scale(unsigned long cpu_khz)
-> {
->     ns2cyc_scale =3D (cpu_khz << NS2CYC_SCALE_FACTOR) / 1000000;
-> }
->=20
-> static inline unsigned long long ns_2_cycles(unsigned long long ns)
-> {
->     return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
-> }
->=20
->>>
->>> TSC are not the whole nucleus time base, but only the timer managemen=
-t
->>> one. The motivation to use TSCs in nucleus/timer.c was to pick a unit=
+(Xenomai sim)
+starting VxWorks services.
+t010726-2.c:196: TEST failed: qid !=3D 0
+t010726-2.c:199: TEST failed: rc =3D=3D 0
+t010726-2.c:201: TEST failed: rc =3D=3D OK
+t010726-2.c:203: TEST failed: rc =3D=3D 1
+t010726-2.c:205: TEST failed: rc =3D=3D OK
+t010726-2.c:207: TEST failed: rc =3D=3D 2
+t010726-2.c:209: TEST failed: rc=3D=3D OK
+Error code 3997697: S_objLib_OBJ_ID_ERROR
+t010726-2.c:211: TEST failed: rc =3D=3D 1
+t010726-2.c:213: TEST failed: rc=3D=3D OK
+Error code 3997697: S_objLib_OBJ_ID_ERROR
+t010726-2.c:215: TEST failed: rc =3D=3D 0
+t010726-2.c:220: TEST failed: rc =3D=3D 2
+t010726-2.c:222: TEST failed: rc=3D=3D OK
+Error code 3997697: S_objLib_OBJ_ID_ERROR
+t010726-2.c:224: TEST failed: rc =3D=3D 1
+t010726-2.c:227: TEST failed: rc =3D=3D OK
+t010726-2.c:278: TEST failed: rc=3D=3D OK
+Error code 4259841: S_msgQLib_INVALID_MSG_LENGTH
+t010726-2.c:284: TEST failed: rc =3D=3D ERROR && errno =3D=3D S_objLib_OBJ_=
+UNAVAILABLE
+Xenoscope: lt-t010726-2: fatal in MvmIrq (time=3D30000658.732701):=20
 
->>> which would not require any conversion beyond the initial one in
->>> xntimer_start.
->>
->>
->> That helps strictly periodic application timers, not aperiodic ones li=
-ke
->> timeouts.
->>
->=20
-> It depends, periodic timers usually exhibit larger delays, so the gain
-> is more significant with oneshot timings incurring smaller delays, henc=
-e
-> a higher number of calculations.
->=20
->>
->>>> Any pitfalls down the road (except introducing regressions)?
->>>
->>> Well, pitfalls expected from changing the core idea of time of the ti=
-mer
->>> management code... :o>
->>>
->>
->> You mean turning
->>
->> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,RTHAL_CP=
-U_FREQ));
->>
->>
->> into
->>
->> rthal_timer_program_shot(rthal_imuldiv(delay,RTHAL_TIMER_FREQ,10000000=
-00));
->>
->>
->=20
-> Not really, it was a general remark about changing a code that might
-> have some assumtions on using TSCs. Additionally, only x86 needs to
-> rescale TSC values to the timer frequency, other archs use the same uni=
-t
-> on both sides, and such unit might even have nothing to do with any CPU=
+Best regards
+=2D-=20
+Niklaus Giger
 
-> accounting (e.g. blackfin uses a free running timer, ppc uses the
-> internal timebase, etc).
+--Boundary-00=_HdUkE2n1GQOGIeZ
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="vx_patch.msgq3"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="vx_patch.msgq3"
 
-Ok, an interesting aspect I already assumed but didn't check in details
-yet. That makes dealing with TSCs interesting again on !=3D x86. In
-contrast, on x86, there is the aspect of frequency scaling that Anders
-brought up and which would speak pro nanos.
+Index: sim/skins/vxworks/testsuite/t010823-1.c
+===================================================================
+--- sim/skins/vxworks/testsuite/t010823-1.c	(Revision 1206)
++++ sim/skins/vxworks/testsuite/t010823-1.c	(Arbeitskopie)
+@@ -70,7 +70,7 @@
+     TEST_ASSERT(pTcb != NULL);
+ 
+ #ifdef VXWORKS
+-    pstackBase = (char *) malloc(stackSize) + stacksize;
++    pstackBase = (char *) malloc(stackSize) + stackSize;
+ #endif
+   
+     TEST_ASSERT(taskInit(&peerTcb,
+@@ -100,7 +100,10 @@
+ 
+     TEST_MARK();
+ 
+-    TEST_ASSERT(taskIdVerify(0) == ERROR && errno == S_objLib_OBJ_ID_ERROR);
++    errno = 0;
++    TEST_ASSERT(taskIdVerify(0) == ERROR && errno == 0);
++    errno = 0;
++    TEST_ASSERT(taskIdVerify(malloc(20)) == ERROR && errno == S_objLib_OBJ_ID_ERROR);
+ 
+     TEST_ASSERT_OK(taskIdVerify((TASK_ID)&peerTcb));
+ 
+Index: sim/skins/vxworks/testsuite/t010726-2.c
+===================================================================
+--- sim/skins/vxworks/testsuite/t010726-2.c	(Revision 1206)
++++ sim/skins/vxworks/testsuite/t010726-2.c	(Arbeitskopie)
+@@ -17,7 +17,7 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  *
+- * Description: Testing VxWorks services:
++ * Description: Testing VxWorks services (task to task and int to task):
+  * - msgQCreate
+  * - msgQDelete
+  * - msgQNumMsgs
+@@ -47,6 +47,67 @@
+ 
+ #define NMESSAGES (sizeof(message_list) / sizeof(message_list[0]))
+ 
++static WDOG_ID wid;
++
++static int int2taskQid ;
++
++void msgDuringInt (long arg)
++
++{
++    int qid = 0, rc = 0, msg = 0;
++    TEST_ASSERT(intContext());
++    TEST_MARK();
++
++    qid = msgQCreate(NMESSAGES,sizeof(int),MSG_Q_FIFO);
++    TEST_ASSERT(qid == 0 && errno == S_intLib_NOT_ISR_CALLABLE);
++
++    errno = 0;
++    rc = msgQNumMsgs(int2taskQid);
++    TEST_ASSERT(rc == 0);
++
++    errno = 0;
++    rc = msgQReceive(int2taskQid,(char *)&msg,sizeof(msg), 0);
++    TEST_ASSERT(rc == ERROR && errno == S_intLib_NOT_ISR_CALLABLE);
++    msg = 0x5555affe;
++
++    errno = 0;
++    rc = msgQSend(int2taskQid,(char *)&msg,sizeof(int),0, MSG_PRI_NORMAL);
++    TEST_ASSERT_OK(rc);
++
++    errno = 0;
++    rc = msgQSend(int2taskQid,(char *)&msg,sizeof(int),WAIT_FOREVER, MSG_PRI_NORMAL);
++    TEST_ASSERT(rc == ERROR && errno == S_msgQLib_NON_ZERO_TIMEOUT_AT_INT_LEVEL);
++    TEST_MARK();
++}
++
++void testMsqInterrupt()
++{
++   int nmsg = 0, qid, rc, msg = 0;
++   int2taskQid = msgQCreate(NMESSAGES,sizeof(int),MSG_Q_FIFO);
++   TEST_ASSERT(int2taskQid != 0);
++
++   wid = wdCreate();
++
++   TEST_ASSERT(wid != 0);
++
++   TEST_ASSERT_OK(wdStart(wid,1,msgDuringInt,0x25262728));
++
++   TEST_MARK();
++
++   TEST_ASSERT_OK(taskDelay(2));
++   TEST_ASSERT_OK(wdCancel(wid));
++   TEST_ASSERT_OK(wdDelete(wid));
++
++   TEST_MARK();
++
++   errno = 0;
++   rc = msgQReceive(int2taskQid,(char *)&msg,sizeof(msg), 0);
++   TEST_ASSERT(rc == sizeof(msg) && msg == 0x5555affe);
++
++   TEST_MARK();
++
++}
++
+ void peerTask (long a0, long a1, long a2, long a3, long a4,
+                long a5, long a6, long a7, long a8, long a9)
+ {
+@@ -105,6 +166,7 @@
+ {
+     int nmsg = 0, qid, rc, msg = 0;
+     WIND_TCB *pTcb;
++    char *buffer;
+ 
+     TEST_START(0);
+ 
+@@ -113,15 +175,57 @@
+ 
+     TEST_MARK();
+ 
++    errno = 0;
+     qid = msgQCreate(NMESSAGES,sizeof(int),0xffff);
+     TEST_ASSERT(qid == 0 && errno == S_msgQLib_INVALID_QUEUE_TYPE);
+ 
++#ifndef VXWORKS
++    /* This is undesirable behaviour in vxWorks (at least tested under version 5.5.1. 
++       Some might even call it a bug.
++       Passing a negative argument to maxMsgs for msgQCreate returns a  non null MSG_Q_ID.
++       Freeing it leads to a  a memPartFree: invalid block.
++       For maxMsgs bigger than the available memory, vxWorks returns 0, 
++       but does not set errno to a consistent value.
++    */
+     qid = msgQCreate(-1,sizeof(int),MSG_Q_FIFO);
+     TEST_ASSERT(qid == 0 && errno == S_msgQLib_INVALID_QUEUE_TYPE);
++#endif
+ 
++    /* Test mailbox with 0 length messages */
+     qid = msgQCreate(NMESSAGES,0,MSG_Q_FIFO);
+-    TEST_ASSERT(qid == 0 && errno == S_msgQLib_INVALID_MSG_LENGTH);
++    TEST_ASSERT(qid != 0);
++    errno = 0;
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 0);
++    rc = msgQSend(qid,(char *)&message_list[0],0, NO_WAIT, MSG_PRI_NORMAL);
++    TEST_ASSERT(rc == OK);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 1);
++    rc = msgQSend(qid,(char *)&message_list[0],0, NO_WAIT, MSG_PRI_NORMAL);
++    TEST_ASSERT(rc == OK);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 2);
++    rc = msgQReceive(qid,(char *)&msg,0,NO_WAIT);
++    TEST_ASSERT_OK(rc);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 1);
++    rc = msgQReceive(qid,(char *)&msg,0,NO_WAIT);
++    TEST_ASSERT_OK(rc);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 0);
+ 
++    rc = msgQSend(qid,(char *)&message_list[0],0, NO_WAIT, MSG_PRI_NORMAL);
++    rc = msgQSend(qid,(char *)&message_list[0],0, NO_WAIT, MSG_PRI_NORMAL);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 2);
++    rc = msgQReceive(qid,(char *)&msg,2,NO_WAIT);
++    TEST_ASSERT_OK(rc);
++    rc = msgQNumMsgs(qid);
++    TEST_ASSERT(rc == 1);
++
++    rc = msgQDelete(qid);
++    TEST_ASSERT(rc == OK);
++
+     qid = msgQCreate(NMESSAGES,sizeof(int),MSG_Q_FIFO);
+     TEST_ASSERT(qid != 0);
+ 
+@@ -148,23 +252,38 @@
+ 
+     TEST_MARK();
+ 
+-    rc = msgQSend(qid,(char *)&message_list[0],0,WAIT_FOREVER,MSG_PRI_NORMAL);
++    errno = 0;
++    rc = msgQSend(qid,(char *)&message_list[0],2*message_list[0], WAIT_FOREVER,MSG_PRI_NORMAL);
+     TEST_ASSERT(rc == ERROR && errno == S_msgQLib_INVALID_MSG_LENGTH);
+ 
+     rc = msgQSend(qid,(char *)&message_list[0],sizeof(int),WAIT_FOREVER,MSG_PRI_NORMAL);
+     TEST_ASSERT_OK(rc);
+ 
++    rc = msgQSend(qid,(char *)&message_list[0], 2*sizeof(int),WAIT_FOREVER,MSG_PRI_NORMAL);
++    TEST_ASSERT(rc == ERROR && errno == S_msgQLib_INVALID_MSG_LENGTH);
++
+     TEST_MARK();
+ 
++    errno = 0;
+     rc = msgQReceive(0,(char *)&msg,sizeof(msg),NO_WAIT);
+     TEST_ASSERT(rc == ERROR && errno == S_objLib_OBJ_ID_ERROR);
+ 
+-    rc = msgQReceive(qid,(char *)&msg,0,NO_WAIT);
+-    TEST_ASSERT(rc == ERROR && errno == S_msgQLib_INVALID_MSG_LENGTH);
+-
++    errno = 0;
+     rc = msgQReceive(qid,(char *)&msg,sizeof(msg),NO_WAIT);
+     TEST_ASSERT(rc == sizeof(msg));
+ 
++    rc = msgQSend(qid,(char *)&message_list[0],sizeof(int),WAIT_FOREVER,MSG_PRI_NORMAL);
++    TEST_ASSERT_OK(rc);
++    rc = msgQReceive(qid,(char *)&msg,0,NO_WAIT);
++    TEST_ASSERT_OK(rc);
++
++    errno = 0;
++    buffer = malloc(2*sizeof(message_list));
++    bzero(buffer,   2*sizeof(message_list));
++    rc = msgQReceive(qid,buffer,2*sizeof(message_list),NO_WAIT);
++    TEST_ASSERT(rc == ERROR && errno == S_objLib_OBJ_UNAVAILABLE);
++    free(buffer);
++
+     TEST_MARK();
+ 
+     for (nmsg = 0; nmsg < NMESSAGES; nmsg++)
+@@ -209,6 +328,8 @@
+     rc = msgQDelete(qid);
+     TEST_ASSERT_OK(rc);
+ 
++    testMsqInterrupt();
++
+     /*
+     TEST_ASSERT(!ckObjectExists(qid));
+     */
+@@ -219,10 +340,10 @@
+                         SEQ("Peer",2),
+                         SEQ("root",8),
+                         SEQ("Peer",14),
+-                        SEQ("root",1),
++                        SEQ("root",6),
+                         END_SEQ);
+ 
+-    TEST_ASSERT_OK(taskDelete(peerTid));
++   if (peerTid) TEST_ASSERT_OK(taskDelete(peerTid));
+     
+     TEST_FINISH();
+ }
+Index: sim/skins/vxworks/testsuite/t010820-2.c
+===================================================================
+--- sim/skins/vxworks/testsuite/t010820-2.c	(Revision 1206)
++++ sim/skins/vxworks/testsuite/t010820-2.c	(Arbeitskopie)
+@@ -33,6 +33,7 @@
+ 
+ {
+     TEST_ASSERT(arg == 0x25262728);
++    TEST_ASSERT(intContext());
+     TEST_MARK();
+ }
+ 
+Index: doc/txt/vxworks-skin.txt
+===================================================================
+--- doc/txt/vxworks-skin.txt	(Revision 1206)
++++ doc/txt/vxworks-skin.txt	(Arbeitskopie)
+@@ -73,31 +73,37 @@
+   genuine OS.
+ 
+ - The exit() service is called taskExit() for kernel-space based
+-applications. User-space applications may invoke exit() normally.
++  applications. User-space applications may invoke exit() normally.
+ 
+ - Functions taking function pointers as arguments do not use FUNCPTR, which mean
+   that the function pointer types are verified at compile time.
+ 
++- Passing a negative argument to maxMsgs for msgQCreate returns 0 and sets
++  errno to S_msgQLib_INVALID_QUEUE_TYPE
++
++- Passing a argument with non defined bits to options for msgQCreate returns 0.
++  VxWorks returns a valid msqId.
++
+ - msgQSend() might return S_memLib_NOT_ENOUGH_MEMORY in case of
+-dynamic memory shortage when called from user-space, for messages
+-longer than 128 bytes. This service might also return
+-S_msgQLib_INVALID_MSG_LENGTH whenever the message buffer address is
+-NULL.
++  dynamic memory shortage when called from user-space, for messages
++  longer than 128 bytes. This service might also return
++  S_msgQLib_INVALID_MSG_LENGTH whenever the message buffer address is
++  NULL.
+ 
+ - msgQReceive() might return S_objLib_OBJ_UNAVAILABLE if the timeout
+-parameter is different from NO_WAIT, but the caller cannot be put to
+-sleep. This is for instance the case whenever the caller is not a
+-VxWorks task, or the scheduler is locked.
++  parameter is different from NO_WAIT, but the caller cannot be put to
++  sleep. This is for instance the case whenever the caller is not a
++  VxWorks task, or the scheduler is locked.
+ 
+ - In case the documented VxWorks API does not explicitely handle the
+-case, calling blocking services outside of any VxWorks task context or
+-under scheduler lock, might return the POSIX error value "EPERM".
++  case, calling blocking services outside of any VxWorks task context or
++  under scheduler lock, might return the POSIX error value "EPERM".
+ 
+ - When called from user-space, all blocking services might return
+-prematurely with the POSIX error value "EINTR", whenever a Linux
+-signal is received by the sleeping task. This also includes
+-taskDelete() which might need to wait for the deleted task to exit a
+-safe section (taskSafe/taskUnsafe) before proceeding.
++  prematurely with the POSIX error value "EINTR", whenever a Linux
++  signal is received by the sleeping task. This also includes
++  taskDelete() which might need to wait for the deleted task to exit a
++  safe section (taskSafe/taskUnsafe) before proceeding.
+ 
+ Module parameters
+ =================
 
->=20
-> This said, it should not have that many assumptions, and in any case,
-> they should be confined to nucleus/timers.c. I think we should give thi=
-s
-> kind of optimization a try.
->=20
-
-Yep, it just needs some more brain cycles how to do this precisely.
-
-Jan
-
-
---------------enig5C3DBC900FD03E92B0377009
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEjr6MniDOoMHTA+kRAqc9AJsGjS8Klfw4owwc99SighKt+3PTGgCeLiyT
-NZBKIFtChlAhg/W/CVhNN2k=
-=3gIc
------END PGP SIGNATURE-----
-
---------------enig5C3DBC900FD03E92B0377009--
+--Boundary-00=_HdUkE2n1GQOGIeZ--
 
