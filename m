@@ -1,17 +1,12 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Some new test cases for the vxWorks skin
-Date: Sat, 17 Jun 2006 20:45:08 +0200
-References: <200606122058.18019.niklaus.giger@domain.hid>
-	<200606172025.13228.niklaus.giger@domain.hid>
-	<17556.19312.486378.71911@domain.hid>
-In-Reply-To: <17556.19312.486378.71911@domain.hid>
+Message-ID: <44945B9C.3020906@domain.hid>
+Date: Sat, 17 Jun 2006 13:44:28 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200606172045.09813.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+References: <44906584.60503@domain.hid> <449115E6.7040202@domain.hid>
+In-Reply-To: <449115E6.7040202@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: GPIO and RTDM
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,47 +16,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Am Samstag, 17. Juni 2006 20:35 schrieb Gilles Chanteperdrix:
-> Niklaus Giger wrote:
->  > Am Samstag, 17. Juni 2006 19:53 schrieb Gilles Chanteperdrix:
->  > > Niklaus Giger wrote:
->  > >  > Hi
->  > >  >
->  > >  > Here the reworked patch.
->  > >  >
->  > >  > vxWorks supports empty messages. Only one at a time can be
->  > >  > received.
->  > >
->  > > Could you explain a bit more "Only one at a time can be received" ? I
->  > > do not get it. You mean that one message get lost if posting two null
->  > > length messages while two receivers are blocked in a call to
->  > > msgQReceive ?
->  >
->  > I have two testcases for the 0 length messages. Look in my patch  for
->  > "Test mailbox with 0 length messages". They are:
->  >
->  > a) Post two messages, then call twice msgQReceive and each time I get
->  > one message back. Each time verified using msgQNumMsgs.
->  >
->  > b) Post two messages, then try to receive two messages at once by givi=
-ng
->  > 2 (bytes) to msgQReceive see line:
->  >  =A0rc =3D msgQReceive(qid,(char *)&msg,2,NO_WAIT);)
->  > In this case I only get one message back, as msgQNumMsgs reports 1.
->  > This explains the lines:
->  > =A0 =A0rc =3D msgQNumMsgs(qid);
->  > =A0 =A0TEST_ASSERT(rc =3D=3D 1);
+Jan Kiszka wrote:
+> Jim Cromie wrote:
+>   
+>> hi Jan, everyone,
+>>
+>> Ive worked up a patchset to add a GPIO driver for the chip on my mobo.
+>> I adapted an existing one, drivers/char/scx200_gpio,
+>> and created drivers/char/pc8736x_gpio
+>>
+>> When doing this, I _oversimplified_ my problem by disregarding RTDM,
+>> and Im hoping I can just _retrofit_ as needed.
+>>     
 >
-> The current implementation of message queues in vxworks skin does not
-> support anything like "receive two messages at once". Are you sure
-> vxworks does for non null messages ?
-I am not sure. But will test sometimes next week.
+> From a short glance at scx200_gpio: the only minor difference between
+> registering and handling a Linux GPIO char-device and doing the same
+> under RTDM will be the different naming. RTDM has no direct support for
+> major/minor identification, it uses clear-text names for its devices. So
+> you would have to create the device names on your own. Well, and some
+> locking might be required (full preemptibility!), but this seems to
+> apply to the Linux driver as well under certain kernel configs.
+>
+> But I wonder if it is clever for GPIO devices with a significant number
+> of I/O lines to create a device node for each and every bit! Consider
+> the usage scenario where you want to talk to some n-bit bus using GPIO
+> lines. Would you like to open n devices and issue n writes just to put
+> some n-bit value on that bus?
+>
+>   
 
-Best regards
+That same Q had occurred to me.  There are likely apps which can already 
+do their own
+bit-masking, so dont need kernel support for single bits.  It would be a 
+trivial to
+allow either/both ports & bits via a mod-param. 
 
-=2D-=20
-Niklaus Giger
+The bit-centrism is also a legacy of the device-file interface - the 
+vintage driver has
+*no* port access support, unlike at least 1 out-of-tree driver (which 
+has /proc iface)
+
+
+> At this chance: Did you have a look at the comedi interface as well? It
+> typically covers far more complexes data acquisition devices, but it
+> should also be usable for simple digital I/O interfaces. Moreover,
+> comedi is available for Linux for quite a while, and a RTDM port is on
+> the way.
+>
+>   
+I did look briefly, its device model felt more complex than I needed.
+A re-review is in order, now that I comprehend more than when I saw it last.
+
+> If comedi means too much overhead for trivial I/O line manipulation, I
+> would welcome any suggestion for a generic GPIO device profile - both
+> mappable on RTDM and normal Linux character devices!
+>
+>   
+>> the chip is on an ISA bus, a user-space C program can read the pins at
+>> (this) rate:
+>>
+>> Wed Jun 14 13:24:13 MDT 2006
+>> Linux soekris 2.6.17-rc6-gpio-sk #4 Sun Jun 11 20:43:10 MDT 2006 i586
+>> GNU/Linux
+>> opened /dev/gpio-17, for 1 loops, 1000000 samples
+>> read 1000000 samples in 7.8434 sec, rate: 127494.9460 samples/sec
+>> opened /dev/led, for 1 loops, 1000000 samples
+>> read 1000000 samples in 5.4116 sec, rate: 184788.5056 samples/sec
+>>
+>> (obviously speed isnt latency, but theres some correlation ..)
+>>
+>> I dont actually have a Real Question, to I'll throw out a placeholder -
+>>
+>> What are the top 3-5 things to do or look at
+>> in order to check the compatibility of my patches with RTDM ?
+>>
+>>
+>>
+>>
+>> Separately..
+>>
+>> In this GPIO work, I concluded that I needed to add a sysfs interface
+>> to my driver, in order to better fit with LKML expectations.
+>>     
+>
+> Err, sorry for not seeing this immediately even after (cross-)reading
+> your second mail, but what will the sysfs interface be for? 
+
+Heh - Im sure its not you, but the un-clarity..
+
+> Information,
+> configuration? 
+
+config - output_enable / tristate,   pullup/no,  totempole/opendrain, etc.
+both reading & writing,  for bits, and for ports.
+current pin values,  RW.
+
+Basically, Im imitating the way things are done by LM-sensors,
+where raw sensors are exposed via sysfs to a user-lib, which then does
+the (floating-point) conversion to units that are more meaningful to users.
+
+
+> Do you see concrete usage scenarios for this?
+>   
+
+WRT the sysfs interface itself, no, not per-se.  The device-file 
+interface works fine,
+and is basically interchangable.  The whole exersize was to anticipate
+whatever push-back might come from LKML.
+(I sent patch-set there today, so we'll see)
+
+
+My 'concrete' app/hobby is to strap a cheap 'embedded-pc' to a RC-car
+(radio-remote-control), have it read the PWM signals from the in-car 
+receiver,
+and to duplicate them to a pair of pins wired to the servos.
+Once that works, the computer can train itself to the course driven by the
+remote-control user, then try to repeat the manuver.
+
+In order to 'read' the input, I *need* to use interrupts - polling the 
+pins is ridiculous
+if the computer is to do anything else.  Further, to 'follow' the input, 
+I'll have to
+invert the triggering edge in the handler, so it can see both rising and 
+falling edges
+of the 1-3 mS pulse, on 20 ms cycle.
+
+( this could be handled by a $50 servo-controller, but wheres the fun in 
+that !)
+
+Even if following the inputs is too hard, xenomai should be able to generate
+these signals.  Presuming 256 discrete pulse widths in 1-3 ms range, 
+each unit-time diff
+is ~ 8uS.    On my board, this is less than peak latency jitter, approx 
+equal
+the RMS jitter.  It will be interesting to see if the servos are 'twitchy'.
+
+
+With my gpio driver in a usable state, I can focus more on the RT parts 
+now :-D
+Will be trolling the demos dir RSN, and probably Capt. Hannes' 
+xenoamai/rtai website.
+(whats that URL again ?)
+
+>   
+>> What I did so far works, and seems to hang together coherently, but
+>> insofar as it
+>> is the 1st time (to my knowledge) that a uniform treatment has been tried,
+>> I might have painted myself / all-of-us into a corner.
+>>
+>> Hopefully not, but you folks have a keener perception of these things.
+>> Ill send shortly.
+>>
+>> tia
+>> jimc
+>>     
+>
+> Jan
+>
+>   
+thanks Jan
+-jimc
 
