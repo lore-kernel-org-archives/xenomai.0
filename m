@@ -1,15 +1,12 @@
+Message-ID: <44954920.1050001@domain.hid>
+Date: Sun, 18 Jun 2006 14:37:52 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17550.48848.368995.713681@domain.hid>
-Date: Tue, 13 Jun 2006 15:34:08 +0200
-Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-In-Reply-To: <448EBD89.4060003@domain.hid>
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
-	<17550.47269.736193.860722@domain.hid>
-	<448EBD89.4060003@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8D65AF0614B1A0AA7728A8E0"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] fix warning under 2.4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,41 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
- > Gilles Chanteperdrix wrote:
- > > Philippe Gerum wrote:
- > >  > static inline unsigned long long ns_2_cycles(unsigned long long ns)
- > >  > {
- > >  >      return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
- > > 
- > > This multiplication is 64 bits * 32 bits, the intermediate result may
- > > need more than 64 bits, so you should compute it the same way as the
- > > beginning of ullimd. Something like:
- > 
- > Sure, but the point is that if we were to use such code, we should bound 
- > the 64bit operand and would not use it beyond the tolerable loss of 
- > accuracy on output (e.g. 2ms).  This would require to break longer shots 
- > in several smaller ones, relying on the internal timer management logic 
- > to redo the shot until it has actually elapsed (which should be a rare 
- > case for oneshot timing), a bit like we are currently doing in bounding 
- > the values to 2^32-1 right now. Going for ullimd alike implementation 
- > somehow impedes the overall effort in reducing the CPU footprint, I 
- > guess. This said, I have still no clue if the gain in computation cycles 
- > is worth the additional overhead of dealing with possibly early shots - 
- > I tend to think it would be better on average though.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8D65AF0614B1A0AA7728A8E0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ok, we could then write:
+Hi Gilles,
 
-static inline unsigned long long ns_2_cycles(unsigned ns)
-{
-    return (unsigned long long) ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
-}
+this patch avoids type-mismatch warning when building for 2.4.
 
--- 
+Jan
 
 
-					    Gilles Chanteperdrix.
+--- ksrc/skins/posix/syscall.c  (Revision 1222)
++++ ksrc/skins/posix/syscall.c  (Arbeitskopie)
+@@ -1229,7 +1229,7 @@ static int __pthread_condattr_getclock(s
+
+        uattrp =3D (pthread_condattr_t *) __xn_reg_arg1(regs);
+
+-       uclockp =3D (int *) __xn_reg_arg2(regs);
++       uclockp =3D (clockid_t *) __xn_reg_arg2(regs);
+
+        if (!__xn_access_ok
+            (curr, VERIFY_READ, (void __user *)uattrp, sizeof(*uattrp)))
+
+
+--------------enig8D65AF0614B1A0AA7728A8E0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFElUkkniDOoMHTA+kRAq/NAJ0dyaN9MtGhNxC87DQ5sWRL+6rH0ACeIe/b
+TyMtL0BtTezLvrNHqfLQ9n8=
+=nX1a
+-----END PGP SIGNATURE-----
+
+--------------enig8D65AF0614B1A0AA7728A8E0--
 
