@@ -1,14 +1,13 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17557.24320.717387.489268@domain.hid>
-Date: Sun, 18 Jun 2006 16:11:12 +0200
-Subject: Re: [Xenomai-core] Some new test cases for the vxWorks skin
-In-Reply-To: <200606151340.55710.niklaus.giger@domain.hid>
-References: <200606122058.18019.niklaus.giger@domain.hid>
-	<17552.3527.468486.973862@domain.hid>
-	<200606151340.55710.niklaus.giger@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 20 Jun 2006 11:21:52 +0200
+Message-ID: <923F5E294B7B194EA41B7B11DAE5330B1A9F3990@domain.hid>
+From: "Merilainen, Jussi \(GE Healthcare\)" <jussi.merilainen@domain.hid>
+Subject: [Xenomai-core] User-space DMA transfer and I/O access from Xenomai
+	API
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,34 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Niklaus Giger wrote:
- > Hi
- > 
- > Here the reworked patch.
+=20
 
-Ok, most of your patch is applied, I changed vxworks msgQLib so that it
-behave like vxworks. The only thing I did not apply is :
+I'm porting a PCI driver for a custom board from VxWorks to =
+Xenomai/Linux. My goal is to keep the driver as much as possible in =
+user-space. Implementing the HW interrupt handler should be quite =
+straight forward as presented in 'Writing user-space device drivers' in =
+Native-API-Tour manual.
+My concern is the PCI DMA transfer. Does the Xenomai API provide any =
+support for this in user-space? Does anyone have experience on this =
+subject?
+Another thing is the Device I/O handling from user-space. Simple =
+question: how do I perform read/write operations? In VxWorks, I have for =
+example following function for reading an I/O register of the board:
+=20
+#include <vxworks.h>
+#include <sysLib.h>
+#include <intLib.h>
+#include <taskLib.h>
 
-Index: sim/skins/vxworks/testsuite/t010726-2.c
-===================================================================
---- sim/skins/vxworks/testsuite/t010726-2.c	(Revision 1206)
-+++ sim/skins/vxworks/testsuite/t010726-2.c	(Arbeitskopie)
-@@ -219,10 +340,10 @@
-                         SEQ("Peer",2),
-                         SEQ("root",8),
-                         SEQ("Peer",14),
--                        SEQ("root",1),
-+                        SEQ("root",6),
-                         END_SEQ);
+Uint8 CIo::readIoMaskUint8(Uint32 addr, Uint8 mask)
+{
+    Uint8 data =3D 0;
+    int intKey;
+   =20
+    // Lock interrupts
+    intKey =3D intLock();
+   =20
+    // Read data
+    data =3D sysInByte((int)addr);
+    data =3D (data & mask);
+   =20
+    // Unlock interrupt
+    intUnlock(intKey);
+   =20
+    return data;
+}
+=20
+Thanks in advance for any support,
 
+Jussi Meril=E4inen
 
-The count is 2 here.
-
--- 
-
-
-					    Gilles Chanteperdrix.
 
