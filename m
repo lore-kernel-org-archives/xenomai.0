@@ -1,13 +1,13 @@
-content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-core] User-space DMA transfer and I/O access from
-	XenomaiAPI
-Date: Tue, 20 Jun 2006 13:44:11 +0200
-Message-ID: <1CFEB358338412458B21FAA0D78FE86D042A304E@rennsmail02.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] adeos-ipipe-2.6.17-i386-1.3.05
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <449556F4.2010907@domain.hid>
+References: <449556F4.2010907@domain.hid>
+Content-Type: text/plain
+Date: Tue, 20 Jun 2006 17:02:34 +0200
+Message-Id: <1150815755.4386.54.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,27 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, "Merilainen, Jussi (GE Healthcare)" <jussi.merilainen@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-[..]
->> Another thing is the Device I/O handling from user-space. Simple
-question: how do I perform read/write operations? In VxWorks, I have for
-example following function for reading an I/O register of the board:
-> ...
+On Sun, 2006-06-18 at 15:36 +0200, Jan Kiszka wrote:
+> Hi,
+> 
+> this is a rebased i386 ipipe patch for the new 2.6.17 kernel.
+> 
+> Again it was just about applying some failing hunks manually (and
+> checking if that was legal). I also included my last two kgdb-over-ipipe
+> patches, but they are of limited use as long as no kgdb is publicly
+> available for the new kernel.
+> 
+> All is working fine so far. This mail was, e.g., posted from a Xenomai
+> box running the patch, switchtest, and latency.
 
->On x86, iopl() or ioperm() opens in/out to a user space process. Memory
->mapped I/O should be accessible via /dev/mem on any arch.
+Tested here UP+SMP and committed. This will be part of the upcoming
+-rc3. Thanks.
 
-Here is a code snippet [4], and also with a shorter URL[5].
+-- 
+Philippe.
 
-[4]
-http://www.denx.de/twiki/bin/view/PPCEmbedded/DeviceDrivers#Section_Acce
-ssingPeripheralsFromUserSpace
-[5] http://tinyurl.com/6c7th
-
---=20
-Stephane
 
 
