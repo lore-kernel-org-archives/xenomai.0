@@ -1,15 +1,13 @@
-Message-ID: <44985239.2070000@domain.hid>
-Date: Tue, 20 Jun 2006 21:53:29 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Nucleus Documentation
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <d87da8330606201027m19044b68lfa29d352297fa77a@domain.hid>
 References: <d87da8330606201027m19044b68lfa29d352297fa77a@domain.hid>
-	<f48df4840606201226m4d6979eevcd4e730198b42875@domain.hid>
-In-Reply-To: <f48df4840606201226m4d6979eevcd4e730198b42875@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3DA370BDA8A1F7E440F6E2A6"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain
+Date: Tue, 20 Jun 2006 23:34:08 +0200
+Message-Id: <1150839249.4417.59.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,76 +20,86 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Pramode C E <pramode@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3DA370BDA8A1F7E440F6E2A6
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Tue, 2006-06-20 at 22:57 +0530, Pramode C E wrote:
+> Hello,
+> 
+> Is there some documentation (other than the API reference) which
+> describes the Xenomai nucleus?
 
-Bruno Rouchouse wrote:
-> Hi !
->=20
-> On 6/20/06, Pramode C E <pramode@domain.hid> wrote:
->>
->> Hello,
->>
->> Is there some documentation (other than the API reference) which
->> describes
->> the Xenomai nucleus? I am trying to learn how to write an RTOS skin us=
-ing
->> the Nucleus and am finding the going a bit tough .... any help will be=
+Nope.
 
->> greatly appreciated.
->>
->=20
-> Check this link (
-> http://wiki.rtai.dk/cgi-bin/gratiswiki.pl?How_To_Implement_A_New_Skin)
-> which
-> may give you some information about how to start writing a new skin.
->=20
-> "Writing a Xenomai skin" is another piece of doc missing and the topics=
- to
-> address are varied such as implementing the kernel part, writing the us=
-er
-> space layer and also how to use the simulator in order to develop and d=
-ebug
-> the model.
->=20
-> A good exercise is maybe to start from a public specification (e.g. VRT=
-X or
-> uiTRON) and read the source code of the model to understand how it has =
-been
-> implemented.
+> I am trying to learn how to write an RTOS skin using the Nucleus and
+> am finding the going a bit tough .... any help will be greatly
+> appreciated.
 
-Even a bit simpler in some regards is the RTDM skin, more specifically
-its driver development API providing basic task, mutex, event, or
-semaphore services.
+Aside of the information already given on this list, what's missing is a
+step-by-step guide to programming a skin from the ground up. There is no
+such marvel, yet. But still, here are a few hints:
 
->=20
-> For sure people who have already written complete skins will be able to=
+- if you want to write a skin callable from user-space, start coding it
+as if it was only available to kernel space modules. In any case, you
+will mostly have to _add_ support to extend it to be callable from
+user-space apps, and not _change_ existing code. uITRON has no
+user-space interface yet, you might want to have a look at it since it's
+simpler; the same goes for the RTAI emulator (ksrc/skins/uitron,rtai).
 
-> give
-> you other advices ;)
+- from a pre-existing skin, always start from the module.c file, looking
+for the call to xnpod_init(). The initial magic starts there; it defines
+the core characteristics of a real-time interface desciptor which is
+going to host your RTOS "objects". A single "pod" can be active at any
+time; this said, Xenomai provides a core pod you can stack your new
+interface over (started by xncore_attach()), which is already shared by
+the posix, rtdm, vxworks, vrtx and native interfaces. If you only want
+to run your new skin alone, you can register a new active pod through
+xnpod_init(). See the initial comment from include/nucleus/core.h.
 
-Learning by doing. :)
+- as soon as a pod has been registered (or joined, for the core one),
+your skin may create threads, manage synchronization objects, receive
+interrupts and so on. Albeit slightly outdated, this document gives a
+good general overview of the high-level Xenomai "objects" one can use to
+implement a skin:
+http://download.gna.org/xenomai/documentation/trunk/pdf/xenomai.pdf
+There, you've got basic RTOS threads to derive yours, synchronization
+objects to implement anything that requires a thread to block for a
+resource/event to be available, deterministic memory management,
+interrupt abstraction and so on. This is basically what the nucleus
+implements.
 
-What kind of API do you plan to implement?
+- looking at an existing skin, you should be able to infere the way some
+RTOS implements something similar your interface wants to do. I.e. to
+implement mutexes, just have a look at ksrc/skins/native/mutex.c, or
+ksrc/skins/vrtx/mx.c. Semantically, this is always the same old story,
+just with different "window-dressings". The same goes with semaphores
+(*/sem.c), and so on.
 
-Jan
+When your interface has been validated over the simulator, you can
+either stop there, or add the user-space support. Usually, this support
+is implemented into two additional files, namely
+include/your_skin/syscall.h, and ksrc/skins/your_skin/syscall.c. The
+latter declares a syscall table, registers it to the nucleus
+(xnshadow_register_interface()), and implements the kernel space
+wrappers invoked upon user-space syscalls. Each wrapper collects the
+input args passed by the user-space application, usually calls the
+normal in-kernel service (you've just developed using the simulator),
+and returns the output values to the caller. The valid syscalls are
+declared in the first additional file (syscall.h), and fired from
+user-space by the XENOMAI_SYSCALL and XENOMAI_SKINCALL macros. The
+user-space library which provides the C routines is symmetrically
+available under the src/skins root. E.g. src/skins/posix implements the
+library (something like your skin's own libc for syscalls) of the
+real-time interface implemented by ksrc/skins/posix.
+
+PS: if you go for user-space support, take an extreme care to properly
+propagate the -EINTR return code to the user-space caller (see XNBREAK
+condition upon return from xnsynch_sleep_on()), signaling that a Linux
+signal has hit a blocked real-time thread. Doing this properly
+guarantees you a working GDB support for debugging the apps using your
+interface, and above all, participates to the overall stability of the
+system upon signal receipt. Keeping this in mind will spare you a fair
+number of head banging sessions.
+
+-- 
+Philippe.
 
 
---------------enig3DA370BDA8A1F7E440F6E2A6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEmFI5niDOoMHTA+kRAgOQAJ9IttsGRYID5SJ2l/ZRR8IR9QLQhQCggYsG
-lnmhGFiNhslJlY05RaovZ7c=
-=sR6g
------END PGP SIGNATURE-----
-
---------------enig3DA370BDA8A1F7E440F6E2A6--
 
