@@ -1,13 +1,14 @@
+Message-ID: <44992054.70905@domain.hid>
+Date: Wed, 21 Jun 2006 12:32:52 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] mutex locking
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <216509776@domain.hid>
-References: <216509776@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Date: Wed, 21 Jun 2006 11:58:53 +0200
-Message-Id: <1150883933.7498.17.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+References: <216532953@domain.hid>
+In-Reply-To: <216532953@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig21EB9D863E68E8A137E8685C"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,66 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tobias =?ISO-8859-1?Q?B=E4r?= <Tobias.Baer@domain.hid>
-Cc: xenomai@xenomai.org
+To: =?ISO-8859-15?Q?Tobias_B=E4r?= <Tobias.Baer@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Wed, 2006-06-21 at 11:37 +0200, Tobias B=E4r wrote:
-> Hi all,
->=20
-> my question is about the right way to lock and inquire a mutex. At time=
-, my code looks like this:
->=20
->=20
-> rt_mutex_inquire(&mutex,TM_NONBLOCK);
->=20
-> if(info.lockcnt =3D=3D 0)=20
-> {
->       rt_mutex_lock(&write_mutex,TM_NONBLOCK);
->=20
->       // do sth.
->=20
->       rt_mutex_unlock(&mutex);
-> }
->=20
->=20
-> What happens if anyone locks the mutex between my "rt_mutex_inquire(...=
-)" and my "if(info.lockcnt =3D=3D 0)" ?
->=20
-> Is this the standard way to lock and inquire a mutex?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig21EB9D863E68E8A137E8685C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-No, this snippet is terminally broken, I'm afraid. The mutex object is
-precisely aimed at avoiding this kind of race conditions; the code above
-would introduce them back.
-
-Native skin mutexes are recursive by nature, so there is no need to
-inquire for their current status. Additionally, passing TM_NONBLOCK
-might cause mutex_lock() to return an error, if another thread holds it
-already, so you need to check for the return value in any case. What you
-likely want is, either:
-
-if (rt_mutex_lock(...TM_INFINITE) < 0)
-	bail_out();
-/* work in critical section */
-rt_mutex_unlock()
-
-or,
-
-if (rt_mutex_lock(...TM_NONBLOCK) < 0)
-	resource_not_immediately_available();
-/* work in critical section */
-rt_mutex_unlock()
-
-
+Tobias B=E4r wrote:
+>> -----Urspr=FCngliche Nachricht-----
+>> Von: Jan Kiszka <jan.kiszka@domain.hid>
+>> Gesendet: 21.06.06 11:46:34
+>> An: Tobias B=E4r <Tobias.Baer@domain.hid>
+>> CC: xenomai@xenomai.org
+>> Betreff: Re: [Xenomai-help] mutex locking
 >=20
-> Thanks,
->   Tobias
+>> Try this, it's safe from such races:
+>>
+>> /* returns -EWOULDBLOCK if the mutex is locked */
+>> if (rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
+>> {
+>>       // do sth.
+>>
+>>       rt_mutex_unlock(&mutex);
+>> }
 >=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
+> Thank's for the quick reply! But another question: How could it be that=
+ a mutex is locked twice?
+>=20
+
+RTFM ;): "Xenomai mutexes are implicitely recursive [...]."
+
+> if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
+>   {
+>     if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
+>       printf("Mutex is locked twice!\n");
+>=20
+>    rt_mutex_unlock(&mutex);
+>   }
+>=20
+> Is it locked by the ID of the thread?
+>=20
+
+Yep, the owner is recorded, also to perform priority inheritance when
+required. Recursive means that the current owner can acquire the mutex
+multiple times (but (s)he also has to release it symmetrically then -
+your example is lacking one unlock).
+
+If you use the POSIX skin with its standard pthread_mutex'es, then you
+can decide about the recursiveness explicitly.
+
+Jan
 
 
+--------------enig21EB9D863E68E8A137E8685C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEmSBUniDOoMHTA+kRAvODAJ0cycp7iKTzYBLdy214C9hONzAwpACbBTsL
+Ooku5IuujUMYKI4WnwNbd4g=
+=YTWs
+-----END PGP SIGNATURE-----
+
+--------------enig21EB9D863E68E8A137E8685C--
 
