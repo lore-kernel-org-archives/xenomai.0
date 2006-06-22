@@ -1,13 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <449A7602.1020004@domain.hid>
+Date: Thu, 22 Jun 2006 12:50:42 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17550.47269.736193.860722@domain.hid>
-Date: Tue, 13 Jun 2006 15:07:49 +0200
-Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-In-Reply-To: <448EB038.8070802@domain.hid>
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
+Subject: Re: [Xenomai-core] [BUG] oops on skincall without nucleus being loaded
+References: <449A7261.7040503@domain.hid>
+In-Reply-To: <449A7261.7040503@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6A04846737EBF85E95D05CB6"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,37 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
- > static inline unsigned long long ns_2_cycles(unsigned long long ns)
- > {
- >      return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6A04846737EBF85E95D05CB6
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This multiplication is 64 bits * 32 bits, the intermediate result may
-need more than 64 bits, so you should compute it the same way as the
-beginning of ullimd. Something like:
+Jan Kiszka wrote:
+> Hi,
+>=20
+> wondering why suddenly things crash on invoking the latency test, I
+> realised that I turned the nucleus into a module which was not yet
+> loaded. Here is the oops in this case:
 
-static inline unsigned long long ns_2_cycles(unsigned long long ns)
-{
-    unsigned nsh, nsl, tlh, tll;
-    unsigned long long th, tl;
+Correction: the nucleus was still compiled in, the native skin was missin=
+g.
 
-    __rthal_u64tou32(ns, nsh, nsl);
-    tl = rthal_ullmul(nsl, ns2cyc_scale);
-    __rthal_u64tou32(tl, tlh, tll);
-    th = rthal_ullmul(nsh, ns2cyc_scale);
-    th += tlh;
-
-    tll = (unsigned) th << (32 - NS2CYC_SCALE_FACTOR) | tll >> NS2CYC_SCALE_FACTOR;
-    th >>= NS2CYC_SCALE_FACTOR;
-    return __rthal_u64fromu32(th, tll);
-}
+Jan
 
 
--- 
+--------------enig6A04846737EBF85E95D05CB6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-					    Gilles Chanteperdrix.
+iD8DBQFEmnYCniDOoMHTA+kRAhQsAJ99KWAtqrCbwVJVrcQbWj6fjCRZ5QCfXUv5
+WW2HXWvn/ngAS4wXXk764h4=
+=hHIk
+-----END PGP SIGNATURE-----
+
+--------------enig6A04846737EBF85E95D05CB6--
 
