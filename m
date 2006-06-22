@@ -1,14 +1,12 @@
-Message-ID: <449A5549.40104@domain.hid>
-Date: Thu, 22 Jun 2006 10:31:05 +0200
+Message-ID: <449A7261.7040503@domain.hid>
+Date: Thu, 22 Jun 2006 12:35:13 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] RTDM driver add-on infrastructure
-References: <449A3AAE.7090403@domain.hid>
-In-Reply-To: <449A3AAE.7090403@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig488109AEC8A074EAB52DDE22"
+	boundary="------------enig26AAD7FE214378C9687BFF0B"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] oops on skincall without nucleus being loaded
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,71 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig488109AEC8A074EAB52DDE22
+--------------enig26AAD7FE214378C9687BFF0B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Wolfgang Grandegger wrote:
-> Hello,
->=20
-> I'm currently implementing a RTDM real-time CAN driver, which raises th=
-e
-> the problem of adding the driver to the Xenomai source tree. My first
-> idea was to provide RTCAN as a patch for Xenomai:
+Hi,
 
-So you prefer to maintain RTCAN out-of-tree on the long term? What are
-the reasons?
+wondering why suddenly things crash on invoking the latency test, I
+realised that I turned the nucleus into a module which was not yet
+loaded. Here is the oops in this case:
 
->=20
->   $ cd xenomai
->   $ patch -p1 < xenomai-rtcan-add-on.patch
->   $ scripts/prepare_kernel ...
->   ...
->   $ <configure and make kernel>
->   $ <configure, make and install Xenomai user space stuff>
->=20
-> This does not work because of autoconf files needed to copy header file=
-s
-> to the installation path. Is this really necessary?
-> Another issue is where to put utility and test programs. Making them
-> without autoconf and friends works by using xeno-config. But they shoul=
-d
-> be installed with make install as well. Likely there are other issues.
->=20
-> Any ideas or comments on how to provide a generic RTDM driver add-on
-> infrastructure?
+[   54.170151] Unable to handle kernel NULL pointer dereference at
+virtual address 00000054
+[   54.172015]  printing eip:
+[   54.172326] c013db2d
+[   54.172603] *pde =3D 00000000
+[   54.173001] Oops: 0000 [#1]
+[   54.173722] PREEMPT
+[   54.174121] Modules linked in: ne2k_pci 8390
+[   54.174924] CPU:    0
+[   54.175027] EIP:    0060:[<c013db2d>]    Not tainted VLI
+[   54.175212] EFLAGS: 00000202   (2.6.16.16 #101)
+[   54.176141] EIP is at losyscall_event+0xca/0x13c
+[   54.176542] eax: 00000000   ebx: 00000001   ecx: fffffffd   edx: 00000=
+000
+[   54.177019] esi: c7b27fbc   edi: 00000000   ebp: c7b27f80   esp: c7b27=
+f6c
+[   54.177571] ds: 007b   es: 007b   ss: 0068
+[   54.177979] Process latency (pid: 901, threadinfo=3Dc7b26000 task=3Dc1=
+1d4580)
+[   54.178366] Stack: <0>00000000 00000000 c02a4e00 00000246 c02a4e00
+c7b27fa8 c013253a c7b27fbc
+[   54.180003]        00000021 c02a4d88 00000001 c02a4e00 5254444d
+bffc7b8c 5254444d c7b27fb4
+[   54.181557]        c010a422 5254444d c7b26000 c0268750 5254444d
+00000002 00000001 bffc7b8c
+[   54.183017] Call Trace:
+[   54.183415]  [<c0102f96>] show_stack_log_lvl+0xaf/0xba
+[   54.184125]  [<c01030dd>] show_registers+0x13c/0x1a8
+[   54.184787]  [<c01032be>] die+0x175/0x225
+[   54.190610]  [<c010c771>] do_page_fault+0x3e9/0x525
+[   54.191307]  [<c010a4e9>] __ipipe_handle_exception+0x61/0x90
+[   54.191996]  [<c0102a54>] error_code+0x54/0x70
+[   54.192634]  [<c013253a>] __ipipe_dispatch_event+0x5e/0xdc
+[   54.193440]  [<c010a422>] __ipipe_syscall_root+0x55/0xbb
+[   54.194119]  [<c0268750>] system_call+0x20/0x41
+[   54.194829] Code: 8b 00 ff 11 89 c1 83 f8 da 75 18 f6 c3 40 74 13 85
+ff 74 0a b8 01 00 00 00 e8 e0 fb ff ff 83 f3 43 eb ad 89 4e 18 a1 bc d4
+48 c0 <8b> 40 54 f6 80 32 02 00 00 40 74 41 b8 00 e0 ff ff 21 e0 8b 10
 
-When you first talked about an "RTDM plugin" interface for Xenomai, I
-got the idea of dragging external sources into the Xenomai kernel build
-process. I haven't thought about this technically yet, but it would
-allow to keep driver source packages maintained externally while still
-providing them the option to become built into the kernel.
-
-Ok, let's think about this for a while: We would need some management
-script(s) to link an external source tree into the config and build
-process, the remove it again, and probably to give a list of the
-currently active plugins. Should be feasible without huge magic,
-shouldn't it? But does this make sense, is it desirable (to me it is
-when I think about making RTnet build cleanly against 2.6.17 yesterday...=
-)?
-
-
-This does not address your user mode utils, but I think they should
-rather be distributed independently (something I have in mind for RTnet
-as well once we ever switch from /dev/rtnet to some RTDM socket/device
-for config work). The required rtdm/rtcan.h should be merged into
-Xenomai, yet unmerged revisions could alternatively come with the
-rtcan-utils packages to make it build (autoconf if your friend to detect
-the available revision).
+Could someone have a look?
 
 Jan
 
 
---------------enig488109AEC8A074EAB52DDE22
+--------------enig26AAD7FE214378C9687BFF0B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -91,10 +82,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFEmlVOniDOoMHTA+kRAriBAJoDKNRhYETEevSDRh618qg8t/jcnwCfXMZ0
-NPgYBMIo36FcCbF++7Iy55s=
-=qUl2
+iD8DBQFEmnJhniDOoMHTA+kRAqVcAJ9dA40wjrTvIq8zAWVOVZ+aYmTEDwCdGCrY
+hFHnZJyi7K9D4WPmMp78UD8=
+=iBh8
 -----END PGP SIGNATURE-----
 
---------------enig488109AEC8A074EAB52DDE22--
+--------------enig26AAD7FE214378C9687BFF0B--
 
