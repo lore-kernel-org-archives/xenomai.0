@@ -1,13 +1,10 @@
-Subject: Re: [Xenomai-core] [PATCH] optimise rthal_timer locking
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4499B97A.5040800@domain.hid>
-References: <4499B97A.5040800@domain.hid>
-Content-Type: text/plain
-Date: Wed, 21 Jun 2006 23:37:56 +0200
-Message-Id: <1150925877.25370.16.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <449A3AAE.7090403@domain.hid>
+Date: Thu, 22 Jun 2006 08:37:34 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-core] RTDM driver add-on infrastructure
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,30 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2006-06-21 at 23:26 +0200, Jan Kiszka wrote:
-> Hi,
-> 
-> long pending in my tree, I finally decided to role this one out as it is
-> quite lone-standing:
-> 
-> This patch avoids to additionally switch off the local IRQs in
-> rthal_timer_program_shot for the PIPELINE_HEAD case - the caller is
-> expected to hold the nucleus lock with IRQs off anyway. Applies to i386
-> and ia64.
+Hello,
 
-Applied, thanks.
+I'm currently implementing a RTDM real-time CAN driver, which raises the 
+the problem of adding the driver to the Xenomai source tree. My first 
+idea was to provide RTCAN as a patch for Xenomai:
 
-> 
-> Jan
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+   $ cd xenomai
+   $ patch -p1 < xenomai-rtcan-add-on.patch
+   $ scripts/prepare_kernel ...
+   ...
+   $ <configure and make kernel>
+   $ <configure, make and install Xenomai user space stuff>
 
+This does not work because of autoconf files needed to copy header files 
+to the installation path. Is this really necessary?
+Another issue is where to put utility and test programs. Making them 
+without autoconf and friends works by using xeno-config. But they should 
+be installed with make install as well. Likely there are other issues.
+
+Any ideas or comments on how to provide a generic RTDM driver add-on 
+infrastructure?
+
+Wolfgang.
 
 
