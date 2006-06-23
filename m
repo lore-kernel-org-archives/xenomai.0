@@ -2,13 +2,12 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17550.59390.98050.812303@domain.hid>
-Date: Tue, 13 Jun 2006 18:29:50 +0200
-Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-In-Reply-To: <448EE593.7010809@domain.hid>
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
-	<448EE593.7010809@domain.hid>
+Message-ID: <17563.61309.258099.930934@domain.hid>
+Date: Fri, 23 Jun 2006 15:41:17 +0200
+Subject: Re: [Xenomai-core] [BUG] oops on skincall without nucleus being loaded
+In-Reply-To: <449A7602.1020004@domain.hid>
+References: <449A7261.7040503@domain.hid>
+	<449A7602.1020004@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,39 +18,26 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
- > Philippe Gerum wrote:
- > > Here is likely why we have different levels of accuracy and performance,
- > >  firstly my version is bluntly based on the khz freq, secondly it
- > > calculates the other way around, i.e. ns2tsc, so that tsc are keep in
- > > the inner code, but more efficiently converted from ns counts passed to
- > > the outer interface:
+ > Jan Kiszka wrote:
+ > > Hi,
  > > 
- > > static unsigned long ns2cyc_scale;
- > > #define NS2CYC_SCALE_FACTOR 10 /* 2^10, carefully chosen */
- > > 
- > > static inline void set_ns2cyc_scale(unsigned long cpu_khz)
- > > {
- > >     ns2cyc_scale = (cpu_khz << NS2CYC_SCALE_FACTOR) / 1000000;
- > > }
- > > 
- > > static inline unsigned long long ns_2_cycles(unsigned long long ns)
- > > {
- > >     return ns * ns2cyc_scale >> NS2CYC_SCALE_FACTOR;
- > > }
+ > > wondering why suddenly things crash on invoking the latency test, I
+ > > realised that I turned the nucleus into a module which was not yet
+ > > loaded. Here is the oops in this case:
  > 
- > Your version performs ~50% better than mine (outperforming the original
- > version by factor 7 on a 1 GHz box, vs. 4.8). I think you compared
- > non-optimised code, didn't you? Without -O2, I see 15 times better
- > performance.
- > 
- > [Gilles variant yet refuses the get benchmarked.]
+ > Correction: the nucleus was still compiled in, the native skin was missing.
 
-Since we accept a smaller range, I think you should benchmark
-nodiv_imuldiv instead of nodiv_ullimd. And it should perform better
-since it uses 32 bits shifts which are not real shifts.
+After a few investigation, the problem appears to be that the nucleus
+assume that user-space skins will issue a bind syscall before using a
+skin, and that the user-space RTDM library does not exit if binding
+fails. So, there are two ways we can fix this problem:
+- either we make the nucleus paranoid and have it handle gracefully
+  syscalls to non loaded tables;
+- or we make the user-space RTDM library behave like other skins and
+  exit if the interface is not bound.
 
 -- 
 
