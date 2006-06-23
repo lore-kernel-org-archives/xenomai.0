@@ -1,14 +1,13 @@
-Message-ID: <449BB3EA.70807@domain.hid>
-Date: Fri, 23 Jun 2006 11:27:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] provide ipipe_traceing via
-	nucleus	interface
-References: <449A76D0.30800@domain.hid> <1151046221.4438.16.camel@domain.hid>
-In-Reply-To: <1151046221.4438.16.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] Improved xeno-test: Ready for checkin
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200606222337.30022.niklaus.giger@domain.hid>
+References: <200606222337.30022.niklaus.giger@domain.hid>
+Content-Type: text/plain
+Date: Fri, 23 Jun 2006 11:30:31 +0200
+Message-Id: <1151055031.4438.24.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,93 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: niklaus.giger@domain.hid
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Thu, 2006-06-22 at 12:54 +0200, Jan Kiszka wrote:
->> Hi,
->>
->> having to load xeno_timerbench and to open its device just for
->> triggering the I-pipe tracer was not a smart decision of mine. This
->> patch makes is more comfortable to call the tracer from user space.
+On Thu, 2006-06-22 at 23:37 +0200, Niklaus Giger wrote:
+> Hi
 > 
->> Index: include/asm-generic/syscall.h
->> ===================================================================
->> --- include/asm-generic/syscall.h	(Revision 1252)
->> +++ include/asm-generic/syscall.h	(Arbeitskopie)
->> @@ -30,6 +30,13 @@
->>  #define __xn_sys_info       4	/* xnshadow_get_info(muxid,&info) */
->>  #define __xn_sys_arch       5	/* r = xnarch_local_syscall(args) */
->>  
->> +#define __xn_sys_trace_begin    6   /* ipipe_trace_begin(v) */
->> +#define __xn_sys_trace_end      7   /* ipipe_trace_end(v) */
->> +#define __xn_sys_trace_freeze   8   /* ipipe_trace_freeze(v) */
->> +#define __xn_sys_trace_specl    9   /*
-> ipipe_trace_special(special_id, v) */
->> +#define __xn_sys_trace_mreset   10  /* ipipe_trace_max_reset() */
->> +#define __xn_sys_trace_freset   11  /* ipipe_trace_frozen_reset() */
->> +
+> Here is my patch for improved versions of xeno-info/load/config/test
+> as well as a Ruby test script for the maintainers.
 > 
-> Ok for providing a tracer syscall from the nucleus table, but let's
-> not pollute the namespace uselessly. We could just have a single
-> tracer entry point, using the first arg as a function code for begin,
-> end, freeze etc. Given that those ops are not on the fast path, there
-> is nothing to gain in having them as separate calls. See __xn_sys_arch
-> for ARM.
+> The modified scripts pass the test for most options to xeno-test. The only 
+> exception is "-v" for verbose. As I have no clue how/what this option should 
+> do I left it as is.
 
-Ok, will change.
+The getopt list lacked the "v" option letter. Fixed, thanks.
 
 > 
->>  
->> Index: include/nucleus/ipipe_trace.h
->> ===================================================================
-> 
-> This file should go to include/asm-generic/ since it depends on the
-> underlying real-time enabler (i.e. I-pipe). This way, there would be
-> no need to check for __XENO_SIM__.
+> The modifications are:
+> - busybox supported
+> - The load jobs (dd) are killed correctly
+> - two new lines for my buildbot "xeno-test started" and "xeno-test finished"
+> - the options -m / -L are no more silent, but echo also on the standard out.
+>   If the old behaviour is preferred, it would be simple to restore it. But
+>   the actual behaviour is easier to debug and fits better into the buildbot
+>   logs.
 
-Ok, but how is the user supposed to include the API then? Or can we drag
-it in implicitly somehow? That would be even nicer I think.
+Logs look ok.
 
-> 
->> --- include/nucleus/ipipe_trace.h	(Revision 0)
->> +++ include/nucleus/ipipe_trace.h	(Revision 0)
->> @@ -0,0 +1,82 @@
->> +/*
->> Index: src/testsuite/latency/latency.c
->> ===================================================================
->> --- src/testsuite/latency/latency.c	(Revision 1252)
->> +++ src/testsuite/latency/latency.c	(Arbeitskopie)
->> @@ -12,6 +12,7 @@
->>  #include <native/timer.h>
->>  #include <native/sem.h>
->>  #include <rtdm/rttesting.h>
->> +#include <nucleus/ipipe_trace.h>
->>  
->>  RT_TASK latency_task, display_task;
->>  
->> @@ -130,8 +131,7 @@ void latency (void *cookie)
->>  
->>              if (freeze_max && (dt > gmaxjitter) && !(finished ||
-> warmup))
->>                  {
->> -                rt_dev_ioctl(benchdev, RTBNCH_RTIOC_REFREEZE_TRACE,
->> -                             rt_timer_tsc2ns(dt));
->> +                ipipe_trace_refreeze(rt_timer_tsc2ns(dt));
-> 
-> I don't like the idea of spreading ipipe-something symbols and
-> dependancies all over the entire source code including the generic one,
-> especially when considering that at some point, we are going to have
-> preempt-rt as the other possible real-time enabler, like
-> Adeos is already used now. We should use something more generic.
-> "tracer*" would be ok, I guess.
+> As rc3 is still not out, I do not see any reason not to check in this patch.
+> But I would like to see this happen soon, as I will not be able to fix errors 
+> after next Wednesday.
 > 
 
-I'm going to rescan Ingo's API to define a common interface where
-feasible (their own user space API seems to hide behind gettimeofday).
-BTW, looks like that tracer will not make into mainline soon - I noticed
-no further pushing recently.
+Applied, thanks.
 
-Jan
+-- 
+Philippe.
+
+
 
