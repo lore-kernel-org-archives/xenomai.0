@@ -2,12 +2,11 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17563.64513.188964.943550@domain.hid>
-Date: Fri, 23 Jun 2006 16:34:41 +0200
-Subject: Re: [Xenomai-core] [BUG] oops on skincall without nucleus being loaded
-In-Reply-To: <449A7602.1020004@domain.hid>
-References: <449A7261.7040503@domain.hid>
-	<449A7602.1020004@domain.hid>
+Message-ID: <17564.334.146871.649320@domain.hid>
+Date: Fri, 23 Jun 2006 16:57:18 +0200
+Subject: Re: [Xenomai-core] More testcases for vxworks skin task handling?
+In-Reply-To: <200606201908.28728.niklaus.giger@domain.hid>
+References: <200606201908.28728.niklaus.giger@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,22 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > Jan Kiszka wrote:
- > > Hi,
- > > 
- > > wondering why suddenly things crash on invoking the latency test, I
- > > realised that I turned the nucleus into a module which was not yet
- > > loaded. Here is the oops in this case:
+Niklaus Giger wrote:
+ > Hi Gilles
  > 
- > Correction: the nucleus was still compiled in, the native skin was missing.
+ > I did some more testing, about how the vxWorks skins handles 
+ > taskSpawn/taskInit and taskName.
+ > 
+ > I did not discover any differences between running it on my board under 
+ > vxworks and under using the Xenomai simulator on my PowerBook.
+ > 
+ > There are probably some tests that you consider redundant, so please feel free 
+ > to minimize is.
+ > 
+ > It is very nice to have an infrastructure where I can easily add testcases and 
+ > verify that everything is okay!
 
-After a more thorough inspection, the problem was the xnshadow_p() call
-at the very end of do_losyscall_event. When no pod is loaded this call
-oopses.
+Patch applied, thanks.
+
 
 -- 
 
