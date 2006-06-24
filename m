@@ -1,14 +1,13 @@
-Message-ID: <44992054.70905@domain.hid>
-Date: Wed, 21 Jun 2006 12:32:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <d87da8330606232034n259b0fcaka361f60e0497e9de@domain.hid>
+Date: Sat, 24 Jun 2006 09:04:17 +0530
+From: "Pramode C E" <pramode@domain.hid>
+Subject: Re: [Xenomai-help] Nucleus Documentation
+In-Reply-To: <1150839249.4417.59.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] mutex locking
-References: <216532953@domain.hid>
-In-Reply-To: <216532953@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig21EB9D863E68E8A137E8685C"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_7656_33338579.1151120057677"
+References: <d87da8330606201027m19044b68lfa29d352297fa77a@domain.hid>
+	<1150839249.4417.59.camel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,73 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?Tobias_B=E4r?= <Tobias.Baer@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig21EB9D863E68E8A137E8685C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_7656_33338579.1151120057677
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Tobias B=E4r wrote:
->> -----Urspr=FCngliche Nachricht-----
->> Von: Jan Kiszka <jan.kiszka@domain.hid>
->> Gesendet: 21.06.06 11:46:34
->> An: Tobias B=E4r <Tobias.Baer@domain.hid>
->> CC: xenomai@xenomai.org
->> Betreff: Re: [Xenomai-help] mutex locking
->=20
->> Try this, it's safe from such races:
->>
->> /* returns -EWOULDBLOCK if the mutex is locked */
->> if (rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
->> {
->>       // do sth.
->>
->>       rt_mutex_unlock(&mutex);
->> }
->=20
-> Thank's for the quick reply! But another question: How could it be that=
- a mutex is locked twice?
->=20
-
-RTFM ;): "Xenomai mutexes are implicitely recursive [...]."
-
-> if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
->   {
->     if(rt_mutex_lock(&write_mutex,TM_NONBLOCK) =3D=3D 0)
->       printf("Mutex is locked twice!\n");
->=20
->    rt_mutex_unlock(&mutex);
->   }
->=20
-> Is it locked by the ID of the thread?
->=20
-
-Yep, the owner is recorded, also to perform priority inheritance when
-required. Recursive means that the current owner can acquire the mutex
-multiple times (but (s)he also has to release it symmetrically then -
-your example is lacking one unlock).
-
-If you use the POSIX skin with its standard pthread_mutex'es, then you
-can decide about the recursiveness explicitly.
-
-Jan
+PS: if you go for user-space support, take an extreme care to properly
+> propagate the -EINTR return code to the user-space caller (see XNBREAK
+> condition upon return from xnsynch_sleep_on()), signaling that a Linux
+> signal has hit a blocked real-time thread. Doing this properly
+> guarantees you a working GDB support for debugging the apps using your
+> interface, and above all, participates to the overall stability of the
+> system upon signal receipt. Keeping this in mind will spare you a fair
+> number of head banging sessions.
 
 
---------------enig21EB9D863E68E8A137E8685C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Thanks for the hints; let me try my hand at  it once again.
 
-iD8DBQFEmSBUniDOoMHTA+kRAvODAJ0cycp7iKTzYBLdy214C9hONzAwpACbBTsL
-Ooku5IuujUMYKI4WnwNbd4g=
-=YTWs
------END PGP SIGNATURE-----
+Regards,
+Pramode
+--------------
 
---------------enig21EB9D863E68E8A137E8685C--
+------=_Part_7656_33338579.1151120057677
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br><br>
+<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">PS: if you go for user-space support, take an extreme care to properly<br>propagate the -EINTR return code to the user-space caller (see XNBREAK
+<br>condition upon return from xnsynch_sleep_on()), signaling that a Linux<br>signal has hit a blocked real-time thread. Doing this properly<br>guarantees you a working GDB support for debugging the apps using your<br>interface, and above all, participates to the overall stability of the
+<br>system upon signal receipt. Keeping this in mind will spare you a fair<br>number of head banging sessions.</blockquote><div><br>
+<br>
+Thanks for the hints; let me try my hand at&nbsp; it once again.&nbsp; <br>
+<br>
+Regards,<br>
+Pramode<br>
+--------------<br>
+ </div><br>
+</div>
+
+------=_Part_7656_33338579.1151120057677--
 
