@@ -1,12 +1,9 @@
-Message-ID: <448EECAD.2060706@domain.hid>
-Date: Tue, 13 Jun 2006 18:49:49 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig17707CC58E756E231250EBC8"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] duplicate div94by32 macros?
+Message-Id: <20060626172118.347530000@domain.hid>
+References: <20060626172116.019532000@domain.hid>
+Date: Mon, 26 Jun 2006 19:21:18 +0200
+From: jan.kiszka@domain.hid
+Content-Disposition: inline; filename=enhance-kernel-fault-report.patch
+Subject: [Xenomai-core] [PATCH 2/6] Improve fault report
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,34 +13,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig17707CC58E756E231250EBC8
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Introduce xnarch_fault_um() to test if a fault happened in user-mode and applies the new feature to report core and driver crashes more verbosely. 
 
-Hi,
+---
+ include/asm-generic/system.h |    5 +++++
+ include/asm-sim/system.h     |    1 +
+ include/asm-uvm/system.h     |    1 +
+ ksrc/nucleus/pod.c           |   11 ++++++++++-
+ 4 files changed, 17 insertions(+), 1 deletion(-)
 
-__rthal_generic_div96by32 from asm-generic/hal.h looks similar to
-__rthal_div96by32 from asm-i386/hal.h. Shouldn't this get cleaned up?
+Index: xenomai/include/asm-generic/system.h
+===================================================================
+--- xenomai.orig/include/asm-generic/system.h
++++ xenomai/include/asm-generic/system.h
+@@ -35,6 +35,7 @@
+ #include <asm/uaccess.h>
+ #include <asm/param.h>
+ #include <asm/mmu_context.h>
++#include <asm/ptrace.h>
+ #include <linux/config.h>
+ #include <asm/xenomai/hal.h>
+ #include <asm/xenomai/atomic.h>
+@@ -52,6 +53,10 @@
+ #define xnarch_trace_panic_freeze()	rthal_trace_panic_freeze()
+ #define xnarch_trace_panic_dump()	rthal_trace_panic_dump()
+ 
++#ifndef xnarch_fault_um
++#define xnarch_fault_um(fi) user_mode(fi->regs)
++#endif
++
+ #define module_param_value(parm) (parm)
+ 
+ typedef unsigned long spl_t;
+Index: xenomai/include/asm-sim/system.h
+===================================================================
+--- xenomai.orig/include/asm-sim/system.h
++++ xenomai/include/asm-sim/system.h
+@@ -56,6 +56,7 @@ typedef void *xnarch_fltinfo_t;	/* Unuse
+ #define xnarch_fault_code(fi)   0
+ #define xnarch_fault_pc(fi)     0L
+ #define xnarch_fault_notify(fi) 1
++#define xnarch_fault_um(fi)     0
+ 
+ typedef int spl_t;
+ 
+Index: xenomai/include/asm-uvm/system.h
+===================================================================
+--- xenomai.orig/include/asm-uvm/system.h
++++ xenomai/include/asm-uvm/system.h
+@@ -192,6 +192,7 @@ typedef void *xnarch_fltinfo_t;	/* Unuse
+ #define xnarch_fault_code(fi)   0
+ #define xnarch_fault_pc(fi)     0L
+ #define xnarch_fault_notify(fi) 1
++#define xnarch_fault_um(fi)     0
+ 
+ typedef struct xnarch_heapcb {
+ 
+Index: xenomai/ksrc/nucleus/pod.c
+===================================================================
+--- xenomai.orig/ksrc/nucleus/pod.c
++++ xenomai/ksrc/nucleus/pod.c
+@@ -194,7 +194,16 @@ static int xnpod_fault_handler(xnarch_fl
+ 
+ 	if (xnpod_shadow_p()) {
+ #ifdef CONFIG_XENO_OPT_DEBUG
+-		if (xnarch_fault_notify(fltinfo))	/* Don't report debug traps */
++		if (!xnarch_fault_um(fltinfo)) {
++			xnarch_trace_panic_freeze();
++			xnprintf
++			    ("Switching %s to secondary mode after exception #%u in "
++			     "kernel-space at 0x%lx (pid %d)\n", thread->name,
++			     xnarch_fault_trap(fltinfo),
++			     xnarch_fault_pc(fltinfo),
++			     xnthread_user_pid(thread));
++			xnarch_trace_panic_dump();
++		} else if (xnarch_fault_notify(fltinfo)) /* Don't report debug traps */
+ 			xnprintf
+ 			    ("Switching %s to secondary mode after exception #%u from "
+ 			     "user-space at 0x%lx (pid %d)\n", thread->name,
 
-Jan
-
-
---------------enig17707CC58E756E231250EBC8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEjuytniDOoMHTA+kRAn57AJ46agNcgO3d0+qcRHEh1MSUPuO/vgCfXdTA
-d4hriEfBN1aq+IPF8lSEtGE=
-=16DU
------END PGP SIGNATURE-----
-
---------------enig17707CC58E756E231250EBC8--
+--
 
