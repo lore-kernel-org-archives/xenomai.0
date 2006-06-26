@@ -1,15 +1,11 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Mon, 26 Jun 2006 11:34:22 +0200
+Message-Id: <1151314462.6626.2.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-ID: <17564.12674.330717.263818@domain.hid>
-Date: Fri, 23 Jun 2006 20:22:58 +0200
-Subject: Re: [Xenomai-core] [BUG] oops on skincall without nucleus being loaded
-In-Reply-To: <17564.11393.93645.251930@domain.hid>
-References: <449A7261.7040503@domain.hid> <449A7602.1020004@domain.hid>
-	<17563.61309.258099.930934@domain.hid>
-	<1151079971.4438.103.camel@domain.hid>
-	<17564.11393.93645.251930@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.2-rc3
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,19 +15,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > misinterpretation. When issuing syscalls with a fixed muxid whereas
- > there is no interface corresponding to this muxid, the nucleus crashes,
- > but it is acceptable, user-space interfaces should issue an
- > __xn_sys_bind syscall first.
 
-This is not even possible, since the invalid syscall go through
-do_hisyscall_event first and get handled there.
+Ok, five weeks is far too long between release candidates and we'll
+try to shorten that, but still, the number of issues closed by -rc3 is
+worth the delay. Significant POSIX skin updates, KGDB support merged
+for x86, and another ARM port, this one over the iMX21, are among the
+goodies. Here is the short log:
+
+Dmitry Adamushko:
+
+	* nucleus: Fix synch. object ownership stealing.
+
+Alexis Berlemont:
+
+	* rtdm: Add support for	mapping vmalloc'ed memory.
+
+Gilles Chanteperdrix:
+
+	* HAL/i386: Fix alignment issue of NMI support with GCC 4.1.
+
+	* nucleus: Properly handle module locking/unlocking to prevent
+	unsafe unloads. Add a regular syscall table for handling
+	internal nucleus syscalls. Add per-process cleanup handlers.
+
+	* vxworks: Conformance fixes.
+
+	* posix: Close race window in several syscall wrappers.
+	Add support for user-space mutex and condition variable
+	attributes. Cleanup per-process objects on process
+	termination. Add support for the SCHED_NORMAL policy.
+	Rework allocation in shared memory support.
+
+	* testsuite: Add context switch unit test.
+
+Jim Cromie:
+
+	* scripts: Various cleanups and improvements.
+
+Niklaus Giger:
+
+	* scripts: Better busybox support. Provide test script to
+	maintainers.
+
+Jan Kiszka:
+
+	* HAL/ia64: Leverage pipeline head optimization.
+
+	* HAL/i386: Enable KGDB support.
+
+	* nucleus: Allow creation of non real-time Xenomai-enabled
+	threads. Improve binary heap management for timers.
+
+Heikki Lindholm:
+	
+	* testsuite: implement Power PC FPU testing routines.
+
+Daniel Rossier:
+
+	* Adeos/arm: Add support for the Freescale iMX21/csb535fs board.
+
+Philippe Gerum:
+
+	* Adeos/blackfin: Upgrade to R06R1RC2 and CVS-20060625.
+
+	* Adeos/i386: Fix 2.4 compilation w/ GCC 3.4. Upgrade 2.6
+	support.
+
+	* nucleus: Add XNPIPEIOC_SETSIG.
+
+	* vrtx: Extend user-space support.
+
+	* testsuite: Fix sched_setaffinity() issue.
+
+-----
+
+See the ChangeLog for details.
+
+http://download.gna.org/xenomai/testing/xenomai-2.2-rc3.tar.bz2
 
 -- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
