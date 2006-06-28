@@ -1,11 +1,11 @@
-Message-ID: <44A2DABA.4050902@domain.hid>
-Date: Wed, 28 Jun 2006 21:38:34 +0200
+Message-ID: <44A2DACA.5050401@domain.hid>
+Date: Wed, 28 Jun 2006 21:38:50 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 4/6] Add prio switch to latency test
-References: <20060626172116.019532000@domain.hid> <20060626172119.347898000@domain.hid>
-In-Reply-To: <20060626172119.347898000@domain.hid>
-Content-Type: multipart/mixed; boundary="------------050807020703070402020803"
+Subject: Re: [Xenomai-core] [PATCH 5/6] Overread dev-prefix on posix open
+References: <20060626172116.019532000@domain.hid> <20060626172119.882570000@domain.hid>
+In-Reply-To: <20060626172119.882570000@domain.hid>
+Content-Type: multipart/mixed; boundary="------------020509070406030609000303"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,145 +19,50 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------050807020703070402020803
+--------------020509070406030609000303
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
-This is just a rebased version of the patch over revision #1275.
+Update to fix a compiler warning (char * vs. const char *).
 
 Jan
 
---------------050807020703070402020803
+--------------020509070406030609000303
 Content-Type: text/x-patch;
- name="latency-add-prio-switch.patch"
+ name="accept-rtdm-dev-prefix.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="latency-add-prio-switch.patch"
+ filename="accept-rtdm-dev-prefix.patch"
 
-Subject: Add prio switch to latency test
+Subject: Overread dev-prefix on posix open
 
-Introduces -P <priority> switch to the latency test and extends xeno_timerbench to respect this for the kernel-based timer task as well. The patch also allows now to run multiple latency tests (both in-kernel and user-space) in parallel.
+Adds support to the posix user-space lib to address RTDM-devices also with a (here meaningless) "/dev/" name prefix. Intended to increase user convenience slightly.
 
 ---
- include/rtdm/rttesting.h          |    1 +
- ksrc/drivers/testing/timerbench.c |    4 ++--
- src/testsuite/latency/latency.c   |   20 ++++++++++++++++----
- 3 files changed, 19 insertions(+), 6 deletions(-)
+ src/skins/posix/rtdm.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Index: xenomai/include/rtdm/rttesting.h
+Index: xenomai/src/skins/posix/rtdm.c
 ===================================================================
---- xenomai.orig/include/rtdm/rttesting.h
-+++ xenomai/include/rtdm/rttesting.h
-@@ -86,6 +86,7 @@ typedef struct rttst_overall_bench_res {
- typedef struct rttst_tmbench_config {
-     int                     mode;
-     uint64_t                period;
-+    int                     priority;
-     int                     warmup_loops;
-     int                     histogram_size;
-     int                     histogram_bucketsize;
-Index: xenomai/ksrc/drivers/testing/timerbench.c
-===================================================================
---- xenomai.orig/ksrc/drivers/testing/timerbench.c
-+++ xenomai/ksrc/drivers/testing/timerbench.c
-@@ -305,7 +305,7 @@ int rt_tmbench_ioctl_nrt(struct rtdm_dev
-                     ctx->mode = RTTST_TMBENCH_TASK;
-                     ret = rtdm_task_init(&ctx->timer_task, "timerbench",
-                                          timer_task_proc, ctx,
--                                         RTDM_TASK_HIGHEST_PRIORITY, 0);
-+                                         config->priority, 0);
-                 }
-             } else {
-                 /* FIXME: convert to RTDM timers */
-@@ -465,7 +465,7 @@ int rt_tmbench_ioctl_rt(struct rtdm_dev_
- static struct rtdm_device device = {
-     struct_version:     RTDM_DEVICE_STRUCT_VER,
+--- xenomai.orig/src/skins/posix/rtdm.c
++++ xenomai/src/skins/posix/rtdm.c
+@@ -41,10 +41,15 @@ static inline int set_errno(int ret)
+ int __wrap_open(const char *path, int oflag, ...)
+ {
+ 	int ret, oldtype;
++	const char *rtdm_path = path;
  
--    device_flags:       RTDM_NAMED_DEVICE | RTDM_EXCLUSIVE,
-+    device_flags:       RTDM_NAMED_DEVICE,
-     context_size:       sizeof(struct rt_tmbench_context),
-     device_name:        "",
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
  
-Index: xenomai/src/testsuite/latency/latency.c
-===================================================================
---- xenomai.orig/src/testsuite/latency/latency.c
-+++ xenomai/src/testsuite/latency/latency.c
-@@ -34,6 +34,7 @@ int quiet = 0;          /* suppress prin
- int benchdev_no = 0;
- int benchdev = -1;
- int freeze_max = 0;
-+int priority = T_HIPRIO;
- 
- #define USER_TASK       0
- #define KERNEL_TASK     1
-@@ -194,6 +195,7 @@ void display (void *cookie)
-             config.mode = RTTST_TMBENCH_HANDLER;
- 
-         config.period               = period_ns;
-+        config.priority             = priority;
-         config.warmup_loops         = WARMUP_TIME;
-         config.histogram_size       = (do_histogram || do_stats) ? histogram_size : 0;
-         config.histogram_bucketsize = bucketsize;
-@@ -424,7 +426,7 @@ int main (int argc, char **argv)
-     char task_name[16];
-     int cpu = 0;
- 
--    while ((c = getopt(argc,argv,"hp:l:T:qH:B:sD:t:fc:")) != EOF)
-+    while ((c = getopt(argc,argv,"hp:l:T:qH:B:sD:t:fc:P:")) != EOF)
-         switch (c)
-             {
-             case 'h':
-@@ -487,6 +489,10 @@ int main (int argc, char **argv)
-                 cpu = T_CPU(atoi(optarg));
-                 break;
- 
-+            case 'P':
-+                priority = atoi(optarg);
-+                break;
+-	ret = XENOMAI_SKINCALL2(__rtdm_muxid, __rtdm_open, path, oflag);
++	/* skip path prefix for RTDM invocation */
++	if (strncmp(path, "/dev/", 5) == 0)
++		rtdm_path += 5;
 +
-             default:
++	ret = XENOMAI_SKINCALL2(__rtdm_muxid, __rtdm_open, rtdm_path, oflag);
  
-                 fprintf(stderr, "usage: latency [options]\n"
-@@ -501,7 +507,8 @@ int main (int argc, char **argv)
-                         "  [-D <testing_device_no>]     # number of testing device, default=0\n"
-                         "  [-t <test_mode>]             # 0=user task (default), 1=kernel task, 2=timer IRQ\n"
-                         "  [-f]                         # freeze trace for each new max latency\n"
--                        "  [-c <cpu>]                   # pin measuring task down to given CPU\n");
-+                        "  [-c <cpu>]                   # pin measuring task down to given CPU\n"
-+                        "  [-P <priority>]              # task priority (test mode 0 and 1 only)\n");
-                 exit(2);
-             }
+ 	pthread_setcanceltype(oldtype, NULL);
  
-@@ -529,6 +536,11 @@ int main (int argc, char **argv)
-     if (period_ns == 0)
-         period_ns = 100000LL; /* ns */
- 
-+    if (priority <= T_LOPRIO)
-+        priority = T_LOPRIO + 1;
-+    else if (priority > T_HIPRIO)
-+        priority = T_HIPRIO;
-+
-     signal(SIGINT, sighand);
-     signal(SIGTERM, sighand);
-     signal(SIGHUP, sighand);
-@@ -562,7 +574,7 @@ int main (int argc, char **argv)
-     rt_timer_set_mode(TM_ONESHOT); /* Force aperiodic timing. */
- 
-     snprintf(task_name, sizeof(task_name), "display-%d", getpid());
--    err = rt_task_create(&display_task,task_name,0,98,T_FPU);
-+    err = rt_task_create(&display_task,task_name,0,0,T_FPU);
- 
-     if (err)
-         {
-@@ -580,7 +592,7 @@ int main (int argc, char **argv)
- 
-     if (test_mode == USER_TASK) {
-         snprintf(task_name, sizeof(task_name), "sampling-%d", getpid());
--        err = rt_task_create(&latency_task,task_name,0,99,T_FPU|cpu);
-+        err = rt_task_create(&latency_task,task_name,0,priority,T_FPU|cpu);
- 
-         if (err)
-             {
 
---------------050807020703070402020803--
+--------------020509070406030609000303--
 
