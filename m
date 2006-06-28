@@ -1,18 +1,18 @@
-Message-ID: <b647ffbd0606280818l472911a9na1b7747aadf80a99@domain.hid>
-Date: Wed, 28 Jun 2006 17:18:52 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH 6/6] Introduce IRQ latency benchmark
-In-Reply-To: <44A29429.4060609@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [PATCH 2/6] Improve fault report
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44A2491D.5040102@domain.hid>
+References: <20060626172116.019532000@domain.hid>
+	<20060626172118.347530000@domain.hid> <1151480559.5154.2.camel@domain.hid>
+	<44A234F9.9010705@domain.hid> <1151481889.5154.14.camel@domain.hid>
+	<44A23B66.7070202@domain.hid> <1151483788.5154.22.camel@domain.hid>
+	<44A24308.70703@domain.hid> <1151485207.5154.28.camel@domain.hid>
+	<44A2491D.5040102@domain.hid>
+Content-Type: text/plain
+Date: Wed, 28 Jun 2006 18:36:38 +0200
+Message-Id: <1151512598.4992.24.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <20060626172116.019532000@domain.hid> <20060626172120.322015000@domain.hid>
-	<17570.29185.754625.871443@domain.hid>
-	<44A275DE.5080500@domain.hid>
-	<17570.34620.38518.404171@domain.hid>
-	<b647ffbd0606280714q142553dag79cd39c4068992e8@domain.hid>
-	<44A29429.4060609@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,41 +25,71 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-> >
-> > Then all other threads must block signal delivering with sigprocmask()
-> > so that the main thread is the only one which "accepts" signals.
->
-> Is that required, i.e. does pause() only wake up if the signal handler
-> executed in the main thread's context? Then cyclictest contains a bug as
-> well...
+On Wed, 2006-06-28 at 11:17 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Wed, 2006-06-28 at 10:51 +0200, Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>> On Wed, 2006-06-28 at 10:18 +0200, Jan Kiszka wrote:
+> >>>> Philippe Gerum wrote:
+> >>>>> On Wed, 2006-06-28 at 09:51 +0200, Jan Kiszka wrote:
+> >>>>>> Philippe Gerum wrote:
+> >>>>>>> On Mon, 2006-06-26 at 19:21 +0200, jan.kiszka@domain.hid wrote:
+> >>>>>>>> plain text document attachment (enhance-kernel-fault-report.patch)
+> >>>>>>>> Introduce xnarch_fault_um() to test if a fault happened in user-mode and applies the new feature to report core and driver crashes more verbosely. 
+> >>>>>>>> 	if (xnpod_shadow_p()) {
+> >>>>>>>>  #ifdef CONFIG_XENO_OPT_DEBUG
+> >>>>>>>> -		if (xnarch_fault_notify(fltinfo))	/* Don't report debug traps */
+> >>>>>>>> +		if (!xnarch_fault_um(fltinfo)) {
+> >>>>>>>> +			xnarch_trace_panic_freeze();
+> >>>>>>> KGDB breakpoint issue?
+> >>>>>> Sorry, please switch on verbose mode, didn't get yet what you mean.
+> >>>>> Oops, sorry. I meant: what if a KGDB breakpoint is hit from kernel space
+> >>>>> while running a shadow thread? The way I read the modified test sequence
+> >>>>> above, such bp trap is going to trigger a panic, instead of being
+> >>>>> silently passed to Linux.
+> >>>> I would say: KGDB will not come along here with a breakpoint. It should
+> >>>> already got involved in __ipipe_divert_exception().
+> >>> Ok, so the only problem that remains would be inlined asm("int 1/3") in
+> >>> kernel space not handled by KGDB (whether the KGDB patch is in or not).
+> >>> I'm still scratching my head pondering if we can live with this or not.
+> >> But this is perfectly one of the situations my patch tries to catch: a
+> >> fatal bug in the kernel! Such a hand-coded kernel breakpoint without a
+> >> debugger caring is a bug to me.
+> > 
+> > Not that sure: passive debug code may exist. Only the presence of the
+> > debugger should activate it.
+> > 
+> 
+> ...but remains a bug for me /w RT code.
 
-If strictly speaking, then yes, it's required. But I expect your fix
-to be working perfectly, just because the current linux implementation
-always favors the main thread when it comes to choosing a thread to
-handle the signal.
+Someone inserting such passive breakpoints would have to know what she's
+doing, in any case. Looking the relax counter in /proc/xenomai/stats
+(which is among the first things to do when chasing unexpected
+latencies) would also give a serious hint to the inattentive folks. What
+bothers me is to restrict the usage one can do of debug vectors on
+certain archs, just for the purpose of saving one's from careless
+coding.
 
-look at signal.c :: __group_complete_signal() routine where the actual
-magic happens.
+>  We now complain about this
+> exception happened. And there is no crash/BUG in this case, just a
+> desirable warning with back-trace in the log.
+> 
 
-from the comments
+Ok, If *_panic() routines do not actually panic at all, it's acceptable.
 
-/*
-         * Now find a thread we can wake up to take the signal off the queue.
-         *
-         * If the main thread wants the signal, it gets first crack.
-         * Probably the least surprising to the average bear.
-         */
+> 
+> 
+> PS: Other OSes show you a nice blue-screen when they ran on such
+> orphaned breakpoints.
 
-...
+What other O/S do in this respect is not relevant; it's not an
+inter-operability or compatibility issue between Xenomai and others,
+it's a decision to make about which behaviour is the least intrusive wrt
+debug strategies.
 
-As I understand, the only case when another thread may handle the
-signal indeed is when the main thread has already another pending
-signal. But even then nothing bad happens as pause() (in the main
-thread) will be interrupted by this pending signal. Just "finished"
-will be set up by some other thread but it doesn't really matter.
-
-
+> 
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
+
+
 
