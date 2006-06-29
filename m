@@ -1,225 +1,199 @@
-Message-ID: <44A432AD.9050305@domain.hid>
-Date: Thu, 29 Jun 2006 22:06:05 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <0D21CBD1298D2C4790E2F2B86D96EC19013280F9@domain.hid>
-In-Reply-To: <0D21CBD1298D2C4790E2F2B86D96EC19013280F9@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6DB28071FDEE4EC317AE234C"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: [Adeos-main] User space,
-	level triggered interrupt
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Reynolds, Terry AMRDEC/SimTech" <terry.reynolds2@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C69BA1.0EF5AE39"
+Date: Thu, 29 Jun 2006 12:25:46 -0500
+Message-ID: <0D21CBD1298D2C4790E2F2B86D96EC19013280F8@domain.hid>
+From: "Reynolds, Terry AMRDEC/SimTech" <terry.reynolds2@domain.hid>
+Subject: [Adeos-main] User space, level triggered interrupt
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6DB28071FDEE4EC317AE234C
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C69BA1.0EF5AE39
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Reynolds, Terry AMRDEC/SimTech wrote:
-> Hi,
->=20
-> Unfortunately I'm tied to this version of linux (2.6.10). =20
+Hi All,
+=20
+I'm trying to understand what I'm seeing in my real-time code where I
+handle a PCI interrupt, using it to handshake with a program running on
+another computer connected via a PCI reflective memory card.  This is on
+a G5 ppc64 kernel.
+=20
+When I register the driver for the PCI card, I allocate an IRQ for it,
+and install the kernel ISR which only returns IRQ_HANDLED.  I mmap the
+registers on the card, as the user application has to access them to
+clear the PCI interrupt after the IRQ is detected.
+=20
+My realtime application is based on Fusion 0.9, but I've looked at the
+Xenomai version of the rt_intr_wait code and don't see any differences.
+The realtime code accesses the card's pci driver to read the IRQ number,
+and creates a user space interrupt object (passing I_PROPAGATE &
+I_AUTOENA ).  What's strange is that when I call rt_intr_wait for an
+instance where only one interrupt has fired, but several micro-seconds
+have passed prior to the wait function, the wait returns values
+indicating that several interrupts are pending.  Calling the wait
+function without allowing any spare time returns a correct 'one'
+interrupt having fired.  Calling the wait once seems to clear the
+interrupt pending count.
+=20
+My questions are:  how are multiple interrupt pending counts being
+generated during a real time task that doesn't yield?  How is it
+possible to service several pending interrupts if the pending count gets
+cleared every time you check for an interrupt?
+=20
+=20
+Thanks,
+=20
+=20
 
-Very unfortunate, indeed.
+Terry Reynolds
 
->=20
-> I have the PCI driver allocate the IRQ and register a handler for it, s=
-o
-> I'll be able to learn the IRQ number.  I've tried not propagating the
-> IRQ from Fusion, but the code never seems to proceed past the first
-> interrupt.
->=20
-> As I understood the interrupt pipeline, if my realtime task didn't idle=
+Simulation Technologies, INC.
 
-> itself, then Linux didn't get a chance to do anything, include
-> processing IRQ's!
+=20
 
-Yep.
+When trouble arises and things look bad, there is always=20
 
->=20
-> The only way I can think of for the interrupt count to increment is for=
+one individual who perceives a solution and is willing to=20
 
-> the Linux isr to get called, and return IRQ_HANDLED, without clearing
-> the actual interrupt line.  (the user app. has to clear it)
+take command.  Very often, that individual is crazy.
 
-The I_AUTOENA flag tells the system to immediately re-enable the IRQ
-line. Your user-space task will then be executed *after* the IRQ line
-got enabled (leaving SMP systems aside here). By combining I_AUTOENA and
-I_PROPAGATE you then risk to re-enable the line twice: the second time
-after Linux got hold of and handled the event. Cannot say what this
-means in practice for your arch though.
+                                                            Dave Barry
 
->=20
-> If I didn't have Linux return the irq_handled, how would I mark the IRQ=
+=20
 
-> as being handled from a user space application?
+------_=_NextPart_001_01C69BA1.0EF5AE39
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-You could call rt_intr_enable, though this is not totally clean. Some
-archs (PPC32 is one of them I think) distinguish between *enabling* and
-*ending* an interrupt. We had a long discussion on this on xenomai-core,
-and while the nucleus is now clean in this respect (also it's
-documentation), the native (former rtai) skin still does not deal with
-this issue yet. If you decide to not let the skin enable the line for
-you, then calling rt_intr_enable may not always fit. But, unfortunately,
-there is no rt_intr_end() even in latest Xenomai...
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.2900.2912" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial size=3D2>Hi=20
+All,</FONT></SPAN></DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial size=3D2>I'm =
+trying to=20
+understand what I'm seeing in my real-time code where I handle a PCI =
+interrupt,=20
+using it to handshake with a program running on another computer =
+connected via a=20
+PCI reflective memory card.&nbsp; This is on a G5 ppc64=20
+kernel.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial size=3D2>When I =
+register the=20
+driver for the PCI card, I allocate an IRQ for it, and install the =
+kernel ISR=20
+which only returns IRQ_HANDLED.&nbsp; I mmap the registers on the =
+card,&nbsp;as=20
+the user application has to access them to clear the PCI interrupt after =
+the IRQ=20
+is detected.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial size=3D2>My =
+realtime=20
+application is based on Fusion 0.9, but I've looked at the Xenomai =
+version of=20
+the rt_intr_wait code and don't see any differences.&nbsp; The realtime =
+code=20
+accesses the card's pci driver to read the IRQ number, and creates a =
+user space=20
+interrupt object (passing <FONT face=3D"Times New Roman" size=3D3><FONT =
+face=3DArial=20
+size=3D2>I_PROPAGATE &amp; I_AUTOENA</FONT> <FONT face=3DArial =
+size=3D2>).&nbsp;=20
+What's strange is that when I call rt_intr_wait for an instance where =
+only one=20
+interrupt has fired, but several micro-seconds have passed prior to the =
+wait=20
+function, the wait returns values indicating that several interrupts are =
 
-[Could someone help my memory with the current status of open-coded IRQ
-handling in native/POSIX threads? I only know that I have some early
-RTDM code hanging around somewhere, but that will become a different
-usage model.]
+pending.&nbsp; Calling the wait function without allowing any spare time =
+returns=20
+a correct 'one' interrupt having fired.&nbsp; Calling the wait once =
+seems to=20
+clear the interrupt pending count.</FONT></FONT></FONT></SPAN></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial size=3D2>My =
+questions=20
+are:&nbsp; how are multiple interrupt pending counts being generated =
+during a=20
+real time task that doesn't yield?&nbsp; How is it possible to service =
+several=20
+pending interrupts if the pending count gets cleared every time you =
+check for an=20
+interrupt?</FONT></SPAN></DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2>Thanks,</FONT></SPAN></DIV>
+<DIV><SPAN class=3D492300316-29062006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D492300316-29062006></SPAN>&nbsp;</DIV>
+<DIV class=3DSection1>
+<P class=3DMsoNormal align=3Dleft><EM><SPAN=20
+style=3D"FONT-SIZE: 18pt; FONT-FAMILY: 'Comic Sans MS'">Terry=20
+Reynolds</SPAN></EM></P>
+<P class=3DMsoNormal><SPAN style=3D"FONT-SIZE: 10pt; FONT-FAMILY: =
+Arial">Simulation=20
+Technologies, INC.</SPAN></P>
+<P class=3DMsoNormal>&nbsp;</P><SPAN=20
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial; mso-bidi-font-family: =
+'Times New Roman'">
+<P class=3DMsoNormal=20
+style=3D"MARGIN: 0in 0in 0pt; tab-stops: .5in; mso-layout-grid-align: =
+none"><FONT=20
+size=3D3><EM><SPAN style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial">When =
+trouble arises=20
+and things look bad, there is always </SPAN></EM></FONT></P>
+<P class=3DMsoNormal=20
+style=3D"MARGIN: 0in 0in 0pt; tab-stops: .5in; mso-layout-grid-align: =
+none"><FONT=20
+size=3D3><EM><SPAN=20
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial">one&nbsp;</SPAN><SPAN=20
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial">individual who perceives a =
+solution=20
+and is willing to </SPAN></EM></FONT></P>
+<P class=3DMsoNormal=20
+style=3D"MARGIN: 0in 0in 0pt; tab-stops: .5in; mso-layout-grid-align: =
+none"><FONT=20
+size=3D3><EM><SPAN style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial">take=20
+command.&nbsp;<SPAN style=3D"mso-spacerun: =
+yes">&nbsp;</SPAN></SPAN><SPAN=20
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: Arial">Very often, that =
+individual is=20
+crazy.</SPAN></EM></FONT></P>
+<P class=3DMsoNormal></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 10pt; FONT-FAMILY: =
+Arial">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+Dave Barry</SPAN></P></DIV>
+<DIV>&nbsp;</DIV></BODY></HTML>
 
-Even worse for you, I'm not sure if Fusion 0.9 handled this
-differentiation correctly at all. nucleus/intr.c only talks about
-xnarch_enable_irq() on return from the handler:
-
-http://www.rts.uni-hannover.de/xenomai/lxr/source/nucleus/intr.c?v=3Dfusi=
-on-0.9#L365
-
->=20
-> PS.  I wasn't sure where the 'best' group to post this as it's an Fusio=
-n
-> / Adeos application and not a I-Pipe version.
->=20
-
-Definitely Xenomai, I CC'ed the help list (subscription required for
-postings).
-
-Jan
-
-
->=20
-> Terry.=20
->=20
-> -----Original Message-----
-> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-> Sent: Thursday, June 29, 2006 1:32 PM
-> To: Reynolds, Terry AMRDEC/SimTech
-> Cc: adeos-main@gna.org
-> Subject: Re: [Adeos-main] User space, level triggered interrupt
->=20
-> Reynolds, Terry AMRDEC/SimTech wrote:
->> Hi All,
->> =20
->> I'm trying to understand what I'm seeing in my real-time code where I =
-
->> handle a PCI interrupt, using it to handshake with a program running=20
->> on another computer connected via a PCI reflective memory card.  This =
-
->> is on a G5 ppc64 kernel.
->> =20
->> When I register the driver for the PCI card, I allocate an IRQ for it,=
-
->=20
->> and install the kernel ISR which only returns IRQ_HANDLED.  I mmap the=
-
->=20
-> Wait, do you share the IRQ this way between RT and non-RT? I mean is th=
-e
-> Linux handler still registered when you attach to it via Fusion? What
-> jobs still should be done in non-RT context? Note that this can cause
-> nasty prio inversions with the RT code.
->=20
->> registers on the card, as the user application has to access them to=20
->> clear the PCI interrupt after the IRQ is detected.
->> =20
->> My realtime application is based on Fusion 0.9, but I've looked at the=
-
->=20
->> Xenomai version of the rt_intr_wait code and don't see any
-> differences.
->> The realtime code accesses the card's pci driver to read the IRQ=20
->> number, and creates a user space interrupt object (passing I_PROPAGATE=
-
->=20
->> & I_AUTOENA ).  What's strange is that when I call rt_intr_wait for an=
-
->=20
->> instance where only one interrupt has fired, but several micro-seconds=
-
->=20
->> have passed prior to the wait function, the wait returns values=20
->> indicating that several interrupts are pending.  Calling the wait=20
->> function without allowing any spare time returns a correct 'one'
->> interrupt having fired.  Calling the wait once seems to clear the=20
->> interrupt pending count.
->=20
-> It does [1] (also in Xenomai).
->=20
->> =20
->> My questions are:  how are multiple interrupt pending counts being=20
->> generated during a real time task that doesn't yield?  How is it
->=20
-> Hard to say without knowing your code (or at least the central parts of=
-
-> it). But such problems can nicely be analysed these days with the Adeos=
-
-> I-pipe tracer. Once you detect a failure in your app, you can trigger a=
-
-> freeze and go back several thousands of kernel function calls in the
-> trace history. This typically gives a nice picture of what happened and=
-
-> what should better have not happened.
->=20
-> It may "only" require an update of your code base. But given the
-> improvements and fixes along the path from Fusion 0.9 to Xenomai 2.1
-> (2.2 soon), it may be worth it. Do you depend on a specific kernel
-> version that's no longer supported? Or does your project require fixed
-> versions?
->=20
->> possible to service several pending interrupts if the pending count=20
->> gets cleared every time you check for an interrupt?
->> =20
->=20
-> First, you get the number of occurred IRQs on return of rt_intr_wait.
-> And second, a typical IRQ handler (if threaded or not) looks like this:=
-
->=20
-> while (hardware_says_there_are_events) {
-> 	handle_some_hardware_event;
-> }
->=20
-> So the IRQ event itself is just a trigger to handle n >=3D 1 hardware
-> events.
->=20
->=20
-> I'm just scratching my head if this is an adeos-related question ;). I
-> would say xenomai-core is a better place for this discussion, covering
-> more the RTOS than the low-level hardware abstractions.
->=20
-> Jan
->=20
->=20
-> [1]http://www.rts.uni-hannover.de/xenomai/lxr/source/skins/rtai/syscall=
-=2E
-> c?v=3Dfusion-0.9#L3100
->=20
-
-
---------------enig6DB28071FDEE4EC317AE234C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEpDKtniDOoMHTA+kRAkPlAJ0bsXEW1a4I3jlU3GyWoKngaOmaCwCfTAXw
-ld4hYjpAm3KuanSfkoWzcUk=
-=259w
------END PGP SIGNATURE-----
-
---------------enig6DB28071FDEE4EC317AE234C--
+------_=_NextPart_001_01C69BA1.0EF5AE39--
 
