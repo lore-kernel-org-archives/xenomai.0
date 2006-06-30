@@ -1,15 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Sender: dv@domain.hid
+Message-ID: <44A4C531.221089B3@domain.hid>
+Date: Fri, 30 Jun 2006 08:31:23 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17571.63940.929691.356210@domain.hid>
-Date: Thu, 29 Jun 2006 18:03:16 +0200
-Subject: Re: [Xenomai-core] Prio-inversion on cleanup?
-In-Reply-To: <1151587492.5291.72.camel@domain.hid>
-References: <44A1608B.3090605@domain.hid> <44A295ED.2080306@domain.hid>
-	<44A39C3C.1080508@domain.hid> <1151576082.5291.41.camel@domain.hid>
-	<44A3ACA8.6070201@domain.hid> <1151578090.5291.49.camel@domain.hid>
-	<1151587492.5291.72.camel@domain.hid>
+Subject: Re: [Xenomai-core] Some questions about the ARM port (Integrator vs.
+	PXA)
+References: <44A3919C.596DFDAE@vollmann.ch>
+	<1151592402.19389.31.camel@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,40 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: dv@domain.hid
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > On Thu, 2006-06-29 at 12:48 +0200, Philippe Gerum wrote:
- > > > > Switching off priority adjustment for the root thread before moving a
- > > > > SCHED_FIFO shadow to SCHED_OTHER would prevent this side-effect. We'd
- > > > > need to add a per-thread status bit to check whether we should run
- > > > > xnpod_renice_root() or not for any given thread, and switch it on/off
- > > > > from __wrap_pthread_setschedparam.
- > > > > 
- > > > 
- > > > This doesn't sound bad and would probably help low-prio threads also in
- > > > some other scenarios.
- > > > 
- > > 
- > > I'm currently implementing that at nucleus level.
- > 
- > The priority coupling switch is in place now, the static config one is
- > called CONFIG_XENO_OPT_RPIDISABLE, and a dynamic flag as been added to
- > the xnthread status mask, namely XNRPIOFF (Root [thread] PI off). I've
- > only added the required support to control priority coupling between
- > both Xenomai and Linux schedulers, but refrained from choosing any
- > policy regarding how we are going to use it in the POSIX skin to solve
- > the pthread_setschedpram issue. I guess that more brain cycles are need
- > there, and I'm cowardly leaving this to Gilles.
+Stelian Pop wrote:
+> Le jeudi 29 juin 2006 =E0 10:38 +0200, Detlef Vollmann a =E9crit :
 
-I have changed __wrap_pthread_setschedparam so that it no longer uses
-__real_pthread_setschedparam, and added a wrapper for
-pthread_getschedparam. I will add support for this XNRPIOFF bit to
-pthread_set_mode_np. This avoid the need for brain cycles.
+> >  a) What's the difference between __ipipe_mach_ticks_per_jiffy
+> >     and LATCH?
+>=20
+> As a matter of fact there is no difference.
+Does this mean that __ipipe_mach_ticks_per_jiffy never changes?
+What about the correlation between __ipipe_mach_set_dec() and
+__ipipe_mach_ticks_per_jiffy?  __ipipe_mach_set_dec() seems
+to do a permanent change, and not only a one-time change.
 
--- 
+Is the Linux timer interrupt still only called after LATCH ticks?
 
 
-					    Gilles Chanteperdrix.
+> >  b) Is there some (hidden, intended future) semantics of tscok?
+> >     Right now it just avoids that garbage is returned before
+> >     the timer is initialized.
+>=20
+> tscok is used to prevent __ipipe_mach_get_tsc() returning bogus values
+> in the early boot stages (when the timer is not yet initialized but
+> ipipe is). IIRC this was mainly needed when enabling
+> CONFIG_IPIPE_STATS...
+Ok, thanks.
+
+
+> >  c) In the interrupt routine, the comment currently says:
+> >     "If Linux is the only domain, ack the timer and reprogram it",
+> >     but the actual code looks as if the comment should read:
+> >     "If Linux is running natively, ack the timer.
+> >     If Linux's the only domain, reprogram it."
+> >     What's wrong, the code or the comment?
+>=20
+> Always trust the code :)
+>=20
+> The true meaning of that code is:
+>         * if Linux is running natively (no ipipe), ack and reprogram th=
+e timer
+>         * if Linux is running under ipipe, but it still has the control=
+ over
+> the timer (no Xenomai for example), then reprogram the timer (ipipe has
+> already acked it)
+>         * if some other domain has taken over the timer, then do nothin=
+g (ipipe
+> has acked it, and the other domain has reprogramed it)
+Thanks for the explanation, it really helps.
+
+Now I have another question on this: on the PXA I have a hardware
+problem so that I must sometimes set the next match value to the
+match value after the next one, so effectively loosing one
+interrupt.
+
+If Linux is responsible for reprogramming the timer, I should tell
+ipipe about it, so that ipipe can tell any other domain.
+How can I do that?
+
+> Indeed, you will need to adapt the PXA incrementer to the ipipe
+> decrementer semantics.
+Ok, that shouldn't be a problem.
+
+Thanks a lot for your help
+ Detlef
+
+--=20
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
