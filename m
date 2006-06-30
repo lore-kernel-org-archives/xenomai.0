@@ -1,15 +1,14 @@
-Subject: Re: [Xenomai-core] Some questions about the ARM port (Integrator
-	vs. PXA)
-From: Stelian Pop <stelian.pop@domain.hid>
-In-Reply-To: <44A4C4CB.5F24DA68@domain.hid>
-References: <44A3919C.596DFDAE@vollmann.ch>
-	<1151592402.19389.31.camel@domain.hid>
-	<44A4C4CB.5F24DA68@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Fri, 30 Jun 2006 10:53:41 +0200
-Message-Id: <1151657621.3060.26.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+From: Romain Lenglet <rlenglet@domain.hid>
+Subject: Re: [Xenomai-core] prepare_kernel --output-patch
+Date: Fri, 30 Jun 2006 18:26:06 +0900
+References: <44A4D271.90006@domain.hid>
+In-Reply-To: <44A4D271.90006@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200606301826.06445.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,62 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Detlef Vollmann <dv@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Le vendredi 30 juin 2006 =E0 08:29 +0200, Detlef Vollmann a =E9crit :
-> Stelian Pop wrote:
-> > Le jeudi 29 juin 2006 =E0 10:38 +0200, Detlef Vollmann a =E9crit :
->=20
-> > >  a) What's the difference between __ipipe_mach_ticks_per_jiffy
-> > >     and LATCH?
-> >=20
-> > As a matter of fact there is no difference.
-> Does this mean that __ipipe_mach_ticks_per_jiffy never changes?
+Wolfgang Grandegger wrote:
+> what is "prepare_kernel --output-patch" useful for?
 
-Indeed.
+It modifies the behavior of prepare_kernel, so that it does not 
+modify the kernel source tree (except that it must apply the 
+Adeos patch), but instead generates a patch file that has the 
+same effect when applied against that Adeos-patched kernel 
+source tree.
 
-> What about the correlation between __ipipe_mach_set_dec() and
-> __ipipe_mach_ticks_per_jiffy?  __ipipe_mach_set_dec() seems
-> to do a permanent change, and not only a one-time change.
+Therefore, it is useful for creating Xenomai packages for 
+GNU/Linux distributions, such as packages based on dh-kpatches 
+in Debian, which require to have patch files.
 
-__ipipe_mach_set_dec sets the *next* timer occurence. It functions in a
-one-shot way (like a real decrementer, not a auto-reloading one).
-
-> Is the Linux timer interrupt still only called after LATCH ticks?
-
-IPipe doesn't do anything special to the timer (except for acking the
-interrupt because this must be done early in some cases).
-
-If Linux handles the timer, then nothing changes, the timer frequency is
-LATCH.
-
-If Xenomai handles the timer, then it is its responsability to propagate
-the interrupt to Linux when it wants to (look for xnarch_relay_tick() in
-Xenomai's nucleus).
-
-> Now I have another question on this: on the PXA I have a hardware
-> problem so that I must sometimes set the next match value to the
-> match value after the next one, so effectively loosing one
-> interrupt.
-
-> If Linux is responsible for reprogramming the timer, I should tell
-> ipipe about it, so that ipipe can tell any other domain.
-> How can I do that?
-
-If Linux is responsible for reprogramming the timer there is a good
-chance there is no other domain, so it doesn't matter much :)
-
-But you will have a problem when Xenomai takes upon the timer, because
-its scheduler doesn't expect to lose timer ticks.=20
-
-I can imagine adding a return code to __ipipe_mach_set_dec() which would
-tell if the hardware has been programmed successfully or not, and in
-this latter case Xenomai (or ipipe ?) would have to busy sleep until the
-next (calculated) timer occurence... What do the experts think ?
-
-Stelian.
---=20
-Stelian Pop <stelian.pop@domain.hid>
-
+-- 
+Romain LENGLET
 
