@@ -1,13 +1,10 @@
-Message-ID: <44A4F1E9.3030202@domain.hid>
-Date: Fri, 30 Jun 2006 11:42:01 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <44A519C4.3080900@domain.hid>
+Date: Fri, 30 Jun 2006 12:32:04 +0000
+From: "s.a." <sancelot@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] prepare_kernel --output-patch
-References: <44A4D271.90006@domain.hid>
-	<200606301826.06445.rlenglet@domain.hid>
-In-Reply-To: <200606301826.06445.rlenglet@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] xeno task debigging 
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,26 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Romain Lenglet <rlenglet@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Romain Lenglet wrote:
-> Wolfgang Grandegger wrote:
->> what is "prepare_kernel --output-patch" useful for?
-> 
-> It modifies the behavior of prepare_kernel, so that it does not 
-> modify the kernel source tree (except that it must apply the 
-> Adeos patch), but instead generates a patch file that has the 
-> same effect when applied against that Adeos-patched kernel 
-> source tree.
-> 
-> Therefore, it is useful for creating Xenomai packages for 
-> GNU/Linux distributions, such as packages based on dh-kpatches 
-> in Debian, which require to have patch files.
+Hi,
+I have got the following kernel message in a process that crashes sometimes
+the action to obtain it is console switching with ctrl alt  Fx
+the two processes are xeno tasks
 
-Ah, OK. I understood what it does but I did not realize what its useful for.
+any idea about the problem ?
 
-Thanks.
+how to debug this in xenomai ?
+is there a workaround ?
 
-Wolfgang.
+general protection fault: 0000 [#1]
+PREEMPT
+Modules linked in: nls_iso8859_1 nls_cp437 i915 rtcan_sja1000 e100
+usb_storage eepro100 mii rtc unix
+CPU:    0
+EIP:    0060:[<c0103112>]    Not tainted VLI
+EFLAGS: 00010246   (2.6.16.19-ipipe #1)
+EIP is at sysenter_exit+0xf/0x11
+eax: 00000010   ebx: 00000000   ecx: b7d1223c   edx: ffffe410
+esi: b7d122cc   edi: 00000000   ebp: 00000000   esp: dc1a7fbc
+ds: 007b   es: 007b   ss: 0068
+Process EnvoiPDO0 (pid: 1879, threadinfo=dc1a6000 task=de35d030)
+Stack: <0>00000000 b7d122cc 00000000 b7d122cc 00000000 b7d12268 00000010
+0000007b
+       0000007b 0802022b ffffe410 00000073 00000206 b7d1223c 0000007b
+00000000
+       00000000
+Call Trace:
+Code: 44 24 18 e8 81 ca 03 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 4e 01 00
+00 e8 ed ea 00 00 8b 44 24 18 8b 54 24 28 8b 4c 24 34 31 ed fb <0f> 35
+50 fc 06 1e 50 55 57 56 52 51 53 ba 7b 00 00 00 8e da 8e
+ <0>general protection fault: 0000 [#2]
+PREEMPT
+Modules linked in: nls_iso8859_1 nls_cp437 i915 rtcan_sja1000 e100
+usb_storage eepro100 mii rtc unix
+CPU:    0
+EIP:    0060:[<c0103112>]    Not tainted VLI
+EFLAGS: 00010246   (2.6.16.19-ipipe #1)
+EIP is at sysenter_exit+0xf/0x11
+eax: 00000000   ebx: 00000000   ecx: b7ce6a2c   edx: ffffe410
+esi: 00669627   edi: 00000000   ebp: 00000000   esp: d704ffbc
+ds: 007b   es: 007b   ss: 0068
+Process Automat (pid: 1882, threadinfo=d704e000 task=d701b030)
+Stack: <0>00000000 00000001 b7d8a660 00669627 00000000 b7ce6a58 00000000
+2801007b
+       0000007b 0801022b ffffe410 00000073 00000206 b7ce6a2c 0000007b
+00000000
+       00000000
+Call Trace:
+Code: 44 24 18 e8 81 ca 03 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 4e 01 00
+00 e8 ed ea 00 00 8b 44 24 18 8b 54 24 28 8b 4c 24 34 31 ed fb <0f> 35
+50 fc 06 1e 50 55 57 56 52 51 53 ba 7b 00 00 00 8e da 8e
 
