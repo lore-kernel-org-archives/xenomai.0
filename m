@@ -1,13 +1,12 @@
-Message-ID: <b647ffbd0606300804q28d0f070o30e93cc00db2b87a@domain.hid>
-Date: Fri, 30 Jun 2006 17:04:33 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] xeno task debigging
-In-Reply-To: <44A50553.9010200@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Date: Fri, 30 Jun 2006 16:54:45 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <44A519C4.3080900@domain.hid> <44A50553.9010200@domain.hid>
+Message-Id: <200606301654.45844.lbocseg@domain.hid>
+Subject: [Xenomai-core] 2.6.17 hang on "will halt now" (possibly SMI related)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,63 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: sancelot@domain.hid
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+I began to experience a problem since 2.6.17 when shutting down my PC.
 
-do you mean that your rt tasks work fine until you press Ctrl-Alt-FN
-to switch virtual terminals?
+I noticed the problem just after I recompiled my kernel to enable the SMI 
+workaround. I, then rebooted the new kernel and when I tried to shutdown  the 
+system, it stopped on "will halt now" message or something like.
 
-well, it's pretty enough information at least to point out the code
-that caused a problem in question :)
+The same behavior is occurring both in home (Pentium-3 550 MHz) and  at 
+college (P4-1.7GHz). In both systems, Xenomai advised me to enable SMI 
+workaround. Actually, at home, the worst latency with the latency test was 
+about 20us independently from enabling or not the SMI workaround.
 
-it seems to be "sysexit" in entry.S, namely the following block
+Do someone else experienced a similar problem when upgrading to 2.6.17?
 
-/* if something modifies registers it must also disable sysexit */
-       EMULATE_ROOT_IRET(sysenter_exit)
-        movl EIP(%esp), %edx
-        movl OLDESP(%esp), %ecx
-        xorl %ebp,%ebp
-        sti
-->     sysexit
+I'm currently using 2.6.17.2 and SVN version of Xenomai.
 
-Looking at dumped register values :
+Thanks in advance,
 
-edx == ffffe410 that stands for some code inside "vsyscall page" -
-[fffe000, ffff0000]. I suppose the next instruction after "sysenter".
+Rodrigo.
 
-ecx - a pointer to user-space stack of the task that issued a syscall
-through "vsyscall page". it's 0xb7d1223c and at least we may say it
-belongs to user-space (but can point to something invalid).
+P.S: All remaining system is working fine as much as I could note.
 
-this is exactly what "sysexit" expects to find in edx and ecx, namely
-EIP and ESP.
-
-Then let's look at the "code":
-
-Code: 44 24 18 e8 81 ca 03 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 4e 01 00
-00 e8 ed ea 00 00 8b 44 24 18 8b 54 24 28 8b 4c 24 34 31 ed fb <0f> 35
-50 fc 06 1e 50 55 57 56 52 51 53 ba 7b 00 00 00 8e da 8e
-
-<0f> 35 seems to be the current instruction and this is an opcode for
-"sysexit" on e.g. AMD aa64 (google helps :)
-
-The following also confirms that:
-EIP is at sysenter_exit+0xf/0x11
-
-EIP points to last 2 bytes of sysenter_exit and that's "sysexit".
-
-I tried to find what exactly "sysexit" does and when/why it may fault
-but failed so far. e.g. if ecx is wrong (points to non-existent vma).
-
-It's also interesting that 2 tasks get GPF, both returning from some syscall.
-
-Maybe Philippe who (I suppose) introduced sysenter/exit support for
-Adeos/ipipe can shed some light.
+		
+_______________________________________________________ 
+Novidade no Yahoo! Mail: receba alertas de novas mensagens no seu celular. Registre seu aparelho agora! 
+http://br.mobile.yahoo.com/mailalertas/ 
+ 
 
 
--- 
-Best regards,
-Dmitry Adamushko
 
