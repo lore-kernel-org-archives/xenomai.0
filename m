@@ -1,15 +1,13 @@
-Message-ID: <44900A19.1040702@domain.hid>
-Date: Wed, 14 Jun 2006 15:07:37 +0200
+Message-ID: <44A50553.9010200@domain.hid>
+Date: Fri, 30 Jun 2006 13:04:51 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] ns vs. tsc as internal timer base
-References: <448E98A3.6080707@domain.hid>	<448E9E8B.70809@domain.hid>	<448EA7F7.5000802@domain.hid>	<448EB038.8070802@domain.hid>	<448EE593.7010809@domain.hid>	<448EF022.1040901@domain.hid>	<17550.61982.685449.470866@domain.hid>
-	<448EFCC5.60308@domain.hid> <448FD5EC.4060109@domain.hid>
-	<44900143.50806@domain.hid>
-In-Reply-To: <44900143.50806@domain.hid>
+Subject: Re: [Xenomai-core] xeno task debigging
+References: <44A519C4.3080900@domain.hid>
+In-Reply-To: <44A519C4.3080900@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD8FFE2A0E19C20E554BD905F"
+	boundary="------------enig879B44F4100D1C9018046B41"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,87 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: "s.a." <sancelot@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD8FFE2A0E19C20E554BD905F
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig879B44F4100D1C9018046B41
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> Jim Cromie wrote:
->> Philippe Gerum wrote:
->>
->>> Gilles Chanteperdrix wrote:
->>>
->>>> Philippe Gerum wrote:
->>>>  > Redone the check here on a Centrino 1.6Mhz, and still have
->>>> roughly x20  > improvement (a bit better actually). I'm using
->>>> Debian/sarge gcc 3.3.5.
->>>>
->>>> I think I remember that Pentium M has a much shorter mull instructio=
-n
->>>> than other processors of the family.
->>>>
->>>
->>> That would explain. Anyway, as John Stulz put it:
->>> "math is hard, lets go shopping!"
->>>
->>
->> Heh.  Appropriate that his name (Stultz) comes up here, as his
->> generic-time (GTOD)
->> patchset looks headed for 2.6.18, bringing with it a full re-working
->> of linux timers / timeofday.  IN this new world, time is kept on
->> free-running counters.
->>
->> Ive been running this patchset on my soekris for some time, since
->> GTOD detects that the TSC counts slowly, calls it insane, and does tim=
-ing
->> with the PIT.
->>
->> With GTOD, writing a new clocksource driver is easy, enough so I could=
+s.a. wrote:
+> Hi,
+> I have got the following kernel message in a process that crashes somet=
+imes
+> the action to obtain it is console switching with ctrl alt  Fx
+> the two processes are xeno tasks
+>=20
+> any idea about the problem ?
 
->> do it.
->> My clocksource patch uses the 27 mhz timer on the Geode CPU.
->> Once the TSC is de-rated, mine becomes the best clocksource, and GTOD
->> switches to it.
->>
->> All of which is to say ..
->> new mainline code is coming, should this current rework notion wait,
->> given that its will all need revisited again later
->>
->=20
-> Clearly yes, since this is going to impact Adeos too. GTOD is going to
-> fiddle with the PIT channels in a way Adeos needs to be aware of, in
-> order for the client RTOS to reuse such timer. Added to the flow of
-> other core changes planned for 2.6.18, this is likely going to be funky=
-=2E
->=20
-> "Find wall. Beat head against same."
->=20
+Please tell us your Xenomai and I-ipipe patch version. Also your kernel
+=2Econfig my be helpful. Do you use any "special" Linux drivers, e.g. som=
+e
+binary-only nvidia or ati stuff?
 
-May not be required: the GTOD and clocksource abstractions could provide
-a clean way to register some virtual, Adeos- or RTOS-provided clock with
-Linux. And that clock may even lose ticks without Linux losing its
-system time! So far for the theory, practice may still require walls...
+>=20
+> how to debug this in xenomai ?
+> is there a workaround ?
+
+Can you derive a simple demo code from your application so that we can
+give it a try as well? I have an emulator here (qemu) where I can easily
+step into such issues (when they trigger on my box too...).
+
+If you want to dig deeper on your own: there is a kgdb add-on patch
+available for 2.6.16 (not 2.6.17 as falsely claimed by the readme) [1].
 
 Jan
 
 
---------------enigD8FFE2A0E19C20E554BD905F
+[1] http://download.gna.org/adeos/patches/v2.6/i386/kgdb/
+
+
+--------------enig879B44F4100D1C9018046B41
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFEkAodniDOoMHTA+kRAgHMAJ9+1GN/pn+zWIPEIZYP6PgGTjnOTwCfcO2I
-mQZuqAIzEeqlkbXHlWVPAkQ=
-=ynjz
+iD8DBQFEpQVTniDOoMHTA+kRAgZgAJ9v5MpbHdf/BQG7dZSBmMxXulGujwCdFPsn
+vI0HG+PpZTvqc0Js+Su7jFw=
+=WkB2
 -----END PGP SIGNATURE-----
 
---------------enigD8FFE2A0E19C20E554BD905F--
+--------------enig879B44F4100D1C9018046B41--
 
