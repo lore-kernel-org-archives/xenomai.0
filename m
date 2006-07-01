@@ -1,45 +1,40 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44A6BC2B.8050105@domain.hid>
+Date: Sat, 01 Jul 2006 20:17:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] [PATCH 6/6] Introduce IRQ latency benchmark
+References: <20060626172116.019532000@domain.hid>	<20060626172120.322015000@domain.hid>
+	<44A2DB06.8050000@domain.hid>	<44A3B799.8030608@domain.hid>
+	<1151768301.5014.7.camel@domain.hid>
+In-Reply-To: <1151768301.5014.7.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <17548.4423.616939.905643@domain.hid>
-Date: Sun, 11 Jun 2006 14:49:11 +0200
-Subject: Re: [Xenomai-help] Can I profile a Xenomai app?
-In-Reply-To: <4489C553.2040502@domain.hid>
-References: <4489C553.2040502@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Brian Hughner <brh@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Brian Hughner wrote:
- > Hi!
- > 
- > I've been working with Xenomai 2.1 and 2.2 and would like to profile a 
- > daemon that I wrote. Is it possible to profile Xenomai threads in a daemon?
+Philippe Gerum wrote:
+> On Thu, 2006-06-29 at 13:20 +0200, Jan Kiszka wrote:
+>> Jan Kiszka wrote:
+>>
+>>> Here comes an update of the irqbench patch.
+>>>   
+>> And this add-on fixes a classic copy&paste issue.
+>>
+> 
+> Merged, along with the generic trace support. Thanks.
+> 
 
-If you are looking for a way to manually instrument your code in order
-to measure short time intervals, you may use
-clock_gettime(CLOCK_MONOTONIC) with the posix skin, or rt_timer_tsc()
-with the native skin.
+Almost :) - but it's fixed now.
 
-For a more automated way, have a look at the I-pipe tracer.
-
-If you are able to simulate the low-level part of the daemon you
-developed, or if this daemon does not interact too much with hardware,
-you may compile this daemon for xenomai simulator, compiled with the
-"atomic core" option, and give a try to cachegrind. I do not think
-cachegrind will be able to output per-thread results, though.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Jan
 
