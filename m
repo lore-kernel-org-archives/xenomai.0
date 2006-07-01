@@ -1,34 +1,39 @@
-Message-ID: <448C0FBF.3020707@domain.hid>
-Date: Sun, 11 Jun 2006 14:42:39 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CONFIG_PREEMPT
-References: <02AA386EB831044F8537A696BA785C78A666A9@domain.hid>
-In-Reply-To: <02AA386EB831044F8537A696BA785C78A666A9@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] [PATCH 6/6] Introduce IRQ latency benchmark
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44A3B799.8030608@domain.hid>
+References: <20060626172116.019532000@domain.hid>
+	<20060626172120.322015000@domain.hid> <44A2DB06.8050000@domain.hid>
+	<44A3B799.8030608@domain.hid>
+Content-Type: text/plain
+Date: Sat, 01 Jul 2006 17:38:20 +0200
+Message-Id: <1151768301.5014.7.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Landau, Bracha wrote:
-> Under what circumstances must one configure the kernel with CONFIG_PREEMPT when running Xenomai-based code?
+On Thu, 2006-06-29 at 13:20 +0200, Jan Kiszka wrote:
+> Jan Kiszka wrote:
+> 
+> > Here comes an update of the irqbench patch.
+> >   
+> And this add-on fixes a classic copy&paste issue.
 > 
 
-This option is not directly related to Xenomai. You may want to set
-CONFIG_PREEMPT if you need increased preemptibility for normal Linux
-tasks (including Xenomai tasks executing Linux services in secondary
-mode), but you can perfectly use CONFIG_NONE as well when overall system
-performance counts.
+Merged, along with the generic trace support. Thanks.
 
-Jan
+-- 
+Philippe.
+
+
 
