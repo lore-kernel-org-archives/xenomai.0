@@ -1,14 +1,14 @@
-Message-ID: <44A6BC2B.8050105@domain.hid>
-Date: Sat, 01 Jul 2006 20:17:15 +0200
+Message-ID: <44A7CA35.5060009@domain.hid>
+Date: Sun, 02 Jul 2006 15:29:25 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 6/6] Introduce IRQ latency benchmark
-References: <20060626172116.019532000@domain.hid>	<20060626172120.322015000@domain.hid>
-	<44A2DB06.8050000@domain.hid>	<44A3B799.8030608@domain.hid>
-	<1151768301.5014.7.camel@domain.hid>
-In-Reply-To: <1151768301.5014.7.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] 2.6.17 hang on "will halt now" (possibly SMI
+	related)
+References: <200606301654.45844.lbocseg@domain.hid>
+In-Reply-To: <200606301654.45844.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig48B5855AA87E7D2B8B35560C"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,22 +19,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Thu, 2006-06-29 at 13:20 +0200, Jan Kiszka wrote:
->> Jan Kiszka wrote:
->>
->>> Here comes an update of the irqbench patch.
->>>   
->> And this add-on fixes a classic copy&paste issue.
->>
-> 
-> Merged, along with the generic trace support. Thanks.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig48B5855AA87E7D2B8B35560C
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Almost :) - but it's fixed now.
+Rodrigo Rosenfeld Rosas wrote:
+> I began to experience a problem since 2.6.17 when shutting down my PC.
+>=20
+> I noticed the problem just after I recompiled my kernel to enable the S=
+MI=20
+> workaround. I, then rebooted the new kernel and when I tried to shutdow=
+n  the=20
+> system, it stopped on "will halt now" message or something like.
+>=20
+> The same behavior is occurring both in home (Pentium-3 550 MHz) and  at=
+=20
+> college (P4-1.7GHz). In both systems, Xenomai advised me to enable SMI =
+
+> workaround. Actually, at home, the worst latency with the latency test =
+was=20
+> about 20us independently from enabling or not the SMI workaround.
+>=20
+> Do someone else experienced a similar problem when upgrading to 2.6.17?=
+
+
+Yep. Should be fixed now, see latest trunk.
+
+It was a deadlock due to clumsy unregistration of the reboot notifier
+from its own handler. I think the locking of the kernel changed in
+2.6.17 (RCU) and made this fatal.
 
 Jan
+
+
+PS: 20us on a P-III 550 is a bit too good. I guess some serious load is
+missing (cache load, IRQs, ...).
+
+
+--------------enig48B5855AA87E7D2B8B35560C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFEp8o4niDOoMHTA+kRAgLgAJ0UF+W2kl21biYjc0Eg5BDPdqW/EgCfQ1kO
+ksQ8PSDRZkh41ThX9ycXLBg=
+=1uHF
+-----END PGP SIGNATURE-----
+
+--------------enig48B5855AA87E7D2B8B35560C--
 
