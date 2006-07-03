@@ -1,15 +1,16 @@
-Message-ID: <44A7CA35.5060009@domain.hid>
-Date: Sun, 02 Jul 2006 15:29:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Sender: dv@domain.hid
+Message-ID: <44A8B191.3DCC39C2@domain.hid>
+Date: Mon, 03 Jul 2006 07:56:33 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] 2.6.17 hang on "will halt now" (possibly SMI
-	related)
-References: <200606301654.45844.lbocseg@domain.hid>
-In-Reply-To: <200606301654.45844.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig48B5855AA87E7D2B8B35560C"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Some questions about the ARM port (Integrator vs.
+	PXA)
+References: <44A3919C.596DFDAE@vollmann.ch>
+	<1151592402.19389.31.camel@domain.hid>
+	<44A4C4CB.5F24DA68@domain.hid>
+	<1151657621.3060.26.camel@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,60 +20,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Stelian Pop <stelian.pop@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig48B5855AA87E7D2B8B35560C
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Stelian Pop wrote:
+> Le vendredi 30 juin 2006 =E0 08:29 +0200, Detlef Vollmann a =E9crit :
 
-Rodrigo Rosenfeld Rosas wrote:
-> I began to experience a problem since 2.6.17 when shutting down my PC.
+> __ipipe_mach_set_dec sets the *next* timer occurence. It functions in a
+> one-shot way (like a real decrementer, not a auto-reloading one).
+In your implementation for the Integrator you set timer_reload in
+__ipipe_mach_set_dec() and use that value in the (Linux) interrupt
+handler.
+And that seems to be the correct behaviour, if I look at Xenomai's
+arch/arm/hal.c and see in rthal_timer_release the call
+__ipipe_mach_set_dec(__ipipe_mach_ticks_per_jiffy).
+
+> > Is the Linux timer interrupt still only called after LATCH ticks?
 >=20
-> I noticed the problem just after I recompiled my kernel to enable the S=
-MI=20
-> workaround. I, then rebooted the new kernel and when I tried to shutdow=
-n  the=20
-> system, it stopped on "will halt now" message or something like.
+> IPipe doesn't do anything special to the timer (except for acking the
+> interrupt because this must be done early in some cases).
 >=20
-> The same behavior is occurring both in home (Pentium-3 550 MHz) and  at=
-=20
-> college (P4-1.7GHz). In both systems, Xenomai advised me to enable SMI =
-
-> workaround. Actually, at home, the worst latency with the latency test =
-was=20
-> about 20us independently from enabling or not the SMI workaround.
+> If Linux handles the timer, then nothing changes, the timer frequency i=
+s
+> LATCH.
 >=20
-> Do someone else experienced a similar problem when upgrading to 2.6.17?=
+> If Xenomai handles the timer, then it is its responsability to propagat=
+e
+> the interrupt to Linux when it wants to (look for xnarch_relay_tick() i=
+n
+> Xenomai's nucleus).
+Thanks for the explanation.
 
+> > Now I have another question on this: on the PXA I have a hardware
+> > problem so that I must sometimes set the next match value to the
+> > match value after the next one, so effectively loosing one
+> > interrupt.
+>=20
+> > If Linux is responsible for reprogramming the timer, I should tell
+> > ipipe about it, so that ipipe can tell any other domain.
+> > How can I do that?
+>=20
+> If Linux is responsible for reprogramming the timer there is a good
+> chance there is no other domain, so it doesn't matter much :)
+That's probably true.
 
-Yep. Should be fixed now, see latest trunk.
+> But you will have a problem when Xenomai takes upon the timer, because
+> its scheduler doesn't expect to lose timer ticks.
+Exactly that's the problem...
 
-It was a deadlock due to clumsy unregistration of the reboot notifier
-from its own handler. I think the locking of the kernel changed in
-2.6.17 (RCU) and made this fatal.
+> I can imagine adding a return code to __ipipe_mach_set_dec() which woul=
+d
+> tell if the hardware has been programmed successfully or not, and in
+> this latter case Xenomai (or ipipe ?)
+It should definitely be ipipe.  At least in theory there could be
+other domains than Xenomai, and any domain needs to be informed.
 
-Jan
+> would have to busy sleep until the
+> next (calculated) timer occurence...
+Hmmm, busy sleeping for several usecs is pretty long.
+Couldn't ipipe in that case just fire the interrupt routine
+(w/o ack'ing the interrupt), even if a bit out of the correct timing?
 
+But anyway, whoever is responsible for reprogramming the timer needs
+to know that it already is reprogrammed this time.
 
-PS: 20us on a P-III 550 is a bit too good. I guess some serious load is
-missing (cache load, IRQs, ...).
+In Linux, it's easy because there are separate functions for dealing
+with the hardware (ack the IRQ and reprogram timer) and for actually
+doing what has to be done in the system on a timer interrupt
+(timer_tick()).
+For IPIPE, that separation isn't so easy as the (some) domains have the
+illusions that they get their timer interrupts still from the
+real hardware.
 
+A simple solution would be a special return value from
+__ipipe_mach_set_dec(), and in this case ipipe just calls the
+registered handlers from all domains.  But for the domain
+that called (indirectly) __ipipe_mach_set_dec() this could mean
+that an interrupt handler is called recursively, and this is
+something no handler really expects...
 
---------------enig48B5855AA87E7D2B8B35560C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+So, I have no solution for now and have to live with the fact
+that Xenomai might loose a timer tick :-(
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Again, thanks a lot for your help
+ Detlef
 
-iD8DBQFEp8o4niDOoMHTA+kRAgLgAJ0UF+W2kl21biYjc0Eg5BDPdqW/EgCfQ1kO
-ksQ8PSDRZkh41ThX9ycXLBg=
-=1uHF
------END PGP SIGNATURE-----
-
---------------enig48B5855AA87E7D2B8B35560C--
+--=20
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
