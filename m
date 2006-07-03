@@ -1,81 +1,65 @@
-Message-ID: <20060612153100.61236.qmail@domain.hid>
-Date: Mon, 12 Jun 2006 08:31:00 -0700 (PDT)
-From: Cedric Herreman <glocker50@domain.hid>
+Message-ID: <44A9579D.1020004@domain.hid>
+Date: Mon, 03 Jul 2006 19:45:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-677057953-1150126260=:57594"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Compaq nc6120 timer frequency
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] 2.6.17 hang on "will halt now" (possibly SMI
+	related) [SOLVED]
+References: <200606301654.45844.lbocseg@domain.hid> <44A7CA35.5060009@domain.hid>
+	<200607031437.09370.lbocseg@domain.hid>
+In-Reply-To: <200607031437.09370.lbocseg@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig49BA9D80A86B5FF747C10453"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---0-677057953-1150126260=:57594
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig49BA9D80A86B5FF747C10453
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Rodrigo Rosenfeld Rosas wrote:
+> Thank you Jan. I tested and it is working pretty fine again.
+>=20
+> My only problem is that I couldn't compile the new IRQ testsuite. I nee=
+ded to=20
+> disable it in order to compile the kernel. That happened both at home a=
+s at=20
+> college.
 
-I have installed xenomai on my Compaq nc6120 portable. Everything seems to be working OK. There is only one issue :
+[Oops, forgot to reply your private mail]
+Did you re-run the prepare-kernel script?
 
-When i create a periodic task, it runs with a higher period than expected (60 x). I have the impression that the ratio "ticks per ns" is not correct. The latencies are acceptable.
+I'm not aware of problems with the kernel compilation so far, I only
+forgot to add nucleus/trace.h to the userspace installation process
+which Gilles fixed today.
 
-I am running xenomai-2.1.2 on a 2.6.16.20 kernel. 
- 
- cat /proc/xenomai/timer:
- status=oneshot:setup=51:tickval=1:jiffies=42919216297
- 
- cat /proc/xenomai/latency:
- 2699
- 
- cat /proc/cpufreq:
-           minimum CPU frequency  -  maximum CPU frequency  -  policy
- CPU  0       800000 kHz ( 50 %)  -    1600000 kHz (100 %)  -  userspace
- 
- cat /proc/cpuinfo:
- processor    : 0
- vendor_id    : GenuineIntel
- cpu family    : 6
- model        : 13
- model name    : Intel(R) Pentium(R) M processor 1.60GHz
- stepping    : 8
- cpu MHz        : 798.419
- cache size    : 2048 KB
- fdiv_bug    : no
- hlt_bug        : no
- f00f_bug    : no
- coma_bug    : no
- fpu        : yes
- fpu_exception    : yes
- cpuid level    : 2
- wp        : yes
- flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat clflush dts acpi mmx fxsr sse sse2 ss tm pbe nx est tm2
- bogomips    : 1576.96
-
-Can anyone give me a hint on this problem ? 
- 
- Thanks,
-
-Cedric.
+Jan
 
 
+--------------enig49BA9D80A86B5FF747C10453
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
- __________________________________________________
-Do You Yahoo!?
-Tired of spam?  Yahoo! Mail has the best spam protection around 
-http://mail.yahoo.com 
---0-677057953-1150126260=:57594
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Hello,<br><br>I have installed xenomai on my Compaq nc6120 portable. Everything seems to be working OK. There is only one issue :<br><br>When i create a periodic task, it runs with a higher period than expected (60 x). I have the impression that the ratio "ticks per ns" is not correct. The latencies are acceptable.<br><br>I am running xenomai-2.1.2 on a 2.6.16.20 kernel. <br> <br> cat /proc/xenomai/timer:<br> status=oneshot:setup=51:tickval=1:jiffies=42919216297<br> <br> cat /proc/xenomai/latency:<br> 2699<br> <br> cat /proc/cpufreq:<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; minimum CPU frequency&nbsp; -&nbsp; maximum CPU frequency&nbsp; -&nbsp; policy<br> CPU&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 800000 kHz ( 50 %)&nbsp; -&nbsp;&nbsp;&nbsp; 1600000 kHz (100 %)&nbsp; -&nbsp; userspace<br> <br> cat /proc/cpuinfo:<br> processor&nbsp;&nbsp;&nbsp; : 0<br> vendor_id&nbsp;&nbsp;&nbsp; : GenuineIntel<br> cpu family&nbsp;&nbsp;&nbsp; : 6<br>
- model&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 13<br> model name&nbsp;&nbsp;&nbsp; : Intel(R) Pentium(R) M processor 1.60GHz<br> stepping&nbsp;&nbsp;&nbsp; : 8<br> cpu MHz&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : 798.419<br> cache size&nbsp;&nbsp;&nbsp; : 2048 KB<br> fdiv_bug&nbsp;&nbsp;&nbsp; : no<br> hlt_bug&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : no<br> f00f_bug&nbsp;&nbsp;&nbsp; : no<br> coma_bug&nbsp;&nbsp;&nbsp; : no<br> fpu&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : yes<br> fpu_exception&nbsp;&nbsp;&nbsp; : yes<br> cpuid level&nbsp;&nbsp;&nbsp; : 2<br> wp&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : yes<br> flags&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat clflush dts acpi mmx fxsr sse sse2 ss tm pbe nx est tm2<br> bogomips&nbsp;&nbsp;&nbsp; : 1576.96<br><br>Can anyone give me a hint on this problem ? <br> <br> Thanks,<br><br>Cedric.<br><br><br><p>&#32;__________________________________________________<br>Do You
- Yahoo!?<br>Tired of spam?  Yahoo! Mail has the best spam protection around <br>http://mail.yahoo.com 
---0-677057953-1150126260=:57594--
+iD8DBQFEqVedniDOoMHTA+kRAoVNAJ981V1KbJmsWUNQhfVyaPFtPQZYnACePYZV
+/U3UecF/XOeyh3RttGO8zQM=
+=QwgF
+-----END PGP SIGNATURE-----
+
+--------------enig49BA9D80A86B5FF747C10453--
 
