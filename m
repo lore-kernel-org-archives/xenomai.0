@@ -1,16 +1,20 @@
-From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Subject: Re: [Xenomai-core] 2.6.17 hang on "will halt now" (possibly SMI
-	related) [SOLVED]
-Date: Mon, 3 Jul 2006 15:04:51 -0300
-References: <200606301654.45844.lbocseg@domain.hid>
-	<200607031437.09370.lbocseg@domain.hid> <44A9579D.1020004@domain.hid>
-In-Reply-To: <44A9579D.1020004@domain.hid>
+Sender: dv@domain.hid
+Message-ID: <44AA0E21.3F17401F@vollmann.ch>
+Date: Tue, 04 Jul 2006 08:43:45 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] Some questions about the ARM port (Integrator
+	vs.	PXA)
+References: <44A3919C.596DFDAE@vollmann.ch>
+	<1151592402.19389.31.camel@domain.hid>
+	<44A4C4CB.5F24DA68@domain.hid>
+	<1151657621.3060.26.camel@domain.hid>
+	<44A8B191.3DCC39C2@domain.hid> <44A8BA2E.9090106@domain.hid>
+	<44A8D7A1.4E4E9D27@domain.hid>
+	<17577.4096.436840.354535@domain.hid>
+	<17577.5372.702355.432641@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200607031504.51361.lbocseg@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,32 +24,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Em Segunda 03 Julho 2006 14:45, Jan Kiszka escreveu:
+Gilles Chanteperdrix wrote:
+> You can even do this in __ipipe_mach_set_dec, this avoid the need to
+> modify I-ipipe non-machine specific code. Something like:
+> 
+> void __ipipe_mach_set_dec(unsigned long delay)
+> {
+>     if (delay < 8)
+>         ipipe_trigger_irq(__ipipe_mach_timerint);
+>     else
+>         OSMR0 = OSCR + delay;
+> }
 
->Rodrigo Rosenfeld Rosas wrote:
->> Thank you Jan. I tested and it is working pretty fine again.
->>
->> My only problem is that I couldn't compile the new IRQ testsuite. I needed
->> to disable it in order to compile the kernel. That happened both at home
->> as at college.
->
->[Oops, forgot to reply your private mail]
->Did you re-run the prepare-kernel script?
+Thanks, ipipe_trigger_irq() is exactly what I was looking for.
 
-Right. That corrected the problem.
+I'll just add another test after the update of OSMR0 for the
+case that we got interrupted between the comparison and the
+assignment.  And in that (probably very rare) case I accept that
+I loose a timer tick :-(
 
-Sorry,
+Also, this way the timer comes a bit early, so any handler that
+checks the TSC might think that this is the wrong interrupt --
+and wait forever for the correct one.
+But the only other option would be the busy wait...
 
-Rodrigo.
+The question about recursion remains:
+If a domain decides in its timer interrupt handler to reprogram
+the timer by calling __ipipe_mach_set_dec() (indirectly), and
+we already are too close to the next match, then that interrupt
+handler is called recursively.
+Is every ipipe domain expected to cope with this?
 
-		
-_______________________________________________________ 
-Novidade no Yahoo! Mail: receba alertas de novas mensagens no seu celular. Registre seu aparelho agora! 
-http://br.mobile.yahoo.com/mailalertas/ 
- 
+ Detlef Vollmann
 
-
+-- 
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
