@@ -1,14 +1,11 @@
-Message-ID: <44AA7134.6080905@domain.hid>
-Date: Tue, 04 Jul 2006 15:46:28 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re:  [Xenomai-help] Modification of the PSOS skin.
-References: <FB64A9A42E10824EAC3F78D6A2CD596E04DBD14C@kheops.clb.tcfr.thales>
-In-Reply-To: <FB64A9A42E10824EAC3F78D6A2CD596E04DBD14C@kheops.clb.tcfr.thales>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6715F979A29B07AF21FD8683"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C6A015.17001413"
+Date: Wed, 5 Jul 2006 11:26:26 +0200
+Message-ID: <AD78122AD7C05B4B936EBAD7F49738C0AB2B4F@square.bfh.ch>
+From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
+Subject: [Xenomai-help] PCI multiple serial port card
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,55 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Antoine.BRUGEAS@fr.thalesgroup.com
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6715F979A29B07AF21FD8683
-Content-Type: text/plain; charset=ISO-8859-15
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C6A015.17001413
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Antoine.BRUGEAS@fr.thalesgroup.com wrote:
-> hello,
->=20
-> Xenomai is under the GPL license, and I think that I have to
-> redistribute the source code when I modify or add something on it.
-> But, I don't know how to process to distribute the source code. Then,
-> I give you modifications in this mailing list.
->=20
+Hi,
 
-In general, publication of your patches is required when you give
-binaries to some third party. In-house use doesn't require this by law.
-Nevertheless, we can only encourage anyone to follow your good example
-and send us improvements! You will gain feedback and make sure that
-future versions will already contain your patches.
-
-Just a hint on the preferred patch format: either generate a diff of
-individual modified files by invoking "diff -up file file.orig >>
-my.patch" or - even easier - check out the subversion repository (see
-https://gna.org/svn/?group=3Dxenomai for details), change your files and
-run "svn diff > my.patch". This makes it easier to review the
-differences and integrate them in the tree.
-
-Sorry, I cannot comment on code details, but I'm sure others will.
+because my hardware has only one serial port and no ISA bus anymore I am
+looking for a PCI card with at least two serial ports that has a driver
+for Xenomai. Has anyone heard of or used such a device? Any info is
+welcome.
 
 Thanks,
-Jan
 
+Nathan
 
---------------enig6715F979A29B07AF21FD8683
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------_=_NextPart_001_01C6A015.17001413
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7650.28">
+<TITLE>PCI multiple serial port card</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
 
-iD8DBQFEqnE0niDOoMHTA+kRAjqyAJ92uoYp0KsAli074jRFOaRNYU4u6gCfT/zk
-oJOuEzkWibd8XUVqKiyTje8=
-=ZDvY
------END PGP SIGNATURE-----
+<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT>
+</P>
 
---------------enig6715F979A29B07AF21FD8683--
+<P><FONT SIZE=3D2 FACE=3D"Arial">because my hardware has only one serial =
+port and no ISA bus anymore I am looking for a PCI card with at least =
+two serial ports that has a driver for Xenomai. Has anyone heard of or =
+used such a device? Any info is welcome.</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Thanks,</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Nathan</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C6A015.17001413--
 
