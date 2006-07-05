@@ -1,14 +1,13 @@
-Message-ID: <44ABBFA1.4090706@domain.hid>
-Date: Wed, 05 Jul 2006 15:33:21 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-Id: <1152123076.10814.265353853@domain.hid>
+From: "Alessandro Pittaluga" <xpit@domain.hid>
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] delete queues "offline"; /proc/stat
-References: <5D63919D95F87E4D9D34FF7748CE2C2A3BD0B3@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A3BD0B3@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig078FDEAAC9D5A7C4619CE97A"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] PCI multiple serial port card
+In-Reply-To: <AD78122AD7C05B4B936EBAD7F49738C0AB2B4F@square.bfh.ch>
+Date: Wed, 05 Jul 2006 20:11:16 +0200
+References: <AD78122AD7C05B4B936EBAD7F49738C0AB2B4F@square.bfh.ch>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,60 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: Lauener Nathan <Nathan.Lauener@domain.hid>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig078FDEAAC9D5A7C4619CE97A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
+I'm currently using PCMCIA serial cards up to 4 ports each.
+They works really fine with xenomai & rtdm!
+I think that things should be even more straightforward with PCI
+multiports.
 
-Roderik_Wildenburg@domain.hid wrote:
-> when a xenomai-task crashs which created some queues (rt_queue_create)
-> and I try to restart the task the creation of the queues will fail as
-> the queue still exists (error EEXIST =3D=3D 17). Is there a possibility=
- to
-> see which queues exist (I did not find a hint in the /proc/xenomai
-> directory) and to get rid of these queues (or geneally spoken : to get
-> rid of allocated resources) e.g. with a commandline tool ?
+The only essential check to be done selecting the hardware is that the
+UART belons to the 16550 family.
 
-Native or posix skin? Gilles added per-process resource cleanup to the
-posix skin in 2.2-rc3.
+Hoping to have been useful
+Alessandro
 
-Otherwise: the names should be found in /proc/xenomai/registry. Writing
-a tiny tool to pick up a name and resources type, attach to it, and then
-release it should be straightforward. But I think we will have
-per-process cleanup also for other skins in the future.
+On Wed, 5 Jul 2006 11:26:26 +0200, "Lauener Nathan"
+<Nathan.Lauener@domain.hid> said:
+> Hi,
+>=20
+> because my hardware has only one serial port and no ISA bus anymore I am
+> looking for a PCI card with at least two serial ports that has a driver
+> for Xenomai. Has anyone heard of or used such a device? Any info is
+> welcome.
+>=20
+> Thanks,
+>=20
+> Nathan
+--=20
+  Alessandro Pittaluga
+  al.pittaluga@domain.hid
 
-Stalled RTDM descriptors can be released via "echo DESCR_NO >
-/proc/xenomai/rtdm/open_fildes" (I still have to make use of Gilles'
-per-process cleanup also for the posix rtdm part...).
+--=20
+http://www.fastmail.fm - And now for something completely different=85
 
-> An other question, I would appreciate some help for, is :
-> How could I determine the CPU-load when a xenomai thread is running? Is=
-
-> the data provided by /proc/stat valid with xenomai ?
-
-Nope, they aren't. We actually need to do something in this direction,
-maybe a simple per-xeno-thread execution time accounting if
-XENO_OPT_STATS is set.
-
-Jan
-
-
---------------enig078FDEAAC9D5A7C4619CE97A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEq7+hniDOoMHTA+kRApNBAJ99supdmu68zoGZUD1NDg2tTG8TqQCeLC1U
-WcDxLVsAlClx2F/LCHjsqNA=
-=CZMH
------END PGP SIGNATURE-----
-
---------------enig078FDEAAC9D5A7C4619CE97A--
 
