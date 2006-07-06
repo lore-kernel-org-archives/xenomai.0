@@ -1,53 +1,54 @@
-Subject: Re: [Xenomai-core] Timer optimisations, continued
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17608.46241.732781.448429@domain.hid>
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
-	<448EE593.7010809@domain.hid> <448EF022.1040901@domain.hid>
-	<17550.61982.685449.470866@domain.hid>
-	<44C6626A.6000304@domain.hid> <1153990428.5251.46.camel@domain.hid>
-	<17608.46241.732781.448429@domain.hid>
-Content-Type: text/plain
-Date: Thu, 27 Jul 2006 15:19:07 +0200
-Message-Id: <1154006347.4984.2.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <17580.64278.6862.15230@domain.hid>
+Date: Thu, 6 Jul 2006 13:59:18 +0200
+Subject: Re: AW: [Xenomai-help] delete queues "offline"; /proc/stat
+In-Reply-To: <44ACF432.7090200@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A3F8CE2@domain.hid>
+	<17580.62092.647925.100612@domain.hid>
+	<44ACF432.7090200@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2006-07-27 at 14:42 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > >  o A further improvement should be achievable for scenarios 4 and 5 by
->  > >    introducing absolute xntimers (more precisely: a flag to
->  > >    differentiate between the mode on xntimer_start). I have an outdated
->  > >    patch for this in my repos, needs re-basing.
->  > > 
->  > 
->  > Grmblm... Well, I would have preferred that we don't add that kind of
->  > complexity to the nucleus interface, but I must admit that some
->  > important use cases are definitely better served by absolute timespecs,
->  > so I would surrender to this requirement, provided the implementation is
->  > confined to xnpod_suspend_thread() + xntimer_start().
-> 
-> It would be nice if absolute timeouts were also available when using
-> xnsynch_sleep_on. There are a few use cases in the POSIX skin.
+Jan Kiszka wrote:
+ > > Yes, all resources specific to a process are deleted automatically, so,
+ > > any message queue descriptor or shared memory descriptor is
+ > > closed. Named objects are not deleted though, since they may be shared
+ > > between several processes, only non-pshared anonymous objects and named
+ > > objects *descriptors* are deleted. This is the only reasonable
+ > > implementation I could find.
+ > 
+ > What about a usage counter maintained on creation/binding vs.
+ > closing/destruction? I would prefer to get them cleaned up automatically
+ > as well somehow, or we really need tool support for IPC cleanup, and
+ > that is ugly in my eyes.
 
-Makes sense, since xnpod_suspend_thread() and xnsynch_sleep_on() are
-tightly integrated interfaces.
+I am not sure one would expect a named object to be unlinked when one only
+calls its "close" service, without calling its "unlink" service. If, on
+the other hand, one calls the "unlink" service, then the object will be
+automatically destroyed when the last descriptor is closed, as mandated
+by the specification.
 
-> 
+Moreover, the existence of such objects is not a leak that will grow
+over time, if one do not use the O_EXCL flag when opening objects,
+existing objects will simply be reused. If one use the O_EXCL flag,
+opening will fail.
+
+This behaviour is the same as Linux behaviour.
+
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
