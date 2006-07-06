@@ -1,15 +1,14 @@
-Message-ID: <44ACFE07.5040609@domain.hid>
-Date: Thu, 06 Jul 2006 14:11:51 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Subject: Re: [Xenomai-help] FPU not available in user-space programs
+Date: Thu, 6 Jul 2006 13:45:25 -0300
+References: <44AC8482.6000902@domain.hid>
+	<17580.62726.293737.991643@domain.hid>
+In-Reply-To: <17580.62726.293737.991643@domain.hid>
 MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-help] delete queues "offline"; /proc/stat
-References: <5D63919D95F87E4D9D34FF7748CE2C2A3F8CE2@domain.hid>	<17580.62092.647925.100612@domain.hid>	<44ACF432.7090200@domain.hid>
-	<17580.64278.6862.15230@domain.hid>
-In-Reply-To: <17580.64278.6862.15230@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig936FB5C4A5CA30E9AF7DE3B1"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200607061345.25400.lbocseg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,81 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig936FB5C4A5CA30E9AF7DE3B1
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Thank you Gilles and Jan,
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > > Yes, all resources specific to a process are deleted automatically=
-, so,
->  > > any message queue descriptor or shared memory descriptor is
->  > > closed. Named objects are not deleted though, since they may be sh=
-ared
->  > > between several processes, only non-pshared anonymous objects and =
-named
->  > > objects *descriptors* are deleted. This is the only reasonable
->  > > implementation I could find.
->  >=20
->  > What about a usage counter maintained on creation/binding vs.
->  > closing/destruction? I would prefer to get them cleaned up automatic=
-ally
->  > as well somehow, or we really need tool support for IPC cleanup, and=
+Jan, I had taken a look at that thread just after I created this thread.
 
->  > that is ugly in my eyes.
->=20
-> I am not sure one would expect a named object to be unlinked when one o=
-nly
-> calls its "close" service, without calling its "unlink" service. If, on=
+Well, at least, now I know this fault is expected and is not an error.
 
-> the other hand, one calls the "unlink" service, then the object will be=
+Do I need to make a dummy float-point operation in primary mode for avoidin=
+g=20
+unexpected higher latency for enabling FPU in critical code?
 
-> automatically destroyed when the last descriptor is closed, as mandated=
+Thank you for your support. I must enforce that this list has the best supp=
+ort=20
+I've seen. I posted a question on Doxygen's user list a few days ago and ju=
+st=20
+one user answered to it, but not really solved what I was asking...
 
-> by the specification.
+By the way, does someone here know how can I put comment code on=20
+documentation, as in:
+/*! ...
+   \code /* this is a comment */ \endcode */
 
-But if the creator of an object dies + there are no further open
-instances, I see no practical reason to keep this alive. I'm talking
-about the check on process exit here, not on explicit close().
+Of course this won't compile. The user suggests to put the above code insid=
+e a=20
+#ifdef __COMMENT__ and define it on Doxyfile, but that makes the code seem =
 
->=20
-> Moreover, the existence of such objects is not a leak that will grow
-> over time, if one do not use the O_EXCL flag when opening objects,
-> existing objects will simply be reused. If one use the O_EXCL flag,
-> opening will fail.
->=20
-> This behaviour is the same as Linux behaviour.
->=20
+ugly in kdevelop, besides causing a compiler warning:
 
-Well, I have sys-v ipc in mind where I used to fiddle a lot with ipcrm
-to get certain applications running again after unexpected termination.
-The reason was that the developers used the existence of certain ipc
-names to check if a central component was already running.
-
-Maybe it's really dependent on the actual ipc mechanism, and having the
-one characteristic for posix and some other later for native might be
-the way to go.
-
-Jan
+warning: "/*" within comment
 
 
---------------enig936FB5C4A5CA30E9AF7DE3B1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Is there a cleaner way to make possible to put comments inside the @code=20
+command?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I hope you can help me once more this time... ;)
 
-iD8DBQFErP4HniDOoMHTA+kRAvWaAJ4/uAcfGzbeQKu8ZDSN7wQj/I6u8ACfQXpm
-lMYlE3kO2JkmD8VNSFzCc44=
-=0Qkp
------END PGP SIGNATURE-----
+Thanks,
 
---------------enig936FB5C4A5CA30E9AF7DE3B1--
+Rodrigo.
+
+____________________________________________________________
+Em Quinta 06 Julho 2006 08:33, Gilles Chanteperdrix escreveu:
+
+>Rodrigo Rosenfeld Rosas wrote:
+> > Hi,
+> >
+> > I was looking at /proc/xenomai/faults and noticed that the only errors
+> > were on TRAP 7 (FPU not available).
+> >
+> > Each time I run the user-space program using the native skin, I
+> > increment the fault by one. I don't understand why this happens. From
+> > documentation, FPU should be enabled automatically for user-space
+> > programs.
+> >
+> > Any ideas why I'm getting this error and what does it mean? Should I do
+> > some float-point operation before creating my real-time tasks?
+>
+>This fault is not an error, it happens when a task use the FPU for the
+>first time in primary mode. When in secondary mode, such an FPU fault
+>happens every time the FPU is used after a context switch, you simply do
+>not know about it because it is not accounted for.
+
+=09
+
+=09
+	=09
+_______________________________________________________=20
+Voc=EA quer respostas para suas perguntas? Ou voc=EA sabe muito e quer comp=
+artilhar seu conhecimento? Experimente o Yahoo! Respostas !
+http://br.answers.yahoo.com/
+
 
