@@ -1,15 +1,10 @@
-Message-ID: <44ACF432.7090200@domain.hid>
-Date: Thu, 06 Jul 2006 13:29:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-help] delete queues "offline"; /proc/stat
-References: <5D63919D95F87E4D9D34FF7748CE2C2A3F8CE2@domain.hid>
-	<17580.62092.647925.100612@domain.hid>
-In-Reply-To: <17580.62092.647925.100612@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF6C05141330BAFB18D3E8EE4"
-Sender: jan.kiszka@domain.hid
+Date: Thu, 6 Jul 2006 13:43:51 +0200
+From: "J. Niehaus" <Niehaus@domain.hid>
+Message-ID: <20060706134351.2e582664@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Detecting switch to secondary mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,71 +14,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Roderik_Wildenburg@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF6C05141330BAFB18D3E8EE4
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Gilles Chanteperdrix wrote:
-> Roderik_Wildenburg@domain.hid wrote:
->  > > > when a xenomai-task crashs which created some queues=20
->  > > > (rt_queue_create)=20
->  > > > and I try to restart the task the creation of the queues=20
->  > > > will fail as=20
->  > > > the queue still exists (error EEXIST =3D=3D 17). Is there a=20
->  > > > possibility to=20
->  > > > see which queues exist (I did not find a hint in the /proc/xenom=
-ai
->  > > > directory) and to get rid of these queues (or geneally=20
->  > > > spoken : to get=20
->  > > > rid of allocated resources) e.g. with a commandline tool ?
->  >=20
->  > >=20
->  > > Native or posix skin? Gilles added per-process resource=20
->  > > cleanup to the posix skin in 2.2-rc3.
->  > >
->  >=20
->  > following Murphys law, I, of course, use native skin where this mech=
-anism isn?t=20
->  > implemented yet ;-)
->  > What does "per-process resource cleanup" mean ?=20
->  > When the process/thread is killed the queues and other resources of =
-this=20
->  > process/thread are deleted automaticaly ?
->=20
-> Yes, all resources specific to a process are deleted automatically, so,=
+I have written a xenomai application (posix-skin) with several tasks. All of them should normally use primary mode (SCHED_FIFO). While some are allowed to switch to secondary mode for stuff like I/O and memory allocation others must not switch due to hard realtime constraints. 
 
-> any message queue descriptor or shared memory descriptor is
-> closed. Named objects are not deleted though, since they may be shared
-> between several processes, only non-pshared anonymous objects and named=
+Is there a way to check if and how often a thread has switched to secondary mode and maybe even what system call caused the switch? While a test from within the program itself would be great some information from /proc/xenomai would also do.
 
-> objects *descriptors* are deleted. This is the only reasonable
-> implementation I could find.
-
-What about a usage counter maintained on creation/binding vs.
-closing/destruction? I would prefer to get them cleaned up automatically
-as well somehow, or we really need tool support for IPC cleanup, and
-that is ugly in my eyes.
-
-Jan
-
-
---------------enigF6C05141330BAFB18D3E8EE4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFErPQyniDOoMHTA+kRAsMFAJ9qtZ5rArK2YxuoRwSppiBsi5w2BwCfTLv7
-gVQSk9T287fmtUtXBzY+1Y8=
-=IQl1
------END PGP SIGNATURE-----
-
---------------enigF6C05141330BAFB18D3E8EE4--
+Thanks,
+	Jens
 
