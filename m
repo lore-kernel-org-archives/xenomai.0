@@ -1,13 +1,12 @@
-Subject: Re: [Xenomai-help] Detecting switch to secondary mode
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20060706134351.2e582664@domain.hid>
-References: <20060706134351.2e582664@domain.hid>
-Content-Type: text/plain
-Date: Thu, 06 Jul 2006 13:55:47 +0200
-Message-Id: <1152186947.4978.39.camel@domain.hid>
-Mime-Version: 1.0
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17580.62726.293737.991643@domain.hid>
+Date: Thu, 6 Jul 2006 13:33:26 +0200
+Subject: Re: [Xenomai-help] FPU not available in user-space programs
+In-Reply-To: <44AC8482.6000902@domain.hid>
+References: <44AC8482.6000902@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,33 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "J. Niehaus" <Niehaus@domain.hid>
+To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-07-06 at 13:43 +0200, J. Niehaus wrote:
-> Hello,
-> 
-> I have written a xenomai application (posix-skin) with several tasks. All of them should normally use primary mode (SCHED_FIFO). While some are allowed to switch to secondary mode for stuff like I/O and memory allocation others must not switch due to hard realtime constraints. 
-> 
-> Is there a way to check if and how often a thread has switched to secondary mode and maybe even what system call caused the switch? While a test from within the program itself would be great some information from /proc/xenomai would also do.
-> 
+Rodrigo Rosenfeld Rosas wrote:
+ > Hi,
+ > 
+ > I was looking at /proc/xenomai/faults and noticed that the only errors 
+ > were on TRAP 7 (FPU not available).
+ > 
+ > Each time I run the user-space program using the native skin, I 
+ > increment the fault by one. I don't understand why this happens. From 
+ > documentation, FPU should be enabled automatically for user-space programs.
+ > 
+ > Any ideas why I'm getting this error and what does it mean? Should I do 
+ > some float-point operation before creating my real-time tasks?
 
-The MSW ("mode switch") column from /proc/xenomai/stats tells you how
-many times any given thread switched to secondary mode; there is no
-finer detail given though. Also, setting the PTHREAD_TRAPSW switch for a
-thread using pthread_set_mode_np() makes Xenomai send this thread a
-SIGXCPU signal upon switch from primary to secondary - it's a useful
-debug tool when used along with GDB for instance.
+This fault is not an error, it happens when a task use the FPU for the
+first time in primary mode. When in secondary mode, such an FPU fault
+happens every time the FPU is used after a context switch, you simply do
+not know about it because it is not accounted for.
 
-> Thanks,
-> 	Jens
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
