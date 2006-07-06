@@ -1,34 +1,44 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17549.52124.344294.89351@domain.hid>
-Date: Mon, 12 Jun 2006 22:16:28 +0200
-Subject: Re: [Xenomai-help] Compaq nc6120 timer frequency
-In-Reply-To: <20060612200701.54795.qmail@domain.hid>
-References: <17549.35340.963162.868247@domain.hid>
-	<20060612200701.54795.qmail@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <17581.41221.527736.416354@domain.hid>
+Date: Fri, 7 Jul 2006 01:47:17 +0200
+Subject: Re: [Xenomai-core] [RFC, PATCH] per-thread exec-time stats
+In-Reply-To: <1152196379.4978.74.camel@domain.hid>
+References: <44ACF5FA.2050205@domain.hid>
+	<1152196379.4978.74.camel@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Cedric Herreman <glocker50@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Cedric Herreman wrote:
- > I disabled CPU Frequency Scaling and recompiled kernel + modules, but the problem remains.
- >  
+Philippe Gerum wrote:
+ > > +#ifdef CONFIG_XENO_OPT_STATS
+ > > +static inline void xnpod_acc_exec_time(xnsched_t *sched,
+ > > +                                       xnthread_t *threadout)
+ > > +{
+ > > +    xnticks_t now = xntimer_get_rawclock();
+ > > +    threadout->stat.exec_time += now - sched->last_csw;
+ > > +    sched->last_csw = now;
+ > > +}
+ > 
+ > It would be better to only pass the thread pointer, then use the
+ > thread->sched member. This would clearly explain the relationship
+ > between both, and prevent any bugous attempt at mixing things.
 
-If it is not done, please also disable CONFIG_ACPI_PROCESSOR.
+Beware, when xnpod_schedule is called from within
+xnpod_migrate_thread(), the sched pointer of the switched out thread is
+the one of the destination cpu. So, passing the sched and threadout
+pointers to xnpod_acc_exec_time is safer.
 
-Do you observe the same behaviour with the latency test ? If yes, could
-you send us your .config, if not, could you show us a minimal piece of
-code which has a problem ?
 
 -- 
 
