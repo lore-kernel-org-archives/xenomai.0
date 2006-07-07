@@ -1,12 +1,12 @@
-Message-ID: <44AECB5B.20504@domain.hid>
-Date: Fri, 07 Jul 2006 23:00:11 +0200
+Message-ID: <44AECB5F.1080100@domain.hid>
+Date: Fri, 07 Jul 2006 23:00:15 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAED00B910CFCCCA7C895BA7F"
+	boundary="------------enig84F987403BAF49AB49488FF4"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 1/2] /proc output - improve scalability
+Subject: [Xenomai-core] [PATCH 2/2] /proc output - add CPU usage stats
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,251 +19,284 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAED00B910CFCCCA7C895BA7F
+--------------enig84F987403BAF49AB49488FF4
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-This is an unmodified resent of my previously posted patch to make
-/proc/xenomai/{sched,stat} O(1) wrt nklock. It also solve a potential rac=
-e during
-thread cleanup when accessing the dying thread's name.
+Yet another (hopefully the final) version of my attempt to add simple per=
+-thread CPU
+usage statistics. This variant now prints the usage in percent directly v=
+ia
+/proc/xenomai/stat.
+
+As Philippe suggested to reorganise the /proc section for statistics, I d=
+ecided to make
+this probably intermediate version independent of any user-space tools. Y=
+ou can simply
+type "cat /proc/xenomai/stat" as often as you like to update the stats. E=
+xample:
+
+root@domain.hid :/root# cat /proc/xenomai/stat
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          5836670    0     01400080   78.8  ROOT
+  0  0      0          1          0     00000082    0.0  timsPipeReceiver=
+
+  0  1029   1          1          0     00c00180    0.0  irqloop
+  0  1030   1          7843       0     00c00082    4.2  irqloop
+  0  1039   16         140        0     00c00082    0.1  display-1038
+  0  0      0          166598     0     00000084   16.9  timerbench
+
+Each output marks the beginning of the following measuring interval, thus=
+ when running
+
+    while true; do cat /proc/xenomai/stat; sleep 1; clear; done
+
+you effectively get the CPU usage of the last second continuously updated=
+=2E
+
+Note that the results are not always accurate when threads are added, rem=
+oved, or
+migrated. If numbers looks weird, just re-run and things should normalise=
+=2E This is due
+to the fact that the measuring only takes place between context switches =
+on each CPU,
+now longer explicitly on output. This appears least intrusive and SMP-saf=
+e to me.
+Nevertheless, I'm lacking SMP here, real testing is still required.
 
 Jan
 
 
 ---
- include/nucleus/pod.h |    1=20
- ksrc/nucleus/module.c |   94 +++++++++++++++++++++++++++++++++----------=
--------
- ksrc/nucleus/pod.c    |    2 +
- 3 files changed, 66 insertions(+), 31 deletions(-)
+ include/nucleus/pod.h    |   38 ++++++++++++++++++++++++++++++++++++++
+ include/nucleus/thread.h |    2 ++
+ ksrc/nucleus/module.c    |   40 +++++++++++++++++++++++++++++++++++-----=
 
-Index: xenomai/include/nucleus/pod.h
+ ksrc/nucleus/pod.c       |    8 ++++++++
+ ksrc/nucleus/thread.c    |    2 ++
+ 5 files changed, 85 insertions(+), 5 deletions(-)
+
+Index: include/nucleus/thread.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/nucleus/pod.h
-+++ xenomai/include/nucleus/pod.h
-@@ -195,6 +195,7 @@ struct xnpod {
-     xnsched_t sched[XNARCH_NR_CPUS]; /*!< Per-cpu scheduler slots. */
+--- include/nucleus/thread.h.orig
++++ include/nucleus/thread.h
+@@ -152,6 +152,8 @@ typedef struct xnthread {
+ 	unsigned long csw;	/* Context switches (includes
+ 				   secondary -> primary switches) */
+ 	unsigned long pf;	/* Number of page faults */
++	xnticks_t exec_time;	/* Accumulated execution time (tsc) */
++	xnticks_t exec_start;	/* Start of execution time accumulation (tsc) */
+     } stat;
+ #endif /* CONFIG_XENO_OPT_STATS */
 =20
-     xnqueue_t threadq;          /*!< All existing threads. */
-+    int threadq_rev;            /*!< Modification counter of threadq. */=
-
-=20
-     volatile u_long schedlck;	/*!< Scheduler lock count. */
-=20
-Index: xenomai/ksrc/nucleus/module.c
+Index: include/nucleus/pod.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/module.c
-+++ xenomai/ksrc/nucleus/module.c
-@@ -99,7 +99,7 @@ struct sched_seq_iterator {
- 	struct sched_seq_info {
- 		int cpu;
- 		pid_t pid;
--		const char *name;
-+		char name[XNOBJECT_NAME_LEN];
- 		int cprio;
- 		xnticks_t timeout;
- 		xnflags_t status;
-@@ -177,17 +177,26 @@ static struct seq_operations sched_op =3D=20
+--- include/nucleus/pod.h.orig
++++ include/nucleus/pod.h
+@@ -145,6 +145,10 @@ typedef struct xnsched {
 =20
- static int sched_seq_open(struct inode *inode, struct file *file)
- {
--	struct sched_seq_iterator *iter;
-+	struct sched_seq_iterator *iter =3D NULL;
- 	struct seq_file *seq;
- 	xnholder_t *holder;
--	int err, count;
-+	int err, count, rev;
- 	spl_t s;
+     xnthread_t rootcb;          /*!< Root thread control block. */
 =20
- 	if (!nkpod)
- 		return -ESRCH;
-=20
-+      restart:
-+	xnlock_get_irqsave(&nklock, s);
++#ifdef CONFIG_XENO_OPT_STATS
++    xnticks_t last_csw;         /*!< Last context switch (ticks). */
++#endif /* CONFIG_XENO_OPT_STATS */
 +
-+	rev =3D nkpod->threadq_rev;
- 	count =3D countq(&nkpod->threadq);	/* Cannot be empty (ROOT) */
-+	holder =3D getheadq(&nkpod->threadq);
-+
-+	xnlock_put_irqrestore(&nklock, s);
+ } xnsched_t;
 =20
-+	if (iter)
-+		kfree(iter);
- 	iter =3D kmalloc(sizeof(*iter)
- 		       + (count - 1) * sizeof(struct sched_seq_info),
- 		       GFP_KERNEL);
-@@ -202,31 +211,37 @@ static int sched_seq_open(struct inode *
+ #ifdef CONFIG_SMP
+@@ -545,6 +549,40 @@ static inline void xnpod_delete_self (vo
+     xnpod_delete_thread(xnpod_current_thread());
+ }
+=20
++#ifdef CONFIG_XENO_OPT_STATS
++static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thr=
+ead)
++{
++    xnticks_t now =3D xnarch_get_cpu_tsc();
++
++    thread->stat.exec_time +=3D now - sched->last_csw;
++    sched->last_csw =3D now;
++}
++
++static inline void xnpod_reset_exec_stats(xnthread_t *thread)
++{
++    thread->stat.exec_time =3D 0;
++    thread->stat.exec_start =3D xnarch_get_cpu_tsc();
++}
++
++static inline void xnpod_update_csw_date(xnsched_t *sched)
++{
++    sched->last_csw =3D xnarch_get_cpu_tsc();
++}
++
++#else /* !CONFIG_XENO_OPT_STATS */
++static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thr=
+ead)
++{
++}
++
++static inline void xnpod_reset_exec_stats(xnthread_t *thread)
++{
++}
++
++static inline void xnpod_update_csw_date(xnsched_t *sched)
++{
++}
++#endif /* CONFIG_XENO_OPT_STATS */
++
+ #ifdef __cplusplus
+ }
+ #endif
+Index: ksrc/nucleus/pod.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/nucleus/pod.c.orig
++++ ksrc/nucleus/pod.c
+@@ -669,6 +669,9 @@ static inline void xnpod_switch_zombie(x
+=20
+ 	xnthread_cleanup_tcb(threadout);
+=20
++	/* no need to update stats of dying thread */
++	xnpod_update_csw_date(sched);
++
+ 	xnarch_finalize_and_switch(xnthread_archtcb(threadout),
+ 				   xnthread_archtcb(threadin));
+=20
+@@ -1889,6 +1892,9 @@ int xnpod_migrate_thread(int cpu)
+=20
+ 	xnpod_schedule();
+=20
++	/* Reset execution time stats due to unsync'ed TSCs */
++	xnpod_reset_exec_stats(thread);
++
+       unlock_and_exit:
+=20
+ 	xnlock_put_irqrestore(&nklock, s);
+@@ -2433,6 +2439,7 @@ void xnpod_schedule(void)
+ 		xnarch_enter_root(xnthread_archtcb(threadin));
  	}
 =20
- 	iter->nentries =3D 0;
-+	iter->start_time =3D xntimer_get_jiffies();
++	xnpod_acc_exec_time(sched, threadout);
+ 	xnthread_inc_csw(threadin);
 =20
--	/* Take a snapshot and release the nucleus lock immediately after,
--	   so that dumping /proc/xenomai/sched with lots of entries won't
--	   cause massive jittery. */
-+	/* Take a snapshot element-wise, restart if something changes
-+	   underneath us. */
+ 	xnarch_switch_to(xnthread_archtcb(threadout),
+@@ -2604,6 +2611,7 @@ void xnpod_schedule_runnable(xnthread_t=20
+ 		nkpod->schedhook(runthread, XNREADY);
+ #endif /* __XENO_SIM__ */
 =20
--	xnlock_get_irqsave(&nklock, s);
-+	while (holder) {
-+		xnthread_t *thread;
-+		int n;
++	xnpod_acc_exec_time(sched, runthread);
+ 	xnthread_inc_csw(threadin);
 =20
--	iter->start_time =3D xntimer_get_jiffies();
-+		xnlock_get_irqsave(&nklock, s);
-+
-+		if (nkpod->threadq_rev !=3D rev)
-+			goto restart;
-+		rev =3D nkpod->threadq_rev;
-=20
--	for (holder =3D getheadq(&nkpod->threadq);
--	     holder && count > 0;
--	     holder =3D nextq(&nkpod->threadq, holder), count--) {
--		xnthread_t *thread =3D link2thread(holder, glink);
--		int n =3D iter->nentries++;
-+		thread =3D link2thread(holder, glink);
-+		n =3D iter->nentries++;
-=20
- 		iter->sched_info[n].cpu =3D xnsched_cpu(thread->sched);
- 		iter->sched_info[n].pid =3D xnthread_user_pid(thread);
--		iter->sched_info[n].name =3D thread->name;
-+		memcpy(iter->sched_info[n].name, thread->name,
-+		       sizeof(iter->sched_info[n].name));
- 		iter->sched_info[n].cprio =3D thread->cprio;
- 		iter->sched_info[n].timeout =3D
- 		    xnthread_get_timeout(thread, iter->start_time);
- 		iter->sched_info[n].status =3D thread->status;
--	}
-=20
--	xnlock_put_irqrestore(&nklock, s);
-+		holder =3D nextq(&nkpod->threadq, holder);
-+
-+		xnlock_put_irqrestore(&nklock, s);
-+	}
-=20
- 	seq =3D (struct seq_file *)file->private_data;
- 	seq->private =3D iter;
-@@ -250,7 +265,7 @@ struct stat_seq_iterator {
- 		int cpu;
- 		pid_t pid;
- 		xnflags_t status;
--		const char *name;
-+		char name[XNOBJECT_NAME_LEN];
+ 	xnarch_switch_to(xnthread_archtcb(runthread),
+Index: ksrc/nucleus/module.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/nucleus/module.c.orig
++++ ksrc/nucleus/module.c
+@@ -269,6 +269,8 @@ struct stat_seq_iterator {
  		unsigned long ssw;
  		unsigned long csw;
  		unsigned long pf;
-@@ -315,17 +330,26 @@ static struct seq_operations stat_op =3D {
++		xnticks_t exec_time;
++		xnticks_t exec_period;
+ 	} stat_info[1];
+ };
 =20
- static int stat_seq_open(struct inode *inode, struct file *file)
+@@ -309,13 +311,27 @@ static void stat_seq_stop(struct seq_fil
+ static int stat_seq_show(struct seq_file *seq, void *v)
  {
--	struct stat_seq_iterator *iter;
-+	struct stat_seq_iterator *iter =3D NULL;
- 	struct seq_file *seq;
- 	xnholder_t *holder;
--	int err, count;
-+	int err, count, rev;
- 	spl_t s;
-=20
- 	if (!nkpod)
- 		return -ESRCH;
-=20
-+      restart:
-+	xnlock_get_irqsave(&nklock, s);
+ 	if (v =3D=3D SEQ_START_TOKEN)
+-		seq_printf(seq, "%-3s  %-6s %-10s %-10s %-4s  %-8s  %s\n",
+-			   "CPU", "PID", "MSW", "CSW", "PF", "STAT", "NAME");
++		seq_printf(seq, "%-3s  %-6s %-10s %-10s %-4s  %-8s  %5s"
++			   "  %s\n",
++			   "CPU", "PID", "MSW", "CSW", "PF", "STAT", "%CPU",
++			   "NAME");
+ 	else {
+ 		struct stat_seq_info *p =3D (struct stat_seq_info *)v;
+-		seq_printf(seq, "%3u  %-6d %-10lu %-10lu %-4lu  %.8lx  %s\n",
++		int usage =3D 0;
 +
-+	rev =3D nkpod->threadq_rev;
- 	count =3D countq(&nkpod->threadq);	/* Cannot be empty (ROOT) */
-+	holder =3D getheadq(&nkpod->threadq);
-+
-+	xnlock_put_irqrestore(&nklock, s);
++		if (p->exec_period) {
++			while (p->exec_period > 0xFFFFFFFF) {
++				p->exec_time >>=3D 16;
++				p->exec_period >>=3D 16;
++			}
++			usage =3D xnarch_ulldiv(
++				p->exec_time * 1000LL + (p->exec_period >> 1),
++				p->exec_period, NULL);
++		}
++		seq_printf(seq, "%3u  %-6d %-10lu %-10lu %-4lu  %.8lx  %3u.%u"
++			   "  %s\n",
+ 			   p->cpu, p->pid, p->ssw, p->csw, p->pf, p->status,
+-			   p->name);
++			   usage / 10, usage % 10, p->name);
+ 	}
 =20
-+	if (iter)
-+		kfree(iter);
- 	iter =3D kmalloc(sizeof(*iter)
- 		       + (count - 1) * sizeof(struct stat_seq_info),
- 		       GFP_KERNEL);
-@@ -341,27 +365,35 @@ static int stat_seq_open(struct inode *i
+ 	return 0;
+@@ -370,6 +386,8 @@ static int stat_seq_open(struct inode *i
 =20
- 	iter->nentries =3D 0;
+ 	while (holder) {
+ 		xnthread_t *thread;
++		xnsched_t *sched;
++		xnticks_t period;
+ 		int n;
 =20
--	/* Take a snapshot and release the nucleus lock immediately after,
--	   so that dumping /proc/xenomai/stat with lots of entries won't
--	   cause massive jittery. */
-+	/* Take a snapshot element-wise, restart if something changes
-+	   underneath us. */
+ 		xnlock_get_irqsave(&nklock, s);
+@@ -381,7 +399,8 @@ static int stat_seq_open(struct inode *i
+ 		thread =3D link2thread(holder, glink);
+ 		n =3D iter->nentries++;
 =20
--	xnlock_get_irqsave(&nklock, s);
-+	while (holder) {
-+		xnthread_t *thread;
-+		int n;
-+
-+		xnlock_get_irqsave(&nklock, s);
-+
-+		if (nkpod->threadq_rev !=3D rev)
-+			goto restart;
-+		rev =3D nkpod->threadq_rev;
-+
-+		thread =3D link2thread(holder, glink);
-+		n =3D iter->nentries++;
-=20
--	for (holder =3D getheadq(&nkpod->threadq);
--	     holder && count > 0;
--	     holder =3D nextq(&nkpod->threadq, holder), count--) {
--		xnthread_t *thread =3D link2thread(holder, glink);
--		int n =3D iter->nentries++;
- 		iter->stat_info[n].cpu =3D xnsched_cpu(thread->sched);
+-		iter->stat_info[n].cpu =3D xnsched_cpu(thread->sched);
++		sched =3D thread->sched;
++		iter->stat_info[n].cpu =3D xnsched_cpu(sched);
  		iter->stat_info[n].pid =3D xnthread_user_pid(thread);
--		iter->stat_info[n].name =3D thread->name;
-+		memcpy(iter->stat_info[n].name, thread->name,
-+		       sizeof(iter->stat_info[n].name));
- 		iter->stat_info[n].status =3D thread->status;
- 		iter->stat_info[n].ssw =3D thread->stat.ssw;
+ 		memcpy(iter->stat_info[n].name, thread->name,
+ 		       sizeof(iter->stat_info[n].name));
+@@ -390,6 +409,17 @@ static int stat_seq_open(struct inode *i
  		iter->stat_info[n].csw =3D thread->stat.csw;
  		iter->stat_info[n].pf =3D thread->stat.pf;
--	}
 =20
--	xnlock_put_irqrestore(&nklock, s);
-+		holder =3D nextq(&nkpod->threadq, holder);
++		period =3D sched->last_csw - thread->stat.exec_start;
++		if (!period && thread =3D=3D sched->runthread) {
++			iter->stat_info[n].exec_time =3D 1;
++			iter->stat_info[n].exec_period =3D 1;
++		} else {
++			iter->stat_info[n].exec_time =3D thread->stat.exec_time;
++			iter->stat_info[n].exec_period =3D period;
++		}
++		thread->stat.exec_time =3D 0;
++		thread->stat.exec_start =3D sched->last_csw;
 +
-+		xnlock_put_irqrestore(&nklock, s);
-+	}
+ 		holder =3D nextq(&nkpod->threadq, holder);
 =20
- 	seq =3D (struct seq_file *)file->private_data;
- 	seq->private =3D iter;
-Index: xenomai/ksrc/nucleus/pod.c
+ 		xnlock_put_irqrestore(&nklock, s);
+Index: ksrc/nucleus/thread.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/pod.c
-+++ xenomai/ksrc/nucleus/pod.c
-@@ -815,6 +815,7 @@ int xnpod_init_thread(xnthread_t *thread
- 	xnlock_get_irqsave(&nklock, s);
- 	thread->sched =3D xnpod_current_sched();
- 	appendq(&nkpod->threadq, &thread->glink);
-+	nkpod->threadq_rev++;
- 	xnpod_suspend_thread(thread, XNDORMANT | (flags & XNSUSP), XN_INFINITE,=
-
- 			     NULL);
- 	xnlock_put_irqrestore(&nklock, s);
-@@ -1225,6 +1226,7 @@ void xnpod_delete_thread(xnthread_t *thr
- 	sched =3D thread->sched;
+--- ksrc/nucleus/thread.c.orig
++++ ksrc/nucleus/thread.c
+@@ -90,6 +90,8 @@ int xnthread_init(xnthread_t *thread,
+ 	thread->stat.ssw =3D 0;
+ 	thread->stat.csw =3D 0;
+ 	thread->stat.pf =3D 0;
++	thread->stat.exec_time =3D 0;
++	thread->stat.exec_start =3D 0;
+ #endif /* CONFIG_XENO_OPT_STATS */
 =20
- 	removeq(&nkpod->threadq, &thread->glink);
-+	nkpod->threadq_rev++;
-=20
- 	if (!testbits(thread->status, XNTHREAD_BLOCK_BITS)) {
- 		if (testbits(thread->status, XNREADY)) {
+ 	/* These will be filled by xnpod_start_thread() */
 
 
 
 
-
-
---------------enigAED00B910CFCCCA7C895BA7F
+--------------enig84F987403BAF49AB49488FF4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -272,10 +305,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFErstbniDOoMHTA+kRAsVJAJ4pmD/yALEPGF5ziCvu7l7xFMcCegCfbiu3
-MDEKWiFfuotTXTpLn1M/L1g=
-=DIK5
+iD8DBQFErstfniDOoMHTA+kRAhZfAJ4gq4VNdkxqdMHz7bwT6oSeSAJIPwCfW6jX
+xAlgG3+D+Hv7xftRpETmNkM=
+=pjao
 -----END PGP SIGNATURE-----
 
---------------enigAED00B910CFCCCA7C895BA7F--
+--------------enig84F987403BAF49AB49488FF4--
 
