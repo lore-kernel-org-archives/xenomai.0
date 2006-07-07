@@ -1,14 +1,13 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17581.42736.753665.97338@domain.hid>
-Date: Fri, 7 Jul 2006 02:12:32 +0200
-Subject: Re: [Xenomai-help] FPU not available in user-space programs
-In-Reply-To: <200607061345.25400.lbocseg@domain.hid>
-References: <44AC8482.6000902@domain.hid>
-	<17580.62726.293737.991643@domain.hid>
-	<200607061345.25400.lbocseg@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 7 Jul 2006 15:55:39 +0200
+Message-ID: <5B122FD931231D408AC32630D1B1F7290C8BBB60@domain.hid>
+From: "Thomas, Brieuc \(GE Healthcare\)" <Brieuc.Thomas@domain.hid>
+Subject: [Xenomai-help] PB to patch a 2.6.16 kernel with an
+	adeos-ipipe-2.6.14-ppc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,18 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Rodrigo Rosenfeld Rosas wrote:
- > Is there a cleaner way to make possible to put comments inside the @code 
- > command?
+Hi everybody !=20
 
-What about putting the commented code in a separate file and including
-it with \include ?
+I've got a PPC-MPC8540 target with a 2.6.16 patch from the provider. I
+would like to patch my 2.6.16 kernel with an adeos-ipipe-2.6.14-ppc. Has
+somebody already done this? =20
+Up to now, I've done the patch manually and the compilation with
+xenomai-2.1.2...
+When I launch my target, the boot run without errors. But when I launch
+an Xenomai application (like latency) I've got a "kernel oops" message
+(during the task creation).
+can somebody help me to patch correctly my kernel?
 
--- 
-
-
-					    Gilles Chanteperdrix.
+Brieuc THOMAS.
 
