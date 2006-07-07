@@ -1,30 +1,67 @@
-Message-ID: <45045.155.98.4.39.1150149018.squirrel@domain.hid>
-Date: Mon, 12 Jun 2006 15:50:18 -0600 (MDT)
-From: "Brandt Erickson" <brandt@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] strange periodic behavior
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC, PATCH] per-thread exec-time stats
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44AE2372.6020006@domain.hid>
+References: <44ACF5FA.2050205@domain.hid> <1152196379.4978.74.camel@domain.hid>
+	<44AD27AF.8050804@domain.hid> <1152200271.4978.85.camel@domain.hid>
+	<44AD3048.5050602@domain.hid>  <44AD3C00.9050909@domain.hid>
+	<1152259455.5017.14.camel@domain.hid>  <44AE16B3.80901@domain.hid>
+	<1152262158.5017.22.camel@domain.hid>  <44AE2372.6020006@domain.hid>
+Content-Type: text/plain
+Date: Fri, 07 Jul 2006 13:28:44 +0200
+Message-Id: <1152271725.5050.6.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hey all,
-I've been experimenting with writing a simple timer program using the
-native API.  Basically, each loop, it writes the current timestamp into
-shared memory which then gets read by a slower loop and written to disk. 
-The weird thing is, the period I get seems to always be half of what I've
-commanded.  That is, if I set the frequency to 1000 Hz, the difference
-between each timestamp is a little over 2 ms (500 Hz).  It works the same
-way for 10000 Hz and 20000 Hz.  Does anyone know what causes this or how
-to fix it?  Thanks.
--Brandt
+On Fri, 2006-07-07 at 11:03 +0200, Jan Kiszka wrote:
+> >> Far too complex in my eyes for this simple purpose (what's the pid of
+> >> kernel-only threads?) -
+> > 
+> > It's symbolic name. It's not a matter of simplicity, your patch for that
+> > purpose is rather complex already.
+> 
+> Haven't measured, but the amount of code added for collecting the data
+> and printing just another column should be marginal as yet. Introducing
+> a new infrastructure for more /proc subdirs with probably multiple
+> entries would certainly cost more.
+> 
+
+This has no cost on the real-time side of things. In contrast, scanning
+the threadq within /proc handlers like /stats and /sched are doing now,
+does have some noticeable cost. By having separate per-thread entries,
+we provide the necessary infrastructure for exporting more raw
+statistical data to user-space tools, in a format which would be
+script-friendly.
+
+> > 
+> >>  and we need to solve the latency problem of
+> >> /sched and /stat anyway.
+> > 
+> > That's separate issues. Solving the scalability issue
+> > of /proc/xenomai/stats and friends does not improve their usability in
+> > the context of user-space tools monitoring thread activity. E.g. how are
+> > we going to extend the reporting about such activity if need be, adding
+> > yet another column to /stats and /sched?
+> 
+> As long as there are no stand-alone tools relying on the layout, just
+> only our own ones - fairly simple. But before speculating more, I will
+> have a look now how simple such tool/script may actually be.
+> 
+> Jan
+> 
+-- 
+Philippe.
+
 
 
