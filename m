@@ -1,12 +1,12 @@
-Message-ID: <44AECB5F.1080100@domain.hid>
-Date: Fri, 07 Jul 2006 23:00:15 +0200
+Message-ID: <44AECD18.4070809@domain.hid>
+Date: Fri, 07 Jul 2006 23:07:36 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig84F987403BAF49AB49488FF4"
+	boundary="------------enig33B5FE005CC6951745F40F45"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 2/2] /proc output - add CPU usage stats
+Subject: [Xenomai-core] [PATCH] add ipipe-domain mode to irqbench
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,284 +19,276 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig84F987403BAF49AB49488FF4
+--------------enig33B5FE005CC6951745F40F45
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Yet another (hopefully the final) version of my attempt to add simple per=
--thread CPU
-usage statistics. This variant now prints the usage in percent directly v=
-ia
-/proc/xenomai/stat.
+Another test mode for irqbench: this patch allows to run the irq loopback=
+ ahead of
+Xenomai in its own domain. Relies on latest ipipe patch which made non-he=
+ading irq
+handlers interruptible, requires CONFIG_XENO_OPT_PIPELINE_HEAD=3Dn (but w=
+ill simply fail
+on mode request if not).
 
-As Philippe suggested to reorganise the /proc section for statistics, I d=
-ecided to make
-this probably intermediate version independent of any user-space tools. Y=
-ou can simply
-type "cat /proc/xenomai/stat" as often as you like to update the stats. E=
-xample:
-
-root@domain.hid :/root# cat /proc/xenomai/stat
-CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-  0  0      0          5836670    0     01400080   78.8  ROOT
-  0  0      0          1          0     00000082    0.0  timsPipeReceiver=
-
-  0  1029   1          1          0     00c00180    0.0  irqloop
-  0  1030   1          7843       0     00c00082    4.2  irqloop
-  0  1039   16         140        0     00c00082    0.1  display-1038
-  0  0      0          166598     0     00000084   16.9  timerbench
-
-Each output marks the beginning of the following measuring interval, thus=
- when running
-
-    while true; do cat /proc/xenomai/stat; sleep 1; clear; done
-
-you effectively get the CPU usage of the last second continuously updated=
-=2E
-
-Note that the results are not always accurate when threads are added, rem=
-oved, or
-migrated. If numbers looks weird, just re-run and things should normalise=
-=2E This is due
-to the fact that the measuring only takes place between context switches =
-on each CPU,
-now longer explicitly on output. This appears least intrusive and SMP-saf=
-e to me.
-Nevertheless, I'm lacking SMP here, real testing is still required.
+I tried to pick up the rthal versions of all ipipe-related stuff, please =
+remark
+potential misuse.
 
 Jan
 
-
 ---
- include/nucleus/pod.h    |   38 ++++++++++++++++++++++++++++++++++++++
- include/nucleus/thread.h |    2 ++
- ksrc/nucleus/module.c    |   40 +++++++++++++++++++++++++++++++++++-----=
+ doc/txt/irqbench.txt             |   36 ++++++++++++++++++++++++++-
+ include/rtdm/rttesting.h         |    1=20
+ ksrc/drivers/testing/irqbench.c  |   51 ++++++++++++++++++++++++++++++++=
++++++--
+ src/testsuite/irqbench/irqloop.c |    6 +++-
+ 4 files changed, 89 insertions(+), 5 deletions(-)
 
- ksrc/nucleus/pod.c       |    8 ++++++++
- ksrc/nucleus/thread.c    |    2 ++
- 5 files changed, 85 insertions(+), 5 deletions(-)
-
-Index: include/nucleus/thread.h
+Index: xenomai/include/rtdm/rttesting.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/nucleus/thread.h.orig
-+++ include/nucleus/thread.h
-@@ -152,6 +152,8 @@ typedef struct xnthread {
- 	unsigned long csw;	/* Context switches (includes
- 				   secondary -> primary switches) */
- 	unsigned long pf;	/* Number of page faults */
-+	xnticks_t exec_time;	/* Accumulated execution time (tsc) */
-+	xnticks_t exec_start;	/* Start of execution time accumulation (tsc) */
-     } stat;
- #endif /* CONFIG_XENO_OPT_STATS */
+--- xenomai.orig/include/rtdm/rttesting.h
++++ xenomai/include/rtdm/rttesting.h
+@@ -97,6 +97,7 @@ typedef struct rttst_tmbench_config {
+ #define RTTST_IRQBENCH_USER_TASK    0
+ #define RTTST_IRQBENCH_KERNEL_TASK  1
+ #define RTTST_IRQBENCH_HANDLER      2
++#define RTTST_IRQBENCH_HARD_IRQ     3
 =20
-Index: include/nucleus/pod.h
+ #define RTTST_IRQBENCH_SERPORT      0
+ #define RTTST_IRQBENCH_PARPORT      1
+Index: xenomai/ksrc/drivers/testing/irqbench.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/nucleus/pod.h.orig
-+++ include/nucleus/pod.h
-@@ -145,6 +145,10 @@ typedef struct xnsched {
-=20
-     xnthread_t rootcb;          /*!< Root thread control block. */
-=20
-+#ifdef CONFIG_XENO_OPT_STATS
-+    xnticks_t last_csw;         /*!< Last context switch (ticks). */
-+#endif /* CONFIG_XENO_OPT_STATS */
-+
- } xnsched_t;
-=20
- #ifdef CONFIG_SMP
-@@ -545,6 +549,40 @@ static inline void xnpod_delete_self (vo
-     xnpod_delete_thread(xnpod_current_thread());
- }
-=20
-+#ifdef CONFIG_XENO_OPT_STATS
-+static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thr=
-ead)
-+{
-+    xnticks_t now =3D xnarch_get_cpu_tsc();
-+
-+    thread->stat.exec_time +=3D now - sched->last_csw;
-+    sched->last_csw =3D now;
-+}
-+
-+static inline void xnpod_reset_exec_stats(xnthread_t *thread)
-+{
-+    thread->stat.exec_time =3D 0;
-+    thread->stat.exec_start =3D xnarch_get_cpu_tsc();
-+}
-+
-+static inline void xnpod_update_csw_date(xnsched_t *sched)
-+{
-+    sched->last_csw =3D xnarch_get_cpu_tsc();
-+}
-+
-+#else /* !CONFIG_XENO_OPT_STATS */
-+static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thr=
-ead)
-+{
-+}
-+
-+static inline void xnpod_reset_exec_stats(xnthread_t *thread)
-+{
-+}
-+
-+static inline void xnpod_update_csw_date(xnsched_t *sched)
-+{
-+}
-+#endif /* CONFIG_XENO_OPT_STATS */
-+
- #ifdef __cplusplus
- }
- #endif
-Index: ksrc/nucleus/pod.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/nucleus/pod.c.orig
-+++ ksrc/nucleus/pod.c
-@@ -669,6 +669,9 @@ static inline void xnpod_switch_zombie(x
-=20
- 	xnthread_cleanup_tcb(threadout);
-=20
-+	/* no need to update stats of dying thread */
-+	xnpod_update_csw_date(sched);
-+
- 	xnarch_finalize_and_switch(xnthread_archtcb(threadout),
- 				   xnthread_archtcb(threadin));
-=20
-@@ -1889,6 +1892,9 @@ int xnpod_migrate_thread(int cpu)
-=20
- 	xnpod_schedule();
-=20
-+	/* Reset execution time stats due to unsync'ed TSCs */
-+	xnpod_reset_exec_stats(thread);
-+
-       unlock_and_exit:
-=20
- 	xnlock_put_irqrestore(&nklock, s);
-@@ -2433,6 +2439,7 @@ void xnpod_schedule(void)
- 		xnarch_enter_root(xnthread_archtcb(threadin));
- 	}
-=20
-+	xnpod_acc_exec_time(sched, threadout);
- 	xnthread_inc_csw(threadin);
-=20
- 	xnarch_switch_to(xnthread_archtcb(threadout),
-@@ -2604,6 +2611,7 @@ void xnpod_schedule_runnable(xnthread_t=20
- 		nkpod->schedhook(runthread, XNREADY);
- #endif /* __XENO_SIM__ */
-=20
-+	xnpod_acc_exec_time(sched, runthread);
- 	xnthread_inc_csw(threadin);
-=20
- 	xnarch_switch_to(xnthread_archtcb(runthread),
-Index: ksrc/nucleus/module.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/nucleus/module.c.orig
-+++ ksrc/nucleus/module.c
-@@ -269,6 +269,8 @@ struct stat_seq_iterator {
- 		unsigned long ssw;
- 		unsigned long csw;
- 		unsigned long pf;
-+		xnticks_t exec_time;
-+		xnticks_t exec_period;
- 	} stat_info[1];
+--- xenomai.orig/ksrc/drivers/testing/irqbench.c
++++ xenomai/ksrc/drivers/testing/irqbench.c
+@@ -56,11 +56,13 @@ struct rt_irqbench_context {
+     int                         mode;
+     int                         port_type;
+     unsigned long               port_ioaddr;
++    unsigned int                port_irq;
+     unsigned int                toggle;
+     struct rttst_irqbench_stats stats;
+     rtdm_irq_t                  irq_handle;
+     rtdm_event_t                irq_event;
+     rtdm_task_t                 irq_task;
++    rthal_pipeline_stage_t      domain;
+     struct semaphore            nrt_mutex;
  };
 =20
-@@ -309,13 +311,27 @@ static void stat_seq_stop(struct seq_fil
- static int stat_seq_show(struct seq_file *seq, void *v)
+@@ -156,6 +158,25 @@ static int rt_irqbench_direct_irq(rtdm_i
+ }
+=20
+=20
++static void rt_irqbench_domain_irq(unsigned irq, void *arg)
++{
++    struct rt_irqbench_context *ctx =3D (struct rt_irqbench_context *)ar=
+g;
++
++
++    if (rt_irqbench_check_irq(ctx))
++        rt_irqbench_hwreply(ctx);
++
++    rthal_irq_end(ctx->port_irq);
++}
++
++
++static inline void do_rt_irqbench_domain_entry(void)
++{
++}
++
++RTHAL_DECLARE_DOMAIN(rt_irqbench_domain_entry);
++
++
+ static int rt_irqbench_stop(struct rt_irqbench_context *ctx)
  {
- 	if (v =3D=3D SEQ_START_TOKEN)
--		seq_printf(seq, "%-3s  %-6s %-10s %-10s %-4s  %-8s  %s\n",
--			   "CPU", "PID", "MSW", "CSW", "PF", "STAT", "NAME");
-+		seq_printf(seq, "%-3s  %-6s %-10s %-10s %-4s  %-8s  %5s"
-+			   "  %s\n",
-+			   "CPU", "PID", "MSW", "CSW", "PF", "STAT", "%CPU",
-+			   "NAME");
- 	else {
- 		struct stat_seq_info *p =3D (struct stat_seq_info *)v;
--		seq_printf(seq, "%3u  %-6d %-10lu %-10lu %-4lu  %.8lx  %s\n",
-+		int usage =3D 0;
+     if (ctx->mode < 0)
+@@ -172,7 +193,12 @@ static int rt_irqbench_stop(struct rt_ir
+             break;
+     }
+=20
+-    rtdm_irq_free(&ctx->irq_handle);
++    if (ctx->mode =3D=3D RTTST_IRQBENCH_HARD_IRQ) {
++        rthal_virtualize_irq(&ctx->domain, ctx->port_irq, NULL, NULL, NU=
+LL,
++                             IPIPE_PASS_MASK);
++        rthal_unregister_domain(&ctx->domain);
++    } else
++        rtdm_irq_free(&ctx->irq_handle);
+=20
+     if (ctx->mode =3D=3D RTTST_IRQBENCH_KERNEL_TASK)
+         rtdm_task_destroy(&ctx->irq_task);
+@@ -304,6 +330,24 @@ static int rt_irqbench_ioctl_nrt(struct=20
+                                            "irqbench", ctx);
+                     break;
+=20
++                case RTTST_IRQBENCH_HARD_IRQ:
++                    ret =3D rthal_register_domain(&ctx->domain, "irqbenc=
+h",
++                                                0x49525142,
++                                                IPIPE_HEAD_PRIORITY,
++                                                rt_irqbench_domain_entry=
+);
++                    if (ret < 0)
++                        goto unlock_start_out;
 +
-+		if (p->exec_period) {
-+			while (p->exec_period > 0xFFFFFFFF) {
-+				p->exec_time >>=3D 16;
-+				p->exec_period >>=3D 16;
-+			}
-+			usage =3D xnarch_ulldiv(
-+				p->exec_time * 1000LL + (p->exec_period >> 1),
-+				p->exec_period, NULL);
-+		}
-+		seq_printf(seq, "%3u  %-6d %-10lu %-10lu %-4lu  %.8lx  %3u.%u"
-+			   "  %s\n",
- 			   p->cpu, p->pid, p->ssw, p->csw, p->pf, p->status,
--			   p->name);
-+			   usage / 10, usage % 10, p->name);
- 	}
-=20
- 	return 0;
-@@ -370,6 +386,8 @@ static int stat_seq_open(struct inode *i
-=20
- 	while (holder) {
- 		xnthread_t *thread;
-+		xnsched_t *sched;
-+		xnticks_t period;
- 		int n;
-=20
- 		xnlock_get_irqsave(&nklock, s);
-@@ -381,7 +399,8 @@ static int stat_seq_open(struct inode *i
- 		thread =3D link2thread(holder, glink);
- 		n =3D iter->nentries++;
-=20
--		iter->stat_info[n].cpu =3D xnsched_cpu(thread->sched);
-+		sched =3D thread->sched;
-+		iter->stat_info[n].cpu =3D xnsched_cpu(sched);
- 		iter->stat_info[n].pid =3D xnthread_user_pid(thread);
- 		memcpy(iter->stat_info[n].name, thread->name,
- 		       sizeof(iter->stat_info[n].name));
-@@ -390,6 +409,17 @@ static int stat_seq_open(struct inode *i
- 		iter->stat_info[n].csw =3D thread->stat.csw;
- 		iter->stat_info[n].pf =3D thread->stat.pf;
-=20
-+		period =3D sched->last_csw - thread->stat.exec_start;
-+		if (!period && thread =3D=3D sched->runthread) {
-+			iter->stat_info[n].exec_time =3D 1;
-+			iter->stat_info[n].exec_period =3D 1;
-+		} else {
-+			iter->stat_info[n].exec_time =3D thread->stat.exec_time;
-+			iter->stat_info[n].exec_period =3D period;
-+		}
-+		thread->stat.exec_time =3D 0;
-+		thread->stat.exec_start =3D sched->last_csw;
++                    ctx->port_irq =3D config->port_irq;
++                    ret =3D rthal_virtualize_irq(&ctx->domain, config->p=
+ort_irq,
++                                               rt_irqbench_domain_irq, c=
+tx,
++                                               NULL, IPIPE_HANDLE_MASK |=
+
++                                               IPIPE_WIRED_MASK |
++                                               IPIPE_EXCLUSIVE_MASK);
++                    if (ret < 0)
++                        rthal_unregister_domain(&ctx->domain);
++                    break;
 +
- 		holder =3D nextq(&nkpod->threadq, holder);
+                 default:
+                     ret =3D -EINVAL;
+                     break;
+@@ -315,7 +359,10 @@ static int rt_irqbench_ioctl_nrt(struct=20
 =20
- 		xnlock_put_irqrestore(&nklock, s);
-Index: ksrc/nucleus/thread.c
+             memset(&ctx->stats, 0, sizeof(ctx->stats));
+=20
+-            rtdm_irq_enable(&ctx->irq_handle);
++            if (ctx->mode =3D=3D RTTST_IRQBENCH_HARD_IRQ)
++                rthal_irq_enable(ctx->port_irq);
++            else
++                rtdm_irq_enable(&ctx->irq_handle);
+=20
+             /* Arm IRQ */
+             switch (ctx->port_type) {
+Index: xenomai/src/testsuite/irqbench/irqloop.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/nucleus/thread.c.orig
-+++ ksrc/nucleus/thread.c
-@@ -90,6 +90,8 @@ int xnthread_init(xnthread_t *thread,
- 	thread->stat.ssw =3D 0;
- 	thread->stat.csw =3D 0;
- 	thread->stat.pf =3D 0;
-+	thread->stat.exec_time =3D 0;
-+	thread->stat.exec_start =3D 0;
- #endif /* CONFIG_XENO_OPT_STATS */
+--- xenomai.orig/src/testsuite/irqbench/irqloop.c
++++ xenomai/src/testsuite/irqbench/irqloop.c
+@@ -54,7 +54,8 @@ void sighand(int sig)
+ int main(int argc, char *argv[])
+ {
+     const char *mode_name[] =3D
+-        { "user-space task", "kernel-space task", "IRQ handler" };
++        { "user-space task", "kernel-space task",
++          "IRQ handler", "hard-IRQ handler" };
+     const char *port_type_name[] =3D { "serial", "parallel" };
+     char devname[RTDM_MAX_DEVNAME_LEN];
+     int benchdev_no =3D 0;
+@@ -102,7 +103,8 @@ int main(int argc, char *argv[])
+             default:
+                 fprintf(stderr, "usage: irqloop [options]\n"
+                         "  [-D <testing_device_no>] # number of testing =
+device, default=3D0\n"
+-                        "  [-t <test_mode>]         # 0=3Duser task (def=
+ault), 1=3Dkernel task, 2=3DIRQ\n"
++                        "  [-t <test_mode>]         # 0=3Duser task (def=
+ault), 1=3Dkernel task,\n"
++                        "                           # 2=3DIRQ handler, 3=
+=3Dhard-IRQ handler\n"
+                         "  [-P <priority>]          # task priority (tes=
+t mode 0 and 1 only)\n"
+                         "  [-o <port_type>]         # 0=3Dserial (defaul=
+t), 1=3Dparallel\n"
+                         "  [-a <port_io_address>]   # default=3D0x3f8\n"=
+
+Index: xenomai/doc/txt/irqbench.txt
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/doc/txt/irqbench.txt
++++ xenomai/doc/txt/irqbench.txt
+@@ -1,6 +1,8 @@
+ IRQ Latency Benchmark
+ ---------------------
 =20
- 	/* These will be filled by xnpod_start_thread() */
++1. Overview
++
+ This latency benchmark for external interrupts consists of three parts:
+=20
+ 1. xeno_irqbench (ksrc/drivers/testing)
+@@ -19,6 +21,9 @@ This latency benchmark for external inte
+=20
+         <gcc-x86-compiler> irqbench.c -o irqbench -O2
+=20
++
++2. Hardware Setup
++
+ To link both test and log system, a null-modem cable between 8250-compat=
+ible
+ two RS232 ports is required. The infrastructure for parallel port cross-=
+over
+ is prepared as well, but yet untested and incomplete. The null-modem cab=
+le
+@@ -38,6 +43,36 @@ must provide at least the following link
+ Test and log system can be started in arbitrary order, they will wait on=
+
+ each other.
+=20
++
++3. Test Scenarios
++
++The xeno_irqbench driver supports four different IRQ handling scenarios,=
+
++selectable via "-t <test_mode>" on irqloop start-up:
++
++Mode 0 - Installs an IRQ handler that wakes up a user-space task. This t=
+ask
++         is provided by irqloop. Once it is woken up, it will issue an I=
+OCTL
++         to xeno_irqbench in order to generate the reply. This scenario =
+is
++         typical for kernel-based device drivers.
++
++Mode 1 - Same as mode 0, except that the task resides inside the kernel =
+and is
++         provided by xeno_irqbench itself. A typical scenario for kernel=
+-based
++         RT-applications or drivers that handle IRQ requests inside a ke=
+rnel
++         task.
++
++Mode 2 - Installs an IRQ handler that directly replies to the event. Thi=
+s
++         scenario measures the reactivity of driver IRQ handlers when ha=
+ndling
++         events immediately or taking timestamps.
++
++Mode 3 - In this mode, an additional I-pipe domain is registered on top =
+of
++         Xenomai. The IRQ handler for immediate reply is then assigned t=
+o the
++         new domain. By pushing the handling above Xenomai, the IRQ repl=
+y
++         latency can widely be decoupled from RT-application-related del=
+ays.
++         The drawback is that no direct interaction with the Xenomai sch=
+eduler
++         is possible from the higher domain.
++
++
++4. Measuring
++
+ The log system runs each single IRQ measurement with local IRQs disabled=
+=2E It
+ will wait up to 100 times the current period on the test system's reply =
+(after
+ initial successful synchronisation, which happens with IRQs enabled). No=
+te that
+@@ -48,4 +83,3 @@ new IRQ event before the reply on the pr
+ Thus the specified test period may be dynamically expended in case of
+ overload. But maximum a latency close or above the period will clearly
+ indicate this.
+-
 
 
 
 
---------------enig84F987403BAF49AB49488FF4
+--------------enig33B5FE005CC6951745F40F45
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -305,10 +297,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFErstfniDOoMHTA+kRAhZfAJ4gq4VNdkxqdMHz7bwT6oSeSAJIPwCfW6jX
-xAlgG3+D+Hv7xftRpETmNkM=
-=pjao
+iD8DBQFErs0YniDOoMHTA+kRAn3fAJ935L/aHLxg1GxnNrYDAICTO4eIJgCfetoN
+nHXjOtCKa9W0YbWn7K2b9DI=
+=MBUo
 -----END PGP SIGNATURE-----
 
---------------enig84F987403BAF49AB49488FF4--
+--------------enig33B5FE005CC6951745F40F45--
 
