@@ -1,11 +1,12 @@
-Message-ID: <e325d110607071259g5ebc019bs2565887803265adc@domain.hid>
-Date: Fri, 7 Jul 2006 20:59:08 +0100
-From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] xenomai beginner problem.
+Message-ID: <17582.49402.69117.801222@domain.hid>
+Date: Fri, 7 Jul 2006 22:15:54 +0200
+Subject: Re: [Xenomai-help] xenomai beginner problem.
+In-Reply-To: <e325d110607071259g5ebc019bs2565887803265adc@domain.hid>
+References: <e325d110607071259g5ebc019bs2565887803265adc@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,37 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Kim Chuan Lim <lim.kim.chuan@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi all,
-The following is my problem...
+Kim Chuan Lim wrote:
+ > The following is the result of my locate..
+ > 
+ > locate xeno_native
+ > /home/username/linux-2.6.17.4/kernel/xenomai/skins/native/.xeno_native.o.cmd
+ > /home/username/linux-2.6.17.4/kernel/xenomai/skins/native/xeno_native.o
 
-suse003:/usr/xenomai/testsuite/latency # ./run
-*
-*
-* Type ^C to stop this application.
-*
-*
-Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_native?)
-suse003:/usr/xenomai/testsuite/latency # modprobe xeno_native
-FATAL: Module xeno_native not found.
+This may mean two things:
+- either you did not compile the native skin as a module, it is
+  built-in, and as suggested by the error message
+  you disabled CONFIG_XENO_OPT_PERVASIVE in the "real-time subsystem"
+  menu of the kernel configuration menu;
+- or the compilation of the xeno_native module (and linux kernel) failed.
 
-i'm using an old pentium 3 1GHz machine with suse9.3.
-i recently downloaded kernel 2.6.17 from kernel.org and patch it with
-xenomai trunk.
+In order to conclude, posting /home/username/linux-2.6.17.4/.config as
+well as the build logs if compilation failed, may help.
 
-May i know what is my problem??
-Is it i didnt setup my kernel probably?
+-- 
 
-The following is the result of my locate..
 
-locate xeno_native
-/home/username/linux-2.6.17.4/kernel/xenomai/skins/native/.xeno_native.o.cmd
-/home/username/linux-2.6.17.4/kernel/xenomai/skins/native/xeno_native.o
-
-How can i load the xeno_native manually?
-
-Regards,
-Kim Chuan.
+					    Gilles Chanteperdrix.
 
