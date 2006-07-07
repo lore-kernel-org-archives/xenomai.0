@@ -1,18 +1,12 @@
-Subject: Re: [Xenomai-core] [RFC, PATCH] per-thread exec-time stats
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17582.26845.522459.204811@domain.hid>
-References: <44ACF5FA.2050205@domain.hid> <1152196379.4978.74.camel@domain.hid>
-	<17581.41221.527736.416354@domain.hid>
-	<1152258866.5017.4.camel@domain.hid>
-	<17582.13798.272437.979081@domain.hid>
-	<1152278610.5035.12.camel@domain.hid>
-	<17582.26845.522459.204811@domain.hid>
-Content-Type: text/plain
-Date: Fri, 07 Jul 2006 16:25:32 +0200
-Message-Id: <1152282333.5035.46.camel@domain.hid>
-Mime-Version: 1.0
+From: Danilo Levantesi <vagninu@domain.hid>
+Date: Fri, 7 Jul 2006 17:02:59 +0200
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart1487665.0kpYAKaYq4";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-Id: <200607071703.10700.vagninu@domain.hid>
+Subject: [Xenomai-core] Xenomai on PXA
+Reply-To: vagninu@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,39 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2006-07-07 at 15:59 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > > xnpod_acc_exec_time() is called from within xnpod_schedule() that is
->  > > called from within xnpod_migrate_thread() at a time where
->  > > threadout->sched is the wrong pointer.
->  > 
->  > Gasp. Unfortunately, we are trapped by an exception case, and I don't
->  > see any better approach.
-> 
-> We could reimplement an xnpod_migrate_thread() which suspend the calling
-> thread and wake up a server thread on the destination CPU, this server
-> thread migrating the suspended thread by changing its sched pointer
-> outside of xnpod_schedule().
-> 
+--nextPart1487665.0kpYAKaYq4
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-No, really. A small hack to get per-thread accounting should not trigger
-a storm of fundamental changes like this.
+Hi to all.
+I should study a soft real time linux kernel for a university project on an=
+=20
+arm architecture (in detail I have got an Ipaq 3970 with a xscale processor)
+I have a working distro based on a 2.4.19 vanilla kernel for that PDA.
+Then i tried to apply the RTAI patch without success and on rtai-ml they to=
+ld=20
+me arm is no longer supported and to have a look at xenomai.
+I read on the xenomai-ml archive and found only 2 posts (from Bart Jonkers)=
+=20
+about pxa port, without answers.
+So what is the status of the port? Is anything working on a pxa arch?
+Many thanks in advance.
 
-> Or we can get rid of xnpod_migrate_thread(), it is currently not used by
-> any skin.
-> 
+Danilo Levantesi
 
-It's a fundamental feature for placing SMP jobs, and kernel-based
-Xenomai threads could not rely on sched_setscheduler() to do it. Let's
-keep this service, and simply pass the sched pointer to the accumulation
-routine; I was wrong initially suggesting the opposite. IOW, let's avoid
-smashing a squadron of flies with nukes...
+--nextPart1487665.0kpYAKaYq4
+Content-Type: application/pgp-signature
 
--- 
-Philippe.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
 
+iD8DBQBErneuQbvwSSpGUgQRAn2oAKDAhKHqraSXBYRh3E+2rtLyZvK38ACgzS+W
++g6TsS6rNHejnKwoj/woxVU=
+=yZZM
+-----END PGP SIGNATURE-----
 
+--nextPart1487665.0kpYAKaYq4--
 
