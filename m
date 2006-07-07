@@ -1,14 +1,13 @@
 Subject: Re: [Xenomai-core] [RFC, PATCH] per-thread exec-time stats
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44AE2372.6020006@domain.hid>
+In-Reply-To: <17582.13798.272437.979081@domain.hid>
 References: <44ACF5FA.2050205@domain.hid> <1152196379.4978.74.camel@domain.hid>
-	<44AD27AF.8050804@domain.hid> <1152200271.4978.85.camel@domain.hid>
-	<44AD3048.5050602@domain.hid>  <44AD3C00.9050909@domain.hid>
-	<1152259455.5017.14.camel@domain.hid>  <44AE16B3.80901@domain.hid>
-	<1152262158.5017.22.camel@domain.hid>  <44AE2372.6020006@domain.hid>
+	<17581.41221.527736.416354@domain.hid>
+	<1152258866.5017.4.camel@domain.hid>
+	<17582.13798.272437.979081@domain.hid>
 Content-Type: text/plain
-Date: Fri, 07 Jul 2006 13:28:44 +0200
-Message-Id: <1152271725.5050.6.camel@domain.hid>
+Date: Fri, 07 Jul 2006 15:23:30 +0200
+Message-Id: <1152278610.5035.12.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -21,44 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-07-07 at 11:03 +0200, Jan Kiszka wrote:
-> >> Far too complex in my eyes for this simple purpose (what's the pid of
-> >> kernel-only threads?) -
-> > 
-> > It's symbolic name. It's not a matter of simplicity, your patch for that
-> > purpose is rather complex already.
+On Fri, 2006-07-07 at 12:22 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > On Fri, 2006-07-07 at 01:47 +0200, Gilles Chanteperdrix wrote:
+>  > > Philippe Gerum wrote:
+>  > >  > > +#ifdef CONFIG_XENO_OPT_STATS
+>  > >  > > +static inline void xnpod_acc_exec_time(xnsched_t *sched,
+>  > >  > > +                                       xnthread_t *threadout)
+>  > >  > > +{
+>  > >  > > +    xnticks_t now = xntimer_get_rawclock();
+>  > >  > > +    threadout->stat.exec_time += now - sched->last_csw;
+>  > >  > > +    sched->last_csw = now;
+>  > >  > > +}
+>  > >  > 
+>  > >  > It would be better to only pass the thread pointer, then use the
+>  > >  > thread->sched member. This would clearly explain the relationship
+>  > >  > between both, and prevent any bugous attempt at mixing things.
+>  > > 
+>  > > Beware, when xnpod_schedule is called from within
+>  > > xnpod_migrate_thread(), the sched pointer of the switched out thread is
+>  > > the one of the destination cpu. So, passing the sched and threadout
+>  > > pointers to xnpod_acc_exec_time is safer.
+>  > 
+>  > Nope, the nklock is held by the migrating thread all along until the
+>  > switch has actually occured.
 > 
-> Haven't measured, but the amount of code added for collecting the data
-> and printing just another column should be marginal as yet. Introducing
-> a new infrastructure for more /proc subdirs with probably multiple
-> entries would certainly cost more.
-> 
+> xnpod_acc_exec_time() is called from within xnpod_schedule() that is
+> called from within xnpod_migrate_thread() at a time where
+> threadout->sched is the wrong pointer.
 
-This has no cost on the real-time side of things. In contrast, scanning
-the threadq within /proc handlers like /stats and /sched are doing now,
-does have some noticeable cost. By having separate per-thread entries,
-we provide the necessary infrastructure for exporting more raw
-statistical data to user-space tools, in a format which would be
-script-friendly.
+Gasp. Unfortunately, we are trapped by an exception case, and I don't
+see any better approach.
 
-> > 
-> >>  and we need to solve the latency problem of
-> >> /sched and /stat anyway.
-> > 
-> > That's separate issues. Solving the scalability issue
-> > of /proc/xenomai/stats and friends does not improve their usability in
-> > the context of user-space tools monitoring thread activity. E.g. how are
-> > we going to extend the reporting about such activity if need be, adding
-> > yet another column to /stats and /sched?
-> 
-> As long as there are no stand-alone tools relying on the layout, just
-> only our own ones - fairly simple. But before speculating more, I will
-> have a look now how simple such tool/script may actually be.
-> 
-> Jan
 > 
 -- 
 Philippe.
