@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-core] [PATCH 2/2] /proc output - add CPU usage stats
+Subject: Re: [Xenomai-core] [PATCH] add ipipe-domain mode to irqbench
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44AECB5F.1080100@domain.hid>
-References: <44AECB5F.1080100@domain.hid>
+In-Reply-To: <44AECD18.4070809@domain.hid>
+References: <44AECD18.4070809@domain.hid>
 Content-Type: text/plain
-Date: Sat, 08 Jul 2006 10:49:13 +0200
-Message-Id: <1152348554.5065.5.camel@domain.hid>
+Date: Sat, 08 Jul 2006 10:49:42 +0200
+Message-Id: <1152348582.5065.7.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -20,10 +20,14 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-07-07 at 23:00 +0200, Jan Kiszka wrote:
-> Yet another (hopefully the final) version of my attempt to add simple per-thread CPU
-> usage statistics. This variant now prints the usage in percent directly via
-> /proc/xenomai/stat.
+On Fri, 2006-07-07 at 23:07 +0200, Jan Kiszka wrote:
+> Another test mode for irqbench: this patch allows to run the irq loopback ahead of
+> Xenomai in its own domain. Relies on latest ipipe patch which made non-heading irq
+> handlers interruptible, requires CONFIG_XENO_OPT_PIPELINE_HEAD=n (but will simply fail
+> on mode request if not).
+> 
+> I tried to pick up the rthal versions of all ipipe-related stuff, please remark
+> potential misuse.
 
 Merged, thanks.
 
