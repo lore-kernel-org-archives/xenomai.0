@@ -1,72 +1,78 @@
-Subject: Re: [Xenomai-core] Timer optimisations, continued
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44C8C5B0.9080000@domain.hid>
-References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
-	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
-	<448EE593.7010809@domain.hid> <448EF022.1040901@domain.hid>
-	<17550.61982.685449.470866@domain.hid>
-	<44C6626A.6000304@domain.hid> <1153990428.5251.46.camel@domain.hid>
-	<17608.46241.732781.448429@domain.hid>
-	<1154006347.4984.2.camel@domain.hid>  <44C8C5B0.9080000@domain.hid>
-Content-Type: text/plain
-Date: Thu, 27 Jul 2006 16:10:47 +0200
-Message-Id: <1154009448.4984.16.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <44B13AC9.3050307@domain.hid>
+Date: Sun, 09 Jul 2006 19:20:09 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] PB to patch a 2.6.16 kernel with
+	an	adeos-ipipe-2.6.14-ppc
+References: <5B122FD931231D408AC32630D1B1F7290C8BBB60@domain.hid>
+In-Reply-To: <5B122FD931231D408AC32630D1B1F7290C8BBB60@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig722A21D6755443D7840D10D0"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Thomas, Brieuc (GE Healthcare)" <Brieuc.Thomas@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2006-07-27 at 15:54 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Thu, 2006-07-27 at 14:42 +0200, Gilles Chanteperdrix wrote:
-> >> Philippe Gerum wrote:
-> >>  > >  o A further improvement should be achievable for scenarios 4 and 5 by
-> >>  > >    introducing absolute xntimers (more precisely: a flag to
-> >>  > >    differentiate between the mode on xntimer_start). I have an outdated
-> >>  > >    patch for this in my repos, needs re-basing.
-> >>  > > 
-> >>  > 
-> >>  > Grmblm... Well, I would have preferred that we don't add that kind of
-> >>  > complexity to the nucleus interface, but I must admit that some
-> >>  > important use cases are definitely better served by absolute timespecs,
-> >>  > so I would surrender to this requirement, provided the implementation is
-> >>  > confined to xnpod_suspend_thread() + xntimer_start().
-> >>
-> >> It would be nice if absolute timeouts were also available when using
-> >> xnsynch_sleep_on. There are a few use cases in the POSIX skin.
-> > 
-> > Makes sense, since xnpod_suspend_thread() and xnsynch_sleep_on() are
-> > tightly integrated interfaces.
-> > 
-> 
-> Anyone any idea how to extend both function interfaces best to
-> differentiate absolute/relative timeouts? I guess we need an additional
-> argument to the functions, don't we?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig722A21D6755443D7840D10D0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I'm afraid we do. The other approach that would basically make the
-timeout a non-scalar value in order to store the rel/abs qualifier would
-be just overkill.
+Thomas, Brieuc (GE Healthcare) wrote:
+> Hi everybody !=20
+>=20
+> I've got a PPC-MPC8540 target with a 2.6.16 patch from the provider. I
+> would like to patch my 2.6.16 kernel with an adeos-ipipe-2.6.14-ppc. Ha=
+s
+> somebody already done this? =20
+> Up to now, I've done the patch manually and the compilation with
+> xenomai-2.1.2...
 
-> 
-> I had the weird idea of using the sign bit of the timeout value for
-> this. But the potential side effects of halving the absolute time domain
-> this way scares me.
-> 
+Migrating some version steps upward in 2.6.x can be problematic. Also
+the patches you got from the board vendor may collide with ipipe. What
+conflicts did you have to resolve? Were you able to verify if those were
+not related to relevant functional changes in the kernel?
 
-Same here, this looks like a very fragile solution to a general issue.
+> When I launch my target, the boot run without errors. But when I launch=
 
--- 
-Philippe.
+> an Xenomai application (like latency) I've got a "kernel oops" message
+> (during the task creation).
+
+What does the oops precisely say, what's the backtrace about?
+
+> can somebody help me to patch correctly my kernel?
+
+Is your kernel patch publicly available? What parts does it touch
+(critical for ipipe are IRQ and timer management).
+
+Maybe someone from the PPC fraction on this list can comment on the
+status of vanilla 2.6.16 vs. 2.6.14, also wrt ipipe/xenomai.
+
+Jan
 
 
+--------------enig722A21D6755443D7840D10D0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFEsTrJniDOoMHTA+kRAmFtAJ9ctFVt9mOjK4XGaPZMEqFvNKdiUwCdH1ln
+MCL4dqboo5IjHGFN4wffnMs=
+=kD14
+-----END PGP SIGNATURE-----
+
+--------------enig722A21D6755443D7840D10D0--
 
