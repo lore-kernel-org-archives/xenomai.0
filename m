@@ -1,10 +1,22 @@
-Content-class: urn:content-classes:message
+Message-ID: <e325d110607100838q4955cfa3p3ef1386f38e3e599@domain.hid>
+Date: Mon, 10 Jul 2006 16:38:43 +0100
+From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
+Subject: Re: [Xenomai-help] xenomai beginner problem.
+In-Reply-To: <44B13745.300@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C6A42F.6C52250E"
-Date: Mon, 10 Jul 2006 16:45:00 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A3F91A5@domain.hid>
-From: <Roderik_Wildenburg@domain.hid>
-Subject: [Xenomai-help] memset of heap crashes Xenomai-Task
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <e325d110607071259g5ebc019bs2565887803265adc@domain.hid>
+	<e325d110607080632u5d80322bte8d32d8e4828030e@domain.hid>
+	<17583.47182.991802.118974@domain.hid>
+	<e325d110607080808w7778fb6ayf1f033b79be7c92b@domain.hid>
+	<1152371904.5004.2.camel@domain.hid>
+	<e325d110607081156n42b7d8f1m892949b16dc2e9f@domain.hid>
+	<17584.4915.679135.575538@domain.hid>
+	<44B02B69.9050903@domain.hid>
+	<e325d110607090646m6fe877c7sc33777a370648d99@domain.hid>
+	<44B13745.300@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,149 +26,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Hi all,
 
-------_=_NextPart_001_01C6A42F.6C52250E
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+I managed to install Xenomai into another of my machine.
+I am able to run all the test program without any problem.
 
-Xenomai Version : 2.2-rc2
-Skin : native
-Kernel : 2.4.25
-Arch.: PPC
+I am interested with the hard real time serial port example from..
+http://www.captain.at/xenomai-serial-port-example.php
 
-I try to allocate as much memory as possible with the functions :
-rt_heap_create and
-rt_heap_alloc.
-(see also "Xenomai heap services" in this mailing list; see source
-attached)
+The following is the error message i received when i try to run the program..
+./rt_serial_uprog
+rt_serial_uprog: PRESS CTRL-C to EXIT
+rt_serial_uprog: timer started
+rt_serial_uprog: can't open rtser0
+rt_serial_uprog: stop timer
 
-When I try to use the allocated memory with memset, the Xenomai-task
-crashes with a "Segmentation fault".
+May i know which device is "rtser0"?
+shall i just change it to /dev/ttyS0?
 
-Is memset allowed to be used with Xenomai heaps ?
-If so, could somebody try to reproduce this (preferable with a PPC), to
-see whether it is a common problem or just one of my configuration .
-I have the feeling it is timing dependend, as it does not crash every
-time. So try to start it several times, please.
+Regards,
+Kim Chuan.
 
 
-Thank you for your help=20
-Roderik
-
-------_=_NextPart_001_01C6A42F.6C52250E
-Content-Type: application/octet-stream;
-	name="heap.c"
-Content-Transfer-Encoding: base64
-Content-Description: heap.c
-Content-Disposition: attachment;
-	filename="heap.c"
-
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KI2luY2x1ZGUgPHN0cmluZy5o
-PgojaW5jbHVkZSA8bmV0ZGIuaD4KI2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8Z2V0b3B0
-Lmg+CiNpbmNsdWRlIDxwdGhyZWFkLmg+CiNpbmNsdWRlIDxtYWxsb2MuaD4KI2luY2x1ZGUgPHN5
-cy90eXBlcy5oPgojaW5jbHVkZSA8c3lzL3NvY2tldC5oPgojaW5jbHVkZSA8bmV0aW5ldC9pbi5o
-PgojaW5jbHVkZSA8YXJwYS9pbmV0Lmg+CiNpbmNsdWRlIDxzeXMvbW1hbi5oPgojaW5jbHVkZSA8
-eGVub21haS9uYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8eGVub21haS9uYXRpdmUvcXVldWUuaD4K
-I2luY2x1ZGUgPHhlbm9tYWkvbmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDx4ZW5vbWFpL25hdGl2
-ZS9oZWFwLmg+CgoKCiNkZWZpbmUgRElTUExBWV9UQVNLX1BSSSAgICAgIDEwCiNkZWZpbmUgRElT
-UExBWV9TVEFDS19TSVpFICAgIDgxOTIKI2RlZmluZSBNRU1PUllDSFVOS1NJWkUgICAgICAgMTYw
-MDAwMDAKI2RlZmluZSBNQVhIRUFQQkxPQ0tTICAgICAgICAgMjAKI2RlZmluZSBESVNQX1BFUklP
-RCAgICAgICAgICAgNTAwMDAwMDAwMAoKc3RhdGljIFJUX1RBU0sgZGlzcGxheV90YXNrOwpSVF9I
-RUFQIGJpZ2hlYXBbTUFYSEVBUEJMT0NLU107CnZvaWQgICAgKmJpZ2J1ZltNQVhIRUFQQkxPQ0tT
-XTsKaW50ICAgICBiaWdzaXplW01BWEhFQVBCTE9DS1NdOwppbnQgICAgIG1lbW9yeWFsbG9jYXRl
-ZDsKCnZvaWQgZGlzcGxheSh2b2lkICpjb29raWUpCnsKCiAgIGxvbmcgbWVtc2l6ZTsKICAgbG9u
-ZyBhZGRzaXplOwogICBpbnQgaSxyZXQ7CiAgIGNoYXIgbmJ1ZlsxMDBdOwogICBpbnQgZXJyOwog
-ICBSVF9IRUFQIHRoZWFwOwoKICAgZXJyID0gcnRfdGFza19zZXRfcGVyaW9kaWMoTlVMTCwgVE1f
-Tk9XLCBydF90aW1lcl9uczJ0aWNrcyhESVNQX1BFUklPRCkpOwogICBpZiAoZXJyKQogICB7CiAg
-ICAgIGZwcmludGYoc3RkZXJyLCAiRGlzcGxheSA6IGZhaWxlZCB0byBzZXQgcGVyaW9kaWMsIGNv
-ZGUgJWRcbiIsIGVycik7CiAgICAgIHJldHVybjsKICAgfQoKCiAgIC8qZGVsZXRlIGxlZnQgb3Zl
-ciBoZWFwcyovCiAgIGZvcihpPTA7aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewogICAgICBzcHJp
-bnRmKG5idWYsImJpZ2hlYXAlZCIsaSk7CiAgICAgIGlmKCFydF9oZWFwX2JpbmQoJnRoZWFwLG5i
-dWYsMTAwMDAwMCkpCiAgICAgIHsKICAgICAgICAgcnRfaGVhcF9kZWxldGUoJnRoZWFwKTsKICAg
-ICAgICAgcHJpbnRmKCJIZWFwICVzIGRlbGV0ZWRcbiIsbmJ1Zik7CiAgICAgIH0KICAgfQoKICAg
-c2xlZXAoMSk7CgogICBwcmludGYoIkF2YWlsYWJsZSBNZW1vcnkgJWxkIChQYWdlc2l6ZSAlbGQp
-XG4iLHN5c2NvbmYoX1NDX0FWUEhZU19QQUdFUykgKiBzeXNjb25mKF9TQ19QQUdFU0laRSksc3lz
-Y29uZihfU0NfUEFHRVNJWkUpKTsKCiAgIGFkZHNpemU9bWVtc2l6ZT1NRU1PUllDSFVOS1NJWkU7
-IC8qbWF4IEhlYXBzaXplIDE2TUIqLwogICBtZW1vcnlhbGxvY2F0ZWQ9MDsKCiAgIGZvcihpPTA7
-aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewoKICAgICAgLypjcmVhdGUgaGVhcCovCiAgICAgIHNw
-cmludGYobmJ1ZiwiYmlnaGVhcCVkIixpKTsKICAgICAgaWYocnRfaGVhcF9jcmVhdGUoJmJpZ2hl
-YXBbaV0sbmJ1ZixtZW1zaXplLEhfUFJJT3xIX01BUFBBQkxFKSkKICAgICAgICAgYnJlYWs7CiAg
-ICAgIHByaW50ZigiaGVhcCAlZCBvZiBzaXplICVsZCBjcmVhdGVkXG4iLGksbWVtc2l6ZSk7CgoK
-ICAgICAgLyphbGxvY2F0ZSBtZW1veSovCiAgICAgIGlmKChyZXQ9cnRfaGVhcF9hbGxvYygmYmln
-aGVhcFtpXSxtZW1zaXplLFRNX05PTkJMT0NLLCZiaWdidWZbaV0pKSkKICAgICAgewogICAgICAg
-ICBwcmludGYoIkZhaWxlZCB0byBhbGxvY2F0ZSBoZWFwICVkIG9mIHNpemUgJWxkIChSZXQ6JWQp
-XG4iLGksbWVtc2l6ZSxyZXQpOwogICAgICAgICBiaWdidWZbaV09TlVMTDsKICAgICAgICAgYmln
-c2l6ZVtpXT0wOwogICAgICB9CiAgICAgIGVsc2UKICAgICAgewogICAgICAgICBtZW1vcnlhbGxv
-Y2F0ZWQrPW1lbXNpemU7CiAgICAgICAgIHByaW50ZigiSGVhcCAlZCBhbGxvY2F0ZWQgc2l6ZSAl
-bGRcbiIsaSxtZW1zaXplKTsKICAgICAgICAgYmlnc2l6ZVtpXT1tZW1zaXplOwogICAgICB9CiAg
-IH0KCiAgIHByaW50ZigiQXZhaWxhYmxlIE1lbW9yeSBhZnRlciBhbGxvY2F0aW9uICVsZFxuIixz
-eXNjb25mKF9TQ19BVlBIWVNfUEFHRVMpICogc3lzY29uZihfU0NfUEFHRVNJWkUpKTsKCiAgIHNs
-ZWVwKDEpOwoKICAgLypzb21lIG1vcmUgc3BhcmUgbWVtb3J5IGxlc3MgdGhhbiAxNk1CID8qLwog
-ICBtZW1zaXplPWFkZHNpemU9MTAqMTAyNDsKICAgZG8KICAgewogICAgICBtZW1zaXplKz1hZGRz
-aXplOwogICAgICBpZighKHJldD1ydF9oZWFwX2NyZWF0ZSgmYmlnaGVhcFtpXSxuYnVmLG1lbXNp
-emUsSF9QUklPfEhfTUFQUEFCTEUpKSkKICAgICAgICAgcnRfaGVhcF9kZWxldGUoJmJpZ2hlYXBb
-aV0pOwogICB9d2hpbGUocmV0PT0wKTsKCiAgIG1lbXNpemU+Pj0xOwogICBpZihydF9oZWFwX2Ny
-ZWF0ZSgmYmlnaGVhcFtpXSxuYnVmLG1lbXNpemUsSF9QUklPfEhfTUFQUEFCTEUpKQogICB7CiAg
-ICAgIHByaW50ZigiSGVhcCAlZCBjcmVhdGlvbiBmYWlsZWQgZm9yIHNpemUgJWxkXG4iLGksbWVt
-c2l6ZSk7CiAgIH0KICAgZWxzZQogICB7CiAgICAgIHByaW50ZigiSGVhcCAlZCBjcmVhdGVkIHdp
-dGggc2l6ZSAlbGRcbiIsaSxtZW1zaXplKTsKICAgICAgaWYoKHJldD1ydF9oZWFwX2FsbG9jKCZi
-aWdoZWFwW2ldLG1lbXNpemUsMTAwMDAwMDAwMDAsJmJpZ2J1ZltpXSkpICkKICAgICAgewogICAg
-ICAgICBwcmludGYoIkZhaWxlZCB0byBhbGxvY2F0ZSBoZWFwICVkIG9mIHNpemUgJWxkIChSZXQ6
-JWQpLlxuIixpLG1lbXNpemUscmV0KTsKICAgICAgICAgYmlnYnVmW2ldPU5VTEw7CiAgICAgICAg
-IGJpZ3NpemVbaV09MDsKICAgICAgfQogICAgICBlbHNlCiAgICAgIHsKICAgICAgICAgYmlnc2l6
-ZVtpXT1tZW1zaXplOwogICAgICAgICBwcmludGYoIkhlYXAgJWQgYWxsb2NhdGVkIHNpemUgJWxk
-XG4iLGksbWVtc2l6ZSk7CiAgICAgICAgIG1lbW9yeWFsbG9jYXRlZCs9bWVtc2l6ZTsKICAgICAg
-fQogICB9CgoKCiAgIHByaW50ZigiTWVtb3J5IGFsbG9jYXRlZCBpbiB0b3RhbCA6ICVkXG4iLCBt
-ZW1vcnlhbGxvY2F0ZWQpOwoKICAgZm9yICg7OykKICAgewogICAgICBlcnIgPSBydF90YXNrX3dh
-aXRfcGVyaW9kKE5VTEwpOwoKICAgICAgZm9yKGk9MDtpPE1BWEhFQVBCTE9DS1M7aSsrKQogICAg
-ICB7CiAgICAgICAgIGlmKGJpZ2J1ZltpXSE9TlVMTCkKICAgICAgICAgewogICAgICAgICAgICAv
-KnByaW50ZigiU2V0dGluZyBoZWFwICVkLiBTaXplICVkXG4iLGksYmlnc2l6ZVtpXSk7Ki8KICAg
-ICAgICAgICAgbWVtc2V0KGJpZ2J1ZltpXSwweEFGLGJpZ3NpemVbaV0pOwogICAgICAgICB9Cgog
-ICAgICB9CgogICB9Cn0KCgoKCmludCByb290X3RocmVhZF9pbml0KHZvaWQpCnsKICAgcHJpbnRm
-KCJyb290X3RocmVhZF9pbml0IDpcbiIpOwoKICAgcnRfdGltZXJfc2V0X21vZGUoVE1fT05FU0hP
-VCk7CgogICBwcmludGYoInRpbWVyIHN0YXJ0ZWR0XG4iKTsKCgogICBydF90YXNrX3NwYXduKCZk
-aXNwbGF5X3Rhc2ssIkRpc3BsYXlUYXNrIiwgRElTUExBWV9TVEFDS19TSVpFLCBESVNQTEFZX1RB
-U0tfUFJJLCAwLCAmZGlzcGxheSwgTlVMTCk7CiAgIHByaW50ZigiZGlzcGxheSB0YXNrIGNyZWF0
-ZWRcbiIpOwoKICAgcmV0dXJuIDA7Cn0KCnZvaWQgcm9vdF90aHJlYWRfZXhpdCh2b2lkKQp7CiAg
-IGludCBpOwogICBSVF9IRUFQX0lORk8gKmhwaW5mbzsKCiAgIHByaW50ZigiVURQLT5yb290X3Ro
-cmVhZF9leGl0XG4iKTsKCiAgIGZvcihpPTA7aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewogICAg
-ICBpZiggIXJ0X2hlYXBfaW5xdWlyZSgmYmlnaGVhcFtpXSxocGluZm8pICkKICAgICAgICAgcnRf
-aGVhcF9kZWxldGUoJmJpZ2hlYXBbaV0pOwogICB9CgogICBydF90YXNrX2RlbGV0ZSgmZGlzcGxh
-eV90YXNrKTsKfQoKdm9pZCBjbGVhbnVwX3Vwb25fc2lnKGludCBzaWcgX19hdHRyaWJ1dGVfXyAo
-KHVudXNlZCkpKQp7CiAgIHJvb3RfdGhyZWFkX2V4aXQoKTsKfQoKaW50IG1haW4oaW50IGFyZ2Ms
-IGNoYXIgKmFyZ3ZbXSkKewoKICAgcHJpbnRmKCJTdGFydCBIZWFwXG4iKTsKICAgc2xlZXAoMSk7
-CgogICBtbG9ja2FsbChNQ0xfQ1VSUkVOVCB8IE1DTF9GVVRVUkUpOwoKICAgc2lnbmFsKFNJR0lO
-VCwgY2xlYW51cF91cG9uX3NpZyk7CiAgIHNpZ25hbChTSUdURVJNLCBjbGVhbnVwX3Vwb25fc2ln
-KTsKICAgc2lnbmFsKFNJR0hVUCwgY2xlYW51cF91cG9uX3NpZyk7CiAgIHNpZ25hbChTSUdBTFJN
-LCBjbGVhbnVwX3Vwb25fc2lnKTsKCgogICBpZihyb290X3RocmVhZF9pbml0KCk8MCkKICAgICAg
-Z290byBleGl0OwoKICAgcHJpbnRmKCJyb290X3RocmVhZF9pbml0IGJlZW5kZXRcbiIpOwogICBz
-bGVlcCgxKSwgcGF1c2UoKTsKCmV4aXQ6CiAgIHJvb3RfdGhyZWFkX2V4aXQoKTsKCiAgIHJldHVy
-biAwOwp9Cgo=
-
-------_=_NextPart_001_01C6A42F.6C52250E
-Content-Type: application/octet-stream;
-	name="Makefile.hp2"
-Content-Transfer-Encoding: base64
-Content-Description: Makefile.hp2
-Content-Disposition: attachment;
-	filename="Makefile.hp2"
-
-eGVub2Rpcjo9L2hvbWUvdXNlci9tYzQ1L3hlbm9tYWkvX2luc3RhbGwKQ0M6PXBwYy1saW51eC1n
-Y2MKCiMgQWxsb3cgb3ZlcnJpZGluZyB4ZW5vLWNvbmZpZyBvbiBtYWtlIGNvbW1hbmQgbGluZQpY
-RU5PX0NPTkZJRz0kKHhlbm9kaXIpL2Jpbi94ZW5vLWNvbmZpZwpwcmVmaXggOj0gJChzaGVsbCAk
-KFhFTk9fQ09ORklHKSAtLXByZWZpeCkKCmlmZXEgKCQocHJlZml4KSwpCiQoZXJyb3IgUGxlYXNl
-IGFkZCA8eGVub21haS1pbnN0YWxsLXBhdGg+L2JpbiB0byB5b3VyIFBBVEggdmFyaWFibGUpCmVu
-ZGlmCgpTVERfQ0ZMQUdTICA6PSAkKHNoZWxsICQoWEVOT19DT05GSUcpIC0teGVuby1jZmxhZ3Mp
-ClNURF9MREZMQUdTIDo9ICQoc2hlbGwgJChYRU5PX0NPTkZJRykgLS14ZW5vLWxkZmxhZ3MpIC1s
-bmF0aXZlIC1sbSAtbHJ0ZG0KU1REX1RBUkdFVFMgOj0gaGVhcAoKCiMgInN0ZCIgbWFrZXMgYWxs
-IGRlbW9zIHJ1bm5pbmcgbmF0aXZlbHkgaW4gdXNlci1zcGFjZS4KCnN0ZDogJChTVERfVEFSR0VU
-UykKCgphbGw6IHN0ZAoKCiQoU1REX1RBUkdFVFMpOiAkKFNURF9UQVJHRVRTOiU9JS5jKQoJJChD
-QykgLW8gJEAgJEAuYyAkKFNURF9DRkxBR1MpICQoU1REX0xERkxBR1MpCgoKY2xlYW46CgkkKFJN
-KSAtZiAqLm8gKl9zLm8gJChTVERfVEFSR0VUUykgJChTSU1fVEFSR0VUUykK
-
-------_=_NextPart_001_01C6A42F.6C52250E--
+On 7/9/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Kim Chuan Lim wrote:
+> > Hi all,
+> >
+> > Please find the attachment for my linux kernel config.
+> > Please let me know if anything wrong in the configuration.
+>
+> Nothing suspicious on first sight. Please proceed with Gilles' and my
+> other suggestions now.
+>
+> Jan
+>
+>
+>
+>
 
