@@ -1,17 +1,18 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="OZyTe3w/cI"
+Content-Type: multipart/mixed; boundary="Xm2fAGonJU"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17585.23253.953487.892164@domain.hid>
-Date: Sun, 9 Jul 2006 21:36:53 +0200
+Message-ID: <17586.36398.889473.833858@domain.hid>
+Date: Mon, 10 Jul 2006 19:28:14 +0200
 Subject: Re: [Xenomai-core] nervous nmi-watchdog
-In-Reply-To: <1152464821.5027.6.camel@domain.hid>
+In-Reply-To: <17585.23253.953487.892164@domain.hid>
 References: <44736EE4.2060807@domain.hid> <44845D59.5040608@domain.hid>
 	<17540.32930.566897.960413@domain.hid>
 	<448482B4.2040105@domain.hid>
 	<17584.64392.157061.788526@domain.hid>
 	<1152463301.5027.3.camel@domain.hid> <44B1354A.50403@domain.hid>
 	<1152464821.5027.6.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+	<17585.23253.953487.892164@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,42 +22,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 
---OZyTe3w/cI
+--Xm2fAGonJU
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
-Philippe Gerum wrote:
- > On Sun, 2006-07-09 at 18:56 +0200, Jan Kiszka wrote:
- > > I can confirm the failing NMI test here on my notebook with both nucleus
- > > and native skin built into the kernel. I haven't seen false positive
- > > NMIs yet, but the tracer is still on. Will switch off and re-check.
+Gilles Chanteperdrix wrote:
+ > Philippe Gerum wrote:
+ >  > On Sun, 2006-07-09 at 18:56 +0200, Jan Kiszka wrote:
+ >  > > I can confirm the failing NMI test here on my notebook with both nucleus
+ >  > > and native skin built into the kernel. I haven't seen false positive
+ >  > > NMIs yet, but the tracer is still on. Will switch off and re-check.
+ >  > 
+ >  > FWIW, here, the false positive is raised immediately when starting the
+ >  > latency test.
  > 
- > FWIW, here, the false positive is raised immediately when starting the
- > latency test.
+ > The attached patch attempt to workaround these early shots, count them,
+ > and display them in /proc/xenomai/nmi_early_shots. Could you try it on
+ > your box and see if the /proc display moves ?
 
-The attached patch attempt to workaround these early shots, count them,
-and display them in /proc/xenomai/nmi_early_shots. Could you try it on
-your box and see if the /proc display moves ?
+This patch should work better.
 
 -- 
 
 
 					    Gilles Chanteperdrix.
 
---OZyTe3w/cI
+--Xm2fAGonJU
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="xeno-nmi.diff"
+	filename="xeno-nmi.2.diff"
 Content-Transfer-Encoding: 7bit
 
 Index: ksrc/arch/i386/nmi.c
 ===================================================================
---- ksrc/arch/i386/nmi.c	(revision 1316)
+--- ksrc/arch/i386/nmi.c	(revision 1322)
 +++ ksrc/arch/i386/nmi.c	(working copy)
 @@ -61,6 +61,9 @@
          unsigned long perfctr_msr;
@@ -64,7 +67,7 @@ Index: ksrc/arch/i386/nmi.c
          unsigned int p4_cccr_val;
 +
 +		unsigned early_shots;
-+		unsigned long long arm_date;
++		unsigned long long tick_date;
      };
      char __pad[SMP_CACHE_BYTES];
  } rthal_nmi_wd_t ____cacheline_aligned;
@@ -74,9 +77,9 @@ Index: ksrc/arch/i386/nmi.c
  
 -    if (wd->armed)
 +	if (wd->armed) {
-+		if (rthal_rdtsc() - wd->arm_date < rthal_maxlat_tsc) {
++		if (rthal_rdtsc() - wd->tick_date < rthal_maxlat_tsc) {
 +			++wd->early_shots;
-+			wd->next_linux_check = wd->arm_date + rthal_maxlat_tsc;
++			wd->next_linux_check = wd->tick_date + rthal_maxlat_tsc;
 +		} else
          rthal_nmi_emergency(regs);
 +	}
@@ -132,14 +135,15 @@ Index: ksrc/arch/i386/nmi.c
      wrmsrl(rthal_nmi_perfctr_msr, 0 - RTHAL_CPU_FREQ);
      touch_nmi_watchdog();
      wmb();
-@@ -215,6 +251,7 @@
+@@ -215,6 +251,8 @@
          rthal_local_irq_restore(flags);
      }
  
-+	wd->arm_date = rthal_rdtsc();
++	wd->tick_date = rthal_rdtsc() + (delay - rthal_maxlat_tsc);
++	wmb();
      wrmsrl(wd->perfctr_msr, 0 - delay);
      wmb();
      wd->armed = 1;
 
---OZyTe3w/cI--
+--Xm2fAGonJU--
 
