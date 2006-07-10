@@ -1,14 +1,15 @@
-Message-ID: <44B2169F.7070205@domain.hid>
-Date: Mon, 10 Jul 2006 10:58:07 +0200
+Message-ID: <44B218C5.9000804@domain.hid>
+Date: Mon, 10 Jul 2006 11:07:17 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] isr
-References: <20060710080757.4430@domain.hid> <44B21018.4060702@domain.hid>
-	<20060710084549.4390@domain.hid>
-In-Reply-To: <20060710084549.4390@domain.hid>
+Subject: Re: [Xenomai-help] Sychronize between Linux and Xenomai domain
+References: <4546494d0607092316s7dbc7406j2436714deccbfb91@domain.hid>	
+	<44B1FDBD.4060600@domain.hid>
+	<4546494d0607100148s1f5476e3tb3f58d7ae48d4a72@domain.hid>
+In-Reply-To: <4546494d0607100148s1f5476e3tb3f58d7ae48d4a72@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC5F4D4561CDB98DD4C39F6A2"
+	boundary="------------enigF854CA3A269AC61C3A704FA1"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,149 +20,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Keinen Namen <GSM909@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Li Yi (Adam)" <liyiadam@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC5F4D4561CDB98DD4C39F6A2
+--------------enigF854CA3A269AC61C3A704FA1
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Keinen Namen wrote:
-> Sorry here is my source code.
+Li Yi (Adam) wrote:
+> Thanks Jan.
 >=20
-> My Problem ist how can I call the ISR.
+> You mentioned:
+> "Depends on what you have to protect. The easiest way for short code
+> passages are still spinlocks with hard IRQ protection (under RTDM:
+> rtdm_lock_xxx). "
+>=20
+> I read the code of rtdm_lock_xxx and find it mapped to spin_lock. If I
+> understand correctly,
+>=20
+> a RTDM driver using:
+> rtdm_lock_get(&my_lock);
+>=20
+> a normal linux driver using
+> spin_lock(&my_lock);
+>=20
+> Can be used to protect some shared data structure between RTDM real-tim=
+e
+> driver in Xenomai Domain
+> and a normal Linux driver, right?
 
-Well, the basic idea behind IRQs is that the hardware "call" them for
-you, isn't it? :)
-
-See /proc/xenomai/irq if something is happening on your IRQ line.
-
->=20
-> Regards Memory
->=20
->=20
-> #include <linux/kernel.h>
-> #include <linux/init.h>
-> #include <linux/module.h>
-> #include <linux/fs.h>
->=20
-> #include <native/intr.h>
->=20
-> MODULE_DESCRIPTION("My kernel module");
-> MODULE_AUTHOR("Nobody");
-> MODULE_DESCRIPTION("Dei Mudda");
-> MODULE_LICENSE("my own");
->=20
->=20
-> RT_INTR my_rt_intr;
->=20
-> int helloworld_isr(rt_intr_t *intr){
-> 	printk( KERN_ALERT "IRQ\n");
-> 	return IRQ_HANDLED;
-> }
->=20
-> struct file_operations helloworld_fops =3D {
-> 	.owner 		=3D THIS_MODULE,
-> 	.llseek		=3D NULL,
-> 	.read		=3D NULL,
-> 	.write		=3D NULL,
-> 	.readdir	=3D NULL,
-> 	.poll		=3D NULL,
-> 	.ioctl		=3D NULL,
-> 	.mmap		=3D NULL,
-> 	.open		=3D NULL,
-> 	.flush		=3D NULL,
-> 	.release	=3D NULL,
-> 	.fsync		=3D NULL,
-> 	.fasync		=3D NULL,
-> 	.lock		=3D NULL,
-> 	.readv		=3D NULL,
-> 	.writev		=3D NULL,
-> };
-
-What's this for? Keep in mind that mixing Linux file operations with
-Xenomai is almost always not cleanly working. That's also what RTDM is
-for: providing a stripped down file operations interface to real-time use=
-rs.
+Yep. See also real-world examples in existing RTDM drivers.
 
 >=20
->=20
-> static int helloworld_init_module(void) {
-> 	int x;
-> 	printk( KERN_ALERT "Module helloworld init startet Version 0.1\n" );
-> 	x =3D rt_intr_create(&my_rt_intr,"ein Name",SIU_INT_TIMER2,&helloworld=
-_isr,NULL,0);
+> I just started to write a RTDM driver, and I am not sure what existing
+> linux
+> kernel services
+> I can use in the RTDM driver, e.g, wait queue, semaphores, request_dma(=
+),
+> free_dma(), etc.
+> I have concern that the RTDM driver may not synchronize with linux kern=
+el,
+> since it will
+> preempt Linux kernel whenever the HW interrupt is not masked.
+> Is there any guideline there?
 
-Are you sure your hardware is already set up to fire on SIU_INT_TIMER2?
+Keep in mind that Linux may have been preempted AT ANY POINT when your
+driver executes some code in hard real-time mode. Therefore, calling
+almost all Linux services from RT context must be considered unsafe
+(unfortunately, it often works fine in practice, just fails/crashes
+"magically" from time to time).
 
-If you are looking for some working examples, check the new irqbench
-test over RS232 or the timer-related part of Hannes' example driver on
-http://www.captain.at/xenomai-real-time-driver-example-driver-source-code=
-=2Ephp
+But it's usually not required to do so as most of Linux interaction can
+be performed during init/cleanup. Just register your open/socket and
+close handler as "_nrt" so that they are only executed in pure Linux or
+secondary mode, and you can run whatever Linux service you like.
 
-What's your goal, BTW?
+If you encounter any Linux service that you have to call for your driver
+from IRQ or RT context, please report.
 
-> 	if(!x){
-> 		printk( KERN_ALERT "Interrupt erfolgreich erstellt\n");
-> 		if(!(rt_intr_enable(&my_rt_intr))){
-> 			printk( KERN_ALERT "Interrupt erfolgreich aktiviert\n");
-> 		}
-> 	}else{
-> 		printk( KERN_ALERT "Interrupt Erstellung fehlgeschlagen %i\n",x);
-> 	}
-> }
->=20
-> static void helloworld_exit_module(void) {
->=20
-> 	if(!(rt_intr_disable(&my_rt_intr))){
-> 		printk( KERN_ALERT "Interrupt Cleared !\n" );
-> 		if(!(rt_intr_delete(&my_rt_intr))){
-> 	 		printk(KERN_ALERT "Interrupt deleted\n" );
-> 		}
-> 	}
->=20
-> 	printk( KERN_ALERT "Module helloworld exit\n" );
-> }
->=20
-> module_init(helloworld_init_module);
-> module_exit(helloworld_exit_module);
->=20
-> -------- Original-Nachricht --------
-> Datum: Mon, 10 Jul 2006 10:30:16 +0200
-> Von: Jan Kiszka <jan.kiszka@domain.hid>
-> An: Keinen Namen <GSM909@domain.hid>
-> Betreff: Re: [Xenomai-help] isr
->=20
->> Keinen Namen wrote:
->>> Hi I useing Xenomai 2.1 and the native skin=20
->>>
->>> I want create a intr in kernel space with rt_intr_create, the 4th
->> argument is the pointer is the ISR.
->>> My Question is which form does the ISR must have
->>>
->>> rt_isr_t myisr ( ??? )
->>> {
->>> ...
->>> }
->>>
->> int my_isr(rt_intr_t *intr);
->>
->> That's indeed undocumented, you had to browse the code for this
->> information. :-/
->>
->> [Note: unless you are writing some specialised or experimental code,
->> developing drivers over the RTDM skin is recommended now. This aims at=
-
->> unifying the device interfaces for all skins.]
->>
->> Jan
->>
->=20
+Jan
 
 
-
---------------enigC5F4D4561CDB98DD4C39F6A2
+--------------enigF854CA3A269AC61C3A704FA1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -170,10 +91,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEshafniDOoMHTA+kRAvIjAJoCDgujMw+MjBjAroueL7bRkAaZsgCdHn58
-2tuz4GiUZbrB9+HVy8aKnXA=
-=OEuv
+iD8DBQFEshjFniDOoMHTA+kRAv69AJ92m3LrYGwzZnvgZEyf2nZiqztDNgCfSVRT
+IjHrjPEg6Kn6DkOczUVYVLQ=
+=LUSs
 -----END PGP SIGNATURE-----
 
---------------enigC5F4D4561CDB98DD4C39F6A2--
+--------------enigF854CA3A269AC61C3A704FA1--
 
