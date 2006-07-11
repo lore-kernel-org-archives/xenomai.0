@@ -1,19 +1,13 @@
-Message-ID: <44B341E2.9040506@domain.hid>
-Date: Tue, 11 Jul 2006 08:14:58 +0200
+Message-ID: <44B343AF.2030706@domain.hid>
+Date: Tue, 11 Jul 2006 08:22:39 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Sychronize between Linux and Xenomai domain
-References: <4546494d0607092316s7dbc7406j2436714deccbfb91@domain.hid>	
-	<44B1FDBD.4060600@domain.hid>	
-	<4546494d0607100148s1f5476e3tb3f58d7ae48d4a72@domain.hid>	
-	<44B218C5.9000804@domain.hid>	
-	<4546494d0607100231x469aa596s2513e5b36cad8550@domain.hid>	
-	<44B2216A.1060904@domain.hid>
-	<4546494d0607102125w2817ccd1j746651214cac3a6d@domain.hid>
-In-Reply-To: <4546494d0607102125w2817ccd1j746651214cac3a6d@domain.hid>
+Subject: Re: AW: [Xenomai-help] memset of heap crashes Xenomai-Task
+References: <5D63919D95F87E4D9D34FF7748CE2C2A3F9204@domain.hid>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A3F9204@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAF991AA41CBEED288F16CFF3"
+	boundary="------------enigF2ED2A83E88666F5A911A442"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,40 +18,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Li Yi (Adam)" <liyiadam@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Roderik_Wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAF991AA41CBEED288F16CFF3
+--------------enigF2ED2A83E88666F5A911A442
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Li Yi (Adam) wrote:
-> Hi Jan,
+Roderik_Wildenburg@domain.hid wrote:
+>> First of all, I'm not sure if that 8K of stack is enough on=20
+>> PPC with 2.4, on x86 over 2.6 it isn't. The native skin picks=20
+>> PTHREAD_STACK_MIN*4 for you by default. Is this too much?=20
+>> Unless dealing with dozens of
+>> *simple* threads, reducing this makes no sense to me.
 >=20
-> Sometimes there is situation to  protect a  Non-real time task in kerne=
-l
-> space NOT to be interrupted by Xenomai task.
-> Is disabling HW interrupt the only way? Can I stall Xenomai Domain from=
+> ?? Greping for PTHREAD_STACK_MIN xenomai/posix/pthread.h tells me,=20
+> it is 1024. 1024*4=3D4096. This is less than 8192 ;-)
 
+That's for the kernel-space usage of the posix skin. In user-space you
+have to look at /usr/include:
 
-Think of SMP as well (ok, blackfin is UP so far, right? :)): you need
-IRQ lock + some spinlock that is acquired in the IRQ handler(s) as well,
-thus you end up with that rtdm_lock_t again.
+/usr/include/bits/local_lim.h:#define PTHREAD_STACK_MIN 16384
+(glibc-2.4, x86 of course)
 
-> handling interrupt while let the Linux domain
-> handle interrupt normally?
+> Is there a differnce between x86 and PPC.
+> (I simply did not realize that there is a default value for=20
+> the stacksize. Therfore I choose my own value, which was based on my=20
+> vxWorks experince)
 
-Stalling (i.e. preventing IRQ delivery) higher prio domains (like
-Xenomai) implicitly means stalling all lower prio ones (including
-Linux): No, this is not possible. You might prevent rescheduling by
-setting the scheduler lock of Xenomai, but this still doesn't protect
-from IRQs.
+Again, that /might/ be fine on PPC, cannot tell.
+
+>=20
+>=20
+>> Then there was this bug:
+>>
+>> @@ -168,13 +169,13 @@
+>>  void root_thread_exit(void)
+>>  {
+>>     int i;
+>> -   RT_HEAP_INFO *hpinfo;
+>> +   RT_HEAP_INFO hpinfo;
+>>
+>>     printf("UDP->root_thread_exit\n");
+>>
+>>     for(i=3D0;i<MAXHEAPBLOCKS;i++)
+>>     {
+>> -      if( !rt_heap_inquire(&bigheap[i],hpinfo) )
+>> +      if( !rt_heap_inquire(&bigheap[i],&hpinfo) )
+>>           rt_heap_delete(&bigheap[i]);
+>>     }
+>=20
+> Thank you ! 4 eyes see more than 2.
+> (but this is probably not the reason for the segmentation fault, as=20
+> this routine is called for exit only !?)
+
+True.
+
+> But even after correcting this error, I get segmentation faults (not
+> with=20
+> the first start but with the second or third)
+>=20
+>=20
+>> Now I get some other strange effects (e.g. kernel oopses after OOM
+>> oopses) that need a closer look under qemu later.
+>=20
+
+I re-tried the setup, but was "only" able to find a 2.6-kernel bug in
+the OOM roll-back path of vmalloc (2.4 is unaffected). The other issue,
+totally failing rt_heap_alloc, was not reproducable. I must have messed
+something up on the test box at work.
+
+So this means I cannot trigger your problem here on x86/2.6, sorry.
 
 Jan
 
 
---------------enigAF991AA41CBEED288F16CFF3
+--------------enigF2ED2A83E88666F5A911A442
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -66,10 +103,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFEs0HnniDOoMHTA+kRAtzkAJ4lX13ZpFmNEsnBbI9wwMs4mysBKACfYyBe
-yHWMQ+e7hdrMTmO4whHqKA4=
-=XVA1
+iD8DBQFEs0OwniDOoMHTA+kRAnkrAJ99cgZQ1yn0X53L3KN+pIqOSskgogCfdcYF
+Inz6oFzeRNr+R/DJwoLMyrY=
+=rBu3
 -----END PGP SIGNATURE-----
 
---------------enigAF991AA41CBEED288F16CFF3--
+--------------enigF2ED2A83E88666F5A911A442--
 
