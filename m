@@ -5,8 +5,8 @@ References: <200607071703.10700.vagninu@domain.hid>
 	<17582.50372.830923.414981@domain.hid>
 	<44B34343.9F56F13@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
-Date: Tue, 11 Jul 2006 17:01:51 +0200
-Message-Id: <1152630145.21591.1.camel@domain.hid>
+Date: Tue, 11 Jul 2006 17:02:56 +0200
+Message-Id: <1152630176.21591.3.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
