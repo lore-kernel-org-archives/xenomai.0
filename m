@@ -1,24 +1,11 @@
-Message-ID: <44B4B7FD.2060302@domain.hid>
-Date: Wed, 12 Jul 2006 10:51:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <e325d110607120507x61180e92q744464ca3bb33a41@domain.hid>
+Date: Wed, 12 Jul 2006 13:07:45 +0100
+From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Sychronize between Linux and Xenomai domain
-References: <4546494d0607092316s7dbc7406j2436714deccbfb91@domain.hid>	
-	<44B341E2.9040506@domain.hid>	
-	<4546494d0607102348g181624cfxc14b47c85c00efb4@domain.hid>	
-	<4546494d0607102353j99dee1na4209decc75b05ec@domain.hid>	
-	<44B35346.2070200@domain.hid>	
-	<4546494d0607110043x45804030td009ed790040420b@domain.hid>	
-	<4546494d0607111851t3d432f80offde2c1a2ef37689@domain.hid>	
-	<44B497FE.9090207@domain.hid>	
-	<4546494d0607120034l3635fb89yda1c79bcbd6c196b@domain.hid>	
-	<44B4AA17.2050708@domain.hid>
-	<4546494d0607120124t6a38b19dp8e9f4514c64309a2@domain.hid>
-In-Reply-To: <4546494d0607120124t6a38b19dp8e9f4514c64309a2@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD88ECB65582BDBC2DD0C2C33"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] Pentium IV processor with Hyper Threading
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,45 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Li Yi (Adam)" <liyiadam@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD88ECB65582BDBC2DD0C2C33
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi all,
 
-Li Yi (Adam) wrote:
-> But how to handle the situation when, e.g, a normal Linux task( in kern=
-el
-> space) and a Xenomai task (in kernel space),
-> they share a global data structure. The Linux task want to block the
-> Xenomai
-> task for a while when it handles this data structure, while
-> at the same time HW interrupt is enabled? When the data is ready, Xenom=
-ai
-> task is waken up.
+Unfortunally my xenomai box only able to detect 1 CPU.
+:(
 
-Simply turn the Linux task into a Xenomai task (set priority to 0 if the
-task has otherwise no RT jobs) and use a mutex. That's far cleaner than
-playing with suspend/resume anyway.
+cat /proc/cpuinfo
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 15
+model           : 2
+model name      : Intel(R) Pentium(R) 4 CPU 3.20GHz
+stepping        : 9
+cpu MHz         : 3216.028
+cache size      : 512 KB
+physical id     : 0
+siblings        : 1
+core id         : 0
+cpu cores       : 1
+fdiv_bug        : no
+hlt_bug         : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 2
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge
+mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe up
+cid xtpr
+bogomips        : 6440.75
 
-Jan
+Is xenomai currently only work with single processor machine?
 
-
---------------enigD88ECB65582BDBC2DD0C2C33
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEtLf+niDOoMHTA+kRAgSaAJwMTUbW6Nc7sYWEolYjCzgHOXPdvgCeJEf/
-2nnMJMLLoCAgWjfG5J9bbbs=
-=/uBV
------END PGP SIGNATURE-----
-
---------------enigD88ECB65582BDBC2DD0C2C33--
+Regards,
+Kim Chuan.
 
