@@ -1,17 +1,16 @@
-Message-ID: <b647ffbd0607120756k62edfdamff718a50d03c0db1@domain.hid>
-Date: Wed, 12 Jul 2006 16:56:34 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] relax context check for rt_task_suspend
-In-Reply-To: <b647ffbd0607120744p7bf0860atb9e42d8644fc2d31@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_90713_9129692.1152716194849"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17589.7054.61661.221910@domain.hid>
+Date: Wed, 12 Jul 2006 17:55:58 +0200
+Subject: Re: [Xenomai-core] [PATCH] relax context check for rt_task_suspend
+In-Reply-To: <44B50771.9080003@domain.hid>
 References: <44B4C09F.209@domain.hid>
 	<b647ffbd0607120500jccf65cdqd781ff668f2c7ba8@domain.hid>
 	<44B4EA3B.1010109@domain.hid>
-	<17588.60439.678980.545437@domain.hid>
-	<44B4F9CB.2070605@domain.hid>
-	<b647ffbd0607120744p7bf0860atb9e42d8644fc2d31@domain.hid>
+	<b647ffbd0607120645n69a20805rfb9e62c8cfb3061f@domain.hid>
+	<44B50771.9080003@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,55 +23,39 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_90713_9129692.1152716194849
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Jan Kiszka wrote:
+ > Dmitry Adamushko wrote:
+ > > --- task.c      2006-05-19 18:25:19.000000000 +0200
+ > > +++ task-my.c   2006-07-12 15:40:16.549170000 +0200
+ > > @@ -426,7 +426,8 @@ int rt_task_suspend(RT_TASK *task)
+ > >         goto unlock_and_exit;
+ > >     }
+ > > 
+ > > 
+ > > -    if (xnpod_unblockable_p()) {
+ > > +    /* we are about to suspend a task, let's check wehther it may sleep */
+ > > +    if (xnthread_test_flags(task, XNLOCK|XNROOT)) {
+ > >         err = -EPERM;
+ > >         goto unlock_and_exit;
+ > >     }
+ > > 
+ > > 
+ > > 
+ > > See the difference? :) it was slightly broken indeed, meaning it just
+ > > bailed
+ > > out all the calls from the interrupt context which is wrong according to
+ > > spec.
+ > 
+ > Fine, now I achieved what I always wanted: someone really thought about
+ > it! :)
+ > 
+ > I tried to bundle your approach with appropriate documentation update
+ > and a minor fix in the attached patch. Credits go to you then.
 
-  Sure I don't know all the implementation details and can be just driven by
-> my own misunderstanding.
->
+Patch applied.
 
-Yep,  just a common excuse to keep my face out of the soup in case I'm
-completely wrong.
-Normally means (by Freud?) a person doesn't want to take responsibility
-err... for his own words. IOW, if I'm right let's my carma to be updated, if
-no - weeell you know I'm still leeeaarning but see I can solve this quadr.
-math equotion !
-
-err.. hope the majority of people subscribed to this mailing list have got
-good spam filters :)
-
-
-Jan
-> >
-> >
-> >
 -- 
-Best regards,
-Dmitry Adamushko
 
-------=_Part_90713_9129692.1152716194849
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<br><div><div><br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><div>&nbsp;
-Sure I don't know all the
-implementation details and can be just driven by my own
-misunderstanding.</div></div></div></blockquote><div><br>
-Yep,&nbsp; just a common excuse to keep my face out of the soup in case I'm completely wrong.<br>
-Normally means (by Freud?) a person doesn't want to take responsibility
-err... for his own words. IOW, if I'm right let's my carma to be
-updated, if no - weeell you know I'm still leeeaarning but see I can
-solve this quadr. math equotion !<br>
-<br>
-err.. hope the majority of people subscribed to this mailing list have got good spam filters :)<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Jan<br><br><br></blockquote></div></div></blockquote></div><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_90713_9129692.1152716194849--
+					    Gilles Chanteperdrix.
 
