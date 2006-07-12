@@ -1,15 +1,12 @@
-Message-ID: <44B4EA3B.1010109@domain.hid>
-Date: Wed, 12 Jul 2006 14:25:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] relax context check for rt_task_suspend
-References: <44B4C09F.209@domain.hid>
-	<b647ffbd0607120500jccf65cdqd781ff668f2c7ba8@domain.hid>
-In-Reply-To: <b647ffbd0607120500jccf65cdqd781ff668f2c7ba8@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB089D6D1E97E596808B14B28"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17588.60046.972123.383913@domain.hid>
+Date: Wed, 12 Jul 2006 14:26:54 +0200
+Subject: Re: [Xenomai-core] [PATCH] fix xnheap_alloc rounding
+In-Reply-To: <44B3AF69.4050100@domain.hid>
+References: <44B3AF69.4050100@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,111 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB089D6D1E97E596808B14B28
-Content-Type: multipart/mixed; boundary="------------030603000103030900060604"
+Jan Kiszka wrote:
+ > Hi,
+ > 
+ > playing a stupid rt_heap user (actually I didn't just play this...), I
+ > stumbled over this undocumented oddity:
+ > 
+ > rt_heap_create(&heap, name, 10000, H_PRIO|H_MAPPABLE);
+ > rt_heap_alloc(&heap, 10000, TM_NONBLOCK, &ptr);
+ > 
+ > Creation is successful, allocation fails. The reason: while during
+ > creation the net heap size is rounded down to page boundaries, the
+ > allocation of memory > PAGE_SIZE is rounded up. One could add H_SINGLE
+ > to the flags, but this may even result in allocating less memory than
+ > the user expected, causing severe problems later.
+ > 
+ > How to resolve this best? I thought about rounding twice in
+ > rt_head_create (one time the net size, the second time including the
+ > overhead), but this encodes characteristics of the underlying heap
+ > allocator into the skin (I have a generic heap allocator framework in
+ > mind for 2.3). So I decided to do this rounding in xnheap_overhead()
+ > instead, see attached patch. Hope I didn't skewed up any calculation. At
+ > least the scenario above now works fine.
 
-This is a multi-part message in MIME format.
---------------030603000103030900060604
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+The problem I see with this patch is that you are counting 
+(rounded_hsize - hsize) as part of the overhead, whereas you would like to
+count it as free space. Would not it make more sense to do the rounding
+in xnheap_init_mapped ?
 
-Dmitry Adamushko wrote:
-> Hi,
->=20
->=20
-> given the existing doc of rt_task_suspend about allowed environments an=
-d
->> also when thinking about the logic behind it, I see no reason why
->> xnpod_unblockable_p() is also applied to task !=3D NULL.
->=20
->=20
->=20
-> XNLOCK is set? anyway, I don't see how the patch makes current logic
-> different...
->=20
-> in both cases xnpod_unblockable_p() has a chance to be executed only wh=
-en
-> task !=3D NULL (thanks to goto). and -EPERM is returned when task !=3D =
-NULL &&
-> xnpod_unblockable_p() =3D=3D true.
->=20
->=20
->        if (!task) {
->>                 err =3D xeno_handle_error(task, XENO_TASK_MAGIC, RT_TA=
-SK);
->>                 goto unlock_and_exit;
->> -       }
->> -
->> -       if (xnpod_unblockable_p()) {
->> +       } else if (xnpod_unblockable_p()) {
->>                 err =3D -EPERM;
->>                 goto unlock_and_exit;
->>         }
->>
->>
->>
->=20
->=20
+-- 
 
-Oh, my dear. I should stop hacking patches while talking to colleagues.
-Does this one make more sense?
 
-Jan
-
---------------030603000103030900060604
-Content-Type: text/plain; name="suspend-foreign-task-from-any-context-v2.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
-	filename="suspend-foreign-task-from-any-context-v2.patch"
-
-Index: ksrc/skins/native/task.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/native/task.c	(revision 1323)
-+++ ksrc/skins/native/task.c	(working copy)
-@@ -391,9 +391,9 @@ int rt_task_start(RT_TASK *task, void (*
-  *
-  * - -EINVAL is returned if @a task is not a task descriptor.
-  *
-- * - -EPERM is returned if @a task is NULL but not called from a task
-- * context, or this service was called from a context which cannot
-- * sleep (e.g. interrupt, non-realtime or scheduler locked).
-+ * - -EPERM is returned if @a task is NULL and this service was called
-+ * from a context which cannot sleep (e.g. interrupt, non-realtime or
-+ * scheduler locked).
-  *
-  * - -EIDRM is returned if @a task is a deleted task descriptor.
-  *
-@@ -432,7 +432,7 @@ int rt_task_suspend(RT_TASK *task)
- 		goto unlock_and_exit;
- 	}
-=20
--	if (xnpod_unblockable_p()) {
-+	if (xnpod_locked_p()) {
- 		err =3D -EPERM;
- 		goto unlock_and_exit;
- 	}
-
---------------030603000103030900060604--
-
---------------enigB089D6D1E97E596808B14B28
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEtOo7niDOoMHTA+kRAqRLAJ4zP/0vVjGsQDWakCrtfqvaw6D0PACcCDcK
-HiI2606NGvotyVBfMhn8TA0=
-=eZZO
------END PGP SIGNATURE-----
-
---------------enigB089D6D1E97E596808B14B28--
+					    Gilles Chanteperdrix.
 
