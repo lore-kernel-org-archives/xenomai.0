@@ -1,15 +1,15 @@
-Message-ID: <44B4ED32.8040201@domain.hid>
-Date: Wed, 12 Jul 2006 14:38:10 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] fix xnheap_alloc rounding
-References: <44B3AF69.4050100@domain.hid>
-	<17588.60046.972123.383913@domain.hid>
-In-Reply-To: <17588.60046.972123.383913@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig209C6F98E68F0AA751C15563"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Xenomai on PXA
+From: Bart Jonkers <jonkersbart@domain.hid>
+In-Reply-To: <1152630145.21591.1.camel@domain.hid>
+References: <200607071703.10700.vagninu@domain.hid>
+	<17582.50372.830923.414981@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<1152630145.21591.1.camel@domain.hid>
+Content-Type: text/plain; charset=utf-8
+Date: Wed, 12 Jul 2006 15:13:36 +0200
+Message-Id: <1152710016.9488.15.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,76 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Stelian Pop <stelian.pop@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig209C6F98E68F0AA751C15563
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Hi,
->  >=20
->  > playing a stupid rt_heap user (actually I didn't just play this...),=
- I
->  > stumbled over this undocumented oddity:
->  >=20
->  > rt_heap_create(&heap, name, 10000, H_PRIO|H_MAPPABLE);
->  > rt_heap_alloc(&heap, 10000, TM_NONBLOCK, &ptr);
->  >=20
->  > Creation is successful, allocation fails. The reason: while during
->  > creation the net heap size is rounded down to page boundaries, the
->  > allocation of memory > PAGE_SIZE is rounded up. One could add H_SING=
-LE
->  > to the flags, but this may even result in allocating less memory tha=
-n
->  > the user expected, causing severe problems later.
->  >=20
->  > How to resolve this best? I thought about rounding twice in
->  > rt_head_create (one time the net size, the second time including the=
-
->  > overhead), but this encodes characteristics of the underlying heap
->  > allocator into the skin (I have a generic heap allocator framework i=
-n
->  > mind for 2.3). So I decided to do this rounding in xnheap_overhead()=
-
->  > instead, see attached patch. Hope I didn't skewed up any calculation=
-=2E At
->  > least the scenario above now works fine.
+On Tue, 2006-07-11 at 17:01 +0200, Stelian Pop wrote:
+> Le mardi 11 juillet 2006 =C3=A0 08:20 +0200, Detlef Vollmann a =C3=A9cr=
+it :
 >=20
-> The problem I see with this patch is that you are counting=20
-> (rounded_hsize - hsize) as part of the overhead, whereas you would like=
- to
-> count it as free space. Would not it make more sense to do the rounding=
-
-> in xnheap_init_mapped ?
+> > What is missing is a look at entry-macro.S.
+> > Stelian Pop has done something for the Integrator that I don't
+> > really understand and therefore I can't say whether the PXA needs
+> > something similar.
 >=20
+> Well, you should have asked if you didn't undestand. :)
+>=20
+> The change in entry-macro.S does optimize the fast path for a timer
+> interrupt. Instead of looking at each interrupt controller status and
+> compute the irq number the code tests the timer interrupt status and
+> returns immediately if true.=20
 
-I was thinking of the open-coded
+So this isn't really needed?
 
-allocate(heap_size + xnheap_overhead)
-xnheap_init()
+Are there other things where I have to take a look to?
 
-in many skins as well.
+I think I have found 2 errors in the code of Detlef Vollmann:
+- timer_initialized is never set to 1, so __ipipe_mach_get_tsc will
+always return 0. I have set timer_initialized to 1 at the end of
+pxa_timer_init.
 
-Jan
+- __ipipe_mach_set_dec will return without calling
+spin_unlock_irqrestore_hw(&timer_lock, flags); when delay < 8
+
+When I use the adaptions of Detlef Vollmann and
+adeos-ipipe-2.6.15-arm-1.3-04 Linux doesn't get any interrupts. During
+initialization of the hard-disk I get the error 'hda: lost interrupt'.
+
+Somebody an idea?
+
+Bart
 
 
---------------enig209C6F98E68F0AA751C15563
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>=20
+> Stelian.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEtO0yniDOoMHTA+kRAsYMAJ9KvdhUARaPeow5ETp6zYYLGEDqCgCeOojb
-wZyfkSzhX/16KnRdTJhQgaE=
-=wg0j
------END PGP SIGNATURE-----
-
---------------enig209C6F98E68F0AA751C15563--
 
