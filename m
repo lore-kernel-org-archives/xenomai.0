@@ -1,15 +1,14 @@
-Message-ID: <44B4F9CB.2070605@domain.hid>
-Date: Wed, 12 Jul 2006 15:31:55 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <b647ffbd0607120645n69a20805rfb9e62c8cfb3061f@domain.hid>
+Date: Wed, 12 Jul 2006 15:45:48 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] [PATCH] relax context check for rt_task_suspend
-References: <44B4C09F.209@domain.hid>	<b647ffbd0607120500jccf65cdqd781ff668f2c7ba8@domain.hid>	<44B4EA3B.1010109@domain.hid>
-	<17588.60439.678980.545437@domain.hid>
-In-Reply-To: <17588.60439.678980.545437@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0679277B1188AB20DA502F38"
-Sender: jan.kiszka@domain.hid
+In-Reply-To: <44B4EA3B.1010109@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_89944_21051153.1152711948184"
+References: <44B4C09F.209@domain.hid>
+	<b647ffbd0607120500jccf65cdqd781ff668f2c7ba8@domain.hid>
+	<44B4EA3B.1010109@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,43 +18,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0679277B1188AB20DA502F38
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_89944_21051153.1152711948184
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > =20
->  > -	if (xnpod_unblockable_p()) {
->  > +	if (xnpod_locked_p()) {
->=20
-> Why not if (task =3D=3D xeno_current_task() && xnpod_unblockable_p()) ?=
-
->=20
-
-Is it legal to suspend a foreign task when XNLOCK is set? If yes, I
-would vote for your version as well.
-
-Jan
+--- task.c      2006-05-19 18:25:19.000000000 +0200
++++ task-my.c   2006-07-12 15:40:16.549170000 +0200
+@@ -426,7 +426,8 @@ int rt_task_suspend(RT_TASK *task)
+         goto unlock_and_exit;
+     }
 
 
---------------enig0679277B1188AB20DA502F38
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-    if (xnpod_unblockable_p()) {
++    /* we are about to suspend a task, let's check wehther it may sleep */
++    if (xnthread_test_flags(task, XNLOCK|XNROOT)) {
+         err = -EPERM;
+         goto unlock_and_exit;
+     }
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEtPnLniDOoMHTA+kRAg8GAJ0XYJuuuhCyBn07TJhe2eylx2vKiQCeLRpq
-iCUHsG5H1MCrjJGxFkThGeA=
-=/66p
------END PGP SIGNATURE-----
 
---------------enig0679277B1188AB20DA502F38--
+See the difference? :) it was slightly broken indeed, meaning it just bailed
+out all the calls from the interrupt context which is wrong according to
+spec.
+
+maybe something like xnthread_task_unblockable/blockable(task)  would be
+also of avail.
+
+
+Oh, my dear. I should stop hacking patches while talking to colleagues.
+> Does this one make more sense?
+>
+
+maybe it's better that the other way around? I mean, writting good code and
+saying nonsense to your collegues... :o>
+
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_89944_21051153.1152711948184
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div><div><br>
+--- task.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2006-05-19 18:25:19.000000000 +0200<br>
++++ task-my.c&nbsp;&nbsp; 2006-07-12 15:40:16.549170000 +0200<br>
+@@ -426,7 +426,8 @@ int rt_task_suspend(RT_TASK *task)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto unlock_and_exit;<br>
+&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+-&nbsp;&nbsp;&nbsp; if (xnpod_unblockable_p()) {<br>
++&nbsp;&nbsp;&nbsp; /* we are about to suspend a task, let's check wehther it may sleep */<br>
++&nbsp;&nbsp;&nbsp; if (xnthread_test_flags(task, XNLOCK|XNROOT)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; err = -EPERM;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto unlock_and_exit;<br>
+&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+See the difference? :) it was slightly broken indeed, meaning it just
+bailed out all the calls from the interrupt context which is wrong
+according to spec.<br>
+<br>
+maybe something like xnthread_task_unblockable/blockable(task)&nbsp; would be also of avail.<br>
+<br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Oh, my dear. I should stop hacking patches while talking to colleagues.<br>
+Does this one make more sense?<br></blockquote></div><br>
+maybe it's better that the other way around? I mean, writting good code and saying nonsense to your collegues... :o&gt;<br>
+<br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
+
+
+------=_Part_89944_21051153.1152711948184--
 
