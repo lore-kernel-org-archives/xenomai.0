@@ -1,10 +1,10 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17590.31244.141411.473429@domain.hid>
-Date: Thu, 13 Jul 2006 18:51:24 +0200
+Message-ID: <17590.40418.205139.609207@domain.hid>
+Date: Thu, 13 Jul 2006 21:24:18 +0200
 Subject: Re: [Xenomai-help] RT timer help
-In-Reply-To: <e325d110607130946m47041caai13413b69288b71a1@domain.hid>
+In-Reply-To: <e325d110607131026qdb0aac8p53bb9f1ddad58181@domain.hid>
 References: <e325d110607130503k37a4e648p1ae581e7b984abb4@domain.hid>
 	<17590.14655.583084.480317@domain.hid>
 	<e325d110607130737j3011b167wef31d2bf8fa6fd42@domain.hid>
@@ -12,6 +12,8 @@ References: <e325d110607130503k37a4e648p1ae581e7b984abb4@domain.hid>
 	<e325d110607130902r6bdd04e4l1001f33e094d9d4a@domain.hid>
 	<17590.28495.53263.24303@domain.hid>
 	<e325d110607130946m47041caai13413b69288b71a1@domain.hid>
+	<17590.31244.141411.473429@domain.hid>
+	<e325d110607131026qdb0aac8p53bb9f1ddad58181@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -28,16 +30,26 @@ Cc: xenomai@xenomai.org
 Kim Chuan Lim wrote:
  > Hi Gilles,
  > 
- > I am a bit confused with the defination of "latency suffer".
+ > I print the result of rt_timer_read() for every output...
+ > > Do you see one line displayed every second, or one line every ten
+ > > seconds ?
+ > 
+ > The latency program...
+ > display the line every second.
+ > different between each rt_timer_read() is roughly the same(~1000000000).
+ > 
+ > my program...
+ > display the line every 10 second.
+ > different between each rt_timer_read() is roughly the same(~1000000000).
+ > 
+ > May i know if the different of time maintained by the system timer are
+ > the same, why the output text displayed at different rate?
 
-Do you see one line displayed every second, or one line every ten
-seconds ?
-
- > The following is the output of example program at /xenomai/testuites/latency.
- > Is 38.5ms average latency consider good?
-
-These are microseconds, not milliseconds. Whether it is good or not
-depends on the platform.
+Your example runs fine here. Could you tell us more about your setup ?
+What processor ? What configuration (are CONFIG_CPU_FREQ and
+CONFIG_ACPI_PROCESSOR disabled and is hyper-threading enabled) ? Could
+you send us your .config ? Is there any error message in the kernel logs
+? 
 
 -- 
 
