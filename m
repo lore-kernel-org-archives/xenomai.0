@@ -1,13 +1,13 @@
-Message-ID: <44B8A1E9.7080004@domain.hid>
-Date: Sat, 15 Jul 2006 10:06:01 +0200
+Message-ID: <44B8A259.1040608@domain.hid>
+Date: Sat, 15 Jul 2006 10:07:53 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] optimise syscall mux-code calculation
-References: <44B62AE7.8080503@domain.hid> <1152930271.5027.69.camel@domain.hid>
-In-Reply-To: <1152930271.5027.69.camel@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] fix xnheap_alloc rounding
+References: <44B3AF69.4050100@domain.hid> <1152928135.5027.60.camel@domain.hid>
+In-Reply-To: <1152928135.5027.60.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD1CE48F84439F85137A620CD"
+	boundary="------------enigD6195BE020E440A2CE432725"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,112 +22,91 @@ To: rpm@xenomai.org
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD1CE48F84439F85137A620CD
+--------------enigD6195BE020E440A2CE432725
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Philippe Gerum wrote:
-> On Thu, 2006-07-13 at 13:13 +0200, Jan Kiszka wrote:
+> On Tue, 2006-07-11 at 16:02 +0200, Jan Kiszka wrote:
 >> Hi,
 >>
->> some may recall the "micro-optimisation" thread I once started. Here i=
-s
->> now a simple approach to deal with the yet suboptimal mux-code
->> calculation in user-space. Code saving:
+>> playing a stupid rt_heap user (actually I didn't just play this...), I=
+
+>> stumbled over this undocumented oddity:
 >>
->> Before:
->>    text    data     bss     dec     hex filename
->>   18004     476       8   18488    4838 native/.libs/libnative.so
->>   27445     696       4   28145    6df1 posix/.libs/libpthread_rt.so
+>> rt_heap_create(&heap, name, 10000, H_PRIO|H_MAPPABLE);
+>> rt_heap_alloc(&heap, 10000, TM_NONBLOCK, &ptr);
 >>
->> After:
->>    text    data     bss     dec     hex filename
->>   17172     476       8   17656    44f8 native/.libs/libnative.so
->>   26805     696       4   27505    6b71 posix/.libs/libpthread_rt.so
+>> Creation is successful, allocation fails. The reason: while during
+>> creation the net heap size is rounded down to page boundaries, the
+>> allocation of memory > PAGE_SIZE is rounded up. One could add H_SINGLE=
+
+>> to the flags, but this may even result in allocating less memory than
+>> the user expected, causing severe problems later.
 >>
->> Of course, this also results in a few ops less being executed on each
->> Xenomai syscall invocation (not many cycles, though).
->>
->> Tested without problems on x86 so far.
->>
+>> How to resolve this best? I thought about rounding twice in
+>> rt_head_create (one time the net size, the second time including the
+>> overhead), but this encodes characteristics of the underlying heap
+>> allocator into the skin (I have a generic heap allocator framework in
+>> mind for 2.3).
 >=20
-> This is post 2.2 stuff since we need to check this critical change
-> against each and every supported arch.=20
+> The nucleus heap expects the caller to pass it the memory which is goin=
+g
+> to be used to fulfill allocation requests, so there is already a builti=
+n
+> dependency from any client heap manager on the nucleus implementation.
+> Double rounding is therefore the way to go, since callers need to be
+> fixed so that they provide enough memory to the xnheap manager when
+> specializing its behaviour.
 
-Agree, there is no need to hurry in 2.2.
-
-> Since this breaks the ABI
-> including the ascending compatibility between old apps and new kernel
-> support, this won't make it during the v2 series either.
-
-The ABI chance just took place due to my laziness - I didn't want to
-touch every skin library. Anyway, this ABI breakage can be avoided with
-slightly more effort, i.e. by doing the shift in user-space during the
-binding.
+If this means to do the rounding in the clients without the help of some
+well-defined xnheap-API, then I disagree. I have an alternative nucleus
+heap manager in mind for the future that will have a different rounding
+strategy for allocations. So we should cleanly hide such property behind
+a xnheap service - either in the overhead calculation or in some
+additional rounding service. But I do not see a need for splitting this
+up yet.
 
 >=20
+>>  So I decided to do this rounding in xnheap_overhead()
+>> instead, see attached patch. Hope I didn't skewed up any calculation. =
+At
+>> least the scenario above now works fine.
+>>
 >> Jan
->> plain text document attachment (optimise-muxcode-calculation.patch)
->> ---
->>  include/asm-arm/syscall.h      |   25 +++++++++++++------------
->>  include/asm-blackfin/syscall.h |    4 +++-
->>  include/asm-i386/syscall.h     |    3 ++-
->>  include/asm-ia64/syscall.h     |   23 ++++++++++++-----------
->>  include/asm-powerpc/syscall.h  |    3 ++-
->>  ksrc/nucleus/shadow.c          |    3 ++-
->>  6 files changed, 34 insertions(+), 27 deletions(-)
->>
->> Index: xenomai/include/asm-arm/syscall.h
+>> plain text document attachment (xnheap_overhead-fix-rounding.patch)
+>> Index: include/nucleus/heap.h
 >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> --- xenomai.orig/include/asm-arm/syscall.h
->> +++ xenomai/include/asm-arm/syscall.h
->> @@ -26,6 +26,7 @@
->>  #include <asm-generic/xenomai/syscall.h>
+>> --- include/nucleus/heap.h	(revision 1322)
+>> +++ include/nucleus/heap.h	(working copy)
+>> @@ -109,8 +109,14 @@ extern xnheap_t kheap;
+>>  #define xnheap_used_mem(heap)        ((heap)->ubytes)
+>>  #define xnheap_max_contiguous(heap)  ((heap)->maxcont)
+>>  #define xnheap_overhead(hsize,psize) \
+>> -((sizeof(xnextent_t) + (((hsize) - sizeof(xnextent_t)) / (psize)) + \=
+
+>> - XNHEAP_MINALIGNSZ - 1) & ~(XNHEAP_MINALIGNSZ - 1))
+>> +({ \
+>> +    u_long rounded_hsize =3D (hsize + psize - 1) & ~(psize - 1); \
+>> +    u_long overhead =3D ((sizeof(xnextent_t) + \
+>> +	(((rounded_hsize) - sizeof(xnextent_t)) / (psize)) + \
+>> +	XNHEAP_MINALIGNSZ - 1) & ~(XNHEAP_MINALIGNSZ - 1)); \
+>> +    overhead +=3D rounded_hsize - hsize; \
+>> +    overhead; \
+>> +})
 >> =20
->>  #define __xn_mux_code(id,op)    ((op << 24)|((id << 16) & 0xff0000)|(=
-__xn_sys_mux & 0xffff))
->> +#define __xn_mux_code_shft(shifted_id,op) ((op << 24)|shifted_id|(__x=
-n_sys_mux & 0xffff))
->=20
-> +#define __xn_mux_code_shft(shifted_id,op) ((op << 24)|shifted_id)
->=20
-> should be enough.
-
-Given my current calculation of the muxid in the kernel, yes. But the
-original variant has zero effect on the code and looks more consistent
-to me.
-
->=20
-> <snip>
->=20
->> Index: xenomai/include/asm-blackfin/syscall.h
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> --- xenomai.orig/include/asm-blackfin/syscall.h
->> +++ xenomai/include/asm-blackfin/syscall.h
->> @@ -27,6 +27,7 @@
->>     (i.e. negative syscall number in orig_p0 meaning "non-syscall
->>     entry"). */
->>  #define __xn_mux_code(id,op)   ((id << 24)|((op << 16) & 0xff0000)|(_=
-_xn_sys_mux & 0xffff))
->> +#define __xn_mux_code_fast(shifted_id,op) ((op << 24)|shifted_id|(__x=
-n_sys_mux & 0xffff))
->> =20
->=20
-> Breakage alert.
->=20
-
-Oops.
-
-Ok, I will rework this patch.
-
-Jan
+>>  #define xnmalloc(size)     xnheap_alloc(&kheap,size)
+>>  #define xnfree(ptr)        xnheap_free(&kheap,ptr)
+>> _______________________________________________
+>> Xenomai-core mailing list
+>> Xenomai-core@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-core
 
 
---------------enigD1CE48F84439F85137A620CD
+
+--------------enigD6195BE020E440A2CE432725
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -136,10 +115,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEuKHuniDOoMHTA+kRAk07AJ9mjcga98zLrMM22gWL/9SwEh/lXwCfacmG
-j3a4WeECroeUGd+2p93a8+c=
-=jNPp
+iD8DBQFEuKJZniDOoMHTA+kRAuNQAJ0TTt4cS5tPbSE8huFmQkpI0z9XdQCeO1+R
+mCsCiKPmfm8ddhMfmMVNwvI=
+=A2/y
 -----END PGP SIGNATURE-----
 
---------------enigD1CE48F84439F85137A620CD--
+--------------enigD6195BE020E440A2CE432725--
 
