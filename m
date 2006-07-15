@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-help] Xenomai heap services
+Subject: Re: [Xenomai-help] do memory functions switch to secondary mode ?
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A3F912B@ARVMAIL1.mra.roland-man.biz>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A3F912B@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A3F9354@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A3F9354@domain.hid>
 Content-Type: text/plain
-Date: Sat, 15 Jul 2006 03:14:08 +0200
-Message-Id: <1152926048.5027.49.camel@domain.hid>
+Date: Sat, 15 Jul 2006 03:38:10 +0200
+Message-Id: <1152927490.5027.52.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -20,32 +20,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Roderik_Wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-On Mon, 2006-07-10 at 13:56 +0200, Roderik_Wildenburg@domain.hid wrote:
-> - why rt_heap_alloc fails
+On Tue, 2006-07-11 at 14:27 +0200, Roderik_Wildenburg@domain.hid wrote:
+> Does any of the memory functions like :
+> memcopy,
+> memset,
+> bzero,
+> 
+> :
+> :
+> 
+> cause Xenomai to switch to secondary mode ?
 
-Because nucleus heaps the native ones are based on, are given the start
-address of the memory segment to use, from which they borrow a certain
-portion for housekeeping data. IOW, heaps give no guarantee that the
-full size of the memory segment will be available for user allocation.
-The fact that native heaps could hide this by passing a larger memory
-segment to encompass the internal overhead is another issue. They
-attempt to actually, but fail on rounding errors.
+No, unless a page fault is raised as a result of treading on the target
+memory.
 
-> - what the error -EAGAIN means
+> I am asking as I have a high priority task, which mesures its
+> periodicity (set to 1ms).
+> This task is using just rt_-functions and memcpy.
+> When in low priority tasks memory intensively is used (memset,
+> rt_heap_alloc, rt_heap_create, NFS-transfers in Linux threads), the
+> cycle time of the high priority task inreases to nearly twice the time
+> it has been set up (2ms++; at least 1 time, as I just measure maxima).
+> 
+> Is this possible, or am I doing something wrong ?
+> 
 
-You passed TM_NONBLOCK telling Xenomai that your task could not be
-suspended to wait for more memory to be available, and your allocation
-request could not be fulfilled immediately, so -EWOULDBLOCK has been
-returned. EAGAIN and EWOULDBLOCK are the same value.
+Do you observe this weird behaviour at the same time the kernel emits
+allocation failure messages?
 
-> - why heaps are limited to 16MB
-
-Nucleus heaps are not limited to 16Mb, heap extents are, and heaps may
-have several active extents, albeit the native skin only uses a single
-(initial) one, because we want the entite heap space to be contiguous
-for the native skin, due to the H_MAPPABLE property. This said, this
-16Mb limit looks pretty useless.
-
+> Tanks a lot
+> Roderik
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
 Philippe.
 
