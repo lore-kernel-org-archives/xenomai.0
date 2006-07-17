@@ -1,69 +1,65 @@
-Message-ID: <448EE9C3.4060706@domain.hid>
-Date: Tue, 13 Jun 2006 18:37:23 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Danilo Levantesi <vagninu@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai on PXA
+Date: Tue, 18 Jul 2006 00:33:30 +0200
+References: <200607071703.10700.vagninu@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<17595.47131.142881.132531@domain.hid>
+In-Reply-To: <17595.47131.142881.132531@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] strange periodic behavior
-References: <45045.155.98.4.39.1150149018.squirrel@domain.hid>
-	<448E5A2B.9060606@domain.hid>
-	<3384.206.81.135.88.1150211884.squirrel@domain.hid>
-	<448EDECA.7030302@domain.hid>
-	<36429.155.98.4.39.1150216385.squirrel@domain.hid>
-In-Reply-To: <36429.155.98.4.39.1150216385.squirrel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD109593141790380A8846707"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; boundary="nextPart12544523.PusPUTKiic";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <200607180033.39079.vagninu@domain.hid>
+Reply-To: vagninu@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Brandt Erickson <brandt@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD109593141790380A8846707
-Content-Type: text/plain; charset=ISO-8859-15
+--nextPart12544523.PusPUTKiic
+Content-Type: text/plain;
+  charset="iso-8859-2"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Brandt Erickson wrote:
->> Sure your kernel was updated? Check /proc/cpuinfo for varying numbers
->> with and without system load.
->=20
-> Yes, the kernel is up-to-date.  The config file on /boot confirms and
-> there is no variation in frequency going from and idle load to ~full lo=
-ad.
->=20
->> But maybe it is better to post a simple excerpt of your test which sho=
-ws
->> your problem and let us cross-check.
->=20
-> sample output from the latency program is attached.  Thanks for the hel=
-p.
+> Starting from Detlef patch, I made some tests on an SA1100 based ARM,
+> attached is a patch that works for me, which I also adapted to PXA
+> without testing it. It would be nice if someone could test it on PXA.
+>
+> In order to do these tests, I had to adapt the ARM ipipe 2.6.15 patch to
+> linux 2.6.16, so the 2.6.16 ipipe patch is attached too for further
+> testing. Note that I had to make a small modification in
+> include/asm-arm/system.h, because the SA1100 version of __xchg uses
+> local_irq_restore, which use PSR_I_BIT, which is defined elsewhere, so I
+> replaced PSR_I_BIT with its value. I now wonder if it is the proper fix,
+> or if __xchg should be fixed to use local_irq_save_hw and
+> local_irq_restore_hw instead, as is the case for the atomic operations
+> defined in atomic.h and bitops.h.
+I'm sorry, but probably i can't test it, because i need an handelds.org=20
+patched kernel to load linux into my ipaq (i need the mmc driver), and the=
+=20
+latest stable version is 2.4.19-rmk6-pxa1-hh41... No official support for=20
+2.6 :'(=20
+BTW, if i can find a working 2.6.16 kernel i'll give it a try!
 
-Grmbl, my fault. Your test looks ok, but I was rather referring to your
-*code*.
+Danilo Levantesi
 
-Jan
-
-
---------------enigD109593141790380A8846707
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--nextPart12544523.PusPUTKiic
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
 
-iD8DBQFEjunDniDOoMHTA+kRApeyAJ0d+y2XCVlRlpklTSxFRMz4R3hcvQCaA8Ud
-+4P3/eMQ57/xY7itEaUrB6w=
-=hR2/
+iD8DBQBEvBBDQbvwSSpGUgQRAhGfAKCX33JvfQHQaBNZOfnU8RF1oANiWACg5sJF
+AoWss97u+pKoM8oQatN0NZ8=
+=OF39
 -----END PGP SIGNATURE-----
 
---------------enigD109593141790380A8846707--
+--nextPart12544523.PusPUTKiic--
 
