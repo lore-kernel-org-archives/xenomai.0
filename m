@@ -1,11 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17597.8389.101648.999117@domain.hid>
-Date: Tue, 18 Jul 2006 19:56:21 +0200
+Message-ID: <e325d110607181105n58a6fb47o24d53b42ee92e2a3@domain.hid>
+Date: Tue, 18 Jul 2006 19:05:58 +0100
+From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
 Subject: Re: [Xenomai-help] poor graphic performance
 In-Reply-To: <17597.7768.14509.204472@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 References: <e325d110607181030vd9753c4j12f45f8246503715@domain.hid>
 	<17597.7768.14509.204472@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,46 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kim Chuan Lim <lim.kim.chuan@domain.hid>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Kim Chuan Lim wrote:
- >  > Hi all,
- >  > 
- >  > The following is my glxgears result..
- >  > glxgears
- >  > 6693 frames in 5.0 seconds = 1338.519 FPS
- >  > 1069 frames in 5.0 seconds = 211.973 FPS
- >  > 50 frames in 5.0 seconds =  9.975 FPS
- >  > 567 frames in 5.1 seconds = 111.257 FPS
- >  > 50 frames in 5.0 seconds =  9.967 FPS
- >  > 388 frames in 5.1 seconds = 76.194 FPS
- >  > 50 frames in 5.0 seconds =  9.975 FPS
- >  > 50 frames in 5.0 seconds =  9.975 FPS
- >  > 282 frames in 5.1 seconds = 55.465 FPS
- >  > 353 frames in 5.0 seconds = 70.147 FPS
- >  > 
- >  > 10FPS is really low!!
- >  > 
- >  > May i know what is the reason it is so slow? I manage to get 2000FPS
- >  > in my normal linux box.
- > 
- > Do you get these results while a xenomai application is running or
- > without xenomai running ? 
- > If a xenomai application is running, then it needs cpu. If no xenomai
- > application is running, maybe you disabled support for DRI for your
- > graphic card in kernel configuration ?
+> Do you get these results while a xenomai application is running or
+> without xenomai running ?
+There is no any rt_task running in my computer when i do the glxgears testing.
 
-It is DRM, not DRI. A more complete answer, check that the following
-items are configured in your kernel configuration:
-- in the menu "Processor type and features", check that MTRR is enabled;
-- in the menu "Device drivers/Character devices", check that
-  /dev/agpgart is enabled for your chipset;
-- in the same menu, check that Direct Rendering Manager is enabled for
-  your graphic card.
+> If a xenomai application is running, then it needs cpu. If no xenomai
+> application is running, maybe you disabled support for DRI for your
+> graphic card in kernel configuration ?
+CONFIG_DRM=m
+CONFIG_DRM_TDFX=m
+CONFIG_DRM_R128=m
+CONFIG_DRM_RADEON=m
+CONFIG_DRM_I810=m
+CONFIG_DRM_I830=m
+CONFIG_DRM_I915=m
+CONFIG_DRM_MGA=m
+CONFIG_DRM_SIS=m
+CONFIG_DRM_VIA=m
+CONFIG_DRM_SAVAGE=m
 
--- 
+I'm using the proprietary driver provided by Ati from
+https://a248.e.akamai.net/f/674/9206/0/www2.ati.com/drivers/linux/ati-driver-installer-8.26.18-x86.run
 
+The default driver provided by my linux distribuition can only give
+upto 200FPS in my xenomai box.
 
-					    Gilles Chanteperdrix.
+Regards,
+Kim Chuan.
 
