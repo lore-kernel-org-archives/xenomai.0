@@ -1,16 +1,11 @@
-From: Danilo Levantesi <vagninu@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai on PXA
-Date: Tue, 18 Jul 2006 00:33:30 +0200
-References: <200607071703.10700.vagninu@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-In-Reply-To: <17595.47131.142881.132531@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart12544523.PusPUTKiic";
-	protocol="application/pgp-signature"; micalg=pgp-sha1
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Tue, 18 Jul 2006 15:05:28 +0200
+Message-Id: <1153227929.5029.25.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <200607180033.39079.vagninu@domain.hid>
-Reply-To: vagninu@domain.hid
+Subject: [Xenomai-core] Xenomai v2.2
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,44 +17,35 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---nextPart12544523.PusPUTKiic
-Content-Type: text/plain;
-  charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-> Starting from Detlef patch, I made some tests on an SA1100 based ARM,
-> attached is a patch that works for me, which I also adapted to PXA
-> without testing it. It would be nice if someone could test it on PXA.
->
-> In order to do these tests, I had to adapt the ARM ipipe 2.6.15 patch to
-> linux 2.6.16, so the 2.6.16 ipipe patch is attached too for further
-> testing. Note that I had to make a small modification in
-> include/asm-arm/system.h, because the SA1100 version of __xchg uses
-> local_irq_restore, which use PSR_I_BIT, which is defined elsewhere, so I
-> replaced PSR_I_BIT with its value. I now wonder if it is the proper fix,
-> or if __xchg should be fixed to use local_irq_save_hw and
-> local_irq_restore_hw instead, as is the case for the atomic operations
-> defined in atomic.h and bitops.h.
-I'm sorry, but probably i can't test it, because i need an handelds.org=20
-patched kernel to load linux into my ipaq (i need the mmc driver), and the=
-=20
-latest stable version is 2.4.19-rmk6-pxa1-hh41... No official support for=20
-2.6 :'(=20
-BTW, if i can find a working 2.6.16 kernel i'll give it a try!
+Here is v2.2, basically aiming at higher performances and better Linux
+integration compared to the previous series. The major issues we have
+been working on for this release are:
 
-Danilo Levantesi
+o Latency reduction, thanks to a combined work on the I-pipe support
+and fast paths of the real-time core. To leverage that, you will need
+to upgrade to recent Adeos releases, which provide pipeline head
+optimizations.
 
---nextPart12544523.PusPUTKiic
-Content-Type: application/pgp-signature
+o Direct syscall interfaces to the VxWorks and VRTX skins are now
+available. In other words, it is now possible to run VxWorks and VRTX
+applications in user-space context, without resorting to the UVM
+machinery (which remains available, though).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+o The testsuite has been extended with new tests and benchmarks.
 
-iD8DBQBEvBBDQbvwSSpGUgQRAhGfAKCX33JvfQHQaBNZOfnU8RF1oANiWACg5sJF
-AoWss97u+pKoM8oQatN0NZ8=
-=OF39
------END PGP SIGNATURE-----
+o The POSIX, RTDM and native skin have been significantly updated.
+POSIX-wise, this also means that we are getting close to the 1003.1b
+specifications, fully delivered in primary execution mode.
 
---nextPart12544523.PusPUTKiic--
+o The Adeos support has been upgraded for all architectures.
+
+See the ChangeLog for details.
+
+http://download.gna.org/xenomai/stable/xenomai-2.2.0.tar.bz2
+
+-- 
+Philippe.
+
+
 
