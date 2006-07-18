@@ -1,10 +1,12 @@
+Subject: Re: [Xenomai-core] Xenomai v2.2
 From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1153227929.5029.25.camel@domain.hid>
+References: <1153227929.5029.25.camel@domain.hid>
 Content-Type: text/plain
-Date: Tue, 18 Jul 2006 15:05:28 +0200
-Message-Id: <1153227929.5029.25.camel@domain.hid>
+Date: Tue, 18 Jul 2006 18:43:17 +0200
+Message-Id: <1153240997.5135.12.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai v2.2
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,32 +19,16 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
+On Tue, 2006-07-18 at 15:05 +0200, Philippe Gerum wrote:
+> Here is v2.2,
 
-Here is v2.2, basically aiming at higher performances and better Linux
-integration compared to the previous series. The major issues we have
-been working on for this release are:
+Unfortunately, the Adeos 2.6.14-1.3-04 patch for ppc shipped with the
+release is broken. PowerPC users will need to upgrade to -05, which can
+be downloaded from the usual place:
 
-o Latency reduction, thanks to a combined work on the I-pipe support
-and fast paths of the real-time core. To leverage that, you will need
-to upgrade to recent Adeos releases, which provide pipeline head
-optimizations.
+http://download.gna.org/adeos/patches/v2.6/ppc/adeos-ipipe-2.6.14-ppc-1.3-05.patch
 
-o Direct syscall interfaces to the VxWorks and VRTX skins are now
-available. In other words, it is now possible to run VxWorks and VRTX
-applications in user-space context, without resorting to the UVM
-machinery (which remains available, though).
-
-o The testsuite has been extended with new tests and benchmarks.
-
-o The POSIX, RTDM and native skin have been significantly updated.
-POSIX-wise, this also means that we are getting close to the 1003.1b
-specifications, fully delivered in primary execution mode.
-
-o The Adeos support has been upgraded for all architectures.
-
-See the ChangeLog for details.
-
-http://download.gna.org/xenomai/stable/xenomai-2.2.0.tar.bz2
+Sorry for the inconvenience.
 
 -- 
 Philippe.
