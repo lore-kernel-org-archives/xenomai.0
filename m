@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-core] [PATCH 2/2] simplify xntimer_start
+Subject: Re: [Xenomai-core] [PATCH 1/2] kill cookie in xntimer_t
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44BD735B.2030502@domain.hid>
-References: <44BD735B.2030502@domain.hid>
+In-Reply-To: <44BD7355.60507@domain.hid>
+References: <44BD7355.60507@domain.hid>
 Content-Type: text/plain
-Date: Wed, 19 Jul 2006 10:28:48 +0200
-Message-Id: <1153297728.5026.12.camel@domain.hid>
+Date: Wed, 19 Jul 2006 10:28:37 +0200
+Message-Id: <1153297717.5026.10.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -21,14 +21,23 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 On Wed, 2006-07-19 at 01:48 +0200, Jan Kiszka wrote:
-> Almost all callers of xntimer_start already run in nklock-protected
-> context. Therefore, we can save the lock reacquisition in that function
-> and turn it even into a trivial inliner. This patch also takes care of
-> the two exceptions of the rule above in xnpod_start_timer and psos+'s
-> tm_start_event_timer.
+> [This is only the simplest part of a potential larger xntimer
+> restructuring. Other parts need to be rebased, rewritten, or even
+> rethought yet. One goal is to get the abstraction closer to the kernel's
+> hrtimer, another one is to check for potential optimisations. More
+> information will follow the next days or so.]
+> 
+> 
+> Almost all users of xntimer_t embed this object in the same meta-object
+> they later define as cookie of the timer handler. Thus, a simple
+> container_of could also serve to obtain the cookie in the handler.
+> 
+> This conversion is performed by the attached patch. It also handles the
+> only exception of the rule above: the vwworks skin requires a trampoline
+> handler for its wdog now. Philippe confirmed earlier that this is
+> acceptable.
 
 Applied, thanks.
-
 
 > 
 > Jan
