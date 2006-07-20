@@ -1,14 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="mH9IF9wenn"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17598.11417.970717.5621@domain.hid>
-Date: Wed, 19 Jul 2006 14:59:05 +0200
-Subject: Re: [Xenomai-help] kernel oops using mq_open after fork
-In-Reply-To: <17598.7383.550897.877061@domain.hid>
-References: <200607111736.k6BHaCme029123@domain.hid>
-	<02AA386EB831044F8537A696BA785C78A66846@domain.hid>
-	<17598.7383.550897.877061@domain.hid>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C6ABEB.030841FD"
+Date: Thu, 20 Jul 2006 12:54:39 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E04F5517@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-help] Strange behaviour w/mutex&semaphore
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,214 +14,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C6ABEB.030841FD
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
 
---mH9IF9wenn
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+Hi all,
 
-Gilles Chanteperdrix wrote:
- > Landau, Bracha wrote:
- >  > I'm using xenomai 2.2 rc3 on a MPC8247, on linux 2.6.14.
- >  >  
- >  > I have a problem using mq_open. Please see the attached code.
- >  > If I fork before the mq_open the kernel, I get a kernel oops.
- >  > 
- >  > Why this behaviour?
- > 
- > The child process has not "bound" the interface, so, it has no
- > per-process data. If this is the cause of the oops, the solution is to
- > add a pthread_atfork call in xeno_user_skin_init in order for the
- > process children to also call xeno_user_skin_init.
+I've a strange behaviour with the attached piece of code.
+It's really simple: there are 3 tasks and we're spinning within the task =
+in order
+to simulate task load.
 
-Actually, this issue is specific to skins using the per-process data
-feature, i.e. only the posix skin now. So, here is a fix that only fixes
-the posix skin initialization. If it solve your issue I will commit it.
-You only have to rebuild the user-space support, kernel-space support is
-unchanged.
-
--- 
+It's a pure academic exercice, so don't try to think about the =
+usefulness of this code ;-)
 
 
-					    Gilles Chanteperdrix.
+Actually, after insmod'ing the code into the kernel, the system freezes =
+and
+the "meteoDataAcquisition" task is suspended runaway by the internal =
+xenomai watchdog.
 
---mH9IF9wenn
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-posix-fork-handler.diff"
-Content-Transfer-Encoding: 7bit
+Why?
 
-Index: src/skins/posix/init.c
-===================================================================
---- src/skins/posix/init.c	(revision 1357)
-+++ src/skins/posix/init.c	(working copy)
-@@ -30,6 +30,7 @@
- int __pse51_muxid = -1;
- int __rtdm_muxid = -1;
- int __rtdm_fd_start = INT_MAX;
-+static int fork_handler_registered;
- 
- int __wrap_pthread_setschedparam(pthread_t, int, const struct sched_param *);
- 
-@@ -58,9 +59,9 @@
- 	}
- 
- 	parm.sched_priority = 0;
--	if ((err =
--	     __wrap_pthread_setschedparam(pthread_self(), SCHED_OTHER,
--					  &parm))) {
-+	err = __wrap_pthread_setschedparam(pthread_self(), SCHED_OTHER,
-+					   &parm);
-+	if (err) {
- 		fprintf(stderr, "Xenomai Posix skin init: "
- 			"pthread_setschedparam: %s\n", strerror(err));
- 		exit(EXIT_FAILURE);
-@@ -70,4 +71,14 @@
- 		perror("Xenomai Posix skin init: munlockall");
- 		exit(EXIT_FAILURE);
- 	}
-+
-+	if (!fork_handler_registered) {
-+		err = pthread_atfork(NULL, NULL, &__init_posix_interface);
-+		if (err) {
-+			fprintf(stderr, "Xenomai Posix skin init: "
-+				"pthread_atfork: %s\n", strerror(err));
-+			exit(EXIT_FAILURE);
-+		}
-+		fork_handler_registered = 1;
-+	}
- }
-Index: src/testsuite/switchtest/Makefile.am
-===================================================================
---- src/testsuite/switchtest/Makefile.am	(revision 1357)
-+++ src/testsuite/switchtest/Makefile.am	(working copy)
-@@ -9,8 +9,7 @@
- switch_LDFLAGS =  $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
- 
- switch_LDADD = \
--	-lpthread -lrt \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a	-lpthread -lrt
- 
- install-data-local:
- 	$(mkinstalldirs) $(DESTDIR)$(testdir)
-Index: src/testsuite/switchtest/Makefile.in
-===================================================================
---- src/testsuite/switchtest/Makefile.in	(revision 1357)
-+++ src/testsuite/switchtest/Makefile.in	(working copy)
-@@ -1,4 +1,4 @@
--# Makefile.in generated by automake 1.9.6 from Makefile.am.
-+# Makefile.in generated by automake 1.9.5 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-@@ -14,6 +14,8 @@
- 
- @SET_MAKE@
- 
-+SOURCES = $(switch_SOURCES)
-+
- srcdir = @srcdir@
- top_srcdir = @top_srcdir@
- VPATH = @srcdir@
-@@ -229,8 +231,7 @@
- switch_CPPFLAGS = -I$(top_srcdir)/include/posix $(XENO_USER_CFLAGS) -g -I$(top_srcdir)/include
- switch_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
- switch_LDADD = \
--	-lpthread -lrt \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a	-lpthread -lrt
- 
- EXTRA_DIST = runinfo
- all: all-am
-Index: src/testsuite/cyclic/Makefile.am
-===================================================================
---- src/testsuite/cyclic/Makefile.am	(revision 1357)
-+++ src/testsuite/cyclic/Makefile.am	(working copy)
-@@ -9,8 +9,7 @@
- cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
- 
- cyclictest_LDADD = \
--	-lpthread -lrt \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a -lpthread -lrt
- 
- install-data-local:
- 	$(mkinstalldirs) $(DESTDIR)$(testdir)
-Index: src/testsuite/cyclic/Makefile.in
-===================================================================
---- src/testsuite/cyclic/Makefile.in	(revision 1357)
-+++ src/testsuite/cyclic/Makefile.in	(working copy)
-@@ -1,4 +1,4 @@
--# Makefile.in generated by automake 1.9.6 from Makefile.am.
-+# Makefile.in generated by automake 1.9.5 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-@@ -14,6 +14,8 @@
- 
- @SET_MAKE@
- 
-+SOURCES = $(cyclictest_SOURCES)
-+
- srcdir = @srcdir@
- top_srcdir = @top_srcdir@
- VPATH = @srcdir@
-@@ -229,8 +231,7 @@
- cyclictest_CPPFLAGS = -I$(top_srcdir)/include/posix $(XENO_USER_CFLAGS) -DIPIPE_TRACE=1 -I$(top_srcdir)/include
- cyclictest_LDFLAGS = $(XENO_POSIX_WRAPPERS) $(XENO_USER_LDFLAGS)
- cyclictest_LDADD = \
--	-lpthread -lrt \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a -lpthread -lrt
- 
- EXTRA_DIST = runinfo
- all: all-am
-Index: src/testsuite/irqbench/Makefile.am
-===================================================================
---- src/testsuite/irqbench/Makefile.am	(revision 1357)
-+++ src/testsuite/irqbench/Makefile.am	(working copy)
-@@ -19,8 +19,7 @@
- 	$(XENO_USER_LDFLAGS)
- 
- irqloop_LDADD = \
--	-lpthread \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a -lpthread
- 
- 
- irqbench_SOURCES = irqbench.c
-Index: src/testsuite/irqbench/Makefile.in
-===================================================================
---- src/testsuite/irqbench/Makefile.in	(revision 1357)
-+++ src/testsuite/irqbench/Makefile.in	(working copy)
-@@ -1,4 +1,4 @@
--# Makefile.in generated by automake 1.9.6 from Makefile.am.
-+# Makefile.in generated by automake 1.9.5 from Makefile.am.
- # @configure_input@
- 
- # Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-@@ -14,6 +14,8 @@
- 
- @SET_MAKE@
- 
-+SOURCES = $(irqbench_SOURCES) $(irqloop_SOURCES)
-+
- srcdir = @srcdir@
- top_srcdir = @top_srcdir@
- VPATH = @srcdir@
-@@ -241,8 +243,7 @@
- 	$(XENO_USER_LDFLAGS)
- 
- irqloop_LDADD = \
--	-lpthread \
--	../../skins/posix/.libs/libpthread_rt.a
-+	../../skins/posix/.libs/libpthread_rt.a -lpthread
- 
- irqbench_SOURCES = irqbench.c
- irqbench_CPPFLAGS = \
+Anything wrong in this code?
 
---mH9IF9wenn--
+Thanks for any advice.
+
+Daniel
+
+
+------_=_NextPart_001_01C6ABEB.030841FD
+Content-Type: application/octet-stream;
+	name="mytry.c"
+Content-Transfer-Encoding: base64
+Content-Description: mytry.c
+Content-Disposition: attachment;
+	filename="mytry.c"
+
+CgojaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5j
+bHVkZSA8bmF0aXZlL3NlbS5oPgojaW5jbHVkZSA8bmF0aXZlL211dGV4Lmg+CiNpbmNsdWRlIDxu
+YXRpdmUvYWxhcm0uaD4KCiNkZWZpbmUgU1RBQ0tfU0laRSA4MTkyCiNkZWZpbmUgTVMgMTAwMDAw
+MCAKCiNkZWZpbmUgV0lUSF9NVVRFWCAgMSAgLyogc2VtYXBob3JlL211dGV4IHNlbGVjdGlvbiAq
+LwoKUlRfVEFTSyBidXNNYW5hZ2VtZW50VGFzazsKUlRfVEFTSyBtZXRlb0RhdGFBY3F1aXNpdGlv
+blRhc2s7ClJUX1RBU0sgY29tSGFuZGxpbmdUYXNrOwoKUlRfU0VNIHNlbWE7ClJUX01VVEVYIG11
+dGV4OwoKaW50IGVycjsKCnZvaWQgbWV0ZW9EYXRhQWNxdWlzaXRpb24odm9pZCAqY29va2llKSB7
+CgogIHdoaWxlKDEpIHsKCiAgICBpZiAoV0lUSF9NVVRFWCkKICAgICAgcnRfbXV0ZXhfbG9jaygm
+bXV0ZXgsIFRNX0lORklOSVRFKTsKICAgIGVsc2UKICAgICAgcnRfc2VtX3AoJnNlbWEsIFRNX0lO
+RklOSVRFKTsKCiAgICBydF90aW1lcl9zcGluKDEwKk1TKTsKCiAgICBpZiAoV0lUSF9NVVRFWCkK
+ICAgICAgcnRfbXV0ZXhfdW5sb2NrKCZtdXRleCk7CiAgICBlbHNlCiAgICAgIHJ0X3NlbV92KCZz
+ZW1hKTsKCiAgICBydF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwogIH0KCn0KCnZvaWQgYnVzTWFu
+YWdlbWVudCh2b2lkICpjb29raWUpIHsKCiAgd2hpbGUoMSkgewoKICAgIGlmIChXSVRIX01VVEVY
+KQogICAgICBydF9tdXRleF9sb2NrKCZtdXRleCwgVE1fSU5GSU5JVEUpOwogICAgZWxzZQogICAg
+ICBydF9zZW1fcCgmc2VtYSwgVE1fSU5GSU5JVEUpOwoKICAgIHJ0X3RpbWVyX3NwaW4oNSpNUyk7
+CgogICAgaWYgKFdJVEhfTVVURVgpCiAgICAgIHJ0X211dGV4X3VubG9jaygmbXV0ZXgpOwogICAg
+ZWxzZQogICAgICBydF9zZW1fdigmc2VtYSk7CgogICAgcnRfdGFza193YWl0X3BlcmlvZChOVUxM
+KTsKICB9Cn0KCnZvaWQgY29tSGFuZGxpbmcodm9pZCAqY29va2llKSB7CgogIHdoaWxlICgxKSB7
+CgogICAgcnRfdGltZXJfc3BpbigxMCpNUyk7CgogICAgcnRfdGFza193YWl0X3BlcmlvZChOVUxM
+KTsKICB9Cgp9Cgp2b2lkIGFsYXJtSGFuZGxlcihSVF9BTEFSTSAqYWxhcm1EZXNjLCB2b2lkICpj
+b29raWUpIHsKICBwcmludGsoIiNBTEVSVDpcbiIpOwp9Cgp2b2lkIF9fZXhpdCBjbGVhbnVwX21v
+ZHVsZSAodm9pZCkgewoKICBwcmludGsoIiNjbGVhbnVwXG4iKTsKCiAgcnRfdGFza19kZWxldGUo
+Jm1ldGVvRGF0YUFjcXVpc2l0aW9uVGFzayk7CiAgcnRfdGFza19kZWxldGUoJmJ1c01hbmFnZW1l
+bnRUYXNrKTsKICBydF90YXNrX2RlbGV0ZSgmY29tSGFuZGxpbmdUYXNrKTsKCiAgLy9ydF9hbGFy
+bV9kZWxldGUoJmFsYXJtQnVzKTsKCiAgcnRfbXV0ZXhfZGVsZXRlKCZtdXRleCk7CiAgcnRfc2Vt
+X2RlbGV0ZSgmc2VtYSk7CgoKICBwcmludGsoIkJ5ZSBieWUhXG4iKTsKfQoKaW50IF9faW5pdCBp
+bml0X21vZHVsZSAodm9pZCkgewoKICBwcmludGsoIiNzdGFydGluZy4uLlxuIik7CgogIGVyciA9
+IHJ0X3RpbWVyX3NldF9tb2RlKE1TKTsKICBpZiAoZXJyICE9IDApIHsKICAgIHByaW50aygiRXJy
+b3IgdGltZXI6ICVkXG4iLCBlcnIpOwogICAgcmV0dXJuIC0xOwogIH0KCiAgZXJyID0gcnRfc2Vt
+X2NyZWF0ZSgmc2VtYSwgIlNFTUFQSE9SRV9CVVMiLCAxLCBTX1BSSU8pOwogIGlmIChlcnIgIT0g
+MCkgewogICAgcHJpbnRrKCJzZW1hcGhvcmUgY3JlYXRpb24gZmFpbGVkOiAlZFxuIiwgZXJyKTsK
+ICAgIHJldHVybiAtMTsKICB9IAoKICBlcnIgPSBydF9tdXRleF9jcmVhdGUoJm11dGV4LCAiTVVU
+RVhfQlVTIik7CiAgaWYgKGVyciAhPSAwKSB7CiAgICBwcmludGsoIm11dGV4IGNyZWF0aW9uIGZh
+aWxlZDogJWRcbiIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBlcnIgPSBydF90YXNrX2Ny
+ZWF0ZSgmYnVzTWFuYWdlbWVudFRhc2ssICJidXNNYW5hZ2VtZW50IiwgU1RBQ0tfU0laRSwgMTAs
+IDApOwogIGlmIChlcnIgIT0gMCkgewogICAgcHJpbnRrKCJ0YXNrIGNyZWF0aW9uIGZhaWxlZDog
+JWRcbiIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBlcnIgPSBydF90YXNrX2NyZWF0ZSgm
+bWV0ZW9EYXRhQWNxdWlzaXRpb25UYXNrLCAibWV0ZW9EYXRhQWNxdWlzaXRpb24iLCBTVEFDS19T
+SVpFLCAxLCAwKTsKICBpZiAoZXJyICE9IDApIHsKICAgIHByaW50aygidGFzayBjcmVhdGlvbiBm
+YWlsZWQ6ICVkXG4iLCBlcnIpOwogICAgcmV0dXJuIC0xOwogIH0KCiAgZXJyID0gcnRfdGFza19j
+cmVhdGUoJmNvbUhhbmRsaW5nVGFzaywgImNvbUhhbmRsaW5nIiwgU1RBQ0tfU0laRSwgNSAsIDAp
+OwogIGlmIChlcnIgIT0gMCkgewogICAgcHJpbnRrKCJ0YXNrIGNyZWF0aW9uIGZhaWxlZDogJWRc
+biIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBydF90YXNrX3NldF9wZXJpb2RpYygmYnVz
+TWFuYWdlbWVudFRhc2ssIFRNX05PVywgMjApOwogIHJ0X3Rhc2tfc2V0X3BlcmlvZGljKCZjb21I
+YW5kbGluZ1Rhc2ssIFRNX05PVywgMjApOwogIHJ0X3Rhc2tfc2V0X3BlcmlvZGljKCZtZXRlb0Rh
+dGFBY3F1aXNpdGlvblRhc2ssIDE4LCAxMDAwKTsgLyogRGVsYXkgdGhpcyB0YXNrIGluIG9yZGVy
+IHRvIGZvcmNlIHByaW9yaXR5IGludmVyc2lvbiAqLwoKICBydF90YXNrX3N0YXJ0KCZjb21IYW5k
+bGluZ1Rhc2ssIGNvbUhhbmRsaW5nLCBOVUxMKTsKICBydF90YXNrX3N0YXJ0KCZidXNNYW5hZ2Vt
+ZW50VGFzaywgYnVzTWFuYWdlbWVudCwgTlVMTCk7CiAgcnRfdGFza19zdGFydCgmbWV0ZW9EYXRh
+QWNxdWlzaXRpb25UYXNrLCBtZXRlb0RhdGFBY3F1aXNpdGlvbiwgTlVMTCk7CgogIHJldHVybiAw
+Owp9CgpNT0RVTEVfTElDRU5TRSgiR1BMIik7Cg==
+
+------_=_NextPart_001_01C6ABEB.030841FD--
 
