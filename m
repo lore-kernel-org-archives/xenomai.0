@@ -1,10 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <44BF62FE.6080404@domain.hid>
+Date: Thu, 20 Jul 2006 13:03:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C6ABEB.030841FD"
-Date: Thu, 20 Jul 2006 12:54:39 +0200
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E04F5517@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: [Xenomai-help] Strange behaviour w/mutex&semaphore
+Subject: Re: [Xenomai-help] Strange behaviour w/mutex&semaphore
+References: <FDBBB5CC70676540B3EF7CFE83FD94E04F5517@domain.hid>
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E04F5517@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA8F7C9837721C179363E9C8F"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,100 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C6ABEB.030841FD
-Content-Type: text/plain;
-	charset="iso-8859-1"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA8F7C9837721C179363E9C8F
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
+ROSSIER Daniel wrote:
+> Hi all,
+>=20
+> I've a strange behaviour with the attached piece of code.
+> It's really simple: there are 3 tasks and we're spinning within the tas=
+k in order
+> to simulate task load.
+>=20
+> It's a pure academic exercice, so don't try to think about the usefulne=
+ss of this code ;-)
+>=20
+>=20
+> Actually, after insmod'ing the code into the kernel, the system freezes=
+ and
+> the "meteoDataAcquisition" task is suspended runaway by the internal xe=
+nomai watchdog.
+>=20
+> Why?
+>=20
+> Anything wrong in this code?
 
-Hi all,
+Check the values you assign to rt_task_set_periodic. Kind of... fast?
 
-I've a strange behaviour with the attached piece of code.
-It's really simple: there are 3 tasks and we're spinning within the task =
-in order
-to simulate task load.
-
-It's a pure academic exercice, so don't try to think about the =
-usefulness of this code ;-)
-
-
-Actually, after insmod'ing the code into the kernel, the system freezes =
-and
-the "meteoDataAcquisition" task is suspended runaway by the internal =
-xenomai watchdog.
-
-Why?
-
-Anything wrong in this code?
-
-Thanks for any advice.
-
-Daniel
+>=20
+> Thanks for any advice.
+>=20
+> Daniel
+>=20
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 
-------_=_NextPart_001_01C6ABEB.030841FD
-Content-Type: application/octet-stream;
-	name="mytry.c"
-Content-Transfer-Encoding: base64
-Content-Description: mytry.c
-Content-Disposition: attachment;
-	filename="mytry.c"
 
-CgojaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5j
-bHVkZSA8bmF0aXZlL3NlbS5oPgojaW5jbHVkZSA8bmF0aXZlL211dGV4Lmg+CiNpbmNsdWRlIDxu
-YXRpdmUvYWxhcm0uaD4KCiNkZWZpbmUgU1RBQ0tfU0laRSA4MTkyCiNkZWZpbmUgTVMgMTAwMDAw
-MCAKCiNkZWZpbmUgV0lUSF9NVVRFWCAgMSAgLyogc2VtYXBob3JlL211dGV4IHNlbGVjdGlvbiAq
-LwoKUlRfVEFTSyBidXNNYW5hZ2VtZW50VGFzazsKUlRfVEFTSyBtZXRlb0RhdGFBY3F1aXNpdGlv
-blRhc2s7ClJUX1RBU0sgY29tSGFuZGxpbmdUYXNrOwoKUlRfU0VNIHNlbWE7ClJUX01VVEVYIG11
-dGV4OwoKaW50IGVycjsKCnZvaWQgbWV0ZW9EYXRhQWNxdWlzaXRpb24odm9pZCAqY29va2llKSB7
-CgogIHdoaWxlKDEpIHsKCiAgICBpZiAoV0lUSF9NVVRFWCkKICAgICAgcnRfbXV0ZXhfbG9jaygm
-bXV0ZXgsIFRNX0lORklOSVRFKTsKICAgIGVsc2UKICAgICAgcnRfc2VtX3AoJnNlbWEsIFRNX0lO
-RklOSVRFKTsKCiAgICBydF90aW1lcl9zcGluKDEwKk1TKTsKCiAgICBpZiAoV0lUSF9NVVRFWCkK
-ICAgICAgcnRfbXV0ZXhfdW5sb2NrKCZtdXRleCk7CiAgICBlbHNlCiAgICAgIHJ0X3NlbV92KCZz
-ZW1hKTsKCiAgICBydF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwogIH0KCn0KCnZvaWQgYnVzTWFu
-YWdlbWVudCh2b2lkICpjb29raWUpIHsKCiAgd2hpbGUoMSkgewoKICAgIGlmIChXSVRIX01VVEVY
-KQogICAgICBydF9tdXRleF9sb2NrKCZtdXRleCwgVE1fSU5GSU5JVEUpOwogICAgZWxzZQogICAg
-ICBydF9zZW1fcCgmc2VtYSwgVE1fSU5GSU5JVEUpOwoKICAgIHJ0X3RpbWVyX3NwaW4oNSpNUyk7
-CgogICAgaWYgKFdJVEhfTVVURVgpCiAgICAgIHJ0X211dGV4X3VubG9jaygmbXV0ZXgpOwogICAg
-ZWxzZQogICAgICBydF9zZW1fdigmc2VtYSk7CgogICAgcnRfdGFza193YWl0X3BlcmlvZChOVUxM
-KTsKICB9Cn0KCnZvaWQgY29tSGFuZGxpbmcodm9pZCAqY29va2llKSB7CgogIHdoaWxlICgxKSB7
-CgogICAgcnRfdGltZXJfc3BpbigxMCpNUyk7CgogICAgcnRfdGFza193YWl0X3BlcmlvZChOVUxM
-KTsKICB9Cgp9Cgp2b2lkIGFsYXJtSGFuZGxlcihSVF9BTEFSTSAqYWxhcm1EZXNjLCB2b2lkICpj
-b29raWUpIHsKICBwcmludGsoIiNBTEVSVDpcbiIpOwp9Cgp2b2lkIF9fZXhpdCBjbGVhbnVwX21v
-ZHVsZSAodm9pZCkgewoKICBwcmludGsoIiNjbGVhbnVwXG4iKTsKCiAgcnRfdGFza19kZWxldGUo
-Jm1ldGVvRGF0YUFjcXVpc2l0aW9uVGFzayk7CiAgcnRfdGFza19kZWxldGUoJmJ1c01hbmFnZW1l
-bnRUYXNrKTsKICBydF90YXNrX2RlbGV0ZSgmY29tSGFuZGxpbmdUYXNrKTsKCiAgLy9ydF9hbGFy
-bV9kZWxldGUoJmFsYXJtQnVzKTsKCiAgcnRfbXV0ZXhfZGVsZXRlKCZtdXRleCk7CiAgcnRfc2Vt
-X2RlbGV0ZSgmc2VtYSk7CgoKICBwcmludGsoIkJ5ZSBieWUhXG4iKTsKfQoKaW50IF9faW5pdCBp
-bml0X21vZHVsZSAodm9pZCkgewoKICBwcmludGsoIiNzdGFydGluZy4uLlxuIik7CgogIGVyciA9
-IHJ0X3RpbWVyX3NldF9tb2RlKE1TKTsKICBpZiAoZXJyICE9IDApIHsKICAgIHByaW50aygiRXJy
-b3IgdGltZXI6ICVkXG4iLCBlcnIpOwogICAgcmV0dXJuIC0xOwogIH0KCiAgZXJyID0gcnRfc2Vt
-X2NyZWF0ZSgmc2VtYSwgIlNFTUFQSE9SRV9CVVMiLCAxLCBTX1BSSU8pOwogIGlmIChlcnIgIT0g
-MCkgewogICAgcHJpbnRrKCJzZW1hcGhvcmUgY3JlYXRpb24gZmFpbGVkOiAlZFxuIiwgZXJyKTsK
-ICAgIHJldHVybiAtMTsKICB9IAoKICBlcnIgPSBydF9tdXRleF9jcmVhdGUoJm11dGV4LCAiTVVU
-RVhfQlVTIik7CiAgaWYgKGVyciAhPSAwKSB7CiAgICBwcmludGsoIm11dGV4IGNyZWF0aW9uIGZh
-aWxlZDogJWRcbiIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBlcnIgPSBydF90YXNrX2Ny
-ZWF0ZSgmYnVzTWFuYWdlbWVudFRhc2ssICJidXNNYW5hZ2VtZW50IiwgU1RBQ0tfU0laRSwgMTAs
-IDApOwogIGlmIChlcnIgIT0gMCkgewogICAgcHJpbnRrKCJ0YXNrIGNyZWF0aW9uIGZhaWxlZDog
-JWRcbiIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBlcnIgPSBydF90YXNrX2NyZWF0ZSgm
-bWV0ZW9EYXRhQWNxdWlzaXRpb25UYXNrLCAibWV0ZW9EYXRhQWNxdWlzaXRpb24iLCBTVEFDS19T
-SVpFLCAxLCAwKTsKICBpZiAoZXJyICE9IDApIHsKICAgIHByaW50aygidGFzayBjcmVhdGlvbiBm
-YWlsZWQ6ICVkXG4iLCBlcnIpOwogICAgcmV0dXJuIC0xOwogIH0KCiAgZXJyID0gcnRfdGFza19j
-cmVhdGUoJmNvbUhhbmRsaW5nVGFzaywgImNvbUhhbmRsaW5nIiwgU1RBQ0tfU0laRSwgNSAsIDAp
-OwogIGlmIChlcnIgIT0gMCkgewogICAgcHJpbnRrKCJ0YXNrIGNyZWF0aW9uIGZhaWxlZDogJWRc
-biIsIGVycik7CiAgICByZXR1cm4gLTE7CiAgfQoKICBydF90YXNrX3NldF9wZXJpb2RpYygmYnVz
-TWFuYWdlbWVudFRhc2ssIFRNX05PVywgMjApOwogIHJ0X3Rhc2tfc2V0X3BlcmlvZGljKCZjb21I
-YW5kbGluZ1Rhc2ssIFRNX05PVywgMjApOwogIHJ0X3Rhc2tfc2V0X3BlcmlvZGljKCZtZXRlb0Rh
-dGFBY3F1aXNpdGlvblRhc2ssIDE4LCAxMDAwKTsgLyogRGVsYXkgdGhpcyB0YXNrIGluIG9yZGVy
-IHRvIGZvcmNlIHByaW9yaXR5IGludmVyc2lvbiAqLwoKICBydF90YXNrX3N0YXJ0KCZjb21IYW5k
-bGluZ1Rhc2ssIGNvbUhhbmRsaW5nLCBOVUxMKTsKICBydF90YXNrX3N0YXJ0KCZidXNNYW5hZ2Vt
-ZW50VGFzaywgYnVzTWFuYWdlbWVudCwgTlVMTCk7CiAgcnRfdGFza19zdGFydCgmbWV0ZW9EYXRh
-QWNxdWlzaXRpb25UYXNrLCBtZXRlb0RhdGFBY3F1aXNpdGlvbiwgTlVMTCk7CgogIHJldHVybiAw
-Owp9CgpNT0RVTEVfTElDRU5TRSgiR1BMIik7Cg==
+--------------enigA8F7C9837721C179363E9C8F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------_=_NextPart_001_01C6ABEB.030841FD--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFEv2L+niDOoMHTA+kRAhJ/AJ9MUScA0xKPdvXCrVq33Hvu+jdqQgCdHnyS
+Tiz72bEoj4o/t/40huLkS2o=
+=C7SJ
+-----END PGP SIGNATURE-----
+
+--------------enigA8F7C9837721C179363E9C8F--
 
