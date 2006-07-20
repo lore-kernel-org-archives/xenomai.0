@@ -1,13 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
 Subject: RE: [Xenomai-help] Strange behaviour w/mutex&semaphore
-Date: Thu, 20 Jul 2006 13:59:33 +0200
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E05B4515@domain.hid>
-In-Reply-To: <17599.28125.410049.220275@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0210E16@domain.hid>
+References: <FDBBB5CC70676540B3EF7CFE83FD94E0210E16@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Date: Thu, 20 Jul 2006 14:04:26 +0200
+Message-Id: <1153397066.5078.10.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,82 +17,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-
-
-> -----Message d'origine-----
-> De=A0: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Envoy=E9=A0: jeudi, 20. juillet 2006 13:50
-> =C0=A0: ROSSIER Daniel
-> Cc=A0: jan.kiszka@domain.hid; xenomai@xenomai.org
-> Objet=A0: RE: [Xenomai-help] Strange behaviour w/mutex&semaphore
+On Thu, 2006-07-20 at 13:17 +0200, ROSSIER Daniel wrote:
 >=20
-> ROSSIER Daniel wrote:
->  >
->  >
->  > > -----Message d'origine-----
->  > > De=A0: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
->  > > Envoy=E9=A0: jeudi, 20. juillet 2006 13:03
->  > > =C0=A0: ROSSIER Daniel
->  > > Cc=A0: xenomai@xenomai.org
->  > > Objet=A0: Re: [Xenomai-help] Strange behaviour w/mutex&semaphore
->  > >
->  > > ROSSIER Daniel wrote:
->  > > > Hi all,
->  > > >
->  > > > I've a strange behaviour with the attached piece of code.
->  > > > It's really simple: there are 3 tasks and we're spinning within =
-the
-> task
->  > > in order
->  > > > to simulate task load.
->  > > >
->  > > > It's a pure academic exercice, so don't try to think about the
->  > > usefulness of this code ;-)
->  > > >
->  > > >
->  > > > Actually, after insmod'ing the code into the kernel, the system
-> freezes
->  > > and
->  > > > the "meteoDataAcquisition" task is suspended runaway by the
-> internal
->  > > xenomai watchdog.
->  > > >
->  > > > Why?
->  > > >
->  > > > Anything wrong in this code?
->  > >
->  > > Check the values you assign to rt_task_set_periodic. Kind of... =
-fast?
->  >
->  > No, with at these frequencies, there is no problem (the jiffy is at
->  > 1ms).
+> > -----Message d'origine-----
+> > De : jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+> > Envoy=E9 : jeudi, 20. juillet 2006 13:03
+> > =C0 : ROSSIER Daniel
+> > Cc : xenomai@xenomai.org
+> > Objet : Re: [Xenomai-help] Strange behaviour w/mutex&semaphore
+> >=20
+> > ROSSIER Daniel wrote:
+> > > Hi all,
+> > >
+> > > I've a strange behaviour with the attached piece of code.
+> > > It's really simple: there are 3 tasks and we're spinning within the=
+ task
+> > in order
+> > > to simulate task load.
+> > >
+> > > It's a pure academic exercice, so don't try to think about the
+> > usefulness of this code ;-)
+> > >
+> > >
+> > > Actually, after insmod'ing the code into the kernel, the system fre=
+ezes
+> > and
+> > > the "meteoDataAcquisition" task is suspended runaway by the interna=
+l
+> > xenomai watchdog.
+> > >
+> > > Why?
+> > >
+> > > Anything wrong in this code?
+> >=20
+> > Check the values you assign to rt_task_set_periodic. Kind of... fast?
 >=20
-> There are two tasks with a period of 20 ms that are spinning 10 ms
-> each. Does not this put a 100% load on the RT system ? If yes, then
-> Linux has no time left to run. That is what the watchdog is here to
-> avoid. You should try reducing the spinning time in order to let some
-> time for Linux to run.
-
-No, there are:=20
-- a task "MeteoDataAcquisition", with a spin of 10ms, and a period of 1s =
-(1000ms).
-- a task "BusManagement", with a spin of 5ms, and a period of 20ms
-- a task "ComHandling", with a spin of 10ms, and a period of 20ms.
-
-So actually, the CPU load is 10/1000 + 5/20 + 10/20 =3D 0.76; and this =
-gives Linux chance to run. (But again Gilles, it works with the =
-following statement:  rt_task_set_periodic(&meteoDataAcquisitionTask, =
-TM_NOW, 1000);
-
-I don't understand why it doesn't work with a delay of 18ms on the first =
-release point of this task.
-
-> --
->=20
+> No, with at these frequencies, there is no problem (the jiffy is at 1ms=
+). Actually, putting TM_NOW in the rt_task_set_periodic() instead of 18 a=
+s it is, we noticed that it works.
+> Removing the mutex & semaphore stuff, with the delay in set_periodic(),=
+ does not change the behaviour.
+> We came up with this issue after another one, actually, with a more sop=
+histicated code showing a priority inversion. We reduce the code, and the=
+n find this issue. I do not know it both issues are related, but I'd like
+> to solve this one first.
 >=20
 
-Daniel
+-  rt_task_set_periodic(&meteoDataAcquisitionTask, 18, 1000);
++  rt_task_set_periodic(&meteoDataAcquisitionTask, rt_timer_read() + 18,
+1000);
+
+The current call should return with -ETIMEDOUT, in which case, the
+associated acquisition thread would enter a runaway loop, with
+rt_task_wait_period() systematically bailing out upon the same error,
+which in turn makes the task sucking all the available CPU. Then came
+the relentless watchdog...
+
+> >=20
+> > >
+> > > Thanks for any advice.
+> > >
+> > > Daniel
+> > >
+> > >
+> > >
+> > > -------------------------------------------------------------------=
+-----
+> > >
+> > > _______________________________________________
+> > > Xenomai-help mailing list
+> > > Xenomai-help@domain.hid
+> > > https://mail.gna.org/listinfo/xenomai-help
+> >=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
+Philippe.
+
+
 
