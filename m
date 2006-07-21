@@ -1,15 +1,15 @@
-Message-ID: <44C0D0BE.5020500@domain.hid>
-Date: Fri, 21 Jul 2006 15:03:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Priority inversion
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0210E1A@EINT11.einet.ad.eivd.ch>	<FDBBB5CC70676540B3EF7CFE83FD94E05B4564@domain.hid>
-	<20060721145159.5a87453c@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <20060721145159.5a87453c@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig000868D4172622A4EE0D6A1B"
-Sender: jan.kiszka@domain.hid
+References: <FDBBB5CC70676540B3EF7CFE83FD94E0210E1A@EINT11.einet.ad.eivd.ch>
+	<FDBBB5CC70676540B3EF7CFE83FD94E05B4564@domain.hid>
+	<20060721145159.5a87453c@domain.hid>
+Content-Type: text/plain
+Date: Fri, 21 Jul 2006 15:16:16 +0200
+Message-Id: <1153487776.5019.32.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,55 +22,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Daniel Simon <Daniel.Simon@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig000868D4172622A4EE0D6A1B
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Daniel Simon wrote:
+On Fri, 2006-07-21 at 14:51 +0200, Daniel Simon wrote:
 > On Fri, 21 Jul 2006 14:12:47 +0200
 > "ROSSIER Daniel" <Daniel.Rossier@domain.hid> wrote:
->=20
->> but it might be at the spin() level.
->=20
-> I have observed that the behaviour of rt_timer_spin() does not fit with=
-
-> the expected behaviour as described in the doxygened comment: its actua=
-l
-> awakening time do not increase when it is preempted.=20
->=20
+> 
+> > but it might be at the spin() level.
+> 
+> I have observed that the behaviour of rt_timer_spin() does not fit with
+> the expected behaviour as described in the doxygened comment: its actual
+> awakening time do not increase when it is preempted. 
+> 
 > According to the code in timer.c (using 2.1.2) the wakening time seems
 > to be computed once for all at the beginning of the function call.
->=20
+> 
 > Am I right?
+> 
 
-Partially. The doc doesn't claim that the time during preemption will
-get added to your requested spin time. Depending on how long you got
-preempted, the delay /may/ be longer (until the preemption actually
-ends). Anyway, this could explain some misunderstandings in this tricky
-scenario here.
+Yes. But nothing is said in the documentation about the determination of
+the end spinning time, so the doc is right; what it says is that your
+task is going to wait for a certain count of nanoseconds, as seen from
+its own POV, it does not say that only cycles spent in actual spinning
+wait on behalf of the caller should be accounted for. Fact is that the
+task will have waited for a certain amount of time before returning,
+what has occurred in the rest of the system during that period is
+irrelevant to the purpose of rt_task_spin().
 
-[There is actually one undocumented issue of rt_timer_spin: if the task
-is migrated to another CPU during spin, the end time will not match the
-new timebase. So, one should not forget to pin such spinning tasks to
-one CPU first when running on SMP.]
+I guess that your interpretation of the behaviour of your application
+has been wrong due to the non-cumulative aspect of rt_timer_spin(), i.e.
+a first spinning interrupted by a second one will exit immediately upon
+return if the initial end time has been reached, because of the second
+spin time. But in any case, this is an expected behaviour.
 
-Jan
+> 	Daniel
+> 
+-- 
+Philippe.
 
 
---------------enig000868D4172622A4EE0D6A1B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEwNC+niDOoMHTA+kRApDnAJ909j+9vqzfPK/27EyfyVuVIGOy5wCcC4nR
-lrASZkROOQJwpxGevYs3A4k=
-=Zoe1
------END PGP SIGNATURE-----
-
---------------enig000868D4172622A4EE0D6A1B--
 
