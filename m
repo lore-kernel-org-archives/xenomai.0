@@ -1,16 +1,12 @@
-Message-ID: <44BFFC62.8030601@domain.hid>
-Date: Thu, 20 Jul 2006 23:57:54 +0200
+Message-ID: <44C09BC0.4030307@domain.hid>
+Date: Fri, 21 Jul 2006 11:17:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai v2.2
-References: <1153227929.5029.25.camel@domain.hid>
-	<44BE8ECF.2050608@domain.hid>	<44BE943E.80302@domain.hid>
-	<44BEA974.40708@domain.hid> <44BFC5FA.6080608@domain.hid>
-In-Reply-To: <44BFC5FA.6080608@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3761A4D1387C8C4D352C063C"
+	boundary="------------enigE09AA782E122B0C43EE32579"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] rt_task_delete kills caller
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,57 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3761A4D1387C8C4D352C063C
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigE09AA782E122B0C43EE32579
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hannes Mayer wrote:
-> Jan Kiszka wrote:
->> Hannes Mayer wrote:
->>> ...out of curiosity and to test an older example, I compiled
->>> in periodic timer support, recompiled and then it oopses
->>> at boot. Screenshot:
->>> http://www.captain.at/tmp/dsc05081.jpg
->>> *shrugs*
->>
->> .config please. And it would also be more helpful if you could switch =
-on
->> debug symbols so that the oopses tell us where they happened. So this
->> happened during boot or when running your test?
->=20
-> debug symbols ? Can't find anything else the debug option in "kernel
-> hacking" and in "xeno->nucleus". Just enabled both, but no more info
-> at the oops. Oops at booting, BTW.
+Hi,
 
-Hmm, 2.4 limitation. There used to by some tool called ksymoops for
-this. Please give it a try.
+I stumbled over a strange behaviour of rt_task_delete for a created, set
+periodic, but non-started task. The process gets killed on invocation,
+but only if rt_task_set_periodic was called with a non-zero start time.
+Here is the demo code:
 
-> .config later
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/task.h>
 
-Looking forward. Meanwhile I actually have a 2.4 kernel running here
-(and found two compilation quirks in my code at this chance). Though I
-switched on periodic mode, no oops here. And xeno_16550A loads fine as we=
-ll.
+main()
+{
+	RT_TASK task;
+
+	mlockall(MCL_CURRENT|MCL_FUTURE);
+
+	printf("rt_task_create=3D%d\n",
+		rt_task_create(&task, "task", 8192*4, 10, 0));
+
+	printf("rt_task_set_periodic=3D%d\n",
+		rt_task_set_periodic(&task, rt_timer_read()+1, 100000));
+
+	printf("rt_task_delete=3D%d\n",
+		rt_task_delete(&task));
+}
+
+Once you skip rt_task_set_periodic or call it like this
+rt_task_set_periodic(&task, TM_NOW, 100000), everything is fine. Tested
+over trunk, but I guess over versions should suffer as well.
+
+I noticed that the difference seems to be related to the
+xnpod_suspend_thread in xnpod_set_thread_periodic. That suspend is not
+called on idate =3D=3D XN_INFINITE. What is it for then, specifically if =
+you
+would call xnpod_suspend_thread(thread, xnpod_get_time()+period, period)
+which should have the same effect like xnpod_suspend_thread(thread, 0,
+period)?
 
 Jan
 
 
---------------enig3761A4D1387C8C4D352C063C
+--------------enigE09AA782E122B0C43EE32579
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEv/xmniDOoMHTA+kRAk85AJoDQY+sbCijLKIQQghqWz3XpqezcwCeKQup
-83iSVPbusLmGy9zVpwb9j4A=
-=YtD3
+iD8DBQFEwJvAniDOoMHTA+kRAmbqAJ4kjbgUGuEmn1AnZ9emFytmDUHgpACfYdAg
+eXgpfTfRc8iKY6qhGW9i/lI=
+=K38u
 -----END PGP SIGNATURE-----
 
---------------enig3761A4D1387C8C4D352C063C--
+--------------enigE09AA782E122B0C43EE32579--
 
