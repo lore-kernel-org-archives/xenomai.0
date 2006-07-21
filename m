@@ -1,57 +1,87 @@
-Message-ID: <448EEF1A.8070300@domain.hid>
-Date: Tue, 13 Jun 2006 19:00:10 +0200
+Message-ID: <44C0A083.6000101@domain.hid>
+Date: Fri, 21 Jul 2006 11:38:11 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] strange periodic behavior
-References: <45045.155.98.4.39.1150149018.squirrel@domain.hid>
-	<448E5A2B.9060606@domain.hid>
-	<3384.206.81.135.88.1150211884.squirrel@domain.hid>
-	<448EDECA.7030302@domain.hid>
-	<36429.155.98.4.39.1150216385.squirrel@domain.hid>
-	<448EE9C3.4060706@domain.hid>
-	<40729.155.98.4.39.1150217383.squirrel@domain.hid>
-In-Reply-To: <40729.155.98.4.39.1150217383.squirrel@domain.hid>
+Subject: Re: [Xenomai-core] [BUG] rt_task_delete kills caller
+References: <44C09BC0.4030307@domain.hid>
+In-Reply-To: <44C09BC0.4030307@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6D418A124576F20334A3BBF8"
+	boundary="------------enig537B5B5E5C7E385BEC7B7F0F"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Brandt Erickson <brandt@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6D418A124576F20334A3BBF8
+--------------enig537B5B5E5C7E385BEC7B7F0F
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Brandt Erickson wrote:
->  > Grmbl, my fault. Your test looks ok, but I was rather referring to y=
-our
->> *code*.
+Jan Kiszka wrote:
+> Hi,
 >=20
-> Sorry, here's a small portion of what it outputs.  The first column is =
-the
-> timestamp and the second is the overrun value from rt_task_wait_period.=
-=20
-> In this case, the "control loop" is supposed to be running at 10 KHz.
+> I stumbled over a strange behaviour of rt_task_delete for a created, se=
+t
+> periodic, but non-started task. The process gets killed on invocation,
+
+More precisely:
+
+(gdb) cont
+Program received signal SIG32, Real-time event 32.
+
+Weird. No kernel oops BTW.
+
+> but only if rt_task_set_periodic was called with a non-zero start time.=
+
+> Here is the demo code:
 >=20
+> #include <stdio.h>
+> #include <sys/mman.h>
+> #include <native/task.h>
+>=20
+> main()
+> {
+> 	RT_TASK task;
+>=20
+> 	mlockall(MCL_CURRENT|MCL_FUTURE);
+>=20
+> 	printf("rt_task_create=3D%d\n",
+> 		rt_task_create(&task, "task", 8192*4, 10, 0));
+>=20
+> 	printf("rt_task_set_periodic=3D%d\n",
+> 		rt_task_set_periodic(&task, rt_timer_read()+1, 100000));
+>=20
+> 	printf("rt_task_delete=3D%d\n",
+> 		rt_task_delete(&task));
+> }
+>=20
+> Once you skip rt_task_set_periodic or call it like this
+> rt_task_set_periodic(&task, TM_NOW, 100000), everything is fine. Tested=
 
-Let's try this again :): Could you post your test program or better a
-reduced version of it that demonstrate the wrong timing? We can then
-analyse and/or compile and run it on some of our test systems.
+> over trunk, but I guess over versions should suffer as well.
+>=20
+> I noticed that the difference seems to be related to the
+> xnpod_suspend_thread in xnpod_set_thread_periodic. That suspend is not
+> called on idate =3D=3D XN_INFINITE. What is it for then, specifically i=
+f you
+> would call xnpod_suspend_thread(thread, xnpod_get_time()+period, period=
+)
+> which should have the same effect like xnpod_suspend_thread(thread, 0,
+> period)?
+>=20
+> Jan
 
-Jan
 
 
---------------enig6D418A124576F20334A3BBF8
+--------------enig537B5B5E5C7E385BEC7B7F0F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -60,10 +90,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEju8aniDOoMHTA+kRAsB2AJ4oxersHQXyPSjUzAW1Vp8WNJ1qggCeOJ15
-LoFnwaR/BkBDLG6lGh6oH10=
-=tN9e
+iD8DBQFEwKCDniDOoMHTA+kRAk6oAJwN/ayp5m+0cdAUf7wr0t9aNsvrSgCeJfbv
+vFssXF8kuT7/ay2sKtYDyYM=
+=fd+q
 -----END PGP SIGNATURE-----
 
---------------enig6D418A124576F20334A3BBF8--
+--------------enig537B5B5E5C7E385BEC7B7F0F--
 
