@@ -1,91 +1,78 @@
-Message-ID: <44C70EF2.3060405@domain.hid>
-Date: Wed, 26 Jul 2006 08:42:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Julien Heyman <bidsonux@domain.hid>
+Subject: Re: [Xenomai-help] Beginner's question / testsuite / latency
+Date: Sat, 22 Jul 2006 11:58:52 +0200
+References: <442248c90607201417m24729b7cs23a8b82b719ff1cc@domain.hid>
+	<17600.54714.315590.474838@domain.hid>
+In-Reply-To: <17600.54714.315590.474838@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Buildbot running again. rtnet does not compile,
-	small error in sim testsuite.
-References: <200607260652.58806.niklaus.giger@domain.hid>
-In-Reply-To: <200607260652.58806.niklaus.giger@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig96234091D4D9137A38946A14"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200607221158.53315.bidsonux@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig96234091D4D9137A38946A14
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Gilles,
 
-Niklaus Giger wrote:
-> Hi
->=20
-> Back from my vacation I discovered that the buildbot did not run during=
- my=20
-> absence as I had added a (debugging) printf some time before vacation. =
-This=20
-> printf did not harm as long as the session was alive. But before leavin=
-g I=20
-> cleanup my desktop and bang the xenomai repository watcher got killed. =
-Sorry!
->=20
-> I fixed the error and now the buildbot is running again.
->=20
-> RTnet seems to have a compile problem: see
-> http://ngiger.dyndns.org/buildbot/tqm860/builds/227/step-mk_RTnet/0
-> In file included from rtnet_ifs.c:30:
-> ../../../stack/include/rtnet.h:29:23: rtdm/rtdm.h: No such file or dire=
-ctory
-> rtnet_ifs.c: In function `main':
-> <..>
+On Friday 21 July 2006 15:25, Gilles Chanteperdrix wrote:
+> Julien Heyman wrote:
+>  > Hi,
+>  >
+>  > I am currently trying to evaluate Xenomai, and my current setup is :
+>  > VIA C3 533Mhz processor, Kubuntu 6.06 Linux distribution.
+>  > I am using Xenomai-2.1.0 over a 2.6.17.4 kernel.
+>  > When I run the latency part of the testsuite (in a console under KDE), I
+>  > get results that I cannot understand, so I probably did something wrong
+>  > (execution trace included below).
+>  > I get reasonable values during the first seconds, then all of a sudden
+>  > latencies begin to rise, continuously, to very large values.
+>  > - I did check that DMA transfer is activated on my HD.
+>  > - I did select "Enable SMI workaround" + "Globally disable SMI" in the
+>  > Xenomai
+>  > options while configuring the kernel.
+>  > - I have disabled power management at BIOS level and disabled ACPI
+>  > support and
+>  > CPU frequency scaling during kernel configuration.
+>  > - I checked that I don't have anything called "legacy USB" in my BIOS. I
+>  > do have an "OnChip USB" option enable in the BIOS though.
+>  >
+>  > Any advice would be appreciated !
+>
+> Some platforms stop their tsc when idle, this would cause serious
+> trouble for Xenomai. Linux detect such behaviour and print the message:
+>
+> Losing too many ticks!
+> TSC cannot be used as a timesource.
+> Possible reasons for this are:
+>   You're running with Speedstep,
+>   You don't have DMA enabled for your hard disk (see hdparm),
+>   Incorrect TSC synchronization on an SMP system (see dmesg).
+> Falling back to a sane timesource now.
+>
+> Do you see such message in kernel logs ?
 
-Seems to me like you do not install the Xenomai user-space part
-properly. At least I'm not able to find any "make install" in the logs.
-As a result, there are no headers like rtdm/rtdm.h under
-/usr/include/xenomai (i.e. the include path xeno-config tells to RTnet).
+No, no trace of such messages in dmesg / kern.log when the pb occurs.
+(am I checking the "right" logs by the way ? I am a newbie on Linux)
 
->=20
-> The timing behaviour seems to have changed a little bit as the simulato=
-r=20
-> testsuite reports in:
-> http://ngiger.dyndns.org/buildbot/sim/builds/213/step-check_sim/0
-> vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2009=
-); got=20
-> SEQ("Test2",2002)
-> vxworks->t010823-2: t010823-2.c:166, test finished: 1 failures/ 33 test=
-s
->=20
-> Best regards
->=20
+>
+> If this is the issue you are having, then you may try passing idle=poll
+> on kernel boot line. Or recompile the kernel selecting a processor that
+> has no tsc (for example 486), xenomai will then use the 8254 counter to
+> emulate the tsc.
 
-Thanks,
-Jan
+Ok, I will try selecting CPU=486, disabling TSC in Xenomai config and using 
+the latest Xenomai release, for the sake of testing.
 
-
-
---------------enig96234091D4D9137A38946A14
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFExw72niDOoMHTA+kRAr0IAJ9HfYNXLQINvRn9oMVWVmdryLGr+wCcCYPU
-50+8LEVI1aE25GcEganWcXM=
-=4oJR
------END PGP SIGNATURE-----
-
---------------enig96234091D4D9137A38946A14--
+Regards,
+Julien Heyman
 
