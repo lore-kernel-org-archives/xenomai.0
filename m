@@ -1,12 +1,16 @@
-Message-ID: <44C21AF8.3000906@domain.hid>
-Date: Sat, 22 Jul 2006 14:32:56 +0200
-From: Hannes Mayer <h.mayer@domain.hid>
+Message-ID: <44C25DA7.6020302@domain.hid>
+Date: Sat, 22 Jul 2006 19:17:27 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Xenomai v2.2
 References: <1153227929.5029.25.camel@domain.hid>	<44BE8ECF.2050608@domain.hid>	<44BE943E.80302@domain.hid>	<44BEA974.40708@domain.hid>
 	<44BFC5FA.6080608@domain.hid> <44BFFC62.8030601@domain.hid>
-In-Reply-To: <44BFFC62.8030601@domain.hid>
-Content-Type: multipart/mixed; boundary="------------060505020804070007010803"
+	<44C21AF8.3000906@domain.hid>
+In-Reply-To: <44C21AF8.3000906@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig35825623F054A64543E25BD2"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,184 +20,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Hannes Mayer <h.mayer@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------060505020804070007010803
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig35825623F054A64543E25BD2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jan!
-
-Jan Kiszka wrote:
-[...]
-> Hmm, 2.4 limitation. There used to by some tool called ksymoops for
-> this. Please give it a try.
-
-hmm...so far I haven't figured out how to use ksymoops, but I got this:
-
-# addr2line -e vmlinux -f c0126f46
-__ipipe_dispatch_event
-??:0
-# addr2line -e vmlinux -f c01160d1
-schedule
-??:0
-# addr2line -e vmlinux -f c01266c7
-flush_scheduled_tasks
-??:0
-# addr2line -e vmlinux -f c0105000
-_stext
-??:0
-# addr2line -e vmlinux -f c0105080
-init
-main.c:0
-# addr2line -e vmlinux -f c010739e
-arch_kernel_thread
-??:0
-# addr2line -e vmlinux -f c0105070
-init
-main.c:0
-
-Does this help ?
-If not, please advise with ksymoops. (btw, there is no .ksyms file
-in /var/log/ksymoops for the boot oops)
-
->> .config later
-
-Find my kernel config attached. Note that the same config without
-the periodic timer works flawlessly.
-
-Thanks a lot,
-Hannes 8-)
+Hannes Mayer wrote:
+> Hi Jan!
+>=20
+> Jan Kiszka wrote:
+> [...]
+>> Hmm, 2.4 limitation. There used to by some tool called ksymoops for
+>> this. Please give it a try.
+>=20
+> hmm...so far I haven't figured out how to use ksymoops, but I got this:=
 
 
---------------060505020804070007010803
-Content-Type: application/x-gzip;
- name="config-2.4.32-xeno22-captain.gz"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="config-2.4.32-xeno22-captain.gz"
+ksymoops < your-kernel-log
 
-H4sICOgYwkQAA2NvbmZpZy0yLjQuMzIteGVubzIyLWNhcHRhaW4AjFzbcuO2sn3PV6j2fjiT
-qqRiXSzLu2oeQBCUMCIImCB1mReWYmtmXLEtH1nO2f770+BFAsgGJ6lKebhWA2gCDaC7Aerf
-v/x7QN5Ph+fd6fF+9/T0Mfi+f9kfd6f9w+DPj8Hz7q/94Hn/8n5/ePn2+P0/g4fDy/+cBvuH
-x9Mv//6FyiTi82Izm37+gHrqRx3kevD4Nng5nAZv+1MjlfNwaOSgHIgeHqDe3en9+Hj6GDzt
-/94/DQ6vp8fDy9ulXrZRLOWCJRmJm4LxYfew+/MJCh8e3uHP2/vr6+FoKSNkmMdM2woBtGKp
-5jLB9FoC3dSujof7/dvb4Tg4fbzuB7uXh8G3vdFy/1apXVc4nk3tmi7ExEdc9xCZpl5OiA2i
-s5i6XS4UdBLPBeccr6nmJzi79Oi2vPHgMxxnMUlwhqa5lgzn1jyhC66oR4maHvWy49DT7jbl
-G2+vrDih42KEdDCYdLFWxVqmS13IJfS1RfBkFau5i1GhNnTRAjckDF0k0GuiXEhJRcKqjbNm
-6VozUcxZAvZPC614Eku6RPSsBE3L0FRB4rlMebYQbgvxsKCELlihFzzKPl/b3ILoAuzPLTCX
-EipTvAWrOXOBXLNCqVQWUDld6rzVbklFLKGtYtHVVWR37fm1DSkobiaZBO0DgnJ8tsQHmNNU
-UhniNZat6dTLUQVLFtLnDAb1uXlI5ILPF4IJ+z1qaDJH667ZaT+NzXqSLQom8phksJY58z9L
-8ffQQnmsO1fICAPIZRcG4yMxIs5lAzodB/ZUhFyTIGaexiuLK5fUebndPBmJ99fLMs4VV5bZ
-JCy7PCjK7SbhESw24FKjXVDRIU8ZzRB1KpokW6f+wlTnIlUNFwxe0BVIiGBWGeYICEocC5GZ
-inPcABQVlOOGXhczzSGvord6BevopdFAhwXMQcq0Lgi1lQdRmsWX5yWVKStYHNlKViCROdZv
-AU8ikZXsZTbUYFWPiwkOY/58qVxKUSx5HDPccJVAYeLipQURqvhAn/2Ai6zB28Ji/3w4fgyy
-/f2Pl8PT4fvHINz//Qib/uCTyMJfnV0+CzvF1Q5s9QmcFdNY1/lQJFUytTqkBmDAMAx2jXjY
-JTSs+uDxYAUiHknH9i+Uzo23JPHevIj1WFcjRQSf90uIiI77q8hIim+6jcTc4/ScOyFPAqV6
-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
-/wF8F1Y6oWEAAA==
---------------060505020804070007010803--
+If you have nothing in your local logs, try to redirect the kernel
+output to a serial port and capture it on a second box over null-modem.
+
+>=20
+> # addr2line -e vmlinux -f c0126f46
+> __ipipe_dispatch_event
+> ??:0
+> # addr2line -e vmlinux -f c01160d1
+> schedule
+> ??:0
+> # addr2line -e vmlinux -f c01266c7
+> flush_scheduled_tasks
+> ??:0
+> # addr2line -e vmlinux -f c0105000
+> _stext
+> ??:0
+> # addr2line -e vmlinux -f c0105080
+> init
+> main.c:0
+> # addr2line -e vmlinux -f c010739e
+> arch_kernel_thread
+> ??:0
+> # addr2line -e vmlinux -f c0105070
+> init
+> main.c:0
+>=20
+> Does this help ?
+
+What about addr2line -e vmlinux -f c01d68b2?
+
+> If not, please advise with ksymoops. (btw, there is no .ksyms file
+> in /var/log/ksymoops for the boot oops)
+
+/proc/ksyms?
+
+>=20
+>>> .config later
+>=20
+> Find my kernel config attached. Note that the same config without
+> the periodic timer works flawlessly.
+
+I still got no oops here, even with LAPIC on (one of the major
+differences in our configs). Maybe I will try your original config later.=
+
+
+But there is definitely something fishy about
+adeos-ipipe-2.4.32-i386-1.2-05: my Linux clock runs about twice as fast
+as it should. This doesn't happen with a comparable 2.6 setup. I still
+need to check what happens without CONFIG_XENO_OPT_TIMING_PERIODIC...
+Uuh, what's this now? The oops, just with "inverted" .config! And it's
+inside qemu - no chance to escape then. 8)
+
+Ok, will keep you posted!
+
+Jan
+
+
+--------------enig35825623F054A64543E25BD2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFEwl2rniDOoMHTA+kRAiqiAJ9sH+RH0Wgu3e1aPwA8i8oUN4EfHgCfeOCw
+gIibUy/Hkf2FlvC513jDQSI=
+=VyYE
+-----END PGP SIGNATURE-----
+
+--------------enig35825623F054A64543E25BD2--
 
