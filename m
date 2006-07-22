@@ -1,13 +1,15 @@
-Subject: RE: [Xenomai-help] Priority inversion
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E05B456D@EINT11.einet.ad.eivd.ch>
-References: <FDBBB5CC70676540B3EF7CFE83FD94E05B456D@EINT11.einet.ad.eivd.ch>
-Content-Type: text/plain; charset=ISO-8859-1
-Date: Fri, 21 Jul 2006 18:16:06 +0200
-Message-Id: <1153498566.5019.66.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+From: Julien Heyman <bidsonux@domain.hid>
+Subject: Re: [Xenomai-help] Beginner's question / testsuite / latency
+Date: Sat, 22 Jul 2006 11:52:33 +0200
+References: <442248c90607201417m24729b7cs23a8b82b719ff1cc@domain.hid>
+	<44BFFC73.9080603@domain.hid>
+In-Reply-To: <44BFFC73.9080603@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200607221152.34298.bidsonux@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,96 +19,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2006-07-21 at 15:39 +0200, ROSSIER Daniel wrote:
-> > -----Message d'origine-----
-> > De : xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid=
-g] De
-> > la part de Philippe Gerum
-> > Envoy=E9 : vendredi, 21. juillet 2006 15:16
-> > =C0 : Daniel Simon
-> > Cc : xenomai@xenomai.org
-> > Objet : Re: [Xenomai-help] Priority inversion
-> >=20
-> > On Fri, 2006-07-21 at 14:51 +0200, Daniel Simon wrote:
-> > > On Fri, 21 Jul 2006 14:12:47 +0200
-> > > "ROSSIER Daniel" <Daniel.Rossier@domain.hid> wrote:
-> > >
-> > > > but it might be at the spin() level.
-> > >
-> > > I have observed that the behaviour of rt_timer_spin() does not fit =
-with
-> > > the expected behaviour as described in the doxygened comment: its a=
-ctual
-> > > awakening time do not increase when it is preempted.
-> > >
-> > > According to the code in timer.c (using 2.1.2) the wakening time se=
-ems
-> > > to be computed once for all at the beginning of the function call.
-> > >
-> > > Am I right?
-> > >
-> >=20
-> > Yes. But nothing is said in the documentation about the determination=
- of
-> > the end spinning time, so the doc is right; what it says is that your
-> > task is going to wait for a certain count of nanoseconds, as seen fro=
-m
-> > its own POV, it does not say that only cycles spent in actual spinnin=
-g
-> > wait on behalf of the caller should be accounted for. Fact is that th=
-e
-> > task will have waited for a certain amount of time before returning,
-> > what has occurred in the rest of the system during that period is
-> > irrelevant to the purpose of rt_task_spin().
-> >=20
-> > I guess that your interpretation of the behaviour of your application
-> > has been wrong due to the non-cumulative aspect of rt_timer_spin(), i=
-.e.
-> > a first spinning interrupted by a second one will exit immediately up=
-on
-> > return if the initial end time has been reached, because of the secon=
-d
-> > spin time. But in any case, this is an expected behaviour.
->=20
-> Yes, that's definitively the point; and again, sorry for the mishap wit=
-h the mutex/sema, which actually perfectly works :-)
->=20
-> Back to rt_timer_spin(), in other words, does it mean that there is a k=
-ind of global counter used by this function that evolves over the differe=
-nt tasks when rt_timer_spin() is used, or something like this (no notion =
-of virtual task time)?
->=20
+Hi,
 
-rt_task_spin() relies on the free running counter provided by the hw
-platform, e.g. the TSC on x86. Therefore, on x86 this value is local to
-the current CPU, but global to any thread executed by this CPU.
-rt_task_spin() is basically aimed at providing fine grained and short
-delays for synchronizing with hardware ops without involving any
-rescheduling.
+On Thursday 20 July 2006 23:58, Jan Kiszka wrote:
+> Julien Heyman wrote:
+> > Hi,
+> >
+> > I am currently trying to evaluate Xenomai, and my current setup is :
+> > VIA C3 533Mhz processor, Kubuntu 6.06 Linux distribution.
+> > I am using Xenomai-2.1.0 over a 2.6.17.4 kernel.
+>
+> General advice: especially when starting new, try to pick the latest
+> version, at least the latest from the preferred series (here 2.1.2). But
+> 2.2 is even better. :)
+>
 
-Xenomai only use real time references, never virtual ones. However,
-runtime accounting data are available since v2.2, giving the percentage
-of CPU used by any given task (see /proc/xenomai/stat), which is the
-only virtual time information available so far, but never used to
-specify timings though.
+OK. Actually started with Xenomai-2.1.0 then switched to 2.1.1 to fix a kernel 
+build error. But anyway, I will start with a fresh install of 2.2 as soon as 
+I have figured out the other points :)
 
-> >=20
-> > > 	Daniel
-> > >
-> > --
-> > Philippe.
-> >=20
-> >=20
-> >=20
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
+> > When I run the latency part of the testsuite (in a console under KDE), I
+> > get
+> > results that I cannot understand, so I probably did something wrong
+> > (execution trace included below).
+> > I get reasonable values during the first seconds, then all of a sudden
+> > latencies begin to rise, continuously, to very large values.
+> > - I did check that DMA transfer is activated on my HD.
+> > - I did select "Enable SMI workaround" + "Globally disable SMI" in the
+> > Xenomai
+> > options while configuring the kernel.
+> > - I have disabled power management at BIOS level and disabled ACPI
+> > support and
+> > CPU frequency scaling during kernel configuration.
+> > - I checked that I don't have anything called "legacy USB" in my BIOS. I
+> > do have an "OnChip USB" option enable in the BIOS though.
+> >
+> > Any advice would be appreciated !
+>
+> Maybe it's related to some other weird on-chip hardware. At work we run
+> Xenomai only on a head-less VIA C3 box, i.e. without X. No problems so
+> far. I would suggest to try stopping X and run the test from the text mode.
+
+This is interesting : indeed when I switch to console mode (Ctrl+Atl+F1) and 
+run the test, the latency values stay right on track.
+If I let the test run, switch to X, and switch back to the original console, 
+the values have gone wild in the meantime.
+So there seems to be a strong link with X. 
+What does that say about potential causes of my issue ?
+
+>
+> A further tool to analyse such effects in details is the I-pipe tracer.
+> It's an additional patch you have to apply to your kernel (see
+> http://download.gna.org/adeos/patches/v2.6/i386/tracer). Enable this
+> I-pipe option, rebuild your kernel, and start the latency test with -f.
+> The test will then capture on every new worst-case delay a backtrace to
+> /proc/ipipe/trace/frozen. You may want to play with the number of
+> back-trace points or the verbose mode (see /proc/ipipe/trace/*) even
+> after the capturing.
+>
+
+I had already used an adeos patch during my initial kernel-patching
+(adeos-ipipe-2.6.17-i386-1.3-07.patch)
+I tried running the latency test using /usr/xenomai/bin/xeno-load latency -f
+but I get this error :
+
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+latency: failed to open benchmark device, code -19
+(modprobe xeno_timerbench?)
+
+What am I doing wrong ?
+
+Thanks,
+Julien Heyman
 
 
+> Unless you find something obvious immediately, feel free to post a
+> backtrace that includes the problematic delay period before the freeze
+> (compress when too large).
+>
+> Jan
 
