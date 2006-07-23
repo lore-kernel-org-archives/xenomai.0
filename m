@@ -1,17 +1,12 @@
-Message-ID: <44C3AEB9.5070905@domain.hid>
-Date: Sun, 23 Jul 2006 19:15:37 +0200
+Message-ID: <44C3B1DB.2040807@domain.hid>
+Date: Sun, 23 Jul 2006 19:28:59 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai v2.2
-References: <1153227929.5029.25.camel@domain.hid>	<44BE8ECF.2050608@domain.hid>	<44BE943E.80302@domain.hid>	<44BEA974.40708@domain.hid>
-	<44BFC5FA.6080608@domain.hid> <44BFFC62.8030601@domain.hid>
-	<44C21AF8.3000906@domain.hid> <44C25DA7.6020302@domain.hid>
-	<44C287C4.30209@domain.hid>
-In-Reply-To: <44C287C4.30209@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig2871B6F264CF5BE4536189A7"
+	boundary="------------enigDB201E23020683AEB3E71BD0"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] x86 TSC emulation broken
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,45 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Hannes Mayer <h.mayer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2871B6F264CF5BE4536189A7
+--------------enigDB201E23020683AEB3E71BD0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hannes Mayer wrote:
-> Hi Jan!
->=20
-> Jan Kiszka wrote:
->> What about addr2line -e vmlinux -f c01d68b2?
->=20
-> # addr2line -e vmlinux -f c01d68b2
-> xnshadow_ppd_insert
-> shadow.c:0
->=20
->> Ok, will keep you posted!
->=20
-> Tante grazie e buon fine settimana,
-> Hannes.
->=20
+Hi,
 
-Please try "make clean" before rebuilding your 2.4 kernel with a
-different timer support. For me this fixed the issue (2.4 build system
-seems to fail catching all dependencies, thus some struct sizes don't
-get updated consistently).
+I happened to switch on some CPU type that enabled the Xenomai's TSC
+emulation code. The result was an ugly lock-up: endless loop in the
+timer IRQ handler.
 
-The only thing that still puzzles me is that my crash happened at a
-different code line. Anyway, might be due to other .config differences.
+The reason: the TSC emulation collides with the VT sound output / the PC
+speaker driver. Over 2.6, one can easily avoid this my switching off
+CONFIG_INPUT_PCSPKR. 2.4 requires to export and than manipulate
+kb_mksound (the pointer to the sound generating code).
 
-This digging in 2.4 over x86 was "worthwhile": Two further corner-case
-bugs found, though not all fixed yet.
+The latter pointer rang some bell. I once fixed a broken RTAI build due
+to that code. So I pulled out vulcano and actually found the related
+code + an extension of the original ipipe patch to export kb_mksound. I
+guess it would have been too complicated for Paolo to explain the reason
+of this export to us...
+
+Anyway, this digging revealed another potential breakage in the
+emulation code: RTAI takes care to read the emulated TSC at least once
+per 50 ms, to avoid overflows I assume. Xenomai does not.
+
+Before spending "some" time on a clean (in contrast to what I just read
+in foreign code...) fix for Xenomai, I would like to cross-check if this
+emulation is still considered useful. No one seems to use it, otherwise
+we should have received complaints much earlier.
+
+Fix it or drop it?
 
 Jan
 
 
---------------enig2871B6F264CF5BE4536189A7
+--------------enigDB201E23020683AEB3E71BD0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -68,10 +63,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFEw665niDOoMHTA+kRAmqRAJ9MKTWWDIbTOrml6NlhNaHNwOFdRQCfS9HF
-wfV5M3kIvBDG0Q2P1IN4P2g=
-=6NIo
+iD8DBQFEw7HbniDOoMHTA+kRAsi/AJ9u1bvSjOcDjIQgPHUkTYEp3BLScwCfXrC0
+dPAiQ9jiMkfh+9F6bVpJZvA=
+=im58
 -----END PGP SIGNATURE-----
 
---------------enig2871B6F264CF5BE4536189A7--
+--------------enigDB201E23020683AEB3E71BD0--
 
