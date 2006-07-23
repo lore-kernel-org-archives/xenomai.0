@@ -1,82 +1,224 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44C3B653.3030805@domain.hid>
+Date: Sun, 23 Jul 2006 19:48:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17545.26998.683843.924195@domain.hid>
-Date: Fri, 9 Jun 2006 14:28:38 +0200
-Subject: Re: [Xenomai-help] shm_open, ftruncate
-In-Reply-To: <448937A5.7080701@domain.hid>
-References: <4480595D.7040203@domain.hid>
-	<17536.29324.723709.385494@domain.hid>
-	<4484365A.7090007@domain.hid>
-	<17540.21517.871383.751462@domain.hid>
-	<44856CA7.30802@domain.hid>
-	<17541.29542.312486.329018@domain.hid>
-	<44859C28.3090600@domain.hid>
-	<17541.49945.431732.834139@domain.hid>
-	<4486CCDF.2070409@domain.hid>
-	<17542.59422.109900.142889@domain.hid>
-	<448937A5.7080701@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig332B6F690007A2DA23896826"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Eighth Real-Time Linux Workshop 2nd CFP
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Lionel Perrin <perrin@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>
+Cc: Peter Wurmsdobler <peter@domain.hid>
 
-Lionel Perrin wrote:
- > // 	/* the following lines shouldn't be commented but xenomai... */
- > // 	else
- > // 	{
- > // 		/* a new shm_file has been created, we need to truncate it */
- > // 		if (ftruncate(h_shm, nbvalues * sizeof(double))==-1)
- > // 		{
- > // 			printf("truncate failed\n");
- > // 			goto close_and_unlink;
- > // 		}
- > // 	}
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig332B6F690007A2DA23896826
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Do you still have an issue with ftruncate ? 
+I dare to forward this. Maybe someone here hasn't receive a copy yet is
+interested in presenting work on/with Xenomai at this event.
 
-Note that it is better to always call ftruncate even in a process that
-is not creating the shared memory, this avoid the race condition where
-the process that created the shared memory is about to truncate it and
-is interrupted by the second process which did not create it but want to
-mmap it.
-
- > 	mem->h_mut = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
- > 	pthread_mutex_init(mem->h_mut, NULL);
+-------------------------------------------------------------------------=
+-------
 
 
-Note that if you want to share the mem structure between several
-processes, you should put the mutex on the shared memory, doing for
-example:
+                    Eighth Real-Time Linux Workshop
 
-typedef struct {
-    pthread_mutex_t mutex;
-    int nbaccess;
-    double values[0]
-} myshm_t;
-
-myshm_t *myshm;
-
-myshm = (myshm_t *) mmap(...);
-
-mem->h_mut = &myshm->mutex;
-mem->ptr = &myshm->values;
-
-pthread_mutex_init(mem->h_mut, NULL);
-
-Xenomai should detect that you are initializing a mutex that was already
-initialized and return EBUSY that you can safely ignore.
-
--- 
+                          October 12-15, 2006
+                       Lanzhou University - SISE
+                        Tianshui South Road 222
+                         Lanzhou, Gansu 730000
+                               P.R.China
 
 
-					    Gilles Chanteperdrix.
+General
+
+ Following  the  meetings  of  developers  and  users at the previous 7
+ successful  real-time Linux workshops held in Vienna, Orlando, Milano,
+ Boston,  and  Valencia, Singapore, Lille, the Real-Time Linux Workshop
+ for  2006  will  come back to Asia again, to be held at the School for
+ Information  Science  and  Engineering, Lanzhou University, in Lanzhou
+ China.
+
+ Embedded  and  real-time Linux is rapidly gaining traction in the Asia
+ Pacific  region.  Embedded  systems  in  both  automation/control  and
+ entertainment moving to 32/64bit systems, opening the door for the use
+ of  full  featured  OS  like  GNU/Linux  on  COTS  based systems. With
+ real-time  capabilities being a common demand for embedded systems the
+ soft  and  hard  real-time  variants are an important extension to the
+ versatile GNU/Linux GPOS.
+
+ Authors  are  invited  to  submit  original  work dealing with general
+ topics  related  to  real-time  Linux  research,  experiments and case
+ studies,  as  well  as issues of integration of real-time and embedded
+ Linux.  A  special focus will be on industrial case studies. Topics of
+ interest include, but are not limited to:
+
+   * Modifications and variants of the GNU/Linux operating system
+     extending its real-time capabilities,
+   * Contributions to real-time Linux variants, drivers and extensions,
+   * User-mode real-time concepts, implementation and experience,
+   * Real-time Linux applications, in academia, research and industry,
+   * Work in progress reports, covering recent developments,
+   * Educational material on real-time Linux,
+   * Tools for embedding Linux or real-time Linux and embedded
+     real-time Linux applications,
+   * RTOS core concepts, RT-safe synchronization mechanisms,
+   * RT-safe interaction of RT and non RT components,
+   * IPC mechanisms in RTOS,
+   * Analysis and Benchmarking methods and results of
+     real-time GNU/Linux variants,
+   * Debugging techniques and tools, both for code and temporal
+     debugging of core RTOS components, drivers and real-time
+     applications,
+   * Real-time related extensions to development environments.
+
+Further information:
+
+EN: http://www.realtimelinuxfoundation.org/events/rtlws-2006/ws.html
+CN: http://dslab.lzu.edu.cn/rtlws8/index.html
+
+Awarded papers
+
+The  Programme Committee  will award a best paper in the category Real-
+Time Systems Theory.  This best paper will be invited  for  publication
+to the Real-Time Systems Journal, RTSJ.
+
+The  Programme Committee will award a best paper in the category Real-
+Time Systems Application.  This paper will be invited  for  publication
+to the Dr Dobbs Journal.  Moreover, the publication of the other papers
+in a special issue of Dr Dobbs Journal is in discussion.
+
+Abstract submission
+
+In  order register an abstract, please go to:
+http://www.realtimelinuxfoundation.org/rtlf/register-abstract.html
+
+Venue
+
+Lanzhou University Information Building, School of Information Science
+and Engineering, Laznhou University, http://www.lzu.edu.cn/.
+
+Registration
+
+In  order  to  participate  to  the  workshop,  please register on the
+registration page at:
+http://www.realtimelinuxfoundation.org/rtlf/register-participant.html
+
+Accommodation
+
+Please refer to the Lanzhou hotel page for accomodation at
+http://dslab.lzu.edu.cn/rtlws8/hotels/hotels.htm
+
+Travel information
+
+For travel information and directions how to get to Lanzhou from an
+international airport in China please refer to:
+http://www.realtimelinuxfoundation.org/events/rtlws-2006/
+
+Important dates
+
+August    28:  Abstract submission
+September 15:  Notification of acceptance
+September 29:  Final paper
+
+Pannel Participants:
+
+   o Roberto Bucher - Scuola Universitaria Professionale della Svizzera
+     Italiana, Switzerland, RTAI/ADEOS/RTAI-Lab.
+
+   o Alfons Crespo Lorente - University of Valenica, Spain,Departament
+     d'Informtica de Sistemes i Computadors, XtratuM.
+
+   o Herman Haertig - Technical University Dresden, Germany,Institute for=
+
+     System Architecture, L4/Fiasco/L4Linux.
+
+   o Nicholas Mc Guire - Lanzhou University, P.R. China, Distributed and
+     Embedded Systems Lab, RTLinux/GPL.
+
+   o Douglas Niehaus - University of Kansas, USA, Information and
+     Telecommunication Technology Center, RT-preempt.
+
+Organization committee:
+
+   * Prof. Li LIAN (Co-Chair), (SISE, Lanzhou University, CHINA)
+   * Xiaoping ZHANG, LZU, CHINA
+   * Jiming WANG, PKU, CHINA
+   * Zhibing LI, ECNU, China
+   * Prof.  Nicholas  MCGUIRE  (Co-Chair),  Real  Time Linux Foundation
+     (RTLF)
+   * Dr. Peter WURMSDOBLER, Real Time Linux Foundation (RTLF)
+   * Dr.  Qingguo  ZHOU, (Distributed and Embedded Systems Lab, Lanzhou
+     University, CHINA)
+
+Program committee:
+
+  * Prof. Li Xing (Co-Chair), (Tsinghua University, CHINA)
+   * Dr.  Zhang  Yunquan,  (Institute  of  Software, Chinese Academy of
+     Science, CHINA)
+   * Dr. Chen Yu, (Tsinghua University, CHINA)
+   * Dr. Chen Maoke, (Tsinghua University, CHINA)
+   * Dr. Yu Guanghui, (Dalian University of Techonolgy, CHINA)
+   * Prof.   Dr.   Paolo   Mantegazza,   (Dipartimento   di  Ingegneria
+     Aerospaziale, ITALY)
+   * Prof.  Dr.  Bernhard  Zagar,  (Johannes  Kepler  Universitt Linz,
+     AUSTRIA)
+   * Prof.   Dr.   Hermann  Hrtig,  (Technische  Universitt  Dresden,
+     Fakultt Informatik, GERMANY)
+   * Prof.  Tei-Wei  Kuo,  (National  Taiwan  University, Department of
+     Computer Science and Information Engineering,TAIWAN)
+   * Anthony Skjellum, (Mississippi State University, USA)
+   * Ing. Pavel Pisa, (Czech Technical University, CZECH REPUBLIC)
+   * Prof. Alfons Crespo, (Universidad Politcnica de Valencia, SPAIN)
+   * Dr. Qingguo Zhou, (Lanzhou University, CHINA)
+   * PhD. Jaesoon Choi, (National Cancer Center, KOREA)
+   * Prof. Douglas Niehaus, (Kansas University, USA)
+   * Dr. Michael Hohmuth, (Technische Universitt Dresden, GERMANY)
+   * Prof.  Thambipillai Srikanthan, (Nanyang Technological University,
+     SINGAPORE)
+   * Zhengting He, (University of Texas, USA)
+   * Martin Terbuc, (Universitz of Maribor, SLOVENIA)
+   * Yoshinori Sato, (the H8/300 project, JAPAN)
+   * Yuqing Lan, (China Standard SoftwareCo.,LTD, CHINA)
+   * Dr. Peter Wurmsdobler, (Real Time Linux Foundation, USA)
+   * Prof. Nicholas Mc Guire (Co-Chair), (Lanzhou University, CHINA)
+
+Workshop organizers:
+
+   * School  for  Information  Science and Engineering (SISE) , Lanzhou
+     University , CHINA
+   * IBM China, Xi'an Branch , China
+   * Haag Embedded Systems, Austira
+
+
+Peter Wurmsdobler <peter@domain.hid>
+Nicholas Mc Guire <mcguire@domain.hid>
+Zhou Qingguo <zhouqg@domain.hid>
+
+
+--------------enig332B6F690007A2DA23896826
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFEw7ZUniDOoMHTA+kRAqkhAJwK7ew5bPrKwNFOsU/Uanpf3sny5QCcC8c8
+RFmJx+dSVf8HBVBRnYOn/WE=
+=CoXG
+-----END PGP SIGNATURE-----
+
+--------------enig332B6F690007A2DA23896826--
 
