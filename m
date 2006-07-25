@@ -1,13 +1,13 @@
-Message-ID: <44C657DD.1040800@domain.hid>
-Date: Tue, 25 Jul 2006 19:41:49 +0200
-From: Jan Kiszka <kiszka@domain.hid>
+From: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+Date: Tue, 25 Jul 2006 17:35:35 -0300
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai task (beginner)
-References: <1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
-In-Reply-To: <1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigED358F9E0F0F866CCDA0B290"
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200607251735.35500.lbocseg@domain.hid>
+Subject: [Xenomai-help] How can I now when it will be next periodic task
+	release point?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: GUARDIOLA-FALCO Sebastien 204282 <Sebastien.GUARDIOLA-FALCO@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigED358F9E0F0F866CCDA0B290
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I want to capture and process images each 300 ms. The processing routines take 
+a (fixed, but unknown) time. I'd like to request a new image about 50 ms 
+before next release point, like this:
 
-GUARDIOLA-FALCO Sebastien 204282 wrote:
-> Hello,
->=20
-> I'm waiting for Xenomai to be included in the ElinOS Linux package, so =
-I can't try it before next week.=20
+for(;;)
+{
+	rt_task_wait_period(NULL);
+	ProcessImage();
+	rt_task_sleep(XXX); // until 50 ms before next release point
+	RequestNewImage();
+}
 
-Oh, good to hear that this long announced update finally takes place! I
-think there are quite a few ElinOS users out there happily awaiting it.
-Let's see what version they will deliver.
+I could use rt_task_inquire() if RT_TASK_INFO was documented. From 
+source-code:
+  RTIME relpoint;             /* !< Periodic release point. */
 
-Jan
+The question is which release point? Next or the last reached?
+Anyway, a new function like rt_task_getnextrelpoint() would be very welcome...
+
+rt_task_sleep(rt_task_getnextrelpoint() - 50*1000*1000);
+
+Thanks in advance,
+
+Rodrigo.
 
 
---------------enigED358F9E0F0F866CCDA0B290
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+		
+_______________________________________________________ 
+Novidade no Yahoo! Mail: receba alertas de novas mensagens no seu celular. Registre seu aparelho agora! 
+http://br.mobile.yahoo.com/mailalertas/ 
+ 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFExlfdncNeS9Q0k+IRAi1mAJ40PEvaPMSswWVhWzz3LcRnKTIf6ACcC/tS
-MPkzYMUs3VNId5TPnOc5pIA=
-=TT+m
------END PGP SIGNATURE-----
-
---------------enigED358F9E0F0F866CCDA0B290--
 
