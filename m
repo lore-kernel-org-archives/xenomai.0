@@ -1,13 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44C657DD.1040800@domain.hid>
+Date: Tue, 25 Jul 2006 19:41:49 +0200
+From: Jan Kiszka <kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17606.21420.165431.429261@domain.hid>
-Date: Tue, 25 Jul 2006 19:23:56 +0200
 Subject: Re: [Xenomai-help] Xenomai task (beginner)
+References: <1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
 In-Reply-To: <1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
-References: <44C5B7B5.3080505@domain.hid>
-	<1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigED358F9E0F0F866CCDA0B290"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,33 +20,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: GUARDIOLA-FALCO Sebastien 204282 <Sebastien.GUARDIOLA-FALCO@domain.hid>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigED358F9E0F0F866CCDA0B290
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
 GUARDIOLA-FALCO Sebastien 204282 wrote:
- > Hello,
- > 
- > I'm waiting for Xenomai to be included in the ElinOS Linux package, so I can't try it before next week. 
- > My question is simple : how to port a linux program to Xenomai so this program is recognized as a Xenomai task? (and has low latencies?). Is it done when launching the program? like "prio 255 myprogram" in LynxOS? or are there lines of code to include?
- > My linux task doesn't have any system call, except mmap(). Next I'm using the pointer I get from mmap() and that's it.
- > 
+> Hello,
+>=20
+> I'm waiting for Xenomai to be included in the ElinOS Linux package, so =
+I can't try it before next week.=20
 
-If you are talking about latencies, then your task has to suspend,
-waiting for some event using some other system call than mmap. I assume
-here that you are using the POSIX interface for that purpose. 
+Oh, good to hear that this long announced update finally takes place! I
+think there are quite a few ElinOS users out there happily awaiting it.
+Let's see what version they will deliver.
 
-To have a Linux program "recognized" by Xenomai, you have to compile it
-with special compilation flags, provided by the xeno-config script. The
-advantage of this approach is that the regular Linux services remain
-accessible by prefixing their names with the __real_ prefix. For example
-Linux regular mmap remain accessible but is called __real_mmap.
-
-If your program is called hello.c, you would compile it for Xenomai
-POSIX skin by calling:
-
-gcc -o hello.o  -c hello.c `xeno-config --posix-cflags`
-
-gcc -o hello hello.o `xeno-config --posix-ldflags`
-
--- 
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigED358F9E0F0F866CCDA0B290
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFExlfdncNeS9Q0k+IRAi1mAJ40PEvaPMSswWVhWzz3LcRnKTIf6ACcC/tS
+MPkzYMUs3VNId5TPnOc5pIA=
+=TT+m
+-----END PGP SIGNATURE-----
+
+--------------enigED358F9E0F0F866CCDA0B290--
 
