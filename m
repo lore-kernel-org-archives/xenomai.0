@@ -1,77 +1,50 @@
-Message-ID: <44B3BBCE.8080906@domain.hid>
-Date: Tue, 11 Jul 2006 16:55:10 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Wed, 26 Jul 2006 06:52:58 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] do memory functions switch to secondary mode ?
-References: <5D63919D95F87E4D9D34FF7748CE2C2A3F9354@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A3F9354@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6865AE86978A6915E9D8F93F"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200607260652.58806.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Buildbot running again. rtnet does not compile,
+	small error in sim testsuite.
+Reply-To: niklaus.giger@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6865AE86978A6915E9D8F93F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi
 
-Roderik_Wildenburg@domain.hid wrote:
-> Does any of the memory functions like :
-> memcopy,
-> memset,
-> bzero,
->=20
-> :
-> :
->=20
-> cause Xenomai to switch to secondary mode ?
-> I am asking as I have a high priority task, which mesures its
-> periodicity (set to 1ms).
-> This task is using just rt_-functions and memcpy.
-> When in low priority tasks memory intensively is used (memset,
-> rt_heap_alloc, rt_heap_create, NFS-transfers in Linux threads), the
-> cycle time of the high priority task inreases to nearly twice the time
-> it has been set up (2ms++; at least 1 time, as I just measure maxima).
->=20
-> Is this possible, or am I doing something wrong ?
+Back from my vacation I discovered that the buildbot did not run during my 
+absence as I had added a (debugging) printf some time before vacation. This 
+printf did not harm as long as the session was alive. But before leaving I 
+cleanup my desktop and bang the xenomai repository watcher got killed. Sorry!
 
-Try catching unwanted context switches via the SIGXCPU signal. Given you
-have a sane glibc, non of those functions should cause a context switch
-- unless you touch some piece of memory for the first time (lazy
-mapping...).
+I fixed the error and now the buildbot is running again.
 
-[Unfortunately, the I-pipe tracer is only available over 2.6 so far.
-Otherwise, putting a xntrace_user_freeze() right at that line in your
-application where you detect the deadline miss would give a nice view
-back in history.]
+RTnet seems to have a compile problem: see
+http://ngiger.dyndns.org/buildbot/tqm860/builds/227/step-mk_RTnet/0
+In file included from rtnet_ifs.c:30:
+../../../stack/include/rtnet.h:29:23: rtdm/rtdm.h: No such file or directory
+rtnet_ifs.c: In function `main':
+<..>
 
-Jan
+The timing behaviour seems to have changed a little bit as the simulator 
+testsuite reports in:
+http://ngiger.dyndns.org/buildbot/sim/builds/213/step-check_sim/0
+vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2009); got 
+SEQ("Test2",2002)
+vxworks->t010823-2: t010823-2.c:166, test finished: 1 failures/ 33 tests
 
+Best regards
 
---------------enig6865AE86978A6915E9D8F93F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFEs7vPniDOoMHTA+kRAt2TAJ9ZtyNWbHP+jsmnHY83XAHhjHLfVwCeK/Lc
-abI8gZ9ObiA4nTrYvOLA608=
-=7usP
------END PGP SIGNATURE-----
-
---------------enig6865AE86978A6915E9D8F93F--
+-- 
+Niklaus Giger
 
