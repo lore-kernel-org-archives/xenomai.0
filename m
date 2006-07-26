@@ -1,11 +1,15 @@
-Message-ID: <e325d110607310304pac72cf3pad25cec643be0edf@domain.hid>
-Date: Mon, 31 Jul 2006 11:04:36 +0100
-From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
+From: Ulrich Schwab <schwab@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai task (beginner)
+Date: Wed, 26 Jul 2006 16:39:06 +0200
+References: <1299EF3181B10F479D85C3280132852422DABC@THEZE.intra.cea.fr>
+	<44C657DD.1040800@domain.hid>
+In-Reply-To: <44C657DD.1040800@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] configuration scripts doesn't work
+Message-Id: <200607261639.08866.schwab@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,16 +21,31 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-./configure --enable-x86-sep --enable-x86-tsc
+On Tuesday 25 July 2006 19:41, Jan Kiszka wrote:
+> GUARDIOLA-FALCO Sebastien 204282 wrote:
+> > Hello,
+> >
+> > I'm waiting for Xenomai to be included in the ElinOS Linux package, so I
+> > can't try it before next week.
+>
+> Oh, good to hear that this long announced update finally takes place! I
+> think there are quite a few ElinOS users out there happily awaiting it.
+> Let's see what version they will deliver.
+I doubt this, since they have their own realtime implementation (PikeOS).
+According to them, it is better than any other, of course ! :-)
 
-Xenomai: incompatible feature set
-(required="sep tsc", present="sep", missing="tsc").
+I never saw  xenomai support announced, by the way.
 
-https://mail.gna.org/public/xenomai-help/2006-04/msg00198.html
 
-I managed to fix it by following the same way.. can someone fix it in
-the trunk or next distribution please.
-
-Regards,
-Kim Chuan.
+Ulrich Schwab
+-- 
+====================================================
+  inmess GmbH
+  Frankfurter Str. 74
+  D - 64521 Gross-Gerau
+  Phone: +49 6152 97790
+  Fax  : +49 6152 977920
+  mail : info@domain.hid
+  web:   www.inmess.de
+====================================================
 
