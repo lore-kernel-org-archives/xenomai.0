@@ -1,15 +1,11 @@
-Message-ID: <44C6929C.5030804@domain.hid>
-Date: Tue, 25 Jul 2006 23:52:28 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] How can I now when it will be next periodic task
-	release point?
-References: <200607251735.35500.lbocseg@domain.hid>
-In-Reply-To: <200607251735.35500.lbocseg@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2AE8BFB83F868E8D3D5505BE"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C6B07A.C690ECF7"
+Subject: RE: [Xenomai-help] Xenomai task (beginner)
+Date: Wed, 26 Jul 2006 08:14:39 +0200
+Message-ID: <1299EF3181B10F479D85C3280132852422DABD@THEZE.intra.cea.fr>
+In-Reply-To: <17606.21420.165431.429261@domain.hid>
+From: "GUARDIOLA-FALCO Sebastien 204282" <Sebastien.GUARDIOLA-FALCO@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,132 +15,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2AE8BFB83F868E8D3D5505BE
-Content-Type: multipart/mixed; boundary="------------060908030504070409010504"
-
 This is a multi-part message in MIME format.
---------------060908030504070409010504
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> I want to capture and process images each 300 ms. The processing routin=
-es take=20
-> a (fixed, but unknown) time. I'd like to request a new image about 50 m=
-s=20
-> before next release point, like this:
->=20
-> for(;;)
-> {
-> 	rt_task_wait_period(NULL);
-> 	ProcessImage();
-> 	rt_task_sleep(XXX); // until 50 ms before next release point
-> 	RequestNewImage();
-> }
->=20
-> I could use rt_task_inquire() if RT_TASK_INFO was documented. From=20
-> source-code:
->   RTIME relpoint;             /* !< Periodic release point. */
->=20
-> The question is which release point? Next or the last reached?
-
-Looks like you managed to dig out dead/broken code here: RT_TASK.timer,
-the timer returned in relpoint, is nowhere else used than in
-rt_task_inquire.
-
-> Anyway, a new function like rt_task_getnextrelpoint() would be very wel=
-come...
->=20
-> rt_task_sleep(rt_task_getnextrelpoint() - 50*1000*1000);
-
-See my attached patch. It should fix rt_task_inquire in a way that meets
-your requirements. It also clarifies the doc. Only compile tested.
-
-Philippe, is it correct?
-
-Jan
-
---------------060908030504070409010504
+------_=_NextPart_001_01C6B07A.C690ECF7
 Content-Type: text/plain;
- name="return-ptimer-in-rt_task_inquire.patch"
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline; filename="return-ptimer-in-rt_task_inquire.patch"
 
-Index: include/native/task.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/native/task.h	(Revision 1374)
-+++ include/native/task.h	(Arbeitskopie)
-@@ -76,7 +76,7 @@ typedef struct rt_task_info {
-=20
-     unsigned status;		/* !< Status. */
-=20
--    RTIME relpoint;		/* !< Periodic release point. */
-+    RTIME relpoint;		/* !< Next periodic release point. */
-=20
-     char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
-=20
-@@ -109,8 +109,6 @@ typedef struct rt_task {
- #define link2rtask(laddr) \
- ((RT_TASK *)(((char *)laddr) - (int)(&((RT_TASK *)0)->link)))
-=20
--    xntimer_t timer;
--
-     xnthread_t thread_base;
-=20
-     char rname[XNOBJECT_NAME_LEN]; /* !< Name in registry. Not the same =
-as
-Index: ChangeLog
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ChangeLog	(Revision 1374)
-+++ ChangeLog	(Arbeitskopie)
-@@ -1,3 +1,8 @@
-+2006-07-25  Jan Kiszka  <jan.kiszka@domain.hid>
-+
-+	* include/native/task.h, ksrc/native/task.c: Kill unused timer field
-+	in RT_TASK. Return ptimer of the underlying thread on rt_task_inquire.
-+
- 2006-07-23  Jan Kiszka  <jan.kiszka@domain.hid>
-=20
- 	* ksrc/skins/native/Makefile: Fixed typo that messed up modularised
-Index: ksrc/skins/native/task.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/native/task.c	(Revision 1374)
-+++ ksrc/skins/native/task.c	(Arbeitskopie)
-@@ -1118,7 +1118,7 @@ int rt_task_inquire(RT_TASK *task, RT_TA
- 	info->bprio =3D xnthread_base_priority(&task->thread_base);
- 	info->cprio =3D xnthread_current_priority(&task->thread_base);
- 	info->status =3D xnthread_status_flags(&task->thread_base);
--	info->relpoint =3D xntimer_get_date(&task->timer);
-+	info->relpoint =3D xntimer_get_date(&task->thread_base.ptimer);
-=20
-       unlock_and_exit:
-=20
+GUARDIOLA-FALCO Sebastien 204282 wrote:
+ >> Hello,
+ >>=20
+ >> I'm waiting for Xenomai to be included in the ElinOS Linux package, =
+so I can't try it before next week.=20
+ >> My question is simple : how to port a linux program to Xenomai so =
+this program is recognized as a Xenomai task? (and has low latencies?). =
+Is it done when launching the program? like "prio 255 myprogram" in =
+LynxOS? or are there lines of code to include?
+ >> My linux task doesn't have any system call, except mmap(). Next I'm =
+using the pointer I get from mmap() and that's it.
+ >>=20
 
---------------060908030504070409010504--
+Gilles Chanteperdrix wrote:
+>If you are talking about latencies, then your task has to suspend,
+>waiting for some event using some other system call than mmap. I assume
+>here that you are using the POSIX interface for that purpose.=20
 
---------------enig2AE8BFB83F868E8D3D5505BE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Actually my program (see attached file) doesn't wait, it's a "polling" =
+task (on a VME bus) that reads a pointer.
+And if data read shows that we missed an event/data (means that data =
+refresh is too fast, 500 microseconds for Linux for example), then I =
+save/display the error.
+So there's no blocking call here, only polling.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+>To have a Linux program "recognized" by Xenomai, you have to compile it
+>with special compilation flags, provided by the xeno-config script. The
+>advantage of this approach is that the regular Linux services remain
+>accessible by prefixing their names with the __real_ prefix. For =
+example
+>Linux regular mmap remain accessible but is called __real_mmap.
 
-iD8DBQFExpKdniDOoMHTA+kRAo81AJ0f3qwOENKimqd275lXcH5bu0cw0ACfYAY7
-h6xMmBhMNmwqCLp1RaOtHBo=
-=1vaf
------END PGP SIGNATURE-----
+Interesting. About the compilation, does it means that when I launch =
+such a task the Xenomai scheduler will do all the job? only because I =
+include this 'xeno-config' option?
+If it's the case, I'm wondering if that scheduler will increase =
+performance for my polling thing... not sure.
+What is certain is that task priority handling must be greater in =
+Xenomai than Linux/premmptive.
+About that, does my "sched_get_priority_max(SCHED_FIFO)" of my code will =
+have any effect on Xenomai? a Xenomai equivalent for this call?
 
---------------enig2AE8BFB83F868E8D3D5505BE--
+Thanks,
+S=E9bastien.
+
+------_=_NextPart_001_01C6B07A.C690ECF7
+Content-Type: application/octet-stream;
+	name="polling.c"
+Content-Transfer-Encoding: base64
+Content-Description: polling.c
+Content-Disposition: attachment;
+	filename="polling.c"
+
+LyoNCioqICAgRklMRSAgIDogcG9vbGluZy5jDQoqKg0KKiogICBBVVRIT1IgOiBT6WJhc3RpZW4g
+R1VBUkRJT0xBIEZBTENPDQoqKg0KKiogICBQUk9EVUNUIDogUmVhZGluZyBUZXN0IHByb2dyYW0g
+b24gVk1FIGJ1cyAocG9sbGluZyBhbiBhY3F1aXNpdGlvbiBib2FyZCkNCioqDQoqKiAgIFZFUlNJ
+T046IDEuMCBMSU5VWA0KKioNCioqICAgQ3JlYXRlZCA6IDAzIEp1aWxsZXQgMjAwNg0KKioNCioq
+ICAgQ29tbWVudHMgOg0KKioNCioqICAgDQoqKg0KKi8NCiNpbmNsdWRlIDxzY2hlZC5oPg0KI2lu
+Y2x1ZGUgPHN5cy9tbWFuLmg+DQojaW5jbHVkZSA8c3lzL3N0YXQuaD4NCiNpbmNsdWRlICJ2bWVk
+cnYuaCINCiNpbmNsdWRlIDxzdGRsaWIuaD4NCiNpbmNsdWRlIDxzdGRkZWYuaD4NCiNpbmNsdWRl
+IDxzeXMvbW1hbi5oPg0KI2luY2x1ZGUgPHVuaXN0ZC5oPiANCiNpbmNsdWRlIDxlcnJuby5oPg0K
+I2luY2x1ZGUgPHN5cy9maWxlLmg+DQojaW5jbHVkZSA8c3lzL2lvY3RsLmg+DQojaW5jbHVkZSA8
+c3lzL3R5cGVzLmg+DQojaW5jbHVkZSA8ZmNudGwuaD4NCiNpbmNsdWRlIDxzdGRpby5oPg0KI2lu
+Y2x1ZGUgPHN0cmluZ3MuaD4NCiNpbmNsdWRlIDxzaWduYWwuaD4NCiNpbmNsdWRlICJjaHJvbm8u
+aCINCg0Kc3RhdGljIGludCBJVEVSPTE7DQpzdGF0aWMgRklMRSAqb3V0cHV0Ow0Kc3RhdGljIHVu
+c2lnbmVkIGxvbmcgdGFiWzFdOw0KDQoNCmludCBtYWluKGludCBhcmdjLCBjaGFyICphcmd2W10p
+DQp7DQogICBzdHJ1Y3QgdGltZXZhbCBzdGFydCwgZWxhcHNlZDsNCiAgIGludCBrPTAsZmRPdXQs
+bjsNCiAgIGxvbmcgaW50IHRpbWVfZTsNCiAgIHVuc2lnbmVkIGxvbmcgbXNiLGxzYj0wLGRhdGVw
+cmVjLGV2dDsNCiAgIGNoYXIgKiBwdHJBMzI7DQogICBjaGFyIGRldm5vZGVbMjBdOw0KICAgc3Ry
+dWN0IHNjaGVkX3BhcmFtIG15c2NoZWQ7DQoNCiAgIG91dHB1dCA9IGZvcGVuKCJSZXN1bHRfZmls
+ZSIsInciKTsNCg0KLyoqKiBTRVQgVEFTSyBQUklPUklUWSAqKiovDQogICAgbXlzY2hlZC5zY2hl
+ZF9wcmlvcml0eSA9IHNjaGVkX2dldF9wcmlvcml0eV9tYXgoU0NIRURfRklGTykgLSAxOw0KICAg
+IGlmKCBzY2hlZF9zZXRzY2hlZHVsZXIoIDAsIFNDSEVEX0ZJRk8sICZteXNjaGVkICkgPT0gLTEg
+KSB7DQogICAgICBwcmludGYoIkVSUk9SIElOIFNFVFRJTkcgVEhFIFNDSEVEVUxFUiIpOw0KICAg
+ICAgcGVycm9yKCJlcnJubyIpOw0KICAgICAgZXhpdCgxKTsNCiAgICB9DQoNCi8qKiogT1BFTiBW
+TUUgV0lORE9XICoqKi8NCiAgICBzcHJpbnRmKGRldm5vZGUsICIvZGV2L3ZtZV9tJWQiLCAwKTsN
+CiAgICBmZE91dCA9IG9wZW4oZGV2bm9kZSwgT19SRFdSKTsNCiAgICBpZiAoZmRPdXQgPCAwKSB7
+DQogCXByaW50ZigiT3V2ZXJ0dXJlIGRlIGxhIGZlbmV0cmUgIyVkIGltcG9zc2libGUuICBFcnJu
+byA9ICVkXG4iLCAwLCBlcnJubyk7DQoJX2V4aXQoMSk7DQogICAgfQ0KDQovKioqKioqIE1NQVAg
+T0YgVEhBVCBXSU5ET1cgKioqKioqKiovDQogICAgcHRyQTMyID0gbW1hcCgwLDB4MTAwMDAwMDAs
+IFBST1RfUkVBRHxQUk9UX1dSSVRFLCBNQVBfU0hBUkVELCBmZE91dCwgKG9mZl90KTB4MDAwMDAw
+MDApOw0KICAgIGlmKHB0ckEzMiA9PSBNQVBfRkFJTEVEKQ0KICAgIHsNCglwcmludGYoIkVjaGVj
+IGxvcnMgZHUgbW1hcCgpLlxuIik7DQoJcmV0dXJuIC0xOw0KICAgIH0NCg0KLyoqKioqKiBJTklU
+IE9GIEFDUVVJU0lUSU9OIEJPQVJEICoqKioqKiovDQogICBjaHJvVm1lSW5pdChwdHJBMzIpOw0K
+ICAgY2hyb1ZtZVNldE1vZGUoUFJPRyk7DQogICBjaHJvVm1lU2V0UkFaRGF0ZSgweDIwLEVOUkFa
+REFURSxSQVpEQVRFTklWMCw0KTsNCiAgIGNocm9WbWVTZXRDcHQoREFURV9IX01IWik7DQogICBj
+aHJvVm1lUkFaQ3B0KENQVF9EQVRFKTsNCiAgIGNocm9WbWVTZXRNb2RlKFVUSUwpOw0KICAgZm9y
+KGs9MDtrPElURVI7aysrKQ0KCXRhYltrXT0wOw0KICAgcHJpbnRmKCJpbml0IG9rXG4iKTsNCiAg
+IGNocm9WbWVTZXRTZW5zRXZ0RGF0ZSgxLCBOSVYwKTsNCg0KLyoqKiBMT0NLIE1FTU9SWSAqKioq
+LyANCiAgIG1sb2NrYWxsKE1DTF9DVVJSRU5UIHwgTUNMX0ZVVFVSRSk7DQoNCi8qKiogU0FWRSBT
+VEFSVCBUSU1FICoqKi8NCiAgIGdldHRpbWVvZmRheSgmc3RhcnQsKHN0cnVjdCB0aW1ldmFsKikw
+KTsNCiAgIA0KLyoqKiBSRUFEIEVWRU5UIChOT04tQkxPQ0tJTkcpICoqKi8NCiAgIGNocm9WbWVH
+ZXRFdnREYXRlKCZldnQpOw0KDQovKioqIFJFQUQgREFUQSBBU1NPQ0lBVEVEIFRPIFRIQVQgRVZF
+TlQgKioqLw0KICAgY2hyb1ZtZUdldERhdGVFdnREYXRlKCAxLCAmbXNiLCAmZGF0ZXByZWMpOw0K
+DQovKioqIERPIFRISVMgUkVBRCBGT1IgQSBXSElMRS4uLiAqKiovDQogICBmb3Ioaz0wO2s8SVRF
+UjspDQogICB7DQogICAgIGNocm9WbWVHZXRFdnREYXRlKCZldnQpOw0KICAgICBpZiAoZXZ0JkVW
+REFURTEpDQogICAgIHsNCgkNCiAgICAgIGNocm9WbWVHZXREYXRlRXZ0RGF0ZSggMSwgJm1zYiwg
+JmxzYik7DQoNCgkvKioqIFBST0NFU1NJTkcgREFUQSAoRVJST1IgSUYgVEhFIFBST0dSQU0gSVMg
+TUlTU0lORyBBTiBFVkVOVCkgKioqLw0KCWlmKChsc2ItZGF0ZXByZWMpPjYwMCkgDQoJew0KCSAg
+ICBpZihsc2IhPTApIHsNCgkgICAgICAgIHRhYltrXT1sc2ItZGF0ZXByZWM7DQogICAgICAgICAg
+ICAgICAgKytrOw0KCSAgICB9DQoJfQ0KCWRhdGVwcmVjPWxzYjsNCiAgICAgfQ0KIA0KICAgfQ0K
+DQoNCiAgIGdldHRpbWVvZmRheSgmZWxhcHNlZCwoc3RydWN0IHRpbWV2YWwqKTApOw0KICAgdGlt
+ZV9lPShlbGFwc2VkLnR2X3NlYy1zdGFydC50dl9zZWMpKjEwMDAwMDAgKyAoZWxhcHNlZC50dl91
+c2VjLXN0YXJ0LnR2X3VzZWMpOw0KICAgcHJpbnRmKCJFcnJvciBmb3VuZCBpbiAlZCBtaWNyb3Nl
+Y29uZHMuXG4iLHRpbWVfZSk7DQoNCi8qKiogV1JJVElORyBSRVNVTFRTICoqKi8NCiAgIGZvcihr
+PTA7azxJVEVSO2srKykNCglmcHJpbnRmKG91dHB1dCwiJWRcbiIsdGFiW2tdKTsNCg0KDQogIG11
+bm1hcChwdHJBMzIsMHgxMDAwMDAwMCk7DQogIGNsb3NlKGZkT3V0KTsNCiAgZmNsb3NlKG91dHB1
+dCk7DQogIHJldHVybiAwOw0KfQ0K
+
+------_=_NextPart_001_01C6B07A.C690ECF7--
 
