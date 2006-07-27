@@ -1,44 +1,53 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Timer optimisations, continued
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <17608.46241.732781.448429@domain.hid>
+References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
+	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
+	<448EE593.7010809@domain.hid> <448EF022.1040901@domain.hid>
+	<17550.61982.685449.470866@domain.hid>
+	<44C6626A.6000304@domain.hid> <1153990428.5251.46.camel@domain.hid>
+	<17608.46241.732781.448429@domain.hid>
+Content-Type: text/plain
+Date: Thu, 27 Jul 2006 15:19:07 +0200
+Message-Id: <1154006347.4984.2.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-ID: <17580.62726.293737.991643@domain.hid>
-Date: Thu, 6 Jul 2006 13:33:26 +0200
-Subject: Re: [Xenomai-help] FPU not available in user-space programs
-In-Reply-To: <44AC8482.6000902@domain.hid>
-References: <44AC8482.6000902@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Rodrigo Rosenfeld Rosas wrote:
- > Hi,
- > 
- > I was looking at /proc/xenomai/faults and noticed that the only errors 
- > were on TRAP 7 (FPU not available).
- > 
- > Each time I run the user-space program using the native skin, I 
- > increment the fault by one. I don't understand why this happens. From 
- > documentation, FPU should be enabled automatically for user-space programs.
- > 
- > Any ideas why I'm getting this error and what does it mean? Should I do 
- > some float-point operation before creating my real-time tasks?
+On Thu, 2006-07-27 at 14:42 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > >  o A further improvement should be achievable for scenarios 4 and 5 by
+>  > >    introducing absolute xntimers (more precisely: a flag to
+>  > >    differentiate between the mode on xntimer_start). I have an outdated
+>  > >    patch for this in my repos, needs re-basing.
+>  > > 
+>  > 
+>  > Grmblm... Well, I would have preferred that we don't add that kind of
+>  > complexity to the nucleus interface, but I must admit that some
+>  > important use cases are definitely better served by absolute timespecs,
+>  > so I would surrender to this requirement, provided the implementation is
+>  > confined to xnpod_suspend_thread() + xntimer_start().
+> 
+> It would be nice if absolute timeouts were also available when using
+> xnsynch_sleep_on. There are a few use cases in the POSIX skin.
 
-This fault is not an error, it happens when a task use the FPU for the
-first time in primary mode. When in secondary mode, such an FPU fault
-happens every time the FPU is used after a context switch, you simply do
-not know about it because it is not accounted for.
+Makes sense, since xnpod_suspend_thread() and xnsynch_sleep_on() are
+tightly integrated interfaces.
 
+> 
 -- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
