@@ -1,70 +1,46 @@
-Message-ID: <44ACB82A.5010503@domain.hid>
-Date: Thu, 06 Jul 2006 09:13:46 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] FPU not available in user-space programs
-References: <44AC8482.6000902@domain.hid>
-In-Reply-To: <44AC8482.6000902@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDA958F916841CA64A1BD2040"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17608.46241.732781.448429@domain.hid>
+Date: Thu, 27 Jul 2006 14:42:09 +0200
+Subject: Re: [Xenomai-core] Timer optimisations, continued
+In-Reply-To: <1153990428.5251.46.camel@domain.hid>
+References: <448E98A3.6080707@domain.hid> <448E9E8B.70809@domain.hid>
+	<448EA7F7.5000802@domain.hid> <448EB038.8070802@domain.hid>
+	<448EE593.7010809@domain.hid> <448EF022.1040901@domain.hid>
+	<17550.61982.685449.470866@domain.hid>
+	<44C6626A.6000304@domain.hid> <1153990428.5251.46.camel@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA958F916841CA64A1BD2040
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
+ > >  o A further improvement should be achievable for scenarios 4 and 5 by
+ > >    introducing absolute xntimers (more precisely: a flag to
+ > >    differentiate between the mode on xntimer_start). I have an outdated
+ > >    patch for this in my repos, needs re-basing.
+ > > 
+ > 
+ > Grmblm... Well, I would have preferred that we don't add that kind of
+ > complexity to the nucleus interface, but I must admit that some
+ > important use cases are definitely better served by absolute timespecs,
+ > so I would surrender to this requirement, provided the implementation is
+ > confined to xnpod_suspend_thread() + xntimer_start().
 
-Rodrigo Rosenfeld Rosas wrote:
-> Hi,
->=20
-> I was looking at /proc/xenomai/faults and noticed that the only errors
-> were on TRAP 7 (FPU not available).
->=20
-> Each time I run the user-space program using the native skin, I
-> increment the fault by one. I don't understand why this happens. From
-> documentation, FPU should be enabled automatically for user-space progr=
-ams.
->=20
-> Any ideas why I'm getting this error and what does it mean? Should I do=
+It would be nice if absolute timeouts were also available when using
+xnsynch_sleep_on. There are a few use cases in the POSIX skin.
 
-> some float-point operation before creating my real-time tasks?
->=20
-
-Watch out for the thread "T_FPU without effect" on xenomai-core, I
-stumbled over this some time ago as well. It's an initial fault that
-happens only on first FPU usage from user-space.
-
-I'm not up-to-date with its current state, i.e. if there are plans to
-solve this differently. Maybe Gilles or Philippe can comment on it.
-
-Jan
+-- 
 
 
---------------enigDA958F916841CA64A1BD2040
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFErLgqniDOoMHTA+kRAp5oAKCB6ac1VHe7PCf/0WRCWvT9Biok9ACeIHVg
-Tx7spKqj4IPKUnNeianFMo0=
-=cUrE
------END PGP SIGNATURE-----
-
---------------enigDA958F916841CA64A1BD2040--
+					    Gilles Chanteperdrix.
 
