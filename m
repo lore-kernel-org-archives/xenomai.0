@@ -1,41 +1,82 @@
-Content-class: urn:content-classes:message
+Message-ID: <44CB4A1D.1090109@domain.hid>
+Date: Sat, 29 Jul 2006 13:44:29 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: AW: AW: AW: [Xenomai-help] memset of heap crashes Xenomai-Task
-Date: Tue, 11 Jul 2006 14:50:10 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A3F936B@ARVMAIL1.mra.roland-man.biz>
-From: <Roderik_Wildenburg@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] cpu_set_t and friends undefined
+References: <44CB312E.8090409@domain.hid> <44CB3685.6090006@domain.hid>
+In-Reply-To: <44CB3685.6090006@domain.hid>
+Content-Type: multipart/mixed; boundary="------------040006020902010401060409"
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
->=20
-> Maybe the task is in fact killed by the OOM killer ? It would=20
-> prove that this function is working correctly, since the=20
-> killed task is the one that allocates all the memory. Is=20
-> there no trace in the logs ?
->=20
+This is a multi-part message in MIME format.
+--------------040006020902010401060409
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Could not find a hint in the /var/log/messages from OOM killer. Nothing
-that says : task xyz killed.
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Hello,
+>>
+>> with todays SVN version of Xenomai, the testsuite program
+>> switchtest/switch.c does not compile because cpu_set_t and friends
+>> (CPU_SET, ...) are not undefined. I'm using kernel version 2.4.25.
+>>
+>> Any idea what goes wrong. I haven't found where cpu_set_t is declared,
+>> not even in Linux 2.4.17.7.
+> 
+> That's user-space stuff, in /usr/include/bits/sched.h on my box. Maybe
+> some #ifndef __cpu_set_t_defined + local definition is required here.
+> What glibc version do you use?
 
-/var/log/messages :
-Apr 25 09:44:03 arv0043 user.notice kernel: __alloc_pages: 0-order
-allocation fa
-iled (gfp=3D0x1f2/0)
-Apr 25 09:44:11 arv0043 user.notice kernel: __alloc_pages: 0-order
-allocation fa
-iled (gfp=3D0x1f2/0)
+Ah, OK. The problem is with gcc version 3.3.3 (DENX ELDK 3.1.1 3.3.3-9),
+which does not have cpu_set_t, indeed. The configure script already 
+deals with different implementations of setaffinity. The attached patch 
+fixes the problem. It removes CONFIG_SMP, which is not known to user 
+space applications anyhow. Well, it might get defined in 
+"src/include/xeno_config.h" somehow but I don't know how this could work 
+properly without knowing the configured kernel tree.
+
+Wolfgang,
 
 
+--------------040006020902010401060409
+Content-Type: text/x-patch;
+ name="xenomai-switch.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai-switch.patch"
+
++ diff -u xenomai/src/testsuite/switchtest/switch.c.SMP xenomai/src/testsuite/switchtest/switch.c
+--- xenomai/src/testsuite/switchtest/switch.c.SMP	2006-07-29 13:31:06.000000000 +0200
++++ xenomai/src/testsuite/switchtest/switch.c	2006-07-29 13:32:18.000000000 +0200
+@@ -15,7 +15,6 @@
+ #include <asm/xenomai/fptest.h>
+ #include <rtdm/rttesting.h>
+ 
+-#if CONFIG_SMP
+ #ifdef HAVE_RECENT_SETAFFINITY
+ #define smp_sched_setaffinity(pid,len,mask) sched_setaffinity(pid,len,mask)
+ #else /* !HAVE_RECENT_SETAFFINITY */
+@@ -28,9 +27,6 @@
+ #define	 CPU_SET(n,set) 	do { *(set) |= (1 << n); } while(0)
+ #endif /* HAVE_OLD_SETAFFINITY */
+ #endif /* HAVE_RECENT_SETAFFINITY */
+-#else /* !CONFIG_SMP */
+-#define smp_sched_setaffinity(pid,len,mask) 0
+-#endif /* !CONFIG_SMP */
+ 
+ struct cpu_tasks;
+ 
+
+--------------040006020902010401060409--
 
