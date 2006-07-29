@@ -1,70 +1,64 @@
-Message-ID: <44B21018.4060702@domain.hid>
-Date: Mon, 10 Jul 2006 10:30:16 +0200
+Message-ID: <44CB2884.80801@domain.hid>
+Date: Sat, 29 Jul 2006 11:21:08 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] isr
-References: <20060710080757.4430@domain.hid>
-In-Reply-To: <20060710080757.4430@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig92A384147BF0C32714EEAB05"
+	boundary="------------enig5D859A6981BC23E3043DF785"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [PATCH] detect conflict with INPUT_PCSPKR
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Keinen Namen <GSM909@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig92A384147BF0C32714EEAB05
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig5D859A6981BC23E3043DF785
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Keinen Namen wrote:
-> Hi I useing Xenomai 2.1 and the native skin=20
->=20
-> I want create a intr in kernel space with rt_intr_create, the 4th argum=
-ent is the pointer is the ISR.
->=20
-> My Question is which form does the ISR must have
->=20
-> rt_isr_t myisr ( ??? )
-> {
-> ...
-> }
->=20
-
-int my_isr(rt_intr_t *intr);
-
-That's indeed undocumented, you had to browse the code for this
-information. :-/
-
-[Note: unless you are writing some specialised or experimental code,
-developing drivers over the RTDM skin is recommended now. This aims at
-unifying the device interfaces for all skins.]
+This is a simple patch to catch the very rare but fatal conflict between
+Xenomai's TSC emulation and the PC speaker driver on 2.6/x86.
 
 Jan
 
 
---------------enig92A384147BF0C32714EEAB05
+--- include/asm-i386/hal.h      (Revision 1390)
++++ include/asm-i386/hal.h      (Arbeitskopie)
+@@ -169,6 +169,11 @@ static inline unsigned long long rthal_r
+     return t;
+ }
+ #else  /* !CONFIG_X86_TSC */
++#if defined(CONFIG_INPUT_PCSPKR) || defined(CONFIG_INPUT_PCSPKR_MODULE)
++#error Please disable PC speaker driver (CONFIG_INPUT_PCSPKR).
++#error It conflicts with Xenomai's TSC emulation.
++#endif /* CONFIG_INPUT_PCSPKR */
++
+ #define RTHAL_8254_COUNT2LATCH  0xfffe
+ void rthal_setup_8254_tsc(void);
+ rthal_time_t rthal_get_8254_tsc(void);
+
+
+
+--------------enig5D859A6981BC23E3043DF785
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFEshAbniDOoMHTA+kRAvCWAJ9pteXpOED13J2p5ZY/s4IHWbWFDACghUaD
-wmMsAX5P3o9yXE1LUqO9om8=
-=00jr
+iD8DBQFEyyiIniDOoMHTA+kRAr3QAJ9mZJUjyGYFlwg+WxZ+skMCjqwoVACfczrZ
+bBi4y21pkWErLPdXKrLL4jA=
+=uDmE
 -----END PGP SIGNATURE-----
 
---------------enig92A384147BF0C32714EEAB05--
+--------------enig5D859A6981BC23E3043DF785--
 
