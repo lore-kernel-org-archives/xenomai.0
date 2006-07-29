@@ -1,71 +1,61 @@
-Message-ID: <4546494d0607102348g181624cfxc14b47c85c00efb4@domain.hid>
-Date: Tue, 11 Jul 2006 14:48:26 +0800
-From: "Li Yi (Adam)" <liyiadam@domain.hid>
-Subject: Re: [Xenomai-help] Sychronize between Linux and Xenomai domain
-In-Reply-To: <44B341E2.9040506@domain.hid>
+Message-ID: <44CB3685.6090006@domain.hid>
+Date: Sat, 29 Jul 2006 12:20:53 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_105777_3767416.1152600506199"
-References: <4546494d0607092316s7dbc7406j2436714deccbfb91@domain.hid>
-	<44B1FDBD.4060600@domain.hid>
-	<4546494d0607100148s1f5476e3tb3f58d7ae48d4a72@domain.hid>
-	<44B218C5.9000804@domain.hid>
-	<4546494d0607100231x469aa596s2513e5b36cad8550@domain.hid>
-	<44B2216A.1060904@domain.hid>
-	<4546494d0607102125w2817ccd1j746651214cac3a6d@domain.hid>
-	<44B341E2.9040506@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] cpu_set_t and friends undefined
+References: <44CB312E.8090409@domain.hid>
+In-Reply-To: <44CB312E.8090409@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig22FB55FC3DF1CE04CA50A9C9"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_105777_3767416.1152600506199
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig22FB55FC3DF1CE04CA50A9C9
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Yes. I am concerned about UP situation. But I am still a little confused.
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> with todays SVN version of Xenomai, the testsuite program
+> switchtest/switch.c does not compile because cpu_set_t and friends
+> (CPU_SET, ...) are not undefined. I'm using kernel version 2.4.25.
+>=20
+> Any idea what goes wrong. I haven't found where cpu_set_t is declared,
+> not even in Linux 2.4.17.7.
 
-Do you mean in a "normal Linux driver", I can use
+That's user-space stuff, in /usr/include/bits/sched.h on my box. Maybe
+some #ifndef __cpu_set_t_defined + local definition is required here.
+What glibc version do you use?
 
-rtdm_lock_get_irqsave() to protect my Linux task from being preempted by
-Xenomai task?
+Jan
 
 
-The code shows that:
-"
-#define rtdm_lock_get_irqsave(lock, context)    \
-    rthal_spin_lock_irqsave(lock, context).
+--------------enig22FB55FC3DF1CE04CA50A9C9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-#define rthal_spin_lock_irqsave(lock,x) \
-do {  \
-    rthal_local_irq_save(x); \
-    rthal_spin_lock(lock); \
-} while(0)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-#define rthal_local_irq_save(x) ((x) =
-!!ipipe_test_and_stall_pipeline_from(&rthal_domain)
+iD8DBQFEyzaFniDOoMHTA+kRAkIpAJwJ2mVd+wMX2sFV8GOt9PPZzDkZBACfVN/c
+DEtARhhqY2j/sOEIoVoajgk=
+=bWYP
+-----END PGP SIGNATURE-----
 
-------=_Part_105777_3767416.1152600506199
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Yes. I am concerned about UP situation. But I am still a little confused.<br><br>Do you mean in a &quot;normal Linux driver&quot;, I can use<br><br>rtdm_lock_get_irqsave() to protect my Linux task from being preempted by Xenomai task?
-<br><br><br>The code shows that:<br>&quot;<br>#define rtdm_lock_get_irqsave(lock, context)&nbsp;&nbsp;&nbsp; \<br>
-&nbsp;&nbsp;&nbsp; rthal_spin_lock_irqsave(lock, context).<br><br>#define rthal_spin_lock_irqsave(lock,x) \<br>
-do {&nbsp; \<br>
-&nbsp;&nbsp;&nbsp; rthal_local_irq_save(x); \<br>
-&nbsp;&nbsp;&nbsp; rthal_spin_lock(lock); \<br>
-} while(0)
-<br><br>#define rthal_local_irq_save(x)		((x) = !!ipipe_test_and_stall_pipeline_from(&amp;rthal_domain)
-
-------=_Part_105777_3767416.1152600506199--
+--------------enig22FB55FC3DF1CE04CA50A9C9--
 
