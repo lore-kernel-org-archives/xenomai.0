@@ -1,121 +1,88 @@
-Message-ID: <44B7BF28.6000500@domain.hid>
-Date: Fri, 14 Jul 2006 17:58:32 +0200
+Message-ID: <44CC5D59.3080405@domain.hid>
+Date: Sun, 30 Jul 2006 09:18:49 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] handling threads within a pod
-References: <44B51D2C.10508@domain.hid> <44B52214.7050009@domain.hid>	
-	<44B60737.6050705@domain.hid> <1152891036.5075.35.camel@domain.hid>
-In-Reply-To: <1152891036.5075.35.camel@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] detect conflict with INPUT_PCSPKR
+References: <44CB2884.80801@domain.hid>	<17611.36969.814874.846387@domain.hid>
+	<17611.37633.881446.443324@domain.hid>
+In-Reply-To: <17611.37633.881446.443324@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0757CE261AB81E18D801FD90"
+	boundary="------------enig5763EB7FAA22C2FD6D678729"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, Khalil GHORBAL <kg@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0757CE261AB81E18D801FD90
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig5763EB7FAA22C2FD6D678729
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> On Thu, 2006-07-13 at 10:41 +0200, Khalil GHORBAL wrote:
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>  > How about solving this in Kconfig ?
+>  > Index: scripts/Kconfig.frag
+>  > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>  > --- scripts/Kconfig.frag	(revision 1388)
+>  > +++ scripts/Kconfig.frag	(working copy)
+>  > @@ -2,6 +2,7 @@
+>  >  menu "Real-time sub-system"
+>  > =20
+>  >  config XENOMAI
+>  > +	depends on CONFIG_X86_TSC || !X86 || !CONFIG_INPUT_PCSPKR
+>  >  	bool "Xenomai"
+>  >  	default y
+>  >          select IPIPE
 >=20
->> I'll give an example to explain the issue:
->> Assuming having multiple threads in our active pod, these threads can =
-be=20
->> in different states.
->> The running thread have to get the *extinfo* field of thread named=20
->> "COM_THREAD" (for example) if exists.
->>
->> All services of the nucleus need a *xnthread_t* structure to identify =
+> Sorry, I meant:
+>=20
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> Index: scripts/Kconfig.frag
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- scripts/Kconfig.frag	(revision 1388)
+> +++ scripts/Kconfig.frag	(working copy)
+> @@ -2,6 +2,7 @@
+>  menu "Real-time sub-system"
+> =20
+>  config XENOMAI
+> +	depends on X86_TSC || !X86 || !INPUT_PCSPKR
+>  	bool "Xenomai"
+>  	default y
+>          select IPIPE
 
->> the thread to treat, we can't have a list or something similar to swee=
-p=20
->> existing threads. All I've found is the global queue, doubly-linked an=
-d=20
->> circular, which link all threads.
->> So all informations I have is the number of threads and a way to go fr=
-om=20
->> one holder to another
->> without really be able to identify the thread and read the other field=
-s.
->>
->=20
-> Forget about extinfo; you don't need this, and it's old cruft we are
-> going to kill in later versions anyway. What you need to handle
-> arinc653-like temporal partitioning is something along these lines:
->=20
-> struct ima380_process {
-> 	xnthread_t threadbase;	/* process control block */
-> 	xnholder_t ptlink;	/* link to next partition */
-> 	/* ... */
-> };
->=20
-> struct ima380_partition {
-> 	xnqueue_t procq;	/* chains ima380 processes */
-> 	/* ... */
-> };
->=20
-> Don't refer to Xenomai's global thread queue, just manage your own
-> process queues populating a partition object abstraction.
->=20
-> Then use the XNHELD bit which has been specifically added as a
-> suspensive condition to handle temporal partitioning. This way, XNSUSP
-> remains available for suspending processes forcibly within a partition
-> (suspension bits are conjunctive). IOW, only the processes pertaining t=
-o
-> the running partition will have the XNHELD bit cleared, others will hav=
-e
-> this bit set, and as such, suspended by the nucleus, which is what you
-> want.
->=20
-> void deactivate_partition (struct ima380_partition *pt)
-> {
-> 	foreach(thread in pt->procq) {
-> 		xnpod_suspend_thread(thread,XNHELD,XN_INFINITE,NULL);
-> 	}
-> }
->=20
-> void activate_partition (struct ima380_partition *pt)
-> {
-> 	foreach(thread in pt->procq) {
-> 		xnpod_resume_thread(thread,XNHELD);
-> 	}
-> }
->=20
-> The partition slicer can be implemented as a simple periodic timer,
-> whose handler activates existing partitions in a round-robin fashion.
->=20
-> FWIW, mimicking arinc653 over the nucleus is a no-brainer, so there's
-> good hope for IMA380.
->=20
+No problem, but only when combining with a
 
-The way described above is certainly the preferred one for a first
-approach. But I wonder if switching full schedules isn't more efficient,
-scalable, and simply more "partitioned" than this O(n) method. I haven't
-looked at details yet, but is there anything that may prevent such
-"hard" switch ATM?
+comment "Switch off CONFIG_INPUT_PCSPKR to use Xenomai" (or so)
+	depends on !X86_TSC && X86 && INPUT_PCSPKR
 
-Another topic that my addiction to perfectionism brought to my mind are
-partitioned timers. Anyway, once we switch whole schedules, shouldn't
-those timers be switched automatically as well? Considering that a
-partition switch would be triggered by a timer, one would only have to
-restart the timer IRQ over the new sched to continue. In theory...
+Otherwise the user will be left alone here with a non-selectable Xenomai
+option...
+
+This actually remind me of my suggestion some months ago to add Kconfig
+warnings for CONFIG_CPU_FREQ & friends. Might be a good chance to catch
+this all. Is scripts/Kconfig.frag the preferred place to add it?
 
 Jan
 
 
---------------enig0757CE261AB81E18D801FD90
+--------------enig5763EB7FAA22C2FD6D678729
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -124,10 +91,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFEt78oniDOoMHTA+kRAumXAJ46mPZeiLDQLMhXxLcFTk/cnBAlQQCeMcYT
-g3S2gUstGdlfUY0sU4zigwA=
-=c1Hj
+iD8DBQFEzF1ZniDOoMHTA+kRAoHAAJ46h6hywH7U1IQKnkuPY0P7JIWdbQCbB9Ys
+DRNfBk5bRBh44ZEHNR0thfo=
+=YgKy
 -----END PGP SIGNATURE-----
 
---------------enig0757CE261AB81E18D801FD90--
+--------------enig5763EB7FAA22C2FD6D678729--
 
