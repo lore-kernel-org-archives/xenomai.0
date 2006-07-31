@@ -1,14 +1,14 @@
-Message-ID: <44CE11FB.3070309@domain.hid>
-Date: Mon, 31 Jul 2006 16:21:47 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <e325d110607310723r18eec657vf1e9bd6d7fdde2a5@domain.hid>
+Date: Mon, 31 Jul 2006 15:23:08 +0100
+From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
+Subject: Re: [Xenomai-help] configuration scripts doesn't work
+In-Reply-To: <17613.60695.176599.493100@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] two questions about using rtdm
-References: <02AA386EB831044F8537A696BA785C78A668C7@domain.hid>
-In-Reply-To: <02AA386EB831044F8537A696BA785C78A668C7@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA4959029F443F0069EBB6A38"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <e325d110607310304pac72cf3pad25cec643be0edf@domain.hid>
+	<17613.60695.176599.493100@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,47 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Landau, Bracha" <BLandau@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA4959029F443F0069EBB6A38
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Gilles,
 
-Landau, Bracha wrote:
-> I downloaded RTNet and tried to compile it for mpc8260 fcc enet.=20
-> I use linux kernel 2.6.14.
-> The file drivers/rt_mpc8260_fcc_enet.c did not compile. It's looking fo=
-r files named "immap_8260.h" and "immap_cpm2.h", neither of which exists.=
+The error message i get when try to run the latency test program..
+warming up...
+latency: failed to set periodic, code -110
 
->=20
-
-I think to remember Wolfgang said that 2.6 is not yet supposed to work
-with this particular driver. So I better redirect this question for more
-details.
-
-But before digging to deep into this: What are you planning to do with
-RTnet? My point is if you actually need deterministic network access or
-if you may live with relaxed services via normal Linux. It's not that
-RTnet is bad :), but it might not be required here.
-
-Jan
+The message you got initially told you that a discrepancy between the
+CPU selected at kernel level and the user-support has been detected.
+To fix this, you need to select a x86 CPU supporting a timestamp
+counter when configuring your kernel, since by default, the configure
+script assumes --enable-x86-tsc.
 
 
---------------enigA4959029F443F0069EBB6A38
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+May i know what does it mean by "x86 CPU supporting a timestamp
+counter when configuring your kernel"?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Regards,
+Kim Chuan.
 
-iD8DBQFEzhH7niDOoMHTA+kRAsEPAJ9tBoSXpvJ9oVDNaZZt9Jp5JZyaQACbBgqh
-D+iHMGUZ7exec9Q4Mluesdg=
-=vuKY
------END PGP SIGNATURE-----
 
---------------enigA4959029F443F0069EBB6A38--
+On 7/31/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Kim Chuan Lim wrote:
+>  > ./configure --enable-x86-sep --enable-x86-tsc
+>  >
+>  > Xenomai: incompatible feature set
+>  > (required="sep tsc", present="sep", missing="tsc").
+>  >
+>  > https://mail.gna.org/public/xenomai-help/2006-04/msg00198.html
+>  >
+>  > I managed to fix it by following the same way.. can someone fix it in
+>  > the trunk or next distribution please.
+>
+> As explained in the mail you have found, there is nothing to be fixed in
+> Xenomai sources. What need to be fixed is the flags you passed to
+> configure.
+>
+> --
+>
+>
+>                                             Gilles Chanteperdrix.
+>
 
