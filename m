@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17615.25409.355632.931296@domain.hid>
-Date: Tue, 1 Aug 2006 16:20:49 +0200
-Subject: Re: [Xenomai-help] Convert Linux PosixThreads to Xenomai PosixThreads
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A46D6A5@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A46D6A5@domain.hid>
-Content-Transfer-Encoding: Quoted-Printable
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 1 Aug 2006 17:27:51 +0300
+Message-ID: <02AA386EB831044F8537A696BA785C78A668D1@domain.hid>
+In-Reply-To: <200608011001.k71A1RPp024916@domain.hid>
+From: "Landau, Bracha" <BLandau@domain.hid>
+Subject: [Xenomai-help] mq_send /mq_receive problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Roderik_Wildenburg@domain.hid wrote:
- > I try to port some software, which runs on native Linux, to Xenomai.
- > As the original SW uses Posix calls, I thought, I just have to compile=
- with Xenomai-header files, link Xenomai-libraries, use the Xenomai flags=
- as deliverd from xeno-config and the application will run on Xenomai.
- >=20
- > So far so good. Compiling and linking works miraculous (see output bel=
-ow).=20
- > But when I start my application I still get just Linux threads and no =
-Xenomai shadow tasks are created. Can anybody give me a hint how I can co=
-ntroll what kind of thread is created ?
-
-Normally, any thread created with pthread_create has a shadow. Whether
-they are started in primary mode depends on their scheduling policy.
-
- >=20
- > By the way : the posix example satch.c works fine (Xenomai tasks are c=
-reated) and compiler and linker output are nearly the same as for my appl=
-ication (see below). So, I can=B4t see, what I made wrong.
- >=20
-
-Could you try reducing your problem to a program as simple as possible,
-and send us the sources of this program ? How do you know that no shadow
-threads are created ?
-
---=20
-
-
-					    Gilles Chanteperdrix.
+I have a low priority thread running in the kernel which receives to a me=
+ssage queue and writes to the same message queue after it processes the m=
+essage. The message queue is opened for reading and writing.
+Without a delay (with nanosleep) between the reading (mq_receive) and wri=
+ting (mq_send), the kernel hangs.
+If I put in a small delay between the mq_send and mq_receive, the mechani=
+sm works fine.
+Why is this?
+*************************************************************************=
+**********
+This email message and any attachments thereto are intended only for use =
+by the addressee(s) named above, and may contain legally privileged and/o=
+r confidential information. If the reader of this message is not the inte=
+nded recipient, or the employee or agent responsible to deliver it to the=
+ intended recipient, you are hereby notified that any dissemination, dist=
+ribution or copying of this communication is strictly prohibited. If you =
+have received this communication in error, please immediately notify the =
+postmaster@domain.hid and destroy the original message.
+*************************************************************************=
+**********
 
