@@ -1,12 +1,13 @@
-Message-ID: <44CFA184.9090204@domain.hid>
-Date: Tue, 01 Aug 2006 11:46:28 -0700
-From: Nathaniel Villaume <villaume@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: RT_TASK_INFO status
-References: <1154015872-24969.00053.00861-smmsdV2.1.4@domain.hid>	<44C8EECE.4070209@domain.hid>	<44C90CEF.9090908@domain.hid>	<44C9136C.7080709@domain.hid>	<44C9420D.3070100@domain.hid>	<44C9D319.7020704@domain.hid>
-	<17610.5728.464611.778617@domain.hid>
-In-Reply-To: <17610.5728.464611.778617@domain.hid>
-Content-Type: multipart/mixed; boundary="------------060107050403010603080701"
+Content-Type: multipart/mixed; boundary="pKcnn4geoO"
+Content-Transfer-Encoding: 7bit
+Message-ID: <17615.48165.184151.82875@domain.hid>
+Date: Tue, 1 Aug 2006 22:40:05 +0200
+Subject: RE: [Xenomai-help] mq_send /mq_receive problem
+In-Reply-To: <02AA386EB831044F8537A696BA785C78A668D5@domain.hid>
+References: <17615.28311.703965.598653@domain.hid>
+	<02AA386EB831044F8537A696BA785C78A668D5@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,213 +17,215 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: "Landau, Bracha" <BLandau@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------060107050403010603080701
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+--pKcnn4geoO
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
-Please see attached diff. I think I found a good way to do it that 
-preserves the readable C-code style ( I gave up using the @define command).
-This patch includes changes to the defines and the RT_TASK_INFO and 
-RT_TASK_MCB structures.
+Landau, Bracha wrote:
+ > The queue is opened with O_CREAT | O_RDWR.
+ > Please note that I sent an updated version of the code that causes the crash - the queue in both the mq_send and mq_receive is "link_rq_mq".
 
-Let me know if you want something different.
+Merging your sample with the code of the satch example, I arrived to the
+attached test that work as expected as long as:
+- the task priorities are correctly set
+- there is no printf call between the mq_send and mq_receive in the
+  "producer" function. It looks like such a printf suspends the
+  GetLinkState thread out of mq_receive, so that when the LinkThread
+  send a message, it is able to immediately receive it.
 
--Nate
+This state of affair is a bit fragile, in order to do something more
+robust, you should probably use one message queue for each direction.
 
---------------060107050403010603080701
-Content-Type: text/plain;
- name="defines_documentation.diff"
-Content-Transfer-Encoding: 7bit
+-- 
+
+
+					    Gilles Chanteperdrix.
+
+--pKcnn4geoO
+Content-Type: text/plain
 Content-Disposition: inline;
- filename="defines_documentation.diff"
+	filename="tmq.c"
+Content-Transfer-Encoding: 7bit
 
-Index: include/native/task.h
-===================================================================
---- include/native/task.h	(revision 1383)
-+++ include/native/task.h	(working copy)
-@@ -34,21 +34,28 @@
- #define T_CPU(cpu) (1 << (24 + (cpu & 7))) /* Up to 8 cpus [0-7] */
- #define T_CPUMASK  0xff000000
- 
--/* Status/mode flags. */
--#define T_BLOCKED  XNPEND
--#define T_DELAYED  XNDELAY
--#define T_READY    XNREADY
--#define T_DORMANT  XNDORMANT
--#define T_STARTED  XNSTARTED
--#define T_BOOST    XNBOOST
--#define T_LOCK     XNLOCK
--#define T_RRB      XNRRB
--#define T_NOSIG    XNASDI
--#define T_SHIELD   XNSHIELD
--#define T_WARNSW   XNTRAPSW
--#define T_RPIOFF   XNRPIOFF
-+/*! 
-+  \ingroup native
-+  @defgroup native_task_status Task Status 
-+  @brief Defines used to specify task state and/or mode 
-+  @{
-+ */
-+
-+#define T_BLOCKED  XNPEND     /**< See #XNPEND    */
-+#define T_DELAYED  XNDELAY    /**< See #XNDELAY   */
-+#define T_READY    XNREADY    /**< See #XNREADY   */
-+#define T_DORMANT  XNDORMANT  /**< See #XNDORMANT */
-+#define T_STARTED  XNSTARTED  /**< See #XNSTARTED */
-+#define T_BOOST    XNBOOST    /**< See #XNBOOST   */
-+#define T_LOCK     XNLOCK     /**< See #XNLOCK    */
-+#define T_RRB      XNRRB      /**< See #XNRRB     */
-+#define T_NOSIG    XNASDI     /**< See #XNASDI    */ 
-+#define T_SHIELD   XNSHIELD   /**< See #XNSHIELD  */ 
-+#define T_WARNSW   XNTRAPSW   /**< See #XNTRAPSW  */ 
-+#define T_RPIOFF   XNRPIOFF   /**< See #XNRPIOFF  */ 
- #define T_PRIMARY  0x00000200	/* Recycle internal bits status which */
- #define T_JOINABLE 0x00000400	/* won't be passed to the nucleus.  */
-+/*! @} */ /* Ends doxygen-group native_task_status */
- 
- /* Task hook types. */
- #define T_HOOK_START  XNHOOK_THREAD_START
-@@ -68,31 +75,38 @@
- struct rt_queue_msg;
- struct rt_task;
- 
-+/** Structure containing task-information useful to users.
-+ *
-+ *  @see rt_task_inquire()
-+ */
- typedef struct rt_task_info {
-+    
-+    int bprio;  /**< Base priority. */
- 
--    int bprio;			/* !< Base priority. */
-+    int cprio; /**< Current priority. May change through Priority Inheritance.*/
-+    
-+    unsigned status; /**< Task's status. @see native_task_status */ 
-+    
-+    RTIME relpoint; /**< Time of next release.*/ 
-+    
-+    char name[XNOBJECT_NAME_LEN];  /**< Symbolic name assigned at creation. */
- 
--    int cprio;			/* !< Current priority. */
--
--    unsigned status;		/* !< Status. */
--
--    RTIME relpoint;		/* !< Next periodic release point. */
--
--    char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
--
- } RT_TASK_INFO;
- 
- #define RT_MCB_FSTORE_LIMIT  64
- 
-+/** Structure used in passing messages between tasks.
-+  @see rt_task_send(), rt_task_reply(), rt_task_receive()
-+*/
- typedef struct rt_task_mcb {
- 
--    int flowid;			/* !< Flow identifier. */
-+    int flowid;   /**< Flow identifier. */
- 
--    int opcode;			/* !< Operation code. */
-+    int opcode;   /**< Operation code. */
- 
--    caddr_t data;		/* !< Address of message. */
-+    caddr_t data; /**< Message address. */
- 
--    size_t size;		/* !< Size of message. */
-+    size_t size;  /**< Message size (bytes). */
- 
- } RT_TASK_MCB;
- 
-Index: include/nucleus/thread.h
-===================================================================
---- include/nucleus/thread.h	(revision 1383)
-+++ include/nucleus/thread.h	(working copy)
-@@ -1,4 +1,4 @@
--/*
-+/* 
-  * Copyright (C) 2001,2002,2003 Philippe Gerum <rpm@xenomai.org>.
-  *
-  * Xenomai is free software; you can redistribute it and/or modify
-@@ -22,38 +22,48 @@
- 
- #include <nucleus/timer.h>
- 
-+/*! @ingroup nucleus 
-+  @defgroup nucleus_status_mode Status and Mode Defines.
-+  @brief These defines are the used by the skins to report status of 
-+         tasks and other objects. 
-+  @{
-+*/
-+
- /* Status flags */
--#define XNSUSP    0x00000001	/* Suspended */
--#define XNPEND    0x00000002	/* Sleep-wait for a resource */
--#define XNDELAY   0x00000004	/* Delayed */
--#define XNREADY   0x00000008	/* Linked to the ready queue */
--#define XNDORMANT 0x00000010	/* Not started yet or killed */
--#define XNZOMBIE  0x00000020	/* Zombie thread in deletion process */
--#define XNRESTART 0x00000040	/* Restarting thread */
--#define XNSTARTED 0x00000080	/* Could be restarted */
--#define XNRELAX   0x00000100	/* Relaxed shadow thread (blocking bit) */
--#define XNHELD    0x00000200	/* Held thread from suspended partition */
- 
--#define XNTIMEO   0x00000400	/* Woken up due to a timeout condition */
--#define XNRMID    0x00000800	/* Pending on a removed resource */
--#define XNBREAK   0x00001000	/* Forcibly awaken from a wait state */
--#define XNKICKED  0x00002000	/* Kicked upon Linux signal (shadow only) */
--#define XNBOOST   0x00004000	/* Undergoes regular PIP boost */
--#define XNDEBUG   0x00008000	/* Hit debugger breakpoint (shadow only) */
-+#define XNSUSP    0x00000001 /**< Suspended. */
-+#define XNPEND    0x00000002 /**< Sleep-wait for a resource. */
-+#define XNDELAY   0x00000004 /**< Delayed */
-+#define XNREADY   0x00000008 /**< Linked to the ready queue. */
-+#define XNDORMANT 0x00000010 /**< Not started yet or killed */
-+#define XNZOMBIE  0x00000020 /**< Zombie thread in deletion process */
-+#define XNRESTART 0x00000040 /**< Restarting thread */
-+#define XNSTARTED 0x00000080 /**< Could be restarted */
-+#define XNRELAX   0x00000100 /**< Relaxed shadow thread (blocking bit) */
-+#define XNHELD    0x00000200 /**< Held thread from suspended partition */
- 
-+#define XNTIMEO   0x00000400 /**< Woken up due to a timeout condition */
-+#define XNRMID    0x00000800 /**< Pending on a removed resource */
-+#define XNBREAK   0x00001000 /**< Forcibly awaken from a wait state */
-+#define XNKICKED  0x00002000 /**< Kicked upon Linux signal (shadow only) */
-+#define XNBOOST   0x00004000 /**< Undergoes regular PIP boost */
-+#define XNDEBUG   0x00008000 /**< Hit debugger breakpoint (shadow only) */
-+
- /* Mode flags. */
--#define XNLOCK    0x00010000	/* Not preemptible */
--#define XNRRB     0x00020000	/* Undergoes a round-robin scheduling */
--#define XNASDI    0x00040000	/* ASR are disabled */
--#define XNSHIELD  0x00080000	/* IRQ shield is enabled (shadow only) */
--#define XNTRAPSW  0x00100000	/* Trap execution mode switches */
--#define XNRPIOFF  0x00200000	/* Stop priority coupling (shadow only) */
-+#define XNLOCK    0x00010000 /**< Not preemptible */
-+#define XNRRB     0x00020000 /**< Undergoes a round-robin scheduling */
-+#define XNASDI    0x00040000 /**< ASR are disabled */
-+#define XNSHIELD  0x00080000 /**< IRQ shield is enabled (shadow only) */
-+#define XNTRAPSW  0x00100000 /**< Trap execution mode switches */
-+#define XNRPIOFF  0x00200000 /**< Stop priority coupling (shadow only) */
- 
--#define XNFPU     0x00400000	/* Thread uses FPU */
--#define XNSHADOW  0x00800000	/* Shadow thread */
--#define XNROOT    0x01000000	/* Root thread (i.e. Linux/IDLE) */
--#define XNINVPS   0x02000000	/* Using inverted priority scale */
-+#define XNFPU     0x00400000 /**< Thread uses FPU */
-+#define XNSHADOW  0x00800000 /**< Shadow thread */
-+#define XNROOT    0x01000000 /**< Root thread (that is, Linux/IDLE) */
-+#define XNINVPS   0x02000000 /**< Using inverted priority scale */
- 
-+/*! @} */ /* Ends doxygen comment group: nucleus_status_modes */
-+
- /*
-   Must follow the declaration order of the above bits. Status symbols
-   are defined as follows:
+#ifdef __KERNEL__
+#include <linux/module.h>
+#elif !defined(__XENO_SIM__)
+#include <stdio.h>
+#define printk printf
+#else
+#endif
 
---------------060107050403010603080701--
+#ifndef __XENO_SIM__
+#include <errno.h>
+#include <pthread.h>
+#include <mqueue.h>
+#include <sys/mman.h>
+#else
+#include <posix/posix.h>
+#endif
 
+#define CONSUMER_TASK_PRI    1
+#define CONSUMER_STACK_SIZE  8192
+
+#define PRODUCER_TASK_PRI    2
+#define PRODUCER_STACK_SIZE  8192
+
+#define MQ_NAME "/mymq"
+
+static pthread_t consumer_task, producer_task;
+static mqd_t mqd = (mqd_t) -1;
+static pthread_mutex_t mutex;
+
+void *consumer(void *cookie)
+{
+	int status;
+	unsigned linkr;
+
+	if ((status=mq_receive (mqd, (char *)&linkr, sizeof (linkr), 0)) > 0)
+		status = mq_send (mqd, (char *)&linkr, sizeof (linkr), 0);
+	else {
+		printk ("linkthread:mq_receive returned %08x, errno=%08x\n", status, errno);
+		return cookie;
+	}
+
+	status=mq_receive (mqd, (char *)&linkr, sizeof (linkr), 0);
+
+	printk("test failed!\n");
+	
+	return 0;
+}
+
+void *producer(void *cookie)
+{
+	unsigned linkr = (unsigned) cookie;
+	int status;
+	status = mq_send (mqd, (char *)&linkr, sizeof (linkr), 0);
+	mq_receive (mqd, (char *)&linkr, sizeof (linkr), 0);
+	printk("test passed\n");
+	return (void *) linkr;
+}
+
+void __xeno_user_exit(void)
+{
+    if (consumer_task)
+        {
+        pthread_cancel(consumer_task);
+        pthread_join(consumer_task, NULL);
+        }
+    if (mqd != (mqd_t) -1)
+        mq_close(mqd);
+    if (producer_task)
+        {
+        pthread_cancel(producer_task);
+        pthread_join(producer_task, NULL);
+        }
+    mq_unlink(MQ_NAME);
+}
+
+int __xeno_user_init (void)
+
+{
+    struct sched_param parm;
+    pthread_attr_t attr;
+    int rc = 0;
+    struct mq_attr mattr;
+
+    pthread_mutex_init(&mutex, NULL);
+
+    mattr.mq_maxmsg = 30;
+    mattr.mq_msgsize = sizeof(unsigned);
+    mqd = mq_open(MQ_NAME, O_CREAT| O_EXCL| O_RDWR, 0, &mattr);
+    if (mqd == (mqd_t) -1)
+        {
+	if (errno == EEXIST)
+	    {
+	    printk("Mqtest: consumer module is already running, please "
+		     "only launch one consumer instance.\n");
+	    goto out;
+	    }
+
+        printk("mq_open(mqd): %d\n", errno);
+        goto out;
+        }
+   
+    pthread_attr_init(&attr);
+    pthread_attr_setstacksize(&attr, CONSUMER_STACK_SIZE);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    parm.sched_priority = CONSUMER_TASK_PRI;
+    pthread_attr_setschedparam(&attr, &parm);
+    rc = pthread_create(&consumer_task, &attr, &consumer, NULL);
+
+    if (rc)
+        {
+        printk("pthread_create(consumer_task): %d\n", rc);
+        goto out;
+        }
+
+    pthread_attr_init(&attr);
+    pthread_attr_setstacksize(&attr, PRODUCER_STACK_SIZE);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    parm.sched_priority = PRODUCER_TASK_PRI;
+    pthread_attr_setschedparam(&attr, &parm);
+    rc = pthread_create(&producer_task, &attr, &producer, (void *) 42);
+
+    if (rc)
+        {
+        printk("pthread_create(producer_task): %d\n", rc);
+        goto out;
+        }
+
+    return 0;
+
+  out:
+    rc = -rc ?: -errno;
+    __xeno_user_exit();
+    return rc;
+}
+
+#ifdef __KERNEL__
+MODULE_AUTHOR("gilles.chanteperdrix@xenomai.org");
+MODULE_LICENSE("GPL");
+module_init(__xeno_user_init);
+module_exit(__xeno_user_exit);
+
+#elif !defined(__XENO_SIM__)
+int main (int ac, char *av[])
+
+{
+    sigset_t mask;
+    int rc, sig;
+
+    sigemptyset(&mask);
+    sigaddset(&mask,SIGINT);
+    sigaddset(&mask,SIGTERM);
+    sigaddset(&mask,SIGHUP);
+    sigaddset(&mask,SIGALRM);
+
+    pthread_sigmask(SIG_BLOCK, &mask, NULL);
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    rc = __xeno_user_init();
+
+    if (rc)
+        {
+        printk("__xeno_user_init: %d\n", -rc);
+        return -rc;
+        }
+
+    sigwait(&mask, &sig);
+    __xeno_user_exit();
+
+    return 0;
+}
+#endif /* !__XENO_SIM__ && !__KERNEL__ */
+
+--pKcnn4geoO--
 
