@@ -1,36 +1,40 @@
+Message-ID: <44CF91D2.9050609@domain.hid>
+Date: Tue, 01 Aug 2006 19:39:30 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Date: Thu, 27 Jul 2006 09:23:52 -0700
-From: "Nathaniel J Villaume" <villaume@domain.hid>
-Message-Id: <1154017432-24969.00057.00869-smmsdV2.1.4@domain.hid>
-In-Reply-To: <200607271001.k6RA19sN018076@domain.hid>
-Content-Type: text/plain; charset="us-ascii"
-Subject: [Xenomai-help] patch: native/task.h
-Reply-To: Nathaniel.J.Villaume@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Re: [ANNOUNCE] RTDM driver for CAN devices
+References: <44CF6EB1.1010808@domain.hid> <8ne4q3-fkg.ln1@domain.hid>
+In-Reply-To: <8ne4q3-fkg.ln1@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Bernhard Walle <bernhard.walle@domain.hid>
+Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
-Hi, 
+Bernhard Walle wrote:
+> Hi Wolfgang,
+> 
+> Wolfgang Grandegger <wg@domain.hid> [2006-08-01]:
+>> at "ftp://ftp.denx.de/pub/xenomai/rtcan" you can find a first version of
+>> RTCAN, an Open Source hard real-time protocol stack for CAN devices
+>> based on BSD sockets. It is based on the SJA1000 socket-based CAN driver
+>> for RTDM by Sebastian Smolorz (see CREDITS file).
+> 
+> Has this something to do with http://sourceforge.net/projects/rtcan/?
+> It seems no, so maybe it would be better to find another name for your
+> driver.
 
-I include two more patches here:
-1) info_mcb_changed_native_task.h.diff: 
-   only changed documentation level of RT_TASK_INFO and RT_TASK_MCB
-2) all_changed_native_task.h.diff: 
-   changed the file to show all the documented bits (including
-RT_TASK
+No, the project you mention seem not to be maintained for a long time 
+now and I'm going to contact the author. Please regard the name as 
+preliminary. We already thought of renaming it to RT-Socketcan.
 
-The reasoon is that maybe the internals of RT_TASK don't need to
-be exposed. 
-
-HTH,
--Nate
-
-
+Wolfgang.
 
