@@ -1,163 +1,51 @@
-Subject: Re: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17636.56428.140050.265677@domain.hid>
-References: <17636.56428.140050.265677@domain.hid>
-Content-Type: text/plain
-Date: Fri, 18 Aug 2006 12:55:33 +0200
-Message-Id: <1155898533.4326.50.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <17615.25409.355632.931296@domain.hid>
+Date: Tue, 1 Aug 2006 16:20:49 +0200
+Subject: Re: [Xenomai-help] Convert Linux PosixThreads to Xenomai PosixThreads
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A46D6A5@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A46D6A5@domain.hid>
+Content-Transfer-Encoding: Quoted-Printable
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Roderik_Wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-08-17 at 23:15 +0200, Gilles Chanteperdrix wrote:
-> Hi, 
-> 
-> For review, you will find attached to this mail a patch which allows
-> Xenomai to run on ARM platforms where the timer interrupt is
-> shared. Such a platform have to define the constant
-> IPIPE_HAVE_SHARED_TIMER_IRQ, as well as two functions or macros:
-> - ipipe_timer_irq_p(), used by xnpod_announce_tick to test  whether a
-> timer interrupt is pending, in which case it is handled, otherwise
-> xnpod_announce_tick returns with the XN_ISR_PROPAGATE so that the
-> interrupt is propagated to the Linux domain.
-> - ipipe_mark_root_timer_irq(), used by xnarch_relay_tick so that the
-> interrupt propagated by xnarch_relay_tick is treated by the root domain
-> as a timer irq. As a matter of fact, since the interrupt is shared, the
-> root domain has to know whether the irq is a timer irq, and since this
-> interrupt is forged, the root domain can not rely on the same hardware
-> mechanism as the xenomai domain irq.
-> 
-> The patch also contains a tiny patch of Xenomai syslib so that
-> __tickAnnounce has the same return value as xnpod_announce_tick.
-> 
-> 
-> 
-> plain text document attachment (xeno-shared-timer-irq.diff)
-> Index: include/asm-generic/hal.h
-> ===================================================================
-> --- include/asm-generic/hal.h	(revision 1451)
-> +++ include/asm-generic/hal.h	(working copy)
-> @@ -679,6 +679,12 @@
->  
->  #endif /* CONFIG_IPIPE_TRACE */
->  
-> +#ifdef IPIPE_HAVE_SHARED_TIMER_IRQ
-> +#define RTHAL_HAVE_SHARED_TIMER_IRQ
-> +#define rthal_timer_irq_p()         ipipe_timer_irq_p()
-> +#define rthal_mark_root_timer_irq() ipipe_mark_root_timer_irq()
-> +#endif /* IPIPE_SHARED_TIMER_IRQ */
+Roderik_Wildenburg@domain.hid wrote:
+ > I try to port some software, which runs on native Linux, to Xenomai.
+ > As the original SW uses Posix calls, I thought, I just have to compile=
+ with Xenomai-header files, link Xenomai-libraries, use the Xenomai flags=
+ as deliverd from xeno-config and the application will run on Xenomai.
+ >=20
+ > So far so good. Compiling and linking works miraculous (see output bel=
+ow).=20
+ > But when I start my application I still get just Linux threads and no =
+Xenomai shadow tasks are created. Can anybody give me a hint how I can co=
+ntroll what kind of thread is created ?
 
-Let's avoid cascading conditionals through the layers here too:
+Normally, any thread created with pthread_create has a shadow. Whether
+they are started in primary mode depends on their scheduling policy.
 
-#else
-#define rthal_timer_irq_p() 0
-#define rthal_mark_root_timer_irq()  do { } while(0) 
-#endif
-> +
+ >=20
+ > By the way : the posix example satch.c works fine (Xenomai tasks are c=
+reated) and compiler and linker output are nearly the same as for my appl=
+ication (see below). So, I can=B4t see, what I made wrong.
+ >=20
 
-I'd rather keep the number of obscure conditional macros as low as
-possible; we should actually try to reduce them since we have a growing
-number of real and pseudo-archs to support, and those macros tend to
-obfuscate the generic code.
+Could you try reducing your problem to a program as simple as possible,
+and send us the sources of this program ? How do you know that no shadow
+threads are created ?
 
-In the same vein, is there anything we could use in the compatible Adeos
-patch that would unambiguously identify the presence of such support
-without resorting to yet-another-macro like IPIPE_HAVE_SHARED_TIMER_IRQ?
-
->  #ifdef __cplusplus
->  }
->  #endif /* __cplusplus */
-> Index: include/asm-generic/system.h
-> ===================================================================
-> --- include/asm-generic/system.h	(revision 1451)
-> +++ include/asm-generic/system.h	(working copy)
-> @@ -487,4 +487,9 @@
->  #define xnarch_post_graph(obj,state)
->  #define xnarch_post_graph_if(obj,state,cond)
->  
-> +#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
-> +#define XNARCH_HAVE_SHARED_TIMER_IRQ
-> +#define xnarch_timer_irq_p()         rthal_timer_irq_p()
-> +#endif /* IPIPE_SHARED_TIMER_IRQ */
-
-#define xnarch_timer_irq_p() rthal_timer_irq_p()
-
-> +
->  #endif /* !_XENO_ASM_GENERIC_SYSTEM_H */
-> Index: include/asm-arm/bits/intr.h
-> ===================================================================
-> --- include/asm-arm/bits/intr.h	(revision 1451)
-> +++ include/asm-arm/bits/intr.h	(working copy)
-> @@ -27,6 +27,9 @@
->  
->  static inline void xnarch_relay_tick(void)
->  {
-> +#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
-> +	rthal_mark_root_timer_irq();
-> +#endif /* RTHAL_HAVE_SHARED_TIMER_IRQ */
->  	rthal_irq_host_pend(RTHAL_TIMER_IRQ);
->  }
->  
-> Index: ksrc/skins/vxworks/sysLib.c
-> ===================================================================
-> --- ksrc/skins/vxworks/sysLib.c	(revision 1451)
-> +++ ksrc/skins/vxworks/sysLib.c	(working copy)
-> @@ -24,19 +24,20 @@
->  
->  static wind_tick_handler_t tick_handler;
->  static long tick_handler_arg;
-> +static int tick_status [XNARCH_NR_CPUS];
->  
->  void tickAnnounce(void)
->  {
->  	if (tick_handler != NULL)
->  		tick_handler(tick_handler_arg);
->  
-> -	xnpod_announce_tick(&nkclock);
-> +	tick_status[xnarch_current_cpu()] = xnpod_announce_tick(&nkclock);
->  }
->  
->  static int __tickAnnounce(xnintr_t *intr)
->  {
->  	tickAnnounce();
-> -	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
-> +	return tick_status[xnarch_current_cpu()];
->  }
->  
->  int wind_sysclk_init(u_long init_rate)
-> Index: ksrc/nucleus/pod.c
-> ===================================================================
-> --- ksrc/nucleus/pod.c	(revision 1451)
-> +++ ksrc/nucleus/pod.c	(working copy)
-> @@ -3249,6 +3249,11 @@
->  {
->  	xnsched_t *sched;
->  
-> +#ifdef XNARCH_HAVE_SHARED_TIMER_IRQ
-> +	if (!xnarch_timer_irq_p())
-> +		return XN_ISR_NONE | XN_ISR_NOENABLE | XN_ISR_PROPAGATE;
-> +#endif /* XNARCH_HAVE_SHARED_TIMER_IRQ */
-> +	
->  	sched = xnpod_current_sched();
->  
->  	xnlock_get(&nklock);
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+--=20
 
 
+					    Gilles Chanteperdrix.
 
