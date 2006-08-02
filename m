@@ -1,10 +1,12 @@
-Date: Wed, 02 Aug 2006 18:08:25 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
-MIME-Version: 1.0
-Message-ID: <200608021808.18076@domain.hid>
-Content-Type: text/plain; charset="windows-1250"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] rt_pipe and rt_queue problems
+From: Marco Jackel <ich@domain.hid>
+Date: Wed, 02 Aug 2006 20:46:31 +0200
+Message-ID: <eaqrtk$vkb$1@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: news <news@domain.hid>
+Subject: [Xenomai-help] problem with reading from rt_pipe with a normal
+	linux process
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,12 +18,58 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-I have Xenomai snapshot (18.5.2006,  2.1.1 ~ 2.1.2) and userspace application.
-I need to exchange lot of data between two tasks (producer -> consumer) with some buffer in the middle.
-I used rt_pipe/linux device scheme, but I realised that the preformance is very low. (At least some performance monitor showed it)
-So I tried to use rt_queue. But when I tried to read from queue with timeout (or TM_INFINITE), I got an EPERM error.
-That means: "service should block, but was called from a context, which cannot sleep.". But I want to sleep (and wait for new data).
-Where is the problem? Do you have any advice?
-Petr Cervenka
+Hi,
+i do the following:
+
+- create a pipe:
+
+rt_pipe_create (&data_pipe, "data_pipe", PIPE_MINOR, PIPE_SIZE);
+
+- write data to the pipe:
+
+rt_pipe_write(&data_pipe, &pipe_buf, pipe_buf_sz, P_NORMAL);
+
+- open the pipe from a normal linux process:
+
+pipe_fd = open(DATA_PIPE, O_RDONLY);
+
+- read the data from the pipe:
+
+ret = read(pipe_fd, &pipe_buf, sizeof(pipe_buf));
+
+
+Opening works, but the reading doesn't work. I get the error code "-1",
+Operation not permitted.
+
+Permission for the device file is ok:
+
+voyage:~# ls -l /dev/rtp0
+crw-rw-rw-  1 root root 150, 0 Jun 21  2006 /dev/rtp0
+
+
+What am I doing wrong?
+
+Thanks
+Marco
+
+
+Linux voyage 2.6.16.1-03-xenomai-2.1.2 #1 PREEMPT Tue Jul 11 10:17:15
+GMT 2006 i586 GNU/Linux
+
+Gnu C                  17:
+util-linux             2.12p
+mount                  2.12p
+module-init-tools      3.2-pre1
+e2fsprogs              1.37
+pcmcia-cs              3.2.5
+PPP                    2.4.3
+Linux C Library        2.3.2
+Dynamic linker (ldd)   2.3.2
+Procps                 3.2.1
+Net-tools              1.60
+Kbd                    69:
+Sh-utils               5.2.1
+Modules Loaded         xeno_16550A xeno_rtdm uhci_hcd ohci_hcd usbcore
+dm_mod
 
 
