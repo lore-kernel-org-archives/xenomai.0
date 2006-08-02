@@ -1,11 +1,12 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6B615.6BFF71D3"
-Date: Wed, 2 Aug 2006 10:24:14 +0100
-Message-ID: <353F6272FE0A6544AA97D47F761F486B01707FDF@ples506a.stcl.siemens.co.uk>
-From: "Doyle, Alan" <alan.doyle@domain.hid>
-Subject: [Xenomai-help] Reading Memory Mapped IO
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: [Xenomai-help] Convert Linux PosixThreads to Xenomai PosixThreads
+Date: Wed, 2 Aug 2006 11:32:43 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A46D7CF@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,100 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Gilles Chanteperdrix :
+>> But when I start my application I still get just Linux threads and no =
+Xenomai=20
+>> shadow tasks are created. Can anybody give me a hint how I can =
+controll what
+>> kind of thread is created ?>=20
 
-------_=_NextPart_001_01C6B615.6BFF71D3
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+> Normally, any thread created with pthread_create has a=20
+> shadow. Whether they are started in primary mode depends on=20
+> their scheduling policy.
+>=20
+
+I think this was the hint I have been looking for.
+Now I set some attributes explicitly :
+   nResult =3D pthread_attr_setinheritsched(&attr, =
+PTHREAD_EXPLICIT_SCHED);
+   ASSERT(nResult =3D=3D 0);
+   nResult =3D pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+   ASSERT(nResult =3D=3D 0);
+(although this should be the default)
+
+But when I create a thread with=20
+ nResult =3D pthread_create(&tid, &attr, (void *) & body, pTask);
+pthread_create returns with 4=3DInterrupted system call. Unfortunatelly =
+this return value is not documented. Can you tell me what it means ?=20
+
+>=20
+> Could you try reducing your problem to a program as simple as=20
+> possible, and send us the sources of this program ?=20
+
+I=B4ll try this when I am not succesfull in starting threads with the =
+changed attributes (see above).
+
+> How do=20
+> you know that no shadow threads are created ?
+>=20
+
+I had a look in /proc/xenomai/sched and couldn=B4t see any Xenomai-task. =
+Isn=B4t this the usual way ?
 
 
-Hi,
-
-I have an application where I need to read four contiguous memory mapped
-data registers in response to an interrupt. As its real time critical I
-intend to implement the read in Xenomai. Having read and processed the
-data it later needs to be passed to a Linux domain application, I am
-hoping to use a Posix message queue for this purpose.
-
-I seem to have two options as to how to implement this, I could register
-the interrupt in a Xenomai user space thread and mmap the data registers
-so that on receiving the interrupt the registers could be read.
-Alternatively I could write a Xenomai RTDM driver to read the registers
-on interrupt and use the driver read call from the Xenomai user space
-thread to access register data. In each case the data would then be
-passed to the Linux domain via a message to a Posix queue - after some
-further processing that is not real time critical.
-
-Could you enlighten me as to the pros and cons of each approach, I am
-particularly unclear as to the implications of using mmap in the Xenomai
-domain and what if any affect it might have on the real time
-responsiveness (I understand mmap() to be a call back into the Linux
-kernel rather than to the Xenomai nucleus).
-
-Thanks
-
-Alan
-
-
-
-
-------_=_NextPart_001_01C6B615.6BFF71D3
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7650.28">
-<TITLE>Reading Memory Mapped IO</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
-<BR>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">I have an application where I need to =
-read four contiguous memory mapped data registers in response to an =
-interrupt. As its real time critical I intend to implement the read in =
-Xenomai. Having read and processed the data it later needs to be passed =
-to a Linux domain application, I am hoping to use a Posix message queue =
-for this purpose.</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">I seem to have two options as to how to =
-implement this, I could register the interrupt in a Xenomai user space =
-thread and mmap the data registers so that on receiving the interrupt =
-the registers could be read. Alternatively I could write a Xenomai RTDM =
-driver to read the registers on interrupt and use the driver read call =
-from the Xenomai user space thread to access register data. In each case =
-the data would then be passed to the Linux domain via a message to a =
-Posix queue - after some further processing that is not real time =
-critical.</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Could you enlighten me as to the pros =
-and cons of each approach, I am particularly unclear as to the =
-implications of using mmap in the Xenomai domain and what if any affect =
-it might have on the real time responsiveness (I understand mmap() to be =
-a call back into the Linux kernel rather than to the Xenomai =
-nucleus).</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Thanks</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Alan</FONT>
-</P>
-<BR>
-<BR>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C6B615.6BFF71D3--
+Thanks a lot
+Roderik
 
