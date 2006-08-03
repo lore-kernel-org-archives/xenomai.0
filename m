@@ -1,13 +1,12 @@
-Message-ID: <44D19F3D.9060700@domain.hid>
-Date: Thu, 03 Aug 2006 09:01:17 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44D1ACB8.3090906@domain.hid>
+Date: Thu, 03 Aug 2006 09:58:48 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB2B215E9AEFFED7A4F0104E2"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
-	timers
+Subject: Re: [Xenomai-core] Future of Xenomai's RTDM driver repository
+References: <44D07C4E.4040200@domain.hid>
+In-Reply-To: <44D07C4E.4040200@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,85 +16,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB2B215E9AEFFED7A4F0104E2
-Content-Type: multipart/mixed; boundary="------------090004030609040806020308"
+Jan Kiszka wrote:
+> Hi,
+> 
+> instead of replying directly to Wolfgang's announcement of their great
+> CAN stack I take the chance to start a generic thread on the future of
+> RTDM drivers *within* Xenomai.
+> 
+> If you look at the real-time Linux scene now and in the past, you may
+> find it fairly scattered. Specifically precious Open Source drivers are
+> hard to find, not always up-to-date, or not ported to your favourite
+> kernel/RT-patch. Just check how many CAN driver projects for how many RT
+> APIs are out there. There are even a few hardware vendors providing
+> driver packages for real-time Linux, others offer at least some kind of
+> "reference code", but many nothing at all. Sad but true for _many_ years.
+> 
+> RTDM came into play to provide a common ground for real-time driver
+> development under Linux. It is already utilised by quite a few
+> stand-alone driver projects and even vendor drivers. But as resources
+> are limited, maintenance is tricky, and testers are rare, we should
+> consider concentrating driver development efforts more intensively. I'm
+> convinced such concentration should primarily happen within the Xenomai
+> driver repository.
+> 
+> Xenomai has the unique potential to provide a real-time framework for
+> both the co-scheduling approach and for the native RT-Linux environment
+> that Preempt-RT will probably push into mainline one day. And Xenomai is
+> also a sound foundation for the tricky 2.4/2.6 support scenario.
+> 
+> Here are the concrete advantages I see in maintaining drivers *inside*
+> Xenomai:
+> 
+>  o Better visibility (did you know that there is a working FireWire
+>    stack for Xenomai?)
+>  o Better testing, also across architectures, due to more users (this
+>    applies to the drivers, but also to RTDM and Xenomai in all)
+>  o Closer to the latest RTDM development
+>  o Wrapping environments for changing kernel interfaces (2.4/2.6 etc.)
+>  o In-kernel build
+>  o Simpler build system (look at RTnet...)
+>  o Single, integrated package, thus less breakages due to version
+>    mismatches
+> 
+> Of course, there are also certain critical topics that need to be
+> resolved first:
+> 
+>  o Clear acceptance rules
+>     - Maintenance commitment: "dump-and-run" will not scale. Unless
+>       there is already a community behind it, complex drivers need
+>       people to look after them. Dead/unused drivers should get moved in
+>       some corner after a while.
+>     - Coding style: Should simply be kernel style (though I personally
+>       hate tabs).
+>     - Documentation: New RTDM profiles as well as the drivers themselves
+>       must contain "some words" (surely a more softish requirement).
+>     - Test cases, test conformance: Drivers should provide some simple
+>       tests or, if once available, conform to existing tests for their
+>       RTDM profiles.
+>  o Repository organisation
+>     - Where to keep utilities (Wolfgang raised this as well)? Should a
+>       "rtcanconfig" come with Xenomai, as a separate package of
+>       rt-utils, or as package of its own?
+>     - Where to put test cases? Distribute them separately?
+>     - Where to collect usage examples? This is actually a generic
+>       question, also for the skins (I think the current situation is
+>       a bit unsatisfactory).
+>  o Support organisation
+>       Simple drivers can certainly be managed via xenomai-help, existing
+>       communities will continue to use their own forums, but what about
+>       new subsystems? I could imagine introducing some
+>       xenomai-SUBSYSTEM@gna.org lists for them, Philippe suggested
+>       simply xenomai-drivers which is likely already sufficient.
+> 
+> Now I would suggest to look at RTCAN (or what it will be called in the
+> end) and to discuss on this first concrete example how we can proceed
+> towards the sketched goal.
+> 
+> Looking forward to your feedback!
 
-This is a multi-part message in MIME format.
---------------090004030609040806020308
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+As you have said, maintaining a RTDM driver within the Xenomai 
+repository clearly has some advantages but it also puts more burden onto 
+the Xenomai maintainers and some developers might even prefer to keep 
+thing separated. Therefore I suggest a simple RTDM add-on framework to 
+support external RTDM drivers as well. They could be announced and 
+listed on the Xenomai home page and then it would alsl be visible that 
+there is a FireWire stack for Xenomai.
 
-A simple patch, just like suggested by Gilles, to avoid looping over
-periodic xntimer handlers in case of overruns.
+What I had first was a add-rtdm-driver.sh, a modified version of 
+Philippe's prepare-kernel.sh script, to add the RTDM driver to the 
+kernel tree. Similarly, as script could be used to add "loosely" the 
+driver to Xenomai.
 
-It saves the current TSC on loop entry and uses this value later when
-forwarding the timer. Is is the overhead of re-reading the TSC on all
-archs negligible and should we rather go that way?
+What do you think?
 
-Jan
+Wolfgang.
 
---------------090004030609040806020308
-Content-Type: text/x-patch;
- name="xntimer-handle-periodic-overrun.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline; filename="xntimer-handle-periodic-overrun.patch"
-
----
- ksrc/nucleus/timer.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-Index: xenomai/ksrc/nucleus/timer.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/timer.c
-+++ xenomai/ksrc/nucleus/timer.c
-@@ -200,12 +200,13 @@ static void xntimer_do_tick_aperiodic(vo
- 	xntimerq_t *timerq =3D &sched->timerqueue;
- 	xntimerh_t *holder;
- 	xntimer_t *timer;
-+	xnticks_t now;
-=20
- 	while ((holder =3D xntimerq_head(timerq)) !=3D NULL) {
- 		timer =3D aplink2timer(holder);
-=20
--		if (xntimerh_date(&timer->aplink) - nkschedlat >
--		    xnarch_get_cpu_tsc())
-+		now =3D xnarch_get_cpu_tsc();
-+		if (xntimerh_date(&timer->aplink) - nkschedlat > now)
- 			/* No need to continue in aperiodic mode since timeout
- 			   dates are ordered by increasing values. */
- 			break;
-@@ -236,8 +237,8 @@ static void xntimer_do_tick_aperiodic(vo
- 				}
- #endif /* CONFIG_XENO_OPT_DEBUG || __XENO_SIM__ */
- 			} else if (timer->interval =3D=3D XN_INFINITE) {
--				xntimerh_date(&timer->aplink) +=3D
--				    nkpod->htimer.interval;
-+				while ((xntimerh_date(&timer->aplink) +=3D
-+				        nkpod->htimer.interval) < now);
- 				continue;
- 			}
- 		} else
-
---------------090004030609040806020308--
-
---------------enigB2B215E9AEFFED7A4F0104E2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFE0Z89niDOoMHTA+kRArY8AJ9jG7CxBJ5gcwwWA8VJLcYF6IoB9wCdGW1Q
-yv0dpU/ogyVCFN2ezEGM54o=
-=6Hqc
------END PGP SIGNATURE-----
-
---------------enigB2B215E9AEFFED7A4F0104E2--
 
