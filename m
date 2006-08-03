@@ -1,12 +1,12 @@
-Content-class: urn:content-classes:message
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 3 Aug 2006 11:50:02 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A46D9C5@domain.hid>
-From: <Roderik_Wildenburg@domain.hid>
-Subject: [Xenomai-help] Xenomai POSIX-libraries
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17617.56609.856127.381430@domain.hid>
+Date: Thu, 3 Aug 2006 13:25:21 +0200
+Subject: Re: [Xenomai-help] pthread_attr_setname_np
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A46D8E7@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A46D8E7@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,22 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Roderik_Wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
-Can anybody tell me how the POSIX-Libraries are build. I had a look on =
-various scripts and makefiles but I don=B4t understand the mechanism.
-I am asking, as I have the feeling, my POSIX-Library is not correct.
-Although the xeno_posix.o file in the Linux/kernel/xenomai/skins/posix =
-directory includes all functions from the (xenomai)thread_attr.c file =
-(e.g.: pthread_attr_setname_np), the posix-libraries in the =
-Xenomai/install/lib directory (created by make install) do not include =
-all functions (explicitly pthread_attr_setname_np is not included) where =
-did I lose them ? Are the libraries in my install directory the correct =
-ones, where do they come from ???
+Roderik_Wildenburg@domain.hid wrote:
+ > Is this function implemented in Xeno2.2-rc2 ?
+ > When using it, the linker complains about a "undefined reference".
 
-Sorry, but the building process is too complex for a normal mortal like =
-me. Perhaps somebody can give me a helping hand.
+That is not clear in the documentation, but the function
+pthread_attr_setname_np is only available in kernel-space. When
+compiling with -Wall, you should get an "implicit function declaration"
+warning, because this function is only declared in pthread.h when
+included from kernel-space.
 
-Thank you in advance
-Roderik=20
+ > (Is this a a standard POSIX-funktion or a Xenomai extension ?)
+As the _np suffix suggest it, it is a non portable extension.
+
+In user-space, you should use pthread_setname_np, another non portable
+extension.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
