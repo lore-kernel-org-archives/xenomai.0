@@ -1,10 +1,10 @@
 Subject: Re: [Xenomai-core] Future of Xenomai's RTDM driver repository
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44D07C4E.4040200@domain.hid>
-References: <44D07C4E.4040200@domain.hid>
+In-Reply-To: <44D1ACB8.3090906@domain.hid>
+References: <44D07C4E.4040200@domain.hid>  <44D1ACB8.3090906@domain.hid>
 Content-Type: text/plain
-Date: Thu, 03 Aug 2006 17:14:58 +0200
-Message-Id: <1154618098.5010.42.camel@domain.hid>
+Date: Thu, 03 Aug 2006 17:53:50 +0200
+Message-Id: <1154620430.5010.79.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,132 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2006-08-02 at 12:19 +0200, Jan Kiszka wrote:
-> Hi,
-> 
-> instead of replying directly to Wolfgang's announcement of their great
-> CAN stack I take the chance to start a generic thread on the future of
-> RTDM drivers *within* Xenomai.
-> 
-> If you look at the real-time Linux scene now and in the past, you may
-> find it fairly scattered. Specifically precious Open Source drivers are
-> hard to find, not always up-to-date, or not ported to your favourite
-> kernel/RT-patch. Just check how many CAN driver projects for how many RT
-> APIs are out there. There are even a few hardware vendors providing
-> driver packages for real-time Linux, others offer at least some kind of
-> "reference code", but many nothing at all. Sad but true for _many_ years.
-> 
-> RTDM came into play to provide a common ground for real-time driver
-> development under Linux. It is already utilised by quite a few
-> stand-alone driver projects and even vendor drivers. But as resources
-> are limited, maintenance is tricky, and testers are rare, we should
-> consider concentrating driver development efforts more intensively. I'm
-> convinced such concentration should primarily happen within the Xenomai
-> driver repository.
-> 
-> Xenomai has the unique potential to provide a real-time framework for
-> both the co-scheduling approach and for the native RT-Linux environment
-> that Preempt-RT will probably push into mainline one day. And Xenomai is
-> also a sound foundation for the tricky 2.4/2.6 support scenario.
-> 
-> Here are the concrete advantages I see in maintaining drivers *inside*
-> Xenomai:
-> 
->  o Better visibility (did you know that there is a working FireWire
->    stack for Xenomai?)
->  o Better testing, also across architectures, due to more users (this
->    applies to the drivers, but also to RTDM and Xenomai in all)
->  o Closer to the latest RTDM development
->  o Wrapping environments for changing kernel interfaces (2.4/2.6 etc.)
->  o In-kernel build
->  o Simpler build system (look at RTnet...)
->  o Single, integrated package, thus less breakages due to version
->    mismatches
-> 
 
-And above all, integration is the key issue, which includes device
-drivers. This has a maintenance cost, but much lower than breakages due
-to endemic discrepancies between the out-of-tree modules (whatever
-"modules" means here) and the core framework.
+Hi Wolfgang,
 
-> Of course, there are also certain critical topics that need to be
-> resolved first:
+First of all, thx for the CAN stack. Great job.
+
+On Thu, 2006-08-03 at 09:58 +0200, Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+
+<snip>
+
+> > 
+> > Now I would suggest to look at RTCAN (or what it will be called in the
+> > end) and to discuss on this first concrete example how we can proceed
+> > towards the sketched goal.
+> > 
+> > Looking forward to your feedback!
 > 
->  o Clear acceptance rules
->     - Maintenance commitment: "dump-and-run" will not scale. Unless
->       there is already a community behind it, complex drivers need
->       people to look after them. Dead/unused drivers should get moved in
->       some corner after a while.
-
-It's the common Xenomai policy since day #1 (i.e. no dead/unmaintained
-code), so there should be no problem keeping it this way, provided this
-policy is explicitely stated. However, finding committed
-contributors will always be the main issue.
-
->     - Coding style: Should simply be kernel style (though I personally
->       hate tabs).
-
-So do I, but fact is that implementing anything else than the strict
-kernel coding guidelines for kernel-based code raises the barrier on
-reviewing and even acceptance from the kernel people, so there is no
-need to fight for such details, imho. This is kernel code, let's use
-kernel coding conventions.
-
->     - Documentation: New RTDM profiles as well as the drivers themselves
->       must contain "some words" (surely a more softish requirement).
->     - Test cases, test conformance: Drivers should provide some simple
->       tests or, if once available, conform to existing tests for their
->       RTDM profiles.
->  o Repository organisation
->     - Where to keep utilities (Wolfgang raised this as well)? Should a
->       "rtcanconfig" come with Xenomai, as a separate package of
->       rt-utils, or as package of its own?
-
-I tend to think that self-contained packages are always simpler to deal
-with from the user standpoint, therefore CAN utilities should be part of
-the CAN driver package. Regarding any <rtdriver>config script, maybe we
-could extend xeno-config in the future to accept external configuration
-frags, so that we keep a single front-end which would accept additional
-options dynamically, but this should not be a requirement ATM.
-
+> As you have said, maintaining a RTDM driver within the Xenomai 
+> repository clearly has some advantages but it also puts more burden onto 
+> the Xenomai maintainers and some developers might even prefer to keep 
+> thing separated. Therefore I suggest a simple RTDM add-on framework to 
+> support external RTDM drivers as well. They could be announced and 
+> listed on the Xenomai home page and then it would alsl be visible that 
+> there is a FireWire stack for Xenomai.
 > 
->     - Where to put test cases? Distribute them separately?
->     - Where to collect usage examples? This is actually a generic
->       question, also for the skins (I think the current situation is
->       a bit unsatisfactory).
+> What I had first was a add-rtdm-driver.sh, a modified version of 
+> Philippe's prepare-kernel.sh script, to add the RTDM driver to the 
+> kernel tree. Similarly, as script could be used to add "loosely" the 
+> driver to Xenomai.
+> 
+> What do you think?
 
-Test cases and usage examples do not usually belong to any particular
-Xenomai/driver version, so they should be gathered in a separate
-package. This would also allow to enrich them with end-user
-contributions with lower constraints on coding style etc.
+I can't speak for Jan wrt providing a RTDM add-on framework, but since
+Xenomai is currently the reference platform for RTDM (at least, the
+real-time infrastructure over which most of this work is experimented,
+debugged and stabilized), I would rather seek integration of RTDM-based
+drivers into the Xenomai tree, instead of a complete separation.
 
-> 
->  o Support organisation
->       Simple drivers can certainly be managed via xenomai-help, existing
->       communities will continue to use their own forums, but what about
->       new subsystems? I could imagine introducing some
->       xenomai-SUBSYSTEM@gna.org lists for them, Philippe suggested
->       simply xenomai-drivers which is likely already sufficient.
+The reason being that it makes sense (to a Xenomai maintainer, that is)
+to reduce the odds of discrepancies between the core real-time
+framework, the driver infrastructure and the client drivers, at least
+while the first two are undergoing a rapid evolution. The same "in-tree
+vs out-of-tree drivers" maintenance dilema which is known from the
+kernel folks will also apply to us, if RTDM, and/or RTDM over Xenomai
+are as successful as we wish, i.e. creating opportunities to provide
+lots of RT drivers sharing a common infrastructure.
 
-I guess so, since other major subsystems would probably need their own
-list when they appear.
+Said differently, the day a significant number of people will start
+relying on a rich collection of RTDM-based drivers over Xenomai, we
+_will_ have maintenance issues to deal with, anyway, starting with
+answering a lot of questions on xenomai-whatever*. In such a case, I'd
+rather reduce the odds of integration issues between Xenomai-RTDM and/or
+RTDM/drivers. This said, I'm not saying that Xenomai should be the only
+RTDM-based driver repository in the long run; but I'm arguing that
+Xenomai could be used as a centripetal force to help developing and
+stabilizing the RT driver ecosystem around RTDM.
 
-> 
-> Now I would suggest to look at RTCAN (or what it will be called in the
-> end) and to discuss on this first concrete example how we can proceed
-> towards the sketched goal.
-> 
-> Looking forward to your feedback!
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
