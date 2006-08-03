@@ -1,14 +1,13 @@
-Message-ID: <44D26C1C.5040506@domain.hid>
-Date: Thu, 03 Aug 2006 23:35:24 +0200
+Message-ID: <44D26C50.20000@domain.hid>
+Date: Thu, 03 Aug 2006 23:36:16 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_pipe and rt_queue problems
-References: 200608021808.18076@domain.hid> <200608021808.18076@domain.hid>
-	<44D0F72E.3020406@domain.hid> <200608031628.31584@domain.hid>
-In-Reply-To: <200608031628.31584@domain.hid>
+Subject: Re: [Xenomai-help] Interrupt Problem.
+References: <20060803154437.90346.qmail@domain.hid>
+In-Reply-To: <20060803154437.90346.qmail@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig96E919FD22B0BE5D565C2B07"
+	boundary="------------enigB498F8A27111BC0A6109B6AE"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,42 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
+To: shailesh joshi <zoshi_s@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig96E919FD22B0BE5D565C2B07
+--------------enigB498F8A27111BC0A6109B6AE
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Petr Cervenka wrote:
->>> So I tried to use rt_queue. But when I tried to read from queue with
->>> timeout (or TM_INFINITE), I got an EPERM error. That means: "service
->>> should block, but was called from a context, which cannot sleep.".
->>> But I want to sleep (and wait for new data). Where is the problem? Do=
+shailesh joshi wrote:
+> Hello,
+>   =20
+>   I am trying to interfce a DAQ board to a PC via a PCI card. I am faci=
+ng the following problem:
+>   =20
+>   I am trying to send an interrupt from the Board to the PC. However, t=
+he interrupt is only registered in the PCI cards internal registers and n=
+ot by Xenomai, ie.  the /proc/xenomai/ interface registers interrupt 10 i=
+n the list (namely, handler is being installed) but the count for both cp=
+us remains at 0.=20
+>   =20
+>   To give a hint of the code, i am using a modified version of the RTDM=
+ driver example from captain.at. The only parts i haven't incorporated ar=
+e those for MMAP, else the code is fast the same. Could anyone suggest wh=
+at i might be doing wrong here??
 
->>> you have any advice?
->> Is the read of the queue a Xenomai thread? It has to be, even if it wi=
-ll
->> mostly run in secondary (Linux) mode. Check also /proc/xenomai/sched
->> when you think it should be.
-> Both tasks are created by rt_task_create and started by rt_task_start. =
-They are also in /proc/xenomai/sched:
-> CPU  PID    PRI      TIMEOUT  STAT       NAME
->   0  0       -1      0        R          ROOT/0
->   1  0       -1      0        R          ROOT/1
->   1  313     20      0        X          main_task
->   1  314     30      30195788906 w          hw_task
-> Note: I'm still using your patch allowing to call rtdm_event_timedwait =
-even in nrt.
+Do you happen to have some standard Linux driver for your DAQ board?
+Does it work on your target? Are you sure you correctly initialise and
+enable IRQ delivery on the board?
 
-The only thing I can recommend here: try reducing your code to the bare
-minimum that still demonstrate the issue, then post it.
+BTW, already tried the irqbench the comes with recent Xenomai? Does it
+work on your box (yet another IRQ delivery test, and it's RTDM based)?
 
 Jan
 
 
---------------enig96E919FD22B0BE5D565C2B07
+--------------enigB498F8A27111BC0A6109B6AE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -63,10 +62,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFE0mwcniDOoMHTA+kRAlcGAJ9xZv0nAawmQHG0WTVdnpHs/LWm0QCfQ09f
-wOfTUgXHBTDZUkTvtX59mQo=
-=V4hu
+iD8DBQFE0mxQniDOoMHTA+kRArlwAJ4u6Hl98mZpDSdLUyIt2TOh5Mo8OwCeLSL/
+dQ8yb6ifKAtSx5VkSe7mNk4=
+=JD3J
 -----END PGP SIGNATURE-----
 
---------------enig96E919FD22B0BE5D565C2B07--
+--------------enigB498F8A27111BC0A6109B6AE--
 
