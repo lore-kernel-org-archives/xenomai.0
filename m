@@ -1,112 +1,68 @@
-Message-ID: <44E5AF32.3020102@domain.hid>
-Date: Fri, 18 Aug 2006 14:14:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <20060803154437.90346.qmail@domain.hid>
+Date: Thu, 3 Aug 2006 08:44:37 -0700 (PDT)
+From: shailesh joshi <zoshi_s@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Towards periodic mode over aperiodic timers
-References: <44E46EDC.1000707@domain.hid> <1155899619.4326.56.camel@domain.hid>
-In-Reply-To: <1155899619.4326.56.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig60D7899F8B2D4281FFCBC335"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; boundary="0-1467913123-1154619877=:90016"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Interrupt Problem.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig60D7899F8B2D4281FFCBC335
-Content-Type: text/plain; charset=ISO-8859-15
+--0-1467913123-1154619877=:90016
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> On Thu, 2006-08-17 at 15:27 +0200, Jan Kiszka wrote:
->> Hi,
->>
->> the conflict between skins preferring aperiodic timing vs. skin
->> requiring periodic mode popped up once again on xenomai-help. One way
->> out of this, likely THE way, is to map such tick-driven skins on a
->> periodic timer over aperiodic mode (and drop periodic low-level suppor=
-t
->> completely at the same time).
->>
->> Let's start some discussion how this can be done, specifically as Gill=
-es
->> and I are already turning the xntimer subsystem upside down (almost). =
-If
->> we want co-existence of high-res timing of, say, the posix skin while
->> the vxworks skin runs over a tick-timer, we need some kind of "context=
-"
->> for timing related functions.
->>
->> Simple example: xnpod_suspend_thread() expects a timeout as "xnticks",=
+Hello,
+  =20
+  I am trying to interfce a DAQ board to a PC via a PCI card. I am facing t=
+he following problem:
+  =20
+  I am trying to send an interrupt from the Board to the PC. However, the i=
+nterrupt is only registered in the PCI cards internal registers and not by =
+Xenomai, ie.  the /proc/xenomai/ interface registers interrupt 10 in the li=
+st (namely, handler is being installed) but the count for both cpus remains=
+ at 0.=20
+  =20
+  To give a hint of the code, i am using a modified version of the RTDM dri=
+ver example from captain.at. The only parts i haven't incorporated are thos=
+e for MMAP, else the code is fast the same. Could anyone suggest what i mig=
+ht be doing wrong here??
+  =20
+  =20
+  Regards,
+  Shailesh Joshi
 
->> i.e. either in nanoseconds or in ticks of the underlying periodic time=
-r.
->> This depends on the global timer mode of the pod, and that's a no-go f=
-or
->> concurrent modes as sketched above. Rather, the thread should encode
->> which kind of timing mode to use, even better the threads timers.
->>
->> We currently dispatch xntimer_start globally to the different timer
->> subsystems (if periodic mode is enabled). What about deriving the star=
-t
->> function from the timer itself in the future? If a timer was created a=
-s
->> aperiodic, things happen as usual in aperiodic mode, and the timeout a=
-re
->> interpreted as nanoseconds. If the timer is periodic, we interpret the=
+ 	=09
+---------------------------------
+Talk is cheap. Use Yahoo! Messenger to make PC-to-Phone calls.  Great rates=
+ starting at 1=A2/min.
+--0-1467913123-1154619877=:90016
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
->> timeout in ticks and map them on a second-level timing subsystem
->> (probably a wheel) that itself is driven by a single periodic timer in=
-
->> the first-level system (just like the host tick).
->>
->> Am I heading in the right direction? Is it feasible? Any other ideas?
->=20
-> I like this idea; it's simple and elegant, having only a low impact on
-> the existing interfaces.
->=20
-> The two-level timer handling moving the BSD wheel on top of the
-> aperiodic shot is definitely a clean approach, which adds no overhead t=
-o
-> the existing periodic timer management. This would also allow to get ri=
-d
-> of the specific Adeos support for periodic hw management.
->=20
-
-One could then even think about making the support switch for periodic
-mode a per-skin option for those that support both modes.
-
-That all sounds thrilling, but will certainly require some noticeable
-refactoring. Maybe we can start with adding the required bits to the
-existing aperiodic timer subsystem while keeping the periodic
-infrastructure. Oh my dear, I'm already regretting having made that
-suggestion... ;)
-
-Jan
-
-
---------------enig60D7899F8B2D4281FFCBC335
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE5a8yniDOoMHTA+kRAkDmAJ9FC//jT7ku+JEAYOOnnWZLucP1+ACghJZw
-iIjWg7FI6VJf0GgK6AP3XJU=
-=hjxz
------END PGP SIGNATURE-----
-
---------------enig60D7899F8B2D4281FFCBC335--
+<div>Hello,</div>  <div>&nbsp;</div>  <div>I am trying to interfce a DAQ bo=
+ard to a PC via a PCI card. I am facing the following problem:</div>  <div>=
+&nbsp;</div>  <div>I am trying to send an interrupt from the Board to the P=
+C. However, the interrupt is only registered in the PCI cards internal regi=
+sters and not by Xenomai, ie.&nbsp; the /proc/xenomai/ interface registers =
+interrupt 10 in the list (namely, handler is being installed) but the count=
+ for both cpus remains at 0. </div>  <div>&nbsp;</div>  <div>To give a hint=
+ of the code, i am using a modified version of the RTDM driver example from=
+ captain.at. The only parts i haven't incorporated are those for MMAP, else=
+ the code is fast the same. Could anyone suggest what i might be doing wron=
+g here??</div>  <div>&nbsp;</div>  <div>&nbsp;</div>  <div>Regards,</div>  =
+<div>Shailesh Joshi</div><p>&#32;
+		<hr size=3D1>Talk is cheap. Use Yahoo! Messenger to make PC-to-Phone call=
+s. <a href=3D"http://us.rd.yahoo.com/mail_us/taglines/postman7/*http://us.r=
+d.yahoo.com/evt=3D39666/*http://messenger.yahoo.com"> Great rates starting =
+at 1=A2/min.
+--0-1467913123-1154619877=:90016--
 
