@@ -1,17 +1,12 @@
-Message-ID: <44D0FF4C.9090006@domain.hid>
-Date: Wed, 02 Aug 2006 21:38:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: problem with reading from rt_pipe with a normal
-	linux process
-References: <eaqrtk$vkb$1@domain.hid>
-	<eaqsbk$vkb$2@domain.hid>	<44D0F5DE.3010508@domain.hid>
-	<eaqt5i$4l0$1@domain.hid>
-In-Reply-To: <eaqt5i$4l0$1@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig58EA734BDA9DF343C6970E19"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 3 Aug 2006 07:59:53 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A46D8E7@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
+Subject: [Xenomai-help] pthread_attr_setname_np
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,42 +16,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marco Jackel <ich@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig58EA734BDA9DF343C6970E19
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Is this function implemented in Xeno2.2-rc2 ?
+When using it, the linker complains about a "undefined reference".
+(Is this a a standard POSIX-funktion or a Xenomai extension ?)
 
-Marco Jackel wrote:
-> Jan Kiszka wrote:
->> Hint: read returns its error code in errno. What does that one tell yo=
-u?
->=20
-> read returns -1, "operation not permitted"
->=20
-
-errno =3D=3D EPERM? A bit weird. Try strace'ing both your program and the=
-
-cat tool to look for a difference.
-
-Jan
-
-
---------------enig58EA734BDA9DF343C6970E19
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE0P9MniDOoMHTA+kRAsuqAJ95n54DL1MxYs3pGrZh6VY+pgyFgACfdb9f
-EVGPhNPGXGCczzrTeOrCokk=
-=ucAS
------END PGP SIGNATURE-----
-
---------------enig58EA734BDA9DF343C6970E19--
+Roderik
 
