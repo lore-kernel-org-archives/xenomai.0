@@ -1,15 +1,12 @@
-From: Marco Jackel <ich@domain.hid>
-Date: Thu, 03 Aug 2006 09:10:59 +0200
-Message-ID: <eas7hg$umm$1@domain.hid>
-References: <eaqrtk$vkb$1@domain.hid>	<eaqsbk$vkb$2@domain.hid>	<44D0F5DE.3010508@domain.hid>	<eaqt5i$4l0$1@domain.hid>
-	<44D0FF4C.9090006@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <44D0FF4C.9090006@domain.hid>
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: problem with reading from rt_pipe with a normal
-	linux process
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 3 Aug 2006 11:50:02 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A46D9C5@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
+Subject: [Xenomai-help] Xenomai POSIX-libraries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,28 +18,20 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Marco Jackel wrote:
->> Jan Kiszka wrote:
->>> Hint: read returns its error code in errno. What does that one tell you?
->> read returns -1, "operation not permitted"
->>
-> 
-> errno == EPERM? A bit weird. Try strace'ing both your program and the
-> cat tool to look for a difference.
-strace says "-1" in this case is ENOBUFS
+Can anybody tell me how the POSIX-Libraries are build. I had a look on =
+various scripts and makefiles but I don=B4t understand the mechanism.
+I am asking, as I have the feeling, my POSIX-Library is not correct.
+Although the xeno_posix.o file in the Linux/kernel/xenomai/skins/posix =
+directory includes all functions from the (xenomai)thread_attr.c file =
+(e.g.: pthread_attr_setname_np), the posix-libraries in the =
+Xenomai/install/lib directory (created by make install) do not include =
+all functions (explicitly pthread_attr_setname_np is not included) where =
+did I lose them ? Are the libraries in my install directory the correct =
+ones, where do they come from ???
 
-The failure in my programm is that it writes binary data to a pipe with
-rt_pipe_write (preserves message boundary) and normal linux process
-wants to read it byte by byte with read(). Read wants to receive the
-whole message, but the message is bigger than 1 byte, so it returns ENOBUFS.
+Sorry, but the building process is too complex for a normal mortal like =
+me. Perhaps somebody can give me a helping hand.
 
-The solution is to use rt_pipe_stream (don't preserves message
-boundary). Do I have to use rt_pipe_alloc before? Is there a small
-sample program somewhere?
-
-
-Thanks,
-Marco
-
+Thank you in advance
+Roderik=20
 
