@@ -1,23 +1,12 @@
+Message-ID: <44D19DFD.80305@domain.hid>
+Date: Thu, 03 Aug 2006 08:55:57 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="VH74SF6SoD"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17616.59841.283196.201008@domain.hid>
-Date: Wed, 2 Aug 2006 20:06:57 +0200
-Subject: Re: [Xenomai-core] Xenomai on PXA
-In-Reply-To: <1154525585.9559.22.camel@domain.hid>
-References: <200607071703.10700.vagninu@domain.hid>
-	<17582.50372.830923.414981@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-	<1153153788.11603.2.camel@domain.hid>
-	<17595.49478.157044.654500@domain.hid>
-	<1154334859.9569.12.camel@domain.hid>
-	<44CDCB61.2DEDCBFF@vollmann.ch>
-	<1154342029.9569.27.camel@domain.hid>
-	<44CDE4C2.77465253@domain.hid>
-	<17616.42011.663899.554796@domain.hid>
-	<1154525585.9559.22.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4565CAC326FF682F3026B24E"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [RFC][PATCH 1/4] introduce absolute xntimer_start
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -27,463 +16,372 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bart Jonkers <jonkersbart@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4565CAC326FF682F3026B24E
+Content-Type: multipart/mixed; boundary="------------040405030004040605050503"
 
---VH74SF6SoD
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+This is a multi-part message in MIME format.
+--------------040405030004040605050503
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Bart Jonkers wrote:
- > On Wed, 2006-08-02 at 15:09 +0200, Gilles Chanteperdrix wrote:
- > > Detlef Vollmann wrote:
- > >  > > I also added an interrupt handler on a button which is connected to GPIO
- > >  > > pin. The interrupt handler should print something when it is executed.
- > >  > > When I push the button a couple of times nothing happens. So GPIO
- > >  > > interrupts doesn't seems to work.
- > >  > Probably GPIO0 and GPIO1 work.
- > >  > I suspect it's the cascading interrupt that doesn't work.
- > >  > When I played around with an earlier version of ipipe, I found that
- > >  > the IRQ_GPIO_2_80 (IRQ 10 on PXA270) is masked, but never unmasked
- > >  > again.
- > >  > 
- > >  > The problem is that for the cascading interrupt you need a special
- > >  > IPIPE handler, and I don't think there is currently one for PXA.
- > >  > 
- > >  > How is that done on other machines/architectures?
- > > 
- > > When looking at the ipipe_enable_pipeline function, we see that
- > > interrupts management routines are all intercepted by the I-pipe, so the
- > > cascaded interrupts management routines should be automatically
- > > intercepted. 
- > > 
- > > In order to have a better understanding of the issue, it would be
- > > interesting if you could trace the functions that are called on the path
- > > from the interrupt to the execution of the final handler.
- > 
- > I have tracked and solved the issue. I have looked to the i.MX21 port
- > and they added some code to the GPIO interrupt handler of the i.MX21.
- > When IPIPE is active they unmask the interrupt for the GPIO pins at the
- > end of the handler. I did the same for PXA and my GPIO interrupt problem
- > is solved. I think that the same is needed for SA-1100.
+This patch introduces an additional parameter to xntimer_start for
+specifying if the passed timeout value is relative (like now always) or
+absolute. The idea is to simplify the setup of absolute timeouts which
+have to be converted into relative ones so far.
 
-Here is a new version of the ipipe-sa1100-pxa patch that unmaks
-interrupts at the end of the demux handlers, and that attempt to fix the
-gettimeoffset issue. I have run 20 minutes (time for OSCR to wrap) latency
-with a test program verifying that time returned by gettimeofday is
-never going backward.
+All direct callers of xntimer_start are updated as well as the docs.
 
-The patch and the test program are attached, it would be nice if you
-could test them.
+Jan
 
--- 
-
-
-					    Gilles Chanteperdrix.
-
---VH74SF6SoD
-Content-Type: text/plain
+--------------040405030004040605050503
+Content-Type: text/x-patch;
+ name="xntimer-absolute-v2.patch"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
-	filename="ipipe-sa1100-pxa.2.patch"
-Content-Transfer-Encoding: 7bit
+ filename="xntimer-absolute-v2.patch"
 
---- linux-2.6.16.5-tcl1/arch/arm/mach-pxa/irq.c	2005-10-28 02:02:08.000000000 +0200
-+++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/irq.c	2006-08-02 17:57:30.000000000 +0200
-@@ -143,6 +143,10 @@ static struct irqchip pxa_low_gpio_chip 
- static void pxa_gpio_demux_handler(unsigned int irq, struct irqdesc *desc,
- 				   struct pt_regs *regs)
- {
-+#ifdef CONFIG_IPIPE
-+	struct irqdesc *desc_unused = desc;
-+	unsigned irq_unused = irq;
-+#endif /* CONFIG_IPIPE */
- 	unsigned int mask;
- 	int loop;
- 
-@@ -212,6 +216,10 @@ static void pxa_gpio_demux_handler(unsig
- 		}
- #endif
- 	} while (loop);
+---
+ include/nucleus/timer.h              |   25 +++++++++++++++++++------
+ ksrc/drivers/testing/timerbench.c    |    9 ++++-----
+ ksrc/nucleus/pod.c                   |   12 ++++++++----
+ ksrc/nucleus/timer.c                 |   25 ++++++++++++++++++++-----
+ ksrc/skins/native/alarm.c            |    2 +-
+ ksrc/skins/posix/timer.c             |    3 ++-
+ ksrc/skins/psos+/tm.c                |    2 +-
+ ksrc/skins/vxworks/wdLib.c           |    2 +-
+ sim/skins/posix/testsuite/xntest.c   |    2 +-
+ sim/skins/vxworks/testsuite/xntest.c |    2 +-
+ 10 files changed, 58 insertions(+), 26 deletions(-)
+
+Index: xenomai/include/nucleus/timer.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/nucleus/timer.h
++++ xenomai/include/nucleus/timer.h
+@@ -31,9 +31,14 @@
+ #define XNTIMER_WHEELMASK (XNTIMER_WHEELSIZE - 1)
+ #endif /* CONFIG_XENO_OPT_TIMING_PERIODIC || CONFIG_XENO_OPT_TIMER_WHEEL=
+ */
+=20
++/* Timer status */
+ #define XNTIMER_DEQUEUED  0x00000001
+ #define XNTIMER_KILLED    0x00000002
+=20
++/* Timer mode */
++#define XNTIMER_RELATIVE  0
++#define XNTIMER_ABSOLUTE  1
 +
-+#ifdef CONFIG_IPIPE
-+	desc_unused->chip->unmask(irq_unused);
-+#endif /* CONFIG_IPIPE */
+ /* These flags are available to the real-time interfaces */
+ #define XNTIMER_SPARE0  0x01000000
+ #define XNTIMER_SPARE1  0x02000000
+@@ -268,7 +273,8 @@ typedef struct xntmops {
+     xnticks_t (*get_raw_clock)(void);
+     void (*do_timer_start)(xntimer_t *timer,
+ 			   xnticks_t value,
+-			   xnticks_t interval);
++			   xnticks_t interval,
++			   int mode);
+     void (*do_timer_stop)(xntimer_t *timer);
+     xnticks_t (*get_timer_date)(xntimer_t *timer);
+     xnticks_t (*get_timer_timeout)(xntimer_t *timer);
+@@ -291,7 +297,8 @@ void xntimer_init(xntimer_t *timer,
+ void xntimer_destroy(xntimer_t *timer);
+=20
+ /*!
+- * \fn void xntimer_start(xntimer_t *timer,xnticks_t value,xnticks_t int=
+erval)
++ * \fn void xntimer_start(xntimer_t *timer,xnticks_t value,xnticks_t int=
+erval,
++ *                        int mode)
+  * \brief Arm a timer.
+  *
+  * Activates a timer so that the associated timeout handler will be
+@@ -302,14 +309,19 @@ void xntimer_destroy(xntimer_t *timer);
+  *
+  * @param timer The address of a valid timer descriptor.
+  *
+- * @param value The relative date of the initial timer shot, expressed
+- * in clock ticks (see note).
++ * @param value The date of the initial timer shot, expressed in clock t=
+icks
++ * (see note).
+  *
+  * @param interval The reload value of the timer. It is a periodic
+  * interval value to be used for reprogramming the next timer shot,
+  * expressed in clock ticks (see note). If @a interval is equal to
+  * XN_INFINITE, the timer will not be reloaded after it has expired.
+  *
++ * @param mode The timer mode. It can be either XNTIMER_RELATIVE or
++ * XNTIMER_ABSOLUTE to define if @a value shall be interpreted as a rela=
+tive
++ * or absolute date. Absolute dates are based on the nucleus time return=
+ed by
++ * xnpod_get_time().
++ *
+  * @return 0 is always returned.
+  *
+  * Environments:
+@@ -332,9 +344,10 @@ void xntimer_destroy(xntimer_t *timer);
+  */
+=20
+ static inline void xntimer_start(xntimer_t *timer,
+-                                 xnticks_t value, xnticks_t interval)
++                                 xnticks_t value, xnticks_t interval,
++                                 int mode)
+ {
+-    nktimer->do_timer_start(timer, value, interval);
++    nktimer->do_timer_start(timer, value, interval, mode);
  }
- 
- static void pxa_ack_muxed_gpio(unsigned int irq)
---- linux-2.6.16.5-tcl1/arch/arm/mach-pxa/time.c	2006-05-07 15:36:35.000000000 +0200
-+++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/time.c	2006-08-02 19:17:30.000000000 +0200
-@@ -19,6 +19,7 @@
- #include <linux/signal.h>
- #include <linux/errno.h>
- #include <linux/sched.h>
-+#include <linux/module.h>
- 
- #include <asm/system.h>
- #include <asm/hardware.h>
-@@ -30,6 +31,23 @@
- #include <asm/arch/pxa-regs.h>
- 
- 
-+#ifdef CONFIG_IPIPE
-+#ifdef CONFIG_NO_IDLE_HZ
-+#error "dynamic tick timer not yet supported with IPIPE"
-+#endif /* CONFIG_NO_IDLE_HZ */
-+int __ipipe_mach_timerint = IRQ_OST0;
-+EXPORT_SYMBOL(__ipipe_mach_timerint);
-+
-+int __ipipe_mach_timerstolen = 0;
-+EXPORT_SYMBOL(__ipipe_mach_timerstolen);
-+
-+unsigned int __ipipe_mach_ticks_per_jiffy = LATCH;
-+EXPORT_SYMBOL(__ipipe_mach_ticks_per_jiffy);
-+
-+static int pxa_timer_initialized;
-+static unsigned long pxa_jiffies;
-+#endif /* CONFIG_IPIPE */
-+
- static inline unsigned long pxa_get_rtc_time(void)
- {
- 	return RCNR;
-@@ -54,6 +72,9 @@ static unsigned long pxa_gettimeoffset (
- {
- 	long ticks_to_match, elapsed, usec;
- 
-+#ifdef CONFIG_IPIPE
-+	if (!__ipipe_mach_timerstolen) {
-+#endif
- 	/* Get ticks before next timer match */
- 	ticks_to_match = OSMR0 - OSCR;
- 
-@@ -63,6 +84,10 @@ static unsigned long pxa_gettimeoffset (
- 	/* don't get fooled by the workaround in pxa_timer_interrupt() */
- 	if (elapsed <= 0)
- 		return 0;
-+#ifdef CONFIG_IPIPE
-+	} else
-+		elapsed = OSCR - pxa_jiffies * LATCH;
-+#endif
- 
- 	/* Now convert them to usec */
- 	usec = (unsigned long)(elapsed * (tick_nsec / 1000))/LATCH;
-@@ -105,9 +130,27 @@ pxa_timer_interrupt(int irq, void *dev_i
- 	 * affect things only when the timer IRQ has been delayed by nearly
- 	 * exactly one tick period which should be a pretty rare event.
- 	 */
-+#ifdef CONFIG_IPIPE
-+	/*
-+	 * - if Linux is running natively (no ipipe), ack and reprogram the timer
-+	 * - if Linux is running under ipipe, but it still has the control over
-+	 *   the timer (no Xenomai for example), then reprogram the timer (ipipe
-+	 *   has already acked it)
-+	 * - if some other domain has taken over the timer, then do nothing
-+	 *   (ipipe has acked it, and the other domain has reprogramed it)
-+	 */
-+	if (__ipipe_mach_timerstolen) {
-+		timer_tick(regs);
-+		++pxa_jiffies;
-+	} else
-+#endif /* CONFIG_IPIPE */
- 	do {
- 		timer_tick(regs);
-+#ifdef CONFIG_IPIPE
-+		++pxa_jiffies;
-+#else /* !CONFIG_IPIPE */
- 		OSSR = OSSR_M0;  /* Clear match on timer 0 */
-+#endif /* !CONFIG_IPIPE */
- 		next_match = (OSMR0 += LATCH);
- 	} while( (signed long)(next_match - OSCR) <= 8 );
- 
-@@ -139,6 +182,10 @@ static void __init pxa_timer_init(void)
- 	setup_irq(IRQ_OST0, &pxa_timer_irq);
- 	OIER = OIER_E0;		/* enable match on timer 0 to cause interrupts */
- 	OSCR = 0;		/* initialize free-running timer */
-+
-+#ifdef CONFIG_IPIPE
-+	pxa_timer_initialized = 1;
-+#endif /* CONFIG_IPIPE */
+=20
+ /*!
+Index: xenomai/ksrc/drivers/testing/timerbench.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/drivers/testing/timerbench.c
++++ xenomai/ksrc/drivers/testing/timerbench.c
+@@ -175,8 +175,8 @@ void timer_proc(xntimer_t *timer)
+=20
+     ctx->start_time =3D rtdm_clock_read();
+     /* FIXME: convert to RTDM timers */
+-    xntimer_start(&ctx->timer, xnpod_ns2ticks(ctx->date-ctx->start_time)=
+,
+-                  XN_INFINITE);
++    xntimer_start(&ctx->timer, xnpod_ns2ticks(ctx->date),
++                  XN_INFINITE, XNTIMER_ABSOLUTE);
+=20
+     if (++ctx->curr.test_loops < ctx->samples_per_sec)
+         return;
+@@ -320,9 +320,8 @@ int rt_tmbench_ioctl_nrt(struct rtdm_dev
+                         ctx->date       =3D ctx->start_time + ctx->perio=
+d;
+=20
+                         /* FIXME: convert to RTDM timers */
+-                        xntimer_start(&ctx->timer,
+-                                xnpod_ns2ticks(ctx->date-rtdm_clock_read=
+()),
+-                                XN_INFINITE);
++                        xntimer_start(&ctx->timer, xnpod_ns2ticks(ctx->d=
+ate),
++                                      XN_INFINITE, XNTIMER_ABSOLUTE);
+                     );
+                 }
+             }
+Index: xenomai/ksrc/nucleus/pod.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/nucleus/pod.c
++++ xenomai/ksrc/nucleus/pod.c
+@@ -1429,7 +1429,8 @@ void xnpod_suspend_thread(xnthread_t *th
+ 		   a call to xnpod_suspend_thread(thread,XNDELAY,0,NULL). */
+ 		__setbits(thread->status, XNDELAY);
+ 		xntimer_set_sched(&thread->rtimer, thread->sched);
+-		xntimer_start(&thread->rtimer, timeout, XN_INFINITE);
++		xntimer_start(&thread->rtimer, timeout, XN_INFINITE,
++			      XNTIMER_RELATIVE);
+ 	}
+ #ifdef __XENO_SIM__
+ 	if (nkpod->schedhook)
+@@ -3101,7 +3102,8 @@ int xnpod_start_timer(u_long nstick, xni
+ 	if (XNARCH_HOST_TICK) {
+ 		xnlock_get_irqsave(&nklock, s);
+ 		xntimer_start(&nkpod->htimer, delta,
+-			      XNARCH_HOST_TICK / nkpod->tickvalue);
++			      XNARCH_HOST_TICK / nkpod->tickvalue,
++			      XNTIMER_RELATIVE);
+ 		xnlock_put_irqrestore(&nklock, s);
+ 	}
+=20
+@@ -3390,14 +3392,16 @@ int xnpod_set_thread_periodic(xnthread_t
+ 	xntimer_set_sched(&thread->ptimer, thread->sched);
+=20
+ 	if (idate =3D=3D XN_INFINITE) {
+-		xntimer_start(&thread->ptimer, period, period);
++		xntimer_start(&thread->ptimer, period, period,
++			      XNTIMER_RELATIVE);
+ 		thread->pexpect =3D xntimer_get_raw_expiry(&thread->ptimer)
+ 		    + xntimer_interval(&thread->ptimer);
+ 	} else {
+ 		now =3D xnpod_get_time();
+=20
+ 		if (idate > now) {
+-			xntimer_start(&thread->ptimer, idate - now, period);
++			xntimer_start(&thread->ptimer, idate, period,
++				      XNTIMER_ABSOLUTE);
+ 			thread->pexpect =3D
+ 			    xntimer_get_raw_expiry(&thread->ptimer)
+ 			    + xntimer_interval(&thread->ptimer);
+Index: xenomai/ksrc/nucleus/timer.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/nucleus/timer.c
++++ xenomai/ksrc/nucleus/timer.c
+@@ -93,14 +93,22 @@ static inline void xntimer_next_remote_s
  }
- 
- #ifdef CONFIG_NO_IDLE_HZ
-@@ -216,3 +263,69 @@ struct sys_timer pxa_timer = {
- 	.dyn_tick	= &pxa_dyn_tick,
- #endif
- };
-+
-+#ifdef CONFIG_IPIPE
-+void __ipipe_mach_acktimer(void)
-+{
-+	OSSR = OSSR_M0;  /* Clear match on timer 0 */
-+}
-+
-+unsigned long long __ipipe_mach_get_tsc(void)
-+{
-+	if (likely(pxa_timer_initialized)) {
-+		static union {
-+#ifdef __BIG_ENDIAN
-+			struct {
-+				unsigned long high;
-+				unsigned long low;
-+			};
-+#else /* __LITTLE_ENDIAN */
-+			struct {
-+				unsigned long low;
-+				unsigned long high;
-+			};
-+#endif /* __LITTLE_ENDIAN */
-+			unsigned long long full;
-+		} tsc[NR_CPUS], *local_tsc;
-+		unsigned long stamp, flags;
-+		unsigned long long result;
-+
-+		local_irq_save_hw(flags);
-+		local_tsc = &tsc[ipipe_processor_id()];
-+		stamp = OSCR;
-+		if (unlikely(stamp < local_tsc->low))
-+			/* 32 bit counter wrapped, increment high word. */
-+			local_tsc->high++;
-+		local_tsc->low = stamp;
-+		result = local_tsc->full;
-+		local_irq_restore_hw(flags);
-+
-+		return result;
-+	}
-+	
-+        return 0;
-+}
-+EXPORT_SYMBOL(__ipipe_mach_get_tsc);
-+
-+/*
-+ * Reprogram the timer
-+ */
-+
-+void __ipipe_mach_set_dec(unsigned long delay)
-+{
-+	if (delay > 8) {
-+		unsigned long flags;
-+
-+		local_irq_save_hw(flags);
-+		OSMR0 = delay + OSCR;
-+		local_irq_restore_hw(flags);
-+	} else
-+		ipipe_trigger_irq(IRQ_OST0);
-+}
-+EXPORT_SYMBOL(__ipipe_mach_set_dec);
-+
-+unsigned long __ipipe_mach_get_dec(void)
-+{
-+	return OSMR0 - OSCR;
-+}
-+#endif /* CONFIG_IPIPE */
---- linux-2.6.16.5-tcl1/arch/arm/mach-sa1100/irq.c	2005-10-28 02:02:08.000000000 +0200
-+++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-sa1100/irq.c	2006-08-02 17:55:48.000000000 +0200
-@@ -111,6 +111,10 @@ static void
- sa1100_high_gpio_handler(unsigned int irq, struct irqdesc *desc,
- 			 struct pt_regs *regs)
+=20
+ static void xntimer_do_start_aperiodic(xntimer_t *timer,
+-				       xnticks_t value, xnticks_t interval)
++				       xnticks_t value, xnticks_t interval,
++				       int mode)
  {
-+#ifdef CONFIG_IPIPE
-+	struct irqdesc *desc_unused = desc;
-+	unsigned irq_unused = irq;
-+#endif /* CONFIG_IPIPE */
- 	unsigned int mask;
- 
- 	mask = GEDR & 0xfffff800;
-@@ -134,6 +138,10 @@ sa1100_high_gpio_handler(unsigned int ir
- 
- 		mask = GEDR & 0xfffff800;
- 	} while (mask);
++	xnticks_t date;
 +
-+#ifdef CONFIG_IPIPE
-+	desc_unused->chip->unmask(irq_unused);
-+#endif /* CONFIG_IPIPE */
+ 	if (!testbits(timer->status, XNTIMER_DEQUEUED))
+ 		xntimer_dequeue_aperiodic(timer);
+=20
+-	xntimerh_date(&timer->aplink) =3D
+-	    xnarch_get_cpu_tsc() + xnarch_ns_to_tsc(value);
++	if (mode =3D=3D XNTIMER_RELATIVE)
++		date =3D xnarch_ns_to_tsc(value) + xnarch_get_cpu_tsc();
++	else
++		date =3D xnarch_ns_to_tsc(value - nkpod->wallclock_offset);
++
++	xntimerh_date(&timer->aplink) =3D date;
+ 	timer->interval =3D xnarch_ns_to_tsc(interval);
++
+ 	xntimer_enqueue_aperiodic(timer);
+ 	if (xntimer_heading_p(timer)) {
+ 		if (xntimer_sched(timer) !=3D xnpod_current_sched())
+@@ -287,13 +295,20 @@ static inline void xntimer_dequeue_perio
  }
- 
- /*
---- linux-2.6.16.5-tcl1/arch/arm/mach-sa1100/time.c	2006-05-07 15:36:35.000000000 +0200
-+++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-sa1100/time.c	2006-08-02 19:09:06.000000000 +0200
-@@ -13,6 +13,7 @@
- #include <linux/interrupt.h>
- #include <linux/timex.h>
- #include <linux/signal.h>
-+#include <linux/module.h>
- 
- #include <asm/mach/time.h>
- #include <asm/hardware.h>
-@@ -20,6 +21,23 @@
- #define RTC_DEF_DIVIDER		(32768 - 1)
- #define RTC_DEF_TRIM            0
- 
-+#ifdef CONFIG_IPIPE
-+#ifdef CONFIG_NO_IDLE_HZ
-+#error "dynamic tick timer not yet supported with IPIPE"
-+#endif /* CONFIG_NO_IDLE_HZ */
-+int __ipipe_mach_timerint = IRQ_OST0;
-+EXPORT_SYMBOL(__ipipe_mach_timerint);
-+
-+int __ipipe_mach_timerstolen = 0;
-+EXPORT_SYMBOL(__ipipe_mach_timerstolen);
-+
-+unsigned int __ipipe_mach_ticks_per_jiffy = LATCH;
-+EXPORT_SYMBOL(__ipipe_mach_ticks_per_jiffy);
-+
-+static int sa1100_timer_initialized;
-+static unsigned long sa1100_jiffies;
-+#endif /* CONFIG_IPIPE */
-+
- static unsigned long __init sa1100_get_rtc_time(void)
+=20
+ static void xntimer_do_start_periodic(xntimer_t *timer,
+-				      xnticks_t value, xnticks_t interval)
++				      xnticks_t value, xnticks_t interval,
++				      int mode)
  {
- 	/*
-@@ -58,11 +76,18 @@ static unsigned long sa1100_gettimeoffse
- {
- 	unsigned long ticks_to_match, elapsed, usec;
- 
-+#ifdef CONFIG_IPIPE
-+	if (!__ipipe_mach_timerstolen) {
-+#endif
- 	/* Get ticks before next timer match */
- 	ticks_to_match = OSMR0 - OSCR;
- 
- 	/* We need elapsed ticks since last match */
- 	elapsed = LATCH - ticks_to_match;
-+#ifdef CONFIG_IPIPE
-+	} else
-+		elapsed = OSCR - sa1100_jiffies * LATCH;
-+#endif
- 
- 	/* Now convert them to usec */
- 	usec = (unsigned long)(elapsed * (tick_nsec / 1000))/LATCH;
-@@ -97,9 +122,27 @@ sa1100_timer_interrupt(int irq, void *de
- 	 * ensured, hence we can use do_gettimeofday() from interrupt
- 	 * handlers.
- 	 */
-+#ifdef CONFIG_IPIPE
-+	/*
-+	 * - if Linux is running natively (no ipipe), ack and reprogram the timer
-+	 * - if Linux is running under ipipe, but it still has the control over
-+	 *   the timer (no Xenomai for example), then reprogram the timer (ipipe
-+	 *   has already acked it)
-+	 * - if some other domain has taken over the timer, then do nothing
-+	 *   (ipipe has acked it, and the other domain has reprogramed it)
-+	 */
-+	if (__ipipe_mach_timerstolen) {
-+		timer_tick(regs);
-+		++sa1100_jiffies;
-+	} else
-+#endif /* CONFIG_IPIPE */
- 	do {
- 		timer_tick(regs);
-+#ifdef CONFIG_IPIPE
-+		++sa1100_jiffies;
-+#else /* !CONFIG_IPIPE */
- 		OSSR = OSSR_M0;  /* Clear match on timer 0 */
-+#endif /* !CONFIG_IPIPE */
- 		next_match = (OSMR0 += LATCH);
- 	} while ((signed long)(next_match - OSCR) <= 0);
- 
-@@ -131,6 +174,10 @@ static void __init sa1100_timer_init(voi
- 	setup_irq(IRQ_OST0, &sa1100_timer_irq);
- 	OIER = OIER_E0;		/* enable match on timer 0 to cause interrupts */
- 	OSCR = 0;		/* initialize free-running timer */
+ 	if (!testbits(timer->status, XNTIMER_DEQUEUED))
+ 		xntimer_dequeue_periodic(timer);
+=20
+-	xntlholder_date(&timer->plink) =3D nkpod->jiffies + value;
++	if (mode =3D=3D XNTIMER_RELATIVE)
++		value +=3D nkpod->jiffies;
++	else
++		value -=3D nkpod->wallclock_offset;
 +
-+#ifdef CONFIG_IPIPE
-+	sa1100_timer_initialized = 1;
-+#endif /* CONFIG_IPIPE */
++	xntlholder_date(&timer->plink) =3D value;
+ 	timer->interval =3D interval;
++
+ 	xntimer_enqueue_periodic(timer);
  }
- 
- #ifdef CONFIG_NO_IDLE_HZ
-@@ -209,3 +256,66 @@ struct sys_timer sa1100_timer = {
- 	.dyn_tick	= &sa1100_dyn_tick,
- #endif
- };
-+
-+#ifdef CONFIG_IPIPE
-+void __ipipe_mach_acktimer(void)
-+{
-+	OSSR = OSSR_M0;  /* Clear match on timer 0 */
-+}
-+
-+unsigned long long __ipipe_mach_get_tsc(void)
-+{
-+	if (likely(sa1100_timer_initialized)) {
-+		static union {
-+#ifdef __BIG_ENDIAN
-+			struct {
-+				unsigned long high;
-+				unsigned long low;
-+			};
-+#else /* __LITTLE_ENDIAN */
-+			struct {
-+				unsigned long low;
-+				unsigned long high;
-+			};
-+#endif /* __LITTLE_ENDIAN */
-+			unsigned long long full;
-+		} tsc[NR_CPUS], *local_tsc;
-+		unsigned long stamp, flags;
-+		unsigned long long result;
-+
-+		local_irq_save_hw(flags);
-+		local_tsc = &tsc[ipipe_processor_id()];
-+		stamp = OSCR;
-+		if (unlikely(stamp < local_tsc->low))
-+			/* 32 bit counter wrapped, increment high word. */
-+			local_tsc->high++;
-+		local_tsc->low = stamp;
-+		result = local_tsc->full;
-+		local_irq_restore_hw(flags);
-+
-+		return result;
-+	}
-+	
-+        return 0;
-+}
-+EXPORT_SYMBOL(__ipipe_mach_get_tsc);
-+
-+/*
-+ * Reprogram the timer
-+ */
-+
-+void __ipipe_mach_set_dec(unsigned long delay)
-+{
-+	unsigned long flags;
-+
-+	local_irq_save_hw(flags);
-+        OSMR0 = delay + OSCR;
-+	local_irq_restore_hw(flags);
-+}
-+EXPORT_SYMBOL(__ipipe_mach_set_dec);
-+
-+unsigned long __ipipe_mach_get_dec(void)
-+{
-+	return OSMR0 - OSCR;
-+}
-+#endif /* CONFIG_IPIPE */
+=20
+Index: xenomai/ksrc/skins/native/alarm.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/skins/native/alarm.c
++++ xenomai/ksrc/skins/native/alarm.c
+@@ -360,7 +360,7 @@ int rt_alarm_start(RT_ALARM *alarm, RTIM
+ 		goto unlock_and_exit;
+ 	}
+=20
+-	xntimer_start(&alarm->timer_base, value, interval);
++	xntimer_start(&alarm->timer_base, value, interval, XNTIMER_RELATIVE);
+=20
+       unlock_and_exit:
+=20
+Index: xenomai/ksrc/skins/posix/timer.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/skins/posix/timer.c
++++ xenomai/ksrc/skins/posix/timer.c
+@@ -372,7 +372,8 @@ int timer_settime(timer_t timerid,
+ 				start =3D 1;
+=20
+ 		xntimer_start(&timer->timerbase,
+-			      start, ts2ticks_ceil(&value->it_interval));
++			      start, ts2ticks_ceil(&value->it_interval),
++			      XNTIMER_RELATIVE);
+ 		timer->owner =3D cur;
+ 		inith(&timer->tlink);
+ 		appendq(&timer->owner->timersq, &timer->tlink);
+Index: xenomai/ksrc/skins/psos+/tm.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/skins/psos+/tm.c
++++ xenomai/ksrc/skins/psos+/tm.c
+@@ -91,7 +91,7 @@ static u_long tm_start_event_timer(u_lon
+ 	appendq(&psostimerq, &tm->link);
+ 	appendgq(&tm->owner->alarmq, tm);
+=20
+-	xntimer_start(&tm->timerbase, ticks, interval);
++	xntimer_start(&tm->timerbase, ticks, interval, XNTIMER_RELATIVE);
+=20
+ 	xnlock_put_irqrestore(&nklock, s);
+=20
+Index: xenomai/ksrc/skins/vxworks/wdLib.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/skins/vxworks/wdLib.c
++++ xenomai/ksrc/skins/vxworks/wdLib.c
+@@ -183,7 +183,7 @@ STATUS wdStart(WDOG_ID wdog_id, int time
+ 	wd->handler =3D handler;
+ 	wd->arg =3D arg;
+=20
+-	xntimer_start(&wd->timerbase, timeout, XN_INFINITE);
++	xntimer_start(&wd->timerbase, timeout, XN_INFINITE, XNTIMER_RELATIVE);
+=20
+ 	xnlock_put_irqrestore(&nklock, s);
+ 	return OK;
+Index: xenomai/sim/skins/posix/testsuite/xntest.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/sim/skins/posix/testsuite/xntest.c
++++ xenomai/sim/skins/posix/testsuite/xntest.c
+@@ -79,7 +79,7 @@ void xntest_start(void)
+=20
+     xnlock_get_irqsave(&test_lock, s);
+     xntimer_init(&watchdog, interrupt_test);
+-    xntimer_start(&watchdog, xnpod_ns2ticks(test_timeout * 1000000000ULL=
+), XN_INFINITE);
++    xntimer_start(&watchdog, xnpod_ns2ticks(test_timeout * 1000000000ULL=
+), XN_INFINITE, XNTIMER_RELATIVE);
+=20
+     initq(&marks_q);
+     tests=3D0;
+Index: xenomai/sim/skins/vxworks/testsuite/xntest.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/sim/skins/vxworks/testsuite/xntest.c
++++ xenomai/sim/skins/vxworks/testsuite/xntest.c
+@@ -79,7 +79,7 @@ void xntest_start(void)
+=20
+     xnlock_get_irqsave(&test_lock, s);
+     xntimer_init(&watchdog, interrupt_test);
+-    xntimer_start(&watchdog, xnpod_ns2ticks(test_timeout * 1000000000ULL=
+), XN_INFINITE);
++    xntimer_start(&watchdog, xnpod_ns2ticks(test_timeout * 1000000000ULL=
+), XN_INFINITE, XNTIMER_RELATIVE);
+=20
+     initq(&marks_q);
+     tests=3D0;
 
---VH74SF6SoD
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="test_gettimeofday.c"
-Content-Transfer-Encoding: 7bit
+--------------040405030004040605050503--
 
-#include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
+--------------enig4565CAC326FF682F3026B24E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-int main(void)
-{
-	struct timeval tv, old_tv;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-	gettimeofday(&old_tv, NULL);
-	for (;;) {
-		gettimeofday(&tv, NULL);
-		if (tv.tv_sec < old_tv.tv_sec ||
-		    (tv.tv_sec == old_tv.tv_sec && tv.tv_usec < old_tv.tv_usec))
-			printf("Time is going backward !\n");
-		old_tv = tv;
-	}
-}
+iD8DBQFE0Z39niDOoMHTA+kRAsZwAJ9Jym8mKcqXsU3W//8IWHS99YJPVwCeJoW2
+wyMVxwIdpFcxIwTZqGv/pZc=
+=kB/8
+-----END PGP SIGNATURE-----
 
---VH74SF6SoD--
+--------------enig4565CAC326FF682F3026B24E--
 
