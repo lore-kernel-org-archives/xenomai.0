@@ -1,12 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Date: Thu, 03 Aug 2006 15:35:16 +0200
+From: GSM909@domain.hid
+Message-ID: <20060803133516.31820@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17617.57681.985907.937876@domain.hid>
-Date: Thu, 3 Aug 2006 13:43:13 +0200
-Subject: Re: [Xenomai-help] Xenomai POSIX-libraries
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A46D9C5@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A46D9C5@domain.hid>
-Content-Transfer-Encoding: Quoted-Printable
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Time between ISR and RT Task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Roderik_Wildenburg@domain.hid wrote:
- > Can anybody tell me how the POSIX-Libraries are build. I had a look on=
- various scripts and makefiles but I don=B4t understand the mechanism.
+Hello
 
-Everything is correct. pthread_attr_setname_np does not exist in
-user-space, because we did not want to wrap the pthread_attr* calls, and
-there is no room in pthread_attr_t for an additional string pointer.
+I have run a few programs with Xenomai tasks and have no problems. But I no=
+tice that the time between ISR and RT task ( RT task is suspended and resum=
+ed by the ISR) is shorter when Linux have a lot of work ( average load arou=
+nd 10 ) as when Linux has nothing to do( al : 0.05 ).=20
 
- > I am asking, as I have the feeling, my POSIX-Library is not correct.
- > Although the xeno_posix.o file in the Linux/kernel/xenomai/skins/posix=
- directory includes all functions from the (xenomai)thread_attr.c file (e=
-.g.: pthread_attr_setname_np), the posix-libraries in the Xenomai/install=
-/lib directory (created by make install) do not include all functions (ex=
-plicitly pthread_attr_setname_np is not included) where did I lose them ?=
- Are the libraries in my install directory the correct ones, where do the=
-y come from ???
- >=20
- > Sorry, but the building process is too complex for a normal mortal lik=
-e me. Perhaps somebody can give me a helping hand.
+My simple Question is why ?? :)=20
 
-The kernel-space module is built from the contents of ksrc/skins/posix,
-whereas the user-space librarry is built from the contents of
-src/skins/posix. The mapping between user-space and kernel-space calls
-is done in ksrc/skins/posix/syscall.c.
-
+thx=20
+Ted
 --=20
 
 
-					    Gilles Chanteperdrix.
+Echte DSL-Flatrate dauerhaft f=FCr 0,- Euro*. Nur noch kurze Zeit!
+"Feel free" mit GMX DSL: http://www.gmx.net/de/go/dsl
 
