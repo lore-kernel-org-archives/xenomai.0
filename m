@@ -1,10 +1,14 @@
-Message-ID: <20060803154437.90346.qmail@domain.hid>
-Date: Thu, 3 Aug 2006 08:44:37 -0700 (PDT)
-From: shailesh joshi <zoshi_s@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1467913123-1154619877=:90016"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] Interrupt Problem.
+Subject: Re: [Xenomai-help] native heap services and overloading new
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44D0F876.8020406@domain.hid>
+References: <38215.155.98.4.39.1154456700.squirrel@domain.hid>
+	<44D0F876.8020406@domain.hid>
+Content-Type: text/plain
+Date: Thu, 03 Aug 2006 19:13:52 +0200
+Message-Id: <1154625233.5010.111.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,55 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-1467913123-1154619877=:90016
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2006-08-02 at 21:09 +0200, Jan Kiszka wrote:
+> Brandt Erickson wrote:
+> > I have some code where I'd like to be able to dynamically allocate memory
+> > in realtime.  Since the code is written in C++, I was thinking of just
+> > making a huge global RT_HEAP and overloading the new and delete operators
+> > to use the rt_heap_alloc and rt_heap_free functions.  First off, I'm
+> > wondering if there are any caveats to this sort of thing that wouldn't be
+> > obvious to someone new to xenomai like myself.  Second, if I fail to call
+> > rt_heap_delete before the program terminates, does the heap remain
+> > registered hang potentially causing problems when I try to re-allocate the
+> > heap when the program is run again?  Thanks.
+> 
+> For now: yes, the heap will stay, no automatic cleanup (the posix skin
+> already have this). You could then run into naming conflicts and you
+> lose memory, of course.
+> 
+> But you could install some signal handler for cleaning up. We do so in
+> our native-skin-based framework (also C++, but no "evil" ;) features in
+> use). We even catch SIGSEGV this way.
+> 
 
-Hello,
-  =20
-  I am trying to interfce a DAQ board to a PC via a PCI card. I am facing t=
-he following problem:
-  =20
-  I am trying to send an interrupt from the Board to the PC. However, the i=
-nterrupt is only registered in the PCI cards internal registers and not by =
-Xenomai, ie.  the /proc/xenomai/ interface registers interrupt 10 in the li=
-st (namely, handler is being installed) but the count for both cpus remains=
- at 0.=20
-  =20
-  To give a hint of the code, i am using a modified version of the RTDM dri=
-ver example from captain.at. The only parts i haven't incorporated are thos=
-e for MMAP, else the code is fast the same. Could anyone suggest what i mig=
-ht be doing wrong here??
-  =20
-  =20
-  Regards,
-  Shailesh Joshi
+Another simple option: the binding operation is particularly useful for
+recycling/discarding lingering objects.
 
- 	=09
----------------------------------
-Talk is cheap. Use Yahoo! Messenger to make PC-to-Phone calls.  Great rates=
- starting at 1=A2/min.
---0-1467913123-1154619877=:90016
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+RT_HEAP app_heap;
 
-<div>Hello,</div>  <div>&nbsp;</div>  <div>I am trying to interfce a DAQ bo=
-ard to a PC via a PCI card. I am facing the following problem:</div>  <div>=
-&nbsp;</div>  <div>I am trying to send an interrupt from the Board to the P=
-C. However, the interrupt is only registered in the PCI cards internal regi=
-sters and not by Xenomai, ie.&nbsp; the /proc/xenomai/ interface registers =
-interrupt 10 in the list (namely, handler is being installed) but the count=
- for both cpus remains at 0. </div>  <div>&nbsp;</div>  <div>To give a hint=
- of the code, i am using a modified version of the RTDM driver example from=
- captain.at. The only parts i haven't incorporated are those for MMAP, else=
- the code is fast the same. Could anyone suggest what i might be doing wron=
-g here??</div>  <div>&nbsp;</div>  <div>&nbsp;</div>  <div>Regards,</div>  =
-<div>Shailesh Joshi</div><p>&#32;
-		<hr size=3D1>Talk is cheap. Use Yahoo! Messenger to make PC-to-Phone call=
-s. <a href=3D"http://us.rd.yahoo.com/mail_us/taglines/postman7/*http://us.r=
-d.yahoo.com/evt=3D39666/*http://messenger.yahoo.com"> Great rates starting =
-at 1=A2/min.
---0-1467913123-1154619877=:90016--
+void init_heap (void)
+{
+	RT_HEAP old_heap;
+
+	if (rt_heap_bind(&old_heap, "foo", TM_NONBLOCK) == 0)
+		rt_heap_delete(&old_heap);
+
+	rt_heap_create(&app_heap, "foo", ...);
+}
+
+-- 
+Philippe.
+
+
 
