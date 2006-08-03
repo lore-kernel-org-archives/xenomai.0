@@ -1,24 +1,10 @@
-Subject: Re: [Xenomai-core] Xenomai on PXA
+Subject: Re: [Xenomai-core] Future of Xenomai's RTDM driver repository
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17617.63387.138316.343123@domain.hid>
-References: <200607071703.10700.vagninu@domain.hid>
-	<17582.50372.830923.414981@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-	<1153153788.11603.2.camel@domain.hid>
-	<17595.49478.157044.654500@domain.hid>
-	<1154334859.9569.12.camel@domain.hid>
-	<44CDCB61.2DEDCBFF@vollmann.ch>
-	<1154342029.9569.27.camel@domain.hid>
-	<44CDE4C2.77465253@domain.hid>
-	<17616.42011.663899.554796@domain.hid>
-	<1154525585.9559.22.camel@domain.hid>
-	<17616.59841.283196.201008@domain.hid>
-	<1154596354.9835.28.camel@domain.hid>
-	<17617.63387.138316.343123@domain.hid>
+In-Reply-To: <44D07C4E.4040200@domain.hid>
+References: <44D07C4E.4040200@domain.hid>
 Content-Type: text/plain
-Date: Thu, 03 Aug 2006 16:56:54 +0200
-Message-Id: <1154617014.5010.29.camel@domain.hid>
+Date: Thu, 03 Aug 2006 17:14:58 +0200
+Message-Id: <1154618098.5010.42.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -31,79 +17,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Thu, 2006-08-03 at 15:18 +0200, Gilles Chanteperdrix wrote:
-> Bart Jonkers wrote:
->  > > Here is a new version of the ipipe-sa1100-pxa patch that unmaks
->  > > interrupts at the end of the demux handlers, and that attempt to fix the
->  > > gettimeoffset issue. I have run 20 minutes (time for OSCR to wrap) latency
->  > > with a test program verifying that time returned by gettimeofday is
->  > > never going backward.
->  > > 
->  > > The patch and the test program are attached, it would be nice if you
->  > > could test them.
->  > I have tested the patch and ran the test program.
->  > The test program give no problems.
->  > 
->  > The interrupt problem in Linux is also solved. But I have another one.
->  > I have created a small real-time kernel module which uses the native
->  > interface to handle an GPIO interrupt. The problem is that Xenomai
->  > doesn't see the interrupt. When I use GPIO0 (which doesn't use the
->  > chained handler) to receive the interrupt everything works as it should.
->  > 
->  > So it seems to be that xenomai have a problem with the chained handler.
->  > Does someone have an idea to solve this problem?
+On Wed, 2006-08-02 at 12:19 +0200, Jan Kiszka wrote:
+> Hi,
 > 
-> The problem is that the demux handler is a root domain handler, and
-> directly call the cascaded interrupts root domain handlers through
-> desc_handle_irq, whereas in order for the I-pipe to intercept the
-> interrupt for any domain, the demux handler should be run for any
-> domain, and invoke __ipipe_grab_irq, __ipipe_handle_irq or
-> ipipe_trigger_irq so that the cascaded interrupts are pipelined.
+> instead of replying directly to Wolfgang's announcement of their great
+> CAN stack I take the chance to start a generic thread on the future of
+> RTDM drivers *within* Xenomai.
 > 
-> So, there are two possible fixes:
-> - either fix the I-pipe patch so that the demux handler is invoked when
->   the multiplexed interrupt is received for any domain, and triggers
->   interrupts through ipipe_trigger_irq;
-
-Fixing the I-pipe is the way to go, definitely. If I understand this
-correctly, the best way to handle the demux case is to implement an
-I-pipe variant of the demultiplexing code currently available in
-pxa_gpio_demux_handler(), which would be called from __ipipe_grab_irq()
-when processing the multiplexed interrupt channel.
-
-The I-pipe-specific demux code would then log the decoded IRQ by a call
-to __ipipe_handle_irq() instead of running the root handler directly
-(i.e. desc_handle_irq), which would in turn preserve the ability to
-"wire" GPIO interrupts and also handle IRQ stickiness issues.
-
-This would resemble what we are doing right now on the powerpc arch,
-pulling the received IRQ number from a request to the machine-dependent
-layer. I'd see no issue in duplicating such handling since this is a
-rather short piece of invariant, hw-specific code which would not depend
-on Linux internals, but rather on the I-pipe's.
-
-> - or you may fix the issue locally by registering a demux handler in
->   Xenomai domain through ipipe_virtualize_irq_from, and in this demux
->   handler only clear the interrupt you want and call ipipe_trigger_irq 
->   for them, and ipipe_propagate_irq the multiplexing interrupt to let
->   other irqs be handled in the root domain.
+> If you look at the real-time Linux scene now and in the past, you may
+> find it fairly scattered. Specifically precious Open Source drivers are
+> hard to find, not always up-to-date, or not ported to your favourite
+> kernel/RT-patch. Just check how many CAN driver projects for how many RT
+> APIs are out there. There are even a few hardware vendors providing
+> driver packages for real-time Linux, others offer at least some kind of
+> "reference code", but many nothing at all. Sad but true for _many_ years.
 > 
-> Philippe, is there a way to tell the I-ipipe that an interrupt handler
-> should be executed for any domain?
-
-Nope, there is no interrupt handlers implicitely shared among domains in
-Adeos.
-
->  Is this what a "wired" handler is?
+> RTDM came into play to provide a common ground for real-time driver
+> development under Linux. It is already utilised by quite a few
+> stand-alone driver projects and even vendor drivers. But as resources
+> are limited, maintenance is tricky, and testers are rare, we should
+> consider concentrating driver development efforts more intensively. I'm
+> convinced such concentration should primarily happen within the Xenomai
+> driver repository.
+> 
+> Xenomai has the unique potential to provide a real-time framework for
+> both the co-scheduling approach and for the native RT-Linux environment
+> that Preempt-RT will probably push into mainline one day. And Xenomai is
+> also a sound foundation for the tricky 2.4/2.6 support scenario.
+> 
+> Here are the concrete advantages I see in maintaining drivers *inside*
+> Xenomai:
+> 
+>  o Better visibility (did you know that there is a working FireWire
+>    stack for Xenomai?)
+>  o Better testing, also across architectures, due to more users (this
+>    applies to the drivers, but also to RTDM and Xenomai in all)
+>  o Closer to the latest RTDM development
+>  o Wrapping environments for changing kernel interfaces (2.4/2.6 etc.)
+>  o In-kernel build
+>  o Simpler build system (look at RTnet...)
+>  o Single, integrated package, thus less breakages due to version
+>    mismatches
 > 
 
-A wired interrupt handler is specifically associated to the domain which
-is know to always lead the pipeline, so that certain assumptions which
-we rely on to speed up the interrupt delivery are always true.
+And above all, integration is the key issue, which includes device
+drivers. This has a maintenance cost, but much lower than breakages due
+to endemic discrepancies between the out-of-tree modules (whatever
+"modules" means here) and the core framework.
 
+> Of course, there are also certain critical topics that need to be
+> resolved first:
+> 
+>  o Clear acceptance rules
+>     - Maintenance commitment: "dump-and-run" will not scale. Unless
+>       there is already a community behind it, complex drivers need
+>       people to look after them. Dead/unused drivers should get moved in
+>       some corner after a while.
+
+It's the common Xenomai policy since day #1 (i.e. no dead/unmaintained
+code), so there should be no problem keeping it this way, provided this
+policy is explicitely stated. However, finding committed
+contributors will always be the main issue.
+
+>     - Coding style: Should simply be kernel style (though I personally
+>       hate tabs).
+
+So do I, but fact is that implementing anything else than the strict
+kernel coding guidelines for kernel-based code raises the barrier on
+reviewing and even acceptance from the kernel people, so there is no
+need to fight for such details, imho. This is kernel code, let's use
+kernel coding conventions.
+
+>     - Documentation: New RTDM profiles as well as the drivers themselves
+>       must contain "some words" (surely a more softish requirement).
+>     - Test cases, test conformance: Drivers should provide some simple
+>       tests or, if once available, conform to existing tests for their
+>       RTDM profiles.
+>  o Repository organisation
+>     - Where to keep utilities (Wolfgang raised this as well)? Should a
+>       "rtcanconfig" come with Xenomai, as a separate package of
+>       rt-utils, or as package of its own?
+
+I tend to think that self-contained packages are always simpler to deal
+with from the user standpoint, therefore CAN utilities should be part of
+the CAN driver package. Regarding any <rtdriver>config script, maybe we
+could extend xeno-config in the future to accept external configuration
+frags, so that we keep a single front-end which would accept additional
+options dynamically, but this should not be a requirement ATM.
+
+> 
+>     - Where to put test cases? Distribute them separately?
+>     - Where to collect usage examples? This is actually a generic
+>       question, also for the skins (I think the current situation is
+>       a bit unsatisfactory).
+
+Test cases and usage examples do not usually belong to any particular
+Xenomai/driver version, so they should be gathered in a separate
+package. This would also allow to enrich them with end-user
+contributions with lower constraints on coding style etc.
+
+> 
+>  o Support organisation
+>       Simple drivers can certainly be managed via xenomai-help, existing
+>       communities will continue to use their own forums, but what about
+>       new subsystems? I could imagine introducing some
+>       xenomai-SUBSYSTEM@gna.org lists for them, Philippe suggested
+>       simply xenomai-drivers which is likely already sufficient.
+
+I guess so, since other major subsystems would probably need their own
+list when they appear.
+
+> 
+> Now I would suggest to look at RTCAN (or what it will be called in the
+> end) and to discuss on this first concrete example how we can proceed
+> towards the sketched goal.
+> 
+> Looking forward to your feedback!
+> 
+> Jan
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
