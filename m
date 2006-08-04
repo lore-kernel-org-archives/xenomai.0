@@ -1,100 +1,64 @@
-Message-ID: <44E345D7.4070904@domain.hid>
-Date: Wed, 16 Aug 2006 18:20:39 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44D3976D.7060003@domain.hid>
+Date: Fri, 04 Aug 2006 20:52:29 +0200
+From: newsletter <gsm909@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
-	timers
-References: <44D19F3D.9060700@domain.hid>	<17618.12731.97405.118098@domain.hid>	<44D24257.10605@domain.hid>
-	<17635.15652.735628.299134@domain.hid>
-In-Reply-To: <17635.15652.735628.299134@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD1258F536DA16EFFD3742876"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Time between ISR and RT Task
+References: <20060804070841.313620@domain.hid>
+	<17619.19247.585900.147875@domain.hid>
+In-Reply-To: <17619.19247.585900.147875@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD1258F536DA16EFFD3742876
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Sorry
+
+My System:
+MPC8270 (PowerPC)
+with uboot
+
+Denx Linux und Xenomai Realtime Framework :)
+
+thx for Helping
+
 
 Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Gilles Chanteperdrix wrote:
->  > > Jan Kiszka wrote:
->  > >  > A simple patch, just like suggested by Gilles, to avoid looping=
- over
->  > >  > periodic xntimer handlers in case of overruns.
->  > >  >=20
->  > >  > It saves the current TSC on loop entry and uses this value late=
-r when
->  > >  > forwarding the timer. Is is the overhead of re-reading the TSC =
-on all
->  > >  > archs negligible and should we rather go that way?
->  > >=20
->  > >  >(...)
->  > >  > -				xntimerh_date(&timer->aplink) +=3D
->  > >  > -				    nkpod->htimer.interval;
->  > >  > +				while ((xntimerh_date(&timer->aplink) +=3D
->  > >  > +				        nkpod->htimer.interval) < now);
->  > >=20
->  > > I think you are patching the wrong addition, the one you are inter=
-ested
->  > > in is most probably the one at the bottom of xntimer_do_tick_aperi=
-odic.
->  > >=20
->  >=20
->  > Ouch, indeed. Guess I should start reading what I patch. Here comes =
-a
->  > second try.
->  >=20
->  > I'm still in favour of saving the TSC instead of re-reading it.
->  > Otherwise we would have to pave the code with #ifdefs for the case
->  > xnarch_get_cpu_tsc() is slow for a specific setup. Not that nice, is=
- it?
->=20
-> I am thinking again about this patch: some handlers need to be
-> rewritten, for example the posix timers handler, because the handler
-> relies on the fact that it is called for every timer expiry to compute
-> the overruns count. So maybe this patch should come with the addition o=
-f
-> an xntimer_getoverrun service that computes the overrun count using the=
+> GSM909@domain.hid wrote:
+>  > GSM909@domain.hid wrote:
+>  >  > Hello
+>  >  >
+>  >  > I have run a few programs with Xenomai tasks and have no problems. But I notice that the time between ISR and RT task ( RT task is suspended and resumed by the ISR) is shorter when Linux have a lot of work ( average load around 10 ) as when Linux has nothing to do( al : 0.05 ). 
+>  > 
+>  > Do you observe this for worst case, or for average case latencies? Do you observe this when you boot with the idle=poll parameter ?
+>  > 
+>  > When idle, Linux uses the 'hlt' instruction, that stops the CPU until an interrupt happen, maybe waking up from this state take a little bit more time than when an interrupt is received directly?
+>  > 
+>  > How can I set idel = poll ?
+>
+> That's idle, not idel. The way to pass this option to the kernel depend
+> on the bootloader you are using. If using lilo on x86, add a line:
+>
+> append="idle=poll"
+>
+> to the /etc/lilo.conf section for the image you are booting (if there is
+> already an "append" line, then add "idle=poll" to this line)
+>
+> If using grub on x86, add idle=poll to the /boot/grub/menu.lst line
+> beginning with "kernel" for the xenomai kernel.
+>
+> Anyway, you should let the latency test run a few hours for a given
+> configuration before concluding anything, the worst case latency does
+> not show up so easily.
+>
+>   
 
-> tsc ?
->=20
-
-Mmh, that gets close to hrtimer_forward now: push an overdue timer to an
-expiry date that is in the future and return the number of overruns. But
-do we still want this optimisation of the broken path then? It starts
-getting complex, probably adding more code than it is worth. I'm
-starting to vote against my own patch...
-
-Jan
-
-
---------------enigD1258F536DA16EFFD3742876
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE40XXniDOoMHTA+kRAtF+AJ901GZCDcwZ2Mhp/tIGt6u9vaV89gCZARYs
-21GZM97/rwbK1YJ39LDXvco=
-=ACsN
------END PGP SIGNATURE-----
-
---------------enigD1258F536DA16EFFD3742876--
 
