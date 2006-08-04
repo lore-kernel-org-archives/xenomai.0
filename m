@@ -1,12 +1,11 @@
+Message-ID: <e325d110608040715v5c200f04l4632837bca7a15a4@domain.hid>
+Date: Fri, 4 Aug 2006 15:15:59 +0100
+From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17619.19247.585900.147875@domain.hid>
-Date: Fri, 4 Aug 2006 15:27:11 +0200
-Subject: Re: [Xenomai-help] Time between ISR and RT Task
-In-Reply-To: <20060804070841.313620@domain.hid>
-References: <20060804070841.313620@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Disposition: inline
+Subject: [Xenomai-help] building xenomai integrated drivers
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: GSM909@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-GSM909@domain.hid wrote:
- > GSM909@domain.hid wrote:
- >  > Hello
- >  >
- >  > I have run a few programs with Xenomai tasks and have no problems. But I notice that the time between ISR and RT task ( RT task is suspended and resumed by the ISR) is shorter when Linux have a lot of work ( average load around 10 ) as when Linux has nothing to do( al : 0.05 ). 
- > 
- > Do you observe this for worst case, or for average case latencies? Do you observe this when you boot with the idle=poll parameter ?
- > 
- > When idle, Linux uses the 'hlt' instruction, that stops the CPU until an interrupt happen, maybe waking up from this state take a little bit more time than when an interrupt is received directly?
- > 
- > How can I set idel = poll ?
+Hi ya,
 
-That's idle, not idel. The way to pass this option to the kernel depend
-on the bootloader you are using. If using lilo on x86, add a line:
+The following is my .config..
 
-append="idle=poll"
-
-to the /etc/lilo.conf section for the image you are booting (if there is
-already an "append" line, then add "idle=poll" to this line)
-
-If using grub on x86, add idle=poll to the /boot/grub/menu.lst line
-beginning with "kernel" for the xenomai kernel.
-
-Anyway, you should let the latency test run a few hours for a given
-configuration before concluding anything, the worst case latency does
-not show up so easily.
-
--- 
+#
+# Drivers
+#
+CONFIG_XENO_DRIVERS_16550A=y
+CONFIG_XENO_DRIVERS_TIMERBENCH=y
+CONFIG_XENO_DRIVERS_IRQBENCH=y
+CONFIG_XENO_DRIVERS_SWITCHTEST=y
 
 
-					    Gilles Chanteperdrix.
+I try to look for xeno_16550A.ko in my computer but i cannot get it.
+There is nothing such folder namely "xenomai "in my
+/lib/modules/2.6.17-default/kernel/drivers/
+
+May i know how could i build it manually?
+
+Regards,
+Kim Chuan.
 
