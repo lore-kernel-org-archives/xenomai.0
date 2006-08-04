@@ -1,10 +1,13 @@
-Content-Type: text/plain; charset="iso-8859-1"
-Date: Fri, 04 Aug 2006 09:08:41 +0200
-From: GSM909@domain.hid
-Message-ID: <20060804070841.313620@domain.hid>
+Date: Fri, 04 Aug 2006 13:45:08 +0200
+From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Time between ISR and RT Task
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <200608041345.6449@domain.hid>
+References: 00608021808.18076@domain.hid> <200608021808.18076@domain.hid>
+	<44D0F72E.3020406@domain.hid> <200608031628.31584@domain.hid>
+	<44D26C1C.5040506@domain.hid>
+In-Reply-To: <44D26C1C.5040506@domain.hid>
+Subject: Re: [Xenomai-help] rt_pipe and rt_queue problems
+Content-Type: multipart/mixed; boundary="-------=_4A4754D.3E6110D3"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,39 +17,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-GSM909@domain.hid wrote:
- > Hello
- >
- > I have run a few programs with Xenomai tasks and have no problems. But I=
- notice that the time between ISR and RT task ( RT task is suspended and re=
-sumed by the ISR) is shorter when Linux have a lot of work ( average load a=
-round 10 ) as when Linux has nothing to do( al : 0.05 ).=20
+This is a multi-part message in MIME format
 
-Do you observe this for worst case, or for average case latencies? Do you o=
-bserve this when you boot with the idle=3Dpoll parameter ?
+---------=_4A4754D.3E6110D3
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: 8bit
 
-When idle, Linux uses the 'hlt' instruction, that stops the CPU until an in=
-terrupt happen, maybe waking up from this state take a little bit more time=
- than when an interrupt is received directly?
+>
+>Petr Cervenka wrote:
+>>>> So I tried to use rt_queue. But when I tried to read from queue with
+>>>> timeout (or TM_INFINITE), I got an EPERM error. That means: "service
+>>>> should block, but was called from a context, which cannot sleep.".
+>>>> But I want to sleep (and wait for new data). Where is the problem?
+Do>>> you have any advice?
+>>> Is the read of the queue a Xenomai thread? It has to be, even if it
+will
+>>> mostly run in secondary (Linux) mode. Check also /proc/xenomai/sched
+>>> when you think it should be.
+>> Both tasks are created by rt_task_create and started by rt_task_start.
+They are also in /proc/xenomai/sched:
+>> CPU PID PRI TIMEOUT STAT NAME
+>> 0 0 -1 0 R ROOT/0
+>> 1 0 -1 0 R ROOT/1
+>> 1 313 20 0 X main_task
+>> 1 314 30 30195788906 w hw_task
+>> Note: I'm still using your patch allowing to call rtdm_event_timedwait
+even in nrt.
+>
+>The only thing I can recommend here: try reducing your code to the bare
+>minimum that still demonstrate the issue, then post it.
+>
 
-How can I set idel =3D poll ?
-and what are other options for idel ?=20
-
-Regards=20
-Ted
---=20
-
-
-					    Gilles Chanteperdrix.
+I made a reduced example and the error was still there. So I tried a couple of things and I found out, that new interface rt_queue_write/rt_queue_read is faulty (perhaps only rt_queue_read) or I misused it. I used these functions to speed up the trasfer from rt_pipes/linux devices. "Zero-copy" optimization should come somewhere in near future (or never) ;-)
+When I tried to use rt_queue_alloc/rt_queue_send/rt_queue_receive/rt_queue_free, everything was fine.
+Xenomai version: 2.2.0 with any patches
+Linux: 2.6.17.7, adeos: 2.6.17-i386-1.3-09
+Petr
 
 
+---------=_4A4754D.3E6110D3
+Content-Type: text/x-c++src; name="queuetest.cpp"
+Content-Transfer-Encoding: base64
 
---=20
+I2lmZGVmIEhBVkVfQ09ORklHX0gKI2luY2x1ZGUgPGNvbmZpZy5oPgojZW5kaWYKCi8vI2lu
+Y2x1ZGUgPHN0ZGV4Y2VwdD4KLy8jaW5jbHVkZSA8dW5pc3RkLmg+CgojaW5jbHVkZSA8c2ln
+bmFsLmg+CQkvL3NpZ25hbAojaW5jbHVkZSA8c3lzL21tYW4uaD4JLy9tbG9ja2FsbCwgTUNM
+X0NVUlJFTlQsIE1DTF9GVVRVUkUKCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVk
+ZSA8bmF0aXZlL3F1ZXVlLmg+CgovLyBDWFhGTEFHUzoKLy8gICAgLURfUkVFTlRSQU5UIC1X
+YWxsIC1waXBlIC1JL3Vzci9zcmMvbGludXgvaW5jbHVkZSAtSS91c3IveGVub21haS9pbmNs
+dWRlCi8vIExERkxBR1M6Ci8vICAgICAtbG5hdGl2ZSAtTC91c3IveGVub21haS9saWIKLy8g
+b2xkIGNvbXBpbGUgb3B0aW9ucyBmbGFnCgojZGVmaW5lIFVTRV9SRUFEX1dSSVRFCgojZGVm
+aW5lIFBFUklPRAkJCQkxMDAwMDAwMAkvLzEwbXMKLy8jZGVmaW5lIFBFUklPRAkJCQkxMDAw
+MDAJLy8xMDB1cwojZGVmaW5lIFFVRVVFX0lOUFVUX0xFTgkJMTAyNAojZGVmaW5lIENQVV9J
+RAkJCQkwCgpSVF9UQVNLIHRhc2tfbWFpbiwgdGFza19wcm9kdWNlciwgdGFza19jb25zdW1l
+cjsKUlRfUVVFVUUgcXVldWVfaW5wdXQ7CnZvaWQgKmNvb2tpZSA9IE5VTEw7CnN0YXRpYyB2
+b2xhdGlsZSBib29sIGZpbmlzaGVkID0gZmFsc2U7CgpzdHJ1Y3QgVElucHV0RGF0YSB7Cglp
+bnQgY291bnRlcjsKCWludCBkYXRhWzE2XTsKfTsKCnN0YXRpYyB2b2lkIHNpZ2hhbmRsZXIo
+aW50IGR1bW15KSB7IGZpbmlzaGVkID0gdHJ1ZTsgfQoKdm9pZCBwcm9kdWNlcih2b2lkICpj
+b29raWUpIHsKCVRJbnB1dERhdGEgc2VuZERhdGE7CgltZW1zZXQoJnNlbmREYXRhLCAwLCBz
+aXplb2YoVElucHV0RGF0YSkpOwoJd2hpbGUoIWZpbmlzaGVkKSB7CgkJcnRfdGFza193YWl0
+X3BlcmlvZChOVUxMKTsKI2lmZGVmIFVTRV9SRUFEX1dSSVRFCgkJaW50IGJ5dGVzU2VudCA9
+IHJ0X3F1ZXVlX3dyaXRlKCZxdWV1ZV9pbnB1dCwgJnNlbmREYXRhLCBzaXplb2YoVElucHV0
+RGF0YSksIFFfTk9STUFMKTsKCQlpZiAoYnl0ZXNTZW50IDw9IDApIHsKCQkJcHJpbnRmKCJy
+dF9xdWV1ZV93cml0ZShxdWV1ZV9pbnB1dCkgZmFpbGVkOiAlZFxuIiwgYnl0ZXNTZW50KTsK
+CQkJZmluaXNoZWQgPSB0cnVlOyBjb250aW51ZTsKCQl9CiNlbHNlCgkJdm9pZCAqbXNnID0g
+cnRfcXVldWVfYWxsb2MoJnF1ZXVlX2lucHV0LCBzaXplb2YoVElucHV0RGF0YSkpOwoJCWlm
+KG1zZyA9PSBOVUxMKSB7CgkJCXByaW50ZigicnRfcXVldWVfYWxsb2MocXVldWVfaW5vdXQs
+ICVkKSBmYWlsZWRcbiIsIHNpemVvZihUSW5wdXREYXRhKSk7CgkJCWZpbmlzaGVkID0gdHJ1
+ZTsgY29udGludWU7CgkJfQoJCW1lbWNweShtc2csICZzZW5kRGF0YSwgc2l6ZW9mKFRJbnB1
+dERhdGEpKTsKCQlpbnQgYnl0ZXNTZW50ID0gcnRfcXVldWVfc2VuZCgmcXVldWVfaW5wdXQs
+IG1zZywgc2l6ZW9mKFRJbnB1dERhdGEpLCBRX05PUk1BTCk7CgkJaWYgKGJ5dGVzU2VudCA8
+PSAwKSB7CgkJCXByaW50ZigicnRfcXVldWVfc2VuZChxdWV1ZV9pbnB1dCkgZmFpbGVkOiAl
+ZFxuIiwgYnl0ZXNTZW50KTsKCQkJcnRfcXVldWVfZnJlZSgmcXVldWVfaW5wdXQsIG1zZyk7
+CgkJCWZpbmlzaGVkID0gdHJ1ZTsgY29udGludWU7CgkJfQojZW5kaWYKCQlzZW5kRGF0YS5j
+b3VudGVyKys7Cgl9Cn0KCnZvaWQgY29uc3VtZXIodm9pZCAqY29va2llKSB7CglUSW5wdXRE
+YXRhIHJlY2VpdmVEYXRhOwoJcmVjZWl2ZURhdGEuY291bnRlciA9IC0xOwoJd2hpbGUoIWZp
+bmlzaGVkKSB7CgkJaW50IGNvdW50ZXIgPSByZWNlaXZlRGF0YS5jb3VudGVyOwojaWZkZWYg
+VVNFX1JFQURfV1JJVEUKCQlpbnQgYnl0ZXNSZWFkID0gcnRfcXVldWVfcmVhZCgmcXVldWVf
+aW5wdXQsICZyZWNlaXZlRGF0YSwgc2l6ZW9mKFRJbnB1dERhdGEpLCBUTV9JTkZJTklURSk7
+CgkJaWYgKGJ5dGVzUmVhZCA8PSAwKSB7CgkJCXByaW50ZigicnRfcXVldWVfcmVhZChxdWV1
+ZV9pbnB1dCkgZmFpbGVkOiAlZFxuIiwgYnl0ZXNSZWFkKTsKCQkJZmluaXNoZWQgPSB0cnVl
+OyBjb250aW51ZTsKCQl9IAojZWxzZQoJCXZvaWQgKm1zZzsKCQlpbnQgYnl0ZXNSZWFkID0g
+cnRfcXVldWVfcmVjZWl2ZSgmcXVldWVfaW5wdXQsICZtc2csIFRNX0lORklOSVRFKTsKCQlp
+ZiAoYnl0ZXNSZWFkID4gMCkgewoJCQltZW1jcHkoJnJlY2VpdmVEYXRhLCBtc2csIHNpemVv
+ZihUSW5wdXREYXRhKSk7CgkJCXJ0X3F1ZXVlX2ZyZWUoJnF1ZXVlX2lucHV0LCBtc2cpOwoJ
+CX0KCQlpZiAoYnl0ZXNSZWFkIDw9MCkgewoJCQlwcmludGYoInJ0X3F1ZXVlX3JlY2VpdmUo
+cXVldWVfaW5wdXQpIGZhaWxlZDogJWRcbiIsIGJ5dGVzUmVhZCk7CgkJCWZpbmlzaGVkID0g
+dHJ1ZTsgY29udGludWU7CgkJfQojZW5kaWYKCQllbHNlIGlmIChyZWNlaXZlRGF0YS5jb3Vu
+dGVyICE9IGNvdW50ZXIgKyAxKSB7CgkJCXByaW50ZigiY291bnRlciBlcnJvcjogJWRcdC0+
+XHQlZFxuIiwgY291bnRlciArIDEsIHJlY2VpdmVEYXRhLmNvdW50ZXIpOwoJCX0gZWxzZSB7
+CgkJCXByaW50ZigiJWRcbiIsIHJlY2VpdmVEYXRhLmNvdW50ZXIpOwoJCX0KCX0KfQoKaW50
+IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkKewoJaW50IHJlczsKCXJlcyA9IG1sb2Nr
+YWxsKE1DTF9DVVJSRU5UIHwgTUNMX0ZVVFVSRSk7CglpZiAocmVzIDwgMCkgewoJCXByaW50
+ZigibWxvY2thbGwgZmFpbGVkOiAlZFxuIiwgcmVzKTsKCQlnb3RvIGV4aXQ7Cgl9CgkKCS8v
+TUFJTgoJcmVzID0gcnRfdGFza19zaGFkb3coCgkJJnRhc2tfbWFpbiwJCQkJLy8gdGFzayBk
+ZXNjcmlwdG9yCgkJIm1haW4iLAkJCQkJLy8gdGFzayBuYW1lCgkJMTAsCQkJCQkJLy8gcHJp
+b3JpdHkKCQlUX0ZQVSB8IFRfQ1BVKENQVV9JRCkJLy8gbW9kZSBUX0ZQVSwgVF9DUFUoaSks
+IFRfU1VTUAoJKTsKCWlmIChyZXMgPCAwKSB7CgkJcHJpbnRmKCJydF90YXNrX3NoYWRvdyh0
+YXNrX21haW4pIGZhaWxlZDogJWRcbiIsIHJlcyk7CgkJZ290byBjbGVhbnVwX21haW47Cgl9
+CgoJLy8gSU5QVVRfUVVFVUUKCXJlcyA9IHJ0X3F1ZXVlX2NyZWF0ZSgmcXVldWVfaW5wdXQs
+ICJxdWV1ZV9pbnB1dCIsIHNpemVvZihUSW5wdXREYXRhKSAqIFFVRVVFX0lOUFVUX0xFTiwK
+CQlRVUVVRV9JTlBVVF9MRU4sIFFfRklGTyB8IFFfU0hBUkVEKTsKCWlmIChyZXMgPT0gLUVF
+WElTVCkgIHsKCQlyZXMgPSBydF9xdWV1ZV9iaW5kKCZxdWV1ZV9pbnB1dCwgInF1ZXVlX2lu
+cHV0IiwgMTAwMCk7CgkJLy9ydF9xdWV1ZV9jbGVhcigmcXVldWVfaW5wdXQpOwoJfQoJaWYg
+KHJlcyA8IDApIHsKCQlwcmludGYoInJ0X3F1ZXVlX2NyZWF0ZShxdWV1ZV9pbnB1dCkgZmFp
+bGVkOiAlZFxuIiwgcmVzKTsKCQlnb3RvIGNsZWFudXBfcXVldWVfaW5wdXQ7Cgl9CgoJLy8g
+Q09OU1VNRVIKCXJlcyA9IHJ0X3Rhc2tfY3JlYXRlKAoJCSZ0YXNrX2NvbnN1bWVyLAkJCQkJ
+Ly8gdGFzayBkZXNjcmlwdG9yCgkJImNvbnN1bWVyIiwJCQkJCQkvLyB0YXNrIG5hbWUKCQk1
+MTIqMTAyNCwJCQkJCQkvLyBzdGFjayBzaXplCgkJMjAsCQkJCQkJCQkvLyBwcmlvcml0eQoJ
+CVRfRlBVIHwgVF9DUFUoQ1BVX0lEKSB8IFRfSk9JTkFCTEUJLy8gbW9kZSBUX0ZQVSwgVF9D
+UFUoaSksIFRfU1VTUAoJCSk7CglpZiAocmVzIDwgMCkgewoJCXByaW50ZigicnRfdGFza19j
+cmVhdGUoY29uc3VtZXIpIGZhaWxlZDogJWRcbiIsIHJlcyk7CgkJZ290byBjbGVhbnVwX2Nv
+bnN1bWVyOwoJfQoKCS8vIFBST0RVQ0VSCglyZXMgPSBydF90YXNrX2NyZWF0ZSgKCQkmdGFz
+a19wcm9kdWNlciwJCQkJCS8vIHRhc2sgZGVzY3JpcHRvcgoJCSJwcm9kdWNlciIsCQkJCQkJ
+Ly8gdGFzayBuYW1lCgkJMjU2KjEwMjQsCQkJCQkJLy8gc3RhY2sgc2l6ZQoJCTMwLAkJCQkJ
+CQkJLy8gcHJpb3JpdHkKCQlUX0ZQVSB8IFRfQ1BVKENQVV9JRCkgfCBUX0pPSU5BQkxFCS8v
+IG1vZGUgVF9GUFUsIFRfQ1BVKGkpLCBUX1NVU1AKCQkpOwoJaWYgKHJlcyA8IDApIHsKCQlw
+cmludGYoInJ0X3Rhc2tfY3JlYXRlKHByb2R1Y2VyKSBmYWlsZWQ6ICVkXG4iLCByZXMpOwoJ
+CWdvdG8gY2xlYW51cF9wcm9kdWNlcjsKCX0KCglyZXMgPSBydF90YXNrX3N0YXJ0KCZ0YXNr
+X2NvbnN1bWVyLCBjb25zdW1lciwgY29va2llKTsKCglydF90YXNrX3NldF9wZXJpb2RpYygK
+CQkmdGFza19wcm9kdWNlciwKCQlydF90aW1lcl9yZWFkKCkgKyA1ICogcnRfdGltZXJfbnMy
+dGlja3MoUEVSSU9EKSwKCQlydF90aW1lcl9uczJ0aWNrcyhQRVJJT0QpCgkpOwoJcmVzID0g
+cnRfdGFza19zdGFydCgmdGFza19wcm9kdWNlciwgcHJvZHVjZXIsIGNvb2tpZSk7CgoJc2ln
+bmFsKFNJR0lOVCwgc2lnaGFuZGxlcik7CglzaWduYWwoU0lHVEVSTSwgc2lnaGFuZGxlcik7
+CglzaWduYWwoU0lHSFVQLCBzaWdoYW5kbGVyKTsKCXNpZ25hbChTSUdBTFJNLCBzaWdoYW5k
+bGVyKTsKCgl3aGlsZSghZmluaXNoZWQpCgkJcGF1c2UoKTsKCglwcmludGYoImNsZWFudXAo
+cHJvZHVjZXIpXG4iKTsKCXJ0X3Rhc2tfdW5ibG9jaygmdGFza19wcm9kdWNlcik7CglydF90
+YXNrX2pvaW4oJnRhc2tfcHJvZHVjZXIpOwpjbGVhbnVwX3Byb2R1Y2VyOgoJcHJpbnRmKCJj
+bGVhbnVwKGNvbnN1bWVyKVxuIik7CglydF90YXNrX3VuYmxvY2soJnRhc2tfY29uc3VtZXIp
+OwoJcnRfdGFza19qb2luKCZ0YXNrX2NvbnN1bWVyKTsKY2xlYW51cF9jb25zdW1lcjoKCXBy
+aW50ZigiY2xlYW51cChxdWV1ZV9pbnB1dClcbiIpOwoJcnRfcXVldWVfZGVsZXRlKCZxdWV1
+ZV9pbnB1dCk7CmNsZWFudXBfcXVldWVfaW5wdXQ6CmNsZWFudXBfbWFpbjoKZXhpdDoKCglp
+ZiAocmVzID49IDApCgkJcmV0dXJuIEVYSVRfU1VDQ0VTUzsKCWVsc2UKCQlyZXR1cm4gcmVz
+Owp9Ck==
 
-
-Echte DSL-Flatrate dauerhaft f=FCr 0,- Euro*. Nur noch kurze Zeit!
-"Feel free" mit GMX DSL: http://www.gmx.net/de/go/dsl
+---------=_4A4754D.3E6110D3--
 
