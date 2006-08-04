@@ -1,13 +1,13 @@
-Message-ID: <44D2E86C.4080608@domain.hid>
-Date: Fri, 04 Aug 2006 08:25:48 +0200
+Message-ID: <44D2E878.2030509@domain.hid>
+Date: Fri, 04 Aug 2006 08:26:00 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Interrupt Problem.
-References: <20060803231039.7184.qmail@domain.hid>
-In-Reply-To: <20060803231039.7184.qmail@domain.hid>
+Subject: Re: [Xenomai-help] testing interrupt latency
+References: <1154615459.9835.62.camel@domain.hid>
+In-Reply-To: <1154615459.9835.62.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig781BEA860B21DDE4891BD29A"
+	boundary="------------enig306E8306A404272662B2A556"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,40 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: shailesh joshi <zoshi_s@domain.hid>
+To: Bart Jonkers <jonkersbart@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig781BEA860B21DDE4891BD29A
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig306E8306A404272662B2A556
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-shailesh joshi wrote:
-> The board is custom made, the PCI card is of the make ADLink but has no=
- Linux support. However, the same card worked for RTLinux, however, we ha=
-d to drop the Idea for latency reasons.=20
->   =20
->   i am guessing i am doing something wrong while initialising the handl=
-er. Like i said, the Card is generatimg the interript signal but linux is=
- not acknowledging it, aka, the code does not enter the handler....I am u=
-sing a sleep function in the user application but i guess that does not a=
-ffect the RT code oder?? I am a beginner so I might be sounding very stup=
-id. I request you to bare with me for the time being till i sharpen up.
->   =20
->   Regards,
->   Shailesh.
->   =20
->   P.S: I am initialising the handler with rtdm_irq_request. Have also t=
-ried rthal_irq_request. Any suggestions there??
+Bart Jonkers wrote:
+> Hey,
+>=20
+> I have written a small module to test the interrupt response time of
+> Xenomai to compare it with the time of Linux.
+>=20
+> I generate an interrupt on a GPIO pin and toggles another GPIO pin in
+> the interrupt service routine. (code below)
+> The time between the generated interrupt and the value change on the
+> GPIO pin is taken as interrupt response time.
 
-rtdm_irq_request is the way to go, followed by rtdm_irq_enable. See also
-the existing examples like Hannes code or irqbench. If still unsure,
-post code so that we can have a look.
+Can we say that playing with such GPIO pins is a good generic way to
+measure IRQ latencies on ARM platforms? If so, do you see a chance to
+enhance the existing irqbench framework with this mechanism?
 
 Jan
 
 
---------------enig781BEA860B21DDE4891BD29A
+--------------enig306E8306A404272662B2A556
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -60,10 +53,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFE0uhxniDOoMHTA+kRAqSLAJ9WVYy/WLDsOL7a0qfYKGuAZ6YulACfZlx7
-/uOAjB2FUlc6C/AAMNKe6yY=
-=ihZ/
+iD8DBQFE0uh4niDOoMHTA+kRAnVwAJ9ledbaaQ35BjxrZQJ2H7fFxoPS/QCfRRXp
++fgf0Ok8dyvzqfoiEdOIXpE=
+=iVjX
 -----END PGP SIGNATURE-----
 
---------------enig781BEA860B21DDE4891BD29A--
+--------------enig306E8306A404272662B2A556--
 
