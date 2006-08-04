@@ -1,16 +1,28 @@
-Message-ID: <44D24257.10605@domain.hid>
-Date: Thu, 03 Aug 2006 20:37:11 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Sender: dv@domain.hid
+Message-ID: <44D2E4DC.63409EBA@vollmann.ch>
+Date: Fri, 04 Aug 2006 08:10:36 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
-	timers
-References: <44D19F3D.9060700@domain.hid>
-	<17618.12731.97405.118098@domain.hid>
-In-Reply-To: <17618.12731.97405.118098@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig356956FDA0A0BA00FBADA025"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Xenomai on PXA
+References: <200607071703.10700.vagninu@domain.hid>
+	<17582.50372.830923.414981@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<17595.47131.142881.132531@domain.hid>
+	<1153153788.11603.2.camel@domain.hid>
+	<17595.49478.157044.654500@domain.hid>
+	<1154334859.9569.12.camel@domain.hid>
+	<44CDCB61.2DEDCBFF@vollmann.ch>
+	<1154342029.9569.27.camel@domain.hid>
+	<44CDE4C2.77465253@domain.hid>
+	<17616.42011.663899.554796@domain.hid>
+	<1154525585.9559.22.camel@domain.hid>
+	<17616.59841.283196.201008@domain.hid>
+	<1154596354.9835.28.camel@domain.hid>
+	<17617.63387.138316.343123@domain.hid>
+	<1154617014.5010.29.camel@domain.hid>
+	<17618.12042.631648.702921@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,108 +33,46 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig356956FDA0A0BA00FBADA025
-Content-Type: multipart/mixed; boundary="------------030101070305060408020100"
-
-This is a multi-part message in MIME format.
---------------030101070305060408020100
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Cc: xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > A simple patch, just like suggested by Gilles, to avoid looping over=
+> Philippe Gerum wrote:
+>  > Fixing the I-pipe is the way to go, definitely. If I understand this
+>  > correctly, the best way to handle the demux case is to implement an
+>  > I-pipe variant of the demultiplexing code currently available in
+>  > pxa_gpio_demux_handler(), which would be called from __ipipe_grab_irq()
+>  > when processing the multiplexed interrupt channel.
+>  >
+>  > The I-pipe-specific demux code would then log the decoded IRQ by a call
+>  > to __ipipe_handle_irq() instead of running the root handler directly
+>  > (i.e. desc_handle_irq), which would in turn preserve the ability to
+>  > "wire" GPIO interrupts and also handle IRQ stickiness issues.
+This was also my first idea.  But after a bit of musing on that
+idea, I'm not really sure that this is the best way to go.
+We're talking here about more than 100 bits that have to be tested
+one after the other (on PXA270, it's 116, though the actual code
+checks 126 bits), and even on a fast CPU this takes some time.
 
->  > periodic xntimer handlers in case of overruns.
->  >=20
->  > It saves the current TSC on loop entry and uses this value later whe=
-n
->  > forwarding the timer. Is is the overhead of re-reading the TSC on al=
-l
->  > archs negligible and should we rather go that way?
->=20
->  >(...)
->  > -				xntimerh_date(&timer->aplink) +=3D
->  > -				    nkpod->htimer.interval;
->  > +				while ((xntimerh_date(&timer->aplink) +=3D
->  > +				        nkpod->htimer.interval) < now);
->=20
-> I think you are patching the wrong addition, the one you are interested=
+So I've thought about a way to register a GPIO-IRQ into I-pipe
+that gets checked directly under I-pipe, while all other GPIOs
+are only checked and handled in the domain that handles the
+original multiplexing IRQ.
+But I have to admit that I have no idea how to implement that...
 
-> in is most probably the one at the bottom of xntimer_do_tick_aperiodic.=
+[snip]
+> +++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/irq.c   2006-08-03 19:04:52.000000000 +0200
 
->=20
+> +#ifdef CONFIG_IPIPE
+> +void __ipipe_mach_demux_irq(unsigned irq, struct pt_regs *regs)
 
-Ouch, indeed. Guess I should start reading what I patch. Here comes a
-second try.
+> +                                       __ipipe_handle_irq(irq, regs);
+Just to check:  this only marks the interrupt, but not actually
+handles it, doesn't it?
 
-I'm still in favour of saving the TSC instead of re-reading it.
-Otherwise we would have to pave the code with #ifdefs for the case
-xnarch_get_cpu_tsc() is slow for a specific setup. Not that nice, is it?
+ Detlef
 
-Jan
-
---------------030101070305060408020100
-Content-Type: text/x-patch;
- name="xntimer-handle-periodic-overrun-v2.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
-	filename="xntimer-handle-periodic-overrun-v2.patch"
-
----
- ksrc/nucleus/timer.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-Index: xenomai/ksrc/nucleus/timer.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/timer.c
-+++ xenomai/ksrc/nucleus/timer.c
-@@ -200,12 +200,13 @@ static void xntimer_do_tick_aperiodic(vo
- 	xntimerq_t *timerq =3D &sched->timerqueue;
- 	xntimerh_t *holder;
- 	xntimer_t *timer;
-+	xnticks_t now;
-=20
- 	while ((holder =3D xntimerq_head(timerq)) !=3D NULL) {
- 		timer =3D aplink2timer(holder);
-=20
--		if (xntimerh_date(&timer->aplink) - nkschedlat >
--		    xnarch_get_cpu_tsc())
-+		now =3D xnarch_get_cpu_tsc();
-+		if (xntimerh_date(&timer->aplink) - nkschedlat > now)
- 			/* No need to continue in aperiodic mode since timeout
- 			   dates are ordered by increasing values. */
- 			break;
-@@ -247,7 +248,7 @@ static void xntimer_do_tick_aperiodic(vo
- 			   translates into precious microsecs on low-end hw. */
- 			__setbits(sched->status, XNHTICK);
-=20
--		xntimerh_date(&timer->aplink) +=3D timer->interval;
-+		while ((xntimerh_date(&timer->aplink) +=3D timer->interval) < now);
- 		xntimer_enqueue_aperiodic(timer);
- 	}
-=20
-
---------------030101070305060408020100--
-
---------------enig356956FDA0A0BA00FBADA025
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFE0kJbniDOoMHTA+kRAih6AJ4lN9wcpIGMlr25O2ZUTI7LA5a1agCeOefG
-H6H0OiL8Os60Z15cUC3ENo4=
-=+pNo
------END PGP SIGNATURE-----
-
---------------enig356956FDA0A0BA00FBADA025--
+-- 
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
