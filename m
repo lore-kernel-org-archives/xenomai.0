@@ -1,13 +1,30 @@
-Message-ID: <44D3097A.6040407@domain.hid>
-Date: Fri, 04 Aug 2006 10:46:50 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Future of Xenomai's RTDM driver repository
-References: <44D07C4E.4040200@domain.hid> <44D1ACB8.3090906@domain.hid>
-	<1154620430.5010.79.camel@domain.hid>
-In-Reply-To: <1154620430.5010.79.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] Xenomai on PXA
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44D2E4DC.63409EBA@vollmann.ch>
+References: <200607071703.10700.vagninu@domain.hid>
+	<17582.50372.830923.414981@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<17595.47131.142881.132531@domain.hid>
+	<1153153788.11603.2.camel@domain.hid>
+	<17595.49478.157044.654500@domain.hid>
+	<1154334859.9569.12.camel@domain.hid>
+	<44CDCB61.2DEDCBFF@vollmann.ch>
+	<1154342029.9569.27.camel@domain.hid>
+	<44CDE4C2.77465253@domain.hid>
+	<17616.42011.663899.554796@domain.hid>
+	<1154525585.9559.22.camel@domain.hid>
+	<17616.59841.283196.201008@domain.hid>
+	<1154596354.9835.28.camel@domain.hid>
+	<17617.63387.138316.343123@domain.hid>
+	<1154617014.5010.29.camel@domain.hid>
+	<17618.12042.631648.702921@domain.hid>
+	<44D2E4DC.63409EBA@vollmann.ch>
+Content-Type: text/plain
+Date: Fri, 04 Aug 2006 11:04:01 +0200
+Message-Id: <1154682242.4983.5.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,73 +34,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Detlef Vollmann <dv@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Hi Wolfgang,
+On Fri, 2006-08-04 at 08:10 +0200, Detlef Vollmann wrote:
+> Gilles Chanteperdrix wrote:
+> > Philippe Gerum wrote:
+> >  > Fixing the I-pipe is the way to go, definitely. If I understand this
+> >  > correctly, the best way to handle the demux case is to implement an
+> >  > I-pipe variant of the demultiplexing code currently available in
+> >  > pxa_gpio_demux_handler(), which would be called from __ipipe_grab_irq()
+> >  > when processing the multiplexed interrupt channel.
+> >  >
+> >  > The I-pipe-specific demux code would then log the decoded IRQ by a call
+> >  > to __ipipe_handle_irq() instead of running the root handler directly
+> >  > (i.e. desc_handle_irq), which would in turn preserve the ability to
+> >  > "wire" GPIO interrupts and also handle IRQ stickiness issues.
+> This was also my first idea.  But after a bit of musing on that
+> idea, I'm not really sure that this is the best way to go.
+> We're talking here about more than 100 bits that have to be tested
+> one after the other (on PXA270, it's 116, though the actual code
+> checks 126 bits), and even on a fast CPU this takes some time.
 > 
-> First of all, thx for the CAN stack. Great job.
+> So I've thought about a way to register a GPIO-IRQ into I-pipe
+> that gets checked directly under I-pipe, while all other GPIOs
+> are only checked and handled in the domain that handles the
+> original multiplexing IRQ.
+> But I have to admit that I have no idea how to implement that...
 > 
-> On Thu, 2006-08-03 at 09:58 +0200, Wolfgang Grandegger wrote:
->> Jan Kiszka wrote:
+
+Provided that every IRQ notification goes through __ipipe_grab_irq,
+including the GPIO_2_x one, then you just need to check for irq ==
+GPIO_2_x in the latter routine and proceed to the demultiplexing only in
+this case. No?
+
+> [snip]
+> > +++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/irq.c   2006-08-03 19:04:52.000000000 +0200
 > 
-> <snip>
+> > +#ifdef CONFIG_IPIPE
+> > +void __ipipe_mach_demux_irq(unsigned irq, struct pt_regs *regs)
 > 
->>> Now I would suggest to look at RTCAN (or what it will be called in the
->>> end) and to discuss on this first concrete example how we can proceed
->>> towards the sketched goal.
->>>
->>> Looking forward to your feedback!
->> As you have said, maintaining a RTDM driver within the Xenomai 
->> repository clearly has some advantages but it also puts more burden onto 
->> the Xenomai maintainers and some developers might even prefer to keep 
->> thing separated. Therefore I suggest a simple RTDM add-on framework to 
->> support external RTDM drivers as well. They could be announced and 
->> listed on the Xenomai home page and then it would alsl be visible that 
->> there is a FireWire stack for Xenomai.
->>
->> What I had first was a add-rtdm-driver.sh, a modified version of 
->> Philippe's prepare-kernel.sh script, to add the RTDM driver to the 
->> kernel tree. Similarly, as script could be used to add "loosely" the 
->> driver to Xenomai.
->>
->> What do you think?
+> > +                                       __ipipe_handle_irq(irq, regs);
+> Just to check:  this only marks the interrupt, but not actually
+> handles it, doesn't it?
 > 
-> I can't speak for Jan wrt providing a RTDM add-on framework, but since
-> Xenomai is currently the reference platform for RTDM (at least, the
-> real-time infrastructure over which most of this work is experimented,
-> debugged and stabilized), I would rather seek integration of RTDM-based
-> drivers into the Xenomai tree, instead of a complete separation.
-
-I understood that Jan also prefers driver integration into Xenomai. Just 
-for some big external package like RTnet, an add-on would be nice to 
-benefit from the Xenomai infrastructure (static linking, etc.).
-
-> The reason being that it makes sense (to a Xenomai maintainer, that is)
-> to reduce the odds of discrepancies between the core real-time
-> framework, the driver infrastructure and the client drivers, at least
-> while the first two are undergoing a rapid evolution. The same "in-tree
-> vs out-of-tree drivers" maintenance dilema which is known from the
-> kernel folks will also apply to us, if RTDM, and/or RTDM over Xenomai
-> are as successful as we wish, i.e. creating opportunities to provide
-> lots of RT drivers sharing a common infrastructure.
- >
-> Said differently, the day a significant number of people will start
-> relying on a rich collection of RTDM-based drivers over Xenomai, we
-> _will_ have maintenance issues to deal with, anyway, starting with
-> answering a lot of questions on xenomai-whatever*. In such a case, I'd
-> rather reduce the odds of integration issues between Xenomai-RTDM and/or
-> RTDM/drivers. This said, I'm not saying that Xenomai should be the only
-> RTDM-based driver repository in the long run; but I'm arguing that
-> Xenomai could be used as a centripetal force to help developing and
-> stabilizing the RT driver ecosystem around RTDM.
-
-OK, I can follow your arguments. It's fine for me.
-
-Thanks.
-
-Wolfgang.
+>  Detlef
+> 
+-- 
+Philippe.
 
 
 
