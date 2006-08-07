@@ -1,14 +1,10 @@
-Subject: Re: [Xenomai-help] Re: Timer problems?
+Subject: Re: [Xenomai-help] mlockall?
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44F16426.5010207@domain.hid>
-References: <1903864415@domain.hid> <1154964748.4322.31.camel@domain.hid>
-	<44EF17E8.5040606@domain.hid>
-	<slrneeuefr.v1d.Bernhard.Walle@domain.hid>
-	<44F0BBB7.7030703@domain.hid> <1156630353.4730.70.camel@domain.hid>
-	<44F16426.5010207@domain.hid>
+In-Reply-To: <40982.155.98.4.150.1154987920.squirrel@domain.hid>
+References: <40982.155.98.4.150.1154987920.squirrel@domain.hid>
 Content-Type: text/plain
-Date: Sun, 27 Aug 2006 11:34:44 +0200
-Message-Id: <1156671284.4325.4.camel@domain.hid>
+Date: Tue, 08 Aug 2006 00:11:00 +0200
+Message-Id: <1154988660.21290.91.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -21,47 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Kreyer <steve.kreyer@domain.hid>
-Cc: Bernhard Walle <bernhard@domain.hid>, xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: Brandt Erickson <brandt@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sun, 2006-08-27 at 11:21 +0200, Steve Kreyer wrote:
-> Hi Philippe,
+On Mon, 2006-08-07 at 15:58 -0600, Brandt Erickson wrote:
+> I had a program that ran fine under xenomai-2.1.2, but I just upgraded to
+> xenomai-2.2.0 and when I try to run the program, I get:
 > 
-> disabling PM in Kernel was a good tip!
+>   Xenomai: process memory not locked (missing mlockall?)
 > 
-> Now I can call standard linux library functions without resulting in a 
-> system lock up :)
-> But the ETIMEDOUT error when calling e.g. rt_task_wait_period or 
-> rt_task_sleep still persists.
-> The latency test gives me the following output:
+> I saw this article (http://www.captain.at/xenomai-2.2.php) which says to
+> just add:
 > 
-> -------------------------------------------------------------------------------------------------------------------
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> latency: failed to set periodic, code -110
-> warming up...
-> ---|------------|------------|------------|--------|-------------------------
-> RTS| -208983.489|       0.000|  208983.489|       0|    00:00:26/00:00:26
-> -------------------------------------------------------------------------------------------------------------------
+>   mlockall(MCL_CURRENT | MCL_FUTURE);
 > 
-> Also the attached application produces the below output:
-> -------------------------------------------------------------------------------------------------------------------
-> working!
-> working!
-> Warning: Cannot wait for task period! errcode=-110 110 timeout=1
-> working!
-> Warning: Cannot wait for task period! errcode=-110 110 timeout=1
-> -------------------------------------------------------------------------------------------------------------------
-> 
-> The output string "working!" and the warning messages printed at once 
-> and not as expected every second (see attachment)...
-> The TROUBLESHOOTING file has no answer to this behaviour...
-> 
-> Do you have any hints on this?
-> 
+> I tried just putting this in main, but I get compiler errors.  Is there a
+> particular file I need to include to resolve this error or am I going
+> about solving this wrong?  Thanks.
 
-Try disabling ACPI completely, just to see if it is somehow involved.
+#include <sys/mman.h>
 
+should do the trick.
+
+> -Brandt
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
 Philippe.
 
