@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] PPC posted results (testsuite latency)
-Date: Thu, 10 Aug 2006 19:03:42 +0200
-Message-ID: <1299EF3181B10F479D85C3280132852422DAF1@domain.hid>
-From: "GUARDIOLA-FALCO Sebastien 204282" <Sebastien.GUARDIOLA-FALCO@domain.hid>
+Subject: Re: [Xenomai-help] Problems with rt_task_wait_period
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44D74405.7000900@domain.hid>
+References: <1903678222@domain.hid>  <44D74405.7000900@domain.hid>
+Content-Type: text/plain
+Date: Mon, 07 Aug 2006 16:13:28 +0200
+Message-Id: <1154960008.4322.8.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,68 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+On Mon, 2006-08-07 at 15:45 +0200, Jan Kiszka wrote:
+> Steve Kreyer wrote:
+> > Hi,
+> > 
+> > Iam new to xenomai. 
+> > For warming up I try to run this little test program:
+> > 
+> > -----------------------------------------------------------------------
+> > #include <native/task.h>
+> > #include <stdio.h>
+> > #include <sys/mman.h>
+> > 
+> > RT_TASK task1;
+> > 
+> > void rt_task1(void* user_data){
+> >     int err = 0;
+> >     printf("%d\n", rt_task_set_periodic(NULL, TM_NOW, 100));
+> 
+> You are running in one-shot mode, thus all time units are in
+> *nanoseconds*. 100 ns cycles tend to pass quite quickly, thus the setup
+> actually fails (but it doesn't report this - a corner case for
+> considering this a bug).
 
-Here are the results for a PowerPC MVME2700 267Mhz (32Mo RAM + 1024kb =
-L2-cache).
-Can someone cross-check them?
+The setup does not really fail, but the period is so short that the tick
+occurs before the task has a chance to wait for the first release point
+in the timeline, so rt_task_wait_period() notices that no timer is
+outstanding, but incorrectly concludes that no timer was ever armed.
 
-The default value for the kernel parameter "scheduling latency" led me =
-to negative results, so I changed it to 4500ns. Can I improve those =
-results with another walue, or with other parameters?
-For the klatency test, I get more or less the half time I get in =
-latency.
+> 
+> >     err = rt_task_wait_period(NULL);
+> >     if(err){
+> >         fprintf(stderr, "Cannot wait periodic: %d, %d\n", err, EWOULDBLOCK);
+> > 
+> >     }
+> > }
+> > 
+> > int main(){
+> >     char* task1_data = NULL;
+> >     mlockall(MCL_CURRENT|MCL_FUTURE);
+> >     rt_timer_set_mode(TM_ONESHOT);
+> >     rt_task_spawn(&task1, "task1", 0, 99, 0, rt_task1, &task1_data);
+> >     sleep(10);
+> >     rt_task_delete(&task1);
+> >     return 0;
+> > }
+> > -----------------------------------------------------------------------
+> > 
+> > But rt_task_wait_period gives me always the Error EWOULDBLOCK, which means that I did not set the task periodic
+> > but which in fact I did... The call to rt_task_set_periodic is succesful.
+> > Can anyone help me figure out why? If you need additional infos please let me know...
+> > 
+> > Thanks in advance!
+> > 
+> > Steve
+> > 
+> 
+> Jan
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-=3D=3D Sampling period: 100 us
- =3D=3D All results in microseconds
-RTT|  00:00:01
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat =
-worst
-RTD|       1.859|       3.239|       6.179|       0|       1.859|       =
-6.179
-RTD|       2.159|       3.239|      13.559|       0|       1.859|      =
-13.559
-RTD|       1.979|       3.239|       8.879|       0|       1.859|      =
-13.559
-RTD|       2.279|       3.239|      10.259|       0|       1.859|      =
-13.559
-RTD|       1.979|       3.239|      10.319|       0|       1.859|      =
-13.559
-RTD|       2.219|       3.239|       8.939|       0|       1.859|      =
-13.559
-RTD|       2.099|       3.239|      12.419|       0|       1.859|      =
-13.559
-RTD|       2.339|       3.239|       9.479|       0|       1.859|      =
-13.559
-RTD|       2.219|       3.239|      11.759|       0|       1.859|      =
-13.559
-RTD|       1.979|       3.239|       9.479|       0|       1.859|      =
-13.559
-RTD|       2.099|       3.239|      10.439|       0|       1.859|      =
-13.559
-RTD|       1.919|       3.239|       9.899|       0|       1.859|      =
-13.559
-RTD|       2.219|       3.239|       8.999|       0|       1.859|      =
-13.559
-RTD|       2.039|       3.239|       9.779|       0|       1.859|      =
-13.559
-RTD|       1.859|       3.239|       9.659|       0|       1.859|      =
-13.559
-RTD|       1.979|       3.239|      10.919|       0|       1.859|      =
-13.559
-RTD|       2.339|       3.239|       9.779|       0|       1.859|      =
-13.559
-RTD|       2.099|       3.239|      13.499|       0|       1.859|      =
-13.559
-RTD|       1.979|       3.239|       8.999|       0|       1.859|      =
-13.559
-RTD|       2.219|       3.239|      10.919|       0|       1.859|      =
-13.559
-RTD|       1.919|       3.239|      10.259|       0|       1.859|      =
-13.559
-
-S=E9bastien Guardiola Falco.
 
 
