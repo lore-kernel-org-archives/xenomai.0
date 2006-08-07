@@ -1,17 +1,13 @@
-Message-ID: <44D74228.20103@domain.hid>
-Date: Mon, 07 Aug 2006 15:37:44 +0200
+Message-ID: <44D74405.7000900@domain.hid>
+Date: Mon, 07 Aug 2006 15:45:41 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_pipe and rt_queue problems
-References: <200608021808.18076@domain.hid> <44D0F72E.3020406@domain.hid>	
-	<200608031628.31584@domain.hid> <44D26C1C.5040506@domain.hid>	
-	<200608041345.6449@domain.hid> <44D4CC6C.1020709@domain.hid>	
-	<1154799634.4330.23.camel@domain.hid>
-	<b647ffbd0608070603q61008d0emc3a6555b62a40cc2@domain.hid>
-In-Reply-To: <b647ffbd0608070603q61008d0emc3a6555b62a40cc2@domain.hid>
+Subject: Re: [Xenomai-help] Problems with rt_task_wait_period
+References: <1903678222@domain.hid>
+In-Reply-To: <1903678222@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig9605105BE5FBCB9346FAA9A9"
+	boundary="------------enig26A062F951E28DE3906B6355"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -22,33 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai@xenomai.org
+To: Steve Kreyer <steve.kreyer@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9605105BE5FBCB9346FAA9A9
+--------------enig26A062F951E28DE3906B6355
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
-> Hello,
+Steve Kreyer wrote:
+> Hi,
 >=20
-> does this patch make a difference for you?
+> Iam new to xenomai.=20
+> For warming up I try to run this little test program:
 >=20
-> I haven't followed the whole conversation closely so it's just based on=
+> -----------------------------------------------------------------------=
 
-> Jan's trace.
+> #include <native/task.h>
+> #include <stdio.h>
+> #include <sys/mman.h>
 >=20
-> Just a bit blind copy_and_past from __rt_queue_receive() I guess.
+> RT_TASK task1;
 >=20
+> void rt_task1(void* user_data){
+>     int err =3D 0;
+>     printf("%d\n", rt_task_set_periodic(NULL, TM_NOW, 100));
 
-I guess someone should have posted a note that the issue was fixed (see
-SVN). Now it's double-fixed. :)
+You are running in one-shot mode, thus all time units are in
+*nanoseconds*. 100 ns cycles tend to pass quite quickly, thus the setup
+actually fails (but it doesn't report this - a corner case for
+considering this a bug).
+
+>     err =3D rt_task_wait_period(NULL);
+>     if(err){
+>         fprintf(stderr, "Cannot wait periodic: %d, %d\n", err, EWOULDBL=
+OCK);
+>=20
+>     }
+> }
+>=20
+> int main(){
+>     char* task1_data =3D NULL;
+>     mlockall(MCL_CURRENT|MCL_FUTURE);
+>     rt_timer_set_mode(TM_ONESHOT);
+>     rt_task_spawn(&task1, "task1", 0, 99, 0, rt_task1, &task1_data);
+>     sleep(10);
+>     rt_task_delete(&task1);
+>     return 0;
+> }
+> -----------------------------------------------------------------------=
+
+>=20
+> But rt_task_wait_period gives me always the Error EWOULDBLOCK, which me=
+ans that I did not set the task periodic
+> but which in fact I did... The call to rt_task_set_periodic is succesfu=
+l.
+> Can anyone help me figure out why? If you need additional infos please =
+let me know...
+>=20
+> Thanks in advance!
+>=20
+> Steve
+>=20
 
 Jan
 
 
---------------enig9605105BE5FBCB9346FAA9A9
+--------------enig26A062F951E28DE3906B6355
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -57,10 +93,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFE10IoniDOoMHTA+kRAlo6AJ9ubK0oaV0gGnGsb6QewVh81pVpQQCeJCQi
-0OjNq6Gv4OXUT7sOVjd4Nhg=
-=YgSf
+iD8DBQFE10QFniDOoMHTA+kRApiyAJ9Jq8R9Vwhu1HIaeqBErM+E3x/gBgCffBTM
+1wVrAA/WqeEHLTVJXtsL5OQ=
+=1XPv
 -----END PGP SIGNATURE-----
 
---------------enig9605105BE5FBCB9346FAA9A9--
+--------------enig26A062F951E28DE3906B6355--
 
