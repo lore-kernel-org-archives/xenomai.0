@@ -1,21 +1,10 @@
-Message-ID: <44E46ABC.8040508@domain.hid>
-Date: Thu, 17 Aug 2006 15:10:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Mon, 07 Aug 2006 16:34:51 +0200
+Message-Id: <1903846164@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] problem with installation
-References: <20060816190510.20935.qmail@domain.hid>	
-	<44E36F6A.7060004@domain.hid>
-	<200608162137.09103.nicola17@domain.hid>	
-	<44E37823.8080407@domain.hid>	
-	<33646.155.98.4.150.1155767832.squirrel@domain.hid>	
-	<1155803145.4356.33.camel@domain.hid> <44E42BE3.1060709@domain.hid>	
-	<1155814285.4366.22.camel@domain.hid> <44E45645.10106@domain.hid>
-	<1155817937.4366.29.camel@domain.hid>
-In-Reply-To: <1155817937.4366.29.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9371664CFDAF77F2BBA25862"
-Sender: jan.kiszka@domain.hid
+From: Steve Kreyer <steve.kreyer@domain.hid>
+Subject: Re: [Xenomai-help] Problems with rt_task_wait_period
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,146 +15,104 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9371664CFDAF77F2BBA25862
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Philippe Gerum wrote:
-> On Thu, 2006-08-17 at 13:43 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Thu, 2006-08-17 at 10:42 +0200, Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>> On Wed, 2006-08-16 at 16:37 -0600, Brandt Erickson wrote:
->>>>>> So, perhaps I spoke too soon.  The system does boot, but I just lo=
-oked in
->>>>>> the syslog and found this:
->>>>>>
->>>>>> 16 16:08:49 dewback kernel: [4294670.201000] I-pipe: Domain Xenoma=
-i
->>>>>> registered.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.201000] Xenomai: hal/x86 =
-started.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.231000] Xenomai: real-tim=
-e
->>>>>> nucleus v2.2 (Engines Of Creation) loaded.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting=
- native
->>>>>> API services.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting=
- POSIX
->>>>>> services.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting=
- RTDM
->>>>>> services.
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: incompat=
-ible
->>>>>> timer mode (aperiodic found, need periodic).
->>>>>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: VxWorks =
-skin
->>>>>> init failed, code -16.
->>>>>>
->>>>>> my .config is attached.  As far as I can tell, my timer is periodi=
-c and
->>>>>> not aperiodic.  My kernel is 2.6.16 patched with xenomai-2.2.0 fro=
-m the
->>>>>> download page and not the trunk.
->>>>> You need to build the native and POSIX skins as modules, so that th=
-ey do
->>>>> not override the timing mode (they both request aperiodic mode to t=
-he
->>>>> nucleus, which conflicts with the VxWorks skin initializing after t=
-hem).
->>>>>
->>>> Mmh, not on my test setup: once you set a reasonable period, all ski=
-ns
->>>> boot into periodic mode.
->>> That is the point: all skins are going to use the periodic mode, but =
-not
->>> all applications are able to handle this. E.g. the latency test will
->>> force the timing to oneshot using rt_timer_setmode(), but the cyclic
->>> test won't, so you end up with funky results such as multi-ms latenci=
-es
->>> with the latter, albeit the real figure - would the timing mode be
->>> aperiodic as assumed - should be a handful of us. In the same vein,
->>> running the latency test first, then VxWorks's satch demo on your con=
-fig
->>> would break the box, since the latter does not force the timing mode
->>> back to periodic (actually, there is even no interface to do so, exce=
-pt
->>> linking the VxWorks app against the native lib to get rt_timer_setmod=
-e).
->>>
->>> Having all skins as modules (RTDM included) is the way to go whenever=
+thanks for your answers that sounds plausible to me :)
+But another problem arises:
+If I inrease the period from 100 to 1000000 ns in the posted program, I ge=
+t a system crash :)
 
->>> using oneshot and periodic modes alternately depending on the loaded
->>> application is required. This way, the timer is shut off upon skin
->>> unloading, which prevents any conflict and makes sure that the next s=
-kin
->>> will obtain the required mode. I'm not saying that such approach is
->>> intuitive though, but only that it voids a fair number of potential
->>> issues.
->>>
->>> Of course, if only VxWorks is needed, then one just needs to disable =
-the
->>> other skins, which would also solve the issue the eager way.
->>>
->> That all sounds a bit fragile configuration-wise, also given that nati=
-ve
->> and posix skins are on by default and that you can enable vxworks
->> without having to switch on periodic timer support (BTW, are the other=
+Regards,
 
->> legacy RTOS skins with this dependency?).
->>
+Steve
+
+-----Urspr=FCngliche Nachricht-----
+Von: rpm@xenomai.org
+Gesendet: 07.08.06 16:13:39
+An: Jan Kiszka <jan.kiszka@domain.hid>
+CC: xenomai@xenomai.org
+Betreff: Re: [Xenomai-help] Problems with rt=5Ftask=5Fwait=5Fperiod
+
+
+On Mon, 2006-08-07 at 15:45 +0200, Jan Kiszka wrote:
+> Steve Kreyer wrote:
+> > Hi,
+> >=20
+> > Iam new to xenomai.=20
+> > For warming up I try to run this little test program:
+> >=20
+> > ----------------------------------------------------------------------=
+-
+> > #include <native/task.h>
+> > #include <stdio.h>
+> > #include <sys/mman.h>
+> >=20
+> > RT=5FTASK task1;
+> >=20
+> > void rt=5Ftask1(void* user=5Fdata){
+> >     int err =3D 0;
+> >     printf("%d\n", rt=5Ftask=5Fset=5Fperiodic(NULL, TM=5FNOW, 100));
 >=20
-> Yes. Most of traditional RTOSes deal with periodic ticks.
->=20
->> I would suggest to enforce the later and maybe enhance the timer
->> initialisation interface in a way that a user/skin can request to lock=
+> You are running in one-shot mode, thus all time units are in
+> *nanoseconds*. 100 ns cycles tend to pass quite quickly, thus the setup
+> actually fails (but it doesn't report this - a corner case for
+> considering this a bug).
 
->> the mode if it only supports one.
->=20
-> This is a LART, not a fix.
-
-=2E.. which need not mean it's a bad idea. Basically, it is one property
-of the Kconfig system. Granted, a modification of xnpod_start_timer may
-be skipped if we go the way below.
+The setup does not really fail, but the period is so short that the tick
+occurs before the task has a chance to wait for the first release point
+in the timeline, so rt=5Ftask=5Fwait=5Fperiod() notices that no timer is
+outstanding, but incorrectly concludes that no timer was ever armed.
 
 >=20
->>  Than the latency test should fail to
->> start, thus indicating a wrong usage. Or we "hack" periodic support ov=
-er
->> aperiodic mode, but that's a different topic.
->>
+> >     err =3D rt=5Ftask=5Fwait=5Fperiod(NULL);
+> >     if(err){
+> >         fprintf(stderr, "Cannot wait periodic: %d, %d\n", err, EWOULDB=
+LOCK);
+> >=20
+> >     }
+> > }
+> >=20
+> > int main(){
+> >     char* task1=5Fdata =3D NULL;
+> >     mlockall(MCL=5FCURRENT|MCL=5FFUTURE);
+> >     rt=5Ftimer=5Fset=5Fmode(TM=5FONESHOT);
+> >     rt=5Ftask=5Fspawn(&task1, "task1", 0, 99, 0, rt=5Ftask1, &task1=5Fdata);
+> >     sleep(10);
+> >     rt=5Ftask=5Fdelete(&task1);
+> >     return 0;
+> > }
+> > ----------------------------------------------------------------------=
+-
+> >=20
+> > But rt=5Ftask=5Fwait=5Fperiod gives me always the Error EWOULDBLOCK, which m=
+eans that I did not set the task periodic
+> > but which in fact I did... The call to rt=5Ftask=5Fset=5Fperiodic is succesf=
+ul.
+> > Can anyone help me figure out why=3F If you need additional infos please=
+ let me know...
+> >=20
+> > Thanks in advance!
+> >=20
+> > Steve
+> >=20
 >=20
-> This would not be a hack, but the real fix. Keeping the periodic timing=
-
-> handled as a separate hw-dependent mode is the real problem and the
-> source of fragility, which does not buy us anything now that we have a
-> scalable aperiodic timer management code.
+> Jan
 >=20
+> =5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
+Philippe.
 
-That requires some more thoughts I guess. I think I'll start a thread on
-xenomai-core.
-
-Jan
 
 
---------------enig9371664CFDAF77F2BBA25862
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=
 
-iD8DBQFE5Gq8niDOoMHTA+kRAkA1AJ46Arx41uoE/JRVwkmEmkn4Mgv7iACggQls
-xk8OsIpuPFViRpxu2WPxqV0=
-=rKbs
------END PGP SIGNATURE-----
+Erweitern Sie FreeMail zu einem noch leistungsst=E4rkeren E-Mail-Postfach!	=09
+Mehr Infos unter http://freemail.web.de/home/landingpad/=3Fmc=3D021131
 
---------------enig9371664CFDAF77F2BBA25862--
 
