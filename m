@@ -1,15 +1,10 @@
-Message-ID: <b647ffbd0608070603q61008d0emc3a6555b62a40cc2@domain.hid>
-Date: Mon, 7 Aug 2006 15:03:45 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] rt_pipe and rt_queue problems
-In-Reply-To: <1154799634.4330.23.camel@domain.hid>
+Date: Mon, 07 Aug 2006 15:05:04 +0200
+Message-Id: <1903678222@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_26378_4641830.1154955825876"
-References: <200608021808.18076@domain.hid> <44D0F72E.3020406@domain.hid>
-	<200608031628.31584@domain.hid> <44D26C1C.5040506@domain.hid>
-	<200608041345.6449@domain.hid> <44D4CC6C.1020709@domain.hid>
-	<1154799634.4330.23.camel@domain.hid>
+From: Steve Kreyer <steve.kreyer@domain.hid>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Problems with rt_task_wait_period
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,67 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-------=_Part_26378_4641830.1154955825876
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_26379_1195314.1154955825876"
+Hi,
 
-------=_Part_26379_1195314.1154955825876
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Iam new to xenomai. 
+For warming up I try to run this little test program:
 
-Hello,
+-----------------------------------------------------------------------
+#include <native/task.h>
+#include <stdio.h>
+#include <sys/mman.h>
 
-does this patch make a difference for you?
+RT_TASK task1;
 
-I haven't followed the whole conversation closely so it's just based on
-Jan's trace.
+void rt_task1(void* user_data){
+    int err = 0;
+    printf("%d\n", rt_task_set_periodic(NULL, TM_NOW, 100));
+    err = rt_task_wait_period(NULL);
+    if(err){
+        fprintf(stderr, "Cannot wait periodic: %d, %d\n", err, EWOULDBLOCK);
 
-Just a bit blind copy_and_past from __rt_queue_receive() I guess.
+    }
+}
 
+int main(){
+    char* task1_data = NULL;
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+    rt_timer_set_mode(TM_ONESHOT);
+    rt_task_spawn(&task1, "task1", 0, 99, 0, rt_task1, &task1_data);
+    sleep(10);
+    rt_task_delete(&task1);
+    return 0;
+}
+-----------------------------------------------------------------------
 
--- 
-Best regards,
-Dmitry Adamushko
+But rt_task_wait_period gives me always the Error EWOULDBLOCK, which means that I did not set the task periodic
+but which in fact I did... The call to rt_task_set_periodic is succesful.
+Can anyone help me figure out why? If you need additional infos please let me know...
 
-------=_Part_26379_1195314.1154955825876
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Thanks in advance!
 
-<br>
-Hello,<br>
-<br>
-does this patch make a difference for you?<br>
-<br>
-I haven't followed the whole conversation closely so it's just based on Jan's trace.<br>
-<br>
-Just a bit blind copy_and_past from __rt_queue_receive() I guess.<br>
-<br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
-<br>
+Steve
 
-------=_Part_26379_1195314.1154955825876--
+______________________________________________________________
+Verschicken Sie romantische, coole und witzige Bilder per SMS!
+Jetzt bei WEB.DE FreeMail: http://f.web.de/?mc=021193
 
-------=_Part_26378_4641830.1154955825876
-Content-Type: text/x-patch; name=syscall.c.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_eqkusic0
-Content-Disposition: attachment; filename="syscall.c.patch"
-
-LS0tIHN5c2NhbGwtb2xkLmMJMjAwNi0wOC0wNyAxNDo1ODoyOC42OTYxNjgwMDAgKzAyMDAKKysr
-IHN5c2NhbGwuYwkyMDA2LTA4LTA3IDE0OjU4OjM5LjMwODM2MTAwMCArMDIwMApAQCAtMjM3NSw3
-ICsyMzc1LDcgQEAgc3RhdGljIGludCBfX3J0X3F1ZXVlX3JlYWQoc3RydWN0IHRhc2tfcwogICAg
-ICAgICAoY3VyciwgVkVSSUZZX1JFQUQsIF9feG5fcmVnX2FyZzQocmVncyksIHNpemVvZih0aW1l
-b3V0KSkpCiAgICAgICAgIHJldHVybiAtRUZBVUxUOwogCi0gICAgX194bl9jb3B5X2Zyb21fdXNl
-cihjdXJyLCAmdGltZW91dCwgKHZvaWQgX191c2VyICopX194bl9yZWdfYXJnMyhyZWdzKSwKKyAg
-ICBfX3huX2NvcHlfZnJvbV91c2VyKGN1cnIsICZ0aW1lb3V0LCAodm9pZCBfX3VzZXIgKilfX3hu
-X3JlZ19hcmc0KHJlZ3MpLAogICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZW9mKHRpbWVvdXQp
-KTsKIAogICAgIHJzaXplID0gcnRfcXVldWVfcmVjZWl2ZShxLCAmbWJ1ZiwgdGltZW91dCk7Cg==
-
-------=_Part_26378_4641830.1154955825876--
 
