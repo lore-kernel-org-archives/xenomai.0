@@ -1,5 +1,5 @@
-Message-ID: <44D73EE3.4010809@domain.hid>
-Date: Mon, 07 Aug 2006 15:23:47 +0200
+Message-ID: <44D74B93.9070905@domain.hid>
+Date: Mon, 07 Aug 2006 16:17:55 +0200
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 References: <44CF6EB1.1010808@domain.hid> <44D36389.3030706@domain.hid>
@@ -50,9 +50,7 @@ Jan Kiszka wrote:
 > 
 >  o drivers/can/ - That's consistent with the existing subdir naming
 >    anyway.
-
-I was also thinking about that.
-
+> 
 >  o rtdm/rtcan.h - The "rtdm/" prefix clearly defines the context: It's
 >    THE standard real-time CAN profile for RTDM.
 > 
@@ -61,10 +59,7 @@ I was also thinking about that.
 >    to do with the existing "rtcan" project.
 > 
 >  o Variable, type, and function names remain as they are.
-
-OK, thats fine for me. The important thing is, that the official project 
-name is different from RTCAN.
-
+> 
 > Jan
 > 
 > 
@@ -73,9 +68,11 @@ name is different from RTCAN.
 > current primary target platforms (UP), but it's not really beautiful
 > when considering SMP setups. A bit tricky, for sure.
 
-Yes, it's also not nice, that it is in the HW specific driver. I did not 
-  touch it because I have no SMP system for testing.
+I just realized another issue. Where to put README and CREDITS file? The 
+README should go into doc/txt/can-driver.txt. Should I add the credits 
+to this file as well?
 
 Wolfgang.
+
 
 
