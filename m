@@ -1,14 +1,10 @@
-Message-ID: <44F35CA8.5000302@domain.hid>
-Date: Mon, 28 Aug 2006 23:14:16 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44D7EDCF.9010409@domain.hid>
+Date: Mon, 07 Aug 2006 21:50:07 -0400
+From: Vincent Levesque <vleves@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] USB4RT and Framebuffer drivers
-References: <200608281608.06625.witzel.thomas@domain.hid>
-In-Reply-To: <200608281608.06625.witzel.thomas@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDE9FF0B10534584713D162C1"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] -110 error on rt_task_send... bug?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,50 +14,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: witzel.thomas@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: andrewg@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDE9FF0B10534584713D162C1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Thomas Witzel wrote:
-> Hello,
->=20
-> I have two questions.
-> 1) Is there a USB4RT implementation for RTDM yet ?
+I'm having some problems with rt_task_send/receive/reply in the native 
+skin. The code attached at the end of this email works fine on Xenomai 
+2.1 but rt_task_send() fails with error message -110 on Xenomai 2.2.0 
+and today's subversion trunk. I checked the error values of all other 
+calls (removed for clarity) and everything seems to be ok. The -110 
+error code is returned either when rt_task_send() times out or when 
+rt_task_reply() is called, whichever comes first. If I set it to 
+TM_INFINITE, rt_task_send() never returns and the system hangs when I 
+press control-c. I've reproduced this behavior on two computers.
 
-USB4RT already uses RTDM to attach itself to the RTOS, but it does not
-yet exports its own API via RTDM, only via the "classic" way of exported
-symbols. The latter is long planned, but had to be deferred so far due
-to lacking resources - though this isn't complex, just takes someone to
-hack a bit and to test and cleanup a bit more.
+Am I doing something wrong that was tolerated by 2.1? Is this a bug in 
+Xenomai 2.2?
 
-Anyway, you can use USB4RT over any recent Xenomai.
+Thank you,
 
-> 2) Has anyone made a framebuffer driver for RTDM, so realtime graphics =
-could  =20
->     be realized.
-
-Dunno, haven't heard of any yet.
-
-Jan
+Vincent Levesque
+vleves@domain.hid
 
 
---------------enigDE9FF0B10534584713D162C1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+gcc -o test test.c `/usr/xenomai/bin/xeno-config --xeno-cflags` -O2 
+`/usr/xenomai/bin/xeno-config --xeno-ldflags` -lnative
 
-iD8DBQFE81yoniDOoMHTA+kRAreuAJ9Oj8oizE9ZUyPy75CvqAQlNiqATACdFbpj
-NJNSSJAsiWwMde4pznxVbhk=
-=TdRB
------END PGP SIGNATURE-----
+--------------------------------------------------------
+test.c
+--------------------------------------------------------
 
---------------enigDE9FF0B10534584713D162C1--
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/task.h>
+
+void recv_task(void *arg)
+{
+    RT_TASK_MCB mcb_receive;
+    int flowid;
+    int data;
+
+    mcb_receive.data = (caddr_t)&data;
+    mcb_receive.size = sizeof(int);
+    flowid = rt_task_receive(&mcb_receive,TM_INFINITE);
+    if (mcb_receive.opcode == 1)
+    {
+        printf("receiving %d\n", data);
+        rt_task_reply(flowid, NULL);
+    }
+}
+
+int main (int argc, char *argv[])
+{
+    int data, rv;
+    RT_TASK_MCB mcb_send;
+    RT_TASK peer;
+    RT_TASK task;
+
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+
+    rt_task_spawn(&peer, "recv_task", 0, 99, T_FPU, &recv_task, NULL);
+    rt_task_shadow(&task, "send_task", 50, 0);
+
+    data = 13;
+    mcb_send.opcode = 1;
+    mcb_send.data = (caddr_t)&data;
+    mcb_send.size = sizeof(int);
+
+    printf("sending %d\n", data);
+    rv = rt_task_send(&peer,&mcb_send,NULL,1E9);
+    if (rv < 0)
+    {
+        switch(rv)
+        {
+            case -ENOBUFS:        printf("ENOBUFS\n");
+            case -EWOULDBLOCK:    printf("EWOULDBLOCK\n");
+            case -EIDRM:        printf("EIDRM\n");
+            case -EINTR:        printf("EINTR\n");
+            case -EPERM:        printf("EPERM\n");
+            default:            printf("unknown error: %d\n", rv);
+        }
+    }
+
+    rt_task_delete(&peer);
+    return 0;
+}
+
 
