@@ -1,15 +1,16 @@
-From: Ulrich Schwab <schwab@domain.hid>
+Message-ID: <b647ffbd0608090842w6293eb37o94f4deaeb8a7310b@domain.hid>
+Date: Wed, 9 Aug 2006 17:42:50 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send...
 	bug?
-Date: Wed, 9 Aug 2006 17:09:55 +0200
+In-Reply-To: <200608091709.57319.schwab@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_19440_8574421.1155138170028"
 References: <44D7EDCF.9010409@domain.hid>
 	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
 	<b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
-In-Reply-To: <b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
-MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_Frf2E2x7zlBS6ju"
-Message-Id: <200608091709.57319.schwab@domain.hid>
+	<200608091709.57319.schwab@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,159 +20,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: andrewg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
+To: Ulrich Schwab <schwab@domain.hid>
+Cc: xenomai@xenomai.org, andrewg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
---Boundary-00=_Frf2E2x7zlBS6ju
-Content-Type: text/plain;
-  charset="utf-8"
+------=_Part_19440_8574421.1155138170028
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On Wednesday 09 August 2006 13:42, Dmitry Adamushko wrote:
-> So could anyone test this patch and let me know if it works?
+> > So could anyone test this patch and let me know if it works?
+> >
+> > Note : I haven't compiled it even as I don't have a proper environment.
+> But
+> > the changes are pretty simple so it should be ok.
+> I just did run the test program supplied by Vincent after applying Your
+> patch
+> (against 2.2.0)
+> It did work !
 >
-> Note : I haven't compiled it even as I don't have a proper environment. But
-> the changes are pretty simple so it should be ok.
-I just did run the test program supplied by Vincent after applying Your patch
-(against 2.2.0)
-It did work !
-Only one small typo was in the patch, it is fixed in the attached patch 
-version.
 
->
-> There was actually yet another problem mmm... who cares to delete a sender
-> from the msendq?
->
-> Now should be ok or maybe I'm completely wrong and see the things which do
-> not exist at all :)
->
-> p.s. I cc'ed "xenomai-core" as it may involve further discussions and it's
-> the right place indeed.
+
+That's good. Thanks for your assistance.
+
+So synch. message passing interface (IOW, rt_task_send/receive/reply) is
+mgmglmgmm... slightly broken at the moment for all versions.
+
+The ones who need it may use this patch so far. I'll think a bit more on it
+in the mean time but I tend to think that "Fixed Ownership" (expressed by
+XNSYNCH_FOWNER) should really be a property of the synch. object indeed (as
+in the current patch).
+
+
+
+> Only one small typo was in the patch, it is fixed in the attached patch
+> version.
+
+Ok, now I need to run diff -u old-patch new-patch to find out this typo :)
+
 
 -- 
-====================================================
-  inmess GmbH
-  Frankfurter Str. 74
-  D - 64521 Gross-Gerau
-  Phone: +49 6152 97790
-  Fax  : +49 6152 977920
-  mail : info@domain.hid
-  web:   www.inmess.de
-====================================================
+Best regards,
+Dmitry Adamushko
 
---Boundary-00=_Frf2E2x7zlBS6ju
-Content-Type: text/x-diff;
-  charset="utf-8";
-  name="synch-fowner.patch"
+------=_Part_19440_8574421.1155138170028
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="synch-fowner.patch"
+Content-Disposition: inline
 
-diff -urp xenomai-a/include/nucleus/synch.h xenomai-b/include/nucleus/synch.h
---- xenomai-a/include/nucleus/synch.h	2006-07-20 11:09:01.000000000 +0200
-+++ xenomai-b/include/nucleus/synch.h	2006-08-09 12:53:37.044217000 +0200
-@@ -28,6 +28,7 @@
- #define XNSYNCH_NOPIP   0x0
- #define XNSYNCH_PIP     0x2
- #define XNSYNCH_DREORD  0x4
-+#define XNSYNCH_FOWNER	0x20	/* Fixed owner */
- 
- #if defined(__KERNEL__) || defined(__XENO_SIM__)
- 
-diff -urp xenomai-a/ksrc/nucleus/synch.c xenomai-b/ksrc/nucleus/synch.c
---- xenomai-a/ksrc/nucleus/synch.c	2006-06-15 14:15:25.000000000 +0200
-+++ xenomai-b/ksrc/nucleus/synch.c	2006-08-09 13:28:55.199081000 +0200
-@@ -37,6 +37,14 @@
- #include <nucleus/module.h>
- #include <nucleus/ltt.h>
- 
-+/* temporarily here */
-+static inline void xnsynch_set_owner_internal(xnsynch_t *synch, xnthread_t *thread)
-+{
-+	if (!testbits(synch->status, XNSYNCH_FOWNER))
-+		synch->owner = thread;
-+}
-+
-+
- /*! 
-  * \fn void xnsynch_init(xnsynch_t *synch, xnflags_t flags);
-  * \brief Initialize a synchronization object.
-@@ -181,7 +189,7 @@ void xnsynch_sleep_on(xnsynch_t *synch, 
- 
- 				if (testbits(synch->status, XNSYNCH_PENDING)) {
- 					/* Ownership is still pending, steal the resource. */
--					synch->owner = thread;
-+					xnsynch_set_owner_internal(synch, thread);
- 					__clrbits(thread->status,
- 						  XNRMID | XNTIMEO | XNBREAK);
- 					goto grab_ownership;
-@@ -209,7 +217,7 @@ void xnsynch_sleep_on(xnsynch_t *synch, 
- 
- 			xnpod_suspend_thread(thread, XNPEND, timeout, synch);
- 
--			if (unlikely(synch->owner != thread)) {
-+			if (!testbits(synch->status, XNSYNCH_FOWNER) && unlikely(synch->owner != thread)) {
- 				/* Somebody stole us the ownership while we were ready to
- 				   run, waiting for the CPU: we need to wait again for the
- 				   resource. */
-@@ -362,12 +370,12 @@ xnthread_t *xnsynch_wakeup_one_sleeper(x
- 	if (holder) {
- 		thread = link2thread(holder, plink);
- 		thread->wchan = NULL;
--		synch->owner = thread;
-+		xnsynch_set_owner_internal(synch, thread);
- 		__setbits(synch->status, XNSYNCH_PENDING);
- 		xnltt_log_event(xeno_ev_wakeup1, thread->name, synch);
- 		xnpod_resume_thread(thread, XNPEND);
- 	} else {
--		synch->owner = NULL;
-+		xnsynch_set_owner_internal(synch, thread);
- 		__clrbits(synch->status, XNSYNCH_PENDING);
- 	}
- 
-@@ -435,7 +443,7 @@ xnpholder_t *xnsynch_wakeup_this_sleeper
- 	nholder = poppq(&synch->pendq, holder);
- 	thread = link2thread(holder, plink);
- 	thread->wchan = NULL;
--	synch->owner = thread;
-+	xnsynch_set_owner_internal(synch, thread);
- 	__setbits(synch->status, XNSYNCH_PENDING);
- 	xnltt_log_event(xeno_ev_wakeupx, thread->name, synch);
- 	xnpod_resume_thread(thread, XNPEND);
-@@ -523,7 +531,7 @@ int xnsynch_flush(xnsynch_t *synch, xnfl
- 		status = XNSYNCH_RESCHED;
- 	}
- 
--	synch->owner = NULL;
-+	xnsynch_set_owner_internal(synch, NULL);
- 	__clrbits(synch->status, XNSYNCH_PENDING);
- 
- 	xnlock_put_irqrestore(&nklock, s);
-diff -urp xenomai-a/ksrc/skins/native/task.c xenomai-b/ksrc/skins/native/task.c
---- xenomai-a/ksrc/skins/native/task.c	2006-07-30 10:50:49.000000000 +0200
-+++ xenomai-b/ksrc/skins/native/task.c	2006-08-09 13:32:21.917770000 +0200
-@@ -262,7 +262,7 @@ int rt_task_create(RT_TASK *task,
- 
- #ifdef CONFIG_XENO_OPT_NATIVE_MPS
- 	xnsynch_init(&task->mrecv, XNSYNCH_FIFO);
--	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP);
-+	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_FOWNER);
- 	xnsynch_set_owner(&task->msendq, &task->thread_base);
- 	task->flowgen = 0;
- #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
-@@ -2057,10 +2057,7 @@ int rt_task_reply(int flowid, RT_TASK_MC
- 		   identifier from other senders wrt to a given receiver. */
- 
- 		if (receiver->wait_args.mps.mcb_s.flowid == flowid) {
--			/* Note that the following will cause the receiver to be
--			   unblocked without transferring the ownership of the
--			   msendq object, since we want the sender to keep it. */
--			xnpod_resume_thread(&receiver->thread_base, XNPEND);
-+			xnsynch_wakeup_this_sleeper(&sender->msendq, holder);
- 			break;
- 		}
- 	}
+<br><div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; So could anyone test this patch and let me know if it works?<br>&gt;<br>&gt; Note : I haven't compiled it even as I don't have a proper environment. But
+<br>&gt; the changes are pretty simple so it should be ok.<br>I just did run the test program supplied by Vincent after applying Your patch<br>(against 2.2.0)<br>It did work !<br></blockquote><div><br>
+<br>
+That's good. Thanks for your assistance.<br>
+<br>
+So synch. message passing interface (IOW, rt_task_send/receive/reply)
+is mgmglmgmm... slightly broken at the moment for all versions.<br>
+<br>
+The ones who need it may use this patch so far. I'll think a bit more
+on it in the mean time but I tend to think that &quot;Fixed Ownership&quot;
+(expressed by XNSYNCH_FOWNER) should really be a property of the synch.
+object indeed (as in the current patch).<br>
+<br>
+<br>
+<br>
+&gt; Only one small typo was in the patch, it is fixed in the attached patch<br>
+&gt; version.<br>
+<br>
+Ok, now I need to run diff -u old-patch new-patch to find out this typo :)<br>
 
---Boundary-00=_Frf2E2x7zlBS6ju--
+<br>
+&nbsp;</div></div>-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
+
+------=_Part_19440_8574421.1155138170028--
 
