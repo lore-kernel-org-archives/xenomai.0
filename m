@@ -1,16 +1,10 @@
-Message-ID: <b647ffbd0608090842w6293eb37o94f4deaeb8a7310b@domain.hid>
-Date: Wed, 9 Aug 2006 17:42:50 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send...
-	bug?
-In-Reply-To: <200608091709.57319.schwab@domain.hid>
+From: Ulrich Schwab <schwab@domain.hid>
+Date: Wed, 9 Aug 2006 18:37:54 +0200
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_19440_8574421.1155138170028"
-References: <44D7EDCF.9010409@domain.hid>
-	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
-	<b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
-	<200608091709.57319.schwab@domain.hid>
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_j9g2EpS1c+rmdYc"
+Message-Id: <200608091837.55424.schwab@domain.hid>
+Subject: [Xenomai-core] SMI update
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,76 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Ulrich Schwab <schwab@domain.hid>
-Cc: xenomai@xenomai.org, andrewg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-------=_Part_19440_8574421.1155138170028
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--Boundary-00=_j9g2EpS1c+rmdYc
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-> > So could anyone test this patch and let me know if it works?
-> >
-> > Note : I haven't compiled it even as I don't have a proper environment.
-> But
-> > the changes are pretty simple so it should be ok.
-> I just did run the test program supplied by Vincent after applying Your
-> patch
-> (against 2.2.0)
-> It did work !
->
 
+I saw some bad latency behaviour on a new system, it is a
+P4 with ICH7 chipset. It showed  more than 300 us max. latency without any 
+load.
+This chipset was not detected as SMI generating and SMI disable was not done.
 
-That's good. Thanks for your assistance.
+Finally I figured out where to add this DEVICE_ID
+to the SMI detection in smi.c
+It is done in the attached patch.
 
-So synch. message passing interface (IOW, rt_task_send/receive/reply) is
-mgmglmgmm... slightly broken at the moment for all versions.
+Now, the max. latency values on this new system are below 10 us.
+Although, not tested very long.
 
-The ones who need it may use this patch so far. I'll think a bit more on it
-in the mean time but I tend to think that "Fixed Ownership" (expressed by
-XNSYNCH_FOWNER) should really be a property of the synch. object indeed (as
-in the current patch).
-
-
-
-> Only one small typo was in the patch, it is fixed in the attached patch
-> version.
-
-Ok, now I need to run diff -u old-patch new-patch to find out this typo :)
-
+Regards,
+Ulrich Schwab
 
 -- 
-Best regards,
-Dmitry Adamushko
+====================================================
+  inmess GmbH
+  Frankfurter Str. 74
+  D - 64521 Gross-Gerau
+  Phone: +49 6152 97790
+  Fax  : +49 6152 977920
+  mail : info@domain.hid
+  web:   www.inmess.de
+====================================================
 
-------=_Part_19440_8574421.1155138170028
-Content-Type: text/html; charset=ISO-8859-1
+--Boundary-00=_j9g2EpS1c+rmdYc
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="smi-ICH7-patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: attachment;
+	filename="smi-ICH7-patch"
 
-<br><div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; So could anyone test this patch and let me know if it works?<br>&gt;<br>&gt; Note : I haven't compiled it even as I don't have a proper environment. But
-<br>&gt; the changes are pretty simple so it should be ok.<br>I just did run the test program supplied by Vincent after applying Your patch<br>(against 2.2.0)<br>It did work !<br></blockquote><div><br>
-<br>
-That's good. Thanks for your assistance.<br>
-<br>
-So synch. message passing interface (IOW, rt_task_send/receive/reply)
-is mgmglmgmm... slightly broken at the moment for all versions.<br>
-<br>
-The ones who need it may use this patch so far. I'll think a bit more
-on it in the mean time but I tend to think that &quot;Fixed Ownership&quot;
-(expressed by XNSYNCH_FOWNER) should really be a property of the synch.
-object indeed (as in the current patch).<br>
-<br>
-<br>
-<br>
-&gt; Only one small typo was in the patch, it is fixed in the attached patch<br>
-&gt; version.<br>
-<br>
-Ok, now I need to run diff -u old-patch new-patch to find out this typo :)<br>
+diff -urp xenomai-2.2.0/ksrc/arch/i386/smi.c xenomai-2.2-patched/ksrc/arch/i386/smi.c
+--- xenomai-2.2.0/ksrc/arch/i386/smi.c	2006-07-03 08:44:33.000000000 +0200
++++ xenomai-2.2-patched/ksrc/arch/i386/smi.c	2006-08-09 18:20:57.000000000 +0200
+@@ -45,6 +45,7 @@ static struct pci_device_id rthal_smi_pc
+ { PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH6_0) },
+ { PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH6_1) },
+ { PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH6_2) },
++{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7_0) },
+ { 0, },
+ };
+ 
 
-<br>
-&nbsp;</div></div>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
-
-------=_Part_19440_8574421.1155138170028--
+--Boundary-00=_j9g2EpS1c+rmdYc--
 
