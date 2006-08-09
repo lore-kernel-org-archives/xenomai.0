@@ -1,13 +1,13 @@
-Message-ID: <44DA6568.6050300@domain.hid>
-Date: Thu, 10 Aug 2006 00:44:56 +0200
+Message-ID: <44DA6D99.9090502@domain.hid>
+Date: Thu, 10 Aug 2006 01:19:53 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] SMI update
-References: <200608091837.55424.schwab@domain.hid>
-In-Reply-To: <200608091837.55424.schwab@domain.hid>
+Subject: Re: [Xenomai-core] -EINTR using rt_pipe_read with TM_INFINITE
+References: <58356.127.0.0.1.1155128979.squirrel@domain.hid>
+In-Reply-To: <58356.127.0.0.1.1155128979.squirrel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig7E9C36BBA52BBADC774FBFB6"
+	boundary="------------enig2D237E31D60E7D524FD43B26"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,52 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Ulrich Schwab <schwab@domain.hid>
+To: Jacques GANGLOFF <jacques@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7E9C36BBA52BBADC774FBFB6
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig2D237E31D60E7D524FD43B26
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Ulrich Schwab wrote:
-> I saw some bad latency behaviour on a new system, it is a
-> P4 with ICH7 chipset. It showed  more than 300 us max. latency without =
-any=20
-> load.
-> This chipset was not detected as SMI generating and SMI disable was not=
- done.
+Jacques GANGLOFF wrote:
+> Hi,
 >=20
-> Finally I figured out where to add this DEVICE_ID
-> to the SMI detection in smi.c
-> It is done in the attached patch.
+> I did this little test :
 >=20
-> Now, the max. latency values on this new system are below 10 us.
-> Although, not tested very long.
+> Below I have attached two sources, one on the kernel side and one on th=
+e
+> user side.
+> I do here a very simple fifo handshaking test. I insert the kernel modu=
+le
+> then I run the user program. When I do the test with the "THE BUG IS HE=
+RE"
+> line commented, I got :
+>=20
+> root@domain.hid# ./user
+> user : j'ai envoy=E9 A
+> user :j'ai bien re=E7u E
+> root@domain.hid# dmesg
+> hello world
+> kernel : j'ai bien re=E7u A
+> kernel : ret =3D 1
+> kernel :j'ai envoy=E9 E
+>=20
+> Now, when I uncomment the line :
+> root@domain.hid# ./user
+> user : j'ai envoy=E9 A
+> [CRTL-C] because the user program is blocking ...
+> root@domain.hid# dmesg
+> hello world
+> kernel : j'ai bien re=E7u A
+> kernel : ret =3D -4
+> kernel :j'ai envoy=E9 E
+>=20
 
-=2E..and not under load. ;)
+That looks like a correct behaviour to me: the kernel module is trying
+to read from pipe1 (MyPipe0, /dev/rtp0) and is blocked on it. The
+user-space tool tries to do the same (is this intended BTW?). Then the
+user-space program gets terminate, thus pipe1 is cleaned up. During that
+cleanup all RT-readers on the pipe are woken up with -EINTR as return
+code [1].
 
-Thanks for the patch, we just need some additional define of
-PCI_DEVICE_ID_INTEL_ICH7_0 for kernel 2.4 compatibility. And if you
-additionally provide a ChangeLog fragment, your patch would be perfect!
-(I tend to forget the last part often too... :) )
+>=20
+> Now, ret=3D-4 is the code for -EINTR. According to the doc :
+> "-EINTR is returned if rt_task_unblock() has been called for the waitin=
+g
+> task before any data was available."
+>=20
+> I cannot see where rt_task_unblock() could be called. What is wrong ?
+>=20
+
+Ok, the documentation is insufficient here. We should actually add the
+second reason for EINTR as sketched above.
 
 Jan
 
 
---------------enig7E9C36BBA52BBADC774FBFB6
+[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/pipe.c#=
+L607
+
+
+--------------enig2D237E31D60E7D524FD43B26
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFE2mVoniDOoMHTA+kRAqYMAJ44yg9GTPs+y1DSti+58t264/hRGwCffsM2
-rO9SRMFbRwscLf56OOcDEkA=
-=Yice
+iD8DBQFE2m2eniDOoMHTA+kRAn/eAJ46wd8F0iR6cgWMs23TktyTeomPrQCfWLtx
+FrKXtMwUxV/tnmoayQGvs8w=
+=snvl
 -----END PGP SIGNATURE-----
 
---------------enig7E9C36BBA52BBADC774FBFB6--
+--------------enig2D237E31D60E7D524FD43B26--
 
