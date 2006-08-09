@@ -1,13 +1,15 @@
-Message-ID: <b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
-Date: Wed, 9 Aug 2006 13:42:57 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_16428_23435704.1155123777589"
-References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
+From: Ulrich Schwab <schwab@domain.hid>
+Subject: Re: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send...
+	bug?
+Date: Wed, 9 Aug 2006 17:09:55 +0200
+References: <44D7EDCF.9010409@domain.hid>
 	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
-Subject: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send... bug?
+	<b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
+In-Reply-To: <b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_Frf2E2x7zlBS6ju"
+Message-Id: <200608091709.57319.schwab@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,131 +19,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, andrewg@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: andrewg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-------=_Part_16428_23435704.1155123777589
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_16429_21959484.1155123777589"
-
-------=_Part_16429_21959484.1155123777589
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--Boundary-00=_Frf2E2x7zlBS6ju
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-So could anyone test this patch and let me know if it works?
+On Wednesday 09 August 2006 13:42, Dmitry Adamushko wrote:
+> So could anyone test this patch and let me know if it works?
+>
+> Note : I haven't compiled it even as I don't have a proper environment. But
+> the changes are pretty simple so it should be ok.
+I just did run the test program supplied by Vincent after applying Your patch
+(against 2.2.0)
+It did work !
+Only one small typo was in the patch, it is fixed in the attached patch 
+version.
 
-Note : I haven't compiled it even as I don't have a proper environment. But
-the changes are pretty simple so it should be ok.
-
-There was actually yet another problem mmm... who cares to delete a sender
-from the msendq?
-
-Now should be ok or maybe I'm completely wrong and see the things which do
-not exist at all :)
-
-p.s. I cc'ed "xenomai-core" as it may involve further discussions and it's
-the right place indeed.
+>
+> There was actually yet another problem mmm... who cares to delete a sender
+> from the msendq?
+>
+> Now should be ok or maybe I'm completely wrong and see the things which do
+> not exist at all :)
+>
+> p.s. I cc'ed "xenomai-core" as it may involve further discussions and it's
+> the right place indeed.
 
 -- 
-Best regards,
-Dmitry Adamushko
+====================================================
+  inmess GmbH
+  Frankfurter Str. 74
+  D - 64521 Gross-Gerau
+  Phone: +49 6152 97790
+  Fax  : +49 6152 977920
+  mail : info@domain.hid
+  web:   www.inmess.de
+====================================================
 
-------=_Part_16429_21959484.1155123777589
-Content-Type: text/html; charset=ISO-8859-1
+--Boundary-00=_Frf2E2x7zlBS6ju
+Content-Type: text/x-diff;
+  charset="utf-8";
+  name="synch-fowner.patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: attachment;
+	filename="synch-fowner.patch"
 
-<br>
-So could anyone test this patch and let me know if it works?<br>
-<br>
-Note : I haven't compiled it even as I don't have a proper environment. But the changes are pretty simple so it should be ok.<br clear="all"><br>
-There was actually yet another problem mmm... who cares to delete a sender from the msendq?<br>
-<br>
-Now should be ok or maybe I'm completely wrong and see the things which do not exist at all :)<br>
-<br>
-p.s. I cc'ed &quot;xenomai-core&quot; as it may involve further discussions and it's the right place indeed.<br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
+diff -urp xenomai-a/include/nucleus/synch.h xenomai-b/include/nucleus/synch.h
+--- xenomai-a/include/nucleus/synch.h	2006-07-20 11:09:01.000000000 +0200
++++ xenomai-b/include/nucleus/synch.h	2006-08-09 12:53:37.044217000 +0200
+@@ -28,6 +28,7 @@
+ #define XNSYNCH_NOPIP   0x0
+ #define XNSYNCH_PIP     0x2
+ #define XNSYNCH_DREORD  0x4
++#define XNSYNCH_FOWNER	0x20	/* Fixed owner */
+ 
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
+ 
+diff -urp xenomai-a/ksrc/nucleus/synch.c xenomai-b/ksrc/nucleus/synch.c
+--- xenomai-a/ksrc/nucleus/synch.c	2006-06-15 14:15:25.000000000 +0200
++++ xenomai-b/ksrc/nucleus/synch.c	2006-08-09 13:28:55.199081000 +0200
+@@ -37,6 +37,14 @@
+ #include <nucleus/module.h>
+ #include <nucleus/ltt.h>
+ 
++/* temporarily here */
++static inline void xnsynch_set_owner_internal(xnsynch_t *synch, xnthread_t *thread)
++{
++	if (!testbits(synch->status, XNSYNCH_FOWNER))
++		synch->owner = thread;
++}
++
++
+ /*! 
+  * \fn void xnsynch_init(xnsynch_t *synch, xnflags_t flags);
+  * \brief Initialize a synchronization object.
+@@ -181,7 +189,7 @@ void xnsynch_sleep_on(xnsynch_t *synch, 
+ 
+ 				if (testbits(synch->status, XNSYNCH_PENDING)) {
+ 					/* Ownership is still pending, steal the resource. */
+-					synch->owner = thread;
++					xnsynch_set_owner_internal(synch, thread);
+ 					__clrbits(thread->status,
+ 						  XNRMID | XNTIMEO | XNBREAK);
+ 					goto grab_ownership;
+@@ -209,7 +217,7 @@ void xnsynch_sleep_on(xnsynch_t *synch, 
+ 
+ 			xnpod_suspend_thread(thread, XNPEND, timeout, synch);
+ 
+-			if (unlikely(synch->owner != thread)) {
++			if (!testbits(synch->status, XNSYNCH_FOWNER) && unlikely(synch->owner != thread)) {
+ 				/* Somebody stole us the ownership while we were ready to
+ 				   run, waiting for the CPU: we need to wait again for the
+ 				   resource. */
+@@ -362,12 +370,12 @@ xnthread_t *xnsynch_wakeup_one_sleeper(x
+ 	if (holder) {
+ 		thread = link2thread(holder, plink);
+ 		thread->wchan = NULL;
+-		synch->owner = thread;
++		xnsynch_set_owner_internal(synch, thread);
+ 		__setbits(synch->status, XNSYNCH_PENDING);
+ 		xnltt_log_event(xeno_ev_wakeup1, thread->name, synch);
+ 		xnpod_resume_thread(thread, XNPEND);
+ 	} else {
+-		synch->owner = NULL;
++		xnsynch_set_owner_internal(synch, thread);
+ 		__clrbits(synch->status, XNSYNCH_PENDING);
+ 	}
+ 
+@@ -435,7 +443,7 @@ xnpholder_t *xnsynch_wakeup_this_sleeper
+ 	nholder = poppq(&synch->pendq, holder);
+ 	thread = link2thread(holder, plink);
+ 	thread->wchan = NULL;
+-	synch->owner = thread;
++	xnsynch_set_owner_internal(synch, thread);
+ 	__setbits(synch->status, XNSYNCH_PENDING);
+ 	xnltt_log_event(xeno_ev_wakeupx, thread->name, synch);
+ 	xnpod_resume_thread(thread, XNPEND);
+@@ -523,7 +531,7 @@ int xnsynch_flush(xnsynch_t *synch, xnfl
+ 		status = XNSYNCH_RESCHED;
+ 	}
+ 
+-	synch->owner = NULL;
++	xnsynch_set_owner_internal(synch, NULL);
+ 	__clrbits(synch->status, XNSYNCH_PENDING);
+ 
+ 	xnlock_put_irqrestore(&nklock, s);
+diff -urp xenomai-a/ksrc/skins/native/task.c xenomai-b/ksrc/skins/native/task.c
+--- xenomai-a/ksrc/skins/native/task.c	2006-07-30 10:50:49.000000000 +0200
++++ xenomai-b/ksrc/skins/native/task.c	2006-08-09 13:32:21.917770000 +0200
+@@ -262,7 +262,7 @@ int rt_task_create(RT_TASK *task,
+ 
+ #ifdef CONFIG_XENO_OPT_NATIVE_MPS
+ 	xnsynch_init(&task->mrecv, XNSYNCH_FIFO);
+-	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP);
++	xnsynch_init(&task->msendq, XNSYNCH_PRIO | XNSYNCH_PIP | XNSYNCH_FOWNER);
+ 	xnsynch_set_owner(&task->msendq, &task->thread_base);
+ 	task->flowgen = 0;
+ #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
+@@ -2057,10 +2057,7 @@ int rt_task_reply(int flowid, RT_TASK_MC
+ 		   identifier from other senders wrt to a given receiver. */
+ 
+ 		if (receiver->wait_args.mps.mcb_s.flowid == flowid) {
+-			/* Note that the following will cause the receiver to be
+-			   unblocked without transferring the ownership of the
+-			   msendq object, since we want the sender to keep it. */
+-			xnpod_resume_thread(&receiver->thread_base, XNPEND);
++			xnsynch_wakeup_this_sleeper(&sender->msendq, holder);
+ 			break;
+ 		}
+ 	}
 
-------=_Part_16429_21959484.1155123777589--
-
-------=_Part_16428_23435704.1155123777589
-Content-Type: text/x-patch; name=synch-fowner.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_eqnmr1nv
-Content-Disposition: attachment; filename="synch-fowner.patch"
-
-ZGlmZiAtdXJwIHhlbm9tYWktYS9pbmNsdWRlL251Y2xldXMvc3luY2guaCB4ZW5vbWFpLWIvaW5j
-bHVkZS9udWNsZXVzL3N5bmNoLmgKLS0tIHhlbm9tYWktYS9pbmNsdWRlL251Y2xldXMvc3luY2gu
-aAkyMDA2LTA3LTIwIDExOjA5OjAxLjAwMDAwMDAwMCArMDIwMAorKysgeGVub21haS1iL2luY2x1
-ZGUvbnVjbGV1cy9zeW5jaC5oCTIwMDYtMDgtMDkgMTI6NTM6MzcuMDQ0MjE3MDAwICswMjAwCkBA
-IC0yOCw2ICsyOCw3IEBACiAjZGVmaW5lIFhOU1lOQ0hfTk9QSVAgICAweDAKICNkZWZpbmUgWE5T
-WU5DSF9QSVAgICAgIDB4MgogI2RlZmluZSBYTlNZTkNIX0RSRU9SRCAgMHg0CisjZGVmaW5lIFhO
-U1lOQ0hfRk9XTkVSCTB4MjAJLyogRml4ZWQgb3duZXIgKi8KIAogI2lmIGRlZmluZWQoX19LRVJO
-RUxfXykgfHwgZGVmaW5lZChfX1hFTk9fU0lNX18pCiAKZGlmZiAtdXJwIHhlbm9tYWktYS9rc3Jj
-L251Y2xldXMvc3luY2guYyB4ZW5vbWFpLWIva3NyYy9udWNsZXVzL3N5bmNoLmMKLS0tIHhlbm9t
-YWktYS9rc3JjL251Y2xldXMvc3luY2guYwkyMDA2LTA2LTE1IDE0OjE1OjI1LjAwMDAwMDAwMCAr
-MDIwMAorKysgeGVub21haS1iL2tzcmMvbnVjbGV1cy9zeW5jaC5jCTIwMDYtMDgtMDkgMTM6Mjg6
-NTUuMTk5MDgxMDAwICswMjAwCkBAIC0zNyw2ICszNywxNCBAQAogI2luY2x1ZGUgPG51Y2xldXMv
-bW9kdWxlLmg+CiAjaW5jbHVkZSA8bnVjbGV1cy9sdHQuaD4KIAorLyogdGVtcG9yYXJpbHkgaGVy
-ZSAqLworc3RhdGljIGlubGluZSB2b2lkIHhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHhuc3lu
-Y2hfdCAqc3luY2gsIHhudGhyZWFkX3QgKnRocmVhZCkKK3sKKwlpZiAoIXRlc3RiaXRzKHN5bmNo
-LT5zdGF0dXMsIFhOU1lOQ0hfRk9XTkVSKSkKKwkJc3luY2gtPm93bmVyID0gdGhyZWFkOworfQor
-CisKIC8qISAKICAqIFxmbiB2b2lkIHhuc3luY2hfaW5pdCh4bnN5bmNoX3QgKnN5bmNoLCB4bmZs
-YWdzX3QgZmxhZ3MpOwogICogXGJyaWVmIEluaXRpYWxpemUgYSBzeW5jaHJvbml6YXRpb24gb2Jq
-ZWN0LgpAQCAtMTgxLDcgKzE4OSw3IEBAIHZvaWQgeG5zeW5jaF9zbGVlcF9vbih4bnN5bmNoX3Qg
-KnN5bmNoLCAKIAogCQkJCWlmICh0ZXN0Yml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNIX1BFTkRJ
-TkcpKSB7CiAJCQkJCS8qIE93bmVyc2hpcCBpcyBzdGlsbCBwZW5kaW5nLCBzdGVhbCB0aGUgcmVz
-b3VyY2UuICovCi0JCQkJCXN5bmNoLT5vd25lciA9IHRocmVhZDsKKwkJCQkJeG5zeW5jaF9zZXRf
-b3duZXJfaW50ZXJuYWwoc3luY2gsIHRocmVhZCk7CiAJCQkJCV9fY2xyYml0cyh0aHJlYWQtPnN0
-YXR1cywKIAkJCQkJCSAgWE5STUlEIHwgWE5USU1FTyB8IFhOQlJFQUspOwogCQkJCQlnb3RvIGdy
-YWJfb3duZXJzaGlwOwpAQCAtMjA5LDcgKzIxNyw3IEBAIHZvaWQgeG5zeW5jaF9zbGVlcF9vbih4
-bnN5bmNoX3QgKnN5bmNoLCAKIAogCQkJeG5wb2Rfc3VzcGVuZF90aHJlYWQodGhyZWFkLCBYTlBF
-TkQsIHRpbWVvdXQsIHN5bmNoKTsKIAotCQkJaWYgKHVubGlrZWx5KHN5bmNoLT5vd25lciAhPSB0
-aHJlYWQpKSB7CisJCQlpZiAoIXRlc3RiaXRzKHN5bmNoLT5zdGF0dXMsIFhOU1lOQ0hfT1dORVIp
-ICYmIHVubGlrZWx5KHN5bmNoLT5vd25lciAhPSB0aHJlYWQpKSB7CiAJCQkJLyogU29tZWJvZHkg
-c3RvbGUgdXMgdGhlIG93bmVyc2hpcCB3aGlsZSB3ZSB3ZXJlIHJlYWR5IHRvCiAJCQkJICAgcnVu
-LCB3YWl0aW5nIGZvciB0aGUgQ1BVOiB3ZSBuZWVkIHRvIHdhaXQgYWdhaW4gZm9yIHRoZQogCQkJ
-CSAgIHJlc291cmNlLiAqLwpAQCAtMzYyLDEyICszNzAsMTIgQEAgeG50aHJlYWRfdCAqeG5zeW5j
-aF93YWtldXBfb25lX3NsZWVwZXIoeAogCWlmIChob2xkZXIpIHsKIAkJdGhyZWFkID0gbGluazJ0
-aHJlYWQoaG9sZGVyLCBwbGluayk7CiAJCXRocmVhZC0+d2NoYW4gPSBOVUxMOwotCQlzeW5jaC0+
-b3duZXIgPSB0aHJlYWQ7CisJCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJl
-YWQpOwogCQlfX3NldGJpdHMoc3luY2gtPnN0YXR1cywgWE5TWU5DSF9QRU5ESU5HKTsKIAkJeG5s
-dHRfbG9nX2V2ZW50KHhlbm9fZXZfd2FrZXVwMSwgdGhyZWFkLT5uYW1lLCBzeW5jaCk7CiAJCXhu
-cG9kX3Jlc3VtZV90aHJlYWQodGhyZWFkLCBYTlBFTkQpOwogCX0gZWxzZSB7Ci0JCXN5bmNoLT5v
-d25lciA9IE5VTEw7CisJCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJlYWQp
-OwogCQlfX2NscmJpdHMoc3luY2gtPnN0YXR1cywgWE5TWU5DSF9QRU5ESU5HKTsKIAl9CiAKQEAg
-LTQzNSw3ICs0NDMsNyBAQCB4bnBob2xkZXJfdCAqeG5zeW5jaF93YWtldXBfdGhpc19zbGVlcGVy
-CiAJbmhvbGRlciA9IHBvcHBxKCZzeW5jaC0+cGVuZHEsIGhvbGRlcik7CiAJdGhyZWFkID0gbGlu
-azJ0aHJlYWQoaG9sZGVyLCBwbGluayk7CiAJdGhyZWFkLT53Y2hhbiA9IE5VTEw7Ci0Jc3luY2gt
-Pm93bmVyID0gdGhyZWFkOworCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJl
-YWQpOwogCV9fc2V0Yml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNIX1BFTkRJTkcpOwogCXhubHR0
-X2xvZ19ldmVudCh4ZW5vX2V2X3dha2V1cHgsIHRocmVhZC0+bmFtZSwgc3luY2gpOwogCXhucG9k
-X3Jlc3VtZV90aHJlYWQodGhyZWFkLCBYTlBFTkQpOwpAQCAtNTIzLDcgKzUzMSw3IEBAIGludCB4
-bnN5bmNoX2ZsdXNoKHhuc3luY2hfdCAqc3luY2gsIHhuZmwKIAkJc3RhdHVzID0gWE5TWU5DSF9S
-RVNDSEVEOwogCX0KIAotCXN5bmNoLT5vd25lciA9IE5VTEw7CisJeG5zeW5jaF9zZXRfb3duZXJf
-aW50ZXJuYWwoc3luY2gsIE5VTEwpOwogCV9fY2xyYml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNI
-X1BFTkRJTkcpOwogCiAJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ssIHMpOwpkaWZmIC11
-cnAgeGVub21haS1hL2tzcmMvc2tpbnMvbmF0aXZlL3Rhc2suYyB4ZW5vbWFpLWIva3NyYy9za2lu
-cy9uYXRpdmUvdGFzay5jCi0tLSB4ZW5vbWFpLWEva3NyYy9za2lucy9uYXRpdmUvdGFzay5jCTIw
-MDYtMDctMzAgMTA6NTA6NDkuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpLWIva3NyYy9za2lu
-cy9uYXRpdmUvdGFzay5jCTIwMDYtMDgtMDkgMTM6MzI6MjEuOTE3NzcwMDAwICswMjAwCkBAIC0y
-NjIsNyArMjYyLDcgQEAgaW50IHJ0X3Rhc2tfY3JlYXRlKFJUX1RBU0sgKnRhc2ssCiAKICNpZmRl
-ZiBDT05GSUdfWEVOT19PUFRfTkFUSVZFX01QUwogCXhuc3luY2hfaW5pdCgmdGFzay0+bXJlY3Ys
-IFhOU1lOQ0hfRklGTyk7Ci0JeG5zeW5jaF9pbml0KCZ0YXNrLT5tc2VuZHEsIFhOU1lOQ0hfUFJJ
-TyB8IFhOU1lOQ0hfUElQKTsKKwl4bnN5bmNoX2luaXQoJnRhc2stPm1zZW5kcSwgWE5TWU5DSF9Q
-UklPIHwgWE5TWU5DSF9QSVAgfCBYTlNZTkNIX0ZPV05FUik7CiAJeG5zeW5jaF9zZXRfb3duZXIo
-JnRhc2stPm1zZW5kcSwgJnRhc2stPnRocmVhZF9iYXNlKTsKIAl0YXNrLT5mbG93Z2VuID0gMDsK
-ICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfTkFUSVZFX01QUyAqLwpAQCAtMjA1NywxMCArMjA1
-Nyw3IEBAIGludCBydF90YXNrX3JlcGx5KGludCBmbG93aWQsIFJUX1RBU0tfTUMKIAkJICAgaWRl
-bnRpZmllciBmcm9tIG90aGVyIHNlbmRlcnMgd3J0IHRvIGEgZ2l2ZW4gcmVjZWl2ZXIuICovCiAK
-IAkJaWYgKHJlY2VpdmVyLT53YWl0X2FyZ3MubXBzLm1jYl9zLmZsb3dpZCA9PSBmbG93aWQpIHsK
-LQkJCS8qIE5vdGUgdGhhdCB0aGUgZm9sbG93aW5nIHdpbGwgY2F1c2UgdGhlIHJlY2VpdmVyIHRv
-IGJlCi0JCQkgICB1bmJsb2NrZWQgd2l0aG91dCB0cmFuc2ZlcnJpbmcgdGhlIG93bmVyc2hpcCBv
-ZiB0aGUKLQkJCSAgIG1zZW5kcSBvYmplY3QsIHNpbmNlIHdlIHdhbnQgdGhlIHNlbmRlciB0byBr
-ZWVwIGl0LiAqLwotCQkJeG5wb2RfcmVzdW1lX3RocmVhZCgmcmVjZWl2ZXItPnRocmVhZF9iYXNl
-LCBYTlBFTkQpOworCQkJeG5zeW5jaF93YWtldXBfdGhpc19zbGVlcGVyKCZzZW5kZXItPm1zZW5k
-cSwgaG9sZGVyKTsKIAkJCWJyZWFrOwogCQl9CiAJfQo=
-------=_Part_16428_23435704.1155123777589--
+--Boundary-00=_Frf2E2x7zlBS6ju--
 
