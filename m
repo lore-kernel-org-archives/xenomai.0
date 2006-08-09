@@ -1,10 +1,13 @@
-Message-ID: <58356.127.0.0.1.1155128979.squirrel@domain.hid>
-Date: Wed, 9 Aug 2006 13:09:39 -0000 (UTC)
-From: "Jacques GANGLOFF" <jacques@domain.hid>
+Message-ID: <b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
+Date: Wed, 9 Aug 2006 13:42:57 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] -EINTR using rt_pipe_read with TM_INFINITE
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_16428_23435704.1155123777589"
+References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
+	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
+Subject: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send... bug?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,199 +17,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org, andrewg@domain.hid, xenomai@xenomai.org
 
-Hi,
+------=_Part_16428_23435704.1155123777589
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_16429_21959484.1155123777589"
 
-I did this little test :
+------=_Part_16429_21959484.1155123777589
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Below I have attached two sources, one on the kernel side and one on the
-user side.
-I do here a very simple fifo handshaking test. I insert the kernel module
-then I run the user program. When I do the test with the "THE BUG IS HERE=
-"
-line commented, I got :
+So could anyone test this patch and let me know if it works?
 
-root@domain.hid# ./user
-user : j'ai envoy=E9 A
-user :j'ai bien re=E7u E
-root@domain.hid# dmesg
-hello world
-kernel : j'ai bien re=E7u A
-kernel : ret =3D 1
-kernel :j'ai envoy=E9 E
+Note : I haven't compiled it even as I don't have a proper environment. But
+the changes are pretty simple so it should be ok.
 
-Now, when I uncomment the line :
-root@domain.hid# ./user
-user : j'ai envoy=E9 A
-[CRTL-C] because the user program is blocking ...
-root@domain.hid# dmesg
-hello world
-kernel : j'ai bien re=E7u A
-kernel : ret =3D -4
-kernel :j'ai envoy=E9 E
+There was actually yet another problem mmm... who cares to delete a sender
+from the msendq?
 
+Now should be ok or maybe I'm completely wrong and see the things which do
+not exist at all :)
 
-Now, ret=3D-4 is the code for -EINTR. According to the doc :
-"-EINTR is returned if rt_task_unblock() has been called for the waiting
-task before any data was available."
+p.s. I cc'ed "xenomai-core" as it may involve further discussions and it's
+the right place indeed.
 
-I cannot see where rt_task_unblock() could be called. What is wrong ?
+-- 
+Best regards,
+Dmitry Adamushko
 
-Thanks for your help,
-Jacques
+------=_Part_16429_21959484.1155123777589
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Kernel module :
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+<br>
+So could anyone test this patch and let me know if it works?<br>
+<br>
+Note : I haven't compiled it even as I don't have a proper environment. But the changes are pretty simple so it should be ok.<br clear="all"><br>
+There was actually yet another problem mmm... who cares to delete a sender from the msendq?<br>
+<br>
+Now should be ok or maybe I'm completely wrong and see the things which do not exist at all :)<br>
+<br>
+p.s. I cc'ed &quot;xenomai-core&quot; as it may involve further discussions and it's the right place indeed.<br>
+<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
 
-#include <native/task.h>
-#include <native/pipe.h>
-#include <rtdm/rtdm_driver.h>
+------=_Part_16429_21959484.1155123777589--
 
-#define TASK_PRIO 99
-#define TASK_MODE T_FPU|T_CPU(0)
-#define TASK_STKSZ 4096
+------=_Part_16428_23435704.1155123777589
+Content-Type: text/x-patch; name=synch-fowner.patch; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_eqnmr1nv
+Content-Disposition: attachment; filename="synch-fowner.patch"
 
-RT_PIPE pipe1,pipe2;
-RT_TASK task_desc;
-
-void task_body (void *cookie)
-{
-	char buf,mesg;
-	int err;
-
-    mesg =3D 'E';
-	/*lecture dans le pipe (TM_INFINITE : bloque la t=E2che s'il y a rien da=
-ns
-	 * le pipe)*/
-	err =3D rt_pipe_read(&pipe1,&buf,sizeof(char),TM_INFINITE);
-
-
-	rtdm_printk("kernel : j'ai bien re=E7u %c \n",buf);
-
-        /* THE BUG IS HERE */
-	err =3D rt_pipe_read(&pipe1,&buf,sizeof(char),TM_INFINITE);
-        /* THE BUG IS HERE */
-
-	rtdm_printk("kernel : ret =3D %d\n", err );
-
-	/*=E9criture dans le pipe*/
-	err =3D rt_pipe_write(&pipe2,&mesg,sizeof(char),P_NORMAL);
-
-	rtdm_printk("kernel :j'ai envoy=E9 %c \n",mesg);
-
-
-}
-
-
-int init_module(void)
-{
-
-	int err=3D0;
-
-
-	printk("hello world\n");
-
-	/*Cr=E9ation d'un pipe pour lecture*/
-	err =3D rt_pipe_create(&pipe1,"MyPipe0",0,sizeof(char));
-	if(err)
-	{
-		rtdm_printk("pipe MyPipe0 creation failure \n");
-	}
-
-	/*Cr=E9ation d'un pipe pour =E9criture*/
-	err =3D rt_pipe_create(&pipe2,"MyPipe1",1,sizeof(char));
-	if(err)
-	{
-		rtdm_printk("pipe MyPipe1 creation failure \n");
-	}
-
-	/*Cr=E9ation de la t=E2che*/
-	err =3D
-rt_task_create(&task_desc,"MyTaskName",TASK_STKSZ,TASK_PRIO,TASK_MODE);
-
-	if (!err)
-	{
-		/*lancement de la t=E2che*/
-		rt_task_start(&task_desc,&task_body,NULL);
-	}
-
-	return 0;
-
-}
-
-
-void cleanup_module(void)
-
-{
-	rt_task_delete(&task_desc);
-	rt_pipe_delete(&pipe1);
-	rt_pipe_delete(&pipe2);
-}
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-
-User program :
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-
-#include <native/task.h>
-#include <native/pipe.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-
-
-
-int main()
-{
-	int pipe1,pipe2;
-	char m2,m1=3D'A';
-
-	m2 =3D 0;
-
-	/*Ouverture du device c=F4t=E9 user pour =E9criture */
-	pipe1 =3D open("/dev/rtp0",O_RDWR);
-
-	/*Ouverture du device c=F4t=E9 user pour lecture*/
-	pipe2 =3D open("/dev/rtp1",O_RDONLY);
-
-	/*=E9criture des donn=E9es*/
-	write(pipe1,&m1,sizeof(char));
-
-	printf("user : j'ai envoy=E9 %c \n",m1);
-
-	/* lecture des donn=E9es */
-	read(pipe2,&m2,sizeof(char));
-
-	printf("user :j'ai bien re=E7u %c \n",m2);
-
-
-	close(pipe1);
-	close(pipe2);
-	return 0;
-}
- ___________________________________________
-
-   Prof. Jacques GANGLOFF
-
-   Strasbourg I University
-   LSIIT Laboratory, EAVR team
-   Bd S. Brant
-   BP 10413, 67412 ILLKIRCH cedex, FRANCE
-   Tel : +33 (0)3 90 24 44 68
-   Fax : +33 (0)3 90 24 44 80
-   http://eavr.u-strasbg.fr
-____________________________________________
-
+ZGlmZiAtdXJwIHhlbm9tYWktYS9pbmNsdWRlL251Y2xldXMvc3luY2guaCB4ZW5vbWFpLWIvaW5j
+bHVkZS9udWNsZXVzL3N5bmNoLmgKLS0tIHhlbm9tYWktYS9pbmNsdWRlL251Y2xldXMvc3luY2gu
+aAkyMDA2LTA3LTIwIDExOjA5OjAxLjAwMDAwMDAwMCArMDIwMAorKysgeGVub21haS1iL2luY2x1
+ZGUvbnVjbGV1cy9zeW5jaC5oCTIwMDYtMDgtMDkgMTI6NTM6MzcuMDQ0MjE3MDAwICswMjAwCkBA
+IC0yOCw2ICsyOCw3IEBACiAjZGVmaW5lIFhOU1lOQ0hfTk9QSVAgICAweDAKICNkZWZpbmUgWE5T
+WU5DSF9QSVAgICAgIDB4MgogI2RlZmluZSBYTlNZTkNIX0RSRU9SRCAgMHg0CisjZGVmaW5lIFhO
+U1lOQ0hfRk9XTkVSCTB4MjAJLyogRml4ZWQgb3duZXIgKi8KIAogI2lmIGRlZmluZWQoX19LRVJO
+RUxfXykgfHwgZGVmaW5lZChfX1hFTk9fU0lNX18pCiAKZGlmZiAtdXJwIHhlbm9tYWktYS9rc3Jj
+L251Y2xldXMvc3luY2guYyB4ZW5vbWFpLWIva3NyYy9udWNsZXVzL3N5bmNoLmMKLS0tIHhlbm9t
+YWktYS9rc3JjL251Y2xldXMvc3luY2guYwkyMDA2LTA2LTE1IDE0OjE1OjI1LjAwMDAwMDAwMCAr
+MDIwMAorKysgeGVub21haS1iL2tzcmMvbnVjbGV1cy9zeW5jaC5jCTIwMDYtMDgtMDkgMTM6Mjg6
+NTUuMTk5MDgxMDAwICswMjAwCkBAIC0zNyw2ICszNywxNCBAQAogI2luY2x1ZGUgPG51Y2xldXMv
+bW9kdWxlLmg+CiAjaW5jbHVkZSA8bnVjbGV1cy9sdHQuaD4KIAorLyogdGVtcG9yYXJpbHkgaGVy
+ZSAqLworc3RhdGljIGlubGluZSB2b2lkIHhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHhuc3lu
+Y2hfdCAqc3luY2gsIHhudGhyZWFkX3QgKnRocmVhZCkKK3sKKwlpZiAoIXRlc3RiaXRzKHN5bmNo
+LT5zdGF0dXMsIFhOU1lOQ0hfRk9XTkVSKSkKKwkJc3luY2gtPm93bmVyID0gdGhyZWFkOworfQor
+CisKIC8qISAKICAqIFxmbiB2b2lkIHhuc3luY2hfaW5pdCh4bnN5bmNoX3QgKnN5bmNoLCB4bmZs
+YWdzX3QgZmxhZ3MpOwogICogXGJyaWVmIEluaXRpYWxpemUgYSBzeW5jaHJvbml6YXRpb24gb2Jq
+ZWN0LgpAQCAtMTgxLDcgKzE4OSw3IEBAIHZvaWQgeG5zeW5jaF9zbGVlcF9vbih4bnN5bmNoX3Qg
+KnN5bmNoLCAKIAogCQkJCWlmICh0ZXN0Yml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNIX1BFTkRJ
+TkcpKSB7CiAJCQkJCS8qIE93bmVyc2hpcCBpcyBzdGlsbCBwZW5kaW5nLCBzdGVhbCB0aGUgcmVz
+b3VyY2UuICovCi0JCQkJCXN5bmNoLT5vd25lciA9IHRocmVhZDsKKwkJCQkJeG5zeW5jaF9zZXRf
+b3duZXJfaW50ZXJuYWwoc3luY2gsIHRocmVhZCk7CiAJCQkJCV9fY2xyYml0cyh0aHJlYWQtPnN0
+YXR1cywKIAkJCQkJCSAgWE5STUlEIHwgWE5USU1FTyB8IFhOQlJFQUspOwogCQkJCQlnb3RvIGdy
+YWJfb3duZXJzaGlwOwpAQCAtMjA5LDcgKzIxNyw3IEBAIHZvaWQgeG5zeW5jaF9zbGVlcF9vbih4
+bnN5bmNoX3QgKnN5bmNoLCAKIAogCQkJeG5wb2Rfc3VzcGVuZF90aHJlYWQodGhyZWFkLCBYTlBF
+TkQsIHRpbWVvdXQsIHN5bmNoKTsKIAotCQkJaWYgKHVubGlrZWx5KHN5bmNoLT5vd25lciAhPSB0
+aHJlYWQpKSB7CisJCQlpZiAoIXRlc3RiaXRzKHN5bmNoLT5zdGF0dXMsIFhOU1lOQ0hfT1dORVIp
+ICYmIHVubGlrZWx5KHN5bmNoLT5vd25lciAhPSB0aHJlYWQpKSB7CiAJCQkJLyogU29tZWJvZHkg
+c3RvbGUgdXMgdGhlIG93bmVyc2hpcCB3aGlsZSB3ZSB3ZXJlIHJlYWR5IHRvCiAJCQkJICAgcnVu
+LCB3YWl0aW5nIGZvciB0aGUgQ1BVOiB3ZSBuZWVkIHRvIHdhaXQgYWdhaW4gZm9yIHRoZQogCQkJ
+CSAgIHJlc291cmNlLiAqLwpAQCAtMzYyLDEyICszNzAsMTIgQEAgeG50aHJlYWRfdCAqeG5zeW5j
+aF93YWtldXBfb25lX3NsZWVwZXIoeAogCWlmIChob2xkZXIpIHsKIAkJdGhyZWFkID0gbGluazJ0
+aHJlYWQoaG9sZGVyLCBwbGluayk7CiAJCXRocmVhZC0+d2NoYW4gPSBOVUxMOwotCQlzeW5jaC0+
+b3duZXIgPSB0aHJlYWQ7CisJCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJl
+YWQpOwogCQlfX3NldGJpdHMoc3luY2gtPnN0YXR1cywgWE5TWU5DSF9QRU5ESU5HKTsKIAkJeG5s
+dHRfbG9nX2V2ZW50KHhlbm9fZXZfd2FrZXVwMSwgdGhyZWFkLT5uYW1lLCBzeW5jaCk7CiAJCXhu
+cG9kX3Jlc3VtZV90aHJlYWQodGhyZWFkLCBYTlBFTkQpOwogCX0gZWxzZSB7Ci0JCXN5bmNoLT5v
+d25lciA9IE5VTEw7CisJCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJlYWQp
+OwogCQlfX2NscmJpdHMoc3luY2gtPnN0YXR1cywgWE5TWU5DSF9QRU5ESU5HKTsKIAl9CiAKQEAg
+LTQzNSw3ICs0NDMsNyBAQCB4bnBob2xkZXJfdCAqeG5zeW5jaF93YWtldXBfdGhpc19zbGVlcGVy
+CiAJbmhvbGRlciA9IHBvcHBxKCZzeW5jaC0+cGVuZHEsIGhvbGRlcik7CiAJdGhyZWFkID0gbGlu
+azJ0aHJlYWQoaG9sZGVyLCBwbGluayk7CiAJdGhyZWFkLT53Y2hhbiA9IE5VTEw7Ci0Jc3luY2gt
+Pm93bmVyID0gdGhyZWFkOworCXhuc3luY2hfc2V0X293bmVyX2ludGVybmFsKHN5bmNoLCB0aHJl
+YWQpOwogCV9fc2V0Yml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNIX1BFTkRJTkcpOwogCXhubHR0
+X2xvZ19ldmVudCh4ZW5vX2V2X3dha2V1cHgsIHRocmVhZC0+bmFtZSwgc3luY2gpOwogCXhucG9k
+X3Jlc3VtZV90aHJlYWQodGhyZWFkLCBYTlBFTkQpOwpAQCAtNTIzLDcgKzUzMSw3IEBAIGludCB4
+bnN5bmNoX2ZsdXNoKHhuc3luY2hfdCAqc3luY2gsIHhuZmwKIAkJc3RhdHVzID0gWE5TWU5DSF9S
+RVNDSEVEOwogCX0KIAotCXN5bmNoLT5vd25lciA9IE5VTEw7CisJeG5zeW5jaF9zZXRfb3duZXJf
+aW50ZXJuYWwoc3luY2gsIE5VTEwpOwogCV9fY2xyYml0cyhzeW5jaC0+c3RhdHVzLCBYTlNZTkNI
+X1BFTkRJTkcpOwogCiAJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ssIHMpOwpkaWZmIC11
+cnAgeGVub21haS1hL2tzcmMvc2tpbnMvbmF0aXZlL3Rhc2suYyB4ZW5vbWFpLWIva3NyYy9za2lu
+cy9uYXRpdmUvdGFzay5jCi0tLSB4ZW5vbWFpLWEva3NyYy9za2lucy9uYXRpdmUvdGFzay5jCTIw
+MDYtMDctMzAgMTA6NTA6NDkuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpLWIva3NyYy9za2lu
+cy9uYXRpdmUvdGFzay5jCTIwMDYtMDgtMDkgMTM6MzI6MjEuOTE3NzcwMDAwICswMjAwCkBAIC0y
+NjIsNyArMjYyLDcgQEAgaW50IHJ0X3Rhc2tfY3JlYXRlKFJUX1RBU0sgKnRhc2ssCiAKICNpZmRl
+ZiBDT05GSUdfWEVOT19PUFRfTkFUSVZFX01QUwogCXhuc3luY2hfaW5pdCgmdGFzay0+bXJlY3Ys
+IFhOU1lOQ0hfRklGTyk7Ci0JeG5zeW5jaF9pbml0KCZ0YXNrLT5tc2VuZHEsIFhOU1lOQ0hfUFJJ
+TyB8IFhOU1lOQ0hfUElQKTsKKwl4bnN5bmNoX2luaXQoJnRhc2stPm1zZW5kcSwgWE5TWU5DSF9Q
+UklPIHwgWE5TWU5DSF9QSVAgfCBYTlNZTkNIX0ZPV05FUik7CiAJeG5zeW5jaF9zZXRfb3duZXIo
+JnRhc2stPm1zZW5kcSwgJnRhc2stPnRocmVhZF9iYXNlKTsKIAl0YXNrLT5mbG93Z2VuID0gMDsK
+ICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfTkFUSVZFX01QUyAqLwpAQCAtMjA1NywxMCArMjA1
+Nyw3IEBAIGludCBydF90YXNrX3JlcGx5KGludCBmbG93aWQsIFJUX1RBU0tfTUMKIAkJICAgaWRl
+bnRpZmllciBmcm9tIG90aGVyIHNlbmRlcnMgd3J0IHRvIGEgZ2l2ZW4gcmVjZWl2ZXIuICovCiAK
+IAkJaWYgKHJlY2VpdmVyLT53YWl0X2FyZ3MubXBzLm1jYl9zLmZsb3dpZCA9PSBmbG93aWQpIHsK
+LQkJCS8qIE5vdGUgdGhhdCB0aGUgZm9sbG93aW5nIHdpbGwgY2F1c2UgdGhlIHJlY2VpdmVyIHRv
+IGJlCi0JCQkgICB1bmJsb2NrZWQgd2l0aG91dCB0cmFuc2ZlcnJpbmcgdGhlIG93bmVyc2hpcCBv
+ZiB0aGUKLQkJCSAgIG1zZW5kcSBvYmplY3QsIHNpbmNlIHdlIHdhbnQgdGhlIHNlbmRlciB0byBr
+ZWVwIGl0LiAqLwotCQkJeG5wb2RfcmVzdW1lX3RocmVhZCgmcmVjZWl2ZXItPnRocmVhZF9iYXNl
+LCBYTlBFTkQpOworCQkJeG5zeW5jaF93YWtldXBfdGhpc19zbGVlcGVyKCZzZW5kZXItPm1zZW5k
+cSwgaG9sZGVyKTsKIAkJCWJyZWFrOwogCQl9CiAJfQo=
+------=_Part_16428_23435704.1155123777589--
 
