@@ -1,15 +1,16 @@
-Message-ID: <44DAEDF9.8060500@domain.hid>
-Date: Thu, 10 Aug 2006 10:27:37 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0608100311hea98dfeg7082e09928822d8d@domain.hid>
+Date: Thu, 10 Aug 2006 12:11:50 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] Re: [Xenomai-help] -110 error on rt_task_send...
+	bug?
+In-Reply-To: <44DAED87.3040506@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] SMI update
-References: <200608091837.55424.schwab@domain.hid> <44DA6568.6050300@domain.hid>
-	<200608100944.34068.schwab@domain.hid>
-In-Reply-To: <200608100944.34068.schwab@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6F05A54EA7D1236CC35F130B"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_26781_28959705.1155204710049"
+References: <44D7EDCF.9010409@domain.hid>
+	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
+	<b647ffbd0608090442q638115acw788da87969792cfb@domain.hid>
+	<200608091709.57319.schwab@domain.hid> <44DAED87.3040506@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,43 +20,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Ulrich Schwab <schwab@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: andrewg@domain.hid, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6F05A54EA7D1236CC35F130B
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+------=_Part_26781_28959705.1155204710049
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Ulrich Schwab wrote:
-> On Thursday 10 August 2006 00:44, Jan Kiszka wrote:
->> Thanks for the patch, we just need some additional define of
->> PCI_DEVICE_ID_INTEL_ICH7_0 for kernel 2.4 compatibility. And if you
->> additionally provide a ChangeLog fragment, your patch would be perfect=
-!
->> (I tend to forget the last part often too... :) )
-> Where to add the new define for kernel 2.4 ?
->=20
+Hello,
 
-I would say to smi.c directly as there are no other users in sight.
-Otherwise, wrapping code goes to include/asm-{generic|<arch>}/wrapper.h.
+if you take a look e.g. at how synch->owner is used in the current SVN
+codebase then you will notice that this field is actually usefull only for
+PIP objects but xnsynch_wakeup_* and friends update it for all cases. No, I
+don't want to say that's why let's do the same with PENDING.
 
-Jan
+This is a preliminary patch and, that said, I'm going to take a closer look
+at the synch.c.
+
+Regarding PENDING : not sure at the moment if it would be helpful (have to
+think about possible use cases), but with the help of PENDING it's possible
+to support "ownership"-stealing for FOWNER objects. Sounds funny? :)
+
+if (testbits(synch->status, XNSYNCH_FOWNER | XNSYNCH_PENDING) ==
+XNSYNCH_FOWNER) {
+
+// the object has been stolen while a thread was waiting to be scheduled on
+
+}
 
 
---------------enig6F05A54EA7D1236CC35F130B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
+Best regards,
+Dmitry Adamushko
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+------=_Part_26781_28959705.1155204710049
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-iD8DBQFE2u35niDOoMHTA+kRAhvgAJ4gg9DScNEaqfHlg1QEeXSM5mriSQCeK+Q2
-REsP292rqBVLe5Pk0XS4uxA=
-=hM28
------END PGP SIGNATURE-----
+<br>
+Hello,<br>
+<br>
+if you take a look e.g. at how synch-&gt;owner is used in the current
+SVN codebase then you will notice that this field is actually usefull
+only for PIP objects but xnsynch_wakeup_* and friends update it for all
+cases. No, I don't want to say that's why let's do the same with
+PENDING.<br>
+<br>
+This is a preliminary patch and, that said, I'm going to take a closer look at the synch.c.<br>
+<br>
+Regarding PENDING : not sure at the moment if it would be helpful (have
+to think about possible use cases), but with the help of PENDING it's
+possible to support &quot;ownership&quot;-stealing for FOWNER objects. Sounds
+funny? :) <br>
+<br>
+if (testbits(synch-&gt;status, XNSYNCH_FOWNER | XNSYNCH_PENDING) == XNSYNCH_FOWNER) {<br>
+<br>
+// the object has been stolen while a thread was waiting to be scheduled on<br>
+<br>
+}<br>
+<br>
+<br>
+-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
 
---------------enig6F05A54EA7D1236CC35F130B--
+------=_Part_26781_28959705.1155204710049--
 
