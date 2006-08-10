@@ -1,13 +1,14 @@
-Subject: Re: [Xenomai-help] Problems with rt_task_wait_period
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44D74405.7000900@domain.hid>
-References: <1903678222@domain.hid>  <44D74405.7000900@domain.hid>
-Content-Type: text/plain
-Date: Mon, 07 Aug 2006 16:13:28 +0200
-Message-Id: <1154960008.4322.8.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <44DB6877.6010702@domain.hid>
+Date: Thu, 10 Aug 2006 19:10:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] PPC posted results (testsuite latency)
+References: <1299EF3181B10F479D85C3280132852422DAF1@domain.hid>
+In-Reply-To: <1299EF3181B10F479D85C3280132852422DAF1@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAEAAB971CF993E36C719C2DE"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,73 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: GUARDIOLA-FALCO Sebastien 204282 <Sebastien.GUARDIOLA-FALCO@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2006-08-07 at 15:45 +0200, Jan Kiszka wrote:
-> Steve Kreyer wrote:
-> > Hi,
-> > 
-> > Iam new to xenomai. 
-> > For warming up I try to run this little test program:
-> > 
-> > -----------------------------------------------------------------------
-> > #include <native/task.h>
-> > #include <stdio.h>
-> > #include <sys/mman.h>
-> > 
-> > RT_TASK task1;
-> > 
-> > void rt_task1(void* user_data){
-> >     int err = 0;
-> >     printf("%d\n", rt_task_set_periodic(NULL, TM_NOW, 100));
-> 
-> You are running in one-shot mode, thus all time units are in
-> *nanoseconds*. 100 ns cycles tend to pass quite quickly, thus the setup
-> actually fails (but it doesn't report this - a corner case for
-> considering this a bug).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAEAAB971CF993E36C719C2DE
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The setup does not really fail, but the period is so short that the tick
-occurs before the task has a chance to wait for the first release point
-in the timeline, so rt_task_wait_period() notices that no timer is
-outstanding, but incorrectly concludes that no timer was ever armed.
+GUARDIOLA-FALCO Sebastien 204282 wrote:
+> Hi,
+>=20
+> Here are the results for a PowerPC MVME2700 267Mhz (32Mo RAM + 1024kb L=
+2-cache).
+> Can someone cross-check them?
+>=20
+> The default value for the kernel parameter "scheduling latency" led me =
+to negative results, so I changed it to 4500ns. Can I improve those resul=
+ts with another walue, or with other parameters?
+> For the klatency test, I get more or less the half time I get in latenc=
+y.
+>=20
+> =3D=3D Sampling period: 100 us
+>  =3D=3D All results in microseconds
+> RTT|  00:00:01
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat=
+ worst
+> RTD|       1.859|       3.239|       6.179|       0|       1.859|      =
+ 6.179
+> RTD|       2.159|       3.239|      13.559|       0|       1.859|      =
+13.559
+> ...
 
-> 
-> >     err = rt_task_wait_period(NULL);
-> >     if(err){
-> >         fprintf(stderr, "Cannot wait periodic: %d, %d\n", err, EWOULDBLOCK);
-> > 
-> >     }
-> > }
-> > 
-> > int main(){
-> >     char* task1_data = NULL;
-> >     mlockall(MCL_CURRENT|MCL_FUTURE);
-> >     rt_timer_set_mode(TM_ONESHOT);
-> >     rt_task_spawn(&task1, "task1", 0, 99, 0, rt_task1, &task1_data);
-> >     sleep(10);
-> >     rt_task_delete(&task1);
-> >     return 0;
-> > }
-> > -----------------------------------------------------------------------
-> > 
-> > But rt_task_wait_period gives me always the Error EWOULDBLOCK, which means that I did not set the task periodic
-> > but which in fact I did... The call to rt_task_set_periodic is succesful.
-> > Can anyone help me figure out why? If you need additional infos please let me know...
-> > 
-> > Thanks in advance!
-> > 
-> > Steve
-> > 
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Looks quite good, maybe too good. Did you load your box? See
+TROUBLESHOOTING for some hints on this. Also let it run for a longer peri=
+od.
+
+Jan
 
 
+--------------enigAEAAB971CF993E36C719C2DE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE22h3niDOoMHTA+kRAqAaAJ9HCm8lud22Y8/g16U7iUitKuR0uwCfXmX0
+FRIgeqrSdw8wH4kosZQW39U=
+=WEu0
+-----END PGP SIGNATURE-----
+
+--------------enigAEAAB971CF993E36C719C2DE--
 
