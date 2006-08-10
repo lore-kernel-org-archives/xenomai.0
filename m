@@ -1,12 +1,10 @@
-From: Bernhard Walle <bernhard.walle@domain.hid>
-Date: Wed, 9 Aug 2006 19:41:43 +0200
-Message-ID: <nbjpq3-u7k.ln1@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A46DE83@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: WG: Xenomai vs. RTAI
+Message-ID: <44DA896F.9060102@domain.hid>
+Date: Wed, 09 Aug 2006 19:18:39 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] expected output and runtime of switchtest ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,22 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-
-Hello,
-
-<Roderik_Wildenburg@domain.hid> [2006-08-09]:
-> > 
-> > http://marc.theaimsgroup.com/?l=kernelnewbies&r=1&w=2
-> > 
-> > 
-> Sorry Bernhard, but I think this site isn´t very helpful for Xenomai (just 6 messages about Xenomai !?), or did I miss something ?
-
-Yes, sorry, I read kernelnewbies list before and here someone asked
-something about RTAI. And I still hand 'kernelnewbies' in mind. :)
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-Regards,
-  Bernhard
 
+soekris:/usr/xenomai/testsuite/switchtest# modprobe xeno_switchtest
+[  160.221018] Xenomai: starting RTDM services.
+soekris:/usr/xenomai/testsuite/switchtest#
+soekris:/usr/xenomai/testsuite/switchtest# switch -n
+soekris:/usr/xenomai/testsuite/switchtest# switch rtk0
+cpu 0: 498
+cpu 0: 998
+cpu 0: 1498
+cpu 0: 2000
+cpu 0: 2496
+cpu 0: 2998
+cpu 0: 3498
+cpu 0: 3998
+cpu 0: 4500
+
+...
+
+This prog has been running for atleast 1/2 hr,
+with minimum args..
+
+what should it be doing ?
 
