@@ -1,13 +1,14 @@
-Message-ID: <46942.127.0.0.1.1155228223.squirrel@domain.hid>
-Date: Thu, 10 Aug 2006 16:43:43 -0000 (UTC)
+Message-ID: <b647ffbd0608100759k44c1d05dk15868fb2e09966ab@domain.hid>
+Date: Thu, 10 Aug 2006 16:59:38 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] -EINTR using rt_pipe_read with TM_INFINITE
-From: "Jacques GANGLOFF" <jacques@domain.hid>
+In-Reply-To: <46942.127.0.0.1.1155228223.squirrel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-References: <58356.127.0.0.1.1155128979.squirrel@domain.hid>   
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_29185_28650977.1155221978216"
+References: <58356.127.0.0.1.1155128979.squirrel@domain.hid>
 	<44DA6D99.9090502@domain.hid>
-In-Reply-To: <44DA6D99.9090502@domain.hid>
+	<46942.127.0.0.1.1155228223.squirrel@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,49 +18,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jacques GANGLOFF <jacques@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
->
-> That looks like a correct behaviour to me: the kernel module is trying
-to read from pipe1 (MyPipe0, /dev/rtp0) and is blocked on it. The
-user-space tool tries to do the same (is this intended BTW?). Then the
-user-space program gets terminate, thus pipe1 is cleaned up. During that
-cleanup all RT-readers on the pipe are woken up with -EINTR as return
-code [1].
->
+------=_Part_29185_28650977.1155221978216
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Hi Jan,
+Hello,
 
-Thanks for your reply.
+take a look at the 4-th parameter of rt_pipe_create() :
 
-Indeed, I was on a wrong track: [CTRL-C] closed the application and also
-the pipes, thus sending this INTR signal to the kernel module.
+@param poolsize Specifies the size of a dedicated buffer pool for the
+ * pipe. Passing 0 means that all message allocations for this pipe are
+ * performed on the system heap.
 
-BTW, is there a limit to the size of a message one can send in a pipe.
-Could this limit be around 65535 ?
+The system heap is also used for other allocations and not only to serve a
+given heap. It's default size is 128 Kb (configurable through the config
+though).
 
-I'm porting a RTAI application to xenomai and I am still hunting a bug on
-a pipe. Writing on the user side more than 65530 bytes on a pipe yields a
-"Cannot allocate memory" perror message.
+Passing non-zero parameter causes a private heap of the given size to be
+created for this heap.
 
-Thanks a lot for your hints,
-Jacques
+Note, it's a size in bytes, not a flag (in your example you use 1 for the
+second heap).
 
- ___________________________________________
+This value is rounded up to a page size.
 
-   Prof. Jacques GANGLOFF
+rt_pipe_create()
+{
+...
+if (poolsize < 2 * PAGE_SIZE)
+                        poolsize = 2 * PAGE_SIZE;
 
-   Strasbourg I University
-   LSIIT Laboratory, EAVR team
-   Bd S. Brant
-   BP 10413, 67412 ILLKIRCH cedex, FRANCE
-   Tel : +33 (0)3 90 24 44 68
-   Fax : +33 (0)3 90 24 44 80
-   http://eavr.u-strasbg.fr
-____________________________________________
+poolsize = xnheap_rounded_size(poolsize, PAGE_SIZE);
 
 
 
+-- 
+Best regards,
+Dmitry Adamushko
 
+------=_Part_29185_28650977.1155221978216
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br>
+Hello,<br>
+<br>
+take a look at the 4-th parameter of rt_pipe_create() :<br>
+<br>
+@param poolsize Specifies the size of a dedicated buffer pool for the<br>
+&nbsp;* pipe. Passing 0 means that all message allocations for this pipe are<br>
+&nbsp;* performed on the system heap.<br clear="all"><br>
+The system heap is also used for other allocations and not only to
+serve a given heap. It's default size is 128 Kb (configurable through
+the config though).<br>
+<br>
+Passing non-zero parameter causes a private heap of the given size to be created for this heap.<br>
+<br>
+Note, it's a size in bytes, not a flag (in your example you use 1 for the second heap). <br>
+<br>
+This value is rounded up to a page size.<br>
+<br>
+rt_pipe_create()<br>
+{<br>
+...<br>
+if (poolsize &lt; 2 * PAGE_SIZE)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+poolsize = 2 * PAGE_SIZE;<br>
+<br>
+ poolsize = xnheap_rounded_size(poolsize, PAGE_SIZE);<br>
+<br>
+<br>
+<br>-- <br>Best regards,<br>Dmitry Adamushko
+
+------=_Part_29185_28650977.1155221978216--
 
