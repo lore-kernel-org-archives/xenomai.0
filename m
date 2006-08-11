@@ -1,13 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <b647ffbd0608110050p24303b2bhef5e4223190acd0e@domain.hid>
+Date: Fri, 11 Aug 2006 09:50:11 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] -110 error on rt_task_send... bug?
+In-Reply-To: <1155247988.4297.52.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] PPC posted results (testsuite latency)
-Date: Fri, 11 Aug 2006 09:43:15 +0200
-Message-ID: <1299EF3181B10F479D85C3280132852422DAF4@domain.hid>
-In-Reply-To: <44DB6877.6010702@domain.hid>
-From: "GUARDIOLA-FALCO Sebastien 204282" <Sebastien.GUARDIOLA-FALCO@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_36833_9486874.1155282611502"
+References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
+	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
+	<1155247988.4297.52.camel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,45 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org, andrewg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-jan.kiszka wrote:
->=20
-> =3D=3D Sampling period: 100 us
->  =3D=3D All results in microseconds
-> RTT|  00:00:01
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat =
-best|---lat worst
-> RTD|       1.859|       3.239|       6.179|       0|       1.859|      =
- 6.179
-> RTD|       2.159|       3.239|      13.559|       0|       1.859|      =
-13.559
-> ...
+------=_Part_36833_9486874.1155282611502
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
->Looks quite good, maybe too good. Did you load your box? See
->TROUBLESHOOTING for some hints on this. Also let it run for a longer =
-period.
-
-What do you mean by "too good"? What could be a cause of these results?
-
-I've tested on a 5-10 minutes basis.
-For calculations loads, I tested Linux ones (like =
-http://www.tux.org/~mayer/linux/bmark.html) that take 99% of CPU usage.
-Then I used the same one compiled for Xenomai. Latency results were =
-almost the same.
-Only Linux commands seems to disturb Xenomai. I tested some "ps" and =
-"top", locally and from a telnet connection.
-Results : I reach to 4.x avg latency, and 50 worse.
-
-Any other idea? May be a huge NFS file transfer, or socket transfer, I =
-don't know.
-
-Thanks,
-
-S=E9bastien Guardiola Falco.
-=20
+No. xnpod_resume_thread() detects that the sender is pending on the
+> msendq, and eventually calls xnsynch_forget_sleeper(), which removes the
+> sender from the pend queue, then clears the boost.
 
 
+I overlooked it indeed.
 
+
+The problem is triggered by synch->owner being cleared in
+> xnsynch_flush(), as a result of the receiver task to exit (called from
+> the native task deletion hook, i.e. xnsynch_destroy(&task->msendq)).
+> The problem to fix is indeed in xnsynch_sleep_on(), but it's rather a
+> matter of making sure that the awakened thread is not going to check the
+> owner field of a synch object that has just been destroyed.
+>
+>
+and moreover I was completely wrong. So the reputation of 2.1 is restored
+and that's more important indeed than err... mine own :o)
+
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_36833_9486874.1155282611502
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div><div><br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">No. xnpod_resume_thread() detects that the sender is pending on the<br>msendq, and eventually calls xnsynch_forget_sleeper(), which removes the
+<br>sender from the pend queue, then clears the boost.</blockquote><div><br>
+I overlooked it indeed.<br>
+&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">The problem is triggered by synch-&gt;owner being cleared in<br>xnsynch_flush(), as a result of the receiver task to exit (called from
+<br>the native task deletion hook, i.e. xnsynch_destroy(&amp;task-&gt;msendq)).<br>The problem to fix is indeed in xnsynch_sleep_on(), but it's rather a<br>matter of making sure that the awakened thread is not going to check the
+<br>owner field of a synch object that has just been destroyed.<br><br></blockquote></div><br>
+and moreover I was completely wrong. So the reputation of 2.1 is
+restored and that's more important indeed than err... mine own :o)<br clear="all"><br>
+<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
+
+------=_Part_36833_9486874.1155282611502--
 
