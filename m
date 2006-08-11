@@ -1,12 +1,12 @@
-Message-ID: <44DCABB2.1060706@domain.hid>
-Date: Fri, 11 Aug 2006 18:09:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44DCAE6B.4010608@domain.hid>
+Date: Fri, 11 Aug 2006 10:20:59 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCCCBEA29C84862348E7F5F8F"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] silence libtool warnings
+References: <44DBCCD3.5070505@domain.hid> <44DC2B80.1020403@domain.hid>
+In-Reply-To: <44DC2B80.1020403@domain.hid>
+Content-Type: multipart/mixed; boundary="------------010306090609030502020905"
+Subject: [Xenomai-core] [patches] 1-bundle-email-spelling-help
+	2-rfc-add-newer-bench-tests
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,166 +16,210 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCCCBEA29C84862348E7F5F8F
-Content-Type: multipart/mixed; boundary="------------030001020509070009050709"
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is a multi-part message in MIME format.
---------------030001020509070009050709
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+--------------010306090609030502020905
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-As we should not statically link the native/rtdm libraries against our
-new CAN tools (that code may reside on small embedded devices soon...),
-the old "Linking the executable XXXX ... is not portable!" warning now
-pops up again during Xenomai user-space build.
+Jan Kiszka wrote:
+> Jim Cromie wrote:
+>   
+>> im trying to inline this patch,
+>> pls let me know if its still ws fouled
+>> (in thunderbird, cp from svn diff |less, preformat b4 paste)
+>>
+>>
+>>
+>>
+>> Index: CREDITS
+>> ===================================================================
+>> --- CREDITS     (revision 1412)
+>> +++ CREDITS     (working copy)
+>> @@ -43,7 +43,7 @@
+>> D: the map.
+>>
+>> N: Jim Cromie
+>> -E: jcromie@domain.hid
+>> +E: jim.cromie@domain.hid
+>> D: Comprehensive statistics collection for the testsuite.
+>> D: Validation test script. Various script fixes and sanitization.
+>>     
+>
+> Obviously damaged, at least here on the list (leading single whitespace
+> missing in unmodified lines). This also applies to your second patch.
+>
+> The required steps with Thunderbird are: 1. start a new mail or reply as
+> HTML (bah!), 2. set the text style of everything to preformat, 3. switch
+> back to "Plain Text Only" under Options/Format. Hope somebody will once
+> hack a plugin for disabling line wrapping on demand without this dance...
+>
+>   
+<marge-simpson-voice>  HRMM
+maybe copy-src is the factor - Ive had luck my way (which yours sounds like)
+when cpying the diff from an emacs window.
 
-Here is an approach to work around that warnings already at libtool
-level (though I'm still convinced dropping "-module" would make more sens=
-e).
+No Matter  ( machts nichts, or after americanization,  MoxNix  )
+attachments are easier anyway, and RPM seems not to care either way.
 
-Jan
+So, 2 patches:
 
---------------030001020509070009050709
+1- bundle: email, Kconfig spelling, switchbench print in us, not ns.
+issues :
+- switchbench segfaults(iirc) for me - both before and after patch,
+so its not tested - and printf format purposely not tweaked, so as
+to give someone else the itch ;-)
+
+
+2 -  add newer benchmark tests to xeno-test  RFC
+- irqbench (all 4 ways)
+- switchbench - segfaults
+- switchtest
+by the way, could we get renames ? 
+    switch{,bench,test}/switch.c
+    is just unnecessarily confusing !
+
+issues :
+- are tests ready to add ?  perhaps, if optional ?
+- config dependence ignored
+    we have no guarantee of .config availability (or do we?)
+- XENOT_*  for tool(*) specific option setting from env
+        warrants better prefix, but XENOTEST_TOPTS_* seemed too much
+
+thanks
+-jimc
+
+--------------010306090609030502020905
 Content-Type: text/plain;
- name="silence-libtool-warnings.patch"
-Content-Transfer-Encoding: quoted-printable
+ name="diff.bundle"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="silence-libtool-warnings.patch"
+ filename="diff.bundle"
 
----
- configure.in                  |    8 ++++++++
- src/skins/native/Makefile.am  |    6 ------
- src/skins/posix/Makefile.am   |    6 ------
- src/skins/rtdm/Makefile.am    |    6 ------
- src/skins/vrtx/Makefile.am    |    6 ------
- src/skins/vxworks/Makefile.am |    6 ------
- 6 files changed, 8 insertions(+), 30 deletions(-)
+Index: src/testsuite/switchbench/switch.c
+===================================================================
+--- src/testsuite/switchbench/switch.c	(revision 1416)
++++ src/testsuite/switchbench/switch.c	(working copy)
+@@ -38,8 +38,9 @@
+ 
+ static inline void add_histogram(long addval)
+ {
+-       long inabs = rt_timer_tsc2ns(addval >= 0 ? addval : -addval) / 1000;  /* usec steps */
+-       histogram[inabs < HISTOGRAM_CELLS ? inabs : HISTOGRAM_CELLS - 1]++;
++	/* usec steps */
++	long inabs = rt_timer_tsc2ns(addval >= 0 ? addval : -addval) / 1000;
++	histogram[inabs < HISTOGRAM_CELLS ? inabs : HISTOGRAM_CELLS - 1]++;
+ }
+ 
+ void dump_histogram(void)
+@@ -134,10 +135,10 @@
+        printf("RTH|%12s|%12s|%12s|%12s\n",
+                       "lat min", "lat avg", "lat max", "lost");
+ 
+-       printf("RTD|%12Ld|%12Ld|%12Ld|%12lld\n",
+-                      rt_timer_tsc2ns(minjitter),
+-                      rt_timer_tsc2ns(avgjitter),
+-                      rt_timer_tsc2ns(maxjitter), lost);
++       printf("RTD|%12.3f|%12.3f|%12.3f|%12lld\n",
++                      rt_timer_tsc2ns(minjitter) / 1000,
++                      rt_timer_tsc2ns(avgjitter) / 1000,
++                      rt_timer_tsc2ns(maxjitter) / 1000, lost);
+ 
+        if (do_histogram)
+                dump_histogram();
+Index: CREDITS
+===================================================================
+--- CREDITS	(revision 1416)
++++ CREDITS	(working copy)
+@@ -43,7 +43,7 @@
+ D: the map.
+ 
+ N: Jim Cromie
+-E: jcromie@domain.hid
++E: jim.cromie@domain.hid
+ D: Comprehensive statistics collection for the testsuite.
+ D: Validation test script. Various script fixes and sanitization.
+ 
+Index: ksrc/arch/i386/Kconfig
+===================================================================
+--- ksrc/arch/i386/Kconfig	(revision 1416)
++++ ksrc/arch/i386/Kconfig	(working copy)
+@@ -67,13 +67,13 @@
+         and hence may not be altered.
+ 
+         For this reason, Xenomai contains code to detect chipsets using
+-        SMIs and optionnaly activate some workarounds to stop SMIs.
++        SMIs and optionally activate some workarounds to stop SMIs.
+         
+-        Enabling this option will cause Xenomai not to try and detect whether 
++        Enabling this option prevents Xenomai from detecting whether 
+         your hardware use SMIs. This option is mostly useful if you know
+         that your system does not use SMIs and really want to size Xenomai 
+         modules down. The detection code has no run-time space overhead,
+-        only disk-space overhead.
++        and a tiny memory footprint (<200 bytes on x86)
+ 
+ config XENO_HW_SMI_DETECT
+         bool
+@@ -98,7 +98,7 @@
+         and hence may not be altered.
+ 
+         For this reason, Xenomai contains code to detect chipsets using
+-        SMIs and optionnaly activate some workarounds to stop SMIs.
++        SMIs and optionally activate some workarounds to stop SMIs.
+         Enabling this option cause those workarounds to be activated.
+ 
+ if XENO_HW_SMI_WORKAROUND
 
-Index: xenomai/configure.in
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/configure.in
-+++ xenomai/configure.in
-@@ -632,3 +632,11 @@ if test \! x$XENO_MAYBE_DOCDIR =3D x; then
- fi
-=20
- AC_OUTPUT()
+--------------010306090609030502020905
+Content-Type: text/plain;
+ name="diff.xt-add-benchs"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="diff.xt-add-benchs"
+
+Index: scripts/xeno-test.in
+===================================================================
+--- scripts/xeno-test.in	(revision 1416)
++++ scripts/xeno-test.in	(working copy)
+@@ -190,16 +192,30 @@
+     boxstatus
+     (
+         cd `dirname $0`/../testsuite/latency
+-	loudly ./run --  $opts -t0
+-	loudly ./run --  $opts -t1
+-	loudly ./run --  $opts -t2
++	loudly ./run -- $XENOT_LAT $opts -t0 '# latency'
++	loudly ./run -- $XENOT_LAT $opts -t1 '# latency'
++	loudly ./run -- $XENOT_LAT $opts -t2 '# latency'
+     )
 +
-+dnl
-+dnl This suppresses the warnings "Linking the executable XXXX against th=
-e
-+dnl loadable module YYY.so is not portable!"
-+dnl
+     (	cd `dirname $0`/../testsuite/switch
+-	loudly ./run --  '# switch'
++	loudly ./run --  $XENOT_SWITCH '# switch'
+     )
++    (	cd `dirname $0`/../testsuite/switchbench
++	loudly ./run -- -p 10 -n -l 1000 $XENOT_SWITCHBENCH '# switchbench'
++    )
++    (	cd `dirname $0`/../testsuite/switchtest
++	loudly ./run -- -n $XENOT_SWITCHTEST '# switchtest'
++    )
 +
-+sed -e 's/shouldnotlink=3D\$module/shouldnotlink=3Dno/' libtool > libtoo=
-l.patched
-+mv libtool.patched libtool
-Index: xenomai/src/skins/native/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/native/Makefile.am
-+++ xenomai/src/skins/native/Makefile.am
-@@ -20,9 +20,3 @@ libnative_la_SOURCES =3D \
- libnative_la_CPPFLAGS =3D \
- 	@XENO_USER_CFLAGS@ \
- 	-I$(top_srcdir)/include
--
--install-exec-hook:
--	for la in $(lib_LTLIBRARIES); do \
--	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/' $(DESTDIR)$(libd=
-ir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
--	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
--	done
-Index: xenomai/src/skins/posix/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/Makefile.am
-+++ xenomai/src/skins/posix/Makefile.am
-@@ -30,10 +30,4 @@ install-data-local:
- uninstall-local:
- 	$(RM) $(DESTDIR)$(libdir)/posix.wrappers
-=20
--install-exec-hook:
--	for la in $(lib_LTLIBRARIES); do \
--	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/' $(DESTDIR)$(libd=
-ir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
--	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
--	done
--
- EXTRA_DIST =3D posix.wrappers
-Index: xenomai/src/skins/rtdm/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/rtdm/Makefile.am
-+++ xenomai/src/skins/rtdm/Makefile.am
-@@ -9,9 +9,3 @@ librtdm_la_SOURCES =3D \
- librtdm_la_CPPFLAGS =3D \
- 	@XENO_USER_CFLAGS@ \
- 	-I$(top_srcdir)/include
--
--install-exec-hook:
--	for la in $(lib_LTLIBRARIES); do \
--	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/' $(DESTDIR)$(libd=
-ir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
--	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
--	done
-Index: xenomai/src/skins/vrtx/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/vrtx/Makefile.am
-+++ xenomai/src/skins/vrtx/Makefile.am
-@@ -17,9 +17,3 @@ libvrtx_la_SOURCES =3D \
- libvrtx_la_CPPFLAGS =3D \
- 	@XENO_USER_CFLAGS@ \
- 	-I$(top_srcdir)/include
--
--install-exec-hook:
--	for la in $(lib_LTLIBRARIES); do \
--	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/' $(DESTDIR)$(libd=
-ir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
--	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
--	done
-Index: xenomai/src/skins/vxworks/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/vxworks/Makefile.am
-+++ xenomai/src/skins/vxworks/Makefile.am
-@@ -18,9 +18,3 @@ libvxworks_la_SOURCES =3D \
- libvxworks_la_CPPFLAGS =3D \
- 	@XENO_USER_CFLAGS@ \
- 	-I$(top_srcdir)/include
--
--install-exec-hook:
--	for la in $(lib_LTLIBRARIES); do \
--	    sed -e 's/shouldnotlink=3Dyes/shouldnotlink=3Dno/' $(DESTDIR)$(libd=
-ir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
--	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
--	done
+     (	cd `dirname $0`/../testsuite/cyclic
+-	loudly ./run -- -p 10 -n -l 1000 '# cyclictest'
++	loudly ./run -- -p 10 -n -l 1000  $XENOT_CYCLIC '# cyclictest'
+     )
++    (	cd `dirname $0`/../testsuite/irqbench
++	loudly ./run -- -P 10 $XENOT_IRQBENCH -t0 '# irqbench user'
++	loudly ./run -- -P 10 $XENOT_IRQBENCH -t1 '# irqbench kernel'
++	loudly ./run -- -P 10 $XENOT_IRQBENCH -t2 '# irqbench irq-handler'
++	loudly ./run -- -P 10 $XENOT_IRQBENCH -t3 '# irqbench hard-irq-handler'
++    )
+     boxstatus
+     cleanup_load
+ }
 
---------------030001020509070009050709--
-
---------------enigCCCBEA29C84862348E7F5F8F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE3KuyniDOoMHTA+kRAr6hAJ43GzFnm/MLDqaaRyvzQpnHU1A4/wCdH0xe
-Ey0aSVAEEUa4tfjV1W9+TO4=
-=CtZ1
------END PGP SIGNATURE-----
-
---------------enigCCCBEA29C84862348E7F5F8F--
+--------------010306090609030502020905--
 
