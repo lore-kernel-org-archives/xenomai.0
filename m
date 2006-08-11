@@ -1,12 +1,12 @@
-Message-ID: <44DC572E.9080205@domain.hid>
-Date: Fri, 11 Aug 2006 12:08:46 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <44DCA9DC.1000509@domain.hid>
+Date: Fri, 11 Aug 2006 18:01:32 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Announcement Realtime USB Stack
-References: <E443EE6E95070D46896C24F5C44EA7F53A15B6@domain.hid>
-In-Reply-To: <E443EE6E95070D46896C24F5C44EA7F53A15B6@domain.hid>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBD6325AFCCB7E57C827E10B7"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] CAN stack merged
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,23 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Harkema, G.A." <G.A.Harkema@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>, Philippe Gerum <rpm@xenomai.org>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Harkema, G.A. wrote:
-> Hello,
->=20
-> =20
->=20
-> We are glad to present our new realtime USB stack based on Xenomai=20
-> 2.2.0. You can find it at https://gna.org/projects/usb20rt/ as a=20
-> downloadable file and svn.
->=20
-> It is not bug free, but it=92s a start. Please try the core and feel fr=
-ee=20
-> to make comments.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBD6325AFCCB7E57C827E10B7
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Cools, this would allow for support of CAN-USB-Devices.
+Hi all,
 
-Wolfgang.
+I just hit enter, and all the nice CAN code is now in SVN head. We only
+need a check-in of a bootstrap run with the fitting autotool versions.
+Philippe, could you do this? [Meanwhile, one can also run it locally
+after checking out from SVN.]
+
+Both the drivers and the tools were merged. You find the latter under
+src/utils/can. rtcanconfig will be installed to <prefix>/sbin,
+rtcansend/resc go to <prefix>/bin.
+
+Wolfgang suggested to collect driver documentation under doc/drivers/,
+maybe this is better than having it in the driver's source directory (or
+under doc/txt like for irqbench or 16550A).
+
+The utils README should be converted to man pages. Unless Wolfgang
+already started this (but he didn't sound like that ;) ): anyone willing
+to volunteer?
+
+Many thanks again to the contributors of RT-Socket-CAN! I'm convinced
+this is a significant milestone for CAN support under real-time Linux in
+general and, of course, specifically under Xenomai.
+
+Jan
+
+
+--------------enigBD6325AFCCB7E57C827E10B7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE3KncniDOoMHTA+kRAslJAJ4yRTvaTDy6XqygHmt+EHNUUDlzeACfffhu
+Tvrs0MALipUShSYIgqOupoo=
+=/UdV
+-----END PGP SIGNATURE-----
+
+--------------enigBD6325AFCCB7E57C827E10B7--
 
