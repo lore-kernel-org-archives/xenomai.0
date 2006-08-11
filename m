@@ -1,11 +1,14 @@
-content-class: urn:content-classes:message
+Message-ID: <44DC4BE2.2050104@domain.hid>
+Date: Fri, 11 Aug 2006 11:20:34 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6BD1A.CA8BCD6A"
-Date: Fri, 11 Aug 2006 09:50:19 +0200
-Message-ID: <E443EE6E95070D46896C24F5C44EA7F53A15B6@domain.hid>
-From: "Harkema, G.A." <G.A.Harkema@domain.hid>
-Subject: [Xenomai-core] Announcement Realtime USB Stack
+Subject: Re: [Xenomai-core] Announcement Realtime USB Stack
+References: <E443EE6E95070D46896C24F5C44EA7F53A15B6@domain.hid>
+In-Reply-To: <E443EE6E95070D46896C24F5C44EA7F53A15B6@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigE6242F49D135DAD7BCD1C98C"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,164 +18,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Harkema, G.A." <G.A.Harkema@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C6BD1A.CA8BCD6A
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigE6242F49D135DAD7BCD1C98C
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Harkema, G.A. wrote:
+> Hello,
+>=20
+> =20
+>=20
+> We are glad to present our new realtime USB stack based on Xenomai
+> 2.2.0. You can find it at https://gna.org/projects/usb20rt/ as a
+> downloadable file and svn.
+>=20
+> It is not bug free, but it's a start. Please try the core and feel free=
 
-=20
+> to make comments.
+>=20
 
-We are glad to present our new realtime USB stack based on Xenomai
-2.2.0. You can find it at https://gna.org/projects/usb20rt/ as a
-downloadable file and svn.
+Porting the Linux USB stack over was certainly a lot of work. Could you
+elaborate a bit on the design principles?
 
-It is not bug free, but it's a start. Please try the core and feel free
-to make comments.
+I saw e.g. that you preallocate one USB per endpoint, correct? Is there
+a chance to add more pending URBs? Looks to me like a network driver
+that is prepared to receive a single frame and than first requires the
+application to read out the data. But I might be wrong here.
 
-=20
+How do you manage transfer descriptors? Are they preallocated as well?
 
-Kind Regards,
+Some remarks on the code after a first glance:
 
-=20
+ o rthal_spinlock shouldn't be used in a RTDM driver, pick rtdm_lock
+   instead.
+ o At least in the EHCI code there is still a Linux timer in use from
+   RTDM IRQ context (mod_timer in rtdm_ehci_irq). This will blow your
+   box sooner or later.
+ o The skeleton driver registers its read handler also for non-rt usage.
+   If you don't do this, you could drop that context check in
+   rtdm_skeleton_read, and you will gain auto-context-switching for the
+   caller as well.
 
-Gerard
+This is certainly a pragmatic approach to gain USB 2.0 support over
+RTDM. But I would recommend you to carefully review all time-critical
+code paths (URB reception and transmission) with all its corner cases
+and dependencies (via spinlocks) to check for their RT-safeness.
 
-=20
-
-P Before you print think about the ENVIRONMENT
-
-=20
+Jan
 
 
-------_=_NextPart_001_01C6BD1A.CA8BCD6A
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--------------enigE6242F49D135DAD7BCD1C98C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:Tahoma;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
-@font-face
-	{font-family:Webdings;
-	panose-1:5 3 1 2 1 5 9 6 7 3;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.E-mailStijl17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:595.45pt 841.7pt;
-	margin:70.55pt 72.0pt 89.3pt 72.0pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+iD8DBQFE3EvmniDOoMHTA+kRAp4sAJ93nxLmMJv8Zdv5S45EzfsgxAM48gCeIhAC
+TAr2mheuwledyHE/sTk2pAg=
+=eJxJ
+-----END PGP SIGNATURE-----
 
-</head>
-
-<body lang=3DNL link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Hello,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>We are glad to present our new realtime USB =
-stack
-based on Xenomai 2.2.0. You can find it at <a
-href=3D"https://gna.org/projects/usb20rt/"
-title=3D"https://gna.org/projects/usb20rt/">https://gna.org/projects/usb2=
-0rt/</a>
-as a downloadable file and svn.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>It is not bug free, but it&#8217;s a start. =
-Please
-try the core and feel free to make =
-comments.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Kind Regards,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Gerard<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>&nbsp;<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><strong><b><font size=3D6 color=3Dgreen =
-face=3DWebdings><span
-lang=3DEN-US =
-style=3D'font-size:24.0pt;font-family:Webdings;color:green'>P</span></fon=
-t></b></strong><strong><b><font
-color=3Dblack face=3D"Times New Roman"><span lang=3DEN-US =
-style=3D'color:black'> </span></font></b></strong><font
-size=3D1 color=3Dgreen face=3DArial><span lang=3DEN-US =
-style=3D'font-size:7.5pt;
-font-family:Arial;color:green'>Before you print think about the =
-</span></font><strong><b><font
-size=3D1 color=3Dgreen face=3DTahoma><span lang=3DEN-US =
-style=3D'font-size:7.5pt;
-font-family:Tahoma;color:green'>ENVIRONMENT</span></font></b></strong><sp=
-an
-lang=3DEN-GB><o:p></o:p></span></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C6BD1A.CA8BCD6A--
+--------------enigE6242F49D135DAD7BCD1C98C--
 
