@@ -1,12 +1,16 @@
-Message-ID: <44DCAE6B.4010608@domain.hid>
-Date: Fri, 11 Aug 2006 10:20:59 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <44DCAF88.2060801@domain.hid>
+Date: Fri, 11 Aug 2006 18:25:44 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <44DBCCD3.5070505@domain.hid> <44DC2B80.1020403@domain.hid>
-In-Reply-To: <44DC2B80.1020403@domain.hid>
-Content-Type: multipart/mixed; boundary="------------010306090609030502020905"
-Subject: [Xenomai-core] [patches] 1-bundle-email-spelling-help
-	2-rfc-add-newer-bench-tests
+References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
+	<44DB9958.10109@domain.hid>
+In-Reply-To: <44DB9958.10109@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6F781CE59F9ECFA0290C9C33"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Test, benchmark,
+ demo frameworks (was: expected output and runtime of switchtest ?)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,210 +20,166 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jim Cromie <jim.cromie@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------010306090609030502020905
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6F781CE59F9ECFA0290C9C33
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Jim Cromie wrote:
->   
->> im trying to inline this patch,
->> pls let me know if its still ws fouled
->> (in thunderbird, cp from svn diff |less, preformat b4 paste)
->>
->>
->>
->>
->> Index: CREDITS
->> ===================================================================
->> --- CREDITS     (revision 1412)
->> +++ CREDITS     (working copy)
->> @@ -43,7 +43,7 @@
->> D: the map.
->>
->> N: Jim Cromie
->> -E: jcromie@domain.hid
->> +E: jim.cromie@domain.hid
->> D: Comprehensive statistics collection for the testsuite.
->> D: Validation test script. Various script fixes and sanitization.
->>     
->
-> Obviously damaged, at least here on the list (leading single whitespace
-> missing in unmodified lines). This also applies to your second patch.
->
-> The required steps with Thunderbird are: 1. start a new mail or reply as
-> HTML (bah!), 2. set the text style of everything to preformat, 3. switch
-> back to "Plain Text Only" under Options/Format. Hope somebody will once
-> hack a plugin for disabling line wrapping on demand without this dance...
->
->   
-<marge-simpson-voice>  HRMM
-maybe copy-src is the factor - Ive had luck my way (which yours sounds like)
-when cpying the diff from an emacs window.
+Hi all,
 
-No Matter  ( machts nichts, or after americanization,  MoxNix  )
-attachments are easier anyway, and RPM seems not to care either way.
+Jim raised these issues nicely to a generic level. I would like to pick
+it up and add some thoughts.
 
-So, 2 patches:
+Jim Cromie wrote:
+> ...
+> FWIW, I noted that xeno-test is not running these:
+> - switchbench
+> - switchtest
+> - irqbench
+>=20
+> Im not sure they belong in xeno-test though, since they dont
+> appear to produce output that shows good vs bad performance,
+> only an informal 'sanity' check.
 
-1- bundle: email, Kconfig spelling, switchbench print in us, not ns.
-issues :
-- switchbench segfaults(iirc) for me - both before and after patch,
-so its not tested - and printf format purposely not tweaked, so as
-to give someone else the itch ;-)
+Including switchtest depends on if xeno-test should also do some
+elementary stability tests. This can be derived from performance tests
+as well, but Gilles' switchtest does it for the various switching
+constellations more systematically.
+
+Including irqbench is more tricky as "real" hardware and a second box
+are always involved here (so far it only works over null-modem, need to
+be extended to some GPIOs or parallel port).
+
+Regarding the output of the various benchmarks I would like to cite
+myself here:
+
+https://mail.gna.org/public/xenomai-core/2006-06/msg00195.html
+
+[And as one of the major xeno-test contributors, you may feel included
+by the term "test team". ;)]
+
+>=20
+> And technically, dont regression tests have to yield
+> a PASS / FAIL decision ?  ;-)
+>=20
+
+Simple regular output is a good idea whenever the result is simple to
+express. A fatally crashing switch test due to broken support on arch
+XYZ will make it hard to issue "FAIL"... :)
+
+>=20
+> Speaking more broadly, there are 3 possible kinds of test-progs
+>=20
+> - regression tests
+>    PASS / FAIL - either by exit(rc),
+>       or by printf( "%s\n", rc ? "not-ok" : "ok")
+>       see perl's regression test suite ( 100k separate tests )
+>       usually test details, are not tutorial
+
+Have you checked what is already under sim/skins/*/testsuite? I must
+confess I don't know if it is easily compilable for non-simulated
+execution as well. The best thing would be a test framework that builds
+both for the simulator and for "real" usage on the target.
+
+>=20
+> - performance tests
+>    progs stress xenomai, print performance data
+>    should help see performance problems, expose bugs
+>    xeno-test aims to collect performance data
+>    performance data must be expressive
+>       (switchtest is perhaps insufficient here)
+
+See my note above. I think some approach with a generic data collection
+suite + various data generators would be really fantastic! Just takes
+some brain(s) to design it and some hands to hack it...
+
+>=20
+> - examples / tutorials
+>    ex: satch.c    simple, clear progs (low feature clutter, etc)
+>    Id like to see all demo/**/ progs in single dir
+>       forex satch-native, satch-vxworks, etc ..
+>       makes for easier browsing
+>    simple makefile
+>       builds out-of-tree
+>       handles kernel-modules and user-progs
+>       (Ive seen some clean ones, cant find now.  Mine are crufty:-(
+>    'patterns' of usage
+>       IWBGreat if we had common usage patterns isolated,
+>       named, and described
+
+Basically full ack! Wolfgang and I had this discussion recently in a
+private thread on how to deal with demos for the new CAN stack. Xenomai
+really needs more of this, and it needs it in a structured, regularly
+organised way. Some of my thoughts on a demo repository:
+
+ o Should be located in the same SVN repos, maybe under /demo, in order
+   to keep it in sync with ongoing API enhancements/modifications.
+   But the distribution should be separate from the release (just like
+   the simulator).
+
+ o Must be well commented, i.e. should not only show how things can be
+   done, but also why (or why not). That matches very well with your
+   patterns.
+
+ o Should include both simple beginners examples as well as a few more
+   complex demos.
+
+ o Full ack to your Makefile requirement: stand-alone kernel (Hannes has
+   a nice generic one for both 2.4 and 2.6) and user-space makefiles. No
+   autotool stuff here. At the same time, we need a script to build and
+   maybe even run them automatically to detect breakages.
+
+This will certainly be a longer process and will take some helping
+hands, but we first of all need to agree on the basic structure and
+requirements, and then give it an (even small) start.
+
+>=20
+>=20
+> Towards this last item, Ive done 2 things:
+>=20
+> - poached code from Hannes Mayer :-)
+>    http://www.captain.at/xenomai.php
+>    task-timers.c does periodic timer 3 ways:
+>       sleeper, waiter, alarm.
+>=20
+> - scrounged old rtai/fusion code (ls -l says Jul 05 ;-)
+>    cleaned up, 1/2 compile now
+>    maybe theres examples-tutorials-patterns fodder in here.
+>=20
+>=20
+> attached tarball has these in 2 top-level dirs.
+> Id like to see if theres a place for them long-term, and clean
+> them up so theyre correct and helpful.
+>=20
+
+They can serve as a source, but may need to be aligned to a fairly
+strict quality level we should apply on all examples. You know, the
+clearer the code is, the better the user can adopt it, the less
+questions pop up on xenomai-help - and the more time we have to hack
+nice new features instead. =3D8)
+
+So, how to proceed?
+
+Jan
 
 
-2 -  add newer benchmark tests to xeno-test  RFC
-- irqbench (all 4 ways)
-- switchbench - segfaults
-- switchtest
-by the way, could we get renames ? 
-    switch{,bench,test}/switch.c
-    is just unnecessarily confusing !
 
-issues :
-- are tests ready to add ?  perhaps, if optional ?
-- config dependence ignored
-    we have no guarantee of .config availability (or do we?)
-- XENOT_*  for tool(*) specific option setting from env
-        warrants better prefix, but XENOTEST_TOPTS_* seemed too much
 
-thanks
--jimc
+--------------enig6F781CE59F9ECFA0290C9C33
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---------------010306090609030502020905
-Content-Type: text/plain;
- name="diff.bundle"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="diff.bundle"
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Index: src/testsuite/switchbench/switch.c
-===================================================================
---- src/testsuite/switchbench/switch.c	(revision 1416)
-+++ src/testsuite/switchbench/switch.c	(working copy)
-@@ -38,8 +38,9 @@
- 
- static inline void add_histogram(long addval)
- {
--       long inabs = rt_timer_tsc2ns(addval >= 0 ? addval : -addval) / 1000;  /* usec steps */
--       histogram[inabs < HISTOGRAM_CELLS ? inabs : HISTOGRAM_CELLS - 1]++;
-+	/* usec steps */
-+	long inabs = rt_timer_tsc2ns(addval >= 0 ? addval : -addval) / 1000;
-+	histogram[inabs < HISTOGRAM_CELLS ? inabs : HISTOGRAM_CELLS - 1]++;
- }
- 
- void dump_histogram(void)
-@@ -134,10 +135,10 @@
-        printf("RTH|%12s|%12s|%12s|%12s\n",
-                       "lat min", "lat avg", "lat max", "lost");
- 
--       printf("RTD|%12Ld|%12Ld|%12Ld|%12lld\n",
--                      rt_timer_tsc2ns(minjitter),
--                      rt_timer_tsc2ns(avgjitter),
--                      rt_timer_tsc2ns(maxjitter), lost);
-+       printf("RTD|%12.3f|%12.3f|%12.3f|%12lld\n",
-+                      rt_timer_tsc2ns(minjitter) / 1000,
-+                      rt_timer_tsc2ns(avgjitter) / 1000,
-+                      rt_timer_tsc2ns(maxjitter) / 1000, lost);
- 
-        if (do_histogram)
-                dump_histogram();
-Index: CREDITS
-===================================================================
---- CREDITS	(revision 1416)
-+++ CREDITS	(working copy)
-@@ -43,7 +43,7 @@
- D: the map.
- 
- N: Jim Cromie
--E: jcromie@domain.hid
-+E: jim.cromie@domain.hid
- D: Comprehensive statistics collection for the testsuite.
- D: Validation test script. Various script fixes and sanitization.
- 
-Index: ksrc/arch/i386/Kconfig
-===================================================================
---- ksrc/arch/i386/Kconfig	(revision 1416)
-+++ ksrc/arch/i386/Kconfig	(working copy)
-@@ -67,13 +67,13 @@
-         and hence may not be altered.
- 
-         For this reason, Xenomai contains code to detect chipsets using
--        SMIs and optionnaly activate some workarounds to stop SMIs.
-+        SMIs and optionally activate some workarounds to stop SMIs.
-         
--        Enabling this option will cause Xenomai not to try and detect whether 
-+        Enabling this option prevents Xenomai from detecting whether 
-         your hardware use SMIs. This option is mostly useful if you know
-         that your system does not use SMIs and really want to size Xenomai 
-         modules down. The detection code has no run-time space overhead,
--        only disk-space overhead.
-+        and a tiny memory footprint (<200 bytes on x86)
- 
- config XENO_HW_SMI_DETECT
-         bool
-@@ -98,7 +98,7 @@
-         and hence may not be altered.
- 
-         For this reason, Xenomai contains code to detect chipsets using
--        SMIs and optionnaly activate some workarounds to stop SMIs.
-+        SMIs and optionally activate some workarounds to stop SMIs.
-         Enabling this option cause those workarounds to be activated.
- 
- if XENO_HW_SMI_WORKAROUND
+iD8DBQFE3K+IniDOoMHTA+kRAlhyAJ9ERwZbEZoo+Yql7vCzqjrAMqnQvwCfRKm6
+JKKBephfq23xjrIvZ+mWfKc=
+=cJpb
+-----END PGP SIGNATURE-----
 
---------------010306090609030502020905
-Content-Type: text/plain;
- name="diff.xt-add-benchs"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="diff.xt-add-benchs"
-
-Index: scripts/xeno-test.in
-===================================================================
---- scripts/xeno-test.in	(revision 1416)
-+++ scripts/xeno-test.in	(working copy)
-@@ -190,16 +192,30 @@
-     boxstatus
-     (
-         cd `dirname $0`/../testsuite/latency
--	loudly ./run --  $opts -t0
--	loudly ./run --  $opts -t1
--	loudly ./run --  $opts -t2
-+	loudly ./run -- $XENOT_LAT $opts -t0 '# latency'
-+	loudly ./run -- $XENOT_LAT $opts -t1 '# latency'
-+	loudly ./run -- $XENOT_LAT $opts -t2 '# latency'
-     )
-+
-     (	cd `dirname $0`/../testsuite/switch
--	loudly ./run --  '# switch'
-+	loudly ./run --  $XENOT_SWITCH '# switch'
-     )
-+    (	cd `dirname $0`/../testsuite/switchbench
-+	loudly ./run -- -p 10 -n -l 1000 $XENOT_SWITCHBENCH '# switchbench'
-+    )
-+    (	cd `dirname $0`/../testsuite/switchtest
-+	loudly ./run -- -n $XENOT_SWITCHTEST '# switchtest'
-+    )
-+
-     (	cd `dirname $0`/../testsuite/cyclic
--	loudly ./run -- -p 10 -n -l 1000 '# cyclictest'
-+	loudly ./run -- -p 10 -n -l 1000  $XENOT_CYCLIC '# cyclictest'
-     )
-+    (	cd `dirname $0`/../testsuite/irqbench
-+	loudly ./run -- -P 10 $XENOT_IRQBENCH -t0 '# irqbench user'
-+	loudly ./run -- -P 10 $XENOT_IRQBENCH -t1 '# irqbench kernel'
-+	loudly ./run -- -P 10 $XENOT_IRQBENCH -t2 '# irqbench irq-handler'
-+	loudly ./run -- -P 10 $XENOT_IRQBENCH -t3 '# irqbench hard-irq-handler'
-+    )
-     boxstatus
-     cleanup_load
- }
-
---------------010306090609030502020905--
+--------------enig6F781CE59F9ECFA0290C9C33--
 
