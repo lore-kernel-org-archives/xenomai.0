@@ -1,10 +1,10 @@
-Message-ID: <44DBCCD3.5070505@domain.hid>
-Date: Thu, 10 Aug 2006 18:18:27 -0600
+Message-ID: <44DBDA2C.2000808@domain.hid>
+Date: Thu, 10 Aug 2006 19:15:24 -0600
 From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [patch] update email addr
+Subject: [Xenomai-core] [patch-trivial ]  fix a couple spelling errs
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,28 +16,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-im trying to inline this patch,
-pls let me know if its still ws fouled
-(in thunderbird, cp from svn diff |less, preformat b4 paste)
+[jimc@domain.hid xenomai]$ diff -u ./ksrc/arch/i386/Kconfig{~,}
+--- ./ksrc/arch/i386/Kconfig~   2006-03-23 19:06:35.000000000 -0700
++++ ./ksrc/arch/i386/Kconfig    2006-08-10 19:12:39.000000000 -0600
+@@ -67,7 +67,7 @@
+         and hence may not be altered.
 
+         For this reason, Xenomai contains code to detect chipsets using
+-        SMIs and optionnaly activate some workarounds to stop SMIs.
++        SMIs and optionally activate some workarounds to stop SMIs.
 
+         Enabling this option will cause Xenomai not to try and detect whether
+         your hardware use SMIs. This option is mostly useful if you know
+@@ -98,7 +98,7 @@
+         and hence may not be altered.
 
+         For this reason, Xenomai contains code to detect chipsets using
+-        SMIs and optionnaly activate some workarounds to stop SMIs.
++        SMIs and optionally activate some workarounds to stop SMIs.
+         Enabling this option cause those workarounds to be activated.
 
-Index: CREDITS
-===================================================================
---- CREDITS     (revision 1412)
-+++ CREDITS     (working copy)
-@@ -43,7 +43,7 @@
- D: the map.
-
- N: Jim Cromie
--E: jcromie@domain.hid
-+E: jim.cromie@domain.hid
- D: Comprehensive statistics collection for the testsuite.
- D: Validation test script. Various script fixes and sanitization.
-
-(END)
-
+ if XENO_HW_SMI_WORKAROUND
 
 
 
