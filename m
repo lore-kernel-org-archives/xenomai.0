@@ -1,12 +1,14 @@
-Message-ID: <44DC3C82.3060704@domain.hid>
-Date: Fri, 11 Aug 2006 10:14:58 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <b647ffbd0608120333j7cd4ef35q7ed00bafab35753d@domain.hid>
+Date: Sat, 12 Aug 2006 12:33:24 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] -110 error on rt_task_send... bug?
+In-Reply-To: <1155247988.4297.52.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] PPC posted results (testsuite latency)
-References: <1299EF3181B10F479D85C3280132852422DAF4@domain.hid>
-In-Reply-To: <1299EF3181B10F479D85C3280132852422DAF4@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_40358_15559832.1155378804509"
+References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
+	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
+	<1155247988.4297.52.camel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: GUARDIOLA-FALCO Sebastien 204282 <Sebastien.GUARDIOLA-FALCO@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-GUARDIOLA-FALCO Sebastien 204282 wrote:
-> jan.kiszka wrote:
->> == Sampling period: 100 us
->>  == All results in microseconds
->> RTT|  00:00:01
->> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
->> RTD|       1.859|       3.239|       6.179|       0|       1.859|       6.179
->> RTD|       2.159|       3.239|      13.559|       0|       1.859|      13.559
->> ...
-> 
->> Looks quite good, maybe too good. Did you load your box? See
->> TROUBLESHOOTING for some hints on this. Also let it run for a longer period.
-> 
-> What do you mean by "too good"? What could be a cause of these results?
-> 
-> I've tested on a 5-10 minutes basis.
-> For calculations loads, I tested Linux ones (like http://www.tux.org/~mayer/linux/bmark.html) that take 99% of CPU usage.
-> Then I used the same one compiled for Xenomai. Latency results were almost the same.
-> Only Linux commands seems to disturb Xenomai. I tested some "ps" and "top", locally and from a telnet connection.
-> Results : I reach to 4.x avg latency, and 50 worse.
+------=_Part_40358_15559832.1155378804509
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-The interesting figure is the worst case latency under load. If I 
-understood you correctly, you measured 50 + 4.5 us worse case. This is a 
-more resonable number for you system. Nevertheless, the big L2 cache 
-should help.
+>
+>
+> The problem is triggered by synch->owner being cleared in
+> xnsynch_flush(), as a result of the receiver task to exit (called from
+> the native task deletion hook, i.e. xnsynch_destroy(&task->msendq)).
 
-> Any other idea? May be a huge NFS file transfer, or socket transfer, I don't know.
 
-I normally do "while ls; do ls; done" on the console and "ping -f 
-<server-ip>" in another telnet window. It's typical that the latency 
-jumps when you do a telnet, etc.
 
-Wolfgang.
+As I understood it didn't work in all cases and not only when a receiver
+exits. What's wrong with the case Jan revealed?
+
+I mean rt_task_reply() makes use of a direct call to xnpod_resume_thread()
+to avoid a change of the owner while a sender finds itself being woken up in
+xnsynch_sleep_on() - the PRIO + PIP branch - and the first thing it does is
+a check for (synch->owner != thread) and it's obviously that the sender is
+not the owner (but the receiver).
+
+No?
+
+> --
+>
+> Philippe.
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_40358_15559832.1155378804509
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid"><br>The problem is triggered by synch-&gt;owner being cleared in<br>xnsynch_flush(), as a result of the receiver task to exit (called from
+<br>the native task deletion hook, i.e. xnsynch_destroy(&amp;task-&gt;msendq)).</blockquote>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>As I understood it didn't work in all cases and not only when a receiver exits. What's wrong with the case&nbsp;Jan revealed?</div>
+<div>&nbsp;</div>
+<div>I mean rt_task_reply() makes use of a direct call to xnpod_resume_thread() to avoid a change of the owner&nbsp;while a sender finds itself being woken up in xnsynch_sleep_on() - the PRIO + PIP branch - and&nbsp;the first thing it does is a check&nbsp;for (synch-&gt;owner != thread) and it's obviously that the sender is not the&nbsp;owner (but the receiver).
+</div>
+<p>No?</p>
+<div>&nbsp;</div>
+<div>&gt; --</div>
+<div>&gt;<br>&gt; Philippe.<br>&nbsp;</div>
+<div>-- <br>Best regards,<br>Dmitry Adamushko </div>
+
+------=_Part_40358_15559832.1155378804509--
 
