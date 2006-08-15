@@ -1,14 +1,15 @@
-Message-ID: <44E21CD6.10802@domain.hid>
-Date: Tue, 15 Aug 2006 21:13:26 +0200
+Message-ID: <44E2247D.2050206@domain.hid>
+Date: Tue, 15 Aug 2006 21:46:05 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <200608152104.20562.Sebastian.Smolorz@domain.hid>
-In-Reply-To: <200608152104.20562.Sebastian.Smolorz@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD3E68FA3A3C3BC434E1C91F8"
+Subject: Re: [Xenomai-core] Buildbot cannot compile xenoma:
+	rtcanconfig	refences pthread_kill
+References: <200608150949.30029.niklaus.giger@domain.hid>	<44E20EEF.7000705@domain.hid>
+	<200608152056.51541.niklaus.giger@domain.hid>
+In-Reply-To: <200608152056.51541.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: Small typo fix for rtcan.h
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,79 +19,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Cc: xenomai@xenomai.org
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD3E68FA3A3C3BC434E1C91F8
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Niklaus Giger wrote:
+> Am Dienstag, 15. August 2006 20:14 schrieb Jan Kiszka:
+>> Niklaus Giger wrote:
+>>> Hi
+>>>
+>>> All my PPC based compilation fail with something like
+>>> ...
+>> Things start to work again, but other issues pop up now.
+>>
+>> o The installation step of xenomai on the tqm860 is broken. For that
+>>   reason RTnet fails to configure. Please have a look, Niklaus.
+> I had noticed this just before the compile issues popped up. I will have a 
+> look, but the whole buildbot system is quite complex and confuses sometimes 
+> even its creator.
 
-Sebastian Smolorz wrote:
-> Hi,
->=20
-> here comes a minor typo fix for rtcan.h
->=20
-> Sebastian
->=20
+:)
 
-Thanks, applied.
+>> o The simulator fails in both the posix and vxworks part:
+>>   http://ngiger.dyndns.org/buildbot/sim/builds/258/step-check_sim/0
+> I reported the error "vxworks->t010823-2:t010823-2.c:163: Expected sequence: 
+> SEQ("Test2",2009); got SEQ("Test2",2003)" some time ago. Looks like a minor 
+> issue to me, as the simulator has its own internal timing. But I always 
+> prefer that Gilles fixes these kind of errors.
+> 
+>>   Could anyone have a look?
+> The other errors in the POSIX skin are new and need to be looked at.
+
+That looks to me (after finding out how to build that testsuite: make
+check!) like it is related to latest changes on pthread_cond_xxx. Gilles
+is on CC now.
+
+> 
+>> o The run test on the hcu_vx seems to cause a hang after the nucleus
+>>   being loaded:
+>>   http://ngiger.dyndns.org/buildbot/hcu_vx/builds/128/step-xeno-test/0
+> This is a long standing problem, where Philippe needs to get hand on a PPC40x 
+> system to find the error. I tried to give it a look
+
+If you happen to have time, I would suggest narrowing the cause down by
+switching synchronous printk on (ipipe_set_printk_sync(&rthal_root);
+ipipe_set_printk_sync(rthal_root_domain);) and then spreading some
+printk to the init routines of the nucleus, trying the find the
+problematic line(s). This printk will even works under hard IRQ lock, so
+also endless loops in the timer handler can be detected that way. It's
+just a bit time-consuming for the operator...
+
+>> hcu3 is fine, a rebuild of "ppc" is currently pending.
+> hcu3 is the most important target (at least for me), as it is the only target 
+> which runs xeno-test.
+>> A few remarks and wishes:
+>>
+>> o Some list of the characteristics of those systems would be nice, just
+>>   to gain overview what the differences are.
+> 
+> I will try to fix my documentation. But from the beginning I wanted to 
+> introduce as much variance as possible in the different buildings, therefore 
+> I intentionally used different gcc versions, cross-compiling vs native, only 
+> xenomai vs xenomai+RTnet, POSIX vs VXWORKS, everything built-in vs everything 
+> as a module. Looking at all the different log files (I know that this is time 
+> consuming) usually gives me quite a few of the answers.
+
+Is there already some doc somewhere? Maybe I was just blind.
+
+> 
+>> o Maybe it's useful to strip the kernel configs of some systems
+>>   (non-related drivers etc.) to reduce the turn-around time.
+> I was thinking about it, but it is only the ppc build which takes a long time 
+> to build and I am running usually a specific build of this kernel to assure 
+> me that Xenomai is working all right in a real environment.
+> 
+> Roundtrip time could also be improved if more buildbot slave were added. 
+> Though if anybody has a spare machine running all the time which could 
+> support the load of Xenomai builds, I would be glad to help integrate another 
+> slaves into my buildbot system. It would be also possible to add specific 
+> slave for anybody who wants to be assured that the Xenomai trunk continues to 
+> work for his specific board and build environment.
+
+Well, I would offer to spend a few cycles of our development server, but
+our build environment and target boards are already the most common
+ones: latest compiler on x86 for x86. Boring, I know...
+
+> 
+>> o Some kind of allyesconfig for Xenomai would be nice. 2.4 doesn't seem
+>>   to have this, but maybe one can derive that from a 2.6 .config, grab
+>>   all XENO-related switches, and append them to the 2.4 .config. This
+>>   way new stuff like the CAN stack now would get included faster.
+> A allyesconfig is not possible as e.g. VXWORKS and the POSIX-skin have 
+> mutually exclusive requirements for the timing system (periodic vs 
+> aperiodic).
+> 
+> If you want some specific CONFIG set please drop me a note.
+
+Then please check for the CAN drivers (same as with RTnet: some only
+build for PPC) and the latest switches of the POSIX skin.
+
+> 
+>> On final remark I can only repeat over and over again:
+>>
+>> Your buildbot is really great stuff! It significantly reduces the
+>> round-trip time for detecting and fixing (often trivial) build issues as
+>> long as there are not yet millions of Xenomai users updating their SVN
+>> checkout every day ;)
+> Thanks for the compliment. As long as everybody on the mailing list responds 
+> so well to my complaints that something is broken, I will remain motivated to 
+> invest my time.
+> 
+
+Ok, and if we do not respond, just yell loader! ;)
 
 Jan
-
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> Index: include/rtdm/rtcan.h
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- include/rtdm/rtcan.h	(Revision 1442)
-> +++ include/rtdm/rtcan.h	(Arbeitskopie)
-> @@ -1077,7 +1077,7 @@
-> =20
-> =20
->  /*!
-> - * @anchor Error2 @name Protocoll error type
-> + * @anchor Error2 @name Protocol error type
->   * Error in the data[2] field of struct can_frame.
->   * @{ */
->  /* error in CAN protocol (type) / data[2] */
-> @@ -1093,7 +1093,7 @@
->  /** @} */
-> =20
->  /*!
-> - * @anchor Error3 @name Protocoll error location
-> + * @anchor Error3 @name Protocol error location
->   * Error in the data[3] field of struct can_frame.
->   * @{ */
->  /* error in CAN protocol (location) / data[3] */
-> @@ -1120,7 +1120,7 @@
->  /** @} */
-> =20
->  /*!
-> - * @anchor Error4 @name Protocoll error location
-> + * @anchor Error4 @name Protocol error location
->   * Error in the data[4] field of struct can_frame.
->   * @{ */
->  /* error status of CAN-transceiver / data[4] */
-
-
-
---------------enigD3E68FA3A3C3BC434E1C91F8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFE4hzZniDOoMHTA+kRAg6dAJ0fc8eXp6VQDX4tiwAwzWAzsBeVhgCeOM12
-dWEKkrSJXBV4a4bFMSi3WY0=
-=RhQs
------END PGP SIGNATURE-----
-
---------------enigD3E68FA3A3C3BC434E1C91F8--
 
