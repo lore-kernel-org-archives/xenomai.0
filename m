@@ -1,15 +1,14 @@
-Message-ID: <44E37823.8080407@domain.hid>
-Date: Wed, 16 Aug 2006 21:55:15 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <60766.155.98.4.150.1155759747.squirrel@domain.hid>
+In-Reply-To: <44E37321.1010400@domain.hid>
+References: <20060816190510.20935.qmail@domain.hid>
+	<49365.155.98.4.150.1155755874.squirrel@domain.hid>
+	<44E37321.1010400@domain.hid>
+Date: Wed, 16 Aug 2006 14:22:27 -0600 (MDT)
 Subject: Re: [Xenomai-help] problem with installation
-References: <20060816190510.20935.qmail@domain.hid>	<44E36F6A.7060004@domain.hid>
-	<200608162137.09103.nicola17@domain.hid>
-In-Reply-To: <200608162137.09103.nicola17@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3019226A5A642CD1D80C060B"
-Sender: jan.kiszka@domain.hid
+From: "Brandt Erickson" <brandt@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,74 +20,29 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3019226A5A642CD1D80C060B
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+> Good that someone read the real error...
+>
+> Was this issues related to Xenomai or the Adeos patch? Or were there
+> just some drivers missing in the kernel directly or initfs?
+>
+> It is typically fine to derive the Xenomai kernel .config from an
+> existing one (e.g. that your your distro), just switching of the
+> features listed as problematic.
+>
+> Jan
 
-Nicola Pezzotti wrote:
-> Alle 21:18, mercoled=C3=AC 16 agosto 2006, Jan Kiszka ha scritto:
->> Nicola Pezzotti wrote:
->>> Hi all.
->>>     I'm trying to install Xenomai on my pc.
->>> To do that I'm following this guide
->>> http://www.captain.at/xenomai-2.1-installation.php
->>> I'm using Kubuntu 6.6, linux-2.6.17 kernel and xenomai-2.2.0
->>> I have runned the script prepare-kernel.sh with the correct option as=
- in
->>> README.INSTALL
->>> Everything go well untill I reboot the system, then I have those erro=
-rs
->>>
->>>
->>> Uncompressing Linux... ok, booting the kernel
->>> MP-BIOS bug 8254 timer not connected to IO-APIC
->>> Xenomai: incompatible timer mode(aperiodic found, need aperiodic)
->>                                                          ^^^^^^^^^
->> I guess this this is a typo, isn't it? I would expect "periodic" here.=
+The setup I'm using is ubuntu 6.06 on an Athlon XP 2100+.  As to whether
+it was adeos or xenomai that causes/caused the error I can't say.  I
+compiled the kernel using the ubuntu kernel configuration as a base and
+enabling periodic timer support.  When the system had grub installed on a
+separate boot partition, I got that same error when trying to boot from
+the xenomai version of the kernel.  However, when there was no boot
+partition, the system booted just fine.  I used the same .deb in both
+cases, so that was the only difference in setup.
 
->=20
-> Sorry=20
-> Xenomai: incompatible timer mode(aperiodic found, need periodic)
->=20
->=20
->>> Xenomai: VxWorks skin init failed code -16
->>> Kernel Panic - not syncing: VFS Unable to mount root fs on unknow
->>> -block(0,0)
->> The VxWorks skin requires periodic timer mode. If you don't plan to us=
-e
->> it, drop it from the kernel config . If you do want it, either set
->> CONFIG_XENO_OPT_TIMING_PERIOD to some reasonable value (see also the
->> related kernel-config help), or turn the nucleus into a module and pas=
-s
->> the period via the module parameter "tick_arg" when insmod'ing
->> xeno_nucleus later.
->>
->=20
-> I need VxWorks skin... can you give me an hint abount this configuratio=
-n? in=20
-> what part of installation I must this flag?
+Consequently, when the system had a separate boot partition but period
+timer support was not enabled, it also booted just fine.  However, I need
+the timer for my work so that wasn't particularly useful for me.
+-Brandt
 
-When you configure your kernel, watch out for Xenomai->Timing->"Use
-periodic timer hardware" and "Time period". However, I guess this will
-not solve the other issue.
-
-Jan
-
-
---------------enig3019226A5A642CD1D80C060B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE43gjniDOoMHTA+kRAvnBAJ4rveXHdI5EhP/sgiYPDDWOpvPy4gCeJ+cJ
-QT/p6gElVF7pmjCMtBNK0LQ=
-=qO1y
------END PGP SIGNATURE-----
-
---------------enig3019226A5A642CD1D80C060B--
 
