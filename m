@@ -1,9 +1,17 @@
-Date: Wed, 16 Aug 2006 16:14:31 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Subject: Re: [Xenomai-core] ksrc/driver refactoring
-Message-ID: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
+Message-ID: <44E32B21.8060508@domain.hid>
+Date: Wed, 16 Aug 2006 16:26:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+References: <44E2DC1C.2010304@domain.hid>
+	<200608161231.53239.Sebastian.Smolorz@domain.hid>
+	<44E2F8DE.4000806@domain.hid>
+	<200608161305.54411.Sebastian.Smolorz@domain.hid>
+In-Reply-To: <200608161305.54411.Sebastian.Smolorz@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig519DD2D60F05F3A73FD1BDFF"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: Time representation in RTDM profiles
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,53 +21,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-> I just wanted to drop a note that I did some refactoring on the
-> drivers directory (16550A->serial) and the config menus. If anything is
-> broken, shoot me.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig519DD2D60F05F3A73FD1BDFF
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I don't think this is related, but 2 students of mine got stuck on a linker
-error this morning trying to compile xenomai-trunk on a i386 target
-(2.4.33 kernel with the adeos-ipipe-2.4.32-i386-1.2-06.patch (applied
-with a few minor hunks), gcc 3.3.6 from Debian).
+Sebastian Smolorz wrote:
+> Jan Kiszka wrote:
+>> Sebastian Smolorz wrote:
+>>> The possibility of redefinition was not the main goal here. As you
+>>> mentioned it would be problematic. No, I introduced nanosecs_abs_t an=
+d
+>>> nanosecs_rel_t because they are more intuitive and more "speaking" to=
+ the
+>>> programmer. The meaning of a variable of such a type is clear at firs=
+t
+>>> sight.
+>> Yeah, sounds reasonable to me. Then let's move these typedefs to rtdm.=
+h
+>> and document them as self-explanatory defines of the underlying standa=
+rd
+>> types, freezing their width and signedness at the same time.
+>=20
+> Agreed.
+>=20
+>> Actually, this would be useful for the driver API of RTDM as well.
+>=20
+> That's right. No objections from my side.
+>=20
 
-ld -m elf_i386 -T /usr/src/linux-2.4.33/arch/i386/vmlinux.lds -e stext
-arch/i386/kernel/head.o arch/i386/kernel/init_task.o init/
-main.o init/version.o init/do_mounts.o \
-                --start-group \
-                arch/i386/kernel/kernel.o arch/i386/mm/mm.o
-kernel/kernel.o mm/mm.o fs/fs.o ipc/ipc.o \
-                 drivers/acpi/acpi.o drivers/char/char.o
-drivers/block/block.o drivers/misc/misc.o drivers/net/net.o
-drivers/char             /agp/agp.o drivers/ide/idedriver.o
-drivers/cdrom/driver.o drivers/pci/driver.o drivers/pcmcia/pcmcia.o
-drivers/net/pcmcia/pcmcia_             net.o drivers/video/video.o
-drivers/media/media.o kernel/xenomai/nucleus/xeno_nucleus.o
-kernel/xenomai/skins/native/xeno_native.o
-kernel/xenomai/skins/posix/xeno_posix.o
-kernel/xenomai/skins/rtdm/xeno_rtdm.o
-drivers/xenomai/16550A/xeno_16550A.o drivers/xenom
-ai/testing/xeno_timerbench.o arch/i386/xenomai/built-in.o \
-                net/network.o \
-                /usr/src/linux-2.4.33/arch/i386/lib/lib.a
-/usr/src/linux-2.4.33/lib/lib.a
-/usr/src/linux-2.4.33/arch/i386/lib/lib             .a \
-                --end-group \
-                -o vmlinux
-drivers/char/char.o: In function `handle_scancode':
-(.text+0x1b25a): undefined reference to `pckbd_sysrq_xlate'
-make: *** [vmlinux] Error 1
+Done.
 
-The "quick-fix" solution was to disable the magic_sysrq_key option
-from the kernel.  I first thought the problem was due to a missing
-dependency in the the kernel and not at all xenomai-related (and since
-the quick hack worked, they didn't search any further), but now that
-I've read your mail I started to doubt if it might be related.
+Though I checked things more then twice, some regression may be hidden,
+specifically as I changed the signedness of timeout parameters of a few
+RTDM driver API functions. All documented under
+ksrc/skins/rtdm/API.CHANGES, and everyone is warned now.
 
-Let me know if it might be related and if you want further info.
+Jan
 
-But I'll wait before shooting :-)
 
-klaas
+--------------enig519DD2D60F05F3A73FD1BDFF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE4yshniDOoMHTA+kRAjogAJ4uiZ71q9KP2FjQUZ9jjj4lUThj8ACfclcH
+C5UUTG2i13L2vmCYjnBorLY=
+=j70f
+-----END PGP SIGNATURE-----
+
+--------------enig519DD2D60F05F3A73FD1BDFF--
 
