@@ -1,250 +1,65 @@
-Subject: Re: [Xenomai-help] Re: RT_TASK_INFO status
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44C9420D.3070100@domain.hid>
-References: <1154015872-24969.00053.00861-smmsdV2.1.4@domain.hid>
-	<44C8EECE.4070209@domain.hid> <44C90CEF.9090908@domain.hid>
-	<44C9136C.7080709@domain.hid>  <44C9420D.3070100@domain.hid>
-Content-Type: text/plain
-Date: Fri, 28 Jul 2006 11:09:01 +0200
-Message-Id: <1154077741.4982.32.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Wed, 16 Aug 2006 16:14:31 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Subject: Re: [Xenomai-core] ksrc/driver refactoring
+Message-ID: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Nathaniel Villaume <villaume@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
+> I just wanted to drop a note that I did some refactoring on the
+> drivers directory (16550A->serial) and the config menus. If anything is
+> broken, shoot me.
 
-Hi Nate,
+I don't think this is related, but 2 students of mine got stuck on a linker
+error this morning trying to compile xenomai-trunk on a i386 target
+(2.4.33 kernel with the adeos-ipipe-2.4.32-i386-1.2-06.patch (applied
+with a few minor hunks), gcc 3.3.6 from Debian).
 
-On Thu, 2006-07-27 at 15:45 -0700, Nathaniel Villaume wrote:
-> Jan,
-> Ok, so I played around with your request some.
-> 
->  My goal here is to produce documentation, but not at the expense of 
-> source-code readability and maintainability.  It's not hard to document 
-> defines, but it CAN make the source look uglier.
-> Witness nucleus/thread.h:
-> 
-> /*! @def XNSUSP */
-> #define XNSUSP 0x00000001 /*!< @brief Suspended */
-> 
-> /*! @define XNSUSP */
-> #define XNSUSP 0x00000002 /*!< Sleep-wait for a resource. */
-> 
-> In the first case, @brief is used to get the comment up into the brief 
-> listing (duh). If this is not done, then a detailed section is created 
-> with the comment, which is a little kludgier on the output end, but 
-> still completely usable.
-> 
-> Second order of business: refering to this new documentation. In 
-> include/native/task.h I made a group native_task_status that encompasses 
-> all the define documentation. This makes it easy to refer to from within 
-> the RT_TASK_INFO::status documentation (and anywhere else)
-> 
-> Third: I removed the duplication as you requested. This is not without 
-> consequence.  Please note the difference between RT_TASK_INFO and 
-> RT_TASK_MCB (which remainded the same).  To keep the brief member 
-> documentation, I had to use the /**  comment */ syntax. This is 
-> inconsistent with other usage, but... this gives the results we want.
-> 
-> Please see the patch and let me know what you think for this initial set.
+ld -m elf_i386 -T /usr/src/linux-2.4.33/arch/i386/vmlinux.lds -e stext
+arch/i386/kernel/head.o arch/i386/kernel/init_task.o init/
+main.o init/version.o init/do_mounts.o \
+                --start-group \
+                arch/i386/kernel/kernel.o arch/i386/mm/mm.o
+kernel/kernel.o mm/mm.o fs/fs.o ipc/ipc.o \
+                 drivers/acpi/acpi.o drivers/char/char.o
+drivers/block/block.o drivers/misc/misc.o drivers/net/net.o
+drivers/char             /agp/agp.o drivers/ide/idedriver.o
+drivers/cdrom/driver.o drivers/pci/driver.o drivers/pcmcia/pcmcia.o
+drivers/net/pcmcia/pcmcia_             net.o drivers/video/video.o
+drivers/media/media.o kernel/xenomai/nucleus/xeno_nucleus.o
+kernel/xenomai/skins/native/xeno_native.o
+kernel/xenomai/skins/posix/xeno_posix.o
+kernel/xenomai/skins/rtdm/xeno_rtdm.o
+drivers/xenomai/16550A/xeno_16550A.o drivers/xenom
+ai/testing/xeno_timerbench.o arch/i386/xenomai/built-in.o \
+                net/network.o \
+                /usr/src/linux-2.4.33/arch/i386/lib/lib.a
+/usr/src/linux-2.4.33/lib/lib.a
+/usr/src/linux-2.4.33/arch/i386/lib/lib             .a \
+                --end-group \
+                -o vmlinux
+drivers/char/char.o: In function `handle_scancode':
+(.text+0x1b25a): undefined reference to `pckbd_sysrq_xlate'
+make: *** [vmlinux] Error 1
 
-Regarding the inline vs out-of-line typedef documentation, I would also
-go for inlining it, to help preventing discrepancies between comments
-and implementation, provided that we keep such doc reasonably terse
-(IOW, making sure that those typedefs still look like C language).
+The "quick-fix" solution was to disable the magic_sysrq_key option
+from the kernel.  I first thought the problem was due to a missing
+dependency in the the kernel and not at all xenomai-related (and since
+the quick hack worked, they didn't search any further), but now that
+I've read your mail I started to doubt if it might be related.
 
-> Again, the decisions to be made are:
-> 1.) Do we document the defines at all?
-> 1a) If so, do we include brief in the define documentation (or not)?
+Let me know if it might be related and if you want further info.
 
-The bottom line is that defines are assigned their meaning by the
-routines which accept or return them as values, which in turn means that
-a back link to those routines is likely the best documentation we could
-bring to the reader. In any case, the routines would document the flags
-they manipulate.
+But I'll wait before shooting :-)
 
-> 1b) Do we group the defines (or not) for easy reference? (they show up 
-> under modules/native/Task Status)
-
-It wouldn't hurt, even if I'm not sure that people would search for
-information starting from the set of available flags; I guess that they
-would rather seek a feature, therefore they would first look for a
-routine providing the needed functionality, which ends up manipulating
-the flags. This said, the way we document the nucleus for people
-implementing skins is another story, since this is clearly a different
-use case.
-
-> 
-> My default action is to continue with the style/grouping as in the patch.
-> 
-> -Nate
-> 
-> Jan Kiszka wrote:
-> 
-> >Nathaniel Villaume wrote:
-> >  
-> >
-> >>In RT_TASK_INFO, can someone tell me what is the set of all possible
-> >>values for status?
-> >>I'd like to include that in the documentation.
-> >>    
-> >>
-> >
-> >They are defined in include/native/task.h [1], but they widely redirect
-> >to defines in include/nucleus/thread.h [2]. Maybe you could add comments
-> >to the native/task.h defines and include them in doxygen.
-> >
-> >Thanks again for your effort!
-> >Jan
-> >
-> >[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/native/task.h#L37
-> >[2]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/nucleus/thread.h#L25
-> >
-> >  
-> >
-> plain text document attachment (task_defines.diff)
-> Index: include/native/task.h
-> ===================================================================
-> --- include/native/task.h	(revision 1383)
-> +++ include/native/task.h	(working copy)
-> @@ -34,8 +34,20 @@
->  #define T_CPU(cpu) (1 << (24 + (cpu & 7))) /* Up to 8 cpus [0-7] */
->  #define T_CPUMASK  0xff000000
->  
-> -/* Status/mode flags. */
-> -#define T_BLOCKED  XNPEND
-> +/*! 
-> +  \ingroup native
-> +  @defgroup native_task_status Task Status 
-> +  @brief Defines used to specify task state and/or mode 
-> +  */
-> +/*! @addtogroup native_task_status 
-> +  @{
-> +  */
-> +
-> +/*! @def T_BLOCKED  
-> +  Task is blocked. See define #XNPEND*/
-> +#define T_BLOCKED  XNPEND 
-> +/*! @def T_DELAYED  
-> +  Task is delayed. See define #XNDELAY*/
->  #define T_DELAYED  XNDELAY
->  #define T_READY    XNREADY
->  #define T_DORMANT  XNDORMANT
-> @@ -49,6 +61,7 @@
->  #define T_RPIOFF   XNRPIOFF
->  #define T_PRIMARY  0x00000200	/* Recycle internal bits status which */
->  #define T_JOINABLE 0x00000400	/* won't be passed to the nucleus.  */
-> +/*! @} */ /* Ends addtogroup native_task_status */
->  
->  /* Task hook types. */
->  #define T_HOOK_START  XNHOOK_THREAD_START
-> @@ -68,31 +81,50 @@
->  struct rt_queue_msg;
->  struct rt_task;
->  
-> +/*! @brief Structure containing task-information useful to users.
-> + *
-> + *  @see rt_task_inquire()
-> +  */
->  typedef struct rt_task_info {
-> +    
-> +    /** Base priority. */
-> +    int bprio;  
->  
-> -    int bprio;			/* !< Base priority. */
-> +    /** Current priority. Can change through Priority Inheritance.*/
-> +    int cprio;
-> +    
-> +    /** Task's status.
-> +     * Status may be any of the defines in task.h
-> +     *  @see native_task_status shows possible values.
-> +     */
-> +    unsigned status; 
-> +    
-> +    /** Time of next release.*/
-> +    RTIME relpoint; 
-> +    
-> +    /** Symbolic name assigned in creation */
-> +    char name[XNOBJECT_NAME_LEN];  
->  
-> -    int cprio;			/* !< Current priority. */
-> -
-> -    unsigned status;		/* !< Status. */
-> -
-> -    RTIME relpoint;		/* !< Next periodic release point. */
-> -
-> -    char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
-> -
->  } RT_TASK_INFO;
->  
->  #define RT_MCB_FSTORE_LIMIT  64
-> +/*! @typedef RT_TASK_MCB
-> +  @brief Structure used in passing messages between tasks.
->  
-> +  @param  flowid  Flow identifier.
-> +  @param  opcode  Operation code.
-> +  @param  data    Message address.
-> +  @param  size    Message size (bytes).
-> +*/
->  typedef struct rt_task_mcb {
->  
-> -    int flowid;			/* !< Flow identifier. */
-> +    int flowid;
->  
-> -    int opcode;			/* !< Operation code. */
-> +    int opcode;
->  
-> -    caddr_t data;		/* !< Address of message. */
-> +    caddr_t data;
->  
-> -    size_t size;		/* !< Size of message. */
-> +    size_t size;
->  
->  } RT_TASK_MCB;
->  
-> Index: include/nucleus/thread.h
-> ===================================================================
-> --- include/nucleus/thread.h	(revision 1383)
-> +++ include/nucleus/thread.h	(working copy)
-> @@ -1,4 +1,4 @@
-> -/*
-> +/*! @file nucleus/thread.h
->   * Copyright (C) 2001,2002,2003 Philippe Gerum <rpm@xenomai.org>.
->   *
->   * Xenomai is free software; you can redistribute it and/or modify
-> @@ -23,9 +23,13 @@
->  #include <nucleus/timer.h>
->  
->  /* Status flags */
-> -#define XNSUSP    0x00000001	/* Suspended */
-> -#define XNPEND    0x00000002	/* Sleep-wait for a resource */
-> -#define XNDELAY   0x00000004	/* Delayed */
-> +
-> +/*! @def XNSUSP */
-> +#define XNSUSP    0x00000001	/*!< @brief Suspended */
-> +/*! @def XNPEND */
-> +#define XNPEND    0x00000002	/*!< Sleep-wait for a resource */
-> +/*! @def XNPEND */
-> +#define XNDELAY   0x00000004	/*!< Delayed */
->  #define XNREADY   0x00000008	/* Linked to the ready queue */
->  #define XNDORMANT 0x00000010	/* Not started yet or killed */
->  #define XNZOMBIE  0x00000020	/* Zombie thread in deletion process */
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
-
-
+klaas
 
