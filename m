@@ -1,17 +1,10 @@
-Subject: Re: [Xenomai-help] -110 error on rt_task_send... bug?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1155480473.11108.22.camel@domain.hid>
-References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
-	<b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
-	<1155247988.4297.52.camel@domain.hid>
-	<b647ffbd0608120333j7cd4ef35q7ed00bafab35753d@domain.hid>
-	<1155417252.4381.49.camel@domain.hid>  <1155480473.11108.22.camel@domain.hid>
-Content-Type: text/plain
-Date: Sun, 13 Aug 2006 22:24:11 +0200
-Message-Id: <1155500652.4298.15.camel@domain.hid>
+Message-ID: <20060816190510.20935.qmail@domain.hid>
+From: "Nicola Pezzotti" <nicola17@domain.hid>
+Date: Wed, 16 Aug 2006 21:05:10 +0200
 Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] problem with installation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,36 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-On Sun, 2006-08-13 at 16:47 +0200, Philippe Gerum wrote:
-> On Sat, 2006-08-12 at 23:14 +0200, Philippe Gerum wrote:
-> 
-> > IOW, a construct like "if (synch-> ...." when returning from suspension
-> > is the root of all evil. We must not depend on anything requiring such
-> > dereference when resuming the thread. A way to fix this would be to
-> > introduce a new thread status flag which gets raised whenever some
-> > object ownership is stolen, so that we would not have to inspect the
-> > synch object anymore to know about such situation, and rely on
-> > potentially wrong information from the ->owner field. We would only have
-> > to inspect the status flags of the thread that got "robbed" (i.e. the
-> > one that resumes) and act accordingly. I will post a patch implementing
-> > this, after I have solved all the related issues.
-> 
-> The patch below provides a more general fix to the issues introduced by
-> the resource stealing feature. There is still one case where this code
-> could attempt to reuse a stolen resource unsafely,
+Hi all. 
 
-More precisely, a stolen then deleted resource, and those events must
-happen while the caller of xnsynch_sleep_on has been readied from
-suspension, but not yet switched in. Deletion is the issue there,
-meaning that the resource might be destroyed immediately after it has
-been released, without any attempt to synchronize with the next consumer
-of such resource.
+     I'm trying to install Xenomai on my pc.
+To do that I'm following this guide 
+http://www.captain.at/xenomai-2.1-installation.php 
 
--- 
-Philippe.
+I'm using Kubuntu 6.6, linux-2.6.17 kernel and xenomai-2.2.0 
+
+I have runned the script prepare-kernel.sh with the correct option as in 
+README.INSTALL 
+
+Everything go well untill I reboot the system, then I have those errors 
+
+ 
+
+Uncompressing Linux... ok, booting the kernel
+MP-BIOS bug 8254 timer not connected to IO-APIC
+Xenomai: incompatible timer mode(aperiodic found, need aperiodic)
+Xenomai: VxWorks skin init failed code -16
+Kernel Panic - not syncing: VFS Unable to mount root fs on unknow 
+ -block(0,0) 
 
 
+Someone can give me an help? where I can found an official installation 
+guide 
+
+(Sorry for my bad english)
+Thanks
 
