@@ -1,14 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44E36CBB.2030006@domain.hid>
+Date: Wed, 16 Aug 2006 21:06:35 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Re: Time representation in RTDM profiles
+References: <44E2DC1C.2010304@domain.hid>	<200608161305.54411.Sebastian.Smolorz@domain.hid>	<44E32B21.8060508@domain.hid>
+	<200608162020.45918.Sebastian.Smolorz@domain.hid>
+In-Reply-To: <200608162020.45918.Sebastian.Smolorz@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Message-ID: <17641.43126.189924.769218@domain.hid>
-Date: Mon, 21 Aug 2006 14:35:02 +0200
-Subject: Re: [Xenomai-core] Re: xeno-load: line 182: 2794 Floating
-	point	exception$suflag $* $cmdargs
-In-Reply-To: <44E9663C.2030904@domain.hid>
-References: <44E91231.8070403@domain.hid> <44E955E0.40009@domain.hid>
-	<1156143410.4723.4.camel@domain.hid> <44E9663C.2030904@domain.hid>
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,46 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jim Cromie wrote:
- > got a backtrace
- > 
- > Philippe Gerum wrote:
- > > On Mon, 2006-08-21 at 00:42 -0600, Jim Cromie wrote:
- > >   
- > >> Jim Cromie wrote:
- > >>     
- > >>> *
- > >>> == Sampling period: 10 us
- > >>> == Do not interrupt this program
- > >>> /usr/xenomai/bin/xeno-load: line 182:  2868 Floating point 
- > >>> exception$suflag $* $cmdargs
- > >>>
- > >>>       
- > >> soekris:/usr/xenomai/bin# gdb ../testsuite/switchbench/switchbench
- > >> I tried stuffing -g into all *_CFLAGS in src/testsuite/Makefile,
- > >> but I couldnt get it to show up in the compilation.
- > >>
- > >>     
- > >
- > > Try passing --enable-debug to the "configure" script.
- > >
- > >   
- > #0  0x0804ae57 in __divdi3 ()
- > #1  0x08049ac2 in worker (cookie=0x0) at switchbench.c:133
- > #2  0x0804a18f in rt_task_trampoline (cookie=0x0) at task.c:89
- > #3  0xb7f8107d in start_thread () from /lib/tls/libpthread.so.0
- > #4  0xb7f158fe in clone () from /lib/tls/libc.so.6
- > (gdb)
+Sebastian Smolorz wrote:
+> Jan Kiszka wrote:
+>> Sebastian Smolorz wrote:
+>>> Jan Kiszka wrote:
+>>>> Sebastian Smolorz wrote:
+>>>>> The possibility of redefinition was not the main goal here. As you
+>>>>> mentioned it would be problematic. No, I introduced nanosecs_abs_t and
+>>>>> nanosecs_rel_t because they are more intuitive and more "speaking" to
+>>>>> the programmer. The meaning of a variable of such a type is clear at
+>>>>> first sight.
+>>>> Yeah, sounds reasonable to me. Then let's move these typedefs to rtdm.h
+>>>> and document them as self-explanatory defines of the underlying standard
+>>>> types, freezing their width and signedness at the same time.
+>>> Agreed.
+>>>
+>>>> Actually, this would be useful for the driver API of RTDM as well.
+>>> That's right. No objections from my side.
+>> Done.
+>>
+>> Though I checked things more then twice, some regression may be hidden,
+>> specifically as I changed the signedness of timeout parameters of a few
+>> RTDM driver API functions. All documented under
+>> ksrc/skins/rtdm/API.CHANGES, and everyone is warned now.
+> 
+> Here comes a follow-up patch. Compile-tested successfully.
+> 
 
-You likely have a division by 0 because nsamples is 0. nsamples come
-from the numeric argument of the -n option, and I think you do not pass
-a numeric argument to -n, so atoi returns 0.
+Just applied, thanks.
 
--- 
+[I thought about dropping the RTSER_TIMEOUT_* stuff as well, but A)
+there are already users and B) it aligns so well with the other defines
+for rtser_config.]
 
-
-					    Gilles Chanteperdrix.
+Jan
 
