@@ -1,72 +1,100 @@
-Subject: Re: [Xenomai-help] Xenomai & Elinos
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44D35F15.6060600@domain.hid>
-References: <1299EF3181B10F479D85C3280132852422DAE1@domain.hid>
-	<44D35F15.6060600@domain.hid>
-Content-Type: text/plain
-Date: Fri, 04 Aug 2006 17:31:42 +0200
-Message-Id: <1154705502.4326.29.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <44E345D7.4070904@domain.hid>
+Date: Wed, 16 Aug 2006 18:20:39 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
+	timers
+References: <44D19F3D.9060700@domain.hid>	<17618.12731.97405.118098@domain.hid>	<44D24257.10605@domain.hid>
+	<17635.15652.735628.299134@domain.hid>
+In-Reply-To: <17635.15652.735628.299134@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD1258F536DA16EFFD3742876"
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, GUARDIOLA-FALCO Sebastien 204282 <Sebastien.GUARDIOLA-FALCO@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-08-04 at 16:52 +0200, Jan Kiszka wrote:
-> GUARDIOLA-FALCO Sebastien 204282 wrote:
-> > Hello,
-> > 
-> > I believe some people wanted to know which version of Xenomai is currently supported by ElinOS (Sysgo).
-> > This is the 2.0.4, patched to a 2.6.15 kernel, but I'm only talking about PowerPC archs (don't know others).
-> 
-> Thanks for the info. Yeah, I meanwhile read this as well in some
-> publicly available data sheet. Just the precise patch level remained
-> unclear.
-> 
-> What did they patched, only I-pipe? What I-pipe version is the patch
-> based on?
-> 
-> > What can I expect of this Xenomai version? what has been mostly improved since then?
-> 
-> See the ChangeLog of a recent Xenomai version... :)
-> 
-> A lot of stuff has improved since then, e.g. the performance
-> enhancements due to pipeline head optimisation or the shared IRQ
-> support. And I bet that a few recent bug fixes are missing in the 2.0
-> series as well (one may correct me, it's a subjective impression). The
-> same may be true for the I-pipe patch.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD1258F536DA16EFFD3742876
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-2.0.x is in deep maintenance mode, which means that only real
-showstoppers are fixed when there is no work-around, and only for
-subsystems which were complete and not work-in-progress at the time of
-the initial 2.0 release. IOW, no optimization, no ahead of bug report
-fixes, no new architecture support, no new interfaces, no documentation
-update, just plain brown paper-bag bug fixes if any.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > A simple patch, just like suggested by Gilles, to avoid looping=
+ over
+>  > >  > periodic xntimer handlers in case of overruns.
+>  > >  >=20
+>  > >  > It saves the current TSC on loop entry and uses this value late=
+r when
+>  > >  > forwarding the timer. Is is the overhead of re-reading the TSC =
+on all
+>  > >  > archs negligible and should we rather go that way?
+>  > >=20
+>  > >  >(...)
+>  > >  > -				xntimerh_date(&timer->aplink) +=3D
+>  > >  > -				    nkpod->htimer.interval;
+>  > >  > +				while ((xntimerh_date(&timer->aplink) +=3D
+>  > >  > +				        nkpod->htimer.interval) < now);
+>  > >=20
+>  > > I think you are patching the wrong addition, the one you are inter=
+ested
+>  > > in is most probably the one at the bottom of xntimer_do_tick_aperi=
+odic.
+>  > >=20
+>  >=20
+>  > Ouch, indeed. Guess I should start reading what I patch. Here comes =
+a
+>  > second try.
+>  >=20
+>  > I'm still in favour of saving the TSC instead of re-reading it.
+>  > Otherwise we would have to pave the code with #ifdefs for the case
+>  > xnarch_get_cpu_tsc() is slow for a specific setup. Not that nice, is=
+ it?
+>=20
+> I am thinking again about this patch: some handlers need to be
+> rewritten, for example the posix timers handler, because the handler
+> relies on the fact that it is called for every timer expiry to compute
+> the overruns count. So maybe this patch should come with the addition o=
+f
+> an xntimer_getoverrun service that computes the overrun count using the=
 
-2.0.x can use any of the recent I-pipe patches, but won't benefit from
-the recent optimizations they bring, like wired interrupt support,
-though.
+> tsc ?
+>=20
 
-> It would be really a pity if they have patches of common interest for
-> Xenomai/I-pipe, even if only for 2.0.x, and did not posted them yet...
-> Jan
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Mmh, that gets close to hrtimer_forward now: push an overdue timer to an
+expiry date that is in the future and return the number of overruns. But
+do we still want this optimisation of the broken path then? It starts
+getting complex, probably adding more code than it is worth. I'm
+starting to vote against my own patch...
+
+Jan
 
 
+--------------enigD1258F536DA16EFFD3742876
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE40XXniDOoMHTA+kRAtF+AJ901GZCDcwZ2Mhp/tIGt6u9vaV89gCZARYs
+21GZM97/rwbK1YJ39LDXvco=
+=ACsN
+-----END PGP SIGNATURE-----
+
+--------------enigD1258F536DA16EFFD3742876--
 
