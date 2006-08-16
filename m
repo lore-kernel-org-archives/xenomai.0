@@ -1,15 +1,17 @@
-Subject: Re: [Xenomai-core] Towards periodic mode over aperiodic timers
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17637.53630.902869.885922@domain.hid>
-References: <44E46EDC.1000707@domain.hid> <1155899619.4326.56.camel@domain.hid>
-	<44E5AF32.3020102@domain.hid> <1155911563.4326.96.camel@domain.hid>
-	<17637.53630.902869.885922@domain.hid>
-Content-Type: text/plain
-Date: Fri, 18 Aug 2006 17:05:00 +0200
-Message-Id: <1155913500.4326.112.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17635.21607.931068.951138@domain.hid>
+Date: Wed, 16 Aug 2006 19:22:47 +0200
+Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
+	timers
+In-Reply-To: <44E345D7.4070904@domain.hid>
+References: <44D19F3D.9060700@domain.hid>
+	<17618.12731.97405.118098@domain.hid>
+	<44D24257.10605@domain.hid>
+	<17635.15652.735628.299134@domain.hid>
+	<44E345D7.4070904@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,27 +21,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-08-18 at 16:41 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Before we start implementing anything, there is still another issue (at
->  > least) to address: how do we deal with the wall clock time, basically
->  > xnpod_get_time/set_time, and the xnarch-level counterparts, after we
->  > move the logic from the central pod to a per-thread/per-timer view? E.g. what
->  > should xnpod_get_time() return when called over an ISR context? 
-> 
-> If we add an xntimer_base_t context, the each skin would initialize its
-> context (or even contexts, if a skin has several time bases), and pass a
-> pointer to a base to xnpod_get_time.
+Jan Kiszka wrote:
+ > > I am thinking again about this patch: some handlers need to be
+ > > rewritten, for example the posix timers handler, because the handler
+ > > relies on the fact that it is called for every timer expiry to compute
+ > > the overruns count. So maybe this patch should come with the addition of
+ > > an xntimer_getoverrun service that computes the overrun count using the
+ > > tsc ?
+ > > 
+ > 
+ > Mmh, that gets close to hrtimer_forward now: push an overdue timer to an
+ > expiry date that is in the future and return the number of overruns. But
+ > do we still want this optimisation of the broken path then? It starts
+ > getting complex, probably adding more code than it is worth. I'm
+ > starting to vote against my own patch...
 
-Looks good. This would also solve the issue of having different wall
-clocks for concurrent skins, which is still something we can't have
-right now.
+The code to compute the number of overruns from the tsc exists in
+xnpod_wait_thread_period, is not this just a matter of refactoring this
+code in an xntimer_getoverrun ?
 
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
