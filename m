@@ -1,16 +1,16 @@
-Subject: Re: [Xenomai-core] Buildbot cannot compile xenoma: rtcanconfig
-	refences pthread_kill
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200608152056.51541.niklaus.giger@domain.hid>
-References: <200608150949.30029.niklaus.giger@domain.hid>
-	<44E20EEF.7000705@domain.hid>
-	<200608152056.51541.niklaus.giger@domain.hid>
-Content-Type: text/plain
-Date: Tue, 15 Aug 2006 23:29:44 +0200
-Message-Id: <1155677384.4327.88.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <44E2C547.30601@domain.hid>
+Date: Wed, 16 Aug 2006 09:12:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
+	<44DB9958.10109@domain.hid> <44DCAF88.2060801@domain.hid>
+	<44DD08A0.5000603@domain.hid>
+In-Reply-To: <44DD08A0.5000603@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC446F6AE9072A48F02924DB1"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: Test, benchmark, demo frameworks
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,25 +20,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2006-08-15 at 20:56 +0200, Niklaus Giger wrote:
-> > o The run test on the hcu_vx seems to cause a hang after the nucleus
-> >   being loaded:
-> >   http://ngiger.dyndns.org/buildbot/hcu_vx/builds/128/step-xeno-test/0
-> This is a long standing problem, where Philippe needs to get hand on a PPC40x 
-> system to find the error. I tried to give it a look
-> > hcu3 is fine, a rebuild of "ppc" is currently pending.
-> hcu3 is the most important target (at least for me), as it is the only target 
-> which runs xeno-test.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC446F6AE9072A48F02924DB1
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This one is spotted in the timer activation sequence during startup, but
-I need to put my hands back on a 40x board (likely by September) to
-solve it. This is high on the must-fix list for me too.
+Jim Cromie wrote:
+> Jan Kiszka wrote:
+>> ...
+>> So, how to proceed?
+>>  =20
+> <aside> wiki++ </>
+>=20
+> 1 file at a time - I suppose..
+>=20
+> I'll start by poaching Hannes' Makefile, bundling it into an examples/
+> dir with
+> my 3-way version of his timer programs.  Id like see the target files
+> appear as 0 len files,
+> ( presuming this necessary for svn diff to see code I drop in )
+>=20
+> Then we can discuss the more nuanced improvements /* adding tutorial,
+> guidance */
+>=20
+> After that, its just step and repeat, tossing crap along the way.
+>=20
 
--- 
-Philippe.
+Ok, to ease pushing things into folders, I would suggest creating this
+structure in the root dir of trunk:
+
+examples/native/...
+examples/native/kernel/...
+examples/posix/...
+examples/...
+examples/drivers/can/...
+examples/drivers/serial/...
+
+All stuff self-contained, i.e. one should simply cd to the folder type
+make, maybe additionally providing some information on the xenomai
+installation dir / kernel source path, and some binary pops up, ready to
+run or insmod.
+
+I would furthermore suggest to have some kind of hello-xenomai.c in
+every skin example folder that is intended as the beginners tutorial,
+providing an elementary framework to start hacking.
 
 
+Reorganising the testsuites is another topic. I currently have no idea
+how to sort things. We have some stuff under sim/skins/*/testsuite that
+only builds for the simulator, there is src/testsuite, intended to be
+distributed and installed on the target, and we may want to have a
+larger testsuite that can be downloaded separately (my concern is also
+about driver tests here). Anyone any ideas/comments on this?
+
+Jan
+
+
+--------------enigC446F6AE9072A48F02924DB1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFE4sVIniDOoMHTA+kRAn+eAJ9oV8UBrCYaEyofGAF5hAXJa//RlQCgg7FG
+QBFpSlYRZjwu+O7jrxsDK/k=
+=EqM4
+-----END PGP SIGNATURE-----
+
+--------------enigC446F6AE9072A48F02924DB1--
 
