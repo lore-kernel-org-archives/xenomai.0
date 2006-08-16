@@ -1,15 +1,14 @@
-Message-ID: <b647ffbd0608210134n410d0814n427caa8a6dd0a822@domain.hid>
-Date: Mon, 21 Aug 2006 10:34:23 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Date: Wed, 16 Aug 2006 20:20:45 +0200
+References: <44E2DC1C.2010304@domain.hid>
+	<200608161305.54411.Sebastian.Smolorz@domain.hid>
+	<44E32B21.8060508@domain.hid>
+In-Reply-To: <44E32B21.8060508@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_27655_17205098.1156149263123"
-Subject: [Xenomai-core] [patch,
-	minor] xnpipe_recv and # CPE_ANT_R6.2 (Slotted
-	release R6) - ModemSoftware bant-z # Sun Aug 20 08:24:02 MEST
-	2006 element * CHECKEDOUT # linxiangcheng # Sat Aug 19
-	09:47:12 MEST 2006 # fix the bug: CPE_P00016456 element
-	/cm4/fsn/app/pstack/sl
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_9H24EcoFRmRVx8f"
+Message-Id: <200608162020.45918.Sebastian.Smolorz@domain.hid>
+Subject: [Xenomai-core] Re: Time representation in RTDM profiles
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,108 +18,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_27655_17205098.1156149263123
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_27656_27547979.1156149263123"
-
-------=_Part_27656_27547979.1156149263123
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--Boundary-00=_9H24EcoFRmRVx8f
+Content-Type: text/plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-Hello,
+Jan Kiszka wrote:
+> Sebastian Smolorz wrote:
+> > Jan Kiszka wrote:
+> >> Sebastian Smolorz wrote:
+> >>> The possibility of redefinition was not the main goal here. As you
+> >>> mentioned it would be problematic. No, I introduced nanosecs_abs_t and
+> >>> nanosecs_rel_t because they are more intuitive and more "speaking" to
+> >>> the programmer. The meaning of a variable of such a type is clear at
+> >>> first sight.
+> >>
+> >> Yeah, sounds reasonable to me. Then let's move these typedefs to rtdm.h
+> >> and document them as self-explanatory defines of the underlying standard
+> >> types, freezing their width and signedness at the same time.
+> >
+> > Agreed.
+> >
+> >> Actually, this would be useful for the driver API of RTDM as well.
+> >
+> > That's right. No objections from my side.
+>
+> Done.
+>
+> Though I checked things more then twice, some regression may be hidden,
+> specifically as I changed the signedness of timeout parameters of a few
+> RTDM driver API functions. All documented under
+> ksrc/skins/rtdm/API.CHANGES, and everyone is warned now.
 
-[ pipe.c.patch ]  update the "timeout" variable so that the remaining
-timeout is used in case of consequent xnsynch_sleep_on() calls.
+Here comes a follow-up patch. Compile-tested successfully.
 
-As I understand that may indeed happen in case when another thread "steals"
-data while this one waits to be scheduled in.
+Sebastian
 
-[ timer.c.patch] xnticks_t is unsigned while (as I understand)
-"xntlholder_date(&timer->plink) - nkpod->jiffies" can be negative.
-In this case, some positive big number is returned and any code that relies
-on xnthread_timeout() or xntimer_get_timeout() and runs over periodic mode
-won't work properly (e.g. xnsynch_sleep_on() and xnpipe_recv() now). Not
-sure 1 should be returned in this case (so far I just did it the same way as
-xntimer_get_timeout_aperiodic()), I guess 0 would be better in both cases.
-
-At least in theory, 1 may cause an (even) infinite loop in xnpipe_recv() as
-I don't like a check for "timeout > 1" to be placed there. It's something
-that should be decided at the timer layer - I mean, whether it's too late to
-sleep or not.
-
-hope, I haven't overlooked anything this time :o)
-
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_27656_27547979.1156149263123
-Content-Type: text/html; charset=ISO-8859-1
+--Boundary-00=_9H24EcoFRmRVx8f
+Content-Type: text/x-diff; charset="iso-8859-15"; name="rtcan_timeout.patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: attachment;
+	filename="rtcan_timeout.patch"
 
-<br>
-Hello,<br>
-<br>
-[ pipe.c.patch ]&nbsp; update the &quot;timeout&quot; variable so that the
-remaining timeout is used in case of consequent xnsynch_sleep_on()
-calls.<br>
-<br>
-As I understand that may indeed happen in case when another thread &quot;steals&quot; data while this one waits to be scheduled in.<br>
-<br>
-[ timer.c.patch] xnticks_t is unsigned while (as I understand)
-&quot;xntlholder_date(&amp;timer-&gt;plink) - nkpod-&gt;jiffies&quot; can be
-negative.<br>
-In this case, some positive big number is returned and any code that
-relies on xnthread_timeout() or xntimer_get_timeout() and runs over
-periodic mode won't work properly (e.g. xnsynch_sleep_on() and
-xnpipe_recv() now). Not sure 1 should be returned in this case (so far
-I just did it the same way as xntimer_get_timeout_aperiodic()), I guess
-0 would be better in both cases.<br>
-<br>
-At least in theory, 1 may cause an (even) infinite loop in
-xnpipe_recv() as I don't like a check for &quot;timeout &gt; 1&quot; to be placed
-there. It's something that should be decided at the timer layer - I
-mean, whether it's too late to sleep or not.<br>
-<br>
-hope, I haven't overlooked anything this time :o)<br>
-<br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
+Index: include/rtdm/rtcan.h
+===================================================================
+--- include/rtdm/rtcan.h	(Revision 1450)
++++ include/rtdm/rtcan.h	(Arbeitskopie)
+@@ -507,16 +507,6 @@
+ /** @} */
+ 
+ 
+-/*!
+- * @anchor RTCAN_TIMEOUTS   @name Timeouts
+- * Special reception and transmission timeouts
+- * @{ */
+-#define RTCAN_TIMEOUT_INFINITE    0     /**< wait for ever  */
+-#define RTCAN_TIMEOUT_NONE        (-1)  /**< equivalent to non-blocking */
+-/** @} */
+-
+-
+-
+ #define RTIOC_TYPE_CAN              RTDM_CLASS_CAN
+ 
+ 
+@@ -946,7 +936,7 @@
+  * @param [in] arg Pointer to @ref nanosecs_rel_t variable. The value is
+  *                interpreted as relative timeout in nanoseconds in case
+  *                of a positive value.
+- *                See @ref RTCAN_TIMEOUTS "Timeouts" for special timeouts.
++ *                See @ref RTDM_TIMEOUT_xxx "Timeouts" for special timeouts.
+  *
+  * @return 0 on success, otherwise:
+  * - -EFAULT: It was not possible to access user space memory area at the
+@@ -976,7 +966,7 @@
+  * @param [in] arg Pointer to @ref nanosecs_rel_t variable. The value is
+  *                interpreted as relative timeout in nanoseconds in case
+  *                of a positive value.
+- *                See @ref RTCAN_TIMEOUTS "Timeouts" for special timeouts.
++ *                See @ref RTDM_TIMEOUT_xxx "Timeouts" for special timeouts.
+  *
+  * @return 0 on success, otherwise:
+  * - -EFAULT: It was not possible to access user space memory area at the
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(Revision 1450)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,8 @@
++2006-08-16  Sebastian Smolorz  <Sebastian.Smolorz@domain.hid>
++
++	* include/rtdm/rtcan.h, ksrc/drivers/can/rtcan_{module,socket,raw}.c:
++	Get rid of RTCAN_TIMEOUT_* defines and replace them with RTDM_TIMEOUT_*
++
+ 2006-08-16  Jan Kiszka  <jan.kiszka@domain.hid>
+ 
+ 	* include/rtdm/*.h, ksrc/skins/rtdm/drvlib.c: Refactor RTDM types
+Index: ksrc/drivers/can/rtcan_module.c
+===================================================================
+--- ksrc/drivers/can/rtcan_module.c	(Revision 1450)
++++ ksrc/drivers/can/rtcan_module.c	(Arbeitskopie)
+@@ -112,7 +112,7 @@
+ static void rtcan_get_timeout_name(nanosecs_rel_t timeout,
+ 				   char* name, int max_len)
+ {
+-    if (timeout == RTCAN_TIMEOUT_INFINITE) 
++    if (timeout == RTDM_TIMEOUT_INFINITE) 
+ 	strncpy(name, "infinite", max_len);
+     else
+ 	sprintf(name, "%lld", timeout);
+Index: ksrc/drivers/can/rtcan_socket.c
+===================================================================
+--- ksrc/drivers/can/rtcan_socket.c	(Revision 1450)
++++ ksrc/drivers/can/rtcan_socket.c	(Arbeitskopie)
+@@ -49,8 +49,8 @@
+     sock->err_mask = 0;
+     sock->rx_buf_full = 0;
+ 
+-    sock->tx_timeout = RTCAN_TIMEOUT_INFINITE;
+-    sock->rx_timeout = RTCAN_TIMEOUT_INFINITE;
++    sock->tx_timeout = RTDM_TIMEOUT_INFINITE;
++    sock->rx_timeout = RTDM_TIMEOUT_INFINITE;
+ 
+     INIT_LIST_HEAD(&sock->tx_wait_head);
+     list_add(&sock->socket_list, &rtcan_socket_list);
+Index: ksrc/drivers/can/rtcan_raw.c
+===================================================================
+--- ksrc/drivers/can/rtcan_raw.c	(Revision 1450)
++++ ksrc/drivers/can/rtcan_raw.c	(Arbeitskopie)
+@@ -556,7 +556,7 @@
+     /* Set RX timeout */
+     rtdm_lock_get_irqsave(&rtcan_socket_lock, lock_ctx);
+ 
+-    timeout = (flags & MSG_DONTWAIT) ? RTCAN_TIMEOUT_NONE : sock->rx_timeout;
++    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->rx_timeout;
+ 
+     rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
+ 
+@@ -839,7 +839,7 @@
+    
+     rtdm_lock_get_irqsave(&rtcan_socket_lock, lock_ctx);
+ 
+-    timeout = (flags & MSG_DONTWAIT) ? RTCAN_TIMEOUT_NONE : sock->tx_timeout;
++    timeout = (flags & MSG_DONTWAIT) ? RTDM_TIMEOUT_NONE : sock->tx_timeout;
+ 
+     rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
+ 
 
-------=_Part_27656_27547979.1156149263123--
-
-------=_Part_27655_17205098.1156149263123
-Content-Type: text/x-patch; name=pipe.c.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_er4jzh66
-Content-Disposition: attachment; filename="pipe.c.patch"
-
-LS0tIHBpcGUtU1ZOLmMJMjAwNi0wOC0yMCAxNTowNDoyNS4wMDAwMDAwMDAgKzAyMDAKKysrIHBp
-cGUuYwkyMDA2LTA4LTIwIDIxOjI5OjU1LjAwMDAwMDAwMCArMDIwMApAQCAtNDUwLDYgKzQ1MCw5
-IEBAIHNzaXplX3QgeG5waXBlX3JlY3YoaW50IG1pbm9yLCBzdHJ1Y3QgeG4KIAkJCXJldCA9IC1F
-SURSTTsKIAkJCWdvdG8gdW5sb2NrX2FuZF9leGl0OwogCQl9CisKKwkJLyogcmVtYWluaW5nIHRp
-bWVvdXQgKi8JCQorCQl0aW1lb3V0ID0geG50aHJlYWRfdGltZW91dCh0aHJlYWQpOwogCX0KIAog
-CSpwbWggPSBsaW5rMm1oKGhvbGRlcik7Cg==
-------=_Part_27655_17205098.1156149263123
-Content-Type: text/x-patch; name=timer.c.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_er4k010m
-Content-Disposition: attachment; filename="timer.c.patch"
-
-LS0tIHRpbWVyLVNWTi5jCTIwMDYtMDgtMjAgMTU6NTA6MTguMDAwMDAwMDAwICswMjAwCisrKyB0
-aW1lci5jCTIwMDYtMDgtMjAgMTU6NTQ6MzAuMDAwMDAwMDAwICswMjAwCkBAIC0zMTMsNyArMzEz
-LDEyIEBAIHN0YXRpYyB4bnRpY2tzX3QgeG50aW1lcl9nZXRfZGF0ZV9wZXJpb2QKIAogc3RhdGlj
-IHhudGlja3NfdCB4bnRpbWVyX2dldF90aW1lb3V0X3BlcmlvZGljKHhudGltZXJfdCAqdGltZXIp
-CiB7Ci0JcmV0dXJuIHhudGxob2xkZXJfZGF0ZSgmdGltZXItPnBsaW5rKSAtIG5rcG9kLT5qaWZm
-aWVzOworCXhudGlja3NfdCBub3cgPSBua3BvZC0+amlmZmllczsKKwkKKwlpZiAoeG50bGhvbGRl
-cl9kYXRlKCZ0aW1lci0+cGxpbmspIDwgbm93KQorCQlyZXR1cm4gMTsJLyogV2lsbCBlbGFwc2Ug
-c2hvcnRseS4gKi8KKwkKKwlyZXR1cm4geG50bGhvbGRlcl9kYXRlKCZ0aW1lci0+cGxpbmspIC0g
-bm93OwogfQogCiBzdGF0aWMgeG50aWNrc190IHhudGltZXJfZ2V0X3Jhd19leHBpcnlfcGVyaW9k
-aWMoeG50aW1lcl90ICp0aW1lcikK
-------=_Part_27655_17205098.1156149263123--
+--Boundary-00=_9H24EcoFRmRVx8f--
 
