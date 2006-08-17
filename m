@@ -1,19 +1,10 @@
-Message-ID: <44F5FC95.4030206@domain.hid>
-Date: Wed, 30 Aug 2006 23:01:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
-References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>	
-	<44F49A6C.5050603@domain.hid>	
-	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>	
-	<44F592AD.2000900@domain.hid> <1156960547.4323.68.camel@domain.hid>	
-	<44F5DDF1.3030006@domain.hid> <1156970880.4323.74.camel@domain.hid>	
-	<44F5FB26.40700@domain.hid> <1156971559.4323.82.camel@domain.hid>
-In-Reply-To: <1156971559.4323.82.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAE1DBCE12AA79D0A6FA5FBBD"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/mixed; boundary="ZOSqkkA7uD"
+Content-Transfer-Encoding: 7bit
+Message-ID: <17636.56428.140050.265677@domain.hid>
+Date: Thu, 17 Aug 2006 23:15:24 +0200
+Subject: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,101 +14,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAE1DBCE12AA79D0A6FA5FBBD
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Philippe Gerum wrote:
-> On Wed, 2006-08-30 at 22:55 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Wed, 2006-08-30 at 20:50 +0200, Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>
->>>>> On Wed, 2006-08-30 at 15:29 +0200, Jan Kiszka wrote:
->>>>>  =20
->>>>>> Dmitry Adamushko wrote:
->>>>>>    =20
->>>>>>> On 29/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->>>>>>>      =20
->>>>>>>> Dmitry Adamushko wrote:
->>>>>>>>
->>>>>>>> I think the additional costs of maintaining an error counter are=
- almost
->>>>>>>> negligible. The test is in the unlikely path, and the first cond=
-ition
->>>>>>>> already keeps us away from touching the counter.
->>>>>>>>        =20
->>>>>>> But it's updated (unhandled =3D 0) any time the ISR(s) report som=
-ething
->>>>>>> different from XN_ISR_NONE.  Hence, it's at the beginning of the =
-xnintr_t
->>>>>>> structure, hopefully, at the same cache line with other highly-us=
-ed members
->>>>>>> (i.e. isr, cookie and hits).
->>>>>>>      =20
->>>>>> Mmh, considering this and also the existing code I wonder if we co=
-uld
->>>>>> optimise this a bit. I'm only looking at xnintr_irq_handler now (s=
-haring
->>>>>> is slow anyway): currently the intr object is touched both before
->>>>>> (naturally...) and after the call to the ISR handler. Maybe we can=
- push
->>>>>> all accesses before the handler for the fast path. E.g.:
->>>>>>
->>>>>> int unhandled =3D intr->unhandled;
->>>>>>
->>>>>> intr->unhandled =3D 0;
->>>>>> ++intr->hits;
->>>>>> s =3D intr->isr(...);
->>>>>>
->>>>>> if (s =3D=3D XN_ISR_NONE) {
->>>>>> 	intr->unhandled =3D ++unhandled;
->>>>>> 	if (unhandled =3D=3D XNINTR_MAX_UNHANDLED)
->>>>>> 		ALARM!
->>>>>> }
->>>>>>
->>>>>>    =20
->>>>> Without speculating whether this could actually reduce cache misses=
- or
->>>>> not when the branch is taken, the main issue I see here is that we =
-would
->>>>> optimize the error case, at the expense of an additional memory fet=
-ching
->>>> No, it's the common path. Otherwise, I would have stopped already. I=
- don't
->>>> expect further memory access because the head of intr should be cach=
-ed
->>>> already.
->>>>
->>> Sorry, my brain cells must be glued together, but then, I just don't =
-get
->>> what your patch actually optimizes :o}
->> Cache misses when accessing intr AFTER the ISR has finished (not on
->> latest Pentium with 4 MB caches...) for the non-error case.
->=20
-> What do you call the "error case"?
->=20
-
-XN_ISR_NONE
+To: xenomai@xenomai.org
 
 
---------------enigAE1DBCE12AA79D0A6FA5FBBD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--ZOSqkkA7uD
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFE9fyVniDOoMHTA+kRAmYUAJ4raJh7UKO2mIJUNHcID/jO9V0/4wCeM72f
-deFU/0ZuPgN5kS558NDYsug=
-=IIWZ
------END PGP SIGNATURE-----
+Hi, 
 
---------------enigAE1DBCE12AA79D0A6FA5FBBD--
+For review, you will find attached to this mail a patch which allows
+Xenomai to run on ARM platforms where the timer interrupt is
+shared. Such a platform have to define the constant
+IPIPE_HAVE_SHARED_TIMER_IRQ, as well as two functions or macros:
+- ipipe_timer_irq_p(), used by xnpod_announce_tick to test  whether a
+timer interrupt is pending, in which case it is handled, otherwise
+xnpod_announce_tick returns with the XN_ISR_PROPAGATE so that the
+interrupt is propagated to the Linux domain.
+- ipipe_mark_root_timer_irq(), used by xnarch_relay_tick so that the
+interrupt propagated by xnarch_relay_tick is treated by the root domain
+as a timer irq. As a matter of fact, since the interrupt is shared, the
+root domain has to know whether the irq is a timer irq, and since this
+interrupt is forged, the root domain can not rely on the same hardware
+mechanism as the xenomai domain irq.
+
+The patch also contains a tiny patch of Xenomai syslib so that
+__tickAnnounce has the same return value as xnpod_announce_tick.
+
+
+
+-- 
+
+
+					    Gilles Chanteperdrix.
+
+--ZOSqkkA7uD
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="xeno-shared-timer-irq.diff"
+Content-Transfer-Encoding: 7bit
+
+Index: include/asm-generic/hal.h
+===================================================================
+--- include/asm-generic/hal.h	(revision 1451)
++++ include/asm-generic/hal.h	(working copy)
+@@ -679,6 +679,12 @@
+ 
+ #endif /* CONFIG_IPIPE_TRACE */
+ 
++#ifdef IPIPE_HAVE_SHARED_TIMER_IRQ
++#define RTHAL_HAVE_SHARED_TIMER_IRQ
++#define rthal_timer_irq_p()         ipipe_timer_irq_p()
++#define rthal_mark_root_timer_irq() ipipe_mark_root_timer_irq()
++#endif /* IPIPE_SHARED_TIMER_IRQ */
++
+ #ifdef __cplusplus
+ }
+ #endif /* __cplusplus */
+Index: include/asm-generic/system.h
+===================================================================
+--- include/asm-generic/system.h	(revision 1451)
++++ include/asm-generic/system.h	(working copy)
+@@ -487,4 +487,9 @@
+ #define xnarch_post_graph(obj,state)
+ #define xnarch_post_graph_if(obj,state,cond)
+ 
++#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
++#define XNARCH_HAVE_SHARED_TIMER_IRQ
++#define xnarch_timer_irq_p()         rthal_timer_irq_p()
++#endif /* IPIPE_SHARED_TIMER_IRQ */
++
+ #endif /* !_XENO_ASM_GENERIC_SYSTEM_H */
+Index: include/asm-arm/bits/intr.h
+===================================================================
+--- include/asm-arm/bits/intr.h	(revision 1451)
++++ include/asm-arm/bits/intr.h	(working copy)
+@@ -27,6 +27,9 @@
+ 
+ static inline void xnarch_relay_tick(void)
+ {
++#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
++	rthal_mark_root_timer_irq();
++#endif /* RTHAL_HAVE_SHARED_TIMER_IRQ */
+ 	rthal_irq_host_pend(RTHAL_TIMER_IRQ);
+ }
+ 
+Index: ksrc/skins/vxworks/sysLib.c
+===================================================================
+--- ksrc/skins/vxworks/sysLib.c	(revision 1451)
++++ ksrc/skins/vxworks/sysLib.c	(working copy)
+@@ -24,19 +24,20 @@
+ 
+ static wind_tick_handler_t tick_handler;
+ static long tick_handler_arg;
++static int tick_status [XNARCH_NR_CPUS];
+ 
+ void tickAnnounce(void)
+ {
+ 	if (tick_handler != NULL)
+ 		tick_handler(tick_handler_arg);
+ 
+-	xnpod_announce_tick(&nkclock);
++	tick_status[xnarch_current_cpu()] = xnpod_announce_tick(&nkclock);
+ }
+ 
+ static int __tickAnnounce(xnintr_t *intr)
+ {
+ 	tickAnnounce();
+-	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
++	return tick_status[xnarch_current_cpu()];
+ }
+ 
+ int wind_sysclk_init(u_long init_rate)
+Index: ksrc/nucleus/pod.c
+===================================================================
+--- ksrc/nucleus/pod.c	(revision 1451)
++++ ksrc/nucleus/pod.c	(working copy)
+@@ -3249,6 +3249,11 @@
+ {
+ 	xnsched_t *sched;
+ 
++#ifdef XNARCH_HAVE_SHARED_TIMER_IRQ
++	if (!xnarch_timer_irq_p())
++		return XN_ISR_NONE | XN_ISR_NOENABLE | XN_ISR_PROPAGATE;
++#endif /* XNARCH_HAVE_SHARED_TIMER_IRQ */
++	
+ 	sched = xnpod_current_sched();
+ 
+ 	xnlock_get(&nklock);
+
+--ZOSqkkA7uD--
 
