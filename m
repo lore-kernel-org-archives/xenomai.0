@@ -1,15 +1,12 @@
-Subject: Re: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
-References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
-	<44F49A6C.5050603@domain.hid>
-	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
-Content-Type: text/plain
-Date: Wed, 30 Aug 2006 15:18:21 +0200
-Message-Id: <1156943901.4323.47.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <44E46EDC.1000707@domain.hid>
+Date: Thu, 17 Aug 2006 15:27:56 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC82744B0D12B17D4CA51B513"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Towards periodic mode over aperiodic timers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,84 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2006-08-29 at 22:34 +0200, Dmitry Adamushko wrote:
-> 
-> On 29/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->         Dmitry Adamushko wrote:
->         
->         I think the additional costs of maintaining an error counter
->         are almost
->         negligible. The test is in the unlikely path, and the first
->         condition
->         already keeps us away from touching the counter.
-> 
-> But it's updated (unhandled = 0) any time the ISR(s) report something
-> different from XN_ISR_NONE.  Hence, it's at the beginning of the
-> xnintr_t structure, hopefully, at the same cache line with other
-> highly-used members (i.e. isr, cookie and hits).
->  
-> 
->         The benefit of not
->         kicking out IRQ lines on spurious IRQs is obvious (think of
->         EMC issues, 
->         though one should better solve them on the board...).
-> 
-> Yep, that's why I'm asking whether we really need it or no. If a
-> scenario when "spurious" interrupts indeed happen from time to time
-> and a minor number of them (consequently) is not something completely
-> unacceptable, then we might keep this "unhandled" counter. Here I
-> don't have enough practical experience/evidence and may only rely on
-> the linux way (damn, now I understand why they advised people not to
-> read windows kernel code :)
->  
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC82744B0D12B17D4CA51B513
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-People deploying Xenomai-based software in the field would hate us for
-not being accomodating enough with their buggy hardware, so let's
-properly handle the fact that our ISRs might properly unhandle their
-IRQs.
+Hi,
 
-> 
->         BTW, is there a difference between unlikely(a && b) and
->         unlikely(a) && 
->         unlikely(b) that we should care about here?
-> 
-> I had it also in mind and grepped use cases of "unlikely" in kernel/
-> directory. There are a number of unlikely (a op. b) but none of
-> unlikely(a) op. unlikely (b).
-> 
-> Out of curiosity, one may disassemble code for both cases. My feeling
-> though, unlikely(a && b) is at least not worse (cpu and compiler-wise)
-> but don't want to speculate as I'm quite uneducated bozo here :)
-> 
+the conflict between skins preferring aperiodic timing vs. skin
+requiring periodic mode popped up once again on xenomai-help. One way
+out of this, likely THE way, is to map such tick-driven skins on a
+periodic timer over aperiodic mode (and drop periodic low-level support
+completely at the same time).
 
-Since likely/unlikely are hints given to the compiler for optimizing
-branches, you might want to give it all the information you have at hand
-immediately, to augment your chances to have it do the right thing [just
-in case the optimizer has no more short-term memory than a red fish...]
+Let's start some discussion how this can be done, specifically as Gilles
+and I are already turning the xntimer subsystem upside down (almost). If
+we want co-existence of high-res timing of, say, the posix skin while
+the vxworks skin runs over a tick-timer, we need some kind of "context"
+for timing related functions.
 
-Patch looks ok.
+Simple example: xnpod_suspend_thread() expects a timeout as "xnticks",
+i.e. either in nanoseconds or in ticks of the underlying periodic timer.
+This depends on the global timer mode of the pod, and that's a no-go for
+concurrent modes as sketched above. Rather, the thread should encode
+which kind of timing mode to use, even better the threads timers.
 
-> 
-> 
->         
->         Jan
->         
-> 
-> 
-> 
-> -- 
-> Best regards,
-> Dmitry Adamushko 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+We currently dispatch xntimer_start globally to the different timer
+subsystems (if periodic mode is enabled). What about deriving the start
+function from the timer itself in the future? If a timer was created as
+aperiodic, things happen as usual in aperiodic mode, and the timeout are
+interpreted as nanoseconds. If the timer is periodic, we interpret the
+timeout in ticks and map them on a second-level timing subsystem
+(probably a wheel) that itself is driven by a single periodic timer in
+the first-level system (just like the host tick).
+
+Am I heading in the right direction? Is it feasible? Any other ideas?
+
+Jan
 
 
+--------------enigC82744B0D12B17D4CA51B513
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE5G7cniDOoMHTA+kRAsW2AJ4yy+Nkx+TMx7sCkhJTxWPq1FzLPACfdaXa
+J6vZlSsawoyjCN1L+YGCrOM=
+=swVv
+-----END PGP SIGNATURE-----
+
+--------------enigC82744B0D12B17D4CA51B513--
 
