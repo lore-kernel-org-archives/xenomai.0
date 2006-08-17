@@ -1,17 +1,16 @@
-Message-ID: <b647ffbd0608070723v4435f3aoc2e0eabaa444da6b@domain.hid>
-Date: Mon, 7 Aug 2006 16:23:09 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] rt_pipe and rt_queue problems
-In-Reply-To: <1154959541.4322.1.camel@domain.hid>
+Message-ID: <44E42BE3.1060709@domain.hid>
+Date: Thu, 17 Aug 2006 10:42:11 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_27339_16824187.1154960589023"
-References: <200608021808.18076@domain.hid> <44D0F72E.3020406@domain.hid>
-	<200608031628.31584@domain.hid> <44D26C1C.5040506@domain.hid>
-	<200608041345.6449@domain.hid> <44D4CC6C.1020709@domain.hid>
-	<1154799634.4330.23.camel@domain.hid>
-	<b647ffbd0608070603q61008d0emc3a6555b62a40cc2@domain.hid>
-	<44D74228.20103@domain.hid> <1154959541.4322.1.camel@domain.hid>
+Subject: Re: [Xenomai-help] problem with installation
+References: <20060816190510.20935.qmail@domain.hid>	<44E36F6A.7060004@domain.hid>
+	<200608162137.09103.nicola17@domain.hid>	<44E37823.8080407@domain.hid>	<33646.155.98.4.150.1155767832.squirrel@domain.hid>
+	<1155803145.4356.33.camel@domain.hid>
+In-Reply-To: <1155803145.4356.33.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD1ED5FF3050D08CA6AEB6584"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,45 +21,73 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: rpm@xenomai.org
-Cc: Petr Cervenka <grugh@domain.hid>, xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_27339_16824187.1154960589023
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD1ED5FF3050D08CA6AEB6584
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ok, this was not terribly explicit, but I did:
-> https://mail.gna.org/public/xenomai-help/2006-08/msg00086.html
+Philippe Gerum wrote:
+> On Wed, 2006-08-16 at 16:37 -0600, Brandt Erickson wrote:
+>> So, perhaps I spoke too soon.  The system does boot, but I just looked=
+ in
+>> the syslog and found this:
+>>
+>> 16 16:08:49 dewback kernel: [4294670.201000] I-pipe: Domain Xenomai
+>> registered.
+>> Aug 16 16:08:49 dewback kernel: [4294670.201000] Xenomai: hal/x86 star=
+ted.
+>> Aug 16 16:08:49 dewback kernel: [4294670.231000] Xenomai: real-time
+>> nucleus v2.2 (Engines Of Creation) loaded.
+>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting nat=
+ive
+>> API services.
+>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting POS=
+IX
+>> services.
+>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: starting RTD=
+M
+>> services.
+>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: incompatible=
+
+>> timer mode (aperiodic found, need periodic).
+>> Aug 16 16:08:49 dewback kernel: [4294670.232000] Xenomai: VxWorks skin=
+
+>> init failed, code -16.
+>>
+>> my .config is attached.  As far as I can tell, my timer is periodic an=
+d
+>> not aperiodic.  My kernel is 2.6.16 patched with xenomai-2.2.0 from th=
+e
+>> download page and not the trunk.
+>=20
+> You need to build the native and POSIX skins as modules, so that they d=
+o
+> not override the timing mode (they both request aperiodic mode to the
+> nucleus, which conflicts with the VxWorks skin initializing after them)=
+=2E
+>=20
+
+Mmh, not on my test setup: once you set a reasonable period, all skins
+boot into periodic mode.
+
+Jan
 
 
-I haven't noticed it. I thought I'm the only person out there who sends
-not-inlined patches :)
+--------------enigD1ED5FF3050D08CA6AEB6584
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Moreover I had to trust my inner voice actually telling me that such a
-simple "bug" would not have remained unfixed for 2 days.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Ok, let's consider it as a side effect of ocassional jumping in. Sorry about
-this confusion.
+iD8DBQFE5CvjniDOoMHTA+kRAgbJAJ415kDlXwD5On5XIaF/dRP8f7TZ2wCfd6py
+0+YhMPcjAjSabMNgkL3nuMI=
+=7+qt
+-----END PGP SIGNATURE-----
 
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_27339_16824187.1154960589023
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<div><div><br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Ok, this was not terribly explicit, but I did:<br><a href="https://mail.gna.org/public/xenomai-help/2006-08/msg00086.html">
-https://mail.gna.org/public/xenomai-help/2006-08/msg00086.html</a></blockquote><div><br>
-I haven't noticed it. I thought I'm the only person out there who sends not-inlined patches :)<br>
-<br>
-Moreover I had to trust my inner voice actually telling me that such a simple &quot;bug&quot; would not have remained unfixed for 2 days.<br>
-<br>
-Ok, let's consider it as a side effect of ocassional jumping in. Sorry about this confusion.<br>
-</div></div><br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_27339_16824187.1154960589023--
+--------------enigD1ED5FF3050D08CA6AEB6584--
 
