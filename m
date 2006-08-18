@@ -1,14 +1,14 @@
-Message-ID: <44E5B93F.40603@domain.hid>
-Date: Fri, 18 Aug 2006 14:57:35 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] speed up building of posix apps
-References: <44E5ACFA.50905@domain.hid> <1155904681.4326.67.camel@domain.hid>
-In-Reply-To: <1155904681.4326.67.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF8E4ECDD9E8E50C7DF0B5969"
-Sender: jan.kiszka@domain.hid
+Subject: Making skin libraries not dlopenable (was: Re: [Xenomai-core]
+	[PATCH] silence libtool warnings)
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44DCABB2.1060706@domain.hid>
+References: <44DCABB2.1060706@domain.hid>
+Content-Type: text/plain
+Date: Fri, 18 Aug 2006 15:08:03 +0200
+Message-Id: <1155906484.4326.82.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,44 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF8E4ECDD9E8E50C7DF0B5969
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2006-08-11 at 18:09 +0200, Jan Kiszka wrote:
+> As we should not statically link the native/rtdm libraries against our
+> new CAN tools (that code may reside on small embedded devices soon...),
+> the old "Linking the executable XXXX ... is not portable!" warning now
+> pops up again during Xenomai user-space build.
+> 
+> Here is an approach to work around that warnings already at libtool
+> level (though I'm still convinced dropping "-module" would make more sense).
 
-Philippe Gerum wrote:
-> On Fri, 2006-08-18 at 14:05 +0200, Jan Kiszka wrote:
->=20
->> PS: What about the silence-libtool patch? I've heard neither ack nor
->> nack so far.
->=20
-> Still pondering the libtool --module issue.
->=20
+I don't like the idea of patching the .la files, really. But thinking a
+bit more about the -module option than previously, it's likely that one
+would want to dlopen a library using the skin, rather than the skin
+itself. So I would eventually vote for getting rid of -module instead;
+it looks like much saner.
 
-Try a grep -r shouldnotlink `find /usr/lib/ -name "*.la"` to get an
-impression what kind of libraries were linked with --module and what
-most likely not. I cannot imagine they all do such "patching" like we. :)=
+If people have objections so as making skin libraries not dlopenable
+anymore, it's the right time to express them.
 
-
-Jan
+-- 
+Philippe.
 
 
---------------enigF8E4ECDD9E8E50C7DF0B5969
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE5bk/niDOoMHTA+kRAuMaAJ96YCT0xSqIlbLQxM1lfKkyerRCFACdF1wa
-GkfAw8+ovoDrkOg8AZ1aHd0=
-=sR5C
------END PGP SIGNATURE-----
-
---------------enigF8E4ECDD9E8E50C7DF0B5969--
 
