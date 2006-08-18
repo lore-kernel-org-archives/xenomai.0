@@ -1,61 +1,50 @@
-Subject: Re: [Xenomai-help] native heap services and overloading new
+Subject: Re: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44D0F876.8020406@domain.hid>
-References: <38215.155.98.4.39.1154456700.squirrel@domain.hid>
-	<44D0F876.8020406@domain.hid>
+In-Reply-To: <17637.41333.124122.921988@domain.hid>
+References: <17636.56428.140050.265677@domain.hid>
+	<1155898533.4326.50.camel@domain.hid>
+	<17637.41333.124122.921988@domain.hid>
 Content-Type: text/plain
-Date: Thu, 03 Aug 2006 19:13:52 +0200
-Message-Id: <1154625233.5010.111.camel@domain.hid>
+Date: Fri, 18 Aug 2006 14:36:06 +0200
+Message-Id: <1155904566.4326.65.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2006-08-02 at 21:09 +0200, Jan Kiszka wrote:
-> Brandt Erickson wrote:
-> > I have some code where I'd like to be able to dynamically allocate memory
-> > in realtime.  Since the code is written in C++, I was thinking of just
-> > making a huge global RT_HEAP and overloading the new and delete operators
-> > to use the rt_heap_alloc and rt_heap_free functions.  First off, I'm
-> > wondering if there are any caveats to this sort of thing that wouldn't be
-> > obvious to someone new to xenomai like myself.  Second, if I fail to call
-> > rt_heap_delete before the program terminates, does the heap remain
-> > registered hang potentially causing problems when I try to re-allocate the
-> > heap when the program is run again?  Thanks.
+On Fri, 2006-08-18 at 13:16 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > I'd rather keep the number of obscure conditional macros as low as
+>  > possible; we should actually try to reduce them since we have a growing
+>  > number of real and pseudo-archs to support, and those macros tend to
+>  > obfuscate the generic code.
+>  > 
+>  > In the same vein, is there anything we could use in the compatible Adeos
+>  > patch that would unambiguously identify the presence of such support
+>  > without resorting to yet-another-macro like IPIPE_HAVE_SHARED_TIMER_IRQ?
 > 
-> For now: yes, the heap will stay, no automatic cleanup (the posix skin
-> already have this). You could then run into naming conflicts and you
-> lose memory, of course.
-> 
-> But you could install some signal handler for cleaning up. We do so in
-> our native-skin-based framework (also C++, but no "evil" ;) features in
-> use). We even catch SIGSEGV this way.
+> We could decide that ipipe_timer_irq_p() must be implemented as a macro,
+> and use #ifdef ipipe_timer_irq_p but I thought that #ifdef
+> IPIPE_HAVE_SHARED_TIMER_IRQ was easier to understand.
 > 
 
-Another simple option: the binding operation is particularly useful for
-recycling/discarding lingering objects.
-
-RT_HEAP app_heap;
-
-void init_heap (void)
-{
-	RT_HEAP old_heap;
-
-	if (rt_heap_bind(&old_heap, "foo", TM_NONBLOCK) == 0)
-		rt_heap_delete(&old_heap);
-
-	rt_heap_create(&app_heap, "foo", ...);
-}
+It is, but the point is that we should not define a normalized
+interface; older ARM patches are obsoleted by the very existence of the
+new one adding a required feature for PXA. Therefore, at some point in
+time, we are going to deprecate them, removing the conditional from the
+Xenomai codebase. In other words, this code is aimed at transitioning
+internally between two Adeos patch series, not at providing a stable
+interface.
 
 -- 
 Philippe.
