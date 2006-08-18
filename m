@@ -1,18 +1,14 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Buildbot cannot compile xenoma: rtcanconfig
-	refences pthread_kill
-Date: Wed, 16 Aug 2006 19:37:08 +0200
-References: <200608150949.30029.niklaus.giger@domain.hid>
-	<200608152056.51541.niklaus.giger@domain.hid>
-	<17635.7248.269603.523155@domain.hid>
-In-Reply-To: <17635.7248.269603.523155@domain.hid>
+Message-ID: <44E606B9.6050406@domain.hid>
+Date: Fri, 18 Aug 2006 12:28:09 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
+	<44DB9958.10109@domain.hid> <44DCAF88.2060801@domain.hid>
+	<44E5F0B4.8070405@domain.hid> <44E6009E.7020304@domain.hid>
+In-Reply-To: <44E6009E.7020304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200608161937.10372.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+Subject: [Xenomai-core] Re: Test, benchmark
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,28 +18,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Am Mittwoch, 16. August 2006 15:23 schrieb Gilles Chanteperdrix:
-> Niklaus Giger wrote:
->  > Am Dienstag, 15. August 2006 20:14 schrieb Jan Kiszka:
->  > > Niklaus Giger wrote:
->  > > > Hi
-> Will try to improve this... I also have a small remark: I think
-> htmlified logs would be easier to read if it was possible to jump from
-> error to error. The following bash snippet allow to create such a
-> browsable log file from the plain text log file. Attached an example of
-Yes, I remember that you suggested this approach a while ago. Unfortunatly 
-buildbot up to the current version 0.7.3 has no facility to present a build 
-log in any other way as a text file (HTML escaped).
-In the buildbot trunk there are now possiblities to add a LogObserver. I will 
-give it a try as soon as I have some spare hours.
+Jan Kiszka wrote:
+> Jim Cromie wrote:
+>   
+>> ...
+>> just responding to small part now..
+>>
+>> this patch adds switchtest, switchbench (and drops switch) and irqbench.
+>>
+>> each test-prog has a corresponding $XENOT_<progname>
+>> with which you can inject new test arguments individually.
+>> Most of these can be undef'd, except for XENOT_IRQBENCH,
+>> which needs to be set in order for test to run (since the test requires
+>> additional resources, as you noted above)
+>>     
+>
+> I doesn't necessarily require additional parameters (default is the
+> first serial port on PCs).
+>
+> Why not adding a switch to xeno_test instead? Something like "-a
+> <additional-tests>" (e.g. "-a irqbench,whateverbench"). However, please
+> don't forget to document this extension (man page?).
+>
+> Jan
+>
+>   
+several reasons for my preference:
 
-Nice to find the simulator testsuite working fine again!
-
-Best regards
-
--- 
-Niklaus Giger
+- xeno-test is already cluttered with options, many of which propagate 
+down to tests
+- as more tests are added, more option-clashing is inevitable.
+    this makes pass-downs more complicated.
+- prog-specific options isolate us from option clashes / churn
+- assuming -a <prog>,
+    need to handle multiples on line (I havent done that with shell getopts)
+    I have to wonder if all shells have uniform getopt behavior -
+       we want to work on bash, sh, ash, dash ...
+- I get to duck the manpage update ;-)
 
