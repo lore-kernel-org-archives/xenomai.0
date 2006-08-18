@@ -1,15 +1,15 @@
+Message-ID: <44E5C769.4050605@domain.hid>
+Date: Fri, 18 Aug 2006 15:58:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="/qjLOGsj0s"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17637.50791.966458.220636@domain.hid>
-Date: Fri, 18 Aug 2006 15:53:43 +0200
-Subject: Re: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
-In-Reply-To: <1155904794.4326.69.camel@domain.hid>
-References: <17636.56428.140050.265677@domain.hid>
-	<1155898533.4326.50.camel@domain.hid>
-	<17637.41333.124122.921988@domain.hid>
-	<1155904566.4326.65.camel@domain.hid> <1155904794.4326.69.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH] speed up building of posix apps
+References: <44E5ACFA.50905@domain.hid>
+	<17637.50472.580142.331066@domain.hid>
+In-Reply-To: <17637.50472.580142.331066@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDBBAE67B22E98F17C1EF140B"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,142 +19,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDBBAE67B22E98F17C1EF140B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Hi,
+>  >=20
+>  > with the growing number of wrapped posix applications also their fai=
+rly
+>  > slow build process became visible. It somehow scaled badly.
+>  >=20
+>  > I had the idea to pass all wrapping commands to the linker via a fil=
+e
+>  > for quite some time. Now I tried it and it gives a nice speedup of
+>  > roughly 400% for me when building typical single-file apps (mileage =
+may
+>  > vary, I'm building on vmware box...). Moreover, it beautifies the
+>  > compiler output.
+>  >=20
+>  > Tested on various setups, no regressions known so far.
+>  >=20
+>  > Jan
+>  >=20
+>  >=20
+>  > PS: What about the silence-libtool patch? I've heard neither ack nor=
+
+>  > nack so far.
+>  > Index: configure.in
+>  > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>  > --- configure.in	(revision 1453)
+>  > +++ configure.in	(working copy)
+>  > @@ -525,8 +525,7 @@ XENO_USER_APP_CFLAGS=3D$XENO_USER_CFLAGS
+>  >  XENO_USER_CFLAGS=3D"$XENO_USER_CFLAGS -D__IN_XENO__ -Wstrict-protot=
+ypes"
+>  >  XENO_USER_APP_LDFLAGS=3D$XENO_USER_LDFLAGS
+>  > =20
+>  > -XENO_POSIX_WRAPPERS=3D`while read symbol; do echo -n "-Wl,--wrap,$s=
+ymbol "; done \
+>  > -        < $srcdir/src/skins/posix/posix.wrappers`
+>  > +XENO_POSIX_WRAPPERS=3D"-Wl,@`cd $srcdir && pwd`/src/skins/posix/pos=
+ix.wrappers"
+>=20
+> Does not work here: the @ is passed to ld which does not know how to
+> handle it.
+>=20
+>=20
+
+Mmm, which version of ld do you have? If it's different from 2.16.91,
+please check if "man ld" says something about the "@file" option.
+
+Also, could you mail me the output of the build run?
 
 
---/qjLOGsj0s
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+--------------enigDBBAE67B22E98F17C1EF140B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Philippe Gerum wrote:
- > On Fri, 2006-08-18 at 14:36 +0200, Philippe Gerum wrote:
- > > On Fri, 2006-08-18 at 13:16 +0200, Gilles Chanteperdrix wrote:
- > > > Philippe Gerum wrote:
- > > >  > I'd rather keep the number of obscure conditional macros as low as
- > > >  > possible; we should actually try to reduce them since we have a growing
- > > >  > number of real and pseudo-archs to support, and those macros tend to
- > > >  > obfuscate the generic code.
- > > >  > 
- > > >  > In the same vein, is there anything we could use in the compatible Adeos
- > > >  > patch that would unambiguously identify the presence of such support
- > > >  > without resorting to yet-another-macro like IPIPE_HAVE_SHARED_TIMER_IRQ?
- > > > 
- > > > We could decide that ipipe_timer_irq_p() must be implemented as a macro,
- > > > and use #ifdef ipipe_timer_irq_p but I thought that #ifdef
- > > > IPIPE_HAVE_SHARED_TIMER_IRQ was easier to understand.
- > > > 
- > > 
- > > It is, but the point is that we should not define a normalized
- > > interface; older ARM patches are obsoleted by the very existence of the
- > > new one adding a required feature for PXA.
- > 
- > AT91.
- > 
- > >  Therefore, at some point in
- > > time, we are going to deprecate them, removing the conditional from the
- > > Xenomai codebase. In other words, this code is aimed at transitioning
- > > internally between two Adeos patch series, not at providing a stable
- > > interface.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Here is a new version of the patch.
+iD8DBQFE5cdpniDOoMHTA+kRAi75AJ9RIkn2dBsy0SWHn3VbbI4b7U20qwCfcuFK
+CFz80B4K2kmJFUEB/A2KfKA=
+=nhrt
+-----END PGP SIGNATURE-----
 
--- 
-
-
-					    Gilles Chanteperdrix.
-
---/qjLOGsj0s
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-shared-timer-irq.2.diff"
-Content-Transfer-Encoding: 7bit
-
-Index: include/asm-generic/hal.h
-===================================================================
---- include/asm-generic/hal.h	(revision 1451)
-+++ include/asm-generic/hal.h	(working copy)
-@@ -679,6 +679,15 @@
- 
- #endif /* CONFIG_IPIPE_TRACE */
- 
-+#ifdef ipipe_timer_irq_p
-+/* Timer IRQ is shared. */
-+#define rthal_timer_irq_p()         ipipe_timer_irq_p()
-+#define rthal_mark_root_timer_irq() ipipe_mark_root_timer_irq()
-+#else /* !IPIPE_SHARED_TIMER_IRQ */
-+#define rthal_timer_irq_p()         1
-+#define rthal_mark_root_timer_irq() do { } while(0)
-+#endif /* IPIPE_SHARED_TIMER_IRQ */
-+
- #ifdef __cplusplus
- }
- #endif /* __cplusplus */
-Index: include/asm-generic/system.h
-===================================================================
---- include/asm-generic/system.h	(revision 1451)
-+++ include/asm-generic/system.h	(working copy)
-@@ -487,4 +487,6 @@
- #define xnarch_post_graph(obj,state)
- #define xnarch_post_graph_if(obj,state,cond)
- 
-+#define xnarch_timer_irq_p()         rthal_timer_irq_p()
-+
- #endif /* !_XENO_ASM_GENERIC_SYSTEM_H */
-Index: include/asm-arm/bits/intr.h
-===================================================================
---- include/asm-arm/bits/intr.h	(revision 1451)
-+++ include/asm-arm/bits/intr.h	(working copy)
-@@ -27,6 +27,7 @@
- 
- static inline void xnarch_relay_tick(void)
- {
-+	rthal_mark_root_timer_irq();
- 	rthal_irq_host_pend(RTHAL_TIMER_IRQ);
- }
- 
-Index: ksrc/skins/vxworks/sysLib.c
-===================================================================
---- ksrc/skins/vxworks/sysLib.c	(revision 1451)
-+++ ksrc/skins/vxworks/sysLib.c	(working copy)
-@@ -24,19 +24,20 @@
- 
- static wind_tick_handler_t tick_handler;
- static long tick_handler_arg;
-+static int tick_status [XNARCH_NR_CPUS];
- 
- void tickAnnounce(void)
- {
- 	if (tick_handler != NULL)
- 		tick_handler(tick_handler_arg);
- 
--	xnpod_announce_tick(&nkclock);
-+	tick_status[xnarch_current_cpu()] = xnpod_announce_tick(&nkclock);
- }
- 
- static int __tickAnnounce(xnintr_t *intr)
- {
- 	tickAnnounce();
--	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
-+	return tick_status[xnarch_current_cpu()];
- }
- 
- int wind_sysclk_init(u_long init_rate)
-Index: ksrc/nucleus/pod.c
-===================================================================
---- ksrc/nucleus/pod.c	(revision 1451)
-+++ ksrc/nucleus/pod.c	(working copy)
-@@ -3249,6 +3249,9 @@
- {
- 	xnsched_t *sched;
- 
-+	if (!xnarch_timer_irq_p())
-+		return XN_ISR_NONE | XN_ISR_NOENABLE | XN_ISR_PROPAGATE;
-+	
- 	sched = xnpod_current_sched();
- 
- 	xnlock_get(&nklock);
-
---/qjLOGsj0s--
+--------------enigDBBAE67B22E98F17C1EF140B--
 
