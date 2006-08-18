@@ -1,17 +1,13 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] ksrc/driver refactoring
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
+References: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
+Content-Type: text/plain
+Date: Fri, 18 Aug 2006 18:00:50 +0200
+Message-Id: <1155916850.4326.118.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-ID: <17635.21607.931068.951138@domain.hid>
-Date: Wed, 16 Aug 2006 19:22:47 +0200
-Subject: Re: [Xenomai-core] [RFC][PATCH 4/4] shorten overrun loops of periodic
-	timers
-In-Reply-To: <44E345D7.4070904@domain.hid>
-References: <44D19F3D.9060700@domain.hid>
-	<17618.12731.97405.118098@domain.hid>
-	<44D24257.10605@domain.hid>
-	<17635.15652.735628.299134@domain.hid>
-	<44E345D7.4070904@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,30 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
- > > I am thinking again about this patch: some handlers need to be
- > > rewritten, for example the posix timers handler, because the handler
- > > relies on the fact that it is called for every timer expiry to compute
- > > the overruns count. So maybe this patch should come with the addition of
- > > an xntimer_getoverrun service that computes the overrun count using the
- > > tsc ?
- > > 
- > 
- > Mmh, that gets close to hrtimer_forward now: push an overdue timer to an
- > expiry date that is in the future and return the number of overruns. But
- > do we still want this optimisation of the broken path then? It starts
- > getting complex, probably adding more code than it is worth. I'm
- > starting to vote against my own patch...
+On Wed, 2006-08-16 at 16:14 +0200, Klaas Gadeyne wrote:
+> > I just wanted to drop a note that I did some refactoring on the
+> > drivers directory (16550A->serial) and the config menus. If anything is
+> > broken, shoot me.
+> 
+> I don't think this is related, but 2 students of mine got stuck on a linker
+> error this morning trying to compile xenomai-trunk on a i386 target
+> (2.4.33 kernel with the adeos-ipipe-2.4.32-i386-1.2-06.patch (applied
+> with a few minor hunks), gcc 3.3.6 from Debian).
+> 
+> ld -m elf_i386 -T /usr/src/linux-2.4.33/arch/i386/vmlinux.lds -e stext
+> arch/i386/kernel/head.o arch/i386/kernel/init_task.o init/
+> main.o init/version.o init/do_mounts.o \
+>                 --start-group \
+>                 arch/i386/kernel/kernel.o arch/i386/mm/mm.o
+> kernel/kernel.o mm/mm.o fs/fs.o ipc/ipc.o \
+>                  drivers/acpi/acpi.o drivers/char/char.o
+> drivers/block/block.o drivers/misc/misc.o drivers/net/net.o
+> drivers/char             /agp/agp.o drivers/ide/idedriver.o
+> drivers/cdrom/driver.o drivers/pci/driver.o drivers/pcmcia/pcmcia.o
+> drivers/net/pcmcia/pcmcia_             net.o drivers/video/video.o
+> drivers/media/media.o kernel/xenomai/nucleus/xeno_nucleus.o
+> kernel/xenomai/skins/native/xeno_native.o
+> kernel/xenomai/skins/posix/xeno_posix.o
+> kernel/xenomai/skins/rtdm/xeno_rtdm.o
+> drivers/xenomai/16550A/xeno_16550A.o drivers/xenom
+> ai/testing/xeno_timerbench.o arch/i386/xenomai/built-in.o \
+>                 net/network.o \
+>                 /usr/src/linux-2.4.33/arch/i386/lib/lib.a
+> /usr/src/linux-2.4.33/lib/lib.a
+> /usr/src/linux-2.4.33/arch/i386/lib/lib             .a \
+>                 --end-group \
+>                 -o vmlinux
+> drivers/char/char.o: In function `handle_scancode':
+> (.text+0x1b25a): undefined reference to `pckbd_sysrq_xlate'
+> make: *** [vmlinux] Error 1
+> 
+> The "quick-fix" solution was to disable the magic_sysrq_key option
+> from the kernel.  I first thought the problem was due to a missing
+> dependency in the the kernel and not at all xenomai-related (and since
+> the quick hack worked, they didn't search any further), but now that
+> I've read your mail I started to doubt if it might be related.
+> 
+> Let me know if it might be related and if you want further info.
+> 
+> But I'll wait before shooting :-)
+> 
 
-The code to compute the number of overruns from the tsc exists in
-xnpod_wait_thread_period, is not this just a matter of refactoring this
-code in an xntimer_getoverrun ?
+There seems to be a few "generic" 2.4 kernel issues in the same area.
+For instance, building the kernel without CONFIG_VT causes
+handle_scancode to be undefined, since driver/char/Makefile does not
+build keyboard.c in such a case, albeit it's used by the input
+subsystem. In any case, this is not related to Adeos/Xenomai.
 
+> klaas
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
