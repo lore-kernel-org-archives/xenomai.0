@@ -1,13 +1,16 @@
-Subject: Re: [Xenomai-core] Handling of null delay in asm/hal.h
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17638.5405.154869.872706@domain.hid>
-References: <17638.5405.154869.872706@domain.hid>
-Content-Type: text/plain
-Date: Fri, 18 Aug 2006 21:51:53 +0200
-Message-Id: <1155930713.4902.5.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17638.11497.402153.649650@domain.hid>
+Date: Fri, 18 Aug 2006 23:11:05 +0200
+Subject: Re: [Xenomai-core] [PATCH] speed up building of posix apps
+In-Reply-To: <44E5FB40.1050306@domain.hid>
+References: <44E5ACFA.50905@domain.hid>
+	<17637.50472.580142.331066@domain.hid>
+	<44E5ED9A.9040201@domain.hid>
+	<17637.63696.703047.258987@domain.hid>
+	<44E5FB40.1050306@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,103 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-08-18 at 21:29 +0200, Gilles Chanteperdrix wrote:
-> Hi,
-> 
-> at some point in time, we decided to trigger directly the timer irq when
-> called on x86 to program a null delay. Attached a patch which does the
-> same for all other architectures.
-> 
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Jan Kiszka wrote:
+ > >  > Ok, here comes version 2, now with detection of the required ld feature.
+ > >  > Falls back to normal behaviour if ld is too old. Could you test it please?
+ > >  > 
+ > >  > [Grmbl, the fun stops where autoconf begins...]
+ > > 
+ > > Seems to work. But maybe we could find the bottleneck and fix it in a
+ > > general way. What part of the process is slow ?
+ > > 
+ > 
+ > Don't know. Maybe it's some automake magic (the arguments look different
+ > between libtool invocation and linker run), maybe just the long list of
+ > arguments.
+ > 
+ > Anyway, it's also annoying how the screen is filled up with this
+ > irrelevant information. So besides looking for other optimisations (but
+ > things run fine now I think), I definitely vote for the @file approach
+ > for the sake of output reduction. I haven't build a larger POSIX project
+ > against Xenomai recently, but I could imagine that the dump size can
+ > become even more than just annoying...
 
-Applied, thanks.
+Patch applied, thanks. Since we are talking about optimisation, in shell
+scripts, I prefer to set a variable to true (or better, the : builtin)
+or false, this way, it may be used directly as a condition.
 
-> plain text document attachment (xeno-trigger-irq-on-null-delay.patch)
-> Index: include/asm-arm/hal.h
-> ===================================================================
-> --- include/asm-arm/hal.h	(revision 1456)
-> +++ include/asm-arm/hal.h	(working copy)
-> @@ -104,8 +104,9 @@
->  static inline void rthal_timer_program_shot (unsigned long delay)
->  {
->      if(!delay)
-> -        delay = 10;
-> -    __ipipe_mach_set_dec(delay);
-> +	rthal_trigger_irq(RTHAL_TIMER_IRQ);
-> +    else
-> +	__ipipe_mach_set_dec(delay);
->  }
->  
->      /* Private interface -- Internal use only */
-> Index: include/asm-blackfin/hal.h
-> ===================================================================
-> --- include/asm-blackfin/hal.h	(revision 1456)
-> +++ include/asm-blackfin/hal.h	(working copy)
-> @@ -61,11 +61,14 @@
->  
->  static inline void rthal_timer_program_shot (unsigned long delay)
->  {
-> -    if (delay < 2) delay = 10;
-> -    *pTCOUNT = delay - 1;
-> -    __builtin_bfin_csync();
-> -    *pTCNTL = 3; /* Oneshot mode, no auto-reload. */
-> -    __builtin_bfin_csync();
-> +    if (delay < 2)
-> +	rthal_trigger_irq(RTHAL_TIMER_IRQ);
-> +    else {
-> +	*pTCOUNT = delay - 1;
-> +	__builtin_bfin_csync();
-> +	*pTCNTL = 3; /* Oneshot mode, no auto-reload. */
-> +	__builtin_bfin_csync();
-> +    }
->  }
->  
->      /* Private interface -- Internal use only */
-> Index: include/asm-ia64/hal.h
-> ===================================================================
-> --- include/asm-ia64/hal.h	(revision 1456)
-> +++ include/asm-ia64/hal.h	(working copy)
-> @@ -72,8 +72,10 @@
->  
->      rthal_local_irq_save_hw(flags);
->  #endif /* CONFIG_XENO_OPT_PIPELINE_HEAD */
-> -    if (!delay) { delay = 10; }
-> -    ia64_set_itm(ia64_get_itc() + delay);
-> +    if (!delay)
-> +	rthal_trigger_irq(RTHAL_TIMER_IRQ);
-> +    else
-> +	ia64_set_itm(ia64_get_itc() + delay);
->  #ifndef CONFIG_XENO_OPT_PIPELINE_HEAD
->      rthal_local_irq_restore_hw(flags);
->  #endif /* CONFIG_XENO_OPT_PIPELINE_HEAD */
-> Index: include/asm-powerpc/hal.h
-> ===================================================================
-> --- include/asm-powerpc/hal.h	(revision 1456)
-> +++ include/asm-powerpc/hal.h	(working copy)
-> @@ -73,11 +73,12 @@
->  static inline void rthal_timer_program_shot(unsigned long delay)
->  {
->  	if (!delay)
-> -		delay = 1;
-> +		rthal_trigger_irq(RTHAL_TIMER_IRQ);
-> +	else
->  #ifdef CONFIG_40x
-> -	mtspr(SPRN_PIT, delay);
-> +		mtspr(SPRN_PIT, delay);
->  #else /* !CONFIG_40x */
-> -	set_dec((int)delay);	/* decrementer is only 32-bits */
-> +	        set_dec((int)delay);	/* decrementer is only 32-bits */
->  #endif /* CONFIG_40x */
->  }
->  
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
