@@ -1,14 +1,11 @@
-Subject: Re: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
+Subject: Re: [Xenomai-core] Towards periodic mode over aperiodic timers
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17637.50791.966458.220636@domain.hid>
-References: <17636.56428.140050.265677@domain.hid>
-	<1155898533.4326.50.camel@domain.hid>
-	<17637.41333.124122.921988@domain.hid>
-	<1155904566.4326.65.camel@domain.hid> <1155904794.4326.69.camel@domain.hid>
-	<17637.50791.966458.220636@domain.hid>
+In-Reply-To: <44E5AF32.3020102@domain.hid>
+References: <44E46EDC.1000707@domain.hid> <1155899619.4326.56.camel@domain.hid>
+	<44E5AF32.3020102@domain.hid>
 Content-Type: text/plain
-Date: Fri, 18 Aug 2006 16:21:22 +0200
-Message-Id: <1155910883.4326.89.camel@domain.hid>
+Date: Fri, 18 Aug 2006 16:32:43 +0200
+Message-Id: <1155911563.4326.96.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -21,130 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-08-18 at 15:53 +0200, Gilles Chanteperdrix wrote:
+On Fri, 2006-08-18 at 14:14 +0200, Jan Kiszka wrote:
 > Philippe Gerum wrote:
->  > On Fri, 2006-08-18 at 14:36 +0200, Philippe Gerum wrote:
->  > > On Fri, 2006-08-18 at 13:16 +0200, Gilles Chanteperdrix wrote:
->  > > > Philippe Gerum wrote:
->  > > >  > I'd rather keep the number of obscure conditional macros as low as
->  > > >  > possible; we should actually try to reduce them since we have a growing
->  > > >  > number of real and pseudo-archs to support, and those macros tend to
->  > > >  > obfuscate the generic code.
->  > > >  > 
->  > > >  > In the same vein, is there anything we could use in the compatible Adeos
->  > > >  > patch that would unambiguously identify the presence of such support
->  > > >  > without resorting to yet-another-macro like IPIPE_HAVE_SHARED_TIMER_IRQ?
->  > > > 
->  > > > We could decide that ipipe_timer_irq_p() must be implemented as a macro,
->  > > > and use #ifdef ipipe_timer_irq_p but I thought that #ifdef
->  > > > IPIPE_HAVE_SHARED_TIMER_IRQ was easier to understand.
->  > > > 
->  > > 
->  > > It is, but the point is that we should not define a normalized
->  > > interface; older ARM patches are obsoleted by the very existence of the
->  > > new one adding a required feature for PXA.
->  > 
->  > AT91.
->  > 
->  > >  Therefore, at some point in
->  > > time, we are going to deprecate them, removing the conditional from the
->  > > Xenomai codebase. In other words, this code is aimed at transitioning
->  > > internally between two Adeos patch series, not at providing a stable
->  > > interface.
+> > On Thu, 2006-08-17 at 15:27 +0200, Jan Kiszka wrote:
+> >> Hi,
+> >>
+> >> the conflict between skins preferring aperiodic timing vs. skin
+> >> requiring periodic mode popped up once again on xenomai-help. One way
+> >> out of this, likely THE way, is to map such tick-driven skins on a
+> >> periodic timer over aperiodic mode (and drop periodic low-level support
+> >> completely at the same time).
+> >>
+> >> Let's start some discussion how this can be done, specifically as Gilles
+> >> and I are already turning the xntimer subsystem upside down (almost). If
+> >> we want co-existence of high-res timing of, say, the posix skin while
+> >> the vxworks skin runs over a tick-timer, we need some kind of "context"
+> >> for timing related functions.
+> >>
+> >> Simple example: xnpod_suspend_thread() expects a timeout as "xnticks",
+> >> i.e. either in nanoseconds or in ticks of the underlying periodic timer.
+> >> This depends on the global timer mode of the pod, and that's a no-go for
+> >> concurrent modes as sketched above. Rather, the thread should encode
+> >> which kind of timing mode to use, even better the threads timers.
+> >>
+> >> We currently dispatch xntimer_start globally to the different timer
+> >> subsystems (if periodic mode is enabled). What about deriving the start
+> >> function from the timer itself in the future? If a timer was created as
+> >> aperiodic, things happen as usual in aperiodic mode, and the timeout are
+> >> interpreted as nanoseconds. If the timer is periodic, we interpret the
+> >> timeout in ticks and map them on a second-level timing subsystem
+> >> (probably a wheel) that itself is driven by a single periodic timer in
+> >> the first-level system (just like the host tick).
+> >>
+> >> Am I heading in the right direction? Is it feasible? Any other ideas?
+> > 
+> > I like this idea; it's simple and elegant, having only a low impact on
+> > the existing interfaces.
+> > 
+> > The two-level timer handling moving the BSD wheel on top of the
+> > aperiodic shot is definitely a clean approach, which adds no overhead to
+> > the existing periodic timer management. This would also allow to get rid
+> > of the specific Adeos support for periodic hw management.
+> > 
 > 
-> Here is a new version of the patch.
+> One could then even think about making the support switch for periodic
+> mode a per-skin option for those that support both modes.
+> 
+> That all sounds thrilling, but will certainly require some noticeable
+> refactoring. Maybe we can start with adding the required bits to the
+> existing aperiodic timer subsystem while keeping the periodic
+> infrastructure. Oh my dear, I'm already regretting having made that
+> suggestion... ;)
 > 
 
-Applied, thanks.
+Before we start implementing anything, there is still another issue (at
+least) to address: how do we deal with the wall clock time, basically
+xnpod_get_time/set_time, and the xnarch-level counterparts, after we
+move the logic from the central pod to a per-thread/per-timer view? E.g. what
+should xnpod_get_time() return when called over an ISR context? 
 
-> plain text document attachment (xeno-shared-timer-irq.2.diff)
-> Index: include/asm-generic/hal.h
-> ===================================================================
-> --- include/asm-generic/hal.h	(revision 1451)
-> +++ include/asm-generic/hal.h	(working copy)
-> @@ -679,6 +679,15 @@
->  
->  #endif /* CONFIG_IPIPE_TRACE */
->  
-> +#ifdef ipipe_timer_irq_p
-> +/* Timer IRQ is shared. */
-> +#define rthal_timer_irq_p()         ipipe_timer_irq_p()
-> +#define rthal_mark_root_timer_irq() ipipe_mark_root_timer_irq()
-> +#else /* !IPIPE_SHARED_TIMER_IRQ */
-> +#define rthal_timer_irq_p()         1
-> +#define rthal_mark_root_timer_irq() do { } while(0)
-> +#endif /* IPIPE_SHARED_TIMER_IRQ */
-> +
->  #ifdef __cplusplus
->  }
->  #endif /* __cplusplus */
-> Index: include/asm-generic/system.h
-> ===================================================================
-> --- include/asm-generic/system.h	(revision 1451)
-> +++ include/asm-generic/system.h	(working copy)
-> @@ -487,4 +487,6 @@
->  #define xnarch_post_graph(obj,state)
->  #define xnarch_post_graph_if(obj,state,cond)
->  
-> +#define xnarch_timer_irq_p()         rthal_timer_irq_p()
-> +
->  #endif /* !_XENO_ASM_GENERIC_SYSTEM_H */
-> Index: include/asm-arm/bits/intr.h
-> ===================================================================
-> --- include/asm-arm/bits/intr.h	(revision 1451)
-> +++ include/asm-arm/bits/intr.h	(working copy)
-> @@ -27,6 +27,7 @@
->  
->  static inline void xnarch_relay_tick(void)
->  {
-> +	rthal_mark_root_timer_irq();
->  	rthal_irq_host_pend(RTHAL_TIMER_IRQ);
->  }
->  
-> Index: ksrc/skins/vxworks/sysLib.c
-> ===================================================================
-> --- ksrc/skins/vxworks/sysLib.c	(revision 1451)
-> +++ ksrc/skins/vxworks/sysLib.c	(working copy)
-> @@ -24,19 +24,20 @@
->  
->  static wind_tick_handler_t tick_handler;
->  static long tick_handler_arg;
-> +static int tick_status [XNARCH_NR_CPUS];
->  
->  void tickAnnounce(void)
->  {
->  	if (tick_handler != NULL)
->  		tick_handler(tick_handler_arg);
->  
-> -	xnpod_announce_tick(&nkclock);
-> +	tick_status[xnarch_current_cpu()] = xnpod_announce_tick(&nkclock);
->  }
->  
->  static int __tickAnnounce(xnintr_t *intr)
->  {
->  	tickAnnounce();
-> -	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
-> +	return tick_status[xnarch_current_cpu()];
->  }
->  
->  int wind_sysclk_init(u_long init_rate)
-> Index: ksrc/nucleus/pod.c
-> ===================================================================
-> --- ksrc/nucleus/pod.c	(revision 1451)
-> +++ ksrc/nucleus/pod.c	(working copy)
-> @@ -3249,6 +3249,9 @@
->  {
->  	xnsched_t *sched;
->  
-> +	if (!xnarch_timer_irq_p())
-> +		return XN_ISR_NONE | XN_ISR_NOENABLE | XN_ISR_PROPAGATE;
-> +	
->  	sched = xnpod_current_sched();
->  
->  	xnlock_get(&nklock);
 -- 
 Philippe.
 
