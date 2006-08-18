@@ -1,41 +1,35 @@
-Message-ID: <e325d110608040715v5c200f04l4632837bca7a15a4@domain.hid>
-Date: Fri, 4 Aug 2006 15:15:59 +0100
-From: "Kim Chuan Lim" <lim.kim.chuan@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [PATCH] speed up building of posix apps
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44E5ACFA.50905@domain.hid>
+References: <44E5ACFA.50905@domain.hid>
+Content-Type: text/plain
+Date: Fri, 18 Aug 2006 14:38:01 +0200
+Message-Id: <1155904681.4326.67.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] building xenomai integrated drivers
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi ya,
+On Fri, 2006-08-18 at 14:05 +0200, Jan Kiszka wrote:
 
-The following is my .config..
+> 
+> PS: What about the silence-libtool patch? I've heard neither ack nor
+> nack so far.
 
-#
-# Drivers
-#
-CONFIG_XENO_DRIVERS_16550A=y
-CONFIG_XENO_DRIVERS_TIMERBENCH=y
-CONFIG_XENO_DRIVERS_IRQBENCH=y
-CONFIG_XENO_DRIVERS_SWITCHTEST=y
+Still pondering the libtool --module issue.
+
+-- 
+Philippe.
 
 
-I try to look for xeno_16550A.ko in my computer but i cannot get it.
-There is nothing such folder namely "xenomai "in my
-/lib/modules/2.6.17-default/kernel/drivers/
-
-May i know how could i build it manually?
-
-Regards,
-Kim Chuan.
 
