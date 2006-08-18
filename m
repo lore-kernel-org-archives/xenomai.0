@@ -1,15 +1,15 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17638.11497.402153.649650@domain.hid>
-Date: Fri, 18 Aug 2006 23:11:05 +0200
-Subject: Re: [Xenomai-core] [PATCH] speed up building of posix apps
-In-Reply-To: <44E5FB40.1050306@domain.hid>
-References: <44E5ACFA.50905@domain.hid>
-	<17637.50472.580142.331066@domain.hid>
-	<44E5ED9A.9040201@domain.hid>
-	<17637.63696.703047.258987@domain.hid>
-	<44E5FB40.1050306@domain.hid>
+Message-ID: <17638.12535.516931.25513@domain.hid>
+Date: Fri, 18 Aug 2006 23:28:23 +0200
+Subject: Re: [Xenomai-core] Re: Test, benchmark
+In-Reply-To: <44E60313.8000803@domain.hid>
+References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
+	<44DB9958.10109@domain.hid> <44DCAF88.2060801@domain.hid>
+	<44E5F0B4.8070405@domain.hid>
+	<17637.63157.596008.331241@domain.hid>
+	<44E60313.8000803@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,35 +20,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > Ok, here comes version 2, now with detection of the required ld feature.
- > >  > Falls back to normal behaviour if ld is too old. Could you test it please?
- > >  > 
- > >  > [Grmbl, the fun stops where autoconf begins...]
- > > 
- > > Seems to work. But maybe we could find the bottleneck and fix it in a
- > > general way. What part of the process is slow ?
- > > 
- > 
- > Don't know. Maybe it's some automake magic (the arguments look different
- > between libtool invocation and linker run), maybe just the long list of
- > arguments.
- > 
- > Anyway, it's also annoying how the screen is filled up with this
- > irrelevant information. So besides looking for other optimisations (but
- > things run fine now I think), I definitely vote for the @file approach
- > for the sake of output reduction. I haven't build a larger POSIX project
- > against Xenomai recently, but I could imagine that the dump size can
- > become even more than just annoying...
+Jim Cromie wrote:
+ > I think I added it at some point when I wasnt getting output.
+ > It works without the -n too,  which should be added via XENOT_SWITCHTEST,
+ > not stuffed in by default.   You could just edit it out of patch, if 
+ > otherwize satisfied...
 
-Patch applied, thanks. Since we are talking about optimisation, in shell
-scripts, I prefer to set a variable to true (or better, the : builtin)
-or false, this way, it may be used directly as a condition.
+Patch applied without -n, thanks.
 
 -- 
 
