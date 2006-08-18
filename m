@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17638.4287.277994.908118@domain.hid>
-Date: Fri, 18 Aug 2006 21:10:55 +0200
-Subject: Re: [Xenomai-core] Re: Test, benchmark
-In-Reply-To: <44E60313.8000803@domain.hid>
-References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
-	<44DB9958.10109@domain.hid> <44DCAF88.2060801@domain.hid>
-	<44E5F0B4.8070405@domain.hid>
-	<17637.63157.596008.331241@domain.hid>
-	<44E60313.8000803@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="Zi3/lmrL7l"
+Content-Transfer-Encoding: 7bit
+Message-ID: <17638.5405.154869.872706@domain.hid>
+Date: Fri, 18 Aug 2006 21:29:33 +0200
+Subject: [Xenomai-core] Handling of null delay in asm/hal.h
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,36 +14,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jim Cromie wrote:
- > Offhand, that seems counterintuitive that -n gives lower growth-rate of 
- > total switches,
- > since its equivalent to a shorter list of 'threadspec's
 
-In addition to the threads specified by the 'threadspec's list,
-switchtest create a thread (named sleeper) that sleep 10 ms every time
-some other thread switches to it. If there are more threads, this
-sleeper thread is less likely to run, so there are more context
-switches per second.
+--Zi3/lmrL7l
+Content-Type: text/plain; charset=us-ascii
+Content-Description: message body and .signature
+Content-Transfer-Encoding: 7bit
 
- > 
- > 
- > Also, 2 possible output change requests:
- > 
- > a - print per-sample measures, not accumulating ones.
- >     this is more consistent with latency, which prints the latencies
- >     seen over the 1-sec sample period
- >     This also feeds better into histogram, w/o adding 'delta' logic to 
- > histogrammer
- > 
- > b - label output lines more in spirit of latency
 
-Ok, I will change the output.
+Hi,
+
+at some point in time, we decided to trigger directly the timer irq when
+called on x86 to program a null delay. Attached a patch which does the
+same for all other architectures.
 
 -- 
 
 
 					    Gilles Chanteperdrix.
+
+--Zi3/lmrL7l
+Content-Type: text/plain
+Content-Disposition: inline;
+	filename="xeno-trigger-irq-on-null-delay.patch"
+Content-Transfer-Encoding: 7bit
+
+Index: include/asm-arm/hal.h
+===================================================================
+--- include/asm-arm/hal.h	(revision 1456)
++++ include/asm-arm/hal.h	(working copy)
+@@ -104,8 +104,9 @@
+ static inline void rthal_timer_program_shot (unsigned long delay)
+ {
+     if(!delay)
+-        delay = 10;
+-    __ipipe_mach_set_dec(delay);
++	rthal_trigger_irq(RTHAL_TIMER_IRQ);
++    else
++	__ipipe_mach_set_dec(delay);
+ }
+ 
+     /* Private interface -- Internal use only */
+Index: include/asm-blackfin/hal.h
+===================================================================
+--- include/asm-blackfin/hal.h	(revision 1456)
++++ include/asm-blackfin/hal.h	(working copy)
+@@ -61,11 +61,14 @@
+ 
+ static inline void rthal_timer_program_shot (unsigned long delay)
+ {
+-    if (delay < 2) delay = 10;
+-    *pTCOUNT = delay - 1;
+-    __builtin_bfin_csync();
+-    *pTCNTL = 3; /* Oneshot mode, no auto-reload. */
+-    __builtin_bfin_csync();
++    if (delay < 2)
++	rthal_trigger_irq(RTHAL_TIMER_IRQ);
++    else {
++	*pTCOUNT = delay - 1;
++	__builtin_bfin_csync();
++	*pTCNTL = 3; /* Oneshot mode, no auto-reload. */
++	__builtin_bfin_csync();
++    }
+ }
+ 
+     /* Private interface -- Internal use only */
+Index: include/asm-ia64/hal.h
+===================================================================
+--- include/asm-ia64/hal.h	(revision 1456)
++++ include/asm-ia64/hal.h	(working copy)
+@@ -72,8 +72,10 @@
+ 
+     rthal_local_irq_save_hw(flags);
+ #endif /* CONFIG_XENO_OPT_PIPELINE_HEAD */
+-    if (!delay) { delay = 10; }
+-    ia64_set_itm(ia64_get_itc() + delay);
++    if (!delay)
++	rthal_trigger_irq(RTHAL_TIMER_IRQ);
++    else
++	ia64_set_itm(ia64_get_itc() + delay);
+ #ifndef CONFIG_XENO_OPT_PIPELINE_HEAD
+     rthal_local_irq_restore_hw(flags);
+ #endif /* CONFIG_XENO_OPT_PIPELINE_HEAD */
+Index: include/asm-powerpc/hal.h
+===================================================================
+--- include/asm-powerpc/hal.h	(revision 1456)
++++ include/asm-powerpc/hal.h	(working copy)
+@@ -73,11 +73,12 @@
+ static inline void rthal_timer_program_shot(unsigned long delay)
+ {
+ 	if (!delay)
+-		delay = 1;
++		rthal_trigger_irq(RTHAL_TIMER_IRQ);
++	else
+ #ifdef CONFIG_40x
+-	mtspr(SPRN_PIT, delay);
++		mtspr(SPRN_PIT, delay);
+ #else /* !CONFIG_40x */
+-	set_dec((int)delay);	/* decrementer is only 32-bits */
++	        set_dec((int)delay);	/* decrementer is only 32-bits */
+ #endif /* CONFIG_40x */
+ }
+ 
+
+--Zi3/lmrL7l--
 
