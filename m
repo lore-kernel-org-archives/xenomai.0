@@ -1,15 +1,11 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Sat, 19 Aug 2006 18:17:55 +0200
+Message-Id: <1156004275.4718.11.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-ID: <17639.2178.158208.80020@domain.hid>
-Date: Sat, 19 Aug 2006 14:48:02 +0200
-Subject: Re: [Xenomai-core] Re: Test, benchmark
-In-Reply-To: <44E6BF53.4000809@domain.hid>
-References: <44DA896F.9060102@domain.hid> <44DB1865.90004@domain.hid>
-	<44DB9958.10109@domain.hid> <44DCAF88.2060801@domain.hid>
-	<44E5F0B4.8070405@domain.hid> <44E6009E.7020304@domain.hid>
-	<44E606B9.6050406@domain.hid> <44E6BF53.4000809@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.2.1
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,37 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-Jan Kiszka wrote:
- > list="a,b,c,d"
- > for option in `echo $list|sed -e's/,/\n/g'`; do
- > 	case $option in
- > 	a)
- > 		do_this
- > 		;;
- > 	b)
- > 		do_that
- > 		;;
- > 	...
- > 	esac
- > done
+To: xenomai@xenomai.org
 
 
-What about:
+Here is the first maintenance release for the v2.2.x branch.  Short
+log follows:
 
-save_ifs="$IFS"
-IFS=,
-for option in $list; do
-     case $option in
-...
-     esac
-done
-IFS="$save_ifs"
+	[x86, powerpc] Upgrade Adeos support.
+
+	[nucleus] Fix resource stealing in synchronization management
+	code.
+	Ignore migration requests from threads blocked on the
+	startup	barrier.
+	Do not force migration upon dormant threads.
+
+	[posix] Iron process cleanup code.
+	Fix user-space mutex attribute handling.
+	Fix cancellation request handling.
+	Ensure child processes bind to the skin upon fork.
+
+	[native] Fix rt_queue_read() argument handling when called
+	from user-space.
+	Do not send SIGKILL to dormant threads upon termination.
+
+	[uvm] Mark as deprecated. Will be removed from v2.3.
+
+	[irqbench] Fix 2.4 build.
+
+Please see the ChangeLog for details.
+
+http://download.gna.org/xenomai/stable/xenomai-2.2.1.tar.bz2
 
 -- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
