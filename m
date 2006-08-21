@@ -1,14 +1,19 @@
-Message-ID: <44E36CBB.2030006@domain.hid>
-Date: Wed, 16 Aug 2006 21:06:35 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Time representation in RTDM profiles
-References: <44E2DC1C.2010304@domain.hid>	<200608161305.54411.Sebastian.Smolorz@domain.hid>	<44E32B21.8060508@domain.hid>
-	<200608162020.45918.Sebastian.Smolorz@domain.hid>
-In-Reply-To: <200608162020.45918.Sebastian.Smolorz@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Subject: Re: [Xenomai-core] [patch, minor] xnpipe_recv and
+	xntimer_get_timeout_periodic()
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <b647ffbd0608210447m45704e2bhd1884bce9e6a2a66@domain.hid>
+References: <b647ffbd0608210136w7ca05265o5ef930c1bee24d65@domain.hid>
+	<1156154538.4402.32.camel@domain.hid>
+	<b647ffbd0608210347y4a863588r607c403de0640e74@domain.hid>
+	<1156159631.4402.41.camel@domain.hid>
+	<b647ffbd0608210446v38656cecxc231dba4e8f55dc2@domain.hid>
+	<b647ffbd0608210447m45704e2bhd1884bce9e6a2a66@domain.hid>
+Content-Type: text/plain
+Date: Mon, 21 Aug 2006 14:45:37 +0200
+Message-Id: <1156164337.4402.48.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,41 +23,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-Sebastian Smolorz wrote:
-> Jan Kiszka wrote:
->> Sebastian Smolorz wrote:
->>> Jan Kiszka wrote:
->>>> Sebastian Smolorz wrote:
->>>>> The possibility of redefinition was not the main goal here. As you
->>>>> mentioned it would be problematic. No, I introduced nanosecs_abs_t and
->>>>> nanosecs_rel_t because they are more intuitive and more "speaking" to
->>>>> the programmer. The meaning of a variable of such a type is clear at
->>>>> first sight.
->>>> Yeah, sounds reasonable to me. Then let's move these typedefs to rtdm.h
->>>> and document them as self-explanatory defines of the underlying standard
->>>> types, freezing their width and signedness at the same time.
->>> Agreed.
->>>
->>>> Actually, this would be useful for the driver API of RTDM as well.
->>> That's right. No objections from my side.
->> Done.
->>
->> Though I checked things more then twice, some regression may be hidden,
->> specifically as I changed the signedness of timeout parameters of a few
->> RTDM driver API functions. All documented under
->> ksrc/skins/rtdm/API.CHANGES, and everyone is warned now.
+On Mon, 2006-08-21 at 13:47 +0200, Dmitry Adamushko wrote:
+>                              From: 
+> Dmitry Adamushko
+> <dmitry.adamushko@domain.hid>
+>                                To: 
+> xenomai@xenomai.org
+>                           Subject: 
+> [Xenomai-core] [patch, minor]
+> xnpipe_recv and
+> xntimer_get_timeout_periodic()
+>                              Date: 
+> Mon, 21 Aug 2006 13:47:00 +0200
 > 
-> Here comes a follow-up patch. Compile-tested successfully.
+> 
+> 
+> 
+> 
+>         On Mon, 2006-08-21 at 12:47 +0200, Dmitry Adamushko wrote: 
+>         >
+>         > what about pipe-related change (I mean timeslice updating
+>         in 
+>         > xnpipe_recv()) ?
+>         >
+>         
+>         It's basically useless, since xnsynch_sleep_on() handles the
+>         resource
+>         stealing case internally, and the loop in xnpipe_recv is fake
+>         actually.
+>         Think of it as a goto statement in disguise.
+> 
+> It has nothing to do with "resource stealing" (in terms of synch.c).
+> The synch object is not PIP at all.
 > 
 
-Just applied, thanks.
+Ok, I thought we were discussing a more general issue about a new
+potential side-effect of the resource stealing feature.
 
-[I thought about dropping the RTSER_TIMEOUT_* stuff as well, but A)
-there are already users and B) it aligns so well with the other defines
-for rtser_config.]
+> task1 : blocked in xnpipe_recv()
+> 
+> task2 : xnpipe_send() ---> wakes up task1 ---> task1 is waiting to be
+> scheduled in
+> 
+> task3 [prio > task2.prio] : gets CPU and calls xnpipe_recv()
+> 
+>    task3 gets a message so state->inq is empty now.
+> 
+> ...
+> 
+> task2 : calls getq(&state->inq) which is NULL now (if there were no
+> more messages)
+> 
+> calls xnsynch_sleep_on() again with the initial "timeout".
+>   
 
-Jan
+Definitely, yes. Please ignore my previous comment. I'll apply this one,
+thanks.
+
+-- 
+Philippe.
+
+
 
