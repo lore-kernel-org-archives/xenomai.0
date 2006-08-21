@@ -1,14 +1,15 @@
-Message-ID: <44E9663C.2030904@domain.hid>
-Date: Mon, 21 Aug 2006 01:52:28 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <b647ffbd0608210134n410d0814n427caa8a6dd0a822@domain.hid>
+Date: Mon, 21 Aug 2006 10:34:23 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: xeno-load: line 182: 2794 Floating
-	point	exception$suflag $* $cmdargs
-References: <44E91231.8070403@domain.hid> <44E955E0.40009@domain.hid>
-	<1156143410.4723.4.camel@domain.hid>
-In-Reply-To: <1156143410.4723.4.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_27655_17205098.1156149263123"
+Subject: [Xenomai-core] [patch,
+	minor] xnpipe_recv and # CPE_ANT_R6.2 (Slotted
+	release R6) - ModemSoftware bant-z # Sun Aug 20 08:24:02 MEST
+	2006 element * CHECKEDOUT # linxiangcheng # Sat Aug 19
+	09:47:12 MEST 2006 # fix the bug: CPE_P00016456 element
+	/cm4/fsn/app/pstack/sl
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,39 +19,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-got a backtrace
+------=_Part_27655_17205098.1156149263123
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_27656_27547979.1156149263123"
 
-Philippe Gerum wrote:
-> On Mon, 2006-08-21 at 00:42 -0600, Jim Cromie wrote:
->   
->> Jim Cromie wrote:
->>     
->>> *
->>> == Sampling period: 10 us
->>> == Do not interrupt this program
->>> /usr/xenomai/bin/xeno-load: line 182:  2868 Floating point 
->>> exception$suflag $* $cmdargs
->>>
->>>       
->> soekris:/usr/xenomai/bin# gdb ../testsuite/switchbench/switchbench
->> I tried stuffing -g into all *_CFLAGS in src/testsuite/Makefile,
->> but I couldnt get it to show up in the compilation.
->>
->>     
->
-> Try passing --enable-debug to the "configure" script.
->
->   
-#0  0x0804ae57 in __divdi3 ()
-#1  0x08049ac2 in worker (cookie=0x0) at switchbench.c:133
-#2  0x0804a18f in rt_task_trampoline (cookie=0x0) at task.c:89
-#3  0xb7f8107d in start_thread () from /lib/tls/libpthread.so.0
-#4  0xb7f158fe in clone () from /lib/tls/libc.so.6
-(gdb)
+------=_Part_27656_27547979.1156149263123
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello,
+
+[ pipe.c.patch ]  update the "timeout" variable so that the remaining
+timeout is used in case of consequent xnsynch_sleep_on() calls.
+
+As I understand that may indeed happen in case when another thread "steals"
+data while this one waits to be scheduled in.
+
+[ timer.c.patch] xnticks_t is unsigned while (as I understand)
+"xntlholder_date(&timer->plink) - nkpod->jiffies" can be negative.
+In this case, some positive big number is returned and any code that relies
+on xnthread_timeout() or xntimer_get_timeout() and runs over periodic mode
+won't work properly (e.g. xnsynch_sleep_on() and xnpipe_recv() now). Not
+sure 1 should be returned in this case (so far I just did it the same way as
+xntimer_get_timeout_aperiodic()), I guess 0 would be better in both cases.
+
+At least in theory, 1 may cause an (even) infinite loop in xnpipe_recv() as
+I don't like a check for "timeout > 1" to be placed there. It's something
+that should be decided at the timer layer - I mean, whether it's too late to
+sleep or not.
+
+hope, I haven't overlooked anything this time :o)
 
 
-Ill look deeper later, if its not obvious to the experts
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_27656_27547979.1156149263123
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br>
+Hello,<br>
+<br>
+[ pipe.c.patch ]&nbsp; update the &quot;timeout&quot; variable so that the
+remaining timeout is used in case of consequent xnsynch_sleep_on()
+calls.<br>
+<br>
+As I understand that may indeed happen in case when another thread &quot;steals&quot; data while this one waits to be scheduled in.<br>
+<br>
+[ timer.c.patch] xnticks_t is unsigned while (as I understand)
+&quot;xntlholder_date(&amp;timer-&gt;plink) - nkpod-&gt;jiffies&quot; can be
+negative.<br>
+In this case, some positive big number is returned and any code that
+relies on xnthread_timeout() or xntimer_get_timeout() and runs over
+periodic mode won't work properly (e.g. xnsynch_sleep_on() and
+xnpipe_recv() now). Not sure 1 should be returned in this case (so far
+I just did it the same way as xntimer_get_timeout_aperiodic()), I guess
+0 would be better in both cases.<br>
+<br>
+At least in theory, 1 may cause an (even) infinite loop in
+xnpipe_recv() as I don't like a check for &quot;timeout &gt; 1&quot; to be placed
+there. It's something that should be decided at the timer layer - I
+mean, whether it's too late to sleep or not.<br>
+<br>
+hope, I haven't overlooked anything this time :o)<br>
+<br>
+<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
+
+------=_Part_27656_27547979.1156149263123--
+
+------=_Part_27655_17205098.1156149263123
+Content-Type: text/x-patch; name=pipe.c.patch; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_er4jzh66
+Content-Disposition: attachment; filename="pipe.c.patch"
+
+LS0tIHBpcGUtU1ZOLmMJMjAwNi0wOC0yMCAxNTowNDoyNS4wMDAwMDAwMDAgKzAyMDAKKysrIHBp
+cGUuYwkyMDA2LTA4LTIwIDIxOjI5OjU1LjAwMDAwMDAwMCArMDIwMApAQCAtNDUwLDYgKzQ1MCw5
+IEBAIHNzaXplX3QgeG5waXBlX3JlY3YoaW50IG1pbm9yLCBzdHJ1Y3QgeG4KIAkJCXJldCA9IC1F
+SURSTTsKIAkJCWdvdG8gdW5sb2NrX2FuZF9leGl0OwogCQl9CisKKwkJLyogcmVtYWluaW5nIHRp
+bWVvdXQgKi8JCQorCQl0aW1lb3V0ID0geG50aHJlYWRfdGltZW91dCh0aHJlYWQpOwogCX0KIAog
+CSpwbWggPSBsaW5rMm1oKGhvbGRlcik7Cg==
+------=_Part_27655_17205098.1156149263123
+Content-Type: text/x-patch; name=timer.c.patch; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_er4k010m
+Content-Disposition: attachment; filename="timer.c.patch"
+
+LS0tIHRpbWVyLVNWTi5jCTIwMDYtMDgtMjAgMTU6NTA6MTguMDAwMDAwMDAwICswMjAwCisrKyB0
+aW1lci5jCTIwMDYtMDgtMjAgMTU6NTQ6MzAuMDAwMDAwMDAwICswMjAwCkBAIC0zMTMsNyArMzEz
+LDEyIEBAIHN0YXRpYyB4bnRpY2tzX3QgeG50aW1lcl9nZXRfZGF0ZV9wZXJpb2QKIAogc3RhdGlj
+IHhudGlja3NfdCB4bnRpbWVyX2dldF90aW1lb3V0X3BlcmlvZGljKHhudGltZXJfdCAqdGltZXIp
+CiB7Ci0JcmV0dXJuIHhudGxob2xkZXJfZGF0ZSgmdGltZXItPnBsaW5rKSAtIG5rcG9kLT5qaWZm
+aWVzOworCXhudGlja3NfdCBub3cgPSBua3BvZC0+amlmZmllczsKKwkKKwlpZiAoeG50bGhvbGRl
+cl9kYXRlKCZ0aW1lci0+cGxpbmspIDwgbm93KQorCQlyZXR1cm4gMTsJLyogV2lsbCBlbGFwc2Ug
+c2hvcnRseS4gKi8KKwkKKwlyZXR1cm4geG50bGhvbGRlcl9kYXRlKCZ0aW1lci0+cGxpbmspIC0g
+bm93OwogfQogCiBzdGF0aWMgeG50aWNrc190IHhudGltZXJfZ2V0X3Jhd19leHBpcnlfcGVyaW9k
+aWMoeG50aW1lcl90ICp0aW1lcikK
+------=_Part_27655_17205098.1156149263123--
 
