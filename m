@@ -1,17 +1,14 @@
-Message-ID: <b647ffbd0608210447m45704e2bhd1884bce9e6a2a66@domain.hid>
-Date: Mon, 21 Aug 2006 13:47:00 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: [Xenomai-core] [patch,
-	minor] xnpipe_recv and xntimer_get_timeout_periodic()
-In-Reply-To: <b647ffbd0608210446v38656cecxc231dba4e8f55dc2@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_29284_9777557.1156160820117"
-References: <b647ffbd0608210136w7ca05265o5ef930c1bee24d65@domain.hid>
-	<1156154538.4402.32.camel@domain.hid>
-	<b647ffbd0608210347y4a863588r607c403de0640e74@domain.hid>
-	<1156159631.4402.41.camel@domain.hid>
-	<b647ffbd0608210446v38656cecxc231dba4e8f55dc2@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17641.43126.189924.769218@domain.hid>
+Date: Mon, 21 Aug 2006 14:35:02 +0200
+Subject: Re: [Xenomai-core] Re: xeno-load: line 182: 2794 Floating
+	point	exception$suflag $* $cmdargs
+In-Reply-To: <44E9663C.2030904@domain.hid>
+References: <44E91231.8070403@domain.hid> <44E955E0.40009@domain.hid>
+	<1156143410.4723.4.camel@domain.hid> <44E9663C.2030904@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,97 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_29284_9777557.1156160820117
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Jim Cromie wrote:
+ > got a backtrace
+ > 
+ > Philippe Gerum wrote:
+ > > On Mon, 2006-08-21 at 00:42 -0600, Jim Cromie wrote:
+ > >   
+ > >> Jim Cromie wrote:
+ > >>     
+ > >>> *
+ > >>> == Sampling period: 10 us
+ > >>> == Do not interrupt this program
+ > >>> /usr/xenomai/bin/xeno-load: line 182:  2868 Floating point 
+ > >>> exception$suflag $* $cmdargs
+ > >>>
+ > >>>       
+ > >> soekris:/usr/xenomai/bin# gdb ../testsuite/switchbench/switchbench
+ > >> I tried stuffing -g into all *_CFLAGS in src/testsuite/Makefile,
+ > >> but I couldnt get it to show up in the compilation.
+ > >>
+ > >>     
+ > >
+ > > Try passing --enable-debug to the "configure" script.
+ > >
+ > >   
+ > #0  0x0804ae57 in __divdi3 ()
+ > #1  0x08049ac2 in worker (cookie=0x0) at switchbench.c:133
+ > #2  0x0804a18f in rt_task_trampoline (cookie=0x0) at task.c:89
+ > #3  0xb7f8107d in start_thread () from /lib/tls/libpthread.so.0
+ > #4  0xb7f158fe in clone () from /lib/tls/libc.so.6
+ > (gdb)
 
-On Mon, 2006-08-21 at 12:47 +0200, Dmitry Adamushko wrote:
-> >
-> > what about pipe-related change (I mean timeslice updating in
-> > xnpipe_recv()) ?
-> >
->
-> It's basically useless, since xnsynch_sleep_on() handles the resource
-> stealing case internally, and the loop in xnpipe_recv is fake actually.
-> Think of it as a goto statement in disguise.
-
-
-It has nothing to do with "resource stealing" (in terms of synch.c). The
-synch object is not PIP at all.
-
-task1 : blocked in xnpipe_recv()
-
-task2 : xnpipe_send() ---> wakes up task1 ---> task1 is waiting to be
-scheduled in
-
-task3 [prio > task2.prio] : gets CPU and calls xnpipe_recv()
-
-   task3 gets a message so state->inq is empty now.
-
-...
-
-task2 : calls getq(&state->inq) which is NULL now (if there were no more
-messages)
-
-calls xnsynch_sleep_on() again with the initial "timeout".
-
-No?
-
-
-
->
-> > --
-
-
-> Best regards,
-> Dmitry Adamushko
---
-Philippe.
-
-
-
-
+You likely have a division by 0 because nsamples is 0. nsamples come
+from the numeric argument of the -n option, and I think you do not pass
+a numeric argument to -n, so atoi returns 0.
 
 -- 
-Best regards,
-Dmitry Adamushko
 
-------=_Part_29284_9777557.1156160820117
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<span class="gmail_quote"><br><br></span><div><div></div><div><span class="q"><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">On Mon, 2006-08-21 at 12:47 +0200, Dmitry Adamushko wrote:
-<br>&gt;<br>&gt; what about pipe-related change (I mean timeslice updating in
-<br>&gt; xnpipe_recv()) ?<br>&gt;<br><br>It's basically useless, since xnsynch_sleep_on() handles the resource<br>stealing case internally, and the loop in xnpipe_recv is fake actually.<br>Think of it as a goto statement in disguise.
-</blockquote></span></div><div><div><br>
-It has nothing to do with &quot;resource stealing&quot; (in terms of synch.c). The synch object is not PIP at all.<br>
-<br>
-task1 : blocked in xnpipe_recv()<br>
-<br>
-task2 : xnpipe_send() ---&gt; wakes up task1 ---&gt; task1 is waiting to be scheduled in<br>
-<br>
-task3 [prio &gt; task2.prio] : gets CPU and calls xnpipe_recv()<br>
-<br>
-&nbsp;&nbsp; task3 gets a message so state-&gt;inq is empty now.<br>
-<br>
-...<br>
-<br>
-task2 : calls getq(&amp;state-&gt;inq) which is NULL now (if there were no more messages)<br>
-<br>
-calls xnsynch_sleep_on() again with the initial &quot;timeout&quot;.<br>
-&nbsp;<br>
-No?<br>
-<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt;<br>&gt; --</blockquote></div><div><span class="q"><br>&gt; Best regards,<br>
-&gt; Dmitry Adamushko<br>--<br>Philippe.
-<br><br><br></span></div><div></div><br><br clear="all"><br>-- <br>Best regards,<br></div><div><span class="sg">Dmitry Adamushko
-
-</span></div><br>
-
-------=_Part_29284_9777557.1156160820117--
+					    Gilles Chanteperdrix.
 
