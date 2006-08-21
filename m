@@ -1,14 +1,12 @@
-Subject: Re: [Xenomai-core] Re: xeno-load: line 182: 2794 Floating point
-	exception$suflag $* $cmdargs
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44E955E0.40009@domain.hid>
-References: <44E91231.8070403@domain.hid>  <44E955E0.40009@domain.hid>
-Content-Type: text/plain
-Date: Mon, 21 Aug 2006 08:56:49 +0200
-Message-Id: <1156143410.4723.4.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Date: Mon, 21 Aug 2006 09:25:09 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Subject: Re: [Xenomai-core] ksrc/driver refactoring
+In-Reply-To: <1155916850.4326.118.camel@domain.hid>
+Message-ID: <Pine.LNX.4.64.0608210922010.19485@domain.hid>
+References: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
+	<1155916850.4326.118.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,66 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jim Cromie <jim.cromie@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Mon, 2006-08-21 at 00:42 -0600, Jim Cromie wrote:
-> Jim Cromie wrote:
-> >
-> >
-> > *
-> > == Sampling period: 10 us
-> > == Do not interrupt this program
-> > /usr/xenomai/bin/xeno-load: line 182:  2868 Floating point 
-> > exception$suflag $* $cmdargs
-> >
-> 
-> 
-> soekris:/usr/xenomai/bin# gdb ../testsuite/switchbench/switchbench
-> GNU gdb 6.4.90-debian
-> Copyright (C) 2006 Free Software Foundation, Inc.
-> GDB is free software, covered by the GNU General Public License, and you are
-> welcome to change it and/or distribute copies of it under certain 
-> conditions.
-> Type "show copying" to see the conditions.
-> There is absolutely no warranty for GDB.  Type "show warranty" for details.
-> This GDB was configured as "i486-linux-gnu"...(no debugging symbols found)
-> Using host libthread_db library "/lib/tls/libthread_db.so.1".
-> 
-> (gdb)
-> (gdb) run -p 10 -n -l 1000
-> Starting program: /usr/xenomai/testsuite/switchbench/switchbench -p 10 
-> -n -l 1000
-> (no debugging symbols found)
-> (no debugging symbols found)
-> [Thread debugging using libthread_db enabled]
-> [New Thread -1210206528 (LWP 2070)]
-> (no debugging symbols found)
-> (no debugging symbols found)
-> == Sampling period: 10 us
-> == Do not interrupt this program
-> [New Thread -1210209360 (LWP 2073)]
-> 
-> Program received signal SIGFPE, Arithmetic exception.
-> [Switching to Thread -1210209360 (LWP 2073)]
-> 0x0804acc7 in __divdi3 ()
-> (gdb)
-> 
-> 
-> I tried stuffing -g into all *_CFLAGS in src/testsuite/Makefile,
-> but I couldnt get it to show up in the compilation.
-> 
+On Fri, 18 Aug 2006, Philippe Gerum wrote:
+> On Wed, 2006-08-16 at 16:14 +0200, Klaas Gadeyne wrote:
+>>> I just wanted to drop a note that I did some refactoring on the
+>>> drivers directory (16550A->serial) and the config menus. If anything is
+>>> broken, shoot me.
+>>
+>> I don't think this is related, but 2 students of mine got stuck on a linker
+>> error this morning trying to compile xenomai-trunk on a i386 target
+>> (2.4.33 kernel with the adeos-ipipe-2.4.32-i386-1.2-06.patch (applied
+>> with a few minor hunks), gcc 3.3.6 from Debian).
 
-Try passing --enable-debug to the "configure" script.
+[...]
 
-> Any hints ?
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+>> The "quick-fix" solution was to disable the magic_sysrq_key option
+>> from the kernel.  I first thought the problem was due to a missing
+>> dependency in the the kernel and not at all xenomai-related (and since
+>> the quick hack worked, they didn't search any further), but now that
+>> I've read your mail I started to doubt if it might be related.
 
+[...]
 
+> There seems to be a few "generic" 2.4 kernel issues in the same area.
+> For instance, building the kernel without CONFIG_VT causes
+> handle_scancode to be undefined, since driver/char/Makefile does not
+> build keyboard.c in such a case, albeit it's used by the input
+> subsystem. In any case, this is not related to Adeos/Xenomai.
+
+Indeed, that's what they've concluded too, the vanilla kernel suffers
+from the same problem.  They should have posted this themselves a
+couple of day ago, but they seem to have some trouble getting started
+with the ML :-)
+
+thx,
+
+Klaas
 
