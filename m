@@ -1,12 +1,14 @@
-Date: Mon, 21 Aug 2006 09:25:09 +0200 (CEST)
-From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
-Subject: Re: [Xenomai-core] ksrc/driver refactoring
-In-Reply-To: <1155916850.4326.118.camel@domain.hid>
-Message-ID: <Pine.LNX.4.64.0608210922010.19485@domain.hid>
-References: <Pine.LNX.4.64.0608161603176.7349@domain.hid>
-	<1155916850.4326.118.camel@domain.hid>
+Message-ID: <44E9663C.2030904@domain.hid>
+Date: Mon, 21 Aug 2006 01:52:28 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-core] Re: xeno-load: line 182: 2794 Floating
+	point	exception$suflag $* $cmdargs
+References: <44E91231.8070403@domain.hid> <44E955E0.40009@domain.hid>
+	<1156143410.4723.4.camel@domain.hid>
+In-Reply-To: <1156143410.4723.4.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,42 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 18 Aug 2006, Philippe Gerum wrote:
-> On Wed, 2006-08-16 at 16:14 +0200, Klaas Gadeyne wrote:
->>> I just wanted to drop a note that I did some refactoring on the
->>> drivers directory (16550A->serial) and the config menus. If anything is
->>> broken, shoot me.
+got a backtrace
+
+Philippe Gerum wrote:
+> On Mon, 2006-08-21 at 00:42 -0600, Jim Cromie wrote:
+>   
+>> Jim Cromie wrote:
+>>     
+>>> *
+>>> == Sampling period: 10 us
+>>> == Do not interrupt this program
+>>> /usr/xenomai/bin/xeno-load: line 182:  2868 Floating point 
+>>> exception$suflag $* $cmdargs
+>>>
+>>>       
+>> soekris:/usr/xenomai/bin# gdb ../testsuite/switchbench/switchbench
+>> I tried stuffing -g into all *_CFLAGS in src/testsuite/Makefile,
+>> but I couldnt get it to show up in the compilation.
 >>
->> I don't think this is related, but 2 students of mine got stuck on a linker
->> error this morning trying to compile xenomai-trunk on a i386 target
->> (2.4.33 kernel with the adeos-ipipe-2.4.32-i386-1.2-06.patch (applied
->> with a few minor hunks), gcc 3.3.6 from Debian).
+>>     
+>
+> Try passing --enable-debug to the "configure" script.
+>
+>   
+#0  0x0804ae57 in __divdi3 ()
+#1  0x08049ac2 in worker (cookie=0x0) at switchbench.c:133
+#2  0x0804a18f in rt_task_trampoline (cookie=0x0) at task.c:89
+#3  0xb7f8107d in start_thread () from /lib/tls/libpthread.so.0
+#4  0xb7f158fe in clone () from /lib/tls/libc.so.6
+(gdb)
 
-[...]
 
->> The "quick-fix" solution was to disable the magic_sysrq_key option
->> from the kernel.  I first thought the problem was due to a missing
->> dependency in the the kernel and not at all xenomai-related (and since
->> the quick hack worked, they didn't search any further), but now that
->> I've read your mail I started to doubt if it might be related.
-
-[...]
-
-> There seems to be a few "generic" 2.4 kernel issues in the same area.
-> For instance, building the kernel without CONFIG_VT causes
-> handle_scancode to be undefined, since driver/char/Makefile does not
-> build keyboard.c in such a case, albeit it's used by the input
-> subsystem. In any case, this is not related to Adeos/Xenomai.
-
-Indeed, that's what they've concluded too, the vanilla kernel suffers
-from the same problem.  They should have posted this themselves a
-couple of day ago, but they seem to have some trouble getting started
-with the ML :-)
-
-thx,
-
-Klaas
+Ill look deeper later, if its not obvious to the experts
 
