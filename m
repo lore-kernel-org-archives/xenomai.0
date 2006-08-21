@@ -4,8 +4,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <b647ffbd0608210136w7ca05265o5ef930c1bee24d65@domain.hid>
 References: <b647ffbd0608210136w7ca05265o5ef930c1bee24d65@domain.hid>
 Content-Type: text/plain
-Date: Mon, 21 Aug 2006 11:36:40 +0200
-Message-Id: <1156153000.4402.17.camel@domain.hid>
+Date: Mon, 21 Aug 2006 11:49:11 +0200
+Message-Id: <1156153751.4402.28.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -23,11 +23,22 @@ Cc: xenomai@xenomai.org
 
 On Mon, 2006-08-21 at 10:36 +0200, Dmitry Adamushko wrote:
 
->  Not sure 1 should be returned in this case (so far I just did it the
-> same way as xntimer_get_timeout_aperiodic()), I guess 0 would be
-> better in both cases.
+> [ timer.c.patch] xnticks_t is unsigned while (as I understand)
+> "xntlholder_date(&timer->plink) - nkpod->jiffies" can be negative.
 
-Zero (XN_INFINITE) is reserved to indicate a non-running timer.
+Well, normally, it should not. In periodic mode, each and every tick is
+processed by the timer handler which also maintains the time base
+(nkpod->jiffies), and as such, no timer should remain outstanding after
+its wakeup time has elapsed, otherwise, something is broken in the timer
+wheel management in the first place.
+
+IOW, we should never miss a tick, and consequently, negative timeouts
+cannot exist, since a timer is either running (= 0), or scheduled to
+elapse in the future (> 0). On the contrary, aperiodic mode is based on
+some free running TSC value not controlled by the nucleus, and as such,
+we might well ask for the timeout value slightly before the related
+timer elapses, and end up reading the TSC a bit later than its timeout
+date.
 
 -- 
 Philippe.
