@@ -1,10 +1,14 @@
-Message-ID: <b647ffbd0608212353u13a450f4w16069329cea3966a@domain.hid>
-Date: Tue, 22 Aug 2006 08:53:48 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Message-ID: <44EAB53C.1020705@domain.hid>
+Date: Tue, 22 Aug 2006 09:41:48 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_44183_2257694.1156229628184"
-Subject: [Xenomai-core] [patch, minor] irq proc output in intr.c
+References: <b647ffbd0608212353u13a450f4w16069329cea3966a@domain.hid>
+In-Reply-To: <b647ffbd0608212353u13a450f4w16069329cea3966a@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFFBF80AF7EE5653977804AAC"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [patch, minor] irq proc output in intr.c
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,116 +18,159 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_44183_2257694.1156229628184
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_44184_28570147.1156229628184"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFFBF80AF7EE5653977804AAC
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-------=_Part_44184_28570147.1156229628184
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Dmitry Adamushko wrote:
+> On 19/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>
+>> just realised that the output of /proc/xenomai/irq is suboptimal (no
+>> names) under !CONFIG_XENO_OPT_SHIRQ_LEVEL &&
+>> !CONFIG_XENO_OPT_SHIRQ_EDGE...
+>=20
+>=20
+>=20
+> It should be ok but just in case, Jan, pls give it a try first. I was n=
+ot
+> able to test a branch with rthal_irq_cookie() (but as I recall it worke=
+d
+> when it was implemented) as I don't have any driver at hand to be loade=
+d.
 
-On 19/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> just realised that the output of /proc/xenomai/irq is suboptimal (no
-> names) under !CONFIG_XENO_OPT_SHIRQ_LEVEL &&
-> !CONFIG_XENO_OPT_SHIRQ_EDGE...
+Thanks for the patch. I'm posting some comments below.
+
+>=20
+> TIA,
+>=20
+>=20
+> Thanks,
+>> Jan
+>>
+>>
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> diff -urp xenomai-SVN/include/nucleus/intr.h xenomai-a/include/nucleus/=
+intr.h
+> --- xenomai-SVN/include/nucleus/intr.h	2006-07-20 11:09:01.000000000 +0=
+200
+> +++ xenomai-a/include/nucleus/intr.h	2006-08-22 09:32:24.000000000 +020=
+0
+> @@ -71,7 +71,9 @@ int xnintr_mount(void);
+> =20
+>  void xnintr_clock_handler(void);
+> =20
+> +#if defined(CONFIG_PROC_FS) && defined(__KERNEL__)
+>  int xnintr_irq_proc(unsigned int irq, char *str);
+> +#endif /* CONFIG_PROC_FS && __KERNEL__ */
+> =20
+>      /* Public interface. */
+> =20
+> diff -urp xenomai-SVN/ksrc/nucleus/intr.c xenomai-a/ksrc/nucleus/intr.c=
+
+> --- xenomai-SVN/ksrc/nucleus/intr.c	2006-07-20 12:35:40.000000000 +0200=
+
+> +++ xenomai-a/ksrc/nucleus/intr.c	2006-08-22 09:34:28.000000000 +0200
+> @@ -691,6 +691,7 @@ int xnintr_mount(void)
+>  	return 0;
+>  }
+> =20
+> +#if defined(CONFIG_PROC_FS) && defined(__KERNEL__)
+>  int xnintr_irq_proc(unsigned int irq, char *str)
+>  {
+>  	xnintr_shirq_t *shirq;
+> @@ -727,6 +728,7 @@ int xnintr_irq_proc(unsigned int irq, ch
+> =20
+>  	return p - str;
+>  }
+> +#endif /* CONFIG_PROC_FS && __KERNEL__ */
+> =20
+>  #else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL && !CONFIG_XENO_OPT_SHIRQ_EDGE *=
+/
+> =20
+> @@ -735,10 +737,31 @@ int xnintr_mount(void)
+>  	return 0;
+>  }
+> =20
+> +#if defined(CONFIG_PROC_FS) && defined(__KERNEL__)
+>  int xnintr_irq_proc(unsigned int irq, char *str)
+>  {
+> -	return 0;
+> +	xnintr_t *intr;
+> +	char *p =3D str;
+
++	spl_t s;
+
+> +
+> +	if (rthal_virtual_irq_p(irq)) {
+> +		p +=3D sprintf(p, "         [virtual]");
+> +		return p - str;
+> +	} else if (irq =3D=3D XNARCH_TIMER_IRQ) {
+> +		p +=3D sprintf(p, "         %s", nkclock.name);
+> +		return p - str;
+> +	}
+> +
+> +	xnlock_get_irqsave(&nklock, s);
+
+What's the idea of this lock? I'm asking as xnintr_attach/detach should
+not run under nklock, right? So, how can it protect us then?
+
+> +
+> +	intr =3D rthal_irq_cookie(&rthal_domain, irq);
+> +	if (intr && *(intr->name))
+> +		p +=3D sprintf(p, "        %s", intr->name);
+> +
+> +	xnlock_put_irqrestore(&nklock, s);
+> +
+> +	return p - str;
+>  }
+> +#endif /* CONFIG_PROC_FS && __KERNEL__ */
+> =20
+>  #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */=
+
+> =20
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> --- ChangeLog-SVN	2006-08-22 02:14:43.000000000 +0200
+> +++ ChangeLog	2006-08-22 02:19:21.000000000 +0200
+> @@ -10,6 +10,9 @@
+> =20
+>  	* ksrc/nucleus/pipe.c (xnpipe_recv): Re-evaluate the timeout value
+>  	as we iterate over the message acquisition.
+> +=09
+> +	* ksrc/nucleus/intr.c (xnintr_irq_proc): Print the names of registere=
+d
+> +	handlers also in case of non-shared interrupts.
+> =20
+>  2006-08-20  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
+> =20
+
+Jan
 
 
+--------------enigFFBF80AF7EE5653977804AAC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-It should be ok but just in case, Jan, pls give it a try first. I was not
-able to test a branch with rthal_irq_cookie() (but as I recall it worked
-when it was implemented) as I don't have any driver at hand to be loaded.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-TIA,
+iD8DBQFE6rU8niDOoMHTA+kRApGNAJ4yrlenLRWlwRca3eIwGNRNSeKW8QCeKzti
+riE1KQFzTo+Wdjq7EAe8BZE=
+=5VM+
+-----END PGP SIGNATURE-----
 
-
-Thanks,
-> Jan
->
->
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_44184_28570147.1156229628184
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><div><span class="gmail_quote">On 19/08/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">jan.kiszka@domain.hid
-</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-just realised that the output of /proc/xenomai/irq is suboptimal (no<br>names) under !CONFIG_XENO_OPT_SHIRQ_LEVEL &amp;&amp;<br>!CONFIG_XENO_OPT_SHIRQ_EDGE...</blockquote><div><br>
-<br>
-It should be ok but just in case, Jan, pls give it a try first. I was
-not able to test a branch with rthal_irq_cookie() (but as I recall it worked when it was implemented) as I don't have any
-driver at hand to be loaded.<br>
-<br>
-TIA,<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Thanks,<br>Jan<br><br></blockquote></div><br><br>-- <br>Best regards,<br>Dmitry Adamushko
-<br>
-<br>
-
-
-------=_Part_44184_28570147.1156229628184--
-
-------=_Part_44183_2257694.1156229628184
-Content-Type: text/x-patch; name=ext-proc.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_er5yyefy
-Content-Disposition: attachment; filename="ext-proc.patch"
-
-ZGlmZiAtdXJwIHhlbm9tYWktU1ZOL2luY2x1ZGUvbnVjbGV1cy9pbnRyLmggeGVub21haS1hL2lu
-Y2x1ZGUvbnVjbGV1cy9pbnRyLmgKLS0tIHhlbm9tYWktU1ZOL2luY2x1ZGUvbnVjbGV1cy9pbnRy
-LmgJMjAwNi0wNy0yMCAxMTowOTowMS4wMDAwMDAwMDAgKzAyMDAKKysrIHhlbm9tYWktYS9pbmNs
-dWRlL251Y2xldXMvaW50ci5oCTIwMDYtMDgtMjIgMDk6MzI6MjQuMDAwMDAwMDAwICswMjAwCkBA
-IC03MSw3ICs3MSw5IEBAIGludCB4bmludHJfbW91bnQodm9pZCk7CiAKIHZvaWQgeG5pbnRyX2Ns
-b2NrX2hhbmRsZXIodm9pZCk7CiAKKyNpZiBkZWZpbmVkKENPTkZJR19QUk9DX0ZTKSAmJiBkZWZp
-bmVkKF9fS0VSTkVMX18pCiBpbnQgeG5pbnRyX2lycV9wcm9jKHVuc2lnbmVkIGludCBpcnEsIGNo
-YXIgKnN0cik7CisjZW5kaWYgLyogQ09ORklHX1BST0NfRlMgJiYgX19LRVJORUxfXyAqLwogCiAg
-ICAgLyogUHVibGljIGludGVyZmFjZS4gKi8KIApkaWZmIC11cnAgeGVub21haS1TVk4va3NyYy9u
-dWNsZXVzL2ludHIuYyB4ZW5vbWFpLWEva3NyYy9udWNsZXVzL2ludHIuYwotLS0geGVub21haS1T
-Vk4va3NyYy9udWNsZXVzL2ludHIuYwkyMDA2LTA3LTIwIDEyOjM1OjQwLjAwMDAwMDAwMCArMDIw
-MAorKysgeGVub21haS1hL2tzcmMvbnVjbGV1cy9pbnRyLmMJMjAwNi0wOC0yMiAwOTozNDoyOC4w
-MDAwMDAwMDAgKzAyMDAKQEAgLTY5MSw2ICs2OTEsNyBAQCBpbnQgeG5pbnRyX21vdW50KHZvaWQp
-CiAJcmV0dXJuIDA7CiB9CiAKKyNpZiBkZWZpbmVkKENPTkZJR19QUk9DX0ZTKSAmJiBkZWZpbmVk
-KF9fS0VSTkVMX18pCiBpbnQgeG5pbnRyX2lycV9wcm9jKHVuc2lnbmVkIGludCBpcnEsIGNoYXIg
-KnN0cikKIHsKIAl4bmludHJfc2hpcnFfdCAqc2hpcnE7CkBAIC03MjcsNiArNzI4LDcgQEAgaW50
-IHhuaW50cl9pcnFfcHJvYyh1bnNpZ25lZCBpbnQgaXJxLCBjaAogCiAJcmV0dXJuIHAgLSBzdHI7
-CiB9CisjZW5kaWYgLyogQ09ORklHX1BST0NfRlMgJiYgX19LRVJORUxfXyAqLwogCiAjZWxzZSAv
-KiAhQ09ORklHX1hFTk9fT1BUX1NISVJRX0xFVkVMICYmICFDT05GSUdfWEVOT19PUFRfU0hJUlFf
-RURHRSAqLwogCkBAIC03MzUsMTAgKzczNywzMSBAQCBpbnQgeG5pbnRyX21vdW50KHZvaWQpCiAJ
-cmV0dXJuIDA7CiB9CiAKKyNpZiBkZWZpbmVkKENPTkZJR19QUk9DX0ZTKSAmJiBkZWZpbmVkKF9f
-S0VSTkVMX18pCiBpbnQgeG5pbnRyX2lycV9wcm9jKHVuc2lnbmVkIGludCBpcnEsIGNoYXIgKnN0
-cikKIHsKLQlyZXR1cm4gMDsKKwl4bmludHJfdCAqaW50cjsKKwljaGFyICpwID0gc3RyOworCisJ
-aWYgKHJ0aGFsX3ZpcnR1YWxfaXJxX3AoaXJxKSkgeworCQlwICs9IHNwcmludGYocCwgIiAgICAg
-ICAgIFt2aXJ0dWFsXSIpOworCQlyZXR1cm4gcCAtIHN0cjsKKwl9IGVsc2UgaWYgKGlycSA9PSBY
-TkFSQ0hfVElNRVJfSVJRKSB7CisJCXAgKz0gc3ByaW50ZihwLCAiICAgICAgICAgJXMiLCBua2Ns
-b2NrLm5hbWUpOworCQlyZXR1cm4gcCAtIHN0cjsKKwl9CisKKwl4bmxvY2tfZ2V0X2lycXNhdmUo
-Jm5rbG9jaywgcyk7CisKKwlpbnRyID0gcnRoYWxfaXJxX2Nvb2tpZSgmcnRoYWxfZG9tYWluLCBp
-cnEpOworCWlmIChpbnRyICYmICooaW50ci0+bmFtZSkpCisJCXAgKz0gc3ByaW50ZihwLCAiICAg
-ICAgICAlcyIsIGludHItPm5hbWUpOworCisJeG5sb2NrX3B1dF9pcnFyZXN0b3JlKCZua2xvY2ss
-IHMpOworCisJcmV0dXJuIHAgLSBzdHI7CiB9CisjZW5kaWYgLyogQ09ORklHX1BST0NfRlMgJiYg
-X19LRVJORUxfXyAqLwogCiAjZW5kaWYgLyogQ09ORklHX1hFTk9fT1BUX1NISVJRX0xFVkVMIHx8
-IENPTkZJR19YRU5PX09QVF9TSElSUV9FREdFICovCiAK
-------=_Part_44183_2257694.1156229628184
-Content-Type: text/x-patch; name=ChangeLog.patch; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_er5yzacf
-Content-Disposition: attachment; filename="ChangeLog.patch"
-
-LS0tIENoYW5nZUxvZy1TVk4JMjAwNi0wOC0yMiAwMjoxNDo0My4wMDAwMDAwMDAgKzAyMDAKKysr
-IENoYW5nZUxvZwkyMDA2LTA4LTIyIDAyOjE5OjIxLjAwMDAwMDAwMCArMDIwMApAQCAtMTAsNiAr
-MTAsOSBAQAogCiAJKiBrc3JjL251Y2xldXMvcGlwZS5jICh4bnBpcGVfcmVjdik6IFJlLWV2YWx1
-YXRlIHRoZSB0aW1lb3V0IHZhbHVlCiAJYXMgd2UgaXRlcmF0ZSBvdmVyIHRoZSBtZXNzYWdlIGFj
-cXVpc2l0aW9uLgorCQorCSoga3NyYy9udWNsZXVzL2ludHIuYyAoeG5pbnRyX2lycV9wcm9jKTog
-UHJpbnQgdGhlIG5hbWVzIG9mIHJlZ2lzdGVyZWQKKwloYW5kbGVycyBhbHNvIGluIGNhc2Ugb2Yg
-bm9uLXNoYXJlZCBpbnRlcnJ1cHRzLgogCiAyMDA2LTA4LTIwICBHaWxsZXMgQ2hhbnRlcGVyZHJp
-eCAgPGdpbGxlcy5jaGFudGVwZXJkcml4QGxhcG9zdGUubmV0PgogCg==
-------=_Part_44183_2257694.1156229628184--
+--------------enigFFBF80AF7EE5653977804AAC--
 
