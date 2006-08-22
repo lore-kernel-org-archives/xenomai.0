@@ -1,15 +1,13 @@
-Message-ID: <44EA1B2A.5010402@domain.hid>
-Date: Mon, 21 Aug 2006 22:44:26 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44EA9D22.5090301@domain.hid>
+Date: Tue, 22 Aug 2006 07:58:58 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] primary mode versus secondary mode
-References: <75975c320608211235l79dfb17ft54df1018e7f597ff@domain.hid>
-	<75975c320608211321u5b2d9e45nfb078e9ed4d8b617@domain.hid>
-In-Reply-To: <75975c320608211321u5b2d9e45nfb078e9ed4d8b617@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4DC44AE5BABDE3D6F9062DC4"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Socketcan-users] [Xenomai-help] Re: send error: permission	denied
+References: <DD39B5C3F4963040ADC9768BE7E430CBFFAD9F@is-hdq-exchange.marel.net>	<44EA096D.9080208@domain.hid>
+	<44EA0DB4.1080302@domain.hid>
+In-Reply-To: <44EA0DB4.1080302@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,56 +17,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Paul Ianna <paulianna2002@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, socketcan-users@domain.hid, Daniel Schnell <danielsch@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4DC44AE5BABDE3D6F9062DC4
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Paul Ianna wrote:
-> Hi All,
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Hi Daniel,
+>>
+>> Daniel Schnell wrote:
+>>> Hi,
+>>>
+>>> =20
+>>>
+>>> I am new to socket can.
+>>>
+>>> =20
+>>>
+>>> I wanted to test the rtcan driver in combination with Linux and
+>>> Xenomai and made a little program according to the rtcansend program
+>>> but with some response time measurements.
+>>>
+>>> =20
+>>>
+>>> However after setting up the socket I get =E2=80=93EPERM when trying =
+to send a
+>>> packet to the can device. As the documentation doesn=E2=80=99t state =
+anything
+>>> about this error when calling rt_dev_send() I wonder why the error if
+>>> at all doesn=E2=80=99t appear earlier if I try to setup the socket. T=
+he test
+>>> program already ran nicely when I tested the peak can drivers for
+>>> linux. I just changed the driver specific calls.
+>>>
+>>> =20
+>>>
+>>> Attached you find the complete test file, the function task() is the
+>>> one to blame.
+>>>
+>>> =20
+>>>
+>>> I am a bit stuck with this, so maybe someone can give me a slight hin=
+t
+>>> in what i am doing wrong.
+>> I tried your program on my system and got the same error. The problem
+>> is, that rt_dev_send() is called from non-RT context, which is illegal=
+.
 >=20
-> I have read (at least some of) the Xenomai docs and am a little
-> unclear on the real distinction between primary and secondary mode.
+> ...but should not matter if the caller is a Xenomai thread in "Linux" m=
+ode.
 >=20
-> I have seen in the native API that I can receive a signal if a task
-> has "migrated to the Linux domain".
+>> At a first glance, it's not obvious to me why. Therefore I added the
+>> Xenomai Help ML to the CCs.
 >=20
-> Does secondary mode mean that I am no longer a real-time task?
+> How did you all compile the program [1]? Using xeno-config
+> --posix-cflags / --posix-ldflags?
 
-As long as your task is in this mode, Linux can do with it again what it
-wants to. This phase ends once you call a Xenomai service that requires
-primary mode or you enforce a mode switch (rt_task_set_mode, but for
-most applications designs not required).
+No, ah, oh. It works using the above flags, indeed. I see, that it calls=20
+_rtdm_sendmsg in secondary execution mode (none-RT) first, which=20
+returned -ENOSYS (-38). Then I guess, the context is switch to primary=20
+mode and _rtdm_sendmsg is called again, correct?
 
+> Jan
 >=20
-> How do I avoid dropping from primary mode to secondary mode?
+>=20
+> PS: Daniel, if you go the POSIX way, you don't have to use rt_dev_, you
+> can use the normal POSIX API directly. That services will be wrapped on
+> the Xenomai core just like pthread&friends.
 
-Avoid executing Linux system services (file I/O, networking, printf,
-etc.) in critical code paths, avoid sending Linux signal to the task.
-But if you write a hard real-time application, you are likely doing a
-careful review of what your time-critical code finally does anyway ;).
-If not (don't tell it anyone...), the SIGXCPU signal raised on mode
-switches can guide you finding fishy parts.
+Cool. I was not yet aware of that.
 
-Jan
+> [1]https://lists.berlios.de/pipermail/socketcan-users/attachments/20060=
+821/ff454f48/cantest_rt.obj
 
+Thanks for clarifying things.
 
---------------enig4DC44AE5BABDE3D6F9062DC4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Wolfgang.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE6hsqniDOoMHTA+kRAkvYAJ4hRbTvxjjDm32Fg4ctkDBeOS/R1wCfUKcZ
-z3bK0B+EHyGtuSXfNMYsLxE=
-=7WJG
------END PGP SIGNATURE-----
-
---------------enig4DC44AE5BABDE3D6F9062DC4--
 
