@@ -1,10 +1,10 @@
-Message-ID: <44EC9E02.3090201@domain.hid>
-Date: Wed, 23 Aug 2006 20:27:14 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Wed, 23 Aug 2006 19:31:43 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------030502040800080603030002"
-Subject: [Xenomai-core] [PATCH] Various fixes and improvements for
-	RT-Socket-CAN
+Message-Id: <200608231931.43452.paul_c@domain.hid>
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_P8J7EUB/CabegmV"
+Subject: [Xenomai-core] [PATCH] semicolon delimiters & quotes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,887 +14,556 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------030502040800080603030002
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--Boundary-00=_P8J7EUB/CabegmV
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Hello,
 
-attached is a patch for the RT-Socket-CAN RTDM driver providing:
+Hi Folks
 
-   * ksrc/drivers/can/rtcan_dev.c, ksrc/drivers/can/rtcan_dev.h,
-   ksrc/drivers/can/rtcan_modules.c: Suppress handling of refcount
-   if module support is not enabled or modules cannot be unloaded.
+Having found a problem with another project where semicolons in a few make 
+targets were causing the shell to barf, I grepped xenomai trunk for similar 
+problems. In doing so, I also spotted a few echos where the text wasn't 
+quoted - A sure fire problem should anyone run the offending rule.
 
-   * ksrc/drivers/can/mscan/rtcan_mscan.c,
-   ksrc/drivers/can/mscan/rtcan_mscan_proc.c,
-   ksrc/drivers/can/mscan/rtcan_mscan_regs.h: Make the MSCAN driver
-   work on Linux 2.6. We now use our own set of MSCAN register
-   definitions because they differ between 2.4 and 2.6 (prefix).
+Small patch attached.
 
-   * scripts/Modules.frag: bug fix for making PEAK device drivers.
 
-Note that it adds the file ksrc/drivers/can/mscan/rtcan_mscan_regs.h !
+Regards, Paul.
 
-Wolfgang.
 
---------------030502040800080603030002
-Content-Type: text/x-patch;
- name="xenomai-rtsocketcan4.patch"
+--Boundary-00=_P8J7EUB/CabegmV
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="semicolon.diff"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-rtsocketcan4.patch"
+Content-Disposition: attachment;
+	filename="semicolon.diff"
 
-+ diff -u xenomai/ChangeLog.ORIG xenomai/ChangeLog
---- xenomai/ChangeLog.ORIG	2006-08-23 19:20:42.000000000 +0200
-+++ xenomai/ChangeLog	2006-08-23 19:21:50.000000000 +0200
-@@ -1,3 +1,17 @@
-+2006-08-23  Wolfgang Grandegger <wg@domain.hid>
-+
-+	* ksrc/drivers/can/rtcan_dev.c, ksrc/drivers/can/rtcan_dev.h,
-+	ksrc/drivers/can/rtcan_modules.c: Suppress handling of refcount 
-+	if module support is not enabled or modules cannot be unloaded.
-+
-+	* ksrc/drivers/can/mscan/rtcan_mscan.c,
-+	ksrc/drivers/can/mscan/rtcan_mscan_proc.c,
-+	ksrc/drivers/can/mscan/rtcan_mscan_regs.h: Make the MSCAN driver
-+	work on Linux 2.6. We now use our own set of MSCAN register
-+	definitions because they differ between 2.4 and 2.6 (prefix).
-+	
-+	* scripts/Modules.frag: bug fix for making PEAK device drivers.
-+
- 2006-08-23  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* include/asm-i386/features.h (xeno_x86_features_check): Try
-+ diff -u xenomai/ksrc/drivers/can/mscan/rtcan_mscan.c.ORIG xenomai/ksrc/drivers/can/mscan/rtcan_mscan.c
---- xenomai/ksrc/drivers/can/mscan/rtcan_mscan.c.ORIG	2006-08-22 20:40:29.000000000 +0200
-+++ xenomai/ksrc/drivers/can/mscan/rtcan_mscan.c	2006-08-22 20:41:52.000000000 +0200
-@@ -29,7 +29,6 @@
- #include <linux/module.h>
- #include <linux/ioport.h>
- #include <linux/delay.h>
--#include <asm/mpc5xxx.h>
- #include <asm/ppcboot.h>
- 
- #include <rtdm/rtdm_driver.h>
-@@ -38,6 +37,7 @@
- #include <rtdm/rtcan.h>
- #include "rtcan_dev.h"
- #include "rtcan_raw.h"
-+#include "rtcan_mscan_regs.h"
- 
- extern int rtcan_mscan_create_proc(struct rtcan_device* dev);
- extern void rtcan_mscan_remove_proc(struct rtcan_device* dev);
-@@ -49,39 +49,6 @@
- static char *mscan_ctlr_name  = "MSCAN-MPC5200";
- static char *mscan_board_name = "unkown";
- 
--/** Value for the interrupt enable register */
--#define MSCAN_RIER                  (MPC5xxx_MSCAN_OVRIE | \
--				     MPC5xxx_MSCAN_RXFIE | \
--				     MPC5xxx_MSCAN_WUPIF | \
--				     MPC5xxx_MSCAN_CSCIE | \
--				     MPC5xxx_MSCAN_RSTATE0 | \
--				     MPC5xxx_MSCAN_RSTATE1 | \
--				     MPC5xxx_MSCAN_TSTATE0 | \
--				     MPC5xxx_MSCAN_TSTATE1)
--
--#define BTR0_BRP_MASK    0x3f
--#define BTR0_SJW_SHIFT   6
--#define BTR0_SJW_MASK    (0x3 << BTR0_SJW_SHIFT)
--
--#define BTR1_TSEG1_MASK  0xf
--#define BTR1_TSEG2_SHIFT 4
--#define BTR1_TSEG2_MASK  (0x7 << BTR1_TSEG2_SHIFT)
--#define BTR1_SAM_SHIFT   7
--
--#define BTR0_SET_BRP(brp)     (((brp) - 1) & BTR0_BRP_MASK)
--#define BTR0_SET_SJW(sjw)     ((((sjw) - 1) << BTR0_SJW_SHIFT) & BTR0_SJW_MASK)
--
--#define BTR1_SET_TSEG1(tseg1) (((tseg1) - 1) & BTR1_TSEG1_MASK)
--#define BTR1_SET_TSEG2(tseg2) ((((tseg2) - 1) << BTR1_TSEG2_SHIFT) & BTR1_TSEG2_MASK)
--#define BTR1_SET_SAM(sam)     (((sam) & 1) << BTR1_SAM_SHIFT)
--
--/* Message type access macros.
-- */
--#define MSCAN_BUF_STD_RTR       0x10
--#define MSCAN_BUF_EXT_RTR       0x01
--#define MSCAN_BUF_EXTENDED      0x08
--#define MSCAN_TX_BUFS           3
--
- MODULE_AUTHOR("Wolfgang Grandegger <wg@domain.hid>");
- MODULE_DESCRIPTION("RT-Socket-CAN driver for MSCAN-MPC2500");
- MODULE_SUPPORTED_DEVICE("MSCAN-MPC5200 CAN controller");
-@@ -143,7 +110,7 @@
-     int i;
-     unsigned char size;
-     struct rtcan_rb_frame *frame = &skb->rb_frame;
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
- 
-     skb->rb_frame_size = EMPTY_RB_FRAME_SIZE;
- 
-@@ -201,7 +168,7 @@
- {
-     u8 rstat, tstat;
-     struct rtcan_rb_frame *frame = &skb->rb_frame;
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
- 
-     skb->rb_frame_size = EMPTY_RB_FRAME_SIZE + CAN_ERR_DLC;
- 
-@@ -210,16 +177,16 @@
- 
-     memset(&frame->data[0], 0, frame->can_dlc);
- 
--    if ((r_status & MPC5xxx_MSCAN_OVRIF)) {
-+    if ((r_status & MSCAN_OVRIF)) {
- 	frame->can_id |= CAN_ERR_CRTL;
- 	frame->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
- 
--    } else if ((r_status & (MPC5xxx_MSCAN_CSCIF))) {
-+    } else if ((r_status & (MSCAN_CSCIF))) {
- 	
--	rstat = (r_status & (MPC5xxx_MSCAN_TSTAT0 | 
--			     MPC5xxx_MSCAN_TSTAT1)) >> 2 & 0x3;  
--	tstat = (r_status & (MPC5xxx_MSCAN_RSTAT0 | 
--			     MPC5xxx_MSCAN_RSTAT1)) >> 4 & 0x3;  
-+	rstat = (r_status & (MSCAN_TSTAT0 | 
-+			     MSCAN_TSTAT1)) >> 2 & 0x3;  
-+	tstat = (r_status & (MSCAN_RSTAT0 | 
-+			     MSCAN_RSTAT1)) >> 4 & 0x3;  
- 	dev->state = mscan_stat_map[max(rstat, tstat)];
- 
- 	switch (dev->state) {
-@@ -266,14 +233,14 @@
-     nanosecs_abs_t timestamp = rtdm_clock_read();
-     struct rtcan_skb skb;
-     struct rtcan_device *dev;
--    struct mpc5xxx_mscan *regs;
-+    struct mscan_regs *regs;
-     u8 t_status, r_status;
-     int recv_lock_free = 1;
-     int ret = RTDM_IRQ_NONE;
- 
- 
-     dev = (struct rtcan_device *)rtdm_irq_get_arg(irq_handle, void);
--    regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    regs = (struct mscan_regs *)dev->base_addr;
- 
-     rtdm_lock_get(&dev->device_lock);
- 
-@@ -283,23 +250,23 @@
-     ret = RTDM_IRQ_HANDLED;
- 
-     /* Transmit Interrupt? */
--    if ((t_status & MPC5xxx_MSCAN_TXE)) {
-+    if ((t_status & MSCAN_TXE)) {
- 	/* Disable transmit interrupt here or it will
- 	 * constantly be pending.
- 	 */
--	regs->cantier &= ~MPC5xxx_MSCAN_TXIE;
-+	regs->cantier &= ~MSCAN_TXIE;
- 
- 	/* Wake up a sender */
- 	rtdm_sem_up(&dev->tx_sem);
-     }
- 
-     /* Wakeup interrupt?  */
--    if ((r_status & MPC5xxx_MSCAN_WUPIF)) {
-+    if ((r_status & MSCAN_WUPIF)) {
- 	rtdm_printk("WUPIF interrupt\n");
-     }
- 
-     /* Receive Interrupt? */
--    if ((r_status & MPC5xxx_MSCAN_RXF)) {
-+    if ((r_status & MSCAN_RXF)) {
- 	
- 	/* Read out HW registers */
- 	rtcan_mscan_rx_interrupt(dev, &skb);
-@@ -324,7 +291,7 @@
-     }
- 
-     /* Error Interrupt? */
--    if ((r_status & (MPC5xxx_MSCAN_CSCIF | MPC5xxx_MSCAN_OVRIF))) {
-+    if ((r_status & (MSCAN_CSCIF | MSCAN_OVRIF))) {
- 	/* Check error condition and fill error frame */
- 	rtcan_mscan_err_interrupt(dev, &skb, r_status);
- 
-@@ -345,8 +312,8 @@
- 	regs->canrflg = r_status;
- 
-     if (!recv_lock_free) {
--        rtdm_lock_put(&socket_lock);
--        rtdm_lock_put(&recv_list_lock);
-+        rtdm_lock_put(&rtcan_socket_lock);
-+        rtdm_lock_put(&rtcan_recv_list_lock);
-     }
-     rtdm_lock_put(&dev->device_lock);
- 
-@@ -381,8 +348,8 @@
-     int ret = 0;
-     int rinit = 0;
-     can_state_t state;
--    volatile struct mpc5xxx_mscan *regs = 
--	(struct mpc5xxx_mscan *)dev->base_addr;
-+    volatile struct mscan_regs *regs = 
-+	(struct mscan_regs *)dev->base_addr;
-     u8 reg;
- 
-     state = dev->state;
-@@ -391,12 +358,12 @@
-         goto out;
- 
-     /* Switch to sleep mode */
--    regs->canctl0 |= MPC5xxx_MSCAN_SLPRQ;
--    regs->canctl0 |= MPC5xxx_MSCAN_INITRQ;
-+    regs->canctl0 |= MSCAN_SLPRQ;
-+    regs->canctl0 |= MSCAN_INITRQ;
-     
-     reg = regs->canctl1;
--    while (!(reg & MPC5xxx_MSCAN_SLPAK) ||
--	   !(reg & MPC5xxx_MSCAN_INITAK)) {
-+    while (!(reg & MSCAN_SLPAK) ||
-+	   !(reg & MSCAN_INITAK)) {
-         if (likely(lock_ctx != NULL))
-             rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
-         /* Busy sleep 1 microsecond */
-@@ -440,8 +407,8 @@
- {
-     int ret = 0, retries = 0;
-     can_state_t state;
--    volatile struct mpc5xxx_mscan *regs = 
--	(struct mpc5xxx_mscan *)dev->base_addr;
-+    volatile struct mscan_regs *regs = 
-+	(struct mscan_regs *)dev->base_addr;
- 
-     /* We won't forget that state in the device structure is volatile and
-      * access to it will not be optimized by the compiler. So ... */
-@@ -461,21 +428,21 @@
- 	rtdm_sem_init(&dev->tx_sem, MSCAN_TX_BUFS);
- 
- 	if ((dev->ctrl_mode & CAN_CTRLMODE_LISTENONLY)) {
--	    regs->canctl1 |= MPC5xxx_MSCAN_LISTEN;
-+	    regs->canctl1 |= MSCAN_LISTEN;
- 	} else {
--	    regs->canctl1 &= ~MPC5xxx_MSCAN_LISTEN;
-+	    regs->canctl1 &= ~MSCAN_LISTEN;
- 	}
- 	if ((dev->ctrl_mode & CAN_CTRLMODE_LOOPBACK)) {
--	    regs->canctl1 |= MPC5xxx_MSCAN_LOOPB;
-+	    regs->canctl1 |= MSCAN_LOOPB;
- 	} else {
--	    regs->canctl1 &= ~MPC5xxx_MSCAN_LOOPB;
-+	    regs->canctl1 &= ~MSCAN_LOOPB;
- 	}
- 
- 	/* Switch to normal mode */
--	regs->canctl0 &= ~MPC5xxx_MSCAN_INITRQ;
--	regs->canctl0 &= ~MPC5xxx_MSCAN_SLPRQ;
--	while ((regs->canctl1 & MPC5xxx_MSCAN_INITAK) ||
--	       (regs->canctl1 & MPC5xxx_MSCAN_SLPAK)) {
-+	regs->canctl0 &= ~MSCAN_INITRQ;
-+	regs->canctl0 &= ~MSCAN_SLPRQ;
-+	while ((regs->canctl1 & MSCAN_INITAK) ||
-+	       (regs->canctl1 & MSCAN_SLPAK)) {
- 	    if (likely(lock_ctx != NULL))
- 		rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
- 	    /* Busy sleep 1 microsecond */
-@@ -513,7 +480,7 @@
- 			     struct can_bittime *bit_time,
- 			     rtdm_lockctx_t *lock_ctx)
- {
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr; 
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr; 
-     u8 btr0, btr1;
- 	
-     switch (bit_time->type) {
-@@ -549,7 +516,7 @@
- {
-     int ret = 0, retries = 0;
-     can_state_t state;
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr; 
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr; 
- 
-     switch (mode) {
- 
-@@ -584,8 +551,8 @@
- 	 * the meaning of interrupts ...) */
- 	regs->canrier = 0;
- 	regs->cantier = 0;
--	regs->canctl0 |= MPC5xxx_MSCAN_SLPRQ /*| MPC5xxx_MSCAN_INITRQ*/ | MPC5xxx_MSCAN_WUPE;
--	while (!(regs->canctl1 & MPC5xxx_MSCAN_SLPAK)) {
-+	regs->canctl0 |= MSCAN_SLPRQ /*| MSCAN_INITRQ*/ | MSCAN_WUPE;
-+	while (!(regs->canctl1 & MSCAN_SLPAK)) {
- 	    rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
- 	    /* Busy sleep 1 microsecond */
- 	    rtdm_task_busy_sleep(1000);
-@@ -594,8 +561,8 @@
- 		break;
- 	}
- 	rtdm_printk("Fallen asleep after %d tries.\n", retries);
--	regs->canctl0 &= ~MPC5xxx_MSCAN_INITRQ;
--	while ((regs->canctl1 & MPC5xxx_MSCAN_INITAK)) {
-+	regs->canctl0 &= ~MSCAN_INITRQ;
-+	while ((regs->canctl1 & MSCAN_INITAK)) {
- 	    rtdm_lock_put_irqrestore(&dev->device_lock, *lock_ctx);
- 	    /* Busy sleep 1 microsecond */
- 	    rtdm_task_busy_sleep(1000);
-@@ -604,7 +571,7 @@
- 		break;
- 	}
- 	rtdm_printk("Back to normal after %d tries.\n", retries);
--	regs->canrier = MPC5xxx_MSCAN_WUPIE;
-+	regs->canrier = MSCAN_WUPIE;
- 	
-     mode_sleep_out:
- 	dev->state = state;
-@@ -636,7 +603,7 @@
-     /* Content of frame information register */
-     unsigned char   dlc;
- 
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
- 
-     /* Find an empty TX buffer. */
-     for (buf = 0; buf < MSCAN_TX_BUFS; buf++) {
-@@ -718,12 +685,12 @@
-  *
-  *  @param[in] dev Device ID of the controller to be configured
-  */
--static inline void __init mscan_chip_config(struct mpc5xxx_mscan *regs)
-+static inline void __init mscan_chip_config(struct mscan_regs *regs)
- {
-     /* Choose IP bus as clock source.
-      */
--    regs->canctl1 |= MPC5xxx_MSCAN_CLKSRC;
--    regs->canctl1 &= ~MPC5xxx_MSCAN_LISTEN;
-+    regs->canctl1 |= MSCAN_CLKSRC;
-+    regs->canctl1 &= ~MSCAN_LISTEN;
- 
-     /* Configure MSCAN to accept all incoming messages.
-      */
-@@ -735,7 +702,7 @@
-     regs->canidar6 = regs->canidar7 = 0x00;
-     regs->canidmr4 = regs->canidmr5 = 0xFF;
-     regs->canidmr6 = regs->canidmr7 = 0xFF;
--    regs->canidac &= ~(MPC5xxx_MSCAN_IDAM0 | MPC5xxx_MSCAN_IDAM1);
-+    regs->canidac &= ~(MSCAN_IDAM0 | MSCAN_IDAM1);
- }
- 
- static inline void __init mscan_gpio_config(void)
-@@ -779,16 +746,16 @@
-     unsigned long addr;
-     struct rtcan_device *dev;
-     struct rtcan_priv *priv;
--    struct mpc5xxx_mscan *regs;
-+    struct mscan_regs *regs;
- 
-     switch (port[idx]) {
-     case 1:
--	addr = MPC5xxx_MSCAN1;
--	irq = MPC5xxx_CAN1_IRQ;
-+	addr = MSCAN_CAN1_ADDR;
-+	irq = MSCAN_CAN1_IRQ;
- 	break;
-     case 2:
--	addr = MPC5xxx_MSCAN2;
--	irq = MPC5xxx_CAN2_IRQ;
-+	addr = MSCAN_CAN2_ADDR;
-+	irq = MSCAN_CAN2_IRQ;
- 	break;
-     default:
- 	return 0;
-@@ -805,10 +772,10 @@
- 
-     priv = dev->priv;
-     dev->base_addr = addr;
--    regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    regs = (struct mscan_regs *)dev->base_addr;
-     
-     /* Enable MSCAN module. */
--    regs->canctl1 |= MPC5xxx_MSCAN_CANE;
-+    regs->canctl1 |= MSCAN_CANE;
-     udelay(100);
-     
-     /* Set dummy state for following call */
-@@ -862,7 +829,7 @@
- 
-  out_dev_free:
-     /* Disable MSCAN module. */
--    regs->canctl1 &= ~MPC5xxx_MSCAN_CANE;
-+    regs->canctl1 &= ~MSCAN_CANE;
-     rtcan_dev_free(dev);
- 
-     return ret;
-+ diff -u xenomai/ksrc/drivers/can/mscan/rtcan_mscan_proc.c.ORIG xenomai/ksrc/drivers/can/mscan/rtcan_mscan_proc.c
---- xenomai/ksrc/drivers/can/mscan/rtcan_mscan_proc.c.ORIG	2006-08-22 20:40:29.000000000 +0200
-+++ xenomai/ksrc/drivers/can/mscan/rtcan_mscan_proc.c	2006-08-22 20:41:52.000000000 +0200
-@@ -20,13 +20,13 @@
- #include <linux/module.h>
- #include <linux/ioport.h>
- #include <linux/delay.h>
--#include <asm/mpc5xxx.h>
- 
- #include <rtdm/rtdm_driver.h>
- 
- /* CAN device profile */
- #include "rtcan_dev.h"
- #include "rtcan_internal.h"
-+#include "rtcan_mscan_regs.h"
- 
- #define MSCAN_REG_ARGS(reg) "%-8s 0x%02x\n", #reg, (int)((regs)->reg) & 0xff
- 
-@@ -36,7 +36,7 @@
- 				 int count, int *eof, void *data)
- {
-     struct rtcan_device *dev = (struct rtcan_device *)data;
--    struct mpc5xxx_mscan *regs = (struct mpc5xxx_mscan *)dev->base_addr;
-+    struct mscan_regs *regs = (struct mscan_regs *)dev->base_addr;
-     struct mpc5xxx_gpio *gpio = (struct mpc5xxx_gpio *)MPC5xxx_GPIO;
-     RTCAN_PROC_PRINT_VARS(80);
- 
-@@ -44,24 +44,24 @@
- 	goto done;
-     if (!RTCAN_PROC_PRINT("canctl0  0x%02x%s%s%s%s%s%s%s%s\n",
- 			  regs->canctl0,
--			  (regs->canctl0 & MPC5xxx_MSCAN_RXFRM) ? " rxfrm" :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_RXACT) ? " rxact" :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_CSWAI) ? " cswai" :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_SYNCH) ? " synch" :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_TIME)  ? " time"  :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_WUPE)  ? " wupe"  :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_SLPRQ) ? " slprq" :"",
--			  (regs->canctl0 & MPC5xxx_MSCAN_INITRQ)? " initrq":"" ))
-+			  (regs->canctl0 & MSCAN_RXFRM) ? " rxfrm" :"",
-+			  (regs->canctl0 & MSCAN_RXACT) ? " rxact" :"",
-+			  (regs->canctl0 & MSCAN_CSWAI) ? " cswai" :"",
-+			  (regs->canctl0 & MSCAN_SYNCH) ? " synch" :"",
-+			  (regs->canctl0 & MSCAN_TIME)  ? " time"  :"",
-+			  (regs->canctl0 & MSCAN_WUPE)  ? " wupe"  :"",
-+			  (regs->canctl0 & MSCAN_SLPRQ) ? " slprq" :"",
-+			  (regs->canctl0 & MSCAN_INITRQ)? " initrq":"" ))
- 	goto done;
-     if (!RTCAN_PROC_PRINT("canctl1  0x%02x%s%s%s%s%s%s%s\n",
- 			  regs->canctl1,
--			  (regs->canctl1 & MPC5xxx_MSCAN_CANE)  ? " cane"  :"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_CLKSRC)? " clksrc":"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_LOOPB) ? " loopb" :"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_LISTEN)? " listen":"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_WUPM)  ? " wump"  :"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_SLPAK) ? " slpak" :"",
--			  (regs->canctl1 & MPC5xxx_MSCAN_INITAK)? " initak":""))
-+			  (regs->canctl1 & MSCAN_CANE)  ? " cane"  :"",
-+			  (regs->canctl1 & MSCAN_CLKSRC)? " clksrc":"",
-+			  (regs->canctl1 & MSCAN_LOOPB) ? " loopb" :"",
-+			  (regs->canctl1 & MSCAN_LISTEN)? " listen":"",
-+			  (regs->canctl1 & MSCAN_WUPM)  ? " wump"  :"",
-+			  (regs->canctl1 & MSCAN_SLPAK) ? " slpak" :"",
-+			  (regs->canctl1 & MSCAN_INITAK)? " initak":""))
- 	goto done;
-     if (!RTCAN_PROC_PRINT(MSCAN_REG_ARGS(canbtr0 )) |
- 	!RTCAN_PROC_PRINT(MSCAN_REG_ARGS(canbtr1 )) |
-+ diff -u xenomai/ksrc/drivers/can/mscan/rtcan_mscan_regs.h.ORIG xenomai/ksrc/drivers/can/mscan/rtcan_mscan_regs.h
---- xenomai/ksrc/drivers/can/mscan/rtcan_mscan_regs.h.ORIG	2006-08-22 20:41:52.000000000 +0200
-+++ xenomai/ksrc/drivers/can/mscan/rtcan_mscan_regs.h	2006-08-22 20:41:52.000000000 +0200
-@@ -0,0 +1,214 @@
-+/*
-+ * Copyright (C) 2006 Wolfgang Grandegger <wg@domain.hid>
-+ *
-+ * Based on linux-2.4.25/include/asm-ppc/mpc5xxx.h
-+ * Prototypes, etc. for the Motorola MPC5xxx embedded cpu chips
-+ *
-+ * Author: Dale Farnsworth <dfarnsworth@domain.hid>
-+ *
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software Foundation,
-+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ */
-+
-+#ifndef __RTCAN_MSCAN_REGS_H_
-+#define __RTCAN_MSCAN_REGS_H_
-+
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10)
-+#include <asm/mpc5xxx.h>
-+#define MSCAN_MBAR	MPC5xxx_MBAR
-+#define MSCAN_CAN1_IRQ	MPC5xxx_CAN1_IRQ
-+#define MSCAN_CAN2_IRQ	MPC5xxx_CAN2_IRQ
-+#else
-+#include <asm/mpc52xx.h>
-+#define MSCAN_MBAR	MPC52xx_MBAR
-+#define MSCAN_CAN1_IRQ	MPC52xx_MSCAN1_IRQ
-+#define MSCAN_CAN2_IRQ	MPC52xx_MSCAN2_IRQ
-+#define MPC5xxx_GPIO	MPC52xx_GPIO_OFFSET 
-+#define mpc5xxx_gpio	mpc52xx_gpio
-+#endif
-+
-+#define MSCAN_CAN1_ADDR	(MSCAN_MBAR + 0x0900) /* MSCAN Module 1 */
-+#define MSCAN_CAN2_ADDR	(MSCAN_MBAR + 0x0980) /* MSCAN Module 2 */
-+
-+/* MSCAN control register 0 (CANCTL0) bits */
-+#define MSCAN_RXFRM	0x80
-+#define MSCAN_RXACT	0x40
-+#define MSCAN_CSWAI	0x20
-+#define MSCAN_SYNCH	0x10
-+#define MSCAN_TIME	0x08
-+#define MSCAN_WUPE	0x04
-+#define MSCAN_SLPRQ	0x02
-+#define MSCAN_INITRQ	0x01
-+
-+/* MSCAN control register 1 (CANCTL1) bits */
-+#define MSCAN_CANE	0x80
-+#define MSCAN_CLKSRC	0x40
-+#define MSCAN_LOOPB	0x20
-+#define MSCAN_LISTEN	0x10
-+#define MSCAN_WUPM	0x04
-+#define MSCAN_SLPAK	0x02
-+#define MSCAN_INITAK	0x01
-+
-+/* MSCAN receiver flag register (CANRFLG) bits */
-+#define MSCAN_WUPIF	0x80
-+#define MSCAN_CSCIF	0x40
-+#define MSCAN_RSTAT1	0x20
-+#define MSCAN_RSTAT0	0x10
-+#define MSCAN_TSTAT1	0x08
-+#define MSCAN_TSTAT0	0x04
-+#define MSCAN_OVRIF	0x02
-+#define MSCAN_RXF	0x01
-+
-+/* MSCAN receiver interrupt enable register (CANRIER) bits */
-+#define MSCAN_WUPIE	0x80
-+#define MSCAN_CSCIE	0x40
-+#define MSCAN_RSTATE1	0x20
-+#define MSCAN_RSTATE0	0x10
-+#define MSCAN_TSTATE1	0x08
-+#define MSCAN_TSTATE0	0x04
-+#define MSCAN_OVRIE	0x02
-+#define MSCAN_RXFIE	0x01
-+
-+/* MSCAN transmitter flag register (CANTFLG) bits */
-+#define MSCAN_TXE2	0x04
-+#define MSCAN_TXE1	0x02
-+#define MSCAN_TXE0	0x01
-+#define MSCAN_TXE	(MSCAN_TXE2 | MSCAN_TXE1 | MSCAN_TXE0)
-+
-+/* MSCAN transmitter interrupt enable register (CANTIER) bits */
-+#define MSCAN_TXIE2	0x04
-+#define MSCAN_TXIE1	0x02
-+#define MSCAN_TXIE0	0x01
-+#define MSCAN_TXIE	(MSCAN_TXIE2 | MSCAN_TXIE1 | MSCAN_TXIE0)
-+
-+/* MSCAN transmitter message abort request (CANTARQ) bits */
-+#define MSCAN_ABTRQ2	0x04
-+#define MSCAN_ABTRQ1	0x02
-+#define MSCAN_ABTRQ0	0x01
-+
-+/* MSCAN transmitter message abort ack (CANTAAK) bits */
-+#define MSCAN_ABTAK2	0x04
-+#define MSCAN_ABTAK1	0x02
-+#define MSCAN_ABTAK0	0x01
-+
-+/* MSCAN transmit buffer selection (CANTBSEL) bits */
-+#define MSCAN_TX2	0x04
-+#define MSCAN_TX1	0x02
-+#define MSCAN_TX0	0x01
-+
-+/* MSCAN ID acceptance control register (CANIDAC) bits */
-+#define MSCAN_IDAM1	0x20
-+#define MSCAN_IDAM0	0x10
-+#define MSCAN_IDHIT2	0x04
-+#define MSCAN_IDHIT1	0x02
-+#define MSCAN_IDHIT0	0x01
-+
-+struct mscan_msgbuf {
-+	volatile u8  idr[0x8];		/* 0x00 */
-+	volatile u8  dsr[0x10];		/* 0x08 */
-+	volatile u8  dlr;		/* 0x18 */
-+	volatile u8  tbpr;		/* 0x19 */	/* This register is not applicable for receive buffers */
-+	volatile u16 rsrv1;		/* 0x1A */
-+	volatile u8  tsrh;		/* 0x1C */
-+	volatile u8  tsrl;		/* 0x1D */
-+	volatile u16 rsrv2;		/* 0x1E */
-+};
-+
-+struct mscan_regs {
-+	volatile u8  canctl0;		/* MSCAN + 0x00 */
-+	volatile u8  canctl1;		/* MSCAN + 0x01 */
-+	volatile u16 rsrv1;		/* MSCAN + 0x02 */
-+	volatile u8  canbtr0;		/* MSCAN + 0x04 */
-+	volatile u8  canbtr1;		/* MSCAN + 0x05 */
-+	volatile u16 rsrv2;		/* MSCAN + 0x06 */
-+	volatile u8  canrflg;		/* MSCAN + 0x08 */
-+	volatile u8  canrier;		/* MSCAN + 0x09 */
-+	volatile u16 rsrv3;		/* MSCAN + 0x0A */
-+	volatile u8  cantflg;		/* MSCAN + 0x0C */
-+	volatile u8  cantier;		/* MSCAN + 0x0D */
-+	volatile u16 rsrv4;		/* MSCAN + 0x0E */
-+	volatile u8  cantarq;		/* MSCAN + 0x10 */
-+	volatile u8  cantaak;		/* MSCAN + 0x11 */
-+	volatile u16 rsrv5;		/* MSCAN + 0x12 */
-+	volatile u8  cantbsel;		/* MSCAN + 0x14 */
-+	volatile u8  canidac;		/* MSCAN + 0x15 */
-+	volatile u16 rsrv6[3];		/* MSCAN + 0x16 */
-+	volatile u8  canrxerr;		/* MSCAN + 0x1C */
-+	volatile u8  cantxerr;		/* MSCAN + 0x1D */
-+	volatile u16 rsrv7;		/* MSCAN + 0x1E */
-+	volatile u8  canidar0;		/* MSCAN + 0x20 */
-+	volatile u8  canidar1;		/* MSCAN + 0x21 */
-+	volatile u16 rsrv8;		/* MSCAN + 0x22 */
-+	volatile u8  canidar2;		/* MSCAN + 0x24 */
-+	volatile u8  canidar3;		/* MSCAN + 0x25 */
-+	volatile u16 rsrv9;		/* MSCAN + 0x26 */
-+	volatile u8  canidmr0;		/* MSCAN + 0x28 */
-+	volatile u8  canidmr1;		/* MSCAN + 0x29 */
-+	volatile u16 rsrv10;		/* MSCAN + 0x2A */
-+	volatile u8  canidmr2;		/* MSCAN + 0x2C */
-+	volatile u8  canidmr3;		/* MSCAN + 0x2D */
-+	volatile u16 rsrv11;		/* MSCAN + 0x2E */
-+	volatile u8  canidar4;		/* MSCAN + 0x30 */
-+	volatile u8  canidar5;		/* MSCAN + 0x31 */
-+	volatile u16 rsrv12;		/* MSCAN + 0x32 */
-+	volatile u8  canidar6;		/* MSCAN + 0x34 */
-+	volatile u8  canidar7;		/* MSCAN + 0x35 */
-+	volatile u16 rsrv13;		/* MSCAN + 0x36 */
-+	volatile u8  canidmr4;		/* MSCAN + 0x38 */
-+	volatile u8  canidmr5;		/* MSCAN + 0x39 */
-+	volatile u16 rsrv14;		/* MSCAN + 0x3A */
-+	volatile u8  canidmr6;		/* MSCAN + 0x3C */
-+	volatile u8  canidmr7;		/* MSCAN + 0x3D */
-+	volatile u16 rsrv15;		/* MSCAN + 0x3E */
-+
-+	struct mscan_msgbuf canrxfg;	/* MSCAN + 0x40 */    /* Foreground receive buffer */
-+	struct mscan_msgbuf cantxfg;	/* MSCAN + 0x60 */    /* Foreground transmit buffer */
-+};
-+
-+/* Message type access macros.
-+ */
-+#define MSCAN_BUF_STD_RTR       0x10
-+#define MSCAN_BUF_EXT_RTR       0x01
-+#define MSCAN_BUF_EXTENDED      0x08
-+#define MSCAN_TX_BUFS           3
-+
-+#define MSCAN_IDAM1	0x20
-+/* Value for the interrupt enable register */
-+#define MSCAN_RIER 	(MSCAN_OVRIE | \
-+			 MSCAN_RXFIE | \
-+			 MSCAN_WUPIF | \
-+			 MSCAN_CSCIE | \
-+			 MSCAN_RSTATE0 | \
-+			 MSCAN_RSTATE1 | \
-+			 MSCAN_TSTATE0 | \
-+			 MSCAN_TSTATE1)
-+
-+#define BTR0_BRP_MASK 	 	0x3f
-+#define BTR0_SJW_SHIFT 	 	6
-+#define BTR0_SJW_MASK 	 	(0x3 << BTR0_SJW_SHIFT)
-+
-+#define BTR1_TSEG1_MASK	 	0xf
-+#define BTR1_TSEG2_SHIFT  	4
-+#define BTR1_TSEG2_MASK  	(0x7 << BTR1_TSEG2_SHIFT)
-+#define BTR1_SAM_SHIFT 	  	7
-+
-+#define BTR0_SET_BRP(brp) 	(((brp) - 1) & BTR0_BRP_MASK)
-+#define BTR0_SET_SJW(sjw) 	((((sjw) - 1) << BTR0_SJW_SHIFT) & BTR0_SJW_MASK)
-+
-+#define BTR1_SET_TSEG1(tseg1) 	(((tseg1) - 1) & BTR1_TSEG1_MASK)
-+#define BTR1_SET_TSEG2(tseg2) 	((((tseg2) - 1) << BTR1_TSEG2_SHIFT) & BTR1_TSEG2_MASK)
-+#define BTR1_SET_SAM(sam) 	(((sam) & 1) << BTR1_SAM_SHIFT)
-+
-+#endif /* __RTCAN_MSCAN_REGS_H_ */
-+ diff -u xenomai/ksrc/drivers/can/rtcan_dev.c.ORIG xenomai/ksrc/drivers/can/rtcan_dev.c
---- xenomai/ksrc/drivers/can/rtcan_dev.c.ORIG	2006-08-22 20:40:29.000000000 +0200
-+++ xenomai/ksrc/drivers/can/rtcan_dev.c	2006-08-22 20:41:52.000000000 +0200
-@@ -79,16 +79,22 @@
- struct rtcan_device *rtcan_dev_get_by_name(const char *name)
- {
-     struct rtcan_device *dev;
-+#ifdef RTCAN_USE_REFCOUNT
-     rtdm_lockctx_t context;
-+#endif
- 
- 
-+#ifdef RTCAN_USE_REFCOUNT
-     rtdm_lock_get_irqsave(&rtcan_devices_rt_lock, context);
-+#endif
- 
-     dev = __rtcan_dev_get_by_name(name);
-+
-+#ifdef RTCAN_USE_REFCOUNT
-     if (dev != NULL)
-         atomic_inc(&dev->refcount);
--
-     rtdm_lock_put_irqrestore(&rtcan_devices_rt_lock, context);
-+#endif
- 
-     return dev;
- }
-@@ -103,19 +109,25 @@
- struct rtcan_device *rtcan_dev_get_by_index(int ifindex)
- {
-     struct rtcan_device *dev;
-+#ifdef RTCAN_USE_REFCOUNT
-     rtdm_lockctx_t context;
-+#endif
- 
- 
-     if ((ifindex <= 0) || (ifindex > RTCAN_MAX_DEVICES))
-         return NULL;
- 
-+#ifdef RTCAN_USE_REFCOUNT
-     rtdm_lock_get_irqsave(&rtcan_devices_rt_lock, context);
-+#endif
- 
-     dev = __rtcan_dev_get_by_index(ifindex);
-+
-+#ifdef RTCAN_USE_REFCOUNT
-     if (dev != NULL)
-         atomic_inc(&dev->refcount);
--
-     rtdm_lock_put_irqrestore(&rtcan_devices_rt_lock, context);
-+#endif
- 
-     return dev;
- }
-@@ -134,8 +146,10 @@
-             strncpy(dev->name, buf, IFNAMSIZ);
-             break;
-         }
-+#ifdef RTCAN_USE_REFCOUNT
-         else
-             rtcan_dev_dereference(tmp);
-+#endif
-     }
- }
- 
-@@ -165,8 +179,9 @@
-     /* Init TX Semaphore, will be destroyed forthwith
-      * when setting stop mode */
-     rtdm_sem_init(&dev->tx_sem, 0);
--
-+#ifdef RTCAN_USE_REFCOUNT
-     atomic_set(&dev->refcount, 0);
-+#endif
- 
-     /* Initialize receive list */
-     dev->empty_list = recv_list_elem = dev->receivers;
-@@ -241,6 +256,7 @@
- 
- int rtcan_dev_unregister(struct rtcan_device *dev)
- {
-+#ifdef RTCAN_USE_REFCOUNT
-     rtdm_lockctx_t context;
- 
- 
-@@ -281,6 +297,10 @@
-     printk("RTCAN: unregistered %s\n", dev->name);
- 
-     return 0;
-+#else
-+    printk("RTCAN: Oops, unexpected call of rtcan_dev_unregister()\n");
-+    return -EINVAL;
-+#endif
- }
- 
- 
-+ diff -u xenomai/ksrc/drivers/can/rtcan_dev.h.ORIG xenomai/ksrc/drivers/can/rtcan_dev.h
---- xenomai/ksrc/drivers/can/rtcan_dev.h.ORIG	2006-08-22 20:40:30.000000000 +0200
-+++ xenomai/ksrc/drivers/can/rtcan_dev.h	2006-08-22 21:29:11.000000000 +0200
-@@ -36,8 +36,6 @@
- #include "rtcan_list.h"
- 
- 
--#define RTCAN_DEV_VERS_0_1   0x0001
--
- /* Number of MSCAN devices the driver can handle */
- #define RTCAN_MAX_DEVICES    CONFIG_XENO_DRIVERS_RTCAN_MAX_DEVICES
- 
-@@ -45,10 +43,13 @@
-  * for reception at the same time using Bind */
- #define RTCAN_MAX_RECEIVERS  CONFIG_XENO_DRIVERS_RTCAN_MAX_RECEIVERS
- 
-+/* Suppress handling of refcount if module support is not enabled
-+ * or modules cannot be unloaded */
-+#if defined(CONFIG_MODULES) && !defined(CONFIG_MODULE_UNLOAD)
-+#define RTCAN_USE_REFCOUNT
-+#endif
-+
- 
--/**
-- *  rtcan_device
-- */
- struct rtcan_device {
-     unsigned int        version;
- 
-@@ -61,7 +62,9 @@
-     rtdm_irq_t          irq_handle; /* RTDM IRQ handle */
-  
-     int                 ifindex;
-+#ifdef RTCAN_USE_REFCOUNT
-     atomic_t            refcount;
-+#endif
- 
-     void                *priv;      /* pointer to chip private data */
- 
-@@ -153,8 +156,13 @@
- struct rtcan_device *rtcan_dev_get_by_name(const char *if_name);
- struct rtcan_device *rtcan_dev_get_by_index(int ifindex);
- 
-+#ifdef RTCAN_USE_REFCOUNT
- #define rtcan_dev_reference(dev)      atomic_inc(&(dev)->refcount)
- #define rtcan_dev_dereference(dev)    atomic_dec(&(dev)->refcount)
-+#else
-+#define rtcan_dev_reference(dev)      do {} while(0)
-+#define rtcan_dev_dereference(dev)    do {} while(0)
-+#endif
- 
- int rtcan_dev_create_proc(struct rtcan_device* dev);
- void rtcan_dev_remove_proc(struct rtcan_device* dev);
-+ diff -u xenomai/ksrc/drivers/can/rtcan_module.c.ORIG xenomai/ksrc/drivers/can/rtcan_module.c
---- xenomai/ksrc/drivers/can/rtcan_module.c.ORIG	2006-08-22 20:40:30.000000000 +0200
-+++ xenomai/ksrc/drivers/can/rtcan_module.c	2006-08-22 20:41:52.000000000 +0200
-@@ -237,10 +237,14 @@
- 	!RTCAN_PROC_PRINT("%s %s\n", "State     ", state_name) ||
- 	!RTCAN_PROC_PRINT("%s %d\n", "TX-Counter", dev->tx_count) ||
- 	!RTCAN_PROC_PRINT("%s %d\n", "RX-Counter", dev->rx_count) ||
--	!RTCAN_PROC_PRINT("%s %d\n", "Errors    ", dev->err_count) ||
--	!RTCAN_PROC_PRINT("%s %d\n", "Refcount  ", atomic_read(&dev->refcount)))
-+	!RTCAN_PROC_PRINT("%s %d\n", "Errors    ", dev->err_count))
-         goto done;
--    
-+
-+#ifdef RTCAN_USE_REFCOUNT
-+    if (!RTCAN_PROC_PRINT("%s %d\n", "Refcount  ", atomic_read(&dev->refcount)))
-+	goto done;
-+#endif
-+
-   done:
-     up(&rtcan_devices_nrt_lock);
-     RTCAN_PROC_PRINT_DONE;
-+ diff -u xenomai/scripts/Modules.frag.ORIG xenomai/scripts/Modules.frag
---- xenomai/scripts/Modules.frag.ORIG	2006-08-22 20:39:57.000000000 +0200
-+++ xenomai/scripts/Modules.frag	2006-08-22 22:10:17.000000000 +0200
-@@ -14,5 +14,5 @@
- DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN) += drivers/xenomai/can/xeno_rtcan.o
- DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_MSCAN) += drivers/xenomai/can/mscan/xeno_rtcan_mscan.o
- DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000) += drivers/xenomai/can/sja1000/xeno_rtcan_sja1000.o
--DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_PEAK_PCI) += drivers/xenomai/can/sja1000/xeno_rtcan_peak_pci.o
--DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_PEAK_DNG) += drivers/xenomai/can/sja1000/xeno_rtcan_peak_dng.o
-+DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_PCI) += drivers/xenomai/can/sja1000/xeno_rtcan_peak_pci.o
-+DRIVERS-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_DNG) += drivers/xenomai/can/sja1000/xeno_rtcan_peak_dng.o
+Index: configure.in
+===================================================================
+--- configure.in	(revision 1484)
++++ configure.in	(working copy)
+@@ -72,7 +72,7 @@
+ 	XENO_TARGET_ARCH=blackfin
+         XENO_LINUX_ARCH=bfinnommu
+ 	XENO_LINUX_INSTALL_TARGET=install
+-	if test x$enable_shared = xyes; then
++	if test x$enable_shared = xyes ; then
+ 	   AC_MSG_ERROR([Shared libraries unsupported -- reconfigure passing --disable-shared])
+ 	fi
+         ;;
+@@ -148,7 +148,7 @@
+ 
+ dnl ARCH support for ARM (default: 4)
+ 
+-if test $XENO_TARGET_ARCH = arm; then
++if test $XENO_TARGET_ARCH = arm ; then
+   AC_MSG_CHECKING(for ARM architecture version)
+   CONFIG_XENO_ARM_ARCH=4
+   CONFIG_XENO_ARM_SA1100=
+@@ -184,27 +184,27 @@
+ 	[case "$enableval" in
+ 	y | yes) XENO_LINUX_SRCDIR=y ;;
+ 	n | no) unset XENO_LINUX_SRCDIR ;;
+-        *) XENO_LINUX_SRCDIR="`/bin/bash -c \"echo $enableval\"`";;
++        *) XENO_LINUX_SRCDIR="`/bin/bash -c \"echo $enableval\"`" ;;
+ 	esac])
+ 
+-if test x"$XENO_LINUX_SRCDIR" = x; then
++if test x"$XENO_LINUX_SRCDIR" = x ; then
+   AC_MSG_RESULT(no)
+ else
+   AC_MSG_RESULT(yes)
+   AC_MSG_CHECKING(for Linux sources)
+   if test x"$XENO_LINUX_SRCDIR" = xy; then
+       candidates="linux-* $srcdir/linux-* $srcdir/linux linux"
+-      if test x"$cross_compiling" = xno; then
++      if test x"$cross_compiling" = xno ; then
+           candidates="$candidates /lib/modules/`uname -r`/source /usr/src/linux"
+       fi
+-      for dir in $candidates; do
+-          if test -r $dir/Makefile; then 
++      for dir in $candidates ; do
++          if test -r $dir/Makefile ; then 
+               XENO_LINUX_SRCDIR=$dir
+-              break; 
++              break ; 
+           fi
+       done
+   fi
+-  if test x"$XENO_LINUX_SRCDIR" = xy || test ! -r $XENO_LINUX_SRCDIR/Makefile; then
++  if test x"$XENO_LINUX_SRCDIR" = xy || test ! -r $XENO_LINUX_SRCDIR/Makefile ; then
+      AC_MSG_ERROR([Unable to find Linux kernel sources tree, please pass a valid Linux sources directory to --enable-linux-build])
+   else
+      XENO_LINUX_SRCDIR=`cd $XENO_LINUX_SRCDIR && pwd`
+@@ -222,16 +222,16 @@
+      linux_full_version="$linux_base_version$linux_EXTRAVERSION"
+ 
+      if test x"$linux_PATCHLEVEL" = x -o x"$linux_SUBLEVEL" = x || 
+-        test x"$linux_VERSION" = x; then
++        test x"$linux_VERSION" = x ; then
+         AC_MSG_ERROR([Unable to get version of $XENO_LINUX_SRCDIR, aborting.])
+      else
+         AC_MSG_RESULT([$XENO_LINUX_SRCDIR (kernel ${linux_full_version})])
+      fi
+ 
+      case "$linux_base_version" in
+-	2.4.*) XENO_LINUX_ALL_TARGETS="bzImage modules";;
++	2.4.*) XENO_LINUX_ALL_TARGETS="bzImage modules" ;;
+         2.6.*) XENO_LINUX_ALL_TARGETS="all";;
+-	*) AC_MSG_ERROR([Unknown Linux version $linux_full_version]);;
++	*) AC_MSG_ERROR([Unknown Linux version $linux_full_version]) ;;
+      esac
+      AC_SUBST(XENO_LINUX_ALL_TARGETS)
+      AC_SUBST(XENO_LINUX_INSTALL_TARGET)
+@@ -245,11 +245,11 @@
+ patch. Default is to infer the patch name from Linux kernel version.]),
+         [ADEOS_PATCH="`/bin/bash -c \"echo $withval\"`"])
+ 
+-  if test x"$ADEOS_PATCH" = x && test x"$linux_base_version" != x; then
++  if test x"$ADEOS_PATCH" = x && test x"$linux_base_version" != x ; then
+         set -- $srcdir/ksrc/arch/$XENO_TARGET_ARCH/patches/adeos-*$linux_base_version-$XENO_LINUX_ARCH-*
+         ADEOS_PATCH=$1
+   fi
+-  if test x"$ADEOS_PATCH" = x || test ! -e $ADEOS_PATCH; then
++  if test x"$ADEOS_PATCH" = x || test ! -e $ADEOS_PATCH ; then
+      AC_MSG_ERROR([Unable to find Adeos patch, please use --with-adeos-patch])
+   else
+      AC_MSG_RESULT([$ADEOS_PATCH])
+@@ -257,10 +257,10 @@
+   AC_SUBST(ADEOS_PATCH)
+ 
+   AC_CONFIG_COMMANDS(linux, [
+-     if test -e linux/.xenomai-prepared; then
++     if test -e linux/.xenomai-prepared ; then
+         . linux/.xenomai-prepared
+         if test x"$XENO_LINUX_VERSION" != x"$PREPARED_LINUX_VERSION" ||
+-           test x"`basename $ADEOS_PATCH`" != x"$PREPARED_ADEOS_PATCH"; then
++           test x"`basename $ADEOS_PATCH`" != x"$PREPARED_ADEOS_PATCH" ; then
+            echo "*** Warning: built version of linux and requested versions are "
+            echo "*** different. If you want to build the requested version of "
+            echo "*** linux, remove the file: linux/.xenomai-prepared."
+@@ -270,8 +270,8 @@
+      else
+            set -e
+            targetdir=$PWD/linux
+-           if test \! -e linux || test \! $XENO_LINUX_SRCDIR -ef linux; then
+-               if test -e linux; then
++           if test \! -e linux || test \! $XENO_LINUX_SRCDIR -ef linux ; then
++               if test -e linux ; then
+                    test -e linux/.config && mv linux/.config .xenomai.config
+                    echo $ECHO_N "Removing existing linux directory... $ECHO_C" 
+                    rm -Rf linux
+@@ -280,7 +280,7 @@
+                mkdir linux
+                echo $ECHO_N "Making linux a shadow copy of $XENO_LINUX_SRCDIR... $ECHO_C" 
+                cd $XENO_LINUX_SRCDIR
+-               find . -! -type d | while read f; do
++               find . -! -type d | while read f ; do
+                    d=$targetdir/`dirname $f`
+                    mkdir -p $d && ln -sf $XENO_LINUX_SRCDIR/$f $d/`basename $f`
+                done
+@@ -288,14 +288,14 @@
+            fi
+            cd $targetdir
+ 
+-           if test -e $XENO_LINUX_SRCDIR/.config; then
++           if test -e $XENO_LINUX_SRCDIR/.config ; then
+               . $XENO_LINUX_SRCDIR/.config
+               test x"$CONFIG_X86" = xy && cfg_arch=i386 || :
+               test x"$CONFIG_PPC" = xy && cfg_arch=ppc || :
+               test x"$CONFIG_IA64" = xy && cfg_arch=ia64 || :
+               test x"$CONFIG_PPC64" = xy && cfg_arch=ppc64 || :
+               test x"$CONFIG_BLACKFIN" = xy && cfg_arch=blackfin || :
+-              if test $cfg_arch = $XENO_TARGET_ARCH; then
++              if test $cfg_arch = $XENO_TARGET_ARCH ; then
+                  cp $XENO_LINUX_SRCDIR/.config .xenomai.config
+               fi
+               echo "Cleaning linux directory..." 
+@@ -322,7 +322,7 @@
+ 
+ dnl Documentation package.
+ 
+-if test \! -d $srcdir/doc; then 
++if test \! -d $srcdir/doc ; then 
+     unset XENO_MAYBE_DOCDIR
+ else
+     XENO_MAYBE_DOCDIR=doc
+@@ -337,7 +337,7 @@
+ 	*) unset CONFIG_XENO_DOC_DOX ;;
+ 	esac])
+ 
+-if test \! -d $srcdir/doc; then
++if test \! -d $srcdir/doc ; then
+     if test x$CONFIG_XENO_DOC_DOX = xy ; 
+     then
+         AC_MSG_ERROR([documentation tree is missing.])
+@@ -349,12 +349,12 @@
+ 
+ AC_CHECK_PROG(DOXYGEN, doxygen, doxygen)
+ 
+-if test x${CONFIG_XENO_DOC_DOX} = xy -a x"$DOXYGEN" = x; then
++if test x${CONFIG_XENO_DOC_DOX} = xy -a x"$DOXYGEN" = x ; then
+    AC_MSG_ERROR([Missing the Doxygen tools to generate the documentation.])
+ fi
+ 
+ AC_CHECK_PROG(DOXYGEN_HAVE_DOT, dot, YES, NO)
+-if test x"$DOXYGEN_HAVE_DOT" = xYES; then
++if test x"$DOXYGEN_HAVE_DOT" = xYES ; then
+    DOXYGEN_SHOW_INCLUDE_FILES=NO
+ else
+    DOXYGEN_SHOW_INCLUDE_FILES=YES
+@@ -362,9 +362,9 @@
+ 
+ case "$CONFIG_XENO_DOC_DBX" in
+ y | ye | yes)
+-    DBX_DOC=yes;;
++    DBX_DOC=yes ;;
+ *)
+-    DBX_DOC="";;
++    DBX_DOC="" ;;
+ esac
+ DBX_NET="$CONFIG_XENO_DBX_NET"
+ DBX_ROOT="$CONFIG_XENO_DBX_ROOT"
+@@ -457,10 +457,10 @@
+    [ac_cv_sched_setaffinity=old],
+    [ac_cv_sched_setaffinity=no])]
+  fi
+- if test $ac_cv_sched_setaffinity = old; then
++ if test $ac_cv_sched_setaffinity = old ; then
+      AC_MSG_RESULT(old)
+      AC_DEFINE(HAVE_OLD_SETAFFINITY,1,[config])
+- elif test $ac_cv_sched_setaffinity = new; then
++ elif test $ac_cv_sched_setaffinity = new ; then
+      AC_MSG_RESULT(ok)
+      AC_DEFINE(HAVE_RECENT_SETAFFINITY,1,[config])
+  else
+@@ -539,8 +539,8 @@
+ if [[ $ac_cv_ld_file_option = yes ]]; then
+ 	XENO_POSIX_WRAPPERS="-Wl,@`cd $srcdir && pwd`/src/skins/posix/posix.wrappers"
+ else
+-	XENO_POSIX_WRAPPERS=`while read wrap_option symbol; do \
+-			echo -n "-Wl,$wrap_option,$symbol "; \
++	XENO_POSIX_WRAPPERS=`while read wrap_option symbol ; do \
++			echo -n "-Wl,$wrap_option,$symbol " ; \
+ 		done < $srcdir/src/skins/posix/posix.wrappers`
+ fi
+ AC_MSG_RESULT(${ac_cv_ld_file_option:-no})
+@@ -640,7 +640,7 @@
+        	include/vxworks/Makefile \
+ 	])
+ 
+-if test \! x$XENO_MAYBE_DOCDIR = x; then
++if test \! x$XENO_MAYBE_DOCDIR = x ; then
+       AC_CONFIG_FILES([ \
+ 	doc/Makefile \
+ 	doc/txt/Makefile \
+Index: scripts/Makefile.am
+===================================================================
+--- scripts/Makefile.am	(revision 1484)
++++ scripts/Makefile.am	(working copy)
+@@ -1,7 +1,7 @@
+ bin_SCRIPTS=xeno-config xeno-load xeno-test xeno-info
+ 
+ install-exec-local:
+-	@if test -r $(srcdir)/postinstall.sh; then \
++	@if test -r $(srcdir)/postinstall.sh ; then \
+ 	   echo "Running post-install script..." ;\
+ 	   $(srcdir)/postinstall.sh ; \
+ 	fi
+Index: src/skins/posix/Makefile.am
+===================================================================
+--- src/skins/posix/Makefile.am	(revision 1484)
++++ src/skins/posix/Makefile.am	(working copy)
+@@ -31,9 +31,9 @@
+ 	$(RM) $(DESTDIR)$(libdir)/posix.wrappers
+ 
+ install-exec-hook:
+-	for la in $(lib_LTLIBRARIES); do \
+-	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
+-	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	for la in $(lib_LTLIBRARIES) ; do \
++	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched ; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la ; \
+ 	done
+ 
+ EXTRA_DIST = posix.wrappers
+Index: src/skins/vrtx/Makefile.am
+===================================================================
+--- src/skins/vrtx/Makefile.am	(revision 1484)
++++ src/skins/vrtx/Makefile.am	(working copy)
+@@ -19,7 +19,7 @@
+ 	-I$(top_srcdir)/include
+ 
+ install-exec-hook:
+-	for la in $(lib_LTLIBRARIES); do \
+-	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
+-	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	for la in $(lib_LTLIBRARIES) ; do \
++	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched ; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la ; \
+ 	done
+Index: src/skins/vxworks/Makefile.am
+===================================================================
+--- src/skins/vxworks/Makefile.am	(revision 1484)
++++ src/skins/vxworks/Makefile.am	(working copy)
+@@ -20,7 +20,7 @@
+ 	-I$(top_srcdir)/include
+ 
+ install-exec-hook:
+-	for la in $(lib_LTLIBRARIES); do \
+-	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
+-	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	for la in $(lib_LTLIBRARIES) ; do \
++	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched ; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la ; \
+ 	done
+Index: src/skins/native/Makefile.am
+===================================================================
+--- src/skins/native/Makefile.am	(revision 1484)
++++ src/skins/native/Makefile.am	(working copy)
+@@ -22,7 +22,7 @@
+ 	-I$(top_srcdir)/include
+ 
+ install-exec-hook:
+-	for la in $(lib_LTLIBRARIES); do \
+-	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
+-	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	for la in $(lib_LTLIBRARIES) ; do \
++	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched ; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la ; \
+ 	done
+Index: src/skins/rtdm/Makefile.am
+===================================================================
+--- src/skins/rtdm/Makefile.am	(revision 1484)
++++ src/skins/rtdm/Makefile.am	(working copy)
+@@ -11,7 +11,7 @@
+ 	-I$(top_srcdir)/include
+ 
+ install-exec-hook:
+-	for la in $(lib_LTLIBRARIES); do \
+-	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched; \
+-	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la; \
++	for la in $(lib_LTLIBRARIES) ; do \
++	    sed -e 's/shouldnotlink=yes/shouldnotlink=no/' $(DESTDIR)$(libdir)/$$la > $(DESTDIR)$(libdir)/$$la.patched ; \
++	    mv $(DESTDIR)$(libdir)/$$la.patched $(DESTDIR)$(libdir)/$$la ; \
+ 	done
+Index: sim/configure.in
+===================================================================
+--- sim/configure.in	(revision 1484)
++++ sim/configure.in	(working copy)
+@@ -45,7 +45,7 @@
+ AC_PROG_LIBTOOL
+ AM_PROG_LEX
+ 
+-if test \! -r $srcdir/../ksrc/nucleus; then
++if test \! -r $srcdir/../ksrc/nucleus ; then
+     AC_MSG_ERROR([Missing Xenomai source tree in parent directory])
+ fi
+ 
+@@ -107,15 +107,15 @@
+ 	CONFIG_XENO_MVM_GCC_TARBALL="$withval"
+     ])
+ 
+-if test x$CONFIG_XENO_MVM_GCC_TARBALL = x; then
++if test x$CONFIG_XENO_MVM_GCC_TARBALL = x ; then
+    CONFIG_XENO_MVM_GCC_TARBALL="/tmp/gcc-2.95.3.tar.bz2"
+ fi
+ 
+-if test \! -r $prefix/libexec/gcic/.gcic-installed; then
+-   if test \! -r "${CONFIG_XENO_MVM_GCC_TARBALL}"; then
++if test \! -r $prefix/libexec/gcic/.gcic-installed ; then
++   if test \! -r "${CONFIG_XENO_MVM_GCC_TARBALL}" ; then
+       dnl We are going to need the source GCC tarball to build the
+       dnl instrumenter and we cannot find it: this is bad news.
+-      if test x$CONFIG_XENO_MVM_GCC_TARBALL = x; then
++      if test x$CONFIG_XENO_MVM_GCC_TARBALL = x ; then
+          AC_MSG_RESULT([unspecified (use --with-gcc-tarball to specify one)])
+       else
+          AC_MSG_RESULT([not found at $CONFIG_XENO_MVM_GCC_TARBALL])
+@@ -316,17 +316,17 @@
+ )
+ MVM_LDADD=
+ AC_CHECK_LIB(elf, elf_begin,
+-	[MVM_LDADD="$MVM_LDADD -lelf"; AC_DEFINE(HAVE_LIBELF,1,[config])],
++	[MVM_LDADD="$MVM_LDADD -lelf" ; AC_DEFINE(HAVE_LIBELF,1,[config])],
+ 	AC_MSG_ERROR([Cannot find libelf (development version) on this system])
+ )
+ AC_CHECK_LIB(dl, dlopen,
+-	[MVM_LDADD="$MVM_LDADD -ldl"; AC_DEFINE(HAVE_LIBDL,1,[config])]
++	[MVM_LDADD="$MVM_LDADD -ldl" ; AC_DEFINE(HAVE_LIBDL,1,[config])]
+ )
+ AC_CHECK_LIB(nsl, gethostbyname,
+-	[MVM_LDADD="$MVM_LDADD -lnsl"; AC_DEFINE(HAVE_LIBNSL,1,[config])]
++	[MVM_LDADD="$MVM_LDADD -lnsl" ; AC_DEFINE(HAVE_LIBNSL,1,[config])]
+ )
+ AC_CHECK_LIB(socket, connect,
+-	[MVM_LDADD="$MVM_LDADD -lsocket"; AC_DEFINE(HAVE_LIBSOCKET,1,[config])]
++	[MVM_LDADD="$MVM_LDADD -lsocket" ; AC_DEFINE(HAVE_LIBSOCKET,1,[config])]
+ )
+ AC_CHECK_LIB(png, png_read_init, [LIBPNG_OK=1],
+ 	AC_MSG_ERROR([Cannot find libpng (development version) on this system])
+Index: sim/gcic/Makefile.am
+===================================================================
+--- sim/gcic/Makefile.am	(revision 1484)
++++ sim/gcic/Makefile.am	(working copy)
+@@ -14,7 +14,7 @@
+ 
+ GCCTOP=$(shell basename @MVM_GCC_TARBALL@ | sed -e 's,^\(.*\)\.tar.*,\1,')
+ GCCVER=$(shell basename @MVM_GCC_TARBALL@ | sed -e 's,gcc-\(.*\)\.tar.*,\1,g')
+-GCCDEP=$(shell test -r $(libexecdir)/gcic/.gcic-installed || echo $(libexecdir)/gcic/.gcic-installed)
++GCCDEP=$(shell test -r $(libexecdir)/gcic/.gcic-installed || echo "$(libexecdir)/gcic/.gcic-installed")
+ 
+ all-local: $(GCCDEP)
+ 
+@@ -31,7 +31,7 @@
+ 	$(srcdir)/gcc-$(GCCVER).patch && touch $@
+ 
+ gcc-build/.gcic-configured: $(GCCTOP)/.gcic-patched $(top_builddir)/config.status
+-	@( $(RM) -Rf gcc-build; mkdir gcc-build && cd gcc-build && \
++	@( $(RM) -Rf gcc-build ; mkdir gcc-build && cd gcc-build && \
+ 	LC_ALL=C CC=$(CC) ../$(GCCTOP)/configure --prefix=$(libexecdir)/gcic \
+ 	--with-gnu-ld --with-gnu-as && cd .. ) && touch $@
+ 
+Index: doc/Makefile.am
+===================================================================
+--- doc/Makefile.am	(revision 1484)
++++ doc/Makefile.am	(working copy)
+@@ -3,10 +3,10 @@
+ GENERATE_DOC=$(top_srcdir)/scripts/maint/generate-doc
+ 
+ generate-doc:
+-	@if test \! -e $(GENERATE_DOC) -o \! -e $(srcdir)/.svn; then \
+-		echo $@ may only be run from a SVN working copy.; \
++	@if test \! -e $(GENERATE_DOC) -o \! -e $(srcdir)/.svn ; then \
++		echo "$@ may only be run from a SVN working copy." ; \
+ 	else \
+-		srcdir=$(srcdir) $(GENERATE_DOC); \
++		srcdir=$(srcdir) $(GENERATE_DOC) ; \
+ 	fi
+ 
+ dist-hook:
+Index: doc/doxygen/Makefile.am
+===================================================================
+--- doc/doxygen/Makefile.am	(revision 1484)
++++ doc/doxygen/Makefile.am	(working copy)
+@@ -17,8 +17,8 @@
+ 	$(DOXYGEN) $(DOXYDOC_OPTS)
+ 
+ distclean-local:
+-	for dir in $(HTML_DOCS); do \
+-	    if test -d $$dir; then $(RM) -R $$dir; fi; \
++	for dir in $(HTML_DOCS) ; do \
++	    if test -d $$dir ; then $(RM) -R $$dir ; fi ; \
+ 	done
+ 
+ .PHONY: doxygen-api
+Index: Makefile.am
+===================================================================
+--- Makefile.am	(revision 1484)
++++ Makefile.am	(working copy)
+@@ -13,38 +13,38 @@
+ 
+ dev devices:
+ 	@if test x`id -u` = x0; then \
+-           sudo=; \
+-        else if test \! "x`type $(SUDO)`" = x; then \
+-           echo "sudo found (sudo is $(SUDO)), testing it..."; \
++           sudo= ; \
++        else if test \! "x`type $(SUDO)`" = x ; then \
++           echo "sudo found (sudo is $(SUDO)), testing it..." ; \
+            $(SUDO) true && sudo="$(SUDO)" || { \
+ echo '*** Warning: you are not super-user and sudo does not work, real-time\
+-devices'; \
+-echo '*** nodes will not be created.'; \
++devices' ; \
++echo '*** nodes will not be created.' ; \
+ echo '*** If you do not create these devices by hand, Xenomai test programs\
+-will not'; \
+-echo '*** work.'; \
+-echo '*** To create these devices please run "make devices" with super-user'; \
+-echo '*** privileges.'; \
+-             exit 0; }; \
+-           echo sudo is working.; \
+-           fi; \
+-        fi; \
+-        if test -r $(DESTDIR)/etc/udev/udev.rules; then \
+-           for f in $(srcdir)/ksrc/nucleus/udev/*.rules; do \
++will not' ; \
++echo '*** work.' ; \
++echo '*** To create these devices please run "make devices" with super-user' ; \
++echo '*** privileges.' ; \
++             exit 0 ; } ; \
++           echo 'sudo is working.' ; \
++           fi ; \
++        fi ; \
++        if test -r $(DESTDIR)/etc/udev/udev.rules ; then \
++           for f in $(srcdir)/ksrc/nucleus/udev/*.rules ; do \
+            b=`basename $$f` ; \
+            grep -q Xenomai:`basename $$b .rules` $(DESTDIR)/etc/udev/udev.rules || \
+-           $$sudo sh -c "( echo ; cat $$f ) >> $(DESTDIR)/etc/udev/udev.rules"; \
+-           done; \
+-	fi; \
+-        $(mkinstalldirs) $(DESTDIR)/dev; \
+-	for n in `seq 0 31`; do \
+-           f="$(DESTDIR)/dev/rtp$$n"; \
+-           if test \! -c $$f; then \
+-              $$sudo mknod -m 666 $$f c 150 $$n; \
+-           fi; \
++           $$sudo sh -c "( echo ; cat $$f ) >> $(DESTDIR)/etc/udev/udev.rules" ; \
++           done ; \
++	fi ; \
++        $(mkinstalldirs) $(DESTDIR)/dev ; \
++	for n in `seq 0 31` ; do \
++           f="$(DESTDIR)/dev/rtp$$n" ; \
++           if test \! -c $$f ; then \
++              $$sudo mknod -m 666 $$f c 150 $$n ; \
++           fi ; \
+         done ; \
+-        if test \! -c $(DESTDIR)/dev/rtheap; then \
+-          $$sudo mknod -m 666 $(DESTDIR)/dev/rtheap c 10 254; \
++        if test \! -c $(DESTDIR)/dev/rtheap ; then \
++          $$sudo mknod -m 666 $(DESTDIR)/dev/rtheap c 10 254 ; \
+         fi
+ 
+ install-exec-local: devices
+@@ -88,9 +88,9 @@
+ .PHONY: FORCE
+ 
+ linux/install: linux/all
+-	@targets=modules_install; \
++	@targets=modules_install ; \
+ 	sudo=; if test x`id -u` != x0 && test \! "x`type $(SUDO)`" = x && \
+-	$(SUDO) true; then sudo=$(SUDO); targets="$$targets install"; fi && \
++	$(SUDO) true ; then sudo=$(SUDO) ; targets="$$targets install" ; fi && \
+ 	$(mkinstalldirs) $(DESTDIR) && \
+ 	$$sudo $(mkinstalldirs) $(DESTDIR)/boot && \
+ 	cross=`expr $(CC) : '\(.*\)gcc' || :` && \
+@@ -103,7 +103,7 @@
+ # installation target that simply copy the kernel image and System.map.
+ linux/install_image: linux/all
+ 	sudo=; if test x`id -u` != x0 && test \! "x`type $(SUDO)`" = x && \
+-	$(SUDO) true; then sudo=$(SUDO); fi && \
++	$(SUDO) true ; then sudo=$(SUDO) ; fi && \
+ 	$(mkinstalldirs) $(DESTDIR) && \
+ 	$$sudo $(mkinstalldirs) $(DESTDIR)/boot && \
+ 	cross=`expr $(CC) : '\(.*\)gcc' || :` && \
+@@ -114,8 +114,8 @@
+ 
+ distclean-linux:
+ 	@test -e linux/.config && \
+-		mv linux/.config linux/.config.saved.xenomai; \
+-	$(MAKE) linux/distclean; \
++		mv linux/.config linux/.config.saved.xenomai ; \
++	$(MAKE) linux/distclean ; \
+ 	test -e linux/.config.saved.xenomai && \
+ 		mv linux/.config.saved.xenomai linux/.config
+ 
 
---------------030502040800080603030002--
+--Boundary-00=_P8J7EUB/CabegmV--
 
