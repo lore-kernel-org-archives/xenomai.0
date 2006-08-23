@@ -1,13 +1,15 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Wed, 23 Aug 2006 20:58:35 +0200
+Message-ID: <44ECB145.7030409@domain.hid>
+Date: Wed, 23 Aug 2006 21:49:25 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200608232058.36523.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Problems building RTnet
-Reply-To: niklaus.giger@domain.hid
+Subject: Re: [Xenomai-core] [PATCH] Various fixes and improvements
+	for	RT-Socket-CAN
+References: <44EC9E02.3090201@domain.hid>
+In-Reply-To: <44EC9E02.3090201@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig13DC24D0EF1B2F991853ABF7"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,38 +19,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig13DC24D0EF1B2F991853ABF7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Since a few hours RTnet cannot even be configured, as the Xenomai version got
-bumped to 2.3-devel. See
-http://ngiger.dyndns.org/buildbot/tqm860/builds/8/step-cfg_RTnet/0
-Where it says:
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> attached is a patch for the RT-Socket-CAN RTDM driver providing:
+>=20
+>   * ksrc/drivers/can/rtcan_dev.c, ksrc/drivers/can/rtcan_dev.h,
+>   ksrc/drivers/can/rtcan_modules.c: Suppress handling of refcount
+>   if module support is not enabled or modules cannot be unloaded.
+>=20
+>   * ksrc/drivers/can/mscan/rtcan_mscan.c,
+>   ksrc/drivers/can/mscan/rtcan_mscan_proc.c,
+>   ksrc/drivers/can/mscan/rtcan_mscan_regs.h: Make the MSCAN driver
+>   work on Linux 2.6. We now use our own set of MSCAN register
+>   definitions because they differ between 2.4 and 2.6 (prefix).
+>=20
+>   * scripts/Modules.frag: bug fix for making PEAK device drivers.
+>=20
+> Note that it adds the file ksrc/drivers/can/mscan/rtcan_mscan_regs.h !
+>=20
 
-checking for Xenomai version... configure: error: *** Unsupported Xenomai 
-version 2.3-devel in /var/buildbot/slave/tqm860/linux
+Applied.
 
-This morning the buildbot complained like the following:
-powerpc-860-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I. -I../../../config   -g -I. -I/usr/xenomai/include -g -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -pipe -I../../../stack/include -I../../../stack/include -g -MT 
-rtnet_ifs.o -MD -MP -MF ".deps/rtnet_ifs.Tpo" -c -o rtnet_ifs.o rtnet_ifs.c; 
-\
-        then mv -f ".deps/rtnet_ifs.Tpo" ".deps/rtnet_ifs.Po"; else 
-rm -f ".deps/rtnet_ifs.Tpo"; exit 1; fi
-In file included from rtnet_ifs.c:31:
-../../../stack/include/rtnet.h:29:23: rtdm/rtdm.h: No such file or directory
-rtnet_ifs.c: In function `main':
-rtnet_ifs.c:51: warning: implicit declaration of function `rt_dev_socket'
-rtnet_ifs.c:61: warning: implicit declaration of function `rt_dev_ioctl'
-rtnet_ifs.c:61: error: `SIOCGIFCONF' undeclared (first use in this function)
-rtnet_ifs.c:61: error: (Each undeclared identifier is reported only once
-rtnet_ifs.c:61: error: for each function it appears in.)
-rtnet_ifs.c:63: warning: implicit declaration of function `rt_dev_close'
-rtnet_ifs.c:73: error: `SIOCGIFFLAGS' undeclared (first use in this function)
-rtnet_ifs.c:83: error: `SIOCGIFINDEX' undeclared (first use in this function)
-make[4]: *** [rtnet_ifs.o] Fehler 1
+Thanks,
+Jan
 
-Best regards
--- 
-Niklaus Giger
+
+--------------enig13DC24D0EF1B2F991853ABF7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE7LFFniDOoMHTA+kRAnQLAJ4lYpHNOtfwqTRsp+KIFHH9uTI4sgCfSpKz
+EtW17mdTqNvT5NgHgzgEqLo=
+=Y9sM
+-----END PGP SIGNATURE-----
+
+--------------enig13DC24D0EF1B2F991853ABF7--
 
