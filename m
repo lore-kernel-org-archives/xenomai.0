@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17644.42025.91539.33163@domain.hid>
-Date: Wed, 23 Aug 2006 20:53:29 +0200
 Subject: Re: [Xenomai-core] [PATCH] semicolon delimiters & quotes
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <200608231931.43452.paul_c@domain.hid>
 References: <200608231931.43452.paul_c@domain.hid>
+Content-Type: text/plain
+Date: Wed, 23 Aug 2006 20:53:54 +0200
+Message-Id: <1156359235.4401.45.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,25 +20,28 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Paul <paul_c@domain.hid>
 Cc: xenomai@xenomai.org
 
-Paul wrote:
- > 
- > Hi Folks
- > 
- > Having found a problem with another project where semicolons in a few make 
- > targets were causing the shell to barf, I grepped xenomai trunk for similar 
- > problems. In doing so, I also spotted a few echos where the text wasn't 
- > quoted - A sure fire problem should anyone run the offending rule.
- > 
- > Small patch attached.
+On Wed, 2006-08-23 at 19:31 +0100, Paul wrote:
+> Hi Folks
+> 
+> Having found a problem with another project where semicolons in a few make 
+> targets were causing the shell to barf, I grepped xenomai trunk for similar 
+> problems. In doing so, I also spotted a few echos where the text wasn't 
+> quoted - A sure fire problem should anyone run the offending rule.
+> 
+> Small patch attached.
+> 
 
-Could you tell us a bit more about the errors you had on the other
-project ? I never got any error when sticking the semicolon to the last
-shell line token. I also read the portable shell rules in autobook and
-do not find any mention to such a problem. As for quoting the arguments
-of echo, I am pretty sure that it is not needed.
+Builds fine. Applied, thanks.
 
+> 
+> Regards, Paul.
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
