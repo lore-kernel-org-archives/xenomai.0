@@ -1,13 +1,15 @@
-Message-ID: <44EC9C4C.1040806@domain.hid>
-Date: Wed, 23 Aug 2006 20:19:56 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <75975c320608231300t30cf5e69u7a629887d9163e40@domain.hid>
+Date: Wed, 23 Aug 2006 16:00:47 -0400
+From: "Paul Ianna" <paulianna2002@domain.hid>
+Subject: Re: [Xenomai-help] primary mode versus secondary mode
+In-Reply-To: <1156192960.4321.70.camel@domain.hid>
 MIME-Version: 1.0
-References: <DD39B5C3F4963040ADC9768BE7E430CB01081D6B@is-hdq-exchange.marel.net>	<44EC8B62.8020306@domain.hid>	<44EC8EAB.8010201@domain.hid>
-	<44EC976E.4000601@domain.hid>
-In-Reply-To: <44EC976E.4000601@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Re: [Socketcan-users] Select on a RTCAN socket
+Content-Disposition: inline
+References: <75975c320608211235l79dfb17ft54df1018e7f597ff@domain.hid>
+	<75975c320608211321u5b2d9e45nfb078e9ed4d8b617@domain.hid>
+	<1156192960.4321.70.camel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,54 +19,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
-Cc: Haukur Hafsteinsson <haukur@domain.hid>, socketcan-users@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>, Daniel Schnell <danielsch@domain.hid>
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Jan Kiszka wrote:
->> Hi all,
->>
->> Wolfgang Grandegger wrote:
->>> Hi Daniel,
->>>
->>> Daniel Schnell wrote:
->>>> Hi,
->>>>
->>>>  
->>>>
->>>> I wanted to use select() on a socket to find out how many messages are 
->>>> available. I have opened this socket to access the RTCAN sockets under 
->>>> Xenomai. According to /usr/xenomai/lib/posix.wrappers select is not 
->>>> "supported" by the realtime kernel. Accordingly it doesn't work. If i 
->>>> start the according task under SCHED_FIFO, the task simply hangs when 
->>>> initiating select(), in SCHED_OTHER it is simply returning: bad file 
->>>> descriptor.
->>> select is not supported and cannot be used, indeed.
->> And select is tricky to provide under hard-RT constraints.
->>
->>>> Any ideas ? Is there any other way to find out, how many messages are 
->>>> waiting ?
->>> Select returns the sockets which have data but it does not tell you how 
->>> many messages are waiting. You could use separate threads to read from 
->>> sockets.
->>>
->>> BTW: this mail is off-topic on the socketcan MLs.
->> Mmh, do you mean it the other way around?
-> 
-> Well, I think this is a RTDM/Xenomai related questions and sending it to 
-> xenomai-help is OK. CAN related questions should go to the 
-> socketcan-users maling-list. Am I wrong?
-> 
->> Anyway, is there a mechanism of the standard socket API the obtain the
->> current incoming queue length? Don't think so actually, but it wouldn't
->> be the first time I'm blind.
-> 
-> Not that I know of. For normal file I/O I remember vague some ioctl() or 
-> fnctl(). Does POSIX define a function for this purpose?
+On 8/21/06, Philippe Gerum <rpm@xenomai.org> wrote:
+> Also have a look at /proc/xenomai/stats when your application runs, the
+> MSW field (i.e. Mode SWitches) counts the number of transitions for each
+> Xenomai thread. This value should not increase over time, at least for
+> latency critical threads.
 
-Got it! In Linux it can be done with ioctl FIONREAD, which returns the 
-number of bytes that are immediately available to be read on a file 
-descriptor. It could be implemented, if useful.
+Thanks Philippe, very useful.
 
-Wolfgang.
+Could you also explain the CSW, PF, and STAT fields?
+
+Thanks,
+Paul
 
