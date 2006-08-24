@@ -1,14 +1,13 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Thu, 24 Aug 2006 07:31:38 +0200
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] ndiswrapper fails to 'ifup' on ipipe-1.3.10
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44ECCA1E.1010707@domain.hid>
+References: <44ECCA1E.1010707@domain.hid>
+Content-Type: text/plain
+Date: Thu, 24 Aug 2006 09:07:12 +0200
+Message-Id: <1156403232.4832.7.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200608240731.39283.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Buildbot reorgnized and will get prettier in the
-	future
-Reply-To: niklaus.giger@domain.hid
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,41 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi everybody
+On Wed, 2006-08-23 at 15:35 -0600, Jim Cromie wrote:
+> any off-hand guesses as to what might have caused this ?
+> ndiswrapper-1.x has worked fine with 1.3.9 and previous.
+> 
 
-I invested quite a few hours to clean up my buildbot setup, as there
-were a lot of hacks going into it during the last few months 
-which had reduced considerably its readability.
+Anything in dmesg?
 
-The changes are now:
-- Work based on the Debian package 0.7.3 of buildbot
-- Documentation reworked/completed. It may be downloaded from:
-  http://ngiger.dyndns.org/xenomai-data/xeno_buildbot.pdf
-- master.cfg reworked
-   - clearer parameter passing to subscripts
-   - prepared for debugging (simple way to skip steps, handy
-     if only the last script of a 1 hour compilation run fails)
-   - merged hacks for RTnet, DENX-2.4 kernel into xenoSteps procedure
-- scripts reworked, install*.sh merged into a single ruby script install.rb
-- Some work as I would like to make the installation directory may be
-  specified per through /path/buitbot/slave/<builder>/instDef.rb and no
-  more in master.cfg (using installPattern). At the moment both must match.
-
-As always the whole buildbot documentation and all scripts (except some
-which contain passwords) may be downloaded from:
-http://ngiger.dyndns.org/svn/admin/hcu3_linux/doc/buildbot/
-
-Yesterday builbot 0.7.4 was released. I will try to switch to it and add the 
-following improvements:
-- cleaning up installPattern in master.cfg
-- Prettier HTML output using a CSS.
-- Adding a readable HTML output of the simulator errors
-- May be use Debian init.d script to start/stop the daemons
-
-Best regards
-
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
-Niklaus Giger
+Philippe.
+
+
 
