@@ -1,12 +1,15 @@
-Message-ID: <44ED56C0.2030904@domain.hid>
-Date: Thu, 24 Aug 2006 01:35:28 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] semicolon delimiters & quotes
+Date: Thu, 24 Aug 2006 09:29:37 +0100
+References: <200608231931.43452.paul_c@domain.hid>
+	<17644.42025.91539.33163@domain.hid>
+In-Reply-To: <17644.42025.91539.33163@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] ndiswrapper fails to 'ifup' on ipipe-1.3.10
-References: <44ECCA1E.1010707@domain.hid> <1156403232.4832.7.camel@domain.hid>
-In-Reply-To: <1156403232.4832.7.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200608240929.37774.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,26 +19,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2006-08-23 at 15:35 -0600, Jim Cromie wrote:
->   
->> any off-hand guesses as to what might have caused this ?
->> ndiswrapper-1.x has worked fine with 1.3.9 and previous.
->>
->>     
->
-> Anything in dmesg?
->   
 
-Oops.  I tried and failed with 1.24rc1, then backed up to working 1.23, 
-which failed.
-Bonehead probly forgot to rmmod before re ifup'g it. :-}
+Hi Gilles
 
-1.23 works fine here, on ipipe-1.3.10.  Ill do a debug build of ndiswrapper,
-and see what it shows me.
+On Wednesday 23 August 2006 19:53, Gilles Chanteperdrix wrote:
+> I never got any error when sticking the semicolon to the last
+> shell line token. I also read the portable shell rules in autobook and
+> do not find any mention to such a problem. As for quoting the arguments
+> of echo, I am pretty sure that it is not needed.
 
-Sorry for the noise.
+You are of course correct on both counts - I got in to the habit of quoting 
+echos (cedit's syntax highlighter would pick up on them) and placing 
+whitespaces either side of semicolons.. If nothing else, it makes the files a 
+little easier to read.
+
+
+Regards, Paul.
+
 
