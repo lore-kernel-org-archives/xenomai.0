@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [bug] broken PI-chain
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44F00125.40103@domain.hid>
-References: <44EF2BA6.9040601@domain.hid>  <1156530834.4338.42.camel@domain.hid>
-	<1156550618.4338.74.camel@domain.hid>  <44F00125.40103@domain.hid>
-Content-Type: text/plain
-Date: Sat, 26 Aug 2006 10:44:21 +0200
-Message-Id: <1156581861.4730.14.camel@domain.hid>
-Mime-Version: 1.0
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 26 Aug 2006 11:33:36 +0200
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200608261133.36605.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Buildbot: Small glitch in simulator
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,30 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Sat, 2006-08-26 at 10:07 +0200, Jan Kiszka wrote:
+Hi
 
-[...]
+http://ngiger.dyndns.org/buildbot/sim/builds/18/step-check_sim/0
+reports a small error in the simulator.
 
-> Patch works fine for me.
-> 
-> But I still wonder what the idea is to officially claim a resource (i.e.
-> add yourself to the claim queue) only when you boost. That doesn't seem
-> to be intuitive. Isn't a thread always claiming the resource,
-> independent of its prio delta?
-
-Well, in this context, "claimed" is supposed to mean "actively required"
-so that the current owner is paying attention to the waiter(s) needing
-the resource, by undergoing a priority boost. When there is no risk of
-priority inversion, the waiter is more "passive", it just sleeps without
-changing anything else than its own state. In the logic I've used, what
-you refer to is the "pendq" any waiter is linked to, regardless of its
-priority delta with the current owner.
+>Some problems were reported in:
+>posix->tmq:: starting POSIX services.
+>vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2003); got 
+>SEQ("Test2",2004)
+>vxworks->t010823-2: t010823-2.c:166, test finished: 1 failures/ 33 tests
+>program finished with exit code 3
 
 -- 
-Philippe.
-
-
+Niklaus Giger
 
