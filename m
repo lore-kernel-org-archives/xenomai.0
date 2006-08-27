@@ -1,15 +1,16 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <44F19754.6040808@domain.hid>
+Date: Sun, 27 Aug 2006 15:00:04 +0200
+From: Steve Kreyer <steve.kreyer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17649.37187.585271.837835@domain.hid>
-Date: Sun, 27 Aug 2006 14:34:11 +0200
 Subject: Re: [Xenomai-help] Timer problems?
-In-Reply-To: <1156680494.4325.68.camel@domain.hid>
 References: <1903864415@domain.hid> <1154964748.4322.31.camel@domain.hid>
 	<44EF17E8.5040606@domain.hid> <44EF37BE.70207@domain.hid>
 	<44F0B06B.6050102@domain.hid> <44F17616.9080701@domain.hid>
-	<1156680494.4325.68.camel@domain.hid>
+	<44F196A0.2030006@domain.hid>
+In-Reply-To: <44F196A0.2030006@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Sender: steve.kreyer@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,17 +20,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > - It is automatically solved by Xenomai over Linux 2.4, and should be
- > solved by disabling CONFIG_VT entirely over Linux 2.6 for configurations
+Hi,
 
-Disabling PC speaker is not enough to avoid the conflict on 2.6 ?
+Jan Kiszka wrote:
+>> ...but you have configured your processor to be from the pre-Pentium era
+>> (CONFIG_M586). Suboptimal because TSC support is disabled, TSC emulation
+>> is enabled.
+>>
+>> Moreover, and that's likely another reason for troubles here, you have
+>> CONFIG_VT on. This normally unproblematic features collides with the TSC
+>> emulation of Xenomai. SVN head warns you about this conflict, 2.2 not
+>> yet. Solution: pick a more appropriate processor type.
+>>   
+this was the point... I have now recompiled the kernel with an updated 
+version and set the processor type option to "pentium 4",
+and now the tsc work like expected...
 
--- 
+You guys helped me to get out from big trouble :) Thank you!
 
-
-					    Gilles Chanteperdrix.
+Regards,
+Steve
 
