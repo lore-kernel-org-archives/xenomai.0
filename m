@@ -1,13 +1,12 @@
-Message-ID: <44F49A6C.5050603@domain.hid>
-Date: Tue, 29 Aug 2006 21:50:04 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
+Date: Tue, 29 Aug 2006 22:34:13 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <44F49A6C.5050603@domain.hid>
 MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14177_5383211.1156883653639"
 References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
-In-Reply-To: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6CFEA5D10F33B3CABA284E66"
-Sender: jan.kiszka@domain.hid
+	<44F49A6C.5050603@domain.hid>
 Subject: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,95 +17,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6CFEA5D10F33B3CABA284E66
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+------=_Part_14177_5383211.1156883653639
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Dmitry Adamushko wrote:
-> Hello,
->=20
-> Jan has rised this question initially and I was struggling last week to=
- get
-> his request eventually done :)
->=20
-> The main idea is to prevent system lockups when the cross domain IRQ
-> sharing
-> isn't properly used (there were a number of reports recently).
->=20
-> So here is an initial patch as well as some related critics (yep, I
-> critisize my own patch).
->=20
-> I tend to think now :
->=20
-> 1) "unhandled" is not necessary indeed (do we need chasing "spurious"
-> interrupts the way Linux does it? i.e. it disables the line only after =
-a
-> number of consequently unhandled interrupts > SOME_LIMIT);
->=20
-> 2) XN_ISR_NONE --> should _not_ imply that the line gets re-enabled.
->=20
-> XN_ISR_HANDLED -- implies it, that's ok.
->=20
-> But XN_ISR_NONE (all ISRs in case of a shared RT line) should really me=
-an
-> "something strange happens" and it can be :
->=20
-> o  either a spurious interrupt;
->=20
-> o  something is "sitting" on the same line in the linux domain. ISR sho=
-uld
-> have returned XN_ISR_PROPAGATE in this case.
->=20
->=20
-> That said, if we are not interested in chasing "spurious" interrupts th=
-e
-> linux way, then this patch could be highly simplified to just adding th=
-e
-> following check in all nucleus ISR handlers.
->=20
-> +       if (unlikely(s =3D=3D XN_ISR_NONE)) {
-> +               xnlogerr("xnintr_check_status: %d of unhandled conseque=
-nt
-> interrupts. "
-> +                       "Disabling the IRQ line #%d\n",
-> +                       XNINTR_MAX_UNHANDLED, irq);
-> +               s |=3D XN_ISR_NOENABLE;
-> +       }
->=20
-> I tend to think this would be nicer?
->=20
+On 29/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Dmitry Adamushko wrote:
+>
+> I think the additional costs of maintaining an error counter are almost
+> negligible. The test is in the unlikely path, and the first condition
+> already keeps us away from touching the counter.
 
-I think the additional costs of maintaining an error counter are almost
-negligible. The test is in the unlikely path, and the first condition
-already keeps us away from touching the counter. The benefit of not
-kicking out IRQ lines on spurious IRQs is obvious (think of EMC issues,
-though one should better solve them on the board...).
+
+But it's updated (unhandled = 0) any time the ISR(s) report something
+different from XN_ISR_NONE.  Hence, it's at the beginning of the xnintr_t
+structure, hopefully, at the same cache line with other highly-used members
+(i.e. isr, cookie and hits).
+
+
+The benefit of not
+> kicking out IRQ lines on spurious IRQs is obvious (think of EMC issues,
+> though one should better solve them on the board...).
+
+
+Yep, that's why I'm asking whether we really need it or no. If a scenario
+when "spurious" interrupts indeed happen from time to time and a minor
+number of them (consequently) is not something completely unacceptable, then
+we might keep this "unhandled" counter. Here I don't have enough practical
+experience/evidence and may only rely on the linux way (damn, now I
+understand why they advised people not to read windows kernel code :)
+
 
 BTW, is there a difference between unlikely(a && b) and unlikely(a) &&
-unlikely(b) that we should care about here?
-
-Patch looks good to me.
-
-Jan
+> unlikely(b) that we should care about here?
 
 
---------------enig6CFEA5D10F33B3CABA284E66
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I had it also in mind and grepped use cases of "unlikely" in kernel/
+directory. There are a number of unlikely (a op. b) but none of unlikely(a)
+op. unlikely (b).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Out of curiosity, one may disassemble code for both cases. My feeling
+though, unlikely(a && b) is at least not worse (cpu and compiler-wise) but
+don't want to speculate as I'm quite uneducated bozo here :)
 
-iD8DBQFE9JpsniDOoMHTA+kRAluVAJ9LdLw4LNv3gPDPqLV2AA+Adm/R1gCffy01
-ramUGodAn2N7L9K6MZnIYbQ=
-=+lPx
------END PGP SIGNATURE-----
 
---------------enig6CFEA5D10F33B3CABA284E66--
+
+> Jan
+>
+>
+
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_14177_5383211.1156883653639
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br><div><span class="gmail_quote">On 29/08/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Dmitry Adamushko wrote:<br><br>I think the additional costs of maintaining an error counter are almost<br>negligible. The test is in the unlikely path, and the first condition<br>already keeps us away from touching the counter.
+</blockquote><div><br>
+But it's updated (unhandled = 0) any time the ISR(s) report something
+different from XN_ISR_NONE.&nbsp; Hence, it's at the beginning of the
+xnintr_t structure, hopefully, at the same cache line with other
+highly-used members (i.e. isr, cookie and hits).<br>
+&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"> The benefit of not<br>kicking out IRQ lines on spurious IRQs is obvious (think of EMC issues,
+<br>though one should better solve them on the board...).</blockquote><div><br>
+Yep, that's why I'm asking whether we really need it or no. If a
+scenario when &quot;spurious&quot; interrupts indeed happen from time to time and
+a minor number of them (consequently) is not something completely
+unacceptable, then we might keep this &quot;unhandled&quot; counter. Here I don't
+have enough practical experience/evidence and may only rely on the
+linux way (damn, now I understand why they advised people not to read
+windows kernel code :)<br>
+&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">BTW, is there a difference between unlikely(a &amp;&amp; b) and unlikely(a) &amp;&amp;
+<br>unlikely(b) that we should care about here?</blockquote><div><br>
+I had it also in mind and grepped use cases of &quot;unlikely&quot; in kernel/
+directory. There are a number of unlikely (a op. b) but none of
+unlikely(a) op. unlikely (b).<br>
+<br>
+Out of curiosity, one may disassemble code for both cases. My feeling
+though, unlikely(a &amp;&amp; b) is at least not worse (cpu and
+compiler-wise) but don't want to speculate as I'm quite uneducated bozo
+here :)<br>
+<br>
+<br>
+</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><br>Jan<br><br></blockquote></div><br><br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko
+<br>
+<br>
+
+
+------=_Part_14177_5383211.1156883653639--
 
