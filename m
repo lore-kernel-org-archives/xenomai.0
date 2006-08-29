@@ -1,12 +1,13 @@
-Message-ID: <b647ffbd0608291238q280847d1s53c94a1fc2a8a1e7@domain.hid>
-Date: Tue, 29 Aug 2006 21:38:56 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <44F496D7.60609@domain.hid>
+Message-ID: <44F49A6C.5050603@domain.hid>
+Date: Tue, 29 Aug 2006 21:50:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_13260_20310212.1156880336612"
 References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
-	<44F496D7.60609@domain.hid>
+In-Reply-To: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6CFEA5D10F33B3CABA284E66"
+Sender: jan.kiszka@domain.hid
 Subject: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,118 +18,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_13260_20310212.1156880336612
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_13261_4512526.1156880336612"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6CFEA5D10F33B3CABA284E66
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-------=_Part_13261_4512526.1156880336612
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Dmitry Adamushko wrote:
+> Hello,
+>=20
+> Jan has rised this question initially and I was struggling last week to=
+ get
+> his request eventually done :)
+>=20
+> The main idea is to prevent system lockups when the cross domain IRQ
+> sharing
+> isn't properly used (there were a number of reports recently).
+>=20
+> So here is an initial patch as well as some related critics (yep, I
+> critisize my own patch).
+>=20
+> I tend to think now :
+>=20
+> 1) "unhandled" is not necessary indeed (do we need chasing "spurious"
+> interrupts the way Linux does it? i.e. it disables the line only after =
+a
+> number of consequently unhandled interrupts > SOME_LIMIT);
+>=20
+> 2) XN_ISR_NONE --> should _not_ imply that the line gets re-enabled.
+>=20
+> XN_ISR_HANDLED -- implies it, that's ok.
+>=20
+> But XN_ISR_NONE (all ISRs in case of a shared RT line) should really me=
+an
+> "something strange happens" and it can be :
+>=20
+> o  either a spurious interrupt;
+>=20
+> o  something is "sitting" on the same line in the linux domain. ISR sho=
+uld
+> have returned XN_ISR_PROPAGATE in this case.
+>=20
+>=20
+> That said, if we are not interested in chasing "spurious" interrupts th=
+e
+> linux way, then this patch could be highly simplified to just adding th=
+e
+> following check in all nucleus ISR handlers.
+>=20
+> +       if (unlikely(s =3D=3D XN_ISR_NONE)) {
+> +               xnlogerr("xnintr_check_status: %d of unhandled conseque=
+nt
+> interrupts. "
+> +                       "Disabling the IRQ line #%d\n",
+> +                       XNINTR_MAX_UNHANDLED, irq);
+> +               s |=3D XN_ISR_NOENABLE;
+> +       }
+>=20
+> I tend to think this would be nicer?
+>=20
 
-> -ENOATTACHMENT (also a common issue...)
+I think the additional costs of maintaining an error counter are almost
+negligible. The test is in the unlikely path, and the first condition
+already keeps us away from touching the counter. The benefit of not
+kicking out IRQ lines on spurious IRQs is obvious (think of EMC issues,
+though one should better solve them on the board...).
 
+BTW, is there a difference between unlikely(a && b) and unlikely(a) &&
+unlikely(b) that we should care about here?
 
-now fixed.
-
+Patch looks good to me.
 
 Jan
->
->
 
--- 
-Best regards,
-Dmitry Adamushko
 
-------=_Part_13261_4512526.1156880336612
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+--------------enig6CFEA5D10F33B3CABA284E66
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<br>
-<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">-ENOATTACHMENT (also a common issue...)</blockquote><div><br>
-now fixed.<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br></blockquote></div><br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-------=_Part_13261_4512526.1156880336612--
+iD8DBQFE9JpsniDOoMHTA+kRAluVAJ9LdLw4LNv3gPDPqLV2AA+Adm/R1gCffy01
+ramUGodAn2N7L9K6MZnIYbQ=
+=+lPx
+-----END PGP SIGNATURE-----
 
-------=_Part_13260_20310212.1156880336612
-Content-Type: text/x-patch; name=spurious-irq-detect.patch; 
-	charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_ergqetl7
-Content-Disposition: attachment; filename="spurious-irq-detect.patch"
-
-ZGlmZiAtdXByIHhlbm9tYWktU1ZOL2luY2x1ZGUvbnVjbGV1cy9pbnRyLmggeGVub21haS9pbmNs
-dWRlL251Y2xldXMvaW50ci5oCi0tLSB4ZW5vbWFpLVNWTi9pbmNsdWRlL251Y2xldXMvaW50ci5o
-CTIwMDYtMDctMjAgMTE6MDk6MDEuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpL2luY2x1ZGUv
-bnVjbGV1cy9pbnRyLmgJMjAwNi0wOC0yOSAyMToyMDoxOS4wMDAwMDAwMDAgKzAyMDAKQEAgLTQz
-LDYgKzQzLDggQEAgdHlwZWRlZiBzdHJ1Y3QgeG5pbnRyIHsKIAogI2lmIGRlZmluZWQoQ09ORklH
-X1hFTk9fT1BUX1NISVJRX0xFVkVMKSB8fCBkZWZpbmVkKENPTkZJR19YRU5PX09QVF9TSElSUV9F
-REdFKQogICAgIHN0cnVjdCB4bmludHIgKm5leHQ7IC8qICE8IE5leHQgb2JqZWN0IGluIHRoZSBJ
-UlEtc2hhcmluZyBjaGFpbi4gKi8KKyNlbHNlCisgICAgdW5zaWduZWQgdW5oYW5kbGVkOwkvKiAh
-PCBOdW1iZXIgb2YgY29uc2VxdWVudCB1bmhhbmRsZWQgaW50ZXJydXB0cyAqLwogI2VuZGlmIC8q
-IENPTkZJR19YRU5PX09QVF9TSElSUV9MRVZFTCB8fCBDT05GSUdfWEVOT19PUFRfU0hJUlFfRURH
-RSAqLwogCiAgICAgeG5pc3JfdCBpc3I7CS8qICE8IEludGVycnVwdCBzZXJ2aWNlIHJvdXRpbmUu
-ICovCmRpZmYgLXVwciB4ZW5vbWFpLVNWTi9rc3JjL251Y2xldXMvaW50ci5jIHhlbm9tYWkva3Ny
-Yy9udWNsZXVzL2ludHIuYwotLS0geGVub21haS1TVk4va3NyYy9udWNsZXVzL2ludHIuYwkyMDA2
-LTA3LTIwIDEyOjM1OjQwLjAwMDAwMDAwMCArMDIwMAorKysgeGVub21haS9rc3JjL251Y2xldXMv
-aW50ci5jCTIwMDYtMDgtMjkgMjE6NTI6NDkuMDAwMDAwMDAwICswMjAwCkBAIC0xNTksNiArMTU5
-LDggQEAgaW50IHhuaW50cl9pbml0KHhuaW50cl90ICppbnRyLAogCWludHItPmZsYWdzID0gZmxh
-Z3M7CiAjaWYgZGVmaW5lZChDT05GSUdfWEVOT19PUFRfU0hJUlFfTEVWRUwpIHx8IGRlZmluZWQo
-Q09ORklHX1hFTk9fT1BUX1NISVJRX0VER0UpCiAJaW50ci0+bmV4dCA9IE5VTEw7CisjZWxzZQor
-CWludHItPnVuaGFuZGxlZCA9IDA7CiAjZW5kaWYgLyogQ09ORklHX1hFTk9fT1BUX1NISVJRX0xF
-VkVMIHx8IENPTkZJR19YRU5PX09QVF9TSElSUV9FREdFICovCiAKIAlyZXR1cm4gMDsKQEAgLTM3
-NCw2ICszNzYsNyBAQCB2b2lkIHhuaW50cl9jbG9ja19oYW5kbGVyKHZvaWQpCiAJeG5pbnRyX2ly
-cV9oYW5kbGVyKG5rY2xvY2suaXJxLCAmbmtjbG9jayk7CiB9CiAKKyNkZWZpbmUgWE5JTlRSX01B
-WF9VTkhBTkRMRUQJMTAwMAogLyoKICAqIExvdy1sZXZlbCBpbnRlcnJ1cHQgaGFuZGxlciBkaXNw
-YXRjaGluZyB0aGUgSVNScyAtLSBDYWxsZWQgd2l0aAogICogaW50ZXJydXB0cyBvZmYuCkBAIC0z
-OTMsNiArMzk2LDE0IEBAIHN0YXRpYyB2b2lkIHhuaW50cl9pcnFfaGFuZGxlcih1bnNpZ25lZCAK
-IAlzID0gaW50ci0+aXNyKGludHIpOwogCSsraW50ci0+aGl0czsKIAorCWlmICh1bmxpa2VseShz
-ID09IFhOX0lTUl9OT05FICYmICsraW50ci0+dW5oYW5kbGVkID09IFhOSU5UUl9NQVhfVU5IQU5E
-TEVEKSkgeworCQl4bmxvZ2VycigieG5pbnRyX2NoZWNrX3N0YXR1czogJWQgb2YgdW5oYW5kbGVk
-IGNvbnNlcXVlbnQgaW50ZXJydXB0cy4gIgorCQkJIkRpc2FibGluZyB0aGUgSVJRIGxpbmUgIyVk
-XG4iLAorCQkJWE5JTlRSX01BWF9VTkhBTkRMRUQsIGlycSk7CisJCXMgfD0gWE5fSVNSX05PRU5B
-QkxFOworCX0gZWxzZQorCQlpbnRyLT51bmhhbmRsZWQgPSAwOworCiAJaWYgKHMgJiBYTl9JU1Jf
-UFJPUEFHQVRFKQogCQl4bmFyY2hfY2hhaW5faXJxKGlycSk7CiAJZWxzZSBpZiAoIShzICYgWE5f
-SVNSX05PRU5BQkxFKSkKQEAgLTQyMiw2ICs0MzMsNyBAQCBzdGF0aWMgdm9pZCB4bmludHJfaXJx
-X2hhbmRsZXIodW5zaWduZWQgCiB0eXBlZGVmIHN0cnVjdCB4bmludHJfc2hpcnEgewogCiAJeG5p
-bnRyX3QgKmhhbmRsZXJzOworCWludCB1bmhhbmRsZWQ7CiAjaWZkZWYgQ09ORklHX1NNUAogCWF0
-b21pY19jb3VudGVyX3QgYWN0aXZlOwogI2VuZGlmCQkJCS8qIENPTkZJR19TTVAgKi8KQEAgLTQ4
-MiwxMiArNDk0LDIxIEBAIHN0YXRpYyB2b2lkIHhuaW50cl9zaGlycV9oYW5kbGVyKHVuc2lnbmUK
-IAlpbnRyID0gc2hpcnEtPmhhbmRsZXJzOwogCiAJd2hpbGUgKGludHIpIHsKLQkJcyB8PSBpbnRy
-LT5pc3IoaW50cikgJiBYTl9JU1JfQklUTUFTSzsKKwkJcyB8PSBpbnRyLT5pc3IoaW50cik7CiAJ
-CSsraW50ci0+aGl0czsKIAkJaW50ciA9IGludHItPm5leHQ7CiAJfQorCiAJeG5pbnRyX3NoaXJx
-X3VubG9jayhzaGlycSk7CiAKKwlpZiAodW5saWtlbHkocyA9PSBYTl9JU1JfTk9ORSAmJiArK3No
-aXJxLT51bmhhbmRsZWQgPT0gWE5JTlRSX01BWF9VTkhBTkRMRUQpKSB7CisJCXhubG9nZXJyKCJ4
-bmludHJfaXJxX2hhbmRsZXI6ICVkIG9mIHVuaGFuZGxlZCBjb25zZXF1ZW50IGludGVycnVwdHMu
-ICIKKwkJCSJEaXNhYmxpbmcgdGhlIElSUSBsaW5lICMlZFxuIiwKKwkJCVhOSU5UUl9NQVhfVU5I
-QU5ETEVELCBpcnEpOworCQlzIHw9IFhOX0lTUl9OT0VOQUJMRTsKKwl9IGVsc2UJCisJCXNoaXJx
-LT51bmhhbmRsZWQgPSAwOworCiAJaWYgKHMgJiBYTl9JU1JfUFJPUEFHQVRFKQogCQl4bmFyY2hf
-Y2hhaW5faXJxKGlycSk7CiAJZWxzZSBpZiAoIShzICYgWE5fSVNSX05PRU5BQkxFKSkKQEAgLTUy
-NywxNiArNTQ4LDE1IEBAIHN0YXRpYyB2b2lkIHhuaW50cl9lZGdlX3NoaXJxX2hhbmRsZXIodW4K
-IAlpbnRyID0gc2hpcnEtPmhhbmRsZXJzOwogCiAJd2hpbGUgKGludHIgIT0gZW5kKSB7Ci0JCWlu
-dCByZXQsIGNvZGUsIGJpdHM7CisJCWludCByZXQsIGNvZGU7CiAKIAkJcmV0ID0gaW50ci0+aXNy
-KGludHIpOwogCQljb2RlID0gcmV0ICYgflhOX0lTUl9CSVRNQVNLOwotCQliaXRzID0gcmV0ICYg
-WE5fSVNSX0JJVE1BU0s7CisJCXMgfD0gcmV0OwogCiAJCWlmIChjb2RlID09IFhOX0lTUl9IQU5E
-TEVEKSB7CiAJCQkrK2ludHItPmhpdHM7CiAJCQllbmQgPSBOVUxMOwotCQkJcyB8PSBiaXRzOwog
-CQl9IGVsc2UgaWYgKGNvZGUgPT0gWE5fSVNSX05PTkUgJiYgZW5kID09IE5VTEwpCiAJCQllbmQg
-PSBpbnRyOwogCkBAIC01NTQsNiArNTc0LDE0IEBAIHN0YXRpYyB2b2lkIHhuaW50cl9lZGdlX3No
-aXJxX2hhbmRsZXIodW4KIAkJICAgICgieG5pbnRyX2VkZ2Vfc2hpcnFfaGFuZGxlcigpIDogZmFp
-bGVkIHRvIGdldCB0aGUgSVJRJWQgbGluZSBmcmVlLlxuIiwKIAkJICAgICBpcnEpOwogCisJaWYg
-KHVubGlrZWx5KHMgPT0gWE5fSVNSX05PTkUgJiYgKytzaGlycS0+dW5oYW5kbGVkID09IFhOSU5U
-Ul9NQVhfVU5IQU5ETEVEKSkgeworCQl4bmxvZ2VycigieG5pbnRyX2lycV9oYW5kbGVyOiAlZCBv
-ZiB1bmhhbmRsZWQgY29uc2VxdWVudCBpbnRlcnJ1cHRzLiAiCisJCQkiRGlzYWJsaW5nIHRoZSBJ
-UlEgbGluZSAjJWRcbiIsCisJCQlYTklOVFJfTUFYX1VOSEFORExFRCwgaXJxKTsKKwkJcyB8PSBY
-Tl9JU1JfTk9FTkFCTEU7CisJfSBlbHNlCQorCQlzaGlycS0+dW5oYW5kbGVkID0gMDsKKwogCWlm
-IChzICYgWE5fSVNSX1BST1BBR0FURSkKIAkJeG5hcmNoX2NoYWluX2lycShpcnEpOwogCWVsc2Ug
-aWYgKCEocyAmIFhOX0lTUl9OT0VOQUJMRSkpCkBAIC02MTMsNiArNjQxLDcgQEAgc3RhdGljIGlu
-dCB4bmludHJfc2hpcnFfYXR0YWNoKHhuaW50cl90IAogCQkJCWhhbmRsZXIgPSAmeG5pbnRyX2Vk
-Z2Vfc2hpcnFfaGFuZGxlcjsKICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfU0hJUlFfRURHRSAq
-LwogCQl9CisJCXNoaXJxLT51bmhhbmRsZWQgPSAwOwogCiAJCWVyciA9IHhuYXJjaF9ob29rX2ly
-cShpbnRyLT5pcnEsIGhhbmRsZXIsIGludHItPmlhY2ssIGludHIpOwogCQlpZiAoZXJyKQo=
-------=_Part_13260_20310212.1156880336612--
+--------------enig6CFEA5D10F33B3CABA284E66--
 
