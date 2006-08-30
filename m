@@ -1,16 +1,15 @@
-Message-ID: <44F592AD.2000900@domain.hid>
-Date: Wed, 30 Aug 2006 15:29:17 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0608300903x4ee0571fq627901c7805b87ee@domain.hid>
+Date: Wed, 30 Aug 2006 18:03:53 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
+In-Reply-To: <1156943901.4323.47.camel@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>	
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_26032_9520524.1156953833026"
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
 	<44F49A6C.5050603@domain.hid>
 	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
-In-Reply-To: <b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCB1AA35649820E721FBB6C78"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
+	<1156943901.4323.47.camel@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,67 +19,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCB1AA35649820E721FBB6C78
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_26032_9520524.1156953833026
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Dmitry Adamushko wrote:
-> On 29/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->>
->> Dmitry Adamushko wrote:
->>
->> I think the additional costs of maintaining an error counter are almos=
-t
->> negligible. The test is in the unlikely path, and the first condition
->> already keeps us away from touching the counter.
->=20
->=20
-> But it's updated (unhandled =3D 0) any time the ISR(s) report something=
-
-> different from XN_ISR_NONE.  Hence, it's at the beginning of the xnintr=
-_t
-> structure, hopefully, at the same cache line with other highly-used mem=
-bers
-> (i.e. isr, cookie and hits).
-
-Mmh, considering this and also the existing code I wonder if we could
-optimise this a bit. I'm only looking at xnintr_irq_handler now (sharing
-is slow anyway): currently the intr object is touched both before
-(naturally...) and after the call to the ISR handler. Maybe we can push
-all accesses before the handler for the fast path. E.g.:
-
-int unhandled =3D intr->unhandled;
-
-intr->unhandled =3D 0;
-++intr->hits;
-s =3D intr->isr(...);
-
-if (s =3D=3D XN_ISR_NONE) {
-	intr->unhandled =3D ++unhandled;
-	if (unhandled =3D=3D XNINTR_MAX_UNHANDLED)
-		ALARM!
-}
-
-Jan
+> > I had it also in mind and grepped use cases of "unlikely" in kernel/
+> > directory. There are a number of unlikely (a op. b) but none of
+> > unlikely(a) op. unlikely (b).
+> >
+> > Out of curiosity, one may disassemble code for both cases. My feeling
+> > though, unlikely(a && b) is at least not worse (cpu and compiler-wise)
+> > but don't want to speculate as I'm quite uneducated bozo here :)
+> >
+>
+> Since likely/unlikely are hints given to the compiler for optimizing
+> branches, you might want to give it all the information you have at hand
+> immediately, to augment your chances to have it do the right thing [just
+> in case the optimizer has no more short-term memory than a red fish...]
 
 
---------------enigCB1AA35649820E721FBB6C78
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+(1) if (unlikely(a) && unlikely(b))
+(2) if (unlikely(a && b))
 
-iD8DBQFE9ZKuniDOoMHTA+kRAvcUAJ4kGRhuTpB/mmH50msZZrZTZ2VV6ACfRKGo
-A63E1J8JDIJXtjfMTeY46D8=
-=aFLm
------END PGP SIGNATURE-----
+(1) results in 1 more "je" instruction on the path of the CPU to a "likely"
+branch than in case of (2).
+And as someone more educated in this field has just told me (hopefully I got
+it correct), any conditional jump leads to the pipeline flushing (maybe
+recent CPUs can avoid it indeed in case a condition is false).
 
---------------enigCB1AA35649820E721FBB6C78--
+So the code that contains less conditional && unconditional jumps is more
+pipeline-friendly.
+
+And a compiler is not (always) "smart" (should it be though?) enough to make
+the following transformation :
+
+unlikely(a) && unlikely(b) => unlikely(a + b)
+
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_26032_9520524.1156953833026
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; I had it also in mind and grepped use cases of &quot;unlikely&quot; in kernel/
+<br>&gt; directory. There are a number of unlikely (a op. b) but none of<br>&gt; unlikely(a) op. unlikely (b).<br>&gt;<br>&gt; Out of curiosity, one may disassemble code for both cases. My feeling<br>&gt; though, unlikely(a &amp;&amp; b) is at least not worse (cpu and compiler-wise)
+<br>&gt; but don't want to speculate as I'm quite uneducated bozo here :)<br>&gt;<br><br>Since likely/unlikely are hints given to the compiler for optimizing<br>branches, you might want to give it all the information you have at hand
+<br>immediately, to augment your chances to have it do the right thing [just<br>in case the optimizer has no more short-term memory than a red fish...]</blockquote><div><br>
+<br>
+(1) if (unlikely(a) &amp;&amp; unlikely(b)) <br>
+(2) if (unlikely(a &amp;&amp; b))<br>
+<br>
+(1) results in 1 more &quot;je&quot; instruction on the path of the CPU to a &quot;likely&quot; branch than in case of (2).<br>
+And as someone more educated in this field has just told me (hopefully
+I got it correct), any conditional jump leads to the pipeline flushing
+(maybe recent CPUs can avoid it indeed in case a condition is false).<br>
+<br>
+So the code that contains less conditional &amp;&amp; unconditional jumps is more pipeline-friendly.<br>
+<br>
+And a compiler is not (always) &quot;smart&quot; (should it be though?) enough to make the following transformation :<br>
+<br>
+unlikely(a) &amp;&amp; unlikely(b) =&gt; unlikely(a + b)<br>
+<br></div></div><br>
+-- <br>Best regards,<br>Dmitry Adamushko<br>
+<br>
+
+------=_Part_26032_9520524.1156953833026--
 
