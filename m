@@ -1,15 +1,17 @@
-Message-ID: <b647ffbd0608301025i285f8a35k6b0b738afb888d9@domain.hid>
-Date: Wed, 30 Aug 2006 19:25:06 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <b647ffbd0608301010m52b024fbibc444e10f4a42958@domain.hid>
+Message-ID: <44F5CBE5.9090908@domain.hid>
+Date: Wed, 30 Aug 2006 19:33:25 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_27676_10603072.1156958706726"
-References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
-	<44F49A6C.5050603@domain.hid>
-	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>	
+	<44F49A6C.5050603@domain.hid>	
+	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>	
 	<44F592AD.2000900@domain.hid>
 	<b647ffbd0608301010m52b024fbibc444e10f4a42958@domain.hid>
+In-Reply-To: <b647ffbd0608301010m52b024fbibc444e10f4a42958@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig06245AB793538648E3985927"
+Sender: jan.kiszka@domain.hid
 Subject: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,87 +22,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, Philippe Gerum <rpm@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_27676_10603072.1156958706726
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig06245AB793538648E3985927
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-On 30/08/06, Dmitry Adamushko <dmitry.adamushko@domain.hid> wrote:
+Dmitry Adamushko wrote:
+> On 30/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>
+>>
+>> Mmh, considering this and also the existing code I wonder if we could
+>> optimise this a bit. I'm only looking at xnintr_irq_handler now (shari=
+ng
+>> is slow anyway): currently the intr object is touched both before
+>> (naturally...) and after the call to the ISR handler. Maybe we can pus=
+h
+>> all accesses before the handler for the fast path. E.g.:
+>>
+>> int unhandled =3D intr->unhandled;
+>>
+> intr->unhandled =3D 0;
+>> ++intr->hits;
+>> s =3D intr->isr(...);
+>>
+>> if (s =3D=3D XN_ISR_NONE) {
+>>         intr->unhandled =3D ++unhandled;
+>>         if (unhandled =3D=3D XNINTR_MAX_UNHANDLED)
+>>                 ALARM!
+>> }
+>=20
+>=20
+> so the idea is that we touch all intr members while they are hopefully =
+in
+> the same cache line (if it's 128 bits long) as the cache may be
+> disturbed by
+> ISR afterwards.
+>=20
+> But OTOH, we do an additional write "int unhandled =3D intr->unhandled;=
+"
+>=20
+> (write-through cache) ---> put in cache + syncing with memory immediate=
+ly
+>=20
+> (write-back cache) ---> put in cache + delay syncing (but will it still=
+
+> happen?)
+>=20
+> So while we avoid one possible read from the main memory into the cache=
+
+> when
+> intr->unhandled and ->hits (ok, this one can be moved for sure) are cal=
+led
+> after ISR (and they are not in the cache), we introduce another one (at=
+
+> least for write-through it's 100%) that takes place before ISR and that=
+'s
+> actually a "+" component to the IRQ latency.
+>=20
+> or I can be wrong though.
+>=20
+
+That also depends on what information the compiler keeps on the stack
+and what in registers. On x86, sched of our xnintr_irq_handler remains
+in some register while the ISR executes. The same may happen to
+unhandled, but it's hard to predict. It's also the question what we want
+to improve, ISR latencies or the final user latency (the latter includes
+the post ISR part).
+
+Ok, such stuff makes sense if we can say that for most cases (archs),
+specifically low-end scenarios, there is some gain. Guess this would
+need testing... :-/
+
+Jan
 
 
-(cache line == 128 bits) let's say cacheline[4]
->
-> int a = 1;   // e.g. &a == 0xabcd0004
->
-> this part of memory is currently not in the cache. So :
->
-> 1) [0xabcd0000, 0xabcd0010] == 128 bits is loaded from memory into
-> cacheline.
->
+--------------enig06245AB793538648E3985927
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Nop, it looks wrong. Ignore this part :)
+iD8DBQFE9cvlniDOoMHTA+kRAg1kAJ0WpWnT2rQYQLcyLdxuN8pduEaoZgCfdiaW
+xYuAlIerpTfdx1T8zCoJsLE=
+=y2CX
+-----END PGP SIGNATURE-----
 
-
-
-2) then 1 is loaded into cacheline[1]
->
-> 3) [ write-through ] ---> sync with memory
-> or
->     [ write-back ] ---> delay synching
->
->  ?
->
->
-> Jan
-> >
-> >
-> >
->
-> --
-> Best regards,
-> Dmitry Adamushko
->
-
-
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_27676_10603072.1156958706726
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><div><span class="gmail_quote">On 30/08/06, <b class="gmail_sendername">Dmitry Adamushko</b> &lt;<a href="mailto:dmitry.adamushko@domain.hid">dmitry.adamushko@domain.hid</a>&gt; wrote:</span><div><br>
-&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><div>
-(cache line == 128 bits) let's say cacheline[4]<br>
-<br>
-int a = 1;&nbsp;&nbsp; // e.g. &amp;a == 0xabcd0004<br>
-<br>
-this part of memory is currently not in the cache. So :<br>
-<br>
-1) [0xabcd0000, 0xabcd0010] == 128 bits is loaded from memory into cacheline.</div></div></div></blockquote><div><br>
-<br>
-Nop, it looks wrong. Ignore this part :)<br>
-&nbsp;<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><div>
-2) then 1 is loaded into cacheline[1]<br>
-<br>
-3) [ write-through ] ---&gt; sync with memory<br>
-or<br>
-&nbsp; &nbsp; [ write-back ] ---&gt; delay synching<br>
-<br>
-&nbsp;?</div><br>
-<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br><br>
-</blockquote></div><br clear="all"><br>-- <br>Best regards,<br></div><div><span class="sg">Dmitry Adamushko
-
-</span></div></blockquote></div><br><br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_27676_10603072.1156958706726--
+--------------enig06245AB793538648E3985927--
 
