@@ -1,15 +1,19 @@
-Message-ID: <b647ffbd0608301436l431b0256k129a9000df7636db@domain.hid>
-Date: Wed, 30 Aug 2006 23:36:12 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <1156286237.4319.124.camel@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_30868_13111041.1156973772112"
-References: <b647ffbd0608221412s3167e49fx843da826f870b03c@domain.hid>
-	<1156286237.4319.124.camel@domain.hid>
-Subject: [Xenomai-core] Re: [patch,
-	minor] irq proc output + ipipe_unregister_domain()
-	vs. ipipe_sync_stage()
+Subject: Re: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <44F5FC95.4030206@domain.hid>
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
+	<44F49A6C.5050603@domain.hid>
+	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
+	<44F592AD.2000900@domain.hid> <1156960547.4323.68.camel@domain.hid>
+	<44F5DDF1.3030006@domain.hid> <1156970880.4323.74.camel@domain.hid>
+	<44F5FB26.40700@domain.hid> <1156971559.4323.82.camel@domain.hid>
+	<44F5FC95.4030206@domain.hid>
+Content-Type: text/plain
+Date: Wed, 30 Aug 2006 23:58:30 +0200
+Message-Id: <1156975110.28417.26.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,167 +23,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_30868_13111041.1156973772112
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Wed, 2006-08-30 at 23:01 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Wed, 2006-08-30 at 22:55 +0200, Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>> On Wed, 2006-08-30 at 20:50 +0200, Jan Kiszka wrote:
+> >>>> Philippe Gerum wrote:
+> >>>>
+> >>>>> On Wed, 2006-08-30 at 15:29 +0200, Jan Kiszka wrote:
+> >>>>>   
+> >>>>>> Dmitry Adamushko wrote:
+> >>>>>>     
+> >>>>>>> On 29/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> >>>>>>>       
+> >>>>>>>> Dmitry Adamushko wrote:
+> >>>>>>>>
+> >>>>>>>> I think the additional costs of maintaining an error counter are almost
+> >>>>>>>> negligible. The test is in the unlikely path, and the first condition
+> >>>>>>>> already keeps us away from touching the counter.
+> >>>>>>>>         
+> >>>>>>> But it's updated (unhandled = 0) any time the ISR(s) report something
+> >>>>>>> different from XN_ISR_NONE.  Hence, it's at the beginning of the xnintr_t
+> >>>>>>> structure, hopefully, at the same cache line with other highly-used members
+> >>>>>>> (i.e. isr, cookie and hits).
+> >>>>>>>       
+> >>>>>> Mmh, considering this and also the existing code I wonder if we could
+> >>>>>> optimise this a bit. I'm only looking at xnintr_irq_handler now (sharing
+> >>>>>> is slow anyway): currently the intr object is touched both before
+> >>>>>> (naturally...) and after the call to the ISR handler. Maybe we can push
+> >>>>>> all accesses before the handler for the fast path. E.g.:
+> >>>>>>
+> >>>>>> int unhandled = intr->unhandled;
+> >>>>>>
+> >>>>>> intr->unhandled = 0;
+> >>>>>> ++intr->hits;
+> >>>>>> s = intr->isr(...);
+> >>>>>>
+> >>>>>> if (s == XN_ISR_NONE) {
+> >>>>>> 	intr->unhandled = ++unhandled;
+> >>>>>> 	if (unhandled == XNINTR_MAX_UNHANDLED)
+> >>>>>> 		ALARM!
+> >>>>>> }
+> >>>>>>
+> >>>>>>     
+> >>>>> Without speculating whether this could actually reduce cache misses or
+> >>>>> not when the branch is taken, the main issue I see here is that we would
+> >>>>> optimize the error case, at the expense of an additional memory fetching
+> >>>> No, it's the common path. Otherwise, I would have stopped already. I don't
+> >>>> expect further memory access because the head of intr should be cached
+> >>>> already.
+> >>>>
+> >>> Sorry, my brain cells must be glued together, but then, I just don't get
+> >>> what your patch actually optimizes :o}
+> >> Cache misses when accessing intr AFTER the ISR has finished (not on
+> >> latest Pentium with 4 MB caches...) for the non-error case.
+> > 
+> > What do you call the "error case"?
+> > 
+> 
+> XN_ISR_NONE
 
-I cc'ed the list.
+So the suggested optimization is about saving the clearing of
+intr->unhandled, and the related cache reload/sync? Quite frankly, we
+should really reduce the cache misses rate of Adeos instead (especially
+the pipeline syncer, and the costly domain walk chain which has a
+significant cache impact), it _is_ the one which has the highest margin
+of improvement. Beside this, I'm still unsure that eating one register
+more to cache the "unhandled" variable on x86 - only to handle the error
+case that almost never happens - would not have a negative impact on the
+common path, which would silently obliterate the initial gain.
 
-
-> Probably the only sane way (at least as I can see now) to implement
-> > xnintr_irq_proc() safely for non-shared case is also to make use of
-> > nklock + irq off (as it should be synched wrt the primary domain) and
-> > then the same should be done in xnintr_attach/detach(). In non shared
-> > case, these 2 ones are safe wrt each other as both are directly mapped
-> > on ipipe_virtualize_irq(). So nklock is only required for the safe
-> > synch wrt xnintr_irq_proc() and that's something I don't like.
-> >
->
-> Well, the major issue I'd see is about calling sprintf() within the
-> superlock protection, which makes me a bit nervous latency-wise, but I
-> don't see any other solution right now.
-
-
-
-btw, all primitives of the native skin make use of sprintf() in
-__primitive_read_proc().
-
-e.g.
-
-the impact of __mutex_read_proc() can be much higher than of
-xnintr_irq_proc() with the same approach. Basically it's O(N) where N is a
-number of names to be printed. And a worst case situation for
-__mutex_read_proc [ when a number of blocked threads (__mutex_read_proc) > a
-number of registered IRQ handlers on the same line (xnintr_irq_proc) ] is
-much likely to happen.
-
-In case of strings, e.g.
-
-__mutex_read_proc :
-
-p += sprintf(p, "+%s\n", xnthread_name(sleeper));
-
-(similar in xnintr_irq_proc())
-
-we could do
-
-*(p++) = '+';
-p += our_strcpy(p, some_name);
-
-char *our_strcpy(char *dest, const char *src)
-{
-        char *tmp = dest;
-
-        while ((*dest++ = *src++) != '\0')
-                /* nothing */;
-        return dest - tmp;
-}
-
-it's different from standard strcpy() in the way that it returns a number of
-written symbols and that's what we need here to update "p".
-
-There is also standard strlcpy() but it
-
-first calls (1) strlen() and then (2) memove() which is seemingly less
-optimal but OTOH both (1) and (2) are normally available in CPU-optimized
-variants. So I don't want to speculate which one is better, tests would
-reveal.
-
-vsnprintf(), which is called by snprintf() consumes about 1,5 kb of code on
-my machine.
-
-So ok, it's lickely less cache friendly (cache-friendly? de-ja-vu indeed :)
-but maybe it's not that important here as a linux application (e.g. cat
-/proc/xenomai/something) that calls it likely disturbed the cache already
-quite a lot.
-Pure execution time vs. e.g. our_strcpy() should be likely longer so we may
-win something indeed.
-
-Any thoughts?
-
-
-
---
-> Philippe.
->
->
+Last point that bothers me: ISRs are allowed to re-enable the IRQ line
+and unstall the Xenomai stage in the pipeline during processing, and the
+nucleus is expected to handle interrupt nesting gracefully. So if such
+nesting happens with two or more interrupts from the same unhandled
+source (without entering any IRQ flood, that is), we would miss at least
+one incrementation of the "unhandled" count, due to the local variable
+caching, each time.
 
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
 
-------=_Part_30868_13111041.1156973772112
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-I cc'ed the list.<br>
-<br><br>
-<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; Probably the only sane way (at least as I can see now) to implement<br>&gt; xnintr_irq_proc() safely for non-shared case is also to make use of
-<br>&gt; nklock + irq off (as it should be synched wrt the primary domain) and<br>&gt; then the same should be done in xnintr_attach/detach(). In non shared<br>&gt; case, these 2 ones are safe wrt each other as both are directly mapped
-<br>&gt; on ipipe_virtualize_irq(). So nklock is only required for the safe<br>&gt; synch wrt xnintr_irq_proc() and that's something I don't like.<br>&gt;<br><br>Well, the major issue I'd see is about calling sprintf() within the
-<br>superlock protection, which makes me a bit nervous latency-wise, but I<br>don't see any other solution right now.</blockquote><div><br>
-<br>
-btw, all primitives of the native skin make use of sprintf() in __primitive_read_proc().<br>
-<br>
-e.g.<br>
-<br>
-the impact of __mutex_read_proc() can be much higher than of
-xnintr_irq_proc() with the same approach. Basically it's O(N) where N
-is a number of names to be printed. And a worst case situation for
-__mutex_read_proc [ when a number of blocked threads
-(__mutex_read_proc) &gt; a number of registered IRQ handlers on the
-same line (xnintr_irq_proc) ] is much likely to happen.<br>
-<br>
-In case of strings, e.g.<br>
-<br>
-__mutex_read_proc :<br>
-<br>
-p += sprintf(p, &quot;+%s\n&quot;, xnthread_name(sleeper));<br>
-<br>
-</div>(similar in xnintr_irq_proc())<br>
-<br>
-we could do <br>
-<br>
-*(p++) = '+';<br>
-p += our_strcpy(p, some_name);<br>
-<br>
-char *our_strcpy(char *dest, const char *src)<br>
-{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char *tmp = dest;<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ((*dest++ = *src++) != '\0')<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* nothing */;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return dest - tmp;<br>
-}<br>
-<br>
-it's different from standard strcpy() in the way that it returns a
-number of written symbols and that's what we need here to update &quot;p&quot;.<br>
-<br>
-There is also standard strlcpy() but it <br>
-<br>
-first calls (1) strlen() and then (2) memove() which is seemingly less
-optimal but OTOH both (1) and (2) are normally available in
-CPU-optimized variants. So I don't want to speculate which one is
-better, tests would reveal.<br>
-<br>
-vsnprintf(), which is called by snprintf() consumes about 1,5 kb of code on my machine.<br>
-<br>
-So ok, it's lickely less cache friendly (cache-friendly? de-ja-vu
-indeed :) but maybe it's not that important here as a linux application
-(e.g. cat /proc/xenomai/something) that calls it likely disturbed the
-cache already quite a lot.<br>
-Pure execution time vs. e.g. our_strcpy() should be likely longer so we may win something indeed.<br>
-<br>
-Any thoughts?<br>
-<br>
-<br>
-<br>
-<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">--<br>Philippe.<br><br></blockquote></div><br><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_30868_13111041.1156973772112--
 
