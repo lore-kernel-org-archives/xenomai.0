@@ -1,10 +1,15 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <b647ffbd0608301436l431b0256k129a9000df7636db@domain.hid>
+Date: Wed, 30 Aug 2006 23:36:12 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <1156286237.4319.124.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="ZOSqkkA7uD"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17636.56428.140050.265677@domain.hid>
-Date: Thu, 17 Aug 2006 23:15:24 +0200
-Subject: [Xenomai-core] [rfc, patch] allow timer interrupt to be shared.
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_30868_13111041.1156973772112"
+References: <b647ffbd0608221412s3167e49fx843da826f870b03c@domain.hid>
+	<1156286237.4319.124.camel@domain.hid>
+Subject: [Xenomai-core] Re: [patch,
+	minor] irq proc output + ipipe_unregister_domain()
+	vs. ipipe_sync_stage()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,136 +19,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-
---ZOSqkkA7uD
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
+------=_Part_30868_13111041.1156973772112
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+I cc'ed the list.
 
 
-Hi, 
-
-For review, you will find attached to this mail a patch which allows
-Xenomai to run on ARM platforms where the timer interrupt is
-shared. Such a platform have to define the constant
-IPIPE_HAVE_SHARED_TIMER_IRQ, as well as two functions or macros:
-- ipipe_timer_irq_p(), used by xnpod_announce_tick to test  whether a
-timer interrupt is pending, in which case it is handled, otherwise
-xnpod_announce_tick returns with the XN_ISR_PROPAGATE so that the
-interrupt is propagated to the Linux domain.
-- ipipe_mark_root_timer_irq(), used by xnarch_relay_tick so that the
-interrupt propagated by xnarch_relay_tick is treated by the root domain
-as a timer irq. As a matter of fact, since the interrupt is shared, the
-root domain has to know whether the irq is a timer irq, and since this
-interrupt is forged, the root domain can not rely on the same hardware
-mechanism as the xenomai domain irq.
-
-The patch also contains a tiny patch of Xenomai syslib so that
-__tickAnnounce has the same return value as xnpod_announce_tick.
+> Probably the only sane way (at least as I can see now) to implement
+> > xnintr_irq_proc() safely for non-shared case is also to make use of
+> > nklock + irq off (as it should be synched wrt the primary domain) and
+> > then the same should be done in xnintr_attach/detach(). In non shared
+> > case, these 2 ones are safe wrt each other as both are directly mapped
+> > on ipipe_virtualize_irq(). So nklock is only required for the safe
+> > synch wrt xnintr_irq_proc() and that's something I don't like.
+> >
+>
+> Well, the major issue I'd see is about calling sprintf() within the
+> superlock protection, which makes me a bit nervous latency-wise, but I
+> don't see any other solution right now.
 
 
+
+btw, all primitives of the native skin make use of sprintf() in
+__primitive_read_proc().
+
+e.g.
+
+the impact of __mutex_read_proc() can be much higher than of
+xnintr_irq_proc() with the same approach. Basically it's O(N) where N is a
+number of names to be printed. And a worst case situation for
+__mutex_read_proc [ when a number of blocked threads (__mutex_read_proc) > a
+number of registered IRQ handlers on the same line (xnintr_irq_proc) ] is
+much likely to happen.
+
+In case of strings, e.g.
+
+__mutex_read_proc :
+
+p += sprintf(p, "+%s\n", xnthread_name(sleeper));
+
+(similar in xnintr_irq_proc())
+
+we could do
+
+*(p++) = '+';
+p += our_strcpy(p, some_name);
+
+char *our_strcpy(char *dest, const char *src)
+{
+        char *tmp = dest;
+
+        while ((*dest++ = *src++) != '\0')
+                /* nothing */;
+        return dest - tmp;
+}
+
+it's different from standard strcpy() in the way that it returns a number of
+written symbols and that's what we need here to update "p".
+
+There is also standard strlcpy() but it
+
+first calls (1) strlen() and then (2) memove() which is seemingly less
+optimal but OTOH both (1) and (2) are normally available in CPU-optimized
+variants. So I don't want to speculate which one is better, tests would
+reveal.
+
+vsnprintf(), which is called by snprintf() consumes about 1,5 kb of code on
+my machine.
+
+So ok, it's lickely less cache friendly (cache-friendly? de-ja-vu indeed :)
+but maybe it's not that important here as a linux application (e.g. cat
+/proc/xenomai/something) that calls it likely disturbed the cache already
+quite a lot.
+Pure execution time vs. e.g. our_strcpy() should be likely longer so we may
+win something indeed.
+
+Any thoughts?
+
+
+
+--
+> Philippe.
+>
+>
 
 -- 
+Best regards,
+Dmitry Adamushko
 
-
-					    Gilles Chanteperdrix.
-
---ZOSqkkA7uD
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-shared-timer-irq.diff"
+------=_Part_30868_13111041.1156973772112
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Index: include/asm-generic/hal.h
-===================================================================
---- include/asm-generic/hal.h	(revision 1451)
-+++ include/asm-generic/hal.h	(working copy)
-@@ -679,6 +679,12 @@
- 
- #endif /* CONFIG_IPIPE_TRACE */
- 
-+#ifdef IPIPE_HAVE_SHARED_TIMER_IRQ
-+#define RTHAL_HAVE_SHARED_TIMER_IRQ
-+#define rthal_timer_irq_p()         ipipe_timer_irq_p()
-+#define rthal_mark_root_timer_irq() ipipe_mark_root_timer_irq()
-+#endif /* IPIPE_SHARED_TIMER_IRQ */
-+
- #ifdef __cplusplus
- }
- #endif /* __cplusplus */
-Index: include/asm-generic/system.h
-===================================================================
---- include/asm-generic/system.h	(revision 1451)
-+++ include/asm-generic/system.h	(working copy)
-@@ -487,4 +487,9 @@
- #define xnarch_post_graph(obj,state)
- #define xnarch_post_graph_if(obj,state,cond)
- 
-+#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
-+#define XNARCH_HAVE_SHARED_TIMER_IRQ
-+#define xnarch_timer_irq_p()         rthal_timer_irq_p()
-+#endif /* IPIPE_SHARED_TIMER_IRQ */
-+
- #endif /* !_XENO_ASM_GENERIC_SYSTEM_H */
-Index: include/asm-arm/bits/intr.h
-===================================================================
---- include/asm-arm/bits/intr.h	(revision 1451)
-+++ include/asm-arm/bits/intr.h	(working copy)
-@@ -27,6 +27,9 @@
- 
- static inline void xnarch_relay_tick(void)
- {
-+#ifdef RTHAL_HAVE_SHARED_TIMER_IRQ
-+	rthal_mark_root_timer_irq();
-+#endif /* RTHAL_HAVE_SHARED_TIMER_IRQ */
- 	rthal_irq_host_pend(RTHAL_TIMER_IRQ);
- }
- 
-Index: ksrc/skins/vxworks/sysLib.c
-===================================================================
---- ksrc/skins/vxworks/sysLib.c	(revision 1451)
-+++ ksrc/skins/vxworks/sysLib.c	(working copy)
-@@ -24,19 +24,20 @@
- 
- static wind_tick_handler_t tick_handler;
- static long tick_handler_arg;
-+static int tick_status [XNARCH_NR_CPUS];
- 
- void tickAnnounce(void)
- {
- 	if (tick_handler != NULL)
- 		tick_handler(tick_handler_arg);
- 
--	xnpod_announce_tick(&nkclock);
-+	tick_status[xnarch_current_cpu()] = xnpod_announce_tick(&nkclock);
- }
- 
- static int __tickAnnounce(xnintr_t *intr)
- {
- 	tickAnnounce();
--	return XN_ISR_HANDLED | XN_ISR_NOENABLE;
-+	return tick_status[xnarch_current_cpu()];
- }
- 
- int wind_sysclk_init(u_long init_rate)
-Index: ksrc/nucleus/pod.c
-===================================================================
---- ksrc/nucleus/pod.c	(revision 1451)
-+++ ksrc/nucleus/pod.c	(working copy)
-@@ -3249,6 +3249,11 @@
- {
- 	xnsched_t *sched;
- 
-+#ifdef XNARCH_HAVE_SHARED_TIMER_IRQ
-+	if (!xnarch_timer_irq_p())
-+		return XN_ISR_NONE | XN_ISR_NOENABLE | XN_ISR_PROPAGATE;
-+#endif /* XNARCH_HAVE_SHARED_TIMER_IRQ */
-+	
- 	sched = xnpod_current_sched();
- 
- 	xnlock_get(&nklock);
+I cc'ed the list.<br>
+<br><br>
+<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; Probably the only sane way (at least as I can see now) to implement<br>&gt; xnintr_irq_proc() safely for non-shared case is also to make use of
+<br>&gt; nklock + irq off (as it should be synched wrt the primary domain) and<br>&gt; then the same should be done in xnintr_attach/detach(). In non shared<br>&gt; case, these 2 ones are safe wrt each other as both are directly mapped
+<br>&gt; on ipipe_virtualize_irq(). So nklock is only required for the safe<br>&gt; synch wrt xnintr_irq_proc() and that's something I don't like.<br>&gt;<br><br>Well, the major issue I'd see is about calling sprintf() within the
+<br>superlock protection, which makes me a bit nervous latency-wise, but I<br>don't see any other solution right now.</blockquote><div><br>
+<br>
+btw, all primitives of the native skin make use of sprintf() in __primitive_read_proc().<br>
+<br>
+e.g.<br>
+<br>
+the impact of __mutex_read_proc() can be much higher than of
+xnintr_irq_proc() with the same approach. Basically it's O(N) where N
+is a number of names to be printed. And a worst case situation for
+__mutex_read_proc [ when a number of blocked threads
+(__mutex_read_proc) &gt; a number of registered IRQ handlers on the
+same line (xnintr_irq_proc) ] is much likely to happen.<br>
+<br>
+In case of strings, e.g.<br>
+<br>
+__mutex_read_proc :<br>
+<br>
+p += sprintf(p, &quot;+%s\n&quot;, xnthread_name(sleeper));<br>
+<br>
+</div>(similar in xnintr_irq_proc())<br>
+<br>
+we could do <br>
+<br>
+*(p++) = '+';<br>
+p += our_strcpy(p, some_name);<br>
+<br>
+char *our_strcpy(char *dest, const char *src)<br>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; char *tmp = dest;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ((*dest++ = *src++) != '\0')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* nothing */;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return dest - tmp;<br>
+}<br>
+<br>
+it's different from standard strcpy() in the way that it returns a
+number of written symbols and that's what we need here to update &quot;p&quot;.<br>
+<br>
+There is also standard strlcpy() but it <br>
+<br>
+first calls (1) strlen() and then (2) memove() which is seemingly less
+optimal but OTOH both (1) and (2) are normally available in
+CPU-optimized variants. So I don't want to speculate which one is
+better, tests would reveal.<br>
+<br>
+vsnprintf(), which is called by snprintf() consumes about 1,5 kb of code on my machine.<br>
+<br>
+So ok, it's lickely less cache friendly (cache-friendly? de-ja-vu
+indeed :) but maybe it's not that important here as a linux application
+(e.g. cat /proc/xenomai/something) that calls it likely disturbed the
+cache already quite a lot.<br>
+Pure execution time vs. e.g. our_strcpy() should be likely longer so we may win something indeed.<br>
+<br>
+Any thoughts?<br>
+<br>
+<br>
+<br>
+<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">--<br>Philippe.<br><br></blockquote></div><br><br>-- <br>Best regards,<br>Dmitry Adamushko
 
---ZOSqkkA7uD--
+------=_Part_30868_13111041.1156973772112--
 
