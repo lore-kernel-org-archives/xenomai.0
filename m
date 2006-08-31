@@ -1,17 +1,17 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <b647ffbd0608301436l431b0256k129a9000df7636db@domain.hid>
-References: <b647ffbd0608221412s3167e49fx843da826f870b03c@domain.hid>
-	<1156286237.4319.124.camel@domain.hid>
-	<b647ffbd0608301436l431b0256k129a9000df7636db@domain.hid>
-Content-Type: text/plain
-Date: Thu, 31 Aug 2006 00:21:20 +0200
-Message-Id: <1156976481.28417.43.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [patch,
-	minor] irq proc output + ipipe_unregister_domain() vs.
-	ipipe_sync_stage()
-Reply-To: rpm@xenomai.org
+Message-ID: <b647ffbd0608310112x1ec2db31v3edbe765a279e808@domain.hid>
+Date: Thu, 31 Aug 2006 10:12:35 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <b647ffbd0608301025i285f8a35k6b0b738afb888d9@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_37552_26600698.1157011955081"
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
+	<44F49A6C.5050603@domain.hid>
+	<b647ffbd0608291334u4182e78bub6d874e252abbbc9@domain.hid>
+	<44F592AD.2000900@domain.hid>
+	<b647ffbd0608301010m52b024fbibc444e10f4a42958@domain.hid>
+	<b647ffbd0608301025i285f8a35k6b0b738afb888d9@domain.hid>
+Subject: [Xenomai-core] Re: [patch, RFC] detect unhandled interrupts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,136 +21,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2006-08-30 at 23:36 +0200, Dmitry Adamushko wrote:
-> I cc'ed the list.
-> 
-> 
->         > Probably the only sane way (at least as I can see now) to
->         implement
->         > xnintr_irq_proc() safely for non-shared case is also to make
->         use of 
->         > nklock + irq off (as it should be synched wrt the primary
->         domain) and
->         > then the same should be done in xnintr_attach/detach(). In
->         non shared
->         > case, these 2 ones are safe wrt each other as both are
->         directly mapped 
->         > on ipipe_virtualize_irq(). So nklock is only required for
->         the safe
->         > synch wrt xnintr_irq_proc() and that's something I don't
->         like.
->         >
->         
->         Well, the major issue I'd see is about calling sprintf()
->         within the 
->         superlock protection, which makes me a bit nervous
->         latency-wise, but I
->         don't see any other solution right now.
-> 
-> 
-> btw, all primitives of the native skin make use of sprintf() in
-> __primitive_read_proc().
-> 
-> e.g.
-> 
-> the impact of __mutex_read_proc() can be much higher than of
-> xnintr_irq_proc() with the same approach. Basically it's O(N) where N
-> is a number of names to be printed. And a worst case situation for
-> __mutex_read_proc [ when a number of blocked threads
-> (__mutex_read_proc) > a number of registered IRQ handlers on the same
-> line (xnintr_irq_proc) ] is much likely to happen.
-> 
+------=_Part_37552_26600698.1157011955081
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-This is why I said that using sprintf() in such context makes me
-nervous, but since I did not have a low cost replacement for keeping the
-list consistent while walking through it, I used this dumb approach.
+>
+>
+>
+>
+> (cache line == 128 bits) let's say cacheline[4]
+> >
+> > int a = 1;   // e.g. &a == 0xabcd0004
+> >
+> > this part of memory is currently not in the cache. So :
+> >
+> > 1) [0xabcd0000, 0xabcd0010] == 128 bits is loaded from memory into
+> > cacheline.
+> >
+> 2) then 1 is loaded into cacheline[1]
+>
+>
+> > 3) [ write-through ] ---> sync with memory
+> > or
+> >     [ write-back ] ---> delay synching
+> >
+> >  ?
+> >
+>
 
-> In case of strings, e.g.
-> 
-> __mutex_read_proc :
-> 
-> p += sprintf(p, "+%s\n", xnthread_name(sleeper));
-> 
-> 
-> (similar in xnintr_irq_proc())
-> 
-> we could do 
-> 
-> *(p++) = '+';
-> p += our_strcpy(p, some_name);
-> 
-> char *our_strcpy(char *dest, const char *src)
-> {
->         char *tmp = dest;
-> 
->         while ((*dest++ = *src++) != '\0')
->                 /* nothing */;
->         return dest - tmp;
-> }
-> 
-> it's different from standard strcpy() in the way that it returns a
-> number of written symbols and that's what we need here to update "p".
-> 
-> There is also standard strlcpy() but it 
-> 
-> first calls (1) strlen() and then (2) memove() which is seemingly less
-> optimal but OTOH both (1) and (2) are normally available in
-> CPU-optimized variants. So I don't want to speculate which one is
-> better, tests would reveal.
-> 
-> vsnprintf(), which is called by snprintf() consumes about 1,5 kb of
-> code on my machine.
-> 
-> So ok, it's lickely less cache friendly (cache-friendly? de-ja-vu
-> indeed :) but maybe it's not that important here as a linux
-> application (e.g. cat /proc/xenomai/something) that calls it likely
-> disturbed the cache already quite a lot.
-> Pure execution time vs. e.g. our_strcpy() should be likely longer so
-> we may win something indeed.
-> 
+It seems to be correct indeed. IOW, any write op. involves cache line
+fetching (from L2 cache or main memory) if it's not in the L1.
 
-We should not care of cache issues there. We are running in a non
-real-time context, and before we run our /proc routines, most of the
-usual cache trashing the regular kernel imposes on the real-time
-sub-system has already taken place, and which in any case, is several
-order of magnitude higher than what our /proc formatting routine
-actually costs. So...
 
-> Any thoughts?
-> 
-
-A way to solve this would be to have a transaction identifier into each
-object descriptor, that is incremented each time the object's internal
-state is altered (e.g. removal/insertion of some element from/to the
-pendq and so on). Each /proc routine would:
-
-1- get the lock
-2- read the transaction identifier from the object
-3- release the lock
-4- sprintf() as much as it needs in loop
-5- re-acquire the lock
-6a- revalidate the object (deleted?)
-6b- re-read the transaction identifier from the object
-7- restart from #3 if identifiers do not match.
-
-It's basically the same approach Jan used for fixing
-the /proc/xenomai/sched and /stat routines.
-
-> 
-> 
->         --
->         Philippe.
->         
-> 
-> 
-> -- 
-> Best regards,
-> Dmitry Adamushko
 -- 
-Philippe.
+Best regards,
+Dmitry Adamushko
 
+------=_Part_37552_26600698.1157011955081
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><span class="q"><div><br>
+&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><div>
+(cache line == 128 bits) let's say cacheline[4]<br>
+<br>
+int a = 1;&nbsp;&nbsp; // e.g. &amp;a == 0xabcd0004<br>
+<br>
+this part of memory is currently not in the cache. So :<br>
+<br>
+1) [0xabcd0000, 0xabcd0010] == 128 bits is loaded from memory into cacheline.</div></div></div></blockquote></span></div><div>2) then 1 is loaded into cacheline[1]<br>
+<span class="q"><br>
+<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;"><div><div><div>
+<br>
+3) [ write-through ] ---&gt; sync with memory<br>
+or<br>
+&nbsp; &nbsp; [ write-back ] ---&gt; delay synching<br>
+<br>
+&nbsp;?</div></div></div></blockquote></span></div></div></blockquote><div><br>
+<br>
+It seems to be correct indeed. IOW, any write op. involves cache line
+fetching (from L2 cache or main memory) if it's not in the L1.<br>
+<br>
+<br>
+</div>-- <br>
+</div>Best regards,<br>Dmitry Adamushko
+
+------=_Part_37552_26600698.1157011955081--
 
