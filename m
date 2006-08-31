@@ -1,16 +1,13 @@
-Message-ID: <44F73D61.3010603@domain.hid>
-Date: Thu, 31 Aug 2006 21:49:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <b647ffbd0608311302x45568da9wa3422d4444379877@domain.hid>
+Date: Thu, 31 Aug 2006 22:02:16 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-core] [patch, RFC] detect unhandled interrupts
-References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>	
+In-Reply-To: <44F7346D.20602@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_46996_23769857.1157054536822"
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
 	<1157013092.4359.11.camel@domain.hid> <44F7346D.20602@domain.hid>
-	<1157052719.4359.70.camel@domain.hid>
-In-Reply-To: <1157052719.4359.70.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1CFC890AFFE650642032983F"
-Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,81 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1CFC890AFFE650642032983F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_46996_23769857.1157054536822
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Philippe Gerum wrote:
-> On Thu, 2006-08-31 at 21:11 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Tue, 2006-08-29 at 21:28 +0200, Dmitry Adamushko wrote:
->>>> Hello,
->>>>
->>>> Jan has rised this question initially and I was struggling last week=
+On 31/08/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+>
+> Unless I'm currently doing something completely wrong, it looks like it
+> doesn't work as it should. :(
+>
+> I attached a xeno_16550A to the Ethernet NIC's IRQ line and opened the
+> serial port - lock-up.
 
->>>> to get his request eventually done :)
->>>>
->>>> The main idea is to prevent system lockups when the cross domain IRQ=
 
->>>> sharing isn't properly used (there were a number of reports recently=
-).
->>>>
->>>> So here is an initial patch as well as some related critics (yep, I
->>>> critisize my own patch).
->>> [...]
->>>
->>> Applied, thanks.
->>>
->> Unless I'm currently doing something completely wrong, it looks like i=
-t
->> doesn't work as it should. :(
->>
->> I attached a xeno_16550A to the Ethernet NIC's IRQ line and opened the=
+(1)
 
->> serial port - lock-up.
->>
->> Ok, and now I enabled shared IRQ support:
->>
->> kernel/xenomai/nucleus/intr.c: In function 'xnintr_irq_handler':
->> kernel/xenomai/nucleus/intr.c:399: error: 'xnintr_t' has no member nam=
-ed
->> 'unhandled'
->> kernel/xenomai/nucleus/intr.c:404: error: 'xnintr_t' has no member nam=
-ed
->> 'unhandled'
->>
->> Looks like our patch review failed... :-/
->>
->=20
-> I've just committed two trivial fixes concerning the declaration and
-> initialization of xnintr::unhandled in the !shared case.
->=20
+Ok, and now I enabled shared IRQ support:
+>
+> kernel/xenomai/nucleus/intr.c: In function 'xnintr_irq_handler':
+> kernel/xenomai/nucleus/intr.c:399: error: 'xnintr_t' has no member named
+> 'unhandled'
+> kernel/xenomai/nucleus/intr.c:404: error: 'xnintr_t' has no member named
+> 'unhandled'
 
-And I found the other bug (which was not in the version I suggested BTW
-;) ), see SVN.
 
-Ok, the world is round again, the conflict is correctly detected now!
+(2)
+
+
+Looks like our patch review failed... :-/
+
+
+
+I failed and "got my face in the soup" (as it's said in my country).
+
+But as I can see Philippe's corrections fix only compilation issues, i.e.
+(2). (1) still remains unclear. Can't see any explanation so far, if only
+xeno_16550A sees some of interrupts as its own and returns HANDLED :)
+
 
 Jan
+>
+>
+>
+>
 
 
---------------enig1CFC890AFFE650642032983F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
+Best regards,
+Dmitry Adamushko
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+------=_Part_46996_23769857.1157054536822
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-iD8DBQFE9z1hniDOoMHTA+kRAp3AAKCE3s5ZFNmDiaT04I1rE9s33OEwpQCfXUEC
-7pIFah9/4scUtAbykFLD/bM=
-=jtVs
------END PGP SIGNATURE-----
+<br><div><span class="gmail_quote">On 31/08/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br>Unless I'm currently doing something completely wrong, it looks like it<br>doesn't work as it should. :(<br><br>I attached a xeno_16550A to the Ethernet NIC's IRQ line and opened the<br>serial port - lock-up.</blockquote>
+<div><br>
+(1) <br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Ok, and now I enabled shared IRQ support:<br><br>kernel/xenomai/nucleus/intr.c: In function 'xnintr_irq_handler':
+<br>kernel/xenomai/nucleus/intr.c:399: error: 'xnintr_t' has no member named<br>'unhandled'<br>kernel/xenomai/nucleus/intr.c:404: error: 'xnintr_t' has no member named<br>'unhandled'</blockquote><div><br>
+(2)<br>
+&nbsp;<br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Looks like our patch review failed... :-/</blockquote><div><br>
+<br>
+I failed and &quot;got my face in the soup&quot; (as it's said in my country).<br>
+<br>
+But as I can see Philippe's corrections fix only compilation issues,
+i.e. (2). (1) still remains unclear. Can't see any explanation so far,
+if only xeno_16550A sees some of interrupts as its own and returns
+HANDLED :)<br>
+<br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br><br><br></blockquote></div><br><br clear="all"><br>-- <br>Best regards,
+<br>Dmitry Adamushko
 
---------------enig1CFC890AFFE650642032983F--
+------=_Part_46996_23769857.1157054536822--
 
