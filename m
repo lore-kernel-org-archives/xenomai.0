@@ -4,8 +4,8 @@ In-Reply-To: <44F7346D.20602@domain.hid>
 References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
 	<1157013092.4359.11.camel@domain.hid>  <44F7346D.20602@domain.hid>
 Content-Type: text/plain
-Date: Thu, 31 Aug 2006 21:31:58 +0200
-Message-Id: <1157052719.4359.70.camel@domain.hid>
+Date: Thu, 31 Aug 2006 21:48:51 +0200
+Message-Id: <1157053732.4359.73.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -43,25 +43,67 @@ On Thu, 2006-08-31 at 21:11 +0200, Jan Kiszka wrote:
 > Unless I'm currently doing something completely wrong, it looks like it
 > doesn't work as it should. :(
 > 
-> I attached a xeno_16550A to the Ethernet NIC's IRQ line and opened the
-> serial port - lock-up.
-> 
-> Ok, and now I enabled shared IRQ support:
-> 
-> kernel/xenomai/nucleus/intr.c: In function 'xnintr_irq_handler':
-> kernel/xenomai/nucleus/intr.c:399: error: 'xnintr_t' has no member named
-> 'unhandled'
-> kernel/xenomai/nucleus/intr.c:404: error: 'xnintr_t' has no member named
-> 'unhandled'
-> 
-> Looks like our patch review failed... :-/
-> 
 
-I've just committed two trivial fixes concerning the declaration and
-initialization of xnintr::unhandled in the !shared case.
+Looks like, indeed. Is it any better on your side with the following
+patch applied?
 
-> Jan
-> 
+--- ksrc/nucleus/intr.c	(revision 1530)
++++ ksrc/nucleus/intr.c	(working copy)
+@@ -395,10 +395,12 @@
+ 	s = intr->isr(intr);
+ 	++intr->hits;
+ 
+-	if (unlikely(s == XN_ISR_NONE && ++intr->unhandled == XNINTR_MAX_UNHANDLED)) {
+-		xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
+-			 __FUNCTION__, irq);
+-		s |= XN_ISR_NOENABLE;
++	if (unlikely(s == XN_ISR_NONE)) {
++		if (unlikely(++intr->unhandled == XNINTR_MAX_UNHANDLED)) {
++			xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
++				 __FUNCTION__, irq);
++			s |= XN_ISR_NOENABLE;
++		}
+ 	} else
+ 		intr->unhandled = 0;
+ 
+@@ -499,11 +501,13 @@
+ 
+ 	xnintr_shirq_unlock(shirq);
+ 
+-	if (unlikely(s == XN_ISR_NONE && ++shirq->unhandled == XNINTR_MAX_UNHANDLED)) {
+-		xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
+-			 __FUNCTION__, irq);
+-		s |= XN_ISR_NOENABLE;
+-	} else	
++	if (unlikely(s == XN_ISR_NONE)) {
++		if (unlikely(++shirq->unhandled == XNINTR_MAX_UNHANDLED)) {
++			xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
++				 __FUNCTION__, irq);
++			s |= XN_ISR_NOENABLE;
++		}
++	} else
+ 		shirq->unhandled = 0;
+ 
+ 	if (s & XN_ISR_PROPAGATE)
+@@ -571,11 +575,13 @@
+ 		    ("xnintr_edge_shirq_handler() : failed to get the IRQ%d line free.\n",
+ 		     irq);
+ 
+-	if (unlikely(s == XN_ISR_NONE && ++shirq->unhandled == XNINTR_MAX_UNHANDLED)) {
+-		xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
+-			 __FUNCTION__, irq);
+-		s |= XN_ISR_NOENABLE;
+-	} else	
++	if (unlikely(s == XN_ISR_NONE)) {
++		if (unlikely(++shirq->unhandled == XNINTR_MAX_UNHANDLED)) {
++			xnlogerr("%s: IRQ%d not handled. Disabling IRQ line.\n",
++				 __FUNCTION__, irq);
++			s |= XN_ISR_NOENABLE;
++		}
++	} else
+ 		shirq->unhandled = 0;
+ 
+ 	if (s & XN_ISR_PROPAGATE)
 -- 
 Philippe.
 
