@@ -1,19 +1,15 @@
-Message-ID: <b647ffbd0608310435x4c482c40vbeb9947119e049f5@domain.hid>
-Date: Thu, 31 Aug 2006 13:35:12 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <1157016475.4359.23.camel@domain.hid>
+Message-ID: <44F7346D.20602@domain.hid>
+Date: Thu, 31 Aug 2006 21:11:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_39058_16437427.1157024112868"
-References: <b647ffbd0608221412s3167e49fx843da826f870b03c@domain.hid>
-	<1156286237.4319.124.camel@domain.hid>
-	<b647ffbd0608301436l431b0256k129a9000df7636db@domain.hid>
-	<1156976481.28417.43.camel@domain.hid>
-	<b647ffbd0608310208m514f5128l7276dd30c18b883@domain.hid>
-	<1157016475.4359.23.camel@domain.hid>
-Subject: [Xenomai-core] Re: [patch,
-	minor] irq proc output + ipipe_unregister_domain()
-	vs. ipipe_sync_stage()
+Subject: Re: [Xenomai-core] [patch, RFC] detect unhandled interrupts
+References: <b647ffbd0608291228i58bfa3fex5e8f3e18dc0ecc0@domain.hid>
+	<1157013092.4359.11.camel@domain.hid>
+In-Reply-To: <1157013092.4359.11.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA58C57251E36518A346B9558"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -26,84 +22,62 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-------=_Part_39058_16437427.1157024112868
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA58C57251E36518A346B9558
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
->
-> >         A way to solve this would be to have a transaction identifier
-> >         into each
-> >         object descriptor, that is incremented each time the object's
-> >         internal
-> >         state is altered (e.g. removal/insertion of some element
-> >         from/to the
-> >         pendq and so on).
-> >
-> > This works as long as the object descriptor itself can _not_ be
-> > deleted in the mean time.
-> >
-> > IOW, "object->current_rev != prev_rev" makes sense only if "object"
-> > remains to be valid.
-> >
->
-> This is the purpose of revalidating the object, step 6a.
+Philippe Gerum wrote:
+> On Tue, 2006-08-29 at 21:28 +0200, Dmitry Adamushko wrote:
+>> Hello,
+>>
+>> Jan has rised this question initially and I was struggling last week
+>> to get his request eventually done :)
+>>
+>> The main idea is to prevent system lockups when the cross domain IRQ
+>> sharing isn't properly used (there were a number of reports recently).=
 
+>>
+>> So here is an initial patch as well as some related critics (yep, I
+>> critisize my own patch).
+>=20
+> [...]
+>=20
+> Applied, thanks.
+>=20
 
+Unless I'm currently doing something completely wrong, it looks like it
+doesn't work as it should. :(
 
-arghh.. I missed 6a as I was looking at Jan's code and applied it to other
-cases "as is".
-And the register  would be a source of information on this step.
+I attached a xeno_16550A to the Ethernet NIC's IRQ line and opened the
+serial port - lock-up.
 
+Ok, and now I enabled shared IRQ support:
 
-This whole discussion makes me think that if we want to go down the path
-> of providing a generally safe and latency-aware support for the /proc
-> routines, we should definitely define some common mechanisms to
-> implement them, typically in the registry code.
+kernel/xenomai/nucleus/intr.c: In function 'xnintr_irq_handler':
+kernel/xenomai/nucleus/intr.c:399: error: 'xnintr_t' has no member named
+'unhandled'
+kernel/xenomai/nucleus/intr.c:404: error: 'xnintr_t' has no member named
+'unhandled'
 
+Looks like our patch review failed... :-/
 
-Yep. Actually, the register may likely do both 6a and 6b steps. e.g. a
-revalidation descriptor is stored in "xnobject" and something like
-xnregister_object_changed(handle) should be called when the object's
-internal state changes... just the very first idea and maybe not the best
-one.
-
-
---
-> Philippe.
->
+Jan
 
 
--- 
-Best regards,
-Dmitry Adamushko
+--------------enigA58C57251E36518A346B9558
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_39058_16437427.1157024112868
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A way to solve this would be to have a transaction identifier<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; into each
-<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; object descriptor, that is incremented each time the object's<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; internal<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; state is altered (e.g. removal/insertion of some element<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; from/to the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pendq and so on).
-<br>&gt;<br>&gt; This works as long as the object descriptor itself can _not_ be<br>&gt; deleted in the mean time.<br>&gt;<br>&gt; IOW, &quot;object-&gt;current_rev != prev_rev&quot; makes sense only if &quot;object&quot;
-<br>&gt; remains to be valid.<br>&gt;<br><br>This is the purpose of revalidating the object, step 6a.</blockquote><div><br>
-<br>
-arghh.. I missed 6a as I was looking at Jan's code and applied it to other cases &quot;as is&quot;.<br>
-And the register&nbsp; would be a source of information on this step.<br>
-<br>
-<br>
-</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">This whole discussion makes me think that if we want to go down the path<br>of providing a generally safe and latency-aware support for the /proc
-<br>routines, we should definitely define some common mechanisms to<br>implement them, typically in the registry code.</blockquote><div><br>
-Yep. Actually, the register may likely do both 6a and 6b steps. e.g. a
-revalidation descriptor is stored in &quot;xnobject&quot; and something like
-xnregister_object_changed(handle) should be called when the object's
-internal state changes... just the very first idea and maybe not the
-best one.<br>
-</div><div>&nbsp;<br>
-<br>
-</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">--<br>Philippe.<br></blockquote></div><br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
+iD8DBQFE9zRtniDOoMHTA+kRAk1qAJ46RZCv2tFnDENAvS7iF3Jv169kxwCfVJl4
+4tpOZjzg3wYpRJ+rK9aVD58=
+=IPS4
+-----END PGP SIGNATURE-----
 
-------=_Part_39058_16437427.1157024112868--
+--------------enigA58C57251E36518A346B9558--
 
