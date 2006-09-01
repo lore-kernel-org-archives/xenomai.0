@@ -1,51 +1,44 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] vxworks returns -1 for semGive
-Date: Mon, 16 Oct 2006 08:02:25 +0200
-References: <200609252310.03954.niklaus.giger@domain.hid>
-In-Reply-To: <200609252310.03954.niklaus.giger@domain.hid>
+Message-ID: <20060901085123.15970.qmail@domain.hid>
+Date: Fri, 1 Sep 2006 09:51:23 +0100 (BST)
+From: somshekar kadam <som_kadam@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200610160802.27984.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Adeos-main] ADEOS on MIPS
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-Am Montag, 25. September 2006 23:10 schrieb Niklaus Giger:
-> Hi
->
-> I modified satch.c (see attached patch) to get a testcase for a wrong
-> behaviour of the vxWorks skin. A semGive returns -1 if it is not preceded
-> by a errnoSet(0).
->
-> Output is:
-> -- /usr/xenomai/bin $ /bin/satch
-> NO TASK WAITING
-> Xenomai: Switching RootTask to secondary mode after exception #1025 from
-> user-space at 0xfe5cff8 (pid 3715)
->
-> __xeno_user_init: semMCreate 45 taskId 44
-> __xeno_user_init: semTake 45 status 0 0 taskId 44
-> __xeno_user_init: semGive 45 status -1 errno 1441896 taskId 44
-> Error code 1441896: S_semLib_INVALID_OPERATION
-> __xeno_user_init: semTake 45 status 0 1441896 taskId 44
-> __xeno_user_init: semGive 45 status 0 errno 0 taskId 44
-> Error code 0: Unknown error
-This error has been fixed. Probably with the recent changes to the syscall 
-routines (r1722).
+Hi All, 
 
-Thanks a lot for your hard work.
+I am newbie to ADEOS, 
+we would like to know if ADOES is supported on ADOES.
+when I checked on your release , I dont find MIPS arch
+supported. 
+well we would like to port ADOES for MIPS. 
+I hope I will get Help and right pointers from you all
+People.
+To Begin with We are going to port ADOES to MIPS 4kE
+processor.
+I would like to know what goes in to porting of ADOES
+to new Architecture is where should i Begin
+It will be Big time to get it working , but with our
+support i dont feel it will be problem from me
+Thanks And Regards
+Neelu 
 
--- 
-Niklaus Giger
+Thanks
+
+
+
+		
+__________________________________________________________
+Yahoo! India Answers: Share what you know. Learn something new
+http://in.answers.yahoo.com/
 
