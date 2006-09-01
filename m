@@ -1,14 +1,15 @@
+Message-ID: <44F8379E.4040801@domain.hid>
+Date: Fri, 01 Sep 2006 15:37:34 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17656.11641.610980.162241@domain.hid>
-Date: Fri, 1 Sep 2006 14:54:17 +0200
-Subject: Re: [Xenomai-help] [Fwd: Performance decrease]
-In-Reply-To: <1157094795.4322.9.camel@domain.hid>
-References: <1156941389.4323.17.camel@domain.hid> <1156942089.4323.29.camel@domain.hid>
-	<17655.18827.661904.949733@domain.hid>
-	<1157094795.4322.9.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] IRQ Enable/Disable
+References: <44F6E774.2000701@domain.hid>	 <44F72F35.4070109@domain.hid>
+	<1157099348.4322.32.camel@domain.hid>
+In-Reply-To: <1157099348.4322.32.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAF13BB38908A480033F74771"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,52 +20,107 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAF13BB38908A480033F74771
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
 Philippe Gerum wrote:
- > On Thu, 2006-08-31 at 22:41 +0200, Gilles Chanteperdrix wrote:
- > > Philippe Gerum wrote:
- > >  > On Wed, 2006-08-30 at 14:36 +0200, Philippe Gerum wrote:
- > >  > > -------- Forwarded Message --------
- > >  > > > From: Daniel Schnell <danielsch@domain.hid>
- > >  > > > To: xenomai-help <xenomai@xenomai.org>
- > >  > > > Subject: Performance decrease
- > >  > > > Date: Wed, 30 Aug 2006 11:58:25 -0000
- > >  > > > 
- > >  > > > Hi,
- > >  > > > 
- > >  > > >  
- > >  > > > 
- > >  > > > I have made some CPU throughput tests with/without "Nucleus options->pervasive real-time support in user-space" 
- > >  > >  enabled/disabled. And the performance dicrease in using that option is for my processor (MPC5200, 400 MHz) about 10%.
- > >  > 
- > >  > There is an impact induced by activating the user-space support, since
- > >  > all system calls are filtered through Xenomai; some work is currently
- > >  > undergoing to reduce this overhead, so that only system calls issued by
- > >  > Xenomai shadows would be intercepted. This said, out of curiosity, how
- > >  > do you measure those 10% on your board?
- > > 
- > > Just being curious: how will you achieve this ? You will make the
- > > function used to dispatch system calls a per-thread pointer ?
- > > 
- > 
- > Syscalls are just another form of exceptions, so the change will need to
- > affect all event notifications. A per-thread pointer is an opion
- > provided there is also a mean to install the callback address, so we
- > would also need to intercept the Linux task creation event. 
+> On Thu, 2006-08-31 at 20:49 +0200, Jan Kiszka wrote:
+>> Marcelo Coelho wrote:
+>>> Hi!
+>>>
+>>>
+>>> I've found out in RTAI's 16550a driver, that uses RTDM, the following=
 
-If we continue on this idea. PTD initialization already intercept the
-Linux task creation event to set the PTDs to 0. Maybe we could dedicate
-a PTD to mean that a thread is "monitored", so that when an Adeos event
-occurs, the event only triggers Xenomai callbacks if the thread is
-monitored (not sure that it would work for the "schedule" event
-though).
+>>> comment:
+>>>
+>>>     /*We should disable the line now, but this requires counting
+>>>      * enable/disable, something not yet implemented by the core.
+>>>      * At the moment this call could starve other users sharing the
+>>>      * same line.
+>>>     rtdm_irq_disable(&ctx->irq_handle);*/
+>>>     rtdm_irq_free(&ctx->irq_handle);
+>> In fact, you find the same in Xenomai as RTAI just mirrors the origina=
+l. :)
+>>
+>>> Is this still true? I mean, if i free the device at device close, sho=
+uld
+>>> i expect that i need to request the irq again?
+>> It is still true. Xenomai does not support a nesting counter for
+>> irq_disable/enable yet, therefore RTDM did not change its interface in=
 
-But there is an exception: the "bind" syscall event must be intercepted
-for threads that are not yet marked as monitored.
+>> this regard as well.
+>>
+>>> I'm trying to ckeck what to expect about these calls.
+>>>
+>> For now the situation is like this: rtdm_irq_request allocates an IRQ,=
 
--- 
+>> but doesn't necessarily enables it. So you have to call rtdm_irq_enabl=
+e
+>> afterwards. To release it, just switch off IRQ generation in your devi=
+ce
+>> and call rtdm_irq_free.
+>>
+>> That's true unless the IRQ is shared. Then some other driver may have
+>> already enabled it (which doesn't releases your from the duty to do it=
+
+>> again - you cannot predict the load order). Therefore, if writing a
+>> driver with shared IRQ support, you should not rely on the fact that t=
+he
+>> IRQ line is disabled right after rtdm_irq_request. Neither should you
+>> disable the line on release (only in the hardware). Otherwise, you wou=
+ld
+>> cut off persisting users of that line.
+>>
+>>
+>> Mmh, your question makes me wonder if we shouldn't enable the line in
+>> rtdm_irq_request automatically. I do not recall any urging use-case fo=
+r
+>> the current behaviour... Does anyone else?
+>>
+>> Dmitry, Philippe, what's the reason for the split up in the core? Does=
+
+>> any skin require this?
+>>
+>=20
+> In short, the split up is there because the nucleus is expected to
+> provide mechanisms, not policies, and enabling the channel implicitely
+> upon attachment would impose some kind of policy downstream. Since
+> finding a standard for interrupt handling among OS and platforms is
+> impossible, the core only provides the LEGO bricks, it's up to the uppe=
+r
+> layers to build the big and flashy red fireman truck with those...
+>=20
+
+Ok, makes sense for the core (though it prevents nested
+irq_enable/disable). But I'm convinced now, also when considering RTDM
+over -rt, that RTDM should undergo a change: rtdm_irq_request should
+always return the line enabled.
+
+The first step is now to move rtdm_irq_request and rtdm_irq_enabled
+close to each other in all existing (and publicly known) drivers. Then
+we will see, if this change can be part of 2.3 or is rather something
+for a farther release.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigAF13BB38908A480033F74771
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE+DeeniDOoMHTA+kRAo2sAJ0Ul68+F5vl1wkJzagi5vagJsopbwCeKKts
+ZuuI+eUKkj5KsLxHMRZxRe8=
+=aoLV
+-----END PGP SIGNATURE-----
+
+--------------enigAF13BB38908A480033F74771--
 
