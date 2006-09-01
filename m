@@ -1,14 +1,13 @@
-Message-ID: <44FD5CF1.7000603@domain.hid>
-Date: Tue, 05 Sep 2006 13:18:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <44F84C23.9070105@domain.hid>
+Date: Fri, 01 Sep 2006 10:05:07 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM PCI development framework
-References: <1157443250.4466.12.camel@domain.hid>
-In-Reply-To: <1157443250.4466.12.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD41E75BF20B1960E5DBA7AA6"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Kernel panic with Xenomai SMP kernel
+References: <44F6E774.2000701@domain.hid>	<44F72F35.4070109@domain.hid>	<44F75C54.90608@domain.hid>
+	<17655.28122.163232.842311@domain.hid>
+In-Reply-To: <17655.28122.163232.842311@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,80 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramv <vikesh.rambaran@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD41E75BF20B1960E5DBA7AA6
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Jeff Webb wrote:
+>  > Now, I am setting up a new machine to start the more serious work of
+>  > porting our existing rtlinux simulation to xenomai.  The new machine
+>  > is an Athlon64 X2 processor running Fedora Core 5.  I realize that
+>  > the x86_64 architecture is not supported, so I installed the 32-bit
+>  > version of FC5 on a second partition for use with xenomai.  I
+>  > attempted to compile a xenomai-patched SMP kernel using my 32-bit OS,
+>  > but got a kernel panic when I tried to boot it.  After much fiddling
+>  > with config options, I discovered that if I disable SMP, the kernel
+>  > will boot fine, and the xenomai latency test appears to give good
+>  > results.  This is a good sign, but I would obviously prefer to use my
+>  > second processor, if possible.  I am hoping someone on this list will
+>  > be able to help me track down the problem. 
+> 
+> Do you have spinlock debugging enabled ? If yes, try turning it
+> off. Could you also post your full .config ?
 
-ramv wrote:
-> hi
-> how are you?
->=20
-> This is my first attempt at writing a linux device driver. After readin=
-g
-> through some of the "Linux Device Drivers 3rd edition", and through
-> Xenomai RTDM, i thought a good place to start was a generic framework
-> which detects and allocates PCI resources with the necessary error
-> handling. It makes available callback functions as well as the allocate=
-d
-> resources. The aim is to expand it to provide a framework for a standar=
-d
-> linux char device driver. Thereafter update the framework to be RTDM
-> compatible. I've spoken with Jan Kiska with regards to this and it may
-> useful to others. There is still much work to be done on, especially to=
+I compiled another kernel with the same .config, except with spinlock debugging turned off:
 
-> bring it up to the Xenomai/RTDM coding standard but attached please fin=
-d
-> a first attempt.
->=20
-> Comments and constructive criticism would be greatly appreciated!
-> [The Xenomai GPL file headers are included, hope you don't mind]
+  $ grep -i spinloc /boot/config-2.6.17.7xenomai2.2.1
+  # CONFIG_DEBUG_SPINLOCK is not set
+  # CONFIG_DEBUG_SPINLOCK_SLEEP is not set
 
-The idea to provide some template for (PCI) driver development is
-definitely a good one. Your approach already look quite nice, but it is
-generally wise to apply such templates at least on two different drivers
-to see what may be missing, what needs refinement, or what is not require=
-d.
+I still get a very similar kernel panic with this build.  Do you see any other suspicious options in my .config that could cause problems with SMP on my processor?
 
-A few comments already: it would be nice to add kernel 2.4 support to
-your Makefile. Keep an eye on potential "over-design", i.e. avoid
-wrapping trivial things, rather concentrate on providing templates the
-user can fill in stuff directly.
+Has anyone else tried running xenomai on an Athlon64 X2?
 
->
-> Jan, i went away for a long weekend at the sea to visit my parents.
-> Apologies for not replying earlier
+Thanks,
 
-There is life offline? ;)
-(No need to apologise, we are all busy with various stuff.)
+Jeff
 
->=20
-> ***********************************************************************=
-********************************
-> Disclaimer:  The information contained in this communication is confide=
-ntial and may be legally privileged. =20
-
-Mmm, was it illegal then to read your mail? Or the attachment?? ;)
-
-Jan
-
-
---------------enigD41E75BF20B1960E5DBA7AA6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE/VzxniDOoMHTA+kRAlnEAJ9PwGR7dtfW7ZbpeTiFypSp6Kkq1ACeO2Mb
-WBXPFybj31u1HFiOhaX7mvw=
-=4UWu
------END PGP SIGNATURE-----
-
---------------enigD41E75BF20B1960E5DBA7AA6--
 
