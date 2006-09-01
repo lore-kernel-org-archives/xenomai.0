@@ -1,14 +1,12 @@
-Subject: Re: [Xenomai-help] [Fwd: Performance decrease]
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17655.18827.661904.949733@domain.hid>
-References: <1156941389.4323.17.camel@domain.hid> <1156942089.4323.29.camel@domain.hid>
-	<17655.18827.661904.949733@domain.hid>
-Content-Type: text/plain
-Date: Fri, 01 Sep 2006 09:13:15 +0200
-Message-Id: <1157094795.4322.9.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <b647ffbd0609010023h5de6aa9bx6db265832aecb6f1@domain.hid>
+Date: Fri, 1 Sep 2006 09:23:44 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] IRQ Enable/Disable
+In-Reply-To: <44F72F35.4070109@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_53952_9855038.1157095424055"
+References: <44F6E774.2000701@domain.hid> <44F72F35.4070109@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,50 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Thu, 2006-08-31 at 22:41 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > On Wed, 2006-08-30 at 14:36 +0200, Philippe Gerum wrote:
->  > > -------- Forwarded Message --------
->  > > > From: Daniel Schnell <danielsch@domain.hid>
->  > > > To: xenomai-help <xenomai@xenomai.org>
->  > > > Subject: Performance decrease
->  > > > Date: Wed, 30 Aug 2006 11:58:25 -0000
->  > > > 
->  > > > Hi,
->  > > > 
->  > > >  
->  > > > 
->  > > > I have made some CPU throughput tests with/without "Nucleus options->pervasive real-time support in user-space" 
->  > >  enabled/disabled. And the performance dicrease in using that option is for my processor (MPC5200, 400 MHz) about 10%.
->  > 
->  > There is an impact induced by activating the user-space support, since
->  > all system calls are filtered through Xenomai; some work is currently
->  > undergoing to reduce this overhead, so that only system calls issued by
->  > Xenomai shadows would be intercepted. This said, out of curiosity, how
->  > do you measure those 10% on your board?
-> 
-> Just being curious: how will you achieve this ? You will make the
-> function used to dispatch system calls a per-thread pointer ?
-> 
+------=_Part_53952_9855038.1157095424055
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Syscalls are just another form of exceptions, so the change will need to
-affect all event notifications. A per-thread pointer is an opion
-provided there is also a mean to install the callback address, so we
-would also need to intercept the Linux task creation event. Another
-option would be to define an event filtering routine at domain level,
-which gets called before the event is pipelined. The latter is a simple
-and straightforward approach which does not change much of the existing
-infrastructure, but to remain fast and efficient, the filter should be
-defined for the domain which notifies events, and not for the domains
-which get notified, and this would be quite restrictive Adeos-wise, even
-if this would solve the root issue, Xenomai-wise. To sum up and answer
-to your initial question: well, I don't know yet.
+[...]
 
+Dmitry, Philippe, what's the reason for the split up in the core? Does
+> any skin require this?
+
+
+Can be so if some original interface requires it. e.g. does RTAI enable the
+irq line on rt_request_irq() ?
+Although, RTAI skin bypasses the nucleus layer and calls rthal_irq_request()
+directly.
+
+In general I would say that this approach is more flexible as long as shared
+IRQ mechanism is not involved. And then it makes things more complicated (at
+least less nicer), e.g. the implementation of nested IRQ enable/disable
+calls.
+
+I have found some related discussion (actually, with a draft patch for
+nested IRQ enable/disable support)
+
+https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html
+
+
+Jan
+>
+>
 -- 
-Philippe.
+Best regards,
+Dmitry Adamushko
 
+------=_Part_53952_9855038.1157095424055
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+<div><div><br>
+[...]&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Dmitry, Philippe, what's the reason for the split up in the core? Does<br>any skin require this?
+</blockquote><div><br>
+Can be so if some original interface requires it. e.g. does RTAI enable the irq line on rt_request_irq() ?<br>
+Although, RTAI skin bypasses the nucleus layer and calls rthal_irq_request() directly.<br>
+<br>
+In general I would say that this approach is more flexible as long as
+shared IRQ mechanism is not involved. And then it makes things more
+complicated (at least less nicer), e.g. the implementation of nested
+IRQ enable/disable calls.<br>
+<br>
+I have found some related discussion (actually, with a draft patch for nested IRQ enable/disable support)<br>
+<br>
+<a href="https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html">https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html</a><br>
+&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br></blockquote></div><br>-- <br>Best regards,<br>Dmitry Adamushko
+
+------=_Part_53952_9855038.1157095424055--
 
