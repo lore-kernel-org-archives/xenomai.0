@@ -1,12 +1,15 @@
-Message-ID: <b647ffbd0609010023h5de6aa9bx6db265832aecb6f1@domain.hid>
-Date: Fri, 1 Sep 2006 09:23:44 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] IRQ Enable/Disable
-In-Reply-To: <44F72F35.4070109@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_53952_9855038.1157095424055"
-References: <44F6E774.2000701@domain.hid> <44F72F35.4070109@domain.hid>
+Subject: Re: [Xenomai-help] Kernel panic with Xenomai SMP kernel
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <17655.28122.163232.842311@domain.hid>
+References: <44F6E774.2000701@domain.hid>
+	<44F72F35.4070109@domain.hid> <44F75C54.90608@domain.hid>
+	<17655.28122.163232.842311@domain.hid>
+Content-Type: text/plain
+Date: Fri, 01 Sep 2006 09:26:15 +0200
+Message-Id: <1157095575.4322.14.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,63 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-------=_Part_53952_9855038.1157095424055
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Fri, 2006-09-01 at 01:16 +0200, Gilles Chanteperdrix wrote:
+> Jeff Webb wrote:
+>  > Hello Xenomai crew,
+>  > 
+>  > A few months ago, I tried out xenomai 2.1-rc3 and 2.1-rc4 on my Fedora Core 1 system.  (2.4 kernel / standard AMD Athlon XP machine.)  At that time, I was able to patch the kernel and install xenomai without too much trouble.
+>  > 
+>  > Now, I am setting up a new machine to start the more serious work of
+>  > porting our existing rtlinux simulation to xenomai.  The new machine
+>  > is an Athlon64 X2 processor running Fedora Core 5.  I realize that
+>  > the x86_64 architecture is not supported, so I installed the 32-bit
+>  > version of FC5 on a second partition for use with xenomai.  I
+>  > attempted to compile a xenomai-patched SMP kernel using my 32-bit OS,
+>  > but got a kernel panic when I tried to boot it.  After much fiddling
+>  > with config options, I discovered that if I disable SMP, the kernel
+>  > will boot fine, and the xenomai latency test appears to give good
+>  > results.  This is a good sign, but I would obviously prefer to use my
+>  > second processor, if possible.  I am hoping someone on this list will
+>  > be able to help me track down the problem. 
+> 
+> Do you have spinlock debugging enabled ? If yes, try turning it
+> off.
 
-[...]
+Hopefully, the former issue with CONFIG_DEBUG_SPINLOCK has been fixed in
+Adeos rev. 1.3-08 (this was a 2.6-only issue). So any later patch should
+be immune from this bug.
 
-Dmitry, Philippe, what's the reason for the split up in the core? Does
-> any skin require this?
-
-
-Can be so if some original interface requires it. e.g. does RTAI enable the
-irq line on rt_request_irq() ?
-Although, RTAI skin bypasses the nucleus layer and calls rthal_irq_request()
-directly.
-
-In general I would say that this approach is more flexible as long as shared
-IRQ mechanism is not involved. And then it makes things more complicated (at
-least less nicer), e.g. the implementation of nested IRQ enable/disable
-calls.
-
-I have found some related discussion (actually, with a draft patch for
-nested IRQ enable/disable support)
-
-https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html
-
-
-Jan
->
->
+>  Could you also post your full .config ?
+> 
+> 
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
 
-------=_Part_53952_9855038.1157095424055
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<div><div><br>
-[...]&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Dmitry, Philippe, what's the reason for the split up in the core? Does<br>any skin require this?
-</blockquote><div><br>
-Can be so if some original interface requires it. e.g. does RTAI enable the irq line on rt_request_irq() ?<br>
-Although, RTAI skin bypasses the nucleus layer and calls rthal_irq_request() directly.<br>
-<br>
-In general I would say that this approach is more flexible as long as
-shared IRQ mechanism is not involved. And then it makes things more
-complicated (at least less nicer), e.g. the implementation of nested
-IRQ enable/disable calls.<br>
-<br>
-I have found some related discussion (actually, with a draft patch for nested IRQ enable/disable support)<br>
-<br>
-<a href="https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html">https://mail.gna.org/public/xenomai-core/2006-04/msg00103.html</a><br>
-&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br></blockquote></div><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_53952_9855038.1157095424055--
 
