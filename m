@@ -1,50 +1,154 @@
-Message-ID: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
-Date: Fri, 27 Oct 2006 11:23:30 +1000
-From: "Andrew Dennison" <andrewd.lists@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_40368_5954836.1161912210122"
-Subject: [Xenomai-core] [PATCH] prepare-kernel.sh breaks linux-2.4
-	drivers/Makefile
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-------=_Part_40368_5954836.1161912210122
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Adeos-main] ADEOS on MIPS
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20060902103919.21905.qmail@domain.hid>
+References: <20060902103919.21905.qmail@domain.hid>
+Content-Type: text/plain
+Date: Sat, 02 Sep 2006 13:37:54 +0200
+Message-Id: <1157197075.4967.66.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Reply-To: rpm@xenomai.org
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: somshekar kadam <som_kadam@domain.hid>
+Cc: adeos-main@gna.org
 
-Running prepare-kernel on the denx 2.4 kernel adds the following line
+On Sat, 2006-09-02 at 11:39 +0100, somshekar kadam wrote:
+> Hi Philippe Gerum,
+> 
+>    what I see on net is release of ADOES patches like
+> adeos-ipipe-2.6.13-i386-1.0-05
+> for linux-2.6.13 kernel version. 
+> 
 
-mod-subdirs := xenomai
+The official source for patches contributed by the Adeos project is
+http://download.gna.org/adeos/patches/
 
-This prevents all other mod-subdirs under drivers from building.
+where you can find Adeos/I-pipe versions up to 2.6.17, depending on the
+target architecture.
 
-Patch is against r1273 but still seems to apply (and be required) on head.
+> also I see RTAI version rtai-3.3-test3
+> which includes ADOES support builtin with rtai for
+> linux kernel verison linux-2.6.13 
+> 
 
-Andrew
+Please ask the RTAI people for help, since they provide their own
+interrupt virtualization patches since v3.2 or so. AFAICS, some of these
+patches completely disable the core Adeos code by inserting
+RTAI-specific sideways, other patches only enable part of the Adeos
+code, and so on. Your best option to understand what's going on into the
+RTAI implementation is to get information from the RTAI folks directly.
 
-------=_Part_40368_5954836.1161912210122
-Content-Type: text/x-diff; name=linux_2.4_driver_modules.patch; 
-	charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_etrw8md1
-Content-Disposition: attachment; filename="linux_2.4_driver_modules.patch"
+> 
+> which I should use as our aim is to run rtai on ADOES
+> on mips 4k. 
+> so which I should port is it RTAI.3.3 or only the
+> ADOES patch.
+> 
+> First I need to port ADOES ,so which of the above I
+> should use. one with that comes with RTAI or the
+> individual patch for ADEOS that one. 
+> 
 
-ZGlmZiAtLWdpdCBhL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggYi9zY3JpcHRzL3ByZXBhcmUt
-a2VybmVsLnNoCmluZGV4IGZiYzkxY2UuLmNhODdlN2YgMTAwNzU1Ci0tLSBhL3NjcmlwdHMvcHJl
-cGFyZS1rZXJuZWwuc2gKKysrIGIvc2NyaXB0cy9wcmVwYXJlLWtlcm5lbC5zaApAQCAtNDU1LDcg
-KzQ1NSw3IEBAIEVPRgogCXBhdGNoX2VkIGRyaXZlcnMvTWFrZWZpbGUgPDxFT0YKIC9pbmNsdWRl
-IFwkKFRPUERJUilcL1J1bGVzLm1ha2UKIGkKLW1vZC1zdWJkaXJzIDo9IHhlbm9tYWkKK21vZC1z
-dWJkaXJzICs9IHhlbm9tYWkKIHN1YmRpci1cJChDT05GSUdfWEVOT01BSSkgKz0geGVub21haQog
-CiAuCg==
-------=_Part_40368_5954836.1161912210122--
+Really, I can't help, because it's neither an Adeos or Xenomai issue,
+and I do not follow RTAI's development anymore: 
+https://mail.rtai.org/pipermail/rtai/2005-October/013155.html
+
+> please dont mind it may be a silly question to begin
+> with. 
+
+> Thanks And Regards
+> Neelu 
+> 
+> 
+> 
+> 
+> 
+> --- Philippe Gerum <rpm@xenomai.org> wrote:
+> 
+> > On Fri, 2006-09-01 at 09:51 +0100, somshekar kadam
+> > wrote:
+> > > Hi All, 
+> > > 
+> > > I am newbie to ADEOS, 
+> > > we would like to know if ADOES is supported on
+> > ADOES.
+> > > when I checked on your release , I dont find MIPS
+> > arch
+> > > supported. 
+> > > well we would like to port ADOES for MIPS. 
+> > > I hope I will get Help and right pointers from you
+> > all
+> > > People.
+> > > To Begin with We are going to port ADOES to MIPS
+> > 4kE
+> > > processor.
+> > > I would like to know what goes in to porting of
+> > ADOES
+> > > to new Architecture is where should i Begin
+> > > It will be Big time to get it working , but with
+> > our
+> > > support i dont feel it will be problem from me
+> > > Thanks And Regards
+> > > Neelu 
+> > > 
+> > 
+> > This document is a bit outdated, but the gist of it
+> > still applies:
+> > http://download.gna.org/adeos/doc/porting.txt
+> > 
+> > Adeos has already been ported to quite different
+> > archs, this should give
+> > you some useful insights:
+> > http://download.gna.org/adeos/patches/v2.6/
+> > 
+> > Depending on the complexity of the target interrupt
+> > sub-system, and how
+> > familiar you are with it, the initial porting effort
+> > should be a matter
+> > of 1-4 weeks.
+> > 
+> > > Thanks
+> > > 
+> > > 
+> > > 
+> > > 		
+> > >
+> >
+> __________________________________________________________
+> > > Yahoo! India Answers: Share what you know. Learn
+> > something new
+> > > http://in.answers.yahoo.com/
+> > > 
+> > > _______________________________________________
+> > > Adeos-main mailing list
+> > > Adeos-main@domain.hid
+> > > https://mail.gna.org/listinfo/adeos-main
+> > -- 
+> > Philippe.
+> > 
+> > 
+> > 
+> 
+> 
+> 
+> 		
+> __________________________________________________________
+> Yahoo! India Answers: Share what you know. Learn something new
+> http://in.answers.yahoo.com/
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+-- 
+Philippe.
+
+
 
