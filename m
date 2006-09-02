@@ -1,68 +1,237 @@
-Message-ID: <003101c6e6f6$1fa52de0$1501a8c0@domain.hid>
-From: "Kiichi Kameda" <k-kameda@domain.hid>
-References: <003e01c6e6ee$d0ba19e0$1501a8c0@domain.hid> <45211492.6080109@domain.hid>
-Subject: Re: [Xenomai-help] SH4 port
-Date: Tue, 3 Oct 2006 23:13:39 +0900
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-15"
+Subject: Re: [Adeos-main] ADEOS on MIPS
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20060902114708.45716.qmail@domain.hid>
+References: <20060902114708.45716.qmail@domain.hid>
+Content-Type: text/plain
+Date: Sat, 02 Sep 2006 17:10:00 +0200
+Message-Id: <1157209801.30598.14.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Reply-To: rpm@xenomai.org
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: somshekar kadam <som_kadam@domain.hid>
+Cc: adeos-main@gna.org
 
+On Sat, 2006-09-02 at 12:47 +0100, somshekar kadam wrote:
+> Hi Philipe Gerum,
+> 
+> Thanks A lot for Quick Response,
+> 
+> we are more intrested onto porting ADEOS on our MIPS
+> platform for mips4ke, if it disables core ADEOS
+> functionality, we stick only to ADOES release.
+> 
+> Getting RTAI run on it is not requrement, basicall we
+> need ADEOS on MIPS4k, 
+> 
+> I think I go ahead ADOES patches and source for
+> porting it to MIPS. 
+> 
+> I hope I done the correct decision, as I see no point
+> going to RTAI if it disables core ADEOS . 
+> please comment on this. 
+
+I have already commented in length what I just described earlier:
+https://mail.rtai.org/pipermail/rtai/2005-August/012749.html
+
+The related patches are available to everyone willing to read them, so
+the only advice you will get from me, is to base your decision on facts:
+the source code doesn't lie.
+
+> And we are happy to have your support 
+> 
+
+This mailing list answers general questions about Adeos, or helps
+reviewing actual code posted to it. So far, I've answered the general
+questions you asked for.
+
+> Thanks And Regards
+> Neelu 
+> 
+> 
+> 
+> --- Philippe Gerum <rpm@xenomai.org> wrote:
+> 
+> > On Sat, 2006-09-02 at 11:39 +0100, somshekar kadam
+> > wrote:
+> > > Hi Philippe Gerum,
+> > > 
+> > >    what I see on net is release of ADOES patches
+> > like
+> > > adeos-ipipe-2.6.13-i386-1.0-05
+> > > for linux-2.6.13 kernel version. 
+> > > 
+> > 
+> > The official source for patches contributed by the
+> > Adeos project is
+> > http://download.gna.org/adeos/patches/
+> > 
+> > where you can find Adeos/I-pipe versions up to
+> > 2.6.17, depending on the
+> > target architecture.
+> > 
+> > > also I see RTAI version rtai-3.3-test3
+> > > which includes ADOES support builtin with rtai for
+> > > linux kernel verison linux-2.6.13 
+> > > 
+> > 
+> > Please ask the RTAI people for help, since they
+> > provide their own
+> > interrupt virtualization patches since v3.2 or so.
+> > AFAICS, some of these
+> > patches completely disable the core Adeos code by
+> > inserting
+> > RTAI-specific sideways, other patches only enable
+> > part of the Adeos
+> > code, and so on. Your best option to understand
+> > what's going on into the
+> > RTAI implementation is to get information from the
+> > RTAI folks directly.
+> > 
+> > > 
+> > > which I should use as our aim is to run rtai on
+> > ADOES
+> > > on mips 4k. 
+> > > so which I should port is it RTAI.3.3 or only the
+> > > ADOES patch.
+> > > 
+> > > First I need to port ADOES ,so which of the above
+> > I
+> > > should use. one with that comes with RTAI or the
+> > > individual patch for ADEOS that one. 
+> > > 
+> > 
+> > Really, I can't help, because it's neither an Adeos
+> > or Xenomai issue,
+> > and I do not follow RTAI's development anymore: 
 > >
-> > So, I created modified version of  SH-Linux code , where "current" macro
-> > uses
-> > the stack pointer(SP & ~(THREAD_SIZE) -1).
-> > After that, although Linux seems to work well, the Xenomai thread still
-> > causes system panic, if I once run the Xenomai program that uses POSIX
-> skin.
->
-> And that's something I do not understand. What was your idea behind this
-> step?
->
+> https://mail.rtai.org/pipermail/rtai/2005-October/013155.html
+> > 
+> > > please dont mind it may be a silly question to
+> > begin
+> > > with. 
+> > 
+> > > Thanks And Regards
+> > > Neelu 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > 
+> > > --- Philippe Gerum <rpm@xenomai.org> wrote:
+> > > 
+> > > > On Fri, 2006-09-01 at 09:51 +0100, somshekar
+> > kadam
+> > > > wrote:
+> > > > > Hi All, 
+> > > > > 
+> > > > > I am newbie to ADEOS, 
+> > > > > we would like to know if ADOES is supported on
+> > > > ADOES.
+> > > > > when I checked on your release , I dont find
+> > MIPS
+> > > > arch
+> > > > > supported. 
+> > > > > well we would like to port ADOES for MIPS. 
+> > > > > I hope I will get Help and right pointers from
+> > you
+> > > > all
+> > > > > People.
+> > > > > To Begin with We are going to port ADOES to
+> > MIPS
+> > > > 4kE
+> > > > > processor.
+> > > > > I would like to know what goes in to porting
+> > of
+> > > > ADOES
+> > > > > to new Architecture is where should i Begin
+> > > > > It will be Big time to get it working , but
+> > with
+> > > > our
+> > > > > support i dont feel it will be problem from me
+> > > > > Thanks And Regards
+> > > > > Neelu 
+> > > > > 
+> > > > 
+> > > > This document is a bit outdated, but the gist of
+> > it
+> > > > still applies:
+> > > > http://download.gna.org/adeos/doc/porting.txt
+> > > > 
+> > > > Adeos has already been ported to quite different
+> > > > archs, this should give
+> > > > you some useful insights:
+> > > > http://download.gna.org/adeos/patches/v2.6/
+> > > > 
+> > > > Depending on the complexity of the target
+> > interrupt
+> > > > sub-system, and how
+> > > > familiar you are with it, the initial porting
+> > effort
+> > > > should be a matter
+> > > > of 1-4 weeks.
+> > > > 
+> > > > > Thanks
+> > > > > 
+> > > > > 
+> > > > > 
+> > > > > 		
+> > > > >
+> > > >
+> > >
+> >
+> __________________________________________________________
+> > > > > Yahoo! India Answers: Share what you know.
+> > Learn
+> > > > something new
+> > > > > http://in.answers.yahoo.com/
+> > > > > 
+> > > > >
+> > _______________________________________________
+> > > > > Adeos-main mailing list
+> > > > > Adeos-main@domain.hid
+> > > > > https://mail.gna.org/listinfo/adeos-main
+> > > > -- 
+> > > > Philippe.
+> > > > 
+> > > > 
+> > > > 
+> > > 
+> > > 
+> > > 
+> > > 		
+> > >
+> >
+> __________________________________________________________
+> > > Yahoo! India Answers: Share what you know. Learn
+> > something new
+> > > http://in.answers.yahoo.com/
+> > > 
+> > > _______________________________________________
+> > > Adeos-main mailing list
+> > > Adeos-main@domain.hid
+> > > https://mail.gna.org/listinfo/adeos-main
+> > -- 
+> > Philippe.
+> > 
+> > 
+> > 
+> 
+> 
+> 
+> 		
+> __________________________________________________________
+> Yahoo! India Answers: Share what you know. Learn something new
+> http://in.answers.yahoo.com/
+-- 
+Philippe.
 
-Just a try , because I realized overwriting "current" may not be right way.
-
-
->
-> [ksrc/arch/sh/switch.c]
->
-> void rthal_switch_to(xnarchtcb_t *prev, xnarchtcb_t *next)
-> {
-> ...
->         /*
->          * Restore the kernel mode register
->          *      k7 (r7_bank1)
->          */
->  if(next->user_task) {
->
->             asm volatile("ldc       %0, r5_bank"
->                      : /* no output */
->                      : "r" (next->user_task->thread_info));
->  }
->
-> Is there a particular reason why comment and reality diverge regarding
-> the thread_info register? Could this cause your troubles?
->
-
-I'm sorry, the comment is wrong.
-The code that uses r7_bank  results in overwriting "current".
-To avoid this,  I changed  from r7_bank to r5_bank for Xenomai context
-switch .
-Also, I added to the Linux context switch code  so that thread_info is set
-in r5_bank register  as well as in r7_bank regsiter.
-r5_bank register is referenced in the page fault handling code.
-
-Kiichi Kameda
 
 
