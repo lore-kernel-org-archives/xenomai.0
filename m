@@ -1,14 +1,12 @@
-Message-ID: <4500821B.8040703@domain.hid>
-Date: Thu, 07 Sep 2006 22:33:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0609020538q3dcdc018ufa96f5c895345d55@domain.hid>
+Date: Sat, 2 Sep 2006 14:38:03 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] Question about interrupt propagation to Linux
+In-Reply-To: <20060902114916.GB4486@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Low-level isr in ADEOS/RTDM
-References: <45007B5B.9010000@domain.hid>
-In-Reply-To: <45007B5B.9010000@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig37454244B620C5EA84A597BE"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_68640_12318334.1157200683967"
+References: <20060902114916.GB4486@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,114 +16,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sean McGranaghan <smm@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, Bernhard Walle <bernhard.walle@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig37454244B620C5EA84A597BE
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+------=_Part_68640_12318334.1157200683967
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Sean McGranaghan wrote:
-> Hello all,
->=20
-> I am having an issue with a "lost" interrupt in an RTDM driver. This is=
- a long=20
-> story so I will try to summarize:
->=20
-> Hardware description -
-> I have a Geode2 based PC/104 stack with CAN and ADC/DAC cards. The moth=
-erboard=20
-> implements a standard XT-PIC in its super io. The system is running Xen=
-omai=20
-> 2.2.1 with a Gentoo  Linux 2.6.17 kernel. There are several external de=
-vices on=20
-> the CAN bus to load the bus with traffic.
->=20
-> Software description -
-> I have two RTDM drivers that provide simple ioctl() interfaces to the=20
-> application. One driver supports two CAN controllers. (PCAN/SJA1000. I =
-
-> implemented this driver many months before RTCAN was available. Sorry I=
- couldn't=20
-> wait, paying customer and all. ;-)
-
-Yeah. :)
-
-> The other driver supports a ADC/DAQ card. The=20
-> application runs several Xenomai tasks using message queues for communi=
-cation.
->=20
-> Failure Description -
-> The application starts. I can see IRQ lines being raised and lowered as=
-=20
-> interrupts are handled. The application runs normally. After about one =
-or two=20
-> minutes depending on the bus load, I "lose" the IRQ15 interrupt. My int=
-errupt=20
-> service routine is never called and the interrupt chain is broken for t=
-hat=20
-> device. I have traced the IRQ lines from the devices on the oscilloscop=
-e and see=20
-> that the IRQ goes high, but is never acknowledged. (See attached. I add=
-ed labels=20
-> to each trace.) This failure is sporadic and seems to depend on all thr=
-ee=20
-> devices generating interrupts in the system.
->=20
-> Theory -
-> The interrupt is never acknowledged because the PIC did not notify the =
-processor=20
-> or software never acknowledged the PIC.
->=20
-> Testing approach -
-> I need to determine if the hardware or software has lost the interrupt.=
- I would=20
-> tend to suspect software first so I decided to start there. I am using =
-the=20
-> parallel port pins as GPIO output and trying to instrument the low-leve=
-l=20
-> ADEOS/Xenomai interrupt handling. If I catch the interrupt soon enough =
-in the=20
-> interrupt pipeline I can determine that some software issue is preventi=
-ng my isr=20
-> from running. If no interrupt ever occurs then I can suspect the hardwa=
-re.
->=20
-> Assumptions -
-> ADEOS/Xenomai/RTDM catches the interrupt and propagates it to my isr. I=
-f my isr=20
-> is the first level interrupt handler I am out of luck.
->=20
-> Any thoughts or suggestions are appreciated.
-
-Already had a look at the ipipe-tracer?
-
-http://download.gna.org/adeos/patches/v2.6/i386/tracer
-
-If you can determine the error condition in software, it's easy to
-trigger a freeze of the past invoked functions: xntrace_user_freeze. You
-can call it from any context, also from user-space. Check
-/proc/ipipe/tracer for the output ("frozen") and tunables (specifially
-"back_trace_points"). If help on interpreting the result is required,
-post it (or relevant excerpts) here.
-
-Jan
+Hello Bernhard,
 
 
---------------enig37454244B620C5EA84A597BE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I have a question about interrupt propagation to Linux with the
+> XN_ISR_PROPAGATE return value in the real-time interrupt handler.
+>
+> My question is: is the particular IRQ (not other IRQs) that is handled
+> by this ISR re-enabled after the *RT* ISR finished or is it re-enabled
+> after the *Linux* ISR has finished. In my understanding the interrupt
+> cannot be enabled after the RT-ISR because then the RT-ISR handler
+> would be called again and the Linux ISR would never have a chance to
+> run.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFFAIIiniDOoMHTA+kRAqS+AJ9gLamCaKpY+zF5I1YD6VRaAlRBHgCggk5O
-HE9M4bzZ8wUKBOBJajoQpIU=
-=+TKC
------END PGP SIGNATURE-----
+You are right. The IRQ line is not re-enabled upon getting XN_ISR_PROPAGATE.
+It will be re-enabled by linux domain at some point later when the former
+one eventually gets control (i.e. when there are no activities in the
+primary domain).
+That said, the interrupts from a device being controlled by the RT driver
+(ISR in the primary domain) can't be seen in the mean time. Hence, there are
+no more deterministic guarantees for RT device handling.
 
---------------enig37454244B620C5EA84A597BE--
+The alternative approach is as described here :
+
+https://mail.gna.org/public/xenomai-core/2005-11/msg00012.html
+
+It's possible to apply some optimisation :
+
+1) speedo_suspend_interrupt() should return an indication whether it's
+interested in this IRQ (i.e. whether it was rised by a dedicated device) ;
+
+2) arti_irq_trampoline()  should set "shared" up only when one of the
+suspend_handler() (like e.g. == speedo_suspend_interrupt() ) have denoted
+its interest;
+
+3) this way, the IRQ is not propagated down to the linux domain when nobody
+there is interested.
+
+The patch addresses RTAI and 2.4 kernel but it's easily applicable to recent
+Xenomai.
+
+
+
+Thanks.
+>
+>
+> Regards,
+>   Bernhard
+> --
+> At least Microsoft offers updates to keep your selection of bugs fresh.
+>         -- Alan Shutko, hating Corel even more, in asr
+>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+>
+>
+>
+
+
+-- 
+Best regards,
+Dmitry Adamushko
+
+------=_Part_68640_12318334.1157200683967
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<br>
+<div><span class="gmail_quote">Hello Bernhard<b class="gmail_sendername"><span style="font-weight: bold;"></span>,</b></span><br>
+<div><br>
+</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I have a question about interrupt propagation to Linux with the<br>XN_ISR_PROPAGATE return value in the real-time interrupt handler.
+<br><br>My question is: is the particular IRQ (not other IRQs) that is handled<br>by this ISR re-enabled after the *RT* ISR finished or is it re-enabled<br>after the *Linux* ISR has finished. In my understanding the interrupt
+<br>cannot be enabled after the RT-ISR because then the RT-ISR handler<br>would be called again and the Linux ISR would never have a chance to<br>run.</blockquote><div><br>
+You are right. The IRQ line is not re-enabled upon getting XN_ISR_PROPAGATE.<br>
+It will be re-enabled by linux domain at some point later when the
+former one eventually gets control (i.e. when there are no activities
+in the primary domain).<br>
+That said, the interrupts from a device being controlled by the RT
+driver (ISR in the primary domain) can't be seen in the mean time.
+Hence, there are no more deterministic guarantees for RT device
+handling.<br>
+<br>The alternative approach is as described here :<br>
+<br><a href="https://mail.gna.org/public/xenomai-core/2005-11/msg00012.html">https://mail.gna.org/public/xenomai-core/2005-11/msg00012.html</a><br>
+<br>
+It's possible to apply some optimisation :<br>
+<br>
+1) speedo_suspend_interrupt() should return an indication whether it's
+interested in this IRQ (i.e. whether it was rised by a dedicated
+device) ;<br>
+<br>
+2) arti_irq_trampoline()&nbsp; should set &quot;shared&quot; up only when one of
+the suspend_handler() (like e.g. == speedo_suspend_interrupt() ) have
+denoted its interest;<br>
+<br>
+3) this way, the IRQ is not propagated down to the linux domain when nobody there is interested.<br>
+</div><br>
+The patch addresses RTAI and 2.4 kernel but it's easily applicable to recent Xenomai.<br>
+<br>
+<br>
+<br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Thanks.<br><br><br>Regards,<br>&nbsp;&nbsp;Bernhard<br>--<br>At least Microsoft offers updates to keep your selection of bugs fresh.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- Alan Shutko, hating Corel even more, in asr<br><br><br>_______________________________________________<br>Xenomai-help mailing list<br><a href="mailto:Xenomai-help@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">
+Xenomai-help@domain.hid</a><br><a href="https://mail.gna.org/listinfo/xenomai-help" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">
+https://mail.gna.org/listinfo/xenomai-help</a><br><br><br><br></blockquote></div><br><br clear="all"><br>-- <br>Best regards,<br>Dmitry Adamushko
+
+
+------=_Part_68640_12318334.1157200683967--
 
