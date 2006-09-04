@@ -1,14 +1,13 @@
-Message-ID: <44FB46B7.60702@domain.hid>
-Date: Sun, 03 Sep 2006 23:18:47 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Mon, 4 Sep 2006 08:35:09 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] RTCAN bug fix
-References: <44FACF17.2020806@domain.hid>
-In-Reply-To: <44FACF17.2020806@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig57CDB7042BFC68787F3463DD"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200609040835.10868.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Buildbot reorganisation
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,47 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig57CDB7042BFC68787F3463DD
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi
 
-Wolfgang Grandegger wrote:
-> Hello,
->=20
-> attached is a patch changing:
->=20
->    * ksrc/drivers/can/rtcan_dev.c (rtcan_dev_register): Bug fixed
->    when maximum number of devices is exeeded.
+I refactored the whole buildbot quite a lot. The following changes are worth 
+mentioning and were applied last saturday morning:
 
-Applied.
+- upgraded to buildbot 0.7.4 (required to for better warning/logs)
 
->=20
-> BTW, a similar bug is present in RTnet as well.
+- to speed up builds during the day reorganised the buildbot to
 
-Yep, fixed there as well. Thanks.
+- quick builds which only calls svn update, run 2 minutes after a checkin.
+  Found at the usual place http://ngiger.dyndns.org/buildbot/
+  They should be finished normally 20 to 30 minutes after a checkin.
 
-All pending CAN patches are now in SVN.
+- full builds at 1 AM in the night, takes about 2 hours. Found at
+  http://ngiger.dyndns.org/buildbot-full/
 
-Jan
+- Using the AnyBranchScheduler to permit builds of branches/v2.2.2, in order
+  to catch failures like the one reported yesterday "v2.2.x broken (r1534)".
+  Here I am not totally sure whether everything will work as intended, but I 
+  will have a close look on it.
 
+- Reworked documentation, see
+  http://ngiger.dyndns.org/xenomai-data/xeno_buildbot.{pdf|lyx}
 
---------------enig57CDB7042BFC68787F3463DD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+- Warnings (if any) during compilations are found in the "HTML" log file of
+  a compile step, e.g. build
+  http://ngiger.dyndns.org/buildbot/hcu3_vx_q/builds/0
+  leads to
+  http://ngiger.dyndns.org/buildbot/hcu3_vx_q/builds/0/step-mk_kernel/2
+  I hope, that Gilles is satisfied, if not, please propose a better layout.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+- During build time it should be possible to watch warnings coming in
+  realtime. But beware, that if the slave and master run on the same machine,
+  this will be really slow, for reasons still unknown to me.
 
-iD8DBQFE+0a7niDOoMHTA+kRAjiOAJ902/waoaI3Lx5fcV/4e0PxWckh5QCeIkpB
-XOk2vnV5Cj6OkgBzhkavBk0=
-=BONc
------END PGP SIGNATURE-----
+- Added a help script extract_script.rb, which allows me to extract all
+  the steps run a build. Handy for debugging.
 
---------------enig57CDB7042BFC68787F3463DD--
+- Added a robots.txt to avoid incoming traffic on my machine. Everything robot
+  is no disallow to search anything under the buildbot/.
+
+- Corrected test_sim.rb to output segmentation errors, check for error status
+  of all called test programs.
+
+Buildbot has the very nice feature to be able to run a lot of steps
+B E F O R E checking in the changes. See 
+http://buildbot.sourceforge.net/manual-0.7.4.html#try
+If any of the committers  would like to test the feature, I would love to add 
+this feature to the buildbot and would do all the necessary to give him the 
+necessary privilege on the buildmaster. I never tested this feature yet, but 
+would invest the necessary time if you drop me note that you are interested.
+
+TODO:
+- investigate why the sim segfaults on ppc
+- why does the hcu3 test run with the quick but not the full build.
+
+Best regards
+
+-- 
+Niklaus Giger
 
