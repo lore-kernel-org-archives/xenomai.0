@@ -1,16 +1,14 @@
-Subject: Re: [Xenomai-help] [Fwd: Performance decrease]
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17656.11641.610980.162241@domain.hid>
-References: <1156941389.4323.17.camel@domain.hid> <1156942089.4323.29.camel@domain.hid>
-	<17655.18827.661904.949733@domain.hid>
-	<1157094795.4322.9.camel@domain.hid>
-	<17656.11641.610980.162241@domain.hid>
-Content-Type: text/plain
-Date: Fri, 01 Sep 2006 16:35:10 +0200
-Message-Id: <1157121310.4981.18.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <44FD5CF1.7000603@domain.hid>
+Date: Tue, 05 Sep 2006 13:18:09 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] RTDM PCI development framework
+References: <1157443250.4466.12.camel@domain.hid>
+In-Reply-To: <1157443250.4466.12.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD41E75BF20B1960E5DBA7AA6"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,73 +18,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: ramv <vikesh.rambaran@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2006-09-01 at 14:54 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > On Thu, 2006-08-31 at 22:41 +0200, Gilles Chanteperdrix wrote:
->  > > Philippe Gerum wrote:
->  > >  > On Wed, 2006-08-30 at 14:36 +0200, Philippe Gerum wrote:
->  > >  > > -------- Forwarded Message --------
->  > >  > > > From: Daniel Schnell <danielsch@domain.hid>
->  > >  > > > To: xenomai-help <xenomai@xenomai.org>
->  > >  > > > Subject: Performance decrease
->  > >  > > > Date: Wed, 30 Aug 2006 11:58:25 -0000
->  > >  > > > 
->  > >  > > > Hi,
->  > >  > > > 
->  > >  > > >  
->  > >  > > > 
->  > >  > > > I have made some CPU throughput tests with/without "Nucleus options->pervasive real-time support in user-space" 
->  > >  > >  enabled/disabled. And the performance dicrease in using that option is for my processor (MPC5200, 400 MHz) about 10%.
->  > >  > 
->  > >  > There is an impact induced by activating the user-space support, since
->  > >  > all system calls are filtered through Xenomai; some work is currently
->  > >  > undergoing to reduce this overhead, so that only system calls issued by
->  > >  > Xenomai shadows would be intercepted. This said, out of curiosity, how
->  > >  > do you measure those 10% on your board?
->  > > 
->  > > Just being curious: how will you achieve this ? You will make the
->  > > function used to dispatch system calls a per-thread pointer ?
->  > > 
->  > 
->  > Syscalls are just another form of exceptions, so the change will need to
->  > affect all event notifications. A per-thread pointer is an opion
->  > provided there is also a mean to install the callback address, so we
->  > would also need to intercept the Linux task creation event. 
-> 
-> If we continue on this idea. PTD initialization already intercept the
-> Linux task creation event to set the PTDs to 0. Maybe we could dedicate
-> a PTD to mean that a thread is "monitored", so that when an Adeos event
-> occurs, the event only triggers Xenomai callbacks if the thread is
-> monitored
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD41E75BF20B1960E5DBA7AA6
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The advantage I see with wiring the callback into the task struct is
-that it should be easier to handle the binding issue. While we are at
-it, we could just define an additional callback pointer, no need to
-recycle ptds.
+ramv wrote:
+> hi
+> how are you?
+>=20
+> This is my first attempt at writing a linux device driver. After readin=
+g
+> through some of the "Linux Device Drivers 3rd edition", and through
+> Xenomai RTDM, i thought a good place to start was a generic framework
+> which detects and allocates PCI resources with the necessary error
+> handling. It makes available callback functions as well as the allocate=
+d
+> resources. The aim is to expand it to provide a framework for a standar=
+d
+> linux char device driver. Thereafter update the framework to be RTDM
+> compatible. I've spoken with Jan Kiska with regards to this and it may
+> useful to others. There is still much work to be done on, especially to=
 
->  (not sure that it would work for the "schedule" event
-> though).
+> bring it up to the Xenomai/RTDM coding standard but attached please fin=
+d
+> a first attempt.
+>=20
+> Comments and constructive criticism would be greatly appreciated!
+> [The Xenomai GPL file headers are included, hope you don't mind]
 
-We want to know all scheduling events anyway, including those involving
-non-shadows, so that we can make the root thread inherit the right
-priority (and also engage the interrupt shield as needed).
+The idea to provide some template for (PCI) driver development is
+definitely a good one. Your approach already look quite nice, but it is
+generally wise to apply such templates at least on two different drivers
+to see what may be missing, what needs refinement, or what is not require=
+d.
 
-> 
-> But there is an exception: the "bind" syscall event must be intercepted
-> for threads that are not yet marked as monitored.
+A few comments already: it would be nice to add kernel 2.4 support to
+your Makefile. Keep an eye on potential "over-design", i.e. avoid
+wrapping trivial things, rather concentrate on providing templates the
+user can fill in stuff directly.
 
-That's the major issue. We need to keep events flowing to a filtering
-callback in order to detect binding ops, but without going through the
-entire pipeline abstraction. And pipelining as it is now must be kept
-for bound Linux tasks, i.e. shadows. The idea is to save the time spent
-in the Adeos event dispatcher for tasks that don't need to tell the
-world about what they are actually doing.
+>
+> Jan, i went away for a long weekend at the sea to visit my parents.
+> Apologies for not replying earlier
 
--- 
-Philippe.
+There is life offline? ;)
+(No need to apologise, we are all busy with various stuff.)
+
+>=20
+> ***********************************************************************=
+********************************
+> Disclaimer:  The information contained in this communication is confide=
+ntial and may be legally privileged. =20
+
+Mmm, was it illegal then to read your mail? Or the attachment?? ;)
+
+Jan
 
 
+--------------enigD41E75BF20B1960E5DBA7AA6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE/VzxniDOoMHTA+kRAlnEAJ9PwGR7dtfW7ZbpeTiFypSp6Kkq1ACeO2Mb
+WBXPFybj31u1HFiOhaX7mvw=
+=4UWu
+-----END PGP SIGNATURE-----
+
+--------------enigD41E75BF20B1960E5DBA7AA6--
 
