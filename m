@@ -1,124 +1,98 @@
-Message-ID: <b647ffbd0608090235o2868571ajbe74c0b09dd27282@domain.hid>
-Date: Wed, 9 Aug 2006 11:35:13 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] -110 error on rt_task_send... bug?
-In-Reply-To: <44D90C41.5070307@domain.hid>
+Message-ID: <20060905114004.17461.qmail@domain.hid>
+Date: Tue, 5 Sep 2006 12:40:04 +0100 (BST)
+From: somshekar kadam <som_kadam@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai port to MIPS
+In-Reply-To: <44FD308F.6030604@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_15873_10767008.1155116113407"
-References: <44D7EDCF.9010409@domain.hid> <44D90C41.5070307@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, andrewg@domain.hid
-
-------=_Part_15873_10767008.1155116113407
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello,
+Cc: xenomai@xenomai.org
 
 
-I'm not that deep into rt_task_send/receive design, but this problem
-> seems to be related to some heavy disagree between xnsynch_sleep_on and
-> rt_task_send about the correct ownership of the receiver's send queue.
+Hi Jan, 
+
+ To begin with porting I need some help you people, 
+I dont see an announcement of Xenomai start, who are
+the Authors and maintainers of this I know were very
+well its you and Philipe Gerum and others also whom i
+dont know. As I need to put all this in a document ,
+can help me on this.
+Thanks In Advance 
+Neelu my nick name 
+
+--- Jan Kiszka <jan.kiszka@domain.hid> wrote:
+
+> somshekar kadam wrote:
+> > Hi All, 
+> > 
+> > After a good study with help of mailing list, we
+> fix
+> > on porting Xenomai to our ustom board running with
+> > Mips4k .
+> 
+> Nice to hear. :)
+> 
+> > what I understand is we have Adeos with Xenomai,
+> and
+> > realtime capability of Xenomai. 
+> 
+> Yep.
+> 
+> > 
+> > our ultimate goal is realtime. To Begin with port
+> of
+> > Xenomai I would like to know , in case is there a
+> > porting doc or some pointer which help to
+> understand
+> > Xenomai better and quick, to go ahead.
+> > Please comment on this. 
+> 
+> Your first step still remains the fairly independent
+> port of Adeos/Ipipe
+> over MIPS. Philippe already pointed out the
+> available resources. Start
+> over a recent vanilla kernel (or do you need special
+> patches for your
+> targets?), make Linux boot with Ipipe enabled, then
+> stress the event
+> pipeline with a simple Ipipe test module.
+> 
+> Once this works you can proceed to Xenomai, porting
+> over what's under
+> ksrc/arch/<arch> and include/asm-<arch>. Not all
+> internal functions may
+> be documented. Try to grab their meaning from other
+> archs and/or their
+> usage - or ask on this list.
+> 
+> Another hint: post your patches early even if they
+> do not work yet. We
+> may have a look and comment on style and
+> functionality. This will make
+> it easier to finally merge them (which should be
+> your goal to ease
+> long-term maintenance). And it may attract early
+> adopters that can
+> provide further feedback and test results.
+> 
+> Jan
+> 
+> 
 
 
-Not transfering the ownership causes this problem, yes. But looking briefly
-at the code... there is even yet another problem (if I haven't overlooked
-something) that also exists in 2.1.
 
-rt_task_reply() wakes up a sender with :
-
-[code]
-
-if (receiver->wait_args.mps.mcb_s.flowid == flowid) {
-                        /* Note that the following will cause the receiver
-to be
-                           unblocked without transferring the ownership of
-the
-                           msendq object, since we want the sender to keep
-it. */
-                        xnpod_resume_thread(&receiver->thread_base, XNPEND);
-                        break;
-
-[/code]
-
-Now let's suppose : sender.prio > recv.prio
-
-so recv.prio is boosted when sender executes xnsynch_sleep_on().
-
-The "recv" task (the one that calls rt_task_receive() and rt_task_reply())
-doesn't use xnsynch_* functions (like xnsynch_wakeup_this_sleeper() ) to
-actually wake up the sender. Therefore xnsynch_clear_boost() is never called
-and "recv" keeps temporarily inhereted priority as a permanent one from now
-on.
-
-No?
-
-I have a few ideas on how to fix it intelegently so if Philippe will not
-come up with a quick solution, I may take a look?
-
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_15873_10767008.1155116113407
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<div><div><br>
-Hello,<br>
-&nbsp;</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I'm not that deep into rt_task_send/receive design, but this problem<br>seems to be related to some heavy disagree between xnsynch_sleep_on and
-<br>rt_task_send about the correct ownership of the receiver's send queue.</blockquote><div><br>
-</div>Not transfering the ownership causes this problem, yes. But
-looking briefly at the code... there is even yet another problem (if I
-haven't overlooked something) that also exists in 2.1.<br>
-<br>
-rt_task_reply() wakes up a sender with : <br>
-<br>
-[code]<br>
-<br>
-if (receiver-&gt;wait_args.mps.mcb_s.flowid == flowid) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/* Note that the following will cause the receiver to be<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-unblocked without transferring the ownership of the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-msendq object, since we want the sender to keep it. */<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-xnpod_resume_thread(&amp;receiver-&gt;thread_base, XNPEND);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-break;<br>
-<br>
-[/code]<br>
-</div><br>
-Now let's suppose : sender.prio &gt; recv.prio<br>
-<br>
-so recv.prio is boosted when sender executes xnsynch_sleep_on().<br>
-<br>
-The &quot;recv&quot; task (the one that calls rt_task_receive() and
-rt_task_reply()) doesn't use xnsynch_* functions (like
-xnsynch_wakeup_this_sleeper() ) to actually wake up the sender.
-Therefore xnsynch_clear_boost() is never called and &quot;recv&quot; keeps
-temporarily inhereted priority as a permanent one from now on.<br clear="all"><br>
-No? <br>
-<br>
-I have a few ideas on how to fix it intelegently so if Philippe will not come up with a quick solution, I may take a look?<br>
-<br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-<br>
-
-
-------=_Part_15873_10767008.1155116113407--
+		
+__________________________________________________________
+Yahoo! India Answers: Share what you know. Learn something new
+http://in.answers.yahoo.com/
 
