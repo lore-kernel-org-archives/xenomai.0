@@ -1,11 +1,13 @@
-Message-ID: <44FD99E9.6030500@domain.hid>
-Date: Tue, 05 Sep 2006 17:38:17 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <44FD9F92.4050802@domain.hid>
+Date: Tue, 05 Sep 2006 18:02:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <44FD7463.7010601@domain.hid>
-In-Reply-To: <44FD7463.7010601@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <44FD7463.7010601@domain.hid> <44FD99E9.6030500@domain.hid>
+In-Reply-To: <44FD99E9.6030500@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8B4D431B18873B880F1F32A2"
+Sender: jan.kiszka@domain.hid
 Subject: [Xenomai-core] Re: Move rtdm_irq_enable close to rtdm_irq_request
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,73 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Hi Wolfgang,
-> 
-> in the process of preparing to merge rtdm_irq_enable into
-> rtdm_irq_request I would like to check if the attached patch is ok, thus
-> we could finally drop rtdm_irq_enable once the API is refactored. Please
-> check carefully when the first IRQs may happen and what the handler
-> expects to be initialised! SJA1000 /should/ be ok as it works with
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8B4D431B18873B880F1F32A2
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> shared IRQs, but MSCAN does not (why, BTW?) and /may/ stumble.
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Hi Wolfgang,
+>>
+>> in the process of preparing to merge rtdm_irq_enable into
+>> rtdm_irq_request I would like to check if the attached patch is ok, th=
+us
+>> we could finally drop rtdm_irq_enable once the API is refactored. Plea=
+se
+>> check carefully when the first IRQs may happen and what the handler
+>> expects to be initialised! SJA1000 /should/ be ok as it works with
+>=20
+>> shared IRQs, but MSCAN does not (why, BTW?) and /may/ stumble.
+>=20
+> OK. Why should I use shared interrupts if there is no need? Most
+> embedded PowerPC systems have a dedicated interrupt source.
 
-OK. Why should I use shared interrupts if there is no need? Most 
-embedded PowerPC systems have a dedicated interrupt source.
+Of course, /me forgot once again that not all the world is designed like
+crappy x86. :)
 
-Wolfgang.
+At this chance I looked over the irq_flag mechanism of the CAN stack and
+found a minor cleanup: this #ifdef [1] is not required. If there is no
+sharing support, the subscriber will simply be redirected to the
+non-shared handler.
 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> Index: ksrc/drivers/can/mscan/rtcan_mscan.c
-> ===================================================================
-> --- ksrc/drivers/can/mscan/rtcan_mscan.c	(revision 1559)
-> +++ ksrc/drivers/can/mscan/rtcan_mscan.c	(working copy)
-> @@ -801,7 +801,8 @@ int __init rtcan_mscan_init_one(int idx)
->  	printk("ERROR! rtdm_irq_request for IRQ %d failed\n", irq);
->  	goto out_dev_free;
->      }
-> -    
-> +    rtdm_irq_enable(&dev->irq_handle);
-> +
->      mscan_chip_config(regs);
->      
->  
-> @@ -814,8 +815,6 @@ int __init rtcan_mscan_init_one(int idx)
->  
->      rtcan_mscan_create_proc(dev);
->  
-> -    rtdm_irq_enable(&dev->irq_handle);
-> -    
->      /* Remember initialized devices */
->      rtcan_mscan_devs[idx] = dev;
->  
-> Index: ksrc/drivers/can/sja1000/rtcan_sja1000.c
-> ===================================================================
-> --- ksrc/drivers/can/sja1000/rtcan_sja1000.c	(revision 1559)
-> +++ ksrc/drivers/can/sja1000/rtcan_sja1000.c	(working copy)
-> @@ -747,6 +747,7 @@ int rtcan_sja1000_register(struct rtcan_
->  	printk("ERROR! IRQ %d busy or invalid (code=%d)!\n", chip->irq_num, ret);
->  	return ret;
->      }
-> +    rtdm_irq_enable(&dev->irq_handle);
->  
->      sja1000_chip_config(dev);
->  
-> @@ -759,8 +760,6 @@ int rtcan_sja1000_register(struct rtcan_
->  
->      rtcan_sja_create_proc(dev);
->  
-> -    rtdm_irq_enable(&dev->irq_handle);
-> -    
->      return 0;
->  
->   out_irq_free:
+@Dmitry: What happens under CONFIG_XENO_OPT_SHIRQ_LEVEL &&
+!CONFIG_XENO_OPT_SHIRQ_EDGE when someone comes along with
+XN_ISR_SHARED|XN_ISR_EDGE? Looks like the level-triggered shared handler
+gets installed. Should we catch this? At Kconfig or at nucleus level?
 
+Jan
+
+
+[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja=
+1000/rtcan_peak_pci.c?v=3DSVN-trunk#L233
+
+
+--------------enig8B4D431B18873B880F1F32A2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFE/Z+SniDOoMHTA+kRAgaYAJ9OMUlxa8EZJIKD/aI/VoYzlHj5zQCfVN4K
+nj6AsmK4gRxREqkEAcWUNTU=
+=uvgS
+-----END PGP SIGNATURE-----
+
+--------------enig8B4D431B18873B880F1F32A2--
 
