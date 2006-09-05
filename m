@@ -1,15 +1,10 @@
-Message-ID: <44FD6AFF.8040808@domain.hid>
-Date: Tue, 05 Sep 2006 14:18:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] x86_64 support
-References: <200609051019.25468@domain.hid>
-	<17661.26756.140777.85761@domain.hid>
-In-Reply-To: <17661.26756.140777.85761@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC21353E763BBF95C11C4E2D6"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C6D0E6.D630970C"
+Date: Tue, 5 Sep 2006 14:28:47 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A4E9AEC@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
+Subject: [Xenomai-help] resubmission : memset of heap crashes Xenomai-Task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,46 +14,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC21353E763BBF95C11C4E2D6
-Content-Type: text/plain; charset=ISO-8859-15
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C6D0E6.D630970C
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Petr Cervenka wrote:
->  > Hello,
->  > I would like to ask, if the xenomai (and adeos) x86_64 support is pl=
-anned or if the work on it already began.
->  > Petr Cervenka
->=20
-> There were some discussions about an x86_64 port in march, but I do not=
+Some times ago (2006.07.06) I had the problem described below.=20
+As far as I can see, there is no solution for this till now.=20
+I think, it is worth a second go, as I believe, a industrial strength =
+application can=B4t accept this behavior.
+Therefore I would like to ask the Xenomai-PPC gurus (as far as I can =
+see, it could only be reproduced on PPC (not Qemu)) again, to judge, =
+whether this is a serios problem or just something I have to live with.
 
-> know if someone started the port.
->=20
-
-My last information was that this project had been postponed for now due
-to a complex funding situation. So there seems to be still room to start
-something fancy on your own (likely not what you wanted to hear). ;)
-
-Jan
+Thank you in advance
+Roderik
 
 
---------------enigC21353E763BBF95C11C4E2D6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Xenomai Version : 2.2-rc2
+Skin : native
+Kernel : 2.4.25
+Arch.: PPC
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I try to allocate as much memory as possible with the functions :
+rt_heap_create and
+rt_heap_alloc.
+(see source attached)
 
-iD8DBQFE/Wr/niDOoMHTA+kRApvbAJ961r7lHWfon+KEDcYgr21S9vjYYgCcDEBk
-F9FqEH8Kt7cFcwHBg8s6H0A=
-=2fpf
------END PGP SIGNATURE-----
+When I try to use the allocated memory with memset, the Xenomai-task =
+crashes with a "Segmentation fault".
 
---------------enigC21353E763BBF95C11C4E2D6--
+
+------_=_NextPart_001_01C6D0E6.D630970C
+Content-Type: application/octet-stream;
+	name="heap.c"
+Content-Transfer-Encoding: base64
+Content-Description: heap.c
+Content-Disposition: attachment;
+	filename="heap.c"
+
+I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KI2luY2x1ZGUgPHN0cmluZy5o
+PgojaW5jbHVkZSA8bmV0ZGIuaD4KI2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8Z2V0b3B0
+Lmg+CiNpbmNsdWRlIDxwdGhyZWFkLmg+CiNpbmNsdWRlIDxtYWxsb2MuaD4KI2luY2x1ZGUgPHN5
+cy90eXBlcy5oPgojaW5jbHVkZSA8c3lzL3NvY2tldC5oPgojaW5jbHVkZSA8bmV0aW5ldC9pbi5o
+PgojaW5jbHVkZSA8YXJwYS9pbmV0Lmg+CiNpbmNsdWRlIDxzeXMvbW1hbi5oPgojaW5jbHVkZSA8
+eGVub21haS9uYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8eGVub21haS9uYXRpdmUvcXVldWUuaD4K
+I2luY2x1ZGUgPHhlbm9tYWkvbmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDx4ZW5vbWFpL25hdGl2
+ZS9oZWFwLmg+CgoKCiNkZWZpbmUgRElTUExBWV9UQVNLX1BSSSAgICAgIDEwCiNkZWZpbmUgRElT
+UExBWV9TVEFDS19TSVpFICAgIDgxOTIKI2RlZmluZSBNRU1PUllDSFVOS1NJWkUgICAgICAgMTYw
+MDAwMDAKI2RlZmluZSBNQVhIRUFQQkxPQ0tTICAgICAgICAgMjAKI2RlZmluZSBESVNQX1BFUklP
+RCAgICAgICAgICAgNTAwMDAwMDAwMAoKc3RhdGljIFJUX1RBU0sgZGlzcGxheV90YXNrOwpSVF9I
+RUFQIGJpZ2hlYXBbTUFYSEVBUEJMT0NLU107CnZvaWQgICAgKmJpZ2J1ZltNQVhIRUFQQkxPQ0tT
+XTsKaW50ICAgICBiaWdzaXplW01BWEhFQVBCTE9DS1NdOwppbnQgICAgIG1lbW9yeWFsbG9jYXRl
+ZDsKCnZvaWQgZGlzcGxheSh2b2lkICpjb29raWUpCnsKCiAgIGxvbmcgbWVtc2l6ZTsKICAgbG9u
+ZyBhZGRzaXplOwogICBpbnQgaSxyZXQ7CiAgIGNoYXIgbmJ1ZlsxMDBdOwogICBpbnQgZXJyOwog
+ICBSVF9IRUFQIHRoZWFwOwoKICAgZXJyID0gcnRfdGFza19zZXRfcGVyaW9kaWMoTlVMTCwgVE1f
+Tk9XLCBydF90aW1lcl9uczJ0aWNrcyhESVNQX1BFUklPRCkpOwogICBpZiAoZXJyKQogICB7CiAg
+ICAgIGZwcmludGYoc3RkZXJyLCAiRGlzcGxheSA6IGZhaWxlZCB0byBzZXQgcGVyaW9kaWMsIGNv
+ZGUgJWRcbiIsIGVycik7CiAgICAgIHJldHVybjsKICAgfQoKCiAgIC8qZGVsZXRlIGxlZnQgb3Zl
+ciBoZWFwcyovCiAgIGZvcihpPTA7aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewogICAgICBzcHJp
+bnRmKG5idWYsImJpZ2hlYXAlZCIsaSk7CiAgICAgIGlmKCFydF9oZWFwX2JpbmQoJnRoZWFwLG5i
+dWYsMTAwMDAwMCkpCiAgICAgIHsKICAgICAgICAgcnRfaGVhcF9kZWxldGUoJnRoZWFwKTsKICAg
+ICAgICAgcHJpbnRmKCJIZWFwICVzIGRlbGV0ZWRcbiIsbmJ1Zik7CiAgICAgIH0KICAgfQoKICAg
+c2xlZXAoMSk7CgogICBwcmludGYoIkF2YWlsYWJsZSBNZW1vcnkgJWxkIChQYWdlc2l6ZSAlbGQp
+XG4iLHN5c2NvbmYoX1NDX0FWUEhZU19QQUdFUykgKiBzeXNjb25mKF9TQ19QQUdFU0laRSksc3lz
+Y29uZihfU0NfUEFHRVNJWkUpKTsKCiAgIGFkZHNpemU9bWVtc2l6ZT1NRU1PUllDSFVOS1NJWkU7
+IC8qbWF4IEhlYXBzaXplIDE2TUIqLwogICBtZW1vcnlhbGxvY2F0ZWQ9MDsKCiAgIGZvcihpPTA7
+aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewoKICAgICAgLypjcmVhdGUgaGVhcCovCiAgICAgIHNw
+cmludGYobmJ1ZiwiYmlnaGVhcCVkIixpKTsKICAgICAgaWYocnRfaGVhcF9jcmVhdGUoJmJpZ2hl
+YXBbaV0sbmJ1ZixtZW1zaXplLEhfUFJJT3xIX01BUFBBQkxFKSkKICAgICAgICAgYnJlYWs7CiAg
+ICAgIHByaW50ZigiaGVhcCAlZCBvZiBzaXplICVsZCBjcmVhdGVkXG4iLGksbWVtc2l6ZSk7CgoK
+ICAgICAgLyphbGxvY2F0ZSBtZW1veSovCiAgICAgIGlmKChyZXQ9cnRfaGVhcF9hbGxvYygmYmln
+aGVhcFtpXSxtZW1zaXplLFRNX05PTkJMT0NLLCZiaWdidWZbaV0pKSkKICAgICAgewogICAgICAg
+ICBwcmludGYoIkZhaWxlZCB0byBhbGxvY2F0ZSBoZWFwICVkIG9mIHNpemUgJWxkIChSZXQ6JWQp
+XG4iLGksbWVtc2l6ZSxyZXQpOwogICAgICAgICBiaWdidWZbaV09TlVMTDsKICAgICAgICAgYmln
+c2l6ZVtpXT0wOwogICAgICB9CiAgICAgIGVsc2UKICAgICAgewogICAgICAgICBtZW1vcnlhbGxv
+Y2F0ZWQrPW1lbXNpemU7CiAgICAgICAgIHByaW50ZigiSGVhcCAlZCBhbGxvY2F0ZWQgc2l6ZSAl
+bGRcbiIsaSxtZW1zaXplKTsKICAgICAgICAgYmlnc2l6ZVtpXT1tZW1zaXplOwogICAgICB9CiAg
+IH0KCiAgIHByaW50ZigiQXZhaWxhYmxlIE1lbW9yeSBhZnRlciBhbGxvY2F0aW9uICVsZFxuIixz
+eXNjb25mKF9TQ19BVlBIWVNfUEFHRVMpICogc3lzY29uZihfU0NfUEFHRVNJWkUpKTsKCiAgIHNs
+ZWVwKDEpOwoKICAgLypzb21lIG1vcmUgc3BhcmUgbWVtb3J5IGxlc3MgdGhhbiAxNk1CID8qLwog
+ICBtZW1zaXplPWFkZHNpemU9MTAqMTAyNDsKICAgZG8KICAgewogICAgICBtZW1zaXplKz1hZGRz
+aXplOwogICAgICBpZighKHJldD1ydF9oZWFwX2NyZWF0ZSgmYmlnaGVhcFtpXSxuYnVmLG1lbXNp
+emUsSF9QUklPfEhfTUFQUEFCTEUpKSkKICAgICAgICAgcnRfaGVhcF9kZWxldGUoJmJpZ2hlYXBb
+aV0pOwogICB9d2hpbGUocmV0PT0wKTsKCiAgIG1lbXNpemU+Pj0xOwogICBpZihydF9oZWFwX2Ny
+ZWF0ZSgmYmlnaGVhcFtpXSxuYnVmLG1lbXNpemUsSF9QUklPfEhfTUFQUEFCTEUpKQogICB7CiAg
+ICAgIHByaW50ZigiSGVhcCAlZCBjcmVhdGlvbiBmYWlsZWQgZm9yIHNpemUgJWxkXG4iLGksbWVt
+c2l6ZSk7CiAgIH0KICAgZWxzZQogICB7CiAgICAgIHByaW50ZigiSGVhcCAlZCBjcmVhdGVkIHdp
+dGggc2l6ZSAlbGRcbiIsaSxtZW1zaXplKTsKICAgICAgaWYoKHJldD1ydF9oZWFwX2FsbG9jKCZi
+aWdoZWFwW2ldLG1lbXNpemUsMTAwMDAwMDAwMDAsJmJpZ2J1ZltpXSkpICkKICAgICAgewogICAg
+ICAgICBwcmludGYoIkZhaWxlZCB0byBhbGxvY2F0ZSBoZWFwICVkIG9mIHNpemUgJWxkIChSZXQ6
+JWQpLlxuIixpLG1lbXNpemUscmV0KTsKICAgICAgICAgYmlnYnVmW2ldPU5VTEw7CiAgICAgICAg
+IGJpZ3NpemVbaV09MDsKICAgICAgfQogICAgICBlbHNlCiAgICAgIHsKICAgICAgICAgYmlnc2l6
+ZVtpXT1tZW1zaXplOwogICAgICAgICBwcmludGYoIkhlYXAgJWQgYWxsb2NhdGVkIHNpemUgJWxk
+XG4iLGksbWVtc2l6ZSk7CiAgICAgICAgIG1lbW9yeWFsbG9jYXRlZCs9bWVtc2l6ZTsKICAgICAg
+fQogICB9CgoKCiAgIHByaW50ZigiTWVtb3J5IGFsbG9jYXRlZCBpbiB0b3RhbCA6ICVkXG4iLCBt
+ZW1vcnlhbGxvY2F0ZWQpOwoKICAgZm9yICg7OykKICAgewogICAgICBlcnIgPSBydF90YXNrX3dh
+aXRfcGVyaW9kKE5VTEwpOwoKICAgICAgZm9yKGk9MDtpPE1BWEhFQVBCTE9DS1M7aSsrKQogICAg
+ICB7CiAgICAgICAgIGlmKGJpZ2J1ZltpXSE9TlVMTCkKICAgICAgICAgewogICAgICAgICAgICAv
+KnByaW50ZigiU2V0dGluZyBoZWFwICVkLiBTaXplICVkXG4iLGksYmlnc2l6ZVtpXSk7Ki8KICAg
+ICAgICAgICAgbWVtc2V0KGJpZ2J1ZltpXSwweEFGLGJpZ3NpemVbaV0pOwogICAgICAgICB9Cgog
+ICAgICB9CgogICB9Cn0KCgoKCmludCByb290X3RocmVhZF9pbml0KHZvaWQpCnsKICAgcHJpbnRm
+KCJyb290X3RocmVhZF9pbml0IDpcbiIpOwoKICAgcnRfdGltZXJfc2V0X21vZGUoVE1fT05FU0hP
+VCk7CgogICBwcmludGYoInRpbWVyIHN0YXJ0ZWR0XG4iKTsKCgogICBydF90YXNrX3NwYXduKCZk
+aXNwbGF5X3Rhc2ssIkRpc3BsYXlUYXNrIiwgRElTUExBWV9TVEFDS19TSVpFLCBESVNQTEFZX1RB
+U0tfUFJJLCAwLCAmZGlzcGxheSwgTlVMTCk7CiAgIHByaW50ZigiZGlzcGxheSB0YXNrIGNyZWF0
+ZWRcbiIpOwoKICAgcmV0dXJuIDA7Cn0KCnZvaWQgcm9vdF90aHJlYWRfZXhpdCh2b2lkKQp7CiAg
+IGludCBpOwogICBSVF9IRUFQX0lORk8gKmhwaW5mbzsKCiAgIHByaW50ZigiVURQLT5yb290X3Ro
+cmVhZF9leGl0XG4iKTsKCiAgIGZvcihpPTA7aTxNQVhIRUFQQkxPQ0tTO2krKykKICAgewogICAg
+ICBpZiggIXJ0X2hlYXBfaW5xdWlyZSgmYmlnaGVhcFtpXSxocGluZm8pICkKICAgICAgICAgcnRf
+aGVhcF9kZWxldGUoJmJpZ2hlYXBbaV0pOwogICB9CgogICBydF90YXNrX2RlbGV0ZSgmZGlzcGxh
+eV90YXNrKTsKfQoKdm9pZCBjbGVhbnVwX3Vwb25fc2lnKGludCBzaWcgX19hdHRyaWJ1dGVfXyAo
+KHVudXNlZCkpKQp7CiAgIHJvb3RfdGhyZWFkX2V4aXQoKTsKfQoKaW50IG1haW4oaW50IGFyZ2Ms
+IGNoYXIgKmFyZ3ZbXSkKewoKICAgcHJpbnRmKCJTdGFydCBIZWFwXG4iKTsKICAgc2xlZXAoMSk7
+CgogICBtbG9ja2FsbChNQ0xfQ1VSUkVOVCB8IE1DTF9GVVRVUkUpOwoKICAgc2lnbmFsKFNJR0lO
+VCwgY2xlYW51cF91cG9uX3NpZyk7CiAgIHNpZ25hbChTSUdURVJNLCBjbGVhbnVwX3Vwb25fc2ln
+KTsKICAgc2lnbmFsKFNJR0hVUCwgY2xlYW51cF91cG9uX3NpZyk7CiAgIHNpZ25hbChTSUdBTFJN
+LCBjbGVhbnVwX3Vwb25fc2lnKTsKCgogICBpZihyb290X3RocmVhZF9pbml0KCk8MCkKICAgICAg
+Z290byBleGl0OwoKICAgcHJpbnRmKCJyb290X3RocmVhZF9pbml0IGJlZW5kZXRcbiIpOwogICBz
+bGVlcCgxKSwgcGF1c2UoKTsKCmV4aXQ6CiAgIHJvb3RfdGhyZWFkX2V4aXQoKTsKCiAgIHJldHVy
+biAwOwp9Cgo=
+
+------_=_NextPart_001_01C6D0E6.D630970C
+Content-Type: application/octet-stream;
+	name="Makefile.hp2"
+Content-Transfer-Encoding: base64
+Content-Description: Makefile.hp2
+Content-Disposition: attachment;
+	filename="Makefile.hp2"
+
+eGVub2Rpcjo9L2hvbWUvdXNlci9tYzQ1L3hlbm9tYWkvX2luc3RhbGwKQ0M6PXBwYy1saW51eC1n
+Y2MKCiMgQWxsb3cgb3ZlcnJpZGluZyB4ZW5vLWNvbmZpZyBvbiBtYWtlIGNvbW1hbmQgbGluZQpY
+RU5PX0NPTkZJRz0kKHhlbm9kaXIpL2Jpbi94ZW5vLWNvbmZpZwpwcmVmaXggOj0gJChzaGVsbCAk
+KFhFTk9fQ09ORklHKSAtLXByZWZpeCkKCmlmZXEgKCQocHJlZml4KSwpCiQoZXJyb3IgUGxlYXNl
+IGFkZCA8eGVub21haS1pbnN0YWxsLXBhdGg+L2JpbiB0byB5b3VyIFBBVEggdmFyaWFibGUpCmVu
+ZGlmCgpTVERfQ0ZMQUdTICA6PSAkKHNoZWxsICQoWEVOT19DT05GSUcpIC0teGVuby1jZmxhZ3Mp
+ClNURF9MREZMQUdTIDo9ICQoc2hlbGwgJChYRU5PX0NPTkZJRykgLS14ZW5vLWxkZmxhZ3MpIC1s
+bmF0aXZlIC1sbSAtbHJ0ZG0KU1REX1RBUkdFVFMgOj0gaGVhcAoKCiMgInN0ZCIgbWFrZXMgYWxs
+IGRlbW9zIHJ1bm5pbmcgbmF0aXZlbHkgaW4gdXNlci1zcGFjZS4KCnN0ZDogJChTVERfVEFSR0VU
+UykKCgphbGw6IHN0ZAoKCiQoU1REX1RBUkdFVFMpOiAkKFNURF9UQVJHRVRTOiU9JS5jKQoJJChD
+QykgLW8gJEAgJEAuYyAkKFNURF9DRkxBR1MpICQoU1REX0xERkxBR1MpCgoKY2xlYW46CgkkKFJN
+KSAtZiAqLm8gKl9zLm8gJChTVERfVEFSR0VUUykgJChTSU1fVEFSR0VUUykK
+
+------_=_NextPart_001_01C6D0E6.D630970C
+Content-Type: text/plain;
+	name="ATT08692.txt"
+Content-Transfer-Encoding: base64
+Content-Description: ATT08692.txt
+Content-Disposition: attachment;
+	filename="ATT08692.txt"
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NClhlbm9tYWkt
+aGVscCBtYWlsaW5nIGxpc3QNClhlbm9tYWktaGVscEBnbmEub3JnDQpodHRwczovL21haWwuZ25h
+Lm9yZy9saXN0aW5mby94ZW5vbWFpLWhlbHANCg==
+
+------_=_NextPart_001_01C6D0E6.D630970C--
 
