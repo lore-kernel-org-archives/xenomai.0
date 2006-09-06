@@ -1,15 +1,10 @@
-Subject: Re: [Xenomai-help] Xenomai + PREEMPT_RT
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1157554292.3541.28.camel@domain.hid>
-References: <1157501591.22250.25.camel@domain.hid>
-	<44FEA7F5.6090409@domain.hid>
-	<1157554292.3541.28.camel@domain.hid>
-Content-Type: text/plain
-Date: Wed, 06 Sep 2006 23:07:34 +0200
-Message-Id: <1157576854.5064.81.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <44FF3A22.5060901@domain.hid>
+Date: Wed, 06 Sep 2006 16:14:10 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] max size for pipes and rt-fifos?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,44 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Walker <dwalker@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-On Wed, 2006-09-06 at 07:51 -0700, Daniel Walker wrote: 
-> On Wed, 2006-09-06 at 12:50 +0200, Jan Kiszka wrote:
-> > > Or even better, is anyone already doing work with these two
-> > > technologies combined?
-> > 
-> > There once existed a combo patch (that I don't find ATM) of an ancient
-> > -rt version + old Adeos, a combination that will more or less
-> > automatically come again when PREEMPT_RT is mainline. Porting the
-> > nucleus over PREEMPT_RT so that the skins can run "natively" is another
-> > task yet to begin. Anyway, we are already including this perspective in
-> > current design decisions when subsystems are revised or enhanced.
-> 
-> So I take it that designing the combined version is still taking place?
-> 
-> It sounds like the current direction is more of a straight merge. 
-> Since PREEMPT_RT and Xenomai are somewhat parallel in purpose would
-> there be any room to eliminate duplication between the two?
+Here are a couple of questions that I hope someone can answer:
 
-The current direction is about allowing the Xenomai core and interfaces
-to run indifferently over the current co-kernel technology, or a native
-preemption one, to get the real-time predictability.
+It appears that the maximum pipe size that can be created using rt_pipe_create() is 16 MB.  Is this correct?  If so, what is the cause of this limitation, and are there any work-arounds?  I am using a 128 MB FIFO in my rtlinux simulation.  Any ideas on how I can port this?
 
-Xenomai is all about the real-time interfaces it provides to
-applications: emulation of legacy RTOS core APIs (e.g. VRTX, pSOS+,
-VxWorks, ...) and standard specifications (e.g. POSIX 1003.1b, uITRON).
-Additionally, the RTDM interface abstracts the underlying RTOS services
-needed for implementing our real-time drivers for industrial devices
-(e.g. CAN).
+It appears that the maximum size for RT-FIFOs created with the rtai skin's rtf_create() is much less than 16 MB.  It's hard to quantify, since the errors are given at FIFO write time, and not creation time, but it appears to be around 100 kB or so.  Why is this not the same as for rt_pipe_create()?  Also, why is the memory allocation not done at creation time?  It looks like the memory allocation is done on the first rtf_put() -- which is called from my real-time thread!  I assumed the memory allocation would be a non-realtime operation.  (It also appears that I am getting some kind of memory leak when the memory allocation fails, because I can not allocate as much memory the next time around.  I am cleaning up the FIFO with rtf_destroy, so I don't know what I could be doing wrong...)
 
-In other words, POSIX aside, all the rest would remain relevant,
-including over a PREEMPT_RT kernel, particularly as a migration tool
-from non-Linux environments.
+Thanks,
 
--- 
-Philippe.
-
-
+Jeff
 
