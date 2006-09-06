@@ -1,12 +1,15 @@
-Message-ID: <b647ffbd0609051210p26c56690oe7b332190b3b702e@domain.hid>
-Date: Tue, 5 Sep 2006 21:10:43 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <44FD9F92.4050802@domain.hid>
+Message-ID: <44FE6C55.1030900@domain.hid>
+Date: Wed, 06 Sep 2006 08:36:05 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_104407_5632698.1157483443647"
-References: <44FD7463.7010601@domain.hid> <44FD99E9.6030500@domain.hid>
+References: <44FD7463.7010601@domain.hid> <44FD99E9.6030500@domain.hid>	
 	<44FD9F92.4050802@domain.hid>
+	<b647ffbd0609051210p26c56690oe7b332190b3b702e@domain.hid>
+In-Reply-To: <b647ffbd0609051210p26c56690oe7b332190b3b702e@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0D2415CF5BDBE76797D9DFBF"
+Sender: jan.kiszka@domain.hid
 Subject: [Xenomai-core] Re: Move rtdm_irq_enable close to rtdm_irq_request
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,147 +20,151 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_104407_5632698.1157483443647
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0D2415CF5BDBE76797D9DFBF
+Content-Type: multipart/mixed; boundary="------------050901000409020907020309"
 
-On 05/09/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
->
-> @Dmitry: What happens under CONFIG_XENO_OPT_SHIRQ_LEVEL &&
-> !CONFIG_XENO_OPT_SHIRQ_EDGE when someone comes along with
-> XN_ISR_SHARED|XN_ISR_EDGE? Looks like the level-triggered shared handler
-> gets installed. Should we catch this? At Kconfig or at nucleus level?
+This is a multi-part message in MIME format.
+--------------050901000409020907020309
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+Dmitry Adamushko wrote:
+> On 05/09/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>
+>>
+>> @Dmitry: What happens under CONFIG_XENO_OPT_SHIRQ_LEVEL &&
+>> !CONFIG_XENO_OPT_SHIRQ_EDGE when someone comes along with
+>> XN_ISR_SHARED|XN_ISR_EDGE? Looks like the level-triggered shared handl=
+er
+>> gets installed. Should we catch this? At Kconfig or at nucleus level?
+>=20
+>=20
+> Currently XN_ISR_SHARED and XN_ISR_EDGE are unconditionally available f=
+or
+> any configuration. So nothing stops a user from calling rtdm_irq_reques=
+t(
+> ... , RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE) even when IRQ shared
+> infrastructure is off.
+> (the second call gives -EBUSY and a "bug" report is sent. I mean, if th=
+e
+> user has overlooked "shared irq" section on the configure step and cons=
+ider
+> it a default behavior).
+>=20
+> Probably the clean solution would be to export XN_ISR_SHARED and
+> XN_ISR_EDGE
+> only when their corresponding CONFIG_* parameters are defined.
+>=20
+> Then e.g. rtdm skin should do :
+>=20
+> #ifdef XN_ISR_SHARED
+> #define RTDM_IRQTYPE_SHARED XN_ISR_SHARED
+> #endif
+>=20
+> and let a compiler complain on undefined symbol when a user tries to us=
+e
+> SHARED/EDGE without proper CONFIG options. Although, I'm not sure it wo=
+uld
+> be clear for all users.
+>=20
+> Another approach,
+>=20
+> in xnintr.h
+>=20
+> #ifdef CONFIG_XENO_OPT_SHIRQ_LAYER
+> #define XN_ISR_SHARED   1
+> #else
+> #define XN_ISR_SHARED    XN_ISR_WARNING
+> #endif
+>=20
+> and then catch all wrong use cases in one place :
+>=20
+> int xnintr_attach(xnintr_t *intr, void *cookie)
+> {
+>        intr->hits =3D 0;
+>        intr->cookie =3D cookie;
+>=20
+> +      if (intr->flags & XN_ISR_WARNING) {
+> +                   xnlogerr("blablabla...\n");
+> +                   return -EINVAL;
+> +      }
+>=20
+> #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) ||
+> defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
+>        return xnintr_shirq_attach(intr, cookie);
+> #else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL && !CONFIG_XENO_OPT_SHIRQ_EDGE */=
 
-Currently XN_ISR_SHARED and XN_ISR_EDGE are unconditionally available for
-any configuration. So nothing stops a user from calling rtdm_irq_request(
-... , RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE) even when IRQ shared
-infrastructure is off.
-(the second call gives -EBUSY and a "bug" report is sent. I mean, if the
-user has overlooked "shared irq" section on the configure step and consider
-it a default behavior).
+>        return xnarch_hook_irq(intr->irq, &xnintr_irq_handler, intr->iac=
+k,
+>                               intr);
+> #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
+> }
+>=20
+>=20
+> ?
+>=20
 
-Probably the clean solution would be to export XN_ISR_SHARED and XN_ISR_EDGE
-only when their corresponding CONFIG_* parameters are defined.
+Sharing itself is no problem: if your request an IRQ with XN_ISR_SHARED
+set but the nucleus is not able to actually assign it to more than one
+driver, the second request will simply fail. I see no need to deny the
+first request or even break the driver build.
 
-Then e.g. rtdm skin should do :
+Problematic is only the handling of edge-triggered shared IRQs with the
+level-triggered handler (can cause lost IRQs). Probably a runtime check
+is best as we cannot control the configuration of, e.g., external RTDM
+drivers. What about the attached patch?
 
-#ifdef XN_ISR_SHARED
-#define RTDM_IRQTYPE_SHARED XN_ISR_SHARED
-#endif
+Jan
 
-and let a compiler complain on undefined symbol when a user tries to use
-SHARED/EDGE without proper CONFIG options. Although, I'm not sure it would
-be clear for all users.
+--------------050901000409020907020309
+Content-Type: text/x-patch;
+ name="catch-unsupported-XN_ISR_EDGE.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="catch-unsupported-XN_ISR_EDGE.patch"
 
-Another approach,
+Index: ksrc/nucleus/intr.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/nucleus/intr.c	(Revision 1560)
++++ ksrc/nucleus/intr.c	(Arbeitskopie)
+@@ -638,10 +638,14 @@ static int xnintr_shirq_attach(xnintr_t=20
+ 			handler =3D &xnintr_shirq_handler;
+ #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL */
+=20
++			if (intr->flags & XN_ISR_EDGE) {
+ #if defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
+-			if (intr->flags & XN_ISR_EDGE)
+ 				handler =3D &xnintr_edge_shirq_handler;
++#else /* !CONFIG_XENO_OPT_SHIRQ_EDGE */
++				err =3D -ENOSYS;
++				goto unlock_and_exit;
+ #endif /* CONFIG_XENO_OPT_SHIRQ_EDGE */
++			}
+ 		}
+ 		shirq->unhandled =3D 0;
+=20
 
-in xnintr.h
+--------------050901000409020907020309--
 
-#ifdef CONFIG_XENO_OPT_SHIRQ_LAYER
-#define XN_ISR_SHARED   1
-#else
-#define XN_ISR_SHARED    XN_ISR_WARNING
-#endif
+--------------enig0D2415CF5BDBE76797D9DFBF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-and then catch all wrong use cases in one place :
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-int xnintr_attach(xnintr_t *intr, void *cookie)
-{
-        intr->hits = 0;
-        intr->cookie = cookie;
+iD8DBQFE/mxZniDOoMHTA+kRAr82AJ9V/NHbpoVFkcEwFaUy/3xNq5EWUwCfZeJx
+C6JUYbeizdz8w89ZX6OoXaQ=
+=PYjV
+-----END PGP SIGNATURE-----
 
-+      if (intr->flags & XN_ISR_WARNING) {
-+                   xnlogerr("blablabla...\n");
-+                   return -EINVAL;
-+      }
-
-#if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) ||
-defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
-        return xnintr_shirq_attach(intr, cookie);
-#else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL && !CONFIG_XENO_OPT_SHIRQ_EDGE */
-        return xnarch_hook_irq(intr->irq, &xnintr_irq_handler, intr->iack,
-                               intr);
-#endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
-}
-
-
-?
-
--- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_104407_5632698.1157483443647
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><div><span class="gmail_quote">On 05/09/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br>@Dmitry: What happens under CONFIG_XENO_OPT_SHIRQ_LEVEL &amp;&amp;<br>!CONFIG_XENO_OPT_SHIRQ_EDGE when someone comes along with<br>XN_ISR_SHARED|XN_ISR_EDGE? Looks like the level-triggered shared handler<br>gets installed. Should we catch this? At Kconfig or at nucleus level?
-</blockquote><div><br>
-Currently XN_ISR_SHARED and XN_ISR_EDGE are unconditionally available
-for any configuration. So nothing stops a user from calling
-rtdm_irq_request( ... , RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE) even
-when IRQ shared infrastructure is off.<br>
-(the second call gives -EBUSY and a &quot;bug&quot; report is sent. I mean, if
-the user has overlooked &quot;shared irq&quot; section on the configure step and
-consider it a default behavior).<br>
-<br>
-Probably the clean solution would be to export XN_ISR_SHARED and
-XN_ISR_EDGE only when their corresponding CONFIG_* parameters are
-defined.<br>
-<br>
-Then e.g. rtdm skin should do :<br>
-<br>
-#ifdef XN_ISR_SHARED<br>
-#define RTDM_IRQTYPE_SHARED XN_ISR_SHARED<br>
-#endif<br>
-<br>
-and let a compiler complain on undefined symbol when a user tries to
-use SHARED/EDGE without proper CONFIG options. Although, I'm not sure
-it would be clear for all users.<br>
-<br>
-Another approach,<br>
-<br>
-in xnintr.h<br>
-<br>
-#ifdef CONFIG_XENO_OPT_SHIRQ_LAYER<br>
-#define XN_ISR_SHARED&nbsp;&nbsp; 1<br>
-#else<br>
-#define XN_ISR_SHARED&nbsp;&nbsp;&nbsp; XN_ISR_WARNING<br>
-#endif<br>
-<br>
-and then catch all wrong use cases in one place :<br>
-<br>
-int xnintr_attach(xnintr_t *intr, void *cookie)<br>
-{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intr-&gt;hits = 0;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; intr-&gt;cookie = cookie;<br>
-<br>
-+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (intr-&gt;flags &amp; XN_ISR_WARNING) {<br>
-+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-xnlogerr(&quot;blablabla...\n&quot;); <br>
-+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -EINVAL;<br>
-+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-<br>
-#if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIRQ_EDGE)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return xnintr_shirq_attach(intr, cookie);<br>
-#else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL &amp;&amp; !CONFIG_XENO_OPT_SHIRQ_EDGE */<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return xnarch_hook_irq(intr-&gt;irq, &amp;xnintr_irq_handler, intr-&gt;iack,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-intr);<br>
-#endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */<br>
-}<br>
-<br>
-<br>
-?<br clear="all">
-</div></div><br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_104407_5632698.1157483443647--
+--------------enig0D2415CF5BDBE76797D9DFBF--
 
