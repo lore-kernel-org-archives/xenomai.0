@@ -1,11 +1,14 @@
-Date: Wed, 6 Sep 2006 15:41:39 +0200
-From: Bernhard Walle <bernhard.walle@domain.hid>
-Message-ID: <20060906134139.GA5852@domain.hid>
+Message-ID: <44FED2B7.8090408@domain.hid>
+Date: Wed, 06 Sep 2006 15:52:55 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Sleep return value
+References: <20060906134139.GA5852@domain.hid>
+In-Reply-To: <20060906134139.GA5852@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
-Content-Disposition: inline
-Subject: [Xenomai-core] Sleep return value
+	protocol="application/pgp-signature";
+	boundary="------------enigB1651FE084D16A91F2403A10"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,46 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Bernhard Walle <bernhard.walle@domain.hid>
+Cc: xenomai@xenomai.org
 
-
---Kj7319i9nmIyA2yE
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB1651FE084D16A91F2403A10
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Bernhard Walle wrote:
+> Hello,
+>=20
+> ,----
+> | int rtdm_task_sleep (uint64_t delay);
+> | int rtdm_task_sleep_until (uint64_t wakeup_time);
+> `----
+>=20
+> wouldn't it make sense to return 0 on success and in error case the
+> number of nanoseconds that are remaining to the originally requested
+> sleep period just as the Linux sleeping function behave?
 
-,----
-| int rtdm_task_sleep (uint64_t delay);
-| int rtdm_task_sleep_until (uint64_t wakeup_time);
-`----
+Do you have a use-case for this? Would you consider this as the normal
+scenario?
 
-wouldn't it make sense to return 0 on success and in error case the
-number of nanoseconds that are remaining to the originally requested
-sleep period just as the Linux sleeping function behave?
+Also note that changing the return type would take away to possibility
+to pass the error code.
 
-Of course that would introduce an incompatibility to current code.
+>=20
+> Of course that would introduce an incompatibility to current code.
 
-Regards,
-  Bernhard
---=20
-Ich denke, es gibt weltweit einen Markt f=FCr vielleicht f=FCnf Computer.
-	-- Thomas Watson, Vorsitzender von IBM (1943)
+Given a reasonably urging use-case or brokenness of the original
+interface, API revisions may actually take place in RTDM (see the
+history). But they will surely not happen without thorough
+considerations of pros and cons. :)
 
---Kj7319i9nmIyA2yE
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Jan
+
+
+--------------enigB1651FE084D16A91F2403A10
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iQCVAwUBRP7QDuiVHo+2lFT9AQIQ9QP/W1b7r2QBNvUL3B1p6qThoUaeIEYzer8o
-mvAPmuzUwvAPdp9F4r3pECX6UfoTSd3PWfeOhTHTNczxam4rh1rVculOdrn/bt3b
-TqT/KJTq4Va5vT8qpBfqPmOkf+09RJGRCM4aEoIjXPnJqk68M8xhWzsrmwwsHKOT
-yPSCIYLY/10=
-=NBm3
+iD8DBQFE/tK3niDOoMHTA+kRAisqAJ9QXLcvLT6UmoxINGrSD1ueKtLC3QCfd9Lr
+FeeMbHHxn1m6Au00uhhFOkg=
+=71J/
 -----END PGP SIGNATURE-----
 
---Kj7319i9nmIyA2yE--
+--------------enigB1651FE084D16A91F2403A10--
 
