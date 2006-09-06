@@ -1,39 +1,60 @@
+Date: Wed, 6 Sep 2006 15:41:39 +0200
 From: Bernhard Walle <bernhard.walle@domain.hid>
-Date: Wed, 9 Aug 2006 12:40:32 +0200
-Message-ID: <0mqoq3-qci.ln1@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A46DE23@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: WG: Xenomai vs. RTAI
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <20060906134139.GA5852@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
+Content-Disposition: inline
+Subject: [Xenomai-core] Sleep return value
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
+
+
+--Kj7319i9nmIyA2yE
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
 Hello,
 
-<Roderik_Wildenburg@domain.hid> [2006-08-09]:
-> 
-> And now something completly different, something more idelogical ;-):
-> Wouldn´t a bulletin board or a WIKI be a better form of dicussion respectively knowledge base than a mail archive. The background for this question is, that allways when I start a new stupid question I can´t be sure whether this question hasn´t already been dealt with, as my mail archive isn´t complete and also not very good searchable.
+,----
+| int rtdm_task_sleep (uint64_t delay);
+| int rtdm_task_sleep_until (uint64_t wakeup_time);
+`----
 
-http://marc.theaimsgroup.com/?l=kernelnewbies&r=1&w=2
+wouldn't it make sense to return 0 on success and in error case the
+number of nanoseconds that are remaining to the originally requested
+sleep period just as the Linux sleeping function behave?
 
-
+Of course that would introduce an incompatibility to current code.
 
 Regards,
   Bernhard
--- 
-Lieber einen Tag im Monat über Geld nachdenken, als 30 Tage im Monat 
-dafür arbeiten.
-	-- Heiko Thieme
+--=20
+Ich denke, es gibt weltweit einen Markt f=FCr vielleicht f=FCnf Computer.
+	-- Thomas Watson, Vorsitzender von IBM (1943)
 
+--Kj7319i9nmIyA2yE
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+
+iQCVAwUBRP7QDuiVHo+2lFT9AQIQ9QP/W1b7r2QBNvUL3B1p6qThoUaeIEYzer8o
+mvAPmuzUwvAPdp9F4r3pECX6UfoTSd3PWfeOhTHTNczxam4rh1rVculOdrn/bt3b
+TqT/KJTq4Va5vT8qpBfqPmOkf+09RJGRCM4aEoIjXPnJqk68M8xhWzsrmwwsHKOT
+yPSCIYLY/10=
+=NBm3
+-----END PGP SIGNATURE-----
+
+--Kj7319i9nmIyA2yE--
 
