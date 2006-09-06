@@ -1,16 +1,12 @@
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17656.19065.549422.818297@domain.hid>
-Date: Fri, 1 Sep 2006 16:58:01 +0200
-Subject: Re: [Xenomai-help] [Fwd: Performance decrease]
-In-Reply-To: <1157121310.4981.18.camel@domain.hid>
-References: <1156941389.4323.17.camel@domain.hid> <1156942089.4323.29.camel@domain.hid>
-	<17655.18827.661904.949733@domain.hid>
-	<1157094795.4322.9.camel@domain.hid>
-	<17656.11641.610980.162241@domain.hid>
-	<1157121310.4981.18.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: [Xenomai-help] resubmission : memset of heap crashes Xenomai-Task
+Date: Wed, 6 Sep 2006 14:56:47 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A4E9D0A@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,26 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: danielsch@domain.hid, xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > > 
- > > But there is an exception: the "bind" syscall event must be intercepted
- > > for threads that are not yet marked as monitored.
- > 
- > That's the major issue. We need to keep events flowing to a filtering
- > callback in order to detect binding ops, but without going through the
- > entire pipeline abstraction. And pipelining as it is now must be kept
- > for bound Linux tasks, i.e. shadows. The idea is to save the time spent
- > in the Adeos event dispatcher for tasks that don't need to tell the
- > world about what they are actually doing.
+> Daniel Schnell [mailto:danielsch@domain.hid] wrote :
 
-The binding operation could be made a standard Linux operation, such as
-an ioctl for instance.
+> Hi,
+>=20
+> I have tried your program on my mpc5200 (Kernel 2.4.25,=20
+> Xenomai 2.2.1, 256 MB RAM). Besides it doesn't do much and=20
+> also the heap allocation seems not to work, I had no crashes.
+>=20
 
--- 
+Thank you for testing Daniel !
+The idea was, to test Xenomai with very low memory available (especially =
+network performance tests). Therefore I implemented a algorithm (I =
+admit, not a very sophisticated one), which allocates nearly all memory =
+available. To make sure, that memory is not available for Xenomai, the =
+kernel or other applications,I touche the allocated memory (memset). So, =
+the program realy does not do very much, beside allocating and touching =
+as much memory as possible. Unfortunatelly this crashes the programm =
+(segmentation fault) without doing any "illegal".
+What do you mean with "the heap allocation seems not to work" ? Is this =
+a Xenomai  or a program malfunction ?
+Perhaps your test didn=B4t crash as this allocation does not work ?
+With my target it takes a while (approx 1min.) till the programm =
+crashes. Did you wait a while ?
+Perhaps the problem is already solved in 2.2.1.
 
+Thank you for your support
+Roderik
 
-					    Gilles Chanteperdrix.
 
