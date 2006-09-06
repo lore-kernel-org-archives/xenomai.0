@@ -1,16 +1,13 @@
-Message-ID: <44FECDFD.2070309@domain.hid>
-Date: Wed, 06 Sep 2006 15:32:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-help] resubmission : memset of
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: AW: [Xenomai-help] resubmission : memset of
 	heap	crashes	Xenomai-Task
-References: <5D63919D95F87E4D9D34FF7748CE2C2A4E9CDD@ARVMAIL1.mra.roland-man.biz>	<17662.49530.72472.462058@domain.hid>
-	<44FEC63E.3070009@domain.hid>
-In-Reply-To: <44FEC63E.3070009@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig51D9CCC22421EDAEAFD22277"
-Sender: jan.kiszka@domain.hid
+Date: Wed, 6 Sep 2006 16:07:55 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A4E9D41@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,49 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Roderik_Wildenburg@domain.hid, xenomai@xenomai.org
+To: jan.kiszka@domain.hid, wg@domain.hid
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig51D9CCC22421EDAEAFD22277
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid] :
+=20
+> First of all, do we know where the demo precisely faults? In=20
+> which heap's memset? We could then analyse how this heap is=20
+> being set up in the kernel, if all mappings are done as=20
+> expected, if reasonable address are passed to the user, etc.
+>=20
 
-Wolfgang Grandegger wrote:
-> ...
-> I was able to reproduce the problem on my MPC5200 system some time ago
-> and I have checked the index "i" as well. "i" was not out-of-range,
-> IIRC. The problem only shows up on PowerPC., at least Jan was unable
-> to reproduce it on a x86 system. How could we debug the seg fault. Do
-> you have a good idea? Would the IPIPE tracer help?
+It crashs when the last heap is touched (please see programs output =
+below).
+Astonishingly it does not crash every time !? In fact I had to reboot to =
+produce this output (after running the program several times without a =
+crash; don=B4t ask me why) :
+=20
+Start Heap
+root_thread_init :
+timer startedt
+display task created
+root_thread_init beendet
+Available Memory 113377280 (Pagesize 4096)
+heap 0 of size 16000000 created
+Heap 0 allocated size 16000000
+heap 1 of size 16000000 created
+Heap 1 allocated size 16000000
+heap 2 of size 16000000 created
+Heap 2 allocated size 16000000
+heap 3 of size 16000000 created
+Heap 3 allocated size 16000000
+heap 4 of size 16000000 created
+Heap 4 allocated size 16000000
+heap 5 of size 16000000 created
+Heap 5 allocated size 16000000
+heap 6 of size 16000000 created
+Heap 6 allocated size 16000000
+Available Memory after allocation 4317184
+Heap 7 created with size 1505280
+Heap 7 allocated size 1505280
+Memory allocated in total : 113505280
+Setting heap 0. Size 16000000
+Setting heap 1. Size 16000000
+Setting heap 2. Size 16000000
+Setting heap 3. Size 16000000
+Setting heap 4. Size 16000000
+Setting heap 5. Size 16000000
+Setting heap 6. Size 16000000
+Setting heap 7. Size 1505280
+Segmentation fault=20
 
-First of all, do we know where the demo precisely faults? In which
-heap's memset? We could then analyse how this heap is being set up in
-the kernel, if all mappings are done as expected, if reasonable address
-are passed to the user, etc.
+> > I may have my hands on a 405 board on Friday, but I'm not=20
+> sure if I can do much more testing than a simple run of the=20
+> program. Of course, testing will primarily take place over=20
+> latest Xenomai...
+>=20
 
-I may have my hands on a 405 board on Friday, but I'm not sure if I can
-do much more testing than a simple run of the program. Of course,
-testing will primarily take place over latest Xenomai...
+This certainly would be helpful, especially if you could reproduce the =
+problem (so I know I don=B4t hunt a phantasm).
 
-Roderik, you said you tested under Qemu as well? For PPC or x86 arch?
+> Roderik, you said you tested under Qemu as well? For PPC or x86 arch?
 
-Jan
+I thought, you tested with Qemu without success (crash). But perhaps my =
+rememberence mixes something up. When I said, that the crash could not =
+be reproduced with Qemu I thought to reference your test. Isn=B4t this =
+correct ? =20
 
-
---------------enig51D9CCC22421EDAEAFD22277
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE/s3+niDOoMHTA+kRAkbhAJ0SovJ2vtSRSwuNgSEXKgtIm4kJrQCfbxeE
-0iUSufqa2Njun/4SNYc0mPU=
-=Bb3J
------END PGP SIGNATURE-----
-
---------------enig51D9CCC22421EDAEAFD22277--
+Roderik
 
