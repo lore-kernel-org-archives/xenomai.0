@@ -1,14 +1,12 @@
-Message-ID: <44FEA7F5.6090409@domain.hid>
-Date: Wed, 06 Sep 2006 12:50:29 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai + PREEMPT_RT
-References: <1157501591.22250.25.camel@domain.hid>
-In-Reply-To: <1157501591.22250.25.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig64A2670DE9DAADAEE9706554"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: [Xenomai-help] resubmission : memset of heap crashes Xenomai-Task
+Date: Wed, 6 Sep 2006 14:08:01 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A4E9CDD@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,54 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dwalker@domain.hid
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig64A2670DE9DAADAEE9706554
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Dear Gilles,
 
-Daniel Walker wrote:
-> Hi all!
+I admit, the mechanism for allocating all memory of the target is not =
+very sophisticated. The idea was, that MAXHEAPBLOCKS*MEMORYCHUNKSIZE is =
+much much more, than memory available (at least with my target (128MB) =
+this is true). I should have mentioned this in the source code, sorry. =
+If your target has more then =
+(MAXHEAPBLOCKS*MEMORYCHUNKSIZE=3D320MB(approcimate)) memory, you should =
+increase MAXHEAPBLOCKS.
+
+If this condition is fulfiled, I think, there should be no illegal =
+memory access. Do you agree ?
+
+Roderik
+=20
+
+> -----Urspr=FCngliche Nachricht-----
+> Von: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+> Gesendet: Dienstag, 5. September 2006 17:18
+> An: Wildenburg, Roderik RAEK3 MRA
+> Cc: xenomai@xenomai.org
+> Betreff: Re: [Xenomai-help] resubmission : memset of heap=20
+> crashes Xenomai-Task
 >=20
-> With PREEMPT_RT getting more and more mature, it seems natural that
-> PREEMPT_RT could be used with Xenomai. Has anyone considered this
-> already?
-
-A clear yes: this is part of the long-term roadmap we are currently
-preparing, just stay tuned. In fact, Philippe expressed this goal
-already in earlier announcements.
-
-Having native (patch-less) real-time will indeed be an interesting
-option for the future, besides co-scheduling.
-
-> Or even better, is anyone already doing work with these two
-> technologies combined?
-
-There once existed a combo patch (that I don't find ATM) of an ancient
--rt version + old Adeos, a combination that will more or less
-automatically come again when PREEMPT_RT is mainline. Porting the
-nucleus over PREEMPT_RT so that the skins can run "natively" is another
-task yet to begin. Anyway, we are already including this perspective in
-current design decisions when subsystems are revised or enhanced.
-
-Jan
-
-
---------------enig64A2670DE9DAADAEE9706554
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFE/qf4niDOoMHTA+kRArRIAJ94E7YugDOVT4iVObrPRYm8w8cr2ACePpQs
-O8CTBGqcBnVi9vtNSy6mId0=
-=yvJs
------END PGP SIGNATURE-----
-
---------------enig64A2670DE9DAADAEE9706554--
+> Roderik_Wildenburg@domain.hid wrote:
+>  > Some times ago (2006.07.06) I had the problem described below.=20
+>  > As far as I can see, there is no solution for this till now.=20
+>  > I think, it is worth a second go, as I believe, a=20
+> industrial strength application can=B4t accept this behavior.
+>  > Therefore I would like to ask the Xenomai-PPC gurus (as=20
+> far as I can see, it could only be reproduced on PPC (not=20
+> Qemu)) again, to judge, whether this is a serios problem or=20
+> just something I have to live with.
+>  >
+>  > Thank you in advance
+>  > Roderik
+>  >
+>  >
+>  > Xenomai Version : 2.2-rc2
+>  > Skin : native
+>  > Kernel : 2.4.25
+>  > Arch.: PPC
+>  >
+>  > I try to allocate as much memory as possible with the functions :
+>  > rt_heap_create and
+>  > rt_heap_alloc.
+>  > (see source attached)
+>  >
+>  > When I try to use the allocated memory with memset, the=20
+> Xenomai-task crashes with a "Segmentation fault".
+>=20
+> You are doing:
+>=20
+> RT_HEAP bigheap[MAXHEAPBLOCKS];
+>   =20
+>=20
+>    for(i=3D0;i<MAXHEAPBLOCKS;i++)
+>    {
+>        /* some treatment */
+>    }
+>=20
+>    /* access bigheap[i] */
+>=20
+> After the for loop, i is MAXHEAPBLOCKS, so, you are accessing=20
+> the bigheap array beyond its end, probably overriding the=20
+> bigbuf array.
+>=20
+> --=20
+>=20
+>=20
+> 					    Gilles Chanteperdrix.
+>=20
 
