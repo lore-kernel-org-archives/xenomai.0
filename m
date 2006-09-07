@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17663.64870.945605.117981@domain.hid>
-Date: Thu, 7 Sep 2006 13:07:18 +0200
-Subject: Re: [Xenomai-help] Porting / API Questions
-In-Reply-To: <44FF3C26.10501@domain.hid>
-References: <44FF3C26.10501@domain.hid>
+Message-ID: <17664.3405.935244.253039@domain.hid>
+Date: Thu, 7 Sep 2006 14:15:09 +0200
+Subject: Re: AW: AW: [Xenomai-help] resubmission : memset of heap
+	crashes	Xenomai-Task
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A4E9E80@domain.hid>
+References: <5D63919D95F87E4D9D34FF7748CE2C2A4E9E80@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,17 +17,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
+To: Roderik_Wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-Jeff Webb wrote:
- > Is it okay to use the POSIX API for threads and timing, and the rtai API for FIFOs?  It seems like this is working, but I want to make sure that there are no hidden problems.
+Roderik_Wildenburg@domain.hid wrote:
+ > P.s.: with 2.2.2 I noticed, that in /proc/xenomai/interfaces vxWorks is not listed although I compiled the kernel with support for vxworks. Is this o.K. ?
 
-There should be no problem mixing the POSIX API with other
-interfaces. If a POSIX service absolutely requires a POSIX skin thread,
-it will return an error of EPERM when called from an invalid
-context. Now, if you want to exchange messages "the POSIX way", you can
-use POSIX message queues.
+The vxworks interface probably failed to start, likely because it needs
+periodic timer and you load the native interface that set the hardware
+timer to aperiodic mode.
 
 -- 
 
