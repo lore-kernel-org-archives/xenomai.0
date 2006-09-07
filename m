@@ -1,12 +1,12 @@
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17663.64654.650622.340750@domain.hid>
-Date: Thu, 7 Sep 2006 13:03:42 +0200
-Subject: Re: [Xenomai-help] Strange segmentation fault
-In-Reply-To: <44FFF19B.8080104@domain.hid>
-References: <44FFF19B.8080104@domain.hid>
-Content-Transfer-Encoding: Quoted-Printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17663.64870.945605.117981@domain.hid>
+Date: Thu, 7 Sep 2006 13:07:18 +0200
+Subject: Re: [Xenomai-help] Porting / API Questions
+In-Reply-To: <44FF3C26.10501@domain.hid>
+References: <44FF3C26.10501@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,17 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Ignacio_Garc=EDa_P=E9rez?= <iggarpe@domain.hid>
+To: Jeff Webb <jeff.webb@domain.hid>
 Cc: xenomai@xenomai.org
 
-Ignacio Garc=EDa P=E9rez wrote:
- >     r =3D rt_task_create(&_io_task, "rtcore_io_task", 0x1000, 10, T_FP=
-U);
+Jeff Webb wrote:
+ > Is it okay to use the POSIX API for threads and timing, and the rtai API for FIFOs?  It seems like this is working, but I want to make sure that there are no hidden problems.
 
-Try replacing 0x1000 with say 32000 or 64000. printf uses the stack, so
-need enough room to operate properly.
+There should be no problem mixing the POSIX API with other
+interfaces. If a POSIX service absolutely requires a POSIX skin thread,
+it will return an error of EPERM when called from an invalid
+context. Now, if you want to exchange messages "the POSIX way", you can
+use POSIX message queues.
 
---=20
+-- 
 
 
 					    Gilles Chanteperdrix.
