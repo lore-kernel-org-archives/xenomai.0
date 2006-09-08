@@ -1,20 +1,11 @@
-Subject: Re: [Xenomai-help] Kernel panic with Xenomai SMP kernel
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45004959.8080908@domain.hid>
-References: <44F6E774.2000701@domain.hid>
-	<44F72F35.4070109@domain.hid>	<44F75C54.90608@domain.hid>
-	<17655.28122.163232.842311@domain.hid>
-	<44F84C23.9070105@domain.hid>
-	<17656.30980.846435.69720@domain.hid>
-	<44F8B112.9070203@domain.hid> <1157182863.4967.2.camel@domain.hid>
-	<44FF2E2C.9050209@domain.hid> <1157581459.5064.128.camel@domain.hid>
-	<45004959.8080908@domain.hid>
-Content-Type: text/plain
-Date: Fri, 08 Sep 2006 10:18:29 +0200
-Message-Id: <1157703510.6219.18.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <45014994.2020601@domain.hid>
+Date: Fri, 08 Sep 2006 06:44:36 -0400
+From: Sean McGranaghan <smm@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Low-level isr in ADEOS/RTDM
+References: <45007B5B.9010000@domain.hid> <4500821B.8040703@domain.hid>
+In-Reply-To: <4500821B.8040703@domain.hid>
+Content-Type: multipart/mixed; boundary="------------000909020400030907030903"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,33 +15,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-09-07 at 11:31 -0500, Jeff Webb wrote:
-> Philippe Gerum wrote:
-> > Adeos/x86 has more issues running in SMP mode over the latest kernels on
-> > recent hardware, because the implementation of the interrupt subsystem
-> > is a moving target on the former, and I don't have regular access to the
-> > latter.
-> 
-> That makes sense.  If/when someone decides to look into these issues, I can test out the build on my machine, as time permits.
+This is a multi-part message in MIME format.
+--------------000909020400030907030903
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I will look at these issues; known weaknesses in Adeos always make me
-nervous. Thanks in advance for the testing part.
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<font size="-1"><font face="Helvetica, Arial, sans-serif">I will check
+out the ipipe tracer first. Didn't know about that. Thanks for the idea.<br>
+<br>
+Sean<br>
+</font></font><br>
+Jan Kiszka wrote:
+<blockquote cite="mid4500821B.8040703@domain.hid" type="cite">
+  <pre wrap="">Sean McGranaghan wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">Hello all,
 
-> Thanks for your input (and your great work on xenomai!),
-> 
-> -Jeff
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+I am having an issue with a "lost" interrupt in an RTDM driver. This is a long 
+story so I will try to summarize:
+
+Hardware description -
+I have a Geode2 based PC/104 stack with CAN and ADC/DAC cards. The motherboard 
+implements a standard XT-PIC in its super io. The system is running Xenomai 
+2.2.1 with a Gentoo  Linux 2.6.17 kernel. There are several external devices on 
+the CAN bus to load the bus with traffic.
+
+Software description -
+I have two RTDM drivers that provide simple ioctl() interfaces to the 
+application. One driver supports two CAN controllers. (PCAN/SJA1000. I 
+implemented this driver many months before RTCAN was available. Sorry I couldn't 
+wait, paying customer and all. ;-)
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+Yeah. :)
+
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">The other driver supports a ADC/DAQ card. The 
+application runs several Xenomai tasks using message queues for communication.
+
+Failure Description -
+The application starts. I can see IRQ lines being raised and lowered as 
+interrupts are handled. The application runs normally. After about one or two 
+minutes depending on the bus load, I "lose" the IRQ15 interrupt. My interrupt 
+service routine is never called and the interrupt chain is broken for that 
+device. I have traced the IRQ lines from the devices on the oscilloscope and see 
+that the IRQ goes high, but is never acknowledged. (See attached. I added labels 
+to each trace.) This failure is sporadic and seems to depend on all three 
+devices generating interrupts in the system.
+
+Theory -
+The interrupt is never acknowledged because the PIC did not notify the processor 
+or software never acknowledged the PIC.
+
+Testing approach -
+I need to determine if the hardware or software has lost the interrupt. I would 
+tend to suspect software first so I decided to start there. I am using the 
+parallel port pins as GPIO output and trying to instrument the low-level 
+ADEOS/Xenomai interrupt handling. If I catch the interrupt soon enough in the 
+interrupt pipeline I can determine that some software issue is preventing my isr 
+from running. If no interrupt ever occurs then I can suspect the hardware.
+
+Assumptions -
+ADEOS/Xenomai/RTDM catches the interrupt and propagates it to my isr. If my isr 
+is the first level interrupt handler I am out of luck.
+
+Any thoughts or suggestions are appreciated.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+Already had a look at the ipipe-tracer?
+
+<a class="moz-txt-link-freetext" href="http://download.gna.org/adeos/patches/v2.6/i386/tracer">http://download.gna.org/adeos/patches/v2.6/i386/tracer</a>
+
+If you can determine the error condition in software, it's easy to
+trigger a freeze of the past invoked functions: xntrace_user_freeze. You
+can call it from any context, also from user-space. Check
+/proc/ipipe/tracer for the output ("frozen") and tunables (specifially
+"back_trace_points"). If help on interpreting the result is required,
+post it (or relevant excerpts) here.
+
+Jan
+
+  </pre>
+</blockquote>
+</body>
+</html>
+
+--------------000909020400030907030903
+Content-Type: text/x-vcard; charset=utf-8;
+ name="smm.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="smm.vcf"
+
+begin:vcard
+fn:Sean McGranaghan
+n:McGranaghan;Sean
+org:The Appcon Group, Inc.
+adr;dom:;;97 Ridgeland Rd;Rochester;NY;14623
+email;internet:smm@domain.hid
+title:Embedded Software Engineer
+tel;work:585-427-7830
+tel;fax:585-427-2116
+x-mozilla-html:TRUE
+version:2.1
+end:vcard
 
 
+--------------000909020400030907030903--
 
