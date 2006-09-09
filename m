@@ -1,15 +1,13 @@
-Message-ID: <45003E4E.9060302@domain.hid>
-Date: Thu, 07 Sep 2006 17:44:14 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Sat, 9 Sep 2006 03:07:45 +0200
+From: Bernhard Walle <bernhard.walle@domain.hid>
+Subject: Re: [Xenomai-core] Sleep return value
+Message-ID: <20060909010745.GD1192@domain.hid>
+References: <20060906134139.GA5852@domain.hid> <44FED2B7.8090408@domain.hid>
 MIME-Version: 1.0
-References: <45003003.7070507@domain.hid>
-In-Reply-To: <45003003.7070507@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig784C38AA6201FDEE1E73FA43"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [RFC][PATCH] optimise wakeup order in
-	xnsynch_flush
+	protocol="application/pgp-signature"; boundary="E13BgyNx05feLLmH"
+Content-Disposition: inline
+In-Reply-To: <44FED2B7.8090408@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,58 +17,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig784C38AA6201FDEE1E73FA43
-Content-Type: text/plain; charset=ISO-8859-15
+
+--E13BgyNx05feLLmH
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Hi,
+Hello,
+
+sorry for the late reply.
+
+* Jan Kiszka <jan.kiszka@domain.hid> [2006-09-06 15:52]:
+> Bernhard Walle wrote:
+> > Hello,
+> >=20
+> > ,----
+> > | int rtdm_task_sleep (uint64_t delay);
+> > | int rtdm_task_sleep_until (uint64_t wakeup_time);
+> > `----
+> >=20
+> > wouldn't it make sense to return 0 on success and in error case the
+> > number of nanoseconds that are remaining to the originally requested
+> > sleep period just as the Linux sleeping function behave?
 >=20
-> this is so far a mind experiment combined with an untested patch:
+> Do you have a use-case for this? Would you consider this as the normal
+> scenario?
+
+I must confess that I don't have one. I just compared the Linux API
+with the RTDM API for that use case. I'll dig into sources of Linux
+drivers and see if there are reasonable use cases. But this may take
+some days as I'm a bit busy now.
+
+> Also note that changing the return type would take away to possibility
+> to pass the error code.
+
+Not really. You can
+
+  < 0 : error code (in this case -EPERM)
+  =3D=3D 0 : success
+  > 0 : remaining time
+
+Or simple
+
+  int rtdm_task_sleep(uint64_t delay, uint64_t *time_left);
+
+That would make it more compatible with the current API since the user
+can simply replace
+
+  ret =3D rtdm_task_sleep(delay);
+
+with=20
+
+  ret =3D rtdm_task_sleep(delay, NULL);
+
+> > Of course that would introduce an incompatibility to current code.
 >=20
-> [Assuming priority lists, the following is irrelevant for O(1) sched-qu=
-eues]
->=20
-> Consider we have some bulk of threads with varying priorities waiting o=
-n
-> a xnsynch object. Typically, they are queued in priority order, the
-> highest prio thread at the head. When we wake them up all at once via
-> xnsynch_flush, we iterate from high to low prio threads.
->=20
-> Waking up includes inserting those threads in the ready queue(s), again=
+> Given a reasonably urging use-case or brokenness of the original
+> interface, API revisions may actually take place in RTDM (see the
+> history). But they will surely not happen without thorough
+> considerations of pros and cons. :)
 
-> the highest prio thread first. On wake up of the first waiting thread w=
-e
-> will only have to skip those threads in the ready queue that have highe=
-r
-> priorities. For the second thread we already have to skip the first one=
-
-> as well on insert if it isn't of the same priority. One may continue
-> this workflow...
-
-Forget about this, there was a sign mistake: ready-queue walk already
-takes place in the reverse order (from lower to higher prios), thus with
-minimal iterations for the sketched scenario. Time to go home...
-
-Jan
+Because the missing information can be easily gathered from outside,
+it would be only worth changing if you plan some other changes in
+these functions so that this can be done in one in one step.
 
 
---------------enig784C38AA6201FDEE1E73FA43
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Regards,
+  Bernhard
+--=20
+Bei der Eroberung des Weltraums sind zwei Probleme zu l=F6sen: die Schwerkr=
+aft
+und der Papierkrieg. Mit der Schwerkraft w=E4ren wir fertig geworden.
+	-- Wernher von Braun
+
+--E13BgyNx05feLLmH
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
 
-iD8DBQFFAD5OniDOoMHTA+kRAiTMAJ9cp2lRlMAv5VeWZkYRBVPfD82WOgCeNW1z
-eFNF8JMhciafpYaSQmhC0BQ=
-=MUnK
+iQCVAwUBRQIT3OiVHo+2lFT9AQJn/wP+IqqvhwnMKuYB60IQqiLxPugDOPuIyljG
+RiU9QZ3BmU3+d/CNarzOGAIpbXQK3y11GLPxGKsYiC/ips8n7u5F4zC9E+X62xeq
+4gSQ7i+bp16m+mh/gtVDm13wHJkCyb4YDIcOFHuS8YrgSyWPXS5frggnm8b8PxlF
+XcyW3GsOQxA=
+=8czk
 -----END PGP SIGNATURE-----
 
---------------enig784C38AA6201FDEE1E73FA43--
+--E13BgyNx05feLLmH--
 
