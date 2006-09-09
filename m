@@ -1,48 +1,68 @@
-From: Bernhard Walle <bernhard.walle@domain.hid>
-Date: Wed, 9 Aug 2006 14:15:07 +0200
-Message-ID: <b70pq3-hji.ln1@domain.hid>
-References: <5D63919D95F87E4D9D34FF7748CE2C2A46DE23@domain.hid>
-	<0mqoq3-qci.ln1@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Sender: news <news@domain.hid>
-Subject: [Xenomai-help] Re: WG: Xenomai vs. RTAI
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <45031D1F.8050507@domain.hid>
+Date: Sat, 09 Sep 2006 21:59:27 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Re: CAN updates & questions
+References: <450290AC.6000009@domain.hid> <45029903.7030108@domain.hid>
+	<200609091739.00665.matthias.fuchs@domain.hid>
+In-Reply-To: <200609091739.00665.matthias.fuchs@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Matthias Fuchs <matthias.fuchs@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Hello,
+Hi Matthias,
 
-Bernhard Walle <bernhard.walle@domain.hid> [2006-08-09]:
-> <Roderik_Wildenburg@domain.hid> [2006-08-09]:
-> > 
-> > And now something completly different, something more idelogical ;-):
-> > Wouldn´t a bulletin board or a WIKI be a better form of dicussion respectively knowledge base than a mail archive. The background for this question is, that allways when I start a new stupid question I can´t be sure whether this question hasn´t already been dealt with, as my mail archive isn´t complete and also not very good searchable.
+Matthias Fuchs wrote:
+> Hi Wolfgang,
 > 
-> http://marc.theaimsgroup.com/?l=kernelnewbies&r=1&w=2
+> Wolfgang Grandegger wrote:
+>> You have to define the real CAN system clock, which is 16/2 = 8 Mhz for
+>> most SJA 1000 hardware even if the oscillator is running at 16 MHz. I
+>> will add some reasonable note to rtcan_dev.h
+> Is there any special reason for this? Wouldn't it be more meaningful to pass 
+> the SJA1000 externally applied clock frequency? I can imagine that others 
+> will also run into this issue as Jan and I did yesterday ;-)
 
-Sorry, wrong list. :)
+The frequency is used to calculate reasonable bit-timing parameters, not 
+only for SJA 1000. It's used in a similar way in the Linux socket CAN 
+driver.
 
-You should be able to search in the archive at
-https://mail.gna.org/public/xenomai-core/ and
-https://mail.gna.org/public/xenomai-help/ via google:
+>>> Then we will soon have to discuss how to deal with a rtcan_isa
+>>> derivative that uses ioremapped memory instead of ports (naming,
+>>> separation or integration).
+>> We could add a generic device similar to ISA (or extend ISA accordingly).
+> The SJA1000 isa driver is very simple - and so is the modified version for the 
+> memory mapped SJA1000. I think that merging both ways of access to the 
+> SJA1000 into a single driver will make the code much more dirty. I would 
+> prefer different source files (= different drivers). 
 
-Just enter your search words and the constraint " site:mail.gna.org"
-into the search box.
+I agree.
 
+> It would be a compromise to add support for boards that use some kind of 
+> indirect addressing to access the SJA1000 (address + data register) into the 
+> isa and mem versions of the driver.
 
-Regards,
-  Bernhard
--- 
-"Only free men can negotiate..."
-        -- Nelson Mandela
+Fine if this could be done in a generic way. We also should add a 
+generic PCI driver sooner than later.
+
+> One more proposal: I think many (old) ISA drivers name the module parameter 
+> for the ISA io port "io" instead of "isa". For the memory mapped SJA1000 
+> driver, I'd like to call the parameter "mem".
+
+Well, I cannot remember why I used the name "isa". Common is "io" or 
+"port" or "ioport", indeed. "io" and "mem" or "ioport" and "iomem" would 
+be fine for me.
+
+Wolfgang.
 
 
