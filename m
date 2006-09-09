@@ -1,11 +1,12 @@
-Date: Sat, 9 Sep 2006 03:15:33 +0200
-From: Bernhard Walle <bernhard.walle@domain.hid>
-Message-ID: <20060909011533.GE1192@domain.hid>
+Message-ID: <450290AC.6000009@domain.hid>
+Date: Sat, 09 Sep 2006 12:00:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="k4f25fnPtRuIRUb3"
-Content-Disposition: inline
-Subject: [Xenomai-core] tdm_event_timedwait documentation
+	protocol="application/pgp-signature";
+	boundary="------------enig9B927CF81D745E4D594DAC09"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] CAN updates & questions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,92 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-
---k4f25fnPtRuIRUb3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9B927CF81D745E4D594DAC09
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Hi Wolfgang,
 
-IMO the documentation of tdm_event_timedwait is a bit unclear. There
-are two timeout values: the timeout and the timeout sequence. After
-reading the source code the behaviour is clear but from documentation
-I would have expected following behaviour:
+as one result of a hacking session on a PPC405 with SJA1000 on board I
+applied two minor fixes to rtcan_isa.c to SVN, see end of mail for
+reference. The first one gave an "interesting" effect on big-endian
+because irq is an integer, the second one reveals that we should do some
+multiport test with the ISA driver soon.
 
-   - the sequence timeout is the sum of the timeouts over all calls
-     (which is in case)
+Questions arose regarding the meaning of rtcan_device.can_sys_clock
+(BTW, comment in rtcan_dev.h is wrong). What clock rate does it
+describe? For the SJA1000 drivers its obviously clock/2. I'm asking
+because of a) the output in rtcan_calc_bit_time() and b) the module
+parameter of rtcan_isa and its description. We first hacked 16 MHz into
+the latter yesterday as I didn't recall quickly enough that our Phytec
+board also runs at 16 MHZ, thus the default value of 8 MHZ was already
+correct. Confused? At least we were...
 
-   - the timeout in the parameter is the maximum timeout of this call
-     (which is not in case)
+And another suggestion: In order make module names shorter, what about
+the renaming xeno_rtcan* -> xeno_can*?
 
-If I didn't get the source code totally wrong
+Then we will soon have to discuss how to deal with a rtcan_isa
+derivative that uses ioremapped memory instead of ports (naming,
+separation or integration).
 
-        if (timeout < 0) {
-            err =3D -EWOULDBLOCK;
-            goto unlock_out;
-        }
-
-        if (timeout_seq && (timeout > 0)) {
-            /* timeout sequence */
-            timeout =3D *timeout_seq - xnpod_get_time();
-            if (unlikely(timeout <=3D 0)) {
-                err =3D -ETIMEDOUT;
-                goto unlock_out;
-            }
-            xnsynch_sleep_on(&event->synch_base, timeout);
-        } else {
-            /* infinite or relative timeout */
-            xnsynch_sleep_on(&event->synch_base, xnpod_ns2ticks(timeout));
-        }
-
-the timeout value is only interesting if RTDM_TIMEOUT_NONE or
-RTDM_TIMEOUT_INFINITE otherwise it's not relevant because it's
-overwritten by the value of the timeout sequence. That should be
-expressed in the documentation.
-
-Maybe
-
- * @param[in] timeout Relative timeout, see
- * @ref RTDM_TIMEOUT_xxx for special values (any positive value
- * means the timeout specified in the timeout sequence)
-
-or something like that.
+Jan
 
 
-Regards,
-  Bernhard
+--
 
-PS: As there are more and more RTDM-related questions (not only from
-me :)) -- what do you think about a mailing list for real-time drivers
-only? Which means a common list for RTAI and Xenomai.=20
+Index: ksrc/drivers/can/sja1000/rtcan_isa.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/drivers/can/sja1000/rtcan_isa.c	(Revision 1564)
++++ ksrc/drivers/can/sja1000/rtcan_isa.c	(Arbeitskopie)
+@@ -56,7 +56,7 @@ static u8 ocr[RTCAN_ISA_MAX_DEV];
+ static u8 cdr[RTCAN_ISA_MAX_DEV];
 
-Because I'm using both systems for evaluation I'm always a bit unsure
-to which list I should write (well, if it's not RTAI specified I wrote
-to the Xenomai list because I know you're working on Xenomai and the
-RTAI implementation is from Paolo Mantegazza ;)).
---=20
-"Freedom is just another word for nothing left to lose,
-Nothing don't mean nothing honey if it ain't free, now now.
-And feeling good was easy, Lord, when Bobby sang the blues,
-You know feeling good was good enough for me,
-Good enough for me and my Bobby McGee."        -- Janis Joplin
+ compat_module_short_param_array(isa, RTCAN_ISA_MAX_DEV);
+-compat_module_byte_param_array(irq, RTCAN_ISA_MAX_DEV);
++compat_module_int_param_array(irq, RTCAN_ISA_MAX_DEV);
+ compat_module_int_param_array(clock, RTCAN_ISA_MAX_DEV);
+ compat_module_byte_param_array(ocr, RTCAN_ISA_MAX_DEV);
+ compat_module_byte_param_array(cdr, RTCAN_ISA_MAX_DEV);
+@@ -187,9 +187,10 @@ static void __exit rtcan_isa_exit(void)
+     int i;
+     struct rtcan_device *dev;
 
---k4f25fnPtRuIRUb3
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+-    for (i =3D 0, dev =3D rtcan_isa_devs[i];
+-	 i < RTCAN_ISA_MAX_DEV && dev !=3D NULL;
+-	 i++) {
++    for (i =3D 0; i < RTCAN_ISA_MAX_DEV; i++) {
++	dev =3D rtcan_isa_devs[i];
++	if (!dev)
++	    continue;
+ 	rtcan_sja1000_unregister(dev);
+     }
+ }
+
+
+--------------enig9B927CF81D745E4D594DAC09
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iQCVAwUBRQIVr+iVHo+2lFT9AQLGmgP7BRkh0JklfS/4DJPQ/r81ctgn8NQ+GB8W
-9ydBqoEflCAr3nQYWrYyky0O0Qnx3x1b2XglEEM+1nQeAjj1W2dfDYquqGXzSYK9
-ytP2qLaEaD+2WJmq7BN3kCCe98qoCatLxUoeQ+23E9jbd1d8wUBRhGQao8/WpVZI
-NacH7Evp8r4=
-=Tf34
+iD8DBQFFApCvniDOoMHTA+kRApH3AJwM3lyhXNZyFt5oKc2Pn3fbEaQROQCcDnjX
+bY2FpbpsX1sqFFjeWQaUynI=
+=x2G3
 -----END PGP SIGNATURE-----
 
---k4f25fnPtRuIRUb3--
+--------------enig9B927CF81D745E4D594DAC09--
 
