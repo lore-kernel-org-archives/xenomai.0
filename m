@@ -1,12 +1,14 @@
-Message-ID: <45029903.7030108@domain.hid>
-Date: Sat, 09 Sep 2006 12:35:47 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Sat, 9 Sep 2006 12:58:18 +0200
+From: Bernhard Walle <bernhard.walle@domain.hid>
+Subject: Re: [Xenomai-core] Sleep return value
+Message-ID: <20060909105818.GA4567@domain.hid>
+References: <20060906134139.GA5852@domain.hid> <44FED2B7.8090408@domain.hid>
+	<20060909010745.GD1192@domain.hid> <45029732.8030008@domain.hid>
 MIME-Version: 1.0
-References: <450290AC.6000009@domain.hid>
-In-Reply-To: <450290AC.6000009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: CAN updates & questions
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
+Content-Disposition: inline
+In-Reply-To: <45029732.8030008@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,78 +19,43 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi Wolfgang,
-> 
-> as one result of a hacking session on a PPC405 with SJA1000 on board I
-> applied two minor fixes to rtcan_isa.c to SVN, see end of mail for
-> reference. The first one gave an "interesting" effect on big-endian
-> because irq is an integer, the second one reveals that we should do some
-> multiport test with the ISA driver soon.
 
-OK, I see. Unfortunately I do not have a ISA CAN device for testing.
+--zYM0uCDKw75PZbzx
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Questions arose regarding the meaning of rtcan_device.can_sys_clock
-> (BTW, comment in rtcan_dev.h is wrong). What clock rate does it
-> describe? For the SJA1000 drivers its obviously clock/2. I'm asking
-> because of a) the output in rtcan_calc_bit_time() and b) the module
-> parameter of rtcan_isa and its description. We first hacked 16 MHz into
-> the latter yesterday as I didn't recall quickly enough that our Phytec
-> board also runs at 16 MHZ, thus the default value of 8 MHZ was already
-> correct. Confused? At least we were...
+* Jan Kiszka <jan.kiszka@domain.hid> [2006-09-09 12:28]:
+> > Because the missing information can be easily gathered from outside,
+> > it would be only worth changing if you plan some other changes in
+> > these functions so that this can be done in one in one step.
+>=20
+> You exactly hit the point. :->
 
-You have to define the real CAN system clock, which is 16/2 = 8 Mhz for 
-most SJA 1000 hardware even if the oscillator is running at 16 MHz. I 
-will add some reasonable note to rtcan_dev.h
+Yes, I should first think and then post.
 
-> And another suggestion: In order make module names shorter, what about
-> the renaming xeno_rtcan* -> xeno_can*?
 
-Fine for me.
+Regards,
+  Bernhard
+--=20
+OpenPGP Schl=FCssel-ID: B69454FD (kurz) / E8951E8FB69454FD (lang)
+Fingerprint: F3BE B2A7 8161 2986 ABA4  9AB9 E895 1E8F B694 54FD
 
-> Then we will soon have to discuss how to deal with a rtcan_isa
-> derivative that uses ioremapped memory instead of ports (naming,
-> separation or integration).
+--zYM0uCDKw75PZbzx
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-We could add a generic device similar to ISA (or extend ISA accordingly).
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
 
-> 
-> Jan
-> 
+iQCVAwUBRQKeReiVHo+2lFT9AQLweAP/cQp0iUlld2jEofj4aQ6HqsbrLi0EwDBD
+MxwU10PNw1N2ISAQ+q9ATmxzZwOWVtFluLSybylIRvh0yDtZ7ITY6L/USn8oB0H7
+mmaB5EtYCNhY6QNGGcVtNcztq+7we/GltZwmGyLPsqZOrn9a7g/Qipnt/l+nu4Gd
+f9rfevlF86I=
+=dU7U
+-----END PGP SIGNATURE-----
 
-Wolfgang.
-
-> --
-> 
-> Index: ksrc/drivers/can/sja1000/rtcan_isa.c
-> ===================================================================
-> --- ksrc/drivers/can/sja1000/rtcan_isa.c	(Revision 1564)
-> +++ ksrc/drivers/can/sja1000/rtcan_isa.c	(Arbeitskopie)
-> @@ -56,7 +56,7 @@ static u8 ocr[RTCAN_ISA_MAX_DEV];
->  static u8 cdr[RTCAN_ISA_MAX_DEV];
-> 
->  compat_module_short_param_array(isa, RTCAN_ISA_MAX_DEV);
-> -compat_module_byte_param_array(irq, RTCAN_ISA_MAX_DEV);
-> +compat_module_int_param_array(irq, RTCAN_ISA_MAX_DEV);
->  compat_module_int_param_array(clock, RTCAN_ISA_MAX_DEV);
->  compat_module_byte_param_array(ocr, RTCAN_ISA_MAX_DEV);
->  compat_module_byte_param_array(cdr, RTCAN_ISA_MAX_DEV);
-> @@ -187,9 +187,10 @@ static void __exit rtcan_isa_exit(void)
->      int i;
->      struct rtcan_device *dev;
-> 
-> -    for (i = 0, dev = rtcan_isa_devs[i];
-> -	 i < RTCAN_ISA_MAX_DEV && dev != NULL;
-> -	 i++) {
-> +    for (i = 0; i < RTCAN_ISA_MAX_DEV; i++) {
-> +	dev = rtcan_isa_devs[i];
-> +	if (!dev)
-> +	    continue;
->  	rtcan_sja1000_unregister(dev);
->      }
->  }
-> 
-
+--zYM0uCDKw75PZbzx--
 
