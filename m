@@ -1,12 +1,14 @@
-Message-ID: <45029746.9060302@domain.hid>
-Date: Sat, 09 Sep 2006 12:28:22 +0200
+Message-ID: <45029732.8030008@domain.hid>
+Date: Sat, 09 Sep 2006 12:28:02 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] tdm_event_timedwait documentation
-References: <20060909011533.GE1192@domain.hid>
-In-Reply-To: <20060909011533.GE1192@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Sleep return value
+References: <20060906134139.GA5852@domain.hid> <44FED2B7.8090408@domain.hid>
+	<20060909010745.GD1192@domain.hid>
+In-Reply-To: <20060909010745.GD1192@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig91DF9A0DD7B7823504DB82B1"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,89 +22,89 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Bernhard Walle <bernhard.walle@domain.hid>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig91DF9A0DD7B7823504DB82B1
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
 Bernhard Walle wrote:
 > Hello,
-> 
-> IMO the documentation of tdm_event_timedwait is a bit unclear. There
-> are two timeout values: the timeout and the timeout sequence. After
-> reading the source code the behaviour is clear but from documentation
-> I would have expected following behaviour:
-> 
->    - the sequence timeout is the sum of the timeouts over all calls
->      (which is in case)
-> 
->    - the timeout in the parameter is the maximum timeout of this call
->      (which is not in case)
-> 
-> If I didn't get the source code totally wrong
-> 
->         if (timeout < 0) {
->             err = -EWOULDBLOCK;
->             goto unlock_out;
->         }
-> 
->         if (timeout_seq && (timeout > 0)) {
->             /* timeout sequence */
->             timeout = *timeout_seq - xnpod_get_time();
->             if (unlikely(timeout <= 0)) {
->                 err = -ETIMEDOUT;
->                 goto unlock_out;
->             }
->             xnsynch_sleep_on(&event->synch_base, timeout);
->         } else {
->             /* infinite or relative timeout */
->             xnsynch_sleep_on(&event->synch_base, xnpod_ns2ticks(timeout));
->         }
-> 
-> the timeout value is only interesting if RTDM_TIMEOUT_NONE or
-> RTDM_TIMEOUT_INFINITE otherwise it's not relevant because it's
-> overwritten by the value of the timeout sequence. That should be
-> expressed in the documentation.
+>=20
+> sorry for the late reply.
+>=20
+> * Jan Kiszka <jan.kiszka@domain.hid> [2006-09-06 15:52]:
+>> Bernhard Walle wrote:
+>>> Hello,
+>>>
+>>> ,----
+>>> | int rtdm_task_sleep (uint64_t delay);
+>>> | int rtdm_task_sleep_until (uint64_t wakeup_time);
+>>> `----
+>>>
+>>> wouldn't it make sense to return 0 on success and in error case the
+>>> number of nanoseconds that are remaining to the originally requested
+>>> sleep period just as the Linux sleeping function behave?
+>> Do you have a use-case for this? Would you consider this as the normal=
 
-This overwriting only takes place if timeout_seq is non-NULL. Otherwise,
-we are in "usual" timeout mode.
+>> scenario?
+>=20
+> I must confess that I don't have one. I just compared the Linux API
+> with the RTDM API for that use case. I'll dig into sources of Linux
+> drivers and see if there are reasonable use cases. But this may take
+> some days as I'm a bit busy now.
+>=20
+>> Also note that changing the return type would take away to possibility=
 
-> 
-> Maybe
-> 
->  * @param[in] timeout Relative timeout, see
->  * @ref RTDM_TIMEOUT_xxx for special values (any positive value
->  * means the timeout specified in the timeout sequence)
-> 
-> or something like that.
+>> to pass the error code.
+>=20
+> Not really. You can
+>=20
+>   < 0 : error code (in this case -EPERM)
+>   =3D=3D 0 : success
+>   > 0 : remaining time
+>=20
+> Or simple
+>=20
+>   int rtdm_task_sleep(uint64_t delay, uint64_t *time_left);
+>=20
+> That would make it more compatible with the current API since the user
+> can simply replace
+>=20
+>   ret =3D rtdm_task_sleep(delay);
+>=20
+> with=20
+>=20
+>   ret =3D rtdm_task_sleep(delay, NULL);
+>=20
+>>> Of course that would introduce an incompatibility to current code.
+>> Given a reasonably urging use-case or brokenness of the original
+>> interface, API revisions may actually take place in RTDM (see the
+>> history). But they will surely not happen without thorough
+>> considerations of pros and cons. :)
+>=20
+> Because the missing information can be easily gathered from outside,
+> it would be only worth changing if you plan some other changes in
+> these functions so that this can be done in one in one step.
+>=20
 
-No, that's wrong then. I guess we rather need something like this:
-
-"@param[in] timeout Relative timeout in nanoseconds, see @ref
-RTDM_TIMEOUT_xxx for special values; pass the overall timeout of the
-related series if timeout_seq is non-NULL"
-
-Does this help to clarify the situation? BTW, the same applies to
-rtdm_sem_timeddown and rtdm_mutex_timeddown, all of those could be
-combined in such a series.
-
-> 
-> 
-> Regards,
->   Bernhard
-> 
-> PS: As there are more and more RTDM-related questions (not only from
-> me :)) -- what do you think about a mailing list for real-time drivers
-> only? Which means a common list for RTAI and Xenomai. 
-> 
-> Because I'm using both systems for evaluation I'm always a bit unsure
-> to which list I should write (well, if it's not RTAI specified I wrote
-> to the Xenomai list because I know you're working on Xenomai and the
-> RTAI implementation is from Paolo Mantegazza ;)).
-
-RTDM specification and development only take place over Xenomai, RTAI
-later adopts what we implement here. And this will quite likely remain
-so in the future. Therefore, the best place to discuss also abstract
-RTDM question is here, maybe later on a dedicated xenomai-drivers list
-when the traffic increases.
-
-For oddities of the RTAI implementation there is still the RTAI list
-where I'm subscribed as well and can jump in when required.
+You exactly hit the point. :->
 
 Jan
+
+
+--------------enig91DF9A0DD7B7823504DB82B1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFApcyniDOoMHTA+kRAon2AJ9H2N79AszG3F5tYQOazNel2VZAZACeJG8/
+1W+DlEH413ZC+JLT79Uh92Y=
+=zdQT
+-----END PGP SIGNATURE-----
+
+--------------enig91DF9A0DD7B7823504DB82B1--
 
