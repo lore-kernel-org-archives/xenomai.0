@@ -1,17 +1,34 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] [patch] fix xeno-test for busybox
-Date: Tue, 12 Sep 2006 21:47:11 +0200
-References: <4506E6CD.5050302@domain.hid>
-	<200609122105.57411.niklaus.giger@domain.hid>
-	<4507066C.2020008@domain.hid>
-In-Reply-To: <4507066C.2020008@domain.hid>
+Sender: dv@domain.hid
+Message-ID: <45046563.5B837BC4@domain.hid>
+Date: Sun, 10 Sep 2006 21:20:03 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] Xenomai on PXA
+References: <200607071703.10700.vagninu@domain.hid>
+	<17582.50372.830923.414981@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<17595.47131.142881.132531@domain.hid>
+	<1153153788.11603.2.camel@domain.hid>
+	<17595.49478.157044.654500@domain.hid>
+	<1154334859.9569.12.camel@domain.hid>
+	<44CDCB61.2DEDCBFF@vollmann.ch>
+	<1154342029.9569.27.camel@domain.hid>
+	<44CDE4C2.77465253@domain.hid>
+	<17616.42011.663899.554796@domain.hid>
+	<1154525585.9559.22.camel@domain.hid>
+	<17616.59841.283196.201008@domain.hid>
+	<1154596354.9835.28.camel@domain.hid>
+	<17617.63387.138316.343123@domain.hid>
+	<1154617014.5010.29.camel@domain.hid>
+	<17618.12042.631648.702921@domain.hid>
+	<1154703176.9602.26.camel@domain.hid>
+	<17631.9753.589322.882530@domain.hid>
+	<4503D322.1E88D034@domain.hid>
+	<17668.739.465406.379629@domain.hid>
+	<45043DD7.5A317C85@domain.hid>
+	<17668.16225.396071.612679@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200609122147.11281.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,17 +38,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Am Dienstag, 12. September 2006 21:11 schrieb Jan Kiszka:
-> Niklaus Giger wrote:
-> > Am Dienstag, 12. September 2006 18:56 schrieb Jan Kiszka:
-> I do not, please re-read the second part of my patch.
-Sorry, I seem to have a bad day today, and cannot even distinguish between - 
-and + :-)
+Gilles Chanteperdrix wrote:
+> Detlef Vollmann wrote:
+>  > Another point: did you run the switchbench test?
+>  >
+>  > With '-n 100000' I get a sure softlock.
+> 
+> Probably the default sampling period of 100 us is too hard for ARM,
+Maybe, but I'm not sure (my PXA runs at 520MHz).
 
-Best regards
+> Xenomai never gets out of the timer interrupt handler,
+I don't think that's the problem.
+With '-n 1000', everything is fine.
+With '-n 10000', on a non-loaded machine, everything is still fine,
+but on a loaded machine, I get the softlock.
+With '-n 30000' even on an unloaded machine I get a softlock
+most of the time.
+
+I think I'll go and try to understand what switchbench actually
+does and what happens on that softlock.  Then I'll probably come
+back with more questions.
+
+ Detlef
+
 -- 
-Niklaus Giger
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
