@@ -1,9 +1,13 @@
-From: ramv <vikesh.rambaran@domain.hid>
-Content-Type: multipart/mixed; boundary="=-cfqzrKsBX+KxZPjX/JXo"
-Date: Tue, 05 Sep 2006 10:00:49 +0200
-Message-Id: <1157443250.4466.12.camel@domain.hid>
-Mime-Version: 1.0
-Subject: [Xenomai-help] RTDM PCI development framework
+Date: Mon, 11 Sep 2006 00:58:45 +0200
+From: Bernhard Walle <bernhard.walle@domain.hid>
+Subject: Re: [Xenomai-help] Another newbie problem
+Message-ID: <20060910225845.GC12735@domain.hid>
+References: <200609110032.53059.nicola17@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PuGuTyElPB9bOcsM"
+Content-Disposition: inline
+In-Reply-To: <200609110032.53059.nicola17@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,163 +19,54 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---=-cfqzrKsBX+KxZPjX/JXo
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 
-hi
-how are you?
+--PuGuTyElPB9bOcsM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This is my first attempt at writing a linux device driver. After reading
-through some of the "Linux Device Drivers 3rd edition", and through
-Xenomai RTDM, i thought a good place to start was a generic framework
-which detects and allocates PCI resources with the necessary error
-handling. It makes available callback functions as well as the allocated
-resources. The aim is to expand it to provide a framework for a standard
-linux char device driver. Thereafter update the framework to be RTDM
-compatible. I've spoken with Jan Kiska with regards to this and it may
-useful to others. There is still much work to be done on, especially to
-bring it up to the Xenomai/RTDM coding standard but attached please find
-a first attempt.
+Hello,
 
-Comments and constructive criticism would be greatly appreciated!
-[The Xenomai GPL file headers are included, hope you don't mind]
+* Nicola Pezzotti <nicola17@domain.hid> [2006-09-11 00:32]:
+> Here I'm with another newbie question...
+>=20
+> Finally I have installed Xenomai 2.2 and all seems right.=20
+>=20
+> all testsuite go well but when I try to launch a demos I have the followi=
+ng=20
+> errors:
+>=20
+> "./latency: error while loading shared libraries: libnative.so.0: cannot =
+open=20
+> shared object file: No such file or directory"
+>=20
+>=20
+> I also try to resolve with this command:
+>=20
+> "export LD_LIBRARY_PATH=3D/usr/xenomai/lib/:$LD_LIBRARY_PATH"
 
-Jan, i went away for a long weekend at the sea to visit my parents.
-Apologies for not replying earlier
+This works only for programs that are not running as root. Add the
+patch /usr/xenomai/lib to /etc/ld.so.conf and run ldconfig.
 
-Keep well
-Vicki
+       Bernhard
+--=20
+"Feature freeze means, that everyone has a bad feeling when he changes
+something, almost nothing more :)"=20
+        -- Stephan Kulow
 
+--PuGuTyElPB9bOcsM
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-*******************************************************************************************************
-Disclaimer:  The information contained in this communication is confidential and may be legally privileged.  
-It is intended solely for the use of the individual or entity to whom it is addressed and others authorised to receive it.  
-Any review, retransmission, dissemination, copying, disclosure or other use of, or taking of any action in reliance upon, this information by person or entities other then the intended recipient is prohibited.  
-If you have received this message in error, please notify the sender immediately by e-mail, facsimile or telephone and return and/or destroy the original message and all copies from any computer.  
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
 
-Denel (Pty) Ltd exercises no editorial control over e-mail messages originating in the organisation and does not accept any responsibility for either the contents of the message or any copyright laws that may have been violated by the person sending this message.  
-Denel (Pty) Ltd is neither liable for the proper and complete transmission of the information contained in this communication nor any delay in its receipt.  
-This message should not be copied or used for any purpose other than intended, nor should it be disclosed to any other person.
-*******************************************************************************************************
+iQCVAwUBRQSYnuiVHo+2lFT9AQLPqQP+NOnm8iSqE/cPY4D7/kmStoPLUNPWaHPs
+7D7q589IFODZCX9Zij2Kwj8AK/GzTCXUibNOOhq4xcaQXamfL3xF8UVLjjZzGUtX
+1blZlzm/mO5JkC67irWYblWRbgO1OFZQd4O5IxPp3dW/yhvGWCUMF9Aw3DO1C2cq
+PebMzvIHwjc=
+=Jdsn
+-----END PGP SIGNATURE-----
 
-
---=-cfqzrKsBX+KxZPjX/JXo
-Content-Disposition: attachment; filename="pci_framework.tar.bz2"
-Content-Type: application/x-bzip-compressed-tar; name="pci_framework.tar.bz2"
-Content-Transfer-Encoding: base64
-
-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
-P/i7kinChIEYq3fQ
-
---=-cfqzrKsBX+KxZPjX/JXo--
+--PuGuTyElPB9bOcsM--
 
