@@ -1,29 +1,13 @@
-Sender: dv@domain.hid
-Message-ID: <4503D322.1E88D034@domain.hid>
-Date: Sun, 10 Sep 2006 10:56:02 +0200
-From: Detlef Vollmann <dv@domain.hid>
+Message-ID: <4503E889.2080306@domain.hid>
+Date: Sun, 10 Sep 2006 12:27:21 +0200
+From: Matthias Fuchs <matthias.fuchs@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai on PXA
-References: <200607071703.10700.vagninu@domain.hid>
-	<17582.50372.830923.414981@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-	<1153153788.11603.2.camel@domain.hid>
-	<17595.49478.157044.654500@domain.hid>
-	<1154334859.9569.12.camel@domain.hid>
-	<44CDCB61.2DEDCBFF@vollmann.ch>
-	<1154342029.9569.27.camel@domain.hid>
-	<44CDE4C2.77465253@domain.hid>
-	<17616.42011.663899.554796@domain.hid>
-	<1154525585.9559.22.camel@domain.hid>
-	<17616.59841.283196.201008@domain.hid>
-	<1154596354.9835.28.camel@domain.hid>
-	<17617.63387.138316.343123@domain.hid>
-	<1154617014.5010.29.camel@domain.hid>
-	<17618.12042.631648.702921@domain.hid>
-	<1154703176.9602.26.camel@domain.hid>
-	<17631.9753.589322.882530@domain.hid>
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-core] Re: CAN updates & questions
+References: <450290AC.6000009@domain.hid>
+	<45029903.7030108@domain.hid>	<200609091739.00665.matthias.fuchs@domain.hid>
+	<45031D1F.8050507@domain.hid>
+In-Reply-To: <45031D1F.8050507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -34,38 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Hello,
+Hi Wolfgang,
 
-Gilles Chanteperdrix wrote:
-> Attached a new version of the patch (including the patch for the __xchg
-> operation, so that this patch can be applied incrementally after the
-> official I-pipe patch) which should be more greedy when demultiplexing
-> the GPIO interrupt.
-Thanks, great.
-Finally I came around to test it.
+Wolfgang Grandegger wrote:
+> Hi Matthias,
+> 
+> Matthias Fuchs wrote:
+>> Hi Wolfgang,
+>>
+>> Wolfgang Grandegger wrote:
+>>> You have to define the real CAN system clock, which is 16/2 = 8 Mhz for
+>>> most SJA 1000 hardware even if the oscillator is running at 16 MHz. I
+>>> will add some reasonable note to rtcan_dev.h
+>> Is there any special reason for this? Wouldn't it be more meaningful
+>> to pass the SJA1000 externally applied clock frequency? I can imagine
+>> that others will also run into this issue as Jan and I did yesterday ;-)
+> 
+> The frequency is used to calculate reasonable bit-timing parameters, not
+> only for SJA 1000. It's used in a similar way in the Linux socket CAN
+> driver.
+I am not very familiar with the socket CAN driver, but after a quick
+glance at its svn repository it seems to me that they are also passing
+the SJA1000 external clock frequency to the module (clk-parameter).
 
-There is one small typo in it:
+So I think other controller's drivers may use an other meaning of the
+clk/clock parameter. But for SJA1000 the ext. clock frequency is best.
+> 
+>>>> Then we will soon have to discuss how to deal with a rtcan_isa
+>>>> derivative that uses ioremapped memory instead of ports (naming,
+>>>> separation or integration).
+>>> We could add a generic device similar to ISA (or extend ISA
+>>> accordingly).
+>> The SJA1000 isa driver is very simple - and so is the modified version
+>> for the memory mapped SJA1000. I think that merging both ways of
+>> access to the SJA1000 into a single driver will make the code much
+>> more dirty. I would prefer different source files (= different drivers). 
+> 
+> I agree.
+> 
+>> It would be a compromise to add support for boards that use some kind
+>> of indirect addressing to access the SJA1000 (address + data register)
+>> into the isa and mem versions of the driver.
+> 
+> Fine if this could be done in a generic way. We also should add a
+> generic PCI driver sooner than later.
+> 
+>> One more proposal: I think many (old) ISA drivers name the module
+>> parameter for the ISA io port "io" instead of "isa". For the memory
+>> mapped SJA1000 driver, I'd like to call the parameter "mem".
+> 
+> Well, I cannot remember why I used the name "isa". Common is "io" or
+> "port" or "ioport", indeed. "io" and "mem" or "ioport" and "iomem" would
+> be fine for me.
+I will use mem for the mem'mapped driver. The socket CAN project uses
+base_addr - they must have an affection to a long parameter name :-)
 
-> diff -Naurdp -x '*~' -x '*.orig' -x '*.rej' linux-2.6.16.5-tcl1-ipipe-ref/arch/arm/mach-pxa/irq.c linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/irq.c
-> --- linux-2.6.16.5-tcl1-ipipe-ref/arch/arm/mach-pxa/irq.c       2005-10-28 02:02:08.000000000 +0200
-> +++ linux-2.6.16.5-tcl1-ipipe/arch/arm/mach-pxa/irq.c   2006-08-13 14:31:28.000000000 +0200
-> @@ -214,6 +215,42 @@ static void pxa_gpio_demux_handler(unsig
-[...]
-> +               for (; i; i--) {
-> +                       loop ||= mask[i - 1];
-This should be:
-                       loop |= mask[i - 1];
+Matthias
 
-With that change, first tests look fine.
-BTW, on the SA, what results do you get from xeno-test?
-
- Detlef
-
--- 
-Detlef Vollmann   vollmann engineering gmbh
-Linux and C++ for Embedded Systems    http://www.vollmann.ch/
-Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
