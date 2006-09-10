@@ -1,11 +1,31 @@
-Message-ID: <4503F0A8.8050602@domain.hid>
-Date: Sun, 10 Sep 2006 13:02:00 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Sender: dv@domain.hid
+Message-ID: <45043DD7.5A317C85@domain.hid>
+Date: Sun, 10 Sep 2006 18:31:19 +0200
+From: Detlef Vollmann <dv@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
-References: <4503EB88.2040309@domain.hid>
-In-Reply-To: <4503EB88.2040309@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] Xenomai on PXA
+References: <200607071703.10700.vagninu@domain.hid>
+	<17582.50372.830923.414981@domain.hid>
+	<44B34343.9F56F13@domain.hid>
+	<17595.47131.142881.132531@domain.hid>
+	<1153153788.11603.2.camel@domain.hid>
+	<17595.49478.157044.654500@domain.hid>
+	<1154334859.9569.12.camel@domain.hid>
+	<44CDCB61.2DEDCBFF@vollmann.ch>
+	<1154342029.9569.27.camel@domain.hid>
+	<44CDE4C2.77465253@domain.hid>
+	<17616.42011.663899.554796@domain.hid>
+	<1154525585.9559.22.camel@domain.hid>
+	<17616.59841.283196.201008@domain.hid>
+	<1154596354.9835.28.camel@domain.hid>
+	<17617.63387.138316.343123@domain.hid>
+	<1154617014.5010.29.camel@domain.hid>
+	<17618.12042.631648.702921@domain.hid>
+	<1154703176.9602.26.camel@domain.hid>
+	<17631.9753.589322.882530@domain.hid>
+	<4503D322.1E88D034@domain.hid>
+	<17668.739.465406.379629@domain.hid>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,43 +36,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Matthias Fuchs <matthias.fuchs@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi Matthias,
+Gilles Chanteperdrix wrote:
+> Detlef Vollmann wrote:
+>  > With that change, first tests look fine.
+> 
+> Thanks, attached the patch with this error corrected.
+Thanks.
 
-Matthias Fuchs wrote:
-> Hi,
+>  > BTW, on the SA, what results do you get from xeno-test?
 > 
-> I was trying to use some external hardware interupts on a PPC405 board
-> as part of a hacking session with Jan to bring up the rtcan driver on
-> this board.
-> 
-> Here are some versions:
-> 
-> 	Linux Kernel: 2.6.14
-> 	Adeos: 1.3-07
-> 	Xenomai: from svn (2.3pre, last friday night)
-> 
-> The first interrupt interrupt was always fine. When the 2nd interupt
-> occured, it was never handled and did not cause any action. We used the
-> ipipe-tracer and did not see anything related to the 2nd and any further
-> interrupt.
-> 
-> I think that the hardware interrupt is somehow masked and therefore
-> never result in any action. So the handling of the first interrupt might
-> be incorrect.
-> 
-> This seems to be ppc or even ppc4xx related because I assume that x86
-> platforms do not have this issue. Is this an Adeos issue.
-> 
-> I will do the same test on a 2.4 kernel next week - if nobody tells me
-> that this will be a waste of time.
+> latency in user-space easily get above 100 microseconds, if this is what
+> you mean. But I guess this is what we should expect on ARM.
+Probably yes.  The histogram just looks a bit strange, nearly
+all in the last column...
 
-Could you please add printk statements to the ack, enable and end 
-functions to arch/ppc/syslib/ppc4xx_pic.c if the irq number matches. 
-Please print also SR, ER and status.
+Another point: did you run the switchbench test?
 
-Wolfgang.
+With '-n 100000' I get a sure softlock.
 
+ Detlef
+
+-- 
+Detlef Vollmann   vollmann engineering gmbh
+Linux and C++ for Embedded Systems    http://www.vollmann.ch/
+Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
 
