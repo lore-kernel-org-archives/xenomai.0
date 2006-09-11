@@ -1,14 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <451D38BA.1070105@domain.hid>
-References: <451D338A.1050407@domain.hid>  <451D38BA.1070105@domain.hid>
-Content-Type: text/plain
-Date: Fri, 29 Sep 2006 17:26:20 +0200
-Message-Id: <1159543580.4973.3.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [Adeos-main] [RFC][PATCH 2/2] detect domain
-	violations
-Reply-To: rpm@xenomai.org
+Message-ID: <4505A75B.8000601@domain.hid>
+Date: Mon, 11 Sep 2006 20:13:47 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+References: <4503EB88.2040309@domain.hid>
+	<1157988739.4991.11.camel@domain.hid> <450584D7.6050009@domain.hid>
+	<200609111904.16512.matthias.fuchs@domain.hid>
+In-Reply-To: <200609111904.16512.matthias.fuchs@domain.hid>
+Content-Type: multipart/mixed; boundary="------------020307090508070309040204"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,39 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: Matthias Fuchs <matthias.fuchs@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-On Fri, 2006-09-29 at 17:16 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > ...
-> > This patch is an RFC as the following issues need to be resolved:
-> > 
-> >  o The might be parts of I-pipe remaining that make use of
-> >    preemp_disable even over non-root contexts. Philippe indicated the
-> >    PPC PIC code would be one example.
+This is a multi-part message in MIME format.
+--------------020307090508070309040204
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Matthias Fuchs wrote:
+> On Monday 11 September 2006 17:46, Wolfgang Grandegger wrote:
+>>> A possible explanation is that configurations only using the timer IRQ
+>>> are not affected, since the decrementer is not subject to this issue
+>>> (the tick handler returns XN_ISR_NOENABLE anyway).
+>> I run RT-Socket-CAN on a CAN PCI Card on my MPC5200 without any 
+>> problems, so far (under Linux 2.4). Here the end function of the PIC:
+>>
+>>    static void
+>>    mpc5xxx_ic_end(unsigned int irq)
+>>    {
+>>          if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
+>>                  mpc5xxx_ic_enable(irq);
+>>    }
+>>
+>> Matthias, have you printed out the value of status? I'm just curious.
+>>
+>> Wolfgang.
 > 
-> Mmpf, first test, then post. Looks like there are more subtle scenarios
-> hidden:
+> Here it comes:
+> bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+> _end: status=00000042
+> bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+> _end: status=00000042
+> bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+> _end: status=00000042
 > 
+> So it's IRQ_DISABLED (=2).
 
-[...]
+In 2.6 the interrupts are disabled by default. Then the attached patch 
+for Xenomai should help.
 
-> Namely, __switch_to->__unlazy_fpu->save_init_fpu->preempt_disable.
-> Philippe, looks like killing the ipipe_preempt_guard is not trivial...
-> 
-> Anyway, attached version 2 of this patch enables both stack dump and
-> ipipe-backtrace.
-> 
+Wolfgang.
 
-No, it's not. This is the reason why we should make this disabling an
-obscure I-pipe config option (like in the kernel hacking section,
-default off), so that each and every platform could be validated
-separately, before actually removing the whole damn thing from
-linux/preempt.h.
+--------------020307090508070309040204
+Content-Type: text/x-patch;
+ name="xenomai-irqend.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xenomai-irqend.patch"
 
--- 
-Philippe.
++ diff -u xenomai/ksrc/arch/powerpc/hal.c.IRQEND xenomai/ksrc/arch/powerpc/hal.c
+--- xenomai/ksrc/arch/powerpc/hal.c.IRQEND	2006-08-23 22:12:17.000000000 +0200
++++ xenomai/ksrc/arch/powerpc/hal.c	2006-09-11 20:00:32.000000000 +0200
+@@ -326,6 +326,7 @@
+         rthal_irq_descp(irq)->handler->enable == NULL)
+         return -ENODEV;
+ 
++    rthal_irq_descp(irq)->status &= ~IRQ_DISABLED;
+     rthal_irq_descp(irq)->handler->enable(irq);
+ 
+     return 0;
+@@ -341,6 +342,7 @@
+         rthal_irq_descp(irq)->handler->disable == NULL)
+         return -ENODEV;
+ 
++    rthal_irq_descp(irq)->status |= IRQ_DISABLED;
+     rthal_irq_descp(irq)->handler->disable(irq);
+ 
+     return 0;
 
-
+--------------020307090508070309040204--
 
