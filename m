@@ -1,20 +1,15 @@
-Subject: Re: [Xenomai-core] 	[PATCH, RFC] Make ioremap'ed memory available
-	through	rtdm_mmap_to_user()
-From: Stelian Pop <stelian.pop@domain.hid>
-In-Reply-To: <4513F625.9010709@domain.hid>
-References: <1158337583.13530.20.camel@domain.hid>
-	<450AD766.3000307@domain.hid>
-	<1158613987.31164.9.camel@domain.hid>
-	<45100DF6.8030209@domain.hid>
-	<1158914149.14421.10.camel@domain.hid>
-	<4513A5D0.3040507@domain.hid>
-	<1158924874.19558.6.camel@domain.hid>
-	<4513F625.9010709@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Fri, 22 Sep 2006 16:53:10 +0200
-Message-Id: <1158936791.10518.3.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <45055475.2050705@domain.hid>
+Date: Mon, 11 Sep 2006 14:20:05 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+References: <4503EB88.2040309@domain.hid>
+	<200609111058.44417.matthias.fuchs@domain.hid>
+	<1157970027.4934.6.camel@domain.hid>
+	<200609111402.12493.matthias.fuchs@domain.hid>
+In-Reply-To: <200609111402.12493.matthias.fuchs@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,31 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Matthias Fuchs <matthias.fuchs@domain.hid>
 Cc: xenomai@xenomai.org
 
-Le vendredi 22 septembre 2006 =E0 16:41 +0200, Jan Kiszka a =E9crit :=20
-> Stelian Pop wrote:
-> > Le vendredi 22 septembre 2006 =E0 10:58 +0200, Jan Kiszka a =E9crit :
-> >=20
-> >>> 	d) make a special rtdm_mmap_iomem_to_user() function...
-> >> Also an option. Specifically, it wouldn't break the existing API... =
-What
-> >> about rtdm_iomap_to_user? Would you like to work out a patch in this
-> >> direction?
-> >=20
-> > Here it comes.
->=20
-> Your patch looks very good. Assuming that you have tested it
-> successfully,
+Matthias Fuchs wrote:
+> Hello Philippe,
+> 
+> that helps. I will do some further testing.
+> 
+> Matthias
+> 
+> 
+> On Monday 11 September 2006 12:20, Philippe Gerum wrote:
+>> It's likely an Adeos issue. Could you try this patch? TIA,
+>>
+>> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
+>> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
+>> @@ -72,7 +72,8 @@
+>>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
+>>  		ACK_UIC##n##_PARENT					\
+>>  	}								\
+>> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+>> +	if (!ipipe_root_domain_p ||					\
+>> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+>>  		ppc_cached_irq_mask[n] |= mask;				\
+>>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
+>>  	}								\
+> 
 
-I did.
-
->  I'm going to merge it soon.
+Philippe, could you please explain the problem in more detail? And what 
+are the consequences for other PowerPC ARCs and PICs, also for Linux 2.4?
 
 Thanks.
 
---=20
-Stelian Pop <stelian.pop@domain.hid>
+Wolfgang.
 
 
