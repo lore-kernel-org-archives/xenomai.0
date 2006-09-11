@@ -1,15 +1,18 @@
-Message-ID: <45195BF8.6060707@domain.hid>
-Date: Tue, 26 Sep 2006 18:57:28 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
-References: <J67G6W$AFC4CDFDA31A148D03B70B64BA5713E3@domain.hid>	
-	<1159287029.5084.149.camel@domain.hid>
-	<4519553A.3040109@domain.hid>
-	<1159288734.5084.159.camel@domain.hid>
-In-Reply-To: <1159288734.5084.159.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45057123.1030908@domain.hid>
+References: <4503EB88.2040309@domain.hid>
+	<200609111058.44417.matthias.fuchs@domain.hid>
+	<1157970027.4934.6.camel@domain.hid>
+	<200609111402.12493.matthias.fuchs@domain.hid>
+	<45055475.2050705@domain.hid> <1157980145.4934.69.camel@domain.hid>
+	<45057123.1030908@domain.hid>
+Content-Type: text/plain
+Date: Mon, 11 Sep 2006 17:32:19 +0200
+Message-Id: <1157988739.4991.11.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,75 +22,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2006-09-26 at 18:28 +0200, Wolfgang Grandegger wrote:
->> Philippe Gerum wrote:
->>> On Tue, 2006-09-26 at 16:56 +0200, gilles.chanteperdrix wrote:
->>>> ---------- Debut du message initial -----------
->>>>
->>>> De     : xenomai-core-bounces@domain.hid
->>>> A      : niklaus.giger@domain.hid
->>>> Copies : xenomai@xenomai.org
->>>> Date   : Tue, 26 Sep 2006 16:21:18 +0200
->>>> Objet  : Re: [Xenomai-core] Problem with periodic timer on
->>>> PPC40x solved
->>>>
->>>>>> On Mon, 2006-09-25 at 22:29 +0200, Niklaus Giger wrote:
->>>>>>>> Am Montag, 25. September 2006 17:57 schrieb Philippe
->>>> Gerum:
->>>>>>>>> On Sun, 2006-09-24 at 23:07 +0200, Wolfgang
->>>> Grandegger wrote:
->>>>>>>>>> Niklaus Giger wrote:
->>>>>> <..>
->>>>>>>> Is the output of lines like "Xenomai: Switching
->>>> display-3238 to secondary
->>>>>>>> mode after exception #1025 from user-space at
->>>> 0x100033c4 (pid 3240)"
->>>>>>>> harmless or the result of a activated
->>>> CONFIG_XENO_OPT_DEBUG<..> option?
->>>>> A known hw issue seems to exist with the 405GP (revD), which
->>>> causes the
->>>>> ESR to be incorrectly set upon FPU emulation trap, which
->>>> would in turn
->>>>> cause the spurious exception to be relayed to the nucleus by
->>>> Adeos. The
->>>>> patch below is _not_ the final fix, but rather a way to
->>>> check if this
->>>>> message is indeed related to the FPU emulation on your
->>>> board. Does it
->>>>> silence the exception without breaking the box?
->>>> The FPU fault may be the result of the latency display thread
->>>> using the
->>>> FPU: on systems with emulated FPU, this looks normal.
->>>>
->>> This said, we should not switch the task to secondary mode, but rather
->>> emulate the FPU ops in primary mode. To this end, we need to make sure
->>> that do_mathemu() is not going to choke over this context (e.g.
->>> preemption count check issues over CONFIG_PREEMPT when running
->>> unmodified uaccess routines). We additionally need to fix the program
->>> check exception handler to give the math emulation code a chance to
->>> handle the fault before we complain loudly at the nucleus.
->> OK, but in general, soft-float emulation should be used on systems 
->> without FPU and this is even more important for real-time.
+On Mon, 2006-09-11 at 16:22 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Mon, 2006-09-11 at 14:20 +0200, Wolfgang Grandegger wrote:
+> >> Matthias Fuchs wrote:
+> >>> Hello Philippe,
+> >>>
+> >>> that helps. I will do some further testing.
+> >>>
+> >>> Matthias
+> >>>
+> >>>
+> >>> On Monday 11 September 2006 12:20, Philippe Gerum wrote:
+> >>>> It's likely an Adeos issue. Could you try this patch? TIA,
+> >>>>
+> >>>> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
+> >>>> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
+> >>>> @@ -72,7 +72,8 @@
+> >>>>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
+> >>>>  		ACK_UIC##n##_PARENT					\
+> >>>>  	}								\
+> >>>> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+> >>>> +	if (!ipipe_root_domain_p ||					\
+> >>>> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+> >>>>  		ppc_cached_irq_mask[n] |= mask;				\
+> >>>>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
+> >>>>  	}								\
+> >> Philippe, could you please explain the problem in more detail? And what 
+> >> are the consequences for other PowerPC ARCs and PICs, also for Linux 2.4?
+> > 
+> > The issue lies in the fact that PICs *_end() routines may be called over
+> > the Xenomai domain, and actually are, most of the time, since
+> > xnintr_irq_handler() -which invokes xnarch_end_irq()- is always called
+> > from the the Xenomai stage in the Adeos pipeline.
+> > 
+> > In such a case, we must not check for the Linux-defined IRQ bits (e.g.
+> > IRQ_INPROGRESS), and always send the eoi, since those bits are not
+> > relevant to the Xenomai context. The patch above ensures this.
+> > 
+> > And yes, the 2.4 patch has the very same problem, which should be fixed
+> > the same way for all supported ppc platforms in the various PIC
+> > management code. Oops.
 > 
-> Makes sense. So maybe we should make this a more explicit and formal
-> warning, to catch missing soft float emulation, actually.
-
-We could already print a compiler warning when the kernel is built with 
-MATH_EMULATION=y. There are a few corner-case where it might make sense 
-to have math emulation enabled e.g. you need to run a binary with hard 
-FP instructions because you are unable to rebuild it from the sources.
-
+> And why didn't this render PPC-over-2.4 useless, i.e. what is special
+> about this 405-scenario?
 > 
->>  This is a 
->> tool chain issue. Niklaus, what tool chain are you using?
->>
->> Wolfgang.
->>
->>
->>
+
+A possible explanation is that configurations only using the timer IRQ
+are not affected, since the decrementer is not subject to this issue
+(the tick handler returns XN_ISR_NOENABLE anyway).
+
+-- 
+Philippe.
+
 
 
