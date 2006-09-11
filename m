@@ -1,10 +1,15 @@
-From: Stelian Pop <stelian.pop@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Fri, 29 Sep 2006 15:56:09 +0200
-Message-Id: <1159538169.15778.22.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] [PATCH] automatically run ldconfig on installation
+From: Matthias Fuchs <matthias.fuchs@domain.hid>
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+Date: Mon, 11 Sep 2006 19:04:16 +0200
+References: <4503EB88.2040309@domain.hid>
+	<1157988739.4991.11.camel@domain.hid> <450584D7.6050009@domain.hid>
+In-Reply-To: <450584D7.6050009@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200609111904.16512.matthias.fuchs@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,45 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Hi,
+On Monday 11 September 2006 17:46, Wolfgang Grandegger wrote:
+> > 
+> > A possible explanation is that configurations only using the timer IRQ
+> > are not affected, since the decrementer is not subject to this issue
+> > (the tick handler returns XN_ISR_NOENABLE anyway).
+> 
+> I run RT-Socket-CAN on a CAN PCI Card on my MPC5200 without any 
+> problems, so far (under Linux 2.4). Here the end function of the PIC:
+> 
+>    static void
+>    mpc5xxx_ic_end(unsigned int irq)
+>    {
+>          if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
+>                  mpc5xxx_ic_enable(irq);
+>    }
+> 
+> Matthias, have you printed out the value of status? I'm just curious.
+> 
+> Wolfgang.
 
-When installing the userspace skin libraries, 'ldconfig' is not
-automatically run to update the dynamic library loader cache.
+Here it comes:
+bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+_end: status=00000042
+bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+_end: status=00000042
+bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
+_end: status=00000042
 
-The attached patch does just that, but it does so only if the user is
-not installing cross-compiled libraries as it does not make sense in
-this case.
+So it's IRQ_DISABLED (=2).
 
-Stelian.
-Index: configure.in
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- configure.in	(r=E9vision 1680)
-+++ configure.in	(copie de travail)
-@@ -593,6 +593,7 @@
- AC_SUBST([CONFIG_STATUS_DEPENDENCIES],
-         ['$(top_srcdir)/src/skins/posix/posix.wrappers'])
- AC_SUBST(XENO_POSIX_WRAPPERS)
-+AC_SUBST(cross_compiling)
-=20
- base=3Dasm-$XENO_TARGET_ARCH
- AC_CONFIG_LINKS([src/include/asm/xenomai:include/$base])
-Index: src/skins/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- src/skins/Makefile.am	(r=E9vision 1680)
-+++ src/skins/Makefile.am	(copie de travail)
-@@ -1,2 +1,4 @@
-+install-data-local:
-+	if test "@cross_compiling@" =3D "no"; then ldconfig; fi
-=20
- SUBDIRS =3D native posix rtdm vxworks vrtx rtai
-
---=20
-Stelian Pop <stelian.pop@domain.hid>
-
+Matthias
 
