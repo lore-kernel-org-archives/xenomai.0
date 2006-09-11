@@ -1,10 +1,16 @@
-Message-ID: <f48df4840609200843l66f34e88y3eb75092feb332d8@domain.hid>
-Date: Wed, 20 Sep 2006 17:43:38 +0200
-From: "Bruno Rouchouse" <brouchouse@domain.hid>
+From: Matthias Fuchs <matthias.fuchs@domain.hid>
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+Date: Mon, 11 Sep 2006 14:02:12 +0200
+References: <4503EB88.2040309@domain.hid>
+	<200609111058.44417.matthias.fuchs@domain.hid>
+	<1157970027.4934.6.camel@domain.hid>
+In-Reply-To: <1157970027.4934.6.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_357086_26170199.1158767018379"
-Subject: [Xenomai-core] Website migration
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200609111402.12493.matthias.fuchs@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,45 +20,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-------=_Part_357086_26170199.1158767018379
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hello Philippe,
 
-Dear Xenomai users,
+that helps. I will do some further testing.
 
-Xenomai website is undergoing a migration to a new server in order to offer
-better and more flexible services.
-
-You may encounter some connection problems, notice invalid URL or find bad
-links while browsing the website.
-
-We apologize for the inconveniences and we will do everything possible to
-finish the migration by the end of the week-end.
+Matthias
 
 
-Best regards,
-
-
-Bruno Rouchouse
-
-------=_Part_357086_26170199.1158767018379
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Dear Xenomai users, <br><br>Xenomai website is undergoing a migration to a new server in order to offer better and more flexible services.<br><br>
-You may encounter some connection problems, notice invalid URL or find bad links while browsing the website.<br>
-<br>
-We apologize for the inconveniences and we will do everything possible to&nbsp; finish the migration by the end of the week-end.<br>
-<br>
-<br>
-Best regards,<br>
-<br>
-<br>
-Bruno Rouchouse<br>
-
-------=_Part_357086_26170199.1158767018379--
+On Monday 11 September 2006 12:20, Philippe Gerum wrote:
+> It's likely an Adeos issue. Could you try this patch? TIA,
+> 
+> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
+> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
+> @@ -72,7 +72,8 @@
+>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
+>  		ACK_UIC##n##_PARENT					\
+>  	}								\
+> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+> +	if (!ipipe_root_domain_p ||					\
+> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+>  		ppc_cached_irq_mask[n] |= mask;				\
+>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
+>  	}								\
 
