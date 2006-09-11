@@ -1,13 +1,16 @@
-Message-ID: <451A4ED8.7040708@domain.hid>
-Date: Wed, 27 Sep 2006 12:13:44 +0200
+Message-ID: <450584D7.6050009@domain.hid>
+Date: Mon, 11 Sep 2006 17:46:31 +0200
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
-References: <J67G6W$AFC4CDFDA31A148D03B70B64BA5713E3@domain.hid>
-	<200609262056.30673.niklaus.giger@domain.hid>
-	<45198C45.6080904@domain.hid>
-	<200609262326.04533.niklaus.giger@domain.hid>
-In-Reply-To: <200609262326.04533.niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+References: <4503EB88.2040309@domain.hid>	
+	<200609111058.44417.matthias.fuchs@domain.hid>	
+	<1157970027.4934.6.camel@domain.hid>	
+	<200609111402.12493.matthias.fuchs@domain.hid>	
+	<45055475.2050705@domain.hid>
+	<1157980145.4934.69.camel@domain.hid>	 <45057123.1030908@domain.hid>
+	<1157988739.4991.11.camel@domain.hid>
+In-Reply-To: <1157988739.4991.11.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -19,84 +22,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Am Dienstag, 26. September 2006 22:23 schrieb Wolfgang Grandegger:
->> Niklaus Giger wrote:
->>> Am Dienstag, 26. September 2006 18:28 schrieb Wolfgang Grandegger:
->>>> Philippe Gerum wrote:
->>>>> On Tue, 2006-09-26 at 16:56 +0200, gilles.chanteperdrix wrote:
->>>> OK, but in general, soft-float emulation should be used on systems
->>>> without FPU and this is even more important for real-time. This is a
->>>> tool chain issue. Niklaus, what tool chain are you using?
->>> In my .config I have
->>> MATH_EMULATION=y
->> You seem to need that because your compiler generates code with hard FP
->> instructions. You could check this with:
->>
->>   $ ppc-linux-objdump -d prog|egrep ":\s*[e-f]"
-> This does not return any match on my system.
-
-Oops, then your compiler seems _not_ to create hard FP instruction, 
-otherwise you would get:
-
-   ppc_82xx-objdump -d latency|egrep ":\s*[e-f]"
-   latency:     file format elf32-powerpc
-   100036ac:       fc 21 f8 28     fsub    f1,f1,f31
-   100036b4:       fc 42 f8 28     fsub    f2,f2,f31
-   100036c4:       fc 63 f8 28     fsub    f3,f3,f31
-   100036cc:       fc 21 f0 24     fdiv    f1,f1,f30
-   100036dc:       fc 84 f8 28     fsub    f4,f4,f31
-   ...
-
-> But looking at the disassembly of the latency program I have code like:
-> 100081bc <_restfpr_28_x>:
-> 100081bc:       cb 8b ff e0     lfd     f28,-32(r11)
-> or
-> 1000798c <__floatsidf>:
-> 1000798c:       7c 08 02 a6     mflr    r0
-> 10007990:       2f 83 00 00     cmpwi   cr7,r3,0
-> 10007994:       94 21 ff c0     stwu    r1,-64(r1)
-> 10007998:       90 01 00 44     stw     r0,68(r1)
-> 1000799c:       54 60 0f fe     rlwinm  r0,r3,1,31,31
-> 100079a0:       90 01 00 14     stw     r0,20(r1)
-> 100079a4:       40 9e 00 24     bne-    cr7,100079c8 <__floatsidf+0x3c>
-
-That's from soft float emulation.
-
->>> The toolchain is gcc-3.4.4-glibc-2.3.5/powerpc-405-linux-gnu built using
->>> Dan Kegel crosstool (Version 0.42 if I remember exactly).
+Philippe Gerum wrote:
+> On Mon, 2006-09-11 at 16:22 +0200, Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>> On Mon, 2006-09-11 at 14:20 +0200, Wolfgang Grandegger wrote:
+>>>> Matthias Fuchs wrote:
+>>>>> Hello Philippe,
+>>>>>
+>>>>> that helps. I will do some further testing.
+>>>>>
+>>>>> Matthias
+>>>>>
+>>>>>
+>>>>> On Monday 11 September 2006 12:20, Philippe Gerum wrote:
+>>>>>> It's likely an Adeos issue. Could you try this patch? TIA,
+>>>>>>
+>>>>>> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
+>>>>>> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
+>>>>>> @@ -72,7 +72,8 @@
+>>>>>>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
+>>>>>>  		ACK_UIC##n##_PARENT					\
+>>>>>>  	}								\
+>>>>>> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+>>>>>> +	if (!ipipe_root_domain_p ||					\
+>>>>>> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
+>>>>>>  		ppc_cached_irq_mask[n] |= mask;				\
+>>>>>>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
+>>>>>>  	}								\
+>>>> Philippe, could you please explain the problem in more detail? And what 
+>>>> are the consequences for other PowerPC ARCs and PICs, also for Linux 2.4?
+>>> The issue lies in the fact that PICs *_end() routines may be called over
+>>> the Xenomai domain, and actually are, most of the time, since
+>>> xnintr_irq_handler() -which invokes xnarch_end_irq()- is always called
+>>> from the the Xenomai stage in the Adeos pipeline.
 >>>
->>> Shall I switch to another one?
-
-Maybe (likely) there is nothing wrong with your tool chain.
-
->> The ELDK from DENX uses FP soft-emulation for 4xx (http://www.denx.de).
->> Choose  v3.1.1 for Linux 2.4 and v4 for Linux 2.6.
+>>> In such a case, we must not check for the Linux-defined IRQ bits (e.g.
+>>> IRQ_INPROGRESS), and always send the eoi, since those bits are not
+>>> relevant to the Xenomai context. The patch above ensures this.
+>>>
+>>> And yes, the 2.4 patch has the very same problem, which should be fixed
+>>> the same way for all supported ppc platforms in the various PIC
+>>> management code. Oops.
+>> And why didn't this render PPC-over-2.4 useless, i.e. what is special
+>> about this 405-scenario?
+>>
 > 
-> I am breathing only PowerPC code on my Mac PowerBook (running Debian) and 
-> never managed to installed ELDK on it. (And even Detlev as a Debian developer 
-> couldn't recommend a simple way.) 
+> A possible explanation is that configurations only using the timer IRQ
+> are not affected, since the decrementer is not subject to this issue
+> (the tick handler returns XN_ISR_NOENABLE anyway).
 
-I remember Detlev's pain and frustration.
+I run RT-Socket-CAN on a CAN PCI Card on my MPC5200 without any 
+problems, so far (under Linux 2.4). Here the end function of the PIC:
 
-> But I assume that I specifying GLIBC_EXTRA_CONFIG="--without-fp" in the 
-> powerpc-405.dat should be enough to make Dan Kegels crosstool emit Soft-FPU 
-> emulation.
+   static void
+   mpc5xxx_ic_end(unsigned int irq)
+   {
+         if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
+                 mpc5xxx_ic_enable(irq);
+   }
 
-See above.
-
-> I will try to run the tests at work where I have installed ELDK 4.0, but not 
-> yet a fully working environment. Therefore it may take some time to report a 
-> result back.
-
-I'm now a bit puzzled why a FP exception occurs. What happens if you 
-disable MATH_EMULATION
-in your kernel (that's what I normally have). It will try the latency 
-test on my Walnut-Board with CONFIG_XENO_OPT_DEBUG asap.
+Matthias, have you printed out the value of status? I'm just curious.
 
 Wolfgang.
-
 
