@@ -1,18 +1,10 @@
-Subject: Re: [Xenomai-help] Kernel panic with Xenomai SMP kernel
+Subject: Re: [Xenomai-help] Bad EIP kernel-Oops
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4509A522.5000707@domain.hid>
-References: <44F6E774.2000701@domain.hid>
-	<44F72F35.4070109@domain.hid>	<44F75C54.90608@domain.hid>
-	<17655.28122.163232.842311@domain.hid>
-	<44F84C23.9070105@domain.hid>
-	<17656.30980.846435.69720@domain.hid>
-	<44F8B112.9070203@domain.hid> <1157182863.4967.2.camel@domain.hid>
-	<44FF2E2C.9050209@domain.hid> <1157581459.5064.128.camel@domain.hid>
-	<45081913.8000004@domain.hid> <1158163163.5076.16.camel@domain.hid>
-	<4509A522.5000707@domain.hid>
+In-Reply-To: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
+References: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
 Content-Type: text/plain
-Date: Fri, 15 Sep 2006 09:17:51 +0200
-Message-Id: <1158304672.5009.0.camel@domain.hid>
+Date: Tue, 12 Sep 2006 22:11:15 +0200
+Message-Id: <1158091876.5020.8.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -25,39 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
+To: nils.kemper@domain.hid
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-09-14 at 13:53 -0500, Jeff Webb wrote:
-> Philippe Gerum wrote:'
-> > On Wed, 2006-09-13 at 09:43 -0500, Jeff Webb wrote:
-> > > After many, many recompiles.... As it turns out, this buggy
-> > > behavior occurs when I turn off CONFIG_ACPI completely, instead
-> > > of just turning off CONFIG_ACPI_PROCESSOR.  I tried this same 
-> > > configuration file with the non-patched vanilla kernel, and got 
-> > > strange behavior as well, so the problem is probably not in the 
-> > > adeos patch (unlike the other two issues we discussed).  I am not 
-> > > really concerned about this, since I would rather have some of 
-> > > the CONFIG_ACPI options on anyway.  I just wanted to follow up
-> > > and let you know I tracked down the problem as far as I care to 
-> > > take it for the moment.
-> >
-> > Interesting, this looks like power management quirks, maybe caused by
-> > funky BIOS interactions. In any case, this is worth a new paragraph in
-> > the troubleshooting file. Thanks a lot for testing and reporting this.
+On Tue, 2006-09-12 at 15:24 +0200, Nils Kemper wrote:
+> Hi,
+> I want to use Xenomai, but I get (sometimes, but everytime the same)
+> kernel-Oops just by running xeno-test:
 > 
-> For what it's worth... turning off CONFIG_ACPI completely does not seem to cause a problem if I disable SMP.  So, it seems like the problem is turning off CONFIG_ACPI completely for an SMP kernel.
-> 
+> [..]
+> Xenomai: stopping native API services.
+> I-pipe: Domain Xenomai unregistered.
+> Xenomai: hal/x86 stopped.
+> Xenomai: real-time nucleus unloaded.
 
-ACPI is used to parse the SMP boot table, among other things, so this
-makes sense.
+Does the issue still pop up if you set the Xenomai nucleus as static
+(i.e. not as a module) in the kernel configuration?
 
-> -Jeff
+>  Unable to handle kernel NULL pointer dereference at virtual address 00000000
+>  printing eip:
+>  00000000
+>  *pde = 00000000
+>  Oops: 0000 [#1]
+>  PREEMPT
+>  Modules linked in: netconsole 8139too crc32 ipv6 nfs lockd sunrpc
+> intel_agp ehci_hcd uhci_hcd usbcore i810_audio ac97_codec soundcore 3c59x
+> mii agpgart
+>  CPU:    0
+>  EIP:    0060:[<00000000>]    Not tainted VLI
+>  EFLAGS: 00010246   (2.6.16.27n-xeno222 #7)
+>  EIP is at rest_init+0x3feffde0/0x63
+>  eax: c030ba80   ebx: c030ba80   ecx: 00000002   edx: 00000003
+>  esi: c030ba80   edi: 00000246   ebp: 00000021   esp: cc1bbf80
+>  ds: 007b   es: 007b   ss: 0068
+>  Process dd (pid: 11490, threadinfo=cc1ba000 task=d56f8a70)
+>  Stack: <0>c013f158 00000021 c030ba80 cc1bbfbc 00000001 c0314408 c030ba80
+> cc1bbfbc
+>         00000000 00000200 08051000 cc1ba000 c0111c3d 00000000 c0102ec6
+> 00000000
+>         08051000 00000200 00000200 08051000 bfda2568 00000003 0000007b
+> 0000007b
+>  Call Trace:
+>         [<c013f158>] __ipipe_dispatch_event+0xcd/0xeb
+>         [<c0111c3d>] __ipipe_syscall_root+0x2f/0xd8
+>         [<c0102ec6>] sysenter_past_esp+0x3b/0x67
+>  Code:  Bad EIP value.
+>  <4>I-pipe: Domain Xenomai registered.
+> Xenomai: hal/x86 started.
+> Xenomai: real-time nucleus v2.2.2 (Ride) loaded.
+> Xenomai: SMI-enabled chipset found, enabling SMI workaround.
+> [..]
 > 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> I'm sure somthing is wrong with my kernel-config, so I have attached it,
+> together with the xeno-test-output.
+> BTW: I tried noapic, acpi=off with no success.
+> 
+> TIA,
+> Nils
+> _______________________________________________ Xenomai-help mailing list Xenomai-help@domain.hid https://mail.gna.org/listinfo/xenomai-help
 -- 
 Philippe.
 
