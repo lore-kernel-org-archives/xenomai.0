@@ -1,34 +1,18 @@
-Sender: dv@domain.hid
-Message-ID: <45046563.5B837BC4@domain.hid>
-Date: Sun, 10 Sep 2006 21:20:03 +0200
-From: Detlef Vollmann <dv@domain.hid>
+Message-ID: <45071BBD.30908@domain.hid>
+Date: Tue, 12 Sep 2006 22:42:37 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai on PXA
-References: <200607071703.10700.vagninu@domain.hid>
-	<17582.50372.830923.414981@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-	<1153153788.11603.2.camel@domain.hid>
-	<17595.49478.157044.654500@domain.hid>
-	<1154334859.9569.12.camel@domain.hid>
-	<44CDCB61.2DEDCBFF@vollmann.ch>
-	<1154342029.9569.27.camel@domain.hid>
-	<44CDE4C2.77465253@domain.hid>
-	<17616.42011.663899.554796@domain.hid>
-	<1154525585.9559.22.camel@domain.hid>
-	<17616.59841.283196.201008@domain.hid>
-	<1154596354.9835.28.camel@domain.hid>
-	<17617.63387.138316.343123@domain.hid>
-	<1154617014.5010.29.camel@domain.hid>
-	<17618.12042.631648.702921@domain.hid>
-	<1154703176.9602.26.camel@domain.hid>
-	<17631.9753.589322.882530@domain.hid>
-	<4503D322.1E88D034@domain.hid>
-	<17668.739.465406.379629@domain.hid>
-	<45043DD7.5A317C85@domain.hid>
-	<17668.16225.396071.612679@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] rtcan_mem - CAN driver for memory mapped
+	SJA1000 controllers
+References: <200609121330.16250.matthias.fuchs@domain.hid>
+	<200609121807.49179.matthias.fuchs@domain.hid>
+	<4506E45B.8090605@domain.hid>
+	<200609122105.48598.matthias.fuchs@domain.hid>
+In-Reply-To: <200609122105.48598.matthias.fuchs@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDBD14E6CB9B8D98EF2DEB0E7"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -38,34 +22,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Matthias Fuchs <matthias.fuchs@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Detlef Vollmann wrote:
->  > Another point: did you run the switchbench test?
->  >
->  > With '-n 100000' I get a sure softlock.
-> 
-> Probably the default sampling period of 100 us is too hard for ARM,
-Maybe, but I'm not sure (my PXA runs at 520MHz).
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDBD14E6CB9B8D98EF2DEB0E7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> Xenomai never gets out of the timer interrupt handler,
-I don't think that's the problem.
-With '-n 1000', everything is fine.
-With '-n 10000', on a non-loaded machine, everything is still fine,
-but on a loaded machine, I get the softlock.
-With '-n 30000' even on an unloaded machine I get a softlock
-most of the time.
+Matthias Fuchs wrote:
+> On Tuesday 12 September 2006 18:46, Wolfgang Grandegger wrote:
+>> Matthias Fuchs wrote:
+>>> Hi,
+>>>
+>>> here's the 2nd try:
+>>> - updated external clock frequency handling
+>>> - use request_mem_region() before remapping memory
+>>> - renamed local variable mem to vmem in clean loop because it shadowe=
+d a
+>>> module parameter
+>> I have one more comment, sorry. I think you should use:
+>>
+>>      volatile void __iomem *vmem;
+> __iomem is available since kernel version 2.4.28 and it is defined for =
 
-I think I'll go and try to understand what switchbench actually
-does and what happens on that softlock.  Then I'll probably come
-back with more questions.
+> documentation only.
 
- Detlef
+I guess it's for sparse (haven't used it yet).
 
--- 
-Detlef Vollmann   vollmann engineering gmbh
-Linux and C++ for Embedded Systems    http://www.vollmann.ch/
-Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
+> But the xenomai readme names the Denx 2.4.25'based tree=20
+> as the 2.4 refererence. And that tree also defines __iomem.
+> So, objection allowed.
+>=20
+>> and the cleanup in case of error is not OK. See below.
+> Fixed.
+>=20
+> New patch attached.=20
+
+Ok, thanks again. I just pushed it in with rev. 1598. I reformatted the
+code to kernel style and fixed another inherited bug of the error
+roll-back during init. The same happened to rtcan_isa.
+
+Wolfgang, I added the Peak dongle to 2.4 config. Compiles fine, so I
+assume you simply forgot that one. Also building-in of all CAN driver
+should work now.
+
+If I broke anything, please complain (I only compile-tested so far).
+
+Uff.
+
+Jan
+
+
+--------------enigDBD14E6CB9B8D98EF2DEB0E7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFBxu9niDOoMHTA+kRAiiAAJ4gtT0KvXWmwy6haVvTFwQ/XfJ4VgCfQFHA
+6rC2P8P7NGDl4YyTADsbpOU=
+=Zel/
+-----END PGP SIGNATURE-----
+
+--------------enigDBD14E6CB9B8D98EF2DEB0E7--
 
