@@ -1,13 +1,16 @@
-Subject: Re: [Xenomai-help] read returns more bytes than requested?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4505E719.3030405@domain.hid>
-References: <4505E719.3030405@domain.hid>
-Content-Type: text/plain
-Date: Tue, 12 Sep 2006 09:18:00 +0200
-Message-Id: <1158045481.4978.4.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17670.39477.918020.470948@domain.hid>
+Date: Tue, 12 Sep 2006 13:29:57 +0200
+Subject: Re: [Xenomai-help] max size for pipes and rt-fifos?
+In-Reply-To: <4505E336.2060201@domain.hid>
+References: <44FF3A22.5060901@domain.hid> <44FFE509.3090009@domain.hid>
+	<4500789C.9070804@domain.hid> <450113E7.6000907@domain.hid>
+	<4505C0F7.5060404@domain.hid>
+	<17669.52163.920452.626173@domain.hid>
+	<4505E336.2060201@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,44 +20,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 2006-09-11 at 17:45 -0500, Jeff Webb wrote:
-> I am having some success porting my RTLinux application, but I have encountered a strange error.
-> 
-> I have this snippet of code that is reading data from an rtai-skin FIFO:
-> 
->   result = read(runtime2io_fd, &resp, sizeof(resp));
->   if (result != sizeof(resp))
->     {
->       printf("requested %d bytes, got %d\n", sizeof(resp), result);
->       snprintf(err_str, MAX_STR_LEN, "cannot read response from %s",
->                RUNTIME2IO_FIFO_DEV);
->       sim_halt(err_str);
->       return;
->     }
-> 
-> I get the following output:
-> 
->   requested 312 bytes, got 1220
->   halting the sim: cannot read response from /dev/rtf1
-> 
-> I didn't think that a read could return more bytes than was requested.  Does anyone understand this behaviour?
+Jan Kiszka wrote:
+ > > Calling pthread_cancel then pthread_join from a module cleanup routine
+ > > should work. Because the cancelled thread preempts immediately the
+ > > module cleanup routine, so when pthread_join is called, the thread no
+ > > longer exists and there is no need to suspend the calling thread.
+ > > 
+ > 
+ > Yes, but only on UP. What about including a simple polling loop into
+ > kernel-space pthread_join, something like rtdm_task_join_nrt?
 
-The initial patch has introduced a bug. Will fix.
+Yes, I will include this polling loop.
 
->   This is code that works under RT-Linux.  I am trying to determine why it is working differently under xenomai.
-> 
-> -Jeff
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
