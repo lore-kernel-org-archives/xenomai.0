@@ -1,14 +1,17 @@
-Message-ID: <4506ECAA.9000609@domain.hid>
-Date: Tue, 12 Sep 2006 19:21:46 +0200
+Message-ID: <4506FE59.5070107@domain.hid>
+Date: Tue, 12 Sep 2006 20:37:13 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] RTCAN_USE_REFCOUNT issue in rtcan_dev.h
-References: <200609121755.04559.mfuchs@domain.hid>
-	<4506E11A.6030203@domain.hid>
-In-Reply-To: <4506E11A.6030203@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] rtcan_mem - CAN driver for memory mapped
+	SJA1000 controllers
+References: <200609121330.16250.matthias.fuchs@domain.hid>
+	<4506A66F.5080801@domain.hid>
+	<200609121807.49179.matthias.fuchs@domain.hid>
+	<4506E45B.8090605@domain.hid>
+In-Reply-To: <4506E45B.8090605@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig4BF8751DBB50B0E24A4A0E22"
+	boundary="------------enig4702A7A7892D99C0B38F0FC5"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -23,62 +26,48 @@ To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4BF8751DBB50B0E24A4A0E22
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig4702A7A7892D99C0B38F0FC5
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Wolfgang Grandegger wrote:
 > Matthias Fuchs wrote:
->> Hi Jan,
+>> Hi,
 >>
->> I think there's is little typo in rtcan_dev.h:
->>
->> Index: rtcan_dev.h
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> --- rtcan_dev.h (revision 1564)
->> +++ rtcan_dev.h (working copy)
->> @@ -45,7 +45,7 @@
->> =20
->>  /* Suppress handling of refcount if module support is not enabled
->>   * or modules cannot be unloaded */
->> -#if defined(CONFIG_MODULES) && !defined(CONFIG_MODULE_UNLOAD)
->> +#if defined(CONFIG_MODULES) && defined(CONFIG_MODULE_UNLOAD)
->>  #define RTCAN_USE_REFCOUNT
->>  #endif
->>
->>
->> This simple patch will allow unloading of modules.
->=20
-> Argh, I interpreted the meaning of CONFIG_MODULE_UNLOAD the other way
-> round. But your fix will not work for 2.4, as there is no
-> CONFIG_MODULE_UNLOAD. The attached one should be OK.
->=20
-> Thanks.
->=20
-> Wolfgang.
->=20
+>> here's the 2nd try:
+>> - updated external clock frequency handling
+>> - use request_mem_region() before remapping memory
+>> - renamed local variable mem to vmem in clean loop because it shadowed=
 
-Applied, thanks to both of you.
+>> a   =20
+>> module parameter
+>=20
+> I have one more comment, sorry. I think you should use:
+>=20
+>     volatile void __iomem *vmem;
+>=20
+> and the cleanup in case of error is not OK. See below.
 
+Could someone post a new, full patch so that I don't mess anything up on
+the way into SVN?
+
+Thanks,
 Jan
 
 
-
---------------enig4BF8751DBB50B0E24A4A0E22
+--------------enig4702A7A7892D99C0B38F0FC5
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFBuyqniDOoMHTA+kRAg/4AJ4/zHJGU125yg8wc+7K2/Ib4wv2FgCfT7Qz
-fUpSIB6liF59muCdQ1OYSKE=
-=Jo22
+iD8DBQFFBv5ZniDOoMHTA+kRAsxGAJ41YNfBDVInx55GKl0z1JUv0BKdQACfarmz
+U/R+H+l59cNoPZ4rs0ZlP48=
+=U9Xc
 -----END PGP SIGNATURE-----
 
---------------enig4BF8751DBB50B0E24A4A0E22--
+--------------enig4702A7A7892D99C0B38F0FC5--
 
