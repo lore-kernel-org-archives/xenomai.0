@@ -1,32 +1,11 @@
-Sender: dv@domain.hid
-Message-ID: <45043DD7.5A317C85@domain.hid>
-Date: Sun, 10 Sep 2006 18:31:19 +0200
-From: Detlef Vollmann <dv@domain.hid>
+From: Matthias Fuchs <matthias.fuchs@domain.hid>
+Date: Tue, 12 Sep 2006 13:30:16 +0200
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai on PXA
-References: <200607071703.10700.vagninu@domain.hid>
-	<17582.50372.830923.414981@domain.hid>
-	<44B34343.9F56F13@domain.hid>
-	<17595.47131.142881.132531@domain.hid>
-	<1153153788.11603.2.camel@domain.hid>
-	<17595.49478.157044.654500@domain.hid>
-	<1154334859.9569.12.camel@domain.hid>
-	<44CDCB61.2DEDCBFF@vollmann.ch>
-	<1154342029.9569.27.camel@domain.hid>
-	<44CDE4C2.77465253@domain.hid>
-	<17616.42011.663899.554796@domain.hid>
-	<1154525585.9559.22.camel@domain.hid>
-	<17616.59841.283196.201008@domain.hid>
-	<1154596354.9835.28.camel@domain.hid>
-	<17617.63387.138316.343123@domain.hid>
-	<1154617014.5010.29.camel@domain.hid>
-	<17618.12042.631648.702921@domain.hid>
-	<1154703176.9602.26.camel@domain.hid>
-	<17631.9753.589322.882530@domain.hid>
-	<4503D322.1E88D034@domain.hid>
-	<17668.739.465406.379629@domain.hid>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_IppBFdEPPUzXvn4"
+Message-Id: <200609121330.16250.matthias.fuchs@domain.hid>
+Subject: [Xenomai-core] [PATCH] rtcan_mem - CAN driver for memory mapped
+	SJA1000 controllers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -36,31 +15,314 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Detlef Vollmann wrote:
->  > With that change, first tests look fine.
-> 
-> Thanks, attached the patch with this error corrected.
-Thanks.
+--Boundary-00=_IppBFdEPPUzXvn4
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
->  > BTW, on the SA, what results do you get from xeno-test?
-> 
-> latency in user-space easily get above 100 microseconds, if this is what
-> you mean. But I guess this is what we should expect on ARM.
-Probably yes.  The histogram just looks a bit strange, nearly
-all in the last column...
+Hi,
 
-Another point: did you run the switchbench test?
+attached you will find a patch that adds support for memory mapped SJA1000 CAN 
+controllers as they often can be found on embedded boards. The driver is 
+based on the rtmen_isa driver.
 
-With '-n 100000' I get a sure softlock.
+The driver has been tested on esd's embedded PowerPC boards with AMCC PPC405 
+CPUs.
 
- Detlef
+Thanks to Jan for giving me some introduction to Xenomai during a nightly 
+session last friday.
 
--- 
-Detlef Vollmann   vollmann engineering gmbh
-Linux and C++ for Embedded Systems    http://www.vollmann.ch/
-Linux for PXA270 Colibri module: http://www.vollmann.ch/en/colibri/
+There's one thing a I am not very satisfied with :-) Why passing half of the 
+external clock frequency to the module. Because of compatiblity reasons I 
+kept this behavior of the clock paramter from the ISA driver.
+
+Matthias
+
+--Boundary-00=_IppBFdEPPUzXvn4
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="rtcan_mem.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="rtcan_mem.patch"
+
+Index: ksrc/drivers/can/sja1000/Kconfig
+===================================================================
+--- ksrc/drivers/can/sja1000/Kconfig	(revision 1564)
++++ ksrc/drivers/can/sja1000/Kconfig	(working copy)
+@@ -13,6 +13,16 @@
+        int "Maximum number of ISA devices"
+        default 4       
+ 
++config XENO_DRIVERS_RTCAN_SJA1000_MEM
++       depends on XENO_DRIVERS_RTCAN_SJA1000
++       tristate "Memory mapped controllers"
++       default n
++
++config XENO_DRIVERS_RTCAN_SJA1000_MEM_MAX_DEV
++       depends on XENO_DRIVERS_RTCAN_SJA1000_MEM
++       int "Maximum number of memory mapped controllers"
++       default 4       
++
+ config XENO_DRIVERS_RTCAN_SJA1000_PEAK_PCI
+        depends on XENO_DRIVERS_RTCAN_SJA1000
+        tristate "PEAK PCI Card"
+Index: ksrc/drivers/can/sja1000/rtcan_mem.c
+===================================================================
+--- ksrc/drivers/can/sja1000/rtcan_mem.c	(revision 0)
++++ ksrc/drivers/can/sja1000/rtcan_mem.c	(revision 0)
+@@ -0,0 +1,206 @@
++/*
++ * Copyright (C) 2006 Matthias Fuchs <matthias.fuchs@domain.hid>,
++ *                    Jan Kiszka <jan.kiszka@domain.hid>
++ * 
++ * RTCAN driver for memory mapped SJA1000 CAN controller
++ * This code has been tested on esd's CPCI405/EPPC405 PPC405 systems.
++ * 
++ * This driver is derived from the rtcan-isa driver by 
++ * Wolfgang Grandegger and Sebastian Smolorz. 
++ *
++ * Copyright (C) 2006 Wolfgang Grandegger <wg@domain.hid>
++ * Copyright (C) 2005, 2006 Sebastian Smolorz
++ *                          <Sebastian.Smolorz@domain.hid>
++ *
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; eitherer version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software Foundation,
++ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++
++#include <linux/module.h>
++#include <linux/ioport.h>
++#include <linux/delay.h>
++
++#include <rtdm/rtdm_driver.h>
++
++#include <rtdm/rtcan.h>
++#include <rtcan_dev.h>
++#include <rtcan_raw.h>
++#include <rtcan_internal.h>
++#include <rtcan_sja1000.h>
++#include <rtcan_sja1000_regs.h>
++
++#define RTCAN_DEV_NAME    "rtcan%d"
++#define RTCAN_DRV_NAME    "sja1000-mem"
++
++#ifdef CONFIG_XENO_DRIVERS_RTCAN_MEM_MAX_DEVS
++#define RTCAN_MEM_MAX_DEV CONFIG_XENO_DRIVERS_RTCAN_MEM_MAX_DEV
++#else
++#define RTCAN_MEM_MAX_DEV 2
++#endif
++
++static char *mem_board_name = "mem mapped";
++
++MODULE_AUTHOR("Matthias Fuchs <matthias.fuchs@domain.hid>");
++MODULE_DESCRIPTION("RTCAN driver for memory mapped SJA1000 controller");
++MODULE_SUPPORTED_DEVICE("mem mapped");
++MODULE_LICENSE("GPL");
++
++static u32 mem[RTCAN_MEM_MAX_DEV];
++static int irq[RTCAN_MEM_MAX_DEV];
++static u32 clock[RTCAN_MEM_MAX_DEV];
++static u8 ocr[RTCAN_MEM_MAX_DEV];
++static u8 cdr[RTCAN_MEM_MAX_DEV];
++
++compat_module_int_param_array(mem, RTCAN_MEM_MAX_DEV);
++compat_module_int_param_array(irq, RTCAN_MEM_MAX_DEV);
++compat_module_int_param_array(clock, RTCAN_MEM_MAX_DEV);
++compat_module_byte_param_array(ocr, RTCAN_MEM_MAX_DEV);
++compat_module_byte_param_array(cdr, RTCAN_MEM_MAX_DEV);
++
++MODULE_PARM_DESC(mem, "The io-memory address");
++MODULE_PARM_DESC(irq, "The interrupt number");
++MODULE_PARM_DESC(clock, "CAN system clock frequency (default 8 MHz)");
++MODULE_PARM_DESC(ocr, "Value of output control register (default 0x1a)");
++MODULE_PARM_DESC(cdr, "Value of clock divider register (default 0xc8");
++
++#define RTCAN_MEM_RANGE 0x80
++
++struct rtcan_mem
++{
++    u8 *mem; 
++};
++
++static struct rtcan_device *rtcan_mem_devs[RTCAN_MEM_MAX_DEV];
++
++static u8 rtcan_mem_readreg(struct rtcan_device *dev, int reg)
++{
++    struct rtcan_mem *board = (struct rtcan_mem *)dev->board_priv;
++    return readb(board->mem + reg);
++}
++
++static void rtcan_mem_writereg(struct rtcan_device *dev, int reg, u8 val)
++{
++    struct rtcan_mem *board = (struct rtcan_mem *)dev->board_priv;
++    writeb(val, board->mem + reg);
++}
++
++int __init rtcan_mem_init_one(int idx)
++{
++    struct rtcan_device *dev;
++    struct rtcan_sja1000 *chip;
++    struct rtcan_mem *board;
++    int ret;
++    
++    if ((dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000),
++			       sizeof(struct rtcan_mem))) == NULL)
++        return -ENOMEM;
++
++    chip = (struct rtcan_sja1000 *)dev->priv;
++    board = (struct rtcan_mem *)dev->board_priv;
++
++    dev->board_name = mem_board_name; 
++
++    chip->irq_num = irq[idx];
++    chip->irq_flags = RTDM_IRQTYPE_SHARED;
++    chip->read_reg = rtcan_mem_readreg;
++    chip->write_reg = rtcan_mem_writereg;
++
++    /* ioremap io memory */
++    if (!(board->mem = (u8*)ioremap(mem[idx], RTCAN_MEM_RANGE))) {
++	ret = -EBUSY;
++	goto out_dev_free;
++    }
++
++    /* Clock frequency in Hz */
++    if (clock[idx])
++	dev->can_sys_clock = clock[idx];
++    else
++	dev->can_sys_clock = 8000000; /* 16/2 MHz */
++
++    /* Output control register */
++    if (ocr[idx])
++	chip->ocr = ocr[idx];
++    else
++	chip->ocr = SJA_OCR_MODE_NORMAL | SJA_OCR_TX0_PUSHPULL;
++
++    if (cdr[idx])
++	chip->cdr = cdr[idx];
++    else
++	chip->cdr = SJA_CDR_CAN_MODE | SJA_CDR_CLK_OFF | SJA_CDR_CBP;
++
++    strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
++
++    ret = rtcan_sja1000_register(dev);
++    if (ret) {
++	printk(KERN_ERR "ERROR %d while trying to register SJA1000 device!\n",
++	       ret);
++	goto out_free_region;
++    }
++    
++    rtcan_mem_devs[idx] = dev;
++    return 0;
++    
++ out_free_region:
++    iounmap(board->mem);
++
++ out_dev_free:
++    rtcan_dev_free(dev);
++
++    return ret;
++}
++
++/** Init module */
++static int __init rtcan_mem_init(void)
++{
++    int                         i;
++    int                         ret;
++    int done = 0;
++    for (i = 0; 
++	 i < RTCAN_MEM_MAX_DEV && mem[i] != 0; 
++	 i++) {
++
++	if ((ret = rtcan_mem_init_one(i) != 0)) {
++	    return ret;
++	}
++	done++;
++    }
++    if (done)
++	return 0;
++    printk(KERN_ERR "ERROR! No devices specified! "
++	   "Use mem=<base_addr1>[,...] irq=<irq1>[,...]\n");
++
++    return -EINVAL;
++}
++
++
++/** Cleanup module */
++static void __exit rtcan_mem_exit(void)
++{
++    int i;
++    struct rtcan_device *dev;
++    u8 *mem;
++
++    for (i = 0; i < RTCAN_MEM_MAX_DEV; i++) {
++	    dev = rtcan_mem_devs[i];
++	    if (!dev)
++		    continue;
++	    mem = ((struct rtcan_mem *)dev->board_priv)->mem;
++	    rtcan_sja1000_unregister(dev);
++	    iounmap(mem);
++    }
++}
++
++module_init(rtcan_mem_init);
++module_exit(rtcan_mem_exit);
+Index: ksrc/drivers/can/sja1000/Makefile
+===================================================================
+--- ksrc/drivers/can/sja1000/Makefile	(revision 1564)
++++ ksrc/drivers/can/sja1000/Makefile	(working copy)
+@@ -8,11 +8,13 @@
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_PCI) += xeno_rtcan_peak_pci.o
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_DNG) += xeno_rtcan_peak_dng.o
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_ISA) += xeno_rtcan_isa.o
++obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_MEM) += xeno_rtcan_mem.o
+ 
+ xeno_rtcan_sja1000-y := rtcan_sja1000.o rtcan_sja1000_proc.o
+ xeno_rtcan_peak_pci-y := rtcan_peak_pci.o
+ xeno_rtcan_peak_dng-y := rtcan_peak_dng.o
+ xeno_rtcan_isa-y := rtcan_isa.o
++xeno_rtcan_mem-y := rtcan_mem.o
+ 
+ else
+ 
+@@ -24,6 +26,7 @@
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_PCI) += xeno_rtcan_peak_pci.o 
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_PEAK_DNG) += xeno_rtcan_peak_dng.o 
+ obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_ISA) += xeno_rtcan_isa.o 
++obj-$(CONFIG_XENO_DRIVERS_RTCAN_SJA1000_MEM) += xeno_rtcan_mem.o
+ 
+ list-multi := xeno_rtcan_sja1000.o 
+ 
+@@ -31,6 +34,7 @@
+ xeno_rtcan_peak_pci-objs := rtcan_peak_pci.o
+ xeno_rtcan_peak_dng-objs := rtcan_peak_dng.o
+ xeno_rtcan_isa-objs := rtcan_isa.o
++xeno_rtcan_mem-objs := rtcan_mem.o
+ 
+ export-objs := $(xeno_rtcan_sja1000-objs)
+ 
+@@ -49,4 +53,7 @@
+ 
+ xeno_rtcan_isa.o: $(xeno_rtcan_isa-objs)
+ 	$(LD) -r -o $@ $(xeno_rtcan_isa-objs)
++
++xeno_rtcan_mem.o: $(xeno_rtcan_mem-objs)
++	$(LD) -r -o $@ $(xeno_rtcan_mem-objs)
+ endif
+
+--Boundary-00=_IppBFdEPPUzXvn4--
 
