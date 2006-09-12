@@ -1,14 +1,10 @@
-Subject: Re: [Xenomai-help] problem with rt_task_send() timeout and timer
-	overruns
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45087D79.50506@domain.hid>
-References: <45087D79.50506@domain.hid>
-Content-Type: text/plain
-Date: Thu, 14 Sep 2006 15:58:22 +0200
-Message-Id: <1158242302.5040.121.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4506F853.6060502@domain.hid>
+Date: Tue, 12 Sep 2006 14:11:31 -0400
+From: Randy Smith <rsmith@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] Proper module_cleanup procedure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,125 +14,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Vincent Levesque <vleves@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2006-09-13 at 17:51 -0400, Vincent Levesque wrote:
-> Hello all,
-> 
-> I ran into some problems after moving working code to a slower machine 
-> and traced the problem down to the example attached at the bottom of 
-> this email. I've been using rt_task_send() to implement the equivalent 
-> of a function call, with an error code returned in the reply MCB's 
-> opcode field. In the example below, I send a message and expect a "666" 
-> opcode to be returned but I receive garbage at least on a few calls. The 
-> problem seems to occur when 1) the update rate in the sender is too high 
-> and 2) rt_task_send() has a timeout value (1 sec in the example.)  If I 
-> increase MAIN_RATE_NS or set the TIMEOUT to TM_INFINITE everything seems 
-> to be ok. I've been able to reproduce this problem with xenomai 2.2.2 
-> (two PCs) and 2.1.3. In more complex versions of this code the reply 
-> data buffers also seemed to be invalid or corrupted.
-> 
+Hello,
 
-Confirmed and reproduced, including over the simulator. The reason for
-the invalid opcode is that rt_task_reply() signals an EXIO error, so the
-return value is not filled in. The question is: why do we get this
-error. More later.
+I am running the 2.4 kernel with Xenomai-2.1.0 native skin and I have a 
+kernel module that creates 2 shared memory heaps and then creates a a 
+periodic realtime task to do some interesting things.  This periodic 
+realtime task communicates with a linux user mode task through the 
+shared memory that gains access to it through rt_heap_bind/rt_heap_alloc 
+calls.  Things go along swimmingly.
 
-> Looking at the docs, I'm not sure what to expect when rt_task_send() 
-> times out. It is returning 0 here. If I understand correctly, there is 
-> also no way to distinguish between an empty reply (with an opcode but no 
-> data buffer) and a NULL reply (i.e. rt_task_reply(flowid, NULL)). Could 
-> I be missing a rt_task_send() failure? If so, why would it fail here?
-> 
+I now want to be able to do an "rmmod" on the module and in its cleanup 
+routine, right now I just have rt_heap_delete calls for the two shared 
+memory heaps.  This completes successfully, but if I then try to install 
+another version (debug for instance) of the module with "insmod", I get 
+a memory error. 
 
-rt_task_reply(flowid, NULL) would always force the opcode field to zero.
-Therefore, you should use non-zero return codes for valid messages,
-whether they are empty or not.
+Is this is due to the fact that I didn't suspend the periodic realtime 
+task and then delete it before deleting the heaps?  Is this necessary?  
+Are there any use counts or other signs that I could check to ensure 
+that everyone was finished with the heaps so that I can delete them?
 
-> Thanks,
-> 
-> Vincent Levesque
-> vleves@domain.hid
-> 
-> gcc -o test main.c `/usr/xenomai-2.2/bin/xeno-config --xeno-cflags` 
-> `/usr/xenomai-2.2/bin/xeno-config --xeno-ldflags` -lnative
-> 
-> #include <sys/mman.h>
-> #include <native/task.h>
-> 
-> #define TIMEOUT ((RTIME)1E9)
-> #define PEER_RATE_NS 100000
-> #define MAIN_RATE_NS 5000000
-> #define PEER_NB_ITER 50
-> 
-> void run_peer(void *arg)
-> {
->     unsigned char buf[1024];
->     RT_TASK_MCB mcb_rcv, mcb_reply;
->     int flowid, i, rv;
-> 
->     while (1)
->     {
->         mcb_rcv.data = (caddr_t)buf;
->         mcb_rcv.size = sizeof(buf);
->         flowid = rt_task_receive(&mcb_rcv,TM_INFINITE);
->         if(flowid >= 0)
->         {
->             rt_task_set_periodic(NULL,TM_NOW,PEER_RATE_NS);
->             for (i=0; i<PEER_NB_ITER; ++i)
->                 rt_task_wait_period(NULL);
->             rt_task_set_periodic(NULL,TM_NOW,TM_INFINITE);
-> 
->             mcb_reply.opcode = 666;
->             mcb_reply.size = 0;
->             mcb_reply.data = NULL;
->             rt_task_reply(flowid, &mcb_reply);
->         }
->     }
-> }
-> 
-> int main(int argc, char *argv[])
-> {
->     int i, rv;
->     RT_TASK task, peer_task;
->     RT_TASK_MCB mcb_send, mcb_reply;
-> 
->     mlockall(MCL_CURRENT | MCL_FUTURE);
-> 
->     rt_task_spawn(&peer_task, "peer", 4096, 99, T_FPU, &run_peer, NULL);
->     rt_task_shadow(&task, "user", 50, 0);
->     
->     rt_task_set_periodic(NULL,TM_NOW,MAIN_RATE_NS);
-> 
->     for (i=0; i<10; ++i)
->     {
->         rt_task_wait_period(NULL);
->         mcb_send.opcode = 0x02;
->         mcb_send.data = NULL;
->         mcb_send.size = 0;
->         mcb_reply.size = 0;
->         mcb_reply.data = NULL;
->         rv = rt_task_send(&peer_task,&mcb_send,&mcb_reply,TIMEOUT);
->         if (rv < 0) printf("rt_task_send error\n");
->         if (mcb_reply.opcode != 666)
->             printf("rv=%d, opcode=%d\n", rv, mcb_reply.opcode);
->     }
-> 
->     rt_task_delete(&peer_task);
->     rt_task_delete(NULL);
-> 
->     return 0;
-> }
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Is there any consequence to the user mode task due to jerking the rug 
+out from under it?
 
+Thanks,
 
+Randy Smith
+Software Engineer
+ImageMap, Inc.
 
