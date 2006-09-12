@@ -1,11 +1,14 @@
-Message-ID: <001f01c6e491$c384f7e0$1501a8c0@domain.hid>
-From: "Kiichi Kameda" <k-kameda@domain.hid>
-Date: Sat, 30 Sep 2006 22:10:12 +0900
+Message-ID: <4506EC10.1010807@domain.hid>
+Date: Tue, 12 Sep 2006 19:19:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-2022-jp"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] SH4 port
+Subject: Re: [Xenomai-help] Bad EIP kernel-Oops
+References: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
+In-Reply-To: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig323FAE4CA147D6573991FE04"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,80 +18,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: nils.kemper@domain.hid
+Cc: xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig323FAE4CA147D6573991FE04
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Nils Kemper wrote:
+> Hi,
+> I want to use Xenomai, but I get (sometimes, but everytime the same)
+> kernel-Oops just by running xeno-test:
+>=20
+> [..]
+> Xenomai: stopping native API services.
+> I-pipe: Domain Xenomai unregistered.
+> Xenomai: hal/x86 stopped.
+> Xenomai: real-time nucleus unloaded.
+>  Unable to handle kernel NULL pointer dereference at virtual address 00=
+000000
+>  printing eip:
+>  00000000
+>  *pde =3D 00000000
+>  Oops: 0000 [#1]
+>  PREEMPT
+>  Modules linked in: netconsole 8139too crc32 ipv6 nfs lockd sunrpc
+> intel_agp ehci_hcd uhci_hcd usbcore i810_audio ac97_codec soundcore 3c5=
+9x
+> mii agpgart
+>  CPU:    0
+>  EIP:    0060:[<00000000>]    Not tainted VLI
+>  EFLAGS: 00010246   (2.6.16.27n-xeno222 #7)
+>  EIP is at rest_init+0x3feffde0/0x63
+>  eax: c030ba80   ebx: c030ba80   ecx: 00000002   edx: 00000003
+>  esi: c030ba80   edi: 00000246   ebp: 00000021   esp: cc1bbf80
+>  ds: 007b   es: 007b   ss: 0068
+>  Process dd (pid: 11490, threadinfo=3Dcc1ba000 task=3Dd56f8a70)
+>  Stack: <0>c013f158 00000021 c030ba80 cc1bbfbc 00000001 c0314408 c030ba=
+80
+> cc1bbfbc
+>         00000000 00000200 08051000 cc1ba000 c0111c3d 00000000 c0102ec6
+> 00000000
+>         08051000 00000200 00000200 08051000 bfda2568 00000003 0000007b
+> 0000007b
+>  Call Trace:
+>         [<c013f158>] __ipipe_dispatch_event+0xcd/0xeb
+>         [<c0111c3d>] __ipipe_syscall_root+0x2f/0xd8
+>         [<c0102ec6>] sysenter_past_esp+0x3b/0x67
+>  Code:  Bad EIP value.
+>  <4>I-pipe: Domain Xenomai registered.
+> Xenomai: hal/x86 started.
+> Xenomai: real-time nucleus v2.2.2 (Ride) loaded.
+> Xenomai: SMI-enabled chipset found, enabling SMI workaround.
+> [..]
+>=20
+> I'm sure somthing is wrong with my kernel-config, so I have attached it=
+,
+> together with the xeno-test-output.
+> BTW: I tried noapic, acpi=3Doff with no success.
+
+Looks like a cleanup race in the nucleus unloading code. I just got it
+here as well after adoption to your .config (all modularised,
+CONFIG_PREEMPT). It basically seems to melt down to having high syscall
+load (e.g. dd if=3D/dev/zero of=3D/dev/null) during nucleus unload.
+
+Unless someone around immediately has an idea why some syscall traps
+onto a NULL pointer (or something else - I had non-NULL address here), I
+would try to get this over a debugging environment "later". Hope the bug
+is not too volatile...
+
+Thanks for reporting so precisely!
+
+Jan
 
 
-After long break, I started testing SH4 port of Xenomai based on Xenomai
-2.2.0
+--------------enig323FAE4CA147D6573991FE04
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-My realtime test program is a user space program using POSIX skin , and
-runs periodically (1ms interval)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-It works well when the load is light.
-But with very heavy load such as continuous FTP, the system hangs in several
-minutes,
-due to panic.
+iD8DBQFFBuwQniDOoMHTA+kRAthwAJ44D5CrPSrCbbDLYrRG8ADs6p0CYQCfUxyE
+YXWizEeP06J0V7eqpPGHz7I=
+=LXjb
+-----END PGP SIGNATURE-----
 
-the stack trace shows as follows
-
-======================================================
-Unable to handle kernel NULL pointer dereference. at virtual address
-00000000
-pc = 8c0104a6 <-- dequeue_task
-*pde = 00000000
-Oops: 0000 [#1]
-
-Pid : 944, Comm:              in.ftpd
-PC  : 8c0104a6 SP  : 8d631c00 SR  : 40008101 .TEA : c0198044    .Not
-tainted
-R0  : 8c19a928 R1  : 8c0104a0 R2  : 00000000 R3  : 8d5db680
-R4  : 8d5db680 R5  : 00000000 R6  : 00000000 R7  : 8d5db788
-R8  : 8d5db680 R9  : fffffffb R10 : 8d631c9c R11 : 8d5db680
-R12 : e9bbfd00 R13 : 000f422e R14 : 8d631c08
-MACH: 0000027f MACL: 5c28f7f2 GBR : 29568be0 PR  : 8c0107b6.
-Call trace:
-===top of stack(8d631c00)
-[<8c0107b6>] deactivate_task
-[<8c14d616>] schedule
-[<8c14e38c>] io_schedule
-[<8c035106>] sync_page
-[<8c14e776>] __wait_on_bit_lock
-[<8c035a64>] __lock_page
-[<8c036d10>] filemap_nopage
-[<8c04306a>] __handle_mm_fault
-[<8c0d98ee>] ide_set_handler
-[<8c00e750>] do_page_fault
-[<8c0ac7dc>] csum_partial_copy_generic
-[<8c122d04>] tcp_sendmsg
-[<8c0d79f2>] ide_do_request
-[<8c13ed74>] inet_sendmsg
-[<8c0f69f6>] do_sock_write
-[<8c04cc00>] wait_on_retry_sync_kiocb
-[<8c0f6aec>] sock_aio_write
-[<8c04cf1a>] do_sync_write
-[<8c033024>] __ipipe_sync_stage
-[<8c02a320>] autoremove_wake_function
-[<8c033136>] __ipipe_dispatch_event
-[<8c04cfea>] vfs_write
-[<8c04d134>] sys_write
-[<8c0062bc>] syscall_call
-[<8c04d100>] sys_write
-===bottom of stack
-======================================================
-
-After tough investigation, I think I found some clues such as:
-While in.ftpd runs hard, a "write" system call was issued and Linux
-kernel was processing its request.
- But weird __ipipe_dispatch_event and __ipipe_sync_stage was recorded.
-
-I think the problem originates from a Xenomai context switch(which
-overwrites "current"), while Linux is processing  system call.
-and I am sure that some tricks (preventing such case) must be included
-on other platforms.
-
-Any suggestions on preventing such panic?
-
-thank you,
-Kiichi Kameda
-
+--------------enig323FAE4CA147D6573991FE04--
 
