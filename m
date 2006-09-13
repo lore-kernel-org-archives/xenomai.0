@@ -1,13 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="whb/uWuZy5"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17671.42827.171379.619971@domain.hid>
-Date: Wed, 13 Sep 2006 08:38:03 +0200
+From: Romain Lenglet <rlenglet@domain.hid>
 Subject: Re: [Xenomai-core] [patch] fix xeno-test for busybox
-In-Reply-To: <17671.39329.255070.115135@domain.hid>
-References: <4506E6CD.5050302@domain.hid> <4506E7AC.5090508@domain.hid>
+Date: Wed, 13 Sep 2006 15:55:08 +0900
+References: <4506E6CD.5050302@domain.hid>
 	<17671.39329.255070.115135@domain.hid>
+	<200609131535.05480.rlenglet@domain.hid>
+In-Reply-To: <200609131535.05480.rlenglet@domain.hid>
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_Mt6BFUVypI4ds5i"
+Message-Id: <200609131555.08997.rlenglet@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,46 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-
---whb/uWuZy5
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
+--Boundary-00=_Mt6BFUVypI4ds5i
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
- > Jan Kiszka wrote:
- >  > Jan Kiszka wrote:
- >  > > Hi,
- >  > > 
- >  > > I just tried to fire up xeno-test on a busybox system - without success.
- >  > > Reason: missing getopts. But busybox initial test checks for something
- >  > > else, namely getopt. The attached patch should fix this it, also taking
- >  > > into account that getopts in a shell built-in, not an applet.
- >  > > 
- >  > 
- >  > Another quirk: switchtest runs with hard-wired -T 120...
- > 
- > Could you try the attached patch ?
+Romain Lenglet wrote:
+> Gilles Chanteperdrix wrote:
+> > Jan Kiszka wrote:
+> >  > Jan Kiszka wrote:
+> >  > > Hi,
+> >  > >
+> >  > > I just tried to fire up xeno-test on a busybox system -
+> >  > > without success. Reason: missing getopts. But busybox
+> >  > > initial test checks for something else, namely getopt.
+> >  > > The attached patch should fix this it, also taking into
+> >  > > account that getopts in a shell built-in, not an
+> >  > > applet.
+> >  >
+> >  > Another quirk: switchtest runs with hard-wired -T 120...
+> >
+> > Could you try the attached patch ?
+>
+> Dumb question about your patch...
+> Shouldn't you keep the -T option in the $pass variable, to
+> pass it to latency?
+>
+>         T) timeout=$OPTARG
+>             pass="$pass -T $timeout" ;;
 
-A better patch.
+The problem is that, if you don't put it in $pass, you must 
+re-pass the latency option explicitly when logging, since it is 
+no more in $pass, and is not in $loadpass. Otherwise,
+
+script -c "`dirname $0`/xeno-test $loadpass $pass $*" $wfile
+
+should become:
+
+script -c "`dirname $0`/xeno-test $loadpass $pass -T $latency $*" 
+$wfile
+
+
+Therefore, I propose a slightly different patch. The -T option 
+may be duplicated in $opts, but hopefully this is not a problem 
+with the latency command?
+
 
 -- 
+Romain LENGLET
 
-
-					    Gilles Chanteperdrix.
-
---whb/uWuZy5
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-test-timeout.diff"
+--Boundary-00=_Mt6BFUVypI4ds5i
+Content-Type: text/x-diff;
+  charset="utf-8";
+  name="xeno-test-timeout.diff"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="xeno-test-timeout.diff"
 
-Index: scripts/xeno-test.in
-===================================================================
---- scripts/xeno-test.in	(revision 1600)
-+++ scripts/xeno-test.in	(working copy)
+--- xeno-test.in.orig	2006-09-13 15:49:31.000000000 +0900
++++ xeno-test.in	2006-09-13 15:52:50.000000000 +0900
 @@ -24,6 +24,8 @@
    -v		verbose
    -M <email>	sends output to given addr
@@ -97,7 +120,7 @@ Index: scripts/xeno-test.in
      )
      (	cd `dirname $0`/../testsuite/switchbench
  	loudly ./run -- -h $XENOT_SWITCHBENCH '# switchbench'
-@@ -280,9 +283,11 @@
+@@ -280,9 +283,12 @@
  	# latency passthrus
  	s|h|q)
  	    pass="$pass -$FOO" ;;
@@ -105,11 +128,12 @@ Index: scripts/xeno-test.in
 +	l|H|B|p)
  	    pass="$pass -$FOO $OPTARG" ;;
  
-+	T) timeout=$OPTARG;;
++	T) timeout=$OPTARG 
++	    pass="$pass -T $timeout" ;;
 +
  	# workload related
  	d) 
  	    device=$OPTARG    
 
---whb/uWuZy5--
+--Boundary-00=_Mt6BFUVypI4ds5i--
 
