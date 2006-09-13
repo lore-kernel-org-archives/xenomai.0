@@ -1,17 +1,17 @@
-Message-ID: <4507C49A.5070909@domain.hid>
-Date: Wed, 13 Sep 2006 10:43:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <58168.129.217.4.64.1158067468.squirrel@domain.hid>	
-	<1158091876.5020.8.camel@domain.hid>
-	<b647ffbd0609121358v5b5bff80o6e4e08c859eb110a@domain.hid>
-	<450727D1.6060203@domain.hid>
-In-Reply-To: <450727D1.6060203@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0D1C0D91EF45654BB843986C"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [Xenomai-help] Bad EIP kernel-Oops
+Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45068DFE.3090408@domain.hid>
+References: <4503EB88.2040309@domain.hid>
+	<200609111904.16512.matthias.fuchs@domain.hid>
+	<4505A75B.8000601@domain.hid>
+	<200609120932.20196.matthias.fuchs@domain.hid>
+	<45068DFE.3090408@domain.hid>
+Content-Type: text/plain
+Date: Wed, 13 Sep 2006 12:06:02 +0200
+Message-Id: <1158141962.5066.17.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,132 +21,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0D1C0D91EF45654BB843986C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Tue, 2006-09-12 at 12:37 +0200, Wolfgang Grandegger wrote:
+> Matthias Fuchs wrote:
+> > On Monday 11 September 2006 20:13, Wolfgang Grandegger wrote:
+> >> In 2.6 the interrupts are disabled by default. Then the attached patch 
+> >> for Xenomai should help.
+> >>
+> >> Wolfgang.
+> >>
+> > Your patch also works fine. Now what's the recommended solution? I noticed 
+> > that Philippe already checked in an Adeos fix.
+> 
+> As mentioned, in Linux 2.6 (generic IRQ layer), IRQs are disabled by 
+> default in kernel/irq/handle.c:
+> 
+>    irq_desc_t irq_desc[NR_IRQS] __cacheline_aligned = {
+>          [0 ... NR_IRQS-1] = {
+>                  .status = IRQ_DISABLED,
+>                  .handler = &no_irq_type,
+>                  .lock = SPIN_LOCK_UNLOCKED
+>          }
+>    };
+> 
+> Till now, I haven't found IPIPE/Xenomai related code removing the 
+> IRQ_DISABLED bit. But I wonder why it's working for x86. Maybe I have 
+> missed something.
+> 
+> In Linux 2.4, the "status" field is initialized to 0 (in 
+> arch/ppc/kernel/irq.c) not making trouble:
+> 
+>    irq_desc_t irq_desc[NR_IRQS] __cacheline_aligned =
+>          { [0 ... NR_IRQS-1] = { 0, NULL, NULL, 0, SPIN_LOCK_UNLOCKED}};
+> 
+> At least my CAN PCI card on a MPC5200 works fine.
+> 
+> Philippe, do we really need these ugly PIC patches?
 
-Jan Kiszka wrote:
-> Dmitry Adamushko wrote:
->> On 12/09/06, Philippe Gerum <rpm@xenomai.org> wrote:
->>> On Tue, 2006-09-12 at 15:24 +0200, Nils Kemper wrote:
->>>> Hi,
->>>> I want to use Xenomai, but I get (sometimes, but everytime the same)=
+Not anymore, since we decided to stop supporting a tortuous use case
+where some IRQ channel could be shared between a Xenomai ISR and a Linux
+handler for handling mixed RT/non-RT devices (which was something of a
+bugous design anyway). Doing so, the patch was about preventing
+IRQ_INPROGRESS to block IRQ reenabling requests issued from a Xenomai
+ISR (i.e. in case a RT interrupt preempts the regular Linux handler for
+the same IRQ channel).
 
->>>> kernel-Oops just by running xeno-test:
->>>>
->>>> [..]
->>>> Xenomai: stopping native API services.
->>>> I-pipe: Domain Xenomai unregistered.
->>>> Xenomai: hal/x86 stopped.
->>>> Xenomai: real-time nucleus unloaded.
->>> Does the issue still pop up if you set the Xenomai nucleus as static
->>> (i.e. not as a module) in the kernel configuration?
->>
->>
->> Just a weird presupposition.
->>
->> In __ipipe_dispatch_event()
->>
->>  ipipe_lock_cpu(flags);
->>
->>  start_domain =3D this_domain =3D ipipe_percpu_domain[cpuid];
->>
->>  list_for_each_safe(pos,npos,&__ipipe_pipeline) {
->>
->>                next_domain =3D list_entry(pos,struct ipipe_domain,p_li=
-nk);
->>
->> //...
->>                if (next_domain->evhand[event] !=3D NULL) {
->>                        ipipe_percpu_domain[cpuid] =3D next_domain;
->>                        ipipe_unlock_cpu(flags);
->> (1)
->>                        propagate =3D
->> !next_domain->evhand[event](event,start_domain,data);
->>
->> Does anything prevent another thread from preempting the current one a=
-t (1)
->> and making "next_domain" invalid?
->=20
-> That could explain it. I only read ipipe_lock_cpu during my first scan
-> of this code earlier today, missing the unlock. One should better safe
-> the handler in a local variable before releasing the lock...
->=20
->> then :
->>
->> if next_domain =3D=3D "rthal_domain" (aka Xenomai)  -  e.g. someone un=
-loaded
->> all
->> the modules.
->>
->> then if it's static :
->>
->> rthal_domain is still kind of a valid object - it's at least in a vali=
-d
->> memory region + evhand points to a valid function. It's even possible =
-to
->> jump to the next element if the rthal_domain::fields were not cleared.=
-=2E.
->>
->> non-static :
->>
->> the module image was unloaded, next_domain doesn't point to anything
->> reasonable.
->=20
-> Mmh, we probably need some grace period on unload to avoid such races.
-> Reminds me of issues with the IRQ proc output or the shared IRQ
-> deregistration...
->=20
->> Jan or Nils, what instructions does "objdump -d kernel/ipipe/core.o" s=
-how
->> for a given offset in the __ipipe_dispatch_event().
->>
->> 0xcd in case of Nils.
->>
->> [<c013f158>] __ipipe_dispatch_event+0xcd/0xeb
->>
->> ?
->>
->>
->=20
-> Will check this tomorrow.
+The problem I see now, is that removing the work-arounds from the
+various PIC code would void the ability to use recent Adeos patches with
+older Xenomai releases. I'm not opposed to that, provided we backport
+your fix to 2.1.x and above, but this is an issue we should keep in
+mind. Perhaps the next Adeos patches should even make un-fixed Xenomai
+releases choke at compilation time.
 
-It's the indirect call to the event handler.
-
-   8b3:   8b 55 e4                mov    0xffffffe4(%ebp),%edx
-   8b6:   50                      push   %eax
--> 8b7:   ff 94 93 80 22 00 00    call   *0x2280(%ebx,%edx,4)
-   8be:   83 c4 0c                add    $0xc,%esp
-   8c1:   85 c0                   test   %eax,%eax
-
-In my case the kernel tries to access the address 0xd09bc5e5 which seems
-like it used to be a valid one.
-
-So this looks like we really need some mechanism to make sure all CPUs
-use the updated pointers after unhooking some event handler and before
-proceeding with further cleanups. Sounds like a job for RCU, but we
-don't have such stuff over 2.4.
-
-Jan
+> 
+> Wolfgang.
+-- 
+Philippe.
 
 
---------------enig0D1C0D91EF45654BB843986C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFB8SnniDOoMHTA+kRAnwBAJ9WzPrWwpMKxzjNjMBBDjXjpSNc1QCfV8Cq
-uNcRdALMAoJU4TlTvIBMfJE=
-=VbrR
------END PGP SIGNATURE-----
-
---------------enig0D1C0D91EF45654BB843986C--
 
