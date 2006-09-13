@@ -9,8 +9,8 @@ References: <4503EB88.2040309@domain.hid>
 	<4507DEB6.3070808@domain.hid>  <1158147361.5066.25.camel@domain.hid>
 	<1158147598.5066.30.camel@domain.hid>  <4507FBD7.5010008@domain.hid>
 Content-Type: text/plain
-Date: Wed, 13 Sep 2006 14:45:21 +0200
-Message-Id: <1158151521.5066.35.camel@domain.hid>
+Date: Wed, 13 Sep 2006 14:50:17 +0200
+Message-Id: <1158151817.5066.39.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -94,10 +94,65 @@ On Wed, 2006-09-13 at 14:38 +0200, Wolfgang Grandegger wrote:
 > Adeos iPipe PPC patch for 2.6.18rc6 I'm currently working on?
 > 
 
-I think so. I'm also going to apply the suggested fix to the Xenomai
-HAL, so that new Xenomai revs will work over old Adeos patches, and the
-other way around too. TIA,
+This is the way I fixed it for Adeos over ppc, so that I can apply the
+same logic to all other supported archs:
 
+--- kernel/ipipe/core.c	20 Jun 2006 17:15:23 -0000	1.28
++++ kernel/ipipe/core.c	13 Sep 2006 12:47:05 -0000
+@@ -565,20 +565,22 @@
+ 	ipd->irqs[irq].acknowledge = acknowledge;
+ 	ipd->irqs[irq].control = modemask;
+ 
+-	if (irq < NR_IRQS &&
+-	    handler != NULL &&
+-	    !ipipe_virtual_irq_p(irq) && (modemask & IPIPE_ENABLE_MASK) != 0) {
+-		if (ipd != ipipe_current_domain) {
+-			/* IRQ enable/disable state is domain-sensitive, so we may
+-			   not change it for another domain. What is allowed
+-			   however is forcing some domain to handle an interrupt
+-			   source, by passing the proper 'ipd' descriptor which
+-			   thus may be different from ipipe_current_domain. */
+-			err = -EPERM;
+-			goto unlock_and_exit;
+-		}
++	if (irq < NR_IRQS && handler != NULL && !ipipe_virtual_irq_p(irq)) {
++		__ipipe_enable_irqdesc(irq);
+ 
+-		__ipipe_enable_irq(irq);
++		if ((modemask & IPIPE_ENABLE_MASK) != 0) {
++			if (ipd != ipipe_current_domain) {
++				/* IRQ enable/disable state is domain-sensitive, so we may
++				   not change it for another domain. What is allowed
++				   however is forcing some domain to handle an interrupt
++				   source, by passing the proper 'ipd' descriptor which
++				   thus may be different from ipipe_current_domain. */
++				err = -EPERM;
++				goto unlock_and_exit;
++			}
++			
++			__ipipe_enable_irq(irq);
++		}
+ 	}
+ 
+ 	err = 0;
+Index: include/asm-ppc/ipipe.h
+===================================================================
+RCS file: /var/cvs/adeos/ipipe/v2.6/common/include/asm-ppc/ipipe.h,v
+retrieving revision 1.28
+diff -u -r1.28 ipipe.h
+--- include/asm-ppc/ipipe.h	10 Sep 2006 15:10:03 -0000	1.28
++++ include/asm-ppc/ipipe.h	13 Sep 2006 12:47:05 -0000
+@@ -146,7 +146,9 @@
+ 
+ #define __ipipe_check_platform()	do { } while(0)
+ 
+-#define __ipipe_enable_irq(irq)		enable_irq(irq)
++#define __ipipe_enable_irqdesc(irq)	do { irq_desc[irq].status &= ~IRQ_DISABLED; } while(0)
++
++#define __ipipe_enable_irq(irq)	enable_irq(irq)
+ 
+ #define __ipipe_disable_irq(irq)	disable_irq(irq)
+ 
 > Wolfgang.
 -- 
 Philippe.
