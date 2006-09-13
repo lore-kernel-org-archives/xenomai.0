@@ -1,15 +1,13 @@
-Subject: Re: [Xenomai-help] Xenomai v2.2.3
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <451153D5.2080200@domain.hid>
-References: <1158564530.5020.5.camel@domain.hid> <450F1686.3010304@domain.hid>
-	<451068AD.6080000@domain.hid> <1158744278.5544.42.camel@domain.hid>
-	<451153D5.2080200@domain.hid>
-Content-Type: text/plain
-Date: Wed, 20 Sep 2006 17:22:08 +0200
-Message-Id: <1158765729.5043.4.camel@domain.hid>
-Mime-Version: 1.0
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17672.23330.753175.711411@domain.hid>
+Date: Wed, 13 Sep 2006 21:25:22 +0200
+Subject: Re: [Xenomai-help] Re: Proper module_cleanup procedure
+In-Reply-To: <45085027.1000204@domain.hid>
+References: <4506F853.6060502@domain.hid>
+	<45085027.1000204@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,76 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
+To: Randy Smith <rsmith@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2006-09-20 at 09:44 -0500, Jeff Webb wrote:
-> Philippe Gerum wrote:
-> > On Tue, 2006-09-19 at 17:01 -0500, Jeff Webb wrote:
-> >> Jeff Webb wrote:
-> >>> Philippe Gerum wrote:
-> >>>> Here is the third maintenance release for the v2.2.x branch.
-> >>>> ...
-> >>> This release works fine on my 2.6 kernel x86 machine, with the exception 
-> >>> of the FPU problems noted elsewhere.
-> >>>
-> >>> I have the following problems with my 2.4 kernel x86 machine:
-> >>>  * The latency and switchtest test programs yield segmentation faults.
-> >>>  * My own user-space test programs seg fault.
-> >>>
-> >>> Things that work:
-> >>>  * The kernel boots and runs fine.
-> >>>  * xeno_native, _posix, _rtai all insert and remove without problems.
-> >>>  * Some simple kernel module test programs work fine.
-> >>>
-> >>> I am using the same config as I was for 2.2.2 (which worked fine), but I 
-> >>> am running a slightly newer kernel version (2.4.33.3 as opposed to 2.4.32).
-> >> I was able to build a working xenomai-2.2.3 by using linux-2.4.32 and adeos-ipipe-2.4.32-i386-1.2-07.patch.  The latency and switchtest programs seem to work now.  My problematic build used linux-2.4.33.3 and the adeos-ipipe-2.4.33-i386-1.3-00.patch.  I used the same kernel config for both builds.  
-> >>
-> >> So, does this mean the problem is with the ipipe patch?
-> >>
-> > 
-> > The problem also occurs with older patches, and it looks like extremely
-> > volatile, depending on various parameters, including the CPU
-> > generation/brand, so I tend to think that this issue is not directly
-> > related to the recent Adeos changes, but might trigger more easily with
-> > the latest patch on your box. Could you try the following patch against
-> > vanilla 2.2.3, on all your failing configs so far, and let us know of
-> > the outcome? TIA,
-> 
-> Sorry for not being more clear.  This appears to be a separate problem from the FPU issue.  At least the symptoms are different...  I have only seen this problem on my xenomai-2.2.3/linux-2.4.33.3 (ipipe-1.3) build.  The symptom is that xeno-load gives a segmentation fault in the latency program (switchtest suffers the exact same problem).  A couple of my own userspace RT test programs seg fault as well.  Look at the latency output near the bottom of my original email to see what I mean:
-> 
->   https://mail.gna.org/public/xenomai-help/2006-09/msg00152.html
-> 
-> Switching to xenomai-2.2.3/linux-2.4.32 (ipipe-1.2) fixed this problem.
-> Do you agree that this appears to be a different bug?
+Randy Smith wrote:
+ > Anyone?...Is this mike on?
+ > 
+ > Randy Smith wrote:
+ > > Hello,
+ > >
+ > > I am running the 2.4 kernel with Xenomai-2.1.0 native skin and I have 
+ > > a kernel module that creates 2 shared memory heaps and then creates a 
+ > > a periodic realtime task to do some interesting things.  This periodic 
+ > > realtime task communicates with a linux user mode task through the 
+ > > shared memory that gains access to it through 
+ > > rt_heap_bind/rt_heap_alloc calls.  Things go along swimmingly.
+ > >
+ > > I now want to be able to do an "rmmod" on the module and in its 
+ > > cleanup routine, right now I just have rt_heap_delete calls for the 
+ > > two shared memory heaps.  This completes successfully, but if I then 
+ > > try to install another version (debug for instance) of the module with 
+ > > "insmod", I get a memory error.
+ > > Is this is due to the fact that I didn't suspend the periodic realtime 
+ > > task and then delete it before deleting the heaps?  Is this 
+ > > necessary?  Are there any use counts or other signs that I could check 
+ > > to ensure that everyone was finished with the heaps so that I can 
+ > > delete them?
+ > >
+ > > Is there any consequence to the user mode task due to jerking the rug 
+ > > out from under it?
 
-Ah, ok. Yes, clearly, this sounds different.
+You should probably delete the task using the heaps before deleting the
+heaps. But I am not sure of the kind of error you would get when
+failing to do it. In order to know if the error you encounter is due to
+this or a bug, we need a concrete (and preferably minimal) excerpt of
+code.
 
->   Sorry for the confusion... I am trying to debug two or three different problems at the same time. 
-> Maybe I should have waited until the FPU bug was solved to report this.
+For the general issue of the cleanup of a mixt (kernel-space/user-space)
+application, I would lock the module with try_module_get when it is
+currently used by a user-space application. Actually, I have done it for
+the xeno_switchtest module, opening the RTDM device locks the module and
+closing the device unlocks it.
 
-No problem, I mistakenly made the connection between both issues. I'm
-going to fire up a test box with 2.4.33.3 over Adeos 1-3.00 + v2.2.3 and
-see what happens. More later.
-
-> 
-> I have not experienced the FPU-related switchtest error on my 2.4 machine.
-> My 2.6 machine exhibits the problem, so I will certainly test your patch on that machine to see the effect.
-> 
-
-TIA,
-
-> Thanks!
-> 
-> -Jeff
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
