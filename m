@@ -1,12 +1,17 @@
-Message-ID: <4504EA2C.4080604@domain.hid>
-Date: Mon, 11 Sep 2006 06:46:36 +0200
-From: Philipp Keller <philipp.keller@domain.hid>
+Message-ID: <4507C49A.5070909@domain.hid>
+Date: Wed, 13 Sep 2006 10:43:06 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E1GMOIv-000171-QV@server-r004.hostpoint.ch>
-In-Reply-To: <E1GMOIv-000171-QV@server-r004.hostpoint.ch>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] external hardware interupts on a PPC405
+References: <58168.129.217.4.64.1158067468.squirrel@domain.hid>	
+	<1158091876.5020.8.camel@domain.hid>
+	<b647ffbd0609121358v5b5bff80o6e4e08c859eb110a@domain.hid>
+	<450727D1.6060203@domain.hid>
+In-Reply-To: <450727D1.6060203@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0D1C0D91EF45654BB843986C"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [Xenomai-help] Bad EIP kernel-Oops
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,236 +21,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
-xenomai-core-request@domain.hid wrote:
-> Send Xenomai-core mailing list submissions to
-> 	xenomai@xenomai.org
->
-> To subscribe or unsubscribe via the World Wide Web, visit
-> 	https://mail.gna.org/listinfo/xenomai-core
-> or, via email, send a message with subject or body 'help' to
-> 	xenomai-core-request@domain.hid
->
-> You can reach the person managing the list at
-> 	xenomai-core-owner@domain.hid
->
-> When replying, please edit your Subject line so it is more specific
-> than "Re: Contents of Xenomai-core digest..."
->
->
-> Today's Topics:
->
->    1. Re: Re: CAN updates & questions (Matthias Fuchs)
->    2. No hardware interrupts with xenomai on ppc405  (Matthias Fuchs)
->    3. Re: No hardware interrupts with xenomai on ppc405
->       (Wolfgang Grandegger)
->    4. Re: Xenomai on PXA (Gilles Chanteperdrix)
->
->
-> ----------------------------------------------------------------------
->
-> Message: 1
-> Date: Sun, 10 Sep 2006 12:27:21 +0200
-> From: Matthias Fuchs <matthias.fuchs@domain.hid>
-> Subject: Re: [Xenomai-core] Re: CAN updates & questions
-> To: Wolfgang Grandegger <wg@domain.hid>
-> Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
-> Message-ID: <4503E889.2080306@domain.hid>
-> Content-Type: text/plain; charset=ISO-8859-1
->
-> Hi Wolfgang,
->
-> Wolfgang Grandegger wrote:
->   
->> Hi Matthias,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0D1C0D91EF45654BB843986C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Jan Kiszka wrote:
+> Dmitry Adamushko wrote:
+>> On 12/09/06, Philippe Gerum <rpm@xenomai.org> wrote:
+>>> On Tue, 2006-09-12 at 15:24 +0200, Nils Kemper wrote:
+>>>> Hi,
+>>>> I want to use Xenomai, but I get (sometimes, but everytime the same)=
+
+>>>> kernel-Oops just by running xeno-test:
+>>>>
+>>>> [..]
+>>>> Xenomai: stopping native API services.
+>>>> I-pipe: Domain Xenomai unregistered.
+>>>> Xenomai: hal/x86 stopped.
+>>>> Xenomai: real-time nucleus unloaded.
+>>> Does the issue still pop up if you set the Xenomai nucleus as static
+>>> (i.e. not as a module) in the kernel configuration?
 >>
->> Matthias Fuchs wrote:
->>     
->>> Hi Wolfgang,
->>>
->>> Wolfgang Grandegger wrote:
->>>       
->>>> You have to define the real CAN system clock, which is 16/2 = 8 Mhz for
->>>> most SJA 1000 hardware even if the oscillator is running at 16 MHz. I
->>>> will add some reasonable note to rtcan_dev.h
->>>>         
->>> Is there any special reason for this? Wouldn't it be more meaningful
->>> to pass the SJA1000 externally applied clock frequency? I can imagine
->>> that others will also run into this issue as Jan and I did yesterday ;-)
->>>       
->> The frequency is used to calculate reasonable bit-timing parameters, not
->> only for SJA 1000. It's used in a similar way in the Linux socket CAN
->> driver.
->>     
-> I am not very familiar with the socket CAN driver, but after a quick
-> glance at its svn repository it seems to me that they are also passing
-> the SJA1000 external clock frequency to the module (clk-parameter).
->
-> So I think other controller's drivers may use an other meaning of the
-> clk/clock parameter. But for SJA1000 the ext. clock frequency is best.
->   
->>>>> Then we will soon have to discuss how to deal with a rtcan_isa
->>>>> derivative that uses ioremapped memory instead of ports (naming,
->>>>> separation or integration).
->>>>>           
->>>> We could add a generic device similar to ISA (or extend ISA
->>>> accordingly).
->>>>         
->>> The SJA1000 isa driver is very simple - and so is the modified version
->>> for the memory mapped SJA1000. I think that merging both ways of
->>> access to the SJA1000 into a single driver will make the code much
->>> more dirty. I would prefer different source files (= different drivers). 
->>>       
->> I agree.
 >>
->>     
->>> It would be a compromise to add support for boards that use some kind
->>> of indirect addressing to access the SJA1000 (address + data register)
->>> into the isa and mem versions of the driver.
->>>       
->> Fine if this could be done in a generic way. We also should add a
->> generic PCI driver sooner than later.
+>> Just a weird presupposition.
 >>
->>     
->>> One more proposal: I think many (old) ISA drivers name the module
->>> parameter for the ISA io port "io" instead of "isa". For the memory
->>> mapped SJA1000 driver, I'd like to call the parameter "mem".
->>>       
->> Well, I cannot remember why I used the name "isa". Common is "io" or
->> "port" or "ioport", indeed. "io" and "mem" or "ioport" and "iomem" would
->> be fine for me.
->>     
-> I will use mem for the mem'mapped driver. The socket CAN project uses
-> base_addr - they must have an affection to a long parameter name :-)
->
-> Matthias
->
->
->
->
-> ------------------------------
->
-> Message: 2
-> Date: Sun, 10 Sep 2006 12:40:08 +0200
-> From: Matthias Fuchs <matthias.fuchs@domain.hid>
-> Subject: [Xenomai-core] No hardware interrupts with xenomai on ppc405 
-> To: xenomai@xenomai.org
-> Message-ID: <4503EB88.2040309@domain.hid>
-> Content-Type: text/plain; charset=ISO-8859-1
->
-> Hi,
->
-> I was trying to use some external hardware interupts on a PPC405 board
-> as part of a hacking session with Jan to bring up the rtcan driver on
-> this board.
->
-> Here are some versions:
->
-> 	Linux Kernel: 2.6.14
-> 	Adeos: 1.3-07
-> 	Xenomai: from svn (2.3pre, last friday night)
->
-> The first interrupt interrupt was always fine. When the 2nd interupt
-> occured, it was never handled and did not cause any action. We used the
-> ipipe-tracer and did not see anything related to the 2nd and any further
-> interrupt.
->
-> I think that the hardware interrupt is somehow masked and therefore
-> never result in any action. So the handling of the first interrupt might
-> be incorrect.
->
-> This seems to be ppc or even ppc4xx related because I assume that x86
-> platforms do not have this issue. Is this an Adeos issue.
->
-> I will do the same test on a 2.4 kernel next week - if nobody tells me
-> that this will be a waste of time.
->
-> Matthias
->
->
->
-> ------------------------------
->
-> Message: 3
-> Date: Sun, 10 Sep 2006 13:02:00 +0200
-> From: Wolfgang Grandegger <wg@domain.hid>
-> Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on
-> 	ppc405
-> To: Matthias Fuchs <matthias.fuchs@domain.hid>
-> Cc: xenomai@xenomai.org
-> Message-ID: <4503F0A8.8050602@domain.hid>
-> Content-Type: text/plain; charset=ISO-8859-1; format=flowed
->
-> Hi Matthias,
->
-> Matthias Fuchs wrote:
->   
->> Hi,
+>> In __ipipe_dispatch_event()
 >>
->> I was trying to use some external hardware interupts on a PPC405 board
->> as part of a hacking session with Jan to bring up the rtcan driver on
->> this board.
+>>  ipipe_lock_cpu(flags);
 >>
->> Here are some versions:
+>>  start_domain =3D this_domain =3D ipipe_percpu_domain[cpuid];
 >>
->> 	Linux Kernel: 2.6.14
->> 	Adeos: 1.3-07
->> 	Xenomai: from svn (2.3pre, last friday night)
+>>  list_for_each_safe(pos,npos,&__ipipe_pipeline) {
 >>
->> The first interrupt interrupt was always fine. When the 2nd interupt
->> occured, it was never handled and did not cause any action. We used the
->> ipipe-tracer and did not see anything related to the 2nd and any further
->> interrupt.
+>>                next_domain =3D list_entry(pos,struct ipipe_domain,p_li=
+nk);
 >>
->> I think that the hardware interrupt is somehow masked and therefore
->> never result in any action. So the handling of the first interrupt might
->> be incorrect.
+>> //...
+>>                if (next_domain->evhand[event] !=3D NULL) {
+>>                        ipipe_percpu_domain[cpuid] =3D next_domain;
+>>                        ipipe_unlock_cpu(flags);
+>> (1)
+>>                        propagate =3D
+>> !next_domain->evhand[event](event,start_domain,data);
 >>
->> This seems to be ppc or even ppc4xx related because I assume that x86
->> platforms do not have this issue. Is this an Adeos issue.
+>> Does anything prevent another thread from preempting the current one a=
+t (1)
+>> and making "next_domain" invalid?
+>=20
+> That could explain it. I only read ipipe_lock_cpu during my first scan
+> of this code earlier today, missing the unlock. One should better safe
+> the handler in a local variable before releasing the lock...
+>=20
+>> then :
 >>
->> I will do the same test on a 2.4 kernel next week - if nobody tells me
->> that this will be a waste of time.
->>     
->
-> Could you please add printk statements to the ack, enable and end 
-> functions to arch/ppc/syslib/ppc4xx_pic.c if the irq number matches. 
-> Please print also SR, ER and status.
->
-> Wolfgang.
->
->   
-We are using ppc6xx, but hat a timing problem with external HW, perhaps
-this is related to that interrupt thing? We saw on the oszilloscope that
-we have to init the rtcan with half the baudrate the external modules
-use, then it works.
-Philipp
->
->
-> ------------------------------
->
-> Message: 4
-> Date: Sun, 10 Sep 2006 14:19:47 +0200
-> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> Subject: Re: [Xenomai-core] Xenomai on PXA
-> To: Detlef Vollmann <dv@domain.hid>
-> Cc: xenomai@xenomai.org
-> Message-ID: <17668.739.465406.379629@domain.hid>
-> Content-Type: text/plain; charset="us-ascii"
->
-> Detlef Vollmann wrote:
->  > With that change, first tests look fine.
->
-> Thanks, attached the patch with this error corrected.
->
->  > BTW, on the SA, what results do you get from xeno-test?
->
-> latency in user-space easily get above 100 microseconds, if this is what
-> you mean. But I guess this is what we should expect on ARM.
->
->   
- 
+>> if next_domain =3D=3D "rthal_domain" (aka Xenomai)  -  e.g. someone un=
+loaded
+>> all
+>> the modules.
+>>
+>> then if it's static :
+>>
+>> rthal_domain is still kind of a valid object - it's at least in a vali=
+d
+>> memory region + evhand points to a valid function. It's even possible =
+to
+>> jump to the next element if the rthal_domain::fields were not cleared.=
+=2E.
+>>
+>> non-static :
+>>
+>> the module image was unloaded, next_domain doesn't point to anything
+>> reasonable.
+>=20
+> Mmh, we probably need some grace period on unload to avoid such races.
+> Reminds me of issues with the IRQ proc output or the shared IRQ
+> deregistration...
+>=20
+>> Jan or Nils, what instructions does "objdump -d kernel/ipipe/core.o" s=
+how
+>> for a given offset in the __ipipe_dispatch_event().
+>>
+>> 0xcd in case of Nils.
+>>
+>> [<c013f158>] __ipipe_dispatch_event+0xcd/0xeb
+>>
+>> ?
+>>
+>>
+>=20
+> Will check this tomorrow.
+
+It's the indirect call to the event handler.
+
+   8b3:   8b 55 e4                mov    0xffffffe4(%ebp),%edx
+   8b6:   50                      push   %eax
+-> 8b7:   ff 94 93 80 22 00 00    call   *0x2280(%ebx,%edx,4)
+   8be:   83 c4 0c                add    $0xc,%esp
+   8c1:   85 c0                   test   %eax,%eax
+
+In my case the kernel tries to access the address 0xd09bc5e5 which seems
+like it used to be a valid one.
+
+So this looks like we really need some mechanism to make sure all CPUs
+use the updated pointers after unhooking some event handler and before
+proceeding with further cleanups. Sounds like a job for RCU, but we
+don't have such stuff over 2.4.
+
+Jan
 
 
+--------------enig0D1C0D91EF45654BB843986C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFB8SnniDOoMHTA+kRAnwBAJ9WzPrWwpMKxzjNjMBBDjXjpSNc1QCfV8Cq
+uNcRdALMAoJU4TlTvIBMfJE=
+=VbrR
+-----END PGP SIGNATURE-----
+
+--------------enig0D1C0D91EF45654BB843986C--
 
