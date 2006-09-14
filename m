@@ -1,10 +1,17 @@
-Message-ID: <4509A998.4000102@domain.hid>
-Date: Thu, 14 Sep 2006 14:12:24 -0500
+Message-ID: <4509A522.5000707@domain.hid>
+Date: Thu, 14 Sep 2006 13:53:22 -0500
 From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] read returns more bytes than requested?
-References: <4505E719.3030405@domain.hid> <1158239386.5040.105.camel@domain.hid>
-In-Reply-To: <1158239386.5040.105.camel@domain.hid>
+Subject: Re: [Xenomai-help] Kernel panic with Xenomai SMP kernel
+References: <44F6E774.2000701@domain.hid>	
+	<44F72F35.4070109@domain.hid>	<44F75C54.90608@domain.hid>	
+	<17655.28122.163232.842311@domain.hid>	
+	<44F84C23.9070105@domain.hid>	
+	<17656.30980.846435.69720@domain.hid>	
+	<44F8B112.9070203@domain.hid> <1157182863.4967.2.camel@domain.hid>	
+	<44FF2E2C.9050209@domain.hid> <1157581459.5064.128.camel@domain.hid>	
+	<45081913.8000004@domain.hid> <1158163163.5076.16.camel@domain.hid>
+In-Reply-To: <1158163163.5076.16.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,23 +23,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Mon, 2006-09-11 at 17:45 -0500, Jeff Webb wrote:
->> I didn't think that a read could return more bytes than was requested. 
->> Does anyone understand this behaviour?  This is code that works under RT-Linux.
->> I am trying to determine why it is working differently under xenomai.
-> 
-> Another round of refactoring the message pipe support. This time, it
-> introduces the ability to get partial reads from the /dev/rtp* device
-> endpoint, instead of requiring read() calls to collect all of the
-> pending data at once. The remaining work will allow the same from the
-> real-time API endpoint. This patch applies against the latest patch
-> sent.
+Philippe Gerum wrote:'
+> On Wed, 2006-09-13 at 09:43 -0500, Jeff Webb wrote:
+> > After many, many recompiles.... As it turns out, this buggy
+> > behavior occurs when I turn off CONFIG_ACPI completely, instead
+> > of just turning off CONFIG_ACPI_PROCESSOR.  I tried this same 
+> > configuration file with the non-patched vanilla kernel, and got 
+> > strange behavior as well, so the problem is probably not in the 
+> > adeos patch (unlike the other two issues we discussed).  I am not 
+> > really concerned about this, since I would rather have some of 
+> > the CONFIG_ACPI options on anyway.  I just wanted to follow up
+> > and let you know I tracked down the problem as far as I care to 
+> > take it for the moment.
+>
+> Interesting, this looks like power management quirks, maybe caused by
+> funky BIOS interactions. In any case, this is worth a new paragraph in
+> the troubleshooting file. Thanks a lot for testing and reporting this.
 
-Thanks again!  The read appears to be working now, at least as far as I can tell.  I am now hunting down the source of an unrelated bug, a little further down the line.
+For what it's worth... turning off CONFIG_ACPI completely does not seem to cause a problem if I disable SMP.  So, it seems like the problem is turning off CONFIG_ACPI completely for an SMP kernel.
 
 -Jeff
-
 
