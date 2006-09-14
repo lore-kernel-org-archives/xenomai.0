@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4509A998.4000102@domain.hid>
+Date: Thu, 14 Sep 2006 14:12:24 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: Re: [Xenomai-help] read returns more bytes than requested?
+References: <4505E719.3030405@domain.hid> <1158239386.5040.105.camel@domain.hid>
+In-Reply-To: <1158239386.5040.105.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17673.32941.706379.236825@domain.hid>
-Date: Thu, 14 Sep 2006 18:17:49 +0200
-Subject: Re: [Xenomai-help] inscrutable pipes
-In-Reply-To: <3BDC517D-07A0-4BD3-9C6A-332E76B32615@domain.hid>
-References: <3BDC517D-07A0-4BD3-9C6A-332E76B32615@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,27 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ckreider <ckreider@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-ckreider wrote:
- > Proud though I am, it is time to ask for help.  I have used pipes  
- > with RTLinux but want to use Xenomai this time.  I can't get pipes  
- > working.
- > 
- > (as an aside, I saw on here where if you do make install, it will  
- > create the necessary /dev/rtp* entries.  I work on a development host  
- > and do not compile on the target, so I do not run make install.  I  
- > finally found the mknod magic in a message on this list)
+Philippe Gerum wrote:
+> On Mon, 2006-09-11 at 17:45 -0500, Jeff Webb wrote:
+>> I didn't think that a read could return more bytes than was requested. 
+>> Does anyone understand this behaviour?  This is code that works under RT-Linux.
+>> I am trying to determine why it is working differently under xenomai.
+> 
+> Another round of refactoring the message pipe support. This time, it
+> introduces the ability to get partial reads from the /dev/rtp* device
+> endpoint, instead of requiring read() calls to collect all of the
+> pending data at once. The remaining work will allow the same from the
+> real-time API endpoint. This patch applies against the latest patch
+> sent.
 
-I work on a development host and do not compile on the target, but I use
-make install: I simply set the DESTDIR variable so that the files are
-installed in a temporary directory that I can then share by NFS, rsync
-on the target, use to create an initrd or filesystem image, or anything
-else. This is much simpler than using mknod.
+Thanks again!  The read appears to be working now, at least as far as I can tell.  I am now hunting down the source of an unrelated bug, a little further down the line.
 
--- 
+-Jeff
 
-
-					    Gilles Chanteperdrix.
 
