@@ -1,13 +1,14 @@
-Subject: Re: [Xenomai-help] building cyclic testsuit
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <ac3922a00609280338n59d81a59x7eba1d1b09b5d1c@domain.hid>
-References: <ac3922a00609280338n59d81a59x7eba1d1b09b5d1c@domain.hid>
-Content-Type: text/plain
-Date: Thu, 28 Sep 2006 12:53:45 +0200
-Message-Id: <1159440826.4949.37.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <45092074.2070000@domain.hid>
+Date: Thu, 14 Sep 2006 11:27:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] driver migration
+References: <9D98C51005D80D43A19A3DF329A61D69515623@domain.hid>
+In-Reply-To: <9D98C51005D80D43A19A3DF329A61D69515623@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB84E39A5485C154127E25734"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,58 +18,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Syed Amer Gilani <amg@domain.hid>
+To: Nilanjan Roychowdhury <Nilanjan.Roychowdhury@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-09-28 at 12:38 +0200, Syed Amer Gilani wrote:
-> The "make install" part of installation breaks with following error:
-> 
-> ../../skins/posix/.libs/libpthread_rt.a(libpthread_rt_la-init.o): In
-> function `__init_posix_interface':
-> init.c:(.text+0x280): undefined reference to `pthread_atfork'
-> collect2: ld returned 1 exit status
-> make[3]: *** [cyclictest] Fehler 1
-> make[3]: Leaving directory `/home/amg/xenobuild/src/testsuite/cyclic'
-> make[2]: *** [install-recursive] Fehler 1
-> make[2]: Leaving directory `/home/amg/xenobuild/src/testsuite'
-> make[1]: *** [install-recursive] Fehler 1
-> make[1]: Leaving directory `/home/amg/xenobuild/src'
-> make: *** [install-recursive] Fehler 1
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB84E39A5485C154127E25734
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I guess you are using uClibc? If so, try applying the patch below.
-Feedback welcome, so that we can decide whether a similar fix has to be
-merged or not.
+Nilanjan Roychowdhury wrote:
+>=20
+>=20
+> Hi,
+> I had a linux driver with functionalities like it blocks a thread on an=
 
---- include/asm-powerpc/syscall.h	(revision 1672)
-+++ include/asm-powerpc/syscall.h	(working copy)
-@@ -190,6 +190,13 @@
- }
- #endif /* __powerpc64__ */
- 
-+inline __attribute__((weak)) int pthread_atfork(void (*prepare)(void),
-+						void (*parent)(void),
-+						void (*child)(void))
-+{
-+	return 0;
-+}
-+
- #endif /* __KERNEL__ */
- 
- #endif /* !_XENO_ASM_POWERPC_SYSCALL_H */
-> 
-> how can i fix this?
-> simply skipping cyclic does not work with "--without--cyclic" or
-> "--disable-cyclic"
+> ioctl and wakes it up when an interrupt occurs and does some processing=
+=2E
+> Now I want to migrate to xenomai space. Can I write a user  space devic=
+e
+> driver for this like I create an user space rt_task and call
+> rt_intr_wait in the entry fuction of the task and whenever I get an
+> interrupt I wake up and do the processing. Will I have any performance
+> hit?? I will make sure the priority of this xenomai task is higher than=
 
-> Regards,
-> Syed Amer Gilani
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+> any other xenomai task as it will do some interrupt processing.
+>=20
+> In general, if I need to migrate a traditional linux device driver with=
+
+> only user space clients to xenomai space can I write a user - space
+> device driver ???
+
+You can. Both native and posix skin provide means to block a user-space
+thread on an IRQ event. And if you already have a working user-space
+driver, that step should be simple as there are likely no problems with
+kernel-only services like DMA management.
+
+It is planned to enhance the Real-Time Driver Model (RTDM) with
+user-space support as well, keeping both the programming model for the
+driver users (profiles) as well as for the driver developers as far as
+feasible. The idea is to make drivers easily re-compilable/portable
+between kernel and user-space - but that's something which cannot help
+you yet.
+
+>=20
+> Under what scenario we place a driver as a kernel module in xenomai
+> space??
+
+Performance will remain a reason to go to kernel-space, specifically if
+you either share your device between multiple processes (having a driver
+in a separate process comes at a price...) or if you need low latency on
+IRQ handling. But there are also reasons to go to user-space, e.g.
+license issues. We are trying to address both.
+
+In any case, a clear separation between driver and application design is
+highly recommended and something we try to foster with RTDM.
+
+Jan
 
 
+--------------enigB84E39A5485C154127E25734
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFCSB0niDOoMHTA+kRAmk5AJ9T1BfYT66DXTaK7Z9qLYECe+aDWwCeIcaq
+Sg/tNWP3a/c68AWCBw5g1BA=
+=1oTR
+-----END PGP SIGNATURE-----
+
+--------------enigB84E39A5485C154127E25734--
 
