@@ -1,11 +1,14 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Wed, 13 Sep 2006 22:24:30 +0200
+Message-ID: <4509057F.2060606@domain.hid>
+Date: Thu, 14 Sep 2006 09:32:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_+jGCFUMTGrlw3l/"
-Message-Id: <200609132224.30762.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Add --quiet option to cyclictest
-Reply-To: niklaus.giger@domain.hid
+Subject: Re: [Xenomai-core] Add --quiet option to cyclictest
+References: <200609132224.30762.niklaus.giger@domain.hid>
+In-Reply-To: <200609132224.30762.niklaus.giger@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig18449FB262D193DC8A894809"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,125 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_+jGCFUMTGrlw3l/
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig18449FB262D193DC8A894809
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hi
+Niklaus Giger wrote:
+> Hi
+>=20
+> cyclictest emits far too much output. The attached patched makes it hon=
+our=20
+> the '-q/--quiet' option like all the other tests.
+>=20
+> Could somebody please review the patch and possibly apply it?
 
-cyclictest emits far too much output. The attached patched makes it honour 
-the '-q/--quiet' option like all the other tests.
+I wasn't able to find any problems, so I merged it. Thanks.
 
-Could somebody please review the patch and possibly apply it?
+>=20
+> Later I really would like to propose a common schema how to pass the mo=
+st=20
+> common options to the various tests called by xeno-test.=20
 
-Later I really would like to propose a common schema how to pass the most 
-common options to the various tests called by xeno-test. 
+Maybe the common part of handling those switches could be moved to a
+generic test-tool library (which could later also contain the data
+processing and printing of those tests - my old vision...)?
 
-Best regards in advance
+Jan
 
--- 
-Niklaus Giger
 
---Boundary-00=_+jGCFUMTGrlw3l/
-Content-Type: text/x-diff;
-  charset="iso-8859-1";
-  name="cyclictest.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
-	filename="cyclictest.diff"
+--------------enig18449FB262D193DC8A894809
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Index: /mnt/data.ng/hcu/kernel/xenomai-head/src/testsuite/cyclic/cyclictest.c
-===================================================================
---- /mnt/data.ng/hcu/kernel/xenomai-head/src/testsuite/cyclic/cyclictest.c	(Revision 1604)
-+++ /mnt/data.ng/hcu/kernel/xenomai-head/src/testsuite/cyclic/cyclictest.c	(Arbeitskopie)
-@@ -309,9 +309,9 @@
- /* Print usage information */
- static void display_help(void)
- {
--	printf("cyclictest %s\n", VERSION_STRING);
-+	printf("cyclictest %s (jittertest)\n", VERSION_STRING);
- 	printf("Usage:\n"
--	       "jittertest <options>\n\n"
-+	       "cyclictest <options>\n\n"
- 	       "-b USEC  --breaktrace=USEC send break trace command when latency > USEC\n"
- 	       "-c CLOCK --clock=CLOCK     select clock\n"
- 	       "                           0 = CLOCK_MONOTONIC (default)\n"
-@@ -321,6 +321,7 @@
- 	       "-l LOOPS --loops=LOOPS     number of loops: default=0(endless)\n"
- 	       "-n       --nanosleep       use clock_nanosleep\n"
- 	       "-p PRIO  --prio=PRIO       priority of highest prio thread\n"
-+	       "-q       --quiet	   minimal output\n"
- 	       "-r       --relative        use relative timer instead of absolute\n"
- 	       "-s       --system          use sys_nanosleep and sys_setitimer\n"
- 	       "-t NUM   --threads=NUM     number of threads: default=1\n"
-@@ -337,6 +338,7 @@
- static int max_cycles;
- static int clocksel = 0;
- static int verbose;
-+static int quiet;
- static int interval = 1000;
- static int distance = 500;
- 
-@@ -364,10 +366,11 @@
- 			{"system", no_argument, NULL, 's'},
- 			{"threads", required_argument, NULL, 't'},
- 			{"verbose", no_argument, NULL, 'v'},
-+			{"quiet", no_argument, NULL, 'q'},
- 			{"help", no_argument, NULL, '?'},
- 			{NULL, 0, NULL, 0}
- 		};
--		int c = getopt_long (argc, argv, "b:c:d:i:l:np:rst:v",
-+		int c = getopt_long (argc, argv, "b:c:d:i:l:np:qrst:v",
- 			long_options, &option_index);
- 		if (c == -1)
- 			break;
-@@ -379,6 +382,7 @@
- 		case 'l': max_cycles = atoi(optarg); break;
- 		case 'n': use_nanosleep = MODE_CLOCK_NANOSLEEP; break;
- 		case 'p': priority = atoi(optarg); break;
-+		case 'q': quiet = 1; break;
- 		case 'r': timermode = TIMER_RELTIME; break;	
- 		case 's': use_system = MODE_SYS_OFFSET; break;
- 		case 't': num_threads = atoi(optarg); break;
-@@ -410,7 +414,7 @@
- 	struct thread_stat *stat = par->stats;
- 	
- 	if (!verbose) {
--		printf("T:%2d (%5d) P:%2d I:%8ld C:%8lu Min:%8ld Act:%8ld Max:%8ld\n", 
-+	 	if (!quiet) printf("T:%2d (%5d) P:%2d I:%8ld C:%8lu Min:%8ld Act:%8ld Max:%8ld\n", 
- 		       index, stat->tid, par->prio, par->interval,
- 		       stat->cycles, stat->min, stat->act, stat->max);
- 	} else {
-@@ -496,7 +500,7 @@
- 			len = read(fd, &lavg, 255);
- 			close(fd);
- 			lavg[len-1] = 0x0;
--			printf("%s          \n\n", lavg);
-+			if (!quiet) printf("%s          \n\n", lavg);
- 		}
- 
- 		for (i = 0; i < num_threads; i++) {
-@@ -509,9 +513,15 @@
- 		usleep(10000);
- 		if (test_shutdown || allstopped == num_threads)
- 			break;
--		if (!verbose)
-+		if (!verbose && !quiet)
- 			printf("\033[%dA", num_threads + 2);
- 	}
-+	if (quiet) {
-+		quiet = 0; /* Now we want to output the statistics */
-+		for (i = 0; i < num_threads; i++) {
-+			print_stat(&par[i], i, verbose);
-+		}
-+	}
- 	ret = 0;
-  outall:
- 	test_shutdown = 1;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
---Boundary-00=_+jGCFUMTGrlw3l/--
+iD8DBQFFCQV/niDOoMHTA+kRAjSRAJ9rs+agZlOJclhNWmE2srp8otR2AwCfRVpk
+2IGwatxCoTlV8Ls3u/pbIs8=
+=gHxS
+-----END PGP SIGNATURE-----
+
+--------------enig18449FB262D193DC8A894809--
 
