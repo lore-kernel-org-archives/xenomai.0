@@ -1,12 +1,13 @@
-Message-ID: <b647ffbd0609140525h62ddc07crca474ba48c67863d@domain.hid>
-Date: Thu, 14 Sep 2006 14:25:39 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] premetion
-In-Reply-To: <9D98C51005D80D43A19A3DF329A61D6951562F@INDEXCH2003.gmi.domain>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_235577_17048786.1158236739469"
-References: <9D98C51005D80D43A19A3DF329A61D6951562F@INDEXCH2003.gmi.domain>
+Subject: RE: [Xenomai-help] premetion
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <9D98C51005D80D43A19A3DF329A61D69515631@domain.hid>
+References: <9D98C51005D80D43A19A3DF329A61D69515631@domain.hid>
+Content-Type: text/plain
+Date: Thu, 14 Sep 2006 14:42:22 +0200
+Message-Id: <1158237742.5040.89.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,65 +18,47 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Nilanjan Roychowdhury <Nilanjan.Roychowdhury@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-------=_Part_235577_17048786.1158236739469
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Thu, 2006-09-14 at 17:55 +0530, Nilanjan Roychowdhury wrote:
+> I am confused. Do you mean any thread created in user space with
+> rt_task_create is a secondary mode thread even if it never makes any
+> Linux calls.
 
-On 14/09/06, Nilanjan Roychowdhury <Nilanjan.Roychowdhury@domain.hid> wrote:
->
->  Can a normal Linux thread ( pthread with priority 90) can preempt any
-> user space XENOMAI thread with priority (85). If the XENOMAI thread is
-> running in primary domain ???
->
+No, such task would always start in primary mode. The sentence "by
+secondary mode threads, we really mean Xenomai-enabled user-space
+threads" should be interpreted in the context of the question it answers
+to. The bottom line is that regular Linux threads (i.e. non-Xenomai) can
+only compete for the CPU with Xenomai threads in secondary mode
+depending on their priority level, but threads in primary mode always
+have precedence over the regular Linux threads.
 
-No. The secondary domain (i.e. Linux) gets control only when there is no
-activity in the primary one. OTOH, primary domain activities may always
-(well, if it's not a case of cross-domain synchonization) preempt the ones
-from linux domain.
-That's why, e.g. kernel-space real-time threads or ISR must not use linux
-kernel services, the kernel could have been preempted at any point and,
-thus, it's not-reentrant.
-
-
-
+> -Nilanjan
+> 
+> -----Original Message-----
+> From: Philippe Gerum [mailto:rpm@xenomai.org] 
+> Sent: Thursday, September 14, 2006 5:48 PM
+> To: Nilanjan Roychowdhury
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] premetion
+> 
+> On Thu, 2006-09-14 at 17:37 +0530, Nilanjan Roychowdhury wrote:
+> > Can a normal Linux thread ( pthread with priority 90) can preempt any
+> > user space XENOMAI thread with priority (85). If the XENOMAI thread is
+> > running in primary domain ???
+> 
+> No, only if the latter runs in secondary mode.
+> https://mail.gna.org/public/xenomai-help/2006-08/msg00196.html
+> 
+> 
+> > 
+> > 
+> > _______________________________________________
+> > Xenomai-help mailing list
+> > Xenomai-help@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-help
 -- 
-Best regards,
-Dmitry Adamushko
-
-------=_Part_235577_17048786.1158236739469
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<br><br><div><span class="gmail_quote">On 14/09/06, <b class="gmail_sendername">Nilanjan Roychowdhury</b> &lt;<a href="mailto:Nilanjan.Roychowdhury@domain.hid">Nilanjan.Roychowdhury@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div>
+Philippe.
 
 
-
-
-
-
-
-
-<div link="blue" vlink="purple" lang="EN-US">
-
-<div>
-
-<p><font face="Arial" size="2"><span style="font-size: 10pt; font-family: Arial;">Can a normal Linux thread ( pthread with priority 90) can
-preempt any user space XENOMAI thread with priority (85). If the XENOMAI thread
-is running in primary domain ???</span></font></p></div></div></div></blockquote><div><br>
-No. The secondary domain (i.e. Linux) gets control only when there is
-no activity in the primary one. OTOH, primary domain activities may
-always (well, if it's not a case of cross-domain synchonization)
-preempt the ones from linux domain.<br>
-That's why, e.g. kernel-space real-time threads or ISR must not use
-linux kernel services, the kernel could have been preempted at any
-point and, thus, it's not-reentrant.<br>
-&nbsp;</div></div><br>
-<br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_235577_17048786.1158236739469--
 
