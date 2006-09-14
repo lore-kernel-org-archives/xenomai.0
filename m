@@ -1,10 +1,11 @@
-Subject: Re: [Xenomai-help] read returns more bytes than requested?
+Subject: Re: [Xenomai-help] problem with rt_task_send() timeout and timer
+	overruns
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4505E719.3030405@domain.hid>
-References: <4505E719.3030405@domain.hid>
+In-Reply-To: <45087D79.50506@domain.hid>
+References: <45087D79.50506@domain.hid>
 Content-Type: text/plain
-Date: Thu, 14 Sep 2006 15:09:45 +0200
-Message-Id: <1158239386.5040.105.camel@domain.hid>
+Date: Thu, 14 Sep 2006 15:58:22 +0200
+Message-Id: <1158242302.5040.121.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,191 +18,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Vincent Levesque <vleves@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2006-09-11 at 17:45 -0500, Jeff Webb wrote:
-> I am having some success porting my RTLinux application, but I have encountered a strange error.
+On Wed, 2006-09-13 at 17:51 -0400, Vincent Levesque wrote:
+> Hello all,
 > 
-> I have this snippet of code that is reading data from an rtai-skin FIFO:
+> I ran into some problems after moving working code to a slower machine 
+> and traced the problem down to the example attached at the bottom of 
+> this email. I've been using rt_task_send() to implement the equivalent 
+> of a function call, with an error code returned in the reply MCB's 
+> opcode field. In the example below, I send a message and expect a "666" 
+> opcode to be returned but I receive garbage at least on a few calls. The 
+> problem seems to occur when 1) the update rate in the sender is too high 
+> and 2) rt_task_send() has a timeout value (1 sec in the example.)  If I 
+> increase MAIN_RATE_NS or set the TIMEOUT to TM_INFINITE everything seems 
+> to be ok. I've been able to reproduce this problem with xenomai 2.2.2 
+> (two PCs) and 2.1.3. In more complex versions of this code the reply 
+> data buffers also seemed to be invalid or corrupted.
 > 
->   result = read(runtime2io_fd, &resp, sizeof(resp));
->   if (result != sizeof(resp))
+
+Confirmed and reproduced, including over the simulator. The reason for
+the invalid opcode is that rt_task_reply() signals an EXIO error, so the
+return value is not filled in. The question is: why do we get this
+error. More later.
+
+> Looking at the docs, I'm not sure what to expect when rt_task_send() 
+> times out. It is returning 0 here. If I understand correctly, there is 
+> also no way to distinguish between an empty reply (with an opcode but no 
+> data buffer) and a NULL reply (i.e. rt_task_reply(flowid, NULL)). Could 
+> I be missing a rt_task_send() failure? If so, why would it fail here?
+> 
+
+rt_task_reply(flowid, NULL) would always force the opcode field to zero.
+Therefore, you should use non-zero return codes for valid messages,
+whether they are empty or not.
+
+> Thanks,
+> 
+> Vincent Levesque
+> vleves@domain.hid
+> 
+> gcc -o test main.c `/usr/xenomai-2.2/bin/xeno-config --xeno-cflags` 
+> `/usr/xenomai-2.2/bin/xeno-config --xeno-ldflags` -lnative
+> 
+> #include <sys/mman.h>
+> #include <native/task.h>
+> 
+> #define TIMEOUT ((RTIME)1E9)
+> #define PEER_RATE_NS 100000
+> #define MAIN_RATE_NS 5000000
+> #define PEER_NB_ITER 50
+> 
+> void run_peer(void *arg)
+> {
+>     unsigned char buf[1024];
+>     RT_TASK_MCB mcb_rcv, mcb_reply;
+>     int flowid, i, rv;
+> 
+>     while (1)
 >     {
->       printf("requested %d bytes, got %d\n", sizeof(resp), result);
->       snprintf(err_str, MAX_STR_LEN, "cannot read response from %s",
->                RUNTIME2IO_FIFO_DEV);
->       sim_halt(err_str);
->       return;
+>         mcb_rcv.data = (caddr_t)buf;
+>         mcb_rcv.size = sizeof(buf);
+>         flowid = rt_task_receive(&mcb_rcv,TM_INFINITE);
+>         if(flowid >= 0)
+>         {
+>             rt_task_set_periodic(NULL,TM_NOW,PEER_RATE_NS);
+>             for (i=0; i<PEER_NB_ITER; ++i)
+>                 rt_task_wait_period(NULL);
+>             rt_task_set_periodic(NULL,TM_NOW,TM_INFINITE);
+> 
+>             mcb_reply.opcode = 666;
+>             mcb_reply.size = 0;
+>             mcb_reply.data = NULL;
+>             rt_task_reply(flowid, &mcb_reply);
+>         }
+>     }
+> }
+> 
+> int main(int argc, char *argv[])
+> {
+>     int i, rv;
+>     RT_TASK task, peer_task;
+>     RT_TASK_MCB mcb_send, mcb_reply;
+> 
+>     mlockall(MCL_CURRENT | MCL_FUTURE);
+> 
+>     rt_task_spawn(&peer_task, "peer", 4096, 99, T_FPU, &run_peer, NULL);
+>     rt_task_shadow(&task, "user", 50, 0);
+>     
+>     rt_task_set_periodic(NULL,TM_NOW,MAIN_RATE_NS);
+> 
+>     for (i=0; i<10; ++i)
+>     {
+>         rt_task_wait_period(NULL);
+>         mcb_send.opcode = 0x02;
+>         mcb_send.data = NULL;
+>         mcb_send.size = 0;
+>         mcb_reply.size = 0;
+>         mcb_reply.data = NULL;
+>         rv = rt_task_send(&peer_task,&mcb_send,&mcb_reply,TIMEOUT);
+>         if (rv < 0) printf("rt_task_send error\n");
+>         if (mcb_reply.opcode != 666)
+>             printf("rv=%d, opcode=%d\n", rv, mcb_reply.opcode);
 >     }
 > 
-> I get the following output:
+>     rt_task_delete(&peer_task);
+>     rt_task_delete(NULL);
 > 
->   requested 312 bytes, got 1220
->   halting the sim: cannot read response from /dev/rtf1
+>     return 0;
+> }
 > 
-> I didn't think that a read could return more bytes than was requested.  Does anyone understand this behaviour?  This is code that works under RT-Linux.  I am trying to determine why it is working differently under xenomai.
-
-Another round of refactoring the message pipe support. This time, it
-introduces the ability to get partial reads from the /dev/rtp* device
-endpoint, instead of requiring read() calls to collect all of the
-pending data at once. The remaining work will allow the same from the
-real-time API endpoint. This patch applies against the latest patch
-sent.
-
---- include/nucleus/pipe.h	(revision 1607)
-+++ include/nucleus/pipe.h	(working copy)
-@@ -57,6 +57,7 @@
- 
-     xnholder_t link;
-     unsigned size;
-+    unsigned rdoff;
-     
- } xnpipe_mh_t;
- 
-@@ -156,6 +157,8 @@
- 
- #define xnpipe_m_size(mh) ((mh)->size)
- 
-+#define xnpipe_m_rdoff(mh) ((mh)->rdoff)
-+
- #endif /* __KERNEL__ */
- 
- #endif /* !_XENO_NUCLEUS_PIPE_H */
-Index: ksrc/nucleus/pipe.c
-===================================================================
---- ksrc/nucleus/pipe.c	(revision 1607)
-+++ ksrc/nucleus/pipe.c	(working copy)
-@@ -371,6 +371,7 @@
- 
- 	inith(xnpipe_m_link(mh));
- 	xnpipe_m_size(mh) = size - sizeof(*mh);
-+	xnpipe_m_rdoff(mh) = 0;
- 	state->ionrd += xnpipe_m_size(mh);
- 
- 	if (flags & XNPIPE_URGENT)
-@@ -668,11 +669,11 @@
- 			   char *buf, size_t count, loff_t *ppos)
- {
- 	xnpipe_state_t *state = (xnpipe_state_t *)file->private_data;
-+	int sigpending, err = 0;
- 	size_t nbytes, inbytes;
- 	struct xnpipe_mh *mh;
--	int sigpending, err;
- 	xnholder_t *holder;
--	ssize_t ret = 0;
-+	ssize_t ret;
- 	spl_t s;
- 
- 	if (!access_ok(VERIFY_WRITE, buf, count))
-@@ -701,59 +702,57 @@
- 		holder = getq(&state->outq);
- 		mh = link2mh(holder);
- 
--		if (sigpending && !mh) {
-+		if (!mh) {
- 			xnlock_put_irqrestore(&nklock, s);
--			return -ERESTARTSYS;
-+			return sigpending ? -ERESTARTSYS : 0;
- 		}
- 	}
- 
--	if (mh) {
--		nbytes = xnpipe_m_size(mh); /* Cannot be zero */
--		inbytes = 0;
-+	/*
-+	 * We allow more data to be appended to the current message
-+	 * bucket while its contents is being copied to the user
-+	 * buffer, therefore, we need to loop until: 1) all the data
-+	 * has been copied, 2) we consumed the user buffer space
-+	 * entirely.
-+	 */
- 
--		/*
--		 * We allow more data to be appended to the current
--		 * message bucket while its contents is being copied
--		 * to the user buffer, therefore, we need to loop
--		 * until:
--		 * 1) all the data has been copied,
--		 * 2) we consumed the user buffer space entirely.
--		 */
-+	inbytes = 0;
- 
--		do {
--			if (inbytes <= count) {
--				xnlock_put_irqrestore(&nklock, s);
--				/* More data could be appended while doing this: */
--				err = __copy_to_user(buf + inbytes, xnpipe_m_data(mh) + inbytes, nbytes);
--				xnlock_get_irqsave(&nklock, s);
--				if (err) {
--					ret = -EFAULT;
--					break;
--				}
--				inbytes += nbytes;
--				nbytes = xnpipe_m_size(mh) - inbytes;
--			} else {
--				/* Return buffer is too small - message is lost. */
--				ret = -ENOBUFS;
--				break;
--			}
--		} while(nbytes > 0);
-+	for (;;) {
-+		nbytes = xnpipe_m_size(mh) - xnpipe_m_rdoff(mh);
- 
--		if (ret < 0)
--			inbytes = xnpipe_m_size(mh);
--		else
--			ret = (ssize_t) inbytes;
-+		if (nbytes + inbytes > count)
-+			nbytes = count - inbytes;
- 
--		state->ionrd -= inbytes;
-+		if (nbytes == 0)
-+			break;
- 
--		if (state->output_handler != NULL)
--			ret = state->output_handler(xnminor_from_state(state),
--						    mh, ret, state->cookie);
-+		xnlock_put_irqrestore(&nklock, s);
-+		/* More data could be appended while doing this: */
-+		err = __copy_to_user(buf + inbytes, xnpipe_m_data(mh) + xnpipe_m_rdoff(mh), nbytes);
-+		xnlock_get_irqsave(&nklock, s);
-+
-+		if (err) {
-+			err = -EFAULT;
-+			break;
-+		}
-+
-+		inbytes += nbytes;
-+		xnpipe_m_rdoff(mh) += nbytes;
- 	}
- 
-+	state->ionrd -= inbytes;
-+	ret = inbytes;
-+
-+	if (xnpipe_m_size(mh) > xnpipe_m_rdoff(mh))
-+		prependq(&state->outq, &mh->link);
-+	else if (state->output_handler != NULL)
-+		ret = state->output_handler(xnminor_from_state(state),
-+					    mh, err ?: ret, state->cookie);
-+
- 	xnlock_put_irqrestore(&nklock, s);
- 
--	return ret;
-+	return err ?: ret;
- }
- 
- static ssize_t xnpipe_write(struct file *file,
-@@ -799,6 +798,7 @@
- 
- 	inith(xnpipe_m_link(mh));
- 	xnpipe_m_size(mh) = count;
-+	xnpipe_m_rdoff(mh) = 0;
- 	__copy_from_user(xnpipe_m_data(mh), buf, count);
- 
- 	xnlock_get_irqsave(&nklock, s);
-
-
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
 Philippe.
 
