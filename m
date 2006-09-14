@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <4509239F.8000203@domain.hid>
+Date: Thu, 14 Sep 2006 11:40:47 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6D7E1.FED8A30D"
-Date: Thu, 14 Sep 2006 15:11:46 +0530
-Message-ID: <9D98C51005D80D43A19A3DF329A61D69515625@domain.hid>
-From: "Nilanjan Roychowdhury" <Nilanjan.Roychowdhury@domain.hid>
-Subject: [Xenomai-help] IPC
+Subject: Re: [Xenomai-help] driver migration
+References: <9D98C51005D80D43A19A3DF329A61D69515624@domain.hid>
+In-Reply-To: <9D98C51005D80D43A19A3DF329A61D69515624@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3F5070498335E9A074B99823"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,97 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Nilanjan Roychowdhury <Nilanjan.Roychowdhury@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C6D7E1.FED8A30D
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3F5070498335E9A074B99823
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi
+Nilanjan Roychowdhury wrote:
+>> Performance will remain a reason to go to kernel-space, specifically i=
+f
+>> you either share your device between multiple processes (having a
+> driver
+>> in a separate process comes at a price...) or if you need low latency
+> on
+>> IRQ handling. But there are also reasons to go to user-space, e.g.
+>> license issues. We are trying to address both.
+>=20
+> Nilanjan :- Can I assume you are saying the latency is less when I run
+> my interrupt processing code as an real time ISR rather than a user -
+> space=20
+> Thread ?
 
-What is the best IPC ( in terms of performance) between any user space
-XENOMAI task and a user space Linux thread ?
+Yes, of course. Check the irqbench test for real numbers on your target
+system.
 
-I know pipes can be used between kernel space XENOMAI task and user
-space Linux thread ?
+> In that case I can run the ISR in kernel mode and signal the user space=
 
--Nilanjan
+> RT task by a semaphore ( the user space task will bind this).
+
+That would be the classic design if you have some simple job to do on
+IRQ delivery (some direct fiddling with the hardware e.g.) + you want to
+wakeup a thread waiting on the event. In this case you can use RTDM for
+the in-kernel part and attach your application to the RTDM device your
+driver will then export.
+
+Jan
 
 
-------_=_NextPart_001_01C6D7E1.FED8A30D
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+--------------enig3F5070498335E9A074B99823
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
+iD8DBQFFCSOfniDOoMHTA+kRAubwAJwKKXKmTo57DsuymXU2k/MZ5VllTgCbBG8v
+0OAGlic9hF5ss6oN6B8jDr0=
+=GPgb
+-----END PGP SIGNATURE-----
 
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Hi<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>What is the best IPC ( in terms of performance) =
-between any user
-space XENOMAI task and a user space Linux thread =
-?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>I know pipes can be used between kernel space XENOMAI =
-task
-and user space Linux thread ?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>-Nilanjan<o:p></o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C6D7E1.FED8A30D--
+--------------enig3F5070498335E9A074B99823--
 
