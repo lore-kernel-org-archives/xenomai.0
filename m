@@ -1,9 +1,13 @@
-Subject: Antwort: Re: [Xenomai-help] pSOS skin questions
+Message-ID: <450B0E04.3070506@domain.hid>
+Date: Fri, 15 Sep 2006 15:33:08 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Message-ID: <OF1CB72C09.F6D4F8B3-ONC12571EA.0055805B@uk.marconicomms.com>
-From: "Thomas Necker" <Thomas.Necker@domain.hid>
-Date: Fri, 15 Sep 2006 17:56:58 +0200
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
+References: <4509DBEB.7020707@domain.hid>	<17674.28304.441115.152396@domain.hid>	<450ABC1F.8010108@domain.hid>
+	<17674.48814.824895.814925@domain.hid>
+In-Reply-To: <17674.48814.824895.814925@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,34 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-> > - Is somebody out there actually using the pSOS skin? Who should I 
-send 
-> > patches to?
+Gilles Chanteperdrix wrote:
+> Jeff Webb wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jeff Webb wrote:
+>  > >  > Does anyone have any ideas of what could trigger this besides not setting the fp attribute for the thread?
+>  > > 
+>  > > What version of Xenomai do you use ? I have updated the FPU support very
+>  > > recently, so it would be interesting to know if you also get the error
+>  > > when applying or reverting this change.
+>  > 
+>  > I am using Xenomai-2.2.2 with the two RTAI FIFO patches posted by Philippe a few days ago.  Do you have a patch that undoes the changes?  I could probably figure out how to generate one from subversion, if you know the revision of the change.  I do need the recent FIFO patches for the rest of my application to work properly, or I would just try an old version.  
+>  > 
+>  > I am using the 2.4 x86 UP kernel, if that makes any difference.
+> 
+> Sorry, sent the wrong patch. Try this one.
 
-> Please send your patches to xenomai@xenomai.org. They will be reviewed
-> and possibly picked from there.
+Unfortunately, I get the same results with this patch applied.  I haven't been able to isolate the problem yet.  I did discover that putting in a clock_nanosleep call at certain points in my simulation loop allowed the loop to execute to completion without any FPU errors.  Maybe this is a clue...  I do still get an FPU error message at some point after the main simulation loop is done, though.
 
-Ok. I'll do that as soon as the behaviour of my program resembles a bit
-the behaviour when running under the original OS ;-)
+Any more ideas regarding the source of my problem?  In my main loop, I am doing a few floating point calculations, stuffing some data to an RTAI FIFO, and then calling clock_nanosleep to wait for the next cycle.
 
-> In any case, the pSOS interface is carefully maintained, and bugs will
-> be fixed as they are reported. Providing a simple testcase to reproduce
+Thanks,
 
-That's good to hear.
+Jeff
 
-> If you want to run the pSOS interface over the UVM, you just need the
-> nucleus and the uvm support. If you want to run kernel space pSOS apps,
-> then you need the nucleus and the psos module.
-
-Ok. I'll go with the nucleus and UVM for the moment as you described it. 
-Thus,
-I managed to get the tm_evafter to work. My program still behaves pretty 
-odd -
-but that's not necessarily Xenomai's problem.
-
-Thanks again,
-Thomas
 
 
