@@ -1,16 +1,12 @@
-Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4505A75B.8000601@domain.hid>
-References: <4503EB88.2040309@domain.hid>
-	<1157988739.4991.11.camel@domain.hid> <450584D7.6050009@domain.hid>
-	<200609111904.16512.matthias.fuchs@domain.hid>
-	<4505A75B.8000601@domain.hid>
-Content-Type: text/plain
-Date: Fri, 15 Sep 2006 16:18:35 +0200
-Message-Id: <1158329916.5072.11.camel@domain.hid>
+From: Stelian Pop <stelian.pop@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Date: Fri, 15 Sep 2006 18:26:23 +0200
+Message-Id: <1158337583.13530.20.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] 
+	[PATCH, RFC] Make ioremap'ed memory available through
+	rtdm_mmap_to_user()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,47 +16,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2006-09-11 at 20:13 +0200, Wolfgang Grandegger wrote:
-> Matthias Fuchs wrote:
-> > On Monday 11 September 2006 17:46, Wolfgang Grandegger wrote:
-> >>> A possible explanation is that configurations only using the timer IRQ
-> >>> are not affected, since the decrementer is not subject to this issue
-> >>> (the tick handler returns XN_ISR_NOENABLE anyway).
-> >> I run RT-Socket-CAN on a CAN PCI Card on my MPC5200 without any 
-> >> problems, so far (under Linux 2.4). Here the end function of the PIC:
-> >>
-> >>    static void
-> >>    mpc5xxx_ic_end(unsigned int irq)
-> >>    {
-> >>          if (!(irq_desc[irq].status & (IRQ_DISABLED | IRQ_INPROGRESS)))
-> >>                  mpc5xxx_ic_enable(irq);
-> >>    }
-> >>
-> >> Matthias, have you printed out the value of status? I'm just curious.
-> >>
-> >> Wolfgang.
-> > 
-> > Here it comes:
-> > bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
-> > _end: status=00000042
-> > bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
-> > _end: status=00000042
-> > bash-3.00# ./bin/rtcansend rtcan0 -i 0 1 2 3 4
-> > _end: status=00000042
-> > 
-> > So it's IRQ_DISABLED (=2).
-> 
-> In 2.6 the interrupts are disabled by default. Then the attached patch 
-> for Xenomai should help.
+Hi,
 
+I need to be able to map an IO memory buffer to userspace from a RTDM
+driver.
 
-Applied, thanks.
+rtdm_mmap_to_user() seems to do what I need, but it doesn't work. Its
+code thinks that all virtual addresses between VMALLOC_START and
+VMALLOC_END are obtained through vmalloc() and tries to call
+xnarch_remap_vm_page() on them, which fails.
 
--- 
-Philippe.
+Virtual addresses coming from ioremap() need to go through
+xnarch_remap_io_page_range(), and their physical address cannot be
+obtained with a simple virt_to_phys().
 
+A working patch is attached below, but there might (should ?) be a
+better way to do it. Some of the code may also belong to
+asm-generic/system.h instead of the RTDM skin.
+
+Note that you may also need to EXPORT_SYMBOL(vmlist and vmlist_lock) in
+mm/vmalloc.c if you want to build the RTDM skin as a module.
+
+Comments ?
+
+Stelian.
+
+Index: ksrc/skins/rtdm/drvlib.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/rtdm/drvlib.c	(r=E9vision 1624)
++++ ksrc/skins/rtdm/drvlib.c	(copie de travail)
+@@ -1377,6 +1377,7 @@
+ {
+     struct rtdm_mmap_data *mmap_data =3D filp->private_data;
+     unsigned long vaddr, maddr, size;
++    struct vm_struct *vm;
+=20
+     vma->vm_ops =3D mmap_data->vm_ops;
+     vma->vm_private_data =3D mmap_data->vm_private_data;
+@@ -1385,7 +1386,21 @@
+     maddr =3D vma->vm_start;
+     size  =3D vma->vm_end - vma->vm_start;
+=20
++    write_lock(&vmlist_lock);
++    for (vm =3D vmlist; vm !=3D NULL; vm =3D vm->next) {
++	if (vm->addr =3D=3D (void *)vaddr)
++	    break;
++    }
++    write_unlock(&vmlist_lock);
++
++    /* ioremap'ed memory */
++    if (vm && vm->flags & VM_IOREMAP)
++        return xnarch_remap_io_page_range(vma, maddr,
++					  vm->phys_addr,
++                                          size, PAGE_SHARED);
++    else
+ #ifdef CONFIG_MMU
++    /* vmalloc'ed memory */
+     if ((vaddr >=3D VMALLOC_START) && (vaddr < VMALLOC_END)) {
+         unsigned long mapped_size =3D 0;
+=20
+
+--=20
+Stelian Pop <stelian.pop@domain.hid>
 
 
