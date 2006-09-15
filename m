@@ -1,10 +1,11 @@
-Message-ID: <450ABB29.9000304@domain.hid>
-Date: Fri, 15 Sep 2006 09:39:37 -0500
+Message-ID: <450ABC1F.8010108@domain.hid>
+Date: Fri, 15 Sep 2006 09:43:43 -0500
 From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
-References: <4509DBEB.7020707@domain.hid> <1158308720.5009.37.camel@domain.hid>
-In-Reply-To: <1158308720.5009.37.camel@domain.hid>
+References: <4509DBEB.7020707@domain.hid>
+	<17674.28304.441115.152396@domain.hid>
+In-Reply-To: <17674.28304.441115.152396@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,48 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Thu, 2006-09-14 at 17:47 -0500, Jeff Webb wrote:
->> I made some more progress in porting my RTLinux application, but now I'm spinning my wheels trying to track down the source of the following error:
->>
->>   "invalid use of FPU in Xenomai context at ..."
+Gilles Chanteperdrix wrote:
+> Jeff Webb wrote:
+>  > Does anyone have any ideas of what could trigger this besides not setting the fp attribute for the thread?
 > 
-> This message also gives the faulty location/symbol+offset. Where does it
-> point to?
+> What version of Xenomai do you use ? I have updated the FPU support very
+> recently, so it would be interesting to know if you also get the error
+> when applying or reverting this change.
 
-It's coming from some simple floating point operations in my application code.  The relevant code snippet is:
+I am using Xenomai-2.2.2 with the two RTAI FIFO patches posted by Philippe a few days ago.  Do you have a patch that undoes the changes?  I could probably figure out how to generate one from subversion, if you know the revision of the change.  I do need the recent FIFO patches for the rest of my application to work properly, or I would just try an old version.  
 
-  print_msg(TRACE_MSG, "rt_delay_sim\n");
-  print_msg(INFO_MSG, "jeff rt_delay: 1\n");
-  actual_dt = sim_dt / rt_speed_factor + rt_skew_correction;
-  print_msg(INFO_MSG, "jeff rt_delay: 2\n");
-
-The kernel message output is:
-
-  Sep 15 09:17:34 kernel: rt_delay_sim
-  Sep 15 09:17:34 kernel: jeff rt_delay: 1
-  Sep 15 09:17:34 kernel: invalid use of FPU in Xenomai context at [fc264152]
-  Sep 15 09:17:34 kernel: Xenomai: suspending kernel thread c1ca3730 ('c1ca3730') at
-  0xfc264152 after exception #7
-
-The variables in question are doubles.  The faulty location offset is somewhere in the rt_delay_sim routine, as you would expect from the output above.  This specific code does not appear to be the problem, though.  If I remove the call to the rt_delay_sim routine, I simply get a floating point exception in another location.
-
-The strange thing is that I can do a loop of floating point operations at the beginning of my real-time thread without any problem:
-
-  for (i=0; i<1001; i++)
-    {
-      f = f * 1.0 + 0.1;
-    };  
-  print_msg(INFO_MSG, "f = %d\n", (int)f);
-
-but once I get into my real application code, I get the above error after executing several floating point operations.  My 'real application code' is actually a linked list of routines that reside in other kernel modules.  I wish I could come up with a simple example that caused the same problem...  I will keep trying.
-
-As I said before, I am porting an application that works properly under RTLinux GPL, and am making some small changes to compile with Xenomai POSIX threads/timers and RTAI FIFOs.
+I am using the 2.4 x86 UP kernel, if that makes any difference.
 
 Thanks,
 
-Jeff
+-Jeff
+
+ 
 
 
