@@ -1,15 +1,13 @@
-From: Matthias Fuchs <matthias.fuchs@domain.hid>
-Subject: Re: [Xenomai-core] external hardware interupts on a PPC405
-Date: Mon, 11 Sep 2006 08:17:26 +0200
-References: <E1GMOIv-000171-QV@server-r004.hostpoint.ch>
-	<4504EA2C.4080604@domain.hid>
-In-Reply-To: <4504EA2C.4080604@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] official TSC model on SMP
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <450D3764.80601@domain.hid>
+References: <450D3764.80601@domain.hid>
+Content-Type: text/plain
+Date: Sun, 17 Sep 2006 19:15:28 +0200
+Message-Id: <1158513328.4979.45.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200609110817.27018.matthias.fuchs@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,20 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Monday 11 September 2006 06:46, Philipp Keller wrote:
-> We are using ppc6xx, but hat a timing problem with external HW, perhaps
-> this is related to that interrupt thing? We saw on the oszilloscope that
-> we have to init the rtcan with half the baudrate the external modules
-> use, then it works.
-> Philipp
-It is true that you have to pass the clock frequency divided by two to the 
-rtcan drivers. This is discussed in a separate thread (see "CAN updates & 
-questions"). 
+On Sun, 2006-09-17 at 13:54 +0200, Jan Kiszka wrote:
+> Hi,
+> 
+> reading through timer code of Xenomai I just wondered (again) what our
+> official model of TSCs on multiprocessor boxes are:
+> 
+> 1) (practically) perfectly synchronised without offset
+> 
+> 2) synchronised but with (unknown?) offset
+> 
+> 3) unsynchronised
 
-My problem is propably not related to the rtcan drivers because sending and 
-receiving a single message always works fine. 
+The current model is unsynchronized. If anything from the codebase is
+found relying on the opposite, be it partially or fully, then it's
+utterly broken in the SMP case, and I'm likely the one to blame.
+IOW, we don't currently provide any guarantee to anyone that a timestamp
+could be interpreted anywhere else than the CPU it was read from, and
+leave all the related burden to the application developer (e.g. by mean
+of managing CPU affinity constraints and the like).
 
-Matthias
+> 
+> I'm asking because I worried about timestamps taken on external events
+> like interrupts on one CPU and are then used to trigger some timed
+> operation on another. Such things may easily happen via RTDM devices
+> where we do not communicate the CPU source of event timestamps. But
+> there is also other code influenced by the TSC model, e.g. data
+> collection and evaluation for CPU load stats.
+> 
+> Jan
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
+
+
 
