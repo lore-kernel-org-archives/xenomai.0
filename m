@@ -1,15 +1,15 @@
-Message-ID: <450E6A58.7040202@domain.hid>
-Date: Mon, 18 Sep 2006 11:43:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] Odd behaviour of vxworks
+Date: Mon, 18 Sep 2006 12:57:30 +0200
+References: <eeevrh$rns$1@domain.hid> <1158512788.4979.38.camel@domain.hid>
+In-Reply-To: <1158512788.4979.38.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] official TSC model on SMP
-References: <450D3764.80601@domain.hid>	<1158513328.4979.45.camel@domain.hid>
-	<17677.34698.949600.873431@domain.hid>
-In-Reply-To: <17677.34698.949600.873431@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig37830C563512F9FB4045AF33"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200609181257.31760.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,83 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org, rpm@xenomai.org
+Cc: Niklaus.Giger@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig37830C563512F9FB4045AF33
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Am Sonntag, 17. September 2006 19:06 schrieb Philippe Gerum:
+> On Fri, 2006-09-15 at 21:44 +0200, Niklaus Giger wrote:
+> > Hi
+<..>
+>
+> Maybe the example is misleading in that respect; the patch below makes
+> the behaviour constant among all environments:
+Thanks for your explanation and the fix. 
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > On Sun, 2006-09-17 at 13:54 +0200, Jan Kiszka wrote:
->  > > Hi,
->  > >=20
->  > > reading through timer code of Xenomai I just wondered (again) what=
- our
->  > > official model of TSCs on multiprocessor boxes are:
->  > >=20
->  > > 1) (practically) perfectly synchronised without offset
->  > >=20
->  > > 2) synchronised but with (unknown?) offset
->  > >=20
->  > > 3) unsynchronised
->  >=20
->  > The current model is unsynchronized. If anything from the codebase i=
-s
->  > found relying on the opposite, be it partially or fully, then it's
->  > utterly broken in the SMP case, and I'm likely the one to blame.
->  > IOW, we don't currently provide any guarantee to anyone that a times=
-tamp
->  > could be interpreted anywhere else than the CPU it was read from, an=
-d
->  > leave all the related burden to the application developer (e.g. by m=
-ean
->  > of managing CPU affinity constraints and the like).
->=20
-> I think xntimer_set_sched assumes some continuity, since it reenqueues
-> on a different CPU a timer whose date has been set up on one cpu. If we=
+But I still have the second deviation from the behaviour under vxWorks and the 
+skin behaviour under the xenomai simulator:
+semGive returns -1 with an errno of 1441896 = S_semLib_INVALID_OPERATION.
+See the output here:
 
-> wanted strict unsynchronized tsc, we would have to :
-> - compute the difference between the current date and the timer date
-> - enqueue the timer on a migration queue
-> - send an IPI to the distant CPU
-> - on the distant CPU, iterate over the migration queue, recompute the
->   expiration dates and reenqueue the timers.
->=20
+__xeno_user_init: semMCreate 134 taskId 133
+__xeno_user_init: semTake 134 status 0 0 taskId 133
+__xeno_user_init: semGive 134 status -1 1441896 taskId 133
+consumer_task: task 136 ConsumerTask
+producer_task: task SEM_DELETE_SAFE 137 ProducerTask
 
-I bet there are a few other wrong assumptions about dates hogging around
-in our design. At least all timestamp deliveries of RTDM devices on SMP
-fall into this group.
+Do you have an explanation for this difference?
 
-It's a fairly unsatisfying situation. How common are unsynchronised
-TSCs, also on non x86 archs? I though so far that's an issue of a few
-newer AMD multicore CPUs only. I once read the Solaris x86 timer code,
-and they, e.g., demand synch'ed TSC IIRC.
-
-Can we make the unsynch'ed case somehow the exception and deal with it
-separately (via periodic re-synch based on IPI)? Would make life easier,
-though I agree that explicit CPU scheduling of tasks and IRQs are more
-appropriate to RT systems. But sometimes you cannot put the IRQ on the
-same CPU like the woken up task...
-
-Jan
-
-
---------------enig37830C563512F9FB4045AF33
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFDmpYniDOoMHTA+kRApd9AJ0dN2npYwDMW9+vD1mXeVERlwtFGgCfc1aM
-O+Ros3Ox4wKQ6Lk7N5csQOk=
-=EYEB
------END PGP SIGNATURE-----
-
---------------enig37830C563512F9FB4045AF33--
+Best regards
+-- 
+Niklaus Giger
 
