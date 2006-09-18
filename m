@@ -1,12 +1,10 @@
-From: Thomas Necker <thomas.necker@domain.hid>
-Date: Mon, 18 Sep 2006 13:28:45 +0200
+Date: Mon, 18 Sep 2006 14:13:11 +0200
+Message-Id: <J5SF9Z$7F2EF49769B98E8D95E7CDDC32F233C4@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200609181328.45621.thomas.necker@domain.hid>
-Subject: [Xenomai-core] sizeof problem in pSOS skin
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+From: "gilles\.chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai-core] Re:rare brokenness in latency output - FPU bug!
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,16 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "jan.kiszka" <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-I encountered a problem with the use of "sizeof" in the pSOS skin.
-E.g., in q_send the last parameter is "u_long msgbuf[4]" and its size is 
-passed to q_send_internal as "sizeof(msgbuf)". However, since arrays are 
-always passed by reference this sizeof call yields 4 instead of the expected 
-16. This results in only 4 bytes being sent instead of the whole message. The 
-call must be changed, e.g., to "sizeof(u_long[4])".
-The same problem exists for the following calls: q_receive, q_broadcast, 
-q_urgent.
+---------- Debut du message initial -----------
 
-Thomas
+De     : jan.kiszka@domain.hid
+A      : "xenomai-core" xenomai@xenomai.org
+Chanteperdrix" gilles.chanteperdrix@xenomai.org
+Copies : 
+Date   : Mon, 18 Sep 2006 11:30:45 +0200
+Objet  : rare brokenness in latency output - FPU bug!
+
+> Gilles, what info do you need? It's all the latest on x86 here:
+> 2.6.17.13 (.config attached), ipipe-1.4, SVN #1646, gcc4.1.0.
+
+It would be interesting if you could:
+- try reverting the last FPU changes
+- try to narrow down the issue by reducing the number of
+threads created
+by switchtest (for example, try keeping only the threads whose
+switch
+fails)
+- try dumping the FPU context before the first fp_regs_set,
+chances are that the FPU context is already clobbered before
+the first fp_regs_set; 
+when the FPU context is already clobbered, running fp_regs_set
+set the
+value of the already set registers to qnan, and fp_regs_check
+returns
+INT_MAX when the register is set to qnan. I will send tomorrow
+the 
+header I use for converting FPU contexts into human readable form.
+
+-- 
+                 Gilles Chanteperdrix=0A=0AAcc=E9dez au courrier =E9lectr=
+onique de La Poste 
+sur www.laposte.net ou sur 3615 LAPOSTENET (0,34=80 TTC /mn) 
+1 Giga de stockage gratuit =96 Antispam et antivirus int=E9gr=E9s 
+=0A
+
 
