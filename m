@@ -1,10 +1,14 @@
+Subject: Re: [Xenomai-core] 	[PATCH, RFC] Make ioremap'ed memory available
+	through	rtdm_mmap_to_user()
 From: Stelian Pop <stelian.pop@domain.hid>
+In-Reply-To: <450AD766.3000307@domain.hid>
+References: <1158337583.13530.20.camel@domain.hid>
+	<450AD766.3000307@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
-Date: Mon, 18 Sep 2006 22:57:32 +0200
-Message-Id: <1158613052.31164.2.camel@domain.hid>
+Date: Mon, 18 Sep 2006 23:13:07 +0200
+Message-Id: <1158613987.31164.9.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] [PATCH] pthread_attr_getinheritsched() doc fix
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,42 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Le vendredi 15 septembre 2006 =E0 18:40 +0200, Jan Kiszka a =E9crit :
 
-The attached patchlet fixes the documentation of
-pthread_attr_getinheritsched() (PTHREAD_INHERIT_SCHED and
-PTHREAD_EXPLICIT_SCHED were reversed).
+> In case no one comes up with an easy, portable way to detect remapped
+> memory as well: What about some flags the caller of rtdm_mmap_to_user
+> has to pass, telling what kind of memory it is? Would simplify the RTDM
+> part, and the user normally knows quite well where the memory came from=
+.
+> And I love to break APIs. :)
+
+This would be perfect. We could even reuse the prot field for that
+(PROT_READ | PROT_WRITE | PROT_VMALLOC | PROT_IOREMAP). Not the cleanest
+solution, but it won't break the API this way.
+
+Or maybe we should lower the API level a little bit, and let the user
+specify the physical address of the mapping instead of the virtual
+one....
 
 Stelian.
-
-Index: ksrc/skins/posix/thread_attr.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/posix/thread_attr.c	(r=E9vision 1648)
-+++ ksrc/skins/posix/thread_attr.c	(copie de travail)
-@@ -305,10 +305,10 @@
-  * This service returns at the address @a inheritsched the value of the =
-@a
-  * inheritsched attribute in the attribute object @a attr.
-  *
-- * Threads created with this attribute set to PTHREAD_EXPLICIT_SCHED wil=
-l use
-+ * Threads created with this attribute set to PTHREAD_INHERIT_SCHED will=
- use
-  * the same scheduling policy and priority as the thread calling
-  * pthread_create(). Threads created with this attribute set to
-- * PTHREAD_INHERIT_SCHED will use the value of the @a schedpolicy attrib=
-ute as
-+ * PTHREAD_EXPLICIT_SCHED will use the value of the @a schedpolicy attri=
-bute as
-  * scheduling policy, and the value of the @a schedparam  attribute as s=
-cheduling
-  * priority.
-  *
-
 --=20
 Stelian Pop <stelian.pop@domain.hid>
 
