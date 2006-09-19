@@ -1,12 +1,11 @@
-Subject: Re: [Xenomai-core] rare brokenness in latency output - FPU bug!
+Subject: Re: [Xenomai-core] official TSC model on SMP
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4510034F.70008@domain.hid>
-References: <450E6745.6050903@domain.hid> <450F061A.6090507@domain.hid>
-	<450F084A.1070303@domain.hid> <450F0ECA.2050100@domain.hid>
-	<4510034F.70008@domain.hid>
+In-Reply-To: <17677.34698.949600.873431@domain.hid>
+References: <450D3764.80601@domain.hid> <1158513328.4979.45.camel@domain.hid>
+	<17677.34698.949600.873431@domain.hid>
 Content-Type: text/plain
-Date: Tue, 19 Sep 2006 17:52:14 +0200
-Message-Id: <1158681135.4972.63.camel@domain.hid>
+Date: Tue, 19 Sep 2006 23:46:50 +0200
+Message-Id: <1158702410.4972.131.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -19,45 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2006-09-19 at 09:48 -0500, Jeff Webb wrote:
-> Jeff Webb wrote:
-> > I don't have a plain xenomai-2.2.2 kernel handy, but I do have a patched 
-> > version.  I do not have any problems with switchtest for xenomai-2.2.2 
-> > with the following patches:
-> > 
-> >  https://mail.gna.org/public/xenomai-help/2006-09/msg00084.html
-> >  https://mail.gna.org/public/xenomai-help/2006-09/msg00096.html
-> > 
-> > These patches are to nucleus pipe.c and pipe.h / rtai fifo.c and fifo.h.
-> > 
-> > I am running an Athlon64 X2 in with 32-bit Fedora Core 5.
+On Sun, 2006-09-17 at 19:36 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>  > On Sun, 2006-09-17 at 13:54 +0200, Jan Kiszka wrote:
+>  > > Hi,
+>  > > 
+>  > > reading through timer code of Xenomai I just wondered (again) what our
+>  > > official model of TSCs on multiprocessor boxes are:
+>  > > 
+>  > > 1) (practically) perfectly synchronised without offset
+>  > > 
+>  > > 2) synchronised but with (unknown?) offset
+>  > > 
+>  > > 3) unsynchronised
+>  > 
+>  > The current model is unsynchronized. If anything from the codebase is
+>  > found relying on the opposite, be it partially or fully, then it's
+>  > utterly broken in the SMP case, and I'm likely the one to blame.
+>  > IOW, we don't currently provide any guarantee to anyone that a timestamp
+>  > could be interpreted anywhere else than the CPU it was read from, and
+>  > leave all the related burden to the application developer (e.g. by mean
+>  > of managing CPU affinity constraints and the like).
 > 
-> I have done a couple more tests using xenomai from subversion.  Here is a summary of all the results I have so far:
+> I think xntimer_set_sched assumes some continuity, since it reenqueues
+> on a different CPU a timer whose date has been set up on one cpu. If we
+> wanted strict unsynchronized tsc, we would have to :
+> - compute the difference between the current date and the timer date
+> - enqueue the timer on a migration queue
+> - send an IPI to the distant CPU
+> - on the distant CPU, iterate over the migration queue, recompute the
+>   expiration dates and reenqueue the timers.
 > 
-> xenomai-2.2.2 (patched as described above): switchtest runs
-> svn/xenomai/trunk (r1586): switchtest runs
-> svn/xenomai/trunk (r1589): switchtest runs
-> xenomai-2.2.3 : switchtest fails
-> 
-> This is on my Fedora Core 5 (32-bit x86), linux-2.6.17.13 SMP, ipipe-1.3 (except 1.4 for 2.2.3), gcc-4.1.1, Athlon64 X2.
-> 
-> Hopefully this will help,
 
-It does, thanks. This confirms Jan's findings that something went wrong
-from #1595. The issue is spotted now, somewhere in the FPU save/restore
-code in the x86 support layer.
+Looking at the code, xntimer_set_sched is used in the following
+contexts:
 
-> 
-> -Jeff
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+o setting a CPU affinity for timers just before they get started. They
+might be active already but in such a case, we could simply disarm them
+before migration since they are going to be started anew right after,
+which would solve the issue. AFAIC, this is the most common case.
+
+o changing a CPU affinity for a possibly running (periodic internal)
+timer, without restarting it (i.e. xnpod_migrate_thread). This happens
+once.
+
+So, basically, the issue is about allowing threads that run a periodic
+timer to migrate on the fly, without breaking their ongoing
+timeline, ... or not. (And all of the above only applies to the oneshot
+system timing, since the periodic jiffy counter is global by nature, and
+would never suffer any discontinuity).
+
 -- 
 Philippe.
 
