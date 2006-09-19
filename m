@@ -1,12 +1,13 @@
-Message-ID: <45085027.1000204@domain.hid>
-Date: Wed, 13 Sep 2006 14:38:31 -0400
-From: Randy Smith <rsmith@domain.hid>
-MIME-Version: 1.0
-References: <4506F853.6060502@domain.hid>
-In-Reply-To: <4506F853.6060502@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] How to do tracing with Xenomai on a 2.4 kernel?
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45101503.5020600@domain.hid>
+References: <450FEF8D.7070002@domain.hid>  <45101503.5020600@domain.hid>
+Content-Type: text/plain
+Date: Tue, 19 Sep 2006 18:52:15 +0200
+Message-Id: <1158684735.4972.90.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Re: Proper module_cleanup procedure
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: jean-olivier.villemure@domain.hid, xenomai@xenomai.org
 
-Anyone?...Is this mike on?
+On Tue, 2006-09-19 at 18:04 +0200, Jan Kiszka wrote:
 
-Randy Smith wrote:
-> Hello,
->
-> I am running the 2.4 kernel with Xenomai-2.1.0 native skin and I have 
-> a kernel module that creates 2 shared memory heaps and then creates a 
-> a periodic realtime task to do some interesting things.  This periodic 
-> realtime task communicates with a linux user mode task through the 
-> shared memory that gains access to it through 
-> rt_heap_bind/rt_heap_alloc calls.  Things go along swimmingly.
->
-> I now want to be able to do an "rmmod" on the module and in its 
-> cleanup routine, right now I just have rt_heap_delete calls for the 
-> two shared memory heaps.  This completes successfully, but if I then 
-> try to install another version (debug for instance) of the module with 
-> "insmod", I get a memory error.
-> Is this is due to the fact that I didn't suspend the periodic realtime 
-> task and then delete it before deleting the heaps?  Is this 
-> necessary?  Are there any use counts or other signs that I could check 
-> to ensure that everyone was finished with the heaps so that I can 
-> delete them?
->
-> Is there any consequence to the user mode task due to jerking the rug 
-> out from under it?
->
-> Thanks,
->
-> Randy Smith
-> Software Engineer
-> ImageMap, Inc.
->
+> If you happened to have read LKML recently, a lot of dogfights took
+> place if and how tracing should be included in Linux. LTTng or a
+
+A dispute involving more than 300 posts, half of which being severe name
+calling sessions, the other half being apocalyptic vociferations, is no
+more a dogfight, but rather something of the Battle of Helm's Deep (or
+of the Hornburg, for the nitpickers among us), with lots of frightening
+Orcs and Uruk-hai sitting behind keyboards. LKML is being scary for
+Hobbits these days...
+
+-- 
+Philippe (Happy troll).
+
+
 
