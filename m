@@ -1,13 +1,12 @@
-Subject: Re: [Xenomai-help] How to do tracing with Xenomai on a 2.4 kernel?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45101503.5020600@domain.hid>
-References: <450FEF8D.7070002@domain.hid>  <45101503.5020600@domain.hid>
-Content-Type: text/plain
-Date: Tue, 19 Sep 2006 18:52:15 +0200
-Message-Id: <1158684735.4972.90.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <451068AD.6080000@domain.hid>
+Date: Tue, 19 Sep 2006 17:01:17 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Xenomai v2.2.3
+References: <1158564530.5020.5.camel@domain.hid> <450F1686.3010304@domain.hid>
+In-Reply-To: <450F1686.3010304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,23 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: jean-olivier.villemure@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Tue, 2006-09-19 at 18:04 +0200, Jan Kiszka wrote:
+Jeff Webb wrote:
+> Philippe Gerum wrote:
+>> Here is the third maintenance release for the v2.2.x branch.
+>> ...
+> 
+> This release works fine on my 2.6 kernel x86 machine, with the exception 
+> of the FPU problems noted elsewhere.
+> 
+> I have the following problems with my 2.4 kernel x86 machine:
+>  * The latency and switchtest test programs yield segmentation faults.
+>  * My own user-space test programs seg fault.
+> 
+> Things that work:
+>  * The kernel boots and runs fine.
+>  * xeno_native, _posix, _rtai all insert and remove without problems.
+>  * Some simple kernel module test programs work fine.
+> 
+> I am using the same config as I was for 2.2.2 (which worked fine), but I 
+> am running a slightly newer kernel version (2.4.33.3 as opposed to 2.4.32).
 
-> If you happened to have read LKML recently, a lot of dogfights took
-> place if and how tracing should be included in Linux. LTTng or a
+I was able to build a working xenomai-2.2.3 by using linux-2.4.32 and adeos-ipipe-2.4.32-i386-1.2-07.patch.  The latency and switchtest programs seem to work now.  My problematic build used linux-2.4.33.3 and the adeos-ipipe-2.4.33-i386-1.3-00.patch.  I used the same kernel config for both builds.  
 
-A dispute involving more than 300 posts, half of which being severe name
-calling sessions, the other half being apocalyptic vociferations, is no
-more a dogfight, but rather something of the Battle of Helm's Deep (or
-of the Hornburg, for the nitpickers among us), with lots of frightening
-Orcs and Uruk-hai sitting behind keyboards. LKML is being scary for
-Hobbits these days...
+So, does this mean the problem is with the ipipe patch?
 
--- 
-Philippe (Happy troll).
+This machine is an AMD Athlon(tm) XP 3200+, gcc version 3.3.2, Fedora Core 1.
 
-
+-Jeff
+ 
 
