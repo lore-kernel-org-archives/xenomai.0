@@ -1,16 +1,14 @@
-From: Matthias Fuchs <matthias.fuchs@domain.hid>
-Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
-Date: Mon, 11 Sep 2006 14:02:12 +0200
-References: <4503EB88.2040309@domain.hid>
-	<200609111058.44417.matthias.fuchs@domain.hid>
-	<1157970027.4934.6.camel@domain.hid>
-In-Reply-To: <1157970027.4934.6.camel@domain.hid>
+Message-ID: <4511784C.3060807@domain.hid>
+Date: Wed, 20 Sep 2006 12:20:12 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
+Subject: Re: [Xenomai-core] rare brokenness in latency output - FPU bug!
+References: <450E6745.6050903@domain.hid> <450F061A.6090507@domain.hid>	
+	<450F084A.1070303@domain.hid> <450F0ECA.2050100@domain.hid>	
+	<4510034F.70008@domain.hid> <1158681135.4972.63.camel@domain.hid>
+In-Reply-To: <1158681135.4972.63.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200609111402.12493.matthias.fuchs@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,29 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Hello Philippe,
-
-that helps. I will do some further testing.
-
-Matthias
-
-
-On Monday 11 September 2006 12:20, Philippe Gerum wrote:
-> It's likely an Adeos issue. Could you try this patch? TIA,
+Philippe Gerum wrote:
+> On Tue, 2006-09-19 at 09:48 -0500, Jeff Webb wrote:
+>> Jeff Webb wrote:
+>>> I don't have a plain xenomai-2.2.2 kernel handy, but I do have a patched 
+>>> version.  I do not have any problems with switchtest for xenomai-2.2.2 
+>>> with the following patches:
+>>>
+>>>  https://mail.gna.org/public/xenomai-help/2006-09/msg00084.html
+>>>  https://mail.gna.org/public/xenomai-help/2006-09/msg00096.html
+>>>
+>>> These patches are to nucleus pipe.c and pipe.h / rtai fifo.c and fifo.h.
+>>>
+>>> I am running an Athlon64 X2 in with 32-bit Fedora Core 5.
+>> I have done a couple more tests using xenomai from subversion.  Here is a summary of all the results I have so far:
+>>
+>> xenomai-2.2.2 (patched as described above): switchtest runs
+>> svn/xenomai/trunk (r1586): switchtest runs
+>> svn/xenomai/trunk (r1589): switchtest runs
+>> xenomai-2.2.3 : switchtest fails
+>>
+>> This is on my Fedora Core 5 (32-bit x86), linux-2.6.17.13 SMP, ipipe-1.3 (except 1.4 for 2.2.3), gcc-4.1.1, Athlon64 X2.
+>>
+>> Hopefully this will help,
 > 
-> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
-> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
-> @@ -72,7 +72,8 @@
->  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
->  		ACK_UIC##n##_PARENT					\
->  	}								\
-> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
-> +	if (!ipipe_root_domain_p ||					\
-> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
->  		ppc_cached_irq_mask[n] |= mask;				\
->  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
->  	}								\
+> It does, thanks. This confirms Jan's findings that something went wrong
+> from #1595. The issue is spotted now, somewhere in the FPU save/restore
+> code in the x86 support layer.
+
+I just rebuilt 2.2.3 with the latest FPU fix patch posted by Philippe:
+
+  https://mail.gna.org/public/xenomai-help/2006-09/msg00157.html
+
+This appears to fix the FPU switchtest bug on my Athlon64 X2 (2.6 kernel) machine.  Great job!
+
+Thanks for the hard work,
+
+Jeff
 
