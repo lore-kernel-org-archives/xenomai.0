@@ -1,12 +1,12 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Wed, 20 Sep 2006 07:06:11 +0200
+Date: Wed, 20 Sep 2006 08:06:44 +0200
 MIME-Version: 1.0
 Content-Type: text/plain;
   charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200609200706.12834.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] Use adeos 1.3 or 1.4 for the buildbot?
+Message-Id: <200609200806.47379.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] FPU-Problems on a system without FPU?
 Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,21 +21,44 @@ To: xenomai-core <xenomai@xenomai.org>
 
 Hi
 
-Since a few days we have for i386 2.6.17 and powerpc 2.6.14 kernels two 
-versions of the adeos-ipipe patch in the trunk.
+I studied a little bit my buildbot reports on a PPC405 (without FPU) regarding 
+the FPU problem. Grepping through the saved reports on the server enabled me 
+to pinpoint the changes quickly. I found the following situation:
 
-My buildbot scripts assumed that I find just one of the for a given kernel 
-version. Was this a wrong assumption? For the moment I fixed it to use 1.4. 
-Is this okay?
+Last good check with the quick build was build 58 1604
+http://ngiger.dyndns.org/buildbot/hcu3_q/builds/58/step-xenotest/0
 
-What was the reason to have to versions at the same time in the repo? 
-Shouldn't at least the reason to choose one of them be documented in the 
-README?
+First bad check with the quick build was build 59 with revision 1605 
+http://ngiger.dyndns.org/buildbot/hcu3_q/builds/59/step-xenotest/0
 
-Another question. How should buildbot handle the case when it detects a newer 
-version of the patch? Clean the whole build directory? Or does 
-scripts/prepare_kernel.sh handle this case? This question is only relevant 
-for the quick build, as for a full build I always clean the build directory.
+But the full build 13 with revision 1604 already had the failure!
+http://ngiger.dyndns.org/buildbot/hcu3_f/builds/13/step-xenotest/0
+The full build 12 had revision 1599 and was good.
+http://ngiger.dyndns.org/buildbot/hcu3_f/builds/12/step-xenotest/0
+
+May be this helps to pinpoint the FPU problem a bit.
+
+Question: Is reporting 1 != 2 always the expected output of the FPU check?
+
+A bad check looks like:
+== Testing FPU cXenomai: suspending kernel thread c1ba8ea0 ('rtk5/0') at 
+0xc30303ec after exception #1792
+heck routines...
+r0: 1 != 2
+<..>
+r31: 1 != 2
+== FPU check routines: OK.
+== Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 rtk_fp_ufpp-5 
+rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 rtus-11 rtus-12 
+rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 rtuo_ufpp-18 
+rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 rtuo_ufpp_ufps-22
+RTT|  00:01:59
+RTH|ctx switches|-------total
+RTD|           5|           5
+
+
+Unfortunately I still do not have a x86-box at home where I could run buildbot 
+including xeno-test.
 
 Best regards
 
