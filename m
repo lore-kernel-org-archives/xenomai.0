@@ -1,10 +1,12 @@
-Subject: Re: [Xenomai-core] Use adeos 1.3 or 1.4 for the buildbot?
+Subject: Re: [Xenomai-core] official TSC model on SMP
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200609200706.12834.niklaus.giger@domain.hid>
-References: <200609200706.12834.niklaus.giger@domain.hid>
+In-Reply-To: <1158702410.4972.131.camel@domain.hid>
+References: <450D3764.80601@domain.hid> <1158513328.4979.45.camel@domain.hid>
+	<17677.34698.949600.873431@domain.hid>
+	<1158702410.4972.131.camel@domain.hid>
 Content-Type: text/plain
-Date: Wed, 20 Sep 2006 09:43:47 +0200
-Message-Id: <1158738227.5544.18.camel@domain.hid>
+Date: Wed, 20 Sep 2006 10:17:47 +0200
+Message-Id: <1158740267.5544.31.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,48 +19,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2006-09-20 at 07:06 +0200, Niklaus Giger wrote:
-> Hi
+On Tue, 2006-09-19 at 23:46 +0200, Philippe Gerum wrote:
+> On Sun, 2006-09-17 at 19:36 +0200, Gilles Chanteperdrix wrote:
+> > Philippe Gerum wrote:
+> >  > On Sun, 2006-09-17 at 13:54 +0200, Jan Kiszka wrote:
+> >  > > Hi,
+> >  > > 
+> >  > > reading through timer code of Xenomai I just wondered (again) what our
+> >  > > official model of TSCs on multiprocessor boxes are:
+> >  > > 
+> >  > > 1) (practically) perfectly synchronised without offset
+> >  > > 
+> >  > > 2) synchronised but with (unknown?) offset
+> >  > > 
+> >  > > 3) unsynchronised
+> >  > 
+> >  > The current model is unsynchronized. If anything from the codebase is
+> >  > found relying on the opposite, be it partially or fully, then it's
+> >  > utterly broken in the SMP case, and I'm likely the one to blame.
+> >  > IOW, we don't currently provide any guarantee to anyone that a timestamp
+> >  > could be interpreted anywhere else than the CPU it was read from, and
+> >  > leave all the related burden to the application developer (e.g. by mean
+> >  > of managing CPU affinity constraints and the like).
+> > 
+> > I think xntimer_set_sched assumes some continuity, since it reenqueues
+> > on a different CPU a timer whose date has been set up on one cpu. If we
+> > wanted strict unsynchronized tsc, we would have to :
+> > - compute the difference between the current date and the timer date
+> > - enqueue the timer on a migration queue
+> > - send an IPI to the distant CPU
+> > - on the distant CPU, iterate over the migration queue, recompute the
+> >   expiration dates and reenqueue the timers.
+> > 
 > 
-> Since a few days we have for i386 2.6.17 and powerpc 2.6.14 kernels two 
-> versions of the adeos-ipipe patch in the trunk.
+> Looking at the code, xntimer_set_sched is used in the following
+> contexts:
 > 
-> My buildbot scripts assumed that I find just one of the for a given kernel 
-> version. Was this a wrong assumption? For the moment I fixed it to use 1.4. 
-> Is this okay?
+> o setting a CPU affinity for timers just before they get started. They
+> might be active already but in such a case, we could simply disarm them
+> before migration since they are going to be started anew right after,
+> which would solve the issue. AFAIC, this is the most common case.
 > 
-What was the reason to have to versions at the same time in the repo? 
-> Shouldn't at least the reason to choose one of them be documented in the 
-> README?
+> o changing a CPU affinity for a possibly running (periodic internal)
+> timer, without restarting it (i.e. xnpod_migrate_thread). This happens
+> once.
+> 
+> So, basically, the issue is about allowing threads that run a periodic
+> timer to migrate on the fly, without breaking their ongoing
+> timeline, ... or not. (And all of the above only applies to the oneshot
+> system timing, since the periodic jiffy counter is global by nature, and
+> would never suffer any discontinuity).
 > 
 
-Shipping two patches for the same kernel/arch combo can happen,
-particularly when the most recent one introduces significant changes.
-Adeos patches are being validated as throroughly as possible on
-different platforms before they are released, but still, rainy days
-happen. So this is basically a safety measure, allowing users to
-downgrade easily, in the event of breakage. We could just point them at
-the Adeos download area for the same purpose, but it seems simpler to
-make a fallback option immediately available at hand within the Xenomai
-distro. The older patch normally disappears from the next release.
+To elaborate a bit more on this, and considering that only stopped
+timers are migrated, we would indeed need a timer migration queue on the
+remote CPU, but we might assume that the date field of the linked timers
+would convey the original date, and not the TSC converted one or delay
+from such, and we could safely assume that such timers would not be
+indexed by any data structures that usually hold the outstanding timers.
+Simply reusing the sched IPI for kicking the remote CPU to fire up the
+migrated timers would even be an option.
 
-> Another question. How should buildbot handle the case when it detects a newer 
-> version of the patch? Clean the whole build directory? Or does 
-> scripts/prepare_kernel.sh handle this case? This question is only relevant 
-> for the quick build, as for a full build I always clean the build directory.
-> 
-
-It would be nice if buildbot always used the most recent patch, to
-participate in further validation. prepare-kernel.sh always suggests the
-most recent patch when the kernel tree needs to be patched. But if the
-tree has been previously patched, then it skips this step, regardless of
-the Adeos version found, so I guess that a full cleanup is being needed.
-
-> Best regards
-> 
 -- 
 Philippe.
 
