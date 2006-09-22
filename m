@@ -1,11 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6DE6D.B8B39508"
-Date: Fri, 22 Sep 2006 10:37:05 -0700
-Message-ID: <F75B1CC921BD8E43B7D0484C9AB4C490450F9F@SJEX2003CL1.gmi.domain>
-From: "David Betz" <david.betz@domain.hid>
-Subject: [Xenomai-help] Running more than one "skin" at the same time?
+Subject: Re: [Xenomai-help] Running more than one "skin" at the same time?
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <F75B1CC921BD8E43B7D0484C9AB4C490450F9F@SJEX2003CL1.gmi.domain>
+References: <F75B1CC921BD8E43B7D0484C9AB4C490450F9F@SJEX2003CL1.gmi.domain>
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 22 Sep 2006 20:33:30 +0200
+Message-Id: <1158950010.5175.103.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,130 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: David Betz <david.betz@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+On Fri, 2006-09-22 at 10:37 -0700, David Betz wrote:=20
+> Is it possible to run more than one skin on top of the nucleus at the
+> same time? For instance, can I run the pSOS skin at the same time as
+> the Xenomai Native API?
 
-------_=_NextPart_001_01C6DE6D.B8B39508
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In short, not yet. There is a timing mode compatibility issue between
+the native/POSIX skins and the pSOS module. This particular issue will
+be fixed somewhere in the 2.3.x series. You might still mix both now
+with a bit of hacking, but this would require that timeout values passed
+to pSOS calls be rescaled as counts of nanoseconds instead of ticks,
+which might not be an option for you.
 
-Is it possible to run more than one skin on top of the nucleus at the
-same time? For instance, can I run the pSOS skin at the same time as the
-Xenomai Native API? If so, would all of the calls from a single user
-mode process have to be to one of the skins or could calls be mixed? In
-other words, could a single thread in a user mode process at one point
-block on a pSOS semaphore and later block on a Native API semaphore?
-What are the rules for mixing and matching API calls?
+> If so, would all of the calls from a single user mode process have to
+> be to one of the skins or could calls be mixed? In other words, could
+> a single thread in a user mode process at one point block on a pSOS
+> semaphore and later block on a Native API semaphore? What are the
+> rules for mixing and matching API calls?
+>=20
 
-=20
+The rule of thumb is that blocking syscalls would require to be invoked
+from threads created by the same skin, e.g. a pSOS sema4 would only
+allow pSOS tasks to pend on it, but would allow any kind of task to post
+it. The same goes for all calls that directly affect particular skin
+properties (e.g. sending signals through ev_send() must target a pSOS
+task). But for instance, a native task would be allowed to suspend or
+resume a pSOS one, since the only thing that needs to be known at that
+point is the target task identifier, and we basically don't care of the
+caller's nature.
 
-The problem that I'm trying to solve is that I want to build my software
-on top of the Xenomai Native API but I may have a customer who wants to
-port their pSOS code onto the same platform. Is there a way to make that
-work? They will sometimes need to call functions in my firmware so will
-indirectly invoke Native API calls from their pSOS-based code.
+> =20
+>=20
+> The problem that I=E2=80=99m trying to solve is that I want to build my
+> software on top of the Xenomai Native API but I may have a customer
+> who wants to port their pSOS code onto the same platform. Is there a
+> way to make that work? They will sometimes need to call functions in
+> my firmware so will indirectly invoke Native API calls from their
+> pSOS-based code.
+>=20
+>=20
 
-=20
+A possible approach would be to make your native-based firmware appear
+as a set of server task(s) to the pSOS side. Those native tasks would
+have to wait for requests from the pSOS side sent using a native IPC
+(that doesn't block the caller, e.g. rt_queue_send on the pSOS side,
+rt_queue_receive on the native one, but NOT rt_task_send from the pSOS
+side, which waits for a reply thus always blocks the caller).
 
-Thanks,
+> =20
+>=20
+> Thanks,
+>=20
+> David Betz
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
+Philippe.
 
-David Betz
 
-
-------_=_NextPart_001_01C6DE6D.B8B39508
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-
-<head>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{font-family:Arial;
-	color:windowtext;}
-@page Section1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.25in 1.0in 1.25in;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DEN-US link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Is it possible to run more than one skin on top of =
-the
-nucleus at the same time? For instance, can I run the pSOS skin at the =
-same
-time as the Xenomai Native API? If so, would all of the calls from a =
-single
-user mode process have to be to one of the skins or could calls be =
-mixed? In
-other words, could a single thread in a user mode process at one point =
-block on
-a pSOS semaphore and later block on a Native API semaphore? What are the =
-rules
-for mixing and matching API calls?</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>The problem that I&#8217;m trying to solve is that I =
-want to
-build my software on top of the Xenomai Native API but I may have a =
-customer
-who wants to port their pSOS code onto the same platform. Is there a way =
-to
-make that work? They will sometimes need to call functions in my =
-firmware so
-will indirectly invoke Native API calls from their pSOS-based =
-code.</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>&nbsp;</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>Thanks,</span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
-style=3D'font-size:10.0pt;
-font-family:Arial'>David Betz</span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C6DE6D.B8B39508--
 
