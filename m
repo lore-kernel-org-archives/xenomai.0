@@ -1,17 +1,14 @@
-Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45055475.2050705@domain.hid>
-References: <4503EB88.2040309@domain.hid>
-	<200609111058.44417.matthias.fuchs@domain.hid>
-	<1157970027.4934.6.camel@domain.hid>
-	<200609111402.12493.matthias.fuchs@domain.hid>
-	<45055475.2050705@domain.hid>
-Content-Type: text/plain
-Date: Mon, 11 Sep 2006 15:09:05 +0200
-Message-Id: <1157980145.4934.69.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4516F39A.7040603@domain.hid>
+Date: Sun, 24 Sep 2006 23:07:38 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
+References: <200609232013.27649.niklaus.giger@domain.hid>
+	<45159F4F.3010805@domain.hid>
+	<200609242247.57024.niklaus.giger@domain.hid>
+In-Reply-To: <200609242247.57024.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,58 +18,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: niklaus.giger@domain.hid
 Cc: xenomai@xenomai.org
 
-On Mon, 2006-09-11 at 14:20 +0200, Wolfgang Grandegger wrote:
-> Matthias Fuchs wrote:
-> > Hello Philippe,
-> > 
-> > that helps. I will do some further testing.
-> > 
-> > Matthias
-> > 
-> > 
-> > On Monday 11 September 2006 12:20, Philippe Gerum wrote:
-> >> It's likely an Adeos issue. Could you try this patch? TIA,
-> >>
-> >> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
-> >> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
-> >> @@ -72,7 +72,8 @@
-> >>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
-> >>  		ACK_UIC##n##_PARENT					\
-> >>  	}								\
-> >> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
-> >> +	if (!ipipe_root_domain_p ||					\
-> >> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
-> >>  		ppc_cached_irq_mask[n] |= mask;				\
-> >>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
-> >>  	}								\
-> > 
+Niklaus Giger wrote:
+> Am Samstag, 23. September 2006 22:55 schrieb Wolfgang Grandegger:
+>> Hi Niklaus,
+>>
+>> Niklaus Giger wrote:
+> <..>
+>>          if (flags & IPIPE_RESET_TIMER)
+>>                  ticks = tb_ticks_per_jiffy;
+>>          else {
+>>                  ticks = ns * tb_ticks_per_jiffy / (1000000000 / HZ);
+>>   		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>>                  if (ticks > tb_ticks_per_jiffy)
+>>                          return -EINVAL;
+> <..>
+>> Does replacing the calculation of ticks with
+>>
+>>          ticks = ns * (tb_ticks_per_jiffy / 10000) / (100000 / HZ);
+>>
+>> help. A proper calculation might use mulhwu or rthal_imuldiv.
+> Yes. I does. There are two occurrences fixed with the attached patch (+ one 
+> small ifdef to eliminate a compiler warning in the PPC40x case).
+> Timing is okay as tested with a small vxworks test program.
 > 
-> Philippe, could you please explain the problem in more detail? And what 
-> are the consequences for other PowerPC ARCs and PICs, also for Linux 2.4?
-
-The issue lies in the fact that PICs *_end() routines may be called over
-the Xenomai domain, and actually are, most of the time, since
-xnintr_irq_handler() -which invokes xnarch_end_irq()- is always called
-from the the Xenomai stage in the Adeos pipeline.
-
-In such a case, we must not check for the Linux-defined IRQ bits (e.g.
-IRQ_INPROGRESS), and always send the eoi, since those bits are not
-relevant to the Xenomai context. The patch above ensures this.
-
-And yes, the 2.4 patch has the very same problem, which should be fixed
-the same way for all supported ppc platforms in the various PIC
-management code. Oops.
-
+> Could someone please apply it?
 > 
-> Thanks.
+> Thanks for your cooperation. 
 > 
-> Wolfgang.
+> Best regards
 > 
--- 
-Philippe.
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> Index: ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-1.4-00.patch
+> ===================================================================
+> --- ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-1.4-00.patch	(Revision 1650)
+> +++ ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-1.4-00.patch	(Arbeitskopie)
+> @@ -3595,7 +3595,7 @@
+>  +	if (flags & IPIPE_RESET_TIMER)
+>  +		ticks = tb_ticks_per_jiffy;
+>  +	else {
+> -+		ticks = ns * tb_ticks_per_jiffy / (1000000000 / HZ);
+> ++		ticks = ns * (tb_ticks_per_jiffy / 10000) / (100000 / HZ);
+>  +
+>  +		if (ticks > tb_ticks_per_jiffy)
+>  +			return -EINVAL;
+> Index: ksrc/arch/powerpc/hal.c
+> ===================================================================
+> --- ksrc/arch/powerpc/hal.c	(Revision 1650)
+> +++ ksrc/arch/powerpc/hal.c	(Arbeitskopie)
+> @@ -81,7 +81,9 @@
+>   */
+>  static void rthal_set_local_cpu_timer(void)
+>  {
+> +#ifndef CONFIG_40x
+>      long ticks;
+> +#endif
+>      rthal_declare_cpuid;
+>  
+>      rthal_load_cpuid();
+> @@ -110,7 +112,7 @@
+>      if (ns == 0)
+>          ticks = tb_ticks_per_jiffy;
+>      else {
+> -        ticks = ns * tb_ticks_per_jiffy / (1000000000 / HZ);
+> +	ticks = ns * (tb_ticks_per_jiffy / 10000) / (100000 / HZ);
+>  
+>          if (ticks > tb_ticks_per_jiffy) {
+>              DBG("rthal_set_cpu_timers_unsafe: -EINVAL (%lu)\n", ticks);
 
+My suggested fix was just to locate the source of the problem. As 
+Philippe suggested, we should use mulhwu (or mulhwu_scale_factor). Have 
+a look to arch/ppc/kernel/time.c for further information.
 
+Wolfgang.
 
