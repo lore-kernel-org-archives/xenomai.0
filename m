@@ -1,15 +1,11 @@
-Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200609252229.56854.niklaus.giger@domain.hid>
-References: <200609232013.27649.niklaus.giger@domain.hid>
-	<4516F39A.7040603@domain.hid> <1159199854.4970.19.camel@domain.hid>
-	<200609252229.56854.niklaus.giger@domain.hid>
-Content-Type: text/plain
-Date: Mon, 25 Sep 2006 22:59:47 +0200
-Message-Id: <1159217987.4981.10.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Mon, 25 Sep 2006 23:10:03 +0200
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_rWEGF6Na8zbNmb0"
+Message-Id: <200609252310.03954.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] vxworks returns -1 for semGive
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,75 +15,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2006-09-25 at 22:29 +0200, Niklaus Giger wrote:
-> Am Montag, 25. September 2006 17:57 schrieb Philippe Gerum:
-> > On Sun, 2006-09-24 at 23:07 +0200, Wolfgang Grandegger wrote:
-> > > Niklaus Giger wrote:
-> <..>
-> > Ok, we can go for the lazy fix here, since this code is poised to
-> > disappear anyway. I've merged a variant of the above we already use for
-> > the ARM port, which scales down the period to microseconds instead of
-> > losing precision on the count of timebase ticks per jiffy.
-> >
-> > - ticks = ns * tb_ticks_per_jiffy / (1000000000 / HZ);
-> > + ticks = (ns / 1000) * tb_ticks_per_jiffy / (1000000 / HZ);
-> Thanks for finding this solution. I tried to understand mulhwu and 
-> mulhwu_scale_factor but couldn't figure out a correct solution in a short 
-> time.
-> 
-> The buildbot cannot presently power on and off my PPC405 target board, as the 
-> my power outlet switching device is broken and has been sent back for a 
-> remplacement.
-> 
-> I did however run some tests manually and have the following questions about 
-> the output:
-> Why do I get negative values for latenciy values?
+--Boundary-00=_rWEGF6Na8zbNmb0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Because the timer shot anticipation in /proc/xenomai/latency is too
-large for the target, which in fact has a lower intrinsic latency than
-expected. The default calibration values are obtained from
-include/asm-*/calibration.h.
+Hi
 
-> Is the output of lines like "Xenomai: Switching display-3238 to secondary mode 
-> after exception #1025 from user-space at 0x100033c4 (pid 3240)" harmless or 
-> the result of a activated CONFIG_XENO_OPT_DEBUG<..> option?
-> 
+I modified satch.c (see attached patch) to get a testcase for a wrong=20
+behaviour of the vxWorks skin. A semGive returns -1 if it is not preceded b=
+y=20
+a errnoSet(0).
 
-Oops. It's bad news. A memory access error occured while running the
-test. Which Xenomai/Adeos combo are you currently running on the 4xx?
+Output is:
+=2D- /usr/xenomai/bin $ /bin/satch
+NO TASK WAITING
+Xenomai: Switching RootTask to secondary mode after exception #1025 from=20
+user-space at 0xfe5cff8 (pid 3715)
 
-> Mon Sep 25 20:20:33 UTC 2006
-> running: ./run -- -T 5 -t2 # latency
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> Xenomai: Switching display-3238 to secondary mode after exception #1025 from 
-> user-space at 0x100033c4 (pid 3240)
-> == Sampling period: 100 us
-> == Test mode: in-kernel timer handler
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (in-kernel timer handler, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> RTD|      -5.108|      -4.754|      -0.905|       0|      -5.108|      -0.905
-> RTD|      -4.963|      -4.871|       1.155|       0|      -5.108|       1.155
-> Xenomai: Switching display-3238 to secondary mode after exception #1025 from 
-> user-space at 0xfda9638 (pid 3240)
-> RTD|      -4.963|      -4.758|      16.020|       0|      -5.108|      16.020
-> RTD|      -6.313|      -4.861|      10.980|       0|      -6.313|      16.020
-> Xenomai: Switching display-3238 to secondary mode after exception #1025 from 
-> user-space at 0xfe7c1c4 (pid 3240)
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|      -6.313|      -4.811|      16.020|       0|    00:00:05/00:00:05
-> Xenomai: stopping RTDM services.
-> 
-> Best regards
--- 
-Philippe.
+__xeno_user_init: semMCreate 45 taskId 44
+__xeno_user_init: semTake 45 status 0 0 taskId 44
+__xeno_user_init: semGive 45 status -1 errno 1441896 taskId 44
+Error code 1441896: S_semLib_INVALID_OPERATION
+__xeno_user_init: semTake 45 status 0 1441896 taskId 44
+__xeno_user_init: semGive 45 status 0 errno 0 taskId 44
+Error code 0: Unknown error
 
+This is clearly a difference between the Xenomai simulator's and the user m=
+ode=20
+vxworks skins behaviour.
 
+This leads me to the question how difficult it would be to modify the Xenom=
+ai=20
+simulator's test cases to be run under the Xenomai vxworks skin. I think=20
+using similar techniques as running the test cases under a real vxworks thi=
+s=20
+should be feasible and I would volunteer to tackle this issue, but would li=
+ke=20
+to get some hints from Gilles.
+
+I do not feel at ease with the whole autoconf/automake magic in the simulat=
+or=20
+source directories. I seems however an easy job to add a alternative Makefi=
+le=20
+(=E0 la ksrc/skin/vxworks/demo), eg. name Makefile.user. Is this a good ide=
+a?
+
+Once running I would try to integrate them into the buildbot. I am not sure=
+=20
+whether as part of xeno-test, an option passed to xeno-test or a different=
+=20
+tool.
+
+Needless to say, that similar work should be done for the posix testsuite.
+
+As it is the case when running the testcase under the skins some tests woul=
+d=20
+be expected to fail and/or return different values than those based on the=
+=20
+simulator's view of time.
+
+Would such patches be accepted in the Xenomai source?
+
+Thanks in advance
+
+=2D--
+Niklaus Giger
+
+--Boundary-00=_rWEGF6Na8zbNmb0
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="satch.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="satch.diff"
+
+Index: satch.c
+===================================================================
+--- satch.c	(Revision 1672)
++++ satch.c	(Arbeitskopie)
+@@ -35,6 +35,7 @@
+ int root_thread_init(void);
+ void root_thread_exit(void);
+ 
++#define add_sema_test
+ #if !defined(__KERNEL__) && !defined(__XENO_SIM__)
+ 
+ #include <sys/mman.h>
+@@ -113,7 +114,6 @@
+ {
+     int next_msg = 0;
+     const char *s;
+-
+     for (;;)
+ 	{
+ 	taskDelay(PRODUCER_TRIG);
+@@ -122,13 +122,32 @@
+ 	next_msg %= (sizeof(satch_s_tunes) / sizeof(satch_s_tunes[0]));
+ 
+ 	msgQSend(message_qid,(char *)&s,sizeof(s),WAIT_FOREVER,MSG_PRI_NORMAL);
++	break;
+ 	}
+ }
+ 
+ int root_thread_init (void)
+ 
+ {
+-    message_qid = msgQCreate(16,sizeof(char *),MSG_Q_FIFO);
++#ifdef add_sema_test
++   int sema_1, myErr, status;
++   sema_1 = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE );
++   printf("\n%s: semMCreate %d taskId %d\n", __FUNCTION__, sema_1, taskIdSelf());
++   status = semTake(sema_1, WAIT_FOREVER);
++   printf("%s: semTake %d status %d %d taskId %d\n", __FUNCTION__, sema_1, status, errnoGet(), taskIdSelf());
++   status = semGive(sema_1);
++   myErr = errnoGet();
++   printf("%s: semGive %d status %d errno %d taskId %d\n", __FUNCTION__, sema_1, status, myErr, taskIdSelf());
++   printErrno(myErr);
++   status = semTake(sema_1, WAIT_FOREVER);
++   printf("%s: semTake %d status %d %d taskId %d\n", __FUNCTION__, sema_1, status, errnoGet(), taskIdSelf());
++   errnoSet(0);
++   status = semGive(sema_1);
++   myErr = errnoGet();
++   printf("%s: semGive %d status %d errno %d taskId %d\n", __FUNCTION__, sema_1, status, myErr, taskIdSelf());
++   printErrno(myErr);
++   exit(0);
++#endif
+ 
+     consumer_tid = taskSpawn("ConsumerTask",
+ 			     CONSUMER_TASK_PRI,
+
+--Boundary-00=_rWEGF6Na8zbNmb0--
 
