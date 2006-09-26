@@ -1,18 +1,17 @@
-Subject: Re: [Xenomai-core] No hardware interrupts with xenomai on ppc405
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45057123.1030908@domain.hid>
-References: <4503EB88.2040309@domain.hid>
-	<200609111058.44417.matthias.fuchs@domain.hid>
-	<1157970027.4934.6.camel@domain.hid>
-	<200609111402.12493.matthias.fuchs@domain.hid>
-	<45055475.2050705@domain.hid> <1157980145.4934.69.camel@domain.hid>
-	<45057123.1030908@domain.hid>
-Content-Type: text/plain
-Date: Mon, 11 Sep 2006 17:32:19 +0200
-Message-Id: <1157988739.4991.11.camel@domain.hid>
-Mime-Version: 1.0
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
+Date: Tue, 26 Sep 2006 20:39:13 +0200
+References: <200609232013.27649.niklaus.giger@domain.hid>
+	<200609252315.38689.niklaus.giger@domain.hid>
+	<1159280478.5084.117.camel@domain.hid>
+In-Reply-To: <1159280478.5084.117.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200609262039.14094.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,61 +21,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Mon, 2006-09-11 at 16:22 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2006-09-11 at 14:20 +0200, Wolfgang Grandegger wrote:
-> >> Matthias Fuchs wrote:
-> >>> Hello Philippe,
-> >>>
-> >>> that helps. I will do some further testing.
-> >>>
-> >>> Matthias
-> >>>
-> >>>
-> >>> On Monday 11 September 2006 12:20, Philippe Gerum wrote:
-> >>>> It's likely an Adeos issue. Could you try this patch? TIA,
-> >>>>
-> >>>> --- arch/ppc/syslib/ppc4xx_pic.c~	2005-10-28 02:02:08.000000000 +0200
-> >>>> +++ arch/ppc/syslib/ppc4xx_pic.c	2006-09-11 12:18:14.000000000 +0200
-> >>>> @@ -72,7 +72,8 @@
-> >>>>  		mtdcr(DCRN_UIC_SR(UIC##n), mask);			\
-> >>>>  		ACK_UIC##n##_PARENT					\
-> >>>>  	}								\
-> >>>> -	if (!(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
-> >>>> +	if (!ipipe_root_domain_p ||					\
-> >>>> +	    !(status & (IRQ_DISABLED | IRQ_INPROGRESS))) {		\
-> >>>>  		ppc_cached_irq_mask[n] |= mask;				\
-> >>>>  		mtdcr(DCRN_UIC_ER(UIC##n), ppc_cached_irq_mask[n]);	\
-> >>>>  	}								\
-> >> Philippe, could you please explain the problem in more detail? And what 
-> >> are the consequences for other PowerPC ARCs and PICs, also for Linux 2.4?
-> > 
-> > The issue lies in the fact that PICs *_end() routines may be called over
-> > the Xenomai domain, and actually are, most of the time, since
-> > xnintr_irq_handler() -which invokes xnarch_end_irq()- is always called
-> > from the the Xenomai stage in the Adeos pipeline.
-> > 
-> > In such a case, we must not check for the Linux-defined IRQ bits (e.g.
-> > IRQ_INPROGRESS), and always send the eoi, since those bits are not
-> > relevant to the Xenomai context. The patch above ensures this.
-> > 
-> > And yes, the 2.4 patch has the very same problem, which should be fixed
-> > the same way for all supported ppc platforms in the various PIC
-> > management code. Oops.
-> 
-> And why didn't this render PPC-over-2.4 useless, i.e. what is special
-> about this 405-scenario?
-> 
+Am Dienstag, 26. September 2006 16:21 schrieb Philippe Gerum:
+> > On Mon, 2006-09-25 at 22:29 +0200, Niklaus Giger wrote:
+> > > > Am Montag, 25. September 2006 17:57 schrieb Philippe Gerum:
+> > > > > On Sun, 2006-09-24 at 23:07 +0200, Wolfgang Grandegger wrote:
+> > > > > > Niklaus Giger wrote:
+> >
+> > <..>
+> >
+> > > > Is the output of lines like "Xenomai: Switching display-3238 to
+> > > > secondary mode after exception #1025 from user-space at 0x100033c4
+> > > > (pid 3240)" harmless or the result of a activated
+> > > > CONFIG_XENO_OPT_DEBUG<..> option?
+>
+> A known hw issue seems to exist with the 405GP (revD), which causes the
+> ESR to be incorrectly set upon FPU emulation trap, which would in turn
+> cause the spurious exception to be relayed to the nucleus by Adeos. The
+> patch below is _not_ the final fix, but rather a way to check if this
+> message is indeed related to the FPU emulation on your board. Does it
+> silence the exception without breaking the box?
+>
+> --- arch/ppc/kernel/traps.c~	2006-09-25 17:10:48.000000000 +0200
+> +++ arch/ppc/kernel/traps.c	2006-09-26 16:14:30.000000000 +0200
+> @@ -638,9 +638,6 @@
+>  	unsigned int reason = get_reason(regs);
+>  	extern int do_mathemu(struct pt_regs *regs);
+>
+> -	if (ipipe_trap_notify(IPIPE_TRAP_PCE,regs))
+> -	    	return;
+> -
+>  #ifdef CONFIG_MATH_EMULATION
+>  	/* (reason & REASON_ILLEGAL) would be the obvious thing here,
+>  	 * but there seems to be a hardware bug on the 405GP (RevD)
+> @@ -655,6 +652,9 @@
+>  	}
+>  #endif /* CONFIG_MATH_EMULATION */
+>
+> +	if (ipipe_trap_notify(IPIPE_TRAP_PCE,regs))
+> +	    	return;
+> +
+>  	if (reason & REASON_FP) {
+>  		/* IEEE FP exception */
+>  		int code = 0;
+Tried your patch against adeos-ipipe 1.3. But I still get the same behaviour. 
+Here is my proc/cpuinfo.
 
-A possible explanation is that configurations only using the timer IRQ
-are not affected, since the decrementer is not subject to this issue
-(the tick handler returns XN_ISR_NOENABLE anyway).
+$ cat /proc/cpuinfo
+processor       : 0
+cpu             : 405GPr
+clock           : 400MHz
+revision        : 9.81 (pvr 5091 0951)
+bogomips        : 398.33
+machine         : Netstal HCU3
+plb bus clock   : 133MHz
+
+U-Boot printed the following info:
+CPU:   AMCC PowerPC 405GPr Rev. B at 400 MHz (PLB=133, OPB=33, EBC=33 MHz)
+, PCI sync clock at 33 MHz       16 kB I-Cache 16 kB D-Cache
+
+Best regards
 
 -- 
-Philippe.
-
-
+Niklaus Giger
 
