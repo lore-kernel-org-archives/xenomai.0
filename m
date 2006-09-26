@@ -1,14 +1,14 @@
-Subject: Re: [Xenomai-help] Help on debugger gdb
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4518F58A.5090900@domain.hid>
-References: <45188502.4060209@domain.hid>
-	<1159261731.5084.46.camel@domain.hid>  <4518F58A.5090900@domain.hid>
-Content-Type: text/plain
-Date: Tue, 26 Sep 2006 12:02:33 +0200
-Message-Id: <1159264954.5084.69.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <45194E86.4090002@domain.hid>
+Date: Tue, 26 Sep 2006 18:00:06 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <20060926154124.45256.qmail@domain.hid>
+In-Reply-To: <20060926154124.45256.qmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig566D769DCEFB23D1C88C3875"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-help] Re: [Xenomai-core] aperiodic xenomai tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,69 +18,185 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: mani bhatti <imranbashirbhatti@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, 2006-09-26 at 11:40 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2006-09-25 at 22:40 -0300, Rodrigo Rosenfeld Rosas wrote:
-> >> Hi, it's me again, after a long while :)
-> >>
-> >> I'll present my Master thesis this Friday and I would like to comment 
-> >> about the debugger. Since I'm in hurry with a lot other issues, I do not 
-> >> have to time to test what I'm going to ask.
-> >>
-> >> I've never used a debugger with Xenomai (or RTAI). I mean, not GDB. I 
-> >> used other techniques to debug, such as logging, etc. My doubt is:
-> >>
-> >> Suppose I have a user-space program with 3 independent Xenomai RT-tasks. 
-> >> If I put a breakpoint in one of them, will the other two keep running? I 
-> >> guess yes, but I'm not sure and that is why I'm asking.
-> >>
-> > 
-> > Actually, they would not. The kernel would stop all of them as a
-> > consequence of ptracing, and Xenomai would switch them back to secondary
-> > mode if needed, to let them handle the new situation properly.
-> > 
-> >> Another thing. I think that the scheduler will keep counting the time 
-> >> when the debugger stopped the task. So, the next call to 
-> >> rt_task_wait_period() will return -ETIMEDOUT immediately, with the 
-> >> overruns set accordly, if this was the case, right?
-> >>
-> > 
-> > No, the outstanding RT timers are globally frozen whenever a ptraced
-> > user-space task is stopped by the debugger, exactely to prevent the case
-> > you described, so that you can step into your application without
-> > causing such annoying side-effect. Since we are breakpointing/stepping
-> > into the code, real-time accuracy doesn't matter anyway, so we act as if
-> > the timeline was being frozen each time the debugger holds the
-> > application. 
-> 
-> Timers are frozen, but internal timekeeping continues, e.g. in
-> xnpod_wait_thread_period (which is used by rt_task_wait_period). So the
-> overrun counter is in fact incremented and an error is returned after
-> the interruption.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig566D769DCEFB23D1C88C3875
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I was talking about the old behaviour we had of returning timeout
-conditions repeatedly for each missed release points before
-xnpod_wait_thread_period has been reworked to actually compute the
-missed periods.
+mani bhatti wrote:
+> Hi friends
+> i want to create two aperiodic tasks .I have made a small example and c=
+reated two tasks and set their priority equal.i have removed rt_task_setP=
+eriodic function from the code but problem is that the task which is star=
+ted first only it works and the second task which is started later never =
+shows up.If some one tells me the cause of this problem i would be very g=
+rateful.The source code is given below.
 
-> 
-> That raises the question for me if we shouldn't allow this freeze also
-> per-process in the future to confine the effect only to those programs
-> actually being debugged. I can easily imagine scenarios where the
-> developer might be more happy to keep other, fairly independent parts of
-> the system alive while stepping through one application.
-> 
+First of all, please post such requests for help to the xenomai-help
+list (I already changed the address in this reply). Xenomai-core is
+intended for discussions about the internals of Xenomai.
 
-Yes, but we will need the reworked timer infrastructure to do that
-properly.
+>=20
+> void zaehler1_task(void *cookie){
+>         int ret;
+>=20
+> // ************************* Xenomai-Krempel **************************=
+******************************************
+>     //    ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(=
+task_period_ns1));
+>     //    if (ret) {
+>     //            printf("error while set periodic, code %d\n",ret);
+>     //            return;
+>     //    }
+> // ************************* Ende Xenomai-Krempel *********************=
+*******************************************
 
-> Jan
-> 
--- 
-Philippe.
+Well, by commenting out this "Xenomai-Krempel" (be careful, people on
+these lists may understand German ;)), your real-time task below enters
+an infinite loop without any delays (except for the printing).
+rt_task_wait_period always fails if you do not switch periodic mode on.
+Therefore, the second task never gets a chance to be started.
+
+What was your motivation behind this? You need some clocking for the
+real-time task, either periodical timer-driven or some explicit
+rt_task_sleep, or you pend it on an external event (provided by a driver
+or whatever).
+
+>=20
+>=20
+> // ********************** Beginn des wiederholt ausgefuehrten Codes ***=
+*******************************************
+>         while(!end){
+>                 ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+>                 if (ret) {
+>                         printf("error while rt_task_set_mode, code %d\n=
+",ret);
+>                         return;
+>                 }
+>                 ret =3D rt_task_wait_period();
+>                 printf("T1:Start\n");
+>=20
+>                 if (ret) {
+>                 //        printf("error while rt_task_wait_period, code=
+ %d\n",ret);
+>                 //        return;
+>                 }
+>                 count1++;
+>=20
+>                 printf("T1:Ende:%d\n", count1);
+>=20
+>                 fflush(NULL);
+>         }
+> // ********************** Ende des wiederholt ausgefuehrten Codes *****=
+******************************************
+> }
+>=20
+> void zaehler2_task(void *cookie){
+>         int ret;
+>         long ii;
+>         long jj;
+>         double a;
+>=20
+> // ************************* Xenomai-Krempel **************************=
+******************************************
+> //      ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(ta=
+sk_period_ns2));
+> //      if (ret) {
+> //              printf("error while set periodic, code %d\n",ret);
+> //              return;
+> //      }
+> // ************************* Ende Xenomai-Krempel *********************=
+*******************************************
+>=20
+> // ********************** Beginn des wiederholt ausgefuehrten Codes ***=
+*******************************************
+>         while(!end){
+>                 ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+>                 if (ret) {
+>                         printf("error while rt_task_set_mode, code %d\n=
+",ret);
+>                         return;
+>                 }
+>                 ret =3D rt_task_wait_period();
+>=20
+>                 printf("\t\tT2:Start\n");
+>=20
+>                 if (ret) {
+>                 //      printf("error while rt_task_wait_period, code %=
+d\n",ret);
+>                 //      return;
+>                 }
+>=20
+>             //    for(ii=3D0; ii<200; ii++) {
+>                 //      for(jj=3D0; jj<1000000; jj++) {
+>                 //              a =3D (double)ii * (double)jj;
+>                 //      }
+>         //      }
+>=20
+>                 count2++;
+>                 printf("\t\tT2:Ende:%d\n", count2++);
+>=20
+>                 fflush(NULL);
+>         }
+> // ********************** Ende des wiederholt ausgefuehrten Codes **
+>=20
+>=20
+> int main(int argc, char *argv[]) {
+>         int err, ret;
+>         printf("start\n");
+>         // install signal handler
+>         signal(SIGTERM, clean_exit);
+>         signal(SIGINT, clean_exit);
+>         // start timer
+>         ret =3D rt_timer_start(TM_ONESHOT);
+>         switch (ret) {
+>                 case 0:       printf("Mit dem Fahrrad nich inn ersten W=
+agen\n\n");
+>                               break;
+>                 case -EBUSY:  printf("timer is running\n");
+>                               break;
+>                 case -ENOSYS: printf("can't start timer\n");
+>                               return ret;
+>         }
+>=20
+>         /* create zaehler1_task */
+>         err =3D rt_task_create(&zaehler1_task_ptr,"Zaehler_1",STACK_SIZ=
+E,STD_PRIO1,0);
+>         /* create zaehler2_task */
+>         err =3D rt_task_create(&zaehler2_task_ptr,"Zaehler_2",STACK_SIZ=
+E,STD_PRIO2,0);
+>=20
+>         /* start zaehler1_task */
+>         err =3D rt_task_start(&zaehler1_task_ptr,&zaehler1_task,NULL);
+>=20
+>         /* start zaehler2_task */
+>         err =3D rt_task_start(&zaehler2_task_ptr,&zaehler2_task,NULL);
+>=20
+>         // wait for signal & return of signal handler
+>         pause();
+>         fflush(NULL);
+> }
+>=20
+
+Jan
 
 
+--------------enig566D769DCEFB23D1C88C3875
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFGU6GniDOoMHTA+kRAgDEAJ9eBk0yR1ZsJ7hOU/w4Xl8w0gDTnwCeIMCN
+7HbcrOeesmRh3Q94lwq06JI=
+=ibYg
+-----END PGP SIGNATURE-----
+
+--------------enig566D769DCEFB23D1C88C3875--
 
