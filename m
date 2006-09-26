@@ -1,16 +1,15 @@
+Message-ID: <45198C45.6080904@domain.hid>
+Date: Tue, 26 Sep 2006 22:23:33 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Problem with periodic timer on PPC40x solved
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200609262134.48627.niklaus.giger@domain.hid>
-References: <200609232013.27649.niklaus.giger@domain.hid>
-	<1159217987.4981.10.camel@domain.hid>
-	<200609252315.38689.niklaus.giger@domain.hid>
-	<200609262134.48627.niklaus.giger@domain.hid>
-Content-Type: text/plain
-Date: Tue, 26 Sep 2006 21:48:39 +0200
-Message-Id: <1159300119.5084.173.camel@domain.hid>
-Mime-Version: 1.0
+References: <J67G6W$AFC4CDFDA31A148D03B70B64BA5713E3@domain.hid>
+	<1159287029.5084.149.camel@domain.hid>
+	<4519553A.3040109@domain.hid>
+	<200609262056.30673.niklaus.giger@domain.hid>
+In-Reply-To: <200609262056.30673.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,34 +22,31 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: niklaus.giger@domain.hid
 Cc: xenomai@xenomai.org
 
-On Tue, 2006-09-26 at 21:34 +0200, Niklaus Giger wrote:
-> Here is the stack with adeos-ipipe 1.3 after applying your patch 
-> 
-> (gdb) info stack
-> #0  xnpod_fault_handler (fltinfo=0xc1489e18) at 
-> kernel/xenomai/nucleus/pod.c:216
-> #1  0xc004bad4 in xnpod_trap_fault (fltinfo=0x73) at 
-> kernel/xenomai/nucleus/pod.c:2907
-> #2  0xc0043ee8 in xnarch_trap_fault (event=115, domid=0, data=0xc01a9435) at 
-> include/asm/xenomai/bits/init.h:46
-> #3  0xc012dc38 in exception_event (event=3223286668, ipd=0x0, data=0xc01a9435) 
-> at arch/ppc/xenomai/hal.c:385
-> #4  0xc003fe18 in __ipipe_dispatch_event (event=0, data=0xc1489f50) at 
-> kernel/ipipe/core.c:665
-> #5  0xc000aecc in do_page_fault (regs=0xc1489f50, address=268448708, 
-> error_code=0) at include/linux/ipipe.h:445
-> #6  0xc0003258 in handle_page_fault ()
+Niklaus Giger wrote:
+> Am Dienstag, 26. September 2006 18:28 schrieb Wolfgang Grandegger:
+>> Philippe Gerum wrote:
+>>> On Tue, 2006-09-26 at 16:56 +0200, gilles.chanteperdrix wrote:
+>> OK, but in general, soft-float emulation should be used on systems
+>> without FPU and this is even more important for real-time. This is a
+>> tool chain issue. Niklaus, what tool chain are you using?
+>>
+> In my .config I have 
+> MATH_EMULATION=y
 
-The function parameters look weird, but the backtrace seems ok. This
-tells us that it's not related to FPU emulation, but rather to an
-invalid memory access.
+You seem to need that because your compiler generates code with hard FP 
+instructions. You could check this with:
 
-> Previous frame inner to this frame (corrupt stack?)
-> (gdb) 
+  $ ppc-linux-objdump -d prog|egrep ":\s*[e-f]"
+
+> The toolchain is gcc-3.4.4-glibc-2.3.5/powerpc-405-linux-gnu built using Dan 
+> Kegel crosstool (Version 0.42 if I remember exactly).
 > 
-> Hope it helps you
--- 
-Philippe.
+> Shall I switch to another one?
+
+The ELDK from DENX uses FP soft-emulation for 4xx (http://www.denx.de).
+Choose  v3.1.1 for Linux 2.4 and v4 for Linux 2.6.
+
+Wolfgang.
 
 
 
