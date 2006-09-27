@@ -1,12 +1,12 @@
-Message-ID: <451A8BEF.6060305@domain.hid>
-Date: Wed, 27 Sep 2006 16:34:23 +0200
+Message-ID: <451A9C64.7040802@domain.hid>
+Date: Wed, 27 Sep 2006 17:44:36 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20060927135543.26891.qmail@domain.hid>
-In-Reply-To: <20060927135543.26891.qmail@domain.hid>
+References: <20060927151753.9409.qmail@domain.hid>
+In-Reply-To: <20060927151753.9409.qmail@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigFF71C8715D14ED1A5A76FD86"
+	boundary="------------enig1C6BE6F054D0D50991C1491C"
 Sender: jan.kiszka@domain.hid
 Subject: [Xenomai-help] Re: [Xenomai-core] aperiodic xenomai tasks
 List-Id: Help regarding installation and common use of Xenomai
@@ -22,50 +22,53 @@ To: mani bhatti <imranbashirbhatti@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFF71C8715D14ED1A5A76FD86
+--------------enig1C6BE6F054D0D50991C1491C
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Two requests:
-- please use "reply to all" in order to include everyone in this thread,
-  specifically the list itself
-- cut quotes you do not comment on in your reply (helps to grab quickly
-  what you are referring to - and what not)
-
 mani bhatti wrote:
-> Hi Jan Kiszka
-> Thanks a lot for your kind reply.Actually my motivation behind this
-> question was that i wanted to have two tasks one of the task i want
-> to make pariodic and schedule it after 1second and the second task i
-> wanted to singnal only after my first task has completed its work so
-> that second task completes its work  and  first task is scheduled
-> again and second task signalled and so on.Because second task is
-> signalled only when first task completes thats why i wanted to make
-> it aperiodic and comment out that rt_task_set_periodic stuff but i am
-> not still able to do it because in my case only task no 1 is
-> scheduled and task 2 is not signalled at all.Actually i am a new bee
-> to xenomai and have experience mostly with programming in C++ thats
-> why i have only idea about threading in C++ and java which havent got
-> functions like set periodic.If you please tell me how to realize
-> above idea in Xenomai i would br very thankful to you.Thanks a lot
-> again.
->=20
+> Thanks Jan for your reply
+> Actually the semaphore and mutexes stuff you have referred to i have
+> already grounds for them.The only problem i have is please some body
+> tell me that i dont want to make a thread periodic i,e i dont want to
+> call a thread after periodic time interval i wanted it to  make it
+> aperiodic like threads in C++ are scheduled by scheduler byitself
 
-Your problem is actually independent of Xenomai. I think you should
-first read some basics on interprocess communication. Quick hint
-regarding your scenario:
+This has nothing to do with C++, rather with the class library you are
+used to.
 
-    http://en.wikipedia.org/wiki/Semaphore_%28programming%29
+> and sleep on waiting condition with out any specific time interval
+> and wake  only when  signalled from  pariodic thread. I hope you
+> understand my point.Thanks a lot .
 
-You will find related services in Xenomai as well. Also browsing through
-the Xenomai doc what's available and then reading up what it is good for
-can help to broaden the understanding, and this is essential for writing
-real-time software.
+Let's try it differently:
+
+thread_a()
+{
+	rt_task_set_periodic(...);
+	while (1) {
+		rt_task_wait_period(NULL);
+		/* do some work */
+		if (I_should_trigger_thread_b)
+			rt_sem_v(&sem);
+	}
+}
+
+thread_b()
+{
+	while (1) {
+		rt_sem_p(&sem, TM_INFINITE);
+		/* so some other work */
+	}
+}
+
+Again, read up what the services are exactly doing or you will be lost
+once you have to modify things only slightly.
 
 Jan
 
 
---------------enigFF71C8715D14ED1A5A76FD86
+--------------enig1C6BE6F054D0D50991C1491C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -74,10 +77,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFGovvniDOoMHTA+kRAtT7AJ9yooxhbefddGxxkpHcML6+pcX9SQCfVCoT
-FG2rZpDFLdBf08yFCRymbPU=
-=qAi+
+iD8DBQFFGpxkniDOoMHTA+kRAl1oAJ4oQDpdi2EeS7AOi4zrri2j9Q8JYgCfbiag
+PD1kUGu3pswlxdMdUAUEEeI=
+=1Mi5
 -----END PGP SIGNATURE-----
 
---------------enigFF71C8715D14ED1A5A76FD86--
+--------------enig1C6BE6F054D0D50991C1491C--
 
