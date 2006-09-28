@@ -1,14 +1,9 @@
-Message-ID: <451A9C64.7040802@domain.hid>
-Date: Wed, 27 Sep 2006 17:44:36 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20060927151753.9409.qmail@domain.hid>
-In-Reply-To: <20060927151753.9409.qmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1C6BE6F054D0D50991C1491C"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: [Xenomai-core] aperiodic xenomai tasks
+Message-ID: <OFCB660949.1032EBD1-ONC12571F4.005971C7@domain.hid>
+From: "Thomas Necker" <Thomas.Necker@domain.hid>
+Date: Thu, 28 Sep 2006 08:48:25 +0200
+Content-Type: text/plain; charset="us-ascii"
+Subject: [Xenomai-help] Probable sync problem using pSOS skin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,69 +13,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: mani bhatti <imranbashirbhatti@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1C6BE6F054D0D50991C1491C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Ok, maybe it's best to put the discussion back on the mailing list.
+For the audience, what has happened up to now:
 
-mani bhatti wrote:
-> Thanks Jan for your reply
-> Actually the semaphore and mutexes stuff you have referred to i have
-> already grounds for them.The only problem i have is please some body
-> tell me that i dont want to make a thread periodic i,e i dont want to
-> call a thread after periodic time interval i wanted it to  make it
-> aperiodic like threads in C++ are scheduled by scheduler byitself
+> > > Ok, so it's probably an internal sync problem affecting the UVM. The
+> > > beast is particularly prone to that over the LinuxThreads,
+> > > unfortunately. Actually, what you describe rings a bell now; if you
+> > > could reduce the odd behaviour to a simple test case, I would look 
+at it
+> > > asap.
+> > 
+> > Here's the test case. It was quite an effort to strip the program 
+without
+> > losing the error pattern. The problem seems to be heavily timing 
+> > dependent.
+> > Leave out a printf here or a tm_wkafter there and it works fine. So I 
+hope
+> > you can repeat the error with your configuration at all. I did it on a 
 
-This has nothing to do with C++, rather with the class library you are
-used to.
+> > PowerPC
+> > using Kernel 2.4.22, ucLibc 0.9.28, Xenomai 2.2.2, gcc 3.3.6 .
+ 
+> > The program starts a MAIN task which in turn starts three tasks and 
+idles 
+> > afterwards.
+> > These three tasks are:
+> >  - LHWT that sends a message to LHTX
+> >  - LHTX sends an event to TOSV upon receipt of this message
+> >  - TOSV receives the event but a call to psos_current_task yields 
+LHTX's 
+> > task id - BUMMER!.
+> >    Also the received event Id is 0.  The program usually would crash 
+> > afterwards, but I let it nicely exit instead.
 
-> and sleep on waiting condition with out any specific time interval
-> and wake  only when  signalled from  pariodic thread. I hope you
-> understand my point.Thanks a lot .
+> > > So you fixed it? Does it work for you now? I just looked into the 
+commit-
+> > > mailing list and tried adding "XNBREAK" to shadow.c - no effect for 
+me.
+> >
+> > Yes, that's the fix. Your test case works properly now on my box, and
+> > the fix is directly related to the symptoms you experienced. Could you
+> > double-check that your test case still exhibit the issue?
 
-Let's try it differently:
+I meanwhile double-double checked it - the problem is not gone, also not 
+with
+the SVN head for the v2.2.x branch :-( And I could only provoke it 
+*without* GDB.
+I also asked Wolfgang Grandegger who has a similar setup at hand (2.4 and 
+PPC) to
+run it - same result (thanks again Wolfgang!).
+That leads me to the following conclusions:
+- It's not a problem with my local setup of the toolchain, Adeos, Xenomai.
+- It doesn't seem to be a problem with uClibc, since Wolfgang uses glibc.
+>From my point of view this leaves room for locating the problem in the 
+following areas:
+- problem is related to the PPC as opposed to x86
+- problem is related to kernel 2.4 (or something related to it, e.g. 
+thread implementation)
+- your hardware simply has a different timing and the problem doesn't show 
+up.
 
-thread_a()
-{
-	rt_task_set_periodic(...);
-	while (1) {
-		rt_task_wait_period(NULL);
-		/* do some work */
-		if (I_should_trigger_thread_b)
-			rt_sem_v(&sem);
-	}
-}
+Now I'm not sure how to proceed. My personal knowledge of the internals of 
+Xenomai is
+very probably not sufficient to find this rather tricky problem.
 
-thread_b()
-{
-	while (1) {
-		rt_sem_p(&sem, TM_INFINITE);
-		/* so some other work */
-	}
-}
-
-Again, read up what the services are exactly doing or you will be lost
-once you have to modify things only slightly.
-
-Jan
-
-
---------------enig1C6BE6F054D0D50991C1491C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFGpxkniDOoMHTA+kRAl1oAJ4oQDpdi2EeS7AOi4zrri2j9Q8JYgCfbiag
-PD1kUGu3pswlxdMdUAUEEeI=
-=1Mi5
------END PGP SIGNATURE-----
-
---------------enig1C6BE6F054D0D50991C1491C--
+Thomas
 
