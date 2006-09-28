@@ -1,14 +1,10 @@
-Message-ID: <451C48CF.4010108@domain.hid>
-Date: Fri, 29 Sep 2006 00:12:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <451C586A.7020309@domain.hid>
+Date: Thu, 28 Sep 2006 17:19:06 -0600
+From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] fix for kgbd patch
-References: <4510E84C.90807@domain.hid>
-In-Reply-To: <4510E84C.90807@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF24CC27D4A966B99D3B9AA22"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] possible future conflict w LOCAL_APIC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,52 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>, adeos-main@gna.org
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF24CC27D4A966B99D3B9AA22
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+hi guys,
 
-Jan Kiszka wrote:
-> Hi,
->=20
-> the kgdb-over-ipipe add-on patches available from gna.org contain two
-> bugs that prevents stepping through Xenomai kernel threads. The attache=
-d
-> update fixes them. It also contains the workaround to build kgdb with
-> gcc-3.4 (before 3.4.4) and 4.1 (before 4.1.2).
->=20
-> Tested on 2.6.17.13 with latest kgdb from CVS.
->=20
-
-It turned out (*) that kgdb over I-pipe only works reliably for
-!CONFIG_PREEMPT (e.g. due to rcu_read_lock in the int3 notifier path).
-Until some solution has been worked out, switch preemption off when you
-use the debugger.
-
-Jan
+I encountered this error building 18-mm2 with a .config Ive been
+using with xenomai since I started.  
 
 
-(*) Ever tried to debug a debugger? Here is one way to do this without
-special hardware: Xenomai in qemu, one ddd attached to kgdb over
-emulated serial port on /dev/pts/X, another ddd attached to qemu as
-debugger back-end ("-s"). Sounds like fun? It isn't.
+> arch/i386/kernel/built-in.o(.text+0x34f1): In function `do_nmi':
+> arch/i386/kernel/traps.c:752: undefined reference to 
+> `panic_on_unrecovered_nmi'
+> arch/i386/kernel/built-in.o(.text+0x3564):arch/i386/kernel/traps.c:712: 
+> undefined reference to `panic_on_unrecovered_nmi'
+> 
+> 
+> $ grep nmi arch/i386/kernel/Makefile
+> obj-$(CONFIG_X86_LOCAL_APIC)    += apic.o nmi.o
+> 
+> which I dont have enabled.
 
 
---------------enigF24CC27D4A966B99D3B9AA22
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Will fix.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+BTW I was planning to make LOCAL_APIC unconditional on i386 too like on x86-64.
+There is basically no reason ever to disable it, and the bug work around
+for buggy BIOS one can be done at runtime. Overall the #ifdef / compile breakage
+ratio vs saved code on disabled APIC code is definitely unbalanced.
 
-iD8DBQFFHEjPniDOoMHTA+kRApF/AJkBYzR4+UvOkszjiIDHTf2whI1gAACfYJBq
-fDh4buHZPRdb8ESnreValmI=
-=bz4o
------END PGP SIGNATURE-----
+-Andi
 
---------------enigF24CC27D4A966B99D3B9AA22--
+
+
+This looks like it may become a problem:
+
+Q: The kernel message log says:
+   "Xenomai: Local APIC absent or disabled!
+    Disable APIC support or pass "lapic" as bootparam."
+
+A: Xenomai sends this message if the kernel configuration Xenomai was
+   compiled against enables the local APIC support
+   (CONFIG_X86_LOCAL_APIC), but the processor status gathered at boot
+   time by the kernel says that no local APIC support is available.
+   There are two options for fixing this issue:
+
+   o either your CPU really has _no_ local APIC hw, then you need to
+     rebuild a kernel with LAPIC support disabled, before rebuilding
+     Xenomai against the latter;
+
+
+
+Is this something fundamental or merely inconvenient ?
+
+
+
 
