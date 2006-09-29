@@ -1,10 +1,10 @@
 From: Stelian Pop <stelian.pop@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
-Date: Fri, 29 Sep 2006 15:53:28 +0200
-Message-Id: <1159538008.15778.18.camel@domain.hid>
+Date: Fri, 29 Sep 2006 15:56:09 +0200
+Message-Id: <1159538169.15778.22.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] [PATCH] Clarify pthread_make_periodic_np() usage
+Subject: [Xenomai-core] [PATCH] automatically run ldconfig on installation
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,47 +18,40 @@ To: xenomai-core <xenomai@xenomai.org>
 
 Hi,
 
-The attached patch makes the documentation of pthread_make_periodic_np()
-explicit about the rescheduling which takes place on invocation, until
-the start time has been reached.
+When installing the userspace skin libraries, 'ldconfig' is not
+automatically run to update the dynamic library loader cache.
 
-I for one thought that pthread_make_periodic_np() would not sleep, and
-that pthread_wait_np() would do the wait instead when invoked for the
-first time...
+The attached patch does just that, but it does so only if the user is
+not installing cross-compiled libraries as it does not make sense in
+this case.
 
 Stelian.
-
-Index: ksrc/skins/posix/thread.c
+Index: configure.in
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ksrc/skins/posix/thread.c	(r=E9vision 1680)
-+++ ksrc/skins/posix/thread.c	(copie de travail)
-@@ -503,10 +503,12 @@
-  *
-  * This service is a non-portable extension of the POSIX interface.
-  *
-- * @param thread thread identifier;
-+ * @param thread thread identifier. This thread is immediately delayed
-+ * until the first periodic release point is reached.
-  *
-  * @param starttp start time, expressed as an absolute value of the
-- * CLOCK_REALTIME clock;
-+ * CLOCK_REALTIME clock. The affected thread will be delayed until
-+ * this point is reached.
-  *
-  * @param periodtp period, expressed as a time interval.
-  *
-@@ -514,6 +516,8 @@
-  * @return an error number if:
-  * - ESRCH, @a thread is invalid;
-  * - ETIMEDOUT, the start time has already passed.
-+ *
-+ * Rescheduling: always, until the @starttp start time has been reached.
-  */
- int pthread_make_periodic_np(pthread_t thread,
- 			     struct timespec *starttp,
+--- configure.in	(r=E9vision 1680)
++++ configure.in	(copie de travail)
+@@ -593,6 +593,7 @@
+ AC_SUBST([CONFIG_STATUS_DEPENDENCIES],
+         ['$(top_srcdir)/src/skins/posix/posix.wrappers'])
+ AC_SUBST(XENO_POSIX_WRAPPERS)
++AC_SUBST(cross_compiling)
 =20
+ base=3Dasm-$XENO_TARGET_ARCH
+ AC_CONFIG_LINKS([src/include/asm/xenomai:include/$base])
+Index: src/skins/Makefile.am
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- src/skins/Makefile.am	(r=E9vision 1680)
++++ src/skins/Makefile.am	(copie de travail)
+@@ -1,2 +1,4 @@
++install-data-local:
++	if test "@cross_compiling@" =3D "no"; then ldconfig; fi
+=20
+ SUBDIRS =3D native posix rtdm vxworks vrtx rtai
+
 --=20
 Stelian Pop <stelian.pop@domain.hid>
 
