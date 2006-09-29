@@ -1,13 +1,13 @@
-Message-ID: <4506EC10.1010807@domain.hid>
-Date: Tue, 12 Sep 2006 19:19:12 +0200
+Message-ID: <451D1DAB.8040803@domain.hid>
+Date: Fri, 29 Sep 2006 15:20:43 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Bad EIP kernel-Oops
-References: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
-In-Reply-To: <58168.129.217.4.64.1158067468.squirrel@domain.hid>
+Subject: Re: [Xenomai-help] SH4 port
+References: <001f01c6e491$c384f7e0$1501a8c0@domain.hid>
+In-Reply-To: <001f01c6e491$c384f7e0$1501a8c0@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig323FAE4CA147D6573991FE04"
+	boundary="------------enigACBBA88729F71FDC34EF2830"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,82 +18,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: nils.kemper@domain.hid
+To: Kiichi Kameda <k-kameda@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig323FAE4CA147D6573991FE04
+--------------enigACBBA88729F71FDC34EF2830
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Nils Kemper wrote:
-> Hi,
-> I want to use Xenomai, but I get (sometimes, but everytime the same)
-> kernel-Oops just by running xeno-test:
+Kiichi Kameda wrote:
+> After long break, I started testing SH4 port of Xenomai based on Xenoma=
+i
+> 2.2.0
+
+Nice to hear.
+
 >=20
-> [..]
-> Xenomai: stopping native API services.
-> I-pipe: Domain Xenomai unregistered.
-> Xenomai: hal/x86 stopped.
-> Xenomai: real-time nucleus unloaded.
->  Unable to handle kernel NULL pointer dereference at virtual address 00=
-000000
->  printing eip:
->  00000000
->  *pde =3D 00000000
->  Oops: 0000 [#1]
->  PREEMPT
->  Modules linked in: netconsole 8139too crc32 ipv6 nfs lockd sunrpc
-> intel_agp ehci_hcd uhci_hcd usbcore i810_audio ac97_codec soundcore 3c5=
-9x
-> mii agpgart
->  CPU:    0
->  EIP:    0060:[<00000000>]    Not tainted VLI
->  EFLAGS: 00010246   (2.6.16.27n-xeno222 #7)
->  EIP is at rest_init+0x3feffde0/0x63
->  eax: c030ba80   ebx: c030ba80   ecx: 00000002   edx: 00000003
->  esi: c030ba80   edi: 00000246   ebp: 00000021   esp: cc1bbf80
->  ds: 007b   es: 007b   ss: 0068
->  Process dd (pid: 11490, threadinfo=3Dcc1ba000 task=3Dd56f8a70)
->  Stack: <0>c013f158 00000021 c030ba80 cc1bbfbc 00000001 c0314408 c030ba=
-80
-> cc1bbfbc
->         00000000 00000200 08051000 cc1ba000 c0111c3d 00000000 c0102ec6
+> My realtime test program is a user space program using POSIX skin , and=
+
+> runs periodically (1ms interval)
+>=20
+> It works well when the load is light.
+> But with very heavy load such as continuous FTP, the system hangs in se=
+veral
+> minutes,
+> due to panic.
+>=20
+> the stack trace shows as follows
+>=20
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+> Unable to handle kernel NULL pointer dereference. at virtual address
 > 00000000
->         08051000 00000200 00000200 08051000 bfda2568 00000003 0000007b
-> 0000007b
->  Call Trace:
->         [<c013f158>] __ipipe_dispatch_event+0xcd/0xeb
->         [<c0111c3d>] __ipipe_syscall_root+0x2f/0xd8
->         [<c0102ec6>] sysenter_past_esp+0x3b/0x67
->  Code:  Bad EIP value.
->  <4>I-pipe: Domain Xenomai registered.
-> Xenomai: hal/x86 started.
-> Xenomai: real-time nucleus v2.2.2 (Ride) loaded.
-> Xenomai: SMI-enabled chipset found, enabling SMI workaround.
-> [..]
+> pc =3D 8c0104a6 <-- dequeue_task
+> *pde =3D 00000000
+> Oops: 0000 [#1]
 >=20
-> I'm sure somthing is wrong with my kernel-config, so I have attached it=
-,
-> together with the xeno-test-output.
-> BTW: I tried noapic, acpi=3Doff with no success.
+> Pid : 944, Comm:              in.ftpd
+> PC  : 8c0104a6 SP  : 8d631c00 SR  : 40008101 .TEA : c0198044    .Not
+> tainted
+> R0  : 8c19a928 R1  : 8c0104a0 R2  : 00000000 R3  : 8d5db680
+> R4  : 8d5db680 R5  : 00000000 R6  : 00000000 R7  : 8d5db788
+> R8  : 8d5db680 R9  : fffffffb R10 : 8d631c9c R11 : 8d5db680
+> R12 : e9bbfd00 R13 : 000f422e R14 : 8d631c08
+> MACH: 0000027f MACL: 5c28f7f2 GBR : 29568be0 PR  : 8c0107b6.
+> Call trace:
+> =3D=3D=3Dtop of stack(8d631c00)
+> [<8c0107b6>] deactivate_task
+> [<8c14d616>] schedule
+> [<8c14e38c>] io_schedule
+> [<8c035106>] sync_page
+> [<8c14e776>] __wait_on_bit_lock
+> [<8c035a64>] __lock_page
+> [<8c036d10>] filemap_nopage
+> [<8c04306a>] __handle_mm_fault
+> [<8c0d98ee>] ide_set_handler
+> [<8c00e750>] do_page_fault
+> [<8c0ac7dc>] csum_partial_copy_generic
+> [<8c122d04>] tcp_sendmsg
+> [<8c0d79f2>] ide_do_request
+> [<8c13ed74>] inet_sendmsg
+> [<8c0f69f6>] do_sock_write
+> [<8c04cc00>] wait_on_retry_sync_kiocb
+> [<8c0f6aec>] sock_aio_write
+> [<8c04cf1a>] do_sync_write
+> [<8c033024>] __ipipe_sync_stage
+> [<8c02a320>] autoremove_wake_function
+> [<8c033136>] __ipipe_dispatch_event
+> [<8c04cfea>] vfs_write
+> [<8c04d134>] sys_write
+> [<8c0062bc>] syscall_call
+> [<8c04d100>] sys_write
+> =3D=3D=3Dbottom of stack
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+>=20
+> After tough investigation, I think I found some clues such as:
+> While in.ftpd runs hard, a "write" system call was issued and Linux
+> kernel was processing its request.
+>  But weird __ipipe_dispatch_event and __ipipe_sync_stage was recorded.
+>=20
+> I think the problem originates from a Xenomai context switch(which
+> overwrites "current"), while Linux is processing  system call.
 
-Looks like a cleanup race in the nucleus unloading code. I just got it
-here as well after adoption to your .config (all modularised,
-CONFIG_PREEMPT). It basically seems to melt down to having high syscall
-load (e.g. dd if=3D/dev/zero of=3D/dev/null) during nucleus unload.
+If I interpret linux/include/asm-sh/current.h correctly, current is
+derived from the stack on your platform (like on most archs) and cannot
+be "overwritten". True is that the stack may change, making current
+invalid, when running a Xenomai kernel-space task. But this is something
+both I-pipe and Xenomai has to take into account (and do so on other arch=
+s).
 
-Unless someone around immediately has an idea why some syscall traps
-onto a NULL pointer (or something else - I had non-NULL address here), I
-would try to get this over a debugging environment "later". Hope the bug
-is not too volatile...
+> and I am sure that some tricks (preventing such case) must be included
+> on other platforms.
+>=20
+> Any suggestions on preventing such panic?
 
-Thanks for reporting so precisely!
+I guess you have to understand it more thoroughly first - or I'm not yet
+getting the generic part of your problem.
+
+However, did you try the switchtest already? It performs all kind of
+switches to trigger potential issues with saving/restoring contexts.
+
+And finally: Do we have a chance to see your patch soon? Even if it's
+not mature yet, it helps to look at the code when we shall help you
+analysing the issues. Don't forget good open source is based on peer
+review, and I can only recommend to make use of this mechanism early
+(the many-eyes principle...).
 
 Jan
 
 
---------------enig323FAE4CA147D6573991FE04
+--------------enigACBBA88729F71FDC34EF2830
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -102,10 +139,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFBuwQniDOoMHTA+kRAthwAJ44D5CrPSrCbbDLYrRG8ADs6p0CYQCfUxyE
-YXWizEeP06J0V7eqpPGHz7I=
-=LXjb
+iD8DBQFFHR2rniDOoMHTA+kRAp5LAJ9MCTEZIzX6fSsOc4y2lMVZI2XeigCdE1em
+g5hK8ChwlcX2M/NcNCwOwIY=
+=CuUu
 -----END PGP SIGNATURE-----
 
---------------enig323FAE4CA147D6573991FE04--
+--------------enigACBBA88729F71FDC34EF2830--
 
