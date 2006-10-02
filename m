@@ -1,13 +1,10 @@
-Subject: Re: [Xenomai-help] Probable sync problem using pSOS skin
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <OFCB660949.1032EBD1-ONC12571F4.005971C7@domain.hid>
-References: <OFCB660949.1032EBD1-ONC12571F4.005971C7@domain.hid>
-Content-Type: text/plain
-Date: Mon, 02 Oct 2006 20:57:47 +0200
-Message-Id: <1159815468.5054.32.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4521A42C.5010203@domain.hid>
+Date: Mon, 02 Oct 2006 18:43:40 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-help] POSIX skin and dynamic libs
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,26 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Necker <Thomas.Necker@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-On Thu, 2006-09-28 at 08:48 +0200, Thomas Necker wrote:
-> Ok, maybe it's best to put the discussion back on the mailing list.
-> For the audience, what has happened up to now:
+I have a main program that dynamically loads shared library modules using dlopen().  I would like to create a shared library module that is able to spawn a Xenomai RT thread.  This seems  like it should be possible, but I get the following error when loading the module:
 
-[...]
+IOError: /usr/xenomai/lib/libpthread_rt.so.0: undefined symbol: __real_pthread_getschedparam
 
-> I meanwhile double-double checked it - the problem is not gone, also not 
-> with
-> the SVN head for the v2.2.x branch :-( And I could only provoke it 
-> *without* GDB.
+This seems to be related to the "-Wl,--wrap" linker flags.  Is there a way to get this to work?  I don't think recompiling the main program is an option, but I can add some code that gets executed before the dynamic library is loaded.
 
-[...]
+Thanks,
 
-More fixes have been committed to SVN v2.2.x. Please resync.
-
--- 
-Philippe.
-
-
+Jeff
 
