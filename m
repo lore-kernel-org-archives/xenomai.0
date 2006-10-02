@@ -1,14 +1,17 @@
-Message-ID: <4520D095.9090903@domain.hid>
-Date: Mon, 02 Oct 2006 10:40:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <ac3922a00610020525x26b791e2r63739afa95b7d57b@domain.hid>
+Date: Mon, 2 Oct 2006 14:25:23 +0200
+From: "Syed Amer Gilani" <amg@domain.hid>
+Sender: groove.c@domain.hid
+Subject: Re: [Xenomai-help] Xenomai on 2.6.17 ppc
+In-Reply-To: <451E8999.2000801@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] SH4 port
-References: <001f01c6e491$c384f7e0$1501a8c0@domain.hid> <451D1DAB.8040803@domain.hid>
-In-Reply-To: <451D1DAB.8040803@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigFE677852D19F006EA3F3EA44"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <ac3922a00609270502s498d99bcv120ccc0f1a9f2a40@domain.hid>
+	<451A6E2B.2040901@domain.hid>
+	<ac3922a00609270536m396f4af0i4d60929689d4f541@domain.hid>
+	<451E8999.2000801@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,56 +21,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kiichi Kameda <k-kameda@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFE677852D19F006EA3F3EA44
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+2006/9/30, Wolfgang Grandegger <wg@domain.hid>:
+> I realized, that the differences to Linux 2.6.18 are quite small and non
+> critical. Attached is a ADEOS-IPIPE patch for Linux 2.6.17, which should
+> work on your MPC5200 as well (the idle loop problem for 6xx is solved).
+> Would be nice if you could test the patch and report the results. It's
+> difficult these days to get a 2.6.x kernel built and booted on an
+> MPC5200 :-(.
+>
+> Note: this patch requires another small fix for Xenomai (see
+> attachment). Philippe, could you please apply it? TIA.
 
-Jan Kiszka wrote:
-> Kiichi Kameda wrote:
->> ...
->> After tough investigation, I think I found some clues such as:
->> While in.ftpd runs hard, a "write" system call was issued and Linux
->> kernel was processing its request.
->>  But weird __ipipe_dispatch_event and __ipipe_sync_stage was recorded.=
+Thank you for the 2.6.17 patch, but unfortunately it did not work.
+I had problems with both patches. The xenomai patch expected 2 lines
+in the source that are not in the original xenomai sources. But i
+patched it manual.
+The Kernel Patch does not work with the prepare-kernel script. It stops with:
 
->>
->> I think the problem originates from a Xenomai context switch(which
->> overwrites "current"), while Linux is processing  system call.
->=20
-> If I interpret linux/include/asm-sh/current.h correctly, current is
-> derived from the stack on your platform (like on most archs) and cannot=
+grep: /home/amg/linux-2.6.17/include/asm-powerpc/ipipe.h: No such file
+or directory
+prepare-kernel.sh: /home/amg/linux-2.6.17 has no Adeos support for powerpc
 
+ipipe.h is in asm-ppc so i think it has something to do with the ppc
+-> powerpc merge.
+So i patched is manually. But in menuconfig the xenomai entries are
+missing so i could not activate it to test it.
 
-That's nonsense as I realised later by following the code down to
-include/asm-sh/thread_info.h: current_thread_info seems to get
-referenced by some register.
-
-Still the question remains for me why this should be a general Xenomai
-problem. Xenomai may overwrite the content on switch_to (but I don't
-know your patch, how you realised context switches between RT tasks on
-SH4), but then it should definitely also restore it again on returning
-to Linux.
-
-Jan
-
-
---------------enigFE677852D19F006EA3F3EA44
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFINCVniDOoMHTA+kRAvNvAJ4ybIUZ64JsZKc17Ej6BkCuCQuO0gCdEqGS
-bNGg8LUN2bCld1Eu+1WgeF4=
-=/Sw7
------END PGP SIGNATURE-----
-
---------------enigFE677852D19F006EA3F3EA44--
+Syed Amer Gilani
 
