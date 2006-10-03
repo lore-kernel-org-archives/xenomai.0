@@ -1,6 +1,6 @@
-Date: Tue,  3 Oct 2006 09:47:34 +0200
-Message-Id: <J6JUZA$835CBCA6714D18503B21543C9C3611BE@laposte.net>
-Subject: Re:[Xenomai-help] POSIX API Questions
+Date: Tue,  3 Oct 2006 09:54:28 +0200
+Message-Id: <J6JVAS$C4CF17214301337F8F99C4C608155EE6@domain.hid>
+Subject: Re:[Xenomai-help] POSIX skin and dynamic libs
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
@@ -22,73 +22,25 @@ Cc: xenomai-help <xenomai@xenomai.org>
 De     : xenomai-help-bounces@domain.hid
 A      : "Xenomai help" xenomai@xenomai.org
 Copies : 
-Date   : Mon, 02 Oct 2006 13:16:13 -0500
-Objet  : [Xenomai-help] POSIX API Questions
+Date   : Mon, 02 Oct 2006 18:43:40 -0500
+Objet  : [Xenomai-help] POSIX skin and dynamic libs
 
-> I have a couple of questions regarding the userspace POSIX
-API...
+> I have a main program that dynamically loads shared library
+> modules using dlopen().  I would like to create a shared
+> library module that is able to spawn a Xenomai RT thread.
+>  This seems  like it should be possible, but I get the
+> following error when loading the module:
 > 
-> I remember reading somewhere that in order to make blocking
-> calls to Xenomai resources from the main thread, a Xenomai
-> shadow thread needs to be created by calling rt_task_shadow.
->  Of course, this routine is part of the native API.  From
-> my research, the equivalent way of doing this using the
-> POSIX skin appears to be adding these lines to the main
-> program:
+> IOError: /usr/xenomai/lib/libpthread_rt.so.0: undefined symbol:
+> __real_pthread_getschedparam
 > 
->   struct sched_param sparam;
->   sparam.sched_priority =3D 0; /* Must be zero for SCHED_OTHER? */
->   pthread_setschedparam(pthread_self(), SCHED_OTHER, &sparam);
-> 
-> The documentation says that calling pthread_setschedparam
-for the
-> main thread will make it into a Xenomai task.  So, is the above
-> code correct?  The main thread is intended to be a non-RT I/O
-> thread that communicates with an RT thread via POSIX message
-> queues.
-> 
-> When I look at /proc/xenomai/sched, it appears that a shadow
-> thread is created even if I omit the call to
-> pthread_setschedparam mentioned above.  Is this always done
-> automatically, or should I follow the procedure above and
-> explicitly call pthread_setschedparam?
+> This seems to be related to the "-Wl,--wrap" linker flags.  Is
+> there a way to get this to work?  I don't think recompiling the
+> main program is an option, but I can add some code that gets
+> executed before the dynamic library is loaded.
 
-The main thread is automatically shadowed by the POSIX skin
-library initialization routine. Most people need this anyway
-and if they do not need it, it is harmless.
-
-> 
-> I am new to POSIX thread programming (and Xenomai), so I am
-> trying to figure out how everything works.  I have attached
-> an example that compiles and runs under vanilla linux as
-> well as Xenomai using the POSIX API.  It appears to work
-> the way I would expect.  I would appreciate it if someone
-> would look it over the example see if the signal handling,
-> task creation/deletion, error handling, mqueue operation,
-> etc. looks correct.  
-
-A word about the process termination: using atexit is error
-prone, because the registered callback get called in the 
-context of the thread that is calling exit, before the
-cancellation handlers are called, so for example if a thread
-is calling exit while holding a mutex and the routine
-registered with atexit need to lock the same mutex, the program
-deadlocks. I experienced various issues trying to terminate
-cleanly a posix application, the method I would advise is the
-one used by the switchtest program.
-
-
-> Am I doing anything that would make my rt_thread non-RT? 
-(e.g. is it
-> okay to call snprintf?)
-
-I do not see anything suspicious, but in order to be sure you can
-use pthread_set_mode_np(0, PTHREAD_WARNSW) to cause a SIGXCPU
-signal to be sent when the calling thread involontary switches to 
-secondary mode. See:
-http://www.xenomai.org/documentation/trunk/html/api/group__posix__thread.=
-html#ga14
-
+The wrapper for __real_pthread_getschedparam is missing in
+src/skins/posix/wrappers.c, try adding it.
 
 -- 
                  Gilles Chanteperdrix=0A=0AAcc=E9dez au courrier =E9lectr=
