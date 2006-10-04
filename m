@@ -1,14 +1,13 @@
-Message-ID: <4523BD6F.2050708@domain.hid>
-Date: Wed, 04 Oct 2006 15:55:59 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <e3291e320610040739y2ae413abkd4c037378f75b74f@domain.hid>
+Date: Wed, 4 Oct 2006 16:39:39 +0200
+From: "d p" <dogpointer@domain.hid>
 Subject: Re: [Xenomai-help] root_thread_exit in pSOS skin
+In-Reply-To: <4523BD6F.2050708@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_32339_16117597.1159972779251"
 References: <e3291e320610030716i59d9bf11q286b2d142b79ef8d@domain.hid>
-In-Reply-To: <e3291e320610030716i59d9bf11q286b2d142b79ef8d@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE9E1164E8FC527233B7A156A"
-Sender: jan.kiszka@domain.hid
+	<4523BD6F.2050708@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,49 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: d p <dogpointer@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE9E1164E8FC527233B7A156A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_32339_16117597.1159972779251
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-d p wrote:
-> I'm trying to use Xenomai over a Linux machine, in particular I'm tryin=
-g to
-> emulate a pSOS system by using the demo satch (executable satch_uvm). I=
- see
-> that root_thread_exit is never called.
->=20
-> How I have to do to get root_thread_exit called? I'd like to use this
-> function to remove a pipe created in root_thread_init.
-
-root_thread_exit maps to __xeno_user_exit [1], and that should get
-called by the UVM main function [2].
-
-Jan
+On 04/10/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> root_thread_exit maps to __xeno_user_exit [1], and that should get
+> called by the UVM main function [2].
 
 
-[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/nucleus/type=
-s.h#L129
-[2]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/asm-uvm/syst=
-em.h#L406
+OK, but I  put a  xnprintf in root_thread_exit and I never saw this print. I
+stop the emulation with CTRL+C.
 
+Regards
 
---------------enigE9E1164E8FC527233B7A156A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------=_Part_32339_16117597.1159972779251
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+On 04/10/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+root_thread_exit maps to __xeno_user_exit [1], and that should get<br>called by the UVM main function [2].</blockquote><div><br>OK, but I&nbsp; put a&nbsp; xnprintf in  root_thread_exit and I never saw this print. I stop the emulation with CTRL+C.
+<br><br>Regards<br></div><br></div><br>
 
-iD8DBQFFI71vniDOoMHTA+kRAtygAJ9yoFKik3kf8/acDtK4V0/LtIj1+QCffp9C
-byyKT0+ywpLzK7Z59c4LQRI=
-=vrRM
------END PGP SIGNATURE-----
-
---------------enigE9E1164E8FC527233B7A156A--
+------=_Part_32339_16117597.1159972779251--
 
