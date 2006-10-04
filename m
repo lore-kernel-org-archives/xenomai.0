@@ -1,12 +1,9 @@
-Message-ID: <4522A377.5030503@domain.hid>
-Date: Tue, 03 Oct 2006 11:52:55 -0600
-From: Jim Cromie <jim.cromie@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] possible future conflict w LOCAL_APIC
-References: <451C586A.7020309@domain.hid> <1159628606.5014.33.camel@domain.hid>
-In-Reply-To: <1159628606.5014.33.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <OFEF08EF89.60F083EE-ONC12571FD.003F2533-C12571FD.00429C50@domain.hid>
+From: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+Date: Wed, 4 Oct 2006 14:07:33 +0200
+Content-Type: text/plain; charset="US-ASCII"
+Subject: [Xenomai-core] Please remove "-I." in "xeno-config --*-cflags
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,65 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Thu, 2006-09-28 at 17:19 -0600, Jim Cromie wrote:
->
-> [...]
->
->   
->> BTW I was planning to make LOCAL_APIC unconditional on i386 too like on x86-64.
->> There is basically no reason ever to disable it, and the bug work around
->> for buggy BIOS one can be done at runtime. Overall the #ifdef / compile breakage
->> ratio vs saved code on disabled APIC code is definitely unbalanced.
->>
->> -Andi
->>
->>
->>
->> This looks like it may become a problem:
->>
->> Q: The kernel message log says:
->>    "Xenomai: Local APIC absent or disabled!
->>     Disable APIC support or pass "lapic" as bootparam."
->>
->> A: Xenomai sends this message if the kernel configuration Xenomai was
->>    compiled against enables the local APIC support
->>    (CONFIG_X86_LOCAL_APIC), but the processor status gathered at boot
->>    time by the kernel says that no local APIC support is available.
->>    There are two options for fixing this issue:
->>
->>    o either your CPU really has _no_ local APIC hw, then you need to
->>      rebuild a kernel with LAPIC support disabled, before rebuilding
->>      Xenomai against the latter;
->>
->>
->>
->> Is this something fundamental or merely inconvenient ?
->>
->>     
->
-> Inconvenient because this would require some surgery, and a bit less
-> efficient, since we would have to select the proper timing mode handlers
-> dynamically through function pointers, right in the hot path (e.g. PIT
-> programming in oneshot mode), not to speak of leaving dead code at
-> runtime. Fortunately, this would be made simpler by the
-> periodic-over-aperiodic mode emulation which is planned, since the
-> periodic hw management code would go away as a result of such change.
->
-> This said, the impact of forcing CONFIG_X86_LOCAL_APIC on would be
-> limited to a handful of files, Xenomai-wise. Adeos-wise, this would have
-> the same impact than for the rest of the x86 kernel code: less ifdefs,
-> more dead code at runtime.
->
->   
+Hi,
 
-update:
+setting "-I." in the compiler flags in scripts/xeno-config.in
+messes up the include file search order of the compiler,
+and i can't see any good reason for it to be there. the
+other flags except the xenomai include-path and the
+defines are questionable, too. At least "-Wall" and
+"-pipe" should be left to the programmer of the
+application.
 
-Ingo Molnar has voiced strong preference that the config option remain,
-citing 60kb growth in its removal.  So its probably safe for now ;-)
+(xenomai versions 2.2.0 + 2.2.3)
 
 
+Thanks,
+Thomas Wiedemann
 
