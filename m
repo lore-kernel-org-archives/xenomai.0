@@ -1,5 +1,5 @@
-Message-ID: <ac3922a00610050509r386e0e4du5fe300edb86dbdfc@domain.hid>
-Date: Thu, 5 Oct 2006 14:09:35 +0200
+Message-ID: <ac3922a00610050516j5f06ae37j69ab6efcd9a4eb8e@domain.hid>
+Date: Thu, 5 Oct 2006 14:16:36 +0200
 From: "Syed Amer Gilani" <amg@domain.hid>
 Sender: groove.c@domain.hid
 Subject: Re: [Xenomai-help] Xenomai on 2.6.17 ppc
@@ -47,11 +47,11 @@ Cc: xenomai-help <xenomai@xenomai.org>
 >
 > Note: this patch requires another small fix for Xenomai (see
 > attachment). Philippe, could you please apply it? TIA.
->
->
-> Wolfgang.
->
->
->
->
+
+First sorry for the empty Mail, this damn send button is so easily hit ...
+
+The Patch applied fine and the Kernel compiled without Problems.
+Booting it on the mpc5200 went also fine. But beyond that i cant tell
+you if everything works in order, because is just started to use
+xenomai.
 
