@@ -1,18 +1,14 @@
-Message-ID: <452510A8.2050303@domain.hid>
-Date: Thu, 05 Oct 2006 16:03:20 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <452523BD.2030204@domain.hid>
+Date: Thu, 05 Oct 2006 17:24:45 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai on 2.6.17 ppc
-References: <ac3922a00609270502s498d99bcv120ccc0f1a9f2a40@domain.hid>	
-	<451A6E2B.2040901@domain.hid>	
-	<ac3922a00609270536m396f4af0i4d60929689d4f541@domain.hid>	
-	<451E8999.2000801@domain.hid>	
-	<ac3922a00610050516j5f06ae37j69ab6efcd9a4eb8e@domain.hid>	
-	<4524FB42.8030307@domain.hid>
-	<ac3922a00610050538j450879fcv9c5fb47259959412@domain.hid>
-In-Reply-To: <ac3922a00610050538j450879fcv9c5fb47259959412@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20061005134524.92486.qmail@domain.hid>
+In-Reply-To: <20061005134524.92486.qmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig55E8E9AC3E6314948BABEE2F"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-help] Re: [Xenomai-core] aperiodic xenomai tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,26 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Syed Amer Gilani <amg@domain.hid>
+To: mani bhatti <imranbashirbhatti@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Syed Amer Gilani wrote:
-> 2006/10/5, Wolfgang Grandegger <wg@domain.hid>:
->> Are the Linux 2.6.17 patches for the MPC5200 you mentioned earlier
->> available somewhere? I would like to do some RT-Socket-CAN tests with
->> MSCAN under Linux 2.6 but so far, I didn't succeed to make a usable
->> kernel :-(.
-> 
-> http://www.pengutronix.de/oselas/bsp/phytec/index_de.html#phyCORE-MPC5200B
-> 
-> They are developed for this specific Board, i don't know if they work
-> on slightly different Hardware. This Package is meant to be used with
-> Ptxdist, but when you untar it you will find the kernel patches in the
-> kernel-patches-target Directory.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig55E8E9AC3E6314948BABEE2F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Cool, I got Linux 2.6.17 booted on my Iccecube board. Thanks to you and 
-Pengutronix.
+mani bhatti wrote:
+> HI=20
+> I am grateful for the clarification of the concept.Again the problem is=
+ that  if i make one thread pariodic and the other one non pariodic then =
+the pariodic thread never runs and only non pariodic thread shows up the =
+code for tasks  is given below.I would be very thankful if you fifure out=
+ the problem.Thanks
 
-Wolfgang.
+Please post a full, compilable version of your test case.
 
+Jan
+
+
+--------------enig55E8E9AC3E6314948BABEE2F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFJSO9niDOoMHTA+kRAgIyAJ9QLxDrEf7tIdyWidHksjY9gqJ95ACfYla/
+7lXnZ37DRFevIds599iT574=
+=sr+4
+-----END PGP SIGNATURE-----
+
+--------------enig55E8E9AC3E6314948BABEE2F--
 
