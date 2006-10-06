@@ -1,14 +1,12 @@
-Message-ID: <452523BD.2030204@domain.hid>
-Date: Thu, 05 Oct 2006 17:24:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <ac3922a00610060437i4735bf7at85ca11beb12ab1be@domain.hid>
+Date: Fri, 6 Oct 2006 13:37:20 +0200
+From: "Syed Amer Gilani" <amg@domain.hid>
+Sender: groove.c@domain.hid
 MIME-Version: 1.0
-References: <20061005134524.92486.qmail@domain.hid>
-In-Reply-To: <20061005134524.92486.qmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig55E8E9AC3E6314948BABEE2F"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: [Xenomai-core] aperiodic xenomai tasks
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] rtcan_mscan compilation.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,40 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: mani bhatti <imranbashirbhatti@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig55E8E9AC3E6314948BABEE2F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I wanted to test rtcan but the mscan Driver fails to compile:
 
-mani bhatti wrote:
-> HI=20
-> I am grateful for the clarification of the concept.Again the problem is=
- that  if i make one thread pariodic and the other one non pariodic then =
-the pariodic thread never runs and only non pariodic thread shows up the =
-code for tasks  is given below.I would be very thankful if you fifure out=
- the problem.Thanks
+  CC      drivers/xenomai/can/mscan/rtcan_mscan.o
+drivers/xenomai/can/mscan/rtcan_mscan.c:85: error: syntax error before
+string constant
+drivers/xenomai/can/mscan/rtcan_mscan.c:85: warning: type defaults to
+'int' in declaration of 'MODULE_PARM'
+drivers/xenomai/can/mscan/rtcan_mscan.c:85: warning: function
+declaration isn't a prototype
+drivers/xenomai/can/mscan/rtcan_mscan.c:85: warning: data definition
+has no type or storage class
+drivers/xenomai/can/mscan/rtcan_mscan.c:89: error: syntax error before
+string constant
+drivers/xenomai/can/mscan/rtcan_mscan.c:89: warning: type defaults to
+'int' in declaration of 'MODULE_PARM'
+drivers/xenomai/can/mscan/rtcan_mscan.c:89: warning: function
+declaration isn't a prototype
+drivers/xenomai/can/mscan/rtcan_mscan.c:89: warning: data definition
+has no type or storage class
+make[4]: *** [drivers/xenomai/can/mscan/rtcan_mscan.o] Fehler 1
 
-Please post a full, compilable version of your test case.
+When i understand the Sources correct it has something to do with the
+value of the config variables. But i left them all on the default
+values:
 
-Jan
+CONFIG_XENO_DRIVERS_RTCAN_MSCAN=y
+CONFIG_XENO_DRIVERS_RTCAN_MSCAN_1=y
+CONFIG_XENO_DRIVERS_RTCAN_MSCAN_2=y
+CONFIG_XENO_DRIVERS_RTCAN_MSCAN_CLOCK=66000000
+CONFIG_XENO_DRIVERS_RTCAN_MSCAN_ALT=y
+# CONFIG_XENO_DRIVERS_RTCAN_MSCAN_PSC2 is not set
 
-
---------------enig55E8E9AC3E6314948BABEE2F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFJSO9niDOoMHTA+kRAgIyAJ9QLxDrEf7tIdyWidHksjY9gqJ95ACfYla/
-7lXnZ37DRFevIds599iT574=
-=sr+4
------END PGP SIGNATURE-----
-
---------------enig55E8E9AC3E6314948BABEE2F--
+Regards,
+Syed Amer Gilani
 
