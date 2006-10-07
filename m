@@ -1,13 +1,15 @@
-Message-ID: <4528F0AD.4000602@domain.hid>
-Date: Sun, 08 Oct 2006 14:35:57 +0200
+Message-ID: <4527E457.705@domain.hid>
+Date: Sat, 07 Oct 2006 19:31:03 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] USB to serial converter using in Xenomai
-References: <4527B6C6.7000208@domain.hid>
-In-Reply-To: <4527B6C6.7000208@domain.hid>
+Subject: Re: [Xenomai-help] rtcan_mscan compilation.
+References: <ac3922a00610060437i4735bf7at85ca11beb12ab1be@domain.hid>
+	<4526B48F.50705@domain.hid> <452767E0.3050107@domain.hid>
+	<4527B59B.1030109@domain.hid>
+In-Reply-To: <4527B59B.1030109@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig977DB9FB3ABCCF4E3D57B583"
+	boundary="------------enigEEBB8AB7FD099E71A700A644"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,58 +20,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pavel Pirkl <pavelpirkl@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig977DB9FB3ABCCF4E3D57B583
+--------------enigEEBB8AB7FD099E71A700A644
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Pavel Pirkl wrote:
-> Hello,
-> 1.
-> I am using USB to serial convertes with FTDI chip. But I don=B4t know
-> which paramaters of irq and ioaddr I must to set for xeno_16550A.ko .
-> Can you help me where I found this parameters?
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Wolfgang Grandegger wrote:
+>>> ...
+>>> Index: ksrc/drivers/can/rtcan_internal.h
+>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>> --- ksrc/drivers/can/rtcan_internal.h    (revision 1695)
+>>> +++ ksrc/drivers/can/rtcan_internal.h    (working copy)
+>>> @@ -111,6 +111,10 @@
+>>> =20
+>>>  #ifndef compat_module_int_param_array
+>>>  #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,10)
+>>> +# define compat_module_int_param(name) \
+>>> +    MODULE_PARM(name, "i")
+>>> +# define compat_module_charp_param(name) \
+>>> +    MODULE_PARM(name, "s")
+>>>  # define compat_module_byte_param_array(name, count) \
+>>>      MODULE_PARM(name, "1-" __MODULE_STRING(count) "b")
+>>>  # define compat_module_short_param_array(name, count) \
+>>> @@ -118,6 +122,10 @@
+>>>  # define compat_module_int_param_array(name, count) \
+>>>      MODULE_PARM(name, "1-" __MODULE_STRING(count) "i")
+>>>  #else
+>>> +# define compat_module_int_param(name) \
+>>> +    module_param(name, int, 0444)
+>>> +# define compat_module_charp_param(name) \
+>>> +    module_param(name, charp, 0444)
+>>>  # define compat_module_byte_param_array(name, count) \
+>>>      module_param_array(name, byte, NULL, 0444)
+>>>  # define compat_module_short_param_array(name, count) \
+>>
+>> No need, module_param comes even with 2.4. We only need wrapping for
+>> parameter arrays (due to different semantics of the macro arguments).
 >=20
-> 2.
-> Now I am using two serial link defined us
-> #!/bin/sh
-> setserial /dev/ttyS1 uart none        #COM2
-> setserial /dev/ttyS2 uart none        #COM3
-> insmod    ./xeno_nucleus.ko
-> insmod    ./xeno_native.ko
-> insmod    ./xeno_rtdm.ko
-> insmod    ./xeno_16550A.ko ioaddr=3D0x2f8,0x3e8 irq=3D3,5 tx_fifo=3D10,=
-10
-> start_index=3D0    #COM2, COM3
+> But with limitations, unfortunately:
 >=20
-> This two serial link works very good.
-> But if I am set for example this
-> #!/bin/sh
-> setserial /dev/ttyS2 uart none        #COM3
-> setserial /dev/ttyS3 uart none        #COM4 - not function ??
-> insmod    ./xeno_nucleus.ko
-> insmod    ./xeno_native.ko
-> insmod    ./xeno_rtdm.ko
-> insmod    ./xeno_16550A.ko ioaddr=3D0x3e8,0x3f8 irq=3D5,10 tx_fifo=3D10=
-,10
-> start_index=3D0    #COM3, COM4
+>   /* type is byte, short, ushort, int, uint, long, ulong, bool. (2.6
+>      has more, but they are not supported).  perm is permissions when
+>      it appears in sysfs: 0 means doens't appear, 0444 means read-only
+>      by everyone, 0644 means changable dynamically by root, etc.  name
+>      must be in scope (unlike MODULE_PARM).
+>   */
+>   #define module_param(name, type, perm) \
+>         static inline void *__check_existence_##name(void) { return
+>              &name; } \
+>         MODULE_PARM(name, _MODULE_PARM_STRING_ ## type)
 >=20
-> The COM3 works but COM4 doesn=B4t work. Where is problem?
+>   #define _MODULE_PARM_STRING_byte "b"
+>   #define _MODULE_PARM_STRING_short "h"
+>   #define _MODULE_PARM_STRING_ushort "h"
+>   #define _MODULE_PARM_STRING_int "i"
+>   #define _MODULE_PARM_STRING_uint "i"
+>   #define _MODULE_PARM_STRING_long "l"
+>   #define _MODULE_PARM_STRING_ulong "l"
+>   #define _MODULE_PARM_STRING_bool "i"
+>=20
+> Especially "s" is missing. But it could be wrapped with:
+>=20
+>   #define _MODULE_PARM_STRING_charp "s"
+>=20
+> Any idea why this is not already done?
 
-The FTDI can only be used via an USB stack + a FTDI device drivers,
-there is no such thing as 16550A emulation via USB devices.
+Likely because you mostly don't need it? I think mscan is an exception
+here, at least from my experience.
 
-I have such a FTDI driver for the USB4RT stack here, but it is in an
-"experimental" (means unusable :-/) state. I still hope we can resolve
-this one day, but I cannot promise when.
+When _MODULE_PARM_STRING_charp helps to enhance module_param on 2.4,
+lets put it in Xenomai's wrapping header. I think we should also move
+the parameter array over (directing it officially through the RTDM layer
+can still be done later, at the latest when providing user-space
+support). I would support a patch doing this as well.
+
+>=20
+> I also want to replace the compat_module_*_param_array functions with
+> the attached code snippet.
+
+Ok, I'm awaiting a revised patch.
 
 Jan
 
 
---------------enig977DB9FB3ABCCF4E3D57B583
+--------------enigEEBB8AB7FD099E71A700A644
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -78,10 +119,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFFKPCtniDOoMHTA+kRAs4aAJwOSTZfEYLOLuusylmqYGIfoteCFgCfXe/q
-avdndLcEkqCEUPm5E0nuAdk=
-=Kt/q
+iD8DBQFFJ+RXniDOoMHTA+kRAiMEAJ0VF0hPNCVyfERgO36jzf3uQxO1mgCfZJy1
+AcKBDYAMnWLeELByR8XC94Y=
+=Nu3Q
 -----END PGP SIGNATURE-----
 
---------------enig977DB9FB3ABCCF4E3D57B583--
+--------------enigEEBB8AB7FD099E71A700A644--
 
