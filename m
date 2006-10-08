@@ -1,15 +1,14 @@
-Subject: Re: [Xenomai-core] Compiler and linker flags
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <452956C3.8010109@domain.hid>
-References: <OFACF3C5AC.1F615263-ONC12571FD.004ACE3C-C12571FD.004F1995@domain.hid>
-	<4528FBE5.7020803@domain.hid> <17705.6276.735921.764908@domain.hid>
-	<45293C9B.1030608@domain.hid> <1160335881.4963.19.camel@domain.hid>
-	<452956C3.8010109@domain.hid>
+In-Reply-To: <451E378F.5030305@domain.hid>
+References: <4516F0D1.3010800@domain.hid>
+	<1159135692.4971.68.camel@domain.hid>  <451E378F.5030305@domain.hid>
 Content-Type: text/plain
-Date: Sun, 08 Oct 2006 22:44:39 +0200
-Message-Id: <1160340280.4963.28.camel@domain.hid>
+Date: Sun, 08 Oct 2006 22:56:31 +0200
+Message-Id: <1160340992.4963.31.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [Adeos-main] Re:
+	adeos-ipipe-2.6.18-ppc-1.4-00.patch, first version
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,61 +19,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org
 
-On Sun, 2006-10-08 at 21:51 +0200, Jan Kiszka wrote:
+On Sat, 2006-09-30 at 11:23 +0200, Wolfgang Grandegger wrote:
+> Hi Philippe,
+> 
 > Philippe Gerum wrote:
+> > On Sun, 2006-09-24 at 22:55 +0200, Wolfgang Grandegger wrote:
+> >> Hi Philippe,
 > >>
-> >>  o -D__XENO__
-> > 
-> > POSIX code may be compiled either against the regular Linux support, or
-> > against the Xenomai one; this define provides a standard signature to
-> > test for in order to detect the second case, if need be.
-> 
-> Ok. Should we restrict it to --posix-cflags then?
-> 
-
-No objection, but in such a case, we'd be better off moving the define
-somewhere in include/posix/*.h. Gilles?
-
-> > 
-> >>  o -fstrict-aliasing -Wno-strict-aliasing
-> > 
-> > We want strict aliasing to be enabled for optimization purpose at
-> > application level too, asking the compiler to silence type punned
-> > references in case it find somes, due to legacy code support.
-> 
-> So I guess the idea is just like with -Wall: prod the user to write
-> clean code? I'm not strictly against it, but I also understand Thomas'
-> argument: "what if every lib exported its private policy?"
-> 
-
-Actually, those flags went in just because I once wanted everything that
-I'd build out of tree to be safe from obvious sanity issues. No
-objection to allow people to relax this constraint though and get rid of
-those switches from the standard flags. They are not part of the basic
-pattern anyway; it's "only" about some performance/sanity trade-off.
-
-> > 
-> >>  o -rdynamic
+> >> attached you will find a first version of the PPC ADEOS-IPipe patch for 
+> >> Linux 2.6.18 (from kernel.org) for review. I have also included a 
+> >> commented log file with more information on the porting of 
+> >> adeos-ipipe-2.6.14-ppc-1.4-00 to Linux 2.6.18. It works with a recent 
+> >> version of Xenomai.
 > >>
 > > 
-> > Applications may want to use dlopen() against there own image, in which
-> > case, passing -rdynamic (same as --export-dynamic) makes dlsym()
-> > properly find global symbols exported this way by the executable.
+> > Thanks, at first sight, this looks good. I don't see any obvious problem
+> > in the tracer code either. Anyway, I will play with it asap.
+> > 
+> >> The patch currently only supports devices in the "arch/ppc" tree with 
+> >> the option "CONFIG_PPC_MERGE" not set. Porting the "arch/powerpc" tree 
+> >> requires further effort and I need a test system as well. Puh, let's 
+> >> hope that the merge ppc -> powerpc will be completed soon.
+> >>
+> >> The idle loop is not yet working for 6xx and I have disabled it for
+> >> this reason (check arch/powerpc/kernel/idle.c). It needs further
+> >> debugging. I hope to find more time beginning of October.
+> > 
+> > Ok, thanks. Btw, returning from NAP on 6xx is done through an exception,
+> > right? If so, maybe we have a problem with this particular
+> > exception/interrupt branching directly to transfer_to_handler_full (i.e.
+> > the vanilla way) without being known from the Adeos pipeline, albeit it
+> > should? (red blinking warning: this is just a wild guess).
 > 
-> If the only /may want/ to do this, shouldn't they apply that switch on
-> their own to CFLAGS? Aren't there any downsides of doing this
-> unconditionally via Xenomai?
-
-There's no downside, aside of a few bytes more in the executable's GOT.
-But I agree that people using lazy binding in their apps should know
-about -rdynamic and dlopen() anyway, so that part is their business
-after all; we don't need to enforce it as a basic option.
-
+> Attached is a revised patch including a fix for remaining problem in the 
+> 6xx idle loop mentioned above. The bug was here (diff to old patch):
 > 
-> Jan
+> -+++ linux-2.6.18/arch/ppc/kernel/entry.S
+> ++++ linux-2.6.18/arch/ppc/kernel/entry.S
+>   @@ -132,8 +132,23 @@
+>             * check for stack overflow
+>             */
+> @@ -78,9 +73,9 @@
+>   +      &current->thread_info to &current->thread, which is coarser
+>   +      than the vanilla implementation, but likely sensitive enough
+>   +      to catch overflows soon enough though.*/
+> -+      addi    r11,r9,THREAD
+> ++      addi    r12,r9,THREAD
+>   +      cmplw   0,r1,r9
+> -+      cmplw   1,r1,r11
+> ++      cmplw   1,r1,r12
+>   +      crand   1,1,4
+>   +      bgt-    stack_ovf               /* if r9 < r1 < r9+THREAD */
+>   +#else /* CONFIG_IPIPE */
+> 
+> I accidentally used r11 for the above logic, which is in fact used in 
+> power_save_6xx_restore:
+
+Gasp. Hopefully, one day, we will not have to work around the dual stack
+model anymore, because even Xenomai kernel threads will be based on
+regular Linux TCBs. Thanks for the patch.
+
 -- 
 Philippe.
 
