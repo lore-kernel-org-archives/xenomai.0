@@ -1,15 +1,15 @@
-Message-ID: <45293C9B.1030608@domain.hid>
-Date: Sun, 08 Oct 2006 19:59:55 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Compiler and linker flags
-References: <OFACF3C5AC.1F615263-ONC12571FD.004ACE3C-C12571FD.004F1995@domain.hid>	<4528FBE5.7020803@domain.hid>
-	<17705.6276.735921.764908@domain.hid>
-In-Reply-To: <17705.6276.735921.764908@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF949BE9FEF1786F71C3099E5"
-Sender: jan.kiszka@domain.hid
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45293C9B.1030608@domain.hid>
+References: <OFACF3C5AC.1F615263-ONC12571FD.004ACE3C-C12571FD.004F1995@domain.hid>
+	<4528FBE5.7020803@domain.hid> <17705.6276.735921.764908@domain.hid>
+	<45293C9B.1030608@domain.hid>
+Content-Type: text/plain
+Date: Sun, 08 Oct 2006 21:31:21 +0200
+Message-Id: <1160335881.4963.19.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,133 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF949BE9FEF1786F71C3099E5
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Sun, 2006-10-08 at 19:59 +0200, Jan Kiszka wrote:
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Thomas Wiedemann wrote:
->  > >> BTW, providing a patch, even if it's trivial, is always welcome i=
-n such
->  > >> cases.
->  > >=20
->  > > I had already attached it to the email, but then i thought it was =
-so
->  > > ridiculously small ... and removed it :)
->  > > So here it is again.
->  >=20
->  > The point is if you start a thread like "[PATCH] Remove -I. from
->  > xeno-config" and attach a full patch (including ChangeLog fragment) =
-you
->  > make it more likely to gain full attention and help to get it applie=
-d
->  > quickly.
->  >=20
->  > >=20
->  > > =20
->  > >> Well, -Wall should be considered a reasonable policy to keep code=
- clean.
->  > >> Me feeling is that this switch is fairly appropriate, specificall=
-y for
->  > >> real-time applications. But it can easily be relaxed by adding sp=
-ecific
->  > >> -Wno-xxx after the Xenomai flags. And *that* should happen explic=
-itly.
->  > >>
->  > >> -pipe is an optimisation of the build process, something one may
->  > >> discuss, though I don't see an immediate reason why it could fail=
- in the
->  > >> context of Xenomai applications (that should use the GNU toolchai=
-n=20
->  > > anyway).
->  > >=20
->  > > I definitley agree on the use of "-Wall" and "-pipe", but i think =
-these
->  > > optional flags should be set in the main project, and not by exter=
-nal
->  > > libraries or tools. It's not that i think they would conflict with=
+> >  > @All: What flags are *really* required to build and link some *user*
+> >  > application against Xenomai? Beside that -I. at least -O2 can be fairly
+> >  > problematic I guess - if not even more. Also the debug mode of the
+> >  > Xenomai build leaks to the user if (s)he wants it or not.
+> >  > 
+> >  > Time for a cleanup?
+> > 
+> > -D_GNU_SOURCE is necessary, at least when compiling for the POSIX skin,
+> > because on some platforms, it makes the defines for the pthread mutex
+> > types available.
+> > 
+> > -D_REENTRANT is required when compiling a multithreaded application with
+> > the glibc. Theoretically, the glibc is not supposed to make its services
+> > thread safe when a program is not compiled with this define.
+> > 
+> 
+> Ok, they will be saved from the hoover. What about those:
+> 
+>  o -D__XENO__
 
->  > > other flags or that they are wrong or inappropriate, but just beca=
-use
->  > > i expect *-config-tools to not specify any flags that affect the
->  > > compiler behaviour. I just don't want every libraries' config-scri=
-pt
->  > > to place the authors favorite compiler-flags into my own flags.
->  >=20
->  > I agree now, for the sake of cleanness and as we are not just discus=
-sing
->  > -Wall and -pipe here:
->  >=20
->  > # xeno-config --xeno-cflags
->  > -I. -I<xenomai-inst>/include -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO=
-__
->  > -Wall -pipe -fstrict-aliasing -Wno-strict-aliasing
->  >=20
->  > # xeno-config --posix-cflags
->  > -I. -I<xenomai-inst>/include -I<xenomai-inst>/include/posix -O2
->  > -D_GNU_SOURCE -D_REENTRANT -D__XENO__ -Wall -pipe -fstrict-aliasing
->  > -Wno-strict-aliasing
->  >=20
->  > # xeno-config --xeno-ldflags
->  > -L<xenomai-inst>/lib -lpthread -rdynamic
->  >=20
->  > # xeno-config --posix-ldflags
->  > -Wl,@<xenomai-inst>/lib/posix.wrappers -L<xenomai-inst>/lib -lpthrea=
-d_rt
->  > -lpthread -lrt -rdynamic
->  >=20
->  > (all x86, other platforms may vary)
->  >=20
->  > @All: What flags are *really* required to build and link some *user*=
+POSIX code may be compiled either against the regular Linux support, or
+against the Xenomai one; this define provides a standard signature to
+test for in order to detect the second case, if need be.
 
->  > application against Xenomai? Beside that -I. at least -O2 can be fai=
-rly
->  > problematic I guess - if not even more. Also the debug mode of the
->  > Xenomai build leaks to the user if (s)he wants it or not.
->  >=20
->  > Time for a cleanup?
->=20
-> -D_GNU_SOURCE is necessary, at least when compiling for the POSIX skin,=
+>  o -fstrict-aliasing -Wno-strict-aliasing
 
-> because on some platforms, it makes the defines for the pthread mutex
-> types available.
->=20
-> -D_REENTRANT is required when compiling a multithreaded application wit=
-h
-> the glibc. Theoretically, the glibc is not supposed to make its service=
-s
-> thread safe when a program is not compiled with this define.
->=20
+We want strict aliasing to be enabled for optimization purpose at
+application level too, asking the compiler to silence type punned
+references in case it find somes, due to legacy code support.
 
-Ok, they will be saved from the hoover. What about those:
+>  o -rdynamic
+> 
 
- o -D__XENO__
- o -fstrict-aliasing -Wno-strict-aliasing
- o -rdynamic
+Applications may want to use dlopen() against there own image, in which
+case, passing -rdynamic (same as --export-dynamic) makes dlsym()
+properly find global symbols exported this way by the executable.
 
-Again, only /wrt to user apps. We can keep them all internally.
-
-Jan
+> Again, only /wrt to user apps. We can keep them all internally.
+> 
+> Jan
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
 
---------------enigF949BE9FEF1786F71C3099E5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFKTyeniDOoMHTA+kRApqtAJwNRbqaJWbGr/txSh/e1QwVkNcv+gCeJBO2
-HV+7/FDsoNjyWEsXdOavna8=
-=B76A
------END PGP SIGNATURE-----
-
---------------enigF949BE9FEF1786F71C3099E5--
 
