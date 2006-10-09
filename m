@@ -1,13 +1,13 @@
-Message-ID: <4542341D.5080805@domain.hid>
-Date: Fri, 27 Oct 2006 11:30:21 -0500
-From: Jeff Webb <jeff.webb@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
-References: <450B2BE1.1050105@domain.hid>		<20060916042719.M57867@domain.hid>	<450F0451.8070102@domain.hid>	<1158614598.5009.71.camel@domain.hid>	<453FC279.8040608@domain.hid>
-	<453FC819.9020900@domain.hid> <453FF54D.5030704@domain.hid>
-In-Reply-To: <453FF54D.5030704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-help] 3rd party task mode switches and inquiries
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1160411937.6268.14.camel@domain.hid>
+References: <1160411937.6268.14.camel@domain.hid>
+Content-Type: text/plain
+Date: Mon, 09 Oct 2006 20:14:36 +0200
+Message-Id: <1160417676.4981.4.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,33 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jeff Weber <jweber@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Jeff Webb wrote:
-> Jan Kiszka wrote:
->> Jeff Webb wrote:
->>> If I run the attached program, I get the following result:
->>>
->>>  [root]# ./mqtest2
->>>  CPU time limit exceeded
->>>
->>> The kernel log contains:
->>>
->>>  Oct 25 14:13:03 kernel: invalid use of FPU in Xenomai context at 
->>> 0x80492f6
->>
->> Could you also try if this patch changes anything:
->>
->> https://mail.gna.org/public/xenomai-core/2006-10/msg00069.html
->>
->> (Could be the case if you happen to use some FPU-touching Linux driver.)
+On Mon, 2006-10-09 at 11:38 -0500, Jeff Weber wrote:
+> I have a need for task t1 to switch task t2 to and from primary mode,
+> using the native API.  The rt_task_set_mode() API does not have an
+> argument for the target task, and assumes the current task.  How can I
+> initiate a 3rd party task mode switch?
 > 
-> The patch would not apply to xenomai 2.2.4, so I checked out the svn 
-> trunk (rev 1749), and then applied this patch.  I get the same behavior.
 
-I tried my mqtest2 example with a stock xenomai 2.2.4 UP kernel (instead of SMP), and I still get the FPU error message and SIGXCPU signal.  I also went back to xenomai 2.2.1 SMP and still have the problem there.
+You can't, it's forbidden. Too many indirect issues would become
+possible as a result of allowing that. Only the current task can switch
+its own mode.
 
-Has anyone tried the example on some other hardware?
+> On a related note, the task info returned from rt_task_inquire() does
+> not indicate task mode switches in the corresponding T_PRIMARY (0x200)
+> bit, which is the bit used to command the mode switch.  However, a mode
+> switch can be seen in the 0x100 status bit, which corresponds to the
+> XNRELAX bit, (not in the public native/task.h API).  What's the best way
+> to inquire if an arbitrary task is in primary or secondary mode?
+> 
 
--Jeff
+Testing XNRELAX is the current way to do it, since no native interface
+exists yet. Before this happens, there's some sanitization to do first
+(e.g. if T_PRIMARY is used to switch mode, it should be usable to check
+the status word too, instead of having T_SECONDARY as XNRELAX but which
+could not be used for switching modes).
+
+> I am using Xenomai-2.2.0.
+> 
+> thanks,
+> 	Jeff Weber
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
+
+
 
