@@ -1,12 +1,14 @@
-Message-ID: <452A4169.9050901@domain.hid>
-Date: Mon, 09 Oct 2006 14:32:41 +0200
+Message-ID: <452A43CC.5010908@domain.hid>
+Date: Mon, 09 Oct 2006 14:42:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] cleanup xeno-config output
+References: <452A4169.9050901@domain.hid>
+In-Reply-To: <452A4169.9050901@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig85CBB47A991B64C8D04D8872"
+	boundary="------------enig880FC95F43D3DB485F30ECDE"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] cleanup xeno-config output
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,34 +21,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig85CBB47A991B64C8D04D8872
-Content-Type: multipart/mixed; boundary="------------040602040703000504020106"
+--------------enig880FC95F43D3DB485F30ECDE
+Content-Type: multipart/mixed; boundary="------------040209030601040800050702"
 
 This is a multi-part message in MIME format.
---------------040602040703000504020106
+--------------040209030601040800050702
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Following the discussion in an earlier thread, this patch reduces the
-CFLAGS and LDFLAGS returned by xeno-config to the required minimum.
+Jan Kiszka wrote:
+> Following the discussion in an earlier thread, this patch reduces the
+> CFLAGS and LDFLAGS returned by xeno-config to the required minimum.
+>=20
+> Compile tested with several external packages, no regression known
+> (except that one may want to set some of those flags elsewhere now).
+>=20
 
-Compile tested with several external packages, no regression known
-(except that one may want to set some of those flags elsewhere now).
+As usual, while you are hitting "Send": "Hmm did I check... No, I didn't!=
+"
+
+So here comes -v2, now setting -D__XENO__ also internally again.
 
 Jan
 
---------------040602040703000504020106
+--------------040209030601040800050702
 Content-Type: text/plain;
- name="xeno-config-cleanup.patch"
+ name="xeno-config-cleanup-v2.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="xeno-config-cleanup.patch"
+ filename="xeno-config-cleanup-v2.patch"
 
 ---
  ChangeLog              |    8 +++++++-
- configure.in           |   13 ++++++-------
+ configure.in           |   15 +++++++--------
  scripts/xeno-config.in |    4 ++--
- 3 files changed, 15 insertions(+), 10 deletions(-)
+ 3 files changed, 16 insertions(+), 11 deletions(-)
 
 Index: configure.in
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -96,9 +105,11 @@ c_w_noalias"
  fi
 =20
 -XENO_USER_APP_CFLAGS=3D$XENO_USER_CFLAGS
- XENO_USER_CFLAGS=3D"$XENO_USER_CFLAGS -D__IN_XENO__ -Wstrict-prototypes"=
+-XENO_USER_CFLAGS=3D"$XENO_USER_CFLAGS -D__IN_XENO__ -Wstrict-prototypes"=
 
 -XENO_USER_APP_LDFLAGS=3D$XENO_USER_LDFLAGS
++XENO_USER_CFLAGS=3D"$XENO_USER_CFLAGS -D__XENO__ -D__IN_XENO__ -Wstrict-=
+prototypes"
 =20
  AC_MSG_CHECKING([whether ld supports @file])
  AC_CACHE_VAL(ac_cv_ld_file_option,
@@ -151,9 +162,9 @@ Index: ChangeLog
 =20
  2006-10-08  Wolfgang Grandegger  <wg@domain.hid>
 
---------------040602040703000504020106--
+--------------040209030601040800050702--
 
---------------enig85CBB47A991B64C8D04D8872
+--------------enig880FC95F43D3DB485F30ECDE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -162,10 +173,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFKkFpniDOoMHTA+kRArE8AJ97AqzUi5J/fpulrCQj/ysWYEZo7ACfdS5z
-/aYI4h7HB41TBwV1oJhQxc4=
-=JAjD
+iD8DBQFFKkPMniDOoMHTA+kRArgCAJ4/Tqx3L2gsaptn771IW6AWyhtE1wCeLR10
+9ahe3PTHidvFqd1UuKR2wKM=
+=vEpK
 -----END PGP SIGNATURE-----
 
---------------enig85CBB47A991B64C8D04D8872--
+--------------enig880FC95F43D3DB485F30ECDE--
 
