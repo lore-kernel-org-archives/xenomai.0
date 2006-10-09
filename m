@@ -1,12 +1,16 @@
-Message-ID: <45297772.5080500@domain.hid>
-Date: Mon, 09 Oct 2006 00:10:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4F75680F860D267E7AAB1B70"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] rtf_put broken due to kernel 2.4 bug
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17705.54777.682760.198157@domain.hid>
+Date: Mon, 9 Oct 2006 06:54:17 +0200
+Subject: Re: [Xenomai-core] Compiler and linker flags
+In-Reply-To: <1160340280.4963.28.camel@domain.hid>
+References: <OFACF3C5AC.1F615263-ONC12571FD.004ACE3C-C12571FD.004F1995@domain.hid>
+	<4528FBE5.7020803@domain.hid>
+	<17705.6276.735921.764908@domain.hid>
+	<45293C9B.1030608@domain.hid> <1160335881.4963.19.camel@domain.hid>
+	<452956C3.8010109@domain.hid> <1160340280.4963.28.camel@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,56 +20,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4F75680F860D267E7AAB1B70
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
+ > On Sun, 2006-10-08 at 21:51 +0200, Jan Kiszka wrote:
+ > > Philippe Gerum wrote:
+ > > >>
+ > > >>  o -D__XENO__
+ > > > 
+ > > > POSIX code may be compiled either against the regular Linux support, or
+ > > > against the Xenomai one; this define provides a standard signature to
+ > > > test for in order to detect the second case, if need be.
+ > > 
+ > > Ok. Should we restrict it to --posix-cflags then?
+ > > 
+ > 
+ > No objection, but in such a case, we'd be better off moving the define
+ > somewhere in include/posix/*.h. Gilles?
 
-Hi,
+Since there are several files in include/posix and users are not
+supposed to include them all, it seems easier to force the flag in
+--posix-cflags.
 
-this issue
-
-http://www.ussg.iu.edu/hypermail/linux/kernel/0610.1/0211.html
-
-was revealed by the rtai fifo code. We currently have the double
-__test_and_set_bit combination at least here:
-
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtai/fifo.c#=
-L309
-(resolves to __test_and_set_bit via ipipe_test_and_stall_pipeline_from)
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtai/fifo.c#=
-L311
-
-The effect on this code is that multiple rtf_put on an unconnected fifo
-corrupts its queue.
-
-I'm now awaiting the comment of the 2.4 maintainer, but we will still
-have to cope with this issue on current 2.4 kernels. There is also the
-risk that more spots are affected or will be affected in the future
-given the embedded use of __test_and_set_bit in pipeline stalling command=
-s.
-
-Anyone any smart idea how to handle this? Should we simply include the
-bitops patch in 2.4-x86-ipipe?
-
-Jan
+-- 
 
 
---------------enig4F75680F860D267E7AAB1B70
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFKXdyniDOoMHTA+kRAnTaAJ47T81F5AKlvVqzNyV4+15RPS6L1QCfZPXJ
-LX6JDnyhtwyJLC1Y1F/kSKw=
-=79J+
------END PGP SIGNATURE-----
-
---------------enig4F75680F860D267E7AAB1B70--
+					    Gilles Chanteperdrix.
 
