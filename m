@@ -1,12 +1,10 @@
-Message-ID: <452CABCA.6010900@domain.hid>
-Date: Wed, 11 Oct 2006 10:31:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <54b161f50610110313u3476ef4dsd3b5d6577ec2d119@domain.hid>
+Date: Wed, 11 Oct 2006 12:13:48 +0200
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] collection of example
-References: <452BD97D.1030507@domain.hid>
-In-Reply-To: <452BD97D.1030507@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-2; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_11905_16709980.1160561628096"
+Subject: [Xenomai-help] Xenomai, RTAI, pros and cons
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pavel Pirkl <pavelpirkl@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Pavel Pirkl wrote:
-> Hello,
-> I am a novice in using of RTOS Xenomai.
-> 
-> 1.
-> So I need some example for deep understanding.
-> I found only these url:
-> http://www.captain.at                                  very good 
-> articles, but very easy for deep understanding all function of Xenomai
-> http://www.rts.uni-hannover.de/rtaddon/
-> Where Can I find other example?
+------=_Part_11905_16709980.1160561628096
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-You can find some examples in the sources of Xenomai, see
-ksrc/skins/*/demos
-and
-ksrc/skins/native/snippets
+Hello everyone,
 
-> 
-> 2.
-> Now I am using Linux distribution Slackware and Xenomai.
-> But I need to find some minidistribution for booting from CompactFlash 
-> disk.
-> And I need to stop written to this CompactFlash so all programs must to 
-> run from RAM memory.
-> Can you help me? I hear about ELinOS and free licence?
+I was wondering if anyone can convince me why to choose Xenomai over RTAI?
+You may be thinking "how can we convince you if we don't know what you need
+it for?". Well, I'm confident that the thing I need it for can almost
+equally been done with both Xenomai and RTAI. I'm more curious what your
+opinion is about development speed, support (documentation, community),
+portability between platforms, API completeness, etc.
+I read a LOT the last couple of weeks about Xenomai as well as RTAI, but I
+can't seem to make a clear choice.
 
-There are several distributions for embedded systems, see
-http://www.linuxdevices.com/articles/AT2760742655.html
+I'm sorry to be asking this (because it has probably been asked a thousand
+times before, but I just wasn't able to find it).
+Thanks very much in advance!
 
--- 
-                                                  Gilles Chanteperdrix
+Best regards,
+
+Frits
+
+------=_Part_11905_16709980.1160561628096
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello everyone,<br>
+<br>
+I was wondering if anyone can convince me why to choose Xenomai over
+RTAI? You may be thinking &quot;how can we convince you if we don't know
+what you need it for?&quot;. Well, I'm confident that the thing I need it
+for can almost equally been done with both Xenomai and RTAI. I'm more
+curious what your opinion is about development speed, support
+(documentation, community), portability between platforms, API
+completeness, etc.<br>
+I read a LOT the last couple of weeks about Xenomai as well as RTAI, but I can't seem to make a clear choice.<br>
+<br>
+I'm sorry to be asking this (because it has probably been asked a thousand times before, but I just wasn't able to find it).<br>
+Thanks very much in advance!<br>
+<br>
+Best regards,<br>
+<br>
+Frits<br>
+<br>
+
+------=_Part_11905_16709980.1160561628096--
 
