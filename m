@@ -1,10 +1,10 @@
-Message-ID: <452E9AD3.3030206@domain.hid>
-Date: Thu, 12 Oct 2006 21:43:15 +0200
+Message-ID: <452E9ADB.6000700@domain.hid>
+Date: Thu, 12 Oct 2006 21:43:23 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------040109070602060905090609"
+Content-Type: multipart/mixed; boundary="------------040004030805090806070409"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 1/3] Introduce xnstat subsystem
+Subject: [Xenomai-core] [PATCH 2/3] Migrate and enhance IRQ statistics
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,481 +17,512 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Dmitry Adamushko <dmitry.adamushko@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 This is a multi-part message in MIME format.
---------------040109070602060905090609
+--------------040004030805090806070409
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-This patch adds the new abstraction xnstat_counter (event counter) and
-xnstat_runtime (runtime accumulator) and related services to maintain
-and query this data. The whole subsystem evaluates to void if
-XENO_OPT_STATS is not selected.
+This patch migrates the xnintr hits statistics to the new xnstat
+subsystem and introduces per-CPU runtime statistics to xnintr entities.
+The latter allows to differentiate between ISR and thread activity under
+/proc/xenomai/stat.
 
-Moreover, the patch moves the existing thread statistics (exec_time and
-various counters) over the new infrastructure.
+For querying the xnintr statistics, a scalable service based on IRQ list
+revisions is introduced (xnintr_query), just like it already exists for
+threads.
+
+Accounting model:
+ - hits are only counted if the ISR returns XN_ISR_HANDLED
+ - runtime is accounted over each ISR invocation, independent of its
+   return value
+
+As a hopefully not critical side effect, the native intr services now
+only reports non-zero hit counters if XENO_OPT_STATS in enabled. This
+fact is documented in the rt_intr_info structure.
 
 Jan
 
---------------040109070602060905090609
+--------------040004030805090806070409
 Content-Type: text/plain;
- name="introduce_xnstat.patch"
+ name="migrate_and_enhance_irq_stats.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="introduce_xnstat.patch"
+ filename="migrate_and_enhance_irq_stats.patch"
 
 ---
- include/nucleus/pod.h    |   38 +---------------
- include/nucleus/stat.h   |  106 +++++++++++++++++++++++++++++++++++++++++++++++
- include/nucleus/thread.h |   24 ++--------
- ksrc/nucleus/module.c    |   59 ++++++++++++--------------
- ksrc/nucleus/pod.c       |   18 ++++---
- ksrc/nucleus/shadow.c    |    3 -
- ksrc/nucleus/thread.c    |    9 ---
- 7 files changed, 157 insertions(+), 100 deletions(-)
+ include/native/intr.h    |    3 -
+ include/nucleus/intr.h   |   19 +++++-
+ ksrc/nucleus/intr.c      |  131 ++++++++++++++++++++++++++++++++++++++++++++---
+ ksrc/nucleus/module.c    |   35 ++++++++++++
+ ksrc/skins/native/intr.c |   28 +++++++---
+ 5 files changed, 196 insertions(+), 20 deletions(-)
 
-Index: xenomai/include/nucleus/pod.h
+Index: xenomai/include/nucleus/intr.h
 ===================================================================
---- xenomai.orig/include/nucleus/pod.h
-+++ xenomai/include/nucleus/pod.h
-@@ -146,7 +146,9 @@ typedef struct xnsched {
-     xnthread_t rootcb;          /*!< Root thread control block. */
- 
- #ifdef CONFIG_XENO_OPT_STATS
--    xnticks_t last_csw;         /*!< Last context switch (ticks). */
-+    xnticks_t last_account_switch; /*!< Last account switch date (ticks). */
-+
-+    xnstat_runtime_t *current_account;  /*!< Currently active account */
- #endif /* CONFIG_XENO_OPT_STATS */
- 
- } xnsched_t;
-@@ -544,40 +546,6 @@ static inline void xnpod_delete_self (vo
-     xnpod_delete_thread(xnpod_current_thread());
- }
- 
--#ifdef CONFIG_XENO_OPT_STATS
--static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thread)
--{
--    xnticks_t now = xnarch_get_cpu_tsc();
--
--    thread->stat.exec_time += now - sched->last_csw;
--    sched->last_csw = now;
--}
--
--static inline void xnpod_reset_exec_stats(xnthread_t *thread)
--{
--    thread->stat.exec_time = 0;
--    thread->stat.exec_start = xnarch_get_cpu_tsc();
--}
--
--static inline void xnpod_update_csw_date(xnsched_t *sched)
--{
--    sched->last_csw = xnarch_get_cpu_tsc();
--}
--
--#else /* !CONFIG_XENO_OPT_STATS */
--static inline void xnpod_acc_exec_time(xnsched_t *sched, xnthread_t *thread)
--{
--}
--
--static inline void xnpod_reset_exec_stats(xnthread_t *thread)
--{
--}
--
--static inline void xnpod_update_csw_date(xnsched_t *sched)
--{
--}
--#endif /* CONFIG_XENO_OPT_STATS */
--
- #ifdef __cplusplus
- }
- #endif
-Index: xenomai/include/nucleus/stat.h
-===================================================================
---- /dev/null
-+++ xenomai/include/nucleus/stat.h
-@@ -0,0 +1,106 @@
-+/*
-+ * Copyright (C) 2006 Jan Kiszka <jan.kiszka@domain.hid>.
-+ * Copyright (C) 2006 Dmitry Adamushko <dmitry.adamushko@domain.hid>.
-+ *
-+ * Xenomai is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published
-+ * by the Free Software Foundation; either version 2 of the License,
-+ * or (at your option) any later version.
-+ *
-+ * Xenomai is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Xenomai; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-+ * 02111-1307, USA.
-+ */
-+
-+#ifndef _XENO_NUCLEUS_STAT_H
-+#define _XENO_NUCLEUS_STAT_H
-+
-+#ifdef CONFIG_XENO_OPT_STATS
-+
-+typedef struct xnstat_runtime {
-+
-+	xnticks_t start;   /* Start of execution time accumulation */
-+
-+	xnticks_t total; /* Accumulated execution time */
-+
-+} xnstat_runtime_t;
-+
-+/* Account runtime of current account up to now, but don't set a new
-+   account yet. */
-+#define xnstat_runtime_update(sched) \
-+do { \
-+	xnticks_t now = xnarch_get_cpu_tsc(); \
-+	(sched)->current_account->total += \
-+		now - (sched)->last_account_switch; \
-+	(sched)->last_account_switch = now; \
-+} while (0)
-+
-+/* Update the current account reference, returning the previous one. */
-+#define xnstat_runtime_set_current(sched, new_account) \
-+({ \
-+	xnstat_runtime_t *__prev; \
-+	__prev = xchg(&(sched)->current_account, (new_account)); \
-+	__prev; \
-+})
-+
-+/* Return the currently active accounting entity. */
-+#define xnstat_runtime_get_current(sched) ((sched)->current_account)
-+
-+/* Finalize an account (no need to do further accounting, just mark the
-+   switch date). */
-+#define xnstat_runtime_finalize(sched) \
-+	(sched)->last_account_switch = xnarch_get_cpu_tsc()
-+
-+/* Reset statistics from inside the accounted entity (e.g. after CPU
-+   migration). */
-+#define xnstat_runtime_reset_stats(stat) \
-+do { \
-+	(stat)->total = 0; \
-+	(stat)->start = xnarch_get_cpu_tsc(); \
-+} while (0)
-+
-+
-+typedef struct xnstat_counter {
-+	int counter;
-+} xnstat_counter_t;
-+
-+static inline int xnstat_counter_inc(xnstat_counter_t *c) {
-+	return c->counter++;
-+}
-+
-+static inline int xnstat_counter_get(xnstat_counter_t *c) {
-+	return c->counter;
-+}
-+
-+#else /* !CONFIG_XENO_OPT_STATS */
-+typedef struct xnstat_runtime {
-+} xnstat_runtime_t;
-+
-+#define xnstat_runtime_update(sched)                         do { } while (0)
-+#define xnstat_runtime_set_current(sched, new_account)       ({ NULL; })
-+#define xnstat_runtime_get_current(sched)                    ({ NULL; })
-+#define xnstat_runtime_finalize(sched)                       do { } while (0)
-+#define xnstat_runtime_reset_stats(account)                  do { } while (0)
-+
-+typedef struct xnstat_counter {
-+} xnstat_counter_t;
-+
-+static inline int xnstat_counter_inc(xnstat_counter_t *c) { return 0; }
-+static inline int xnstat_counter_get(xnstat_counter_t *c) { return 0; }
-+#endif /* CONFIG_XENO_OPT_STATS */
-+
-+/* Switch to new_account, accounting the runtime of the current one until now
-+   and returning the previous account. */
-+#define xnstat_runtime_switch(sched, new_account) \
-+({ \
-+	xnstat_runtime_update(sched); \
-+	xnstat_runtime_set_current(sched, new_account); \
-+})
-+
-+#endif /* !_XENO_NUCLEUS_STAT_H */
-Index: xenomai/include/nucleus/thread.h
-===================================================================
---- xenomai.orig/include/nucleus/thread.h
-+++ xenomai/include/nucleus/thread.h
-@@ -105,6 +105,8 @@
+--- xenomai.orig/include/nucleus/intr.h
++++ xenomai/include/nucleus/intr.h
+@@ -39,6 +39,8 @@
  
  #if defined(__KERNEL__) || defined(__XENO_SIM__)
  
 +#include <nucleus/stat.h>
 +
- #ifdef __XENO_SIM__
- /* Pseudo-status (must not conflict with other bits) */
- #define XNRUNNING  XNTHREAD_SPARE0
-@@ -158,16 +160,12 @@ typedef struct xnthread {
+ typedef struct xnintr {
  
-     xnticks_t rrcredit;		/* Remaining round-robin time credit (ticks) */
+ #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
+@@ -51,8 +53,6 @@ typedef struct xnintr {
  
--#ifdef CONFIG_XENO_OPT_STATS
-     struct {
--	unsigned long ssw;	/* Primary -> secondary mode switch count */
--	unsigned long csw;	/* Context switches (includes
--				   secondary -> primary switches) */
--	unsigned long pf;	/* Number of page faults */
--       xnticks_t exec_time;    /* Accumulated execution time (tsc) */
--       xnticks_t exec_start;   /* Start of execution time accumulation (tsc) */
-+	xnstat_counter_t ssw;	/* Primary -> secondary mode switch count */
-+	xnstat_counter_t csw;	/* Context switches (includes secondary -> primary switches) */
-+	xnstat_counter_t pf;	/* Number of page faults */
-+	xnstat_runtime_t account; /* Runtime accounting entity */
-     } stat;
--#endif /* CONFIG_XENO_OPT_STATS */
+     void *cookie;	/* !< User-defined cookie value. */
  
-     int errcode;		/* Local errno */
- 
-@@ -248,16 +246,6 @@ typedef struct xnhook {
-     (testbits((thread)->status,XNROOT) || !xnthread_user_task(thread) ? \
-     0 : xnarch_user_pid(xnthread_archtcb(thread)))
- 
--#ifdef CONFIG_XENO_OPT_STATS
--#define xnthread_inc_ssw(thread)     ++(thread)->stat.ssw
--#define xnthread_inc_csw(thread)     ++(thread)->stat.csw
--#define xnthread_inc_pf(thread)      ++(thread)->stat.pf
--#else /* CONFIG_XENO_OPT_STATS */
--#define xnthread_inc_ssw(thread)     do { } while(0)
--#define xnthread_inc_csw(thread)     do { } while(0)
--#define xnthread_inc_pf(thread)      do { } while(0)
--#endif /* CONFIG_XENO_OPT_STATS */
+-    unsigned long hits;	/* !< Number of receipts (since attachment). */
 -
+     xnflags_t flags; 	/* !< Creation flags. */
+ 
+     unsigned irq;	/* !< IRQ number. */
+@@ -61,9 +61,18 @@ typedef struct xnintr {
+ 
+     const char *name;	/* !< Symbolic name. */
+ 
++    struct {
++	xnstat_counter_t hits;	  /* !< Number of handled receipts since attachment. */
++	xnstat_runtime_t account; /* !< Runtime accounting entity */
++    } stat[RTHAL_NR_CPUS];
++
+ } xnintr_t;
+ 
+ extern xnintr_t nkclock;
++#ifdef CONFIG_XENO_OPT_STATS
++extern int xnintr_count;
++extern int xnintr_list_rev;
++#endif
+ 
  #ifdef __cplusplus
  extern "C" {
+@@ -94,10 +103,14 @@ int xnintr_detach(xnintr_t *intr);
+ int xnintr_enable(xnintr_t *intr);
+ 
+ int xnintr_disable(xnintr_t *intr);
+-    
++
+ xnarch_cpumask_t xnintr_affinity(xnintr_t *intr,
+                                  xnarch_cpumask_t cpumask);
+ 
++int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char *name,
++		 unsigned long *hits, xnticks_t *runtime,
++		 xnticks_t *account_period);
++
+ #ifdef __cplusplus
+ }
  #endif
+Index: xenomai/ksrc/nucleus/intr.c
+===================================================================
+--- xenomai.orig/ksrc/nucleus/intr.c
++++ xenomai/ksrc/nucleus/intr.c
+@@ -34,6 +34,7 @@
+ #include <nucleus/pod.h>
+ #include <nucleus/intr.h>
+ #include <nucleus/ltt.h>
++#include <nucleus/stat.h>
+ #include <asm/xenomai/bits/intr.h>
+ 
+ #define XNINTR_MAX_UNHANDLED	1000
+@@ -44,6 +45,11 @@ xnlock_t intrlock;
+ 
+ xnintr_t nkclock;
+ 
++#ifdef CONFIG_XENO_OPT_STATS
++int xnintr_count = 1;	/* Number of attached xnintr objects + nkclock */
++int xnintr_list_rev;	/* Modification counter of xnintr list */
++#endif /* CONFIG_XENO_OPT_STATS */
++
+ /*
+  * Low-level interrupt handler dispatching the ISRs -- Called with
+  * interrupts off.
+@@ -53,15 +59,19 @@ static void xnintr_irq_handler(unsigned 
+ {
+ 	xnsched_t *sched = xnpod_current_sched();
+ 	xnintr_t *intr = (xnintr_t *)cookie;
++	xnstat_runtime_t *prev;
+ 	int s;
+ 
+ 	xnarch_memory_barrier();
+ 
+ 	xnltt_log_event(xeno_ev_ienter, irq);
++	prev = xnstat_runtime_switch(sched,
++				     &intr->stat[xnsched_cpu(sched)].account);
+ 
+ 	++sched->inesting;
+ 	s = intr->isr(intr);
+-	++intr->hits;
++
++	xnstat_runtime_switch(sched, prev);
+ 
+ 	if (unlikely(s == XN_ISR_NONE)) {
+ 		if (++intr->unhandled == XNINTR_MAX_UNHANDLED) {
+@@ -69,8 +79,10 @@ static void xnintr_irq_handler(unsigned 
+ 				 "line.\n", __FUNCTION__, irq);
+ 			s |= XN_ISR_NOENABLE;
+ 		}
+-	} else
++	} else {
++		xnstat_counter_inc(&intr->stat[xnsched_cpu(sched)].hits);
+ 		intr->unhandled = 0;
++	}
+ 
+ 	if (s & XN_ISR_PROPAGATE)
+ 		xnarch_chain_irq(irq);
+@@ -149,12 +161,14 @@ void xnintr_synchronize(xnintr_t *intr)
+ static void xnintr_shirq_handler(unsigned irq, void *cookie)
+ {
+ 	xnsched_t *sched = xnpod_current_sched();
++	xnstat_runtime_t *prev;
+ 	xnintr_shirq_t *shirq = &xnshirqs[irq];
+ 	xnintr_t *intr;
+ 	int s = 0;
+ 
+ 	xnarch_memory_barrier();
+ 
++	prev = xnstat_runtime_get_current(sched);
+ 	xnltt_log_event(xeno_ev_ienter, irq);
+ 
+ 	++sched->inesting;
+@@ -163,11 +177,23 @@ static void xnintr_shirq_handler(unsigne
+ 	intr = shirq->handlers;
+ 
+ 	while (intr) {
+-		s |= intr->isr(intr);
+-		++intr->hits;
++		int ret;
++
++		xnstat_runtime_switch(sched,
++			&intr->stat[xnsched_cpu(sched)].account);
++
++		ret = intr->isr(intr);
++		s |= ret;
++
++		if (ret & XN_ISR_HANDLED)
++			xnstat_counter_inc(
++				&intr->stat[xnsched_cpu(sched)].hits);
++
+ 		intr = intr->next;
+ 	}
+ 
++	xnstat_runtime_switch(sched, prev);
++
+ 	xnintr_shirq_unlock(shirq);
+ 
+ 	if (unlikely(s == XN_ISR_NONE)) {
+@@ -203,12 +229,14 @@ static void xnintr_edge_shirq_handler(un
+ 	const int MAX_EDGEIRQ_COUNTER = 128;
+ 
+ 	xnsched_t *sched = xnpod_current_sched();
++	xnstat_runtime_t *prev;
+ 	xnintr_shirq_t *shirq = &xnshirqs[irq];
+ 	xnintr_t *intr, *end = NULL;
+ 	int s = 0, counter = 0;
+ 
+ 	xnarch_memory_barrier();
+ 
++	prev = xnstat_runtime_get_current(sched);
+ 	xnltt_log_event(xeno_ev_ienter, irq);
+ 
+ 	++sched->inesting;
+@@ -219,13 +247,17 @@ static void xnintr_edge_shirq_handler(un
+ 	while (intr != end) {
+ 		int ret, code;
+ 
++		xnstat_runtime_switch(sched,
++			&intr->stat[xnsched_cpu(sched)].account);
++
+ 		ret = intr->isr(intr);
+ 		code = ret & ~XN_ISR_BITMASK;
+ 		s |= ret;
+ 
+ 		if (code == XN_ISR_HANDLED) {
+-			++intr->hits;
+ 			end = NULL;
++			xnstat_counter_inc(
++				&intr->stat[xnsched_cpu(sched)].hits);
+ 		} else if (code == XN_ISR_NONE && end == NULL)
+ 			end = intr;
+ 
+@@ -236,6 +268,8 @@ static void xnintr_edge_shirq_handler(un
+ 			intr = shirq->handlers;
+ 	}
+ 
++	xnstat_runtime_switch(sched, prev);
++
+ 	xnintr_shirq_unlock(shirq);
+ 
+ 	if (counter > MAX_EDGEIRQ_COUNTER)
+@@ -489,10 +523,10 @@ int xnintr_init(xnintr_t *intr,
+ 	intr->isr = isr;
+ 	intr->iack = iack;
+ 	intr->cookie = NULL;
+-	intr->hits = 0;
+ 	intr->name = name;
+ 	intr->flags = flags;
+ 	intr->unhandled = 0;
++	memset(&intr->stat, 0, sizeof(intr->stat));
+ #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
+ 	intr->next = NULL;
+ #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
+@@ -572,7 +606,6 @@ int xnintr_attach(xnintr_t *intr, void *
+ 	int err;
+ 	spl_t s;
+ 
+-	intr->hits = 0;
+ 	intr->cookie = cookie;
+ 
+ 	xnlock_get_irqsave(&intrlock, s);
+@@ -581,6 +614,14 @@ int xnintr_attach(xnintr_t *intr, void *
+ 
+ 	xnlock_put_irqrestore(&intrlock, s);
+ 
++#ifdef CONFIG_XENO_OPT_STATS
++	if (!err) {
++		memset(&intr->stat, 0, sizeof(intr->stat));
++		xnintr_count++;
++		xnintr_list_rev++;
++	}
++#endif /* CONFIG_XENO_OPT_STATS */
++
+ 	return err;
+ }
+ 
+@@ -624,6 +665,14 @@ int xnintr_detach(xnintr_t *intr)
+ 
+ 	xnlock_put_irqrestore(&intrlock, s);
+ 
++#ifdef CONFIG_XENO_OPT_STATS
++	if (!err) {
++		xnintr_count--;
++		xnintr_list_rev++;
++	}
++#endif /* CONFIG_XENO_OPT_STATS */
++
++
+ 	/* The idea here is to keep a detached interrupt object valid as long
+ 	   as the corresponding irq handler is running. This is one of the
+ 	   requirements to iterate over the xnintr_shirq_t::handlers list in
+@@ -761,6 +810,74 @@ int xnintr_irq_proc(unsigned int irq, ch
+ }
+ #endif /* CONFIG_PROC_FS */
+ 
++#ifdef CONFIG_XENO_OPT_STATS
++int xnintr_query(int irq, int *cpu, xnintr_t **prev, int revision, char *name,
++		 unsigned long *hits, xnticks_t *runtime,
++		 xnticks_t *account_period)
++{
++	xnintr_t *intr;
++	xnticks_t last_switch;
++	int head;
++	int cpu_no = *cpu;
++	int err = 0;
++	spl_t s;
++
++	head = snprintf(name, XNOBJECT_NAME_LEN, "IRQ%d: ", irq);
++	name += head;
++
++	xnlock_get_irqsave(&nklock, s);
++
++	if (revision != xnintr_list_rev) {
++		err = -EAGAIN;
++		goto unlock_and_exit;
++	}
++
++#if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL) || defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
++	if (*prev)
++		intr = (*prev)->next;
++	else if (irq == XNARCH_TIMER_IRQ)
++		intr = &nkclock;
++	else
++		intr = xnshirqs[irq].handlers;
++#else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL && !CONFIG_XENO_OPT_SHIRQ_EDGE */
++	if (*prev)
++		intr = NULL;
++	else if (irq == XNARCH_TIMER_IRQ)
++		intr = &nkclock;
++	else
++		intr = rthal_irq_cookie(&rthal_domain, irq);
++#endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
++
++	if (!intr) {
++		err = -ENODEV;
++		goto unlock_and_exit;
++	}
++
++	strncpy(name, intr->name, XNOBJECT_NAME_LEN-head);
++
++	*hits = xnstat_counter_get(&intr->stat[cpu_no].hits);
++
++	last_switch = xnpod_sched_slot(cpu_no)->last_account_switch;
++
++	*runtime        = intr->stat[cpu_no].account.total;
++	*account_period = last_switch - intr->stat[cpu_no].account.start;
++
++	intr->stat[cpu_no].account.total  = 0;
++	intr->stat[cpu_no].account.start = last_switch;
++
++	if (++cpu_no == xnarch_num_online_cpus()) {
++		cpu_no = 0;
++		*prev  = intr;
++	}
++	*cpu = cpu_no;
++
++     unlock_and_exit:
++	xnlock_put_irqrestore(&nklock, s);
++
++	return err;
++}
++#endif /* CONFIG_XENO_OPT_STATS */
++
+ EXPORT_SYMBOL(xnintr_attach);
+ EXPORT_SYMBOL(xnintr_destroy);
+ EXPORT_SYMBOL(xnintr_detach);
 Index: xenomai/ksrc/nucleus/module.c
 ===================================================================
 --- xenomai.orig/ksrc/nucleus/module.c
 +++ xenomai/ksrc/nucleus/module.c
-@@ -269,8 +269,8 @@ struct stat_seq_iterator {
- 		unsigned long ssw;
- 		unsigned long csw;
- 		unsigned long pf;
--		xnticks_t exec_time;
--		xnticks_t exec_period;
-+		xnticks_t runtime;
-+		xnticks_t account_period;
- 	} stat_info[1];
- };
- 
-@@ -319,15 +319,15 @@ static int stat_seq_show(struct seq_file
- 		struct stat_seq_info *p = (struct stat_seq_info *)v;
- 		int usage = 0;
- 
--		if (p->exec_period) {
--			while (p->exec_period > 0xFFFFFFFF) {
--				p->exec_time >>= 16;
--				p->exec_period >>= 16;
-+		if (p->account_period) {
-+			while (p->account_period > 0xFFFFFFFF) {
-+				p->runtime >>= 16;
-+				p->account_period >>= 16;
- 			}
- 			usage =
--			    xnarch_ulldiv(p->exec_time * 1000LL +
--					  (p->exec_period >> 1), p->exec_period,
--					  NULL);
-+			    xnarch_ulldiv(p->runtime * 1000LL +
-+					  (p->account_period >> 1),
-+					  p->account_period, NULL);
- 		}
- 		seq_printf(seq, "%3u  %-6d %-10lu %-10lu %-4lu  %.8lx  %3u.%u"
- 			   "  %s\n",
-@@ -350,7 +350,8 @@ static int stat_seq_open(struct inode *i
- 	struct stat_seq_iterator *iter = NULL;
+@@ -351,7 +351,7 @@ static int stat_seq_open(struct inode *i
  	struct seq_file *seq;
  	xnholder_t *holder;
--	int err, count, rev;
-+	struct stat_seq_info *stat_info;
-+	int err, count, thrq_rev;
+ 	struct stat_seq_info *stat_info;
+-	int err, count, thrq_rev;
++	int err, count, thrq_rev, intr_rev, irq;
  	spl_t s;
  
  	if (!nkpod)
-@@ -359,9 +360,9 @@ static int stat_seq_open(struct inode *i
-       restart:
- 	xnlock_get_irqsave(&nklock, s);
- 
--	rev = nkpod->threadq_rev;
- 	count = countq(&nkpod->threadq);	/* Cannot be empty (ROOT) */
+@@ -364,6 +364,9 @@ static int stat_seq_open(struct inode *i
  	holder = getheadq(&nkpod->threadq);
-+	thrq_rev = nkpod->threadq_rev;
+ 	thrq_rev = nkpod->threadq_rev;
  
++	count += xnintr_count * RTHAL_NR_CPUS;
++	intr_rev = xnintr_list_rev;
++
  	xnlock_put_irqrestore(&nklock, s);
  
-@@ -389,37 +390,35 @@ static int stat_seq_open(struct inode *i
- 		xnthread_t *thread;
- 		xnsched_t *sched;
- 		xnticks_t period;
--		int n;
- 
- 		xnlock_get_irqsave(&nklock, s);
- 
--		if (nkpod->threadq_rev != rev)
-+		if (nkpod->threadq_rev != thrq_rev)
- 			goto restart;
--		rev = nkpod->threadq_rev;
- 
- 		thread = link2thread(holder, glink);
--		n = iter->nentries++;
-+		stat_info = &iter->stat_info[iter->nentries++];
- 
- 		sched = thread->sched;
--		iter->stat_info[n].cpu = xnsched_cpu(sched);
--		iter->stat_info[n].pid = xnthread_user_pid(thread);
--		memcpy(iter->stat_info[n].name, thread->name,
--		       sizeof(iter->stat_info[n].name));
--		iter->stat_info[n].status = thread->status;
--		iter->stat_info[n].ssw = thread->stat.ssw;
--		iter->stat_info[n].csw = thread->stat.csw;
--		iter->stat_info[n].pf = thread->stat.pf;
-+		stat_info->cpu = xnsched_cpu(sched);
-+		stat_info->pid = xnthread_user_pid(thread);
-+		memcpy(stat_info->name, thread->name,
-+		       sizeof(stat_info->name));
-+		stat_info->status = thread->status;
-+		stat_info->ssw = xnstat_counter_get(&thread->stat.ssw);
-+		stat_info->csw = xnstat_counter_get(&thread->stat.csw);
-+		stat_info->pf = xnstat_counter_get(&thread->stat.pf);
- 
--		period = sched->last_csw - thread->stat.exec_start;
-+		period = sched->last_account_switch - thread->stat.account.start;
- 		if (!period && thread == sched->runthread) {
--			iter->stat_info[n].exec_time = 1;
--			iter->stat_info[n].exec_period = 1;
-+			stat_info->runtime = 1;
-+			stat_info->account_period = 1;
- 		} else {
--			iter->stat_info[n].exec_time = thread->stat.exec_time;
--			iter->stat_info[n].exec_period = period;
-+			stat_info->runtime = thread->stat.account.total;
-+			stat_info->account_period = period;
- 		}
--		thread->stat.exec_time = 0;
--		thread->stat.exec_start = sched->last_csw;
-+		thread->stat.account.total = 0;
-+		thread->stat.account.start = sched->last_account_switch;
- 
- 		holder = nextq(&nkpod->threadq, holder);
- 
-Index: xenomai/ksrc/nucleus/pod.c
-===================================================================
---- xenomai.orig/ksrc/nucleus/pod.c
-+++ xenomai/ksrc/nucleus/pod.c
-@@ -41,6 +41,7 @@
- #include <nucleus/registry.h>
- #include <nucleus/module.h>
- #include <nucleus/ltt.h>
-+#include <nucleus/stat.h>
- #include <asm/xenomai/bits/pod.h>
- 
- /* NOTE: We need to initialize the globals: remember that this code
-@@ -213,7 +214,7 @@ static int xnpod_fault_handler(xnarch_fl
- 			/* The page fault counter is not SMP-safe, but it's a
- 			   simple indicator that something went wrong wrt memory
- 			   locking anyway. */
--			xnthread_inc_pf(thread);
-+			xnstat_counter_inc(&thread->stat.pf);
- 
- 		xnshadow_relax(xnarch_fault_notify(fltinfo));
+ 	if (iter)
+@@ -425,6 +428,36 @@ static int stat_seq_open(struct inode *i
+ 		xnlock_put_irqrestore(&nklock, s);
  	}
-@@ -503,6 +504,8 @@ int xnpod_init(xnpod_t *pod, int minpri,
- 		sched->rootcb.sched = sched;
  
- 		sched->rootcb.affinity = xnarch_cpumask_of_cpu(cpu);
++	/* Iterate over all IRQ numbers, ... */
++	for (irq = 0; irq < RTHAL_NR_IRQS; irq++) {
++		xnintr_t *prev = NULL;
++		int cpu = 0;
++		int err;
 +
-+		xnstat_runtime_set_current(sched, &sched->rootcb.stat.account);
++		/* ...over all shared IRQs on all CPUs */
++		while (1) {
++			stat_info = &iter->stat_info[iter->nentries];
++			stat_info->cpu = cpu;
++
++			err = xnintr_query(irq, &cpu, &prev, intr_rev,
++					   stat_info->name,
++					   &stat_info->csw,
++					   &stat_info->runtime,
++					   &stat_info->account_period);
++			if (err == EAGAIN)
++				goto restart;
++			if (err)
++				break; /* line unused or end of chain */
++
++			stat_info->pid = 0;
++			stat_info->status =  0;
++			stat_info->ssw = 0;
++			stat_info->pf = 0;
++
++			iter->nentries++;
++		};
++	}
++
+ 	seq = (struct seq_file *)file->private_data;
+ 	seq->private = iter;
+ 
+Index: xenomai/include/native/intr.h
+===================================================================
+--- xenomai.orig/include/native/intr.h
++++ xenomai/include/native/intr.h
+@@ -36,7 +36,8 @@ typedef struct rt_intr_info {
+ 
+     unsigned irq;	/* !< Interrupt request number. */
+ 
+-    unsigned long hits;	/* !< Number of receipts (since attachment). */
++    unsigned long hits;	/* !< Number of receipts (since attachment), 0 if
++                              statistics support is disable in the nucleus. */
+ 
+     char name[XNOBJECT_NAME_LEN]; /* !< Symbolic name. */
+ 
+Index: xenomai/ksrc/skins/native/intr.c
+===================================================================
+--- xenomai.orig/ksrc/skins/native/intr.c
++++ xenomai/ksrc/skins/native/intr.c
+@@ -47,6 +47,17 @@ void __native_intr_pkg_cleanup(void)
+ 		rt_intr_delete(link2intr(holder));
+ }
+ 
++static unsigned long __intr_get_hits(RT_INTR *intr)
++{
++	unsigned long sum = 0;
++	int cpu;
++
++	for (cpu = 0; cpu < XNARCH_NR_CPUS; cpu++)
++		sum += xnstat_counter_get(&intr->intr_base.stat[cpu].hits);
++
++	return sum;
++}
++
+ #ifdef CONFIG_XENO_EXPORT_REGISTRY
+ 
+ static int __intr_read_proc(char *page,
+@@ -56,16 +67,17 @@ static int __intr_read_proc(char *page,
+ 	RT_INTR *intr = (RT_INTR *)data;
+ 	char *p = page;
+ 	int len;
++	spl_t s;
++
++	xnlock_get_irqsave(&nklock, s);
+ 
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
+ 	{
+ 		xnpholder_t *holder;
+-		spl_t s;
+-
+-		xnlock_get_irqsave(&nklock, s);
+ 
+ 		p += sprintf(p, "hits=%lu, pending=%u, mode=0x%x\n",
+-			     intr->intr_base.hits, intr->pending, intr->mode);
++			     __intr_get_hits(intr), intr->pending,
++			     intr->mode);
+ 
+ 		/* Pended interrupt -- dump waiters. */
+ 
+@@ -78,13 +90,13 @@ static int __intr_read_proc(char *page,
+ 			    nextpq(xnsynch_wait_queue(&intr->synch_base),
+ 				   holder);
+ 		}
+-
+-		xnlock_put_irqrestore(&nklock, s);
+ 	}
+ #else /* !CONFIG_XENO_OPT_PERVASIVE */
+-	p += sprintf(p, "hits=%lu\n", intr->intr_base.hits);
++	p += sprintf(p, "hits=%lu\n", __intr_get_hits(intr));
+ #endif /* CONFIG_XENO_OPT_PERVASIVE */
+ 
++	xnlock_put_irqrestore(&nklock, s);
++
+ 	len = (p - page) - off;
+ 	if (len <= off + count)
+ 		*eof = 1;
+@@ -512,7 +524,7 @@ int rt_intr_inquire(RT_INTR *intr, RT_IN
  	}
  
- 	xnarch_hook_ipi(&xnpod_schedule_handler);
-@@ -668,8 +671,7 @@ static inline void xnpod_switch_zombie(x
- 
- 	xnthread_cleanup_tcb(threadout);
- 
--	/* no need to update stats of dying thread */
--	xnpod_update_csw_date(sched);
-+	xnstat_runtime_finalize(sched);
- 
- 	xnarch_finalize_and_switch(xnthread_archtcb(threadout),
- 				   xnthread_archtcb(threadin));
-@@ -1896,7 +1898,7 @@ int xnpod_migrate_thread(int cpu)
- 	xnpod_schedule();
- 
- 	/* Reset execution time stats due to unsync'ed TSCs */
--	xnpod_reset_exec_stats(thread);
-+	xnstat_runtime_reset_stats(&thread->stat.account);
+ 	strcpy(info->name, intr->name);
+-	info->hits = intr->intr_base.hits;
++	info->hits = __intr_get_hits(intr);
+ 	info->irq = intr->intr_base.irq;
  
        unlock_and_exit:
- 
-@@ -2435,8 +2437,8 @@ void xnpod_schedule(void)
- 		xnarch_enter_root(xnthread_archtcb(threadin));
- 	}
- 
--	xnpod_acc_exec_time(sched, threadout);
--	xnthread_inc_csw(threadin);
-+	xnstat_runtime_switch(sched, &threadin->stat.account);
-+	xnstat_counter_inc(&threadin->stat.csw);
- 
- 	xnarch_switch_to(xnthread_archtcb(threadout),
- 			 xnthread_archtcb(threadin));
-@@ -2607,8 +2609,8 @@ void xnpod_schedule_runnable(xnthread_t 
- 		nkpod->schedhook(runthread, XNREADY);
- #endif /* __XENO_SIM__ */
- 
--	xnpod_acc_exec_time(sched, runthread);
--	xnthread_inc_csw(threadin);
-+	xnstat_runtime_switch(sched, &threadin->stat.account);
-+	xnstat_counter_inc(&threadin->stat.csw);
- 
- 	xnarch_switch_to(xnthread_archtcb(runthread),
- 			 xnthread_archtcb(threadin));
-Index: xenomai/ksrc/nucleus/shadow.c
-===================================================================
---- xenomai.orig/ksrc/nucleus/shadow.c
-+++ xenomai/ksrc/nucleus/shadow.c
-@@ -50,6 +50,7 @@
- #include <nucleus/jhash.h>
- #include <nucleus/ppd.h>
- #include <nucleus/trace.h>
-+#include <nucleus/stat.h>
- #include <asm/xenomai/features.h>
- #include <asm/xenomai/syscall.h>
- #include <asm/xenomai/bits/shadow.h>
-@@ -727,7 +728,7 @@ void xnshadow_relax(int notify)
- 	rthal_reenter_root(get_switch_lock_owner(),
- 			   cprio ? SCHED_FIFO : SCHED_NORMAL, cprio);
- 
--	xnthread_inc_ssw(thread);	/* Account for secondary mode switch. */
-+	xnstat_counter_inc(&thread->stat.ssw);	/* Account for secondary mode switch. */
- 
- 	if (notify && testbits(thread->status, XNTRAPSW))
- 		/* Help debugging spurious relaxes. */
-Index: xenomai/ksrc/nucleus/thread.c
-===================================================================
---- xenomai.orig/ksrc/nucleus/thread.c
-+++ xenomai/ksrc/nucleus/thread.c
-@@ -86,14 +86,7 @@ int xnthread_init(xnthread_t *thread,
- 	thread->registry.handle = XN_NO_HANDLE;
- 	thread->registry.waitkey = NULL;
- #endif /* CONFIG_XENO_OPT_REGISTRY */
--
--#ifdef CONFIG_XENO_OPT_STATS
--	thread->stat.ssw = 0;
--	thread->stat.csw = 0;
--	thread->stat.pf = 0;
--	thread->stat.exec_time = 0;
--	thread->stat.exec_start = 0;
--#endif /* CONFIG_XENO_OPT_STATS */
-+	memset(&thread->stat, 0, sizeof(thread->stat));
- 
- 	/* These will be filled by xnpod_start_thread() */
- 	thread->imask = 0;
 
---------------040109070602060905090609--
+--------------040004030805090806070409--
 
