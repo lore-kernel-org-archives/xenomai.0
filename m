@@ -1,12 +1,10 @@
-Message-ID: <452E9ACD.20800@domain.hid>
-Date: Thu, 12 Oct 2006 21:43:09 +0200
+Message-ID: <452E9AE2.3000104@domain.hid>
+Date: Thu, 12 Oct 2006 21:43:30 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig922A2615126E4B1508E71465"
+Content-Type: multipart/mixed; boundary="------------060105030300000400020305"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 0/3] Reworked nucleus statistics
+Subject: [Xenomai-core] [PATCH 3/3] Extend and refine IRQ runtime accounting
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,128 +16,256 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Dmitry Adamushko <dmitry.adamushko@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig922A2615126E4B1508E71465
+This is a multi-part message in MIME format.
+--------------060105030300000400020305
 Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-Hi,
+This is my personally favoured accounting model for xnintr runtimes:
+ - include scheduler path in the xnintr accounting
+ - account only to those xnintr entity that reported XN_ISR_HANDLED on
+   ISR return
 
-here we go: after quite some hacking and refactoring, Dmitry and I are
-happy to provide a patch set that reworks and enhances the statistics
-subsystem of Xenomai.
+Slight unfairness remains:
+ - I-pipe prologue and epilogue cannot be considered (but it's fairly
+   short)
+ - always the last xnintr on a shared IRQ line that reported HANDLED
+   pays for the potential scheduler path, even if it didn't caused it
+   (bean counting...)
+ - the preempted thread still pays for spurious IRQs (but those are bugs
+   anyway)
 
-The original goal of these patches was to improve the accuracy of the
-/proc/xenomai/stat CPU load output. So far it only accounted thread
-switches. The time of potential preceding IRQ handling and scheduling
-decision was added to the preempted thread. The new approach avoids
-this. More about it later.
-
-While discussing the first implementation, Dmitry had the idea to
-refactor even more code that depends on XENO_OPT_STATS, means event
-counting parts under the upcoming generic runtime stats. So this series
-starts with a patch to introduce a generic subsystem for collecting
-statistics on countable events as well as the runtime of entities.
-
-It continues with the second patch that applies xnstat on the IRQ
-subsystem, both for counting hits as well as for measuring the execution
-time. The accounting model applied in this patch is as simple as this:
-measure the time some driver- or application-supplied ISR executes and
-accumulate it per-CPU. The rescheduling is still accounted to the
-preempted thread.
-
-In my endless quest for perfection, I applied an -as I feel- enhanced
-model on top of this (already working!) set, that's the third patch.
-This model adds the scheduler path to the IRQ account. And it only
-accounts to an IRQ if its ISR reported XN_ISR_HANDLED. This is relevant
-for shared IRQs when only one source fired (the typical case). Also, it
-reduces churning by avoiding account switches in the average case. But,
-the downside, it may be less convenient to understand and increases the
-code a bit (only for the shared IRQ case). Dmitry and I were not yet
-able to agree on THE model, so I'm simply posting both for public
-feedback. :)
-
-Here are some numbers I collected today on a P-III 700 MHz, running our
-3D laser range scanner + some post-processing steps (sensor fusion and
-2D mapping) and forwarding those data via TCP/IP. That box makes use of
-the xeno_16550A driver, collecting serial streams at 115k2 and 500k over
-a shared IRQ (you may guess which one belongs to what IRQ :)).
-
-ISR accounting (patch 2/3):
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          11160      0     01400080   73.0  ROOT
->   0  0      0          853        0     00000082    0.0  timsPipeReceiv=
-er
->   0  876    0          61         0     00d00082    0.0  LadarSickLms20=
-02C
->   0  878    0          6666       0     00d00086    0.4  LadarSickLms20=
-02D
->   0  879    0          59         0     00d00082    0.0  Scan2dVirtual3=
-C
->   0  880    0          1207       0     00d00084    0.0  Scan2dVirtual3=
-D
->   0  881    0          167        0     00d00082    0.0  Scan3DScanDriv=
-eSick0C
->   0  882    0          2935       0     00d00086   10.4  Scan3DScanDriv=
-eSick0D
->   0  887    0          140        0     00d00082    0.0  ServoDriveScan=
-Drive0C
->   0  888    0          2509       0     00d00086    0.1  ServoDriveScan=
-Drive0D
->   0  0      0          41913      0     00000000    0.1  IRQ0: [timer]
->   0  0      0          176870     0     00000000   13.5  IRQ5: rtser5
->   0  0      0          11121      0     00000000    2.4  IRQ5: rtser4
-
-Enhanced accounting (patch 3/3):
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          11384      0     01400080   72.4  ROOT
->   0  0      0          745        0     00000082    0.0  timsPipeReceiv=
-er
->   0  884    0          56         0     00d00082    0.0  LadarSickLms20=
-02C
->   0  887    0          7282       0     00d00082    0.4  LadarSickLms20=
-02D
->   0  885    0          140        0     00d00082    0.0  Scan3DScanDriv=
-eSick0C
->   0  889    0          3066       0     00d00086   10.4  Scan3DScanDriv=
-eSick0D
->   0  888    0          54         0     00d00082    0.0  Scan2dVirtual3=
-C
->   0  890    0          1069       0     00d00084    0.0  Scan2dVirtual3=
-D
->   0  897    0          76         0     00d00082    0.0  ServoDriveScan=
-Drive0C
->   0  898    0          2271       0     00d00086    0.1  ServoDriveScan=
-Drive0D
->   0  0      0          50700      0     00000000    0.1  IRQ0: [timer]
->   0  0      0          201357     0     00000000   14.1  IRQ5: rtser5
->   0  0      0          5811       0     00000000    2.4  IRQ5: rtser4
-
-So the difference between both accounting models is not dramatic, but
-noticeable. Clearly, the variation increases with every high rate IRQ
-source you add (rtser5 was about 7 KHz) and with every step down the CPU
-performance ladder.
-
-Ok, enough talk, we are looking forward to feedback now! What
-specifically needs testing is SMP, I only once ran the patches under a
-2-way qemu.
+As a side effect, this patch refactores the xnstat API to provide new
+lazy switching services and drops unused functions again. Net binary
+size increase on x86 is ~60 bytes, mostly for shared IRQs, but the
+average runtime impact on those paths should be lower.
 
 Jan
 
+--------------060105030300000400020305
+Content-Type: text/plain;
+ name="irq_stats_2nd_model.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="irq_stats_2nd_model.patch"
 
---------------enig922A2615126E4B1508E71465
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+---
+ include/nucleus/stat.h |   33 +++++++++++++++++++++++----------
+ ksrc/nucleus/intr.c    |   39 +++++++++++++++++++++++++--------------
+ 2 files changed, 48 insertions(+), 24 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Index: xenomai/ksrc/nucleus/intr.c
+===================================================================
+--- xenomai.orig/ksrc/nucleus/intr.c
++++ xenomai/ksrc/nucleus/intr.c
+@@ -60,19 +60,18 @@ static void xnintr_irq_handler(unsigned 
+ 	xnsched_t *sched = xnpod_current_sched();
+ 	xnintr_t *intr = (xnintr_t *)cookie;
+ 	xnstat_runtime_t *prev;
++	xnticks_t start;
+ 	int s;
+ 
+ 	xnarch_memory_barrier();
+ 
++	prev  = xnstat_runtime_get_current(sched);
++	start = xnstat_runtime_now();
+ 	xnltt_log_event(xeno_ev_ienter, irq);
+-	prev = xnstat_runtime_switch(sched,
+-				     &intr->stat[xnsched_cpu(sched)].account);
+ 
+ 	++sched->inesting;
+ 	s = intr->isr(intr);
+ 
+-	xnstat_runtime_switch(sched, prev);
+-
+ 	if (unlikely(s == XN_ISR_NONE)) {
+ 		if (++intr->unhandled == XNINTR_MAX_UNHANDLED) {
+ 			xnlogerr("%s: IRQ%d not handled. Disabling IRQ "
+@@ -81,6 +80,9 @@ static void xnintr_irq_handler(unsigned 
+ 		}
+ 	} else {
+ 		xnstat_counter_inc(&intr->stat[xnsched_cpu(sched)].hits);
++		xnstat_runtime_lazy_switch(sched,
++			&intr->stat[xnsched_cpu(sched)].account,
++			start);
+ 		intr->unhandled = 0;
+ 	}
+ 
+@@ -102,6 +104,7 @@ static void xnintr_irq_handler(unsigned 
+ 	}
+ 
+ 	xnltt_log_event(xeno_ev_iexit, irq);
++	xnstat_runtime_switch(sched, prev);
+ }
+ 
+ /* Low-level clock irq handler. */
+@@ -162,13 +165,15 @@ static void xnintr_shirq_handler(unsigne
+ {
+ 	xnsched_t *sched = xnpod_current_sched();
+ 	xnstat_runtime_t *prev;
++	xnticks_t start;
+ 	xnintr_shirq_t *shirq = &xnshirqs[irq];
+ 	xnintr_t *intr;
+ 	int s = 0;
+ 
+ 	xnarch_memory_barrier();
+ 
+-	prev = xnstat_runtime_get_current(sched);
++	prev  = xnstat_runtime_get_current(sched);
++	start = xnstat_runtime_now();
+ 	xnltt_log_event(xeno_ev_ienter, irq);
+ 
+ 	++sched->inesting;
+@@ -179,21 +184,21 @@ static void xnintr_shirq_handler(unsigne
+ 	while (intr) {
+ 		int ret;
+ 
+-		xnstat_runtime_switch(sched,
+-			&intr->stat[xnsched_cpu(sched)].account);
+-
+ 		ret = intr->isr(intr);
+ 		s |= ret;
+ 
+-		if (ret & XN_ISR_HANDLED)
++		if (ret & XN_ISR_HANDLED) {
+ 			xnstat_counter_inc(
+ 				&intr->stat[xnsched_cpu(sched)].hits);
++			xnstat_runtime_lazy_switch(sched,
++				&intr->stat[xnsched_cpu(sched)].account,
++				start);
++			start = xnstat_runtime_now();
++		}
+ 
+ 		intr = intr->next;
+ 	}
+ 
+-	xnstat_runtime_switch(sched, prev);
+-
+ 	xnintr_shirq_unlock(shirq);
+ 
+ 	if (unlikely(s == XN_ISR_NONE)) {
+@@ -214,6 +219,7 @@ static void xnintr_shirq_handler(unsigne
+ 		xnpod_schedule();
+ 
+ 	xnltt_log_event(xeno_ev_iexit, irq);
++	xnstat_runtime_switch(sched, prev);
+ }
+ 
+ #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL */
+@@ -230,13 +236,15 @@ static void xnintr_edge_shirq_handler(un
+ 
+ 	xnsched_t *sched = xnpod_current_sched();
+ 	xnstat_runtime_t *prev;
++	xnticks_t start;
+ 	xnintr_shirq_t *shirq = &xnshirqs[irq];
+ 	xnintr_t *intr, *end = NULL;
+ 	int s = 0, counter = 0;
+ 
+ 	xnarch_memory_barrier();
+ 
+-	prev = xnstat_runtime_get_current(sched);
++	prev  = xnstat_runtime_get_current(sched);
++	start = xnstat_runtime_now();
+ 	xnltt_log_event(xeno_ev_ienter, irq);
+ 
+ 	++sched->inesting;
+@@ -258,6 +266,10 @@ static void xnintr_edge_shirq_handler(un
+ 			end = NULL;
+ 			xnstat_counter_inc(
+ 				&intr->stat[xnsched_cpu(sched)].hits);
++			xnstat_runtime_lazy_switch(sched,
++				&intr->stat[xnsched_cpu(sched)].account,
++				start);
++			start = xnstat_runtime_now();
+ 		} else if (code == XN_ISR_NONE && end == NULL)
+ 			end = intr;
+ 
+@@ -268,8 +280,6 @@ static void xnintr_edge_shirq_handler(un
+ 			intr = shirq->handlers;
+ 	}
+ 
+-	xnstat_runtime_switch(sched, prev);
+-
+ 	xnintr_shirq_unlock(shirq);
+ 
+ 	if (counter > MAX_EDGEIRQ_COUNTER)
+@@ -295,6 +305,7 @@ static void xnintr_edge_shirq_handler(un
+ 		xnpod_schedule();
+ 
+ 	xnltt_log_event(xeno_ev_iexit, irq);
++	xnstat_runtime_switch(sched, prev);
+ }
+ 
+ #endif /* CONFIG_XENO_OPT_SHIRQ_EDGE */
+Index: xenomai/include/nucleus/stat.h
+===================================================================
+--- xenomai.orig/include/nucleus/stat.h
++++ xenomai/include/nucleus/stat.h
+@@ -23,6 +23,8 @@
+ 
+ #ifdef CONFIG_XENO_OPT_STATS
+ 
++#include <nucleus/types.h>
++
+ typedef struct xnstat_runtime {
+ 
+ 	xnticks_t start;   /* Start of execution time accumulation */
+@@ -31,14 +33,16 @@ typedef struct xnstat_runtime {
+ 
+ } xnstat_runtime_t;
+ 
+-/* Account runtime of current account up to now, but don't set a new
+-   account yet. */
+-#define xnstat_runtime_update(sched) \
++/* Return current date which can be passed to other xnstat services for
++   immediate or lazy accounting. */
++#define xnstat_runtime_now() xnarch_get_cpu_tsc()
++
++/* Accumulate runtime of the current account until the given date. */
++#define xnstat_runtime_update(sched, start) \
+ do { \
+-	xnticks_t now = xnarch_get_cpu_tsc(); \
+ 	(sched)->current_account->total += \
+-		now - (sched)->last_account_switch; \
+-	(sched)->last_account_switch = now; \
++		start - (sched)->last_account_switch; \
++	(sched)->last_account_switch = start; \
+ } while (0)
+ 
+ /* Update the current account reference, returning the previous one. */
+@@ -82,7 +86,8 @@ static inline int xnstat_counter_get(xns
+ typedef struct xnstat_runtime {
+ } xnstat_runtime_t;
+ 
+-#define xnstat_runtime_update(sched)                         do { } while (0)
++#define xnstat_runtime_now()                                 0
++#define xnstat_runtime_update(sched, start)                  do { } while (0)
+ #define xnstat_runtime_set_current(sched, new_account)       ({ NULL; })
+ #define xnstat_runtime_get_current(sched)                    ({ NULL; })
+ #define xnstat_runtime_finalize(sched)                       do { } while (0)
+@@ -95,11 +100,19 @@ static inline int xnstat_counter_inc(xns
+ static inline int xnstat_counter_get(xnstat_counter_t *c) { return 0; }
+ #endif /* CONFIG_XENO_OPT_STATS */
+ 
+-/* Switch to new_account, accounting the runtime of the current one until now
+-   and returning the previous account. */
++/* Account the runtime of the current account until now, switch to
++   new_account, and return the previous one. */
+ #define xnstat_runtime_switch(sched, new_account) \
+ ({ \
+-	xnstat_runtime_update(sched); \
++	xnstat_runtime_update(sched, xnstat_runtime_now()); \
++	xnstat_runtime_set_current(sched, new_account); \
++})
++
++/* Account the runtime of the current account until given start time, switch
++   to new_account, and return the previous one. */
++#define xnstat_runtime_lazy_switch(sched, new_account, start) \
++({ \
++	xnstat_runtime_update(sched, start); \
+ 	xnstat_runtime_set_current(sched, new_account); \
+ })
+ 
 
-iD8DBQFFLprNniDOoMHTA+kRArGDAJ470JUo+hkYFglcBwII//On3mbmoACfcVMC
-iaTEl5FXIc5EkMaX7agjbFg=
-=h5dL
------END PGP SIGNATURE-----
-
---------------enig922A2615126E4B1508E71465--
+--------------060105030300000400020305--
 
