@@ -1,12 +1,14 @@
-Subject: Re: [Xenomai-core] [BUG] rtf_put broken due to kernel 2.4 bug
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45297772.5080500@domain.hid>
-References: <45297772.5080500@domain.hid>
+In-Reply-To: <451E378F.5030305@domain.hid>
+References: <4516F0D1.3010800@domain.hid>
+	<1159135692.4971.68.camel@domain.hid>  <451E378F.5030305@domain.hid>
 Content-Type: text/plain
-Date: Sat, 14 Oct 2006 23:08:30 +0200
-Message-Id: <1160860110.5151.5.camel@domain.hid>
+Date: Sat, 14 Oct 2006 23:35:26 +0200
+Message-Id: <1160861726.5151.6.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [Adeos-main] Re:
+	adeos-ipipe-2.6.18-ppc-1.4-00.patch, first version
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,43 +19,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org
 
-On Mon, 2006-10-09 at 00:10 +0200, Jan Kiszka wrote:
-> Hi,
+On Sat, 2006-09-30 at 11:23 +0200, Wolfgang Grandegger wrote:
+> Hi Philippe,
 > 
-> this issue
+> Philippe Gerum wrote:
+> > On Sun, 2006-09-24 at 22:55 +0200, Wolfgang Grandegger wrote:
+> >> Hi Philippe,
+> >>
+> >> attached you will find a first version of the PPC ADEOS-IPipe patch for 
+> >> Linux 2.6.18 (from kernel.org) for review. I have also included a 
+> >> commented log file with more information on the porting of 
+> >> adeos-ipipe-2.6.14-ppc-1.4-00 to Linux 2.6.18. It works with a recent 
+> >> version of Xenomai.
+> >>
+> > 
+> > Thanks, at first sight, this looks good. I don't see any obvious problem
+> > in the tracer code either. Anyway, I will play with it asap.
+> > 
+> >> The patch currently only supports devices in the "arch/ppc" tree with 
+> >> the option "CONFIG_PPC_MERGE" not set. Porting the "arch/powerpc" tree 
+> >> requires further effort and I need a test system as well. Puh, let's 
+> >> hope that the merge ppc -> powerpc will be completed soon.
+> >>
+> >> The idle loop is not yet working for 6xx and I have disabled it for
+> >> this reason (check arch/powerpc/kernel/idle.c). It needs further
+> >> debugging. I hope to find more time beginning of October.
+> > 
+> > Ok, thanks. Btw, returning from NAP on 6xx is done through an exception,
+> > right? If so, maybe we have a problem with this particular
+> > exception/interrupt branching directly to transfer_to_handler_full (i.e.
+> > the vanilla way) without being known from the Adeos pipeline, albeit it
+> > should? (red blinking warning: this is just a wild guess).
 > 
-> http://www.ussg.iu.edu/hypermail/linux/kernel/0610.1/0211.html
-> 
-> was revealed by the rtai fifo code. We currently have the double
-> __test_and_set_bit combination at least here:
-> 
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtai/fifo.c#L309
-> (resolves to __test_and_set_bit via ipipe_test_and_stall_pipeline_from)
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/rtai/fifo.c#L311
-> 
-> The effect on this code is that multiple rtf_put on an unconnected fifo
-> corrupts its queue.
-> 
-> I'm now awaiting the comment of the 2.4 maintainer, but we will still
-> have to cope with this issue on current 2.4 kernels. There is also the
-> risk that more spots are affected or will be affected in the future
-> given the embedded use of __test_and_set_bit in pipeline stalling commands.
-> 
-> Anyone any smart idea how to handle this? Should we simply include the
-> bitops patch in 2.4-x86-ipipe?
+> Attached is a revised patch including a fix for remaining problem in the 
+> 6xx idle loop mentioned above. The bug was here (diff to old patch):
 
-Yes, I'm going to wire this patch into 1.3-01 for 2.4.33.
+Merged, thanks.
 
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
