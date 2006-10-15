@@ -1,11 +1,10 @@
-Subject: Re: [Xenomai-core] Build problems with xenomai PPC vxworks skin
-	for target TQM8555 board
+Subject: Re: [Xenomai-core] kernel panic
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <FA9961D07FD27B4EB6058C0F35F3D0D124112A@CSGMX.es.xeroxlabs.com>
-References: <FA9961D07FD27B4EB6058C0F35F3D0D124112A@CSGMX.es.xeroxlabs.com>
+In-Reply-To: <47746.127.0.0.1.1160160976.squirrel@domain.hid>
+References: <47746.127.0.0.1.1160160976.squirrel@domain.hid>
 Content-Type: text/plain
-Date: Sun, 15 Oct 2006 20:50:54 +0200
-Message-Id: <1160938254.4962.17.camel@domain.hid>
+Date: Sun, 15 Oct 2006 22:07:45 +0200
+Message-Id: <1160942865.4962.22.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -18,60 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Chau, Ngaiman" <Ngaiman.Chau@domain.hid>
+To: Wael BACHTA <wael@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2006-10-12 at 17:40 -0700, Chau, Ngaiman wrote:
+On Fri, 2006-10-06 at 18:56 +0000, Wael BACHTA wrote:
+> Hi,
+> 
+> I use an Intel Pentium 4 processor which can be used as 2 virtual
+> processors when setting the SMP option during the kernel compiling (I can
+> see 2 processors with "cat /proc/cpuinfo").
+> 
+> I patched the kernel with adeos in order to install xenomai. I discovered
+> that :
+> - when completely disabling the ACPI and setting the SMP, my system boots
+> but I have only one processor when I look into /proc/cpuinfo
+> - Everything goes well when I don't disable completely the ACPI.
+> 
+> I also use a PCI framegrabber. its driver is a real time one developed
+> under xenomai. I noticed that this driver works fine only if the PCI_MSI
+> is set. Otherwise, I don't have any interrupts.
+> 
+> I must use my real time driver and the 2 virtual processors.
+> But, when I enable the ACPI, the SMP and the PCI_MSI, I have a kernel
+> panic. My PC boots when I disable the ACPI but I loose 1 processor.
+> 
+> I don't see what's wrong.
+> 
 
->   Question 1)
-> 
-> >     The Satch runs ok except the size return from the msqQRecive()
-> is 
-> 
-> > always -1, not sure why? (vxwork api size return should be the
-> number of bytes
-> 
+Try this patch:
+http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.17-i386-1.5-00.patch
 
-There was a subtle bug causing spurious argument shadowing when
-attempting to pass the result code back to user-space. The following
-patch fixes the issue for ppc. All archs need to be fixed, and have been
-updated accordingly, both in the maintenance and development branch.
-Thanks for reporting this issue.
 
---- include/asm-powerpc/syscall.h	(revision 1719)
-+++ include/asm-powerpc/syscall.h	(working copy)
-@@ -54,9 +54,9 @@
-    have checked for bad range before using the copy macros, so we
-    should not have to care about the result. */
- #define __xn_copy_from_user(task,dstP,srcP,n)  \
--    ({ int err = __copy_from_user_inatomic(dstP,srcP,n); err; })
-+    ({ int __err__ = __copy_from_user_inatomic(dstP,srcP,n); __err__; })
- #define __xn_copy_to_user(task,dstP,srcP,n)  \
--    ({ int err = __copy_to_user_inatomic(dstP,srcP,n); err; })
-+    ({ int __err__ = __copy_to_user_inatomic(dstP,srcP,n); __err__; })
- #define __xn_put_user(task,src,dstP)           __put_user(src,dstP)
- #define __xn_get_user(task,dst,srcP)           __get_user(dst,srcP)
- #define __xn_strncpy_from_user(task,dstP,srcP,n)    __strncpy_from_user(dstP,srcP,n)
-
-> > received)
+> Thanks for your help,
 > 
->  
+> Wael.
 > 
-> > Question 2)
+> -------------------------------------
+> Wael BACHTA
+> Strasbourg I University
+> LSIIT Laboratory, AVR group
+> Bd S. Brant
+> BP 10413, 67412 ILLKIRCH cedex, FRANCE
+> Tel : +33 (0)3 90 24 44 78
+> Fax : +33 (0)3 90 24 44 80
+> http://eavr.u-strasbg.fr
 > 
-> >     I try and proceed to add the Koan.c file to the Makefile,
-> however, 
 > 
-> > it runs into compilation error even thought I add the main() and 
-> 
-> > RootTask as in Satch.c does.
-
-koan.c won't run in this context. It was aimed at demonstrating the
-capabilities of the UVM, which has been deprecated recently. Basically,
-the issue is that you don't have access to kernel hooks such as
-tickAnnounce() and friends in mere user-space context with a direct
-syscall interface. This file will be removed from the trunk/ shortly.
-
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
