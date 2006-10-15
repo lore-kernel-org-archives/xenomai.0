@@ -1,10 +1,14 @@
-Message-ID: <45321A93.2090608@domain.hid>
-Date: Sun, 15 Oct 2006 13:25:07 +0200
+Message-ID: <45321C82.6040103@domain.hid>
+Date: Sun, 15 Oct 2006 13:33:22 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------010005070404070604050106"
+Subject: Re: [Adeos-main] [PATCH] build fix for !CONFIG_IPIPE
+References: <45321A93.2090608@domain.hid>
+In-Reply-To: <45321A93.2090608@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig04C2D7D78B07BB58C84F268E"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] build fix for !CONFIG_IPIPE
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,29 +19,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
-This is a multi-part message in MIME format.
---------------010005070404070604050106
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig04C2D7D78B07BB58C84F268E
 Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-Just found this patch in my repository while switching to the latest.
+Jan Kiszka wrote:
+> Just found this patch in my repository while switching to the latest.
+>=20
 
-Jan
+Somehow the patch became an octet stream...
 
---------------010005070404070604050106
-Content-Type: application/octet-stream;
- name="ipipe-fix-disabled.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="ipipe-fix-disabled.patch"
+--- linux-2.6.17.13.orig/include/linux/ipipe.h
++++ linux-2.6.17.13/include/linux/ipipe.h
+@@ -763,6 +763,7 @@ void fastcall *ipipe_get_ptd(int key);
+ #define ipipe_irq_unlock(irq)		do { } while(0)
 
-SW5kZXg6IGxpbnV4LTIuNi4xNy4xMy9pbmNsdWRlL2xpbnV4L2lwaXBlLmgKPT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PQotLS0gbGludXgtMi42LjE3LjEzLm9yaWcvaW5jbHVkZS9saW51eC9pcGlwZS5oCisr
-KyBsaW51eC0yLjYuMTcuMTMvaW5jbHVkZS9saW51eC9pcGlwZS5oCkBAIC03NjMsNiArNzYz
-LDcgQEAgdm9pZCBmYXN0Y2FsbCAqaXBpcGVfZ2V0X3B0ZChpbnQga2V5KTsKICNkZWZpbmUg
-aXBpcGVfaXJxX3VubG9jayhpcnEpCQlkbyB7IH0gd2hpbGUoMCkKIAogI2RlZmluZSBpcGlw
-ZV9yb290X2RvbWFpbl9wCQkxCisjZGVmaW5lIGlwaXBlX3NhZmVfY3VycmVudCgpCQljdXJy
-ZW50CiAKICNlbmRpZgkvKiBDT05GSUdfSVBJUEUgKi8KIAoAAAA=
---------------010005070404070604050106--
+ #define ipipe_root_domain_p		1
++#define ipipe_safe_current()		current
+
+ #endif	/* CONFIG_IPIPE */
+
+
+
+
+--------------enig04C2D7D78B07BB58C84F268E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFMhyFniDOoMHTA+kRArrdAJ4lsW/a5FjIa1hLXWXW53UKtc1+4ACfYgU5
+/K3V28Se7vSolBjqxub7BU4=
+=CKkY
+-----END PGP SIGNATURE-----
+
+--------------enig04C2D7D78B07BB58C84F268E--
 
