@@ -1,12 +1,10 @@
-Subject: Re: [Xenomai-core] kernel panic
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <47746.127.0.0.1.1160160976.squirrel@domain.hid>
-References: <47746.127.0.0.1.1160160976.squirrel@domain.hid>
 Content-Type: text/plain
-Date: Sun, 15 Oct 2006 22:07:45 +0200
-Message-Id: <1160942865.4962.22.camel@domain.hid>
+Date: Sun, 15 Oct 2006 23:32:19 +0200
+Message-Id: <1160947939.4962.27.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai v2.2.4
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,56 +15,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wael BACHTA <wael@domain.hid>
-Cc: xenomai@xenomai.org
-
-On Fri, 2006-10-06 at 18:56 +0000, Wael BACHTA wrote:
-> Hi,
-> 
-> I use an Intel Pentium 4 processor which can be used as 2 virtual
-> processors when setting the SMP option during the kernel compiling (I can
-> see 2 processors with "cat /proc/cpuinfo").
-> 
-> I patched the kernel with adeos in order to install xenomai. I discovered
-> that :
-> - when completely disabling the ACPI and setting the SMP, my system boots
-> but I have only one processor when I look into /proc/cpuinfo
-> - Everything goes well when I don't disable completely the ACPI.
-> 
-> I also use a PCI framegrabber. its driver is a real time one developed
-> under xenomai. I noticed that this driver works fine only if the PCI_MSI
-> is set. Otherwise, I don't have any interrupts.
-> 
-> I must use my real time driver and the 2 virtual processors.
-> But, when I enable the ACPI, the SMP and the PCI_MSI, I have a kernel
-> panic. My PC boots when I disable the ACPI but I loose 1 processor.
-> 
-> I don't see what's wrong.
-> 
-
-Try this patch:
-http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.17-i386-1.5-00.patch
+To: xenomai@xenomai.org
 
 
-> Thanks for your help,
-> 
-> Wael.
-> 
-> -------------------------------------
-> Wael BACHTA
-> Strasbourg I University
-> LSIIT Laboratory, AVR group
-> Bd S. Brant
-> BP 10413, 67412 ILLKIRCH cedex, FRANCE
-> Tel : +33 (0)3 90 24 44 78
-> Fax : +33 (0)3 90 24 44 80
-> http://eavr.u-strasbg.fr
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+Here is the fourth maintenance release for the v2.2.x branch.  Short
+log follows:
+
+	[nucleus]
+
+	* Raise XNBREAK as required when resuming a forcibly suspended
+	shadow thread upon Linux signal receipt.
+
+	* Rework the watchdog implementation, so that it does not
+	depend on the Linux tick to be relayed through the nucleus
+	(e.g. CONFIG_X86_LOCAL_APIC). Export the watchdog status
+	to /proc/xenomai/timer.
+
+	* Fix __xn_copy_from/to_user() so that none of their arguments
+	could be shadowed by the internal variable used to hold the
+	return value. This issue affects _all_ architectures.
+
+	* x86: partially revert commit #1595 to fix FPU
+	management regression issues that surfaced in 2.2.3.
+	Fix CONFIG_PCI_MSI issue by upgrading to Adeos
+	2.6.17-1.5-00.
+
+	* blackfin: Sync with Blackfin's CVS head as of 2006-10-08.
+
+	[hal]
+
+	* powerpc: Fix computation of periodic tick value to prevent
+	32bit arithmetic overflow. Add Adeos support for Linux 2.6.18.
+
+	* blackfin: Upgrade generic Adeos support to the latest
+	release.
+
+	* arm: Fix syscall propagation issue with previous Adeos
+	1.5-00 release.
+
+	[uvm]
+
+	* Iron context switch emulation to prevent spurious wakeups
+	upon Linux signal receipts.
+
+	[posix]
+
+	* Add missing wrapper to __real_pthread_getschedparam().
+
+	[rtdm]
+
+	* Fix return value from copy_to/from_user().
+
+	[psos]
+
+	* Fix size information passed to internal msgQLib
+	routines.
+
+	* Reschedule after task mode change (t_mode).
+
+
+As a sidenote, you will notice that the latest Adeos patches for i386,
+powerpc and Blackfin are bigger than they used to; this is due to the
+integration of the I-pipe tracer feature into the standard Adeos
+support, that used to live in a separate patch up to now. This feature
+is currently forcibly disabled for the Blackfin architecture though,
+since it is not fully functional yet, but this should improve with the
+next releases.
+
+See the ChangeLog for details.
+
+http://download.gna.org/xenomai/stable/xenomai-2.2.4.tar.bz2
+
 -- 
 Philippe.
 
