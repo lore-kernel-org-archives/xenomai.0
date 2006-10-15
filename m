@@ -1,17 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <452B6816.8070904@domain.hid>
-References: <200609191523.39696.andza@domain.hid>
-	<200609210856.41261.andza@domain.hid> <451220FF.10108@domain.hid>
-	<200609221106.21060.andza@domain.hid> <4513B27B.3030509@domain.hid>
-	<4513BCDD.7050002@domain.hid> <20061010065701.GA14976@domain.hid>
-	<452B6816.8070904@domain.hid>
-Content-Type: text/plain
-Date: Tue, 10 Oct 2006 11:45:10 +0200
-Message-Id: <1160473510.4967.19.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Re: SMP-problem with cvs-vulcano/3.4
-Reply-To: rpm@xenomai.org
+Message-ID: <45321A93.2090608@domain.hid>
+Date: Sun, 15 Oct 2006 13:25:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------010005070404070604050106"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] build fix for !CONFIG_IPIPE
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,95 +13,31 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, rtai@domain.hid
+To: adeos-main@gna.org
 
-On Tue, 2006-10-10 at 11:29 +0200, Jan Kiszka wrote:
-> Anders Zachrison wrote:
-> > Reviving an old thread of mine, in the rtai-mail-list. As suggested by
-> > Jan, I will also try to send it to the adeos list (if this doesn't
-> > succeed, could you forward it, Jan?) (And last, for possible readers on
-> > the adeos-list, pleas CC-me, as I'm not following that list).
-> > 
-> > * Jan Kiszka <jan.kiszka@domain.hid> [060922 12:37]:
-> >> Jan Kiszka wrote:
-> >>> Anders Zachrison wrote:
-> >>>> ...  As a short summary, as soon as I patch the 2.6.17-kernels with
-> >>>> the rtai-patch from vulcano-cvs (and apparently magma-cvs) the
-> >>>> kernel stops booting. Quite often the call-trace shows calls to
-> >>>> various ipipe-functions mainly setup and initialization functions.
-> >>>> Other times it is around a call to smp_call_function.
-> > 
-> > A short summary for possible readers; as stated above, the computer
-> > stops booting as soon as the 2.6.17.x kernel is patched with either an
-> > adeos-ipipe patch or with the patch supplied by RTAI. It turned out the
-> > the problem was MSI related (see the end of the mail).
-> > 
-> > It is an old SMP-box with double PII-400MHz processors. 
-> > 
-> > The kernel config is available at
-> > http://hydra.ikp.liu.se/~andza/adeos_oops/config and a further
-> > specification of the computer (from `lspci -vv`) is found at
-> > http://hydra.ikp.liu.se/~andza/adeos_oops/lspci-vv.txt . The computer is
-> > running Debian stable.
-> > 
-> >>> Could you do the Adeos project a favour and test the vanilla Ipipe
-> >>> patch as well (http://download.gna.org/adeos/patches/v2.6/i386)?
-> >>> Please report breakages with precise version number, system
-> >>> description, and .config
-> > 
-> > I've used a 2.6.17.11-kernel (same problems occurs with a 2.6.17 one)
-> > and I've patched it with the adeos-ipipe-2.6.17-i386-1.4-00.patch from
-> > (http://download.gna.org/adeos/patches/v2.6/i386).
-> > 
-> >> ... and the oops if you can catch it (syslog, serial console, etc.).
-> > 
-> > Three oopses are available;
-> > http://hydra.ikp.liu.se/~andza/adeos_oops/oops1.txt
-> > http://hydra.ikp.liu.se/~andza/adeos_oops/oops2.txt
-> > http://hydra.ikp.liu.se/~andza/adeos_oops/oops3.txt .
-> > (Well, they should be all or most of the boot process, as received by
-> > the serial console. However, at least the latter two lacks some parts of
-> > the beginning, although the oopses at the end should be complete.)
-> 
-> Thanks for the oopses. They seem to point in the same direction Philippe
-> already guessed: IRQ migration (the Linux code screams for some spinlock
-> being acquired, which is probably not the case when the pipeline is active).
-> 
-> > 
-> >>> to adeos-main@gna.org or to me (will forward then).
-> >>>
-> >>> Many thanks in advance!
-> >>> Jan
-> >>>
-> > 
-> >> BTW, there used to be problems around MSI with I-pipe patches, though
-> >> my current information is that they are fixed. If you have MSI on your
-> >> box, it might be worth trying to switch related kernel support off
-> >> (CONFIG_PCI_MSI).
-> > 
-> > As stated in a previous reply, this was the case. Disableing the MSI in
-> > the kernel config solved the problem, while disableing it in the kernel
-> > boot parameter did not.
-> > 
-> > Anders
-> > 
-> 
-> There were some commits to Adeos CVS recently regarding
-> kernel/irq/migration.c [1], but the result looks unfinished to me (no
-> more differences to vanilla?). Philippe, is this supposed to solve the
-> issue?
+This is a multi-part message in MIME format.
+--------------010005070404070604050106
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-No, this was a left over from a previous attempt to investigate the
-issue. The issue is still pending.
+Just found this patch in my repository while switching to the latest.
 
-> 
-> Jan
-> 
-> [1]http://cvs.gna.org/cvsweb/ipipe/v2.6/2.6.17/kernel/irq/migration.c?cvsroot=adeos
-> 
--- 
-Philippe.
+Jan
 
+--------------010005070404070604050106
+Content-Type: application/octet-stream;
+ name="ipipe-fix-disabled.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="ipipe-fix-disabled.patch"
 
+SW5kZXg6IGxpbnV4LTIuNi4xNy4xMy9pbmNsdWRlL2xpbnV4L2lwaXBlLmgKPT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PQotLS0gbGludXgtMi42LjE3LjEzLm9yaWcvaW5jbHVkZS9saW51eC9pcGlwZS5oCisr
+KyBsaW51eC0yLjYuMTcuMTMvaW5jbHVkZS9saW51eC9pcGlwZS5oCkBAIC03NjMsNiArNzYz
+LDcgQEAgdm9pZCBmYXN0Y2FsbCAqaXBpcGVfZ2V0X3B0ZChpbnQga2V5KTsKICNkZWZpbmUg
+aXBpcGVfaXJxX3VubG9jayhpcnEpCQlkbyB7IH0gd2hpbGUoMCkKIAogI2RlZmluZSBpcGlw
+ZV9yb290X2RvbWFpbl9wCQkxCisjZGVmaW5lIGlwaXBlX3NhZmVfY3VycmVudCgpCQljdXJy
+ZW50CiAKICNlbmRpZgkvKiBDT05GSUdfSVBJUEUgKi8KIAoAAAA=
+--------------010005070404070604050106--
 
