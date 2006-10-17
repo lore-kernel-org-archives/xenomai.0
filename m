@@ -1,10 +1,11 @@
-Message-ID: <4533541B.6060108@domain.hid>
-Date: Mon, 16 Oct 2006 11:42:51 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------050800030206070409060005"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] avoid installing inappropriate IRQ dispatcher
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Tue, 17 Oct 2006 19:50:02 +0200
+Message-Id: <1161107402.4981.37.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai Roadmap
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,78 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------050800030206070409060005
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
 
-In the (corner) case that someone requests to install a shared edge IRQ
-while the related support is not enabled (!CONFIG_XENO_OPT_SHIRQ_EDGE),
-BUT the opposite type (CONFIG_XENO_OPT_SHIRQ_LEVEL), Xenomai so far
-incorrectly installs the level-type handler. For the other way around,
-the non-shared dispatch handler is installed, which is also not correct.
+Thanks to Bruno, we now have a Wiki, to better organize information
+and keep interesting/useful ideas in a central place, and the beast
+sleeps there: http://www.xenomai.org/wiki.
 
-This patch fixes the issue by returning an error on registration,
-clearly indicating the system misconfiguration to the caller.
+Hopefully, this place is going to be populated with more and more
+information over time, but you can already find interesting bits
+there, and particularly, the project's general r_o_a_d_m_a_p.  Yes, a
+roadmap, really, no kidding. Jan, Gilles, Dmitry and a few others
+threatened to bury me under tons of patches until we publically explain
+where we came from, and where we are heading. Given their firepower in
+this matter, I promptly surrendered, even if I know that this won't slow
+down their productivity for more than a week, because they are
+basically relentless, merciless and sleepless people.
 
-Jan
+The gist of it is that we are heading to Xenomai 3, which should allow
+us to support the Xenomai interfaces indifferently over both the
+co-kernel (i.e. Adeos) and native preemption (i.e. PREEMPT_RT)
+technologies, in order to keep everyone's options open, and always be
+able to use the best tool for the job, depending on which job we are
+talking about.
+[Ok, those who did not fall off their chair are likely to have carefully
+read my various posts on related matters for the past two years, which I
+thank them for]
+The other big thing should be a significant extension of the support
+for industrial drivers, available over an enhanced RTDM layer, and
+hosted by the Xenomai project.
 
---------------050800030206070409060005
-Content-Type: text/plain;
- name="pick-shared-irq-handler.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="pick-shared-irq-handler.patch"
+In any case, we tried to explain these issues and more, here:
+http://www.xenomai.org/wiki/index.php/Xenomai:Roadmap
 
----
- ChangeLog           |    5 +++++
- ksrc/nucleus/intr.c |   15 ++++++++++-----
- 2 files changed, 15 insertions(+), 5 deletions(-)
+As mentioned, this is a general roadmap, and we don't provide any
+precise timeframe yet. Xenomai 3 is going to be a significant effort,
+which must not impede the stabilization of the current development
+branch aiming at the 2.3.x series.
 
-Index: ksrc/nucleus/intr.c
-===================================================================
---- ksrc/nucleus/intr.c.orig
-+++ ksrc/nucleus/intr.c
-@@ -340,14 +340,19 @@ static inline int xnintr_irq_attach(xnin
- 		void (*handler) (unsigned, void *) = &xnintr_irq_handler;
- 
- 		if (intr->flags & XN_ISR_SHARED) {
--#if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL)
--			handler = &xnintr_shirq_handler;
--#endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL */
--
--#if defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
- 			if (intr->flags & XN_ISR_EDGE)
-+#if defined(CONFIG_XENO_OPT_SHIRQ_EDGE)
- 				handler = &xnintr_edge_shirq_handler;
-+#else /* !CONFIG_XENO_OPT_SHIRQ_EDGE */
-+				return -ENOSYS;
- #endif /* CONFIG_XENO_OPT_SHIRQ_EDGE */
-+			else
-+#if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL)
-+				handler = &xnintr_shirq_handler;
-+#else /* !CONFIG_XENO_OPT_SHIRQ_LEVEL */
-+				return -ENOSYS;
-+#endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL */
-+
- 		}
- 		shirq->unhandled = 0;
- 
-Index: ChangeLog
-===================================================================
---- ChangeLog.orig
-+++ ChangeLog
-@@ -1,3 +1,8 @@
-+2006-10-16  Jan Kiszka  <jan.kiszka@domain.hid>
-+
-+	* ksrc/nucleus/intr.x (xnintr_irq_attach): Return error on
-+	mismatching shared-IRQ support.
-+
- 2006-10-15  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* ksrc/arch/powerpc/patches: Upgrade to 2.6.14-ppc-1.5-00.
+-- 
+Philippe.
 
---------------050800030206070409060005--
+
 
