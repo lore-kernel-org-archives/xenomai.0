@@ -1,11 +1,12 @@
-Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
-From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="=-jnCodc7i7zEFMTsRZrGR"
-Date: Tue, 17 Oct 2006 11:23:17 +0200
-Message-Id: <1161076997.5024.0.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4534A243.7070303@domain.hid>
+Date: Tue, 17 Oct 2006 10:28:35 +0100
+From: Marcelo Coelho <mjcoelho@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] which way to obtain irq#
+References: <4533C841.3040108@domain.hid> <4533D031.4040306@domain.hid>
+In-Reply-To: <4533D031.4040306@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,142 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
 
---=-jnCodc7i7zEFMTsRZrGR
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+> [I think you swapped the terms "real" and "virtual" here, no?]
 
-Here some test-cases:
-
-
--sh-3.00# cat /proc/xenomai/rtdm/rttest0/information=20
-driver:         xeno_timerbench
-version:        0.2.0
-peripheral:     Timer Latency Benchmark
-provider:       Jan Kiszka
-class:          6
-sub-class:      0
-flags:          NAMED_DEVICE =20
-lock count:     0
--sh-3.00# cat /proc/xenomai/rtdm/rttest1/information=20
-driver:         xeno_irqbench
-version:        0.1.0
-peripheral:     IRQ Latency Benchmark
-provider:       Jan Kiszka
-class:          6
-sub-class:      1
-flags:          NAMED_DEVICE =20
-lock count:     0
--sh-3.00# cat /proc/xenomai/rtdm/rttest2/information=20
-driver:         xeno_switchtest
-version:        0.1.1
-peripheral:     Context Switch Test
-provider:       Gilles Chanteperdrix
-class:          6
-sub-class:      2
-flags:          NAMED_DEVICE =20
-lock count:     0
--sh-3.00# cat /proc/xenomai/rtdm/named_devices      =20
-Hash    Name                            /proc
-D6      rttest0                         rttest0
-D7      rttest1                         rttest1
-D8      rttest2                         rttest2
-
-
--sh-3.00# ./latency -D0 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to start in-kernel timer benchmark, code -25
----|------------|------------|------------|--------|-----------------------=
---
-RTS|-1091011.128|       0.001|      93.252|   93340|
-00:00:00/00:00:10
-
--sh-3.00# ./latency -D1 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to start in-kernel timer benchmark, code -25
----|------------|------------|------------|--------|-----------------------=
---
-RTS|-1098113.592|       0.001|      93.252|   93340|
-00:00:-01/00:00:10
-
--sh-3.00# ./latency -D2 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to start in-kernel timer benchmark, code -25
----|------------|------------|------------|--------|-----------------------=
---
-RTS|-1093665.336|       0.001|      93.252|   93340|
-00:00:00/00:00:10
-
--sh-3.00# ./latency -D3 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D4 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D4 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D5 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D6 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D7 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
--sh-3.00# ./latency -D8 -t 1 -T 10 -p 10000
-=3D=3D Sampling period: 10000 us
-=3D=3D Test mode: in-kernel periodic task
-=3D=3D All results in microseconds
-latency: failed to open benchmark device, code -19
-(modprobe xeno_timerbench?)
-
-
-
-... no success
+At a first look I don't think so. The first option gives a number 
+between 1 and 255 and the second gives between 1 and 255.
 
 
 
 
---=-jnCodc7i7zEFMTsRZrGR
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
+Jan Kiszka wrote:
+ > Marcelo Coelho wrote:
+ >> Hi!
+ >>
+ >>
+ >> I'm developing a driver based on RTDM, and i'm having some problems
+ >> related to IRQ discovery (related to the fact that the driver is
+ >> starting to do something).
+ >>
+ >> So, there is 2 ways to obtain the IRQ number:
+ >>     pci_device -> irq
+ >> or
+ >>     pci_read_config_byte( pci_device, PCI_INTERRUPT_LINE, (unsigned
+ >> char*) &irq )
+ >>
+ >>
+ >> The difference between these is that the 1st presents the "real" irq
+ >> number (between 1 and 15) and the other presents the "virtual" irq
+ >> (between 1 and 255).
+ >
+ > [I think you swapped the terms "real" and "virtual" here, no?]
+> You have to use the first one like any Linux driver (RTDM is no
+> different in this regard).
+> 
+>>
+>> From your experience, is there any problem using the virtual irq number
+>> (the 1st option)?
+>>
+>>
+>>
+>> Thanks for your answers!!
+>>
+>>
+> 
+> Jan
+> 
 
-iD8DBQBFNKEFbMvu5jIEpfsRAgi/AKCFYQhK956n8DR5KlYMPLK7Xit7fQCfdihn
-II10gmOY+2gsUNs8AcGiW+Y=
-=Bs9+
------END PGP SIGNATURE-----
-
---=-jnCodc7i7zEFMTsRZrGR--
-
+DISCLAIMER: This message may contain confidential information or privileged material and is intended only for the individual(s) named. If you are not a named addressee and mistakenly received this message you should not copy or otherwise disseminate it: please delete this e-mail from your system and notify the sender immediately. E-mail transmissions are not guaranteed to be secure or error-free as information could be intercepted, corrupted, lost, destroyed, arrive late or incomplete or contain viruses. Therefore, the sender does not accept liability for any errors or omissions in the contents of this message that arise as a result of e-mail transmissions. Please request a hard copy version if verification is required. Critical Software, SA.
 
