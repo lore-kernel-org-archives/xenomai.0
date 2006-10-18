@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-core] [PATCH] cleanup xeno-config output
+Subject: Re: [Xenomai-core] [PATCH 0/3] Reworked nucleus statistics
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <452A43CC.5010908@domain.hid>
-References: <452A4169.9050901@domain.hid>  <452A43CC.5010908@domain.hid>
+In-Reply-To: <452E9ACD.20800@domain.hid>
+References: <452E9ACD.20800@domain.hid>
 Content-Type: text/plain
-Date: Wed, 18 Oct 2006 10:11:55 +0200
-Message-Id: <1161159115.5184.8.camel@domain.hid>
+Date: Wed, 18 Oct 2006 15:42:07 +0200
+Message-Id: <1161178927.5053.81.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -20,124 +20,47 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Mon, 2006-10-09 at 14:42 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > Following the discussion in an earlier thread, this patch reduces the
-> > CFLAGS and LDFLAGS returned by xeno-config to the required minimum.
-> > 
-> > Compile tested with several external packages, no regression known
-> > (except that one may want to set some of those flags elsewhere now).
-> > 
-> 
-> As usual, while you are hitting "Send": "Hmm did I check... No, I didn't!"
-> 
-> So here comes -v2, now setting -D__XENO__ also internally again.
-> 
+On Thu, 2006-10-12 at 21:43 +0200, Jan Kiszka wrote:
 
-Applied, thanks.
+[...]
 
-> Jan
-> plain text document attachment (xeno-config-cleanup-v2.patch)
-> ---
->  ChangeLog              |    8 +++++++-
->  configure.in           |   15 +++++++--------
->  scripts/xeno-config.in |    4 ++--
->  3 files changed, 16 insertions(+), 11 deletions(-)
+> It continues with the second patch that applies xnstat on the IRQ
+> subsystem, both for counting hits as well as for measuring the execution
+> time. The accounting model applied in this patch is as simple as this:
+> measure the time some driver- or application-supplied ISR executes and
+> accumulate it per-CPU. The rescheduling is still accounted to the
+> preempted thread.
 > 
-> Index: configure.in
-> ===================================================================
-> --- configure.in.orig
-> +++ configure.in
-> @@ -497,21 +497,23 @@ else
->  fi
->  AC_MSG_RESULT([done])
->  
-> -XENO_USER_CFLAGS="-D_GNU_SOURCE -D_REENTRANT -D__XENO__"
-> +dnl Common CFLAGS and LDFLAGS
-> +XENO_USER_CFLAGS="-D_GNU_SOURCE -D_REENTRANT"
->  XENO_USER_LDFLAGS=
->  
-> +dnl Exported CFLAGS and LDFLAGS, may be enhanced per-arch below
-> +XENO_USER_APP_CFLAGS=$XENO_USER_CFLAGS
-> +XENO_USER_APP_LDFLAGS=$XENO_USER_LDFLAGS
-> +
->  case $XENO_TARGET_ARCH in
->   i386)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe -fstrict-aliasing $gcc_w_noalias"
-> -	XENO_USER_LDFLAGS="-rdynamic"
->          ;;
->   powerpc)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> -	XENO_USER_LDFLAGS="-rdynamic"
->          ;;
->   ia64)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> -	XENO_USER_LDFLAGS="-rdynamic"
->          ;;
->   blackfin)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> @@ -521,7 +523,6 @@ case $XENO_TARGET_ARCH in
->          ;;
->   arm)
->  	XENO_USER_CFLAGS="$XENO_USER_CFLAGS -Wall -pipe"
-> -	XENO_USER_LDFLAGS="-rdynamic"
->          ;;
->  esac
->  
-> @@ -531,9 +532,7 @@ else
->     XENO_USER_CFLAGS="-O2 $XENO_USER_CFLAGS"
->  fi
->  
-> -XENO_USER_APP_CFLAGS=$XENO_USER_CFLAGS
-> -XENO_USER_CFLAGS="$XENO_USER_CFLAGS -D__IN_XENO__ -Wstrict-prototypes"
-> -XENO_USER_APP_LDFLAGS=$XENO_USER_LDFLAGS
-> +XENO_USER_CFLAGS="$XENO_USER_CFLAGS -D__XENO__ -D__IN_XENO__ -Wstrict-prototypes"
->  
->  AC_MSG_CHECKING([whether ld supports @file])
->  AC_CACHE_VAL(ac_cv_ld_file_option,
-> Index: scripts/xeno-config.in
-> ===================================================================
-> --- scripts/xeno-config.in.orig
-> +++ scripts/xeno-config.in
-> @@ -12,9 +12,9 @@ XENO_VERSION="@PACKAGE_VERSION@"
->  XENO_PREFIX="${staging}${prefix}"
->  XENO_CC="@CC@"
->  XENO_TARGET_ARCH="@XENO_TARGET_ARCH@"
-> -XENO_BASE_CFLAGS="-I. -I${staging}${includedir} @XENO_USER_APP_CFLAGS@"
-> +XENO_BASE_CFLAGS="-I${staging}${includedir} @XENO_USER_APP_CFLAGS@"
->  XENO_BASE_LDFLAGS="-L${staging}${libdir} -lpthread @XENO_USER_APP_LDFLAGS@"
-> -XENO_POSIX_CFLAGS="-I. -I${staging}${includedir} -I${staging}${includedir}/posix @XENO_USER_APP_CFLAGS@"
-> +XENO_POSIX_CFLAGS="-I${staging}${includedir} -I${staging}${includedir}/posix @XENO_USER_APP_CFLAGS@ -D__XENO__"
->  XENO_POSIX_LDFLAGS="-L${staging}${libdir} -lpthread_rt -lpthread -lrt @XENO_USER_APP_LDFLAGS@"
->  XENO_POSIX_WRAPPERS="${staging}${libdir}/posix.wrappers"
->  XENO_POSIX_FAST_WRAPPING="@LD_FILE_OPTION@"
-> Index: ChangeLog
-> ===================================================================
-> --- ChangeLog.orig
-> +++ ChangeLog
-> @@ -1,3 +1,9 @@
-> +2006-10-09  Jan Kiszka  <jan.kiszka@domain.hid>
-> +
-> +	* configure.in, scripts/xeno-config.in: Reducing CFLAGS and LDFLAGS
-> +	return by xeno-config to the required minimum while keeping the
-> +	original flags internally.
-> +
->  2006-10-08  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
->  
->  	* src/testsuite/*/Makefile.am: Link with libtool libraries, in
-> @@ -9,7 +15,7 @@
->  	* include/rtdm/rtdm_driver.h (rtdm_*copy_to/from_user): Fix
->  	return code.
->  
-> -	* ksrc/skins/rtdm/drvlib.c (rtdm_strncpy_from_user): Adopt doc to
-> +	* ksrc/skins/rtdm/drvlib.c (rtdm_strncpy_from_user): Adapt doc to
->  	actual success return code, the string length.
->  
->  2006-10-08  Wolfgang Grandegger  <wg@domain.hid>
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+> In my endless quest for perfection, I applied an -as I feel- enhanced
+> model on top of this (already working!) set, that's the third patch.
+> This model adds the scheduler path to the IRQ account. And it only
+> accounts to an IRQ if its ISR reported XN_ISR_HANDLED. This is relevant
+> for shared IRQs when only one source fired (the typical case). Also, it
+> reduces churning by avoiding account switches in the average case. But,
+> the downside, it may be less convenient to understand and increases the
+> code a bit (only for the shared IRQ case). Dmitry and I were not yet
+> able to agree on THE model, so I'm simply posting both for public
+> feedback. :)
+
+The bottom-line is that /proc/xenomai/stats should provide information
+allowing people to better understand how their applications/drivers
+perform, which has a higher priority than allowing us to understand how
+the nucleus behaves. In this vein, having the rescheduling path
+accounted and charged to the ISR - and not to the preempted thread -
+provides a more accurate information, since this operation is quite
+significant time-wise, and it seems unfair and inaccurate to charge any
+random thread for this.
+
+The issue about whether we should integrate every bit of the ISR runtime
+into the accounted value (including source detection for shared
+interrupts), or not by filtering on XN_ISR_HANDLED, seems related to the
+previous point. At first sight, I would also filter out unhandled IRQs,
+given that accepting an interrupt and performing actions upon it should
+be more significant time-wise than solely probing the IRQ sources. 
+
+Dmitry, are there other issues I'm missing, that you think would be
+better solved using a simpler accounting model?
+
 -- 
 Philippe.
 
