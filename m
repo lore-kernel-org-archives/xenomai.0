@@ -1,13 +1,13 @@
-Message-ID: <4536087B.7040301@domain.hid>
-Date: Wed, 18 Oct 2006 12:56:59 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45361870.7060005@domain.hid>
+Date: Wed, 18 Oct 2006 14:05:04 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RT socket CAN architecture
-References: <54b161f50610180247m71815adfu4082fcfd5d679c0f@domain.hid>
-	<45360543.7010503@domain.hid>
-In-Reply-To: <45360543.7010503@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
+References: <1161099585.5024.48.camel@domain.hid>
+	<1161167105.5053.34.camel@domain.hid>
+In-Reply-To: <1161167105.5053.34.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,38 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Frits de Klark wrote:
->> Hello everyone,
+Philippe Gerum wrote:
+> On Tue, 2006-10-17 at 17:39 +0200, Schl=E4gl Manfred jun. wrote:
+>=20
+> [...]
+>=20
+>=20
+>>1. With enabled kernel-debugging (spin_debug), while loading xeno_nativ=
+e
+>>(built-in and as module) I get:
+>=20
+>=20
+> [...]
+>=20
+>=20
+>>Is this normal, or could this also depend on a "main-bug".
 >>
->> I'm in the need of a realtime CAN driver which is as fast as possible
->> and at
->> the same time user-friendly. The RT socket CAN driver looks rather
->> appealing
->> to me, but I'm wondering if there's any negative impact on speed (in the
->> context of minimal response times) in using a socket approach.
->> Also, is there any of you with some testresults?
-> 
-> Wolfgang once had some test results (and application code) on
-> hardware-based loopback latencies, maybe he can post them when time permits.
+>=20
+>=20
+> No, that's absolutely abnormal. Switching the Linux kernel debug option=
+s
+> on is the usual way most of us work, and no warning should be emitted
+> under Xenomai operations. What you get on ARM, and which I cannot
+> reproduce on x86, ppc or blackfin, is worrying.
 
-A while ago I ported the round-trip-test from RTnet. "rtcan_rtt" is a 
-simplified version available in rtsocketcan-0.90.0.tar.bz2 at 
-ftp://ftp.denx.de/pub/xenomai/rtsocketcan.
+Some ARMs do not boot when spinlock debugging is enabled, so it would be
+interesting to check if the error also occurs with I-pipe and Xenomai
+off.
 
-> For sure, twiddling directly with the CAN hardware is always faster than
-> having generic layer(s) in between, but the impact of the CAN stack is
-> fairly small, specifically as we have a direct wake-up path from the IRQ
-> to the application on reception or TX buffer availability.
-> 
-> Do you have any scenario and/or numbers you would like to compare them
-> against?
-
-And what platform do you intend to use?
-
-Wolfgang.
-
+--=20
+                                                  Gilles Chanteperdrix
 
