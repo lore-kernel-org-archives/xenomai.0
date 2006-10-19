@@ -1,68 +1,45 @@
-Subject: Re: [Adeos-main] ADEOS on MIPS
+Subject: Re: [Xenomai-core] [PATCH] fixing __xn_put_user and __xn_get_user
+	for PowerPC
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20060901085123.15970.qmail@domain.hid>
-References: <20060901085123.15970.qmail@domain.hid>
+In-Reply-To: <4537DF47.8040800@domain.hid>
+References: <4537DF47.8040800@domain.hid>
 Content-Type: text/plain
-Date: Fri, 01 Sep 2006 11:09:06 +0200
-Message-Id: <1157101746.4322.44.camel@domain.hid>
+Date: Thu, 19 Oct 2006 22:58:40 +0200
+Message-Id: <1161291521.4959.98.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: somshekar kadam <som_kadam@domain.hid>
-Cc: adeos-main@gna.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-09-01 at 09:51 +0100, somshekar kadam wrote:
-> Hi All, 
+On Thu, 2006-10-19 at 22:25 +0200, Wolfgang Grandegger wrote:
+> Hello,
 > 
-> I am newbie to ADEOS, 
-> we would like to know if ADOES is supported on ADOES.
-> when I checked on your release , I dont find MIPS arch
-> supported. 
-> well we would like to port ADOES for MIPS. 
-> I hope I will get Help and right pointers from you all
-> People.
-> To Begin with We are going to port ADOES to MIPS 4kE
-> processor.
-> I would like to know what goes in to porting of ADOES
-> to new Architecture is where should i Begin
-> It will be Big time to get it working , but with our
-> support i dont feel it will be problem from me
-> Thanks And Regards
-> Neelu 
+> the attached patch fixes the problem described in the mail 
+> https://mail.gna.org/public/xenomai-core/2006-10/msg00037.html. Here is 
+> the ChangeLog entry:
+> 
+>        * include/asm-powerpc/wrappers.h, include/asm-powerpc/syscall.h:
+>        Since Linux 2.4.15, __put_user and __get_user call migth_sleep.
+>        To avoid that, wrapper functions have been added.
 > 
 
-This document is a bit outdated, but the gist of it still applies:
-http://download.gna.org/adeos/doc/porting.txt
+Merged, thanks.
 
-Adeos has already been ported to quite different archs, this should give
-you some useful insights:
-http://download.gna.org/adeos/patches/v2.6/
-
-Depending on the complexity of the target interrupt sub-system, and how
-familiar you are with it, the initial porting effort should be a matter
-of 1-4 weeks.
-
-> Thanks
-> 
-> 
-> 
-> 		
-> __________________________________________________________
-> Yahoo! India Answers: Share what you know. Learn something new
-> http://in.answers.yahoo.com/
-> 
+> Wolfgang.
 > _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
