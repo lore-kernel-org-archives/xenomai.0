@@ -1,12 +1,13 @@
-From: Saverio Labozzetta <saverio.labozzetta@domain.hid>
-In-Reply-To: <22619.80.59.183.97.1161252139.squirrel@domain.hid>
-References: <22619.80.59.183.97.1161252139.squirrel@domain.hid>
-Content-Type: text/plain
-Date: Thu, 19 Oct 2006 12:57:09 +0200
-Message-Id: <1161255429.16347.30.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45378F04.2070500@domain.hid>
+Date: Thu, 19 Oct 2006 16:43:16 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] BUG: sleeping function called from invalid context
+	at kernel/xenomai/skins/posix/syscall.c:272
+References: <45366314.5000904@domain.hid> <45367E43.5020208@domain.hid>
+In-Reply-To: <45367E43.5020208@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: Terminology and versions
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,75 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: javiroman@domain.hid, rtai <rtai@domain.hid>, xenomai@xenomai.org
-Cc: rtai <rtai@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
+
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Hello,
+>>
+>> when I start the RT-Socket-CAN program rtcan_rtt.c, I get the attached
+>> error message. Any idea where the problem could be? It was working with
+>> Xenomai under Linux 2.4.25.
+>>
+>> Thanks.
+>>
+>> Wolfgang.
+>>
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> bash-3.00# rtcan_rtt rtcan0 rtcan1
+>> BUG: sleeping function called from invalid context at kernel/xenomai/skins/posix/syscall.c:272
+>> in_atomic():0, irqs_disabled():1
+> 
+> Leaking lock somewhere? Some suggestions:
+> 
+> - Does it also happen with rtcan_virt?
+
+Yes.
+
+> - If no: switch on XENO_OPT_DEBUG and then XENO_OPT_DEBUG_RTDM (may
+>   catch leaking locks of the CAN driver)
+
+Does not give an additional information for the "if yes" case.
+
+> - If yes: what arch are you on? PPC? On x86/2.6 I do not have problems
+>   with your demo over rtcan_virt.
+
+It's on PowerPC (MPC5200) under Linux 2.6. I have not realized a similar 
+problem with 2.4 on the same board. And it seems to be related with 
+pthread_setschedparam(). And is nothing to do with RTCAN as the 
+cyclictest() prints the same error message. There is obviously a problem 
+with __xn_put_user -> __put_user -> put_user_nocheck:
+
+#define __put_user_nocheck(x, ptr, size)                        \
+({                                                              \
+         long __pu_err;                                          \
+         __typeof__(*(ptr)) __user *__pu_addr = (ptr);           \
+         if (!is_kernel_addr((unsigned long)__pu_addr))          \
+                 might_sleep();                                  \
+         __chk_user_ptr(ptr);                                    \
+         __put_user_size((x), __pu_addr, (size), __pu_err);      \
+         __pu_err;                                               \
+})
+ 
+
+The "might_sleep" seems to make trouble, which showed up in recent 
+versions of Linux on the PowerPC arch :-(.
+
+Wolfgang.
 
 
-On Thu, 2006-10-19 at 06:02 -0400, javiroman@domain.hid wrote:
-> Hi all,
-> 
-> I'm looking for help with a lot of terminology and version numbering which
-> I don't understand. The following is a summary of my knowledge about RTAI,
-> Fusion, Xenomai, ADEOS terms.
-> 
-> There was two lines of development:
-> 
-> 1. RTAI/Classic:
->         Etna: 24.1.11 [closed branch]
->         Stromboli: 24.1.12, 24.1.13 [closed branch]
->         Kilauea: 3.0 (3.0r2, 3.0r3, 3.0r4, 3.0r5) [closed branch]
->         Vesuvio: 3.1 (3.1r2) [closed branch]
->         Vulcano: 3.2 (first support of Linux kernels 2.4.x and 2.6.x series)
->                  3.3
->                  3.4 [current stable version]
-> 
->         Magma: every RTAI classic development version will be named magma
-> until it is released. So it is the current cvs latest release. 3.4
-> with new  (3.5 version??)
-> 
-> 2. RTAI/Fusion: it is RTAI using ADEOS as hardware abstraction layer, and
-> provides hard real-time support in user-space like LXRT sub-system in
-> RTAI/Classic approach.
-> 
 
-AFAIK fusion was using the linux domain priority boosting scheme 
-caming from the Xenomai project, the LXRT real time scheduler generating
-the helper tasks is RTAI bound and it was not used in Fusion.
-
->         RTAI/Fusion v0.8 (first productive testing version)
->         ...
-> 
->         RTAI/Fusion v0.9.1 (last version joined to DIAPM's project)
-> 
-> 
-> The second line of development was gave up supporting from DIAPM.
-> Nevertheless:
-> 
-> Xenomai environment: Absorbed the development of RTAI/Fusion as an
-> independent project. Xenomai 2.0 was RTAI/Fusion 1.0.
-> 
-AFAIK Fusion was a project where the experience of the RTAI project and
-of the Xenomai project did melt for a while, then different views on how
-was better to continue the development makes the people following
-Xenomai project going by their way;
-so they use again the name they were using before the merge was
-attempted. 
-  Saverio
-> 
-> Is this information correct?
-> Please, can anybody help me to complete/correct this terms and versions?
-> 
-> Thanks in advance and best regards.
-> 
-> --
-> Javi Roman
-> 
-> _______________________________________________
-> RTAI mailing list
-> RTAI@rtai.org
-> https://mail.rtai.org/cgi-bin/mailman/listinfo/rtai
-
-
-This message contains information that may be privileged or confidential and is the property of the Capgemini Group. It is intended only for the person to whom it is addressed. If you are not the intended recipient,  you are not authorized to read, print, retain, copy, disseminate,  distribute, or use this message or any part thereof. If you receive this  message in error, please notify the sender immediately and delete all  copies of this message.
+Wolfgang.
 
 
