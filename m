@@ -1,10 +1,10 @@
-Message-ID: <453911D9.3020002@domain.hid>
-Date: Fri, 20 Oct 2006 20:13:45 +0200
+Message-ID: <453911D7.5050003@domain.hid>
+Date: Fri, 20 Oct 2006 20:13:43 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------020301020007010402070101"
+Content-Type: multipart/mixed; boundary="------------010702010306020100050708"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 2/2] Add TLSF heap allocator
+Subject: [Xenomai-core] [PATCH 1/2] Break up nucleus heap
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,49 +17,132 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>, Miguel Angel Masmano Tello <mimastel@domain.hid>
 
 This is a multi-part message in MIME format.
---------------020301020007010402070101
+--------------010702010306020100050708
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-Based on previous split-up, the attached patch adds TLSF version 2.2.0
-as an alternative heap allocator for Xenomai. It is currently limited to
-32-bit platforms. It also does not yet implement extensible heap
-support, which may break on some PPC platforms (so far obviously the
-only user of this feature).
+By splitting up the nucleus heap layer in generic part and an allocator
+implementation, this patch allows to install different heap allocation
+schemes. For now the patch only moves the BSD-specific parts into
+separate files and pushes BSD-specific fields in xnheap_t into a private
+sub-block. Also a "Heap allocator" config option is added, but it only
+offers BSD.
 
-For now this allocator is intended as an experimental variant until the
-above issues are resolved and it is proven to work reliably across any
-Xenomai-enabled architecture.
+Todo: Comments in ksrc/nucleus/heap.c need to be updated or moved to
+bsdalloc.c.
 
---------------020301020007010402070101
+--------------010702010306020100050708
 Content-Type: text/plain;
- name="tlsf-allocator.patch"
+ name="alloc-framework-v4.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="tlsf-allocator.patch"
+ filename="alloc-framework-v4.patch"
 
 ---
- include/nucleus/heap.h      |    2 
- include/nucleus/tlsfalloc.h |   81 +++++++++
- ksrc/nucleus/Config.in      |    3 
- ksrc/nucleus/Kconfig        |   17 +
- ksrc/nucleus/Makefile       |    2 
- ksrc/nucleus/tlsfalloc.c    |  385 ++++++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 489 insertions(+), 1 deletion(-)
+ include/nucleus/bsdalloc.h |   58 +++++
+ include/nucleus/heap.h     |   37 +--
+ ksrc/nucleus/Config.in     |   10 
+ ksrc/nucleus/Kconfig       |    9 
+ ksrc/nucleus/Makefile      |    3 
+ ksrc/nucleus/bsdalloc.c    |  485 +++++++++++++++++++++++++++++++++++++++++++++
+ ksrc/nucleus/heap.c        |  474 -------------------------------------------
+ 7 files changed, 575 insertions(+), 501 deletions(-)
 
-Index: include/nucleus/tlsfalloc.h
+Index: include/nucleus/heap.h
+===================================================================
+--- include/nucleus/heap.h.orig
++++ include/nucleus/heap.h
+@@ -20,8 +20,6 @@
+ #ifndef _XENO_NUCLEUS_HEAP_H
+ #define _XENO_NUCLEUS_HEAP_H
+ 
+-#include <nucleus/queue.h>
+-
+ /*
+  * CONSTRAINTS:
+  *
+@@ -44,16 +42,11 @@
+ 
+ #if defined(__KERNEL__) || defined(__XENO_SIM__)
+ 
+-#define XNHEAP_MINLOG2    3
+-#define XNHEAP_MAXLOG2    22
+-#define XNHEAP_MINALLOCSZ (1 << XNHEAP_MINLOG2)
+-#define XNHEAP_MINALIGNSZ (1 << 4) /* i.e. 16 bytes */
+-#define XNHEAP_NBUCKETS   (XNHEAP_MAXLOG2 - XNHEAP_MINLOG2 + 2)
+-#define XNHEAP_MAXEXTSZ   (1 << 31) /* i.e. 2Gb */
+-
+-#define XNHEAP_PFREE   0
+-#define XNHEAP_PCONT   1
+-#define XNHEAP_PLIST   2
++#include <nucleus/queue.h>
++
++#if defined(CONFIG_XENO_OPT_ALLOC_BSD)
++#include <nucleus/bsdalloc.h>
++#endif /* allocator selection */
+ 
+ typedef struct xnextent {
+ 
+@@ -63,10 +56,9 @@ typedef struct xnextent {
+ ((xnextent_t *)(((char *)laddr) - (int)(&((xnextent_t *)0)->link)))
+ 
+     caddr_t membase,	/* Base address of the page array */
+-	    memlim,	/* Memory limit of page array */
+-	    freelist;	/* Head of the free page list */
++	    memlim;	/* Memory limit of page array */
+ 
+-    u_char pagemap[1];	/* Beginning of page map */
++    xnextend_priv_t priv;
+ 
+ } xnextent_t;
+ 
+@@ -78,12 +70,10 @@ typedef struct xnheap {
+ ((xnheap_t *)(((char *)laddr) - (int)(&((xnheap_t *)0)->link)))
+ 
+     u_long extentsize,
+-           pagesize,
+-           pageshift,
++	   pagesize,
+ 	   hdrsize,
+-	   npages,	/* Number of pages per extent */
+ 	   ubytes,
+-           maxcont;
++	   maxcont;
+ 
+     xnqueue_t extents;
+ 
+@@ -91,7 +81,7 @@ typedef struct xnheap {
+     xnlock_t lock;
+ #endif /* CONFIG_SMP */
+ 
+-    caddr_t buckets[XNHEAP_NBUCKETS];
++    xnheap_priv_t priv;
+ 
+     xnholder_t *idleq;
+ 
+@@ -105,14 +95,9 @@ extern xnheap_t kheap;
+ 
+ #define xnheap_size(heap)            ((heap)->extentsize)
+ #define xnheap_page_size(heap)       ((heap)->pagesize)
+-#define xnheap_page_count(heap)      ((heap)->npages)
+ #define xnheap_used_mem(heap)        ((heap)->ubytes)
+ #define xnheap_max_contiguous(heap)  ((heap)->maxcont)
+-#define xnheap_overhead(hsize,psize) \
+-((sizeof(xnextent_t) + (((hsize) - sizeof(xnextent_t)) / (psize)) + \
+- XNHEAP_MINALIGNSZ - 1) & ~(XNHEAP_MINALIGNSZ - 1))
+-/* The alignment value must be a power of 2 */
+-#define xnheap_align(size,al)		(((size)+(al)-1)&(~((al)-1)))
++#define xnheap_align(size,al)        (((size)+(al)-1)&(~((al)-1)))
+ 
+ #define xnmalloc(size)     xnheap_alloc(&kheap,size)
+ #define xnfree(ptr)        xnheap_free(&kheap,ptr)
+Index: include/nucleus/bsdalloc.h
 ===================================================================
 --- /dev/null
-+++ include/nucleus/tlsfalloc.h
-@@ -0,0 +1,81 @@
++++ include/nucleus/bsdalloc.h
+@@ -0,0 +1,58 @@
 +/*
-+ * Two Levels Segregate Fit memory allocator (TLSF)
-+ * Version 2.2.0
-+ *
-+ * Written by Miguel Masmano Tello, adapted to Xenomai by Jan Kiszka
-+ *
-+ * Copyright (C) 2004,2005,2006 Miguel Masmano Tello <mimastel@domain.hid>.
-+ * Copyright (C) 2006 Jan Kiszka <jan.kiszka@domain.hid>.
++ * Copyright (C) 2001,2002,2003 Philippe Gerum <rpm@xenomai.org>.
 + *
 + * Xenomai is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License as published
@@ -77,103 +160,602 @@ Index: include/nucleus/tlsfalloc.h
 + * 02111-1307, USA.
 + */
 +
-+#ifndef _XENO_NUCLEUS_TLSFALLOC_H
-+#define _XENO_NUCLEUS_TLSFALLOC_H
++#ifndef _XENO_NUCLEUS_BSDALLOC_H
++#define _XENO_NUCLEUS_BSDALLOC_H
 +
-+/* Some IMPORTANT TLSF parameters */
-+#define MAX_FLI			30
-+#define MAX_SLI			32
-+#define MAX_LOG2_SLI		5
-+#define MAX_SLI			32  /* MAX_SLI = 2^MAX_LOG2_SLI */
++#define XNHEAP_MINLOG2    3
++#define XNHEAP_MAXLOG2    22
++#define XNHEAP_MINALLOCSZ (1 << XNHEAP_MINLOG2)
++#define XNHEAP_MINALIGNSZ (1 << 4) /* i.e. 16 bytes */
++#define XNHEAP_NBUCKETS   (XNHEAP_MAXLOG2 - XNHEAP_MINLOG2 + 2)
++#define XNHEAP_MAXEXTSZ   (1 << 31) /* i.e. 2Gb */
 +
-+#define FLI_OFFSET 6		/* tlsf structure just will manage blocks bigger \
-+				   than 128 bytes */
-+#define SMALL_BLOCK		128
-+#define REAL_FLI		(MAX_FLI - FLI_OFFSET)
++#define XNHEAP_PFREE   0
++#define XNHEAP_PCONT   1
++#define XNHEAP_PLIST   2
 +
-+#define XNHEAP_MINALIGNSZ	(1 << 4) /* i.e. 16 bytes */
-+#define XNHEAP_MAXEXTSZ		(1 << MAX_FLI) /* i.e. 1Gb */
++#define xnheap_page_count(heap)      ((heap)->priv.npages)
 +
 +#define xnheap_overhead(hsize,psize) \
-+((sizeof(xnextent_t) + XNHEAP_MINALIGNSZ - 1) & ~(XNHEAP_MINALIGNSZ - 1))
++((sizeof(xnextent_t) + (((hsize) - sizeof(xnextent_t)) / (psize)) + \
++ XNHEAP_MINALIGNSZ - 1) & ~(XNHEAP_MINALIGNSZ - 1))
++/* The alignment value must be a power of 2 */
 +
-+struct bhdr_struct;
++typedef struct xnextend_priv {
 +
-+typedef struct free_ptr_struct {
-+	struct bhdr_struct *prev;
-+	struct bhdr_struct *next;
-+} free_ptr_t;
++    caddr_t freelist;	/* Head of the free page list */
 +
-+typedef struct bhdr_struct {
-+	/* This pointer is just valid if the first bit of size is set */
-+	struct bhdr_struct *prev_hdr;
-+	/* The size is stored in bytes */
-+	u32 size;	/* bit 0 indicates whether the block is used and
-+			   bit 1 allows to know whether the previous block is free */
-+	union {
-+		struct free_ptr_struct free_ptr;
-+		u8 buffer[sizeof(struct free_ptr_struct)];
-+	} ptr;
-+} bhdr_t;
++    u_char pagemap[1];	/* Beginning of page map */
 +
-+typedef struct tlsf_struct {
-+	/* The first-level bitmap
-+	   This array should have a size of REAL_FLI bits */
-+	u32 fl_bitmap;
-+
-+	/* The second-level bitmap */
-+	u32 sl_bitmap[REAL_FLI];
-+
-+	bhdr_t *matrix[REAL_FLI][MAX_SLI];
-+} tlsf_t;
-+
-+typedef tlsf_t xnextend_priv_t;
++} xnextend_priv_t;
 +
 +typedef struct xnheap_priv {
++
++    u_long npages,	/* Number of pages per extent */
++           pageshift;
++
++    caddr_t buckets[XNHEAP_NBUCKETS];
++
 +} xnheap_priv_t;
 +
-+#endif /* !_XENO_NUCLEUS_TLSFALLOC_H */
++#endif /* !_XENO_NUCLEUS_BSDALLOC_H */
 Index: ksrc/nucleus/Kconfig
 ===================================================================
 --- ksrc/nucleus/Kconfig.orig
 +++ ksrc/nucleus/Kconfig
-@@ -133,6 +133,23 @@ choice
+@@ -127,6 +127,15 @@ config XENO_OPT_REGISTRY_NRSLOTS
+ 	registry can handle. All skins using the registry share this
+ 	storage.
  
- config XENO_OPT_ALLOC_BSD
- 	bool "BSD"
-+	help
++choice
++	prompt "Heap allocator"
++	default XENO_OPT_ALLOC_BSD
 +
-+	The is an enhanced version of the BSD memory allocator. Details
-+	on the algorithm can be found in "Design of a General Purpose
-+	Memory Allocator for the 4.3BSD Unix Kernel" by Marshall K.
-+	McKusick and Michael J. Karels (USENIX 1988). Xenomai adds
-+	support for extendible heaps to this model.
++config XENO_OPT_ALLOC_BSD
++	bool "BSD"
 +
-+config XENO_OPT_ALLOC_TLSF
-+	bool "TLSF"
-+	depends on !IA64
-+	help
++endchoice
 +
-+	The TLSF heap allocator has strict O(1) complexity and keeps
-+	overhead and fragmentation low. So far it is only available for
-+	32-bit platforms. For more details on TLSF see
-+	http://rtportal.upv.es/rtmalloc/allocators/tlsf/index.shtml.
+ config XENO_OPT_SYS_HEAPSZ
+ 	int "Size of the system heap (Kb)"
+ 	default 128
+Index: ksrc/nucleus/heap.c
+===================================================================
+--- ksrc/nucleus/heap.c.orig
++++ ksrc/nucleus/heap.c
+@@ -66,39 +66,9 @@ HEAP {
+ #include <nucleus/pod.h>
+ #include <nucleus/thread.h>
+ #include <nucleus/heap.h>
+-#include <asm/xenomai/bits/heap.h>
  
- endchoice
+ xnheap_t kheap;			/* System heap */
  
-Index: ksrc/nucleus/tlsfalloc.c
+-static void init_extent(xnheap_t *heap, xnextent_t *extent)
+-{
+-	caddr_t freepage;
+-	int n, lastpgnum;
+-
+-	inith(&extent->link);
+-
+-	/* The page area starts right after the (aligned) header. */
+-	extent->membase = (caddr_t) extent + heap->hdrsize;
+-	lastpgnum = heap->npages - 1;
+-
+-	/* Mark each page as free in the page map. */
+-	for (n = 0, freepage = extent->membase;
+-	     n < lastpgnum; n++, freepage += heap->pagesize) {
+-		*((caddr_t *) freepage) = freepage + heap->pagesize;
+-		extent->pagemap[n] = XNHEAP_PFREE;
+-	}
+-
+-	*((caddr_t *) freepage) = NULL;
+-	extent->pagemap[lastpgnum] = XNHEAP_PFREE;
+-	extent->memlim = freepage + heap->pagesize;
+-
+-	/* The first page starts the free list of a new extent. */
+-	extent->freelist = extent->membase;
+-}
+-
+-/*
+- */
+-
+ /*!
+  * \fn xnheap_init(xnheap_t *heap,void *heapaddr,u_long heapsize,u_long pagesize)
+  * \brief Initialize a memory heap.
+@@ -148,79 +118,6 @@ static void init_extent(xnheap_t *heap, 
+  * Rescheduling: never.
+  */
+ 
+-int xnheap_init(xnheap_t *heap,
+-		void *heapaddr, u_long heapsize, u_long pagesize)
+-{
+-	u_long hdrsize, shiftsize, pageshift;
+-	xnextent_t *extent;
+-	int n;
+-
+-	/*
+-	 * Perform some parametrical checks first.
+-	 * Constraints are:
+-	 * PAGESIZE must be >= 2 ** MINLOG2.
+-	 * PAGESIZE must be <= 2 ** MAXLOG2.
+-	 * PAGESIZE must be a power of 2.
+-	 * HEAPSIZE must be large enough to contain the static part of an
+-	 * extent header.
+-	 * HEAPSIZE must be a multiple of PAGESIZE.
+-	 * HEAPSIZE must be lower than XNHEAP_MAXEXTSZ.
+-	 */
+-
+-	if ((pagesize < (1 << XNHEAP_MINLOG2)) ||
+-	    (pagesize > (1 << XNHEAP_MAXLOG2)) ||
+-	    (pagesize & (pagesize - 1)) != 0 ||
+-	    heapsize <= sizeof(xnextent_t) ||
+-	    heapsize > XNHEAP_MAXEXTSZ || (heapsize & (pagesize - 1)) != 0)
+-		return -EINVAL;
+-
+-	/* Determine the page map overhead inside the given extent
+-	   size. We need to reserve a byte in a page map for each page
+-	   which is addressable into this extent. The page map is itself
+-	   stored in the extent space, right after the static part of its
+-	   header, and before the first allocatable page.
+-	   pmapsize = (heapsize - sizeof(xnextent_t)) / pagesize; */
+-
+-	/* The overall header size is: static_part + page_map rounded to
+-	   the minimum alignment size. */
+-	hdrsize = xnheap_overhead(heapsize, pagesize);
+-
+-	/* An extent must contain at least two addressable pages to cope
+-	   with allocation sizes between pagesize and 2 * pagesize. */
+-	if (hdrsize + 2 * pagesize > heapsize)
+-		return -EINVAL;
+-
+-	/* Compute the page shiftmask from the page size (i.e. log2 value). */
+-	for (pageshift = 0, shiftsize = pagesize; shiftsize > 1; shiftsize >>= 1, pageshift++) ;	/* Loop */
+-
+-	heap->pagesize = pagesize;
+-	heap->pageshift = pageshift;
+-	heap->extentsize = heapsize;
+-	heap->hdrsize = hdrsize;
+-	heap->npages = (heapsize - hdrsize) >> pageshift;
+-	heap->ubytes = 0;
+-	heap->maxcont = heap->npages * pagesize;
+-	heap->idleq = NULL;
+-	inith(&heap->link);
+-	initq(&heap->extents);
+-	xnlock_init(&heap->lock);
+-
+-	xnarch_init_heapcb(&heap->archdep);
+-
+-	for (n = 0; n < XNHEAP_NBUCKETS; n++)
+-		heap->buckets[n] = NULL;
+-
+-	extent = (xnextent_t *)heapaddr;
+-
+-	init_extent(heap, extent);
+-
+-	appendq(&heap->extents, &extent->link);
+-
+-	xnarch_init_display_context(heap);
+-
+-	return 0;
+-}
+-
+ /*! 
+  * \fn void xnheap_destroy(xnheap_t *heap, void (*flushfn)(xnheap_t *heap, void *extaddr, u_long extsize, void *cookie), void *cookie)
+  * \brief Destroys a memory heap.
+@@ -250,127 +147,7 @@ int xnheap_init(xnheap_t *heap,
+  * Rescheduling: never.
+  */
+ 
+-int xnheap_destroy(xnheap_t *heap,
+-		   void (*flushfn) (xnheap_t *heap,
+-				    void *extaddr,
+-				    u_long extsize, void *cookie), void *cookie)
+-{
+-	xnholder_t *holder;
+-	spl_t s;
+-
+-	if (!flushfn)
+-		return 0;
+-
+-	xnlock_get_irqsave(&heap->lock, s);
+-
+-	while ((holder = getq(&heap->extents)) != NULL) {
+-		xnlock_put_irqrestore(&heap->lock, s);
+-		flushfn(heap, link2extent(holder), heap->extentsize, cookie);
+-		xnlock_get_irqsave(&heap->lock, s);
+-	}
+-
+-	xnlock_put_irqrestore(&heap->lock, s);
+-
+-	return 0;
+-}
+-
+-/*
+- * get_free_range() -- Obtain a range of contiguous free pages to
+- * fulfill an allocation of 2 ** log2size.  The caller must have
+- * acquired the heap lock.
+- */
+-
+-static caddr_t get_free_range(xnheap_t *heap, u_long bsize, int log2size)
+-{
+-	caddr_t block, eblock, freepage, lastpage, headpage, freehead = NULL;
+-	u_long pagenum, pagecont, freecont;
+-	xnholder_t *holder;
+-	xnextent_t *extent;
+-
+-	holder = getheadq(&heap->extents);
+-
+-	while (holder != NULL) {
+-		extent = link2extent(holder);
+-
+-		freepage = extent->freelist;
+-
+-		while (freepage != NULL) {
+-			headpage = freepage;
+-			freecont = 0;
+-
+-			/* Search for a range of contiguous pages in the free page
+-			   list of the current extent. The range must be 'bsize'
+-			   long. */
+-			do {
+-				lastpage = freepage;
+-				freepage = *((caddr_t *) freepage);
+-				freecont += heap->pagesize;
+-			}
+-			while (freepage == lastpage + heap->pagesize
+-			       && freecont < bsize);
+-
+-			if (freecont >= bsize) {
+-				/* Ok, got it. Just update the extent's free page
+-				   list, then proceed to the next step. */
+-
+-				if (headpage == extent->freelist)
+-					extent->freelist =
+-					    *((caddr_t *) lastpage);
+-				else
+-					*((caddr_t *) freehead) =
+-					    *((caddr_t *) lastpage);
+-
+-				goto splitpage;
+-			}
+-
+-			freehead = lastpage;
+-		}
+-
+-		holder = nextq(&heap->extents, holder);
+-	}
+-
+-	return NULL;
+-
+-      splitpage:
+-
+-	/* At this point, headpage is valid and points to the first page
+-	   of a range of contiguous free pages larger or equal than
+-	   'bsize'. */
+-
+-	if (bsize < heap->pagesize) {
+-		/* If the allocation size is smaller than the standard page
+-		   size, split the page in smaller blocks of this size,
+-		   building a free list of free blocks. */
+-
+-		for (block = headpage, eblock =
+-		     headpage + heap->pagesize - bsize; block < eblock;
+-		     block += bsize)
+-			*((caddr_t *) block) = block + bsize;
+-
+-		*((caddr_t *) eblock) = NULL;
+-	} else
+-		*((caddr_t *) headpage) = NULL;
+-
+-	pagenum = (headpage - extent->membase) >> heap->pageshift;
+-
+-	/* Update the extent's page map.  If log2size is non-zero
+-	   (i.e. bsize <= 2 * pagesize), store it in the first page's slot
+-	   to record the exact block size (which is a power of
+-	   two). Otherwise, store the special marker XNHEAP_PLIST,
+-	   indicating the start of a block whose size is a multiple of the
+-	   standard page size, but not necessarily a power of two.  In any
+-	   case, the following pages slots are marked as 'continued'
+-	   (PCONT). */
+-
+-	extent->pagemap[pagenum] = log2size ? : XNHEAP_PLIST;
+-
+-	for (pagecont = bsize >> heap->pageshift; pagecont > 1; pagecont--)
+-		extent->pagemap[pagenum + pagecont - 1] = XNHEAP_PCONT;
+-
+-	return headpage;
+-}
+-
+-/*! 
++/*!
+  * \fn void *xnheap_alloc(xnheap_t *heap, u_long size)
+  * \brief Allocate a memory block from a memory heap.
+  *
+@@ -402,82 +179,7 @@ static caddr_t get_free_range(xnheap_t *
+  * Rescheduling: never.
+  */
+ 
+-void *xnheap_alloc(xnheap_t *heap, u_long size)
+-{
+-	caddr_t block;
+-	u_long bsize;
+-	int log2size;
+-	spl_t s;
+-
+-	if (size == 0)
+-		return NULL;
+-
+-	if (size <= heap->pagesize)
+-		/* Sizes lower or equal to the page size are rounded either to
+-		   the minimum allocation size if lower than this value, or to
+-		   the minimum alignment size if greater or equal to this
+-		   value. In other words, with MINALLOC = 8 and MINALIGN = 16,
+-		   a 7 bytes request will be rounded to 8 bytes, and a 17
+-		   bytes request will be rounded to 32. */
+-	{
+-		if (size <= XNHEAP_MINALIGNSZ)
+-			size =
+-			    (size + XNHEAP_MINALLOCSZ -
+-			     1) & ~(XNHEAP_MINALLOCSZ - 1);
+-		else
+-			size =
+-			    (size + XNHEAP_MINALIGNSZ -
+-			     1) & ~(XNHEAP_MINALIGNSZ - 1);
+-	} else
+-		/* Sizes greater than the page size are rounded to a multiple
+-		   of the page size. */
+-		size = (size + heap->pagesize - 1) & ~(heap->pagesize - 1);
+-
+-	/* It becomes more space efficient to directly allocate pages from
+-	   the free page list whenever the requested size is greater than
+-	   2 times the page size. Otherwise, use the bucketed memory
+-	   blocks. */
+-
+-	if (size <= heap->pagesize * 2) {
+-		/* Find the first power of two greater or equal to the rounded
+-		   size. The log2 value of this size is also computed. */
+-
+-		for (bsize = (1 << XNHEAP_MINLOG2), log2size = XNHEAP_MINLOG2; bsize < size; bsize <<= 1, log2size++) ;	/* Loop */
+-
+-		xnlock_get_irqsave(&heap->lock, s);
+-
+-		block = heap->buckets[log2size - XNHEAP_MINLOG2];
+-
+-		if (block == NULL) {
+-			block = get_free_range(heap, bsize, log2size);
+-
+-			if (block == NULL)
+-				goto release_and_exit;
+-		}
+-
+-		heap->buckets[log2size - XNHEAP_MINLOG2] = *((caddr_t *) block);
+-		heap->ubytes += bsize;
+-	} else {
+-		if (size > heap->maxcont)
+-			return NULL;
+-
+-		xnlock_get_irqsave(&heap->lock, s);
+-
+-		/* Directly request a free page range. */
+-		block = get_free_range(heap, size, 0);
+-
+-		if (block)
+-			heap->ubytes += size;
+-	}
+-
+-      release_and_exit:
+-
+-	xnlock_put_irqrestore(&heap->lock, s);
+-
+-	return block;
+-}
+-
+-/*! 
++/*!
+  * \fn int xnheap_test_and_free(xnheap_t *heap,void *block,int (*ckfn)(void *block))
+  * \brief Test and release a memory block to a memory heap.
+  *
+@@ -517,116 +219,7 @@ void *xnheap_alloc(xnheap_t *heap, u_lon
+  * Rescheduling: never.
+  */
+ 
+-int xnheap_test_and_free(xnheap_t *heap, void *block, int (*ckfn) (void *block))
+-{
+-	caddr_t freepage, lastpage, nextpage, tailpage;
+-	u_long pagenum, pagecont, boffset, bsize;
+-	xnextent_t *extent = NULL;
+-	int log2size, npages, err;
+-	xnholder_t *holder;
+-	spl_t s;
+-
+-	xnlock_get_irqsave(&heap->lock, s);
+-
+-	/* Find the extent from which the returned block is
+-	   originating. */
+-
+-	for (holder = getheadq(&heap->extents);
+-	     holder != NULL; holder = nextq(&heap->extents, holder)) {
+-		extent = link2extent(holder);
+-
+-		if ((caddr_t) block >= extent->membase &&
+-		    (caddr_t) block < extent->memlim)
+-			break;
+-	}
+-
+-	if (!holder)
+-		goto bad_block;
+-
+-	/* Compute the heading page number in the page map. */
+-	pagenum = ((caddr_t) block - extent->membase) >> heap->pageshift;
+-	boffset =
+-	    ((caddr_t) block -
+-	     (extent->membase + (pagenum << heap->pageshift)));
+-
+-	switch (extent->pagemap[pagenum]) {
+-	case XNHEAP_PFREE:	/* Unallocated page? */
+-	case XNHEAP_PCONT:	/* Not a range heading page? */
+-
+-	      bad_block:
+-		err = -EINVAL;
+-
+-	      unlock_and_fail:
+-
+-		xnlock_put_irqrestore(&heap->lock, s);
+-		return err;
+-
+-	case XNHEAP_PLIST:
+-
+-		if (ckfn && (err = ckfn(block)) != 0)
+-			goto unlock_and_fail;
+-
+-		npages = 1;
+-
+-		while (npages < heap->npages &&
+-		       extent->pagemap[pagenum + npages] == XNHEAP_PCONT)
+-			npages++;
+-
+-		bsize = npages * heap->pagesize;
+-
+-		/* Link all freed pages in a single sub-list. */
+-
+-		for (freepage = (caddr_t) block,
+-		     tailpage = (caddr_t) block + bsize - heap->pagesize;
+-		     freepage < tailpage; freepage += heap->pagesize)
+-			*((caddr_t *) freepage) = freepage + heap->pagesize;
+-
+-		/* Mark the released pages as free in the extent's page map. */
+-
+-		for (pagecont = 0; pagecont < npages; pagecont++)
+-			extent->pagemap[pagenum + pagecont] = XNHEAP_PFREE;
+-
+-		/* Return the sub-list to the free page list, keeping
+-		   an increasing address order to favor coalescence. */
+-
+-		for (nextpage = extent->freelist, lastpage = NULL; nextpage != NULL && nextpage < (caddr_t) block; lastpage = nextpage, nextpage = *((caddr_t *) nextpage)) ;	/* Loop */
+-
+-		*((caddr_t *) tailpage) = nextpage;
+-
+-		if (lastpage)
+-			*((caddr_t *) lastpage) = (caddr_t) block;
+-		else
+-			extent->freelist = (caddr_t) block;
+-
+-		break;
+-
+-	default:
+-
+-		log2size = extent->pagemap[pagenum];
+-		bsize = (1 << log2size);
+-
+-		if ((boffset & (bsize - 1)) != 0)	/* Not a block start? */
+-			goto bad_block;
+-
+-		if (ckfn && (err = ckfn(block)) != 0)
+-			goto unlock_and_fail;
+-
+-		/* Return the block to the bucketed memory space. */
+-
+-		*((caddr_t *) block) = heap->buckets[log2size - XNHEAP_MINLOG2];
+-		heap->buckets[log2size - XNHEAP_MINLOG2] = block;
+-
+-		break;
+-	}
+-
+-	heap->ubytes -= bsize;
+-
+-	xnlock_put_irqrestore(&heap->lock, s);
+-
+-	return 0;
+-}
+-
+-/*! 
++/*!
+  * \fn int xnheap_free(xnheap_t *heap, void *block)
+  * \brief Release a memory block to a memory heap.
+  *
+@@ -687,25 +280,6 @@ int xnheap_free(xnheap_t *heap, void *bl
+  * Rescheduling: never.
+  */
+ 
+-int xnheap_extend(xnheap_t *heap, void *extaddr, u_long extsize)
+-{
+-	xnextent_t *extent = (xnextent_t *)extaddr;
+-	spl_t s;
+-
+-	if (extsize != heap->extentsize)
+-		return -EINVAL;
+-
+-	init_extent(heap, extent);
+-
+-	xnlock_get_irqsave(&heap->lock, s);
+-
+-	appendq(&heap->extents, &extent->link);
+-
+-	xnlock_put_irqrestore(&heap->lock, s);
+-
+-	return 0;
+-}
+-
+ /*! 
+  * \fn int xnheap_schedule_free(xnheap_t *heap, void *block, xnholder_t *link)
+  * \brief Schedule a memory block for release.
+@@ -769,48 +343,6 @@ void xnheap_finalize_free_inner(xnheap_t
+ 	xnlock_put_irqrestore(&heap->lock, s);
+ }
+ 
+-int xnheap_check_block(xnheap_t *heap, void *block)
+-{
+-	xnextent_t *extent = NULL;
+-	u_long pagenum, boffset;
+-	xnholder_t *holder;
+-	int ptype, err = 0;
+-	spl_t s;
+-
+-	xnlock_get_irqsave(&heap->lock, s);
+-
+-	/* Find the extent from which the checked block is
+-	   originating. */
+-
+-	for (holder = getheadq(&heap->extents);
+-	     holder != NULL; holder = nextq(&heap->extents, holder)) {
+-		extent = link2extent(holder);
+-
+-		if ((caddr_t) block >= extent->membase &&
+-		    (caddr_t) block < extent->memlim)
+-			break;
+-	}
+-
+-	if (!holder)
+-		goto bad_block;
+-
+-	/* Compute the heading page number in the page map. */
+-	pagenum = ((caddr_t) block - extent->membase) >> heap->pageshift;
+-	boffset =
+-	    ((caddr_t) block -
+-	     (extent->membase + (pagenum << heap->pageshift)));
+-	ptype = extent->pagemap[pagenum];
+-
+-	if (ptype == XNHEAP_PFREE ||	/* Unallocated page? */
+-	    ptype == XNHEAP_PCONT)	/* Not a range heading page? */
+-	      bad_block:
+-		err = -EINVAL;
+-
+-	xnlock_put_irqrestore(&heap->lock, s);
+-
+-	return err;
+-}
+-
+ #if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_PERVASIVE)
+ 
+ #include <asm/io.h>
+Index: ksrc/nucleus/bsdalloc.c
 ===================================================================
 --- /dev/null
-+++ ksrc/nucleus/tlsfalloc.c
-@@ -0,0 +1,385 @@
++++ ksrc/nucleus/bsdalloc.c
+@@ -0,0 +1,485 @@
 +/*
-+ * Two Levels Segregate Fit memory allocator (TLSF)
-+ * Version 2.2.0
-+ *
-+ * Written by Miguel Masmano Tello, adapted to Xenomai by Jan Kiszka
-+ *
-+ * Copyright (C) 2004,2005,2006 Miguel Masmano Tello <mimastel@domain.hid>.
-+ * Copyright (C) 2006 Jan Kiszka <jan.kiszka@domain.hid>.
++ * Copyright (C) 2001,2002,2003 Philippe Gerum <rpm@xenomai.org>.
 + *
 + * Xenomai is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License as published
@@ -191,161 +773,87 @@ Index: ksrc/nucleus/tlsfalloc.c
 + * 02111-1307, USA.
 + */
 +
-+#include <asm/bitops.h>
-+
-+#include <nucleus/pod.h>
 +#include <nucleus/heap.h>
 +#include <asm/xenomai/bits/heap.h>
 +
-+#define _fls(x)			(fls(x)-1)
-+#define _ffs(x)			(ffs(x)-1)
-+
-+#define TLSF_MIN_BLOCK_SIZE	12	/* the size of free_ptr_t + 4 */
-+
-+#define TLSF_BLOCK_SIZE		0xFFFFFFFC
-+#define TLSF_BLOCK_INF		0x3
-+#define TLSF_BLOCK_STATE	0x1
-+#define TLSF_PREV_STATE		0x2
-+
-+/* bit 0 of the block size */
-+#define TLSF_FREE_BLOCK		0x1
-+#define TLSF_USED_BLOCK		0
-+
-+/* bit 1 of the block size */
-+#define TLSF_PREV_FREE		0x2
-+#define TLSF_PREV_USED		0
-+
-+/* 4 bytes is size a header (SIZE + several bits to indicate the
-+   status of the block) */
-+#define TLSF_BHDR_OVERHEAD		4	/* just four bytes */
-+
-+
-+/* TLSF uses boundary tag to know who is the previous and the
-+   next memory block, 4 bytes is the size of this tag */
-+#define TLSF_GET_NEXT_BLOCK(_addr, _r) \
-+	((bhdr_t *) ((unsigned long) _addr + (_r) - 4))
-+
-+/*
-+  We round up or round down _r to a multiple of 4 (we are in a
-+  32 bits architecture)
-+ */
-+#define TLSF_ROUNDUP_SIZE(_r) ((_r + 0x3) & ~0x3)
-+#define TLSF_ROUNDDOWN_SIZE(_r) ((_r) & ~0x3)
-+
-+static inline void TLSF_MAPPING_SEARCH(u_long *_r, int *_fl, int *_sl)
++static void init_extent(xnheap_t *heap, xnextent_t *extent)
 +{
-+	int _t;
++	caddr_t freepage;
++	int n, lastpgnum;
 +
-+	if (*_r < SMALL_BLOCK) {
-+		*_fl = 0;
-+		*_sl = *_r / (SMALL_BLOCK / MAX_SLI);
-+	} else {
-+		_t = (1 << (_fls(*_r) - MAX_LOG2_SLI)) - 1;
-+		*_r = *_r + _t;
-+		*_fl = _fls(*_r);
-+		*_sl = (*_r >> (*_fl - MAX_LOG2_SLI)) - MAX_SLI;
-+		*_fl -= FLI_OFFSET;
-+		*_r &= ~_t;
++	inith(&extent->link);
++
++	/* The page area starts right after the (aligned) header. */
++	extent->membase = (caddr_t) extent + heap->hdrsize;
++	lastpgnum = xnheap_page_count(heap) - 1;
++
++	/* Mark each page as free in the page map. */
++	for (n = 0, freepage = extent->membase;
++	     n < lastpgnum; n++, freepage += heap->pagesize) {
++		*((caddr_t *) freepage) = freepage + heap->pagesize;
++		extent->priv.pagemap[n] = XNHEAP_PFREE;
 +	}
++
++	*((caddr_t *) freepage) = NULL;
++	extent->priv.pagemap[lastpgnum] = XNHEAP_PFREE;
++	extent->memlim = freepage + heap->pagesize;
++
++	/* The first page starts the free list of a new extent. */
++	extent->priv.freelist = extent->membase;
 +}
-+
-+static inline void TLSF_MAPPING_INSERT(u_long _r, int *_fl, int *_sl)
-+{
-+	if (_r < SMALL_BLOCK) {
-+		*_fl = 0;
-+		*_sl = _r / (SMALL_BLOCK / MAX_SLI);
-+	} else {
-+		*_fl = _fls(_r);
-+		*_sl = (_r >> (*_fl - MAX_LOG2_SLI)) - MAX_SLI;
-+		*_fl -= FLI_OFFSET;
-+	}
-+}
-+
-+static inline bhdr_t *TLSF_FIND_SUITABLE_BLOCK(tlsf_t * _tlsf, int *_fl,
-+					  int *_sl)
-+{
-+	u32 _tmp = _tlsf->sl_bitmap[*_fl] & (~0 << *_sl);
-+	bhdr_t *_b = NULL;
-+
-+	if (_tmp) {
-+		*_sl = _ffs(_tmp);
-+		_b = _tlsf->matrix[*_fl][*_sl];
-+	} else {
-+		*_fl = _ffs(_tlsf->fl_bitmap & (~0 << (*_fl + 1)));
-+		if (likely(*_fl > 0)) {
-+			*_sl = _ffs(_tlsf->sl_bitmap[*_fl]);
-+			_b = _tlsf->matrix[*_fl][*_sl];
-+		}
-+	}
-+	return _b;
-+}
-+
-+#define TLSF_EXTRACT_BLOCK_HDR(_b, _tlsf, _fl, _sl) do {\
-+	_tlsf->matrix[_fl][_sl] = _b->ptr.free_ptr.next; \
-+	if (_tlsf->matrix[_fl][_sl]) \
-+		_tlsf->matrix[_fl][_sl] -> ptr.free_ptr.prev = NULL; \
-+	else { \
-+		__clear_bit(_sl, (u_long *)&_tlsf->sl_bitmap[_fl]); \
-+		if (!_tlsf->sl_bitmap[_fl]) \
-+			__clear_bit(_fl, (u_long *)&_tlsf->fl_bitmap); \
-+	} \
-+	_b -> ptr.free_ptr = (free_ptr_t){ NULL, NULL }; \
-+} while (0)
-+
-+#define TLSF_EXTRACT_BLOCK(_b, _tlsf, _fl, _sl) do { \
-+	if (_b->ptr.free_ptr.next) \
-+		_b->ptr.free_ptr.next->ptr.free_ptr.prev = \
-+			_b->ptr.free_ptr.prev; \
-+	if (_b->ptr.free_ptr.prev) \
-+		_b->ptr.free_ptr.prev->ptr.free_ptr.next = \
-+			_b->ptr.free_ptr.next; \
-+	if (_tlsf->matrix[_fl][_sl] == _b) {  \
-+		_tlsf->matrix[_fl][_sl] = _b->ptr.free_ptr.next; \
-+		if (!_tlsf->matrix[_fl][_sl]) {  \
-+			__clear_bit(_sl, (u_long *)&_tlsf->sl_bitmap[_fl]); \
-+			if (!_tlsf->sl_bitmap[_fl]) \
-+				__clear_bit(_fl, \
-+					(u_long *)&_tlsf->fl_bitmap); \
-+		} \
-+	} \
-+	_b->ptr.free_ptr = (free_ptr_t){ NULL, NULL }; \
-+} while (0)
-+
-+#define TLSF_INSERT_BLOCK(_b, _tlsf, _fl, _sl) do { \
-+	_b->ptr.free_ptr = (free_ptr_t){ NULL, _tlsf->matrix[_fl][_sl] }; \
-+	if (_tlsf->matrix[_fl][_sl]) \
-+		_tlsf->matrix[_fl][_sl]->ptr.free_ptr.prev = _b; \
-+	_tlsf->matrix[_fl][_sl] = _b; \
-+	__set_bit(_sl, (u_long *)&_tlsf->sl_bitmap [_fl]); \
-+	__set_bit(_fl, (u_long *)&_tlsf->fl_bitmap); \
-+} while (0)
-+
 +
 +int xnheap_init(xnheap_t *heap,
 +		void *heapaddr, u_long heapsize, u_long pagesize)
 +{
++	u_long hdrsize, shiftsize, pageshift;
 +	xnextent_t *extent;
-+	tlsf_t *tlsf;
-+	bhdr_t *b, *lb;
-+	int fl, sl;
++	int n;
 +
-+	if (!heapaddr || !heapsize ||
-+	    heapsize < xnheap_overhead(heapsize, pagesize) + SMALL_BLOCK) {
-+		xnlogerr("xnheap_init(): heapaddr invalid\n");
++	/*
++	 * Perform some parametrical checks first.
++	 * Constraints are:
++	 * PAGESIZE must be >= 2 ** MINLOG2.
++	 * PAGESIZE must be <= 2 ** MAXLOG2.
++	 * PAGESIZE must be a power of 2.
++	 * HEAPSIZE must be large enough to contain the static part of an
++	 * extent header.
++	 * HEAPSIZE must be a multiple of PAGESIZE.
++	 * HEAPSIZE must be lower than XNHEAP_MAXEXTSZ.
++	 */
++
++	if ((pagesize < (1 << XNHEAP_MINLOG2)) ||
++	    (pagesize > (1 << XNHEAP_MAXLOG2)) ||
++	    (pagesize & (pagesize - 1)) != 0 ||
++	    heapsize <= sizeof(xnextent_t) ||
++	    heapsize > XNHEAP_MAXEXTSZ || (heapsize & (pagesize - 1)) != 0)
 +		return -EINVAL;
-+	}
 +
-+	if (((unsigned long) heapaddr & 0x3)) {
-+		xnlogerr("xnheap_init(): heapaddr must be aligned to a word\n");
++	/* Determine the page map overhead inside the given extent
++	   size. We need to reserve a byte in a page map for each page
++	   which is addressable into this extent. The page map is itself
++	   stored in the extent space, right after the static part of its
++	   header, and before the first allocatable page.
++	   pmapsize = (heapsize - sizeof(xnextent_t)) / pagesize; */
++
++	/* The overall header size is: static_part + page_map rounded to
++	   the minimum alignment size. */
++	hdrsize = xnheap_overhead(heapsize, pagesize);
++
++	/* An extent must contain at least two addressable pages to cope
++	   with allocation sizes between pagesize and 2 * pagesize. */
++	if (hdrsize + 2 * pagesize > heapsize)
 +		return -EINVAL;
-+	}
 +
-+	/* xnheap initialisation */
++	/* Compute the page shiftmask from the page size (i.e. log2 value). */
++	for (pageshift = 0, shiftsize = pagesize; shiftsize > 1; shiftsize >>= 1, pageshift++) ;	/* Loop */
++
 +	heap->pagesize = pagesize;
++	heap->priv.pageshift = pageshift;
 +	heap->extentsize = heapsize;
-+	heap->hdrsize = xnheap_overhead(heapsize, pagesize);
++	heap->hdrsize = hdrsize;
++	heap->priv.npages = (heapsize - hdrsize) >> pageshift;
 +	heap->ubytes = 0;
-+	heap->maxcont = heapsize - heap->hdrsize;
++	heap->maxcont = xnheap_page_count(heap) * pagesize;
 +	heap->idleq = NULL;
 +	inith(&heap->link);
 +	initq(&heap->extents);
@@ -353,31 +861,12 @@ Index: ksrc/nucleus/tlsfalloc.c
 +
 +	xnarch_init_heapcb(&heap->archdep);
 +
-+	/* xnextent initialisation */
-+	extent = (xnextent_t *) heapaddr;
-+	memset(extent, 0x0, heap->hdrsize);
-+	inith(&extent->link);
-+	extent->membase = (caddr_t) extent + heap->hdrsize;
-+	extent->memlim = extent->membase + heap->maxcont;
++	for (n = 0; n < XNHEAP_NBUCKETS; n++)
++		heap->priv.buckets[n] = NULL;
 +
-+	tlsf = &extent->priv;
-+	b = TLSF_GET_NEXT_BLOCK(heapaddr, sizeof(xnextent_t));
-+	b->size = TLSF_ROUNDDOWN_SIZE(heapsize - sizeof(xnextent_t) - 2 *
-+				TLSF_BHDR_OVERHEAD) | TLSF_FREE_BLOCK | TLSF_PREV_USED;
-+	b->ptr.free_ptr.prev = b->ptr.free_ptr.next = 0;
++	extent = (xnextent_t *)heapaddr;
 +
-+	if (b->size > XNHEAP_MAXEXTSZ) {
-+		xnlogerr("xnheap_init(): TLSF can't store a block of %u bytes.\n",
-+			  b->size & TLSF_BLOCK_SIZE);
-+		return -EINVAL;
-+	}
-+
-+	TLSF_MAPPING_INSERT(b->size, &fl, &sl);
-+	TLSF_INSERT_BLOCK(b, tlsf, fl, sl);
-+	/* The sentinel block, it allow us to know when we're in the last block */
-+	lb = TLSF_GET_NEXT_BLOCK(b->ptr.buffer, b->size & TLSF_BLOCK_SIZE);
-+	lb->prev_hdr = b;
-+	lb->size = 0 | TLSF_USED_BLOCK | TLSF_PREV_FREE;
++	init_extent(heap, extent);
 +
 +	appendq(&heap->extents, &extent->link);
 +
@@ -389,8 +878,7 @@ Index: ksrc/nucleus/tlsfalloc.c
 +int xnheap_destroy(xnheap_t *heap,
 +		   void (*flushfn) (xnheap_t *heap,
 +				    void *extaddr,
-+				    u_long extsize, void *cookie),
-+		   void *cookie)
++				    u_long extsize, void *cookie), void *cookie)
 +{
 +	xnholder_t *holder;
 +	spl_t s;
@@ -411,64 +899,184 @@ Index: ksrc/nucleus/tlsfalloc.c
 +	return 0;
 +}
 +
++/*
++ * get_free_range() -- Obtain a range of contiguous free pages to
++ * fulfill an allocation of 2 ** log2size.  The caller must have
++ * acquired the heap lock.
++ */
++
++static caddr_t get_free_range(xnheap_t *heap, u_long bsize, int log2size)
++{
++	caddr_t block, eblock, freepage, lastpage, headpage, freehead = NULL;
++	u_long pagenum, pagecont, freecont;
++	xnholder_t *holder;
++	xnextent_t *extent;
++
++	holder = getheadq(&heap->extents);
++
++	while (holder != NULL) {
++		extent = link2extent(holder);
++
++		freepage = extent->priv.freelist;
++
++		while (freepage != NULL) {
++			headpage = freepage;
++			freecont = 0;
++
++			/* Search for a range of contiguous pages in the free page
++			   list of the current extent. The range must be 'bsize'
++			   long. */
++			do {
++				lastpage = freepage;
++				freepage = *((caddr_t *) freepage);
++				freecont += heap->pagesize;
++			}
++			while (freepage == lastpage + heap->pagesize
++			       && freecont < bsize);
++
++			if (freecont >= bsize) {
++				/* Ok, got it. Just update the extent's free page
++				   list, then proceed to the next step. */
++
++				if (headpage == extent->priv.freelist)
++					extent->priv.freelist =
++					    *((caddr_t *) lastpage);
++				else
++					*((caddr_t *) freehead) =
++					    *((caddr_t *) lastpage);
++
++				goto splitpage;
++			}
++
++			freehead = lastpage;
++		}
++
++		holder = nextq(&heap->extents, holder);
++	}
++
++	return NULL;
++
++      splitpage:
++
++	/* At this point, headpage is valid and points to the first page
++	   of a range of contiguous free pages larger or equal than
++	   'bsize'. */
++
++	if (bsize < heap->pagesize) {
++		/* If the allocation size is smaller than the standard page
++		   size, split the page in smaller blocks of this size,
++		   building a free list of free blocks. */
++
++		for (block = headpage, eblock =
++		     headpage + heap->pagesize - bsize; block < eblock;
++		     block += bsize)
++			*((caddr_t *) block) = block + bsize;
++
++		*((caddr_t *) eblock) = NULL;
++	} else
++		*((caddr_t *) headpage) = NULL;
++
++	pagenum = (headpage - extent->membase) >> heap->priv.pageshift;
++
++	/* Update the extent's page map.  If log2size is non-zero
++	   (i.e. bsize <= 2 * pagesize), store it in the first page's slot
++	   to record the exact block size (which is a power of
++	   two). Otherwise, store the special marker XNHEAP_PLIST,
++	   indicating the start of a block whose size is a multiple of the
++	   standard page size, but not necessarily a power of two.  In any
++	   case, the following pages slots are marked as 'continued'
++	   (PCONT). */
++
++	extent->priv.pagemap[pagenum] = log2size ? : XNHEAP_PLIST;
++
++	for (pagecont = bsize >> heap->priv.pageshift; pagecont > 1; pagecont--)
++		extent->priv.pagemap[pagenum + pagecont - 1] = XNHEAP_PCONT;
++
++	return headpage;
++}
++
 +void *xnheap_alloc(xnheap_t *heap, u_long size)
 +{
-+	/* FIXME: we only have one extent for now */
-+	tlsf_t *tlsf = &link2extent(getheadq(&heap->extents))->priv;
-+	bhdr_t *b, *b2, *next_b;
-+	int fl, sl, tmp_size;
++	caddr_t block;
++	u_long bsize;
++	int log2size;
 +	spl_t s;
 +
 +	if (size == 0)
 +		return NULL;
 +
-+	size = (size < TLSF_MIN_BLOCK_SIZE) ? TLSF_MIN_BLOCK_SIZE : TLSF_ROUNDUP_SIZE(size);
-+	/* Rounding up the requested size and calculating fl and sl */
-+	TLSF_MAPPING_SEARCH(&size, &fl, &sl);
++	if (size <= heap->pagesize)
++		/* Sizes lower or equal to the page size are rounded either to
++		   the minimum allocation size if lower than this value, or to
++		   the minimum alignment size if greater or equal to this
++		   value. In other words, with MINALLOC = 8 and MINALIGN = 16,
++		   a 7 bytes request will be rounded to 8 bytes, and a 17
++		   bytes request will be rounded to 32. */
++	{
++		if (size <= XNHEAP_MINALIGNSZ)
++			size =
++			    (size + XNHEAP_MINALLOCSZ -
++			     1) & ~(XNHEAP_MINALLOCSZ - 1);
++		else
++			size =
++			    (size + XNHEAP_MINALIGNSZ -
++			     1) & ~(XNHEAP_MINALIGNSZ - 1);
++	} else
++		/* Sizes greater than the page size are rounded to a multiple
++		   of the page size. */
++		size = (size + heap->pagesize - 1) & ~(heap->pagesize - 1);
 +
-+	xnlock_get_irqsave(&heap->lock, s);
++	/* It becomes more space efficient to directly allocate pages from
++	   the free page list whenever the requested size is greater than
++	   2 times the page size. Otherwise, use the bucketed memory
++	   blocks. */
 +
-+	/* Searching a free block */
-+	if (!(b = TLSF_FIND_SUITABLE_BLOCK(tlsf, &fl, &sl))) {
-+		xnlock_put_irqrestore(&heap->lock, s);
-+		return NULL;		/* Not found */
++	if (size <= heap->pagesize * 2) {
++		/* Find the first power of two greater or equal to the rounded
++		   size. The log2 value of this size is also computed. */
++
++		for (bsize = (1 << XNHEAP_MINLOG2), log2size = XNHEAP_MINLOG2; bsize < size; bsize <<= 1, log2size++) ;	/* Loop */
++
++		xnlock_get_irqsave(&heap->lock, s);
++
++		block = heap->priv.buckets[log2size - XNHEAP_MINLOG2];
++
++		if (block == NULL) {
++			block = get_free_range(heap, bsize, log2size);
++
++			if (block == NULL)
++				goto release_and_exit;
++		}
++
++		heap->priv.buckets[log2size - XNHEAP_MINLOG2] = *((caddr_t *) block);
++		heap->ubytes += bsize;
++	} else {
++		if (size > xnheap_max_contiguous(heap))
++			return NULL;
++
++		xnlock_get_irqsave(&heap->lock, s);
++
++		/* Directly request a free page range. */
++		block = get_free_range(heap, size, 0);
++
++		if (block)
++			heap->ubytes += size;
 +	}
 +
-+	TLSF_EXTRACT_BLOCK_HDR(b, tlsf, fl, sl);
-+
-+	/*-- found: */
-+	next_b = TLSF_GET_NEXT_BLOCK(b->ptr.buffer, b->size & TLSF_BLOCK_SIZE);
-+	/* Should the block be split? */
-+	tmp_size = (b->size & TLSF_BLOCK_SIZE) - size - TLSF_BHDR_OVERHEAD;
-+	if (tmp_size >= TLSF_MIN_BLOCK_SIZE) {
-+		b2 = TLSF_GET_NEXT_BLOCK(b->ptr.buffer, size);
-+		b2->size = tmp_size | TLSF_FREE_BLOCK | TLSF_PREV_USED;
-+		next_b->prev_hdr = b2;
-+
-+		TLSF_MAPPING_INSERT(tmp_size, &fl, &sl);
-+		TLSF_INSERT_BLOCK(b2, tlsf, fl, sl);
-+
-+		b->size = size | (b->size & TLSF_PREV_STATE);
-+	} else
-+		next_b->size &= (~TLSF_PREV_FREE);
-+
-+	b->size &= (~TLSF_FREE_BLOCK);	/* Now it's used */
-+
-+	heap->ubytes += (b->size & TLSF_BLOCK_SIZE) + TLSF_BHDR_OVERHEAD;
++      release_and_exit:
 +
 +	xnlock_put_irqrestore(&heap->lock, s);
 +
-+	return (void *) b->ptr.buffer;
++	return block;
 +}
 +
-+int xnheap_test_and_free(xnheap_t *heap, void *block,
-+			 int (*ckfn) (void *block))
++int xnheap_test_and_free(xnheap_t *heap, void *block, int (*ckfn) (void *block))
 +{
-+	tlsf_t *tlsf;
-+	bhdr_t *b = (bhdr_t *) ((unsigned long) block - 8), *tmp_b;
-+	int fl = 0, sl = 0;
++	caddr_t freepage, lastpage, nextpage, tailpage;
++	u_long pagenum, pagecont, boffset, bsize;
++	xnextent_t *extent = NULL;
++	int log2size, npages, err;
 +	xnholder_t *holder;
-+	xnextent_t *extent;
 +	spl_t s;
 +
 +	xnlock_get_irqsave(&heap->lock, s);
@@ -485,36 +1093,86 @@ Index: ksrc/nucleus/tlsfalloc.c
 +			break;
 +	}
 +
-+	if (!holder) {
++	if (!holder)
++		goto bad_block;
++
++	/* Compute the heading page number in the page map. */
++	pagenum = ((caddr_t) block - extent->membase) >> heap->priv.pageshift;
++	boffset =
++	    ((caddr_t) block -
++	     (extent->membase + (pagenum << heap->priv.pageshift)));
++
++	switch (extent->priv.pagemap[pagenum]) {
++	case XNHEAP_PFREE:	/* Unallocated page? */
++	case XNHEAP_PCONT:	/* Not a range heading page? */
++
++	      bad_block:
++		err = -EINVAL;
++
++	      unlock_and_fail:
++
 +		xnlock_put_irqrestore(&heap->lock, s);
-+		return -EINVAL;
++		return err;
++
++	case XNHEAP_PLIST:
++
++		if (ckfn && (err = ckfn(block)) != 0)
++			goto unlock_and_fail;
++
++		npages = 1;
++
++		while (npages < xnheap_page_count(heap) &&
++		       extent->priv.pagemap[pagenum + npages] == XNHEAP_PCONT)
++			npages++;
++
++		bsize = npages * heap->pagesize;
++
++		/* Link all freed pages in a single sub-list. */
++
++		for (freepage = (caddr_t) block,
++		     tailpage = (caddr_t) block + bsize - heap->pagesize;
++		     freepage < tailpage; freepage += heap->pagesize)
++			*((caddr_t *) freepage) = freepage + heap->pagesize;
++
++		/* Mark the released pages as free in the extent's page map. */
++
++		for (pagecont = 0; pagecont < npages; pagecont++)
++			extent->priv.pagemap[pagenum + pagecont] = XNHEAP_PFREE;
++
++		/* Return the sub-list to the free page list, keeping
++		   an increasing address order to favor coalescence. */
++
++		for (nextpage = extent->priv.freelist, lastpage = NULL; nextpage != NULL && nextpage < (caddr_t) block; lastpage = nextpage, nextpage = *((caddr_t *) nextpage)) ;	/* Loop */
++
++		*((caddr_t *) tailpage) = nextpage;
++
++		if (lastpage)
++			*((caddr_t *) lastpage) = (caddr_t) block;
++		else
++			extent->priv.freelist = (caddr_t) block;
++
++		break;
++
++	default:
++
++		log2size = extent->priv.pagemap[pagenum];
++		bsize = (1 << log2size);
++
++		if ((boffset & (bsize - 1)) != 0)	/* Not a block start? */
++			goto bad_block;
++
++		if (ckfn && (err = ckfn(block)) != 0)
++			goto unlock_and_fail;
++
++		/* Return the block to the bucketed memory space. */
++
++		*((caddr_t *) block) = heap->priv.buckets[log2size - XNHEAP_MINLOG2];
++		heap->priv.buckets[log2size - XNHEAP_MINLOG2] = block;
++
++		break;
 +	}
 +
-+	tlsf = &extent->priv;
-+
-+	heap->ubytes -= (b->size & TLSF_BLOCK_SIZE) + TLSF_BHDR_OVERHEAD;
-+
-+	b->size |= TLSF_FREE_BLOCK;
-+	b->ptr.free_ptr = (free_ptr_t) { NULL, NULL };
-+	tmp_b = TLSF_GET_NEXT_BLOCK(b->ptr.buffer, b->size & TLSF_BLOCK_SIZE);
-+	if (tmp_b->size & TLSF_FREE_BLOCK) {
-+		TLSF_MAPPING_INSERT(tmp_b->size & TLSF_BLOCK_SIZE, &fl, &sl);
-+		TLSF_EXTRACT_BLOCK(tmp_b, tlsf, fl, sl);
-+		b->size += (tmp_b->size & TLSF_BLOCK_SIZE) + TLSF_BHDR_OVERHEAD;
-+	}
-+	if (b->size & TLSF_PREV_FREE) {
-+		tmp_b = b->prev_hdr;
-+		TLSF_MAPPING_INSERT(tmp_b->size & TLSF_BLOCK_SIZE, &fl, &sl);
-+		TLSF_EXTRACT_BLOCK(tmp_b, tlsf, fl, sl);
-+		tmp_b->size += (b->size & TLSF_BLOCK_SIZE) + TLSF_BHDR_OVERHEAD;
-+		b = tmp_b;
-+	}
-+	TLSF_MAPPING_INSERT(b->size & TLSF_BLOCK_SIZE, &fl, &sl);
-+	TLSF_INSERT_BLOCK(b, tlsf, fl, sl);
-+
-+	tmp_b = TLSF_GET_NEXT_BLOCK(b->ptr.buffer, b->size & TLSF_BLOCK_SIZE);
-+	tmp_b->size |= TLSF_PREV_FREE;
-+	tmp_b->prev_hdr = b;
++	heap->ubytes -= bsize;
 +
 +	xnlock_put_irqrestore(&heap->lock, s);
 +
@@ -523,19 +1181,34 @@ Index: ksrc/nucleus/tlsfalloc.c
 +
 +int xnheap_extend(xnheap_t *heap, void *extaddr, u_long extsize)
 +{
-+	/* FIXME: add support for multiple extents */
-+	return -ENOSYS;
++	xnextent_t *extent = (xnextent_t *)extaddr;
++	spl_t s;
++
++	if (extsize != heap->extentsize)
++		return -EINVAL;
++
++	init_extent(heap, extent);
++
++	xnlock_get_irqsave(&heap->lock, s);
++
++	appendq(&heap->extents, &extent->link);
++
++	xnlock_put_irqrestore(&heap->lock, s);
++
++	return 0;
 +}
 +
 +int xnheap_check_block(xnheap_t *heap, void *block)
 +{
++	xnextent_t *extent = NULL;
++	u_long pagenum, boffset;
 +	xnholder_t *holder;
-+	xnextent_t *extent;
++	int ptype, err = 0;
 +	spl_t s;
 +
 +	xnlock_get_irqsave(&heap->lock, s);
 +
-+	/* Find the extent from which the returned block is
++	/* Find the extent from which the checked block is
 +	   originating. */
 +
 +	for (holder = getheadq(&heap->extents);
@@ -547,57 +1220,74 @@ Index: ksrc/nucleus/tlsfalloc.c
 +			break;
 +	}
 +
++	if (!holder)
++		goto bad_block;
++
++	/* Compute the heading page number in the page map. */
++	pagenum = ((caddr_t) block - extent->membase) >> heap->priv.pageshift;
++	boffset =
++	    ((caddr_t) block -
++	     (extent->membase + (pagenum << heap->priv.pageshift)));
++	ptype = extent->priv.pagemap[pagenum];
++
++	if (ptype == XNHEAP_PFREE ||	/* Unallocated page? */
++	    ptype == XNHEAP_PCONT)	/* Not a range heading page? */
++	      bad_block:
++		err = -EINVAL;
++
 +	xnlock_put_irqrestore(&heap->lock, s);
 +
-+	return (holder) ? 0 : -EINVAL;
++	return err;
 +}
 Index: ksrc/nucleus/Config.in
 ===================================================================
 --- ksrc/nucleus/Config.in.orig
 +++ ksrc/nucleus/Config.in
-@@ -27,7 +27,8 @@ if [ "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]
+@@ -26,6 +26,8 @@ if [ "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]
+ 	if [ "$CONFIG_XENO_OPT_REGISTRY" != "n" ]; then
  		int 'Number of registry slots' CONFIG_XENO_OPT_REGISTRY_NRSLOTS 512
  	fi
- 	choice 'Heap allocator'						\
--		"BSD			CONFIG_XENO_OPT_ALLOC_BSD	BSD
-+		"BSD			CONFIG_XENO_OPT_ALLOC_BSD	\
-+		 TLSF			CONFIG_XENO_OPT_ALLOC_TLSF"	BSD
++	choice 'Heap allocator'						\
++		"BSD			CONFIG_XENO_OPT_ALLOC_BSD	BSD
  	int 'Size of the system heap (Kb)' CONFIG_XENO_OPT_SYS_HEAPSZ 128
  	bool 'Interrupt shield support' CONFIG_XENO_OPT_ISHIELD
  	bool 'Optimize as pipeline head' CONFIG_XENO_OPT_PIPELINE_HEAD
+@@ -49,10 +51,10 @@ if [ "$CONFIG_XENO_OPT_NUCLEUS" != "n" ]
+ 	mainmenu_option next_comment
+ 	comment 'Scalability options'
+ 		bool 'O(1) scheduler' CONFIG_XENO_OPT_SCALABLE_SCHED
+-        choice 'Timer indexing method'			\
+-	"Linear			CONFIG_XENO_OPT_TIMER_LIST	\
+-	 Tree			CONFIG_XENO_OPT_TIMER_HEAP	\
+-	 Hash			CONFIG_XENO_OPT_TIMER_WHEEL"	Linear
++	choice 'Timer indexing method'			\
++		"Linear			CONFIG_XENO_OPT_TIMER_LIST	\
++		 Tree			CONFIG_XENO_OPT_TIMER_HEAP	\
++		 Hash			CONFIG_XENO_OPT_TIMER_WHEEL"	Linear
+ 	if [ "$CONFIG_XENO_OPT_TIMER_HEAP" = "y" ]; then
+ 		int 'Max. number of timers' CONFIG_XENO_OPT_TIMER_HEAP_CAPACITY 256
+ 	fi
 Index: ksrc/nucleus/Makefile
 ===================================================================
 --- ksrc/nucleus/Makefile.orig
 +++ ksrc/nucleus/Makefile
-@@ -13,6 +13,7 @@ xeno_nucleus-$(CONFIG_XENO_OPT_PIPE) += 
+@@ -12,6 +12,8 @@ xeno_nucleus-$(CONFIG_XENO_OPT_PIPE) += 
+ 
  xeno_nucleus-$(CONFIG_XENO_OPT_REGISTRY) += registry.o
  
- xeno_nucleus-$(CONFIG_XENO_OPT_ALLOC_BSD) += bsdalloc.o
-+xeno_nucleus-$(CONFIG_XENO_OPT_ALLOC_TLSF) += tlsfalloc.o
- 
++xeno_nucleus-$(CONFIG_XENO_OPT_ALLOC_BSD) += bsdalloc.o
++
  xeno_nucleus-$(CONFIG_LTT) += ltt.o
  
-@@ -35,6 +36,7 @@ opt_objs-$(CONFIG_XENO_OPT_PERVASIVE) +=
+ EXTRA_CFLAGS += -D__IN_XENOMAI__ -Iinclude/xenomai
+@@ -32,6 +34,7 @@ opt_objs-y :=
+ opt_objs-$(CONFIG_XENO_OPT_PERVASIVE) += shadow.o core.o
  opt_objs-$(CONFIG_XENO_OPT_PIPE) += pipe.o
  opt_objs-$(CONFIG_XENO_OPT_REGISTRY) += registry.o
- opt_objs-$(CONFIG_XENO_OPT_ALLOC_BSD) += bsdalloc.o
-+opt_objs-$(CONFIG_XENO_OPT_ALLOC_TLSF) += tlsfalloc.o
++opt_objs-$(CONFIG_XENO_OPT_ALLOC_BSD) += bsdalloc.o
  opt_objs-$(CONFIG_LTT) += ltt.o
  
  xeno_nucleus-objs += $(opt_objs-y)
-Index: include/nucleus/heap.h
-===================================================================
---- include/nucleus/heap.h.orig
-+++ include/nucleus/heap.h
-@@ -46,6 +46,8 @@
- 
- #if defined(CONFIG_XENO_OPT_ALLOC_BSD)
- #include <nucleus/bsdalloc.h>
-+#elif defined(CONFIG_XENO_OPT_ALLOC_TLSF)
-+#include <nucleus/tlsfalloc.h>
- #endif /* allocator selection */
- 
- typedef struct xnextent {
 
---------------020301020007010402070101--
+--------------010702010306020100050708--
 
