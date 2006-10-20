@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-core] Suggestions for the vxWorks skins
+Subject: Re: [Xenomai-core] [PATCH 0/2] Selectable heap allocators
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200610202221.49664.niklaus.giger@domain.hid>
-References: <200610202221.49664.niklaus.giger@domain.hid>
+In-Reply-To: <453911D4.8060901@domain.hid>
+References: <453911D4.8060901@domain.hid>
 Content-Type: text/plain
-Date: Sat, 21 Oct 2006 00:00:49 +0200
-Message-Id: <1161381649.4988.141.camel@domain.hid>
+Date: Sat, 21 Oct 2006 01:56:58 +0200
+Message-Id: <1161388618.4988.198.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,67 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Miguel Angel Masmano Tello <mimastel@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-10-20 at 22:21 +0200, Niklaus Giger wrote:
-> Hi
+On Fri, 2006-10-20 at 20:13 +0200, Jan Kiszka wrote:
+> Hi,
 > 
-> As I am trying to debug startup failures of a thirs party C++-library, I 
-> stumbled about the fact that the /proc/xenomai/registry/ only listed 
-> semaphores and not tasks.
+> here comes a patch series for an idea I have in mind for quite some
+> time: break up the nucleus heap layer so that it can support different
+> allocation schemes. Motivated was this idea by the great TLSF allocator
+> by Miguel Masmano et al.
 > 
+> I once played with TLSF in userspace as a malloc replacement for RT
+> apps, and I wondered if we shouldn't make use of it as well in the
+> nucleus. It's most beautiful property is its strict O(1) complexity in
+> my eyes, but it seems to provide even more qualities: less
+> fragmentation, less overhead, maybe even better performance.
+> 
+> I haven't done any thorough analysis on those advantages (I'm counting
+> on Miguel and others to prove them ;) ), only stability tests over the
+> last weeks and a simple comparisons of the overhead. With 8 user-space
+> tasks, a few mutexes, 8 RTDM sockets, and likely some other stuff
+> allocated I get e.g. these usage numbers:
 
-Actually, the lack of task information under the registry tree is
-historically due to the existence of /proc/xenomai/{sched,stat}. This
-said, I agree that this would also make sense to provide task-related
-entries into the registry, since some task attributes one would want to
-know about are skin-specific, and could not be exported as part of the
-generic information available from the sched/stat entries.
-
-> My co-workers would appreciate to have some equivalents to vxWorks "i" 
-> or "semShow" routines, as they come often very handy to debug problems, I was 
-> thinking about how to improve the situation.
+> bsdalloc:
+> size=524288:used=17720:pagesz=512
 > 
-> One approach could be:
-> a) Instead of calling semShow for each semaphore 
-> do "cat /proc/xenomai/registry/semaphores/*". The information therein is 
-> already useful. The attached patch only modifies the output to include the 
-> name of the semaphore. In the future it would be nice to show also the owner 
-> of a mutex. 
-> 
-> b) The "i" procedure of vxworks could be replaced 
-> by "cat /proc/xenomai/registry/tasks/*". 
-
-Likely /proc/xenomai/registry/vxworks/tasks/*.
-
-> 
-> With the attached patch I just show the name of the task. 
-> 
-> If nobody opposes I would like to extend the interface to provide at least the 
-> same information as under vxWorks (entrypoint, priority, status, program 
-> counter, errno, delay).
+> tlsfalloc:
+> size=524288:used=14036:pagesz=512
 > 
 
-I would definitely merge that. Xenomai is very much about helping
-traditional RTOS users to move smoothly to Linux, so this feature would
-likely be desirable.
+I'm ok to merge different allocators - and the needed infrastructure to
+support that - provided having several of them actually buys us
+something significant, maybe depending on some usage patterns. Actually,
+I once made the basic assumption that the BSDish heap could fulfill any
+kind of allocation requirements for all the use cases we should care
+about; maybe I was wrong, in which case, we should discuss of the
+particular issue of introducing an abstract layer to support several
+allocators. If the assumption remains unchallenged, then we don't need
+to abstract this, and the issue boils down to whether we should switch
+to TLSF or keep BSD.
 
-> Would it be difficult/desirable to include the amount of free stack space?
-
-Not difficult, but the problem I'd see, is that an application usually
-crashes before one manage to ask for this information to be displayed.
-IOW, you would be already toast before the information gives you any
-value.
-
-> Would it be difficult/desirable to include the name of the vxworks semaphores 
-> a vx task is holding? Together with point a) one could easyly detect lock 
-> ups.
-
-Mm, depends on the overhead tracking them safely.
+This also means that we first need real figures for practical use cases
+comparing BSD and TLSF, before going any step further (at least internal
+and external fragmentation values, allocation and deallocation
+worst-case for bulks of contiguous and discontiguous blocks from various
+sizes, and anything else you may find relevant). At that point, we could
+decide whether we should provide both over the abstract infrastructure,
+simply replace BSD with TLSF, or keep the status quo.
 
 > 
-> Best regards
+> This patch series now first tries to abstract a common interface for
+> heap allocators. Those allocators can be statically selected at compile
+> time. As the second step it adds latest TLSF version 2.2.0 as an
+> alternative to BSD. Default remains BSD for now.
+> 
+> TLSF is currently limited to 32-bit archs, but 64-bit support is on the
+> roadmap according to Miguel. He kindly helped me with preparing the TLSF
+> patch for Xenomai usage. Thanks to him at this point!
+> 
+> Jan
 > 
 > _______________________________________________
 > Xenomai-core mailing list
