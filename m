@@ -1,59 +1,66 @@
-Message-ID: <452BD151.20200@domain.hid>
-Date: Tue, 10 Oct 2006 18:58:57 +0200
+Message-ID: <4538A613.80606@domain.hid>
+Date: Fri, 20 Oct 2006 12:33:55 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Status of device profiles
-References: <452BCD77.9080909@domain.hid>
-In-Reply-To: <452BCD77.9080909@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigA8A07F40CFD9064D00839538"
+	boundary="------------enig4471AC2DC0B017AB46607F4C"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Marcelo Coelho <mjcoelho@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+Subject: [Adeos-main] [PATCH] x86: revert IRQs replay order
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA8A07F40CFD9064D00839538
+--------------enig4471AC2DC0B017AB46607F4C
+Content-Type: multipart/mixed; boundary="------------030402060707060607060904"
+
+This is a multi-part message in MIME format.
+--------------030402060707060607060904
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Marcelo Coelho wrote:
-> Greetings!
->=20
->=20
-> What is the status of the the serial device profiles?
->=20
-
-Given that no one yet came up with complaints on the profile though it
-is heavily used, given that we were in theory able to implement a
-conforming USB-to-RS232 driver for it (practice is suffering from nasty
-bugs), I would say its stable.
-
->=20
-> Just to make sure if i have the right idea, this profile is meant for a=
-n
-> higher standardization of a serial device internal functioning, right? =
-I
-> just have to fill the functions body, compile and i get a wonderfull RT=
-
-> driver, right?
-
-That's the idea. And you will be able to reuse existing software for
-RTDM serial ports over that new driver.
+While digging into a latency issue with multiple IRQs pending (patch
+will likely follow soon), I noticed that the replay order on x86 is the
+inverse of the hardware order. Instead of iterating from lowest IRQ
+number to highest, ipipe currently starts with the highest one. The
+attached patch fixes this.
 
 Jan
 
+--------------030402060707060607060904
+Content-Type: text/plain;
+ name="fix-x86-irq-replay-order.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-x86-irq-replay-order.patch"
 
---------------enigA8A07F40CFD9064D00839538
+Index: linux-2.6.17.13/include/asm-i386/ipipe.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.17.13.orig/include/asm-i386/ipipe.h
++++ linux-2.6.17.13/include/asm-i386/ipipe.h
+@@ -242,8 +242,7 @@ extern int __ipipe_tick_irq;
+=20
+ static inline unsigned long __ipipe_ffnz(unsigned long ul)
+ {
+-      __asm__("bsrl %1, %0":"=3Dr"(ul)
+-      :	"r"(ul));
++	__asm__("bsfl %1, %0":"=3Dr"(ul):"r"(ul));
+ 	return ul;
+ }
+=20
+
+--------------030402060707060607060904--
+
+--------------enig4471AC2DC0B017AB46607F4C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -62,10 +69,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFK9FRniDOoMHTA+kRAkC/AJ9bJFkfdPTVyKNJn2FqhrbjHr9mSACcDbCF
-yXBdnnTFnS21yft9CuzJLfQ=
-=mHc4
+iD8DBQFFOKYTniDOoMHTA+kRAiwEAJ9O/v6ye183zilupBwMXkUWOAtHfgCdFrxa
+/1lVIVEOT8ZlSr3U5VOAwkQ=
+=+RR3
 -----END PGP SIGNATURE-----
 
---------------enigA8A07F40CFD9064D00839538--
+--------------enig4471AC2DC0B017AB46607F4C--
 
