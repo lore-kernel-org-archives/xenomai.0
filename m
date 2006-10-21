@@ -1,13 +1,13 @@
-Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
-From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
-In-Reply-To: <453647E6.2050307@domain.hid>
-References: <1161184570.5093.61.camel@domain.hid>  <453647E6.2050307@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="=-4hJEW9hxDxuI5Bb9iiHt"
-Date: Sat, 21 Oct 2006 14:11:53 +0200
-Message-Id: <1161432713.5007.16.camel@domain.hid>
-Mime-Version: 1.0
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 21 Oct 2006 16:28:20 +0200
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200610211628.21249.niklaus.giger@domain.hid>
+Subject: [Xenomai-help] Cleanup after using the vxWorks skin?
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,63 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
+Hi
 
---=-4hJEW9hxDxuI5Bb9iiHt
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+I run a program using the vxworks skin from user space. As did hang, I=20
+typed =A0"Ctrl-C" to end the program.
 
-Hi!
+Looking at /proc/xenomai/registry/vxworks/semaphores/ I remarked however, t=
+hat=20
+there were still vxworks semaphores open, which had not been deleted.
 
-One problem I had was that I needet to set very high periode-values for
-latency and switchbench.
-I think I've found a solution.
+Is it up to the programmer to clean up at exit? Or is this a bug in the=20
+current Xenomai implementation?
 
-1. I increased the granularity of the system-timer
-I'm using full system-clock f=FCr the timer now, instead of
-system-clock/64 so now I have 1769472 ticks per jiffy (instead of 27648)
+My test program looks like this:
+#include <sys/mman.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "vxworks/vxworks.h"
+extern "C" int root_thread_init();
+extern "C" void root_thread_exit(void);
 
-2. There was a wrong value for CLOCK_TICK_RATE in timex.h I think.
-It was set to 50000000 / 16 (by netsilicon), but it should be the hw
-clock frequency (http://arm.nihilisme.ca/doc/aleph.pdf )
-CLOCK_TICK_RATE is now set to 176947200.
+int main (int argc, char *argv[])
+{
+=A0 int tid;
+=A0 mlockall(MCL_CURRENT|MCL_FUTURE);
+=A0 atexit(&root_thread_exit);
+=A0 tid =3D taskSpawn("root", 10, 0, 32*1024, (FUNCPTR) root_thread_init,=20
+1,2,3,4,5,6,7,8,9,10);
+=A0 if (tid > 0) =A0pause();
+=A0 return 1;
+}
+=A0 extern "C" void root_thread_exit(void)
+=A0 {
+=A0 =A0 printf("%s: task %d\n", __FUNCTION__, taskIdSelf());
+=A0 }
+=A0 extern "C" int root_thread_init()
+=A0 { const char* arg=3D"";
+=A0 =A0 const char* argv[2];
+=A0 =A0 argv[0] =A0=3D "undefined";
+=A0 =A0 argv[1] =A0=3D arg;
+=A0 =A0 int argc =3D sizeof(argv) / sizeof(char*);
+=A0 =A0 int semId1 =3D semCCreate(SEM_Q_PRIORITY, 3);
+=A0 =A0 int semId3 =3D semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE );
+=A0 =A0 printf("proc %s: task %d %s \n", __FUNCTION__, taskIdSelf(),=20
+taskName(taskIdSelf()));
+=A0 =A0 taskDelay(sysClkRateGet());
+=A0 =A0 printf("proc %s: task %d shutting down\n", __FUNCTION__, taskIdSelf=
+());
+// =A0 =A0 return 0;
+=A0 =A0exit(0);
+}
 
-Results:
-I'm able to pass Periods about 200us and lower to latency and
-switchbench now.
+Best regards
 
-
-
-But the Problem with Latency-Test with in-kernel periodic tasks and
-in-kernel timer handler exists further.
-
-ioctl RTTST_RTIOC_INTERM_BENCH_RES is sent once in userspace
-and received twice (by rt_tmbench_ioctl_rt and
-rt_tmbench_ioctl_nrt) ...=20
-There is no such behavior on my x86 running these tests.
-
-Now i'll try to check the communication between the rt-driver and the
-userspace now and will report my results.
-
-
-Greets
-	Manfred
-
-
-
---=-4hJEW9hxDxuI5Bb9iiHt
-Content-Type: application/pgp-signature; name=signature.asc
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
-
-iD8DBQBFOg6JbMvu5jIEpfsRAl42AJ0YgCdZF81TkhHGGDMQRzvs0sVI7wCeNMxn
-srWMYb5CL6GOnWAjihOGpmM=
-=6Xef
------END PGP SIGNATURE-----
-
---=-4hJEW9hxDxuI5Bb9iiHt--
-
+=2D-=20
+Niklaus Giger
 
