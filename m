@@ -1,13 +1,12 @@
-Subject: Re: [Xenomai-core] [BUG?] delayed PIC timer event
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17723.29843.307241.50023@domain.hid>
-References: <4537A5FA.509@domain.hid> <17723.29843.307241.50023@domain.hid>
-Content-Type: text/plain
-Date: Sun, 22 Oct 2006 16:03:49 +0200
-Message-Id: <1161525830.4989.15.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <453BAD90.9020306@domain.hid>
+Date: Sun, 22 Oct 2006 19:42:40 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] switchtest FPU register error on PPC 2.6.18
+References: <453B4816.4010007@domain.hid>
+	<17723.27846.168894.602494@domain.hid>
+In-Reply-To: <17723.27846.168894.602494@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080507090204000906020704"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,52 +17,136 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2006-10-22 at 15:39 +0200, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Hi,
+This is a multi-part message in MIME format.
+--------------080507090204000906020704
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Gilles Chanteperdrix wrote:
+> Wolfgang Grandegger wrote:
+>  > Hello,
 >  > 
->  > while actually cross-checking some user's problem with RTnet (not on
->  > Xenomai), I happen to stumble over another weirdness. Scenario:
+>  > I just realized the error message:
 >  > 
->  > RTnet under high load (>5 KHz network IRQ rate, large packets), "latency
->  > -p1000" as additional load, Pentium 266 MHz (tried boards from different
->  > vendors), kernel 2.6.17.13, Xenomai trunk, ipipe-1.5-00, CONFIG_M586TSC,
->  > !CONFIG_X86_UP_APIC
+>  >    Error after context switch from task 8(rtup-8) to task
+>  >    10(rtup_ufpp-10), FPU registers were set to 1000 (maybe task
+>  >    sleeper_ufps-0)
 >  > 
->  > Main protagonists:
->  >  - "display-" (user, PID 909, prio 0/-1)
->  >  - "samplin" (user, PID 910, prio 99)
->  >  - stack manager (kernel, PID -1, prio 98)
->  >  - "client", the RTnet test (user, PID 903, prio 10)
->  > 
->  > So the sampling task is definitely the chief and should only be delayed
->  > by IRQ handlers. Generally it is (~120 us with i-pipe tracer enabled),
->  > but there happen to be delays of more than 500 us. Attached is such a trace.
->  > 
->  > Specifically suspicious is the fact that the timer IRQ, which should
->  > have popped up around -500, is not blocked by some hard IRQ lock. Rather
->  > it takes someone else (the RTnet test) to start another timer, and then
->  > the delayed event gets raised immediately. Hardware issue? Bug in
->  > Xenomai? With the same boot image on a P-III, this does not happen.
->  > 
->  > Any ideas what to check first are welcome.
+>  > when running "switchtest" on an PPC under Linux 2.6.18 with Xenomai head 
+>  > of SVN. I have attached the full output log.
 > 
-> I got similar behaviour on hardware where programming the timer for a
-> too short delay did not work. The way to check this was to add :
-> if (delay < 100)
->      printk("\n!!!! Short delay !!!!\n");
+> Are you sure you did ?
+
+Oh, well, ... see attachment.
+
+>  >  Can some tell me what went 
+>  > exactly wrong and where I should start looking at?
 > 
-> on the timer programming path.
-
-Actually, there was a bug in the pipeline log syncer which has been
-fixed in the latest patches for ppc and x86. This is a multi-arch issue
-(__ipipe_sync_stage).
-
+> It means that after a switch from task 8 to task 10, the FPU context is
+> the one of task 0. So, some context switches which should have switched
+> the FPU did not. If you are lucky, you should get this error
+> systematically.
 > 
--- 
-Philippe.
+> In order to investigate, you should try and reduce the number of tasks
+> created by switchtest. switchtest --help will tell you the list of tasks
+> created by switchtest by default, start from this list, and try removing
+> some tasks, keeping the failure. When you have the minimum set of tasks
+> that create the failure, try to trace the fpu switches, to see which one
+> does not do its job correctly.
+
+OK, thanks for the hint. I forgot to mention that it only happens once 
+after reboot. Re-exectution does not show the error any more.
+
+Wolfgang.
 
 
+--------------080507090204000906020704
+Content-Type: text/x-log;
+ name="switchtest-error.log"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="switchtest-error.log"
+
+bash-3.00# cd xenomai/testsuite/switchtest/
+bash-3.00# ./run
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Testing FPU check routines...
+r0: 1 != 2
+r1: 1 != 2
+r2: 1 != 2
+r3: 1 != 2
+r4: 1 != 2
+r5: 1 != 2
+r6: 1 != 2
+r7: 1 != 2
+r8: 1 != 2
+r9: 1 != 2
+r10: 1 != 2
+r11: 1 != 2
+r12: 1 != 2
+r13: 1 != 2
+r14: 1 != 2
+r15: 1 != 2
+r16: 1 != 2
+r17: 1 != 2
+r18: 1 != 2
+r19: 1 != 2
+r20: 1 != 2
+r21: 1 != 2
+r22: 1 != 2
+r23: 1 != 2
+r24: 1 != 2
+r25: 1 != 2
+r26: 1 != 2
+r27: 1 != 2
+r28: 1 != 2
+r29: 1 != 2
+r30: 1 != 2
+r31: 1 != 2
+== FPU check routines: OK.
+== Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 rtk_fp_ufpp-5 rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 rtus-11 rtus-12 rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 rtuo_ufpp-18 rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 rtuo_ufpp_ufps-22
+r0: 1000 != 10
+r1: 1000 != 10
+r2: 1000 != 10
+r3: 1000 != 10
+r4: 1000 != 10
+r5: 1000 != 10
+r6: 1000 != 10
+r7: 1000 != 10
+r8: 1000 != 10
+r9: 1000 != 10
+r10: 1000 != 10
+r11: 1000 != 10
+r12: 1000 != 10
+r13: 1000 != 10
+r14: 1000 != 10
+r15: 1000 != 10
+r16: 1000 != 10
+r17: 1000 != 10
+r18: 1000 != 10
+r19: 1000 != 10
+r20: 1000 != 10
+r21: 1000 != 10
+r22: 1000 != 10
+r23: 1000 != 10
+r24: 1000 != 10
+r25: 1000 != 10
+r26: 1000 != 10
+r27: 1000 != 10
+r28: 1000 != 10
+r29: 1000 != 10
+r30: 1000 != 10
+r31: 1000 != 10
+Error after context switch from task 8(rtup-8) to task 10(rtup_ufpp-10),
+FPU registers were set to 1000 (maybe task sleeper_ufps-0)
+RTT|  00:00:00
+RTH|ctx switches|-------total
+RTD|          28|          28
+--------------080507090204000906020704--
 
