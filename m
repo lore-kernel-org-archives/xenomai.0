@@ -1,9 +1,14 @@
-Message-ID: <453C7C48.30602@domain.hid>
-Date: Mon, 23 Oct 2006 10:24:40 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <453C84FE.3050508@domain.hid>
+Date: Mon, 23 Oct 2006 11:01:50 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------010104060608020008010302"
-Subject: [Xenomai-core] x86 FPU switches routines.
+Subject: Re: [Xenomai-core] x86 FPU switches routines.
+References: <453C7C48.30602@domain.hid>
+In-Reply-To: <453C7C48.30602@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig24B31F86816CC65AE8D01056"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,114 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------010104060608020008010302
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig24B31F86816CC65AE8D01056
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+>=20
+> Hi,
+>=20
+> As once discussed with Heikki, and after a first missed attempt, here
+> is a patch for x86 which attempts to cope correctly with Linux (non
+> real-time) drivers using FPU in kernel-space.
+>=20
+> I tested it on my laptop without drivers using FPU, and it appears to
+> work correctly, but it would be nice if people that had problems with
+> the previous attempt (if I remember correctly, on old pentiums and on
+> AMD processors) could test this patch.
+
+Just fired up on a Pentium MMX which used to have problems with the
+first approad. Switchtest reports no problems.
+
+What about writing a simple test case for the non-RT in-kernel FPU usage?=
 
 
-Hi,
+Jan
 
-As once discussed with Heikki, and after a first missed attempt, here
-is a patch for x86 which attempts to cope correctly with Linux (non
-real-time) drivers using FPU in kernel-space.
 
-I tested it on my laptop without drivers using FPU, and it appears to
-work correctly, but it would be nice if people that had problems with
-the previous attempt (if I remember correctly, on old pentiums and on
-AMD processors) could test this patch.
+--------------enig24B31F86816CC65AE8D01056
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Thanks in advance.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
--- 
-                                                  Gilles Chanteperdrix
+iD8DBQFFPIT+niDOoMHTA+kRAhTAAJ9x9+tKqf2v5Pq+YibRCrOVRF1O/QCghKDL
+bDNUA/h4IIq8e6L73WDKNXw=
+=cgV6
+-----END PGP SIGNATURE-----
 
---------------010104060608020008010302
-Content-Type: text/x-patch;
- name="xeno-i386-fpu-switch-use-cr0-ts.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xeno-i386-fpu-switch-use-cr0-ts.diff"
-
-Index: include/asm-i386/system.h
-===================================================================
---- include/asm-i386/system.h	(revision 1704)
-+++ include/asm-i386/system.h	(working copy)
-@@ -69,6 +69,7 @@
-     /* FPU context bits for root thread. */
-     unsigned is_root: 1;
-     unsigned ts_usedfpu: 1;
-+    unsigned cr0_ts: 1;
- 
- } xnarchtcb_t;
- 
-Index: include/asm-i386/bits/pod.h
-===================================================================
---- include/asm-i386/bits/pod.h	(revision 1704)
-+++ include/asm-i386/bits/pod.h	(working copy)
-@@ -44,6 +44,7 @@
- 	/* Remember the preempted Linux task pointer. */
- 	rootcb->user_task = rootcb->active_task = current;
- 	rootcb->ts_usedfpu = wrap_test_fpu_used(current) != 0;
-+	rootcb->cr0_ts = (read_cr0() & 8) != 0;
- 	/* So that xnarch_save_fpu() will operate on the right FPU area. */
- 	rootcb->fpup = &rootcb->user_task->thread.i387;
- }
-@@ -265,12 +266,21 @@
- {
- 	struct task_struct *task = tcb->user_task;
- 
--	if (task) {
--		if (!wrap_test_fpu_used(task))
-+	if (!tcb->is_root) {
-+		if (task) {
-+			/* fpu not used or already saved by __switch_to. */
-+			if (!wrap_test_fpu_used(task))
-+				return;
-+
-+			/* Tell Linux that we already saved the state of the FPU
-+		   	hardware of this task. */
-+			wrap_clear_fpu_used(task);
-+		}
-+	} else {
-+		if (tcb->cr0_ts || 
-+		    (tcb->ts_usedfpu && !wrap_test_fpu_used(task)))
- 			return;
- 
--		/* Tell Linux that we already saved the state of the FPU
--		   hardware of this task. */
- 		wrap_clear_fpu_used(task);
- 	}
- 
-@@ -298,13 +308,14 @@
- 			wrap_set_fpu_used(task);
- 		}
- 	} else {
--		/* Restore state of FPU if TS_USEFPU bit was armed. */
--		if (!tcb->ts_usedfpu) {
-+		/* Restore state of FPU only if TS bit in cr0 was clear. */
-+		if (tcb->cr0_ts) {
- 			stts();
- 			return;
- 		}
- 
--		wrap_set_fpu_used(task);
-+		if (tcb->ts_usedfpu)
-+			wrap_set_fpu_used(task);
- 	}
- 
- 	/* Restore the FPU hardware with valid fp registers from a
-@@ -336,7 +347,7 @@
- 			}
- 		}
- 	} else {
--		if (!tcb->ts_usedfpu)
-+		if (tcb->cr0_ts)
- 			return;
- 
- 		xnarch_restore_fpu(tcb);
-
---------------010104060608020008010302--
+--------------enig24B31F86816CC65AE8D01056--
 
