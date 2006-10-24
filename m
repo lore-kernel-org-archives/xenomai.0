@@ -1,16 +1,11 @@
-Message-ID: <453A4E5C.3020606@domain.hid>
-Date: Sat, 21 Oct 2006 18:44:12 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
-References: <1161099585.5024.48.camel@domain.hid>	<1161157955.5093.3.camel@domain.hid>
-	<4536038A.4000002@domain.hid>	<1161174276.5093.22.camel@domain.hid>
-	<1161442569.5007.25.camel@domain.hid>
-In-Reply-To: <1161442569.5007.25.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE0A3F94816BBF5176123547D"
-Sender: jan.kiszka@domain.hid
+Date: Mon, 23 Oct 2006 18:28:09 -0600
+From: Sunny <sbhuller@domain.hid>
+Subject: RE: [Xenomai-help] rt_queue_read switch to secondary mode
+In-reply-to: <1161389393.4988.203.camel@domain.hid>
+Message-id: <001101c6f703$4f4a9bd0$6400a8c0@domain.hid>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,208 +15,220 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?=22Schl=E4gl_=5C=22Manfred_jun=2E=5C=22=22?= <manfred.schlaegl@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE0A3F94816BBF5176123547D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Philippe,
 
-Schl=E4gl Manfred jun. wrote:
-> On Wed, 2006-10-18 at 14:24 +0200, Schl=E4gl Manfred jun. wrote:
->> On Wed, 2006-10-18 at 12:35 +0200, Jan Kiszka wrote:
->>
->>> I vote for solution 4:
->>>
->>> --- include/rtdm/rttesting.h    (revision 1731)
->>> +++ include/rtdm/rttesting.h    (working copy)
->>> @@ -85,8 +85,8 @@ typedef struct rttst_overall_bench_res {
->>>
->>>  typedef struct rttst_tmbench_config {
->>>      int                     mode;
->>> -    nanosecs_rel_t          period;
->>>      int                     priority;
->>> +    nanosecs_rel_t          period;
->>>      int                     warmup_loops;
->>>      int                     histogram_size;
->>>      int                     histogram_bucketsize;
->>>
->>> Could you check if this helps?
->>>
->>> Thanks,
->>> Jan
->>>
->>
->> Thanks! It works. ioctls are working
->>
->> But there is another Problem: I've inserted debug messages
->>
->> // USER-PROCESS
->> -sh-3.00# ./run -- -t 1 -p 10000 -T 5
->> *
->> *
->> * Type ^C to stop this application.
->> *
->> *
->> Using /lib/modules/2.6.15.7/kernel/drivers/xenomai/testing/xeno_timerb=
-ench.ko
->> =3D=3D Sampling period: 10000 us
->> =3D=3D Test mode: in-kernel periodic task
->> =3D=3D All results in microseconds
->> LATENCY: display send RTTST_RTIOC_TMBENCH_START:
->> mode    0
->> periode 1
->> pri     99
->> warmup  1
->> hist_s  0
->> hist_bs 1000
->> fmax    0
->> DEBUG: rt_dev_ioctl: request: 1075840528
->> warming up...
->> DEBUG: rt_dev_ioctl: request: -1070594560
->> RTT|  00:00:01  (in-kernel periodic task, 10000 us period, priority 99=
-)
->> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---la=
-t
->> worst
->> RTD|      29.369|      32.341|      35.879|       0|      29.369|
->> 35.879
->> DEBUG: rt_dev_ioctl: request: -1070594560
->> RTD|      22.135|      32.381|      36.241|       0|      22.135|
->> 36.241
->> DEBUG: rt_dev_ioctl: request: -1070594560
->> RTD|      21.050|      32.378|      37.326|       0|      21.050|
->> 37.326
->> DEBUG: rt_dev_ioctl: request: -1070594560
->> DEBUG: rt_dev_ioctl: request: -1071118831
->> ---|------------|------------|------------|--------|------------------=
--------
->> RTS|-1095770.696|       0.001|      93.660|   93748|
->> 00:00:05/00:00:05
->> -sh-3.00# =09
->>
->> // KERNEL-OUTPUT
->>
->> [42949410.980000] KERNEL: rt_tmbench_ioctl_nrt got request 1075840528
->> [42949410.990000] KERNEL: rt_tmbench_ioctl_nrt got
->> RTTST_RTIOC_TMBENCH_START:
->> [42949411.020000] mode    0
->> [42949411.020000] periode 10000000
->> [42949411.030000] pri     99
->> [42949411.040000] warmup  1
->> [42949411.050000] hist_s  0
->> [42949411.060000] hist_bs 1000
->> [42949411.070000] fmax    0
->> [42949411.080000] KERNEL: rt_tmbench_ioctl_nrt got request -1070594560=
+	I think I have solved the problem.  I was running
 
->> [42949411.090000] rt_tmbench_ioctl_nrt: request
->> -1070594560(RTTST_RTIOC_INTERM_BENCH_RES) -> ret =3D -ENOSYS(-38)
->> [42949411.120000] rt_tmbench_ioctl_rt -1070594560
->> [42949413.070000] KERNEL: rt_tmbench_ioctl_nrt got request -1070594560=
-
->> [42949413.090000] rt_tmbench_ioctl_nrt: request
->> -1070594560(RTTST_RTIOC_INTERM_BENCH_RES) -> ret =3D -ENOSYS(-38)
->> [42949413.120000] rt_tmbench_ioctl_rt -1070594560
->> [42949414.070000] KERNEL: rt_tmbench_ioctl_nrt got request -1070594560=
-
->> [42949414.090000] rt_tmbench_ioctl_nrt: request
->> -1070594560(RTTST_RTIOC_INTERM_BENCH_RES) -> ret =3D -ENOSYS(-38)
->> [42949414.120000] rt_tmbench_ioctl_rt -1070594560
->> [42949415.070000] KERNEL: rt_tmbench_ioctl_nrt got request -1070594560=
-
->> [42949415.090000] rt_tmbench_ioctl_nrt: request
->> -1070594560(RTTST_RTIOC_INTERM_BENCH_RES) -> ret =3D -ENOSYS(-38)
->> [42949415.120000] rt_tmbench_ioctl_rt -1070594560
->> [42949415.290000] KERNEL: rt_tmbench_ioctl_nrt got request -1071118831=
-
->> [42949415.310000] rt_tmbench_ioctl_nrt: request -1071118831 -> ret =3D=
-
->> -ENOTTY(-25)
->>
->>
->>
->> The RTTST_RTIOC_INTERM_BENCH_RES request is received by
->> rt_tmbench_ioctl_nrt and rt_tmbench_ioctl_rt. Is this normal on arm?
->> (on my x86 this happens only at the beginning of a test-run)
->>
->>
->> Thank you
->> 	Manfred Schlaegl
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->=20
->=20
-> Like above i had a problem using RTTST_RTIOC_TMBENCH_STOP too.
->=20
->=20
-> typedef struct rttst_bench_res {
->     long long               avg;
->     long                    min;
->     long                    max;
->     long                    overruns;
->     long                    test_loops;
-> } rttst_bench_res_t;
->=20
-> typedef struct rttst_overall_bench_res {
->     struct rttst_bench_res  result;
->     long                    *histogram_avg;
->     long                    *histogram_min;
->     long                    *histogram_max;
-> } rttst_overall_bench_res_t;
->=20
->=20
->=20
-> sizeof(struct rttst_bench_res):
-> Kernel	24
-> User	24
->=20
-> sizeof(struct rttst_overall_bench_res):
-> Kernel	36
-> User	40
->=20
->=20
-> I used this Patch:
->=20
-> typedef struct rttst_overall_bench_res {
->     struct rttst_bench_res  result;
-> +   char                    __fill;	/* fill byte */
->     long                    *histogram_avg;
->     long                    *histogram_min;
->     long                    *histogram_max;
-> } rttst_overall_bench_res_t;
->=20
-> sizeof(struct rttst_overall_bench_res):
-> Kernel	40
-> User	40
->=20
-
-Damn it. What alignment of the compiler is behind this? Fill up to
-multiples of X bytes, ok. But how to find out what X is on some
-platform? Anyone any hint on this?
-
-Thanks for tracking down.
-
-Jan
+Linux v2.6.17.6  i686
+Xenomai: v2.2.0
+Adeos: adeos-ipipe-2.6.17.i386-1.3-08
+Hardware: Pentium - M 
 
 
---------------enigE0A3F94816BBF5176123547D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+	Here is what I ended up doing:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+1. Upgraded to Xenomai 2.2.4, but the problem still existed.  I ran gdb and
+here is the backtrace result:
+	------ GDB Backtrace w/ user space debug
 
-iD8DBQFFOk5cniDOoMHTA+kRAiMPAJwIxGVpQluThGwz/QrYX3rTXjpLagCcDPQT
-+keISaHNHx79/D3RzVf1tD8=
-=Xok+
------END PGP SIGNATURE-----
+	(gdb) r
+	Starting program: /root/ipas/apps/skel/test
+	[Thread debugging using libthread_db enabled]
+	[New Thread -1211242816 (LWP 20349)]
+	[New Thread -1208923216 (LWP 20352)]
 
---------------enigE0A3F94816BBF5176123547D--
+	Program received signal SIGXCPU, CPU time limit exceeded.
+	[Switching to Thread -1208923216 (LWP 20352)]
+	0xb7ee5b8b in rt_queue_read (q=0xbfe6ab70, buf=0xb7f14000,
+size=1024, timeout=18446744073709551615) at queue.c:164
+	164             return XENOMAI_SKINCALL4(__native_muxid,
+	Current language:  auto; currently c
+	(gdb) bt
+	#0  0xb7ee5b8b in rt_queue_read (q=0xbfe6ab70, buf=0xb7f14000,
+size=1024, timeout=18446744073709551615) at queue.c:164
+	#1  0x08048852 in task_procedure (arg=0xbfe6ab70) at test.cpp:23
+	#2  0xb7ee6070 in rt_task_trampoline (cookie=0xbfe6ab70) at
+task.c:89
+	#3  0xb7eee0fb in start_thread () from /lib/tls/libpthread.so.0
+	#4  0xb7d9699e in clone () from /lib/tls/libc.so.6
+
+
+2. Installed adeos-ipipe-2.6.17-1.5-01
+3. Set kernel option CONFIG_PREEMPT
+
+
+	I no longer get the SIGXCPU switch.  Thanks for all of your help!
+
+-- Sunny
+
+
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org] 
+Sent: Friday, October 20, 2006 6:10 PM
+To: sbhuller@domain.hid
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] rt_queue_read switch to secondary mode
+
+On Fri, 2006-10-20 at 17:37 -0600, Sunny Bhuller wrote:
+> Hi Philippe,
+> 
+>   I don't think the signal is occuring due to pthread_exit().  If you put
+the rt_queue_read call in a loop you will see that the signal occurs on
+every call to rt_queue_read.  
+> 
+> ...
+> 	while (1)
+>  	{
+> 		rt_queue_read( msq_q, &data, sizeof ( some_data ),
+TM_NONBLOCK);
+> 		rt_task_sleep((RTIME) 100000);
+> 	}
+> ...
+
+This code does not generate any mode switch here. Could you
+display /proc/xenomai/stat once while the program runs?
+
+Additionally, you may want to rebuild your user-space support by passing
+--enable-debug to the configure script, so that we have better
+backtraces.
+
+Btw, what's your:
+- platform?
+- Adeos release?
+- Xenomai version?
+
+> 
+>   The back trace produced the following output for me.
+> 
+> (gdb) r
+> Starting program: /root/ipas/apps/skel/test
+> [Thread debugging using libthread_db enabled]
+> [New Thread -1211189568 (LWP 15101)]
+> [New Thread -1208869968 (LWP 15104)]
+> 
+> Program received signal SIGXCPU, CPU time limit exceeded.
+> [Switching to Thread -1208869968 (LWP 15104)]
+> 0xffffe410 in ?? ()
+> (gdb) bt
+> #0  0xffffe410 in ?? ()
+> #1  0xb7f20fe8 in ?? ()
+> #2  0x00000400 in ?? ()
+> #3  0xb7f21010 in ?? ()
+> #4  0xb7ef2c72 in rt_queue_read () from /usr/xenomai/lib/libnative.so.0
+> #5  0x08048852 in task_procedure (arg=0xbf93a640) at test.cpp:23
+> #6  0xb7ef3141 in rt_task_trampoline () from
+/usr/xenomai/lib/libnative.so.0
+> #7  0xb7efb0fb in start_thread () from /lib/tls/libpthread.so.0
+> #8  0xb7da399e in clone () from /lib/tls/libc.so.6
+> (gdb)
+> 
+> 
+>   Let me know if you see something wrong.
+> -- Sunny
+> 
+> 
+> 
+> 
+> 
+> ----- Original Message -----
+> From: Philippe Gerum <rpm@xenomai.org>
+> Date: Friday, October 20, 2006 5:11 pm
+> Subject: Re: [Xenomai-help] rt_queue_read switch to secondary mode
+> 
+> > On Fri, 2006-10-20 at 16:00 -0600, Sunny Bhuller wrote:
+> > > Hi Philippe,
+> > >   I am including some code below that will produce the problem I 
+> > am seeing. 
+> > > I must be missing something because if remove the force to 
+> > primary mode in the
+> > >  function task_procedure the signal will not be caught.  This 
+> > tells me that
+> > >  without the rt_task_set_mode the task is starting off in 
+> > secondary mode.  
+> > > 
+> > 
+> > The backtrace of your program is this one when SIGXCPU is caught:
+> > 
+> > (gdb) r
+> > Starting program: /home/rpm/frags/secondary/main
+> > [Thread debugging using libthread_db enabled]
+> > [New Thread -1210504992 (LWP 18784)]
+> > [New Thread -1209074768 (LWP 18787)]
+> > 
+> > Program received signal SIGXCPU, CPU time limit exceeded.
+> > [Switching to Thread -1209074768 (zombie)]
+> > 0xb7f02634 in calloc () from /lib/ld-linux.so.2
+> > (gdb) bt
+> > #0  0xb7f02634 in calloc () from /lib/ld-linux.so.2
+> > #1  0xb7ef9110 in _dl_rtld_di_serinfo () from /lib/ld-linux.so.2
+> > #2  0xb7ef8b01 in _dl_rtld_di_serinfo () from /lib/ld-linux.so.2
+> > #3  0xb7e93200 in _dl_open () from /lib/tls/i686/cmov/libc.so.6
+> > #4  0xb7efd43f in _dl_rtld_di_serinfo () from /lib/ld-linux.so.2
+> > #5  0xb7e92c6f in _dl_open () from /lib/tls/i686/cmov/libc.so.6
+> > #6  0xb7e9548d in __libc_dlsym () from /lib/tls/i686/cmov/libc.so.6
+> > #7  0xb7efd43f in _dl_rtld_di_serinfo () from /lib/ld-linux.so.2
+> > #8  0xb7e954ee in __libc_dlopen_mode ()
+> > from /lib/tls/i686/cmov/libc.so.6
+> > #9  0xb7ed7398 in pthread_cancel_init ()
+> > from /lib/tls/i686/cmov/libpthread.so.0
+> > #10 0xb7ed74c1 in _Unwind_ForcedUnwind ()
+> > from /lib/tls/i686/cmov/libpthread.so.0
+> > #11 0xb7ed51f1 in __pthread_unwind ()
+> > from /lib/tls/i686/cmov/libpthread.so.0
+> > #12 0xb7ed1210 in pthread_exit ()
+> > from /lib/tls/i686/cmov/libpthread.so.0
+> > #13 0xb7ec832a in rt_task_trampoline (cookie=0xbfcbb750)
+> >    at /home/rpm/xenomai-2.2.4/src/skins/native/task.c:93
+> > #14 0xb7ed0240 in start_thread ()
+> > from /lib/tls/i686/cmov/libpthread.so.0
+> > #15 0xb7e5e29e in clone () from /lib/tls/i686/cmov/libc.so.6
+> > (gdb)
+> > 
+> > This means that the signal was sent as a result of performing a 
+> > calloc()call, during the late binding of some dynamic library on 
+> > behalf of
+> > pthread_exit(), which gets called as your real-time task exits
+> > immediately after the non-blocking call to rt_queue_read(). So 
+> > this is
+> > ok. The following patch should better illustrate the issue:
+> > 
+> > --- main.c~	2006-10-21 00:15:19.000000000 +0200
+> > +++ main.c	2006-10-21 00:27:52.000000000 +0200
+> > @@ -18,7 +18,7 @@
+> >         some_data data;
+> > 
+> >         rt_queue_read( msq_q, &data, sizeof ( some_data ), 
+> > TM_NONBLOCK);        
+> > -        
+> > +	rt_task_suspend(NULL);
+> > }
+> > 
+> > void signal_handler(int sig)
+> > 
+> > PS: the call to rt_task_set_mode() in the main() function always 
+> > fails,since the main routine is not a Xenomai-thread when started. 
+> > Therefore,the call - which requires to be invoked by Xenomai 
+> > threads - always
+> > returns with -EPERM. Note: this behaviour may differ depending on the
+> > skin bound to the application; for instance, the POSIX skin
+> > automatically promotes the main code as a Xenomai-controlled 
+> > thread, but
+> > the native skin does not (maybe we should, though).
+> > 
+> > -- 
+> > Philippe.
+> > 
+> > 
+> > 
+> 
+-- 
+Philippe.
+
+
+
+
 
