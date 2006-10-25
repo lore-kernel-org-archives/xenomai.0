@@ -1,16 +1,14 @@
-Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
 From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
-In-Reply-To: <453A4E5C.3020606@domain.hid>
-References: <1161099585.5024.48.camel@domain.hid>
-	<1161157955.5093.3.camel@domain.hid>  <4536038A.4000002@domain.hid>
-	<1161174276.5093.22.camel@domain.hid>
-	<1161442569.5007.25.camel@domain.hid> <453A4E5C.3020606@domain.hid>
+In-Reply-To: <E1GcJqn-0000Eo-Lv@domain.hid>
+References: <E1Gapzw-0005RB-Ob@domain.hid>
+	<E1GcJqn-0000Eo-Lv@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="=-vDnuGRds9ZpN1eIpL5kW"
-Date: Wed, 25 Oct 2006 10:03:08 +0200
-Message-Id: <1161763388.5114.4.camel@domain.hid>
+	boundary="=-ELq+YiB6Sc7cE/k5ZM9S"
+Date: Wed, 25 Oct 2006 15:41:24 +0200
+Message-Id: <1161783684.5114.16.camel@domain.hid>
 Mime-Version: 1.0
+Subject: [Xenomai-help] Re: [Xenomai-core] I-pipe patch for ARM S3C24xx
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,53 +21,78 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai-help <xenomai@xenomai.org>
 
 
---=-vDnuGRds9ZpN1eIpL5kW
+--=-ELq+YiB6Sc7cE/k5ZM9S
 Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-
-> Damn it. What alignment of the compiler is behind this? Fill up to
-> multiples of X bytes, ok. But how to find out what X is on some
-> platform? Anyone any hint on this?
+On Tue, 2006-10-24 at 12:49 +0200, Sebastian Smolorz wrote:
+> > Hi all,
+> >
+> > I'm currently working on porting I-pipe to the ARM S3C24xx. The patch i=
+s
+> > attached, it must be applied after the shipped
+> > adeos-ipipe-2.6.15-arm-1.5-01.patch. Unfortunately, there is still a se=
+vere
+> > bug somewhere. I built Xenomai as modules. When I try to modprobe
+> > xeno_native, the system hangs. No reaction at all, inlcuding serial con=
+sole
+> > and network access. I guess that interrupts are not handled any more. F=
+rom
+> > what I see if I spread some debug printk() into my code, the timer star=
+ts
+> > working under the control of the Xenomai domain and one or two calls to=
+ the
+> > Linux timer interrupt handler are made. But after that nothing happens =
+any
+> > more.
+> >
+> > As I try to find the bug for some days now but wasn't successful maybe =
+the
+> > experts have any hints where to continue searching. Or perhaps there is
+> > someone who can test it and confirm or disprove my observation? It woul=
+d be
+> > great to support one more ARM model.
 >=20
-> Thanks for tracking down.
+> Small update with new infos: After Xenomai has (re)started the system tim=
+er=20
+> the Linux timer interrupt handler ist called only once, but=20
+> xnintr_clock_handler() is called several thousand times. So it seems that=
+ the=20
+> timer interrupt handler of Linux is not properly called or Xenomai is=20
+> starving Linux.
 >=20
-> Jan
+> Sebastian
 >=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
-I've found it:
+Hi. I had the same Problem on my Netsilicon board.
 
-The Kernel is compiled with -mabi=3Dapcs-gnu
+I changed my timer-clock from CPU_CLK/64 to CPU_CLK so Xenomai is able
+to use it with a higher granularity (set_dec/get_dec). So my machine has
+1769472 ticks per jiffy instead of 27648. (works only with 32bit timers)
 
-With this flag
-typedef struct test1 {
-    int                     mode;
-    unsigned long long      period;
-    int                     priority;
-    int                     warmup_loops;
-    int                     histogram_size;
-    int                     histogram_bucketsize;
-    int                     freeze_max;
-} test1_t;
-With flag 	-> size =3D 32
-Without flag 	-> size =3D 40
+Further I had to set CLOCK_TICK_RATE (/include/asm/arch-xxxx/timex.h) to
+real cpu frequency (im my case around 176000000).
 
-I'll try to find a solution.
+Now I'm able to run latency with periods > 200us
 
 	- Manfred
 
---=-vDnuGRds9ZpN1eIpL5kW
+--=-ELq+YiB6Sc7cE/k5ZM9S
 Content-Type: application/pgp-signature; name=signature.asc
 Content-Description: This is a digitally signed message part
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.1 (GNU/Linux)
 
-iD8DBQBFPxo7bMvu5jIEpfsRAjK6AJ44jg1ckZ7McZIoIco9ctsKUnjPkACdG1QD
-U6CVt5VGNQ9oaEQX/lmRaVQ=
-=GdUH
+iD8DBQBFP2mEbMvu5jIEpfsRAqDwAJ0SbmL+mjvp2l1cccciw/ZwfAa24gCeNrnV
+VZvJycuuDcq9lUPy/QCUj/s=
+=DsDH
 -----END PGP SIGNATURE-----
 
---=-vDnuGRds9ZpN1eIpL5kW--
+--=-ELq+YiB6Sc7cE/k5ZM9S--
 
 
