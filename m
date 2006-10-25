@@ -1,15 +1,12 @@
-Message-ID: <453F9EF2.3020703@domain.hid>
-Date: Wed, 25 Oct 2006 19:29:22 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <453FC279.8040608@domain.hid>
+Date: Wed, 25 Oct 2006 15:00:57 -0500
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: Licensing issues
-References: <54b161f50610250007t1387a163l33a44d30f27dbfcc@domain.hid>
-	<1161788591.5114.47.camel@domain.hid>
-In-Reply-To: <1161788591.5114.47.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2C589801FB57984A81E2E1F2"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
+References: <450B2BE1.1050105@domain.hid>	 <20060916042719.M57867@domain.hid>
+	<450F0451.8070102@domain.hid> <1158614598.5009.71.camel@domain.hid>
+In-Reply-To: <1158614598.5009.71.camel@domain.hid>
+Content-Type: multipart/mixed; boundary="------------010301080108020906050203"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,108 +16,260 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2C589801FB57984A81E2E1F2
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------010301080108020906050203
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Schl=E4gl Manfred jun. wrote:
-> Its a very difficult question. I'm also interestet in it.
->=20
-> Adeos is under GPL.
-> Xenomai-code in ksrc is under GPL;=20
-> userspace Xenomai-code is under LGPL
->=20
-> Kernel-sources are under GPL, because several functions of the kernel c=
-an only be used by GPL-licensed modules.=20
+If I run the attached program, I get the following result:
 
-Additionally, it is The Right Thing that when you modify such common
-infrastructure like the Xenomai core, you should be urged to provide the
-same freedom to users of your modifications. This can best be reached by
-contributing them back to mainstream.
+  [root]# ./mqtest2
+  CPU time limit exceeded
 
-> Userspace code is under LGPL, but the kernel-code is used by syscalls .=
-=2E.
->=20
-> So it's really hard to determine if applications have to be GPLed or LG=
-PLed at this point...
->=20
->=20
-> BUT!=20
->=20
-> The header-files are GPLed with following exception:
->=20
-> COPYING:
-> ...
-> As a special exception to the following license, the Xenomai
-> project gives permission for additional uses of the header files
-> contained in this directory.
->=20
-> The exception is that, if you include these header files unmodified to
-> produce application programs executing in user-space that use
-> Xenomai services by normal Xenomai system calls, this does not
-> by itself cause the resulting executable to be covered by the GNU
-> General Public License. This is merely considered normal use of the
-> Xenomai system, and does not fall under the heading of "derived
-> work".
->=20
-> This exception does not however invalidate any other reasons why the
-> executable file might be covered by the GNU General Public License. In
-> any case, this exception never applies when the application code is
-> built as a static or dynamically loadable portion of the Linux kernel.
->=20
-> This exception applies only to the code released by the Xenomai
-> project under the name Xenomai and bearing this exception notice.
-> If you copy code from other sources into a copy of Xenomai, the
-> exception does not apply to the code that you add in this way.
-> ...
->=20
->=20
-> But is this exception airtight? Is it hard enought to stand a court-cas=
-e? I don't know.
->=20
+The kernel log contains:
 
-Legal question are always tricky. My believe as a non-lawyer is that
-Xenomai's license terms are fairly clear in that they allow user-space
-development _against_ libs/headers/syscalls under any license. Working
-_inside_ the user libs or even the Xenomai core is of course governed by
-LGPL and GPL, respectively.
+  Oct 25 14:13:03 kernel: invalid use of FPU in Xenomai context at 0x80492f6
 
-Writing non-GPL kernel space applications or drivers is a far trickier
-question. Any such "program" is never only a Xenomai user, it's first of
-all a kernel module. And the "trend" in the kernel community clearly
-goes towards GPL-only. Some developers (i.e. copyright holders) already
-consider ANY non-GPL module an infringement today. Xenomai cannot (and
-doesn't want to) put any escape-door against this legitimate decision.
-Xenomai is just an (out-of-tree) subsystem of Linux.
+If I change the WRITE_SIZE #define at the top of the program to 511 instead of 512, I do not get an error message, and the program works as expected.
 
-Regarding RTDM drivers: My believe is that any potential non-GPL driver
-publisher should better consult a layer. I would rather try (harder) to
-partition the system in a way that relevant intellectual properties are
-always in hardware/firmware or user-space. In the end this makes life
-easier - and saves us from seeing more and more lawyers hanging around
-;). The roadmap of RTDM contains one topic that aims at helping driver
-developers here (user-space driver API), but it's an extension not yet
-backed up with concrete resources.
+I have tried this under two versions of Xenomai with the same result:
+  1) Xenomai 2.2.3 with the FPU patch posted here:
+     https://mail.gna.org/public/xenomai-help/2006-09/msg00157.html
+     (adeos-ipipe-2.6.17-i386-1.4-00.patch)
+  2) Xenomai 2.2.4 (adeos-ipipe-2.6.17-i386-1.5-00.patch)
 
-Jan
+Other details:
+  Linux version 2.6.17.13
+  AMD Athlon(tm)64 X2 Dual Core Processor  4400+
+  Fedora Core 5
+  SMP kernel
+
+This is very similar to a problem I described last month that affected my linux-2.4 system: https://mail.gna.org/public/xenomai-help/2006-09/msg00143.html .  Perhaps these problems are related.
+
+Does anyone see a problem with what I'm doing here?  If not, can you reproduce the problem?
+
+Thanks,
+
+Jeff
+ 
+
+--------------010301080108020906050203
+Content-Type: text/x-csrc;
+ name="mqtest2.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="mqtest2.c"
 
 
---------------enig2C589801FB57984A81E2E1F2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+/* Standard includes */
+#include <stdio.h>
+#include <errno.h>
+#include <pthread.h>  /* POSIX threads and timers */
+#include <stdlib.h>   /* Exit status macros and atexit */
+#include <signal.h>   /* POSIX signals (sigaction) */
+#include <sys/mman.h> /* Memory management (mlockall) */
+#include <sys/stat.h> /* File creation modes (for mq_open) */
+#include <mqueue.h>   /* POSIX message queues */
+#include <error.h>    /* GNU error function */
+#include <string.h>   /* String manipulation (strlen) */
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+/* Constants */
+#define STACK_SIZE 1024*1024*8
+#define QUEUE_MSG_SIZE 1024
+#define QUEUE_MAX_MSGS 10
+#define QUEUE_NAME "/queue1"
+#define PRIORITY 10
+#define WRITE_SIZE 512
 
-iD8DBQFFP57yniDOoMHTA+kRAjAOAJ9Ratboz6FKaPDkMIJc+NimSShHLwCfUo4O
-N5SJg3hdv0aPgQ9cGn+1cB4=
-=NLEC
------END PGP SIGNATURE-----
+/* Global variables */
+sig_atomic_t abort_program = 0;
+pthread_t rt_thread;
+mqd_t queue1;
+mqd_t queue1_rt;
+int count = 0;
+char send_buffer[QUEUE_MSG_SIZE];
+char receive_buffer[QUEUE_MSG_SIZE];
 
---------------enig2C589801FB57984A81E2E1F2--
+/* Real-time thread cleanup routines */
+
+void rt_thread_cleanup_queue1_rt (void * arg)
+{
+  mq_close(queue1_rt);
+}
+
+/* Real-time periodic thread code */
+void * rt_loop(void * arg)
+{
+  double f = 0.0;
+
+  /* Open the message queue */
+  queue1_rt = mq_open(QUEUE_NAME, O_WRONLY | O_NONBLOCK);
+  if (queue1_rt == (mqd_t) -1)
+    error(0, errno, "could not open message queue '%s'", QUEUE_NAME);
+  pthread_cleanup_push(rt_thread_cleanup_queue1_rt, NULL);
+
+  pthread_set_mode_np(0, PTHREAD_WARNSW);
+  
+  /* Loop until the thread is cancelled */
+  while (1)
+    {
+      /* Count the number of times this loop is executed */
+      count++;
+      
+      /* Sleep for 1 second */
+      {
+        struct timespec dt_ts;
+        dt_ts.tv_sec  = 1;
+        dt_ts.tv_nsec = 0;
+        clock_nanosleep(CLOCK_REALTIME, 0, &dt_ts, NULL);
+      }
+
+      /* Send a message to the non-rt thread */
+      {
+        int err;
+
+        snprintf(send_buffer, QUEUE_MSG_SIZE, "count: %d %f", count, f);
+        err = mq_send(queue1_rt, send_buffer, WRITE_SIZE, PRIORITY);
+        if (err)
+          error(0, errno, "could not write to message queue '%s'", 
+                QUEUE_NAME);
+        f = f + 0.1*count;
+      }
+    }
+
+  /* Clean up thread resources */
+  pthread_cleanup_pop(1);
+
+  return NULL;
+}
+
+/* Handle POSIX signals */
+void signal_handler(int sig)
+{
+  abort_program = 1;
+}
+
+/* Cleanup routines */
+
+void cleanup_queue1(void)
+{
+  /* Close the message queue */
+  mq_close(queue1);
+
+  /* Delete the message queue */
+  mq_unlink(QUEUE_NAME);
+}
+
+void cleanup_rt_thread(void)
+{
+  /* Tell the real-time thread to terminate */
+  pthread_cancel(rt_thread);
+
+  /* Wait for the real-time thread to terminate */
+  pthread_join(rt_thread, NULL);
+}
+
+
+/* Main program */
+int main(void)
+{
+  int err;
+
+  /* Disable paging for this program's memory */
+  err = mlockall(MCL_CURRENT | MCL_FUTURE);
+  if (err)
+    error(EXIT_FAILURE, errno,
+          "could not disable memory paging for this program");
+
+  /* Set the scheduling policy of the main program */
+  {
+    struct sched_param sparam;
+
+    sparam.sched_priority = 0; /* Must be zero for SCHED_OTHER */
+    err = pthread_setschedparam(pthread_self(), SCHED_OTHER, &sparam);
+    if (err)
+      error(EXIT_FAILURE, err,
+            "error setting schedule parameters for main program");
+  }
+
+  /* Install POSIX signal handlers */
+  {
+    struct sigaction new_action;
+    int * sig_ptr;
+    int signals[] = {SIGTERM, SIGQUIT, SIGHUP, SIGINT, 0};
+    
+    new_action.sa_handler = signal_handler;
+    sigemptyset(&new_action.sa_mask);
+    new_action.sa_flags = 0;
+
+    for (sig_ptr = signals; *sig_ptr != 0; sig_ptr++)
+      {
+        err = sigaction(*sig_ptr, &new_action, NULL);
+        if (err)
+          error(EXIT_FAILURE, errno, 
+                "could not install signal handler for signal %d", *sig_ptr);
+      }
+  }
+
+  /* Create a message queue */
+  {
+    struct mq_attr attr;
+
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = QUEUE_MAX_MSGS;
+    attr.mq_msgsize = QUEUE_MSG_SIZE;
+
+    mq_unlink(QUEUE_NAME);
+    queue1 = mq_open(QUEUE_NAME, O_RDONLY | O_CREAT | O_EXCL,
+                     S_IRUSR | S_IWUSR | S_IXUSR, &attr);
+    if (queue1 == (mqd_t) -1)
+      error(EXIT_FAILURE, errno, "could not create message queue '%s'", 
+            QUEUE_NAME);
+    atexit(cleanup_queue1);
+  }
+
+  /* Create the real-time task */
+  {
+    pthread_attr_t attr;
+    size_t stacksize = STACK_SIZE;
+    struct sched_param sparam;
+
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    pthread_attr_setstacksize (&attr, stacksize);
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+    sparam.sched_priority = 99; /* High priority */
+    pthread_attr_setschedparam(&attr, &sparam);
+    pthread_create(&rt_thread, &attr, &rt_loop, NULL);
+    pthread_attr_destroy(&attr);
+    if (err)
+      error(EXIT_FAILURE, err, "could not create thread");
+    atexit(cleanup_rt_thread);
+  }
+
+  /* Wait for program to be aborted with <ctrl-c> */
+  while(!abort_program)
+    {
+      int err;
+
+      /* Wait for data from the rt thread */
+      err = mq_receive(queue1, receive_buffer, QUEUE_MSG_SIZE, NULL);
+      if (err < 0)
+        error(0, errno, "error reading from message queue '%s'", QUEUE_NAME);
+      else
+        /* Print the message */
+        printf("received message: %s\n", receive_buffer);
+    }
+
+  /* Print the final loop count */
+  printf("final count = %d\n", count);
+
+  /* Cleanup is handled by atexit functions */
+  return EXIT_SUCCESS;
+}
+
+--------------010301080108020906050203--
 
