@@ -1,12 +1,13 @@
-Message-ID: <453FC4C0.5070105@domain.hid>
-Date: Wed, 25 Oct 2006 15:10:40 -0500
-From: Jeff Webb <jeff.webb@domain.hid>
+From: Thomas Witzel <witzel.thomas@domain.hid>
+Date: Wed, 25 Oct 2006 16:10:36 -0400
 MIME-Version: 1.0
-References: <1160947939.4962.27.camel@domain.hid>
-In-Reply-To: <1160947939.4962.27.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] switchtest and Xenomai 2.2.4
+Content-Disposition: inline
+Message-Id: <200610251610.36530.witzel.thomas@domain.hid>
+Subject: [Xenomai-help] RTDM/ALSA hybrid driver ?
+Reply-To: witzel.thomas@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +19,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-When I upgraded to Xenomai 2.2.4, I tried the switchtest program:
+Hello,
 
-  cd /usr/xenomai/testsuite/switchtest
-  ./run
+I'm now trying to create a sound driver that will start and stop playback in 
+real time. Is it better to implement a driver for RTDM from scratch, or is it 
+reasonable to just add a RTDM interface for the required functionality to an 
+existing ALSA driver ? The advantage of the latter approach is of course, 
+that everything that doesn't need to be done in realtime already exists 
+through ALSA and I only would have to implement the pcm triggers through 
+RTDM. Is that reasonable at all ?
 
-The program appeared to run properly, but <ctrl>-c would not stop the application.  I was not able to kill the process cleanly, and /proc/xenomai/stat showed lots of processes still running.
-
-The other tests (latency, cyclic, switchbench) and the program I am developing seem to work normally.
-
-I have not experienced this problem with previous versions of Xenomai.
-
-System details:
- adeos-ipipe-2.6.17-i386-1.5-00.patch
- Linux version 2.6.17.13
- AMD Athlon(tm)64 X2 Dual Core Processor  4400+
- Fedora Core 5
- SMP kernel
-
-Is there anything I can do to help find the problem?
-
-Thanks,
-
-Jeff
+Thomas
 
