@@ -1,10 +1,16 @@
-Message-ID: <54b161f50610250007t1387a163l33a44d30f27dbfcc@domain.hid>
-Date: Wed, 25 Oct 2006 09:07:21 +0200
-From: "Frits de Klark" <mailing.xenomai@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_21390_26404630.1161760041702"
-Subject: [Xenomai-help] Licensing issues
+Subject: Re: [Xenomai-help] Adeos/Xenomai Arm Port
+From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
+In-Reply-To: <453A4E5C.3020606@domain.hid>
+References: <1161099585.5024.48.camel@domain.hid>
+	<1161157955.5093.3.camel@domain.hid>  <4536038A.4000002@domain.hid>
+	<1161174276.5093.22.camel@domain.hid>
+	<1161442569.5007.25.camel@domain.hid> <453A4E5C.3020606@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="=-vDnuGRds9ZpN1eIpL5kW"
+Date: Wed, 25 Oct 2006 10:03:08 +0200
+Message-Id: <1161763388.5114.4.camel@domain.hid>
+Mime-Version: 1.0
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,74 +20,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-------=_Part_21390_26404630.1161760041702
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hello everyone,
+--=-vDnuGRds9ZpN1eIpL5kW
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-lately I've been looking around into GPL, LGPL, etcetera. I find it quite
-hard to determine under what licences I can distribute my developed
-software. For example:
 
-If I'd develop a very simple program using Xenomai through it's native skin.
-The program also uses the provided RTDM serial driver.
-By 'using' I mean: I include the needed Xenomai header files and in my code
-I call some functions. You might fill in the details (static or dynamic
-linking fx.) so I might get a broader view by several examples.
+> Damn it. What alignment of the compiler is behind this? Fill up to
+> multiples of X bytes, ok. But how to find out what X is on some
+> platform? Anyone any hint on this?
+>=20
+> Thanks for tracking down.
+>=20
+> Jan
+>=20
 
-Is it, for example, possible to distribute such a program using the LGPL
-licence, or am I restricted to GPL?
+I've found it:
 
-It's all somewhat vague for me, but I find it very important to distribute
-only legal software (if I distribute any, that is).
+The Kernel is compiled with -mabi=3Dapcs-gnu
 
-I know this is a hard question and many of you may think "why don't you do
-the investigation yourself?", but I hope some of you have had to deal with
-the same issue already and want to share your experiences and ideas with the
-rest of us.
+With this flag
+typedef struct test1 {
+    int                     mode;
+    unsigned long long      period;
+    int                     priority;
+    int                     warmup_loops;
+    int                     histogram_size;
+    int                     histogram_bucketsize;
+    int                     freeze_max;
+} test1_t;
+With flag 	-> size =3D 32
+Without flag 	-> size =3D 40
 
-Thanks very much in advance for your time and any thoughts you may have on
-this issue.
+I'll try to find a solution.
 
-Best regards,
+	- Manfred
 
-Frits
+--=-vDnuGRds9ZpN1eIpL5kW
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
 
-------=_Part_21390_26404630.1161760041702
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
 
-Hello everyone,<br>
-<br>
-lately I've been looking around into GPL, LGPL, etcetera. I find it
-quite hard to determine under what licences I can distribute my
-developed software. For example:<br>
-<br>
-If I'd develop a very simple program using Xenomai through it's native
-skin. The program also uses the provided RTDM serial driver.<br>
-By 'using' I mean: I include the needed Xenomai header files and in my
-code I call some functions. You might fill in the details (static or
-dynamic linking fx.) so I might get a broader view by several examples.<br>
-<br>
-Is it, for example, possible to distribute such a program using the LGPL licence, or am I restricted to GPL?<br>
-<br>
-It's all somewhat vague for me, but I find it very important to distribute only legal software (if I distribute any, that is).<br>
-<br>
-I know this is a hard question and many of you may think &quot;why don't you
-do the investigation yourself?&quot;, but I hope some of you have had to
-deal with the same issue already and want to share your experiences and
-ideas with the rest of us.<br>
-<br>
-Thanks very much in advance for your time and any thoughts you may have on this issue.<br>
-<br>
-Best regards,<br>
-<br>
-Frits<br>
+iD8DBQBFPxo7bMvu5jIEpfsRAjK6AJ44jg1ckZ7McZIoIco9ctsKUnjPkACdG1QD
+U6CVt5VGNQ9oaEQX/lmRaVQ=
+=GdUH
+-----END PGP SIGNATURE-----
 
-------=_Part_21390_26404630.1161760041702--
+--=-vDnuGRds9ZpN1eIpL5kW--
+
 
