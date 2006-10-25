@@ -1,15 +1,14 @@
-Message-ID: <453FCC87.80409@domain.hid>
-Date: Wed, 25 Oct 2006 15:43:51 -0500
-From: Jeff Webb <jeff.webb@domain.hid>
+Message-ID: <453FEA27.3020705@domain.hid>
+Date: Thu, 26 Oct 2006 00:50:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
-References: <450B2BE1.1050105@domain.hid>	
-	<20060916042719.M57867@domain.hid>	<450F0451.8070102@domain.hid>
-	<1158614598.5009.71.camel@domain.hid>
-	<453FC279.8040608@domain.hid> <453FC819.9020900@domain.hid>
-In-Reply-To: <453FC819.9020900@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problem with rt_queue
+References: <20061025143438.30247.qmail@domain.hid>
+In-Reply-To: <20061025143438.30247.qmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7DEB1B5AC411EE95A975DA7C"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,50 +18,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: mani bhatti <imranbashirbhatti@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Jeff Webb wrote:
->> If I run the attached program, I get the following result:
->>
->>  [root]# ./mqtest2
->>  CPU time limit exceeded
->>
->> The kernel log contains:
->>
->>  Oct 25 14:13:03 kernel: invalid use of FPU in Xenomai context at 0x80492f6
-> 
-> Can you do a backtrace in gdb?
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7DEB1B5AC411EE95A975DA7C
+Content-Type: multipart/mixed; boundary="------------090302010102070301010007"
 
-# gdb ./mqtest2
-GNU gdb Red Hat Linux (6.3.0.0-1.122rh)
-Copyright 2004 Free Software Foundation, Inc.
-GDB is free software, covered by the GNU General Public License, and you are
-welcome to change it and/or distribute copies of it under certain conditions.
-Type "show copying" to see the conditions.
-There is absolutely no warranty for GDB.  Type "show warranty" for details.
-This GDB was configured as "i386-redhat-linux-gnu"...Using host libthread_db library "/lib/libthread_db.so.1".
+This is a multi-part message in MIME format.
+--------------090302010102070301010007
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-(gdb) r
-Starting program: mqtest2
-Reading symbols from shared object read from target memory...done.
-Loaded system supplied DSO at 0xffffe000
-[Thread debugging using libthread_db enabled]
-[New Thread -1208785216 (LWP 3484)]
-[New Thread -1208788064 (LWP 3487)]
-received message: count: 1 0.000000
+mani bhatti wrote:
+> Hi Phillipe and Jan=20
+> Thanks a lot for your help.I am sending the compilable
+> source code so that you have an idea what wrong am i
+> doing.I am sending the listeners which are listening
+> to the same queue at the same time.But i dont know why
+> at one time only one listener receives data from
+> sender queue inspite of that i am using broadcast
+> mode.Thanks a lot.I have attached files for sender and
+> listener.
 
-Program received signal SIGXCPU, CPU time limit exceeded.
-[Switching to Thread -1208788064 (LWP 3487)]
-rt_loop (arg=0x0) at mqtest2.c:74
-74              f = f + 0.1*count;
-(gdb) bt
-#0  rt_loop (arg=0x0) at mqtest2.c:74
-#1  0xb7f53545 in __pthread_trampoline ()
-   from /usr/xenomai/lib/libpthread_rt.so.0
-#2  0x0092940b in start_thread () from /lib/libpthread.so.0
-#3  0x00757b7e in clone () from /lib/libc.so.6
-(gdb)
+Well, interesting test case. It actually revealed bugs, but not where
+expected.
 
+Your problem is a simple bug in the listener tests. They both register a
+task of the name "beta", only the first one succeeds (your code is a bit
+hackish in this regard - when hunting problems, make sure to check ALL
+return codes for potential problems!). Once fixed, your code runs fine he=
+re.
+
+Nevertheless, queue_sender by itself uncovered a problem of
+rt_queue_send in broadcast mode when no one is listening. The message
+reference count got messed up and the queue ran out of memory. The
+attached patch fixes it:
+
+Jan
+
+--------------090302010102070301010007
+Content-Type: text/x-patch;
+ name="native-queue-bcast-fix.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="native-queue-bcast-fix.patch"
+
+Index: ksrc/skins/native/queue.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/skins/native/queue.c	(Revision 1747)
++++ ksrc/skins/native/queue.c	(Arbeitskopie)
+@@ -631,7 +631,9 @@ int rt_queue_send(RT_QUEUE *q, void *mbu
+ 			prependq(&q->pendq, &msg->link);
+ 		else
+ 			appendq(&q->pendq, &msg->link);
+-	}
++	} else
++		/* Ownership did not change, so update reference count. */
++		msg->refcount++;
+=20
+ 	err =3D nrecv;
+=20
+Index: ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ChangeLog	(Revision 1748)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,8 @@
++2006-10-26  Jan Kiszka  <jan.kiszka@domain.hid>
++
++	* ksrc/skins/native/queue.c (rt_queue_send): Track message count
++	correctly when broadcasting to a queue without listeners.
++
+ 2006-10-25  Jan Kiszka  <jan.kiszka@domain.hid>
+=20
+ 	* ksrc/drivers/testing/irqbench.c, doc/txt/irqbench.txt,
+
+--------------090302010102070301010007--
+
+--------------enig7DEB1B5AC411EE95A975DA7C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFP+ooniDOoMHTA+kRAn/eAJ90ojoiffHymYCO1Nsa4UhyuIk0BACfUcR/
+P9Ce440iro31G/RVhWH/WdI=
+=k1aK
+-----END PGP SIGNATURE-----
+
+--------------enig7DEB1B5AC411EE95A975DA7C--
 
