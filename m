@@ -1,10 +1,10 @@
 From: Alessio Igor Bogani <abogani@domain.hid>
 Content-Type: text/plain
-Date: Thu, 26 Oct 2006 16:51:21 +0200
-Message-Id: <1161874282.7650.7.camel@domain.hid>
+Date: Thu, 26 Oct 2006 17:05:34 +0200
+Message-Id: <1161875134.7650.18.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Xenomai & Xen
+Subject: [Xenomai-help] Xenomai 's website
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,10 +18,18 @@ To: "Xenomai (help)" <xenomai@xenomai.org>
 
 Hi,
 
-Can Xenomai cohabit with Xen in the same kernel?
-Someone have already tried?
+IMHO Trac can more useful to a software project than MediaWiki or
+Joomla.
 
-Thank you.
+>From http://trac.edgewall.org/ :
+
+"Trac is a web-based software project management and bug/issue tracking
+system emphasizing ease of use and low ceremony. It provides an
+interface to the Subversion revision control systems, integrated Wiki
+and convenient report facilities."
+
+This is a demo:
+http://www.hosted-projects.com/trac/TracDemo/Demo
 
 Ciao,
 Alessio
