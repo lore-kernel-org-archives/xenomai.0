@@ -1,14 +1,14 @@
-Message-ID: <4540DACA.2050406@domain.hid>
-Date: Thu, 26 Oct 2006 17:56:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4540DE9D.5020609@domain.hid>
+Date: Thu, 26 Oct 2006 18:13:17 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] switchtest and Xenomai 2.2.4
-References: <1160947939.4962.27.camel@domain.hid> <453FC4C0.5070105@domain.hid>
-	<453FF6AA.6030406@domain.hid> <45406FEF.90806@domain.hid>
-	<4540D998.2090908@domain.hid>
-In-Reply-To: <4540D998.2090908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai 's website
+References: <1161875134.7650.18.camel@domain.hid>
+In-Reply-To: <1161875134.7650.18.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2CB4778CE5FF6E5B94DC5C41"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
-Cc: xenomai@xenomai.org
+To: Alessio Igor Bogani <abogani@domain.hid>
+Cc: "Xenomai (help)" <xenomai@xenomai.org>
 
-Jeff Webb wrote:
-> Gilles Chanteperdrix wrote:
-> 
->> After the first Ctrl-C that does not work, could you try and attach gdb
->> to see where the threads are stopped ?
-> 
-> 
-> I tried to do this, but was unable to determine the stopping point using 
-> gdb.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2CB4778CE5FF6E5B94DC5C41
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-type simply: "info threads"
-then change thread to the main thread with "thread x", where x is the 
-lowest thread id as listed by "info threads"
-then type: "backtrace"
+Alessio Igor Bogani wrote:
+> Hi,
+>=20
+> IMHO Trac can more useful to a software project than MediaWiki or
+> Joomla.
+>=20
+>>From http://trac.edgewall.org/ :
+>=20
+> "Trac is a web-based software project management and bug/issue tracking=
 
-> 
->> Are you using NPTL or Linuxthreads ? 
-> 
-> 
-> I'm running a stock Fedora Core 5 configuration, so I think that means 
-> NPTL.
-> 
->> Could you tell us in what state the
->> switchtest threads are when running ps and in /proc/xenomai/sched ?
->> After the second Ctrl-C, are the threads still alive ?
-> 
-> 
-> See the output below.
+> system emphasizing ease of use and low ceremony. It provides an
+> interface to the Subversion revision control systems, integrated Wiki
+> and convenient report facilities."
+>=20
+> This is a demo:
+> http://www.hosted-projects.com/trac/TracDemo/Demo
+>=20
 
-/proc/xenomai/sched gives an information on the status that is easier to
-understand.
+Looks nice on first sight, and it seems to use even the same mark-up
+language as MediaWiki. Nevertheless, it is fairly new and I cannot
+quickly asses how broadly used it is, or how mature/secure.
 
--- 
-                                                  Gilles Chanteperdrix
+But the hard work is up to Bruno anyway ;) (and I know he is already
+fighting with MediaWiki), so I would say he should decide if it is worth
+a closer look. Too many features can be bad too...
+
+Thanks for the hint,
+Jan
+
+
+--------------enig2CB4778CE5FF6E5B94DC5C41
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFQN6dniDOoMHTA+kRAgs6AJ9PjY28hLn/cHn81hGGoHsZye9NBgCeLqRm
+9cRs1M6MNEZmNMMo3RzjdDY=
+=d7R/
+-----END PGP SIGNATURE-----
+
+--------------enig2CB4778CE5FF6E5B94DC5C41--
 
