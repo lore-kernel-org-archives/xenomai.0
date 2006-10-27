@@ -1,16 +1,12 @@
-Message-ID: <454232E4.6070600@domain.hid>
-Date: Fri, 27 Oct 2006 11:25:08 -0500
+Message-ID: <4542341D.5080805@domain.hid>
+Date: Fri, 27 Oct 2006 11:30:21 -0500
 From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] switchtest and Xenomai 2.2.4
-References: <1160947939.4962.27.camel@domain.hid> <453FC4C0.5070105@domain.hid>
-	<454078AD.5000907@domain.hid> <4540DE60.40209@domain.hid>
-	<4540E1AB.2040200@domain.hid> <4540EABD.10403@domain.hid>
-	<4540ECA6.5000604@domain.hid> <45411147.1070205@domain.hid>
-	<4541C0E6.3070807@domain.hid> <45421B89.3090302@domain.hid>
-	<4542203C.6060708@domain.hid>
-In-Reply-To: <4542203C.6060708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] invalid use of FPU in Xenomai context
+References: <450B2BE1.1050105@domain.hid>		<20060916042719.M57867@domain.hid>	<450F0451.8070102@domain.hid>	<1158614598.5009.71.camel@domain.hid>	<453FC279.8040608@domain.hid>
+	<453FC819.9020900@domain.hid> <453FF54D.5030704@domain.hid>
+In-Reply-To: <453FF54D.5030704@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,12 +19,31 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
+Jeff Webb wrote:
+> Jan Kiszka wrote:
+>> Jeff Webb wrote:
+>>> If I run the attached program, I get the following result:
+>>>
+>>>  [root]# ./mqtest2
+>>>  CPU time limit exceeded
+>>>
+>>> The kernel log contains:
+>>>
+>>>  Oct 25 14:13:03 kernel: invalid use of FPU in Xenomai context at 
+>>> 0x80492f6
+>>
+>> Could you also try if this patch changes anything:
+>>
+>> https://mail.gna.org/public/xenomai-core/2006-10/msg00069.html
+>>
+>> (Could be the case if you happen to use some FPU-touching Linux driver.)
 > 
-> Ok, thanks, I will commit yesterday version then.
-> 
+> The patch would not apply to xenomai 2.2.4, so I checked out the svn 
+> trunk (rev 1749), and then applied this patch.  I get the same behavior.
 
-For what it's worth....  The stock switchtest under xenomai 2.2.4 works fine, if I compile for UP instead of SMP.
+I tried my mqtest2 example with a stock xenomai 2.2.4 UP kernel (instead of SMP), and I still get the FPU error message and SIGXCPU signal.  I also went back to xenomai 2.2.1 SMP and still have the problem there.
+
+Has anyone tried the example on some other hardware?
 
 -Jeff
 
