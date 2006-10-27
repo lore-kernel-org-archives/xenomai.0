@@ -3,10 +3,11 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 27 Oct 2006 11:13:53 +0200
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A5FF8EC@ARVMAIL1.mra.roland-man.biz>
+Date: Fri, 27 Oct 2006 11:24:54 +0200
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A5FF8F7@domain.hid>
 From: <Roderik_Wildenburg@domain.hid>
-Subject: [Xenomai-help] mmap and secondary mode
+Subject: [Xenomai-help] InterProcessCommunication between Xenomai task and
+	Linux process
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,13 +19,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Just to be sure :
-Does the access of a mmaped address (real_mmamp of a device file e.g.
-/dev/dualportmemory) force Xenomai to switch to secondary mode ?
-I would say yes, as the access of the address probably results into a
-read/write of the device file.
-Am I right ?
+Is there a standard way for communication between nativ Linux processes
+and Xenomai task which ensures that the Xenomai task does not lose its
+raltime capability (e.g. can I use Xenomai (Posix)-queues within Linux
+processes ?).
+I just need a hint, where I can read about it.
 
-Thanks for your help
+Thanks in advance
 Roderik
+
 
