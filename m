@@ -1,154 +1,67 @@
-Subject: Re: [Adeos-main] ADEOS on MIPS
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20060902103919.21905.qmail@domain.hid>
-References: <20060902103919.21905.qmail@domain.hid>
-Content-Type: text/plain
-Date: Sat, 02 Sep 2006 13:37:54 +0200
-Message-Id: <1157197075.4967.66.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4541B59C.1070402@domain.hid>
+Date: Fri, 27 Oct 2006 09:30:36 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] prepare-kernel.sh breaks
+	linux-2.4	drivers/Makefile
+References: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
+In-Reply-To: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: somshekar kadam <som_kadam@domain.hid>
-Cc: adeos-main@gna.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Andrew Dennison <andrewd.lists@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sat, 2006-09-02 at 11:39 +0100, somshekar kadam wrote:
-> Hi Philippe Gerum,
+Andrew Dennison wrote:
+> Running prepare-kernel on the denx 2.4 kernel adds the following line
 > 
->    what I see on net is release of ADOES patches like
-> adeos-ipipe-2.6.13-i386-1.0-05
-> for linux-2.6.13 kernel version. 
+> mod-subdirs := xenomai
 > 
+> This prevents all other mod-subdirs under drivers from building.
 
-The official source for patches contributed by the Adeos project is
-http://download.gna.org/adeos/patches/
+What does not build. Non-Xenomai drivers as modules?
 
-where you can find Adeos/I-pipe versions up to 2.6.17, depending on the
-target architecture.
+> Patch is against r1273 but still seems to apply (and be required) on head.
 
-> also I see RTAI version rtai-3.3-test3
-> which includes ADOES support builtin with rtai for
-> linux kernel verison linux-2.6.13 
-> 
+Going to check it soon.
 
-Please ask the RTAI people for help, since they provide their own
-interrupt virtualization patches since v3.2 or so. AFAICS, some of these
-patches completely disable the core Adeos code by inserting
-RTAI-specific sideways, other patches only enable part of the Adeos
-code, and so on. Your best option to understand what's going on into the
-RTAI implementation is to get information from the RTAI folks directly.
+Thanks.
 
-> 
-> which I should use as our aim is to run rtai on ADOES
-> on mips 4k. 
-> so which I should port is it RTAI.3.3 or only the
-> ADOES patch.
-> 
-> First I need to port ADOES ,so which of the above I
-> should use. one with that comes with RTAI or the
-> individual patch for ADEOS that one. 
-> 
+Wolfgang.
 
-Really, I can't help, because it's neither an Adeos or Xenomai issue,
-and I do not follow RTAI's development anymore: 
-https://mail.rtai.org/pipermail/rtai/2005-October/013155.html
-
-> please dont mind it may be a silly question to begin
-> with. 
-
-> Thanks And Regards
-> Neelu 
+> Andrew
 > 
 > 
+> ------------------------------------------------------------------------
+> 
+> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+> index fbc91ce..ca87e7f 100755
+> --- a/scripts/prepare-kernel.sh
+> +++ b/scripts/prepare-kernel.sh
+> @@ -455,7 +455,7 @@ EOF
+>  	patch_ed drivers/Makefile <<EOF
+>  /include \$(TOPDIR)\/Rules.make
+>  i
+> -mod-subdirs := xenomai
+> +mod-subdirs += xenomai
+>  subdir-\$(CONFIG_XENOMAI) += xenomai
+>  
+>  .
 > 
 > 
-> 
-> --- Philippe Gerum <rpm@xenomai.org> wrote:
-> 
-> > On Fri, 2006-09-01 at 09:51 +0100, somshekar kadam
-> > wrote:
-> > > Hi All, 
-> > > 
-> > > I am newbie to ADEOS, 
-> > > we would like to know if ADOES is supported on
-> > ADOES.
-> > > when I checked on your release , I dont find MIPS
-> > arch
-> > > supported. 
-> > > well we would like to port ADOES for MIPS. 
-> > > I hope I will get Help and right pointers from you
-> > all
-> > > People.
-> > > To Begin with We are going to port ADOES to MIPS
-> > 4kE
-> > > processor.
-> > > I would like to know what goes in to porting of
-> > ADOES
-> > > to new Architecture is where should i Begin
-> > > It will be Big time to get it working , but with
-> > our
-> > > support i dont feel it will be problem from me
-> > > Thanks And Regards
-> > > Neelu 
-> > > 
-> > 
-> > This document is a bit outdated, but the gist of it
-> > still applies:
-> > http://download.gna.org/adeos/doc/porting.txt
-> > 
-> > Adeos has already been ported to quite different
-> > archs, this should give
-> > you some useful insights:
-> > http://download.gna.org/adeos/patches/v2.6/
-> > 
-> > Depending on the complexity of the target interrupt
-> > sub-system, and how
-> > familiar you are with it, the initial porting effort
-> > should be a matter
-> > of 1-4 weeks.
-> > 
-> > > Thanks
-> > > 
-> > > 
-> > > 
-> > > 		
-> > >
-> >
-> __________________________________________________________
-> > > Yahoo! India Answers: Share what you know. Learn
-> > something new
-> > > http://in.answers.yahoo.com/
-> > > 
-> > > _______________________________________________
-> > > Adeos-main mailing list
-> > > Adeos-main@domain.hid
-> > > https://mail.gna.org/listinfo/adeos-main
-> > -- 
-> > Philippe.
-> > 
-> > 
-> > 
-> 
-> 
-> 
-> 		
-> __________________________________________________________
-> Yahoo! India Answers: Share what you know. Learn something new
-> http://in.answers.yahoo.com/
+> ------------------------------------------------------------------------
 > 
 > _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
-Philippe.
-
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
