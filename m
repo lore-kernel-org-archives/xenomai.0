@@ -1,13 +1,13 @@
-Message-ID: <45420754.4040907@domain.hid>
-Date: Fri, 27 Oct 2006 15:19:16 +0200
+Message-ID: <45420A72.8000700@domain.hid>
+Date: Fri, 27 Oct 2006 15:32:34 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] mmap and secondary mode
-References: <5D63919D95F87E4D9D34FF7748CE2C2A5FF8EC@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A5FF8EC@ARVMAIL1.mra.roland-man.biz>
+Subject: Re: [Xenomai-help] enable/disable all interrupts from user space
+References: <200610261639.36013.jweber@domain.hid>
+In-Reply-To: <200610261639.36013.jweber@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigFC22D0DA2DD0424CC099A23A"
+	boundary="------------enigD367A4712F77445B4EBFBB4B"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,33 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: Jeff Weber <jweber@domain.hid>
+Cc: Xenomai Help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFC22D0DA2DD0424CC099A23A
+--------------enigD367A4712F77445B4EBFBB4B
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Roderik_Wildenburg@domain.hid wrote:
-> Just to be sure :
-> Does the access of a mmaped address (real_mmamp of a device file e.g.
-> /dev/dualportmemory) force Xenomai to switch to secondary mode ?
-> I would say yes, as the access of the address probably results into a
-> read/write of the device file.
-> Am I right ?
+Jeff Weber wrote:
+> How do I enable/disable all interrupts (Linux and Xenomai) from user sp=
+ace? =20
+> (native skin preferred)
 
-Depends. If that mapping takes place directly on a physical memory
-region *ahead-of-use*, then you are safe (like with rtdm_iomap_to_user
-from 2.3-devel). But if there is some Linux driver logic in between that
-is triggered via page faults on access to those memory blocks, this is
-certainly indeterministic. Probably easy to find out by analysing the
-Linux driver in question /wrt its mapping code.
+For x86:
+
+iopl(3);
+__asm__ __volatile__("cli/sti");
+
+Ugly hack, typical a sign that something should be moved somewhere
+else... (there are a few exceptions, though)
+
+We once had some discussion if we shouldn't export domain stalling
+features to user-space in order to support things like X-servers that
+currently come with such code, toasting any RT kernel. May come one day,
+but this will be primarily for legacy non-RT code.
 
 Jan
 
 
---------------enigFC22D0DA2DD0424CC099A23A
+--------------enigD367A4712F77445B4EBFBB4B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -53,10 +56,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFQgdUniDOoMHTA+kRAnJlAJ45liaqLQ1Wq5crnYVDBf1zA3NZZwCeKsyE
-956cenzGXYVJYrG2YIikMjw=
-=G8Oa
+iD8DBQFFQgpyniDOoMHTA+kRAh+fAJ9EIH4iQdgSMeHS9pjpbM1vKlHrSQCffo4L
+TVQHUVXvwrTl5tlcbe/8neE=
+=2xUg
 -----END PGP SIGNATURE-----
 
---------------enigFC22D0DA2DD0424CC099A23A--
+--------------enigD367A4712F77445B4EBFBB4B--
 
