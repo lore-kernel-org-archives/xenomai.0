@@ -1,14 +1,14 @@
-From: Jeff Weber <jweber@domain.hid>
-Subject: Re: [Xenomai-help] enable/disable all interrupts from user space
-Date: Fri, 27 Oct 2006 11:08:14 -0500
-References: <45420A72.8000700@domain.hid>
-In-Reply-To: <45420A72.8000700@domain.hid>
+Message-ID: <454232CE.3010206@domain.hid>
+Date: Fri, 27 Oct 2006 18:24:46 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200610271108.14937.jweber@domain.hid>
+Subject: Re: [Xenomai-help] enable/disable all interrupts from user space
+References: <45420A72.8000700@domain.hid> <200610271108.14937.jweber@domain.hid>
+In-Reply-To: <200610271108.14937.jweber@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2D2A697A8A7D6FA97A785C8E"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,44 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Jeff Weber <jweber@domain.hid>
 Cc: Xenomai Help <xenomai@xenomai.org>
 
-Thanks Jan.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2D2A697A8A7D6FA97A785C8E
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Another thought: is there a direct Adeos =A0call to enable/disable all=20
-interrupts, with nesting from user space?
+Jeff Weber wrote:
+> Thanks Jan.
+>=20
+> Another thought: is there a direct Adeos  call to enable/disable all=20
+> interrupts, with nesting from user space?
 
-I'm porting some legacy RTAI code to the Xenomai native skin. =A0The RTAI c=
-ode=20
-has rtai_save_flags_and_cli()/rtai_restore_flags() for enabling/disabling a=
-ll=20
-interrupts =A0direct from user space, with capability to handle nested call=
-s. =A0
+Not yet, but that would be one option for the scenario I described.
 
-Yes, please add this to the native skin "wish list", along with a nesting=20
-capability.
+>=20
+> I'm porting some legacy RTAI code to the Xenomai native skin.  The RTAI=
+ code=20
+> has rtai_save_flags_and_cli()/rtai_restore_flags() for enabling/disabli=
+ng all=20
+> interrupts  direct from user space, with capability to handle nested ca=
+lls. =20
 
-=A0=A0=A0=A0=A0=A0=A0=A0thanks,
-=A0=A0=A0=A0=A0=A0=A0=A0Jeff
+You can use even more assembly magic in user-space for now:
 
-On Friday 27 October 2006 08:32, Jan Kiszka wrote:
-> Jeff Weber wrote:
-> > How do I enable/disable all interrupts (Linux and Xenomai) from user
->
-> space?
->
-> > (native skin preferred)
->
-> For x86:
->
-> iopl(3);
-> __asm__ __volatile__("cli/sti");
->
-> Ugly hack, typical a sign that something should be moved somewhere
-> else... (there are a few exceptions, though)
+#define local_irq_save(x) \
+	__asm__ __volatile__("pushfl; popl %0; cli":"=3Dg" (x)::"memory")
 
-=2D-=20
-Jeff Weber
-American Superconductor Corp.
+#define local_irq_restore(x) \
+	__asm__ __volatile__("pushl %0; popfl": :"g" (x):"memory", "cc")
+
+Hope your RTAI code takes care of SMP as well (or excludes the execution
+on such boxes).
+
+>=20
+> Yes, please add this to the native skin "wish list", along with a nesti=
+ng=20
+> capability.
+
+Won't you? =3D> http://www.xenomai.org/wiki/index.php/TaskMarket
+
+Ideas and requests on the mailing list are starting become volatile with
+the increasing traffic we see...
+
+Jan
+
+
+--------------enig2D2A697A8A7D6FA97A785C8E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFQjLOniDOoMHTA+kRAixsAJ9ebQqhaq10S2uFivg5nI2SEwbuCwCdGjOg
+q1wXUn3wEituwjdnLxQq3OM=
+=cM/P
+-----END PGP SIGNATURE-----
+
+--------------enig2D2A697A8A7D6FA97A785C8E--
 
