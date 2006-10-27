@@ -1,15 +1,16 @@
-Message-ID: <452A8E22.1060404@domain.hid>
-Date: Mon, 09 Oct 2006 20:00:02 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4542203C.6060708@domain.hid>
+Date: Fri, 27 Oct 2006 17:05:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] 3rd party task mode switches and inquiries
-References: <1160411937.6268.14.camel@domain.hid>
-	<452A8C0F.2010001@domain.hid>
-In-Reply-To: <452A8C0F.2010001@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig03AEBD0F89FC6D6C68BD4E9C"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] switchtest and Xenomai 2.2.4
+References: <1160947939.4962.27.camel@domain.hid> <453FC4C0.5070105@domain.hid>
+	<454078AD.5000907@domain.hid> <4540DE60.40209@domain.hid>
+	<4540E1AB.2040200@domain.hid> <4540EABD.10403@domain.hid>
+	<4540ECA6.5000604@domain.hid> <45411147.1070205@domain.hid>
+	<4541C0E6.3070807@domain.hid> <45421B89.3090302@domain.hid>
+In-Reply-To: <45421B89.3090302@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,44 +20,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jeff Webb <jeff.webb@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig03AEBD0F89FC6D6C68BD4E9C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jeff Webb wrote:
+> Gilles Chanteperdrix wrote:
+> 
+>> Ok, could you try one last thing: keep try_module_get and module_put in
+>> ksrc/drivers/testing/switchtest.c and apply the attached patch to 
+>> src/testsuite/switchtest/switchtest.c
+> 
+> 
+> This does not seem to fix the problem completely.  Output stops after 
+> pressing ctrl-c one time, and I get:
+> 
+> [root xeno-build-r1749p5]# ps a -T
+>  PID  SPID TTY      STAT   TIME COMMAND
+> 19878 19878 pts/1    SLl+   0:00 ./switchtest
+> 19878 19884 pts/1    SLl+   0:00 ./switchtest
+> 19878 19885 pts/1    SLl+   0:00 ./switchtest
+> 19878 19886 pts/1    SLl+   0:00 ./switchtest
+> 19878 19887 pts/1    SLl+   0:00 ./switchtest
+> 
+> [root xeno-build-r1749p5]# cat /proc/xenomai/sched
+> CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
+>  0  0       -1      0        0          R          ROOT/0
+>  1  0       -1      0        0          R          ROOT/1
+>  0  19878    0      0        0          X          switchtest
+>  0  0        1      0        0          W          rtk1/0
+>  0  0        1      0        0          W          rtk2/0
+>  0  0        1      0        0          Wf         rtk3/0
+>  0  0        1      0        0          Wf         rtk4/0
+>  0  0        1      0        0          Wf         rtk5/0
+>  0  0        1      0        0          Wf         rtk6/0
+>  0  19884    1      0        0          R          rtus0-11
+>  0  19885    1      0        0          R          rtus0-12
+>  0  19886    1      0        0          R          rtus_ufps0-13
+>  0  19887    1      0        0          R          rtus_ufps0-14
+>  1  0        1      0        0          W          rtk1/1
+>  1  0        1      0        0          W          rtk2/1
+>  1  0        1      0        0          Wf         rtk3/1
+>  1  0        1      0        0          Wf         rtk4/1
+>  1  0        1      0        0          Wf         rtk5/1
+>  1  0        1      0        0          Wf         rtk6/1
+> 
+> After pressing ctrl-c a second time, switchtest exits leaving a clean 
+> 'ps', but I get:
+> 
+> [root xeno-build-r1749p5]# cat /proc/xenomai/sched
+> CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
+>  0  0       -1      0        0          R          ROOT/0
+>  1  0       -1      0        0          R          ROOT/1
+>  0  0        1      0        0          W          rtk1/0
+>  0  0        1      0        0          W          rtk2/0
+>  0  0        1      0        0          Wf         rtk3/0
+>  0  0        1      0        0          Wf         rtk4/0
+>  0  0        1      0        0          Wf         rtk5/0
+>  0  0        1      0        0          Wf         rtk6/0
+>  1  0        1      0        0          W          rtk1/1
+>  1  0        1      0        0          W          rtk2/1
+>  1  0        1      0        0          Wf         rtk3/1
+>  1  0        1      0        0          Wf         rtk4/1
+>  1  0        1      0        0          Wf         rtk5/1
+>  1  0        1      0        0          Wf         rtk6/1
+> 
+> Removing the module then fails:
+> 
+> [root switchtest]# /sbin/rmmod xeno_switchtest
+> ERROR: Module xeno_switchtest is in use
+> [root switchtest]#
+> 
+> I can run switchtest multiple times, but I get more and more leftover 
+> threads in /proc/xenomai/stat.
 
-Jan Kiszka wrote:
-> Jeff Weber wrote:
->> I have a need for task t1 to switch task t2 to and from primary mode,
->> using the native API.  The rt_task_set_mode() API does not have an
->> argument for the target task, and assumes the current task.  How can I=
+Ok, thanks, I will commit yesterday version then.
 
->> initiate a 3rd party task mode switch?
->=20
-> Umm, could you explain why you need this? Sounds a bit weird to me.
-
-Or do you mean more than just T_PRIMARY? Still, manipulating a remote
-task that way can be fairly dangerous (T_LOCK, T_NOSIG). It's at least
-as "evil" as rt_task_suspend(someone_else). ;)
-
-Jan
-
-
---------------enig03AEBD0F89FC6D6C68BD4E9C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFKo4iniDOoMHTA+kRAoDyAJ9ikcsu2eewdkfK3QXoxrC8a8+O2gCcCI+a
-S4ocQSe58vTMoyHASzq7w/I=
-=unPS
------END PGP SIGNATURE-----
-
---------------enig03AEBD0F89FC6D6C68BD4E9C--
+-- 
+                                                  Gilles Chanteperdrix
 
