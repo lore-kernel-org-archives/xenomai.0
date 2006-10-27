@@ -1,10 +1,11 @@
-Subject: Re: [Xenomai-core] Bug in taskSuspend for user mode vxworks
+Subject: Re: [Xenomai-core] [PATCH] prepare-kernel.sh breaks linux-2.4
+	drivers/Makefile
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200610252346.34150.niklaus.giger@domain.hid>
-References: <200610252346.34150.niklaus.giger@domain.hid>
+In-Reply-To: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
+References: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
 Content-Type: text/plain
-Date: Fri, 27 Oct 2006 18:38:29 +0200
-Message-Id: <1161967109.4983.13.camel@domain.hid>
+Date: Fri, 27 Oct 2006 18:43:35 +0200
+Message-Id: <1161967416.4983.15.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,29 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
+To: Andrew Dennison <andrewd.lists@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2006-10-25 at 23:46 +0200, Niklaus Giger wrote:
-> Hi
+On Fri, 2006-10-27 at 11:23 +1000, Andrew Dennison wrote:
+> Running prepare-kernel on the denx 2.4 kernel adds the following line
 > 
-> While trying to make a small demo app for Xenomai's registry I stumbled about 
-> the following bug of the vxWorks skin.
+> mod-subdirs := xenomai
 > 
-> taskSuspend provokes (sometimes) a switch to the secondary mode, e.g. the 
-> output of the attached demo gives:
-> >  reg_demo &
-> > ~ $ Xenomai: Switching ConsumerTask to secondary mode after exception #1025
+> This prevents all other mod-subdirs under drivers from building.
+> 
+> Patch is against r1273 but still seems to apply (and be required) on head.
+> 
 
-This is the same issue that you raised back then, and that we did not
-fix yet:
-https://mail.gna.org/public/xenomai-core/2006-09/msg00177.html
+Applied, thanks.
 
-#1025 looks like being an ISI exception due to some unmapped memory
-being referred to. You mentioned CONFIG_XENO_OPT_DEBUG as possibly being
-part of the problem/solution; could you check whether this error still
-occurs when this option is disabled in the nucleus?
-
+> Andrew
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
