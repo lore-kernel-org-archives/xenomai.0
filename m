@@ -1,10 +1,10 @@
-Subject: Re: [Xenomai-core] [PATCH 0/3] Reworked nucleus statistics
+Subject: Re: [Xenomai-core] Bug in taskSuspend for user mode vxworks
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <452E9ACD.20800@domain.hid>
-References: <452E9ACD.20800@domain.hid>
+In-Reply-To: <200610252346.34150.niklaus.giger@domain.hid>
+References: <200610252346.34150.niklaus.giger@domain.hid>
 Content-Type: text/plain
-Date: Fri, 27 Oct 2006 18:00:23 +0200
-Message-Id: <1161964824.4983.0.camel@domain.hid>
+Date: Fri, 27 Oct 2006 18:38:29 +0200
+Message-Id: <1161967109.4983.13.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -17,47 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-On Thu, 2006-10-12 at 21:43 +0200, Jan Kiszka wrote:
-> Hi,
+On Wed, 2006-10-25 at 23:46 +0200, Niklaus Giger wrote:
+> Hi
 > 
-> here we go: after quite some hacking and refactoring, Dmitry and I are
-> happy to provide a patch set that reworks and enhances the statistics
-> subsystem of Xenomai.
+> While trying to make a small demo app for Xenomai's registry I stumbled about 
+> the following bug of the vxWorks skin.
 > 
-> The original goal of these patches was to improve the accuracy of the
-> /proc/xenomai/stat CPU load output. So far it only accounted thread
-> switches. The time of potential preceding IRQ handling and scheduling
-> decision was added to the preempted thread. The new approach avoids
-> this. More about it later.
-> 
-> While discussing the first implementation, Dmitry had the idea to
-> refactor even more code that depends on XENO_OPT_STATS, means event
-> counting parts under the upcoming generic runtime stats. So this series
-> starts with a patch to introduce a generic subsystem for collecting
-> statistics on countable events as well as the runtime of entities.
-> 
-> It continues with the second patch that applies xnstat on the IRQ
-> subsystem, both for counting hits as well as for measuring the execution
-> time. The accounting model applied in this patch is as simple as this:
-> measure the time some driver- or application-supplied ISR executes and
-> accumulate it per-CPU. The rescheduling is still accounted to the
-> preempted thread.
-> 
-> In my endless quest for perfection, I applied an -as I feel- enhanced
-> model on top of this (already working!) set, that's the third patch.
-> This model adds the scheduler path to the IRQ account. And it only
-> accounts to an IRQ if its ISR reported XN_ISR_HANDLED. This is relevant
-> for shared IRQs when only one source fired (the typical case). Also, it
-> reduces churning by avoiding account switches in the average case. But,
-> the downside, it may be less convenient to understand and increases the
-> code a bit (only for the shared IRQ case). Dmitry and I were not yet
-> able to agree on THE model, so I'm simply posting both for public
-> feedback. :)
+> taskSuspend provokes (sometimes) a switch to the secondary mode, e.g. the 
+> output of the attached demo gives:
+> >  reg_demo &
+> > ~ $ Xenomai: Switching ConsumerTask to secondary mode after exception #1025
 
-All merged, thanks.
+This is the same issue that you raised back then, and that we did not
+fix yet:
+https://mail.gna.org/public/xenomai-core/2006-09/msg00177.html
+
+#1025 looks like being an ISI exception due to some unmapped memory
+being referred to. You mentioned CONFIG_XENO_OPT_DEBUG as possibly being
+part of the problem/solution; could you check whether this error still
+occurs when this option is disabled in the nucleus?
 
 -- 
 Philippe.
