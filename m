@@ -1,11 +1,10 @@
-Subject: Re: [Xenomai-help] Timer problemm with 2.2.4 release
+Subject: Re: [Xenomai-help] enable/disable all interrupts from user space
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45409310.5070504@domain.hid>
-References: <200610261227.29595.s.zimmermann@domain.hid>
-	<45409310.5070504@domain.hid>
+In-Reply-To: <45420A72.8000700@domain.hid>
+References: <200610261639.36013.jweber@domain.hid> <45420A72.8000700@domain.hid>
 Content-Type: text/plain
-Date: Fri, 27 Oct 2006 20:12:09 +0200
-Message-Id: <1161972729.4983.21.camel@domain.hid>
+Date: Fri, 27 Oct 2006 23:11:46 +0200
+Message-Id: <1161983506.4983.48.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -19,115 +18,56 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai Help <xenomai@xenomai.org>, Jeff Weber <jweber@domain.hid>
 
-On Thu, 2006-10-26 at 12:50 +0200, Jan Kiszka wrote:
-> Stephan Zimmermann wrote:
-> > Hello list,
-> > I recently switched from 2.2.0 on Kernel 2.6.17.6 to more actual 2.2.4  on 
-> > Kernel 2.6.17.14.
-> > After upgrading my periodic tasks won't work at all (task_wait and 
-> > set_periodic functions return errors). I wrote a little testprogram to verify 
-> > it's not a problem with my Software. The code runs fine on my Notebook, still 
-> > under 2.2.0/2.6.17.6, but won't work on my Desktop (AMD X2 / VIA K8T800) with 
-> > the all-new Kernel/Xenomai installation. Maybe there is some config-thing i 
-> > have overseen?
-> > 
-> > #include <iostream>
-> > #include <sys/mman.h>
-> > 
-> > #include "native/task.h"
-> > #include "native/timer.h"
-> > 
-> > RT_TASK maintask;
-> > 
-> > int main(void){
-> > 	std::cout << "xenomai 2.2.4 timer-test" << std::endl;
-> > 	mlockall(MCL_CURRENT | MCL_FUTURE);
-> > 	
-> > 	int err;
-> > 	unsigned long overrun = 0; 
-> > 	
-> > 	err = rt_task_shadow (&maintask,"maintask",10,0);
-> > 	std::cout << "task shadow:" << err << std::endl;
-> > 	
-> > 	err = rt_timer_set_mode(1000000);
-> > 	std::cout << "timer set mode:" << err << std::endl;
-> > 	
-> > 	err = rt_task_sleep(1000);
-> > 	std::cout << "task sleep:" << err << std::endl;
-> > 	
-> > 	err = rt_task_set_periodic(NULL,TM_NOW,1000);  
-> > 	std::cout << "task set periodic:" << err << std::endl;
-> > 	
-> > 	for(int i  = 0; i < 3; i++){
-> > 		err = rt_task_wait_period(&overrun);
-> > 		std::cout << "task wait period:" << err << " overrunns:" << overrun << 
-> > std::endl;
-> > 	}
-> > 	
-> > 	return 0;
-> > }
-> > 
-> > Output on my Workstation:
-> > ----------------------------------------------
-> > xenomai 2.2.4 timer-test
-> > task shadow:0
-> > timer set mode:0
-> > task sleep:0
-> > task set periodic:-22
-> > task wait period:-11 overrunns:0
-> > task wait period:-11 overrunns:0
-> > task wait period:-11 overrunns:0
-> > 
-> > Output on my Notebook:
-> > ----------------------------------------------
-> > xenomai 2.2.4 timer-test
+On Fri, 2006-10-27 at 15:32 +0200, Jan Kiszka wrote:
+> Jeff Weber wrote:
+> > How do I enable/disable all interrupts (Linux and Xenomai) from user space?  
+> > (native skin preferred)
 > 
-> I guess this is a typo (2.2.0?).
+> For x86:
 > 
-> > task shadow:0
-> > timer set mode:0
-> > task sleep:0
-> > task set periodic:0
-> > task wait period:0 overrunns:0
-> > task wait period:0 overrunns:0
-> > task wait period:0 overrunns:0
-> > 
+> iopl(3);
+> __asm__ __volatile__("cli/sti");
 > 
-> Looks like we have a bug here:
-> 
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/pod.c#L3408
-> 
-> That new LART check doesn't consider the periodic mode where period does
-> not have the same unit as nkschedlat. Something like this might be
-> needed (quick hack alarm!):
-> 
-> --- ksrc/nucleus/pod.c  (revision 1747)
-> +++ ksrc/nucleus/pod.c  (working copy)
-> @@ -3413,7 +3413,7 @@ int xnpod_set_thread_periodic(xnthread_t
->                         xntimer_stop(&thread->ptimer);
-> 
->                 goto unlock_and_exit;
-> -       } else if (period < nkschedlat) {
-> +       } else if (nkpod->tickvalue == 1 && period < nkschedlat) {
->                 /* LART: detect periods which are shorter than the
->                  * intrinsic latency figure; this must be a joke... */
->                 err = -EINVAL;
 
-Good catch. Here is the similar fix I'm going to apply.
+Gasp...
 
---- ksrc/nucleus/pod.c	(revision 1759)
-+++ ksrc/nucleus/pod.c	(working copy)
-@@ -3415,7 +3415,7 @@
- 			xntimer_stop(&thread->ptimer);
- 
- 		goto unlock_and_exit;
--	} else if (period < nkschedlat) {
-+	} else if (!testbits(nkpod->status, XNTMPER) && period < nkschedlat) {
- 		/* LART: detect periods which are shorter than the
- 		 * intrinsic latency figure; this must be a joke... */
- 		err = -EINVAL;
+> Ugly hack, typical a sign that something should be moved somewhere
+> else... (there are a few exceptions, though)
+> 
+> We once had some discussion if we shouldn't export domain stalling
+> features to user-space in order to support things like X-servers that
+> currently come with such code, toasting any RT kernel. May come one day,
+> but this will be primarily for legacy non-RT code.
+
+Providing "cli" emulation to X-Servers would only make sense in order to
+stall the Linux domain; controlling the interrupt shield dynamically
+using the T_SHIELD bit would allow that already. If I understand
+correctly, we are talking about stalling the Xenomai domain too, and
+this is a completely different story. The day we would provide such
+"feature" as an official API, we would trigger tons of misuses of this
+hack, a bit like we have now with the T_PRIMARY bit, a number of people
+sprinkle over their code to control the task exec mode, which is most of
+the time utterly sub-optimal, and automatically handled by the nucleus
+already. IOW, I'm not convinced at all that adding such API would be the
+right thing to do.
+
+For the time being, it should be possible to write a simple kernel
+module using either the native or RTDM API from kernel space, which
+would handle such requests from user-space. For instance, one could use
+rt_task_notify() from user-space to signal a helper task in a kernel
+module that carries out the job, depending on the signal received. The
+same goes for a trivial RTDM driver only implementing the ioctl()
+support for the same purpose.
+
+> 
+> Jan
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 -- 
 Philippe.
 
