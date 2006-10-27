@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [PATCH] prepare-kernel.sh breaks linux-2.4
-	drivers/Makefile
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
-References: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
-Content-Type: text/plain
-Date: Fri, 27 Oct 2006 18:43:35 +0200
-Message-Id: <1161967416.4983.15.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 28 Oct 2006 00:31:57 +0200
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200610280031.57642.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Buildbot failure for sim since r1758
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,28 +17,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Andrew Dennison <andrewd.lists@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-10-27 at 11:23 +1000, Andrew Dennison wrote:
-> Running prepare-kernel on the denx 2.4 kernel adds the following line
-> 
-> mod-subdirs := xenomai
-> 
-> This prevents all other mod-subdirs under drivers from building.
-> 
-> Patch is against r1273 but still seems to apply (and be required) on head.
-> 
+Hi
 
-Applied, thanks.
+I get the following error on my buildbot:
+(see http://ngiger.dyndns.org/buildbot/sim_q/builds/133/step-make_sim/1)
 
-> Andrew
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+make[1]: Entering directory `/var/buildbot/slave/sim_q/build/sim/adapter'
+if=20
+g++ -DHAVE_CONFIG_H -I. -I. -I../include -D__XENO_SIM__ -fno-exceptions -I.=
+/.. -I./../../include    -O2 -MT=20
+adapter.o -MD -MP -MF ".deps/adapter.Tpo" -c -o adapter.o adapter.cc; \
+        then mv -f ".deps/adapter.Tpo" ".deps/adapter.Po"; else=20
+rm -f ".deps/adapter.Tpo"; exit 1; fi
+In Datei, eingef=FCgt von ./../../include/nucleus/pod.h:34,
+                    von adapter.cc:23:
+=2E/../../include/nucleus/thread.h:108:26: Fehler: nucleus/stat.h: Datei od=
+er=20
+Verzeichnis nicht gefunden
+=2E/../../include/nucleus/thread.h:164: Fehler: =BBxnstat_counter_t=AB beze=
+ichnet=20
+keinen Typ
+=2E/../../include/nucleus/thread.h:165: Fehler: =BBxnstat_counter_t=AB beze=
+ichnet=20
+keinen Typ
+=2E/../../include/nucleus/thread.h:166: Fehler: =BBxnstat_counter_t=AB beze=
+ichnet=20
+keinen Typ
+=2E/../../include/nucleus/thread.h:167: Fehler: =BBxnstat_runtime_t=AB beze=
+ichnet=20
+keinen Typ
+=2E/../../include/nucleus/intr.h:65: Fehler: =BBxnstat_counter_t=AB bezeich=
+net=20
+keinen Typ
+=2E/../../include/nucleus/intr.h:66: Fehler: =BBxnstat_runtime_t=AB bezeich=
+net=20
+keinen Typ
+=2E/../../include/nucleus/intr.h:67: Fehler: =BBRTHAL_NR_CPUS=AB wurde in d=
+iesem=20
+G=FCltigkeitsbereich nicht definiert
+make[1]: *** [adapter.o] Fehler 1
+make[1]: Leaving directory `/var/buildbot/slave/sim_q/build/sim/adapter'
+make: *** [all-recursive] Fehler 1
+program finished with exit code 2
 
+Starting with a virgen check out didn't cure the problem see:
+http://ngiger.dyndns.org/buildbot/sim_q/builds/139/step-make_sim/1
 
+Best regards=20
+
+=2D-=20
+Niklaus Giger
 
