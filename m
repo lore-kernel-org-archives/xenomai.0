@@ -1,12 +1,11 @@
-Message-ID: <45421D05.8080909@domain.hid>
-Date: Fri, 27 Oct 2006 16:51:49 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45422A9C.5080505@domain.hid>
+Date: Fri, 27 Oct 2006 17:49:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] prepare-kernel.sh
-	breaks	linux-2.4	drivers/Makefile
-References: <54823def0610261823n4c24b6bal31afd74f3e0d962e@domain.hid>
-	<4541B59C.1070402@domain.hid>
-In-Reply-To: <4541B59C.1070402@domain.hid>
+Subject: Re: [Xenomai-core] I-pipe patch for ARM S3C24xx
+References: <E1Gapzw-0005RB-Ob@domain.hid>	<E1GdSZr-0001Pg-BV@mailer.emlix.com>
+	<454216BB.4090507@domain.hid>
+In-Reply-To: <454216BB.4090507@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -18,69 +17,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Andrew Dennison <andrewd.lists@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Andrew Dennison wrote:
->> Running prepare-kernel on the denx 2.4 kernel adds the following line
->>
->> mod-subdirs := xenomai
->>
->> This prevents all other mod-subdirs under drivers from building.
+Gilles Chanteperdrix wrote:
+> Sebastian Smolorz wrote:
 > 
-> What does not build. Non-Xenomai drivers as modules? 
->> Patch is against r1273 but still seems to apply (and be required) on 
->> head.
-> 
-> Going to check it soon.
-
-It's obviously a bug and could cause modules not to get build under 
-certain conditions. I was just wondering why I have not already realized 
-it in the past.
-
-Thanks.
-
-Wolfgang.
-
-> 
-> Thanks.
-> 
-> Wolfgang.
-> 
->> Andrew
+>> Hi,
 >>
+>> here comes version 2 of the I-pipe patch for the S3C24xx ARM. The 
+>> reported problem is solved, the timer works as expected as far as I 
+>> can see. Linux is still there after insmod'ding the native skin. More 
+>> test results will follow next week after I tortured the new patch with 
+>> the whole testsuite arsenal. ;-)
 >>
->> ------------------------------------------------------------------------
+>> The patch has got two suboptimal characteristics due to the generic 
+>> ARM I-pipe implementation which I did not want to change during the 
+>> first steps:
 >>
->> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
->> index fbc91ce..ca87e7f 100755
->> --- a/scripts/prepare-kernel.sh
->> +++ b/scripts/prepare-kernel.sh
->> @@ -455,7 +455,7 @@ EOF
->>      patch_ed drivers/Makefile <<EOF
->>  /include \$(TOPDIR)\/Rules.make
->>  i
->> -mod-subdirs := xenomai
->> +mod-subdirs += xenomai
->>  subdir-\$(CONFIG_XENOMAI) += xenomai
->>  
->>  .
->>
->>
->> ------------------------------------------------------------------------
->>
->> _______________________________________________
->> Xenomai-core mailing list
->> Xenomai-core@domain.hid
->> https://mail.gna.org/listinfo/xenomai-core
+>> 1. Regarding the demux of chained IRQs (See [1]). As the S3C24xx has 
+>> more than one chained IRQ there are two consecutive queries for them 
+>> in __ipipe_mach_irq_mux_p() and __ipipe_mach_demux_irq(). This could 
+>> be optimized.
 > 
 > 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+> You should use switch/case instead of if else if else if, the generated
+> code would be better optimized.
 > 
 
+You can make the test cheap test by using a mask.
+
+#define __ipipe_irqbit(irq) (1 << ((irq) - S3C2410_CPUIRQ_OFFSET))
+#ifdef CONFIG_CPU_S3C2440
+#define __ipipe_muxed_irqmask (__ipipe_irqbit(IRQ_UART0) \
+				| __ipipe_irqbit(IRQ_UART1) \
+				| __ipipe_irqbit(IRQ_UART2) \
+				| __ipipe_irqbit(IRQ_ADCPARENT) \
+				| __ipipe_irqbit(IRQ_WDT) \
+			        | __ipipe_irqbit(IRQ_CAM))
+#else /* !CONFIG_CPU_S3C2440 */
+#define __ipipe_muxed_irqmask (__ipipe_irqbit(IRQ_UART0) \
+			       | __ipipe_irqbit(IRQ_UART1) \
+			       | __ipipe_irqbit(IRQ_UART2) \
+			       | __ipipe_irqbit(IRQ_ADCPARENT))
+#endif /* CONFIG_CPU_S3C2440 */
+
+#define __ipipe_mach_irq_mux_p(irq) \
+	((irq) <= IRQ_ADCPARENT \
+	&& (__ipipe_irqbit(irq) & __ipipe_muxed_irqmask(irq)))
+
+-- 
+                                                  Gilles Chanteperdrix
 
