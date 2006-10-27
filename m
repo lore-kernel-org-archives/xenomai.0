@@ -1,16 +1,11 @@
-Message-ID: <4542203C.6060708@domain.hid>
-Date: Fri, 27 Oct 2006 17:05:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20061027151347.62705.qmail@domain.hid>
+Date: Fri, 27 Oct 2006 08:13:47 -0700 (PDT)
+From: mani bhatti <imranbashirbhatti@domain.hid>
+Subject: Re: [Xenomai-help] Problem with rt_queue
+In-Reply-To: <453FEA27.3020705@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] switchtest and Xenomai 2.2.4
-References: <1160947939.4962.27.camel@domain.hid> <453FC4C0.5070105@domain.hid>
-	<454078AD.5000907@domain.hid> <4540DE60.40209@domain.hid>
-	<4540E1AB.2040200@domain.hid> <4540EABD.10403@domain.hid>
-	<4540ECA6.5000604@domain.hid> <45411147.1070205@domain.hid>
-	<4541C0E6.3070807@domain.hid> <45421B89.3090302@domain.hid>
-In-Reply-To: <45421B89.3090302@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; boundary="0-1455400731-1161962027=:62103"
+Content-Transfer-Encoding: 8bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,81 +15,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jeff Webb wrote:
-> Gilles Chanteperdrix wrote:
-> 
->> Ok, could you try one last thing: keep try_module_get and module_put in
->> ksrc/drivers/testing/switchtest.c and apply the attached patch to 
->> src/testsuite/switchtest/switchtest.c
-> 
-> 
-> This does not seem to fix the problem completely.  Output stops after 
-> pressing ctrl-c one time, and I get:
-> 
-> [root xeno-build-r1749p5]# ps a -T
->  PID  SPID TTY      STAT   TIME COMMAND
-> 19878 19878 pts/1    SLl+   0:00 ./switchtest
-> 19878 19884 pts/1    SLl+   0:00 ./switchtest
-> 19878 19885 pts/1    SLl+   0:00 ./switchtest
-> 19878 19886 pts/1    SLl+   0:00 ./switchtest
-> 19878 19887 pts/1    SLl+   0:00 ./switchtest
-> 
-> [root xeno-build-r1749p5]# cat /proc/xenomai/sched
-> CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
->  0  0       -1      0        0          R          ROOT/0
->  1  0       -1      0        0          R          ROOT/1
->  0  19878    0      0        0          X          switchtest
->  0  0        1      0        0          W          rtk1/0
->  0  0        1      0        0          W          rtk2/0
->  0  0        1      0        0          Wf         rtk3/0
->  0  0        1      0        0          Wf         rtk4/0
->  0  0        1      0        0          Wf         rtk5/0
->  0  0        1      0        0          Wf         rtk6/0
->  0  19884    1      0        0          R          rtus0-11
->  0  19885    1      0        0          R          rtus0-12
->  0  19886    1      0        0          R          rtus_ufps0-13
->  0  19887    1      0        0          R          rtus_ufps0-14
->  1  0        1      0        0          W          rtk1/1
->  1  0        1      0        0          W          rtk2/1
->  1  0        1      0        0          Wf         rtk3/1
->  1  0        1      0        0          Wf         rtk4/1
->  1  0        1      0        0          Wf         rtk5/1
->  1  0        1      0        0          Wf         rtk6/1
-> 
-> After pressing ctrl-c a second time, switchtest exits leaving a clean 
-> 'ps', but I get:
-> 
-> [root xeno-build-r1749p5]# cat /proc/xenomai/sched
-> CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
->  0  0       -1      0        0          R          ROOT/0
->  1  0       -1      0        0          R          ROOT/1
->  0  0        1      0        0          W          rtk1/0
->  0  0        1      0        0          W          rtk2/0
->  0  0        1      0        0          Wf         rtk3/0
->  0  0        1      0        0          Wf         rtk4/0
->  0  0        1      0        0          Wf         rtk5/0
->  0  0        1      0        0          Wf         rtk6/0
->  1  0        1      0        0          W          rtk1/1
->  1  0        1      0        0          W          rtk2/1
->  1  0        1      0        0          Wf         rtk3/1
->  1  0        1      0        0          Wf         rtk4/1
->  1  0        1      0        0          Wf         rtk5/1
->  1  0        1      0        0          Wf         rtk6/1
-> 
-> Removing the module then fails:
-> 
-> [root switchtest]# /sbin/rmmod xeno_switchtest
-> ERROR: Module xeno_switchtest is in use
-> [root switchtest]#
-> 
-> I can run switchtest multiple times, but I get more and more leftover 
-> threads in /proc/xenomai/stat.
+--0-1455400731-1161962027=:62103
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-Ok, thanks, I will commit yesterday version then.
+Thanks a lot Jan for the reply.Now after changing the task name queue is working but 
+  following message is displayed by the sender if there is no queue which you had pointed in the last email.
+  rt_queue_alloc(queue_inout, 8) failed
+Segmentation fault
 
--- 
-                                                  Gilles Chanteperdrix
+  Actually i dont  understand about the patch which you had sent in your last email (because patch seems to be incomple to me ) because that seems to be part of xenomai source code and if that is how can i use that source code in my program for solving my problem i mean at which place in my program should i put that patch .Sorry for your inconvenience.thanks.
+  
+ 
+  
+
+Jan Kiszka <jan.kiszka@domain.hid> wrote:
+  mani bhatti wrote:
+> Hi Phillipe and Jan 
+> Thanks a lot for your help.I am sending the compilable
+> source code so that you have an idea what wrong am i
+> doing.I am sending the listeners which are listening
+> to the same queue at the same time.But i dont know why
+> at one time only one listener receives data from
+> sender queue inspite of that i am using broadcast
+> mode.Thanks a lot.I have attached files for sender and
+> listener.
+
+Well, interesting test case. It actually revealed bugs, but not where
+expected.
+
+Your problem is a simple bug in the listener tests. They both register a
+task of the name "beta", only the first one succeeds (your code is a bit
+hackish in this regard - when hunting problems, make sure to check ALL
+return codes for potential problems!). Once fixed, your code runs fine here.
+
+Nevertheless, queue_sender by itself uncovered a problem of
+rt_queue_send in broadcast mode when no one is listening. The message
+reference count got messed up and the queue ran out of memory. The
+attached patch fixes it:
+
+Jan
+Index: ksrc/skins/native/queue.c
+===================================================================
+--- ksrc/skins/native/queue.c (Revision 1747)
++++ ksrc/skins/native/queue.c (Arbeitskopie)
+@@ -631,7 +631,9 @@ int rt_queue_send(RT_QUEUE *q, void *mbu
+prependq(&q->pendq, &msg->link);
+else
+appendq(&q->pendq, &msg->link);
+- }
++ } else
++ /* Ownership did not change, so update reference count. */
++ msg->refcount++;
+
+err = nrecv;
+
+Index: ChangeLog
+===================================================================
+--- ChangeLog (Revision 1748)
++++ ChangeLog (Arbeitskopie)
+@@ -1,3 +1,8 @@
++2006-10-26 Jan Kiszka 
++
++ * ksrc/skins/native/queue.c (rt_queue_send): Track message count
++ correctly when broadcasting to a queue without listeners.
++
+2006-10-25 Jan Kiszka 
+
+* ksrc/drivers/testing/irqbench.c, doc/txt/irqbench.txt,
+
+
+ 		
+---------------------------------
+ All-new Yahoo! Mail - Fire up a more powerful email and get things done faster.
+--0-1455400731-1161962027=:62103
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+
+<div>Thanks a lot Jan for the reply.Now after changing the task name queue is working but </div>  <div>following message is displayed by the sender if there is no queue which you had pointed in the last email.</div>  <div>rt_queue_alloc(queue_inout, 8) failed<BR>Segmentation fault<BR></div>  <div>Actually i dont&nbsp; understand about the patch which you had sent in your last email (because patch seems to be incomple to me )&nbsp;because that seems to be part of xenomai source code and if that is how can i use that source code in my program for solving my problem i mean at which place in my program should i put that patch&nbsp;.Sorry for your inconvenience.thanks.</div>  <div><BR>&nbsp;</div>  <div><BR><BR><B><I>Jan Kiszka &lt;jan.kiszka@domain.hid&gt;</I></B> wrote:</div>  <BLOCKQUOTE class=replbq style="PADDING-LEFT: 5px; MARGIN-LEFT: 5px; BORDER-LEFT: #1010ff 2px solid">mani bhatti wrote:<BR>&gt; Hi Phillipe and Jan <BR>&gt; Thanks a lot for your help.I am sending the
+ compilable<BR>&gt; source code so that you have an idea what wrong am i<BR>&gt; doing.I am sending the listeners which are listening<BR>&gt; to the same queue at the same time.But i dont know why<BR>&gt; at one time only one listener receives data from<BR>&gt; sender queue inspite of that i am using broadcast<BR>&gt; mode.Thanks a lot.I have attached files for sender and<BR>&gt; listener.<BR><BR>Well, interesting test case. It actually revealed bugs, but not where<BR>expected.<BR><BR>Your problem is a simple bug in the listener tests. They both register a<BR>task of the name "beta", only the first one succeeds (your code is a bit<BR>hackish in this regard - when hunting problems, make sure to check ALL<BR>return codes for potential problems!). Once fixed, your code runs fine here.<BR><BR>Nevertheless, queue_sender by itself uncovered a problem of<BR>rt_queue_send in broadcast mode when no one is listening. The message<BR>reference count got messed up and the queue ran out
+ of memory. The<BR>attached patch fixes it:<BR><BR>Jan<BR>Index: ksrc/skins/native/queue.c<BR>===================================================================<BR>--- ksrc/skins/native/queue.c (Revision 1747)<BR>+++ ksrc/skins/native/queue.c (Arbeitskopie)<BR>@@ -631,7 +631,9 @@ int rt_queue_send(RT_QUEUE *q, void *mbu<BR>prependq(&amp;q-&gt;pendq, &amp;msg-&gt;link);<BR>else<BR>appendq(&amp;q-&gt;pendq, &amp;msg-&gt;link);<BR>- }<BR>+ } else<BR>+ /* Ownership did not change, so update reference count. */<BR>+ msg-&gt;refcount++;<BR><BR>err = nrecv;<BR><BR>Index: ChangeLog<BR>===================================================================<BR>--- ChangeLog (Revision 1748)<BR>+++ ChangeLog (Arbeitskopie)<BR>@@ -1,3 +1,8 @@<BR>+2006-10-26 Jan Kiszka <JAN.KISZKA@WEB.DE><BR>+<BR>+ * ksrc/skins/native/queue.c (rt_queue_send): Track message count<BR>+ correctly when broadcasting to a queue without listeners.<BR>+<BR>2006-10-25 Jan Kiszka <JAN.KISZKA@WEB.DE><BR><BR>*
+ ksrc/drivers/testing/irqbench.c, doc/txt/irqbench.txt,<BR></BLOCKQUOTE><BR><p>&#32;
+		<hr size=1><a href="http://us.rd.yahoo.com/evt=43256/*http://advision.webevents.yahoo.com/mailbeta"> All-new Yahoo! Mail </a>- Fire up a more powerful email and get things done faster.
+--0-1455400731-1161962027=:62103--
 
