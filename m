@@ -1,15 +1,13 @@
-Subject: Re: [Xenomai-help] enable/disable all interrupts from user space
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45427AA3.1030607@domain.hid>
-References: <200610261639.36013.jweber@domain.hid>
-	<45420A72.8000700@domain.hid> <1161983506.4983.48.camel@domain.hid>
-	<45427AA3.1030607@domain.hid>
-Content-Type: text/plain
-Date: Sat, 28 Oct 2006 00:03:20 +0200
-Message-Id: <1161986601.4983.82.camel@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai 's website
+From: =?ISO-8859-1?Q?Schl=E4gl?= "Manfred jun." <manfred.schlaegl@domain.hid>
+In-Reply-To: <4540DE9D.5020609@domain.hid>
+References: <1161875134.7650.18.camel@domain.hid>  <4540DE9D.5020609@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="=-I7N+JOv3BQnR8sGikqET"
+Date: Sat, 28 Oct 2006 14:36:35 +0200
+Message-Id: <1162038995.5029.6.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,98 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai Help <xenomai@xenomai.org>, Jeff Weber <jweber@domain.hid>
+To: xenomai-help <xenomai@xenomai.org>
 
-On Fri, 2006-10-27 at 23:31 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2006-10-27 at 15:32 +0200, Jan Kiszka wrote:
-> >> Jeff Weber wrote:
-> >>> How do I enable/disable all interrupts (Linux and Xenomai) from user space?  
-> >>> (native skin preferred)
-> >> For x86:
-> >>
-> >> iopl(3);
-> >> __asm__ __volatile__("cli/sti");
-> >>
-> > 
-> > Gasp...
-> > 
-> >> Ugly hack, typical a sign that something should be moved somewhere
-> >> else... (there are a few exceptions, though)
-> >>
-> >> We once had some discussion if we shouldn't export domain stalling
-> >> features to user-space in order to support things like X-servers that
-> >> currently come with such code, toasting any RT kernel. May come one day,
-> >> but this will be primarily for legacy non-RT code.
-> > 
-> > Providing "cli" emulation to X-Servers would only make sense in order to
-> > stall the Linux domain; controlling the interrupt shield dynamically
-> > using the T_SHIELD bit would allow that already.
-> 
-> As far as I understood, the I-shield doesn't come for free. So, having
-> at least an API to stall the root domain from user-space should be cheaper.
-> 
 
-The I-shield can be operated on a per-task basis, which reduces the
-performance impact. Additionally, tweaking the Linux domain bit by hand
-won't work: there are places in the kernel where it's purely reset. The
-only way to do this sanely is to have an intermediate domain between
-Xenomai and Linux that regulates the interrupt flow through it's own
-stall control. IOW, like the interrupt shield does.
+--=-I7N+JOv3BQnR8sGikqET
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> > If I understand
-> > correctly, we are talking about stalling the Xenomai domain too, and
-> > this is a completely different story. The day we would provide such
-> > "feature" as an official API, we would trigger tons of misuses of this
-> > hack, a bit like we have now with the T_PRIMARY bit, a number of people
-> > sprinkle over their code to control the task exec mode, which is most of
-> > the time utterly sub-optimal, and automatically handled by the nucleus
-> > already. IOW, I'm not convinced at all that adding such API would be the
-> > right thing to do.
-> 
-> When it comes to *emulate* hacky RTAI APIs - I would not immediately
-> refrain from considering this.
-
-API emulation is done through a skin, in which case, I would have no
-objection to see such support implemented there, since well, a skin is
-aimed at emulating syntax, semantics and behaviour, including the bad
-ones.
-
->  But I agree that this can open Pandora's
-> box, and having it in the native skip could mess up a lot. Unless we
-> will see a widely compatible RTAI user-space skin one day, it's probably
-> better to keep status quo /wrt to non-root domain stalling.
-> 
-
-Indeed, this is my point, especially since there are other ways to
-implement those operations for the purpose of porting RTAI code, without
-polluting the native skin uselessly.
-
-> > 
-> > For the time being, it should be possible to write a simple kernel
-> > module using either the native or RTDM API from kernel space, which
-> > would handle such requests from user-space. For instance, one could use
-> > rt_task_notify() from user-space to signal a helper task in a kernel
-> > module that carries out the job, depending on the signal received. The
-> > same goes for a trivial RTDM driver only implementing the ioctl()
-> > support for the same purpose.
-> 
-> That still remains a hack, though now platform independent :). I would
-> simply use the assembly + a big fat warning sign saying "This code needs
-> serious refactoring!"
-
-The difference is that such hack would work on any platform, and other
-people having the same issue to solve could be suggested to use this
-approach. Not all architectures allow to fiddle with the processor's
-interrupt flag from non-privileged mode; actually, x86 is rather the
-exception than the rule here.
-
-> 
+On Thu, 2006-10-26 at 18:13 +0200, Jan Kiszka wrote:
+> Alessio Igor Bogani wrote:
+> > Hi,
+> >=20
+> > IMHO Trac can more useful to a software project than MediaWiki or
+> > Joomla.
+> >=20
+> >>From http://trac.edgewall.org/ :
+> >=20
+> > "Trac is a web-based software project management and bug/issue tracking
+> > system emphasizing ease of use and low ceremony. It provides an
+> > interface to the Subversion revision control systems, integrated Wiki
+> > and convenient report facilities."
+> >=20
+> > This is a demo:
+> > http://www.hosted-projects.com/trac/TracDemo/Demo
+> >=20
+>=20
+> Looks nice on first sight, and it seems to use even the same mark-up
+> language as MediaWiki. Nevertheless, it is fairly new and I cannot
+> quickly asses how broadly used it is, or how mature/secure.
+>=20
+> But the hard work is up to Bruno anyway ;) (and I know he is already
+> fighting with MediaWiki), so I would say he should decide if it is worth
+> a closer look. Too many features can be bad too...
+>=20
+> Thanks for the hint,
 > Jan
-> 
--- 
-Philippe.
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
+
+We are using trac since a view months for some projects.
+
+It was always hard for me to write Work-Logs or Reports, but with
+trac...
+
+It's very useful, because it works with svn, and so it's very easy to
+link from a log to a file in a specified resporitory with a specified
+revision.
+
+	- Manfred
+
+--=-I7N+JOv3BQnR8sGikqET
+Content-Type: application/pgp-signature; name=signature.asc
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQBFQ07TbMvu5jIEpfsRAmGLAJ96aMChAg2/jfGGioJhdb6rD2rFdACfS8wv
+boTQpqJm7pd4H8VyFHK2DYs=
+=AVwy
+-----END PGP SIGNATURE-----
+
+--=-I7N+JOv3BQnR8sGikqET--
 
 
