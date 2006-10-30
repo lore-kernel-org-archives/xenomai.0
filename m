@@ -1,14 +1,17 @@
+Message-ID: <4545E457.2080103@domain.hid>
+Date: Mon, 30 Oct 2006 12:39:03 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Results of xenomai's latency test vs. RTAI's
-	latency test
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <21364954.1162202747823.JavaMail.ngmail@domain.hid>
-References: <21364954.1162202747823.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Date: Mon, 30 Oct 2006 12:37:44 +0100
-Message-Id: <1162208265.4955.17.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+	latency
+References: <4545D257.3000602@domain.hid>
+	<21364954.1162202747823.JavaMail.ngmail@domain.hid>
+	<33139598.1162206356611.JavaMail.ngmail@domain.hid>
+In-Reply-To: <33139598.1162206356611.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig141363BD3DC2179DEEFEB704"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,67 +24,77 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2006-10-30 at 11:05 +0100, M. Koehrer wrote:
-> Hi everybody,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig141363BD3DC2179DEEFEB704
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+M. Koehrer wrote:
+> Hi Jan,
 >=20
-> I am currently checking XENOMAI (V2.2.3 on a 2.6.17.7 kernel P4) to see=
- if I can use it
-> as replacement for a RTAI 3.3-cv application.
-> The first thing I did was to run the latency test in the the xenomai's =
-testsuite directory.
-> The results of the worst time latency are really ugly - about 40=B5s!
-> On the very same PC I got a value of about 5=B5s using RTAI 3.3-cv runn=
-ing the RTAI's
-> user/latency test.
+> thanks for your reply.
 >=20
-> My question is now: Why can there be such a huge difference between the=
- two systems on the very same
-> hardware??
-> Is there a way to improve this value?
+>>> I am currently checking XENOMAI (V2.2.3 on a 2.6.17.7 kernel P4) to s=
+ee if
+>> I can use it
+>>> as replacement for a RTAI 3.3-cv application.
+>>> The first thing I did was to run the latency test in the the xenomai'=
+s
+>> testsuite directory.
+>>> The results of the worst time latency are really ugly - about 40=B5s!=
+
+>>> On the very same PC I got a value of about 5=B5s using RTAI 3.3-cv ru=
+nning
+>> the RTAI's
+>>> user/latency test.
+>> I'm _very_ sceptical about your 5 us. Could you elaborate on how you
+>> load your box and how long those tests ran? See also TROUBLESHOOTING i=
+n
+>> the Xenomai source tree on appropriate load for triggering the worst c=
+ase.
 >=20
-> The RTAI system uses a 2.4.33 kernel, the XENOMAI uses the 2.6.17.7 ker=
-nel. Could this
-> be an issue?
+> My test setup was the same in both cases.
+> I connect to the RTAI/Xenomai PC via telnet and let the latency test ru=
+n for about 5 minutes.
+
+5 min. are far too short.
+
+It takes a while to "arrange" the worst case, i.e. a dirty cache, one
+unrelated IRQ or atomic section running while the timer (or any other
+event of interest) occurs, and then one or more further IRQs right after
+the woken-up task re-enabled interrupts. If you hit such scenario can be
+observed via the latency tracer (which has some impact on the numbers,
+but not on the structuring).
+
+> No other activity happens (well, there are a couple of services running=
+ like
+> apache, ... - but they should not cause any load).
+> The strange thing, is that in Xenomai even after a few seconds a latenc=
+y in the range of the
+> maximum latency is shown.
+
+Such a test on an unloaded system says almost nothing about a hard
+real-time system.
+
 >=20
+> I can retry the tests using a background stress situation.
 
-Several issues there:
-
-- are you 100% sure that your kernel config file for 2.4.33 is perfectly
-recycled for 2.6.17, e.g. are all latency killer options as listed in
-the TROUBLESHOOTING file really disabled? P4 configurations are
-jitter-prone; some options are know to induce bad latencies.
-
-- worst-case figures do not depend on how fast you get them, the latter
-information gives you nothing to interpret from. You may want to stress
-test the box for a longer period of time, using things like e.g. a dd
-loop, and a compilation in the background (dd if=3D/dev/zero of=3D/somefi=
-le
-count=3D500 bs=3D1M). "ping" network test is not the worst latency raiser=
-,
-actually, under some circumstances, it could even hide some latency
-issues, basically because it favours the code locality in i-cache. Also
-make sure to measure without X-window interaction in both cases; some
-graphic card drivers induce latencies, some don't. YMMV.
-
-This said, 40us on a P4 class machine is not an expected value for
-Xenomai/x86. To give you some reference figures, I have a uniprocessor
-2.8Ghz Xeon box (no HT) performing at 15 us worst-case, and an older
-dual 2.4Ghz Xeon SMP which honours 25 us worst-case in SMP mode. Fact is
-that to get that, I need to disable a number of ACPI options (except
-those which are needed to boot properly in SMP mode), and activate the
-SMI work-around.
-
-And above all, a good starting point would be to send your kernel
-configuration file, so that we could discuss about facts. Additionally,
-you may want to upgrade to 2.2.4; 2.2.3 has a FPU issue on some hw.
-
-> Thanks for any feedback on that issue!
->=20
-> Mathias
->=20
->=20
---=20
-Philippe.
+Jan
 
 
+--------------enig141363BD3DC2179DEEFEB704
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFReRXniDOoMHTA+kRAtApAJ9comIK8iBFudCMO/HS+q1wqhCJDgCeNowe
+uaWU6YUJm8ZSW5n8p+QUrCU=
+=e8sY
+-----END PGP SIGNATURE-----
+
+--------------enig141363BD3DC2179DEEFEB704--
 
