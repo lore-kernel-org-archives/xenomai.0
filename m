@@ -1,10 +1,14 @@
-Message-ID: <20061030170740.63056.qmail@domain.hid>
-Date: Mon, 30 Oct 2006 09:07:40 -0800 (PST)
-From: mani bhatti <imranbashirbhatti@domain.hid>
+Message-ID: <45463851.3030202@domain.hid>
+Date: Mon, 30 Oct 2006 18:37:21 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-1949248512-1162228060=:61117"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] rt_queue fails to allocate
+Subject: Re: [Xenomai-help] Problem with rt_queue
+References: <20061030160829.3119.qmail@domain.hid>
+In-Reply-To: <20061030160829.3119.qmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFAFBFC9FB2B372A3B7B18D49"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,221 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, xenomai@xenomai.org
+To: mani bhatti <imranbashirbhatti@domain.hid>
+Cc: xenomai@xenomai.org
 
---0-1949248512-1162228060=:61117
-Content-Type: multipart/alternative; boundary="0-1889830561-1162228060=:61117"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFAFBFC9FB2B372A3B7B18D49
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
---0-1889830561-1162228060=:61117
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+mani bhatti wrote:
+> Thanks Jan .
+> I have executed # patch -p0 < native-queue-bcast-fix.patch in directory=
+ where xenomai is installed and in my case it is  /usr/xenomai directory =
+but sender still goes out of memory  if no  listener  is  waiting on the =
+queue and displays the message
+>=20
+> rt_queue_alloc(queue_inout, 8) failed
+>=20
+> After this message is displayed and i try to execute sender again then =
+sender doesnot execute at all and simply displays above message so i need=
+ to restart my computer if i want to eecute sender again .Should i execut=
+e patch in some other directory or  is it some other problem?
 
-Hi
-I am working with rt_queues.I have a producer which sends data to a conusmer through rt_queue.The problem is when there is no consumer listening to the queue or waiting on the queue the producer displays the following Error (down ) even i am freeing the rt_queue when there is no consumer waiting on queue.I have attached the code for sender.
+Nope. Executing your original test case after applying my patch (AND
+rebuilding Xenomai - did you check if the kernel you run got updated?)
+clearly demonstrated on my box that the problem was fixed.
 
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_send(queue_input) failed sent bytes: 0
-rt_queue_alloc(queue_inout, 8) failed
-Segmentation fault
+I would suggest to do a clean rebuild from latest SVN.
+
+Jan
 
 
+--------------enigFAFBFC9FB2B372A3B7B18D49
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
- 
----------------------------------
-We have the perfect Group for you. Check out the handy changes to Yahoo! Groups.
---0-1889830561-1162228060=:61117
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Hi<br>I am working with rt_queues.I have a producer which sends data to a conusmer through rt_queue.The problem is when there is no consumer listening to the queue or waiting on the queue the producer displays the following Error (down ) even i am freeing the rt_queue when there is no consumer waiting on queue.I have attached the code for sender.<br><br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes:
- 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_send(queue_input) failed sent bytes: 0<br>rt_queue_alloc(queue_inout, 8) failed<br>Segmentation fault<br><br><br><p>&#32;
+iD8DBQFFRjhRniDOoMHTA+kRAk+4AJ9VB2NBdeDSlmLTFLaGC3qEKSZMtgCeMDfu
+WVxd8P0vbKmI33sfWhkI8ck=
+=AVQX
+-----END PGP SIGNATURE-----
 
-<hr size=1>We have the perfect Group for you. Check out the <a href="http://pa.yahoo.com/*http://us.rd.yahoo.com/evt=41144/*http://groups.yahoo.com/local/newemail.html">handy changes to Yahoo! Groups.</a>
-
---0-1889830561-1162228060=:61117--
-
---0-1949248512-1162228060=:61117
-Content-Type: text/x-csrc; name="queue_sender.c"
-Content-Description: 3236561751-queue_sender.c
-Content-Disposition: inline; filename="queue_sender.c"
-
-#include <math.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/io.h>
-#include <sys/mman.h>
-
-#include <native/task.h>
-#include <native/queue.h>
-#include <native/intr.h>
-
-
-#define STACK_SIZE 8192
-#define STD_PRIO1 2
-#define STD_PRIO2 1
-#define QUEUE_INPUT_LEN		1024
-#define USE_READ_WRITE
-RT_TASK zaehler1_task_ptr;
-RT_TASK zaehler2_task_ptr;
-int count1 = 0;
-int count2 = 0;
-int i;
-int end = 0;
-typedef struct  {
-	int counter;
-	int data;
-}TInputData;
-
-
-
-RT_QUEUE queue_input;
-
-
-//                      --s-ms-us-ns
-RTIME task_period_ns1 =     10000000llu;
-RTIME task_period_ns2 =     10000000llu;
-
-
-void zaehler1_task(void *cookie){
-        
-  int ret;
-  TInputData sendData;
-   memset(&sendData, 0, sizeof(TInputData));
-
-
-
-// ************************* Xenomai-Krempel ********************************************************************
-        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns1));
-        if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-                return;
-        }
-// ************************* Ende Xenomai-Krempel ****************************************************************
-
-
-// ********************** Beginn des wiederholt ausgefuehrten Codes **********************************************
-        while(!end){
-            
-               rt_task_wait_period();
-
-
-		void *msg = rt_queue_alloc(&queue_input, sizeof(TInputData));
-		if(msg == NULL) {
-			printf("rt_queue_alloc(queue_inout, %d) failed\n", sizeof(TInputData));
-			
-                     }
-		memcpy(msg, &sendData, sizeof(TInputData));
-		int bytesSent = rt_queue_send(&queue_input, msg,sizeof(TInputData), Q_BROADCAST);
-		if (bytesSent <= 0) {
-			printf("rt_queue_send(queue_input) failed: %d\n", bytesSent);
-			rt_queue_free(&queue_input, msg);
-			
-		}
-
-		sendData.counter++;  
-
-
-
-
-
-
-
-        }
-// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
-}
-
-
-
-       
-
-
-// signal-handler, to ensure clean exit on Ctrl-C
-void clean_exit(int dummy) {
-	printf("cleanup\n");
-	end = 1;
-	rt_task_delete(&zaehler1_task_ptr);
-	rt_task_delete(&zaehler2_task_ptr);
-	printf("end\n");
-}
-
-int main(int argc, char *argv[]) {
-	int err, ret;
-	
-       int res;
-	res = mlockall(MCL_CURRENT | MCL_FUTURE);
-	if (res < 0) {
-		printf("mlockall failed: %d\n", res);
-		
-	}
-        // INPUT_QUEUE
-	res = rt_queue_create(&queue_input, "queue_input", sizeof(TInputData) * QUEUE_INPUT_LEN,
-		QUEUE_INPUT_LEN, Q_FIFO | Q_SHARED);
-	if (res == -EEXIST)  {
-		res = rt_queue_bind(&queue_input, "queue_input", 1000);
-		//rt_queue_clear(&queue_input);
-	}
-	if (res < 0) {
-		printf("rt_queue_create(queue_input) failed: %d\n", res);
-		
-	}
-
-	
-
- 
-       printf("start\n");
-	// install signal handler
-	signal(SIGTERM, clean_exit);	
-	signal(SIGINT, clean_exit);	
-	// start timer
-	ret = rt_timer_start(TM_ONESHOT);
-	switch (ret) {
-		case 0:       printf("Mit dem Fahrrad nich inn ersten Wagen\n\n");
-		              break;
-		case -EBUSY:  printf("timer is running\n");
-		              break;
-		case -ENOSYS: printf("can't start timer\n");
-		              return ret;
-	}
-
-	/* create zaehler1_task */
-	err = rt_task_create(&zaehler1_task_ptr,"alpha",STACK_SIZE,STD_PRIO1,0);
-	
-	/* start zaehler1_task */
-	err = rt_task_start(&zaehler1_task_ptr,&zaehler1_task,NULL);
-
-	
-
-	// wait for signal & return of signal handler
-	pause();
-	fflush(NULL);
-	return 0;
-}
-
---0-1949248512-1162228060=:61117--
+--------------enigFAFBFC9FB2B372A3B7B18D49--
 
