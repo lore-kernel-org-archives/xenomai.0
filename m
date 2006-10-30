@@ -1,12 +1,11 @@
-Message-ID: <454613C5.2090100@domain.hid>
-Date: Mon, 30 Oct 2006 16:01:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Mon, 30 Oct 2006 16:12:36 +0100 (MET)
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
 Subject: Re: [Xenomai-help] xenomai revision 1772 on arm
-References: <1162218640.4993.5.camel@domain.hid>
 In-Reply-To: <1162218640.4993.5.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <Pine.GSO.4.64.0610301611060.6748@domain.hid>
+References: <1162218640.4993.5.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="-559023410-851401618-1162221156=:6748"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,19 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?=22Schl=E4gl_=5C=22Manfred_jun=2E=5C=22=22?= <manfred.schlaegl@domain.hid>
+To: "=?ISO-8859-1?Q?Schl=E4gl?= Manfred jun." <manfred.schlaegl@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Schl=E4gl Manfred jun. wrote:
-> Hi!
->=20
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+---559023410-851401618-1162221156=:6748
+Content-Type: TEXT/PLAIN; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-MIME-Autoconverted: from 8bit to quoted-printable by
+	studserv.stud.uni-hannover.de id k9UFCcMF009130
+
+On Mon, 30 Oct 2006, Schl=E4gl Manfred jun. wrote:
+
 > Should be a hint, if anyone has similar Problems:
->=20
+>
 > Xenomai (rev. 1772) was not running on my platform. (no
 > timer_tick-calls; timer stopped)
->=20
+>
 > I had to do following downgrade:
->=20
+>
 > Index: include/asm-arm/hal.h
 > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -36,9 +43,9 @@ Schl=E4gl Manfred jun. wrote:
 > --- include/asm-arm/hal.h       (revision 1772)
 > +++ include/asm-arm/hal.h       (working copy)
 > @@ -103,10 +103,13 @@
-> =20
->  static inline void rthal_timer_program_shot (unsigned long delay)
->  {
+>
+> static inline void rthal_timer_program_shot (unsigned long delay)
+> {
 > +    if(!delay)
 > +        delay =3D 10;
 > +    __ipipe_mach_set_dec(delay);
@@ -46,19 +53,17 @@ Schl=E4gl Manfred jun. wrote:
 > -        rthal_trigger_irq(RTHAL_TIMER_IRQ);
 > -     else
 > -       __ipipe_mach_set_dec(delay);
->  }
-> =20
->      /* Private interface -- Internal use only */
->=20
->=20
+> }
+>
+>     /* Private interface -- Internal use only */
+>
+>
 > It's simply a workaround yet. I'll try to find the error in my
 > timer-handling.
 
-You probably have the same problem as PXA, you can not program
-the timer for a too short delay, you should handle this in the
-implementation of __ipipe_mach_set_dec for your platform, not
-in the platform independent code.
+What is your timer operation mode? Free-running or counting down and=20
+aperiodic?
 
---=20
-                                                  Gilles Chanteperdrix
+Sebastian
+---559023410-851401618-1162221156=:6748--
 
