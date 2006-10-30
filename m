@@ -1,14 +1,11 @@
-Message-ID: <15328399.1162222490427.JavaMail.ngmail@domain.hid>
-Date: Mon, 30 Oct 2006 16:34:50 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-Subject: Re: [Xenomai-help] Results of xenomai's latency test vs. RTAI's
-In-Reply-To: <1162219241.5188.21.camel@domain.hid>
+Message-ID: <20061030160829.3119.qmail@domain.hid>
+Date: Mon, 30 Oct 2006 08:08:29 -0800 (PST)
+From: mani bhatti <imranbashirbhatti@domain.hid>
+Subject: Re: [Xenomai-help] Problem with rt_queue
+In-Reply-To: <45423948.10203@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <1162219241.5188.21.camel@domain.hid> <1162208265.4955.17.camel@domain.hid>
-	<21364954.1162202747823.JavaMail.ngmail@domain.hid>
-	<16802252.1162217706570.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/alternative; boundary="0-1327746162-1162224509=:2883"
+Content-Transfer-Encoding: 8bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,76 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi everybody,
+--0-1327746162-1162224509=:2883
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-I have repeated the test using a parallel stress test (dd if=3D/dev/sda of=
-=3D/dev/null, I have
-a SATA harddisk).
-The results are that my RTAI latency of 4=B5s is not valid, here the latenc=
-y is about 26=B5s.
-However, xenomai shows a higher latency of about 40=B5s.
-The interesting thing is, that without load RTAI seems to run very long in =
-a very=20
-low latency region, at the same setup xenomai shows large latencies earlier=
-.
+Thanks Jan .
+I have executed # patch -p0 < native-queue-bcast-fix.patch in directory where xenomai is installed and in my case it is  /usr/xenomai directory but sender still goes out of memory  if no  listener  is  waiting on the queue and displays the message
 
+rt_queue_alloc(queue_inout, 8) failed
 
-Well, I have repeated these tests on a different PC that has a server mainb=
-oard and=20
-a Pentium D 4 (real dual core) CPU.
-The results (measured under load) are much better here:
-RTAI shows a latency of about 6=B5s
-Xenomai shows a latency of about 10=B5s.
-Both values are acceptable, however I wonder where the difference comes fro=
-m?
+After this message is displayed and i try to execute sender again then sender doesnot execute at all and simply displays above message so i need to restart my computer if i want to eecute sender again .Should i execute patch in some other directory or  is it some other problem?
+Thanks for the help.
 
-Thanks for all the feedback on that issue!
+Jan Kiszka <jan.kiszka@domain.hid> wrote: mani bhatti wrote:
+> Thanks a lot Jan for the reply.Now after changing the task name queue is working but 
+>   following message is displayed by the sender if there is no queue which you had pointed in the last email.
+>   rt_queue_alloc(queue_inout, 8) failed
+> Segmentation fault
+> 
+>   Actually i dont  understand about the patch which you had sent in your last email (because patch seems to be incomple to me ) because that seems to be part of xenomai source code and if that is how can i use that source code in my program for solving my problem i mean at which place in my program should i put that patch .Sorry for your inconvenience.thanks.
+>   
 
-Regards
+Goto xenomai source directory and execute
 
-Mathias
-> > I have rebuild my system using V2.2.4 of xenomai.
-> > Also, I had a look to reuse the kernel configuration from the 2.4.33 RT=
-AI
-> system.
-> > However, the results are more or less the same.
-> > The only kernel module I have loaded is the "tg3" network driver, the
-> chipset of the=20
-> > PC (ICH6) is supported by the SMI detection and it is activated.
-> >=20
->=20
-> On such hw, you may want to enable the following:
-> CONFIG_BLK_DEV_IDEDMA_PCI=3Dy
-> CONFIG_BLK_DEV_IDEDMA=3Dy
-> CONFIG_IDEDMA_AUTO=3Dy
->=20
-> > I have enclosed my kernel configuration, perhaps this can help to ident=
-ify
-> an issue.
-> > I do not have X11 running, it is a text-mode only system that is
-> controlled via telnet from
-> > another PC.
-> >=20
-> > I'll try to do a stress test on the RTAI system as well.
-> >=20
->=20
-> You could try running RTAI 3.3 over 2.6.17 with the very same config
-> file too (Xenomai opts aside, of course), so you could rule out any
-> configuration problem if the gap still exists.
+# patch -p0 < native-queue-bcast-fix.patch
+
+But I guess the patch will soon be SVN as well fixing your problem.
+
+Jan
 
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
 
+ 
+---------------------------------
+Get your email and see which of your friends are online - Right on the  new Yahoo.com
+--0-1327746162-1162224509=:2883
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+Thanks Jan .<br>I have executed # patch -p0 &lt; native-queue-bcast-fix.patch in directory where xenomai is installed and in my case it is&nbsp; /usr/xenomai directory but sender still goes out of memory&nbsp; if no&nbsp; listener&nbsp; is&nbsp; waiting on the queue and displays the message<br><br>rt_queue_alloc(queue_inout, 8) failed<br><br>After this message is displayed and i try to execute sender again then sender doesnot execute at all and simply displays above message so i need to restart my computer if i want to eecute sender again .Should i execute patch in some other directory or&nbsp; is it some other problem?<br>Thanks for the help.<br><br><b><i>Jan Kiszka &lt;jan.kiszka@domain.hid&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;"> mani bhatti wrote:<br>&gt; Thanks a lot Jan for the reply.Now after changing the task name queue is working but <br>&gt;   following message is displayed by
+ the sender if there is no queue which you had pointed in the last email.<br>&gt;   rt_queue_alloc(queue_inout, 8) failed<br>&gt; Segmentation fault<br>&gt; <br>&gt;   Actually i dont  understand about the patch which you had sent in your last email (because patch seems to be incomple to me ) because that seems to be part of xenomai source code and if that is how can i use that source code in my program for solving my problem i mean at which place in my program should i put that patch .Sorry for your inconvenience.thanks.<br>&gt;   <br><br>Goto xenomai source directory and execute<br><br># patch -p0 &lt; native-queue-bcast-fix.patch<br><br>But I guess the patch will soon be SVN as well fixing your problem.<br><br>Jan<br><br></blockquote><br><p>&#32;
+
+<hr size=1>Get your email and see which of your friends are online - Right on the <a href="http://us.rd.yahoo.com/evt=42973/*http://www.yahoo.com/preview"> new Yahoo.com</a>
+
+--0-1327746162-1162224509=:2883--
 
