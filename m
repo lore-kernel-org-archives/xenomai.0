@@ -1,90 +1,76 @@
-Message-ID: <45538D53.5090305@domain.hid>
-Date: Thu, 09 Nov 2006 21:19:31 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] I-pipe patch for ARM S3C24xx (v4)
-References: <E1GiChy-0006Bp-5K@mailer.emlix.com>
-In-Reply-To: <E1GiChy-0006Bp-5K@mailer.emlix.com>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig92B02502A92EA1EF0204C0F8"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C6FC79.BF3D13F2"
+Date: Tue, 31 Oct 2006 10:18:56 +1100
+Message-ID: <1F695B041C4BC345AFB7BD5D647B85000119975A@mail.senetas.com>
+From: "John Weston" <john.weston@domain.hid>
+Subject: [Xenomai-help] More woes with linux 2.6.18 and xenomai 2.2.3 or
+	2.2.4 - irq_desc structure changed
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig92B02502A92EA1EF0204C0F8
-Content-Type: text/plain; charset=ISO-8859-15
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C6FC79.BF3D13F2
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Sebastian Smolorz wrote:
-> Hi all,
->=20
-> now that the teething problems of my I-pipe port to the S3C24xx are cur=
-ed=20
-> (hopefully ...) I'm going to iterate it to v4. We've established a proj=
-ect=20
-> homepage for that port
-> http://opensource.emlix.com/ipipe-s3c24xx/
-> in order to concentrate the source code and information at one point. P=
-robably=20
-> tomorrow I will come up with a patch in order to address point 2 in my =
-email=20
-> from 27.10.2006 ([1]). After that I can go to v5 of my patch and beg fo=
-r=20
-> integration. :-)
 
-Nice to hear.
+Continuing from my previous email regarding xenomai 2.2.4 and linux
+2.6.18 for ppc (8260), I have also noticed that the underlying irq_desc
+structure has changed (in include/linux/irq.h), which in turn breaks
+hal.c.
 
->=20
-> However, there is one disturbing issue. When I execute
->=20
-> dd if=3D/dev/zero of=3D/dev/null
->=20
-> and the latency test in userspace with a period not less than 150 us th=
-e worst=20
-> case latency is about 220 us. But when I start latency with -p 100 I ge=
-t a=20
-> softlock like the one attached. I guess this is the same problem as Det=
-lef=20
-> Vollmann described in [2]. So I think it's time for a big fat ARM-speci=
-fic=20
-> warning in the troubleshooting file and perhaps a modification of the=20
-> testsuite so that if being compiled for ARM the default sample periods =
-are=20
-> greater than the 100 us now.
+Are there any more recents patches available to fix this? Thanks in
+advance
 
-Something is preventing the watchdog kthread from being executed for
-more than 10 s. Maybe this is just a sign that the systems is hopelessly
-overloaded (what are average latencies?). Maybe it is a real IRQ or
-scheduling issue in Linux caused by I-pipe. Maybe it is time to port the
-I-pipe tracer... ;)
+John  Weston
+Senetas PL
 
-Jan
+------_=_NextPart_001_01C6FC79.BF3D13F2
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7650.28">
+<TITLE>More woes with linux 2.6.18 and xenomai 2.2.3 or 2.2.4 - irq_desc =
+structure changed</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+<BR>
 
---------------enig92B02502A92EA1EF0204C0F8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<P><FONT SIZE=3D2 FACE=3D"Arial">Continuing from my previous email =
+regarding xenomai 2.2.4 and linux 2.6.18 for ppc (8260), I have also =
+noticed that the underlying irq_desc structure has changed (in =
+include/linux/irq.h), which in turn breaks hal.c.</FONT></P>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+<P><FONT SIZE=3D2 FACE=3D"Arial">Are there any more recents patches =
+available to fix this? Thanks in&nbsp; advance</FONT>
+</P>
 
-iD8DBQFFU41TniDOoMHTA+kRAt1pAJwMJkAY0P6X7v+151IsayJdZA/OAQCfaP+J
-O3ElW8ruGEGlN2FwVBrk2FM=
-=popJ
------END PGP SIGNATURE-----
+<P><FONT SIZE=3D2 FACE=3D"Arial">John&nbsp; Weston</FONT>
 
---------------enig92B02502A92EA1EF0204C0F8--
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Senetas PL</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C6FC79.BF3D13F2--
 
