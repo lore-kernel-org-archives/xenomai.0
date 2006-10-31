@@ -1,44 +1,39 @@
-Message-ID: <4954.192.168.2.153.1162320609.squirrel@domain.hid>
-Date: Tue, 31 Oct 2006 18:50:09 -0000 (WET)
-From: mjcoelho@domain.hid
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-core] Bug in taskSuspend for user mode vxworks
+Date: Tue, 31 Oct 2006 20:17:45 +0100
+References: <200610252346.34150.niklaus.giger@domain.hid>
+	<200610311951.29678.niklaus.giger@domain.hid>
+	<45479DC5.4040509@domain.hid>
+In-Reply-To: <45479DC5.4040509@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Share interrupts between two subdevices
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+Message-Id: <200610312017.52619.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi!
-
-
-I'm implementing a driver for a device that has two subdevices (basically=
-,
-a serial board with two ports). For this to work, i need to use the same
-interrupt for both subdevices.
-
-So the driver, ATM, initializes both subdevices and then only one request=
-s
-and enables the interrupt.
-
-Does RTDM call the interrupt handler of the subdevice that didn't request
-the irq? What capabilities does RTDM have in terms of interrupt sharing
-between drivers in rt "environment"?
-
-
-Thanks for your help!
-
-
-
-
-
-
-
+Am Dienstag, 31. Oktober 2006 20:02 schrieb Wolfgang Grandegger:
+> > I used revision 1747 of the xenomai trunk, linux 2.4.17 + some small
+> > patches
+>
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ^^^^^^
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0I think you me=
+an linux 2.4.14 here.
+Sorry. My mistake: Linux 2.6.14 to match adeos-ipipe-2.6.14-ppc-1.5-01.patc=
+h.
+=2D-=20
+Niklaus Giger
 
