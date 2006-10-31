@@ -1,13 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] Maximum number of realtime tasks
-Date: Tue, 31 Oct 2006 12:15:32 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB0144D632@domain.hid>
-In-Reply-To: <45473968.2070906@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] Xenoami Kernel Configuration Description
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0144D625@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB0144D625@domain.hid>
+Content-Type: text/plain
+Date: Tue, 31 Oct 2006 13:47:59 +0100
+Message-Id: <1162298879.4996.62.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,25 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
+On Tue, 2006-10-31 at 12:02 +0000, Daniel Schnell wrote:
+> Hi,
+>  
+> I would like to contribute the Xenomai Kernel configuration help
+> documentation and therefore will ask here a lot of annoying questions
+> probably.
+>  
+> I am working to port an existing pSoS application to the POSIX Xenomai
+> Skin. Unfortunately the application so far works much better on NPTL
+> threads under a 2.6.17 based Kernel (without rt capability) than on
+> the Xenomai enabled 2.4.25 Denx PPC Kernel for our MPC5200B based
+> board where we have Kernel Oopses and lockups.
 
-> Setting the stack size with pthread_attr_setstacksize seems to allow
-> a stack greater than the limit fixed by ulimit, but I do not think it
-> is wise to rely on such a behaviour. =20
+A good starting point would be to post those oops to the list, and also
+some information about the exact configuration you are using
+(kernel-based, UVM-based?). We cannot work on anything else than facts,
+and the time spent collecting them may give you useful answers in
+return, so this could be a good deal for everyone.
 
-If one wants to have always the same stack size for every thread than
-ulimit -s would be probably the way to go. But often in Realtime
-applications it is the preferred way of setting  the stack size
-individually, so one doesn't waste too much memory. A mixture of both
-seems to be tempting: setting a general stack size and individually
-change it. So why not rely on this ? Which part in the system actually
-creates the stack for a Xenomai task and how is the interaction between
-Linux and Xenomai to derive the general system wide stack limit to a
-Xenomai task ?
+Please keep in mind that without bug reports, we are basically blind,
+unless some core developers rely on the same software setup than you do,
+which is pretty unlikely wrt using the pSOS skin in a production
+environment.
 
-Is there a way to find out, which thread has which stack size ?
+-- 
+Philippe.
 
-Daniel
+
 
