@@ -1,108 +1,37 @@
-Message-ID: <45670C26.3060408@domain.hid>
-Date: Fri, 24 Nov 2006 16:13:42 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4566F619.9060403@domain.hid> <4567033F.1090206@domain.hid>
-In-Reply-To: <4567033F.1090206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [Xenomai-help] RT-Socket-CAN update, please read
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] Maximum number of realtime tasks
+Date: Tue, 31 Oct 2006 11:38:25 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB0144D60E@is-hdq-exchange.marel.net>
+In-Reply-To: <454713B5.2020707@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Hi Wolfgang,
-> 
-> some more comments after looking at code and running a compiler:
-> 
-> ...
->> 	* ksrc/drivers/can/rtcan_raw.c,
->> 	ksrc/drivers/can/sja1000/rtcan_sja1000.c,
->> 	ksrc/drivers/can/mscan/rtcan_mscan.c: timestamps are now read and
->> 	copied in rtcan_recv() and rtcan_tx_loopbcak().
-> 
-> ...thus multiple times in the same IRQ context if there are multiple
-> packets pending. Do we gain enough from the new design that helps to
-> compensate the drawback (considering slow rtdm_clock_read()
+Gilles Chanteperdrix wrote:
+>=20
+> Pay attention to the stack size of the user-space tasks: the default
+> of 8 Megabytes will exhaust your RAM rapidly. So, you should either :
+> - set the default stack size with ulimit;
+> - or set the the stack size of the created threads, but in this case
+> the main thread will have an 8 Megabytes stack.=20
+>=20
+> In order to set the stack size of a thread, use
+> pthread_attr_setstacksize if using the POSIX skin or the stksize
+> parameter of rt_task_create if using the native skin. =20
 
-I think you agree, that it's unlikely, that an RX interrupt is handled 
-together with an TX done or an error interrupt. And we save reading the 
-timestamp when there is just a TX done interrupt (without TX loopback, 
-of course). It makes the driver dependent code simpler and cleaner.
-
-> implementations)? Moreover, we may see a feature one day that the RTDM
-> layer will provide you timestamps for an IRQ event (e.g. when the
-> handler will be running at higher latency as a thread).
-
-Then we need to modify the interface to the driver anyhow.
-
-> ...
->> 	* ksrc/drivers/can/mscan/Kconfig, ksrc/drivers/can/sja1000/Kconfig,
->> 	ksrc/drivers/can/Kconfig: add more help for kernel parameters.
-> 
-> Suggestion: N x "depends on XYZ" => 1 x "if XZY != n ... endif"
-
-OK, no priority though.
-
-> ...
->> 	* ksrc/drivers/can/sja1000/rtcan_sja1000.c,
->> 	ksrc/drivers/can/sja1000/rtcan_isa.c,
->> 	ksrc/drivers/can/sja1000/rtcan_mem.c,
->> 	ksrc/drivers/can/sja1000/rtcan_peak_pci.c,
->> 	ksrc/drivers/can/sja1000/rtcan_peak_dng.c: Remove rtcan_dev_free()
->> 	from rtcan_sja1000_unregister() to allow proper cleanup after the
->> 	device has been unregistered.
-> 
-> [2.4.33 build for x86]
-> rtcan_peak_dng.c: In function `rtcan_peak_dng_exit_one':
-> rtcan_peak_dng.c:315: warning: implicit declaration of function
-> `rtcan_free_dev'
-
-Yes, I realized already this bug.
-
-> [Not related to this change]
-> In order to use the parport dongle also with recent PnP ports (e.g. in
-> notebooks), you may want to have a look at the code I added to irqbench
-> for this purpose:
-> 
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/testing/irqbench.c?v=SVN-trunk#496
-> 
-> The background is that once you unload the parport module, the port will
-> be powered off.
-
-Are there still laptops with parallel ports? Anyhow, I'm going to check 
-that.
-
-> ...
->> 	* src/drivers/Makefile, ksrc/drivers/can/*, scripts/Modules.frag,
->> 	src/utils/can/README: Replace "rtcan" with "can" in macro definitions
->> 	CONFIG_XENO_DRIVERS_RTCAN_* and module names xeno_rtcan_* to comply to
->> 	the common naming scheme.
-> 
-> Hmm, wouldn't shortening some file names also make sense then?
-
-Well, we could remove "rtcan_", but I have not time to do it now.
-
-> Jan
-> 
-> 
-> PS: 2.4 help patching and updating work nicely for me - except for
-> choices which is obviously a 2.4 bug. I saw that the kernel then
-> sometimes stuffs all information into the first item. Maybe scriptable
-> for Xenomai... :->
-
-Yes, I observed the same behavior.
-
-Wolfgang.
-
-
+If I set the stacksize generally via ulimit -s and additionally via the
+pthread_attr_setstacksize() how is the precedence of one of these calls
+over the other ? Does pthread_attr_setstacksize
 
