@@ -1,40 +1,49 @@
-Message-ID: <452BD97D.1030507@domain.hid>
-Date: Tue, 10 Oct 2006 19:33:49 +0200
-From: Pavel Pirkl <pavelpirkl@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-2; format=flowed
+Subject: Re: [Xenomai-core] Buildbot finds unresolved symbols
+	`xnarch_atomic_xchg'
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200610310737.58954.niklaus.giger@domain.hid>
+References: <200610310737.58954.niklaus.giger@domain.hid>
+Content-Type: text/plain
+Date: Tue, 31 Oct 2006 09:27:37 +0100
+Message-Id: <1162283258.4996.20.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] collection of example
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hello,
-I am a novice in using of RTOS Xenomai.
+On Tue, 2006-10-31 at 07:37 +0100, Niklaus Giger wrote:
+> Hi 
+> 
+> I see the following failure since revision 1771. e.g. 
+> http://ngiger.dyndns.org/buildbot-full/ppc_f/builds/56/step-mk_kernel/1
+> 
+> kernel/built-in.o: In function `xnintr_irq_handler':
+> intr.c:(.text+0x34334): undefined reference to `xnarch_atomic_xchg'
+> intr.c:(.text+0x34424): undefined reference to `xnarch_atomic_xchg'
+> kernel/built-in.o: In function `xnpod_schedule':
+> (.text+0x38470): undefined reference to `xnarch_atomic_xchg'
+> kernel/built-in.o: In function `xnpod_schedule_runnable':
+> (.text+0x39f28): undefined reference to `xnarch_atomic_xchg'
+> kernel/built-in.o: In function `xnpod_init':
+> (.text+0x3a770): undefined reference to `xnarch_atomic_xchg'
+> make: *** [.tmp_vmlinux1] Fehler 1
+> 
 
-1.
-So I need some example for deep understanding.
-I found only these url:
-http://www.captain.at                                  very good 
-articles, but very easy for deep understanding all function of Xenomai
-http://www.rts.uni-hannover.de/rtaddon/
-Where Can I find other example?
+Fixed, thanks.
 
-2.
-Now I am using Linux distribution Slackware and Xenomai.
-But I need to find some minidistribution for booting from CompactFlash disk.
-And I need to stop written to this CompactFlash so all programs must to 
-run from RAM memory.
-Can you help me? I hear about ELinOS and free licence?
-
-Pirkl
+> Best regards
+-- 
+Philippe.
 
 
 
