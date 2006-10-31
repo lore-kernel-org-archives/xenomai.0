@@ -1,15 +1,13 @@
-Message-ID: <45634FC9.9060908@domain.hid>
-Date: Tue, 21 Nov 2006 20:13:13 +0100
+Message-ID: <45478914.4030309@domain.hid>
+Date: Tue, 31 Oct 2006 18:34:12 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 3/3] control POSIX
-	skin	debugging	independently
-References: <456236E5.5060203@domain.hid> <4562CE05.70900@domain.hid>
-	<4562E24E.4000209@domain.hid> <456328F8.3050803@domain.hid>
-In-Reply-To: <456328F8.3050803@domain.hid>
+Subject: Re: [Xenomai-core] My work on Xenomai integration to LTTng / LTTV
+References: <1162302832.3687.12.camel@domain.hid>
+In-Reply-To: <1162302832.3687.12.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD356F5537C67E07A8FD8D20F"
+	boundary="------------enigB768F1292A54BC9660753F7A"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,48 +18,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Thomas Lockhart <Thomas.Lockhart@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: jean-olivier.villemure@domain.hid
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD356F5537C67E07A8FD8D20F
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enigB768F1292A54BC9660753F7A
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Thomas Lockhart wrote:
->> About the "if (XENO_DEBUG(POSIX))": I'm OK with converting them back t=
-o
->> "#if XENO_DEBUG(POSIX)" if this is preferred.
+Jean-Olivier Villemure wrote:
+> Hello,
 >=20
-> If the construct is *only* used at compile time, then the second form i=
-s
-> certainly more explicit in that regard. However, it precludes alternate=
-
-> implementations which allow conditional debugging at run time. Would
-> that not be the point of the first form? So in that sense they are not
-> equivalent source code constructs.
+> I'm currently working on the integration of Xenomai tracing in LTTng
+> (Linux Trace Toolkit Next Generation) and the event viewing in LTTV
+> (Linux Trace Toolkit Viewer).
 >=20
+> At this moment, I 'm tracing events about task handling, period and
+> soon, mutex and semaphore synchronization.
 
-True, but we do not have concrete plains to make this runtime
-switchable. And at least for the debugging features of the POSIX skin,
-runtime switching would be of no real use.
+Wow, great news!
+
+>=20
+> Inserting traqcing points in Xenomai nucleus is not very difficult, my
+> main work is focus on the controlflow viewer module of LTTV. At this
+> moment, we can open a trace and view:
+> - Task state : init, started, running, suspended, overrunning (period
+> miss)
+> - Period timer tick for periodic task
+> - Textual information about the task (name, period, priority, birth)
+> - Mutex/semaphore owned by specific task
+> - Soon task waiting on mutex/semaphore
+>=20
+> Look at the screenshot to have a better idea.
+>=20
+> The next step will be to generate some statistics, for this step I will=
+
+> need your help. As Xenomai users, which kind of stats would you want to=
+
+> compute?
+
+ - CPU usage (see /proc/xenomai/stat for average numbers, but we should
+   now be able to precisely calculate them for a specific period)
+ - Waiting times after activation (maybe one can define deadlines later
+   and verify them)
+ - Number of preemptions per second or whatever while a task is runnable
+ - Number of blockades a task faces due to unavailable resources
+   (mutexes, semaphores, etc.)
+
+=2E..just to through some first ideas in.
+
+>=20
+> After that, I'll study the possibilities of simulating an execution
+> trace from an existing trace by modifying some parameters (period
+> length, ...)
+>=20
+> Any ideas are welcome!
+
+So you have an integrated I-pipe+LTTng patch which is able to record
+events under any context and push them to Linux non-RT user-space,
+right? How does this work, what impact does it have (also compared to
+the I-pipe tracer, which is not light-weight)? And, most important, when
+will we be able to see some code (ipipe add-on patch)? Would be good to
+assess how this could be integrated on the long term into
+I-pipe/Xenomai, at least until required LTTng parts become mainstream.
 
 Jan
 
 
---------------enigD356F5537C67E07A8FD8D20F
+--------------enigB768F1292A54BC9660753F7A
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFFY0/JniDOoMHTA+kRArR7AJ9O3irF5ExiS/NRySAHQZwvCiN1nwCdHEZ1
-fIyXJdipQ3RSUroH4tEP0g0=
-=h9Gr
+iD8DBQFFR4kUniDOoMHTA+kRAh6EAJ91iXR5ZDJ/4fdCKr2cmdU4jmWoAwCfbolm
+/bib9MuwFE3mpBvKahbmwro=
+=CsYn
 -----END PGP SIGNATURE-----
 
---------------enigD356F5537C67E07A8FD8D20F--
+--------------enigB768F1292A54BC9660753F7A--
 
