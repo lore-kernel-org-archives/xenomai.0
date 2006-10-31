@@ -1,12 +1,13 @@
-Message-ID: <45476F15.6050706@domain.hid>
-Date: Tue, 31 Oct 2006 16:43:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Maximum number of realtime tasks
-References: <DD39B5C3F4963040ADC9768BE7E430CB0144D632@domain.hid>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0144D632@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] Kernel OOps large appl.
+Date: Tue, 31 Oct 2006 16:37:02 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB0144D777@domain.hid>
+In-Reply-To: <1162308339.4996.107.camel@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,40 +17,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Daniel Schnell wrote:
-> Gilles Chanteperdrix wrote:
-> 
-> 
->>Setting the stack size with pthread_attr_setstacksize seems to allow
->>a stack greater than the limit fixed by ulimit, but I do not think it
->>is wise to rely on such a behaviour.  
-> 
-> 
-> If one wants to have always the same stack size for every thread than
-> ulimit -s would be probably the way to go. But often in Realtime
-> applications it is the preferred way of setting  the stack size
-> individually, so one doesn't waste too much memory. A mixture of both
-> seems to be tempting: setting a general stack size and individually
-> change it. So why not rely on this ? Which part in the system actually
-> creates the stack for a Xenomai task and how is the interaction between
-> Linux and Xenomai to derive the general system wide stack limit to a
-> Xenomai task ?
+Philippe Gerum wrote:
+=20
+=20
+> IOW, something seems out of sync in your configuration. Does the
+> testsuite work on your board, and specifically the "cyclic" test?=20
 
-The way I understand ulimit (or the setrlimit syscall), it should be
-used to set a maximum limit, so the fact that pthread_attr_setstacksize
-allow to bypass this limit may be a bug that may be corrected one day.
-So, I repeat, I would not rely on this behaviour.
 
-> 
-> Is there a way to find out, which thread has which stack size ?
+The cyclic test does the following output:
 
-Each thread stack is set up as a mapping in /proc/pid/maps, so if you
-know one address on each stack, you may find out which thread has
-which stack. Ok, it is not easy, but I know no other way.
+./cyclictest -c 1 -d 500 -i 500 -l 10000 -n
+0.06 0.03 0.01 1/21 354
 
--- 
-                                                  Gilles Chanteperdrix
+T: 0 (  354) P: 0 I:     500 C:   10000 Min:       7 Act:       7 Avg:
+10 Max:     201
+(needs a relatively short time)
+
+./cyclictest -c 0 -d 500 -i 500 -l 10000 -n
+0.00 0.01 0.00 1/21 357
+
+T: 0 (  357) P: 0 I:     500 C:   10000 Min:       6 Act:       6 Avg:
+12 Max:     403
+(needs a relatively short time)
+
+./cyclictest -c 1 -d 500 -i 500 -l 10000 -n -r
+0.00 0.00 0.00 1/21 367
+
+T: 0 (  367) P: 0 I:     500 C:   10000 Min:      10 Act:      11 Avg:
+19 Max:     491
+(needs a relatively short time)
+
+./cyclictest -c 1 -d 500 -i 500 -l 10000 -s
+T: 0 (  360) P: 0 I:     500 C:   10000 Min:   -6174 Act:94983888
+Avg:47488852 Max:94983888
+(needs much longer)
+
+./cyclictest -c 1 -d 500 -i 500 -l 10000
+0.16 0.03 0.01 1/22 379
+
+T: 0 (  379) P: 0 I:     500 C:   10000 Min:-5964339 Act:-5964339
+Avg:-3481100 Max: -997872
+
+(returns immediately without doing anything)
+
+./cyclictest
+
+(locks up system immediately)
+
+
+
+Probably not good....
+
+
+Regards,
+
+Daniel.
+
+=20
 
