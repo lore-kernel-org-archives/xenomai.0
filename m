@@ -1,70 +1,46 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Buildbot finds unresolved
-	=?iso-8859-1?q?symbols=09=60xnarch=5Fatomic=5Fxchg=27?=
-Date: Tue, 31 Oct 2006 13:09:47 +0100
-References: <200610310737.58954.niklaus.giger@domain.hid>
-	<45470076.8030601@domain.hid>
-In-Reply-To: <45470076.8030601@domain.hid>
+Message-ID: <45473968.2070906@domain.hid>
+Date: Tue, 31 Oct 2006 12:54:16 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-help] Maximum number of realtime tasks
+References: <DD39B5C3F4963040ADC9768BE7E430CB0144D60E@is-hdq-exchange.marel.net>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0144D60E@is-hdq-exchange.marel.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200610311309.48160.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-Am Dienstag, 31. Oktober 2006 08:51 schrieb Wolfgang Grandegger:
-> Hi Niklaus,
->
-> Niklaus Giger wrote:
-> > Hi
-> >
-> > I see the following failure since revision 1771. e.g.
-> > http://ngiger.dyndns.org/buildbot-full/ppc_f/builds/56/step-mk_kernel/1
-> >
-> > kernel/built-in.o: In function `xnintr_irq_handler':
-> > intr.c:(.text+0x34334): undefined reference to `xnarch_atomic_xchg'
-> > intr.c:(.text+0x34424): undefined reference to `xnarch_atomic_xchg'
-> > kernel/built-in.o: In function `xnpod_schedule':
-> > (.text+0x38470): undefined reference to `xnarch_atomic_xchg'
-> > kernel/built-in.o: In function `xnpod_schedule_runnable':
-> > (.text+0x39f28): undefined reference to `xnarch_atomic_xchg'
-> > kernel/built-in.o: In function `xnpod_init':
-> > (.text+0x3a770): undefined reference to `xnarch_atomic_xchg'
-> > make: *** [.tmp_vmlinux1] Fehler 1
->
-> I lost track somehow. What version of the Linux kernel, ADEOS-IPIPE and
-> Xenomai are you using?
-Usually, quite a recent one. My main target is a custom PPC405 target, running 
-U-Boot, Linux 2.6.14, adeos-ipipe-2.6.14-ppc-1.5-01.patch.
+Daniel Schnell wrote:
+> Gilles Chanteperdrix wrote:
+> 
+>>Pay attention to the stack size of the user-space tasks: the default
+>>of 8 Megabytes will exhaust your RAM rapidly. So, you should either :
+>>- set the default stack size with ulimit;
+>>- or set the the stack size of the created threads, but in this case
+>>the main thread will have an 8 Megabytes stack. 
+>>
+>>In order to set the stack size of a thread, use
+>>pthread_attr_setstacksize if using the POSIX skin or the stksize
+>>parameter of rt_task_create if using the native skin.  
+> 
+> 
+> If I set the stacksize generally via ulimit -s and additionally via the
+> pthread_attr_setstacksize() how is the precedence of one of these calls
+> over the other ? Does pthread_attr_setstacksize
 
-When I refer to the buildbot (acontinuos integration tool), I mean the the 
-buildbot master, running at http://ngiger.dyndns.org/buildbot/ . It tracks 
-the most recent svn version of the buildbot and builds them for various 
-target (simulator, ppc405 posix, pp405 vxworks, tqm_q with rtnet, ppc60x).
-Each build contains (if one looks at the different build steps) all the 
-relevant information (kernel, ipipe-version, .config) etc.
+Setting the stack size with pthread_attr_setstacksize seems to allow a
+stack greater than the limit fixed by ulimit, but I do not think it is
+wise to rely on such a behaviour.
 
-For details of the above mention build go to:
-http://ngiger.dyndns.org/buildbot-full/ppc_f/builds/56
-and following the different build logs pointed by the stio links.
-
-Documentation about the xenomai buildbot can be found at:
-http://ngiger.dyndns.org/xenomai-data/xeno_buildbot.pdf
-
-Best regards
- 
 -- 
-Niklaus Giger
+                                                  Gilles Chanteperdrix
 
