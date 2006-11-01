@@ -1,16 +1,10 @@
-From: Romain Lenglet <rlenglet@domain.hid>
-Subject: Re: [Xenomai-help] RTDM/ALSA hybrid driver ?
-Date: Wed, 1 Nov 2006 15:58:16 +0900
-References: <200610251610.36530.witzel.thomas@domain.hid>
-	<200610261213.29248.rlenglet@domain.hid>
-	<200611010018.34412.witzel.thomas@domain.hid>
-In-Reply-To: <200611010018.34412.witzel.thomas@domain.hid>
+Message-ID: <54b161f50611010049k5c721465v5472cf50da38efde@domain.hid>
+Date: Wed, 1 Nov 2006 09:49:55 +0100
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200611011558.17164.rlenglet@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_23955_17358370.1162370995871"
+Subject: [Xenomai-help] Xenomai fresh installation, problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,50 +16,68 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Thomas Witzel wrote:
-> On Wednesday 25 October 2006 23:13, Romain Lenglet wrote:
-> > I believe that most people wanting real-time audio use JACK
-> > instead of ALSA. All "serious" audio software on Linux use
-> > JACK: Ardour, Rosegarden, etc.
-> > Its design allows for real-time audio, better than ALSA.
-> > http://jackaudio.org/
-> >
-> > I believe that you could easily port JACK to Xenomai,
-> > transparently for client apps, and then interface an
-> > RTDM-based driver to JACK.
-> >
-> > There is already an alternative implementation of JACK
-> > specifically for IEEE1394 audio interfaces:
-> > http://freebob.sourceforge.net/index.php/Main_Page
-> > You could get inspiration from this implementation.
->
-> Maybe I understand this wrong, but it seems to me that Jack
-> itself does not provide lowlevel drivers for the hardware, but
-> in most cases sits on top of ALSA.
+------=_Part_23955_17358370.1162370995871
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-JACK has several backends, including ALSA. But the Freebob 
-backend does implement its own drivers, in userspace, using the 
-libraw1394, etc.
+Hello everyone,
 
-Since you wanted to develop/port your own device driver anyway, I 
-just suggested to use JACK as an interface with your 
-applications, instead of the ALSA interface. I believe that the 
-JACK API/interface is better suited for realtime applications.
-So why not develop your own new JACK hard-realtime backend with 
-your RTDM driver?
+yesterday I installed a machine from scratch with Linux and Xenomai. I used
+the old configurations for the kernel (and thus Xenomai).
+After following the instructions described in README.INSTALL everything
+seems to install correctly. No errors, no problems.
+But when I try to run the latency test from the testsuite, I get the
+following message:
 
-> Also most applications seem 
-> to use Jack to control other professional devices via MIDI or
-> 1394.
+FATAL: Error inserting xeno_timerbench
+(/lib/modules/2.6.17-ipipe/kernel/drivers/xenomai/testing/xeno_timerbench.ko):
+Kernel does not have module support
+Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+(modprobe xeno_native?)
+ERROR: Module xeno_timerbench does not exist in /proc/modules
 
-No. JACK has been designed to pass/route audio data in realtime 
-and with low latency between applications, and to/from drivers. 
-It can also route MIDI data, but that is not its main purpose.
+Module support IS enabled however, and the native skin as well as
+CONFIG_XENO_OPT_PERVASIVE are both enabled.
+My former installation worked without a problem.
 
-Freebob is an implementation of a JACK backend that provides 
-drivers for IEEE1394 audio interfaces, without using ALSA 
-drivers.
+Does anyone have any idea what I'm doing wrong here?
 
--- 
-Romain LENGLET
+Thanks very much in advance.
+
+Best regards,
+
+Frits
+
+------=_Part_23955_17358370.1162370995871
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello everyone,<br>
+<br>
+yesterday I installed a machine from scratch with Linux and Xenomai. I
+used the old configurations for the kernel (and thus Xenomai).<br>
+After following the instructions described in README.INSTALL everything seems to install correctly. No errors, no problems.<br>
+But when I try to run the latency test from the testsuite, I get the following message:<br>
+<br>
+FATAL: Error inserting xeno_timerbench
+(/lib/modules/2.6.17-ipipe/kernel/drivers/xenomai/testing/xeno_timerbench.ko):
+Kernel does not have module support<br>
+Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.<br>
+(modprobe xeno_native?)<br>
+ERROR: Module xeno_timerbench does not exist in /proc/modules<br>
+<br>
+Module support IS enabled however, and the native skin as well as CONFIG_XENO_OPT_PERVASIVE are both enabled.<br>
+My former installation worked without a problem. <br>
+<br>
+Does anyone have any idea what I'm doing wrong here?<br>
+<br>
+Thanks very much in advance.<br>
+<br>
+Best regards,<br>
+<br>
+Frits<br>
+
+------=_Part_23955_17358370.1162370995871--
 
