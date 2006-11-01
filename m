@@ -1,16 +1,16 @@
 From: Thomas Witzel <witzel.thomas@domain.hid>
 Subject: Re: [Xenomai-help] RTDM/ALSA hybrid driver ?
+Date: Wed, 1 Nov 2006 00:18:34 -0500
 References: <200610251610.36530.witzel.thomas@domain.hid>
-	<200610251640.22737.witzel.thomas@domain.hid>
-	<453FEE9F.9080209@domain.hid>
-In-Reply-To: <453FEE9F.9080209@domain.hid>
+	<453FCA64.9090402@domain.hid>
+	<200610261213.29248.rlenglet@domain.hid>
+In-Reply-To: <200610261213.29248.rlenglet@domain.hid>
 MIME-Version: 1.0
-Content-Disposition: inline
-Date: Tue, 31 Oct 2006 21:45:41 -0500
 Content-Type: text/plain;
-  charset="iso-8859-1"
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <200610312145.42032.witzel.thomas@domain.hid>
+Content-Disposition: inline
+Message-Id: <200611010018.34412.witzel.thomas@domain.hid>
 Reply-To: witzel.thomas@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,35 +21,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Romain Lenglet <rlenglet@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Wednesday 25 October 2006 19:09, you wrote:
-> > Fairly hard. I'm controlling a physics experiment with this (being short
-> > the money for a function generator that will do exactly what I need).
-> > This is going to be a nasty hack (given the time constraints to get this
-> > accomplished).
+On Wednesday 25 October 2006 23:13, Romain Lenglet wrote:
+> I believe that most people wanting real-time audio use JACK
+> instead of ALSA. All "serious" audio software on Linux use JACK:
+> Ardour, Rosegarden, etc.
+> Its design allows for real-time audio, better than ALSA.
+> http://jackaudio.org/
 >
-> What order or dimension do those time constraints have? I.e. how long
-> will the piece of output pattern be you can write ahead-of-time into the
-> hardware?
-Oh I was talking about the time constraints to get this implemented. I spent 
-some more time on building the hardware interface between sound card output 
-and experiment and I'm now back at the software.
-The time constraint is that I'd like to playback a sound sample within 500us 
-(or better if possible) of a trigger. The sample is short enough to fit in 
-one period/buffer of the sound driver, so no "reloading" of the buffer is 
-required.
-> Well, understanding how the hardware and the original driver work will
-> likely be unavoidable ;). Furthermore, be warned about interferences by
-> other PCI users. Shutting them down or switching off DMA where feasible
-> may be required.
-I have a forked driver now, which actually still plays sound over the ALSA 
-interface. I think the key routine to modify is snd_pcm_trigger, which 
-basically starts,pauses,resumes or stops playback. The problem is that the 
-routine is called from the layer above (somewhere in ALSA) already within a 
-spin_lock, so I can't really wait directly in this routine. 
-My idea would be that it would be best if the trigger routine for the START 
-command would just activate a realtime thread that waits for the external 
-event and then does what the trigger start would have done. 
-> Jan
+> I believe that you could easily port JACK to Xenomai,
+> transparently for client apps, and then interface an RTDM-based
+> driver to JACK.
+>
+> There is already an alternative implementation of JACK
+> specifically for IEEE1394 audio interfaces:
+> http://freebob.sourceforge.net/index.php/Main_Page
+> You could get inspiration from this implementation.
+
+Maybe I understand this wrong, but it seems to me that Jack itself does not 
+provide lowlevel drivers for the hardware, but in most cases sits on top of 
+ALSA. Also most applications seem to use Jack to control other professional 
+devices via MIDI or 1394.
+
+Thomas
 
