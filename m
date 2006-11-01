@@ -1,17 +1,14 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Bug in taskSuspend for user mode vxworks
-Date: Tue, 31 Oct 2006 20:17:45 +0100
-References: <200610252346.34150.niklaus.giger@domain.hid>
-	<200610311951.29678.niklaus.giger@domain.hid>
-	<45479DC5.4040509@domain.hid>
-In-Reply-To: <45479DC5.4040509@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200610312017.52619.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+Subject: Re: [Xenomai-core] My work on Xenomai integration to LTTng / LTTV
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45478914.4030309@domain.hid>
+References: <1162302832.3687.12.camel@domain.hid>
+	<45478914.4030309@domain.hid>
+Content-Type: text/plain
+Date: Wed, 01 Nov 2006 07:07:03 +0100
+Message-Id: <1162361224.4983.21.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,19 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: jean-olivier.villemure@domain.hid, xenomai@xenomai.org
 
-Am Dienstag, 31. Oktober 2006 20:02 schrieb Wolfgang Grandegger:
-> > I used revision 1747 of the xenomai trunk, linux 2.4.17 + some small
-> > patches
->
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 ^^^^^^
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0I think you me=
-an linux 2.4.14 here.
-Sorry. My mistake: Linux 2.6.14 to match adeos-ipipe-2.6.14-ppc-1.5-01.patc=
-h.
-=2D-=20
-Niklaus Giger
+On Tue, 2006-10-31 at 18:34 +0100, Jan Kiszka wrote:
+> Jean-Olivier Villemure wrote:
+> > 
+> > The next step will be to generate some statistics, for this step I will
+> > need your help. As Xenomai users, which kind of stats would you want to
+> > compute?
+> 
+>  - CPU usage (see /proc/xenomai/stat for average numbers, but we should
+>    now be able to precisely calculate them for a specific period)
+>  - Waiting times after activation (maybe one can define deadlines later
+>    and verify them)
+>  - Number of preemptions per second or whatever while a task is runnable
+>  - Number of blockades a task faces due to unavailable resources
+>    (mutexes, semaphores, etc.)
+
+- Average number of elements linked to the readyq per second (some kind
+of loadavg for us, i.e. answers the question "should the user switch to
+the scalable scheduler?")
+- Average number of outstanding timers per second (i.e. answers the
+question "should the user switch to the binary heap-based timer
+management?").
+- Total number of timers missing their wakeup date from more than a
+given threshold.
+- Pressure on the system heap (average and max, probably).
+- Transfer rate on message pipes (i.e. nucleus/pipe.c); at some point,
+it would be interesting to extend this to skins exposing data channels
+(e.g. native API's queues, POSIX mqueues).
+
+-- 
+Philippe.
+
+
 
