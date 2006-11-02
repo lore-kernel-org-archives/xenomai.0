@@ -1,13 +1,12 @@
-Subject: Re: [Xenomai-help] POSIX headers and PTHREAD_IPROPAGATE
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4549B048.8070607@domain.hid>
-References: <454931B9.3070304@domain.hid>  <4549B048.8070607@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Date: Thu, 02 Nov 2006 10:10:04 +0100
-Message-Id: <1162458604.4984.3.camel@domain.hid>
+Message-Id: <s54a0103.074@domain.hid>
+Date: Thu, 02 Nov 2006 14:30:09 +0100
+From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
+Subject: =?ISO-8859-1?Q?R=E9p.=20:=20[Xenomai-help]=20Share=20interrupts?=
+	=?ISO-8859-1?Q?=20between=20two=20subdevices?=
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
-
-On Thu, 2006-11-02 at 09:46 +0100, Gilles Chanteperdrix wrote:
-> Jeff Webb wrote:
-> > If I attempt to use PTHREAD_IPROPAGATE in my userspace POSIX skin=20
-> > Xenomai program, I get the following:
-> >=20
-> > irqtest.c: In function =E2=80=98main=E2=80=99:
-> > irqtest.c:278: error: =E2=80=98XN_ISR_PROPAGATE=E2=80=99 undeclared (=
-first use in this=20
-> > function)irqtest.c:278: error: (Each undeclared identifier is reporte=
-d=20
-> > only once
-> > irqtest.c:278: error: for each function it appears in.)
-> >=20
-> > Including <nucleus/intr.h> fixes the problem.  I assume there should =
-be=20
-> > a #include in one of the POSIX header files.
->=20
-> I checked the trunk and the v2.2.x branch, and pthread.h includes
-> nucleus/xenomai.h which includes nucleus/intr.h, so including directly
-> nucleus/intr.h should not be necessary.
->=20
-
-The main header is not included in the user-space case. The patch below
-should fix this:
-
---- include/posix/pthread.h	(revision 1786)
-+++ include/posix/pthread.h	(working copy)
-@@ -147,10 +147,11 @@
- #include <sched.h>
- #include_next <pthread.h>
- #include <nucleus/thread.h>
-+#include <nucleus/intr.h>
-=20
- struct timespec;
-=20
--#endif /* !(__KERNEL__ || __XENO_SIM__) */
-+#endif /* __KERNEL__ || __XENO_SIM__ */
-=20
- #define PTHREAD_PRIO_NONE    0
- #define PTHREAD_PRIO_INHERIT 1
-@@ -497,6 +498,6 @@
- }
- #endif
-=20
--#endif /* !(__KERNEL__ || __XENO_SIM__) */
-+#endif /* __KERNEL__ || __XENO_SIM__ */
-=20
- #endif /* _XENO_POSIX_PTHREAD_H */
+To: xenomai@xenomai.org
 
 
---=20
-Philippe.
+
+>>> <mjcoelho@domain.hid> 31.10 19:50 >>>
+>Hi!
+>
+>
+>I'm implementing a driver for a device that has two subdevices
+(basically,
+>a serial board with two ports). For this to work, i need to use the
+same
+>interrupt for both subdevices.
+>
+>So the driver, ATM, initializes both subdevices and then only one
+requests
+>and enables the interrupt.
+>
+>Does RTDM call the interrupt handler of the subdevice that didn't
+request
+>the irq? What capabilities does RTDM have in terms of interrupt
+sharing
+>between drivers in rt "environment"?
+>
+>
+>Thanks for your help!
 
 
+
+Hello,
+
+You have a Xenomai shared interrupt option in kernel options,
+for example you can see the 16550 xenomai drivers that could use
+shared interrupts.
+
+
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid 
+https://mail.gna.org/listinfo/xenomai-help
 
