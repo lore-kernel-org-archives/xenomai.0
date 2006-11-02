@@ -1,12 +1,12 @@
-Message-Id: <s54a0103.074@domain.hid>
-Date: Thu, 02 Nov 2006 14:30:09 +0100
-From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
-Subject: =?ISO-8859-1?Q?R=E9p.=20:=20[Xenomai-help]=20Share=20interrupts?=
-	=?ISO-8859-1?Q?=20between=20two=20subdevices?=
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
+Date: Thu, 2 Nov 2006 14:53:54 +0100
+MIME-Version: 1.0
 Content-Disposition: inline
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Message-Id: <200611021453.54463.s.zimmermann@domain.hid>
+Subject: [Xenomai-help] Xenomai Simulator
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,43 +18,45 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+Hi, I am actually trying to set up the Simulator, which turns out to be not so 
+easy...
 
+What I did:
+I installed Xenomai 2.2.4 (kernel patches) with Kernel 2.6.17.14, on Debian 
+3.1 using it's standard compiler gcc-3.3. Then I downgraded the compiler (I 
+need to, if I want c++ to work with the simulator, right?)  to version 2.95 
+and compiled and installed xenomai and xenosim, which seems to 
+be ok.
 
->>> <mjcoelho@domain.hid> 31.10 19:50 >>>
->Hi!
->
->
->I'm implementing a driver for a device that has two subdevices
-(basically,
->a serial board with two ports). For this to work, i need to use the
-same
->interrupt for both subdevices.
->
->So the driver, ATM, initializes both subdevices and then only one
-requests
->and enables the interrupt.
->
->Does RTDM call the interrupt handler of the subdevice that didn't
-request
->the irq? What capabilities does RTDM have in terms of interrupt
-sharing
->between drivers in rt "environment"?
->
->
->Thanks for your help!
+Now I wanted to try out the Simulation on a very minimal project using the 
+native skin. (I posted the source some days ago because of another problem)
 
+What I got:
+Calling 
+	"gcc -I/usr/xenomai/include -g -c main.cpp " 
+works without any problem, a following call 
+	"gcc -o test main.o -lnative -L/usr/xenomai/lib"
+works also with no problem.
 
+But calling 
+	"gcic -I/usr/xenomai/include -g -c main.cpp " 
+leads to :
 
-Hello,
+In file included from /usr/xenomai/include/nucleus/thread.h:23,
+                 from /usr/xenomai/include/native/task.h:26,
+                 from main.c:5:
+/usr/xenomai/include/nucleus/timer.h: In function `xntlist_insert':
+/usr/xenomai/include/nucleus/timer.h:80: syntax error before `xntlholder_t'
+/usr/xenomai/include/nucleus/timer.h:80: syntax error before `->'
+/usr/xenomai/include/nucleus/timer.h: At top level:
+/usr/xenomai/include/nucleus/timer.h:144: syntax error before 
+`XNARCH_DECL_DISPLAY_CONTEXT'
+/usr/xenomai/include/nucleus/timer.h:144: warning: no semicolon at end of 
+struct or union
+--- snip ---
 
-You have a Xenomai shared interrupt option in kernel options,
-for example you can see the 16550 xenomai drivers that could use
-shared interrupts.
+I really have no idea what to do, to fix this.
 
-
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid 
-https://mail.gna.org/listinfo/xenomai-help
+Thanks for any hint, 
+greetings, Stephan
 
