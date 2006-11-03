@@ -1,17 +1,17 @@
-Message-ID: <454B345A.9050606@domain.hid>
-Date: Fri, 03 Nov 2006 13:21:46 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Simulator
+Date: Fri, 3 Nov 2006 13:40:01 +0100
+References: <200611021453.54463.s.zimmermann@domain.hid>
+	<200611021717.31758.niklaus.giger@domain.hid>
+	<200611030913.11016.s.zimmermann@domain.hid>
+In-Reply-To: <200611030913.11016.s.zimmermann@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Fwd: Re: [Xenomai-help] invalid use of FPU in Xenomai context]
-References: <4548C170.1000504@domain.hid> <4548F8BE.90809@domain.hid>
-	<454901B6.80606@domain.hid> <454B0FA0.9080307@domain.hid>
-	<454B1363.8080805@domain.hid> <454B15C5.1050803@domain.hid>
-	<454B17A1.7000805@domain.hid>
-In-Reply-To: <454B17A1.7000805@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDA7EE5E9A3D802555810952B"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200611031340.02161.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,167 +21,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA7EE5E9A3D802555810952B
-Content-Type: multipart/mixed; boundary="------------020608070803090803040903"
+Am Freitag, 3. November 2006 09:13 schrieb Stephan Zimmermann:
+> Am Donnerstag, 2. November 2006 17:17 schrieb Niklaus Giger:
+> > Am Donnerstag, 2. November 2006 14:53 schrieb Stephan Zimmermann:
+> > > Hi, I am actually trying to set up the Simulator, which turns out to =
+be
+> > > not so easy...
+> >
+> > <..>
+> >
+> > > But calling
+> > > 	"gcic -I/usr/xenomai/include -g -c main.cpp "
+> > > leads to :
+> >
+> > Does your C++ programm compile cleanly under gcc-2.95? If not, you are
+> > out of luck, as the simulator was developped under gcc-2.95.
+>
+> I did not even come to trying to compile my C++ application under gcc-2.9=
+5,
+> as my testprogram - which is free of any c++ code - doesn't work.
+> (The testprogram simply shadows the maintask and returns, some five lines
+> of code..., as I just see, the code I posted recently contains "std::cout
+> << something..." calls, I removed them and removed everything not needed,
+> didn't mention that before)
+>
+> #include <sys/mman.h>
+> #include <stdio.h>
+> #include "native/task.h"
+> #include "native/timer.h"
+> RT_TASK maintask;
+> int count =3D 0;
+> int main(void){
+> 	int err;
+> 	unsigned long overrun =3D 0;
+> 	printf("test...\n");
+> 	mlockall(MCL_CURRENT | MCL_FUTURE);
+> 	err =3D rt_task_shadow (&maintask,"maintask",10,0);
+> 	return 0;
+> }
+>
+=46or the simulator you must have a root_thread_init instead of a main=20
+procedure.
 
-This is a multi-part message in MIME format.
---------------020608070803090803040903
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Have a look at ksrc/skins/=FCsos+/demos/satch.c. Try to make sim in this=20
+directory and test whether the resulting exec works.
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>> Jeff Webb wrote:
->>>>
->>>>
->>>>> Jan Kiszka wrote:
->>>>>
->>>>>
->>>>>> Jeff Webb wrote:
->>>>>>
->>>>>>
->>>>>>> Does anyone else have an AMD system that can verify my results?
->>>>>>
->>>>>> I have an old Athlon 800. Maybe we are lucky and it exposes the
->>>>>> problem
->>>>>> when the kernel is optimised for it. I'm going to give this a try,=
+Best regards
 
->>>>>> but
->>>>>> it may take a few days (and a free time slot).
->>>>>
->>>>> Thank you.  I appreciate you giving it a try when you get some free=
-
->>>>> time.  I was able to work around the problem by writing the queue d=
-ata
->>>>> in smaller chunks (or use an i686 kernel), so I am not in urgent
->>>>> need of
->>>>> an immediate fix.  I do think it's important to fix this bug
->>>>> eventually,
->>>>> so I didn't want it to slip through the cracks.
->>>>>
->>>>>
->>>>>
->>>>>>> The problem seems to be connected with the size of writes to Xeno=
-mai
->>>>>>> pipes.  This example uses POSIX message queues, but I had a simil=
-ar
->>>>>>> problem a while back with RTAI pipes.  Maybe this tells us the
->>>>>>> problem
->>>>>>> is in the nucleus pipe code?  Just a guess.  The problem seems to=
-
->>>>>>> affect
->>>>>>> both 2.4 and 2.6 systems, and goes back to at least Xenomai 2.2.1=
-=2E
->>>>>>
->>>>>> Maybe, maybe not. Pipes remain fairly unrelated to FPU usage, so
->>>>>> there
->>>>>> is still /at least/ one piece missing in the puzzle.
->>>>>
->>>>> True.  It is very strange that the amount of data in the write call=
-
->>>>> ends
->>>>> up affecting the FPU context.
->>>>
->>>>
->>>> I found the reason: "3-dimensional" memcpy (__memcpy3d/_mmx_memcpy)
->>>>
->>>> http://lxr.free-electrons.com/source/include/asm-i386/string.h#285
->>>>
->>>> It's an optimised memcpy for 3DNow CPUs that is used with blocks >=3D=
- 512
->>>> bytes. It messes up with the FPU state and may get trapped by other
->>>> issues as well (blind access to "current" in order to test
->>>> in_interrupt()). I don't have an answer for this right now beyond
->>>> "don't
->>>> switch on AMD optimisations when using Xenomai". But that's a bit
->>>> unsatisfying.
->>>>
->>>> Another way would be to wrap any memcpy access from Xenomai context,=
-
->>>> but
->>>> that's likely impractical (think of all the drivers).
->>>
->>> I see other ways to solve this issue:
->>> - either we disable the use of the mmx memcpy in string.h if
->>> ipipe_current_domain is not root
->>
->>
->> This is what came to my mind as well meanwhile.
->>
->>
->>> - or we allow the exception to happen for threads in primary mode wit=
-h
->>> the XNFPU bit set and call xnarch_restore_fpu in xnpod_fault_handler =
-in
->>> this case.
->>
->>
->> Given that this is a special case for a subset of x86[_64] CPUs, I
->> rather think we should go for the first variant. Should be simpler.
->=20
-> This second way would not work correctly with kernel-space threads, so,=
-
-> if we wanted to implement it, we would still need to disable the mmx
-> memcpy in string.h for kernel-space threads, i.e. if current is not
-> safe.
->=20
-
-True.
-
-This patch fixes the issue for me.
-
-Jan
-
---------------020608070803090803040903
-Content-Type: text/plain;
- name="disable-mmx_memcpy.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="disable-mmx_memcpy.patch"
-
----
- arch/i386/lib/mmx.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Index: linux-2.6.17.13/arch/i386/lib/mmx.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.17.13.orig/arch/i386/lib/mmx.c
-+++ linux-2.6.17.13/arch/i386/lib/mmx.c
-@@ -32,7 +32,7 @@ void *_mmx_memcpy(void *to, const void *
- 	void *p;
- 	int i;
-=20
--	if (unlikely(in_interrupt()))
-+	if (unlikely(!ipipe_root_domain_p || in_interrupt()))
- 		return __memcpy(to, from, len);
-=20
- 	p =3D to;
-
---------------020608070803090803040903--
-
---------------enigDA7EE5E9A3D802555810952B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFSzRbniDOoMHTA+kRAr1bAJwMM4RM4IhoOAfeOVv7/LGoo/ZDYgCdFjg0
-lWa1ZuvuUusbKC4D2AckH5M=
-=qBOT
------END PGP SIGNATURE-----
-
---------------enigDA7EE5E9A3D802555810952B--
+=2D-=20
+Niklaus Giger
 
