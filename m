@@ -1,14 +1,14 @@
-Message-ID: <4547AD1B.1060505@domain.hid>
-Date: Tue, 31 Oct 2006 21:07:55 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4546494d0611022048i120b6437lf363bc8a8af3f16e@domain.hid>
+Date: Fri, 3 Nov 2006 12:48:21 +0800
+From: "Li Yi (Adam)" <liyiadam@domain.hid>
+In-Reply-To: <1160687379.4970.34.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Bug in taskSuspend for user mode vxworks
-References: <200610252346.34150.niklaus.giger@domain.hid>
-	<200610300809.43844.niklaus.giger@domain.hid>
-	<454705E9.9040606@domain.hid>
-	<200610311951.29678.niklaus.giger@domain.hid>
-In-Reply-To: <200610311951.29678.niklaus.giger@domain.hid>
-Content-Type: multipart/mixed; boundary="------------060409050800010300050504"
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_23790_33498537.1162529301293"
+References: <4546494d0609300026s6be1145awedaeb10af460d56d@domain.hid>
+	<1160687379.4970.34.camel@domain.hid>
+Subject: [Xenomai-core] Re: Updated ADEOS patch for Blackfin uClinux 2006R2
+	release
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,162 +18,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: adeos-main@gna.org, xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------060409050800010300050504
+------=_Part_23790_33498537.1162529301293
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Niklaus Giger wrote:
-> Am Dienstag, 31. Oktober 2006 09:14 schrieb Wolfgang Grandegger:
->> Niklaus Giger wrote:
->>> Am Montag, 30. Oktober 2006 08:31 schrieb Wolfgang Grandegger:
->>>> Niklaus Giger wrote:
->>>>> Am Samstag, 28. Oktober 2006 20:36 schrieb Wolfgang Grandegger:
->>>>>> Niklaus Giger wrote:
->>>>>>> Am Samstag, 28. Oktober 2006 14:54 schrieb Niklaus Giger:
->>>>>>>> Am Freitag, 27. Oktober 2006 18:38 schrieb Philippe Gerum:
->>>>>>>>> On Wed, 2006-10-25 at 23:46 +0200, Niklaus Giger wrote:
->>>>>>>>>> Hi
->>>>>> My impression from our last discussion was that your toolchain is
->>>>>> somehow broken as I was unable to reproduce your problems on (almost)
->>>>>> the same hardware
->>>>>>
->>>>>>> I think I really have to reactivate my old Walnut board to have
->>>>>>> common platform to test with Wolfgang Grandegger.
->>>>>> It would make more sense to use the ELDK4 for comparison. I don't
->>>>>> think it depends on the hardware.
->>>>> As I forced my son to run on his MacMini (Intel Core Duo) only Linux
->>>>> and no MacOsX (he discovered widelands and was quite happy), I had a
->>>>> platform where I could install the CD with ELDK 4.0, which I had laying
->>>>> around.
->>>>>
->>>>> After some setting up of my environment and tweaking my scripts to work
->>>>> with ELDK (e.g. adding --host=ppc CC=ppc_4xx-gcc to my
->>>>> xenomai/configure) I ended
->>>> --host=ppc-linux is already enough with CROSS_COMPILE=ppc_4xx- set.
->>>>
->>>>> up with a nice environment and rootfs with much more precompiled
->>>>> programs than I had ever before. Debugging on the platform is now as
->>>>> good as on my PowerBook.
->>>>>
->>>>> My situation is now as follows:
->>>>> - ELDK 4.0 installed on Debian Etch MacMini
->>>>> - Using ELD 4.0 rootfs ppc_4xx
->>>>> - compiled the kernel uImage, modules, xenomai using ppc_4xx-gcc
->>>>>    (but NOT adding any -mcpu=40x flag to the compiler)
->>>>>
->>>>> The trap 0 in  /proc/xenomai/fault seems to count on each invocation of
->>>>> simple 0:           51    (Data or instruction access)
->>>>> gdb however no does not show anything abnormal, as it says now
->>>>>
->>>>>> This GDB was configured as "ppc-linux"...Using host libthread_db
->>>>>> library "/lib/tls/libthread_db.so.1".
->>>>>>
->>>>>> (gdb) run
->>>>>> Starting program: /bin/simple
->>>>>> [Thread debugging using libthread_db enabled]
->>>>>> [New Thread 805422032 (LWP 639)]
->>>>>> root_thread_init 4[New Thread 805455088 (LWP 642)]
->>>>>>
->>>>>> Program exited normally.
->>>>>> (gdb) quit
->>>>> Though I am still puzzled.
->>>> Could you please send me your Makefile or the compile command to make
->>>> "simple", then I would give it a try on my setup.
->>> Here are the commands
->>> ppc_4xx-gcc -I../.. -I/home/hcu/rootfs/usr/xenomai/include -D_GNU_SOURCE
->>> -D_REENTRANT -I/net/ng/mnt/data.ng/hcu/project/vx_skin -D__XENO__ -g
->>> -DVXWORKS    -c -o simple.o simple.c
->>> ppc_4xx-gcc -o simple
->>> simple.o -L/home/hcu/rootfs/usr/xenomai/lib -lpthread  -lvxworks
->> Again the same question. What versions of kernel, ADEOS-IPIPE and
->> Xenomai are you using.I have some problems to get the kernel booted with
->> the VxWorks skin emulation. I understood, that I must build the Native
->> and POSIX skin as modules and enable the periodic timer support with a
->> resonable frequency.
-> I used revision 1747 of the xenomai trunk, linux 2.4.17 + some small patches 
-> (attached) for my system, the attached .config, 
-> adeos-ipipe-2.6.14-ppc-1.5-01.patch.
-> 
-> I have vxworks built-in to enforce that the timers get initialized into the 
-> periodic mode.
+Hi Philippe,
 
-OK, with a similar setup I get the same results as you have seen on your 
-(son's) MacMini. I have attached the output.
+"This said, I'm currently struggling with the tracer, which makes the
+bf533 freeze when enabled, during the very early boot steps. I suspect
+some issues with having -pg enabled for early setup code. Another issue
+causes the linker to choke on the "mcount" symbol being undefined for
+some files; this looks like some inconsistency with the C symbol prefix.
+Btw, I'm using the 06r2 toolchain."
 
-Wolfgang.
+Sorry for the late response - I was on vocation and did not check mails for
+a long time.
+I have tried your merged bfin-adeos patch. I also saw the frozen at boot
+time.
+And the "mcount" undefined symbol error. This is due to issue in 06r2
+toolchain when dealing with "-pg" option.
+I am talking with the toolchain developer to add the fix into 06r2 updated
+release.
 
+And I will test the bfin-adeos patch to make sure it works for 06r2 kernel
+and 06r2 toolchain and give you update when finished.
 
---------------060409050800010300050504
-Content-Type: text/x-log;
- name="simple.log"
+Thanks
+
+-Yi
+
+On 10/13/06, Philippe Gerum <rpm@xenomai.org> wrote:
+>
+>
+> Hello Yi,
+>
+> On Sat, 2006-09-30 at 15:26 +0800, Li Yi (Adam) wrote:
+> > Hi Philippe,
+> >
+> > I updated the adeos-bfin patch to bfin-uClinux 2006R2 (the release
+> > will be available soon).
+> > Could you please have a look?
+>
+> This looks good, and works as expected, thanks.
+>
+> > The patch can also be found and the bfin-uClinux CVS:
+> >
+> http://blackfin.uclinux.org/plugins/scmcvs/cvsweb.php/~checkout~/uClinux-dist/bfin_patch/adeos_patch/adeos-bfin-cvs.patch?rev=1.1.2.1;content-type=text%2Fplain;cvsroot=uclinux533
+> >
+>
+> Ok, I've merged your patch with the latest generic changes in the Adeos
+> CVS, so we will have the Blackfin support in sync with the most recent
+> I-pipe updates, over the Blackfin CVS head. Figures look good, actually
+> with a better worst-case than the 1.4 series had, likely due to the
+> PF_EVNOTIFY feature which has been recently introduced. The large
+> latency spot I told you recently about has also been fixed in the
+> meantime (the vanilla Blackfin kernel was out of cause, but the Adeos
+> PF_EVNOTIFY feature did break due to a Blackfin-specific issue).
+>
+> I'm now merging your tracer support. From now on, the latter will be
+> integrated to the main Adeos patch for all archs, since it does not make
+> much sense to have two separate patches for each of them now, which
+> would also uselessly increase the maintenance burden.
+>
+> This said, I'm currently struggling with the tracer, which makes the
+> bf533 freeze when enabled, during the very early boot steps. I suspect
+> some issues with having -pg enabled for early setup code. Another issue
+> causes the linker to choke on the "mcount" symbol being undefined for
+> some files; this looks like some inconsistency with the C symbol prefix.
+> Btw, I'm using the 06r2 toolchain.
+>
+> Could you send me your .config with the tracer options you used
+> (configuration for a bf533 or bf537 would do), and confirm that an
+> unmodified 06r2 toolchain should work properly building the whole tree
+> with -pg enabled? TIA,
+>
+> > Best Regards,
+> >
+> > -Yi
+> --
+> Philippe.
+>
+>
+>
+
+------=_Part_23790_33498537.1162529301293
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="simple.log"
+Content-Disposition: inline
 
-sh-3.00# export LD_LIBRARY_PATH=/home/wolf/xenomai/lib
-bash-3.00# ./simple
+Hi Philippe,<br><br>&quot;This said, I'm currently struggling with the <span id="st" name="st" class="st">tracer</span>, which makes the<br>bf533 freeze when enabled, during the very early boot steps. I suspect<br>some issues with having -pg enabled for early setup code. Another issue
+<br>causes the linker to choke on the &quot;mcount&quot; symbol being undefined for<br>some files; this looks like some inconsistency with the C symbol prefix.<br>Btw, I'm using the 06r2 toolchain.&quot;<br><br>Sorry for the late response - I was on vocation and did not check mails for a long time.
+<br>I have tried your merged bfin-adeos patch. I also saw the frozen at boot time.<br>And the &quot;mcount&quot; undefined symbol error. This is due to issue in 06r2 toolchain when dealing with &quot;-pg&quot; option.<br>
+I am talking with the toolchain developer to add the fix into 06r2 updated release.<br><br>And I will test the bfin-adeos patch to make sure it works for 06r2 kernel and 06r2 toolchain and give you update when finished.<br>
+<br>Thanks <br><br>-Yi<br><br><div><span class="gmail_quote">On 10/13/06, <b class="gmail_sendername">Philippe Gerum</b> &lt;<a href="mailto:rpm@xenomai.org">rpm@xenomai.org</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+<br>Hello Yi,<br><br>On Sat, 2006-09-30 at 15:26 +0800, Li Yi (Adam) wrote:<br>&gt; Hi Philippe,<br>&gt;<br>&gt; I updated the adeos-bfin patch to bfin-uClinux 2006R2 (the release<br>&gt; will be available soon).<br>&gt; Could you please have a look?
+<br><br>This looks good, and works as expected, thanks.<br><br>&gt; The patch can also be found and the bfin-uClinux CVS:<br>&gt; <a href="http://blackfin.uclinux.org/plugins/scmcvs/cvsweb.php/~checkout~/uClinux-dist/bfin_patch/adeos_patch/adeos-bfin-cvs.patch?rev=1.1.2.1;content-type=text%2Fplain;cvsroot=uclinux533">
+http://blackfin.uclinux.org/plugins/scmcvs/cvsweb.php/~checkout~/uClinux-dist/bfin_patch/adeos_patch/adeos-bfin-cvs.patch?rev=1.1.2.1;content-type=text%2Fplain;cvsroot=uclinux533</a><br>&gt;<br><br>Ok, I've merged your patch with the latest generic changes in the Adeos
+<br>CVS, so we will have the Blackfin support in sync with the most recent<br>I-pipe updates, over the Blackfin CVS head. Figures look good, actually<br>with a better worst-case than the 1.4 series had, likely due to the<br>
+PF_EVNOTIFY feature which has been recently introduced. The large<br>latency spot I told you recently about has also been fixed in the<br>meantime (the vanilla Blackfin kernel was out of cause, but the Adeos<br>PF_EVNOTIFY feature did break due to a Blackfin-specific issue).
+<br><br>I'm now merging your tracer support. From now on, the latter will be<br>integrated to the main Adeos patch for all archs, since it does not make<br>much sense to have two separate patches for each of them now, which
+<br>would also uselessly increase the maintenance burden.<br><br>This said, I'm currently struggling with the tracer, which makes the<br>bf533 freeze when enabled, during the very early boot steps. I suspect<br>some issues with having -pg enabled for early setup code. Another issue
+<br>causes the linker to choke on the &quot;mcount&quot; symbol being undefined for<br>some files; this looks like some inconsistency with the C symbol prefix.<br>Btw, I'm using the 06r2 toolchain.<br><br>Could you send me your .config with the tracer options you used
+<br>(configuration for a bf533 or bf537 would do), and confirm that an<br>unmodified 06r2 toolchain should work properly building the whole tree<br>with -pg enabled? TIA,<br><br>&gt; Best Regards,<br>&gt;<br>&gt; -Yi<br>--
+<br>Philippe.<br><br><br></blockquote></div><br>
 
-root_thread_init 3
-bash-3.00# cat /proc/xenomai/faults
-TRAP         CPU0
-  0:            1    (Data or instruction access)
-  1:            0    (Alignment)
-  2:            0    (Altivec unavailable)
-  3:            0    (Program check exception)
-  4:            0    (Machine check exception)
-  5:            0    (Unknown)
-  6:            0    (Instruction breakpoint)
-  7:            0    (Run mode exception)
-  8:            0    (Single-step exception)
-  9:            0    (Non-recoverable exception)
- 10:            0    (Software emulation)
- 11:            0    (Debug)
- 12:            0    (SPE)
- 13:            0    (Altivec assist)
-bash-3.00# ./simple
-
-root_thread_init 3
-bash-3.00# cat /proc/xenomai/faults
-TRAP         CPU0
-  0:            2    (Data or instruction access)
-  1:            0    (Alignment)
-  2:            0    (Altivec unavailable)
-  3:            0    (Program check exception)
-  4:            0    (Machine check exception)
-  5:            0    (Unknown)
-  6:            0    (Instruction breakpoint)
-  7:            0    (Run mode exception)
-  8:            0    (Single-step exception)
-  9:            0    (Non-recoverable exception)
- 10:            0    (Software emulation)
- 11:            0    (Debug)
- 12:            0    (SPE)
- 13:            0    (Altivec assist)
-bash-3.00# gdb simple
-GNU gdb Red Hat Linux (6.3.0.0-1.21_1rh)
-Copyright 2004 Free Software Foundation, Inc.
-GDB is free software, covered by the GNU General Public License, and you are
-welcome to change it and/or distribute copies of it under certain conditions.
-Type "show copying" to see the conditions.
-There is absolutely no warranty for GDB.  Type "show warranty" for details.
-This GDB was configured as "ppc-linux"...Using host libthread_db library "/lib/libthread_db.so.1".
-
-(gdb) run
-Starting program: /home/wolf/simple
-[Thread debugging using libthread_db enabled]
-[New Thread 805422032 (LWP 260)]
-[New Thread 805455088 (LWP 263)]
-
-root_thread_init 3
-
-Program exited normally.
-(gdb)
-
-
-
---------------060409050800010300050504--
+------=_Part_23790_33498537.1162529301293--
 
