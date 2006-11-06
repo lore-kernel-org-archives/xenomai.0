@@ -1,13 +1,15 @@
-Message-ID: <54b161f50611060208m44287fb6o5ac0f305e21d08d7@domain.hid>
-Date: Mon, 6 Nov 2006 11:08:52 +0100
-From: "Frits de Klark" <mailing.xenomai@domain.hid>
-Subject: Re: [Xenomai-help] Virtual CAN driver and RT Socket CAN
-In-Reply-To: <454EF06A.8070207@domain.hid>
+Message-ID: <454F125F.6040507@domain.hid>
+Date: Mon, 06 Nov 2006 11:45:51 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_59729_6518811.1162807732303"
-References: <54b161f50611060005w3f65a255qa98da9259cecee0b@domain.hid>
-	<454EF06A.8070207@domain.hid>
+Subject: Re: [Xenomai-help] Virtual CAN driver and RT Socket CAN
+References: <54b161f50611060005w3f65a255qa98da9259cecee0b@domain.hid>	<454EF06A.8070207@domain.hid>
+	<54b161f50611060208m44287fb6o5ac0f305e21d08d7@domain.hid>
+In-Reply-To: <54b161f50611060208m44287fb6o5ac0f305e21d08d7@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2F5BBC1FD4CC8F74A714AE73"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +19,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Frits de Klark <mailing.xenomai@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_59729_6518811.1162807732303
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2F5BBC1FD4CC8F74A714AE73
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-On 11/6/06, Wolfgang Grandegger <wg@domain.hid> wrote:
->
-> Frits de Klark wrote:
-> > Hello everyone,
-> >
-> > I'm not sure this is the right place to ask about it, but is the virtual
-> > CAN driver mentioned in [1] of any use if I want to develop an
-> > application using RT Socket CAN? If so, how do I set it up (just patch
-> > the xenomai-root I guess) and how do I use it?
->
-> The virtual CAN driver is already integrated in recent versions of
-> Xenomai 2.3-devel, e.g. 2.3-rc1. Just install Xenomai as usual and
-> enable RT-Socket-CAN and the driver virtual CAN driver in the kernel
-> configuration.
->
-> Wolfgang.
->
+Frits de Klark wrote:
+> On 11/6/06, Wolfgang Grandegger <wg@domain.hid> wrote:
+>>
+>> Frits de Klark wrote:
+>> > Hello everyone,
+>> >
+>> > I'm not sure this is the right place to ask about it, but is the
+>> virtual
+>> > CAN driver mentioned in [1] of any use if I want to develop an
+>> > application using RT Socket CAN? If so, how do I set it up (just pat=
+ch
+>> > the xenomai-root I guess) and how do I use it?
+>>
+>> The virtual CAN driver is already integrated in recent versions of
+>> Xenomai 2.3-devel, e.g. 2.3-rc1. Just install Xenomai as usual and
+>> enable RT-Socket-CAN and the driver virtual CAN driver in the kernel
+>> configuration.
+>>
+>> Wolfgang.
+>>
+>=20
+> Ah, thanks. It's called the 'virtual tunneling driver' in the kernel
+> config,
+> right?
 
-Ah, thanks. It's called the 'virtual tunneling driver' in the kernel config,
-right?
+Yeah, it is. Probably "tunneling" is not the best term here, "Virtual
+CAN bus driver" should be better - will fix.
 
-But now for my second question: How do I set it up? Is it possible to use
-the virtual driver to run the rtcansend/recv programs? If so, what actions
-should I take to make this possible?
+>=20
+> But now for my second question: How do I set it up? Is it possible to u=
+se
+> the virtual driver to run the rtcansend/recv programs? If so, what acti=
+ons
+> should I take to make this possible?
 
-Thank you very much again.
+Load the driver and it will provide you two CAN ports that are virtually
+interconnected (play with "devices" module param to gain more ports on
+the bus). You will have to configure both ports with rtcanconfig, and
+then tools like rtcansend/recv our your own applications can communicate
+over that bus.
 
-Frits
+Jan
 
-------=_Part_59729_6518811.1162807732303
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-On 11/6/06, <b class="gmail_sendername">Wolfgang Grandegger</b> &lt;<a href="mailto:wg@domain.hid">wg@domain.hid</a>&gt; wrote:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Frits de Klark wrote:<br>&gt; Hello everyone,<br>&gt;<br>&gt; I'm not sure this is the right place to ask about it, but is the virtual<br>&gt; CAN driver mentioned in [1] of any use if I want to develop an<br>&gt; application using RT Socket CAN? If so, how do I set it up (just patch
-<br>&gt; the xenomai-root I guess) and how do I use it?<br><br>The virtual CAN driver is already integrated in recent versions of<br>Xenomai 2.3-devel, e.g. 2.3-rc1. Just install Xenomai as usual and<br>enable RT-Socket-CAN and the driver virtual CAN driver in the kernel
-<br>configuration.<br><br>Wolfgang.<br></blockquote></div><br>
-Ah, thanks. It's called the 'virtual tunneling driver' in the kernel config, right?<br>
-<br>
-But now for my second question: How do I set it up? Is it possible to
-use the virtual driver to run the rtcansend/recv programs? If so, what
-actions should I take to make this possible?<br>
-<br>
-Thank you very much again.<br>
-<br>
-Frits<br>
+--------------enig2F5BBC1FD4CC8F74A714AE73
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-------=_Part_59729_6518811.1162807732303--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFTxJfniDOoMHTA+kRAiNbAJ4u5EpIVejRZZVsvZEyZdKnWudDVQCdEkus
+JUqaG5kWiXhYa2NYC+VvPzI=
+=L3Ei
+-----END PGP SIGNATURE-----
+
+--------------enig2F5BBC1FD4CC8F74A714AE73--
 
