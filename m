@@ -1,14 +1,11 @@
-Message-ID: <45503D5B.5030100@domain.hid>
-Date: Tue, 07 Nov 2006 09:01:31 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] rt_task_delete problem
-References: <4550331E.6090707@domain.hid>
-In-Reply-To: <4550331E.6090707@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDDCF3B211F80FE91DE548FFA"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C70272.AE142F27"
+Date: Tue, 7 Nov 2006 13:43:16 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB014DEFC4@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: [Xenomai-help] RT-SocketCan + Xenomai on MPC5200B
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,72 +15,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philipp Keller <philipp.keller@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDDCF3B211F80FE91DE548FFA
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C70272.AE142F27
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Philipp Keller wrote:
-> Hello
->=20
-> We have troubles deleting the main task created with rt_task_shadow()
-> from user space.
-> In the course of initiating the program, we spawn two other threads fro=
-m
-> the main task with rt_task_spawn().
-> When ending the application, both the spawned tasks can be deleted with=
+Hi,
+=20
+I am struggling with Xenomai latest SVN and RT-Socket-CAN on a MPC5200B
+with MSCAN driver inside a Denx 2.4.25 kernel.
+=20
+Does anybody have this configuration actively running ? How do you use
+the provided rtcansend/rtcanreceive functions, so they actually transfer
+data over the wires ?
+=20
+I was doing the following:
+rtcanconfig rtcan0 -b 125000 start
+rtcansend rtcan0 -i 0 0x1 0x0
+(returns)
+rtcansend rtcan0 -i 0x1 0x0
+(hangs, never comes back)
+=20
+=20
+Actually the first rtcansend command does not seem to work, because a
+connected CAN IO unit doesn't show any reaction.
+=20
+=20
+Any ideas ?
+=20
+Regards,
+=20
+Daniel Schnell.
 
-> rt_task_delete(), but the main task returns with an unknown error code
-> when calling rt_task_delete().
+------_=_NextPart_001_01C70272.AE142F27
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Please post that error. I never tried to delete main, so I would be
-interested what happens then.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<META content=3D"MSHTML 6.00.2900.2963" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2>Hi,</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial size=3D2>I am =
+struggling with=20
+Xenomai latest SVN and RT-Socket-CAN on a MPC5200B with MSCAN =
+driver&nbsp;inside=20
+a Denx 2.4.25 kernel.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial size=3D2>Does =
+anybody have=20
+this configuration actively running ? How do you use the provided=20
+rtcansend/rtcanreceive functions, so they actually transfer data over =
+the wires=20
+?</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial size=3D2>I was =
+doing the=20
+following:</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial =
+size=3D2>rtcanconfig rtcan0=20
+-b 125000 start</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial =
+size=3D2>rtcansend rtcan0 -i=20
+0 0x1 0x0</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2>(returns)</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial =
+size=3D2>rtcansend rtcan0 -i=20
+0x1 0x0</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial =
+size=3D2>(hangs, never comes=20
+back)</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial =
+size=3D2>Actually the first=20
+rtcansend command does not seem to work, because a connected CAN IO unit =
+doesn't=20
+show any reaction.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial size=3D2>Any =
+ideas=20
+?</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2>Regards,</FONT></SPAN></DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial=20
+size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D290353413-07112006><FONT face=3DArial size=3D2>Daniel =
 
-In any case, deleting the main thread is not required, it will be purged
-on process termination. The same happens to your spawned tasks when they
-decide to self-terminate.
+Schnell.</FONT></SPAN></DIV></BODY></HTML>
 
-> We believe to have released all recources before deleting, closing all
-> sockets and file handlers.
-> The trouble is that we cannot initiate rt can socket communication agai=
-n
-> after failing to delete the main thread.
-
-That must be a different issue. Check /proc/xenomai/rtdm/open_fildes for
-any leftover (CAN) file descriptor. Note that rt_dev_close() can fail if
-the descriptor is busy. And such thing can happen if you simply kill the
-task that currently blocks on a CAN device e.g.
-
-The correct ordering is therefore: close the sockets, catch the failure
-in the blocking threads, and make them self-terminate. Granted, note the
-most comfortable situation, but I'm sure we can improve it in the future
-(e.g. via auto-cleanup also for RTDM file descriptors).
-
-> Doeas anyone have an idea what the probelm may be here?
->=20
-> Thanks for any hint
-> Philipp
->=20
-
-Jan
-
-
---------------enigDDCF3B211F80FE91DE548FFA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFUD1fniDOoMHTA+kRAjXCAJkBA5VENEg4cgyg+pQGccRTuwdo6gCfUA16
-K4+ODzH0a5ip8qb7be9rQgk=
-=gna3
------END PGP SIGNATURE-----
-
---------------enigDDCF3B211F80FE91DE548FFA--
+------_=_NextPart_001_01C70272.AE142F27--
 
