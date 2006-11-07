@@ -1,14 +1,10 @@
-From: Thomas Necker <thomas.necker@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai v2.3-rc1
-Date: Mon, 6 Nov 2006 18:34:10 +0100
-References: <1162750381.7285.15.camel@domain.hid>
-In-Reply-To: <1162750381.7285.15.camel@domain.hid>
+Message-ID: <4550331E.6090707@domain.hid>
+Date: Tue, 07 Nov 2006 08:17:50 +0100
+From: Philipp Keller <philipp.keller@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200611061834.10486.thomas.necker@domain.hid>
+Subject: [Xenomai-help] rt_task_delete problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,18 +16,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-> 	[uvm]
->
-> 	* Feature removed.
->
+Hello
 
-I see that there is no direct syscall interface for pSOS added.
-We had a discussion about that a while ago. We're still thinking
-about doing that ourselves but wanted to use the uvm for the
-prototype. Why is the uvm support removed without having
-an adequate substitute for the skins it still supports? This
-means that there will be no way of supporting pSOS programs
-in 2.3, right?
+We have troubles deleting the main task created with rt_task_shadow()
+from user space.
+In the course of initiating the program, we spawn two other threads from
+the main task with rt_task_spawn().
+When ending the application, both the spawned tasks can be deleted with
+rt_task_delete(), but the main task returns with an unknown error code
+when calling rt_task_delete().
+We believe to have released all recources before deleting, closing all
+sockets and file handlers.
+The trouble is that we cannot initiate rt can socket communication again
+after failing to delete the main thread.
+Doeas anyone have an idea what the probelm may be here?
 
-Thomas
+Thanks for any hint
+Philipp
+
 
