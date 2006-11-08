@@ -1,13 +1,14 @@
-From: Wolfgang Denk <wd@domain.hid>
-Subject: Re: [Xenomai-help] RT-SocketCan + Xenomai on MPC5200B 
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-In-reply-to: Your message of "Tue, 07 Nov 2006 14:22:10 GMT."
-	<DD39B5C3F4963040ADC9768BE7E430CB014DEFF0@domain.hid> 
-Date: Tue, 07 Nov 2006 21:31:39 +0100
-Sender: wd@domain.hid
-Message-Id: <20061107203139.00DAC353B57@domain.hid>
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <45518795.5070507@domain.hid>
+Date: Wed, 08 Nov 2006 08:30:29 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Xenomai on Athlon XP (and PIII)
+References: <4550E7A6.9090408@domain.hid>
+In-Reply-To: <4550E7A6.9090408@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7F66BC89E6F021925E10670D"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,26 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-In message <DD39B5C3F4963040ADC9768BE7E430CB014DEFF0@domain.hid=
-l.net> you wrote:
->
-> I would suspect it is the clock setting, as we have also problems with
-> clock_nanosleep() running 4 times too fast. I assume then that the IPB
-> clock frequency is wrong ?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7F66BC89E6F021925E10670D
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-As you can see from the U-Boot startup messages,  the  IPB  clock  on
-your board is set to 66 MHz.
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> I'm currently setting up a PC for Xenomai-Tests. I'm using my good old
+> PC with an Athlon XP (Thunderbird) for this purpose. The kernel hangs a=
+t
+> boot time when I enable APIC via boot argument (lapic). With local APIC=
 
-Best regards,
+> disabled the kernel boots but I see some Opps messages while running th=
+e
+> latency test and trying a slogin to the system (in the scheduler). Are
+> there any known issues with this X86 arch? I remember, that I have seen=
 
-Wolfgang Denk
+> similar problems with my (old) PIII-Notebook (lapic did not work).
 
---=20
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Success in marriage is not so much finding the right person as it  is
-being the right person.
+No known issues, both scenarios *must* work, the P-III at least in PIC
+mode when Linux refuses to enabled lapic on boot.
+
+>=20
+> I will be more precise when time permits.
+>=20
+
+Kind of weird that both systems fail. Compiler issue? Though there are
+no known issues here as well. Well, you know the usual information
+required to dig deeper...
+
+Jan
+
+
+--------------enig7F66BC89E6F021925E10670D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFUYeWniDOoMHTA+kRAm1sAJ9tNb8LTQSP10jgt8ZKWod9AEncPgCfZgUi
+X3I0IJC+WI2+QAp+NHYT5GU=
+=c9Tg
+-----END PGP SIGNATURE-----
+
+--------------enig7F66BC89E6F021925E10670D--
 
