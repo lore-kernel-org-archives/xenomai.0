@@ -1,60 +1,64 @@
-Message-ID: <456C887D.9040008@domain.hid>
-Date: Tue, 28 Nov 2006 20:05:33 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4551FA70.9060803@domain.hid>
+Date: Wed, 08 Nov 2006 16:40:32 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <456C3EFB.7030303@domain.hid>
-In-Reply-To: <456C3EFB.7030303@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: [RFC][PATCH 2/2] global CPU affinity control
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCC28DDCF79E68F370A1B7820"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-help] [Reminder] Fill our Wiki!
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> This is version 4 of the /proc/xenomai/affinity feature. It has been
-> rebased on the reworked xnshadow_map code, now applying the default
-> affinity mask in a (hopefully) correct way also on shadow threads.
-> 
-> What has been said for the previous patch also applies here: test and
-> comment! Mathias, you asked for this feature, please let us know if it
-> fulfils your requirements.
-> 
-> Philippe, you were looking for documentation of this new behaviour.
-> Please let me know where you would like to see this. Surely in the
-> nucleus API, I guess. Anywhere else?
-> 
-> Jan
-> 
-> 
-> ------------------------------------------------------------------------
-> (...)
-> @@ -909,8 +911,8 @@ int xnpod_start_thread(xnthread_t *threa
->  	if (!testbits(thread->status, XNDORMANT))
->  		return -EBUSY;
->  
-> -	if (xnarch_cpus_empty(affinity))
-> -		affinity = XNARCH_CPU_MASK_ALL;
-> +	if (xnarch_cpus_equal(affinity, XNPOD_ALL_CPUS))
-> +		affinity = nkaffinity;
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCC28DDCF79E68F370A1B7820
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Should not this be:
-	if (xnarch_cpus_empty(affinity))
-		affinity = XNARCH_CPU_MASK_ALL;
-	xnarch_cpus_and(affinity, affinity, nkaffinity);
-	if (xnarch_cpus_empty(affinity))
-		return -EINVAL;
+Hi,
 
-so that no thread could escape the rule imposed by nkaffinity.
+it's still work-in-progress (Bruno is switching the whole site into a
+wiki), but it is already open for input:
 
--- 
-                                                 Gilles Chanteperdrix
+	http://www.xenomai.org/wiki
+
+Specifically user stories about "How I got my Xenomai system running"
+are welcome to serve as FAQ for the typical issues one may face.
+
+Please, after resolving problems with or without help over this list,
+push your solutions into that medium. Even if stuff is unsorted first,
+other readers or the core team will organise it more and more. Content
+is attracting more content in a wiki, so every piece counts!
+
+And if you'd like to set some new reference on the main page which is
+read-only for most users now, please drop us a mail, this can be done
+easily.
+
+Thanks,
+Jan
+
+
+--------------enigCC28DDCF79E68F370A1B7820
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFUfpwniDOoMHTA+kRAl/wAJwPkIqgJaasLLWY8XrEPaQ5W7bdrQCbB6Up
+4OH02vQ0NzrfJQOrs5KrGSc=
+=B8bx
+-----END PGP SIGNATURE-----
+
+--------------enigCC28DDCF79E68F370A1B7820--
 
