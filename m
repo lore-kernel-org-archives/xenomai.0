@@ -1,12 +1,9 @@
-Message-ID: <4551E045.4050107@domain.hid>
-Date: Wed, 08 Nov 2006 14:48:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] ISR arguments with Native skin
-References: <4551DA2A.90607@domain.hid>
-In-Reply-To: <4551DA2A.90607@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Message-ID: <BAY101-F18757D131B37DE8D8DE3FEE2F10@domain.hid>
+From: "Marco Rossi" <cicciobombo123@domain.hid>
+Date: Wed, 08 Nov 2006 15:23:49 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Subject: [Xenomai-help] Problem with RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Hallo,
-> 
-> I just realized, that the ISR registered with rt_intr_create() must be 
-> of type:
-> 
->   int isr(struct xnintr *irq)
-> 
-> I expected "RT_INTR *" as type of the argument. The documentation is not 
-> clear about that (what rt_isr_t) is. A hyper-link would be nice.
-> 
-> Thanks.
+Hi every body. I have to test if xenomai support my multiport serial board 
+with shared interrupt. To do this im using a program found at  
+http://www.captain.at/xenomai-serial-port-example.php; when i run the 
+program i get the error:
+   relocation error: ./rt_serial_uprog: undefined symbol: rt_dev_read.
+The version of Xenomai used is 2.2.4.
 
-You can use the I_DESC macro to get the RT_INTR * from the xnintr_t *
+Thanks in advance
 
--- 
-                                                  Gilles Chanteperdrix
+Matteo
+
+_________________________________________________________________
+Aggiungi il modulo Amici al tuo Spaces con un click! 
+http://spaces.live.com/spacesapi.aspx?wx_action=create&wx_url=/friends.aspx&mkt=it-it
+
 
