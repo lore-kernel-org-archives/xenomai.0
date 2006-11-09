@@ -1,14 +1,15 @@
-Message-ID: <45535598.3090108@domain.hid>
-Date: Thu, 09 Nov 2006 17:21:44 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Thu, 9 Nov 2006 19:36:32 +0100
+From: Matthias Fechner <idefix@domain.hid>
+Subject: Re: [Xenomai-help] Strange results with latency test
+Message-ID: <20061109183631.GB40200@domain.hid>
+References: <20061109133632.GA4205@domain.hid>
+	<45533582.40808@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problem with RTDM
-References: <BAY101-F20A6D79AE13F027D50CB96E2F00@domain.hid>
-In-Reply-To: <BAY101-F20A6D79AE13F027D50CB96E2F00@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig07244FF678C1EA149B249BB1"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45533582.40808@domain.hid>
+Sender: Matthias Fechner <idefix@domain.hid>
+Reply-To: xenomai@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,45 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marco Rossi <cicciobombo123@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig07244FF678C1EA149B249BB1
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hello Gilles and Wolfgang,
 
-Marco Rossi wrote:
-> I used the Makefile provided modified with the right directories. In an=
+* Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> [09-11-06 15:04]:
+> It means that Xenomai anticipates, that is, the timer is programmed
+> to tick a bit early in order to account for the interrupt and scheduling
+> latencies. In your case it is a bit too early, you can change this
+> anticipation time at compilation time with the configuration constant
+> CONFIG_OPT_TIMING_TIMERLAT and CONFIG_XENO_OPT_TIMING_SCHEDLAT, or 
+> change it at run time by writing a new value in /proc/xenomai/latency.
 
-> other pc with different version of xenomai there is no problem.
->=20
+ah ok thx a lot for that information.
 
-Hmm. What version is on the other PC? What else is different there? Can
-you reproduce the same issue with this example (the template for Hannes'
-page):
+Best regards,
+Matthias
 
-http://www.rts.uni-hannover.de/rtaddon/rt_serial_uprog.tar.bz2
+-- 
 
-Jan
-
-
-PS: reply-to-all...
-
-
---------------enig07244FF678C1EA149B249BB1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFU1WYniDOoMHTA+kRAh7GAJ9O00yGp5ln19GfF3vnR8i6Y1GLggCdFWDt
-EqmnL1pjK4BMQPsA0ZVJLbQ=
-=NSaE
------END PGP SIGNATURE-----
-
---------------enig07244FF678C1EA149B249BB1--
+"Programming today is a race between software engineers striving to
+build bigger and better idiot-proof programs, and the universe trying to
+produce bigger and better idiots. So far, the universe is winning." --
+Rich Cook
 
