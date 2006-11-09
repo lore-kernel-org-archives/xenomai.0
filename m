@@ -1,76 +1,51 @@
-Content-class: urn:content-classes:message
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Subject: Re: [Xenomai-core] I-pipe patch for ARM S3C24xx (v4)
+Date: Thu, 9 Nov 2006 21:52:01 +0100
+References: <E1GiChy-0006Bp-5K@mailer.emlix.com> <45538D53.5090305@domain.hid>
+In-Reply-To: <45538D53.5090305@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C6FC79.BF3D13F2"
-Date: Tue, 31 Oct 2006 10:18:56 +1100
-Message-ID: <1F695B041C4BC345AFB7BD5D647B85000119975A@mail.senetas.com>
-From: "John Weston" <john.weston@domain.hid>
-Subject: [Xenomai-help] More woes with linux 2.6.18 and xenomai 2.2.3 or
-	2.2.4 - irq_desc structure changed
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200611092152.01896.Sebastian.Smolorz@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Jan Kiszka wrote:
+> Sebastian Smolorz wrote:
+> > However, there is one disturbing issue. When I execute
+> >
+> > dd if=/dev/zero of=/dev/null
+> >
+> > and the latency test in userspace with a period not less than 150 us the
+> > worst case latency is about 220 us. But when I start latency with -p 100
+> > I get a softlock like the one attached. I guess this is the same problem
+> > as Detlef Vollmann described in [2]. So I think it's time for a big fat
+> > ARM-specific warning in the troubleshooting file and perhaps a
+> > modification of the testsuite so that if being compiled for ARM the
+> > default sample periods are greater than the 100 us now.
+>
+> Something is preventing the watchdog kthread from being executed for
+> more than 10 s. Maybe this is just a sign that the systems is hopelessly
+> overloaded (what are average latencies?).
 
-------_=_NextPart_001_01C6FC79.BF3D13F2
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+They are 120-130 us.
 
+> Maybe it is a real IRQ or 
+> scheduling issue in Linux caused by I-pipe. Maybe it is time to port the
+> I-pipe tracer... ;)
 
-Continuing from my previous email regarding xenomai 2.2.4 and linux
-2.6.18 for ppc (8260), I have also noticed that the underlying irq_desc
-structure has changed (in include/linux/irq.h), which in turn breaks
-hal.c.
+With the latest Adeos upgrade for ARM the I-pipe tracer was integrated, wasn't 
+it? I was already taking its usage into account.
 
-Are there any more recents patches available to fix this? Thanks in
-advance
-
-John  Weston
-Senetas PL
-
-------_=_NextPart_001_01C6FC79.BF3D13F2
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7650.28">
-<TITLE>More woes with linux 2.6.18 and xenomai 2.2.3 or 2.2.4 - irq_desc =
-structure changed</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
-<BR>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Continuing from my previous email =
-regarding xenomai 2.2.4 and linux 2.6.18 for ppc (8260), I have also =
-noticed that the underlying irq_desc structure has changed (in =
-include/linux/irq.h), which in turn breaks hal.c.</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Are there any more recents patches =
-available to fix this? Thanks in&nbsp; advance</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">John&nbsp; Weston</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Senetas PL</FONT>
-</P>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C6FC79.BF3D13F2--
+Sebastian
 
