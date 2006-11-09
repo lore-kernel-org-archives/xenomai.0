@@ -1,12 +1,14 @@
-Message-ID: <45533755.1000201@domain.hid>
-Date: Thu, 09 Nov 2006 15:12:37 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45535598.3090108@domain.hid>
+Date: Thu, 09 Nov 2006 17:21:44 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Strange results with latency test
-References: <20061109133632.GA4205@domain.hid>
-In-Reply-To: <20061109133632.GA4205@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problem with RTDM
+References: <BAY101-F20A6D79AE13F027D50CB96E2F00@domain.hid>
+In-Reply-To: <BAY101-F20A6D79AE13F027D50CB96E2F00@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig07244FF678C1EA149B249BB1"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Marco Rossi <cicciobombo123@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Matthias Fechner wrote:
-> Hi,
-> 
-> I tested today Xenomai on my AMD64 (32-bit mode) with the latency
-> program from the testsuite and I got for lat min negative values.
-> 
-> Can my computer predict the future? :)
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig07244FF678C1EA149B249BB1
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Of course, the timer is programmed a bit in advance taking into account 
-some average latency, like code run time, HW latencies, etc. It is 
-system dependent.
+Marco Rossi wrote:
+> I used the Makefile provided modified with the right directories. In an=
 
-> How can I interpret these values?
-> 
-> 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> RTD|      -1.337|      -0.958|       0.970|       0|      -1.337| 0.970
-> RTD|      -1.290|      -0.907|       1.959|       0|      -1.337| 1.959
-> ...
-> RTD|      -1.406|      -0.923|       1.884|       0|      -1.468| 4.358
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|      -1.468|      -0.922|       4.358|       0| 00:00:34/00:00:34
+> other pc with different version of xenomai there is no problem.
+>=20
 
-Add the value listed by 'cat /proc/xenomai/latency` to the above figures 
-or set the latency to "1 ns" with 'echo "1" > /proc/xenomai/latency'.
+Hmm. What version is on the other PC? What else is different there? Can
+you reproduce the same issue with this example (the template for Hannes'
+page):
 
-Wolfgang.
+http://www.rts.uni-hannover.de/rtaddon/rt_serial_uprog.tar.bz2
 
+Jan
+
+
+PS: reply-to-all...
+
+
+--------------enig07244FF678C1EA149B249BB1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFU1WYniDOoMHTA+kRAh7GAJ9O00yGp5ln19GfF3vnR8i6Y1GLggCdFWDt
+EqmnL1pjK4BMQPsA0ZVJLbQ=
+=NSaE
+-----END PGP SIGNATURE-----
+
+--------------enig07244FF678C1EA149B249BB1--
 
