@@ -1,15 +1,16 @@
-Message-ID: <4553997C.5050304@domain.hid>
-Date: Thu, 09 Nov 2006 22:11:24 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] I-pipe patch for ARM S3C24xx (v4)
-References: <E1GiChy-0006Bp-5K@mailer.emlix.com> <45538D53.5090305@domain.hid>
-	<200611092152.01896.Sebastian.Smolorz@domain.hid>
-In-Reply-To: <200611092152.01896.Sebastian.Smolorz@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4BCA3A0F52B8A66AA6C9909C"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Xenomai v2.2.5
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4546494d0611080053o75c30c2ev81898fcbab473fa1@domain.hid>
+References: <1162750194.7285.11.camel@domain.hid>
+	<4546494d0611062232h26a2e45fgda0ed8bc86f8f465@domain.hid>
+	<1162882535.5025.3.camel@domain.hid>
+	<4546494d0611080053o75c30c2ev81898fcbab473fa1@domain.hid>
+Content-Type: text/plain
+Date: Fri, 10 Nov 2006 10:22:49 +0100
+Message-Id: <1163150569.5765.45.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,72 +20,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Li Yi (Adam)" <liyiadam@domain.hid>
+Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4BCA3A0F52B8A66AA6C9909C
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2006-11-08 at 16:53 +0800, Li Yi (Adam) wrote:
+> Another typo in xenomai-2.2.5/ksrc/drivers/testing/timerbench.c:
+> 
+> 412: 
+> printk("%s: bad ioctl code (0x%x)\n", _ _FUNCTION_, request);
+> should be:
+> printk("%s: bad ioctl code (0x%x)\n", _ _FUNCTION_ _, request); 
+> 
 
-Sebastian Smolorz wrote:
-> Jan Kiszka wrote:
->> Sebastian Smolorz wrote:
->>> However, there is one disturbing issue. When I execute
->>>
->>> dd if=3D/dev/zero of=3D/dev/null
->>>
->>> and the latency test in userspace with a period not less than 150 us =
-the
->>> worst case latency is about 220 us. But when I start latency with -p =
-100
->>> I get a softlock like the one attached. I guess this is the same prob=
-lem
->>> as Detlef Vollmann described in [2]. So I think it's time for a big f=
-at
->>> ARM-specific warning in the troubleshooting file and perhaps a
->>> modification of the testsuite so that if being compiled for ARM the
->>> default sample periods are greater than the 100 us now.
->> Something is preventing the watchdog kthread from being executed for
->> more than 10 s. Maybe this is just a sign that the systems is hopeless=
-ly
->> overloaded (what are average latencies?).
->=20
-> They are 120-130 us.
+Yeah, rainy day indeed... Both fixed in the download area too. Thanks.
 
-Which is a good sign that the board is basically only flushing caches
-when running the test at this frequency. Still the question remains if
-the BUG is an expectable behaviour or a sign for hidden problems.
+> -Yi
+> 
+> On 11/7/06, Philippe Gerum <rpm@xenomai.org> wrote:
+>         On Tue, 2006-11-07 at 14:32 +0800, Li Yi (Adam) wrote:
+>         > Hi Philippe,
+>         >
+>         > Not sure you have noticed this typo or not:
+>         >
+>         > xenomai-2.2.5/ksrc/skins/posix/syscall.c
+>         >
+>         > 2674: nt __pse51_call_not_available(struct task_struct
+>         *curr, struct 
+>         > pt_regs *regs)
+>         >
+>         > should be:
+>         >
+>         > int __pse51_call_not_available(struct task_struct *curr,
+>         struct
+>         > pt_regs *regs)
+>         >
+>         
+>         Fixed, thanks.
+>         
+>         > Regards,
+>         >
+>         > -Yi 
+>         >
+>         >
+>         >
+>         > On 11/6/06, Philippe Gerum <rpm@xenomai.org> wrote:
+>         >
+>         >         Here is the fifth maintenance release for the v2.2.x
+>         >         branch.  Short 
+>         >         log follows:
+>         >
+>         >                 [nucleus]
+>         >
+>         >                 * Fix period validity check when setting up
+>         the timer
+>         >         for
+>         >                 periodic timing mode. 
+>         >
+>         >                 [hal]
+>         >
+>         >                 * ppc: Define special wrappers to
+>         get/put_user macros
+>         >         which
+>         >                 bypass the might_sleep() checks. Upgrade
+>         Adeos
+>         >         support.
+>         >
+>         >                 * x86: Upgrade Adeos support.
+>         >
+>         >                 * arm: Upgrade Adeos support.
+>         >
+>         >                 [native]
+>         >
+>         >                 * Fix rt_queue_send() upon null broadcast
+>         (wrong 
+>         >         reference
+>         >                 count).
+>         >
+>         >                 [posix]
+>         >
+>         >                 * Make sure to read interrupt-related macros
+>         from the
+>         >         core
+>         >                 headers when including posix/pthread.h from 
+>         >         user-space.
+>         >
+>         >
+>         >         See the ChangeLog for details.
+>         >
+>         >
+>         http://download.gna.org/xenomai/stable/xenomai-2.2.5.tar.bz2
+>         >
+>         >
+>         >         --
+>         >         Philippe.
+>         >
+>         >
+>         >
+>         >         _______________________________________________
+>         >         Xenomai-core mailing list
+>         >         Xenomai-core@domain.hid
+>         >         https://mail.gna.org/listinfo/xenomai-core
+>         >
+>         --
+>         Philippe.
+>         
+>         
+> 
+-- 
+Philippe.
 
->=20
->> Maybe it is a real IRQ or=20
->> scheduling issue in Linux caused by I-pipe. Maybe it is time to port t=
-he
->> I-pipe tracer... ;)
->=20
-> With the latest Adeos upgrade for ARM the I-pipe tracer was integrated,=
- wasn't=20
-> it? I was already taking its usage into account.
 
-The arch-independent code is merged for ARM, but it still takes to port
-ipipe-mcount.S and likely ipipe_read_tsc + related services. Not much to
-do, though. Take a look at the code in PREEMPT_RT for the mcount part.
-
-Jan
-
-
---------------enig4BCA3A0F52B8A66AA6C9909C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFU5mBniDOoMHTA+kRAorPAJ9EhgKFFyNqYE59kFscpWx/3kFdEgCeP8f3
-XUf4fH0vmMhL7woTNa8q73M=
-=B0gc
------END PGP SIGNATURE-----
-
---------------enig4BCA3A0F52B8A66AA6C9909C--
 
