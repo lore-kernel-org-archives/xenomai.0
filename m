@@ -1,10 +1,12 @@
-Message-ID: <45562072.3020206@domain.hid>
-Date: Sat, 11 Nov 2006 20:11:46 +0100
+Message-ID: <4556220A.2060600@domain.hid>
+Date: Sat, 11 Nov 2006 20:18:34 +0100
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Xenomai configuration help for Linux 2.4
-References: <4555C56B.3070205@domain.hid> <4555DFBE.4050609@domain.hid>
-In-Reply-To: <4555DFBE.4050609@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Doxygen hyperlinking utilitiy and demo
+	programs
+References: <4554636C.4070704@domain.hid>
+	<17750.2115.314322.395360@domain.hid>
+In-Reply-To: <17750.2115.314322.395360@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,36 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
+Gilles Chanteperdrix wrote:
 > Wolfgang Grandegger wrote:
->> Hello,
->>
->> the attached patch adds Xenomai configuration help for Linux 2.4:
+>  > Hello,
+>  > 
+>  > the attached patch adds the RT-Socket-CAN utility programs as examples 
+>  > to the Doxygen documentation setup. This creates some nice cross 
+>  > reference from the documented API functions to the example code lines 
+>  > and vice versa. In a similar way, the Xenomai demo programs and code 
+>  > snippets could be integrated making it much easier to find example code 
+>  > or the description of an API function used in an example.
+>  > 
+>  > Please have a look and comment?
 > 
-> Cool that you picked this up! Frankly, I didn't expect that this would
-> really work without any pitfalls - but it seems to.
+> This is a good idea. The native skin snippets were created with
+> the same idea in mind, it looks like I somehow forgot to finish the
+> work.
+> 
+> Now, about your patch, will not this hunk break some things ?
+> 
+>  >  # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
+>  >  # certain files from those directories.
+>  >  
+>  > -EXCLUDE_PATTERNS       = 
+>  > +EXCLUDE_PATTERNS       = "*.c"
 
-I immediately liked you idea. Having an easily accessible description of 
-the Xenomai kernel configuration parameters helps users a lot. So far I 
-just realized some problems with "choice" but they seem not related to 
-the conversion. It's more likely a bug in menuconfig.
+Oops, of course, I wanted to set EXAMPLE_PATTERNS and not 
+EXCLUDE_PATTERNS to refine the selection of example files.
 
-> Just one addition feature wish: Could you enhance it so that it can also
-> upgrade an existing Configure.help patch? Maybe put some magic marks
-> (comments) around the xeno stuff and remove the whole block before
-> re-patching the help information?
-
-You mean re-running "prepare-kernel" should update the Xenomai block in 
-Configure.help? Doing it in the perl script should not be a big deal.
-
-> Thanks,
-> Jan (who wishes that this would also work for Kconfig->Config.in...)
-
-Yeah, but...
+Thanks.
 
 Wolfgang.
+
+
 
 
