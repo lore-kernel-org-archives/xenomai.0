@@ -1,16 +1,14 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Subject: Re: [Xenomai-help] timer-handling adeos/xenomai on arm
-Date: Sat, 11 Nov 2006 19:45:09 +0100
-References: <1162810995.5144.20.camel@domain.hid>
-	<200611111533.51160.Sebastian.Smolorz@domain.hid>
-	<17749.64255.935835.17174@domain.hid>
-In-Reply-To: <17749.64255.935835.17174@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200611111945.10309.Sebastian.Smolorz@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai v2.3-rc1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200611061834.10486.thomas.necker@domain.hid>
+References: <1162750381.7285.15.camel@domain.hid>
+	<200611061834.10486.thomas.necker@domain.hid>
+Content-Type: text/plain
+Date: Sat, 11 Nov 2006 20:13:50 +0100
+Message-Id: <1163272431.5765.308.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,60 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Thomas Necker <thomas.necker@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Sebastian Smolorz wrote:
->  > Sebastian Smolorz wrote:
->  > > Gilles Chanteperdrix wrote:
->  > > > Schl=E4gl "Manfred jun." wrote:
->  > > >  > Hi again!
->  > > >  >
->  > > >  > I've the presumption, there is something wrong with my
->  > > >  > timer-handling. Could you please take a look at my handling.
->  > > >  >
->  > > >  > Thanks in advance!
->  > > >
->  > > > The problem I see with your code is that you are updating
->  > > > ns_timer_lxlost in __ipipe_mach_acktimer, the integrator
->  > > > architecture code, which also uses a decrementer does not do that.
->  > > > Apart from that, I see nothing wrong.
->  > >
->  > > I see another one which has to do with the fact that __ipipe_mach_tsc
->  > > is updated both in __ipipe_mach_get_tsc and __ipipe_mach_set_dec. Th=
-is
->  > > leads to double-added ticks because the latter funcion is called only
->  > > once a period and the former even more than once. So Xenomai counts
->  > > jiffies in /proc/xenomai/timer to fast. Manfred, can you confirm thi=
-s?
->  >
->  > Forget this, my eyes weren't open this morning ... In=20
->  > __ipipe_mach_get_tsc there is no update of __ipipe_mach_tsc, of course.
->
-> Right, but __ipipe_mach_tsc and ns_timer_lxlost get also updated in
-> __ipipe_mach_acktimer, this looks wrong, in the integrator
-> implementation, they are updated in the timer interrupt, only if the
-> timer is not stolen.
+On Mon, 2006-11-06 at 18:34 +0100, Thomas Necker wrote:
+> > 	[uvm]
+> >
+> > 	* Feature removed.
+> >
+> 
+> I see that there is no direct syscall interface for pSOS added.
+> We had a discussion about that a while ago. We're still thinking
+> about doing that ourselves but wanted to use the uvm for the
+> prototype. Why is the uvm support removed without having
+> an adequate substitute for the skins it still supports?
 
-OK, let's speculate a little bit. (Maybe all of the following turns out to =
-be=20
-completely wrong, but it wouldn't be the first time for me today. ;-)=20
-Hopefully Manfred can give some comments which pieces of my speculation are=
-=20
-right.)
+Because the UVM introduced a significant amount of issues and confusion
+among users for all previous releases, which translated into way too
+much maintenance pressure on me, only to work-around unfixable design
+flaws. Keeping the UVM alive for the 2.3 series would be the wrong
+signal to send, since more people would rely on it, albeit it has been
+deprecated during the 2.2 series. In the same time, blocking the release
+of the 2.3 series, until the user-space support for pSOS and uITRON
+emulators is reinstated would be inconsequent, given the number of
+improvements and long awaited features 2.3 provides, like RTCAN.
 
-The timer counts down to zero, causes an interrupt and then reloads=20
-automatically with ns_timer_reload. So, when __ipipe_mach_acktimer is calle=
-d=20
-ns_timer_reload ticks have passed and can be added to __ipipe_mach_tsc and=
-=20
-ns_timer_lxlost. Some ticks later, __ipipe_mach_set_dec is executed, the=20
-passed ticks are added to __ipipe_mach_tsc and ns_timer_lxlost and the time=
-r=20
-is reprogrammed to the new value.
+Sometimes, there is the need to pick a choice among two sub-optimal
+options, and this is what I did. This does _not_ mean that the pSOS or
+uITRON support in user-space are being withdrawn, only that we need to
+deal with priorities, and balance them according to the workforce we
+have to develop this project. In the absence of external contribution,
+those emulators will be adapted to the direct syscall interface when
+time allows.
 
-Could be right ...
+>  This
+> means that there will be no way of supporting pSOS programs
+> in 2.3, right?
+> 
 
-Sebastian
+No, this means that currently, the first -rc releases of the 2.3 series
+only support kernel-based pSOS applications. As I told you recently, I'm
+ok to provide some help to anyone willing to contribute the direct
+syscall interface for pSOS, which would enable a much more reliable
+user-space support for this skin, like the VxWorks and VRTX emulators
+already benefit from. Doing so would raise the priority of this task on
+my todo list. If this support comes early enough, it could even be
+merged before 2.3 final is out, since this is a simple and
+self-contained add-on with zero impact on the core system.
+
+For the time being, you could still use the UVM support still available
+from 2.2.5 for prototyping your application, provided you likely don't
+depend on 2.3-specific features like RTCAN drivers, since they would not
+mix well with a UVM environment anyway.
+
+> Thomas
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
+
+
 
