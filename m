@@ -1,14 +1,13 @@
-Message-ID: <4556220A.2060600@domain.hid>
-Date: Sat, 11 Nov 2006 20:18:34 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Doxygen hyperlinking utilitiy and demo
-	programs
-References: <4554636C.4070704@domain.hid>
-	<17750.2115.314322.395360@domain.hid>
-In-Reply-To: <17750.2115.314322.395360@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] x86 FPU switches routines.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <453C7C48.30602@domain.hid>
+References: <453C7C48.30602@domain.hid>
+Content-Type: text/plain
+Date: Sat, 11 Nov 2006 23:40:07 +0100
+Message-Id: <1163284808.5765.324.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,40 +18,30 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Wolfgang Grandegger wrote:
->  > Hello,
->  > 
->  > the attached patch adds the RT-Socket-CAN utility programs as examples 
->  > to the Doxygen documentation setup. This creates some nice cross 
->  > reference from the documented API functions to the example code lines 
->  > and vice versa. In a similar way, the Xenomai demo programs and code 
->  > snippets could be integrated making it much easier to find example code 
->  > or the description of an API function used in an example.
->  > 
->  > Please have a look and comment?
+On Mon, 2006-10-23 at 10:24 +0200, Gilles Chanteperdrix wrote:
+> Hi,
 > 
-> This is a good idea. The native skin snippets were created with
-> the same idea in mind, it looks like I somehow forgot to finish the
-> work.
+> As once discussed with Heikki, and after a first missed attempt, here
+> is a patch for x86 which attempts to cope correctly with Linux (non
+> real-time) drivers using FPU in kernel-space.
 > 
-> Now, about your patch, will not this hunk break some things ?
+> I tested it on my laptop without drivers using FPU, and it appears to
+> work correctly, but it would be nice if people that had problems with
+> the previous attempt (if I remember correctly, on old pentiums and on
+> AMD processors) could test this patch.
 > 
->  >  # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
->  >  # certain files from those directories.
->  >  
->  > -EXCLUDE_PATTERNS       = 
->  > +EXCLUDE_PATTERNS       = "*.c"
 
-Oops, of course, I wanted to set EXAMPLE_PATTERNS and not 
-EXCLUDE_PATTERNS to refine the selection of example files.
+Ok, nobody has complained so far, it works for me too on a few test
+boxen, so I'm going to merge this patch for 2.3-rc2.
 
-Thanks.
+So please everybody, let's give this hell _now_ on as many x86 boxen as
+we can, checking out the trunk, so that we won't reiterate the 2.2.3
+mess.
 
-Wolfgang.
-
+-- 
+Philippe.
 
 
 
