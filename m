@@ -1,15 +1,14 @@
-From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <17749.51181.57125.243279@domain.hid>
+Date: Sat, 11 Nov 2006 13:54:05 +0100
 Subject: Re: [Xenomai-help] timer-handling adeos/xenomai on arm
-Date: Sat, 11 Nov 2006 12:52:13 +0100
+In-Reply-To: <1163245175.5765.218.camel@domain.hid>
 References: <1162810995.5144.20.camel@domain.hid>
 	<17749.44672.200334.645300@domain.hid>
-In-Reply-To: <17749.44672.200334.645300@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200611111252.13782.Sebastian.Smolorz@domain.hid>
+	<1163245175.5765.218.camel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,29 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> Schl=E4gl "Manfred jun." wrote:
->  > Hi again!
->  >
->  > I've the presumption, there is something wrong with my timer-handling.
->  > Could you please take a look at my handling.
->  >
->  > Thanks in advance!
->
-> The problem I see with your code is that you are updating
-> ns_timer_lxlost in __ipipe_mach_acktimer, the integrator architecture =20
-> code, which also uses a decrementer does not do that. Apart from that, I
-> see nothing wrong.
+Philippe Gerum wrote:
+ > On Sat, 2006-11-11 at 12:05 +0100, Gilles Chanteperdrix wrote:
+ > > Schl=E4gl "Manfred jun." wrote:
+ > >  > Hi again!
+ > >  >=20
+ > >  > I've the presumption, there is something wrong with my timer-hand=
+ling.
+ > >  > Could you please take a look at my handling.
+ > >  >=20
+ > >  > Thanks in advance!
+ > >=20
+ > > The problem I see with your code is that you are updating
+ > > ns_timer_lxlost in __ipipe_mach_acktimer, the integrator architectur=
+e
+ > > code, which also uses a decrementer does not do that. Apart from tha=
+t, I
+ > > see nothing wrong.
+ > >=20
+ > > If there is a problem with using ipipe_trigger_irq on your architect=
+ure,
+ > > maybe we could let rthal_timer_program_shot pass null delays to
+ > > __ipipe_mach_set_dec.
+ >=20
+ >=20
+ > Maybe the issue is not with ipipe_trigger_irq, which looks ok for ARM
+ > too, but rather with the internal latency/timings of the Xenomai port
+ > over this arch? The very difference between calling ipipe_trigger_irq
+ > and programming the decrementer for a close shot, is that interrupt
+ > delivery would happen immediately after the interrupt mask is enabled
+ > again with the former method. OTOH, the latter would likely leave some
+ > time left to the nucleus to get out of the current IRQ, thus preventin=
+g
+ > recursion-induced lockups.
 
-I see another one which has to do with the fact that __ipipe_mach_tsc is=20
-updated both in __ipipe_mach_get_tsc and __ipipe_mach_set_dec. This leads t=
-o=20
-double-added ticks because the latter funcion is called only once a period=
-=20
-and the former even more than once. So Xenomai counts jiffies=20
-in /proc/xenomai/timer to fast. Manfred, can you confirm this?
+What I meant is that maybe in Manfred case, some global variable need to
+be set in __ipipe_mach_set_dec and used in __ipipe_mach_acktimer and when
+using ipipe_trigger_irq, __ipipe_mach_acktimer get called without
+__ipipe_mach_set_dec.
 
-Sebastian
+That said, I probably misunderstood ns_timer_reload.
+
+--=20
+
+
+					    Gilles Chanteperdrix.
 
