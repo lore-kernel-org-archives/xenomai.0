@@ -1,14 +1,15 @@
-Subject: Re: [Xenomai-help] Xenomai Kernel limits
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1163175259.5765.174.camel@domain.hid>
-References: <DD39B5C3F4963040ADC9768BE7E430CB0154E67A@is-hdq-exchange.marel.net>
-	<45549050.4090005@domain.hid>  <1163175259.5765.174.camel@domain.hid>
-Content-Type: text/plain
-Date: Sat, 11 Nov 2006 17:28:33 +0100
-Message-Id: <1163262513.5765.221.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Message-ID: <17749.64255.935835.17174@domain.hid>
+Date: Sat, 11 Nov 2006 17:31:59 +0100
+Subject: Re: [Xenomai-help] timer-handling adeos/xenomai on arm
+In-Reply-To: <200611111533.51160.Sebastian.Smolorz@domain.hid>
+References: <1162810995.5144.20.camel@domain.hid>
+	<17749.44672.200334.645300@domain.hid>
+	<200611111252.13782.Sebastian.Smolorz@domain.hid>
+	<200611111533.51160.Sebastian.Smolorz@domain.hid>
+Content-Transfer-Encoding: Quoted-Printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,81 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Fri, 2006-11-10 at 17:14 +0100, Philippe Gerum wrote:
-> On Fri, 2006-11-10 at 15:44 +0100, Jan Kiszka wrote:
-> > Daniel Schnell wrote:
-> > > Hi Jan,
-> > > 
-> > > 
-> > > jan.kiszka@domain.hid wrote:
-> > >> Maybe that bug is a symptom of some other scalability issue.
-> > > 
-> > > I suppose so, too.
-> > >  
-> > >>> +++
-> > >>> bash-2.05b# cat /proc/heap
-> > >>> size=131072:used=134400:pagesz=512
-> > >>> +++
-> > >>>
-> > >>> This looks odd. Either the output is misleading or we have used more
-> > >>> resources than possible. But then I would expect that the Xenomai
-> > >>> initialization routines (e.g. pthread_create(), rt_dev_open(), etc.)
-> > >>> should return with an error. Either should be fixed, I suppose.
-> > >> Every services that allocates memory from the real-time heap should
-> > >> fail now. If it doesn't (pthread_create is a good test candidate
-> > >> here), we "only" face a statistics bug. Can you confirm that starting
-> > >> further applications only increases the used counter but otherwise
-> > >> works?    
-> > > 
-> > > I was running the cyclictest and the switchbench without problems at the
-> > > same time and the /proc/xenomai/heap showed even a usage of 135 kBytes.
-> > > So I assume that is a statistics bug.
-> > 
-> > ...or some overwritten memory: The block size is encoded in each heap
-> > chunk. Looks to me like we do not check for its sanity with a magic
-> > number or so, do we? Would be a nice debug feature. Someone around who's
-> > bored (rhetoric question)?
-> > 
-> 
-> The block size is encoded in the pagemap area, idle blocks carry forward
-> links into the free list for a given page. If we go down the way adding
-> redzones to detect overwrites, I'm afraid that we would have to add them
-> all over the place, since trashing the pagemap means that the entire
-> heap is basically dead in the water.
-> 
-> Regarding the size/used inconsistency from /proc/xenomai/heap, I would
-> also rather suspect that xnheap::ubytes is being miscomputed, rather
-> than trashed. E.g. there could be some mismatch/misuse in
-> xnheap_alloc/xnheap_free, between block sizes implicitely derived from
-> the log2 value found in the pagemap entries, and the sizes computed for
-> blocks larger than 2 * page_size. In any case, I already see a bug there
-> for allocation requests greater than 2 * page_size, but that would have
-> the opposite effect than the current issue (i.e. leakage in used bytes
-> accounting):
-> 
-> --- ksrc/nucleus/heap.c	(revision 1809)
-> +++ ksrc/nucleus/heap.c	(working copy)
-> @@ -468,7 +468,7 @@
->  		block = get_free_range(heap, size, 0);
->  
->  		if (block)
-> -			heap->ubytes += size;
-> +			heap->ubytes += xnheap_align(size, heap->pagesize);
->  	}
->  
->        release_and_exit:
-> 
-> [...]
-> 
+Sebastian Smolorz wrote:
+ > Sebastian Smolorz wrote:
+ > > Gilles Chanteperdrix wrote:
+ > > > Schl=E4gl "Manfred jun." wrote:
+ > > >  > Hi again!
+ > > >  >
+ > > >  > I've the presumption, there is something wrong with my timer-ha=
+ndling.
+ > > >  > Could you please take a look at my handling.
+ > > >  >
+ > > >  > Thanks in advance!
+ > > >
+ > > > The problem I see with your code is that you are updating
+ > > > ns_timer_lxlost in __ipipe_mach_acktimer, the integrator architect=
+ure
+ > > > code, which also uses a decrementer does not do that. Apart from t=
+hat, I
+ > > > see nothing wrong.
+ > >
+ > > I see another one which has to do with the fact that __ipipe_mach_ts=
+c is
+ > > updated both in __ipipe_mach_get_tsc and __ipipe_mach_set_dec. This =
+leads
+ > > to double-added ticks because the latter funcion is called only once=
+ a
+ > > period and the former even more than once. So Xenomai counts jiffies
+ > > in /proc/xenomai/timer to fast. Manfred, can you confirm this?
+ >=20
+ > Forget this, my eyes weren't open this morning ... In  __ipipe_mach_ge=
+t_tsc=20
+ > there is no update of __ipipe_mach_tsc, of course.
 
-False alarm. This patch is useless since the requested size is already
-rounded to the page size.
+Right, but __ipipe_mach_tsc and ns_timer_lxlost get also updated in
+__ipipe_mach_acktimer, this looks wrong, in the integrator
+implementation, they are updated in the timer interrupt, only if the
+timer is not stolen.
 
--- 
-Philippe.
+--=20
 
 
+					    Gilles Chanteperdrix.
 
