@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [PATCH] Missing include when compiling an
-	ipiped Linux kernel with CONFIG_PREEMPT for ARM
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <E1GiUTz-00027a-G9@domain.hid>
-References: <E1GiUTz-00027a-G9@domain.hid>
-Content-Type: text/plain
-Date: Sat, 11 Nov 2006 18:21:40 +0100
-Message-Id: <1163265700.5765.270.camel@domain.hid>
-Mime-Version: 1.0
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <17750.2115.314322.395360@domain.hid>
+Date: Sat, 11 Nov 2006 18:28:35 +0100
+Subject: Re: [Xenomai-core] [PATCH] Doxygen hyperlinking utilitiy and demo
+	programs
+In-Reply-To: <4554636C.4070704@domain.hid>
+References: <4554636C.4070704@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,25 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-11-10 at 12:23 +0100, Sebastian Smolorz wrote:
-> Hi,
-> 
-> here comes a fix for I-pipe for ARM. Without it the kernel refuses to compile 
-> when configured with CONFIG_PREEMPT.
+Wolfgang Grandegger wrote:
+ > Hello,
+ > 
+ > the attached patch adds the RT-Socket-CAN utility programs as examples 
+ > to the Doxygen documentation setup. This creates some nice cross 
+ > reference from the documented API functions to the example code lines 
+ > and vice versa. In a similar way, the Xenomai demo programs and code 
+ > snippets could be integrated making it much easier to find example code 
+ > or the description of an API function used in an example.
+ > 
+ > Please have a look and comment?
 
-Applied, thanks.
+This is a good idea. The native skin snippets were created with
+the same idea in mind, it looks like I somehow forgot to finish the
+work.
 
-> 
-> Sebastian
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+Now, about your patch, will not this hunk break some things ?
+
+ >  # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
+ >  # certain files from those directories.
+ >  
+ > -EXCLUDE_PATTERNS       = 
+ > +EXCLUDE_PATTERNS       = "*.c"
+
+
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
