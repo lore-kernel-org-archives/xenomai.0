@@ -1,9 +1,13 @@
-Message-ID: <BAY101-F30C0E46939D0872C16547AE2F70@domain.hid>
-From: "Marco Rossi" <cicciobombo123@domain.hid>
-Subject: Re: [Xenomai-help] Problem with multiport serial board
-Date: Fri, 10 Nov 2006 17:33:45 +0100
+Subject: Re: [Xenomai-help] troubles deleting tasks
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1163165517.5765.132.camel@domain.hid>
+References: <45547BD3.6070500@domain.hid> <1163165517.5765.132.camel@domain.hid>
+Content-Type: text/plain
+Date: Sat, 11 Nov 2006 10:31:38 +0100
+Message-Id: <1163237499.5765.204.camel@domain.hid>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,54 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philipp Keller <philipp.keller@domain.hid>
+Cc: xenomai@xenomai.org
 
-Yes, I  haven't switched on shared edge-triggered IRQ support. When i 
-compiled the kernel i missed to set this option, I'm not yet practical in 
-xenomai.
-Thanks again.
-Marco
-
-
->From: Jan Kiszka <jan.kiszka@domain.hid>
->To: Marco Rossi <cicciobombo123@domain.hid>
->CC: xenomai@xenomai.org
->Subject: Re: [Xenomai-help] Problem with multiport serial board
->Date: Fri, 10 Nov 2006 17:11:19 +0100
+On Fri, 2006-11-10 at 14:31 +0100, Philippe Gerum wrote:
+> On Fri, 2006-11-10 at 14:17 +0100, Philipp Keller wrote:
+> > Hello
+> > 
+> > We have troubles deleting the main task created with rt_task_shadow()
+> > from user space.
+> > In the course of initiating the program, we spawn two other threads from
+> > the main task with rt_task_spawn().
+> > When ending the application, both the spawned tasks can be deleted with
+> > rt_task_delete(), but the main task returns with an unknown error code
+> > when calling rt_task_delete().
 >
->Marco Rossi wrote:
-> >
-> >
-> >
-> > Hi every body. I'm testing my multiport serial board (2 extra serial
-> > port) with shared interrupt using the program found at
-> > http://www.rts.uni-hannover.de/rtaddon/rt_serial_uprog.tar.bz2 .
-> >
-> > I insert the module xeno_16550A.ko in the follow way:
-> > insmod /.../xeno_16550A.ko ioaddr=0x3f8, 0x2f8, 0xd800, 0xdc00
-> > irq=4,3,5,5 start_index=0
-> >
-> > When I use only a extra port the program works, but when I try to write
-> > in the first extra port and to read in the second extraport I got an
-> > error opening the second extraport.
-> >
-> > For example if I write in ttS0 and I read from ttyS2 all work; if   I
-> > write in ttS2 and I read from ttyS3 i get :
-> > can't open rtser3 (the rt_dev_open return a negative file descriptor).
->
->The negative number is the error code (see documentation). It likely
->says -EBUSY, meaning here that the IRQ line is already in use. Check
->your Xenomai kernel configuration, I guess you haven't switched on
->shared edge-triggered IRQ support yet, have you?
->
->Jan
->
+> Knowing which error code would help.
+> 
+
+The following frag definitely works (i.e. the second printf() is not
+issued because the current task has been deleted in the meantime), even
+if using rt_task_self() for getting back the current task handle over
+the main context, so there must be something else going on with your
+application. Again, telling us the _exact_ error code value you get from
+rt_task_delete() is the only way to start investigating the issue;
+knowing that you apparently tested all the documented return codes in
+your program does _not_ tell us which value is actually returned, and
+therefore won't help much.
+
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/task.h>
+
+RT_TASK task;
+
+int main(int ac, char **av)
+{
+        mlockall(MCL_CURRENT|MCL_FUTURE);
+
+        printf("rt_task_create=%d\n",
+               rt_task_shadow(&task, "task", 50, 0));
+
+        printf("rt_task_delete=%d\n",
+                rt_task_delete(&task));
+
+        return 0;
+}
 
 
-><< signature.asc >>
+> > We believe to have released all recources before deleting, closing all
+> > sockets and file handlers.
+> > The trouble is that we cannot initiate rt can socket communication again
+> > after failing to delete the main thread.
+> > Doeas anyone have an idea what the probelm may be here?
+> > 
+> > Thanks for any hint
+> > Philipp
+> > 
+> >  
+> > -- 
+> > Philipp Keller
+> > Software Development
+> > 
+> > Neuronics AG
+> > Technoparkstrasse 1
+> > 8005 Zuerich / Switzerland
+> > Tel +41 44 445 16 40
+> > Fax +41 44 445 16 44
+> > www.neuronics.ch
+-- 
+Philippe.
 
-_________________________________________________________________
-Chiama gratis con Windows Live Messenger  
-http://imagine-msn.com/messenger/launch80/?locale=it-it&TAB=2
 
 
