@@ -1,53 +1,59 @@
-Message-ID: <456D4C7D.2040100@domain.hid>
-Date: Wed, 29 Nov 2006 10:01:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <54b161f50611121034y2f81e293k9d78c3dce9760f1e@domain.hid>
+Date: Sun, 12 Nov 2006 19:34:23 +0100
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
-	<456C97B9.1000402@domain.hid>
-In-Reply-To: <456C97B9.1000402@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_5705_27528450.1163356463929"
+Subject: [Xenomai-help] Needed files/device nodes for Xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Picking up the earlier discussion of CPU affinity of shadow threads,
->>>this patch now opens the possibility to assign a CPU mask on
->>>xnshadow_map. It cleans up the related nucleus code and updates all
->>>callers of xnshadow_map appropriately.
->>>
->>>Be warned, it's only tested on (q)emulated SMP. Comments and test
->>>reports on real hardware are welcome.
->>
->>It is only possible to set the affinity of a user-space thread, why
->>adding another way to do it ?
->>
-> 
-> 
-> I'm not yet completely understanding what you mean.
-> 
-> So far the affinity was indirectly assigned to some xnthread by the CPU
-> the caller of xnshadow_map happened to run on. Now this is done
-> explicitly, thus in a more robust way (there was an undefined path in
-> the old code) and without duplicating code (/wrt skins).
+------=_Part_5705_27528450.1163356463929
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I meant "already" instead of "only", it is already possible to set the
-affinity of a user-space thread with sched_setaffinity.
+Hello everyone,
 
--- 
-                                                 Gilles Chanteperdrix
+are there, besides the rtp* and rtheap device nodes, any files or nodes
+Xenomai relies on to load correctly? I'm getting a -19 error (No such file
+of directory) on startup using a custom built Linux configuration.
+
+I could provide some more detailed information, but not at the moment, since
+I don't have access to the system right now.
+
+Thanks in advance.
+
+Best regards,
+
+Frits
+
+------=_Part_5705_27528450.1163356463929
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hello everyone,<br>
+<br>
+are there, besides the rtp* and rtheap device nodes, any files or nodes
+Xenomai relies on to load correctly? I'm getting a -19 error (No such
+file of directory) on startup using a custom built Linux configuration.<br>
+<br>
+I could provide some more detailed information, but not at the moment, since I don't have access to the system right now.<br>
+<br>
+Thanks in advance.<br>
+<br>
+Best regards,<br>
+<br>
+Frits<br>
+
+------=_Part_5705_27528450.1163356463929--
 
