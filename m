@@ -1,14 +1,9 @@
-Message-ID: <455895FC.7060203@domain.hid>
-Date: Mon, 13 Nov 2006 16:57:48 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai User Space: Using 100% CPU power
-References: <29293133.1163432148953.JavaMail.ngmail@domain.hid>
-In-Reply-To: <29293133.1163432148953.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBD047F8E8EF8AA336B3B9889"
-Sender: jan.kiszka@domain.hid
+Message-ID: <BAY101-F7AE73C8953CF7C39ABE00E2F40@domain.hid>
+From: "Marco Rossi" <cicciobombo123@domain.hid>
+Date: Mon, 13 Nov 2006 18:48:50 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Subject: [Xenomai-help] Strange problem with multiport serail board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,64 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBD047F8E8EF8AA336B3B9889
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi every body,  I'have a strange problem using a multiport serial board 
+connected with the PCI bus: when I read from the ports all work  ok but I 
+can't write in anyone of the extension port. The problem occurs only with 
+the ports of the extension board, whith standard serial port all works ok.  
+The problem occurs both with RTDM driver of Xenomai and standard linux 
+drivers.
+The operanting system used is Debian sarge 3.1, kernel 2.6.17, 
+Xenomai-2.2.4. The PC is an EPIA TC Mini-ITX and the multiport board is a 
+NetMos Technology PCI 9835 Multi-I/O.
+Had someone similar probles or any idea to resolve the problem?
 
-M. Koehrer wrote:
-> Hi everybody,
->=20
-> I have an application where I need extreme precise timing (about 1=B5s)=
- for a couple of seconds
-> using a standard PC (to access a I/O PCI board).
-> For this, I want to write an application that initializes normally and =
+Thanks in advance
+Marco
 
-> whenever the software is in a certain state, I want to enter a  "high-p=
-recision-timing mode".
-> In this high-precision-timing mode, I want to disable all interrupts an=
-d poll permanently on a PCI I/O board.
-> The timing itself can be directly taken from the CPU's TSC using rdtsc.=
+_________________________________________________________________
+I campionati di calcio sono iniziati.Sei pronto alla sfida? 
+http://www.msn.it/messengerleague/home/
 
-> Within this mode, the time measurement of register changes on the PCI I=
-/O board is very important.
-> After a couple of seconds, when all relevant data is taken, I want to l=
-eave this
-> "high-precision-mode" and come back to the normal mode.
-> Then the measurement results are interpreted in detail.
-> All this should happen in user mode, not in kernel mode.
->=20
-> My questions are now:=20
-> Is this possible using Xenomai?
-> How can I enter a mode that disables all interrupts (including timer) f=
-or a while?
-
-We had this discussion recently here, see
-
-https://mail.gna.org/public/xenomai-help/2006-10/msg00172.html
-
-And be aware that you are about to toast Linux's time keeping (but I
-guess that of lower priority in this scenario).
-
-Jan
-
-
---------------enigBD047F8E8EF8AA336B3B9889
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFWJX8niDOoMHTA+kRAjQBAKCDOfeFkw9bJpf+ATiV6ud5kKGBqwCeMxjt
-vo5uYm3/A409FCytCsWgzPw=
-=psqg
------END PGP SIGNATURE-----
-
---------------enigBD047F8E8EF8AA336B3B9889--
 
