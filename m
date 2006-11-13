@@ -1,33 +1,58 @@
-Message-ID: <456D5399.4040901@domain.hid>
-Date: Wed, 29 Nov 2006 10:32:09 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45587B6B.6090006@domain.hid>
+Date: Mon, 13 Nov 2006 15:04:27 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
-	<456C97B9.1000402@domain.hid> <456D4C7D.2040100@domain.hid>
-	<456D4ED4.5040405@domain.hid>
-In-Reply-To: <456D4ED4.5040405@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] waiting in rtdm drivers
+References: <111320061400.15794.45587A600000DBC400003DB222070229339C0E0301089BD2040A969B0799@domain.hid>
+In-Reply-To: <111320061400.15794.45587A600000DBC400003DB222070229339C0E0301089BD2040A969B0799@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig09A931CD0EFF41A9974AF030"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: witzel.thomas@domain.hid
+Cc: Xenomai-help@domain.hid
 
-Jan Kiszka wrote:
-> OK. So you are suggesting to read out the affinity mask from task_struct
-> instead of passing it as an additional argument?
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig09A931CD0EFF41A9974AF030
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Unless I am wrong, it is the way it currently works.
+witzel.thomas@domain.hid wrote:
+> Hello all,
+>=20
+> I'm making slow progress with the sound driver. One question has been b=
+othering me. How do I wait properly in a rtdm driver routine, i.e. I need=
+ to wait a few microseconds for a register to "settle" or for the codecs =
+to come back from reset. This would be required in both routines that can=
+ be called from realtime as well as non-realtime tasks.
 
--- 
-                                                 Gilles Chanteperdrix
+That's a typical job for rtdm_task_busy_sleep():
+
+Jan
+
+
+--------------enig09A931CD0EFF41A9974AF030
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFWHtrniDOoMHTA+kRAmhTAJ4mMFAtu7Xc786LZnwlRoimtHr8ggCbBPjL
+va4MRfjCN4CEjYrCZAQl2g8=
+=16HQ
+-----END PGP SIGNATURE-----
+
+--------------enig09A931CD0EFF41A9974AF030--
 
