@@ -1,79 +1,67 @@
-Message-ID: <456D4ED4.5040405@domain.hid>
-Date: Wed, 29 Nov 2006 10:11:48 +0100
+Message-ID: <45586AF7.9030504@domain.hid>
+Date: Mon, 13 Nov 2006 13:54:15 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
-	<456C97B9.1000402@domain.hid> <456D4C7D.2040100@domain.hid>
-In-Reply-To: <456D4C7D.2040100@domain.hid>
+Subject: Re: [Xenomai-help] [ANNOUNCE] Orocos Real-Time Toolkit 1.0
+References: <200611131055.00633.peter.soetens@domain.hid>
+In-Reply-To: <200611131055.00633.peter.soetens@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0A3350A696358AAB0A4D9DD9"
+	boundary="------------enig2792E6A00605A65C1C2270D3"
 Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Soetens <peter.soetens@domain.hid>
+Cc: Xenomai-help@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0A3350A696358AAB0A4D9DD9
+--------------enig2792E6A00605A65C1C2270D3
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Gilles Chanteperdrix wrote:
->>
->>> Jan Kiszka wrote:
->>>
->>>> Picking up the earlier discussion of CPU affinity of shadow threads,=
-
->>>> this patch now opens the possibility to assign a CPU mask on
->>>> xnshadow_map. It cleans up the related nucleus code and updates all
->>>> callers of xnshadow_map appropriately.
->>>>
->>>> Be warned, it's only tested on (q)emulated SMP. Comments and test
->>>> reports on real hardware are welcome.
->>> It is only possible to set the affinity of a user-space thread, why
->>> adding another way to do it ?
->>>
->>
->> I'm not yet completely understanding what you mean.
->>
->> So far the affinity was indirectly assigned to some xnthread by the CP=
-U
->> the caller of xnshadow_map happened to run on. Now this is done
->> explicitly, thus in a more robust way (there was an undefined path in
->> the old code) and without duplicating code (/wrt skins).
+Peter Soetens wrote:
+>  The "Open Robot Control Software" (Orocos) project uses Xenomai
+>  for realising its real-time behaviour.
 >=20
-> I meant "already" instead of "only", it is already possible to set the
-> affinity of a user-space thread with sched_setaffinity.
+>                The Orocos Real-Time Toolkit v1.0.0.
+>                        http://www.orocos.org
+>                =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 >=20
+>  The Orocos development team is proud to announce the first stable
+>  release of the Real-Time Toolkit (RTT), a C++ toolkit for building
+>  component based, real-time robotics and machine control applications.
 
-OK. So you are suggesting to read out the affinity mask from task_struct
-instead of passing it as an additional argument?
+Congratulations to this milestone! Really nice, professional work.
+
+Could you elaborate a bit on the degree of Xenomai integration? What is
+working, what might be missing (compared to other RTOS ports)? What is
+the status of driver support? And were you able to collect any practical
+experience on larger setups over Xenomai already?
+
+Jan
 
 
---------------enig0A3350A696358AAB0A4D9DD9
+--------------enig2792E6A00605A65C1C2270D3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFbU7UniDOoMHTA+kRAqdlAJ9NF5qKTQUuyUkJge12WP0UanZXywCeKwDB
-JVgUyiWwxV+vups5QAqktgM=
-=OY+J
+iD8DBQFFWGr3niDOoMHTA+kRAos8AJkBY/GSmesC8srfTne0NkTWoESrwgCcDsSv
+eY7LcePGzWV+2fxr5RL0bBM=
+=QGHW
 -----END PGP SIGNATURE-----
 
---------------enig0A3350A696358AAB0A4D9DD9--
+--------------enig2792E6A00605A65C1C2270D3--
 
