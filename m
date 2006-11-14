@@ -1,12 +1,11 @@
-Message-ID: <455993F2.4080609@domain.hid>
-Date: Tue, 14 Nov 2006 11:01:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4559D38C.2080001@domain.hid>
+Date: Tue, 14 Nov 2006 15:32:44 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH]Build xenomai on Blackfin in FDPIC format
-References: <4546494d0611131932q480046e0vfa092f4eaa15f7b5@domain.hid>
-In-Reply-To: <4546494d0611131932q480046e0vfa092f4eaa15f7b5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH] RT-Socket-CAN,
+	TX loopback and further  improvements
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,52 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Li Yi (Adam)" <liyiadam@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Li Yi (Adam) wrote:
-> Hi Philippe,
-> 
-> Since bfin-gcc release 2006-R1, bfin-gcc begins to support "FDPIC"
-> format besides "BFLT".
-> "FDPIC" supports shared library. Bellow patch makes it possible to build
-> xenomai-2.2.5 in FDPIC
-> format. In docs.blackfin.uclinux.org/doku.php?id=adeos
-> <http://docs.blackfin.uclinux.org/doku.php?id=adeos> there is step by
-> step guide.
-> 
-> Although it is still possible to build xenomai as BFLT in this way:
-> 
-> configure --host=bfin CC=bfin-uclinux-gcc LDFLAGS=-Wl,-elf2flt
-> --disable-shared
-> 
-> There will be error:
-> 
->  bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest
-> -Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-
-> 2.2.5/src/skins/posix/posix.wrappers cyclictest-cyclictest.o 
-> ../../skins/posix/.libs/libpthread_rt.a -lpthread -lrt
-> /home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
-> specific.o): In function `_pthread_key_delete':
-> (.text+0x24e): undefined reference to `___wrap_pthread_mutex_lock'
-> /home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
-> specific.o): In function `_pthread_key_delete':
-> 
-> And this can be fixed like:
-> 
-> bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest
-> -Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-2.2.5/src/skins/posix/posix.wrappers
-> cyclictest-cyclictest.o -lpthread -lrt
-> ../../skins/posix/.libs/libpthread_rt.a
+Hi Jan,
 
-This fix is incorrect. The correct way of linking is to do it in two steps:
+attached is a patch implementing the TX loopback, apart from some other 
+fixes and improvements. The TX loopback to foreign local sockets allows 
+to have a net-alike behavior of the CAN bus. Local sockets listening to 
+a device can receive TX messages as well. As discussed, the TX lookback 
+is performed when TX is done (TX done interrupt). As I still think that 
+it will not be used very often, I made it a configurable kernel option. 
+When it's selected, it's _on_ by default and it can be switched off or 
+on again with setsockopt() (to make the Linux Socket-CAN people happy). 
+As long as it's not enabled, it adds little overhead to the driver. If 
+you have no objections I will check it in.
 
-bfin-uclinux-ld -r -o cyclictest.part
-@/home/adam/workspace/xenomai/xenomai_src/xenomai-2.2.5/src/skins/posix/posix.wrappers
-cyclictest-cyclictest.o ../../skins/posix/.libs/libpthread_rt.a
+Here is the ChangeLog entry:
 
-bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest cyclictest.part -lpthread -lrt
+2006-11-14  Wolfgang Grandegger  <wg@domain.hid>
 
--- 
-                                                 Gilles Chanteperdrix
+         * ksrc/drivers/can/rtcan_dev.h,
+         ksrc/drivers/can/rtcan_socket.h,
+         ksrc/drivers/can/rtcan_socket.c,
+         ksrc/drivers/can/rtcan_raw.c,
+         ksrc/drivers/can/rtcan_modules.c,
+         ksrc/drivers/can/sja1000/rtcan_sja1000.c,
+         ksrc/drivers/can/mscan/rtcan_mscan.c,
+         ksrc/drivers/can/Kconfig,
+         ksrc/drivers/can/Config.in,
+         src/utils/can/rtcansend.c,
+         include/rtdm/rtcan.h,: Add feature TX loopback to local sockets.
+
+         * ksrc/drivers/can/rtcan_raw.c, include/rtdm/rtcan.h:
+         Remove locks for the setting and reading of the RX and TX
+         timeout values and add a warning to the documentation.
+
+         * src/utils/rtcansend.c: use sendto() by default to avoid
+         binding a default filter and add option "-s" for using bind()
+         and send().
+
+         * src/utils/rtcanrecv.c: add option "-R" for relative
+         timestamps.
+
+         * ksrc/drivers/can/rtcan_internal.h: use now RTCAN_ASSERT macros
+         when CONFIG_XENO_DRIVERS_RTCAN_DEBUG is set.
+
+         * ksrc/drivers/can/mscan/Kconfig,
+         ksrc/drivers/can/sja1000/Kconfig,
+         ksrc/drivers/can/Kconfig: add more help for kernel parameters.
+
+Thanks.
+
+Wolfgang.
+
+
+
+
+
+
 
