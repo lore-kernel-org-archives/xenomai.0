@@ -1,15 +1,10 @@
-Message-ID: <822467320611130839q7f21cc78m3618199e0e04ba94@domain.hid>
-Date: Mon, 13 Nov 2006 09:39:05 -0700
-From: "Terry Laurenzo" <tlaurenzo@domain.hid>
-Subject: Re: Re: [Xenomai-core] Undefined reference to
-	___wrap_pthread_mutex_lock and friends on Blackfin
-In-Reply-To: <4558339F.5070500@domain.hid>
+Message-ID: <4546494d0611131932q480046e0vfa092f4eaa15f7b5@domain.hid>
+Date: Tue, 14 Nov 2006 11:32:11 +0800
+From: "Li Yi (Adam)" <liyiadam@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <822467320611121613u2cbcd224nc3afedd43d4b4463@domain.hid>
-	<4558339F.5070500@domain.hid>
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_114938_19904353.1163475131985"
+Subject: [Xenomai-core] [PATCH]Build xenomai on Blackfin in FDPIC format
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,65 +14,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On 11/13/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> Terry Laurenzo wrote:
-> > Hello.  I'm new to this list and new to Xenomai.  I am getting the
-> > following when trying to build Xenomai 2.2.3:
-> >
-> > -------------
-> > cyclictest.elf2flt(.text+0x4946): In function `_pthread_key_delete':
-> > : undefined reference to `___wrap_pthread_mutex_lock'
-> > cyclictest.elf2flt(.text+0x4970): In function `_pthread_key_delete':
-> > : undefined reference to `___wrap_pthread_mutex_unlock'
-> > cyclictest.elf2flt(.text+0x49c8): In function `_pthread_key_delete':
-> > : undefined reference to `___wrap_pthread_mutex_unlock'
-> > cyclictest.elf2flt(.text+0x49e8): In function `_pthread_key_create':
-> > : undefined reference to `___wrap_pthread_mutex_lock'
-> > cyclictest.elf2flt(.text+0x4a10): In function `_pthread_key_create':
-> > : undefined reference to `___wrap_pthread_mutex_unlock'
-> > cyclictest.elf2flt(.text+0x4a2e): In function `_pthread_key_create':
-> > : undefined reference to `___wrap_pthread_mutex_unlock'
-> > collect2: ld returned 1 exit status
-> > -------------
-> >
-> > The problem seems to be that the version of libpthread.a that I am
-> > using makes reference to the pthread_mutex_lock and
-> > pthread_mutex_unlock functions from a couple of places including
-> > pthread_key_create and pthread_key_delete.
->
-> The problem is that pthread_key_create and pthread_key_delete should use
-> the libpthread.a versions of pthread_mutex_lock and pthread_mutex_unlock
-> not xenomai versions. In order to avoid this, you have to do the
-> link-edit in two stages: first do a partial link with libpthread_rt.a
-> with the --wrap options, second a final link with libpthread.a without
-> the --wrap options.
+------=_Part_114938_19904353.1163475131985
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_114939_28343387.1163475131985"
 
-Since this is an issue in the main build of xenomai, any suggestions
-on what the proper fix is?  Should libpthread be linked with
-libpthread_rt during the main library build or just for the individual
-(testsuite) programs that use it?  Does anyone have an example of some
-additions to the Automake rules to carry out this two step process?
+------=_Part_114939_28343387.1163475131985
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-> > Applying the patch makes it build but the testsuites for the Posix
-> > skin don't seem to work.  For example, here is what I get when trying
-> > to run cyclictest:
-> >  root:/usr/xenomai/testsuite/cyclic> ./cyclictest
-> >  Xenomai Posix skin init: pthread_atfork: Unknown error -1
->
-> Maybe pthread_atfork is not working at all on uclibc ?
+Hi Philippe,
 
-uclibc does not have a working fork, so I can't imagine that this
-behavior is required.  I think that the problem, however, is in the
-way that I "solved" the build problem.  Now, since libpthread is
-linking against the libpthread_rt wrapped version of mutex_lock and
-mutex_unlock, it is potentially causing problems since the internals
-of libpthread were supposed to link against the unwrapped versions.
-This will probably fix itself if the link-edit step is inserted
-correctly.
+Since bfin-gcc release 2006-R1, bfin-gcc begins to support "FDPIC" format
+besides "BFLT".
+"FDPIC" supports shared library. Bellow patch makes it possible to build
+xenomai-2.2.5 in FDPIC
+format. In docs.blackfin.uclinux.org/doku.php?id=adeos there is step by step
+guide.
 
-Thanks for the replies.
-Terry
+Although it is still possible to build xenomai as BFLT in this way:
+
+configure --host=bfin CC=bfin-uclinux-gcc LDFLAGS=-Wl,-elf2flt
+--disable-shared
+
+There will be error:
+
+ bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest
+-Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-2.2.5/src/skins/posix/posix.wrappers
+cyclictest-cyclictest.o  ../../skins/posix/.libs/libpthread_rt.a -lpthread
+-lrt
+/home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
+specific.o): In function `_pthread_key_delete':
+(.text+0x24e): undefined reference to `___wrap_pthread_mutex_lock'
+/home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
+specific.o): In function `_pthread_key_delete':
+
+And this can be fixed like:
+
+bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest
+-Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-2.2.5/src/skins/posix/posix.wrappers
+cyclictest-cyclictest.o -lpthread -lrt
+../../skins/posix/.libs/libpthread_rt.a
+
+But using "FDPIC" format is suggested.
+
+Thanks,
+
+-Yi
+
+------=_Part_114939_28343387.1163475131985
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Hi Philippe,<br><br>Since bfin-gcc release 2006-R1, bfin-gcc begins to support &quot;FDPIC&quot; format besides &quot;BFLT&quot;.<br>&quot;FDPIC&quot; supports shared library. Bellow patch makes it possible to build xenomai-2.2.5
+ in FDPIC<br>format. In <a href="http://docs.blackfin.uclinux.org/doku.php?id=adeos">docs.blackfin.uclinux.org/doku.php?id=adeos</a> there is step by step guide.<br><br>Although it is still possible to build xenomai as BFLT in this way:
+<br><br>configure --host=bfin CC=bfin-uclinux-gcc LDFLAGS=-Wl,-elf2flt --disable-shared<br><br>There will be error:<br><br>&nbsp;bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest -Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-
+2.2.5/src/skins/posix/posix.wrappers cyclictest-cyclictest.o&nbsp; ../../skins/posix/.libs/libpthread_rt.a -lpthread -lrt<br>/home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
+specific.o): In function `_pthread_key_delete':<br>(.text+0x24e): undefined reference to `___wrap_pthread_mutex_lock'<br>/home/adam/workspace/toolchain/1110/bfin-uclinux/bin/../lib/gcc/bfin-uclinux/4.1.1/../../../../bfin-uclinux/lib/libpthread.a(
+specific.o): In function `_pthread_key_delete':<br><br>And this can be fixed like:<br><br>bfin-uclinux-gcc -Wl,-elf2flt -o cyclictest -Wl,@/home/adam/workspace/xenomai/xenomai_src/xenomai-2.2.5/src/skins/posix/posix.wrappers 
+cyclictest-cyclictest.o -lpthread -lrt ../../skins/posix/.libs/libpthread_rt.a<br><br>But using &quot;FDPIC&quot; format is suggested.<br><br>Thanks,<br><br>-Yi<br>
+
+------=_Part_114939_28343387.1163475131985--
+
+------=_Part_114938_19904353.1163475131985
+Content-Type: text/x-patch; name=xenomai_2.2.5_bfin.patch; 
+	charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_euhqp08p
+Content-Disposition: attachment; filename="xenomai_2.2.5_bfin.patch"
+
+ZGlmZiAtTnVyIHhlbm9tYWktMi4yLjUub3JpZy9jb25maWd1cmUgeGVub21haS0yLjIuNS9jb25m
+aWd1cmUKLS0tIHhlbm9tYWktMi4yLjUub3JpZy9jb25maWd1cmUJMjAwNi0xMS0wNSAyMzozMTo0
+Ni4wMDAwMDAwMDAgKzA4MDAKKysrIHhlbm9tYWktMi4yLjUvY29uZmlndXJlCTIwMDYtMTEtMTQg
+MTE6MTU6NDcuMDAwMDAwMDAwICswODAwCkBAIC0yMTE2Myw5ICsyMTE2Myw2IEBACiAgICAgICAg
+IDs7CiAgYmxhY2tmaW4pCiAJWEVOT19VU0VSX0NGTEFHUz0iJFhFTk9fVVNFUl9DRkxBR1MgLVdh
+bGwgLXBpcGUiCi0JIyB1Q2xpbnV4IHdhbnRzIGZsYXQgZm9ybWF0IGV4ZWN1dGFibGVzOyBhc3N1
+bWUgdGhhdCBvdXIKLQkjIHNvdXJjZSBmb3JtYXQgaXMgRUxGLgotCVhFTk9fVVNFUl9MREZMQUdT
+PSItV2wsLWVsZjJmbHQiCiAgICAgICAgIDs7CiAgYXJtKQogCVhFTk9fVVNFUl9DRkxBR1M9IiRY
+RU5PX1VTRVJfQ0ZMQUdTIC1XYWxsIC1waXBlIgpkaWZmIC1OdXIgeGVub21haS0yLjIuNS5vcmln
+L2NvbmZpZ3VyZS5pbiB4ZW5vbWFpLTIuMi41L2NvbmZpZ3VyZS5pbgotLS0geGVub21haS0yLjIu
+NS5vcmlnL2NvbmZpZ3VyZS5pbgkyMDA2LTA5LTI0IDIyOjUwOjEwLjAwMDAwMDAwMCArMDgwMAor
+KysgeGVub21haS0yLjIuNS9jb25maWd1cmUuaW4JMjAwNi0xMS0xNCAxMToxNToyMC4wMDAwMDAw
+MDAgKzA4MDAKQEAgLTUzNiw5ICs1MzYsNiBAQAogICAgICAgICA7OwogIGJsYWNrZmluKQogCVhF
+Tk9fVVNFUl9DRkxBR1M9IiRYRU5PX1VTRVJfQ0ZMQUdTIC1XYWxsIC1waXBlIgotCSMgdUNsaW51
+eCB3YW50cyBmbGF0IGZvcm1hdCBleGVjdXRhYmxlczsgYXNzdW1lIHRoYXQgb3VyCi0JIyBzb3Vy
+Y2UgZm9ybWF0IGlzIEVMRi4KLQlYRU5PX1VTRVJfTERGTEFHUz0iLVdsLC1lbGYyZmx0IgogICAg
+ICAgICA7OwogIGFybSkKIAlYRU5PX1VTRVJfQ0ZMQUdTPSIkWEVOT19VU0VSX0NGTEFHUyAtV2Fs
+bCAtcGlwZSIKZGlmZiAtTnVyIHhlbm9tYWktMi4yLjUub3JpZy9SRUFETUUuSU5TVEFMTCB4ZW5v
+bWFpLTIuMi41L1JFQURNRS5JTlNUQUxMCi0tLSB4ZW5vbWFpLTIuMi41Lm9yaWcvUkVBRE1FLklO
+U1RBTEwJMjAwNi0wNy0xOCAyMToxOToxNy4wMDAwMDAwMDAgKzA4MDAKKysrIHhlbm9tYWktMi4y
+LjUvUkVBRE1FLklOU1RBTEwJMjAwNi0xMS0xNCAxMToxMzowNi4wMDAwMDAwMDAgKzA4MDAKQEAg
+LTI3MCwxMiArMjcwLDkgQEAKICQgbWFrZSBBUkNIPWJmaW5ub21tdSBDUk9TU19DT01QSUxFPWJm
+aW4tdWNsaW51eC0geGNvbmZpZy9nY29uZmlnL21lbnVjb25maWcgIyBzZWxlY3QgdGhlIGtlcm5l
+bCBhbmQgWGVub21haSBvcHRpb25zCiAkIG1ha2UgQVJDSD1iZmlubm9tbXUgQ1JPU1NfQ09NUElM
+RT1iZmluLXVjbGludXgtIGJ6SW1hZ2UgbW9kdWxlcyAjIHRoZW4gaW5zdGFsbCBhcyBuZWVkZWQK
+ICQgbWtkaXIgJGJ1aWxkX3Jvb3QgJiYgY2QgJGJ1aWxkX3Jvb3QKLSQgJHhlbm9tYWlfcm9vdC9j
+b25maWd1cmUgLS1idWlsZD1pNjg2LXBjLWxpbnV4LWdudSAtLWhvc3Q9YmZpbm5vbW11LXVua25v
+d24tbGludXgtZ251IENDPWJmaW4tdWNsaW51eC1nY2MgQ1hYPWJmaW4tdWNsaW51eC1nY2MgQVI9
+YmZpbi11Y2xpbnV4LWFyIExEPWJmaW4tdWNsaW51eC1sZCAtLWRpc2FibGUtc2hhcmVkCiskICR4
+ZW5vbWFpX3Jvb3QvY29uZmlndXJlIC0taG9zdD1iZmluIENDPWJmaW4tdWNsaW51eC1nY2MgQ0ZM
+QUdTPS1tZmRwaWMgCiAkIG1ha2UgaW5zdGFsbAogCi1DQVVUSU9OOiBub3RlIHRoZSAtLWRpc2Fi
+bGVkLXNoYXJlZCBmbGFnIGNvbmZpZ3VyaW5nIG91dCB0aGUgc2hhcmVkCi1saWJyYXJ5IHN1cHBv
+cnQsIHdoaWNoIGlzIHVuYXZhaWxhYmxlIGZvciB0aGlzIGFyY2hpdGVjdHVyZS4KLQogWW91IG1h
+eSBhbHNvIHdhbnQgdG8gaGF2ZSBhIGxvb2sgYXQgdGhpcyBoYW5kcy1vbiBkZXNjcmlwdGlvbiBh
+Ym91dAogY29uZmlndXJpbmcgYW5kIGJ1aWxkaW5nIGEgWGVub21haSBzeXN0ZW0gZm9yIHRoZSBC
+bGFja2ZpbgogYXJjaGl0ZWN0dXJlOiBodHRwOi8vZG9jcy5ibGFja2Zpbi51Y2xpbnV4Lm9yZy9k
+b2t1LnBocD9pZD1hZGVvcwo=
+------=_Part_114938_19904353.1163475131985--
 
