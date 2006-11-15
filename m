@@ -1,14 +1,16 @@
-Message-ID: <455B916F.3060104@domain.hid>
-Date: Wed, 15 Nov 2006 23:15:11 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Strange problem with multiport serail board
-References: <BAY101-F7AE73C8953CF7C39ABE00E2F40@domain.hid>
-In-Reply-To: <BAY101-F7AE73C8953CF7C39ABE00E2F40@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB9BE77A20B3DD34251408C10"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Kernel crash during queue create/destroy
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <455B8016.2020605@domain.hid>
+References: <200611151121.51836.s.zimmermann@domain.hid>
+	<b647ffbd0611150519w1a510582n40782bdccaa7562d@domain.hid>
+	<200611151544.00429.s.zimmermann@domain.hid>
+	<455B8016.2020605@domain.hid>
+Content-Type: text/plain
+Date: Wed, 15 Nov 2006 23:22:21 +0100
+Message-Id: <1163629342.4974.36.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,53 +20,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marco Rossi <cicciobombo123@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB9BE77A20B3DD34251408C10
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2006-11-15 at 22:01 +0100, Jan Kiszka wrote:
 
-Marco Rossi wrote:
-> Hi every body,  I'have a strange problem using a multiport serial board=
+> /me unfortunately failed to reproduce your problem here. Instead, I
+> found a regression in SVN head - different story for a different thread.
+> 
 
-> connected with the PCI bus: when I read from the ports all work  ok but=
+It's reproducible here. This bug triggers if you leave enough time
+between queue creation and deletion for Linux to deal with its usual
+business, like running workqueues... Additionally, this bug would not
+trigger with different queue names passed to the creation routines. It
+seems to be caused by out-of-sequence create/delete requests of /proc
+entries relayed to the proc_fs subsystem, which does not perform any
+sanity checks on the data it is submitted.
 
-> I can't write in anyone of the extension port. The problem occurs only
-> with the ports of the extension board, whith standard serial port all
-> works ok.  The problem occurs both with RTDM driver of Xenomai and
-> standard linux drivers.
-> The operanting system used is Debian sarge 3.1, kernel 2.6.17,
-> Xenomai-2.2.4. The PC is an EPIA TC Mini-ITX and the multiport board is=
-
-> a NetMos Technology PCI 9835 Multi-I/O.
-> Had someone similar probles or any idea to resolve the problem?
-
-If the problem exists with the original Linux driver as well (which one
-is it precisely?), you may discuss this on the Linux kernel mailing list
-or (if it exists) on the related subsystem list first (see
-linux/MAINTAINERS for who's behind that driver and where to post to).
-
-Anyway, also worth a try is to check the card in some different PC.
-Maybe it's the combination what causes troubles here.
-
-Jan
+-- 
+Philippe.
 
 
---------------enigB9BE77A20B3DD34251408C10
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFW5FvniDOoMHTA+kRAhBwAKCE9ti1Q1ZxMOIAd9lILNAiFmcEfQCfeywZ
-UcGAC2zP2SSRmpRvDQqEL9Y=
-=U/RL
------END PGP SIGNATURE-----
-
---------------enigB9BE77A20B3DD34251408C10--
 
