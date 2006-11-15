@@ -1,13 +1,13 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] pthread_setname_np
-Date: Wed, 15 Nov 2006 17:02:31 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB0154F04D@is-hdq-exchange.marel.net>
-In-Reply-To: <455B3B6B.1030109@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: RE: [Xenomai-help] [PATCH] pthread_setname_np
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0154F047@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB0154F047@domain.hid>
+Content-Type: text/plain
+Date: Wed, 15 Nov 2006 18:50:01 +0100
+Message-Id: <1163613001.4974.17.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,29 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
+On Wed, 2006-11-15 at 16:56 +0000, Daniel Schnell wrote:
+> Gilles Chanteperdrix wrote:
+> 
+> > If you feel like modifying the documentation, please send a patch.
+> 
+> Here is the patch.
+> 
+> Best regards,
+> 
+> Daniel
+> 
+> 
+> 
+> Index: ksrc/skins/posix/thread.c
+> ===================================================================
+> --- ksrc/skins/posix/thread.c   (revision 1834)
+> +++ ksrc/skins/posix/thread.c   (working copy)
+> @@ -650,7 +650,7 @@
+>  }
+> 
+>  /**
+> - * Set a thread name.
+> + * Set the name of a running thread.
 
-> The problem is that we would have to store this additional
-> information in the pthread_attr_t structure. And in order to allow
-> users to include and use the Xenomai API and the native pthread API
-> at the same time, Xenomai use the same definition for all the
-> pthread_* types as the native pthread API, and we do not know if the
-> native API has room for an additional string.    =20
+s/running/existing/
 
-Which are the space constraints here ? Do we have a fixed amount of
-bytes that maybe inside the pthread_t structure ? Is there a
-compatibility issue to older Xenomai versions ?
+which boils down to documenting the fact that you must apply this
+thread-related request against a valid thread. I'm not sure this is
+worth a patch, actually.
 
-I find the function pthread_attr_set_name_np() more natural than the
-other function, because normally one decides upon the name of a thread
-at startup time, not afterwards. Having both options should be enough
-for everybody, and is somehow consistent with the VxWorks API that you
-support as well.
+-- 
+Philippe.
 
 
-Best regards,
-
-Daniel Schnell.
 
