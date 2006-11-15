@@ -1,12 +1,13 @@
-Message-ID: <455B8535.6030106@domain.hid>
-Date: Wed, 15 Nov 2006 22:23:01 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [BUG] commit #1833 breaks rt_queue_create
-References: <455B82F3.702@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <455B82F3.702@domain.hid>
-Content-Type: multipart/mixed; boundary="------------090506070101090702010706"
-Sender: jan.kiszka@domain.hid
+References: <455B82F3.702@domain.hid>
+Content-Type: text/plain
+Date: Wed, 15 Nov 2006 23:17:57 +0100
+Message-Id: <1163629078.4974.30.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,52 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------090506070101090702010706
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-
-Jan Kiszka wrote:
+On Wed, 2006-11-15 at 22:13 +0100, Jan Kiszka wrote:
 > As xnheap_size() changed, a sanity check in xnheap_mmap fails now, at
 > least for SVN head, maybe also 2.2.x.
 > 
-> I would suggest the following patch to fix this,
+> I would suggest the following patch to fix this, though I'm not 100%
+> sure its correct in all cases
 
-Wasn't someone recently writing in the wiki, one should post plain-text
-patches here...?
+It's correct. xnheap_size() is sent back to user-space when creating the
+queue, which forwards this in turn to the mmap handler.
 
-Hope this one is less octet-streamed.
+>  (do we ever come across a heap of multiple
+> extents in xnheap_mmap?).
 
---------------090506070101090702010706
-Content-Type: text/plain;
- name="fix-mapped-heap-size.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="fix-mapped-heap-size.patch"
+Yes we do, particularly for ppc which needs this for the system heap.
+However, we should not allow mmaping multi-extent heaps. Merged fixes
+and added sanity check to prevent the latter issue. Thanks.
 
-Index: ksrc/nucleus/heap.c
-===================================================================
---- ksrc/nucleus/heap.c	(Revision 1835)
-+++ ksrc/nucleus/heap.c	(Arbeitskopie)
-@@ -952,7 +952,7 @@ static int xnheap_mmap(struct file *file
- 	size = vma->vm_end - vma->vm_start;
- 	heap = (xnheap_t *)file->private_data;
- 
--	if (size != heap->extentsize)
-+	if (size != xnheap_size(heap))
- 		return -ENXIO;	/* Doesn't match the heap size. */
- 
- 	vma->vm_ops = &xnheap_vmops;
-@@ -1135,7 +1135,7 @@ int xnheap_destroy_mapped(xnheap_t *heap
- 	xnlock_put_irqrestore(&nklock, s);
- 
- 	__unreserve_and_free_heap(heap->archdep.heapbase,
--				  heap->extentsize, heap->archdep.kmflags);
-+				  xnheap_size(heap), heap->archdep.kmflags);
- 	return 0;
- }
- 
---------------090506070101090702010706--
+> 
+> Jan
+> 
+> 
+> PS: I'll spent a beer (or two...) for the one who starts writing a
+> testsuite for the native skin - in user-space, please, to catch also
+> issues like this one.
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
+
+
 
