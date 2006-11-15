@@ -1,15 +1,15 @@
-Message-ID: <455AC1CA.9070803@domain.hid>
-Date: Wed, 15 Nov 2006 08:29:14 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <455AC829.3080109@domain.hid>
+Date: Wed, 15 Nov 2006 08:56:25 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] [PATCH] RT-Socket-CAN, TX loopback and further
 	improvements
-References: <4559D38C.2080001@domain.hid>
-	<4559DA0E.7060406@domain.hid> <455A02AD.9000403@domain.hid>
-	<455A14C3.60701@domain.hid> <455A1EF4.4080205@domain.hid>
-In-Reply-To: <455A1EF4.4080205@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4559D38C.2080001@domain.hid>	<4559DA0E.7060406@domain.hid>
+	<455A02AD.9000403@domain.hid> <455AC0EA.9000001@domain.hid>
+In-Reply-To: <455AC0EA.9000001@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,86 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->>>> @@ -894,6 +937,12 @@
->>>>      /* We got access */
->>>>  
->>>>  
->>>> +#ifdef CONFIG_XENO_DRIVERS_RTCAN_TX_LOOPBACK
->>>> +    /* Push message onto stack for loopback when TX done */
->>>> +    if (sock->tx_loopback)
->>>> +    rtcan_tx_push(dev, sock, frame);
->>>> +#endif /* CONFIG_XENO_DRIVERS_RTCAN_TX_LOOPBACK */
->>> Hmm, I would prefer to define something like
->>>
->>> if (rtcan_tx_loopback_enabled(sock))
->>>     rtcan_tx_push(dev, sock, frame);
->>>
->>> with rtcan_tx_loopback_enabled resolving to 0 in the configured-out
->>> case. Thus some #ifdefs could be moved from the code to central places
->>> in header files.
->> OK, here I can avoid the #ifdef's ...
->>
->>>> Index: ksrc/drivers/can/mscan/rtcan_mscan.c
->>>> ===================================================================
->>>> --- ksrc/drivers/can/mscan/rtcan_mscan.c    (revision 1834)
->>>> +++ ksrc/drivers/can/mscan/rtcan_mscan.c    (working copy)
->>>> @@ -251,6 +251,21 @@
->>>>      regs->cantier = 0;
->>>>      /* Wake up a sender */
->>>>      rtdm_sem_up(&dev->tx_sem);
->>>> +
->>>> +#ifdef CONFIG_XENO_DRIVERS_RTCAN_TX_LOOPBACK
->>>> +    if (dev->tx_socket) {
->>> Same here. A macro like rtcan_tx_loopback_pending(dev) would avoid the
->>> #ifdef.
->> ...but not here. Or does the optimizer remove the if block?
+Wolfgang Grandegger wrote:
+> Hi Jan,
 > 
-> AFAIK, all relevant gcc versions kill blocks like
+> Jan Kiszka wrote:
+>> Hi Wolfgang,
+> [...deletions...]
 > 
-> if (0) {
-> 	...
-> }
+>> Last remark: For the sake of completeness, tx-loopback should also be
+>> implemented in the virtual CAN driver.
 > 
-> from the binary. But one problem might appear: the block content must be
-> compilable in any case...
+> The virtual CAN driver already works like TX loopback. It routes TX
+> messages to local foreign sockets (but without sending them to any bus).
 
-I'm going to checks this.
+There is a minor difference: When application A is attached to a socket
+on virtual CAN device 1, B to device 2, and C to 1 again, a message sent
+by A will only be received by B. TX loopback as you are introducing it
+should make C receive it as well - in order to have a fully compatible
+test environment.
 
->>> I think the timestamp should rather be passed to rtcan_tc_loopback and
->>> set there. Or, if passing that value increases the code size needlessly,
->>> rtcan_tx_loopback should be defined like
->>>
->>> static inline void
->>> rtcan_tx_loopback(struct rtcan_device *dev, nanosecs_abs_t timestamp)
->>> {
->>>     <set timestamp>
->>>     __rtcan_tx_loopback(dev);
->>> }
->>>
->>> where __rtcan_tx_loopback is the uninlined code. That makes the driver
->>> code leaner. Locking will hopefully change anyway, so nothing to do on
->>> this part for now.
->> Or do it directly in rtcan_tx_loopback() and rtcan_recv(). Would it be
->> OK to read the time in these functions as well or should it be done, as
->> is, at the beginning of the ISR? I have already planned some similar
->> rewrite when Xenomai 2.3. is out, hopefully together with the new locking.
-> 
-> A few cycles offset of the timestamp doesn't matter here. We should just
-> avoid reading it more than once as this can be a costly operation on
-> some systems.
-
-Hm, what does "costly operation" mean? Does it make sense then to read 
-the time only when really necessary e.g. not for pure TX done interrupts 
-and if nobody request them?
-
-Wolfgang.
-
-> Jan
-> 
-
+Jan
 
