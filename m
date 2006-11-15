@@ -1,14 +1,13 @@
-Message-ID: <455AD876.7010606@domain.hid>
-Date: Wed, 15 Nov 2006 10:05:58 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <455AD828.4040801@domain.hid>
+Date: Wed, 15 Nov 2006 10:04:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] RT-Socket-CAN, TX loopback and further
-	improvements
-References: <4559D38C.2080001@domain.hid>	<4559DA0E.7060406@domain.hid>
-	<455A02AD.9000403@domain.hid> <455AC0EA.9000001@domain.hid>
-	<455AC829.3080109@domain.hid>
-In-Reply-To: <455AC829.3080109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] [PATCH] Don't call __ipipe_mach_set_dec in
+	rthal_timer_release directly
+References: <E1Gjcbu-0006ZA-4a@domain.hid> <4559FA51.6050002@domain.hid>
+	<E1GkGSD-0007Z8-0a@domain.hid>
+In-Reply-To: <E1GkGSD-0007Z8-0a@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,43 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Sebastian Smolorz <ssm@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Hi Jan,
->>
->> Jan Kiszka wrote:
->>> Hi Wolfgang,
->> [...deletions...]
->>
->>> Last remark: For the sake of completeness, tx-loopback should also be
->>> implemented in the virtual CAN driver.
->> The virtual CAN driver already works like TX loopback. It routes TX
->> messages to local foreign sockets (but without sending them to any bus).
+Sebastian Smolorz wrote:
+> Gilles Chanteperdrix wrote:
 > 
-> There is a minor difference: When application A is attached to a socket
-> on virtual CAN device 1, B to device 2, and C to 1 again, a message sent
-> by A will only be received by B. TX loopback as you are introducing it
-> should make C receive it as well - in order to have a fully compatible
-> test environment.
+>>Sebastian Smolorz wrote:
+>>
+>>>Hi,
+>>>
+>>>here's a proposal for a minor change in the I-pipe implementation for
+>>>ARM. Since it is required for my S3C24xx patch not to call
+>>>__ipipe_mach_set_dec directly when the timer is released by the Xenomai
+>>>domain I suggest the following changes. The patch comprises the necessary
+>>>modifications for PXA, SA1100 and Integrator, too.
+>>>
+>>>Comments or objections?
+>>
+>>Why can not you call __ipipe_mach_set_dec directly when the timer is
+>>released ?
+> 
+> 
+> The timer used for generating interrupts operates in auto-reloading mode when 
+> it is under Linux control. But when Xenomai reloads the timer the mode of 
+> operation is one-shot (auto-reload feature in hardware is off). So I have to 
+> make a distinction between setting the dec value by Xenomai for programming 
+> the next period and setting the dec value to __ipipe_mach_ticks_per_jiffy 
+> when the timer control is given back to Linux.
+> 
+> The reason for this is the fact that programming a timer on the S3C24xx can 
+> take some ticks which means that these ticks aren't count whereas time is 
+> going on in the real world. So it is more reasonable to let the timer reload 
+> itself when Xenomai hasn't started it. Setting __ipipe_mach_ticks_per_jiffy 
+> in the Linux interrupt handler would make every period last some ticks 
+> longer.
 
-Ah, I missed the case (rx_dev == tx_dev). This should work then:
+You can avoid this problem by adding LATCH or
+__ipipe_mach_ticks_per_jiffy to the current value of the match register
+in the timer interrupt, as it is done for the SA and PXA architectures.
 
-	/* Deliver to all other devices on the virtual bus */
-	for (i = 0; i < devices; i++) {
-		rx_dev = rtcan_virt_devs[i];
-		if (rx_dev->state == CAN_STATE_ACTIVE) {
-			if (tx_dev != rx_dev) {
-				rx_frame->can_ifindex = rx_dev->ifindex;
-				rtcan_rcv(rx_dev, &skb);
-			} else if (rtcan_tx_loopback_pending(tx_dev))
-				rtcan_tx_loopback(tx_dev);
-		}
-	}
-
-Thanks.
-
-Wolfgang.
+-- 
+                                                 Gilles Chanteperdrix
 
