@@ -1,65 +1,50 @@
-Message-ID: <456D5871.6040401@domain.hid>
-Date: Wed, 29 Nov 2006 10:52:49 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <455B5489.4070900@domain.hid>
+Date: Wed, 15 Nov 2006 18:55:21 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
-	<456C97B9.1000402@domain.hid> <456D4C7D.2040100@domain.hid>
-	<456D4ED4.5040405@domain.hid> <456D5399.4040901@domain.hid>
-In-Reply-To: <456D5399.4040901@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1774009F6AC66C77D3F9C7CF"
-Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] pthread_setname_np
+References: <DD39B5C3F4963040ADC9768BE7E430CB0154F04D@is-hdq-exchange.marel.net>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0154F04D@is-hdq-exchange.marel.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1774009F6AC66C77D3F9C7CF
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Daniel Schnell wrote:
+> Gilles Chanteperdrix wrote:
+> 
+> 
+>>The problem is that we would have to store this additional
+>>information in the pthread_attr_t structure. And in order to allow
+>>users to include and use the Xenomai API and the native pthread API
+>>at the same time, Xenomai use the same definition for all the
+>>pthread_* types as the native pthread API, and we do not know if the
+>>native API has room for an additional string.     
+> 
+> 
+> Which are the space constraints here ? Do we have a fixed amount of
+> bytes that maybe inside the pthread_t structure ? Is there a
+> compatibility issue to older Xenomai versions ?
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> OK. So you are suggesting to read out the affinity mask from task_stru=
-ct
->> instead of passing it as an additional argument?
->>
->=20
-> Unless I am wrong, it is the way it currently works.
->=20
+The pthread_attr_t structure is handled by Xenomai as an opaque type. We
+do not know if there is room for an additional pointer there, and we do
+not want to know it; even if there was some room in one version of the
+glibc, we would not have any guarantee that this space exists in later
+versions.
 
-Yes, for the posix skin. But native is different due to the spilt-up
-create/start and its own affinity API. And that caused problems when
-applying nkaffinity.
+It is a tradeoff: handling pthread_attr_t as an opaque structure is very
+convenient whereas having to use pthread_set_name_np is a minor
+inconvenience.
 
-Nevertheless, I should try to combine the cleanup of xnshadow_map with
-passing the mask ALWAYS in task_struct. Let's see how this works out,
-most likely with less patching.
-
-
---------------enig1774009F6AC66C77D3F9C7CF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFbVhxniDOoMHTA+kRAkmDAJ470ks9VH9ZeRsKEofKo+HcLNn8swCfaBlE
-BhyzXMaFRDDPMEHDZuI72oI=
-=Pufl
------END PGP SIGNATURE-----
-
---------------enig1774009F6AC66C77D3F9C7CF--
+-- 
+                                                 Gilles Chanteperdrix
 
