@@ -1,56 +1,65 @@
-Message-ID: <456D608A.4040100@domain.hid>
-Date: Wed, 29 Nov 2006 11:27:22 +0100
-From: Dirk Eibach <eibach@domain.hid>
+Message-ID: <54b161f50611160749p5405415fk6702af8243428fa4@domain.hid>
+Date: Thu, 16 Nov 2006 16:49:30 +0100
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
 MIME-Version: 1.0
-References: <456D5C8A.1090007@domain.hid>
-In-Reply-To: <456D5C8A.1090007@domain.hid>
-Subject: Re: [Xenomai-core] Draft  for a RTDM I2C driver, V2
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_93098_30521322.1163692170020"
+Subject: [Xenomai-help] xeno_rtcan_mem.ko, what are it's parameters?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-jan.kiszka@domain.hid wrote:
-> Dirk Eibach wrote:
->> Hello,
->>
->> I did some redesigning on my first draft.
->> - Now we have some kind of profile in include/rti2c.h.
->> - I got rid of some chunks of code that were not really needed.
->> - Linux kernel dependencies have been removed (I hope I catched all of
->> them)
-> 
-> Will have a look at the code later.
-> 
-> Did you already consider to integrate it in a local Xenomai tree and
-> post patches against SVN head (=> /drivers/i2c, /include/rtdm)? Would
-> make it easier to test compilation and doc generation. What is the empty
-> algo folder supposed to contain one day?
+------=_Part_93098_30521322.1163692170020
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I have already thought about integrating it in my local Xenomia tree, 
-but for my first steps I took the easy way. Probably time has come to 
-change this now.
-The algo folder should be used for the implementation of common 
-algorithms i.e. bit-banging or the PCF8584. Those algorithms are used 
-for specific implementations that are placed in the busses folder.
+Hello everyone,
 
-> What would also be nice is a simple demo application. We still have no
-> policy were to put such stuff. Maybe we'll take the chance and create an
-> examples folder in SVN and/or put code/description into the wiki.
+I finally got my PCI CAN card today. It's an Advantech 1680 and provides, a=
+s
+far as I'm informed, a memory mapped SJA1000 controller.
+I=B4m trying to load the xeno_rtcan_mem module now, but I'm not sure what
+parameters I should pass. More specific: What value(s) should I give to the
+'mem' parameter? Is this an I/O address I found in /proc/pci under the 1680
+device?
 
-I have a simple demo application ready. Just telle me where to put it.
+I might even be completely off-track. Please help me get back on.
 
-Dirk
+Many thanks in advance!
 
+Best regards,
 
+Frits
 
+------=_Part_93098_30521322.1163692170020
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hello everyone,<br>
+<br>
+I finally got my PCI CAN card today. It's an Advantech 1680 and
+provides, as far as I'm informed, a memory mapped SJA1000 controller.<br>
+I=B4m trying to load the xeno_rtcan_mem module now, but I'm not sure what
+parameters I should pass. More specific: What value(s) should I give to
+the 'mem' parameter? Is this an I/O address I found in /proc/pci under
+the 1680 device?<br>
+<br>
+I might even be completely off-track. Please help me get back on.<br>
+<br>
+Many thanks in advance!<br>
+<br>
+Best regards,<br>
+<br>
+Frits<br>
+
+------=_Part_93098_30521322.1163692170020--
 
