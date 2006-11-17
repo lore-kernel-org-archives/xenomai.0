@@ -1,56 +1,82 @@
-Message-ID: <4575AF5D.7080804@domain.hid>
-Date: Tue, 05 Dec 2006 18:41:49 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <54b161f50611170143l10a4b91bl846991103fc39c9f@domain.hid>
+Date: Fri, 17 Nov 2006 10:43:23 +0100
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
+Subject: Re: [Xenomai-help] xeno_rtcan_mem.ko, what are it's parameters?
+In-Reply-To: <455D7FFB.9080802@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
-	architecture.
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>	<4566C5AF.7030107@domain.hid>	<20061124113009.08c0a490.benjamin.zores@domain.hid>	<4569E699.6050003@domain.hid>	<20061127092143.e633cd91.benjamin.zores@domain.hid>	<456ACA35.8030206@domain.hid>	<20061127125419.3852edd9.benjamin.zores@domain.hid>	<456AD5EB.5040901@domain.hid>	<20061130133745.272ab4b1.benjamin.zores@domain.hid>	<45754723.6050503@domain.hid>	<20061205133516.b3b9ae85.benjamin.zores@domain.hid>	<45756F92.6060001@domain.hid>
-	<20061205140843.434ee7d1.benjamin.zores@domain.hid>
-In-Reply-To: <20061205140843.434ee7d1.benjamin.zores@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_108150_31519963.1163756603754"
+References: <54b161f50611160749p5405415fk6702af8243428fa4@domain.hid>
+	<455CBC4A.5010108@domain.hid>
+	<54b161f50611161200u7a32f87etdad89178ddc1a195@domain.hid>
+	<455CC9DE.6030601@domain.hid>
+	<54b161f50611162357o71b7f689v1bf68072861c753e@domain.hid>
+	<455D6D3B.9000009@domain.hid>
+	<54b161f50611170041t2b8d2da1p177e9addade6a0e3@domain.hid>
+	<455D787D.9010407@domain.hid>
+	<54b161f50611170119x70b2104cma26e4ad77df8f965@domain.hid>
+	<455D7FFB.9080802@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Benjamin Zores <benjamin.zores@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Benjamin Zores wrote:
-> On Tue, 05 Dec 2006 14:09:38 +0100
-> Wolfgang Grandegger <wg@domain.hid> wrote:
-> 
->> Unfortunately, "generic" applies only to the Linux part. I realized, 
->> that the new IPIPE support for the genirqs requires even more 
->> arch-specific modifications than the old interface :-( on PowerPC.
-> 
-> That's pretty bad news :-(
+------=_Part_108150_31519963.1163756603754
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Well, but that part is not really tricky.
+On 11/17/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+>
+> CONFIG_XENO_OPT_SHIRQ_*
+>
+> Jan
 
->> Have you ever worked with that board under 2.6? It is not even well 
->> supported by the old ppc tree and you need patches, which are available 
->> somewhere but still require extra tweaking. I have such a board on my 
->> table and if I'm lucky, I will get U-Boot with OF support up and booting 
->> Linux PowerPC 2.6.19 ... but I need plenty of luck.
-> 
-> Nope, but i've seen recent commits for better support on kernel git
-> for upcoming 2.6.20.
 
-Yes, but till now it was not working out of the box.
 
-> Btw, Freescale have GIT trees for UBoot with support for many of their CPUs
-> (and support for OF as well). See http://opensource.freescale.com/
+Ah yes. That works fine :) I=B4m sorry I didn't figure that out myself. I m=
+ust
+say that I'm REALLY glad that you guys are so responsive on this
+mailinglist. Thanks a thousand times for the answers up till now!
 
-OK,
+I'll have myself a cable within an hour or so. I'll let you know how that
+works out.
 
-Thanks.
+Best regards and thanks again!
 
-Wolfgang.
+Frits
 
+------=_Part_108150_31519963.1163756603754
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+<br><div><span class=3D"gmail_quote">On 11/17/06, <b class=3D"gmail_sendern=
+ame">Jan Kiszka</b> &lt;<a href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid=
+.de</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-=
+left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left=
+: 1ex;">
+<br>CONFIG_XENO_OPT_SHIRQ_*<br><br>Jan</blockquote><div><br>
+<br>
+Ah yes. That works fine :) I=B4m sorry I didn't figure that out myself. I
+must say that I'm REALLY glad that you guys are so responsive on this
+mailinglist. Thanks a thousand times for the answers up till now!<br>
+<br>
+I'll have myself a cable within an hour or so. I'll let you know how that w=
+orks out.<br>
+<br>
+Best regards and thanks again!<br>
+<br>
+Frits<br>
+</div><br></div><br>
+
+------=_Part_108150_31519963.1163756603754--
 
