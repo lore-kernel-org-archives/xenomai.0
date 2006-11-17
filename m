@@ -1,13 +1,14 @@
-Message-ID: <455DCBAB.4090204@domain.hid>
-Date: Fri, 17 Nov 2006 15:48:11 +0100
+Message-ID: <455DCE75.1080300@domain.hid>
+Date: Fri, 17 Nov 2006 16:00:05 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] System freezes with Xenomai 2.2.5 and kernel 2.6.17
-References: <20061117143512.191580@domain.hid>
-In-Reply-To: <20061117143512.191580@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig07AF9D932501E8320373AEC9"
+Subject: Re: [Xenomai-help] Re: Re: What happens if task entry function
+	returns?
+References: <455DC001.2040001@domain.hid>	<434646.1163765689576.JavaMail.ngmail@domain.hid>
+	<16178634.1163773048304.JavaMail.ngmail@domain.hid>
+In-Reply-To: <16178634.1163773048304.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,73 +19,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: karre@domain.hid
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig07AF9D932501E8320373AEC9
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+M. Koehrer wrote:
+> Hi Jan, 
+> 
+> First, I give you some more information about the error.
+> The output is the following:
+> Hi, I am task A Hello
+> Hi, I am task B World
+> Main waits for A
+> This is the end of A
+> Main waits for B
+> 
+> Then the system hangs.
 
-karre@domain.hid wrote:
-> Hi,
->=20
-> I tried to install a real time system using Suse Linux 10.1 with a Vani=
-lla-Kernel 2.6.17 and Xenomai 2.2.5.
->=20
-> There were no error messages except "Cannot determine dependencies of m=
-odule reiserfs", though the system was bootable and actually had access t=
-o reiserfs-partitions.
->=20
-> Another suspicious fact was numberous "nothing to do"-messages during c=
-ompilation of Xenomai.
+You mean completely? Or just that application? Please enable the Xenomai
+watchdog to see if we have a run-away RT thread in that case.
 
-User-space part, I guess. Likely you already built it, no?
+> 
+> I have done two tests to verify if there is an SMP issue.
+> First, I have set all CPUs in use with the application to CPU 0.
+> There was no change. However, I am able to stop the application with CTRL-C
+> and everything is cleaned up fine.
+> 
+> Then, I have modified the BIOS settings of the PC to disable Hyperthreading.
 
->=20
-> Now the system is bootable and Xenomai reported that hal&x86, real-time=
- nucleus, nataive API, POSIX and RDTM services had started. Unfortunately=
-, the system freezes unrecoverably shortly after login.
+[Which is recommended anyway to keep latencies bounded - HT is evil for RT!]
 
-=2Econfig, please. I'm running such a setup (SuSE 10.1, 2.6.17.14, latest=
+> Again, no change. The same effect as with the test before.
+> 
+> The strange thing here is, when I use the original test (main on CPU 0, rt tasks on CPU 1)
+> on a SMP machine, I am not able to terminate the application with CTRL-C.
+> I have to reboot the PC.
+> 
+> That means, there seems to be a relation to SMP...
 
-Xenomai) successfully on my notebook.
+Probably in so far that the symptom changes. But !SMP doesn't make it go
+away.
 
-Please make sure, that your build is really consistent. When in doubt,
-try a "make clean; make; make modules_install install" cycle and check
-if it helps. Could you have accidentally mixed up modules from some
-non-Xenomai 2.6.17-build with the Xenomai-enabled version?
+> 
+> Another thing I have detected:
+> When I modify the program to replace the final rt_task_delete by
+> a sleep(1) call everything runs perfectly again.
 
->=20
-> Can this be cause of I couldn't include "Interrupt pipeline" into the k=
-ernel? There was no way to elect it in menuconfig, there was --- instead =
-of [ ], [*] or [M] beneath this option.
+Ok, could you try on a non-hanging setup to grab what is happening via
+strace?
 
-The "---" means that you cannot disable this essential feature, it will
-be forcibly compiled-in when you enable Xenomai.
-
->=20
-> Thank you in advance for any advice!
->=20
-> Richard
->=20
-
+Thanks,
 Jan
-
-
---------------enig07AF9D932501E8320373AEC9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFXcurniDOoMHTA+kRAm8DAJ93SEMQiMNw1/3hyNSHeaTvK3k39QCaAtqK
-hRyaPyC3vYJxwfHFWsVcADQ=
-=bZMr
------END PGP SIGNATURE-----
-
---------------enig07AF9D932501E8320373AEC9--
 
