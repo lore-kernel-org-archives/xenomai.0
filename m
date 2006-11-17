@@ -1,13 +1,14 @@
-Message-ID: <455D962F.3070001@domain.hid>
-Date: Fri, 17 Nov 2006 11:59:59 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <9656043.1163758677000.JavaMail.ngmail@domain.hid>
-In-Reply-To: <9656043.1163758677000.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] Interrupt shield
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1163712755.4980.16.camel@domain.hid>
+References: <E1Gke0B-0003BT-CA@mailer.emlix.com>
+	<1163712755.4980.16.camel@domain.hid>
+Content-Type: text/plain
+Date: Fri, 17 Nov 2006 12:21:08 +0100
+Message-Id: <1163762469.4980.29.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: What happens if task entry function returns?
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,55 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Sebastian Smolorz <ssm@domain.hid>
+Cc: xenomai@xenomai.org
 
-M. Koehrer wrote:
-> Hi!
+On Thu, 2006-11-16 at 22:32 +0100, Philippe Gerum wrote:
+> On Thu, 2006-11-16 at 10:57 +0100, Sebastian Smolorz wrote:
+> > Hello,
+> > 
+> > can anybody confirm this behaviour? If I configure the I-shield into the 
+> > kernel and start the latency test the RT tasks have not activated T_SHIELD 
+> > although the documentation states it (and btw in rt_task_create this bit is 
+> > set).
 > 
-> I am just playing around with Xenomai to understand it.
-> And I have one question concerning the entry function that will be called from
-> rt_task_start (Native API).
-> What happens if this entry function reaches its end or a return within the function is
-> called?
+> The documentation of rt_task_create() is wrong. The default behaviour
+> should be to create tasks with disabled I-shield support.
 > 
-> I have made a simple example that lead to strange effects.
-> In my example (see complete C Code in attachement) I create to tasks
-> that do the same.
-> The entry functions look like:
+> >  If I try to set T_SHIELD inside the display task, the system hangs, a 
+> > soft lockup appears and sometimes a few correct lines of the display task are 
+> > printed, followed by the next lockup.
 > 
-> void taska(void *cookie)
-> {
->     RTIME delay;
->     int i;
->     printf("Hi, I am task A %s\n", (char*)cookie);
->     delay = 100000;
+> Confirmed here (on x86).
 > 
->     for (i=0; i<200; i++)
->     {
->         rt_task_sleep(delay);
->     }
+> > 
+> > Explainable?
+> > 
 > 
->     printf("This is the end of A\n");
->     // rt_task_delete(0);
-> }
-> When I do not place the rt_task_delete(0) at the end of the function
-> my second task will never reach the end with the second printf.
-> Whenever I use rt_task_delete(0) at the end of the function it works perfectly.
+> Yes. I must have screwed up something somewhere, many moons ago.
+> 
 
-Quite inconsistent, sounds like a bug. Does the second rt_task_join just
-rush through and main terminates?
+Yes I did. This patch should fix the issue on your setup too.
 
-> 
-> My question is now: What happens if the task's entry function returns?
+--- ksrc/nucleus/shadow.c	(revision 1838)
++++ ksrc/nucleus/shadow.c	(working copy)
+@@ -554,6 +554,9 @@
+ #ifndef CONFIG_XENO_OPT_RPIDISABLE
+ 			xnpod_renice_root(XNPOD_ROOT_PRIO_BASE);
+ #endif /* CONFIG_XENO_OPT_RPIDISABLE */
++#ifdef CONFIG_XENO_OPT_ISHIELD
++			disengage_irq_shield();
++#endif /* CONFIG_XENO_OPT_ISHIELD */
+ 			xnpod_schedule();
+ 		}
+ 
+-- 
+Philippe.
 
-pthread_exit() is invoked implicitly, which implies rt_task_delete(NULL).
 
-> 
-> Thanks for any feedback on that question.
-
-Is this issue SMP-related? What happens if you force all your tasks to
-the same CPU? Or if you run on a !CONFIG_SMP box?
-
-Jan
 
