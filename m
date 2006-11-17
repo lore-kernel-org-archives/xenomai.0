@@ -1,81 +1,66 @@
-Message-ID: <4570047A.6070109@domain.hid>
-Date: Fri, 01 Dec 2006 11:31:22 +0100
+Message-ID: <455D6F86.2050404@domain.hid>
+Date: Fri, 17 Nov 2006 09:15:02 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
-	architecture.
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>	<20061130133745.272ab4b1.benjamin.zores@domain.hid>	<456EDA4B.3060809@domain.hid>
-	<200611301806.51699.paul_c@domain.hid>
-In-Reply-To: <200611301806.51699.paul_c@domain.hid>
+Subject: Re: [Xenomai-help] Draft for a RTDM I2C driver
+References: <455D674E.2020300@domain.hid>
+In-Reply-To: <455D674E.2020300@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig8C3030DA8C51A04A35ADCD3F"
+	boundary="------------enigE2C6F5027AE812685959D130"
 Sender: jan.kiszka@domain.hid
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Dirk Eibach <eibach@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8C3030DA8C51A04A35ADCD3F
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enigE2C6F5027AE812685959D130
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Paul wrote:
-> On Thursday 30 November 2006 13:19, Jan Kiszka wrote:
->> Philippe, I know you are very busy, but shouldn't we make a pre-releas=
-e
->> available already, also to discuss further how to deal best with genir=
-q
->> on other platforms beyond x86?
+Dirk Eibach wrote:
+> Hello,
 >=20
-> I have an x86_64 box waiting for a Xenomai port - I don't see much poin=
-t in=20
-> hacking 2.6.17 and earlier when 2.6.19 is going to be a major change in=
- key=20
-> areas.. It also looks like there is a closer integration of x86_64 and =
-plain=20
-> old ix86 code in the 2.6.19 tree, so this may simplify the task of=20
-> maintaining a 64bit patch.
+> I have spent some time designing a RTDM I2C driver based on the linux
+> i2c driver. It's stripped down in some aspects but porting existing
+> clients and adapters should be fairly easy.
+> For this draft I have ported the IBM PPC4xx driver, because that is wha=
+t
+> I have here for testing.
+>=20
+> It's my first RTDM project, so I hope I haven't messed things up too mu=
+ch.
+>=20
+> Any comments welcome!
 
-For sure, there is not much point in starting on old code (the "stable"
-2.6.16 series /may/ turn out to be an exception one day).
-
-An x86_64 port will be highly welcome! Feel invited to post I-pipe
-related topics also to adeos-main@gna.org.
-
-One hint that may ease testing/debugging: Have a look at qemu for
-x86_64. At least on x86, it already helped me a lot to debug weird
-kernel issues without long run-instrument-build-rerun cycles. All it
-takes is a minimal system image for a target. You can easily attach a
-debugger to the kernel, and you can even emulate SMP (though debugging
-is not perfect in that case). Of course, you cannot identify latency
-issues this way, but you will likely already be happy when things don't
-crash anymore. :)
+[I pulled this thread over to xenomai-core, given that it is definitely
+about to leave the level of "How do I use Xenomai?". Hope that's fine
+for you.]
 
 Jan
 
 
---------------enig8C3030DA8C51A04A35ADCD3F
+--------------enigE2C6F5027AE812685959D130
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
+Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFcAR6niDOoMHTA+kRAgnvAKCAd7Xrof9/BOUx6MLSovRwPtiYygCfd51/
-G9OhN3Vvh9eUFwv7gWfGl9w=
-=oVM+
+iD8DBQFFXW+GniDOoMHTA+kRAlywAJ0VNcacfXYpE2fF+09nNRT9t3Zu6gCcDEVP
+NZMdH9tHPXKo1SC3JGUH3Lk=
+=t/19
 -----END PGP SIGNATURE-----
 
---------------enig8C3030DA8C51A04A35ADCD3F--
+--------------enigE2C6F5027AE812685959D130--
 
