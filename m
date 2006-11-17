@@ -1,12 +1,13 @@
-Message-ID: <455DE97D.6020701@domain.hid>
-Date: Fri, 17 Nov 2006 17:55:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] MPC5200 OOPS time
-References: <DD39B5C3F4963040ADC9768BE7E430CB015D480C@is-hdq-exchange.marel.net>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB015D480C@is-hdq-exchange.marel.net>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] exception 768
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB0154E8D7@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB0154E8D7@domain.hid>
+Content-Type: text/plain
+Date: Fri, 17 Nov 2006 18:32:59 +0100
+Message-Id: <1163784779.4980.47.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,43 +20,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
-Daniel Schnell wrote:
+On Mon, 2006-11-13 at 12:13 +0000, Daniel Schnell wrote:
 > Hi,
 >  
+> I updated to the newest version in svn and applied Xenomai to my Linux
+> kernel.
 >  
-> attached you find a test program that will badly crash here on our
-> ELDK4.0 based MPC5200 board.
+> The first time I ran the application it was running much longer and I
+> almost thought everything works smooth now. But after some while it did
+> not react any more. No apparant crash message or Oops on the console.
+> Instead some strange exception messages in /var/log/messages.
 >  
-> It will create a bunch of tasks, which itself will allocate different
-> amount of memory, clock_nanosleep() afterwards and return the allocated
-> memory back to the system pool.
-> If one gives a reasonable high number as command line argument (number
-> of tasks to spawn), you will certainly starve the system memory pretty
-> soon.
->  
-> There are several (probably unrelated) issues you can trigger with this:
->  
-> 1.) Without setting an ulimit -s, just using the standard linux stack
-> space and calling it with
+> Please find attached the messages and the kernel symbols. It seems that
+> a kernel exception happens inside __copy_tofrom_user().
+> 
+> Our application linker map was ~roughly 1 mb, so I did not attach it
+> here. Some of the addresses I could not resolve to anything inside the
+> kernel or our application, so probably some other shared objects like
+> glibc are involved here.
+> 
+> 
+> Any ideas ?
 
-You should set the threads stack size with pthread_attr_setstacksize (as
-other pthread_attr_set* functions, it should be used on a previously
-initialized pthread_attr_t structure), ulimit -s only set the stack size
-of the main thread, at least on some architectures.
-
-This is probably unrelated to the errors you see, but:
-- passing the pthread_mutex_t by value is not supposed to work; once a
-pthread_mutex_t is initialized with pthread_mutex_init, you should pass
-the address of the very same pthread_mutex_t to other functions of the API.
-- pthread_t, on the other hand is an identifier, and may be passed by
-value; if you look at functions taking pthread_t as argument, they all
-take the argument by value, except pthread_create. So allocating some
-space for these identifiers is useless.
-
-Now, about the errors you see, it would be nice if you could separate
-the two issues: could you try hitting ctrl-C when running your program
-with stacks small enough so that there is enough room.
+Disable CONFIG_XENO_OPT_DEBUG from your kernel configuration, this is
+the source of the PTE misses you are seeing now on ppc. This is not to
+say that those errors are normal, and this issue still remains to be
+fixed, but unless you want to debug the Xenomai nucleus, you don't need
+this option on (additionally, it adds a large overhead which translates
+in significantly augmented jitter).
 
 -- 
-                                                 Gilles Chanteperdrix
+Philippe.
+
+
 
