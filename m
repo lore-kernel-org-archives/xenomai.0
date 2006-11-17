@@ -1,11 +1,16 @@
-Message-ID: <20061130164532.70291.qmail@domain.hid>
-Date: Thu, 30 Nov 2006 08:45:32 -0800 (PST)
-From: mani bhatti <imranbashirbhatti@domain.hid>
-In-Reply-To: <451A9C64.7040802@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] xeno_rtcan_mem.ko, what are it's parameters?
+Date: Fri, 17 Nov 2006 09:03:42 +0100
+References: <54b161f50611160749p5405415fk6702af8243428fa4@domain.hid>
+	<455CC9DE.6030601@domain.hid>
+	<54b161f50611162357o71b7f689v1bf68072861c753e@domain.hid>
+In-Reply-To: <54b161f50611162357o71b7f689v1bf68072861c753e@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-318679095-1164905132=:69610"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai-help] porting to kernel 2.2 
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1GkyhL-00012j-2w@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,212 +20,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
---0-318679095-1164905132=:69610
-Content-Type: multipart/alternative; boundary="0-1240062379-1164905132=:69610"
+Frits de Klark wrote:
+> Hi,
+>
+> to get back on my earlier question: IF the memory mapping might work for
+> me, how should I call it?
+> The PCI card has two CAN ports. Here's (a part of) the output of lspci -vv:
+>
+> Interrupt: pin A routed to IRQ 11
+> Region 0: Memory at e1003000 (32-bit, non prefetchable) [size=128]
+> Region 2: I/O ports at d800 [size=128]
+> Region 3: I/O ports at dc00 [size=128]
 
---0-1240062379-1164905132=:69610
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Wild guess: Could it be that you can use io=0xd800,0xdc00 (Not memory mapped)?
 
-
-
-Hi all 
-Previously i was working with 2.1 version of xenomai kernel but now i have kernel  2.2 and my previous code flags me error about  rt_task_wait_period() which i have fixed to rt_task_wait_period(NULL) and also gives me warning rt_start_time is deprecated and i have removed this line because in 2.2 system timer automatically starts but still by 
-rt_task_set_periodic gives error   "system timer not stared" and my program exits due to return statement showing that peridodic mode is not set.i am attaching my code.Please figure out the problem and help me about the bug in program.Thanks all.
-
- 
----------------------------------
-Cheap Talk? Check out Yahoo! Messenger's low PC-to-Phone call rates.
---0-1240062379-1164905132=:69610
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-
-<br><br><b><i></i></b>Hi all <br>Previously i was working with 2.1 version of xenomai kernel but now i have kernel&nbsp; 2.2 and my previous code flags me error about&nbsp; rt_task_wait_period() which i have fixed to rt_task_wait_period(NULL) and also gives me warning rt_start_time is deprecated and i have removed this line because in 2.2 system timer automatically starts but still by <br>rt_task_set_periodic gives error&nbsp;&nbsp; "system timer not stared" and my program exits due to return statement showing that peridodic mode is not set.i am attaching my code.Please figure out the problem and help me about the bug in program.Thanks all.<br><p>&#32;
-<hr size=1>Cheap Talk? <a href="http://us.rd.yahoo.com/mail_us/taglines/postman8/*http://us.rd.yahoo.com/evt=39663/*http://voice.yahoo.com">Check out</a> Yahoo! Messenger's low PC-to-Phone call rates.
---0-1240062379-1164905132=:69610--
-
---0-318679095-1164905132=:69610
-Content-Type: text/x-csrc; name="doppel_task.c"
-Content-Description: 4248410318-doppel_task.c
-Content-Disposition: inline; filename="doppel_task.c"
-
-#include <math.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <sys/io.h>
-#include <sys/mman.h>
-
-#include <native/task.h>
-#include <native/queue.h>
-#include <native/intr.h>
-
-
-#define STACK_SIZE 8192
-#define STD_PRIO1 2
-#define STD_PRIO2 1
-
-RT_TASK zaehler1_task_ptr;
-RT_TASK zaehler2_task_ptr;
-int count1 = 0;
-int count2 = 0;
-int i;
-int end = 0;
-
-//                      --s-ms-us-ns
-RTIME task_period_ns1 =   1000000000llu;
-RTIME task_period_ns2 =  10000000000llu;
-
-
-void zaehler1_task(void *cookie){
-        int ret;
-        
-// ************************* Xenomai-Krempel ********************************************************************
-        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns1));
-     switch(-ret){
-      case EINVAL:   printf("Task is not a task descriptor\n");
-                    break;
-      case EIDRM:  printf( "Task is a deleted task descriptor\n");
-                    rt_task_sleep(50000); // wait 50us
-                    break;
-      case ETIMEDOUT: printf("idate different from TM_INFINITE\n");
-                    break;
-      case EWOULDBLOCK: printf("system timer not stared\n");
-                    break;
-      case EPERM:    printf("task is null\n");
-      break;
-    }   
-     
-      if (ret) {
-                printf("error while set periodic, code %d\n",ret);
-                return;
-        }
-// ************************* Ende Xenomai-Krempel ****************************************************************
-
-
-// ********************** Beginn des wiederholt ausgefuehrten Codes **********************************************
-        while(!end){
-    /*      
-          ret = rt_task_set_mode(0, T_PRIMARY, NULL);
-                if (ret) {
-                        printf("error while rt_task_set_mode, code %d\n",ret);
-                        return;
-                }
-      */          
-             ret = rt_task_wait_period(NULL);
-                printf("T1:Start\n");
-
-                if (ret) {
-                        printf("error while rt_task_wait_period, code %d\n",ret);
-                        return;
-                }
-                count1++;
-
-                printf("T1:Ende:%d\n", count1);
-
-                fflush(NULL);
-        }
-// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
-}
-
-
-void zaehler2_task(void *cookie){
-	int ret;	
-	long ii;
-	long jj;
-	double a;
-        unsigned long overrun;
-// ************************* Xenomai-Krempel ********************************************************************
-	ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns2));
-	if (ret) {
-		printf("error while set periodic, code %d\n",ret);
-		return;
-	}
-// ************************* Ende Xenomai-Krempel ****************************************************************
-
-
-// ********************** Beginn des wiederholt ausgefuehrten Codes **********************************************
-	while(!end){
-	/*	ret = rt_task_set_mode(0, T_PRIMARY, NULL);
-		if (ret) {
-			printf("error while rt_task_set_mode, code %d\n",ret);
-			return;
-		}
-	 */	
-      ret = rt_task_wait_period(NULL);
-		
-		printf("\t\tT2:Start\n");
-
-		if (ret) {
-			printf("error while rt_task_wait_period, code %d\n",ret);
-			return;
-		}
-
-                for(ii=0; ii<200; ii++) {
-		 	for(jj=0; jj<1000000; jj++) {
-				a = (double)ii * (double)jj;
-			}
-		}              
-
-                count2++;
-                printf("\t\tT2:Ende:%d\n", count2++);
-
-		fflush(NULL);
-        }
-// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
-}
-       
-
-
-// signal-handler, to ensure clean exit on Ctrl-C
-void clean_exit(int dummy) {
-	printf("cleanup\n");
-	end = 1;
-	rt_task_delete(&zaehler1_task_ptr);
-	rt_task_delete(&zaehler2_task_ptr);
-	printf("end\n");
-}
-
-int main(int argc, char *argv[]) {
-	int err, ret;
-	printf("start\n");
-	// install signal handler
-	signal(SIGTERM, clean_exit);	
-	signal(SIGINT, clean_exit);	
-	// start timer
-	//ret = rt_timer_start(TM_ONESHOT);
-/*	switch (ret) {
-		case 0:       printf("Mit dem Fahrrad nich inn ersten Wagen\n\n");
-		              break;
-		case -EBUSY:  printf("timer is running\n");
-		              break;
-		case -ENOSYS: printf("can't start timer\n");
-		              return ret;
-	}
-
-*/
-
-	/* create zaehler1_task */
-	err = rt_task_create(&zaehler1_task_ptr,"alpha",STACK_SIZE,STD_PRIO1,0);
-	/* create zaehler2_task */
-	err = rt_task_create(&zaehler2_task_ptr,"beta",STACK_SIZE,STD_PRIO2,0);
-
-	/* start zaehler1_task */
-	err = rt_task_start(&zaehler1_task_ptr,&zaehler1_task,NULL);
-
-	/* start zaehler2_task */
-	err = rt_task_start(&zaehler2_task_ptr,&zaehler2_task,NULL);
-
-	// wait for signal & return of signal handler
-	pause();
-	fflush(NULL);
-	return 0;
-}
-
---0-318679095-1164905132=:69610--
+--
+Sebastian
 
