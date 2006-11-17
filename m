@@ -1,14 +1,15 @@
-Message-ID: <456D9031.30807@domain.hid>
-Date: Wed, 29 Nov 2006 14:50:41 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <54b161f50611162357o71b7f689v1bf68072861c753e@domain.hid>
+Date: Fri, 17 Nov 2006 08:57:13 +0100
+From: "Frits de Klark" <mailing.xenomai@domain.hid>
+Subject: Re: [Xenomai-help] xeno_rtcan_mem.ko, what are it's parameters?
+In-Reply-To: <455CC9DE.6030601@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] tool for external jitter measurement
-References: <ac3922a00611290435j11e339a1l55743fe4e9cb43d0@domain.hid>
-In-Reply-To: <ac3922a00611290435j11e339a1l55743fe4e9cb43d0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig731AD40408343CEB3546791F"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_106890_14605186.1163750233303"
+References: <54b161f50611160749p5405415fk6702af8243428fa4@domain.hid>
+	<455C8B8A.80105@domain.hid> <455CBC4A.5010108@domain.hid>
+	<54b161f50611161200u7a32f87etdad89178ddc1a195@domain.hid>
+	<455CC9DE.6030601@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,50 +19,252 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Syed Amer Gilani <amg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig731AD40408343CEB3546791F
-Content-Type: text/plain; charset=ISO-8859-15
+------=_Part_106890_14605186.1163750233303
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Syed Amer Gilani wrote:
-> I wrote with my little Xenomai experience a rtdm kernel module witch
-> generates an external signal to measure it on an Oscilloscope. The
-> Result is satisfying. With no other load there is nearly no jitter.
-> With "dd if=3D/dev/zero of=3D/dev/null" and "ping -f" from an external
-> machine the jitter is +-15=B5sec.
+Hi,
 
-15 us looks fairly good, maybe too good. You may also want to try the
-cache calibrator as load (see TROUBLESHOOTING for details).
+to get back on my earlier question: IF the memory mapping might work for me=
+,
+how should I call it?
+The PCI card has two CAN ports. Here's (a part of) the output of lspci -vv:
 
-> My Question now is if my approach is OK or is there a better way to
-> generate the signal with Xenomai which would result in better results.
-> Maybe by using hardware timer interrupt or something?
+Interrupt: pin A routed to IRQ 11
+Region 0: Memory at e1003000 (32-bit, non prefetchable) [size=3D128]
+Region 2: I/O ports at d800 [size=3D128]
+Region 3: I/O ports at dc00 [size=3D128]
+Region 4: I/O ports at e000 [size=3D4]
 
-We have postponed the API definition for RTDM timers until the nucleus
-timers have been reworked (scheduled for 2.4), but that service would
-probably give you even better results (no reschedule, pins will be
-toggled in IRQ context). Check drivers/testing/timerbench.c for a hack
-to achieve this already.
+What should the insmod command to try if it might work?
 
-Jan
+Thanks again.
 
+Frits
 
---------------enig731AD40408343CEB3546791F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+On 11/16/06, Wolfgang Grandegger <wg@domain.hid> wrote:
+>
+> Frits de Klark wrote:
+> > Hi,
+> >
+> > there is indeed a driver for the 2.4.x kernel series (including source)=
+,
+> > but onfortunately also a BIG FAT copyright statement at the heading of
+> > the sources. Something like:
+> >
+> #########################################################################=
+####
+> >
+> > //
+> >
+> *************************************************************************=
+****
+> >
+> > //                  Copyright ( c ) 2003, Advantech Automation Corp.
+> > //      THIS IS AN UNPUBLISHED WORK CONTAINING CONFIDENTIAL AND
+> PROPRIETARY
+> > //               INFORMATION WHICH IS THE PROPERTY OF ADVANTECH
+> > AUTOMATION CORP.
+> > //
+> > //    ANY DISCLOSURE, USE, OR REPRODUCTION, WITHOUT WRITTEN
+> > AUTHORIZATION FROM
+> > //               ADVANTECH AUTOMATION CORP., IS STRICTLY PROHIBITED.
+> > //
+> >
+> *************************************************************************=
+****
+> >
+> > //
+> >
+> #########################################################################=
+####
+> >
+> > So, I'll have to inquire them first before I (and the company I work
+> > for) take the risk of disclosure.
+> > I'll get back on this as soon as I can. If I can be of any help in the
+> > meantime, I'll be glad to hear from you.
+>
+> Well, it might be simpler to buy an already supported CAN PCI card.
+>
+> > Thank for your time and interest so far.
+>
+> Good luck.
+>
+> Wolfgang.
+>
+> > Frits
+> >
+> > On 11/16/06, *Wolfgang Grandegger* <wg@domain.hid
+> > <mailto:wg@domain.hid>> wrote:
+> >
+> >     Jan Kiszka wrote:
+> >      > Frits de Klark wrote:
+> >      >> Hello everyone,
+> >      >>
+> >      >> I finally got my PCI CAN card today. It's an Advantech 1680 and
+> >      >> provides, as
+> >      >> far as I'm informed, a memory mapped SJA1000 controller.
+> >      >> I=B4m trying to load the xeno_rtcan_mem module now, but I'm not
+> >     sure what
+> >      >> parameters I should pass. More specific: What value(s) should I
+> >     give to the
+> >      >> 'mem' parameter? Is this an I/O address I found in /proc/pci
+> >     under the 1680
+> >      >> device?
+> >      >
+> >      > I'm not sure that this will work, but you can give it a try in
+> >     any case.
+> >      > Do you have a reference driver for that board? Or some manual
+> >     describing
+> >      > the mapping of the SJA1000 into the PCI address space?
+> >
+> >     It was not working for the IXXAT PCI card, at least (but I have not
+> yet
+> >     understodd why). Check with "$ lspci -vv" how the device is mapped
+> and
+> >     what IRQ number is used. The right thing is to implement a PCI
+> driver.
+> >
+> >      > AFAIK, Wolfgang is working on a generic SJA1000 PCI driver. So
+> far we
+> >      > only have a driver for the PEAK PCI adapter, but that one is
+> >     going to be
+> >      > generalised. So you could become a first-grade test candidate fo=
+r
+> >      > another piece of hardware supported by that driver. :)
+> >      >
+> >      > Wolfgang, what the status?
+> >
+> >     As already mention, I'm currently working on a driver for the IXXAT
+> PCI
+> >     card. As I see it, a generic driver is not feasible as the mapping,
+> the
+> >     recognition of the second channel and the IRQ handling is quite
+> >     different.
+> >
+> >     Is there a Linux driver on the CRROM your got with your Advantech
+> 1680
+> >     PCI card? That would help a lot.
+> >
+> >     Wolfgang.
+> >
+> >     Wolfgang.
+> >
+> >
+>
+>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+------=_Part_106890_14605186.1163750233303
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-iD8DBQFFbZAxniDOoMHTA+kRAvfVAJ4+j48ICBVMFaGo3J/KAJeLQosVQwCfZJc6
-tLZskT5RYzCRsn5XrJOUWWo=
-=+BWY
------END PGP SIGNATURE-----
+Hi,<br>
+<br>
+to get back on my earlier question: IF the memory mapping might work for me=
+, how should I call it?<br>
+The PCI card has two CAN ports. Here's (a part of) the output of lspci -vv:=
+<br>
+<br>
+Interrupt: pin A routed to IRQ 11<br>
+Region 0: Memory at e1003000 (32-bit, non prefetchable) [size=3D128]<br>
+Region 2: I/O ports at d800 [size=3D128]<br>
+Region 3: I/O ports at dc00 [size=3D128]<br>
+Region 4: I/O ports at e000 [size=3D4]<br>
+<br>
+What should the insmod command to try if it might work?<br>
+<br>
+Thanks again.<br>
+<br>
+Frits<br><br><div><span class=3D"gmail_quote">On 11/16/06, <b class=3D"gmai=
+l_sendername">Wolfgang Grandegger</b> &lt;<a href=3D"mailto:wg@domain.hid=
+om">wg@domain.hid</a>&gt; wrote:</span><blockquote class=3D"gmail_quote=
+" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0=
+.8ex; padding-left: 1ex;">
+Frits de Klark wrote:<br>&gt; Hi,<br>&gt;<br>&gt; there is indeed a driver =
+for the 2.4.x kernel series (including source),<br>&gt; but onfortunately a=
+lso a BIG FAT copyright statement at the heading of<br>&gt; the sources. So=
+mething like:
+<br>&gt; ##################################################################=
+###########<br>&gt;<br>&gt; //<br>&gt; ************************************=
+*****************************************<br>&gt;<br>&gt;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright
+( c ) 2003, Advantech Automation Corp.<br>&gt; //&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;THIS IS AN UNPUBLISHED WORK CONTAINING CONFIDENTIAL AND PROPRIETA=
+RY<br>&gt;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;
+INFORMATION WHICH IS THE PROPERTY OF ADVANTECH<br>&gt; AUTOMATION CORP.<br>=
+&gt; //<br>&gt; //&nbsp;&nbsp;&nbsp;&nbsp;ANY DISCLOSURE, USE, OR REPRODUCT=
+ION, WITHOUT WRITTEN<br>&gt; AUTHORIZATION FROM<br>&gt;
+//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;
+ADVANTECH AUTOMATION CORP., IS STRICTLY PROHIBITED.<br>&gt; //<br>&gt; ****=
+*************************************************************************<b=
+r>&gt;<br>&gt; //<br>&gt; #################################################=
+############################
+<br>&gt;<br>&gt; So, I'll have to inquire them first before I (and the comp=
+any I work<br>&gt; for) take the risk of disclosure.<br>&gt; I'll get back =
+on this as soon as I can. If I can be of any help in the<br>&gt; meantime, =
+I'll be glad to hear from you.
+<br><br>Well, it might be simpler to buy an already supported CAN PCI card.=
+<br><br>&gt; Thank for your time and interest so far.<br><br>Good luck.<br>=
+<br>Wolfgang.<br><br>&gt; Frits<br>&gt;<br>&gt; On 11/16/06, *Wolfgang Gran=
+degger* &lt;
+<a href=3D"mailto:wg@domain.hid">wg@domain.hid</a><br>&gt; &lt;mail=
+to:<a href=3D"mailto:wg@domain.hid">wg@domain.hid</a>&gt;&gt; wrote=
+:<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; Jan Kiszka wrote:<br>&gt;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; Frits de Klark wrote:
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; Hello everyone,<br>&gt=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&gt;&gt; I finally got my PCI CAN card today. It's an Advante=
+ch 1680 and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; provides, a=
+s<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; far as I'm informed, =
+a memory mapped SJA1000 controller.
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; I=B4m trying to load t=
+he xeno_rtcan_mem module now, but I'm not<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; s=
+ure what<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; parameters I s=
+hould pass. More specific: What value(s) should I<br>&gt;&nbsp;&nbsp;&nbsp;=
+&nbsp; give to the<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt; 'mem=
+' parameter? Is this an I/O address I found in /proc/pci
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; under the 1680<br>&gt;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&gt;&gt; device?<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; I'm not sure that thi=
+s will work, but you can give it a try in<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; a=
+ny case.<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; Do you have a refe=
+rence driver for that board? Or some manual
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; describing<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&gt; the mapping of the SJA1000 into the PCI address space?<br>=
+&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; It was not working for the IXXAT PCI c=
+ard, at least (but I have not yet<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; understod=
+d why). Check with &quot;$ lspci -vv&quot; how the device is mapped and
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; what IRQ number is used. The right thing i=
+s to implement a PCI driver.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&gt; AFAIK, Wolfgang is working on a generic SJA1000 PCI driver. So fa=
+r we<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; only have a driver for=
+ the PEAK PCI adapter, but that one is
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; going to be<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&gt; generalised. So you could become a first-grade test candi=
+date for<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; another piece of h=
+ardware supported by that driver. :)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt; Wolfgang, what th=
+e status?
+<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; As already mention, I'm currently =
+working on a driver for the IXXAT PCI<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; card.=
+ As I see it, a generic driver is not feasible as the mapping, the<br>&gt;&=
+nbsp;&nbsp;&nbsp;&nbsp; recognition of the second channel and the IRQ handl=
+ing is quite
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; different.<br>&gt;<br>&gt;&nbsp;&nbsp;&nbs=
+p;&nbsp; Is there a Linux driver on the CRROM your got with your Advantech =
+1680<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; PCI card? That would help a lot.<br>&g=
+t;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; Wolfgang.<br>&gt;<br>&gt;&nbsp;&nbsp;&nb=
+sp;&nbsp; Wolfgang.<br>
+&gt;<br>&gt;<br><br></blockquote></div><br>
 
---------------enig731AD40408343CEB3546791F--
+------=_Part_106890_14605186.1163750233303--
 
