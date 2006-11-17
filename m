@@ -1,15 +1,15 @@
-Message-ID: <455E022D.2000306@domain.hid>
-Date: Fri, 17 Nov 2006 19:40:45 +0100
+Message-ID: <455E025B.5030906@domain.hid>
+Date: Fri, 17 Nov 2006 19:41:31 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0611111559y8e66c37m12deb64828a85d08@domain.hid>
-In-Reply-To: <b647ffbd0611111559y8e66c37m12deb64828a85d08@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB0154E8D7@domain.hid>
+	<1163784779.4980.47.camel@domain.hid>
+In-Reply-To: <1163784779.4980.47.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6EFFEF698B1E6CA0182593B8"
+	boundary="------------enig40E236C0044256E34E846F39"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [patch] memory barriers in intr.c ::
-	xnintr_lock/unlock()
+Subject: [Xenomai-core] XENO_OPT_DEBUG impact (was: exception 768)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,54 +19,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6EFFEF698B1E6CA0182593B8
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig40E236C0044256E34E846F39
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
+Philippe Gerum wrote:
 > ...
-> In case of linux, smp_mb__after_atomic_inc() and
-> smp_mb__before_atomic_dec()
-> would do the job. But so far, I decided not to add something like
-> xnarch_memory_barrier__after_atomic_inc() :) , provided that both seem =
-to
-> end up being either mb() or barrier() at the same time (have to check m=
-ore
-> thoroughly) anyway.
->=20
-> Any suggestions?
+> Disable CONFIG_XENO_OPT_DEBUG from your kernel configuration, this is
+> the source of the PTE misses you are seeing now on ppc. This is not to
+> say that those errors are normal, and this issue still remains to be
+> fixed, but unless you want to debug the Xenomai nucleus, you don't need=
 
-As we now know that this patch actually solves a real issue on SMP
-(tested by Paolo in RTAI's RTDM variant recently), I would say /some/
-form of it should quickly go into the branches.
+> this option on (additionally, it adds a large overhead which translates=
 
-Actually, this kind of locking via reference counter, may it be atomic
-or per-cpu, is a generic pattern for many (RCU-like) use cases. We have
-it in RTnet (and I guess it's broken there as well, sigh), and I could
-imagine to use it more broadly in the future. This means we should think
-about a generic interface (to reduce the probability to use it the wrong
-way around...). And for such an interface, we will have a need of
-efficient memory barriers.
+> in significantly augmented jitter).
 
-I see two paths now:
+CONFIG_XENO_OPT_DEBUG should not add large jitters - that's what e.g.
+CONFIG_XENO_OPT_DEBUG_QUEUES is now for.
 
-A) If we go for atomic_inc/dec with such locking service,
-xnarch_memory_barrier__after_atomic_inc & friends will be needed anyway
-and could be already introduced now.
+I'm currently seeing two potential "misuses" of the common switch:
 
-B) If we aim at per-cpu counters (complicates things, but SMP clearly
-benefits), we may simply merge Dmitry's patch as is.
+ - the posix skin (Gilles, how heavy-weighted are those checks?)
+   =3D> CONFIG_XENO_OPT_DEBUG_POSIX
 
-Any thoughts?
+ - CONFIG_XENO_SPINLOCK_DEBUG =3D> CONFIG_XENO_OPT_DEBUG_SPINLOCK
+
+Both should be explicitly controllable in Kconfig.
+
+Gilles, is CONFIG_XENO_OPT_DEBUG_BHEAP used in any way? Doesn't seem so.
 
 Jan
 
 
---------------enig6EFFEF698B1E6CA0182593B8
+--------------enig40E236C0044256E34E846F39
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -75,10 +64,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFXgItniDOoMHTA+kRAptzAJ9G81BWHoPeOgQcAKyMQ7rZQYW+wQCfRRJZ
-jNUjSYZLDwUw0iR/rbKsej4=
-=g7ZR
+iD8DBQFFXgJbniDOoMHTA+kRAtgyAJ9gbxMLiXJiEvM6Wt8F+2S3jufLLwCZAblZ
+p/+XtLqb97EH89qjK9IhmcQ=
+=I9tP
 -----END PGP SIGNATURE-----
 
---------------enig6EFFEF698B1E6CA0182593B8--
+--------------enig40E236C0044256E34E846F39--
 
