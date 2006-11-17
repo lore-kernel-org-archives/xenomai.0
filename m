@@ -1,55 +1,88 @@
-Date: Tue, 5 Dec 2006 13:35:16 +0100
-From: Benjamin Zores <benjamin.zores@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
-	architecture.
-Message-Id: <20061205133516.b3b9ae85.benjamin.zores@domain.hid>
-In-Reply-To: <45754723.6050503@domain.hid>
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>
-	<4566C5AF.7030107@domain.hid>
-	<20061124113009.08c0a490.benjamin.zores@domain.hid>
-	<4569E699.6050003@domain.hid>
-	<20061127092143.e633cd91.benjamin.zores@domain.hid>
-	<456ACA35.8030206@domain.hid>
-	<20061127125419.3852edd9.benjamin.zores@domain.hid>
-	<456AD5EB.5040901@domain.hid>
-	<20061130133745.272ab4b1.benjamin.zores@domain.hid>
-	<45754723.6050503@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <455D7FFB.9080802@domain.hid>
+Date: Fri, 17 Nov 2006 10:25:15 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] xeno_rtcan_mem.ko, what are it's parameters?
+References: <54b161f50611160749p5405415fk6702af8243428fa4@domain.hid>	
+	<455C8B8A.80105@domain.hid> <455CBC4A.5010108@domain.hid>	
+	<54b161f50611161200u7a32f87etdad89178ddc1a195@domain.hid>	
+	<455CC9DE.6030601@domain.hid>	
+	<54b161f50611162357o71b7f689v1bf68072861c753e@domain.hid>	
+	<455D6D3B.9000009@domain.hid>	
+	<54b161f50611170041t2b8d2da1p177e9addade6a0e3@domain.hid>	
+	<455D787D.9010407@domain.hid>
+	<54b161f50611170119x70b2104cma26e4ad77df8f965@domain.hid>
+In-Reply-To: <54b161f50611170119x70b2104cma26e4ad77df8f965@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCDE0126CFB2705757926E585"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Frits de Klark <mailing.xenomai@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, 05 Dec 2006 11:17:07 +0100
-Wolfgang Grandegger <wg@domain.hid> wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCDE0126CFB2705757926E585
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> I have now a preliminary patch for adeos-ipipe-2.6.19-ppc-1.5-00. The 
-> porting was rather straight-forward, as the ppc tree does not use the 
-> new "genirq" interface, in contrast to the powerpc tree (that's what you 
-> have realized as well).
+Frits de Klark wrote:
+> On 11/17/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>>
+>> > I entered the following command:
+>> >
+>> > modprobe  xeno_rtcan_isa io=3D55296,56320 irq=3D11
+>>
+>> Try "modprobe xeno_rtcan_isa io=3D55296,56320 irq=3D11,11" instead to =
+assign
+>> the irq of the second port as well.
+>>
+>> Jan
+>>
+>>
+> This (two times irq 11) fails with the following output (only the last =
+part
+> actually):
+>=20
+> rtcan: registered rtcan0
+> ERROR! IRQ 11 busy or invalid (code=3D-16)!
+> ERROR -16 while trying to register SJA1000 device!
+> Unregistering SJA1000 device rtcan0
+> RTCAN: unregistered rtcan0
+> FATAL: Error inserting xeno_rtcan_isa (/lib/modules/../xeno_rtcan_isa.k=
+o):
+> Device or resource busy
+>=20
+> Then it just returns to the shell.
+>=20
+> Any ideas about this?
 
-Well, i guess the old "ppc" arch is bound to die sooner or later.
-New developments should always be done against "powerpc" arch imho.
+CONFIG_XENO_OPT_SHIRQ_*
 
-> Therefore the port of the powerpc tree should be based on Philippe's new 
-> adeos-ipipe-2.6.19-i386-1.6-00. Unfortunately, I still do not have a 
-> board by hand supported by the powerpc tree.
+Jan
 
-I haven't had much much time investigating the problem till now.
-But from what i've seen from Philippe's splitted patches, many of them
-that were supposed to be generic (i.e. don't have i386 in their name)
-still have references to x86 changes.
-Is it a normal behavior ?
 
-(about dev board, no one's developing on lite5200 or sth like that ?)
+--------------enigCDE0126CFB2705757926E585
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Ben
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFXX/7niDOoMHTA+kRAtY/AJ9sR79PCYkUmbJEb7NTuGKBjB1KAgCdGL1x
+mUd/BUqMxCUoHhLQeJb5PJ4=
+=zP+o
+-----END PGP SIGNATURE-----
+
+--------------enigCDE0126CFB2705757926E585--
 
