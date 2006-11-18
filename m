@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <455E0940.7070705@domain.hid>
-References: <DD39B5C3F4963040ADC9768BE7E430CB0154E8D7@domain.hid>
-	<1163784779.4980.47.camel@domain.hid>  <455E025B.5030906@domain.hid>
-	<1163790315.4980.73.camel@domain.hid>  <455E0940.7070705@domain.hid>
-Content-Type: text/plain
-Date: Fri, 17 Nov 2006 22:58:02 +0100
-Message-Id: <1163800682.4980.81.camel@domain.hid>
-Mime-Version: 1.0
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 18 Nov 2006 18:09:16 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: XENO_OPT_DEBUG impact
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200611181809.16782.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Unresolved symbol xnheap_usable_size since r1846
+	(PPC/vxworks only)
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,40 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-11-17 at 20:10 +0100, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2006-11-17 at 19:41 +0100, Jan Kiszka wrote:
-> >> I'm currently seeing two potential "misuses" of the common switch:
-> >>
-> >>  - the posix skin (Gilles, how heavy-weighted are those checks?)
-> >>    => CONFIG_XENO_OPT_DEBUG_POSIX
-> >>
-> >>  - CONFIG_XENO_SPINLOCK_DEBUG => CONFIG_XENO_OPT_DEBUG_SPINLOCK
-> >>
-> >> Both should be explicitly controllable in Kconfig.
-> >>
-> > 
-> > Nack for CONFIG_XENO_OPT_DEBUG_SPINLOCK. Most of the issue we tracked
-> > with Gilles regarding the domain migration code had side-effects on the
-> > nucleus lock. So having CONFIG_XENO_OPT_DEBUG enabled for identifying
-> > internal state weirdnesses - like those triggered by migration bugs -
-> > implies enabling the spinlock watchdogs too.
-> 
-> Ok, if it only makes sense to have both enabled at the same time, then
-> let us create XENO_OPT_DEBUG_NUCLEUS. It should include both, but it
-> shall not be automatically on when, say, only XENO_OPT_DEBUG_RTDM is
-> required.
+Hi Philippe
 
-No objection.
+Since your revision 1846 "Sanitize size-related heap macros" I cannot get link 
+anymore the Linux kernel for PPC405 and vxworks. Others targets link without 
+problems 
 
-> 
-> Jan
-> 
+See
+http://ngiger.dyndns.org/buildbot/hcu3_vx_q/builds/11/step-mk_kernel/1
+which reports:
+LD      init/built-in.o
+  LD      .tmp_vmlinux1
+kernel/built-in.o: In function `__heap_read_proc':
+kernel/xenomai/skins/vrtx/heap.c:38: undefined reference to 
+`xnheap_usable_size'
+make: *** [.tmp_vmlinux1] Fehler 1
+
+Best regards
+
 -- 
-Philippe.
-
-
+Niklaus Giger
 
