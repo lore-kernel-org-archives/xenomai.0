@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] Unresolved symbol xnheap_usable_size since
-	r1846 (PPC/vxworks only)
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200611181809.16782.niklaus.giger@domain.hid>
-References: <200611181809.16782.niklaus.giger@domain.hid>
-Content-Type: text/plain
-Date: Sat, 18 Nov 2006 18:19:49 +0100
-Message-Id: <1163870389.4990.48.camel@domain.hid>
-Mime-Version: 1.0
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Sat, 18 Nov 2006 18:18:17 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200611181818.17629.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Buildbot: Errors building rtnet since at least r1834
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,33 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Sat, 2006-11-18 at 18:09 +0100, Niklaus Giger wrote:
-> Hi Philippe
-> 
-> Since your revision 1846 "Sanitize size-related heap macros" I cannot get link 
-> anymore the Linux kernel for PPC405 and vxworks. Others targets link without 
-> problems 
-> 
-> See
-> http://ngiger.dyndns.org/buildbot/hcu3_vx_q/builds/11/step-mk_kernel/1
-> which reports:
-> LD      init/built-in.o
->   LD      .tmp_vmlinux1
-> kernel/built-in.o: In function `__heap_read_proc':
-> kernel/xenomai/skins/vrtx/heap.c:38: undefined reference to 
-> `xnheap_usable_size'
-> make: *** [.tmp_vmlinux1] Fehler 1
-> 
+Hi
 
-Fixed by #1858, thanks.
+Unfortunately I cannot say since when this build is broken, as I had to 
+reinstall the buildbot on my main server. But this particular build target 
+should not have been affected. (Same compiler, same build slave, same 
+scripts)
 
-> Best regards
-> 
+But since at November 12 I get the following errors in my builds:
+See http://ngiger.dyndns.org/buildbot-full/tqm_f/builds/0/step-mk_RTnet/1
+libtool: link: warning: library 
+`/var/buildbot/install/tqm_f-r1834/usr/xenomai/lib/libpthread_rt.la' was 
+moved.
+libtool: link: warning: library 
+`/var/buildbot/install/tqm_f-r1834/usr/xenomai/lib/librtdm.la' was moved.
+libtool: link: warning: library 
+`/var/buildbot/install/tqm_f-r1834/usr/xenomai/lib/libpthread_rt.la' was 
+moved.
+libtool: link: warning: library 
+`/var/buildbot/install/tqm_f-r1834/usr/xenomai/lib/librtdm.la' was moved.
+
+Has anybody a hint, what the reason could be?
+
+Best regards
+
 -- 
-Philippe.
-
-
+Niklaus Giger
 
