@@ -1,12 +1,15 @@
-Message-ID: <455CB074.9030301@domain.hid>
-Date: Thu, 16 Nov 2006 19:39:48 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] Interrupt shield
+Date: Mon, 20 Nov 2006 10:24:04 +0100
+References: <E1Gke0B-0003BT-CA@mailer.emlix.com>
+	<1163712755.4980.16.camel@domain.hid> <1163762469.4980.29.camel@domain.hid>
+In-Reply-To: <1163762469.4980.29.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] invalid parameter for xeno_rtcan_mem.ko
-References: <54b161f50611160723r355a603awc1d8e1234e5ed44d@domain.hid>
-In-Reply-To: <54b161f50611160723r355a603awc1d8e1234e5ed44d@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1Gm5Nk-0000vS-Le@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,19 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Frits de Klark <mailing.xenomai@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Frits de Klark wrote:
-> Hello everyone,
-> 
-> I tried to load the xeno_rtcan_mem module. I got a message that 
-> parameter 'io' is unknown. After a modinfo I found out that the actual 
-> parameter should be 'mem'. I suggest you fix this, since it can be 
-> somewhat confusing.
+Philippe Gerum wrote:
+> On Thu, 2006-11-16 at 22:32 +0100, Philippe Gerum wrote:
+> > On Thu, 2006-11-16 at 10:57 +0100, Sebastian Smolorz wrote:
+> > > Hello,
+> > >
+> > > can anybody confirm this behaviour? If I configure the I-shield into
+> > > the kernel and start the latency test the RT tasks have not activated
+> > > T_SHIELD although the documentation states it (and btw in
+> > > rt_task_create this bit is set).
+> >
+> > The documentation of rt_task_create() is wrong. The default behaviour
+> > should be to create tasks with disabled I-shield support.
+> >
+> > >  If I try to set T_SHIELD inside the display task, the system hangs, a
+> > > soft lockup appears and sometimes a few correct lines of the display
+> > > task are printed, followed by the next lockup.
+> >
+> > Confirmed here (on x86).
+> >
+> > > Explainable?
+> >
+> > Yes. I must have screwed up something somewhere, many moons ago.
+>
+> Yes I did. This patch should fix the issue on your setup too.
 
-Thanks for reporting. It will be fixed with my next RT-Socket-CAN update.
+Yes, it is working now. Thank you!
 
-Wolfgang.
-
+--
+Sebastian
 
