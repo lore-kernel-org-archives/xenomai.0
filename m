@@ -1,13 +1,10 @@
-Content-Type: text/plain; charset="us-ascii"
-Date: Mon, 20 Nov 2006 10:55:02 +0100
-From: karre@domain.hid
-In-Reply-To: <45616F69.5090404@domain.hid>
-Message-ID: <20061120095502.244780@domain.hid>
+Message-ID: <5517606.1164028545775.JavaMail.ngmail@domain.hid>
+Date: Mon, 20 Nov 2006 14:15:45 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-References: <20061117143512.191580@domain.hid> <455DCBAB.4090204@domain.hid>
-	<45606152.2000100@domain.hid> <45616F69.5090404@domain.hid>
-Subject: Re: [Xenomai-help] System freezes with Xenomai 2.2.5 and kernel 2.6.17
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] removing orphaned xenomai registry entries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,38 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Jan,
+Hi everybody,
 
-that sounds very good! The notebook will need some time for compilation, but I am hopeful that your hint will be successful.
+especially in the development phase of a project, I have the situation to c=
+reate some=20
+entries like events that end up in the Xenomai's registry.
+However, while developing I exit my application before processing the clean=
+ up phase.
+This means, that I have a couple of orphaned events in the registry
+(e.g. in /proc/xenomai/registry/native/events).
+How can I force Xenomai to remove this entries?
+Is there something like a rmxeno  that works like rm or rmmod and removes s=
+pecified
+elements? (if not: Isn't this an idea for any of the next versions of Xenom=
+ai....)
+The only way I found out is to reboot the PC which is not nice as it takes =
+a while.
+Of course, in a final application I should never have this situation, howev=
+er in the development
+phase this might occur fairly often.
 
-> Same config? Then the same issue I will explain below.
+Thanks for any feedback on this.
 
-Concerning the processor type and PC speaker driver, yes.
+Regards
 
-> Not to forget "configure". Yes, that's the user-space part.
+Mathias
 
-Yes, of course. Btw., is it normal that Xenomai's ./configure doen't need any interaction?
-
-> That driver also uses the PIT and finally causes the lock-up. Upcoming
-> Xenomai 2.3 detects the conflict and warns you, but 2.2 lets you trap
-> into this without any hint.
-
-Oh yes, I had to experience this is true ;)
-
-> Yeah, I know those (likely) SuSE-related warnings as well. I never felt
-> like looking for their reason, I can just say that they are harmless.
-
-Ok, I didn't recognize any problems as well. So probably nothing to care about.
-
-Thank you very much & have a nice day!
-
-Richard
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
--- 
-"Feel free" - 10 GB Mailbox, 100 FreeSMS/Monat ...
-Jetzt GMX TopMail testen: http://www.gmx.net/de/go/topmail
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
