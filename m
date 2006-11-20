@@ -1,12 +1,14 @@
-Message-ID: <456060D7.8030905@domain.hid>
-Date: Sun, 19 Nov 2006 14:49:11 +0100
-From: karre@domain.hid
+Message-ID: <1827213.1164009158538.JavaMail.ngmail@domain.hid>
+Date: Mon, 20 Nov 2006 08:52:38 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: Re: [Xenomai-help] Re: Re: What happens if task entry function
+In-Reply-To: <1163865143.4990.47.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] System freezes with Xenomai 2.2.5 and kernel 2.6.17
-References: <20061117143512.191580@domain.hid> <455DCBAB.4090204@domain.hid>
-In-Reply-To: <455DCBAB.4090204@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+References: <1163865143.4990.47.camel@domain.hid> <455DC001.2040001@domain.hid>
+	<434646.1163765689576.JavaMail.ngmail@domain.hid>
+	<16178634.1163773048304.JavaMail.ngmail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,84 +18,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-Hi Jan,
+Hi Philppe,
 
-thank you for your answer! Unfortunately, I didn't find your mail
-earlier as Thunderbird made a mistake.
+thanks for the patch. Using this patch, my test application is working now!
+I have also update to the latest SVN version (1882) of Xenomai.
+Using this version, the application works perfectly, too.
 
-In the meantime I verified the freezing on another platform. Both are
-notebooks that are 3 years or older.
+Regards
 
->> Another suspicious fact was numberous "nothing to do"-messages during compilation of Xenomai.
->>     
->
-> User-space part, I guess. Likely you already built it, no?
->   
-I think so as well. User-space part is the one that is not compiled into
-the kernel but with a make/make install directly in the
-xenomai-directory, isn't it?
+Mathias
 
-But no, at least on this computer I haven't built it before. I
-downloaded a fresh copy of the Vanilla-2.6.17.14-Kernel and of Xenomai
-2.2.5, expanded it, patched the kernel, and compiled the kernel and
-afterwards Xenomai (user part?).
+> > First, I give you some more information about the error.
+> > The output is the following:
+> > Hi, I am task A Hello
+> > Hi, I am task B World
+> > Main waits for A
+> > This is the end of A
+> > Main waits for B
+> >=20
+> > Then the system hangs.
+> >=20
+>=20
+> Confirmed here on a two-way PIII. Well, _this_ was a nice one.
+> Basically, the softlock was due to a missing rescheduling call after
+> task A has exited, leaving task B in ready state, somewhere in the
+> Twilight Zone. The patch below fixes it on my setup:
+>=20
+> --- ksrc/nucleus/shadow.c=09(revision 1854)
+> +++ ksrc/nucleus/shadow.c=09(working copy)
+> @@ -1631,7 +1631,8 @@
+> =20
+>  static inline void do_taskexit_event(struct task_struct *p)
+>  {
+> -=09xnthread_t *thread =3D xnshadow_thread(p);=09/* p =3D=3D current */
+> +=09xnthread_t *thread =3D xnshadow_thread(p); /* p =3D=3D current */
+> +=09spl_t s;
+> =20
+>  =09if (!thread)
+>  =09=09return;
+> @@ -1639,12 +1640,15 @@
+>  =09if (xnpod_shadow_p())
+>  =09=09xnshadow_relax(0);
+> =20
+> -=09/* So that we won't attempt to further wakeup the exiting task in
+> -=09   xnshadow_unmap(). */
+> -
+> +=09xnlock_get_irqsave(&nklock, s);
+> +=09/* Prevent wakeup call from xnshadow_unmap(). */
+>  =09xnshadow_thrptd(p) =3D NULL;
+>  =09xnthread_archtcb(thread)->user_task =3D NULL;
+> -=09xnpod_delete_thread(thread);=09/* Should indirectly call xnshadow_unm=
+ap().
+> */
+> +=09/* xnpod_delete_thread() -> hook -> xnshadow_unmap(). */
+> +=09xnpod_delete_thread(thread);
+> +=09xnsched_set_resched(thread->sched);
+> +=09xnpod_schedule();
+> +=09xnlock_put_irqrestore(&nklock, s);
+> =20
+>  =09xnltt_log_event(xeno_ev_shadowexit, thread->name);
+>  }
+>=20
+> --=20
+> Philippe.
+>=20
+>=20
+>=20
 
->> Now the system is bootable and Xenomai reported that hal&x86, real-time nucleus, nataive API, POSIX and RDTM services had started. Unfortunately, the system freezes unrecoverably shortly after login.
->>     
->
-> .config, please. I'm running such a setup (SuSE 10.1, 2.6.17.14, latest
-> Xenomai) successfully on my notebook.
->   
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
-That's great, also that your run it on a notebook as well!
 
-I appended my .config at the bottom of this email's copy to you. I left
-it from the copy to xenomai-help, as it is 64 KB large. If it is no
-problem, I could also attach it hier.
-
-I have also saved all outputs (bootmessages and make-messages). All in
-all, it's 600 KB. If that isn't too much, I could send it to you, as
-well. Perhaps that this would be useful.
-
-> Please make sure, that your build is really consistent. When in doubt,
-> try a "make clean; make; make modules_install install" cycle and check
-> if it helps. Could you have accidentally mixed up modules from some
-> non-Xenomai 2.6.17-build with the Xenomai-enabled version?
->   
-
-As far as I see it, a make clean would only be necessary if one has
-built the kernel before. So this probably doesn't make a difference.
-
-I'm thinking about what you wrote about mixing up modules. I have
-already built a Kernel on this Computer before, but it was another
-version. At least 2.6.17, but I think it even was 2.6.16.xx. As I said,
-i had fresh copies of both Xenomai and the kernel in /usr/src/, set the
-symbolic links '/usr/src/linux' and '/usr/src/xenomai' correspondingly,
-and did a [xenomai] /scripts/prepare-kernel, [linux] make menuconfig,
-make, make modules_install install, [xenomai] ./configure, make, make
-install - cycle.
-
-By the way, when I compiled the rt-system on this second notebook, I got
-the  "Cannot determine dependencies of module ..." not for reiserfs, but
-for processor, thermal,  jbd, ext3 (in this order and immediately
-afterwards a second time, again in this order). As I have already said,
-I could provide you with the messages during build process.
-
->> Can this be cause of I couldn't include "Interrupt pipeline" into the kernel? There was no way to elect it in menuconfig, there was --- instead of [ ], [*] or [M] beneath this option.
->>     
->
-> The "---" means that you cannot disable this essential feature, it will
-> be forcibly compiled-in when you enable Xenomai.
->   
-
-Ah, I see. Thank you. This probably is the explanation why during boot
-process, "I-pipe 1.5-02: pipeline enabled." and "I-pipe: Domain Xenomai
-registered." is reported.
-
-So thank you for your help! I'm looking forward to hearing from you!
-
-Richard
-
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
