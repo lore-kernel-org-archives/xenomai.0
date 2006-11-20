@@ -1,15 +1,12 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Subject: Re: [Xenomai-help] Interrupt shield
-Date: Mon, 20 Nov 2006 10:24:04 +0100
-References: <E1Gke0B-0003BT-CA@mailer.emlix.com>
-	<1163712755.4980.16.camel@domain.hid> <1163762469.4980.29.camel@domain.hid>
-In-Reply-To: <1163762469.4980.29.camel@domain.hid>
+Message-ID: <45617576.8040509@domain.hid>
+Date: Mon, 20 Nov 2006 10:29:26 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
+Subject: Re: [Xenomai-help] MPC5200 OOPS time
+References: <DD39B5C3F4963040ADC9768BE7E430CB015D4834@domain.hid>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB015D4834@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1Gm5Nk-0000vS-Le@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,36 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Thu, 2006-11-16 at 22:32 +0100, Philippe Gerum wrote:
-> > On Thu, 2006-11-16 at 10:57 +0100, Sebastian Smolorz wrote:
-> > > Hello,
-> > >
-> > > can anybody confirm this behaviour? If I configure the I-shield into
-> > > the kernel and start the latency test the RT tasks have not activated
-> > > T_SHIELD although the documentation states it (and btw in
-> > > rt_task_create this bit is set).
-> >
-> > The documentation of rt_task_create() is wrong. The default behaviour
-> > should be to create tasks with disabled I-shield support.
-> >
-> > >  If I try to set T_SHIELD inside the display task, the system hangs, a
-> > > soft lockup appears and sometimes a few correct lines of the display
-> > > task are printed, followed by the next lockup.
-> >
-> > Confirmed here (on x86).
-> >
-> > > Explainable?
-> >
-> > Yes. I must have screwed up something somewhere, many moons ago.
->
-> Yes I did. This patch should fix the issue on your setup too.
+Daniel Schnell wrote:
+> Hi,
+> 
+> 
+> Gilles Chanteperdrix wrote:
+> 
+>>You should set the threads stack size with pthread_attr_setstacksize
+>>(as other pthread_attr_set* functions, it should be used on a
+>>previously initialized pthread_attr_t structure), ulimit -s only set
+>>the stack size of the main thread, at least on some architectures.   
+> 
+> 
+> pthread_attr_setstacksize() doesn't work for us. The system still does
+> allocate the default linux stack size. Whereas ulimit -s sets the stack
+> size for all created threads correctly.
 
-Yes, it is working now. Thank you!
+pthread_attr_setstacksize does not work for the main thread, but works
+for other threads on all architectures where I tested it, could you
+check the return value ?
 
---
-Sebastian
+> 
+> Can this confirm somebody with an mpc5200B based board (e.g. icecube,
+> lite5200) ?
+> 
+> 
+>>This is probably unrelated to the errors you see, but:
+>>- passing the pthread_mutex_t by value is not supposed to work; once
+>>a pthread_mutex_t is initialized with pthread_mutex_init, you should
+>>pass the address of the very same pthread_mutex_t to other functions
+>>of the API.  
+> 
+> 
+> Hmm, this is mystique to me. pthread_mutex_t is a structure returned by
+> value from within MutexCreate(). Passing structures back by value
+> doesn't do harm to them. Also the pthread_mutex function seem to operate
+> normally.
+
+It works with Xenomai posix skin, because the structure simply holds a
+pointer to the real structure used by the kernel, but this is so for
+quite unobvious reasons (namely because sizeof(pthread_mutex_t) is to
+small, and because it allows pthread_mutex_t to be shared between kernel
+and user-space). But an implementation of the POSIX API could decide to
+put the mutex lock count in the pthread_mutex_t structure, or to put the
+pthread_mutex_t in a linked list, in these two cases, copying the
+pthread_mutex_t would be wrong.
+
+
+-- 
+                                                 Gilles Chanteperdrix
 
