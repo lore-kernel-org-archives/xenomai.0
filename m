@@ -1,17 +1,16 @@
-Message-ID: <456171C7.2090006@domain.hid>
-Date: Mon, 20 Nov 2006 10:13:43 +0100
+Message-ID: <456171E9.3040303@domain.hid>
+Date: Mon, 20 Nov 2006 10:14:17 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <b647ffbd0611111559y8e66c37m12deb64828a85d08@domain.hid>	
-	<455E022D.2000306@domain.hid>
-	<b647ffbd0611190255g11b79febhfa0619a2bf768b01@domain.hid>
-In-Reply-To: <b647ffbd0611190255g11b79febhfa0619a2bf768b01@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB0154E8D7@domain.hid>
+	<1163784779.4980.47.camel@domain.hid> <455E025B.5030906@domain.hid>
+	<4561705B.9030002@domain.hid>
+In-Reply-To: <4561705B.9030002@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig77A6761A5FAE58C89E5963C7"
+	boundary="------------enig80B0E5273056118898B85AA3"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: [patch] memory barriers in intr.c ::
-	xnintr_lock/unlock()
+Subject: [Xenomai-core] Re: XENO_OPT_DEBUG impact
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,107 +20,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig77A6761A5FAE58C89E5963C7
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig80B0E5273056118898B85AA3
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
->> I see two paths now:
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
 >>
->> A) If we go for atomic_inc/dec with such locking service,
->> xnarch_memory_barrier__after_atomic_inc & friends will be needed anywa=
-y
->> and could be already introduced now.
->=20
->=20
-> Yes, this would be better.
->=20
->=20
->=20
->> Any thoughts?
->=20
->=20
-> I have already sent once to you the message, but I do it now once more.=
+>>> ...
+>>> Disable CONFIG_XENO_OPT_DEBUG from your kernel configuration, this is=
 
+>>> the source of the PTE misses you are seeing now on ppc. This is not t=
+o
+>>> say that those errors are normal, and this issue still remains to be
+>>> fixed, but unless you want to debug the Xenomai nucleus, you don't ne=
+ed
+>>> this option on (additionally, it adds a large overhead which translat=
+es
+>>> in significantly augmented jitter).
+>>
+>> CONFIG_XENO_OPT_DEBUG should not add large jitters - that's what e.g.
+>> CONFIG_XENO_OPT_DEBUG_QUEUES is now for.
+>>
+>> I'm currently seeing two potential "misuses" of the common switch:
+>>
+>>  - the posix skin (Gilles, how heavy-weighted are those checks?)
+>>    =3D> CONFIG_XENO_OPT_DEBUG_POSIX
+>=20
+> The posix skin printks are issued by the root thread without holding th=
+e
+> nklock, so they should have no impact on the maximum latency.
 
-Ah, I remember. Got lost somehow.
-
-> Just
-> to give some more stuff to think about (although, nobody seems to be
-> inetersted in memory-barriers :) and maybe, if I'm wrong, someone will
-> point
-> it out.
->=20
-> **********************************************************
->=20
-> I just noticed that probably the code is still, at least very
-> theoretically,
-> not perfectly safe.
->=20
-> let's consider the following scenario:
->=20
-> op1;
->=20
-> lock();
-> op2;
-> unlock();
->=20
-> op3;
->=20
-> from the Documentation/memory-barriers.txt follows that the only guaran=
-tee
-> here is that "b =3D c" is executed inside the lock-unlock section (of c=
-ourse,
-> that's what locks are up too).
->=20
-> But the funny thing is that non of the ops are ordered in respect to ea=
-ch
-> other!
->=20
-> iow, e.g. the following sequences are possible :
->=20
-> lock(); op1; op2; op3; lock();
-> or
-> lock(); op3; op2; op1; lock();
->=20
-> and moreover, pure lock/unlock (without irq disable/enable) doesn't eve=
-n
-> imply a compiler barrier for UP.
->=20
-> [ read starting from the line 1150 in the above mentioned doc ]
->=20
-> And now apply all the said above to xnintr_detach() or even linux's
-> synchronize_irq(). IOW, spin_unlock() doesn't guarantee we have a mb
-> between
-> element deletion and checking the active flag :)
-
-Well, I must agree with you that there is a potential issue even in the
-Linux code. I can't imagine that there is a real one, because this
-should have triggered already on some box, but following the theory it
-is possible.
+Still I think that a separate switch (like we also have for RTDM) is
+cleaner. You could then add more checks as well when ever you feel like
+they could be useful.
 
 >=20
-> Ok, maybe it's just in theory. e.g. lock and unlock for x86 seem to imp=
-ly a
-> full memory barrier (and, probably, all the rest systems does the same)=
-=2E
-> Just look at definitions of mb() and spinlocks() for x86. asm("lock; so=
-me
-> write ops") does the trick in both cases.
+>>  - CONFIG_XENO_SPINLOCK_DEBUG =3D> CONFIG_XENO_OPT_DEBUG_SPINLOCK
+>>
+>> Both should be explicitly controllable in Kconfig.
+>>
+>> Gilles, is CONFIG_XENO_OPT_DEBUG_BHEAP used in any way? Doesn't seem s=
+o.
+>=20
+> What about using CONFIG_XENO_OPT_DEBUG_QUEUE instead ?
 >=20
 
-Well, the essence is likely that we should put a real compiler barrier
-in spinunlock so that such /potential/ leaking of post-lock code into
-the critical region can be excluded. Shouldn't cost anything, should it?
+Either this way, or sort it to upcoming XENO_OPT_DEBUG_NUCLEUS. Hmm, the
+queues may be even more fitting.
 
 Jan
 
 
---------------enig77A6761A5FAE58C89E5963C7
+--------------enig80B0E5273056118898B85AA3
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -130,10 +86,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.2 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFYXHHniDOoMHTA+kRAqv2AJ9zC/Nvvx+Keev3fdxiCmhS0znV1wCfWklw
-5IvyScUsxbD/CiL2IhN4SzM=
-=D2eG
+iD8DBQFFYXHpniDOoMHTA+kRAveWAJ42u6JZM66cM60cRCQeaRhlLOCEbACffC1O
+b5ZKg2kOA/nSr0cKqzF3cZY=
+=D0hh
 -----END PGP SIGNATURE-----
 
---------------enig77A6761A5FAE58C89E5963C7--
+--------------enig80B0E5273056118898B85AA3--
 
