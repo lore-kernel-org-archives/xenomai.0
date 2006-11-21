@@ -1,15 +1,21 @@
-Message-ID: <4562E24E.4000209@domain.hid>
-Date: Tue, 21 Nov 2006 12:26:06 +0100
+Message-ID: <4562E2EC.7060205@domain.hid>
+Date: Tue, 21 Nov 2006 12:28:44 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 3/3] control POSIX skin
-	debugging	independently
-References: <456236E5.5060203@domain.hid> <4562CE05.70900@domain.hid>
-In-Reply-To: <4562CE05.70900@domain.hid>
+References: <b647ffbd0611111559y8e66c37m12deb64828a85d08@domain.hid>	
+	<455E022D.2000306@domain.hid>	
+	<b647ffbd0611190255g11b79febhfa0619a2bf768b01@domain.hid>	
+	<456171C7.2090006@domain.hid>	
+	<b647ffbd0611201209s9d2348bx9579b382b12c7780@domain.hid>	
+	<45623D01.9000404@domain.hid>
+	<b647ffbd0611210132r3002191bj2cca5df3dcd5b861@domain.hid>
+In-Reply-To: <b647ffbd0611210132r3002191bj2cca5df3dcd5b861@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC1EC1A30FAADD44B0F74A5A6"
+	boundary="------------enig640BA1E7EF7D520642B35E18"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [patch] memory barriers in intr.c ::
+	xnintr_lock/unlock()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,56 +25,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC1EC1A30FAADD44B0F74A5A6
+--------------enig640BA1E7EF7D520642B35E18
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Following the logic of per-subsystem debug feature control, this patch=
+Dmitry Adamushko wrote:
+>> Ok, I'm stopping further speculations here... Back to practice, so do =
+we
+>> go
+>> > for smp_mb__before/after_atomic_* counterparts or live it as is? I
+>> guess,
+>> > those would be more optimal.
+>> >
+>>
+>> As I said, I'm still not sure if we finally need it when we may use
+>> per-cpu counters for efficiency reasons on the long-term. If this will=
 
->> introduces a separate kconfig switch XENO_OPT_POSIX_DEBUG and updates
->> the involved source files.
+>> add code or - even more important - an interface (of the system layer)=
+
+>> that will soon be removed again...
 >=20
-> I find the "if(XENO_DEBUG(FOO))" notation make it hard to understand
-> that the piece of code that follows is disabled at compilation time,
-> #ifdef CONFIG_XENO_OPT_FOO_DEBUG is easier to read. This also avoid the=
-
-> rather inelegant
 >=20
-> #ifndef CONFIG_XENO_OPT_POSIX_DEBUG
-> #define CONFIG_XENO_OPT_POSIX_DEBUG 0
-> #endif
+> So could you reveal your vision of per-cpu counters in this scenario (o=
+r
+> something in linux does use it under similar circumstances.. RCU?) At t=
+he
+> first glance, it doesn't seem to be much better. Although, I haven't
+> elaborated more thoroughly yet...
 
-For now that's just for the sake of consistency with other debugging
-parts in Xenomai. But once you may want to use XENO_ASSERT or XENO_BUGON
-also in the POSIX skin, the above becomes necessary anyway.
+I was thinking about some SRCU-like mechanism with clear optimisation
+focus on the reader-side. See this article for SRCU:
 
-I thought a lot about how to encapsulate the #ifndef more gracefully,
-but unfortunately you cannot build preprocessor statements from a
-preprocessor macro. If anyone has an idea how to obtain the
-XENO_ASSERT&friends semantics without any #ifndef-#define constructions,
-please let me know.
+http://lwn.net/Articles/202847/
 
-About the "if (XENO_DEBUG(POSIX))": I'm OK with converting them back to
-"#if XENO_DEBUG(POSIX)" if this is preferred.
+Having per-cpu counter would let SMP readers benefit - no need for
+atomic ops then.
 
->=20
-> Now about the Posix skin patch, in my opinion the Posix skin debug
-> should be enabled by default, because these printks are the indication
-> that there is something wrong in the user code: some objects were
-> created but not destroyed.
+There is currently some discussion going on about refining the
+implementation:
 
-Ok, will make it "default y" in the next patch revision.
+http://www.ussg.iu.edu/hypermail/linux/kernel/0611.2/0227.html
+
+It looks to me that we are in the comfortable situation of being able to
+avoid such extensions.
 
 Jan
 
 
---------------enigC1EC1A30FAADD44B0F74A5A6
+--------------enig640BA1E7EF7D520642B35E18
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -77,10 +85,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFYuJPniDOoMHTA+kRAjiLAJ9VVhmQykl98pQVRWUehMBlKjwAdQCbBnpE
-m++Pej+HZenfm+XLNOsjJXI=
-=s0pV
+iD8DBQFFYuLsniDOoMHTA+kRAtEXAJ9HrrQAQ6i7Dag5QE0o9LbqUwr7OgCfQPYa
+Gapk8c9AYhp0CnVhUy8clYI=
+=olf0
 -----END PGP SIGNATURE-----
 
---------------enigC1EC1A30FAADD44B0F74A5A6--
+--------------enig640BA1E7EF7D520642B35E18--
 
