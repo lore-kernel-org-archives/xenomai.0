@@ -1,14 +1,15 @@
-Subject: RE: [Xenomai-help] What returns rt_task_self in relation
-	tort_task_create
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB015D4F9C@is-hdq-exchange.marel.net>
-References: <DD39B5C3F4963040ADC9768BE7E430CB015D4F9C@is-hdq-exchange.marel.net>
-Content-Type: text/plain
-Date: Wed, 22 Nov 2006 15:16:16 +0100
-Message-Id: <1164204977.5006.322.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <29258254.1164204998593.JavaMail.ngmail@domain.hid>
+Date: Wed, 22 Nov 2006 15:16:38 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: Re: [Xenomai-help] What returns rt_task_self in
+In-Reply-To: <1164204035.5006.305.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <1164204035.5006.305.camel@domain.hid>
+	<20403318.1164195534169.JavaMail.ngmail@domain.hid>
+	<45643CC4.1000201@domain.hid> <1164199940.5006.270.camel@domain.hid>
+	<45644D39.10007@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: rpm@xenomai.org, jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-On Wed, 2006-11-22 at 13:48 +0000, Daniel Schnell wrote:
-> Philippe Gerum wrote:
-> > Use pthread_getspecific() for obtaining back a TLS data previously
-> > defined by pthread_setspecific(), indexed on a TLS key obtained from
-> > pthread_key_create(). Warning: AFAICT, only pthread_getspecific()
-> > refrain from performing any kind of Linux syscall (in the current
-> > NPTL and older LinuxThreads implementation, that is), thus won't
-> > migrate your RT task to secondary mode when called. The two others
-> > could call vanilla kernel services, so you must use them during
-> > non-critical preliminary init steps of your task.       
-> 
-> Does this mean that if you use pthread_getspecific() inside a user-space
-> application you will not switch to secondary mode ?
+> On Wed, 2006-11-22 at 14:14 +0100, Jan Kiszka wrote:
+>=20
+> [...]
+>=20
+>=20
+> Well, it actually does in intra-kernel calls, where rt_task_self()
+> returns the container object of the base nucleus thread present in the
+> RT_TASK struct the user passed us, even if nobody should rely on this
+> fact. I would try to clear any confusion like this:
+> "The address returned points at a descriptor identifying the calling
+> task, which might be different from the descriptor address passed to
+> rt_task_create()."
+>=20
+> > Jan
+> >=20
+> >=20
+> > PS: Who's supposed to free the descriptor allocated by rt_task_self?
+> > Would some check for pthread_getspecific(__native_tskey) + free() on
+> > task self-destruction make sense? Will not catch all cases, I know.
+> >=20
+>=20
+> We could add that, and the same stuff upon return from the task body
+> inside the trampoline call, but the only way to solve this with no leak
+> would be to call the nucleus at each invocation, and not use any cached
+> descriptor here. Since TLS requires to be operated by the owning task,
+> there is no point in trying to have a deleted task clean those up
+> thoroughly.
+What about the idea that it is possible to retrieve the cookie that is used=
+ with
+rt_task_start() ?
+E.g. this could be provided with rt_task_inquire()?
+The rt_task_info struct has to be expanded for that.
 
-Yes.
+The main use case for this is that some user specific, task related data
+has to be stored. One pointer should be sufficient.
+I think, an approach that uses the Xenomai API for that is better than
+to rely on TLS or NPTL as it is unclear if related actions lead to an unwan=
+ted syscall.
 
->  I was just
-> abandoning using TLS because I could not imagine how the NPTL's
-> functionality can be done without a system call. Is this behaviour
-> something one can rely on in the future ?
+One (very ugly) approach could be to code an address into the name of the t=
+ask.
+This name could be retrieved via rt_task_inquire()...
 
-TLS must be stack-based and stack-based accesses are thread-private, so
-there is no reason for the kernel to show up here; so there is a good
-chance that this behaviour be kept in later releases, but I'm not
-maintaining the glibc, so I could not swear it.
+Mathias
 
-In any case, you should check by yourself the behaviour of
-pthread_getspecific(), by arming the T_WARNSW bit using
-rt_task_set_mode(). If the former call switches to secondary mode, you
-would get a SIGXCPU signal. Installing this simple test as some
-preliminary consistency check before your application runs for real
-would prevent any bad surprise after glibc updates.
-
-> 
-> Is there something similar like TLS inside the native API ?
-> 
-
-No, basically because it requires to know about the nitty-gritty details
-of the pthread implementation, and this is precisely why we should only
-rely on the regular TLS implementation.
-
-> 
-> Best regards,
-> 
-> 
-> Daniel.
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
