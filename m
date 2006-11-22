@@ -1,12 +1,12 @@
-Message-ID: <4563FA75.3000206@domain.hid>
-Date: Wed, 22 Nov 2006 08:21:25 +0100
+Message-ID: <4563FA59.6070605@domain.hid>
+Date: Wed, 22 Nov 2006 08:20:57 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH 3/3] control POSIX skin
-	debugging	independently
-References: <456236E5.5060203@domain.hid>
-In-Reply-To: <456236E5.5060203@domain.hid>
-Content-Type: multipart/mixed; boundary="------------060801060408010707080604"
+Subject: Re: [Xenomai-core] [PATCH 1/3] decouple spinlock stats from
+	XENO_OPT_STATS
+References: <456236D2.3050402@domain.hid>
+In-Reply-To: <456236D2.3050402@domain.hid>
+Content-Type: multipart/mixed; boundary="------------050203060303010602090809"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,358 +20,177 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is a multi-part message in MIME format.
---------------060801060408010707080604
+--------------050203060303010602090809
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
-Version 2 of this patch with the following changes:
-
- - switch to #if XENO_DEBUG(POSIX) (instead of "if (XENO_DEBUG(POSIX))")
- - make XENO_OPT_DEBUG_POSIX default y (if debugging is enabled)
+Here comes version 2 of this patch, now following the new
+#if-#else-#endif comment style.
 
 Jan
 
-
-PS: Changelog for the whole series can be provided once it is considered
-mergeable.
-
---------------060801060408010707080604
+--------------050203060303010602090809
 Content-Type: text/x-patch;
- name="split-posix-debug-v2.patch"
+ name="decouple-spinlock-dbg-from-stats-v2.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="split-posix-debug-v2.patch"
+	filename="decouple-spinlock-dbg-from-stats-v2.patch"
 
 ---
- ksrc/skins/posix/Config.in  |    1 +
- ksrc/skins/posix/Kconfig    |   10 ++++++++--
- ksrc/skins/posix/cond.c     |    9 ++++-----
- ksrc/skins/posix/internal.h |    7 +++++++
- ksrc/skins/posix/intr.c     |    9 ++++-----
- ksrc/skins/posix/mq.c       |    8 ++++----
- ksrc/skins/posix/mutex.c    |    4 ++--
- ksrc/skins/posix/registry.c |   17 ++++++++++-------
- ksrc/skins/posix/sem.c      |   12 ++++++------
- ksrc/skins/posix/shm.c      |   12 ++++++------
- ksrc/skins/posix/signal.c   |    9 ++++-----
- ksrc/skins/posix/thread.c   |    4 ++--
- ksrc/skins/posix/timer.c    |    4 ++--
- 13 files changed, 60 insertions(+), 46 deletions(-)
+ include/asm-generic/system.h |   35 ++++++++++++++++-------------------
+ ksrc/nucleus/module.c        |   22 +++++++++++-----------
+ 2 files changed, 27 insertions(+), 30 deletions(-)
 
-Index: xenomai/ksrc/skins/posix/cond.c
+Index: xenomai/include/asm-generic/system.h
 ===================================================================
---- xenomai.orig/ksrc/skins/posix/cond.c
-+++ xenomai/ksrc/skins/posix/cond.c
-@@ -561,11 +561,10 @@ void pse51_condq_cleanup(pse51_kqueues_t
- 	while ((holder = getheadq(&q->condq)) != NULL) {
- 		cond_destroy_internal(link2cond(holder), q);
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
--		xnprintf
--		    ("Posix: destroying condition variable %p.\n",
--		     link2cond(holder));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#if XENO_DEBUG(POSIX)
-+		xnprintf("Posix: destroying condition variable %p.\n",
-+			 link2cond(holder));
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 	}
+--- xenomai.orig/include/asm-generic/system.h
++++ xenomai/include/asm-generic/system.h
+@@ -66,14 +66,12 @@ typedef unsigned long spl_t;
+ #define splexit(x)  rthal_local_irq_restore((x) & 1)
+ #else /* !CONFIG_SMP */
+ #define splexit(x)  rthal_local_irq_restore(x)
+-#endif /* CONFIG_SMP */
++#endif /* !CONFIG_SMP */
+ #define splnone()   rthal_local_irq_enable()
+ #define spltest()   rthal_local_irq_test()
+ #define splget(x)   rthal_local_irq_flags(x)
  
-Index: xenomai/ksrc/skins/posix/internal.h
-===================================================================
---- xenomai.orig/ksrc/skins/posix/internal.h
-+++ xenomai/ksrc/skins/posix/internal.h
-@@ -25,6 +25,13 @@
- #include <posix/posix.h>
- #include <posix/registry.h>
+-#if defined(CONFIG_SMP) && \
+-    (defined(CONFIG_XENO_OPT_STATS) || defined(CONFIG_XENO_OPT_DEBUG))
+-
++#if defined(CONFIG_SMP) && defined(CONFIG_XENO_OPT_DEBUG)
+ typedef struct {
  
-+/* debug support */
-+#include <nucleus/assert.h>
-+
-+#ifndef CONFIG_XENO_OPT_DEBUG_POSIX
-+#define CONFIG_XENO_OPT_DEBUG_POSIX 0
-+#endif
-+
- #define PSE51_MAGIC(n) (0x8686##n##n)
- #define PSE51_ANY_MAGIC         PSE51_MAGIC(00)
- #define PSE51_THREAD_MAGIC      PSE51_MAGIC(01)
-Index: xenomai/ksrc/skins/posix/mq.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/mq.c
-+++ xenomai/ksrc/skins/posix/mq.c
-@@ -1127,10 +1127,10 @@ int mq_notify(mqd_t fd, const struct sig
- static void uqd_cleanup(pse51_assoc_t *assoc)
- {
- 	pse51_ufd_t *ufd = assoc2ufd(assoc);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	xnprintf("Posix: closing message queue descriptor %lu.\n",
- 		 pse51_assoc_key(assoc));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 	mq_close(ufd->kfd);
- 	xnfree(ufd);
+         unsigned long long spin_time;
+@@ -96,25 +94,24 @@ typedef struct {
+ 
+ } xnlock_t;
+ 
+-#define XNARCH_LOCK_UNLOCKED (xnlock_t) {       \
+-	{ ~0 },				        \
+-        NULL,                                   \
+-        NULL,                                   \
+-        0,                                      \
+-        -1,                                     \
+-        0LL,                                    \
+-        0LL,                                    \
++#define XNARCH_LOCK_UNLOCKED (xnlock_t) {	\
++	{ ~0 },					\
++	NULL,					\
++	NULL,					\
++	0,					\
++	-1,					\
++	0LL,					\
++	0LL,					\
  }
-@@ -1160,10 +1160,10 @@ void pse51_mq_pkg_cleanup(void)
- 		pse51_node_remove(&node, mq->nodebase.name, PSE51_MQ_MAGIC);
- 		xnlock_put_irqrestore(&nklock, s);
- 		pse51_mq_destroy(mq);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 		xnprintf("Posix: unlinking message queue \"%s\".\n",
- 			 mq->nodebase.name);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnfree(mq);
- 		xnlock_get_irqsave(&nklock, s);
- 	}
-Index: xenomai/ksrc/skins/posix/mutex.c
+ 
+ #define CONFIG_XENO_SPINLOCK_DEBUG  1
+ 
+-#else /* !(CONFIG_XENO_OPT_STATS && CONFIG_SMP) */
++#else /* !(CONFIG_SMP && CONFIG_XENO_OPT_DEBUG) */
+ 
+ typedef struct { atomic_t owner; } xnlock_t;
+ 
+ #define XNARCH_LOCK_UNLOCKED (xnlock_t) { { ~0 } }
+-
+-#endif /* CONFIG_XENO_OPT_STATS && CONFIG_SMP */
++#endif /* !(CONFIG_SMP && CONFIG_XENO_OPT_DEBUG) */
+ 
+ #define XNARCH_NR_CPUS               RTHAL_NR_CPUS
+ 
+@@ -231,7 +228,7 @@ static inline int xnarch_setimask (int i
+ #else /* !CONFIG_XENO_SPINLOCK_DEBUG */
+ #define xnlock_get(lock)            __xnlock_get(lock)
+ #define xnlock_get_irqsave(lock,x)  ((x) = __xnlock_get_irqsave(lock))
+-#endif /* CONFIG_XENO_SPINLOCK_DEBUG */
++#endif /* !CONFIG_XENO_SPINLOCK_DEBUG */
+ #define xnlock_clear_irqoff(lock)   xnlock_put_irqrestore(lock,1)
+ #define xnlock_clear_irqon(lock)    xnlock_put_irqrestore(lock,0)
+ 
+@@ -304,7 +301,7 @@ static inline void xnlock_put (xnlock_t 
+     rthal_load_cpuid();
+     if (likely(atomic_read(&lock->owner) == cpuid)) {
+ 
+-#ifdef CONFIG_XENO_OPT_STATS
++#ifdef CONFIG_XENO_SPINLOCK_DEBUG
+ 	    extern xnlockinfo_t xnlock_stats[];
+ 
+ 	    unsigned long long lock_time = rthal_rdtsc() - lock->lock_date;
+@@ -316,7 +313,7 @@ static inline void xnlock_put (xnlock_t 
+ 		    xnlock_stats[cpuid].function = lock->function;
+ 		    xnlock_stats[cpuid].line = lock->line;
+ 	    }
+-#endif /* CONFIG_XENO_OPT_STATS */
++#endif /* CONFIG_XENO_SPINLOCK_DEBUG */
+ 	    atomic_set(&lock->owner, ~0);
+     }
+ #ifdef CONFIG_XENO_SPINLOCK_DEBUG
+@@ -377,7 +374,7 @@ static inline void xnlock_put_irqrestore
+ #define xnlock_clear_irqoff(lock)      rthal_local_irq_disable()
+ #define xnlock_clear_irqon(lock)       rthal_local_irq_enable()
+ 
+-#endif /* CONFIG_SMP */
++#endif /* !CONFIG_SMP */
+ 
+ static inline int xnarch_remap_vm_page(struct vm_area_struct *vma,
+ 				       unsigned long from,
+Index: xenomai/ksrc/nucleus/module.c
 ===================================================================
---- xenomai.orig/ksrc/skins/posix/mutex.c
-+++ xenomai/ksrc/skins/posix/mutex.c
-@@ -504,9 +504,9 @@ void pse51_mutexq_cleanup(pse51_kqueues_
- 	while ((holder = getheadq(&q->mutexq)) != NULL) {
- 		pse51_mutex_destroy_internal(link2mutex(holder), q);
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 		xnprintf("Posix: destroying mutex %p.\n", link2mutex(holder));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 	}
+--- xenomai.orig/ksrc/nucleus/module.c
++++ xenomai/ksrc/nucleus/module.c
+@@ -472,7 +472,9 @@ static struct file_operations stat_seq_o
+ 	.release = seq_release_private,
+ };
  
-Index: xenomai/ksrc/skins/posix/registry.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/registry.c
-+++ xenomai/ksrc/skins/posix/registry.c
-@@ -488,18 +488,21 @@ void pse51_reg_pkg_cleanup(void)
- 	unsigned i;
- 	for (i = 0; i < pse51_reg.maxfds; i++)
- 		if (pse51_reg.descs[i]) {
--#ifdef CONFIG_XENO_OPT_DEBUG
--			xnprintf("Posix: destroying descriptor %d.\n",i);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#if XENO_DEBUG(POSIX)
-+			xnprintf("Posix: destroying descriptor %d.\n", i);
-+#endif /* XENO_DEBUG(POSIX) */
- 			pse51_desc_destroy(pse51_reg.descs[i]);
- 		}
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	for (i = 0; i < pse51_reg.buckets_count; i++) {
- 		pse51_node_t *node;
--		for (node = pse51_reg.node_buckets[i]; node; node = node->next)
--			xnprintf("Posix: node \"%s\" left aside.\n", node->name);
-+		for (node = pse51_reg.node_buckets[i];
-+		     node;
-+		     node = node->next)
-+			xnprintf("Posix: node \"%s\" left aside.\n",
-+				 node->name);
- 	}
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 
- 	size = sizeof(pse51_node_t) * pse51_reg.buckets_count
- 		+ sizeof(pse51_desc_t) * pse51_reg.maxfds
-Index: xenomai/ksrc/skins/posix/sem.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/sem.c
-+++ xenomai/ksrc/skins/posix/sem.c
-@@ -760,9 +760,9 @@ static void usem_cleanup(pse51_assoc_t *
- 	pse51_usem_t *usem = assoc2usem(assoc);
- 	nsem_t *nsem = sem2named_sem(sem);
- 
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	xnprintf("Posix: closing semaphore \"%s\".\n", nsem->nodebase.name);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 	sem_close(&nsem->descriptor.native_sem);
- 	xnfree(usem);
- }
-@@ -784,13 +784,13 @@ void pse51_semq_cleanup(pse51_kqueues_t 
- 		pse51_sem_t *sem = link2sem(holder);
- 		pse51_node_t *node;
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
--		if (sem->is_named) 
-+#if XENO_DEBUG(POSIX)
-+		if (sem->is_named)
- 			xnprintf("Posix: unlinking semaphore \"%s\".\n",
- 				 sem2named_sem(sem)->nodebase.name);
- 		else
--			xnprintf("Posix: destroying semaphore %p.\n",sem);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+			xnprintf("Posix: destroying semaphore %p.\n", sem);
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 		if (sem->is_named)
- 			pse51_node_remove(&node,
-Index: xenomai/ksrc/skins/posix/shm.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/shm.c
-+++ xenomai/ksrc/skins/posix/shm.c
-@@ -880,10 +880,10 @@ int pse51_xnheap_get(xnheap_t **pheap, v
- static void ufd_cleanup(pse51_assoc_t *assoc)
- {
- 	pse51_ufd_t *ufd = assoc2ufd(assoc);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	xnprintf("Posix: closing shared memory descriptor %lu.\n",
- 		 pse51_assoc_key(assoc));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 	pse51_shm_close(ufd->kfd);
- 	xnfree(ufd);
- }
-@@ -891,10 +891,10 @@ static void ufd_cleanup(pse51_assoc_t *a
- static void umap_cleanup(pse51_assoc_t *assoc)
- {
- 	pse51_umap_t *umap = assoc2umap(assoc);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	xnprintf("Posix: unmapping shared memory 0x%08lx.\n",
- 		 pse51_assoc_key(assoc));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 	munmap(umap->kaddr, umap->len);
- 	xnfree(umap);
- }
-@@ -931,10 +931,10 @@ void pse51_shm_pkg_cleanup(void)
- 
- 		pse51_node_remove(&node, shm->nodebase.name, PSE51_SHM_MAGIC);
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 		xnprintf("Posix: unlinking shared memory \"%s\".\n",
- 			 shm->nodebase.name);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 		pse51_shm_destroy(shm, 1);
- 	}
-Index: xenomai/ksrc/skins/posix/signal.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/signal.c
-+++ xenomai/ksrc/skins/posix/signal.c
-@@ -1211,15 +1211,14 @@ void pse51_signal_pkg_init(void)
- 
- void pse51_signal_pkg_cleanup(void)
- {
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 	int i;
- 
- 	for (i = 0; i < PSE51_SIGQUEUE_MAX; i++)
- 		if (pse51_infos_pool[i].info.si_signo)
--			xnprintf
--			    ("Posix siginfo structure %p was not freed, freeing now.\n",
--			     &pse51_infos_pool[i].info);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+			xnprintf("Posix siginfo structure %p was not freed, "
-+				 "freeing now.\n", &pse51_infos_pool[i].info);
-+#endif /* XENO_DEBUG(POSIX) */
- 
- #if defined(__KERNEL__) && defined(CONFIG_XENO_OPT_PERVASIVE)
- 	rthal_apc_free(pse51_signals_apc);
-Index: xenomai/ksrc/skins/posix/thread.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/thread.c
-+++ xenomai/ksrc/skins/posix/thread.c
-@@ -712,9 +712,9 @@ void pse51_threadq_cleanup(pse51_kqueues
- 			/* Remaining TCB (joinable thread, which was never joined). */
- 			thread_destroy(thread);
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 		xnprintf("POSIX: destroyed thread %p\n", thread);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 	}
- 
-Index: xenomai/ksrc/skins/posix/timer.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/timer.c
-+++ xenomai/ksrc/skins/posix/timer.c
-@@ -520,9 +520,9 @@ void pse51_timerq_cleanup(pse51_kqueues_
- 		timer_t tm = (timer_t) (link2tm(holder, link) - timer_pool);
- 		pse51_timer_delete_inner(tm, q);
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
-+#if XENO_DEBUG(POSIX)
- 		xnprintf("Posix timer %u deleted\n", (unsigned) tm);
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 	}
- 
-Index: xenomai/ksrc/skins/posix/intr.c
-===================================================================
---- xenomai.orig/ksrc/skins/posix/intr.c
-+++ xenomai/ksrc/skins/posix/intr.c
-@@ -261,11 +261,10 @@ void pse51_intrq_cleanup(pse51_kqueues_t
- 	while ((holder = getheadq(&q->intrq)) != NULL) {
- 		pthread_intr_detach_np(link2intr(holder));
- 		xnlock_put_irqrestore(&nklock, s);
--#ifdef CONFIG_XENO_OPT_DEBUG
--		xnprintf
--		    ("Posix interruption handler %p was not destroyed,"
--		     " destroying now.\n", link2intr(holder));
--#endif /* CONFIG_XENO_OPT_DEBUG */
-+#if XENO_DEBUG(POSIX)
-+		xnprintf("Posix interruption handler %p was not destroyed, "
-+			 "destroying now.\n", link2intr(holder));
-+#endif /* XENO_DEBUG(POSIX) */
- 		xnlock_get_irqsave(&nklock, s);
- 	}
- 
-Index: xenomai/ksrc/skins/posix/Config.in
-===================================================================
---- xenomai.orig/ksrc/skins/posix/Config.in
-+++ xenomai/ksrc/skins/posix/Config.in
-@@ -9,5 +9,6 @@ if [ "$CONFIG_XENO_SKIN_POSIX" != "n" ];
- 	comment 'POSIX interface options'
- 	bool 'Shared memory' CONFIG_XENO_OPT_POSIX_SHM
- 	bool 'Interrupts' CONFIG_XENO_OPT_POSIX_INTR
-+	bool 'Debugging support' CONFIG_XENO_OPT_DEBUG_POSIX
- 	endmenu
- fi
-Index: xenomai/ksrc/skins/posix/Kconfig
-===================================================================
---- xenomai.orig/ksrc/skins/posix/Kconfig
-+++ xenomai/ksrc/skins/posix/Kconfig
-@@ -10,7 +10,6 @@ if XENO_SKIN_POSIX != n
- 
- config XENO_OPT_POSIX_SHM
- 	bool "Shared memory"
--	default n
- 	help
- 
- 	POSIX skin shared memory areas are regions of memory which can be shared
-@@ -23,7 +22,6 @@ config XENO_OPT_POSIX_SHM
- 
- config XENO_OPT_POSIX_INTR
- 	bool "Interrupts"
--	default n
- 	help
- 
- 	This option provides an ad-hoc API to deal with interrupts in programs
-@@ -32,4 +30,12 @@ config XENO_OPT_POSIX_INTR
- 	RTDM skin is the preferred way of implementing drivers), leave this
- 	option unselected.
- 
-+config XENO_OPT_DEBUG_POSIX
-+	bool "Debugging support"
-+	default y
-+	help
+-#ifdef CONFIG_SMP
++#endif /* CONFIG_XENO_OPT_STATS */
 +
-+	When enabled, this option makes the skin warn about not properly
-+	cleaned up POSIX objects it detects on process termination.
++#ifdef CONFIG_XENO_SPINLOCK_DEBUG
+ 
+ xnlockinfo_t xnlock_stats[RTHAL_NR_CPUS];
+ 
+@@ -520,9 +522,7 @@ static int lock_read_proc(char *page,
+ 
+ EXPORT_SYMBOL(xnlock_stats);
+ 
+-#endif /* CONFIG_SMP */
+-
+-#endif /* CONFIG_XENO_OPT_STATS */
++#endif /* CONFIG_XENO_SPINLOCK_DEBUG */
+ 
+ static int latency_read_proc(char *page,
+ 			     char **start,
+@@ -741,12 +741,12 @@ void xnpod_init_proc(void)
+ 
+ #ifdef CONFIG_XENO_OPT_STATS
+ 	add_proc_fops("stat", &stat_seq_operations, 0, rthal_proc_root);
+-#ifdef CONFIG_SMP
+-	add_proc_leaf("lock", &lock_read_proc, NULL, NULL, rthal_proc_root);
+-#endif /* CONFIG_SMP */
+-
+ #endif /* CONFIG_XENO_OPT_STATS */
+ 
++#ifdef CONFIG_XENO_SPINLOCK_DEBUG
++	add_proc_leaf("lock", &lock_read_proc, NULL, NULL, rthal_proc_root);
++#endif /* CONFIG_XENO_SPINLOCK_DEBUG */
 +
- endif
+ 	add_proc_leaf("latency",
+ 		      &latency_read_proc,
+ 		      &latency_write_proc, NULL, rthal_proc_root);
+@@ -786,10 +786,10 @@ void xnpod_delete_proc(void)
+ 	remove_proc_entry("sched", rthal_proc_root);
+ #ifdef CONFIG_XENO_OPT_STATS
+ 	remove_proc_entry("stat", rthal_proc_root);
+-#ifdef CONFIG_SMP
+-	remove_proc_entry("lock", rthal_proc_root);
+-#endif /* CONFIG_SMP */
+ #endif /* CONFIG_XENO_OPT_STATS */
++#ifdef CONFIG_XENO_SPINLOCK_DEBUG
++	remove_proc_entry("lock", rthal_proc_root);
++#endif /* CONFIG_XENO_SPINLOCK_DEBUG */
+ }
+ 
+ #ifdef CONFIG_XENO_OPT_PERVASIVE
 
---------------060801060408010707080604--
+--------------050203060303010602090809--
 
