@@ -1,17 +1,16 @@
-Subject: Re: Re: [Xenomai-help] What returns rt_task_self in
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <29258254.1164204998593.JavaMail.ngmail@domain.hid>
-References: <1164204035.5006.305.camel@domain.hid>
-	<20403318.1164195534169.JavaMail.ngmail@domain.hid>
-	<45643CC4.1000201@domain.hid> <1164199940.5006.270.camel@domain.hid>
-	<45644D39.10007@domain.hid>
-	<29258254.1164204998593.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain
-Date: Wed, 22 Nov 2006 15:49:58 +0100
-Message-Id: <1164206998.5006.343.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45647C2B.1070208@domain.hid>
+Date: Wed, 22 Nov 2006 17:34:51 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] What returns
+	rt_task_self	in	relation	to	rt_task_create
+References: <20403318.1164195534169.JavaMail.ngmail@domain.hid>	
+	<45643CC4.1000201@domain.hid> <1164199940.5006.270.camel@domain.hid>	
+	<45644D39.10007@domain.hid> <1164204035.5006.305.camel@domain.hid>	
+	<456458BC.2060407@domain.hid> <1164205345.5006.329.camel@domain.hid>
+In-Reply-To: <1164205345.5006.329.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,37 +20,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Wed, 2006-11-22 at 15:16 +0100, M. Koehrer wrote:
-
-> The main use case for this is that some user specific, task related data
-> has to be stored. One pointer should be sufficient.
-> I think, an approach that uses the Xenomai API for that is better than
-> to rely on TLS or NPTL as it is unclear if related actions lead to an unwanted syscall.
+Philippe Gerum wrote:
+> On Wed, 2006-11-22 at 15:03 +0100, Gilles Chanteperdrix wrote:
 > 
-
-Think in terms of probability: what's the probability for our own local
-TLS implementation to break after we missed some obscure glibc change VS
-the probability for the glibc to suddently emit syscalls for
-pthread_getspecific()? Because #1 is much more likely than #2, we should
-rely on the regular TLS. IOW, let's not reinvent the wheel, particularly
-if it's square.
-
-> One (very ugly) approach could be to code an address into the name of the task.
-> This name could be retrieved via rt_task_inquire()...
+>>Philippe Gerum wrote:
+>>
+>>>On Wed, 2006-11-22 at 14:14 +0100, Jan Kiszka wrote:
+>>>We could add that, and the same stuff upon return from the task body
+>>>inside the trampoline call, but the only way to solve this with no leak
+>>>would be to call the nucleus at each invocation, and not use any cached
+>>>descriptor here. Since TLS requires to be operated by the owning task,
+>>>there is no point in trying to have a deleted task clean those up
+>>>thoroughly.
+>>>
+>>
+>>When creating a TLS key, you can specify a cleanup function that get
+>>called when a thread exits (or is canceled).
+>>
 > 
-
-Unfortunately, this would make no sense when multiple address spaces are
-involved (kernel/user-space, different processes). This is why
-descriptors should be seen as containers for handles, that eventually
-point at some objects.
-
-> Mathias
 > 
+> Actually, there are spots where the nucleus forces do_exit() over the
+> caller, and specifically, when we zap a shadow from the Xenomai context,
+> then perform a tail scheduling for this zombie over the incoming Linux
+> context. In such situation, the user-space would not even be informed of
+> what's been going on, so the cleanup routine would be useless.
+
+IIRC, rt_task_delete calls pthread_cancel, so tasks deleted with
+rt_task_delete should be able to run the cleanups before exiting. The
+fact that in some cases (namely, in the case of unclean exit) some
+chunks of memory are not deallocated seems acceptable.
+
 -- 
-Philippe.
-
-
+                                                 Gilles Chanteperdrix
 
