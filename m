@@ -1,14 +1,16 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] What returns rt_task_self in relation
-	tort_task_create
-Date: Wed, 22 Nov 2006 13:48:11 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB015D4F9C@is-hdq-exchange.marel.net>
-In-Reply-To: <1164200995.5006.280.camel@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] What returns rt_task_self in
+	relation	to	rt_task_create
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45644D39.10007@domain.hid>
+References: <20403318.1164195534169.JavaMail.ngmail@domain.hid>
+	<45643CC4.1000201@domain.hid> <1164199940.5006.270.camel@domain.hid>
+	<45644D39.10007@domain.hid>
+Content-Type: text/plain
+Date: Wed, 22 Nov 2006 15:00:35 +0100
+Message-Id: <1164204035.5006.305.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,29 +20,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Use pthread_getspecific() for obtaining back a TLS data previously
-> defined by pthread_setspecific(), indexed on a TLS key obtained from
-> pthread_key_create(). Warning: AFAICT, only pthread_getspecific()
-> refrain from performing any kind of Linux syscall (in the current
-> NPTL and older LinuxThreads implementation, that is), thus won't
-> migrate your RT task to secondary mode when called. The two others
-> could call vanilla kernel services, so you must use them during
-> non-critical preliminary init steps of your task.      =20
+On Wed, 2006-11-22 at 14:14 +0100, Jan Kiszka wrote:
 
-Does this mean that if you use pthread_getspecific() inside a user-space
-application you will not switch to secondary mode ? I was just
-abandoning using TLS because I could not imagine how the NPTL's
-functionality can be done without a system call. Is this behaviour
-something one can rely on in the future ?
+[...]
 
-Is there something similar like TLS inside the native API ?
+> >>> How are those addresses related - how can I find out the descriptor address 
+> >>> used for rt_task_create() at runtime?
+> >> The documentation is not precise enough here: what you obtain from
+> >> rt_task_self is /some/ task descriptor for the currently running task,
+> >> it is not a reference to the same piece of memory containing the task
+> >> descriptor. Check the library implementation for further insights.
+> >>
+> > 
+> > A descriptor should always be seen as a reference to an object, not as
+> > the object itself. Said differently, there is no such thing as a
+> > main/unique/specific descriptor for any given object. The doc says
+> > exactly that: you get a valid descriptor to the task by calling
+> > rt_task_self(), but nothing says that this ought to be the unique way of
+> > referencing it. 
+> 
+> The doc talks quite a lot about "_the_ task descriptor address" which
+> /may/ suggest to the reader that there is only one address. That this
+> cannot be the case becomes obvious when considering user/kernel or
+> cross-process usage. Still, clarification at some point can help to
+> avoid any future misinterpretation.
+> 
+> Suggestion (rt_task_self):
+> 
+> "Return the address of a descriptor for the current task.
+> 
+
+Agreed.
+
+> Note: The returned descriptor address does not relate to the descriptor
+> address passed to rt_task_create or similar services."
+> 
+
+Well, it actually does in intra-kernel calls, where rt_task_self()
+returns the container object of the base nucleus thread present in the
+RT_TASK struct the user passed us, even if nobody should rely on this
+fact. I would try to clear any confusion like this:
+"The address returned points at a descriptor identifying the calling
+task, which might be different from the descriptor address passed to
+rt_task_create()."
+
+> Jan
+> 
+> 
+> PS: Who's supposed to free the descriptor allocated by rt_task_self?
+> Would some check for pthread_getspecific(__native_tskey) + free() on
+> task self-destruction make sense? Will not catch all cases, I know.
+> 
+
+We could add that, and the same stuff upon return from the task body
+inside the trampoline call, but the only way to solve this with no leak
+would be to call the nucleus at each invocation, and not use any cached
+descriptor here. Since TLS requires to be operated by the owning task,
+there is no point in trying to have a deleted task clean those up
+thoroughly.
+
+-- 
+Philippe.
 
 
-Best regards,
-
-
-Daniel.
 
