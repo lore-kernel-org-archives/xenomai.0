@@ -1,39 +1,91 @@
-Content-class: urn:content-classes:message
+Message-ID: <456555A2.7020605@domain.hid>
+Date: Thu, 23 Nov 2006 09:02:42 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: RE: [Xenomai-help] Maximum number of realtime tasks
-Date: Tue, 31 Oct 2006 11:38:18 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB0144D60D@is-hdq-exchange.marel.net>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB6C7C71C52841FA63A7494BD"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [ANNOUNCE] Experimental OpenSuSE packages
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
->=20
-> Pay attention to the stack size of the user-space tasks: the default=20
-> of 8 Megabytes will exhaust your RAM rapidly. So, you should either :
-> - set the default stack size with ulimit;
-> - or set the the stack size of the created threads, but in this case=20
-> the main thread will have an 8 Megabytes stack.
->=20
-> In order to set the stack size of a thread, use=20
-> pthread_attr_setstacksize if using the POSIX skin or the stksize=20
-> parameter of rt_task_create if using the native skin.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB6C7C71C52841FA63A7494BD
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-If I set the stacksize generally via ulimit -s and additionally via the
-pthread_attr_setstacksize() how is the precedence of one of these calls
-over the other ? Does pthread_attr_setstacksize() "overwrite" the stack
-size limitation of ulimit -s ?
+Hi,
 
-Daniel.
+this is a nightly hack to evaluate some possibilities for a binary
+Xenomai release:
+
+i586 rpm packages of Xenomai for OpenSuSE 10.1!
+
+	http://www.rts.uni-hannover.de/rtaddon/rpms/
+
+Though the packages already claim to be Xenomai 2.3, they are not newer
+than our latest release candidate 2.
+
+
+The kernel package is actually based on SuSE's original latest 2.6.16
+kernel, which was fairly trivial work. Additionally, that kernel
+contains the software-suspend-enable patch I once posted for I-pipe
+(still works fine on my Thinkpad).
+
+The user-space packages are split up like this:
+ - core package with libs, tools, testsuite, and man-pages
+ - devel package with headers and static linking objects
+ - doc package with doxygen HTML stuff
+
+The kernel was been successfully tested, the user packages not. Err,
+I mean I haven't installed them on my notebook as they would have messed
+up my Xenomai installation.
+
+
+So I'm seeking now for testers - and enthusiasts interested in driving
+this idea further. I'm not able to set up a regular packaging service on
+my own, but help on integration work can be provided. There is no black
+magic behind building such packages, it just takes its time to compile,
+test, adjust, recompile, test, ...
+
+We have now a base to start from, but there are still things that could
+be improved (besides tracking the releases regularly):
+ - SMP kernel builds
+ - Vanilla kernel spec file
+ - Target directory for the testsuite (/usr/testsuite is not that
+   elegant right now)
+
+
+I think such pre-built packages can be quite helpful for users who want
+to start over with Xenomai quickly. And they can also be useful for us
+developers in order to offer users a reference platform when hunting
+(i386 or arch-independent) issues in Xenomai.
+
+Jan
+
+
+--------------enigB6C7C71C52841FA63A7494BD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFZVWiniDOoMHTA+kRAsYiAJ9iEhEAZLpbrPl6dIBgOEQ7EK1kuwCfdjlo
+SA9XB/d7/yJRzya6eMPFjFI=
+=h6C5
+-----END PGP SIGNATURE-----
+
+--------------enigB6C7C71C52841FA63A7494BD--
 
