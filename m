@@ -1,13 +1,14 @@
-Message-ID: <4566C5AF.7030107@domain.hid>
-Date: Fri, 24 Nov 2006 11:13:03 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4567033F.1090206@domain.hid>
+Date: Fri, 24 Nov 2006 15:35:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
-	architecture.
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>
-In-Reply-To: <20061124105346.e442448d.benjamin.zores@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <4566F619.9060403@domain.hid>
+In-Reply-To: <4566F619.9060403@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig96F395B3BB28420010B63981"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: [Xenomai-help] RT-Socket-CAN update, please read
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,46 +18,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Benjamin Zores <benjamin.zores@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Benjamin Zores wrote:
-> Hi,
-> 
-> I've downloaded latest Adeos/Ipipe patch for PPC and unfortunately this
-> latest doesn't (yet) support the ARCH=powerpc architecture from kernel
-> but only the PPC one.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig96F395B3BB28420010B63981
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes, the PowerPC tree is not yet supported.
+Hi Wolfgang,
 
-> I've tried porting the changes to support the PPC_MERGE and be able to
-> still use Xenomai on 2.6.18 with ARCH=powerpc.
+some more comments after looking at code and running a compiler:
 
-Nice.
+=2E..
+> 	* ksrc/drivers/can/rtcan_raw.c,
+> 	ksrc/drivers/can/sja1000/rtcan_sja1000.c,
+> 	ksrc/drivers/can/mscan/rtcan_mscan.c: timestamps are now read and
+> 	copied in rtcan_recv() and rtcan_tx_loopbcak().
 
-> Attached is a patch that has to be applied after regular adeos-2.6.18-ppc
-> patch to extends supports for PowerPC.
-> Please consider it for review only right now as it might not yet compiles to the
-> end (i'm facing problems with includes inter-race which required me to change
-> the radix-tree.h header file which is something i don't want to).
+=2E..thus multiple times in the same IRQ context if there are multiple
+packets pending. Do we gain enough from the new design that helps to
+compensate the drawback (considering slow rtdm_clock_read()
+implementations)? Moreover, we may see a feature one day that the RTDM
+layer will provide you timestamps for an IRQ event (e.g. when the
+handler will be running at higher latency as a thread).
 
-You might have realized my hack to get ride of radix-tree.h for the ppc 
-tree.
+=2E..
+>=20
+> 	* ksrc/drivers/can/mscan/Kconfig, ksrc/drivers/can/sja1000/Kconfig,
+> 	ksrc/drivers/can/Kconfig: add more help for kernel parameters.
 
-> I also have problems booting my latest kernel with this patch on
-> (but booting regular 2.6.18 in merged PowerPC architecture already is a hassle atm)
-> and I'd like you to help me know whether it cames from my patch's content or not.
+Suggestion: N x "depends on XYZ" =3D> 1 x "if XZY !=3D n ... endif"
 
-What defconfig do you use? Unfortunately I do not have a board by hand 
-supported by the PowerPC tree.
+=2E..
+> 	* ksrc/drivers/can/sja1000/rtcan_sja1000.c,
+> 	ksrc/drivers/can/sja1000/rtcan_isa.c,
+> 	ksrc/drivers/can/sja1000/rtcan_mem.c,
+> 	ksrc/drivers/can/sja1000/rtcan_peak_pci.c,
+> 	ksrc/drivers/can/sja1000/rtcan_peak_dng.c: Remove rtcan_dev_free()
+> 	from rtcan_sja1000_unregister() to allow proper cleanup after the
+> 	device has been unregistered.
 
-> FYI, I've tried to port all Adeos architecture dependant parts but i only focused
-> on PPC32 (PPC64 support might be in but i won't test on it). I'm also trying to boot an MPC8349 chip but i don't think I'll have to address anything with it as it used to work with Xenomai on 2.6.14.
-> 
-> Thanks for the review,
+[2.4.33 build for x86]
+rtcan_peak_dng.c: In function `rtcan_peak_dng_exit_one':
+rtcan_peak_dng.c:315: warning: implicit declaration of function
+`rtcan_free_dev'
 
-I will have a look a.s.s.p.
+[Not related to this change]
+In order to use the parport dongle also with recent PnP ports (e.g. in
+notebooks), you may want to have a look at the code I added to irqbench
+for this purpose:
 
-Wolfgang.
+http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/testing/ir=
+qbench.c?v=3DSVN-trunk#496
 
+The background is that once you unload the parport module, the port will
+be powered off.
+
+=2E..
+> 	* src/drivers/Makefile, ksrc/drivers/can/*, scripts/Modules.frag,
+> 	src/utils/can/README: Replace "rtcan" with "can" in macro definitions
+> 	CONFIG_XENO_DRIVERS_RTCAN_* and module names xeno_rtcan_* to comply to=
+
+> 	the common naming scheme.
+
+Hmm, wouldn't shortening some file names also make sense then?
+
+Jan
+
+
+PS: 2.4 help patching and updating work nicely for me - except for
+choices which is obviously a 2.4 bug. I saw that the kernel then
+sometimes stuffs all information into the first item. Maybe scriptable
+for Xenomai... :->
+
+
+--------------enig96F395B3BB28420010B63981
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFZwM/niDOoMHTA+kRAqgQAJwO7B1d5i9OtZ9ZCluCH7oOej2/1wCdE0+o
+tbZ+0GfiWFIqcPw7JCuhF48=
+=8Q32
+-----END PGP SIGNATURE-----
+
+--------------enig96F395B3BB28420010B63981--
 
