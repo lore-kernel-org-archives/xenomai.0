@@ -1,12 +1,14 @@
-Message-ID: <456708F7.3040406@domain.hid>
-Date: Fri, 24 Nov 2006 16:00:07 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <24272255.1164380283049.JavaMail.ngmail@domain.hid>
+Date: Fri, 24 Nov 2006 15:58:03 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Aw: Re: Aw: Re: [Xenomai-help] Strange SIGXCPU signal at
+In-Reply-To: <1164379061.4973.65.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RT-Socket-CAN update, please read
-References: <4566F619.9060403@domain.hid> <4566F934.9070905@domain.hid>
-In-Reply-To: <4566F934.9070905@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <1164379061.4973.65.camel@domain.hid> <1164377274.4973.62.camel@domain.hid>
+	<29451992.1164376099993.JavaMail.ngmail@domain.hid>
+	<29192885.1164378650832.JavaMail.ngmail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,29 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Hello,
->>
->> I have just commited various modifications and improvements for
->> RT-Socket-CAN to the SVN trunk (v2.3-devel). The modification you might
->> realize sooner than later is the renaming of the RT-Socket-CAN kernel
->> modules from "xeno_rtcan_*" to "xeno_can_*" to comply with the usual
->> RTDM driver naming scheme. I have attached the full ChangeLog entry.
-> 
-> One wish for the future: if possible, please try to break up such large
-> commits into smaller pieces. They should be compilable on their own in
-> order to hunt potential issues (also with the help of users) on a more
-> fine-grained base by switching back and forth svn revisions. quilt can
-> help to manage such pieces, I'm using it even for private stuff.
+HI Philippe,=20
 
-I know, I agree, but it makes more work and testing takes more time and 
-"free" time" is rare :-(. Nevertheless, I did not change fundamental or 
-critical things.
+> > unfortunately this patch did not help.
+> > It is the same situation as before.
+> >=20
+>=20
+> Mm, ok, thanks for trying this out. Is T_WARNSW passed to
+> rt_task_create() in your case?
+No, I pass T_FPU | T_CPU(0)
 
-Wolfgang.
+Well, I have decided to restructure the application to create the tasks
+only once during lifetime (which has some other benefits as well).
+That means, that this issue hopefully will no longer hurt...
 
+Thanks a lot
+
+Mathias
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
