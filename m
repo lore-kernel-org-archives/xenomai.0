@@ -1,13 +1,14 @@
-Subject: Re: [Xenomai-help] Interrupt shield
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <E1Gke0B-0003BT-CA@mailer.emlix.com>
-References: <E1Gke0B-0003BT-CA@mailer.emlix.com>
-Content-Type: text/plain
-Date: Thu, 16 Nov 2006 22:32:34 +0100
-Message-Id: <1163712755.4980.16.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <4566F934.9070905@domain.hid>
+Date: Fri, 24 Nov 2006 14:52:52 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] RT-Socket-CAN update, please read
+References: <4566F619.9060403@domain.hid>
+In-Reply-To: <4566F619.9060403@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6A9070080570F8337D5F6678"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Thu, 2006-11-16 at 10:57 +0100, Sebastian Smolorz wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6A9070080570F8337D5F6678
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Wolfgang Grandegger wrote:
 > Hello,
-> 
-> can anybody confirm this behaviour? If I configure the I-shield into the 
-> kernel and start the latency test the RT tasks have not activated T_SHIELD 
-> although the documentation states it (and btw in rt_task_create this bit is 
-> set).
+>=20
+> I have just commited various modifications and improvements for
+> RT-Socket-CAN to the SVN trunk (v2.3-devel). The modification you might=
 
-The documentation of rt_task_create() is wrong. The default behaviour
-should be to create tasks with disabled I-shield support.
+> realize sooner than later is the renaming of the RT-Socket-CAN kernel
+> modules from "xeno_rtcan_*" to "xeno_can_*" to comply with the usual
+> RTDM driver naming scheme. I have attached the full ChangeLog entry.
 
->  If I try to set T_SHIELD inside the display task, the system hangs, a 
-> soft lockup appears and sometimes a few correct lines of the display task are 
-> printed, followed by the next lockup.
+One wish for the future: if possible, please try to break up such large
+commits into smaller pieces. They should be compilable on their own in
+order to hunt potential issues (also with the help of users) on a more
+fine-grained base by switching back and forth svn revisions. quilt can
+help to manage such pieces, I'm using it even for private stuff.
 
-Confirmed here (on x86).
-
-> 
-> Explainable?
-> 
-
-Yes. I must have screwed up something somewhere, many moons ago.
-
-> I'm testing on ARM with my S3C24xx I-pipe patch.
-> 
-
-The I-shield does not depend on any arch-specific code; it's purely
-based on a few generic Adeos services making use of the pipeline
-abstraction. Will fix.
-
-> --
-> Sebastian
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Thanks,
+Jan
 
 
+--------------enig6A9070080570F8337D5F6678
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFZvk0niDOoMHTA+kRAuIKAJ426H4A+4Kib7vMignKrSHJOVu+rACbBEMz
+XIndckk7oyQb1va03iBt77o=
+=Lb9q
+-----END PGP SIGNATURE-----
+
+--------------enig6A9070080570F8337D5F6678--
 
