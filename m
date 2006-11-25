@@ -1,15 +1,15 @@
-Message-ID: <45682250.7070403@domain.hid>
-Date: Sat, 25 Nov 2006 12:00:32 +0100
+Message-ID: <45685D6D.7010802@domain.hid>
+Date: Sat, 25 Nov 2006 16:12:45 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Limiting Xenomai tasks to one certain core in
 	a dual core system
-References: <13096879.1164184060512.JavaMail.ngmail@domain.hid>	<45640F06.5000005@domain.hid>
-	<456426A7.3030305@domain.hid>
-In-Reply-To: <456426A7.3030305@domain.hid>
+References: <13096879.1164184060512.JavaMail.ngmail@domain.hid>	<45640F06.5000005@domain.hid>	<456426A7.3030305@domain.hid>
+	<45682250.7070403@domain.hid>
+In-Reply-To: <45682250.7070403@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigA324033173BB67C7AB63BF12"
+	boundary="------------enigB9F327D1326092BE249EDE07"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -24,83 +24,80 @@ To: Philippe Gerum <rpm@xenomai.org>
 Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA324033173BB67C7AB63BF12
-Content-Type: multipart/mixed; boundary="------------040606080506050100020300"
+--------------enigB9F327D1326092BE249EDE07
+Content-Type: multipart/mixed; boundary="------------050406040907050107070100"
 
 This is a multi-part message in MIME format.
---------------040606080506050100020300
+--------------050406040907050107070100
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Jan Kiszka wrote:
-> Jan Kiszka wrote:
->> M. Koehrer wrote:
->>> Is there a possibility to mask the CPUs to be used globally?
->>> This could also avoid to pass the CPU number with each rt_task_create=
-() call.
->> Well, that would actually be an additional way. Yeah, maybe some globa=
-l
->> CPU mask that controls the affinity on future thread creation. We coul=
-d
->> export it via /proc so that you can set it right before starting a
->> specific group of applications and drivers.
+> This is version 2 of my patch, consequently applying the global mask
+> idea also on IRQ affinity. I think this simple mechanism can solve quit=
+e
+> a few basic SMP setup issue by forcing all user threads, driver threads=
+,
+> and IRQs that are created/attached during a certain period to a specifi=
+c
+> CPU set.
 >=20
-> Some food for thoughts:
+> That's the theory. In practice, things look not that clear ATM. I
+> noticed some oddity on a 4-way qemu box running the latency test and
+> hacked the attached enhancement for /proc/xenomai/sched. This is what I=
+
+> get on that box:
 >=20
-> Here is an experimental implementation of such a global mask. Seems to
-> work, at least I was able to prevent any task creation on a UP box by
-> setting the mask to 0.
-
-Even more brain exercises:
-
-This is version 2 of my patch, consequently applying the global mask
-idea also on IRQ affinity. I think this simple mechanism can solve quite
-a few basic SMP setup issue by forcing all user threads, driver threads,
-and IRQs that are created/attached during a certain period to a specific
-CPU set.
-
-That's the theory. In practice, things look not that clear ATM. I
-noticed some oddity on a 4-way qemu box running the latency test and
-hacked the attached enhancement for /proc/xenomai/sched. This is what I
-get on that box:
-
-> root@domain.hid :/root# cat /proc/xenomai/sched=20
-> CPU  AFFINITY PID    PRI      PERIOD   TIMEOUT    STAT       NAME
->   0  00000001 0       -1      0        0          R          ROOT/0
->   1  00000002 0       -1      0        0          R          ROOT/1
->   2  00000004 0       -1      0        0          R          ROOT/2
->   3  00000008 0       -1      0        0          R          ROOT/3
->   0  0000000c 917      0      0        0          W          display-91=
-6
->   2  0000000c 918     99      5000000  1          D          sampling-9=
+>> root@domain.hid :/root# cat /proc/xenomai/sched=20
+>> CPU  AFFINITY PID    PRI      PERIOD   TIMEOUT    STAT       NAME
+>>   0  00000001 0       -1      0        0          R          ROOT/0
+>>   1  00000002 0       -1      0        0          R          ROOT/1
+>>   2  00000004 0       -1      0        0          R          ROOT/2
+>>   3  00000008 0       -1      0        0          R          ROOT/3
+>>   0  0000000c 917      0      0        0          W          display-9=
 16
-> root@domain.hid :/root# cat /proc/xenomai/affinity=20
-> 0x0000000c
+>>   2  0000000c 918     99      5000000  1          D          sampling-=
+916
+>> root@domain.hid :/root# cat /proc/xenomai/affinity=20
+>> 0x0000000c
+>=20
 
-Philippe, anyone else: This scheduling of display-916 is not like as it
-should be, is it?
+[I should really stop believing heavy issues can be solved with
+light-weight patches...]
+
+OK, after reading a bit more in what I was hacking on, I'm starting to
+understand the CPU selection mechanisms of shadow threads. Here comes
+version 3 of the patch. Now it actually forces all threads to the
+desired CPUs.
+
+The reason why I failed with previous approaches could even be a SMP bug
+of the original code. The Linux affinity of a shadow thread was only set
+if no u_completion has been passed to xnshadow_map - which affected
+native threads e.g. So I reordered the code, and it works.
+
+I also changed the policy of /proc/xenoami/affinity. It will now only
+override the mapping if the user didn't provide an explicit mask. I
+think this provides more flexibility.
+
+Comment?
 
 Jan
 
-
-PS: /proc output of IRQ affinities would be nice as well, but we are
-lacking the require abstraction by ipipe ATM, something to read out the
-currently set affinity.
-
---------------040606080506050100020300
+--------------050406040907050107070100
 Content-Type: text/plain;
- name="global-cpu-affinity-v2.patch"
+ name="global-cpu-affinity-v3.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="global-cpu-affinity-v2.patch"
+ filename="global-cpu-affinity-v3.patch"
 
 ---
  include/nucleus/pod.h |    2 +
  ksrc/nucleus/intr.c   |    3 ++
  ksrc/nucleus/module.c |   57 +++++++++++++++++++++++++++++++++++++++++++=
 +++++++
- ksrc/nucleus/pod.c    |    3 ++
- 4 files changed, 65 insertions(+)
+ ksrc/nucleus/pod.c    |    4 ++-
+ ksrc/nucleus/shadow.c |   15 +++++--------
+ 5 files changed, 71 insertions(+), 10 deletions(-)
 
 Index: xenomai/include/nucleus/pod.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -232,76 +229,52 @@ Index: xenomai/ksrc/nucleus/pod.c
  const char *xnpod_fatal_helper(const char *format, ...)
  {
  	const unsigned nr_cpus =3D xnarch_num_online_cpus();
-@@ -915,6 +917,7 @@ int xnpod_start_thread(xnthread_t *threa
+@@ -910,7 +912,7 @@ int xnpod_start_thread(xnthread_t *threa
+ 		return -EBUSY;
+=20
+ 	if (xnarch_cpus_empty(affinity))
+-		affinity =3D XNARCH_CPU_MASK_ALL;
++		affinity =3D nkaffinity;
+=20
  	xnlock_get_irqsave(&nklock, s);
 =20
- 	thread->affinity =3D xnarch_cpu_online_map;
-+	xnarch_cpus_and(thread->affinity, nkaffinity, thread->affinity);
- 	xnarch_cpus_and(thread->affinity, affinity, thread->affinity);
-=20
- 	if (xnarch_cpus_empty(thread->affinity)) {
-
---------------040606080506050100020300
-Content-Type: text/plain;
- name="print-thread-affinity.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="print-thread-affinity.patch"
-
----
- ksrc/nucleus/module.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-Index: xenomai/ksrc/nucleus/module.c
+Index: xenomai/ksrc/nucleus/shadow.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/module.c
-+++ xenomai/ksrc/nucleus/module.c
-@@ -103,6 +103,7 @@ struct sched_seq_iterator {
- 		xnticks_t period;
- 		xnticks_t timeout;
- 		xnflags_t status;
-+		xnarch_cpumask_t affinity;
- 	} sched_info[1];
- };
+--- xenomai.orig/ksrc/nucleus/shadow.c
++++ xenomai/ksrc/nucleus/shadow.c
+@@ -853,20 +853,17 @@ int xnshadow_map(xnthread_t *thread, xnc
+ 	xnshadow_thrptd(current) =3D thread;
+ 	xnpod_suspend_thread(thread, XNRELAX, XN_INFINITE, NULL);
 =20
-@@ -145,8 +146,9 @@ static int sched_seq_show(struct seq_fil
- 	char sbuf[64], pbuf[16];
++	affinity =3D thread->affinity;
++	if (xnarch_cpus_empty(affinity))
++		affinity =3D nkaffinity;
++	set_cpus_allowed(current, affinity);
++
+ 	if (u_completion) {
+ 		xnshadow_signal_completion(u_completion, 0);
+ 		return 0;
+ 	}
 =20
- 	if (v =3D=3D SEQ_START_TOKEN)
--		seq_printf(seq, "%-3s  %-6s %-8s %-8s %-10s %-10s %s\n",
--			   "CPU", "PID", "PRI", "PERIOD", "TIMEOUT", "STAT", "NAME");
-+		seq_printf(seq, "%-3s  %-8s %-6s %-8s %-8s %-10s %-10s %s\n",
-+			   "CPU", "AFFINITY", "PID", "PRI", "PERIOD", "TIMEOUT",
-+			   "STAT", "NAME");
- 	else {
- 		struct sched_seq_info *p =3D (struct sched_seq_info *)v;
-=20
-@@ -156,8 +158,9 @@ static int sched_seq_show(struct seq_fil
- 		else
- 			snprintf(pbuf, sizeof(pbuf), "%3d", p->cprio);
-=20
--		seq_printf(seq, "%3u  %-6d %-8s %-8Lu %-10Lu %-10s %s\n",
-+		seq_printf(seq, "%3u  %08x %-6d %-8s %-8Lu %-10Lu %-10s %s\n",
- 			   p->cpu,
-+			   p->affinity,
- 			   p->pid,
- 			   pbuf,
- 			   p->period,
-@@ -237,6 +240,7 @@ static int sched_seq_open(struct inode *
- 		iter->sched_info[n].period =3D xnthread_get_period(thread);
- 		iter->sched_info[n].timeout =3D xnthread_get_timeout(thread, iter->sta=
-rt_time);
- 		iter->sched_info[n].status =3D thread->status;
-+		iter->sched_info[n].affinity =3D thread->affinity;
-=20
- 		holder =3D nextq(&nkpod->threadq, holder);
+-	/* Nobody waits for us, so we may start the shadow immediately
+-	   after having forced the CPU affinity to the current
+-	   processor. Note that we don't use smp_processor_id() to prevent
+-	   kernel debug stuff to yell at us for calling it in a preemptible
+-	   section of code. */
+-
+-	affinity =3D xnarch_cpumask_of_cpu(rthal_processor_id());
+-	set_cpus_allowed(current, affinity);
+-
++	/* Nobody waits for us, so we may start the shadow immediately. */
+ 	mode =3D thread->rrperiod !=3D XN_INFINITE ? XNRRB : 0;
+ 	xnpod_start_thread(thread, mode, 0, affinity, NULL, NULL);
 =20
 
---------------040606080506050100020300--
+--------------050406040907050107070100--
 
---------------enigA324033173BB67C7AB63BF12
+--------------enigB9F327D1326092BE249EDE07
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -310,10 +283,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFaCJQniDOoMHTA+kRAjbcAJ4+N5oekeD6wDYOa/3xneglEi1lfgCfXP//
-PC1S5g4jMNP32x/H299yBgo=
-=h7yI
+iD8DBQFFaF1tniDOoMHTA+kRAoHbAJ9/kLpQntqROvzdPCvGX7yJndND7wCdHcDo
+5/skysgDD50IO6/CRemj/Pc=
+=aMZl
 -----END PGP SIGNATURE-----
 
---------------enigA324033173BB67C7AB63BF12--
+--------------enigB9F327D1326092BE249EDE07--
 
