@@ -1,14 +1,16 @@
-Message-ID: <456D8199.5000700@domain.hid>
-Date: Wed, 29 Nov 2006 13:48:25 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid>
-In-Reply-To: <456C3EF9.30102@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig66840947D93618F38B39FFAF"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Limiting Xenomai tasks to one certain core in a
+	dual core system
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45685D6D.7010802@domain.hid>
+References: <13096879.1164184060512.JavaMail.ngmail@domain.hid>
+	<45640F06.5000005@domain.hid>	<456426A7.3030305@domain.hid>
+	<45682250.7070403@domain.hid>  <45685D6D.7010802@domain.hid>
+Content-Type: text/plain
+Date: Sat, 25 Nov 2006 19:13:55 +0100
+Message-Id: <1164478436.4973.157.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,138 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig66840947D93618F38B39FFAF
-Content-Type: multipart/mixed; boundary="------------050104090406050904010009"
+On Sat, 2006-11-25 at 16:12 +0100, Jan Kiszka wrote:
 
-This is a multi-part message in MIME format.
---------------050104090406050904010009
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+[...]
 
-Second try of this patch, now consequently basing the affinity API for
-xnshadow_map on current->cpus_allowed (affects the native skin). Just
-like the current code does, this patch restricts a shadow thread to a
-single (the first) CPU of its affinity mask.
+> OK, after reading a bit more in what I was hacking on, I'm starting to
+> understand the CPU selection mechanisms of shadow threads. Here comes
+> version 3 of the patch. Now it actually forces all threads to the
+> desired CPUs.
+> 
+> The reason why I failed with previous approaches could even be a SMP bug
+> of the original code. The Linux affinity of a shadow thread was only set
+> if no u_completion has been passed to xnshadow_map - which affected
+> native threads e.g. So I reordered the code, and it works.
+> 
 
-Jan
+The root issue is why LO_START_REQ which normally sets the affinity at
+the end of the create -> start protocol did not get a chance to run.
+Likely that the newly mapped thread was still in a runnable state when
+tested from xnshadow_start(), which might be due to a kernel preemption
+artefact.
 
---------------050104090406050904010009
-Content-Type: text/plain;
- name="rework-shadow-affinity-v2.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="rework-shadow-affinity-v2.patch"
+> I also changed the policy of /proc/xenoami/affinity. It will now only
+> override the mapping if the user didn't provide an explicit mask. I
+> think this provides more flexibility.
+> 
+> Comment?
 
----
- ksrc/nucleus/shadow.c       |   35 +++++++++++++----------------------
- ksrc/skins/native/syscall.c |    3 +++
- 2 files changed, 16 insertions(+), 22 deletions(-)
+[...]
 
-Index: xenomai/ksrc/nucleus/shadow.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/shadow.c
-+++ xenomai/ksrc/nucleus/shadow.c
-@@ -409,18 +409,6 @@ static void lostage_handler(void *cookie
- 		xnltt_log_event(xeno_ev_lohandler, reqnum, p->comm, p->pid);
-=20
- 		switch (rq->req[reqnum].type) {
--		case LO_START_REQ:
--
--#ifdef CONFIG_SMP
--			if (xnshadow_thread(p))
--				/* Set up the initial task affinity using the
--				   information passed to xnpod_start_thread(). */
--				set_cpus_allowed(p,
--						 xnshadow_thread(p)->affinity);
--#endif /* CONFIG_SMP */
--
--			goto do_wakeup;
--
- 		case LO_WAKEUP_REQ:
-=20
- #ifdef CONFIG_SMP
-@@ -443,7 +431,9 @@ static void lostage_handler(void *cookie
- 			if (!xnshadow_thread(current))
- 				xnpod_renice_root(XNPOD_ROOT_PRIO_BASE);
- #endif /* CONFIG_XENO_OPT_RPIDISABLE */
--		      do_wakeup:
-+
-+			/* fall through */
-+		case LO_START_REQ:
-=20
- #ifdef CONFIG_XENO_OPT_ISHIELD
- 			if (xnshadow_thread(p) &&
-@@ -853,22 +843,23 @@ int xnshadow_map(xnthread_t *thread, xnc
- 	xnshadow_thrptd(current) =3D thread;
- 	xnpod_suspend_thread(thread, XNRELAX, XN_INFINITE, NULL);
-=20
-+	/* Restrict affinity to a single CPU of the current set */
-+	affinity =3D xnarch_cpumask_of_cpu(
-+		xnarch_first_cpu(current->cpus_allowed));
-+	set_cpus_allowed(current, affinity);
-+
- 	if (u_completion) {
- 		xnshadow_signal_completion(u_completion, 0);
- 		return 0;
- 	}
-=20
--	/* Nobody waits for us, so we may start the shadow immediately
--	   after having forced the CPU affinity to the current
--	   processor. Note that we don't use smp_processor_id() to prevent
--	   kernel debug stuff to yell at us for calling it in a preemptible
--	   section of code. */
--
--	affinity =3D xnarch_cpumask_of_cpu(rthal_processor_id());
--	set_cpus_allowed(current, affinity);
-+	/* Nobody waits for us, so we may start the shadow immediately. */
-=20
- 	mode =3D thread->rrperiod !=3D XN_INFINITE ? XNRRB : 0;
--	xnpod_start_thread(thread, mode, 0, affinity, NULL, NULL);
-+	err =3D xnpod_start_thread(thread, mode, 0, affinity, NULL, NULL);
-+
-+	if (err)
-+		return err;
-=20
- 	err =3D xnshadow_harden();
-=20
-Index: xenomai/ksrc/skins/native/syscall.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/skins/native/syscall.c
-+++ xenomai/ksrc/skins/native/syscall.c
-@@ -168,6 +168,9 @@ static int __rt_task_create(struct task_
- 	err =3D rt_task_create(task, name, 0, prio, XNFPU | XNSHADOW | mode);
-=20
- 	if (err =3D=3D 0) {
-+		/* Apply CPU affinity */
-+		set_cpus_allowed(current, task->affinity);
-+
- 		/* Copy back the registry handle to the ph struct. */
- 		ph.opaque =3D xnthread_handle(&task->thread_base);
- 		ph.opaque2 =3D bulk.a5;	/* hidden pthread_t identifier. */
+>  	const unsigned nr_cpus = xnarch_num_online_cpus();
+> @@ -910,7 +912,7 @@ int xnpod_start_thread(xnthread_t *threa
+>  		return -EBUSY;
+>  
+>  	if (xnarch_cpus_empty(affinity))
+> -		affinity = XNARCH_CPU_MASK_ALL;
+> +		affinity = nkaffinity;
 
---------------050104090406050904010009--
+This is fairly significant API change that should be loudly documented,
+especially because its behaviour now depends on a new variable.
 
---------------enig66840947D93618F38B39FFAF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>  
+>  	xnlock_get_irqsave(&nklock, s);
+>  
+> Index: xenomai/ksrc/nucleus/shadow.c
+> ===================================================================
+> --- xenomai.orig/ksrc/nucleus/shadow.c
+> +++ xenomai/ksrc/nucleus/shadow.c
+> @@ -853,20 +853,17 @@ int xnshadow_map(xnthread_t *thread, xnc
+>  	xnshadow_thrptd(current) = thread;
+>  	xnpod_suspend_thread(thread, XNRELAX, XN_INFINITE, NULL);
+>  
+> +	affinity = thread->affinity;
+> +	if (xnarch_cpus_empty(affinity))
+> +		affinity = nkaffinity;
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+This won't work as expected. The thread->affinity info should not be
+used in the xnshadow_map() context, because it has not been set yet
+(xnshadow_map() should be seen as the equivalent to xnpod_init_thread()
+for shadow threads). This information is set by the nucleus by a call to
+xnpod_start_thread(), so one step later in the task spawn protocol.
+Luckily, it seems to be zeroed in your test, but it has not been
+initialized yet.
 
-iD8DBQFFbYGZniDOoMHTA+kRAnxTAJ4ks0K691yyM4GJQCE3hEyZhnemkQCfSGYe
-k3JB4VDGlepA/YmF3AunLTE=
-=ijBd
------END PGP SIGNATURE-----
+> +	set_cpus_allowed(current, affinity);
+> +
 
---------------enig66840947D93618F38B39FFAF--
+This should be ok to pin the newly mapped task to a CPU early on, even
+in the auto-start configuration, but that case, we should kill the now
+redundant set_cpus_allowed() from LO_START_REQ. Actually, we would be
+better of killing LO_START_REQ entirely, since it would not make sense
+anymore, compared to a regular WAKEUP request.
+
+-- 
+Philippe.
+
+
 
