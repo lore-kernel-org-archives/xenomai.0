@@ -1,83 +1,41 @@
-Message-ID: <54b161f50611010049k5c721465v5472cf50da38efde@domain.hid>
-Date: Wed, 1 Nov 2006 09:49:55 +0100
-From: "Frits de Klark" <mailing.xenomai@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_23955_17358370.1162370995871"
-Subject: [Xenomai-help] Xenomai fresh installation, problems
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Mon, 27 Nov 2006 12:54:19 +0100
+From: Benjamin Zores <benjamin.zores@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
+Message-Id: <20061127125419.3852edd9.benjamin.zores@domain.hid>
+In-Reply-To: <456ACA35.8030206@domain.hid>
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<4566C5AF.7030107@domain.hid>
+	<20061124113009.08c0a490.benjamin.zores@domain.hid>
+	<4569E699.6050003@domain.hid>
+	<20061127092143.e633cd91.benjamin.zores@domain.hid>
+	<456ACA35.8030206@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_23955_17358370.1162370995871
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Mon, 27 Nov 2006 12:21:25 +0100
+Wolfgang Grandegger <wg@domain.hid> wrote:
 
-Hello everyone,
+> > Well, I hack a bit my patch to make it compile and the kernel already booted.
+> > Though it hangs when loading the SATA driver.
+> > I have no idea why atm.
+> 
+> Problems with IRQs?
 
-yesterday I installed a machine from scratch with Linux and Xenomai. I used
-the old configurations for the kernel (and thus Xenomai).
-After following the instructions described in README.INSTALL everything
-seems to install correctly. No errors, no problems.
-But when I try to run the latency test from the testsuite, I get the
-following message:
+Probably, as when unplugging the SATA drive, the boot goes further
+but then hang at USB detection (both are handlign IRQs a lot i guess).
+Would be interesting if someone could test on other board than just mine.
 
-FATAL: Error inserting xeno_timerbench
-(/lib/modules/2.6.17-ipipe/kernel/drivers/xenomai/testing/xeno_timerbench.ko):
-Kernel does not have module support
-Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_native?)
-ERROR: Module xeno_timerbench does not exist in /proc/modules
-
-Module support IS enabled however, and the native skin as well as
-CONFIG_XENO_OPT_PERVASIVE are both enabled.
-My former installation worked without a problem.
-
-Does anyone have any idea what I'm doing wrong here?
-
-Thanks very much in advance.
-
-Best regards,
-
-Frits
-
-------=_Part_23955_17358370.1162370995871
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello everyone,<br>
-<br>
-yesterday I installed a machine from scratch with Linux and Xenomai. I
-used the old configurations for the kernel (and thus Xenomai).<br>
-After following the instructions described in README.INSTALL everything seems to install correctly. No errors, no problems.<br>
-But when I try to run the latency test from the testsuite, I get the following message:<br>
-<br>
-FATAL: Error inserting xeno_timerbench
-(/lib/modules/2.6.17-ipipe/kernel/drivers/xenomai/testing/xeno_timerbench.ko):
-Kernel does not have module support<br>
-Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.<br>
-(modprobe xeno_native?)<br>
-ERROR: Module xeno_timerbench does not exist in /proc/modules<br>
-<br>
-Module support IS enabled however, and the native skin as well as CONFIG_XENO_OPT_PERVASIVE are both enabled.<br>
-My former installation worked without a problem. <br>
-<br>
-Does anyone have any idea what I'm doing wrong here?<br>
-<br>
-Thanks very much in advance.<br>
-<br>
-Best regards,<br>
-<br>
-Frits<br>
-
-------=_Part_23955_17358370.1162370995871--
+Ben
 
