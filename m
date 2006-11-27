@@ -1,17 +1,16 @@
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <456D66F4.7050100@domain.hid>
-References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
-	<456C97B9.1000402@domain.hid> <456D4C7D.2040100@domain.hid>
-	<456D4ED4.5040405@domain.hid> <456D5399.4040901@domain.hid>
-	<456D5871.6040401@domain.hid> <456D60D7.4090202@domain.hid>
-	<456D66F4.7050100@domain.hid>
-Content-Type: text/plain
-Date: Wed, 29 Nov 2006 19:38:41 +0100
-Message-Id: <1164825521.4973.273.camel@domain.hid>
+Date: Mon, 27 Nov 2006 09:21:43 +0100
+From: Benjamin Zores <benjamin.zores@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
+Message-Id: <20061127092143.e633cd91.benjamin.zores@domain.hid>
+In-Reply-To: <4569E699.6050003@domain.hid>
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<4566C5AF.7030107@domain.hid>
+	<20061124113009.08c0a490.benjamin.zores@domain.hid>
+	<4569E699.6050003@domain.hid>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,68 +20,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2006-11-29 at 11:54 +0100, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
-> > Jan Kiszka wrote:
-> > 
-> >>Gilles Chanteperdrix wrote:
-> >>
-> >>>Jan Kiszka wrote:
-> >>>
-> >>>>OK. So you are suggesting to read out the affinity mask from task_struct
-> >>>>instead of passing it as an additional argument?
-> >>>>
-> >>>
-> >>>Unless I am wrong, it is the way it currently works.
-> >>>
-> >>
-> >>Yes, for the posix skin. But native is different due to the spilt-up
-> >>create/start and its own affinity API. And that caused problems when
-> >>applying nkaffinity.
-> >>
-> >>Nevertheless, I should try to combine the cleanup of xnshadow_map with
-> >>passing the mask ALWAYS in task_struct. Let's see how this works out,
-> >>most likely with less patching.
-> > 
-> > 
-> > sched_setaffinity is 2.6 only. So we would have to push the mask
-> > application into kernel space for the native skin anyway. Hmm.
-> > 
-> > What are posix skin users supposed to do over 2.4?
-> 
-> 
-> Right, I did not think about the 2.4 kernel, but I am not sure there are
-> many people using the 2.4 kernel on SMP machines anyway.
+On Sun, 26 Nov 2006 20:10:17 +0100
+Wolfgang Grandegger <wg@domain.hid> wrote:
 
-Ack. 2.4 backports are provided to help people who do not want to double
-jump from <some-rtos> to Xenomai _and_ from 2.4 to 2.6 in the same move
-for upgrading some embedded setup; they can move to Xenomai keeping
-their good old system software if they wish, then move to 2.6 if they
-wish so later, once the dust has settled. People interested by
-multi-cores and/or big irons of some sort should obviously go for 2.6.
+> - NR_IRQS is not defined. This is a problem with the include weirdness 
+> due to radix-tree.h, IIRC. It is set to 512 for all PowerPC archs, puh, 
+> that's overkill (but not our problem for the time being).
 
-> 
-> As for the native skin, it already allows to pass the affinity to
-> rt_task_create, using T_CPU.
-> 
-> 
-> > Upgrade to 2.6? BTW, do you plan to support pthread_attr_setaffinity_np somehow?
-> 
-> pthread_attr_setaffinity_np is implemented in kernel space, and the
-> pthread_attr_t is passed unchanged by __wrap_pthread_create to
-> __real_pthread_create. So pthread_attr_setaffinity_np should be already
-> working provided that you use a libc that supports it.
-> 
-> > 
-> > Jan
-> > 
-> 
-> 
--- 
-Philippe.
+Indeed it seemed so.
+On my private tree, i've fixed/redefined it to 512 to have it compile
+(ugly hack though).
 
+> _ipipe_grab_irq(): special IRQ numbers have changed. Check for 
+> NO_IRQ_IGNORE in the attached patch. Also the new IRQ handling needs a 
+> more detailed review (check irq.c in the powerpc tree).
+> 
+> - disarm_decr[] has disappeared. It was used to disable the programming 
+> of the decrementer in arch/ppc/kernel/time.c:timer_interrupt(). It needs 
+> an appropriate replacement in the powerpc tree. A quick, untested hack 
+> is in the attached patch.
 
+I'll try to check on that.
+
+> Hope this helps you to get a bit further (kernel booted).
+
+Well, I hack a bit my patch to make it compile and the kernel already booted.
+Though it hangs when loading the SATA driver.
+I have no idea why atm.
+
+Ben
 
