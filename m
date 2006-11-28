@@ -1,83 +1,60 @@
-Message-ID: <4551F9C5.3070803@domain.hid>
-Date: Wed, 08 Nov 2006 16:37:41 +0100
+Message-ID: <456C887D.9040008@domain.hid>
+Date: Tue, 28 Nov 2006 20:05:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] LATENCIES > 100 us or CRASH WITH X
-References: <4551F26A.8050209@domain.hid>
-In-Reply-To: <4551F26A.8050209@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <456C3EFB.7030303@domain.hid>
+In-Reply-To: <456C3EFB.7030303@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Re: [RFC][PATCH 2/2] global CPU affinity control
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jean-Luc Pamart <jlpamart@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Jean-Luc Pamart wrote:
-> Hello
+Jan Kiszka wrote:
+> This is version 4 of the /proc/xenomai/affinity feature. It has been
+> rebased on the reworked xnshadow_map code, now applying the default
+> affinity mask in a (hopefully) correct way also on shadow threads.
 > 
-> I am a newbie with Xeno. My goal for the beginning of 2007 is to launch 
-> a project for 4 french studiants : a box with Linux embedded and a usb 
-> camera. The embedded application will analyse the movies in Real time 
-> and lead a mobile machine with CAN-BUS.
-> Now i play with Xeno for my knowledge (without specific hardware) :  a 
-> little linux installed in a usb key with a little embedded distrib 
-> - vanilla kernel 2.6.16 with patch for usb [.config is joint]
-> - Xenomai 2.1.2
-
-Just to be sure that you are not fighting bugs that were already
-corrected, could you try with a more recent version ?
-
-
-> - essentially BusyBox
-> - for xenomai : only "latency" directory and libs in usr/libs
-> I have checked "SMI woraround" for the kernel.
-> In BIOS I have UNchecked  "legacy usb".
-
-Please consult the TROUBLESHOOTING file for details, but you should
-also disable the APM option and enable ACPI options except
-ACPI_PROCESSOR.
-
+> What has been said for the previous patch also applies here: test and
+> comment! Mathias, you asked for this feature, please let us know if it
+> fulfils your requirements.
+> 
+> Philippe, you were looking for documentation of this new behaviour.
+> Please let me know where you would like to see this. Surely in the
+> nucleus API, I guess. Anywhere else?
+> 
+> Jan
 > 
 > 
-> my Desktop PC (a AMD ATHLON) can boot with this little vanilla kernel and
-> 1/ a little embedded distrib of my own
+> ------------------------------------------------------------------------
+> (...)
+> @@ -909,8 +911,8 @@ int xnpod_start_thread(xnthread_t *threa
+>  	if (!testbits(thread->status, XNDORMANT))
+>  		return -EBUSY;
+>  
+> -	if (xnarch_cpus_empty(affinity))
+> -		affinity = XNARCH_CPU_MASK_ALL;
+> +	if (xnarch_cpus_equal(affinity, XNPOD_ALL_CPUS))
+> +		affinity = nkaffinity;
 
-With the version of Xenomai you are using, you should select pentium
-pro, and not AMD Athlon in the kernel configuration menu. Please do not
-enable the local APIC either, since it is buggy on some Athlons.
+Should not this be:
+	if (xnarch_cpus_empty(affinity))
+		affinity = XNARCH_CPU_MASK_ALL;
+	xnarch_cpus_and(affinity, affinity, nkaffinity);
+	if (xnarch_cpus_empty(affinity))
+		return -EINVAL;
 
-> 
-> OR
-> 
-> 2/ a complete mandrake 9.1 on a partition of a classic hard disk
-> 
-> I have 2 differents problems when I lauch this :
-> 
-> 1/ with the linux embedded directories on the usb key
-> high latency > 100 us are ok ? perhaps usb work is not compatible with RT ?
-> 
-> 
-> 2/ with the complete mandrake 9.1 :
-> it crashes X after 1 or few minutes.
-> What is the relation between X and Xenomai ?
-> Is Xenomai compatible with X ?
-
-If Xenomai crashes under X, you will not be able to see any console
-message, so, you should try in text mode first, and see if you also
-get the crash.
-
-Now about X and Xenomai, there is also an entry in TROUBLESHOOTING,
-but X-window for some hardware induces high latencies. If you are
-among the unfortunates that have such hardware, you have to use
-the option "NoAccel" in XF86Config.
+so that no thread could escape the rule imposed by nkaffinity.
 
 -- 
-                                                  Gilles Chanteperdrix
+                                                 Gilles Chanteperdrix
 
