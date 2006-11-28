@@ -1,85 +1,66 @@
-Message-ID: <45549067.1070003@domain.hid>
-Date: Fri, 10 Nov 2006 15:44:55 +0100
+Message-ID: <456C983E.70408@domain.hid>
+Date: Tue, 28 Nov 2006 21:12:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] troubles deleting tasks
-References: <45547BD3.6070500@domain.hid> <455480F1.5020504@domain.hid>
-	<4554875A.9060401@domain.hid>
-In-Reply-To: <4554875A.9060401@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig397A961AB55B34BAA464D7D6"
+Subject: Re: [Xenomai-core] Re: [RFC][PATCH 2/2] global CPU affinity control
+References: <456C3EFB.7030303@domain.hid> <456C887D.9040008@domain.hid>
+In-Reply-To: <456C887D.9040008@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philipp Keller <philipp.keller@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig397A961AB55B34BAA464D7D6
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> This is version 4 of the /proc/xenomai/affinity feature. It has been
+>> rebased on the reworked xnshadow_map code, now applying the default
+>> affinity mask in a (hopefully) correct way also on shadow threads.
+>>
+>> What has been said for the previous patch also applies here: test and
+>> comment! Mathias, you asked for this feature, please let us know if it
+>> fulfils your requirements.
+>>
+>> Philippe, you were looking for documentation of this new behaviour.
+>> Please let me know where you would like to see this. Surely in the
+>> nucleus API, I guess. Anywhere else?
+>>
+>> Jan
+>>
+>>
+>> ------------------------------------------------------------------------
+>> (...)
+>> @@ -909,8 +911,8 @@ int xnpod_start_thread(xnthread_t *threa
+>>  	if (!testbits(thread->status, XNDORMANT))
+>>  		return -EBUSY;
+>>  
+>> -	if (xnarch_cpus_empty(affinity))
+>> -		affinity = XNARCH_CPU_MASK_ALL;
+>> +	if (xnarch_cpus_equal(affinity, XNPOD_ALL_CPUS))
+>> +		affinity = nkaffinity;
+> 
+> Should not this be:
+> 	if (xnarch_cpus_empty(affinity))
+> 		affinity = XNARCH_CPU_MASK_ALL;
+> 	xnarch_cpus_and(affinity, affinity, nkaffinity);
+> 	if (xnarch_cpus_empty(affinity))
+> 		return -EINVAL;
+> 
+> so that no thread could escape the rule imposed by nkaffinity.
+> 
 
-Philipp Keller wrote:
-> Thank you Jan.
->=20
-> As to your answer:
-> That must be a different issue. Check /proc/xenomai/rtdm/open_fildes fo=
-r
-> any leftover (CAN) file descriptor. Note that rt_dev_close() can fail i=
-f
-> the descriptor is busy. And such thing can happen if you simply kill th=
-e
-> task that currently blocks on a CAN device e.g.
->=20
-> The correct ordering is therefore: close the sockets, catch the failure=
-
-> in the blocking threads, and make them self-terminate. Granted, note th=
-e
-> most comfortable situation, but I'm sure we can improve it in the futur=
-e
-> (e.g. via auto-cleanup also for RTDM file descriptors).
->=20
-> I am actually doing that quite defensively I think, as you see in the
-> code snippet:
-[...]
-
-That code looks sane (for UP systems), and you are dumping all errors so
-that I can assume a non-closed socket would have been detected.
-
-So we now need more information on your precise issues, which are still
-two as I see it: rt_task_delete(&main) (actually a non-issue as I
-explained) and the failing re-opening of the CAN device.
-
-What error codes do you get? Can you derive a simple demo program that
-exposes the error and can be analysed by us?
+Nope, that's intentional (forgot to repeat this fact, was explained
+earlier): Users can always override nkaffinity by their own mask. Only
+the "I-don't-care" XNPOD_ALL_CPUS activates this new selection mechanism.
 
 Jan
-
-
-PS: Yet another lacking reply-to-all...
-
-
---------------enig397A961AB55B34BAA464D7D6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFVJBnniDOoMHTA+kRAqleAJ0eUtLjCmdl+iGfW8nUYP+IPFvrYACfS0Z1
-1lpZQyS0WFX/vSl7P9Dgk8A=
-=vsIa
------END PGP SIGNATURE-----
-
---------------enig397A961AB55B34BAA464D7D6--
 
