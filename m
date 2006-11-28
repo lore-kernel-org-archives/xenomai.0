@@ -1,28 +1,45 @@
-Message-ID: <BAY101-F393615B841E0E80C7EBAEEE2F70@domain.hid>
-From: "Marco Rossi" <cicciobombo123@domain.hid>
-Date: Fri, 10 Nov 2006 14:11:24 +0100
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Subject: [Xenomai-help] Problem with RTDM
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <456C97B9.1000402@domain.hid>
+Date: Tue, 28 Nov 2006 21:10:33 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
+References: <456C3EF9.30102@domain.hid> <456C8961.7060906@domain.hid>
+In-Reply-To: <456C8961.7060906@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Sender: jan.kiszka@domain.hid
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-I found the problem; in the same PC there is an installation of rtai and to 
-avoid problem with dynamic library I modified the file /etc/profile adding 
-the line "export LD_LIBRARY_PATH=/usr/realtime-rtai/lib"> Deleting this line 
-all work ok.
-Thank you for support
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Picking up the earlier discussion of CPU affinity of shadow threads,
+>> this patch now opens the possibility to assign a CPU mask on
+>> xnshadow_map. It cleans up the related nucleus code and updates all
+>> callers of xnshadow_map appropriately.
+>>
+>> Be warned, it's only tested on (q)emulated SMP. Comments and test
+>> reports on real hardware are welcome.
+> 
+> It is only possible to set the affinity of a user-space thread, why
+> adding another way to do it ?
+> 
 
-_________________________________________________________________
-Usa il tuo PC come un telefono per chiamare cellulari e telefoni fissi! 
-http://imagine-msn.com/messenger/launch80/?locale=it-it&TAB=2
+I'm not yet completely understanding what you mean.
 
+So far the affinity was indirectly assigned to some xnthread by the CPU
+the caller of xnshadow_map happened to run on. Now this is done
+explicitly, thus in a more robust way (there was an undefined path in
+the old code) and without duplicating code (/wrt skins).
+
+Jan
 
