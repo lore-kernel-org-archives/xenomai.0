@@ -1,44 +1,36 @@
-Message-ID: <45533582.40808@domain.hid>
-Date: Thu, 09 Nov 2006 15:04:50 +0100
+Message-ID: <456C8961.7060906@domain.hid>
+Date: Tue, 28 Nov 2006 20:09:21 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Strange results with latency test
-References: <20061109133632.GA4205@domain.hid>
-In-Reply-To: <20061109133632.GA4205@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <456C3EF9.30102@domain.hid>
+In-Reply-To: <456C3EF9.30102@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Matthias Fechner wrote:
-> Hi,
+Jan Kiszka wrote:
+> Picking up the earlier discussion of CPU affinity of shadow threads,
+> this patch now opens the possibility to assign a CPU mask on
+> xnshadow_map. It cleans up the related nucleus code and updates all
+> callers of xnshadow_map appropriately.
 > 
-> I tested today Xenomai on my AMD64 (32-bit mode) with the latency
-> program from the testsuite and I got for lat min negative values.
-> 
-> Can my computer predict the future? :)
+> Be warned, it's only tested on (q)emulated SMP. Comments and test
+> reports on real hardware are welcome.
 
-The expiration time of a timer is usually known in advance, so, in that
-sense, your computer predicts the future.
-
-> 
-> How can I interpret these values?
-
-It means that Xenomai anticipates, that is, the timer is programmed
-to tick a bit early in order to account for the interrupt and scheduling
-latencies. In your case it is a bit too early, you can change this
-anticipation time at compilation time with the configuration constant
-CONFIG_OPT_TIMING_TIMERLAT and CONFIG_XENO_OPT_TIMING_SCHEDLAT, or 
-change it at run time by writing a new value in /proc/xenomai/latency.
+It is only possible to set the affinity of a user-space thread, why
+adding another way to do it ?
 
 -- 
-                                                  Gilles Chanteperdrix
+                                                 Gilles Chanteperdrix
 
