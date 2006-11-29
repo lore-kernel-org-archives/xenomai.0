@@ -1,9 +1,10 @@
-Message-ID: <455D674E.2020300@domain.hid>
-Date: Fri, 17 Nov 2006 08:39:58 +0100
-From: Dirk Eibach <eibach@domain.hid>
+Message-ID: <456D5075.1060905@domain.hid>
+Date: Wed, 29 Nov 2006 10:18:45 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060304070902080100000906"
-Subject: [Xenomai-help] Draft for a RTDM I2C driver
+Content-Type: multipart/mixed; boundary="------------010000080205000000060905"
+Subject: [Xenomai-help] measuring context switch primary<->secondary mode
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,351 +17,608 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------060304070902080100000906
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--------------010000080205000000060905
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
-Hello,
+Dear Xenomai Users,
 
-I have spent some time designing a RTDM I2C driver based on the linux 
-i2c driver. It's stripped down in some aspects but porting existing 
-clients and adapters should be fairly easy.
-For this draft I have ported the IBM PPC4xx driver, because that is what 
-I have here for testing.
+I want to measure the context switch times between primary and secondary
+ execution modes. Therefore I made some small modifications to the
+already present Latency-Test located in
+$(XENOMAI_ROOT)/src/testsuite/latency
 
-It's my first RTDM project, so I hope I haven't messed things up too much.
+Basically I just changed few things in the latency-Task:
 
-Any comments welcome!
+---snip---
 
-Cheers.
--- 
-Dirk Eibach <eibach@domain.hid>
-Guntermann & Drunck Systementwicklung GmbH
-F & E
-Dortmunder Str. 4a, D-57234 Wilnsdorf
-Tel.: +49 (0) 2739 8901 100, Fax.: +49 (0) 2739 8901 120
+err = rt_task_wait_period(&ov);
+before_tsc = rt_timer_tsc();
+printf("This is a teststring for entering in secondary mode!\n");
+after_tsc = rt_timer_tsc();
 
---------------060304070902080100000906
-Content-Type: application/x-gzip;
- name="rti2c.tar.gz"
-Content-Transfer-Encoding: base64
+dt = after_tsc - before_tsc;
+
+
+if (dt > maxj)
+    maxj = dt;
+if (dt < minj)
+    minj = dt;
+sumj += dt;
+
+---snap---
+
+After that I configured a kernel with CONFIG_PREEMPT and one without. In
+theory I should resolve much lower switch-times when I am running the
+kernel with CONFIG_PREEMPT, right? However, I can't prove this theory.
+The Switch-Times in the non-CONFIG_PREEMPT case are a bit lower than in
+the CONFIG_PREEMPT - Case.
+
+The complete Test-Code is attached.
+
+My System is:
+
+Linux Kernel 2.6.17
+Adeos Patch: adeos-ipipe-2.6.17-i386-1.5-00.patch
+Xenomai 2.2.4
+
+Thanks for help,
+Markus Franke
+
+---
+
+
+
+--------------010000080205000000060905
+Content-Type: text/x-csrc;
+ name="switch_primsek.c"
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="rti2c.tar.gz"
+ filename="switch_primsek.c"
 
-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
---------------060304070902080100000906--
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+#include <getopt.h>
+#include <time.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/sem.h>
+#include <rtdm/rttesting.h>
+
+RT_TASK switch_task, display_task;
+
+RT_SEM display_sem;
+
+#define ONE_BILLION  1000000000
+#define TEN_MILLION    10000000
+
+long minjitter, maxjitter, avgjitter;
+long gminjitter = TEN_MILLION, gmaxjitter = -TEN_MILLION, goverrun = 0;
+long long gavgjitter = 0;
+
+long long period_ns = 0;
+int test_duration = 0;		/* sec of testing, via -T <sec>, 0 is inf */
+int data_lines = 21;		/* data lines per header line, -l <lines> to change */
+int quiet = 0;			/* suppress printing of RTH, RTD lines when -T given */
+int benchdev_no = 0;
+int benchdev = -1;
+int freeze_max = 0;
+int priority = T_HIPRIO;
+
+time_t test_start, test_end;	/* report test duration */
+int test_loops = 0;		/* outer loop count */
+
+#define MEASURE_PERIOD ONE_BILLION
+#define SAMPLE_COUNT (MEASURE_PERIOD / period_ns)
+
+/* Warmup time : in order to avoid spurious cache effects on low-end machines. */
+#define WARMUP_TIME 1
+#define HISTOGRAM_CELLS 100
+int histogram_size = HISTOGRAM_CELLS;
+long *histogram_avg = NULL, *histogram_max = NULL, *histogram_min = NULL;
+
+int do_histogram = 0, do_stats = 0, finished = 0;
+int bucketsize = 1000;		/* default = 1000ns, -B <size> to override */
+
+static inline void add_histogram(long *histogram, long addval)
+{
+	/* bucketsize steps */
+	long inabs =
+	    rt_timer_tsc2ns(addval >= 0 ? addval : -addval) / bucketsize;
+	histogram[inabs < histogram_size ? inabs : histogram_size - 1]++;
+}
+
+void switch_primsek(void *cookie)
+{
+	int err, count, nsamples, warmup = 1;
+	RTIME expected_tsc, period_tsc, start_ticks;
+	RT_TIMER_INFO timer_info;
+
+	err = rt_timer_inquire(&timer_info);
+
+	if (err) {
+		fprintf(stderr, "switch_primsek: rt_timer_inquire, code %d\n", err);
+		return;
+	}
+
+	nsamples = ONE_BILLION / period_ns;
+	period_tsc = rt_timer_ns2tsc(period_ns);
+	/* start time: one millisecond from now. */
+	start_ticks = timer_info.date + rt_timer_ns2ticks(1000000);
+	expected_tsc = timer_info.tsc + rt_timer_ns2tsc(1000000);
+
+	err =
+	    rt_task_set_periodic(NULL, start_ticks,
+				 rt_timer_ns2ticks(period_ns));
+
+	if (err) {
+		fprintf(stderr, "switch_primsek: failed to set periodic, code %d\n",
+			err);
+		return;
+	}
+
+	for (;;) {
+		long minj = TEN_MILLION, maxj = -TEN_MILLION, dt;
+		long overrun = 0;
+		long long sumj;
+		test_loops++;
+		long before_tsc;
+		long after_tsc;
+
+		for (count = sumj = 0; count < nsamples; count++) {
+			unsigned long ov;
+
+			expected_tsc += period_tsc;
+			err = rt_task_wait_period(&ov);
+
+			before_tsc = rt_timer_tsc();
+			printf("This is a teststring for entering in secondary mode!\n");
+			after_tsc = rt_timer_tsc();
+			dt = after_tsc - before_tsc;
+
+			
+			if (dt > maxj)
+				maxj = dt;
+			if (dt < minj)
+				minj = dt;
+			sumj += dt;
+
+			if (err) {
+				if (err != -ETIMEDOUT) {
+					fprintf(stderr,
+						"switch_primsek: wait period failed, code %d\n",
+						err);
+					rt_task_delete(NULL);	/* Timer stopped. */
+				}
+
+				overrun += ov;
+				expected_tsc += period_tsc * ov;
+			}
+			
+			if (freeze_max && (dt > gmaxjitter)
+			    && !(finished || warmup)) {
+				xntrace_user_freeze(rt_timer_tsc2ns(dt), 0);
+				gmaxjitter = dt;
+			}
+
+			if (!(finished || warmup) && (do_histogram || do_stats))
+				add_histogram(histogram_avg, dt);
+		}
+
+		if (!warmup) {
+			if (!finished && (do_histogram || do_stats)) {
+				add_histogram(histogram_max, maxj);
+				add_histogram(histogram_min, minj);
+			}
+
+			minjitter = minj;
+			if (minj < gminjitter)
+				gminjitter = minj;
+
+			maxjitter = maxj;
+			if (maxj > gmaxjitter)
+				gmaxjitter = maxj;
+
+			avgjitter = sumj / nsamples;
+			gavgjitter += avgjitter;
+			goverrun += overrun;
+
+			rt_sem_v(&display_sem);
+		}
+
+		if (warmup && test_loops == WARMUP_TIME) {
+			test_loops = 0;
+			warmup = 0;
+		}
+	}
+}
+
+void display(void *cookie)
+{
+	int err, n = 0;
+	time_t start;
+	char sem_name[16];
+	
+	snprintf(sem_name, sizeof(sem_name), "dispsem-%d", getpid());
+	
+	err = rt_sem_create(&display_sem, sem_name, 0, S_FIFO);
+
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: cannot create semaphore: %s\n",
+			strerror(-err));
+		return;
+
+	} 
+
+	time(&start);
+
+	if (WARMUP_TIME)
+		printf("warming up...\n");
+
+	if (quiet)
+		printf("running quietly for %d seconds\n",
+			test_duration);
+
+	for (;;) {
+		long minj, gminj, maxj, gmaxj, avgj;
+
+		err = rt_sem_p(&display_sem, TM_INFINITE);
+		if (err) {
+			if (err != -EIDRM)
+				fprintf(stderr,
+					"switch_primsek: failed to pend on semaphore, code %d\n",
+					err);
+
+			return;
+		}
+
+		/* convert jitters to nanoseconds. */
+		minj = rt_timer_tsc2ns(minjitter);
+		gminj = rt_timer_tsc2ns(gminjitter);
+		avgj = rt_timer_tsc2ns(avgjitter);
+		maxj = rt_timer_tsc2ns(maxjitter);
+		gmaxj = rt_timer_tsc2ns(gmaxjitter);
+
+		if (!quiet) {
+			if (data_lines && (n++ % data_lines) == 0) {
+				time_t now, dt;
+				time(&now);
+				dt = now - start - WARMUP_TIME;
+				printf
+				    ("RTT|  %.2ld:%.2ld:%.2ld  (%s, %Ld us period, "
+				     "priority %d)\n", dt / 3600,
+				     (dt / 60) % 60, dt % 60,
+				     "User Mode",
+				     period_ns / 1000, priority);
+				printf("RTH|%12s|%12s|%12s|%8s|%12s|%12s\n",
+				       "-----lat min", "-----lat avg",
+				       "-----lat max", "-overrun",
+				       "----lat best", "---lat worst");
+			}
+
+			printf("RTD|%12.3f|%12.3f|%12.3f|%8ld|%12.3f|%12.3f\n",
+			       (double)minj / 1000,
+			       (double)avgj / 1000,
+			       (double)maxj / 1000,
+			       goverrun,
+			       (double)gminj / 1000, (double)gmaxj / 1000);
+		}
+	}
+}
+
+double dump_histogram(long *histogram, char *kind)
+{
+	int n, total_hits = 0;
+	double avg = 0;		/* used to sum hits 1st */
+
+	if (do_histogram)
+		printf("---|--param|----range-|--samples\n");
+
+	for (n = 0; n < histogram_size; n++) {
+		long hits = histogram[n];
+
+		if (hits) {
+			total_hits += hits;
+			avg += n * hits;
+			if (do_histogram)
+				printf("HSD|    %s| %3d -%3d | %8ld\n",
+				       kind, n, n + 1, hits);
+		}
+	}
+
+	avg /= total_hits;	/* compute avg, reuse variable */
+
+	return avg;
+}
+
+void dump_stats(long *histogram, char *kind, double avg)
+{
+	int n, total_hits = 0;
+	double variance = 0;
+
+	for (n = 0; n < histogram_size; n++) {
+		long hits = histogram[n];
+
+		if (hits) {
+			total_hits += hits;
+			variance += hits * (n - avg) * (n - avg);
+		}
+	}
+
+	/* compute std-deviation (unbiased form) */
+	variance /= total_hits - 1;
+	variance = sqrt(variance);
+
+	printf("HSS|    %s| %9d| %10.3f| %10.3f\n",
+	       kind, total_hits, avg, variance);
+}
+
+void dump_hist_stats(void)
+{
+	double minavg, maxavg, avgavg;
+
+	/* max is last, where its visible w/o scrolling */
+	minavg = dump_histogram(histogram_min, "min");
+	avgavg = dump_histogram(histogram_avg, "avg");
+	maxavg = dump_histogram(histogram_max, "max");
+
+	printf("HSH|--param|--samples-|--average--|---stddev--\n");
+
+	dump_stats(histogram_min, "min", minavg);
+	dump_stats(histogram_avg, "avg", avgavg);
+	dump_stats(histogram_max, "max", maxavg);
+}
+
+void cleanup(void)
+{
+	time_t actual_duration;
+	long gmaxj, gminj, gavgj;
+
+	rt_sem_delete(&display_sem);
+
+	gavgjitter /= (test_loops > 1 ? test_loops : 2) - 1;
+
+	gminj = rt_timer_tsc2ns(gminjitter);
+	gmaxj = rt_timer_tsc2ns(gmaxjitter);
+	gavgj = rt_timer_tsc2ns(gavgjitter);
+
+	if (do_histogram || do_stats)
+		dump_hist_stats();
+
+	time(&test_end);
+	actual_duration = test_end - test_start - WARMUP_TIME;
+	if (!test_duration)
+		test_duration = actual_duration;
+
+	printf
+	    ("---|------------|------------|------------|--------|-------------------------\n"
+	     "RTS|%12.3f|%12.3f|%12.3f|%8ld|    %.2ld:%.2ld:%.2ld/%.2d:%.2d:%.2d\n",
+	     (double)gminj / 1000, (double)gavgj / 1000, (double)gmaxj / 1000,
+	     goverrun, actual_duration / 3600, (actual_duration / 60) % 60,
+	     actual_duration % 60, test_duration / 3600,
+	     (test_duration / 60) % 60, test_duration % 60);
+
+	if (histogram_avg)
+		free(histogram_avg);
+	if (histogram_max)
+		free(histogram_max);
+	if (histogram_min)
+		free(histogram_min);
+
+	exit(0);
+}
+
+void sighand(int sig __attribute__ ((unused)))
+{
+        if (sig == SIGXCPU)
+                printf("---!! uh oh, switched to secondary mode !!--\n");
+	else
+		finished = 1;
+}
+
+int main(int argc, char **argv)
+{
+	int c, err;
+	char task_name[16];
+	int cpu = 0;
+	
+	while ((c = getopt(argc, argv, "hp:l:T:qH:B:sD:t:fc:P:")) != EOF)
+		switch (c) {
+		case 'h':
+
+			do_histogram = 1;
+			break;
+
+		case 's':
+
+			do_stats = 1;
+			break;
+
+		case 'H':
+
+			histogram_size = atoi(optarg);
+			break;
+
+		case 'B':
+
+			bucketsize = atoi(optarg);
+			break;
+
+		case 'p':
+
+			period_ns = atoi(optarg) * 1000LL;
+			break;
+
+		case 'l':
+
+			data_lines = atoi(optarg);
+			break;
+
+		case 'T':
+
+			test_duration = atoi(optarg);
+			alarm(test_duration + WARMUP_TIME);
+			break;
+
+		case 'q':
+
+			quiet = 1;
+			break;
+
+		case 'D':
+
+			benchdev_no = atoi(optarg);
+			break;
+
+		case 't':
+
+			break;
+
+		case 'f':
+
+			freeze_max = 1;
+			break;
+
+		case 'c':
+			cpu = T_CPU(atoi(optarg));
+			break;
+
+		case 'P':
+			priority = atoi(optarg);
+			break;
+
+		default:
+
+			fprintf(stderr, "usage: switch_primsek [options]\n"
+				"  [-h]                         # print histograms of min, avg, max latencies\n"
+				"  [-s]                         # print statistics of min, avg, max latencies\n"
+				"  [-H <histogram-size>]        # default = 200, increase if your last bucket is full\n"
+				"  [-B <bucket-size>]           # default = 1000ns, decrease for more resolution\n"
+				"  [-p <period_us>]             # sampling period\n"
+				"  [-l <data-lines per header>] # default=21, 0 to supress headers\n"
+				"  [-T <test_duration_seconds>] # default=0, so ^C to end\n"
+				"  [-q]                         # supresses RTD, RTH lines if -T is used\n"
+				"  [-D <testing_device_no>]     # number of testing device, default=0\n"
+				"  [-t <test_mode>]             # 0=user task (default), 1=kernel task, 2=timer IRQ\n"
+				"  [-f]                         # freeze trace for each new max latency\n"
+				"  [-c <cpu>]                   # pin measuring task down to given CPU\n"
+				"  [-P <priority>]              # task priority (test mode 0 and 1 only)\n");
+			exit(2);
+		}
+
+	time(&test_start);
+
+	histogram_avg = calloc(histogram_size, sizeof(long));
+	histogram_max = calloc(histogram_size, sizeof(long));
+	histogram_min = calloc(histogram_size, sizeof(long));
+
+	if (!(histogram_avg && histogram_max && histogram_min))
+		cleanup();
+
+	if (period_ns == 0)
+		//period_ns = 1000000000LL;	/* ns */
+		period_ns = 1000000LL;	/* ns */
+
+	if (priority <= T_LOPRIO)
+		priority = T_LOPRIO + 1;
+	else if (priority > T_HIPRIO)
+		priority = T_HIPRIO;
+
+	signal(SIGINT, sighand);
+	signal(SIGTERM, sighand);
+	signal(SIGHUP, sighand);
+	signal(SIGALRM, sighand);
+
+	setlinebuf(stdout);
+
+	printf("== Sampling period: %Ld us\n"
+	       "== All results in microseconds\n",
+	       period_ns / 1000);
+
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+
+	err = rt_timer_set_mode(TM_ONESHOT);	/* Force aperiodic timing. */
+	
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: failed to start timer, code %d\n",
+			err);
+		return 0;
+	}
+	
+	snprintf(task_name, sizeof(task_name), "display-%d", getpid());
+	err = rt_task_create(&display_task, task_name, 0, 0, T_FPU);
+
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: failed to create display task, code %d\n",
+			err);
+		return 0;
+	}
+
+	err = rt_task_start(&display_task, &display, NULL);
+
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: failed to start display task, code %d\n",
+			err);
+		return 0;
+	}
+
+	snprintf(task_name, sizeof(task_name), "sampling-%d", getpid());
+	err =
+	    rt_task_create(&switch_task, task_name, 0, priority,
+		   T_FPU | cpu);
+
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: failed to create switch_primsek task, code %d\n",
+			err);
+		return 0;
+	}
+
+	err = rt_task_start(&switch_task, &switch_primsek, NULL);
+
+	if (err) {
+		fprintf(stderr,
+			"switch_primsek: failed to start switch_primsek task, code %d\n",
+			err);
+		return 0;
+	}
+
+	while (!finished)
+		pause();
+
+	cleanup();
+
+	return 0;
+}
 
 
+--------------010000080205000000060905
+Content-Type: text/x-vcard; charset=utf-8;
+ name="Markus.Franke.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="Markus.Franke.vcf"
 
+begin:vcard
+fn:Markus Franke
+n:Franke;Markus
+adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
+email;internet:Markus.Franke@domain.hid
+x-mozilla-html:FALSE
+url:http://www.tu-chemnitz.de/~franm
+version:2.1
+end:vcard
+
+
+--------------010000080205000000060905--
 
