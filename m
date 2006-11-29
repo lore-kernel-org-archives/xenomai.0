@@ -1,16 +1,14 @@
-Message-ID: <456D60D7.4090202@domain.hid>
-Date: Wed, 29 Nov 2006 11:28:39 +0100
+Message-ID: <456D6164.4090400@domain.hid>
+Date: Wed, 29 Nov 2006 11:31:00 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 1/2] rework shadow CPU affinity
-References: <456C3EF9.30102@domain.hid>
-	<456C8961.7060906@domain.hid>	<456C97B9.1000402@domain.hid>
-	<456D4C7D.2040100@domain.hid>	<456D4ED4.5040405@domain.hid>
-	<456D5399.4040901@domain.hid> <456D5871.6040401@domain.hid>
-In-Reply-To: <456D5871.6040401@domain.hid>
+Subject: Re: [Xenomai-core] Re: [RFC][PATCH 2/2] global CPU affinity control
+References: <456C3EFB.7030303@domain.hid> <456C887D.9040008@domain.hid>
+	<456C983E.70408@domain.hid> <456D5EE7.80507@domain.hid>
+In-Reply-To: <456D5EE7.80507@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1D455AE1AA284E6538680BF8"
+	boundary="------------enig4286849EBFFF8C6BE813DE03"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -25,38 +23,31 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1D455AE1AA284E6538680BF8
+--------------enig4286849EBFFF8C6BE813DE03
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> OK. So you are suggesting to read out the affinity mask from task_str=
-uct
->>> instead of passing it as an additional argument?
->>>
->> Unless I am wrong, it is the way it currently works.
->>
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Nope, that's intentional (forgot to repeat this fact, was explained
+>> earlier): Users can always override nkaffinity by their own mask. Only=
+
+>> the "I-don't-care" XNPOD_ALL_CPUS activates this new selection mechani=
+sm.
 >=20
-> Yes, for the posix skin. But native is different due to the spilt-up
-> create/start and its own affinity API. And that caused problems when
-> applying nkaffinity.
+> Ok. But there is still something wrong: if the affinity is empty, it
+> will remain empty whereas it was replaced by XNARCH_CPU_MASK_ALL in the=
+
+> current version.
 >=20
-> Nevertheless, I should try to combine the cleanup of xnshadow_map with
-> passing the mask ALWAYS in task_struct. Let's see how this works out,
-> most likely with less patching.
 
-sched_setaffinity is 2.6 only. So we would have to push the mask
-application into kernel space for the native skin anyway. Hmm.
-
-What are posix skin users supposed to do over 2.4? Upgrade to 2.6? BTW,
-do you plan to support pthread_attr_setaffinity_np somehow?
-
-Jan
+The policy is that no skin should invoke xnshadow_map or
+xnpod_start_thread with an empty mask anymore. So far only the native
+skin made use of this, and that is changed by the patch.
 
 
---------------enig1D455AE1AA284E6538680BF8
+
+--------------enig4286849EBFFF8C6BE813DE03
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -65,10 +56,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFbWDXniDOoMHTA+kRAk/aAJ90v365Q4QG9Rz2d4VNeMT2J7YkNgCfbUxB
-eFZWHOnP46waYzJVcxPH0RE=
-=I/D2
+iD8DBQFFbWFkniDOoMHTA+kRAs9bAJ4gYGad0AYyZcwI5GHoA5mZ/11vGgCfYQXT
+iT0CIh667dZZotkShwhUTu4=
+=b5ah
 -----END PGP SIGNATURE-----
 
---------------enig1D455AE1AA284E6538680BF8--
+--------------enig4286849EBFFF8C6BE813DE03--
 
