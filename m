@@ -1,14 +1,12 @@
-Message-ID: <456D81A5.7080604@domain.hid>
-Date: Wed, 29 Nov 2006 13:48:37 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] testsuite: irqloop.c, irqbench.c
-References: <456D7E32.6050609@domain.hid>
-In-Reply-To: <456D7E32.6050609@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig17133500BE129AECE9079896"
-Sender: jan.kiszka@domain.hid
+Message-Id: <s56d88c0.099@domain.hid>
+Date: Wed, 29 Nov 2006 13:19:00 +0100
+From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
+Subject: =?ISO-8859-1?Q?Re:=20R=E9p.=20:=20Re:=20[Xenomai-help]=20=20Swit?=
+	=?ISO-8859-1?Q?ch=20mode=20with=20x86?=
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,42 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig17133500BE129AECE9079896
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+>>>> "Nicolas BLANCHARD" <n.blanchard@domain.hid> 29.11 11:25 >>>
+>Hello,
+>
+>I've tested wiith Xenomai 2.3-rc2 (adeos 1.5-02)
+>and change the config : 
+>                                        - CONFIG_M586
+>                                        - disable CONFIG_INPUT_PCSPKR
+(it was on module)
+>                                        - disable prio boosting (check
+CONFIG_XENO_OPT_RPDISALBLE)
+>
+>and it seems to work better, one hour without blocking, it's a record
+>for me.
+>
+>So, i will investigate to find which modification improve my problem.
 
-Markus Franke wrote:
-> Dear Xenomai Users,
->=20
-> I want to measure interrupt latencies and I guess the two test-programs=
+After somes tests (kernel compil), it seems that prio boost is
+responsable of my
+problem. When it's disable (kernel option checked) my program run
+correctly.
 
-> mentioned in the subject are suitable for doing so. I wonder whether
-> there is any documentation about these two tests and especially how to
-> use them (hardware requirements, etc.)
+I'm not sure to understand how the prio boost work.
+Can someone explain ?
 
-Check doc/txt/irqbench.txt, report quirks or improvements back to the lis=
-t.
-
-Jan
-
-
---------------enig17133500BE129AECE9079896
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFbYGlniDOoMHTA+kRAo34AJ94q7jIZ85LbkWUDIORxcwVYamBzACfW/Uc
-Tk/LBFbbanBFL8Ho2A+cq3M=
-=b/3e
------END PGP SIGNATURE-----
-
---------------enig17133500BE129AECE9079896--
+thanks
+blanchard nicolas
 
