@@ -1,16 +1,14 @@
-Subject: Re: [Xenomai-core] Limiting Xenomai tasks to one certain core in a
-	dual core system
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45685D6D.7010802@domain.hid>
-References: <13096879.1164184060512.JavaMail.ngmail@domain.hid>
-	<45640F06.5000005@domain.hid>	<456426A7.3030305@domain.hid>
-	<45682250.7070403@domain.hid>  <45685D6D.7010802@domain.hid>
-Content-Type: text/plain
-Date: Sat, 25 Nov 2006 19:13:55 +0100
-Message-Id: <1164478436.4973.157.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <456DC054.9040803@domain.hid>
+Date: Wed, 29 Nov 2006 18:16:04 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Draft for a RTDM I2C driver, V2
+References: <456D5705.1000902@domain.hid>
+In-Reply-To: <456D5705.1000902@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB1CE6D1A25BFF5B7F59CB5B2"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,83 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "M. Koehrer" <mathias_koehrer@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Dirk Eibach <eibach@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sat, 2006-11-25 at 16:12 +0100, Jan Kiszka wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB1CE6D1A25BFF5B7F59CB5B2
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-[...]
+Dirk Eibach wrote:
+> Hello,
+>=20
+> I did some redesigning on my first draft.
+> - Now we have some kind of profile in include/rti2c.h.
+> - I got rid of some chunks of code that were not really needed.
+> - Linux kernel dependencies have been removed (I hope I catched all of
+> them)
 
-> OK, after reading a bit more in what I was hacking on, I'm starting to
-> understand the CPU selection mechanisms of shadow threads. Here comes
-> version 3 of the patch. Now it actually forces all threads to the
-> desired CPUs.
-> 
-> The reason why I failed with previous approaches could even be a SMP bug
-> of the original code. The Linux affinity of a shadow thread was only set
-> if no u_completion has been passed to xnshadow_map - which affected
-> native threads e.g. So I reordered the code, and it works.
-> 
+Hmm, I would rather suggest the opposite: Unless you have to deviate
+from the original Linux API (which seems to exist in kernel 2.4 as
+well), I would prefer to keep structure and constant names identical. I
+see no technically problem ATM in including the original I2C Linux
+header, both in kernel and user space.
 
-The root issue is why LO_START_REQ which normally sets the affinity at
-the end of the create -> start protocol did not get a chance to run.
-Likely that the newly mapped thread was still in a runnable state when
-tested from xnshadow_start(), which might be due to a kernel preemption
-artefact.
+Then I'm curious what /real-time/ application scenarios are behind the
+SMBus wrapping functions. Are you driving time-critical hardware via
+such a protocol? May other users do the same, or is this a special use
+case? Sorry, my knowledge about the SMBus is quite limited. The question
+for me is simply, if those helpers should become part of the official
+API specification or not.
 
-> I also changed the policy of /proc/xenoami/affinity. It will now only
-> override the mapping if the user didn't provide an explicit mask. I
-> think this provides more flexibility.
-> 
-> Comment?
+There are still some duplications in the headers /rti2c.h and
+/include/rti2c.h (I assume rti2c-api.h is just a copy of
+/include/rti2c.h without profile comments). Please avoid this.
+Everything the user needs to see should be in the profile header, and
+that can then be included by the driver header.
 
-[...]
+And I think I found a bug (you may want to try
+CONFIG_XENO_OPT_DEBUG_RTDM): rti2c_adapter_register, e.g., uses an RTDM
+mutex, but I strongly suspect it (only?) runs in Linux context. Please
+check your locking in this regard, also the other way around (non-RT
+services in RT context - we currently lack automated checking for this).
 
->  	const unsigned nr_cpus = xnarch_num_online_cpus();
-> @@ -910,7 +912,7 @@ int xnpod_start_thread(xnthread_t *threa
->  		return -EBUSY;
->  
->  	if (xnarch_cpus_empty(affinity))
-> -		affinity = XNARCH_CPU_MASK_ALL;
-> +		affinity = nkaffinity;
+Another remark while cross-reading (which means: no guarantee I found
+all issues): correct error code for wrong context is EPERM
+(rti2c_ioctl_rt, RTI2C_RDWR).
 
-This is fairly significant API change that should be loudly documented,
-especially because its behaviour now depends on a new variable.
+So far for now.
 
->  
->  	xnlock_get_irqsave(&nklock, s);
->  
-> Index: xenomai/ksrc/nucleus/shadow.c
-> ===================================================================
-> --- xenomai.orig/ksrc/nucleus/shadow.c
-> +++ xenomai/ksrc/nucleus/shadow.c
-> @@ -853,20 +853,17 @@ int xnshadow_map(xnthread_t *thread, xnc
->  	xnshadow_thrptd(current) = thread;
->  	xnpod_suspend_thread(thread, XNRELAX, XN_INFINITE, NULL);
->  
-> +	affinity = thread->affinity;
-> +	if (xnarch_cpus_empty(affinity))
-> +		affinity = nkaffinity;
-
-This won't work as expected. The thread->affinity info should not be
-used in the xnshadow_map() context, because it has not been set yet
-(xnshadow_map() should be seen as the equivalent to xnpod_init_thread()
-for shadow threads). This information is set by the nucleus by a call to
-xnpod_start_thread(), so one step later in the task spawn protocol.
-Luckily, it seems to be zeroed in your test, but it has not been
-initialized yet.
-
-> +	set_cpus_allowed(current, affinity);
-> +
-
-This should be ok to pin the newly mapped task to a CPU early on, even
-in the auto-start configuration, but that case, we should kill the now
-redundant set_cpus_allowed() from LO_START_REQ. Actually, we would be
-better of killing LO_START_REQ entirely, since it would not make sense
-anymore, compared to a regular WAKEUP request.
-
--- 
-Philippe.
+Jan
 
 
+--------------enigB1CE6D1A25BFF5B7F59CB5B2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFbcBUniDOoMHTA+kRAhW7AJwIfzWlYjnN+Q7PqdPcm7LAT4rUAwCeO0A/
+/ANfBWzL3EgMnYm5dbRWebM=
+=Qdob
+-----END PGP SIGNATURE-----
+
+--------------enigB1CE6D1A25BFF5B7F59CB5B2--
 
