@@ -1,12 +1,14 @@
-Message-Id: <s56d88c0.099@domain.hid>
-Date: Wed, 29 Nov 2006 13:19:00 +0100
-From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
-Subject: =?ISO-8859-1?Q?Re:=20R=E9p.=20:=20Re:=20[Xenomai-help]=20=20Swit?=
-	=?ISO-8859-1?Q?ch=20mode=20with=20x86?=
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Message-ID: <456D9031.30807@domain.hid>
+Date: Wed, 29 Nov 2006 14:50:41 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] tool for external jitter measurement
+References: <ac3922a00611290435j11e339a1l55743fe4e9cb43d0@domain.hid>
+In-Reply-To: <ac3922a00611290435j11e339a1l55743fe4e9cb43d0@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig731AD40408343CEB3546791F"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: Syed Amer Gilani <amg@domain.hid>
+Cc: xenomai@xenomai.org
 
->>>> "Nicolas BLANCHARD" <n.blanchard@domain.hid> 29.11 11:25 >>>
->Hello,
->
->I've tested wiith Xenomai 2.3-rc2 (adeos 1.5-02)
->and change the config : 
->                                        - CONFIG_M586
->                                        - disable CONFIG_INPUT_PCSPKR
-(it was on module)
->                                        - disable prio boosting (check
-CONFIG_XENO_OPT_RPDISALBLE)
->
->and it seems to work better, one hour without blocking, it's a record
->for me.
->
->So, i will investigate to find which modification improve my problem.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig731AD40408343CEB3546791F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-After somes tests (kernel compil), it seems that prio boost is
-responsable of my
-problem. When it's disable (kernel option checked) my program run
-correctly.
+Syed Amer Gilani wrote:
+> I wrote with my little Xenomai experience a rtdm kernel module witch
+> generates an external signal to measure it on an Oscilloscope. The
+> Result is satisfying. With no other load there is nearly no jitter.
+> With "dd if=3D/dev/zero of=3D/dev/null" and "ping -f" from an external
+> machine the jitter is +-15=B5sec.
 
-I'm not sure to understand how the prio boost work.
-Can someone explain ?
+15 us looks fairly good, maybe too good. You may also want to try the
+cache calibrator as load (see TROUBLESHOOTING for details).
 
-thanks
-blanchard nicolas
+> My Question now is if my approach is OK or is there a better way to
+> generate the signal with Xenomai which would result in better results.
+> Maybe by using hardware timer interrupt or something?
+
+We have postponed the API definition for RTDM timers until the nucleus
+timers have been reworked (scheduled for 2.4), but that service would
+probably give you even better results (no reschedule, pins will be
+toggled in IRQ context). Check drivers/testing/timerbench.c for a hack
+to achieve this already.
+
+Jan
+
+
+--------------enig731AD40408343CEB3546791F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFbZAxniDOoMHTA+kRAvfVAJ4+j48ICBVMFaGo3J/KAJeLQosVQwCfZJc6
+tLZskT5RYzCRsn5XrJOUWWo=
+=+BWY
+-----END PGP SIGNATURE-----
+
+--------------enig731AD40408343CEB3546791F--
 
