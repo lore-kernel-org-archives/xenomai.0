@@ -1,15 +1,12 @@
-Message-ID: <456D6164.4090400@domain.hid>
-Date: Wed, 29 Nov 2006 11:31:00 +0100
+Message-ID: <456D6451.3030705@domain.hid>
+Date: Wed, 29 Nov 2006 11:43:29 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [RFC][PATCH 2/2] global CPU affinity control
-References: <456C3EFB.7030303@domain.hid> <456C887D.9040008@domain.hid>
-	<456C983E.70408@domain.hid> <456D5EE7.80507@domain.hid>
-In-Reply-To: <456D5EE7.80507@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig4286849EBFFF8C6BE813DE03"
+	boundary="------------enigFB1D798B9898506EF0C2774D"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [RFC] Xenomai examples repository
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,35 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>, xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4286849EBFFF8C6BE813DE03
+--------------enigFB1D798B9898506EF0C2774D
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Nope, that's intentional (forgot to repeat this fact, was explained
->> earlier): Users can always override nkaffinity by their own mask. Only=
+Hi,
 
->> the "I-don't-care" XNPOD_ALL_CPUS activates this new selection mechani=
-sm.
->=20
-> Ok. But there is still something wrong: if the affinity is empty, it
-> will remain empty whereas it was replaced by XNARCH_CPU_MASK_ALL in the=
+we had this topic a few times before, but it's getting more and more
+urgent now: How to establish a repository for Xenomai example code?
 
-> current version.
->=20
+I think we have basically two options:
 
-The policy is that no skin should invoke xnshadow_map or
-xnpod_start_thread with an empty mask anymore. So far only the native
-skin made use of this, and that is changed by the patch.
+ A) create /examples/<skin>, including /examples/rtdm/<profile> in the
+    SVN
+
+ B) create corresponding pages in the wiki
+
+Option A) has the advantage that we could easily integrate the example
+build in the regular build process (when building SVN check-outs), track
+API changes, and keep the examples in sync that way.
+
+Option B) would be easier to maintain by non-core developers as the wiki
+is open for anyone. Both options require some review of the examples
+anyway, but B) would allow to relax the process a bit.
+
+Please comment everyone, even if your are "only" a user, but maybe
+interested in contributing example code in the future.
+
+Mahlzeit,
+Jan
 
 
-
---------------enig4286849EBFFF8C6BE813DE03
+--------------enigFB1D798B9898506EF0C2774D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -56,10 +59,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFbWFkniDOoMHTA+kRAs9bAJ4gYGad0AYyZcwI5GHoA5mZ/11vGgCfYQXT
-iT0CIh667dZZotkShwhUTu4=
-=b5ah
+iD8DBQFFbWRRniDOoMHTA+kRAmMjAJ9dJmllLEQog1DD/Bpk6NzZiTZmtwCePXtK
+x3zNIdAa81inW4fTDG8givY=
+=8dZg
 -----END PGP SIGNATURE-----
 
---------------enig4286849EBFFF8C6BE813DE03--
+--------------enigFB1D798B9898506EF0C2774D--
 
