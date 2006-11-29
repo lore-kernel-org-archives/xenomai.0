@@ -1,10 +1,12 @@
-Message-ID: <456D7E32.6050609@domain.hid>
-Date: Wed, 29 Nov 2006 13:33:54 +0100
-From: Markus Franke <Markus.Franke@domain.hid>
+Message-ID: <ac3922a00611290435j11e339a1l55743fe4e9cb43d0@domain.hid>
+Date: Wed, 29 Nov 2006 13:35:45 +0100
+From: "Syed Amer Gilani" <amg@domain.hid>
+Sender: groove.c@domain.hid
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------080605010709000906050702"
-Subject: [Xenomai-help] testsuite: irqloop.c, irqbench.c
-Reply-To: Markus.Franke@domain.hid
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Subject: [Xenomai-help] tool for external jitter measurement
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +18,56 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------080605010709000906050702
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-Dear Xenomai Users,
-
-I want to measure interrupt latencies and I guess the two test-programs
-mentioned in the subject are suitable for doing so. I wonder whether
-there is any documentation about these two tests and especially how to
-use them (hardware requirements, etc.)
-
-Thanks in advance,
-Markus Franke
-
---------------080605010709000906050702
-Content-Type: text/x-vcard; charset=utf-8;
- name="Markus.Franke.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="Markus.Franke.vcf"
-
-begin:vcard
-fn:Markus Franke
-n:Franke;Markus
-adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
-email;internet:Markus.Franke@domain.hid
-x-mozilla-html:FALSE
-url:http://www.tu-chemnitz.de/~franm
-version:2.1
-end:vcard
-
-
---------------080605010709000906050702--
+SSB3cm90ZSB3aXRoIG15IGxpdHRsZSBYZW5vbWFpIGV4cGVyaWVuY2UgYSBydGRtIGtlcm5lbCBt
+b2R1bGUgd2l0Y2gKZ2VuZXJhdGVzIGFuIGV4dGVybmFsIHNpZ25hbCB0byBtZWFzdXJlIGl0IG9u
+IGFuIE9zY2lsbG9zY29wZS4gVGhlClJlc3VsdCBpcyBzYXRpc2Z5aW5nLiBXaXRoIG5vIG90aGVy
+IGxvYWQgdGhlcmUgaXMgbmVhcmx5IG5vIGppdHRlci4KV2l0aCAiZGQgaWY9L2Rldi96ZXJvIG9m
+PS9kZXYvbnVsbCIgYW5kICJwaW5nIC1mIiBmcm9tIGFuIGV4dGVybmFsCm1hY2hpbmUgdGhlIGpp
+dHRlciBpcyArLTE1wrVzZWMuCk15IFF1ZXN0aW9uIG5vdyBpcyBpZiBteSBhcHByb2FjaCBpcyBP
+SyBvciBpcyB0aGVyZSBhIGJldHRlciB3YXkgdG8KZ2VuZXJhdGUgdGhlIHNpZ25hbCB3aXRoIFhl
+bm9tYWkgd2hpY2ggd291bGQgcmVzdWx0IGluIGJldHRlciByZXN1bHRzLgpNYXliZSBieSB1c2lu
+ZyBoYXJkd2FyZSB0aW1lciBpbnRlcnJ1cHQgb3Igc29tZXRoaW5nPwoKSSB3b3VsZCBhcHByZWNp
+YXRlIGFueSBjb21tZW50IG9uIHRoZSBmb2xsb3dpbmcgY29kZS4KCi8qCiAqIFRoaXMgcHJvZ3Jh
+bSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IKICogbW9k
+aWZ5IGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2Ug
+YXMKICogcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb247IGVpdGhlciB2
+ZXJzaW9uIDIgb2YgdGhlCiAqIExpY2Vuc2UsIG9yIChhdCB5b3VyIG9wdGlvbikgYW55IGxhdGVy
+IHZlcnNpb24uCiAqCiAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0
+aGF0IGl0IHdpbGwgYmUgdXNlZnVsLAogKiBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhv
+dXQgZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZgogKiBNRVJDSEFOVEFCSUxJVFkgb3IgRklU
+TkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuICBTZWUgdGhlIEdOVQogKiBHZW5lcmFsIFB1
+YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuCiAqCiAqIFlvdSBzaG91bGQgaGF2ZSByZWNl
+aXZlZCBhIGNvcHkgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlCiAqIGFsb25nIHdp
+dGggdGhpcyBwcm9ncmFtOyBpZiBub3QsIHdyaXRlIHRvIHRoZSBGcmVlIFNvZnR3YXJlCiAqIEZv
+dW5kYXRpb24sIEluYy4sIDU5IFRlbXBsZSBQbGFjZSAtIFN1aXRlIDMzMCwgQm9zdG9uLCBNQQog
+KiAwMjExMS0xMzA3LCBVU0EuCiAqLwoKI2luY2x1ZGUgPHJ0ZG0vcnRkbV9kcml2ZXIuaD4KCk1P
+RFVMRV9MSUNFTlNFKCJHUEwiKTsKCiNkZWZpbmUgTVBDNTJ4eF9NQkFSICAgICAgICAgICAgMHhm
+MDAwMDAwMCAgICAgIC8qIFBoeXMgYWRkcmVzcyAqLwoKLyogV2FrZVVwIEdQSU8gUmVnaXN0ZXJz
+IC0gTUJBUiArIDB4MEMwMCAqLwojZGVmaW5lIEdQSU9fV0tVUF9FTkEgICAgICAgICAgTVBDNTJ4
+eF9NQkFSICsgMHgwQzAwCiNkZWZpbmUgR1BJT19XS1VQX0RJUiAgICAgICAgICBNUEM1Mnh4X01C
+QVIgKyAweDBDMDgKI2RlZmluZSBHUElPX1dLVVBfT1VUICAgICAgICAgIE1QQzUyeHhfTUJBUiAr
+IDB4MEMwQwojZGVmaW5lIEdQSU9fV0tVUF9JTiAgICAgICAgICAgTVBDNTJ4eF9NQkFSICsgMHgw
+QzIwCgovKiBTZXQgLyBHZXQgdmFsdWUgZm9yIFJlZ2lzdGVyIHJlZyAqLwojZGVmaW5lIE1QQzUy
+eHhfUkVHKHJlZykgICAgICAgICAgICAgICAqKCh1bnNpZ25lZCBsb25nICopcmVnIC8gNCkKCi8q
+IFNldCBSZWdpc3RlciBCaXQgKi8KI2RlZmluZSBTRVRfUkVHX0JJVChyZWcsYml0KSAgIE1QQzUy
+eHhfUkVHKHJlZykgfD0gKDE8PCgzMS1iaXQpKQoKLyogUmVzZXQgUmVnaXN0ZXIgQml0ICovCiNk
+ZWZpbmUgUkVTX1JFR19CSVQocmVnLGJpdCkgICBNUEM1Mnh4X1JFRyhyZWcpICY9IH4oMTw8KDMx
+LWJpdCkpCgovKiBHZXQgUmVnaXN0ZXIgQml0ICovCiNkZWZpbmUgR0VUX1JFR19CSVQocmVnLGJp
+dCkgICBNUEM1Mnh4X1JFRyhyZWcpICYgKDE8PCgzMS1iaXQpKSA/IDE6MAoKcnRkbV90YXNrX3Qg
+c2lnbmFsX3Rhc2s7CmludCAgICAgICAgIGVuZCA9IDA7CgojZGVmaW5lIFNJR05BTF9QRVJJT0Qg
+ICAgMTAwMDAwMCAgIC8qIDEgbXMgKi8KCnZvaWQgc2V0X3BpbihpbnQgbWFzaykKewoJaWYgKG1h
+c2sgPT0gMSkKCXsKCQlTRVRfUkVHX0JJVChHUElPX1NJTlRfT1VULDcpOwoJCVNFVF9SRUdfQklU
+KEdQSU9fU0lOVF9FTkEsNyk7CgkJU0VUX1JFR19CSVQoR1BJT19TSU5UX0RJUiw3KTsKCX0KCWVs
+c2UKCXsKCQlSRVNfUkVHX0JJVChHUElPX1NJTlRfT1VULDcpOwoJCVNFVF9SRUdfQklUKEdQSU9f
+U0lOVF9FTkEsNyk7CgkJU0VUX1JFR19CSVQoR1BJT19TSU5UX0RJUiw3KTsKCX0KfQoKdm9pZCBz
+aWduYWwodm9pZCAqY29va2llKQp7CiAgICBpbnQgc3RhdGUgPSAwOwoKICAgIHdoaWxlICghZW5k
+KSB7CiAgICAgICAgcnRkbV90YXNrX3dhaXRfcGVyaW9kKCk7CiAgICAgICAgaWYgKHN0YXRlID49
+IDEpCiAgICAgICAgewogICAgICAgIAlzZXRfcGluKDEpOwogICAgICAgICAgICBzdGF0ZSA9IDA7
+CiAgICAgICAgfQogICAgICAgIGVsc2UKICAgICAgICB7CiAgICAgICAgCXNldF9waW4oMCk7CiAg
+ICAgICAgCXN0YXRlKys7CiAgICAgICAgfQogICAgfQp9CgppbnQgaW5pdF9tb2R1bGUodm9pZCkK
+ewoJcHJpbnRrKEtFUk5fSU5GTyAicGluX3NpZ25hbCBzdGFydFxuIik7CiAgICByZXR1cm4gcnRk
+bV90YXNrX2luaXQoJnNpZ25hbF90YXNrLCAic2lnbmFsIiwgc2lnbmFsLCBOVUxMLCA5OSwKU0lH
+TkFMX1BFUklPRCk7Cn0KCnZvaWQgY2xlYW51cF9tb2R1bGUodm9pZCkKewogICAgZW5kID0gMTsK
+ICAgIHJ0ZG1fdGFza19qb2luX25ydCgmc2lnbmFsX3Rhc2ssIDEwMCk7CiAgICBzZXRfcGluKDAp
+OwogICAgcHJpbnRrKEtFUk5fSU5GTyAicGluX3NpZ25hbCBzdG9wXG4iKTsKfQo=
 
