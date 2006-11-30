@@ -1,16 +1,17 @@
-From: Ulrich Schwab <schwab@domain.hid>
-Subject: Re: [Xenomai-help] measuring context switch primary<->secondary mode
-Date: Thu, 30 Nov 2006 15:30:10 +0100
-References: <456D5075.1060905@domain.hid>
-	<200611301119.01173.schwab@domain.hid>
-	<456EE120.5060003@domain.hid>
-In-Reply-To: <456EE120.5060003@domain.hid>
+Message-ID: <456EF9F8.6080409@domain.hid>
+Date: Thu, 30 Nov 2006 16:34:16 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200611301530.10283.schwab@domain.hid>
+Subject: Re: [Xenomai-help] measuring context switch primary<->secondary mode
+References: <456D5075.1060905@domain.hid>	<200611301119.01173.schwab@domain.hid>
+	<456EE120.5060003@domain.hid>
+	<456EE4EC.5050305@domain.hid>
+	<456EE9C4.6000203@domain.hid>
+In-Reply-To: <456EE9C4.6000203@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig30F605258A02D711E8BF51CA"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,51 +22,67 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Markus.Franke@domain.hid
-Cc: xenomai@xenomai.org
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Thursday 30 November 2006 14:48, Markus Franke wrote:
-> Ulrich Schwab wrote:
-> > I think that CONFIG_PREEMPT should reduce the jitter of Your measurement,
-> > most importantly the worst case switch time, for wich You need a long
-> > test run under heavy load.
-> > CONFIG_PREEMPT is there to provide more determinism, which usually has a
-> > price in performance.
-> > Realtime is about determinism not performance (or speed).
-> > Its not maximum speed but guaranteed minimum speed.
->
-> You are absolutely right. I put my system under some load (dd) and made
-> two tests. One was with CONFIG_PREEMPT and one without. The worst case
-> switch time jitter was about 30% lower in the CONFIG_PREEMPT case, so
-> your prediction was right.
->
-> > Since the probability of a preemption during the mode switch without
-> > CONFIG_PREEMPT is lower, it might take a long time until the worst case
-> > mode switch time is observed.
->
-> Sorry but I don't understand what you are meaning. Let me explain my
-> point of view. When a realtime task in the Xenomai-Domain makes a
-> linux-systemcall the task is migrated fully automatically to the
-> Linux-Domain as soon as we reach the next preemption point in the
-> Linux-Kernel. Due to the fact that preemptability of the linux-kernel
-> increase when using CONFIG_PREEMPT, the time to the next preemption
-> point should decrease, right?
-Correct.
-But I wrote:  "  without CONFIG_PREEMPT " 
-meaning: the time to the next preemption point is bigger, which might get the 
-requested system call done before the preemption is actually happening.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig30F605258A02D711E8BF51CA
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> I don't get the point of your last sentence.
+Markus Franke wrote:
+> Jan Kiszka wrote:
+>> CONFIG_PREEMPT helps here to reduce the worst case (PREEMPT_RT even
+>> more, but it currently collides with patching the kernel). On the othe=
+r
+>> hand, it increases the overhead for your Linux subsystem (check with
+>> lmbench e.g.). Still, depending on what you need, you are able to tune=
 
-Ulrich
+>> Linux'es own preemption model freely when using Xenomai and I-pipe.
+>=20
+> So at the moment it is not possible to use PREEMPT_RT-Patch and
+> Xenomai/Adeos together?
 
--- 
-====================================================
-  inmess GmbH
-  Frankfurter Str. 74
-  D - 64521 Gross-Gerau
-  Phone: +49 6152 97790
-  Fax  : +49 6152 977920
-  mail : info@domain.hid
-  web:   www.inmess.de
-====================================================
+[adding the list to CC again]
+
+If you browse the Xenomai and I-pipe code, you will find some hints that
+this once worked and Xenomai is basically prepared for it.
+
+To combine both patches today, we would have to adopt I-pipe not only to
+genirq (which is almost done for 2.6.19), but also to the full
+hrtimer+dyntick (clocksource/clockevent) infrastructure. Moreover, quite
+some time has passed since the last I-pipe/-rt combo patch, and both
+PREEMPT_RT and I-pipe changed since then. Do there might be more subtle
+issues hidden for a combination.
+
+
+Still, this is technically feasible and will come over the time when
+PREEMPT_RT continues to "leak" into mainline. The question is if using
+the result (CONFIG_IPIPE+CONFIG_PREEMPT_RT) is also what you want:
+Combining both strategies also means adding overhead of I-pipe's
+paravirtualisations and PREEMPT_RT's IRQ threading & sleeping locks.
+
+The future development, Xenomai 3, therefore aims at rebasing the
+nucleus over the -rt patch while keeping its ability to run
+alternatively over vanilla + I-pipe. Depending on your requirements -
+full system preemptibility vs. focused RT-subsystem - you will then be
+able to switch the model without application or driver rewrites.
+
+Jan
+
+
+--------------enig30F605258A02D711E8BF51CA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFbvn4niDOoMHTA+kRAoBhAJ9FMXl4UFfMbQopebZXcgeoDArGIQCfS7HY
+FB/Vuy2plKaaz3g2tsWEmik=
+=7bwt
+-----END PGP SIGNATURE-----
+
+--------------enig30F605258A02D711E8BF51CA--
 
