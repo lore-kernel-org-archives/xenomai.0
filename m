@@ -1,15 +1,14 @@
-Message-ID: <456D9082.5040409@domain.hid>
-Date: Wed, 29 Nov 2006 14:52:02 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Ulrich Schwab <schwab@domain.hid>
+Subject: Re: [Xenomai-help] measuring context switch primary<->secondary mode
+Date: Thu, 30 Nov 2006 11:19:01 +0100
+References: <456D5075.1060905@domain.hid>
+In-Reply-To: <456D5075.1060905@domain.hid>
 MIME-Version: 1.0
-Subject: Re: =?ISO-8859-15?Q?R=E9p=2E_=3A_Re=3A_=5BXenomai-help=5D_?=
-	=?ISO-8859-15?Q?_Switch_mode_with_x86?=
-References: <s56d88c0.000@domain.hid>
-In-Reply-To: <s56d88c0.000@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig569AD86E7103A6261EBA88AD"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200611301119.01173.schwab@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,69 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nicolas BLANCHARD <n.blanchard@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, Markus.Franke@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig569AD86E7103A6261EBA88AD
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Wednesday 29 November 2006 10:18, Markus Franke wrote:
+> Dear Xenomai Users,
+>
+> I want to measure the context switch times between primary and secondary
+>  execution modes. Therefore I made some small modifications to the
+> already present Latency-Test located in
+> $(XENOMAI_ROOT)/src/testsuite/latency
+>
+> Basically I just changed few things in the latency-Task:
+>
+> ---snip---
+>
+> err = rt_task_wait_period(&ov);
+> before_tsc = rt_timer_tsc();
+> printf("This is a teststring for entering in secondary mode!\n");
+> after_tsc = rt_timer_tsc();
+>
+> dt = after_tsc - before_tsc;
+>
+>
+> if (dt > maxj)
+>     maxj = dt;
+> if (dt < minj)
+>     minj = dt;
+> sumj += dt;
+>
+> ---snap---
+>
+> After that I configured a kernel with CONFIG_PREEMPT and one without. In
+> theory I should resolve much lower switch-times when I am running the
+> kernel with CONFIG_PREEMPT, right? However, I can't prove this theory.
+> The Switch-Times in the non-CONFIG_PREEMPT case are a bit lower than in
+> the CONFIG_PREEMPT - Case.
+I think that CONFIG_PREEMPT should reduce the jitter of Your measurement, most 
+importantly the worst case switch time, for wich You need a long test run 
+under heavy load.
+CONFIG_PREEMPT is there to provide more determinism, which usually has a price 
+in performance.
+Realtime is about determinism not performance (or speed).
+Its not maximum speed but guaranteed minimum speed.
 
-Nicolas BLANCHARD wrote:
->>>>> "Nicolas BLANCHARD" <n.blanchard@domain.hid> 29.11 11:25 >>>
->> Hello,
->>
->> I've tested wiith Xenomai 2.3-rc2 (adeos 1.5-02)
->> and change the config :=20
->>                                        - CONFIG_M586
->>                                        - disable CONFIG_INPUT_PCSPKR
-> (it was on module)
->>                                        - disable prio boosting (check
-> CONFIG_XENO_OPT_RPDISALBLE)
->> and it seems to work better, one hour without blocking, it's a record
->> for me.
->>
->> So, i will investigate to find which modification improve my problem.
->=20
-> After somes tests (kernel compil), it seems that prio boost is
-> responsable of my
-> problem. When it's disable (kernel option checked) my program run
-> correctly.
+Since the probability of a preemption during the mode switch without 
+CONFIG_PREEMPT is lower, it might take a long time until the worst case mode 
+switch time is observed. This probability might be very close to zero.
 
-Yeah, that's what I assumed now as well. Full output of
-/proc/xenomai/sched would be interesting now.
-
->=20
-> I'm not sure to understand how the prio boost work.
-> Can someone explain ?
-
-Any Linux service, including those requested by Xenomai threads in
-secondary mode, runs over the root thread. The root thread normally runs
-at priority -1, i.e. below all Xenomai tasks. When
-CONFIG_XENO_OPT_RPDISALBLE is *not* set and a Xenomai thread switches to
-secondary mode, Xenomai raises the root thread's prio to the level of
-that thread. This boosts Linux temporarily above any lower priority RT
-thread, aiming at accelerating the completion of the requested Linux
-service. If you do not depend on such boosting for your system design,
-switching the service off improves the mode switch performance (and
-obviously avoids a bug here we have to fix nevertheless).
-
-Jan
-
-
---------------enig569AD86E7103A6261EBA88AD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFbZCCniDOoMHTA+kRAlE8AJ9o3qX7mjDnqtkjDfnUd9tSc/RhLwCeJVZh
-Tu7Zt7bXZO5IDl3NZw0DUcw=
-=TqfF
------END PGP SIGNATURE-----
-
---------------enig569AD86E7103A6261EBA88AD--
+Ulrich
+-- 
+====================================================
+  inmess GmbH
+  Frankfurter Str. 74
+  D - 64521 Gross-Gerau
+  Phone: +49 6152 97790
+  Fax  : +49 6152 977920
+  mail : info@domain.hid
+  web:   www.inmess.de
+====================================================
 
