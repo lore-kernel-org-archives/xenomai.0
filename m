@@ -1,16 +1,17 @@
-Message-ID: <456EF3E5.7070307@domain.hid>
-Date: Thu, 30 Nov 2006 16:08:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Paul <paul_c@domain.hid>
 Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
 	architecture.
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>	<4566C5AF.7030107@domain.hid>	<20061124113009.08c0a490.benjamin.zores@domain.hid>	<4569E699.6050003@domain.hid>	<20061127092143.e633cd91.benjamin.zores@domain.hid>	<456ACA35.8030206@domain.hid>	<20061127125419.3852edd9.benjamin.zores@domain.hid>	<456AD5EB.5040901@domain.hid>	<20061130133745.272ab4b1.benjamin.zores@domain.hid>
-	<456EDA4B.3060809@domain.hid> <456EF1DA.1050102@domain.hid>
-In-Reply-To: <456EF1DA.1050102@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC41FD4D71C4DEEE425E936F0"
-Sender: jan.kiszka@domain.hid
+Date: Thu, 30 Nov 2006 18:06:51 +0000
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<20061130133745.272ab4b1.benjamin.zores@domain.hid>
+	<456EDA4B.3060809@domain.hid>
+In-Reply-To: <456EDA4B.3060809@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200611301806.51699.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,81 +21,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC41FD4D71C4DEEE425E936F0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Wolfgang Grandegger wrote:
-> Jan Kiszka wrote:
->> Benjamin Zores wrote:
->>> On Mon, 27 Nov 2006 13:11:23 +0100
->>> Wolfgang Grandegger <wg@domain.hid> wrote:
->>>
->>>> Benjamin Zores wrote:
->>>>> On Mon, 27 Nov 2006 12:21:25 +0100
->>>>> Wolfgang Grandegger <wg@domain.hid> wrote:
->>>>>
->>>>>>> Well, I hack a bit my patch to make it compile and the kernel
->>>>>>> already booted.
->>>>>>> Though it hangs when loading the SATA driver.
->>>>>>> I have no idea why atm.
->>>>>> Problems with IRQs?
->>>>> Probably, as when unplugging the SATA drive, the boot goes further
->>>>> but then hang at USB detection (both are handlign IRQs a lot i gues=
-s).
->>>>> Would be interesting if someone could test on other board than just=
-
->>>>> mine.
->>>> As I pointed out in my previous mail, the IRQ handling is not yet
->>>> correct for powerpc. Try to correct his first.
->>> The 2.6.19 having been released out, and working much better on my ca=
-rd
->>> than the vanilla 2.6.18 used to be, I'm now more kind to adapt my
->>> patch to
->>> this latest kernel.
->>>
->>> However the IRQ handling API seem to have changed a lot
->>> and i was wondering if some work on porting Adeos
->>> (x86/ppc, not yet powerpc of course) patches already have been starte=
-d
->>> by someone here ?
->>
->> I don't see that PPC is converted to genirq, that new API. And I'm not=
-
->> sure (while not being a PPC expert) if it ever will be, specifically a=
-s
->> PowerPC is already on genirq and should obsolete PPC one day, right?
->=20
-> No, or at least partially wrong. I have to check what the new, fully
-> implemented genirq does. But I realized, that the common IRQ structure
-> is used now (resulting in some name changes, w.g. ->handler ->chip).
-> Likely, PPC and PowerPC already use the new genirq.
-
-It is likely used under PPC as far it has to be: renamed structures,
-moved information. But the core issue is if the flow handling (edge,
-level, simple etc.) also moved to kernel/irq/chip.c, and that looks to
-me like only being the case for PowerPC.
-
-Jan
+To: xenomai-core <xenomai@xenomai.org>
 
 
---------------enigC41FD4D71C4DEEE425E936F0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+On Thursday 30 November 2006 13:19, Jan Kiszka wrote:
+> Philippe, I know you are very busy, but shouldn't we make a pre-release
+> available already, also to discuss further how to deal best with genirq
+> on other platforms beyond x86?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I have an x86_64 box waiting for a Xenomai port - I don't see much point in 
+hacking 2.6.17 and earlier when 2.6.19 is going to be a major change in key 
+areas.. It also looks like there is a closer integration of x86_64 and plain 
+old ix86 code in the 2.6.19 tree, so this may simplify the task of 
+maintaining a 64bit patch.
 
-iD8DBQFFbvPlniDOoMHTA+kRAsSjAJwP7phnFTmGuFKrYcXZWyLZBNi0TwCePEMq
-e+kbjdvfEqRahVbexXZmt/s=
-=svS+
------END PGP SIGNATURE-----
 
---------------enigC41FD4D71C4DEEE425E936F0--
+Regards, Paul.
+
 
