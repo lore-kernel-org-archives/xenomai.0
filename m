@@ -1,17 +1,11 @@
-Message-ID: <456EF9F8.6080409@domain.hid>
-Date: Thu, 30 Nov 2006 16:34:16 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <20061130164532.70291.qmail@domain.hid>
+Date: Thu, 30 Nov 2006 08:45:32 -0800 (PST)
+From: mani bhatti <imranbashirbhatti@domain.hid>
+In-Reply-To: <451A9C64.7040802@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] measuring context switch primary<->secondary mode
-References: <456D5075.1060905@domain.hid>	<200611301119.01173.schwab@domain.hid>
-	<456EE120.5060003@domain.hid>
-	<456EE4EC.5050305@domain.hid>
-	<456EE9C4.6000203@domain.hid>
-In-Reply-To: <456EE9C4.6000203@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig30F605258A02D711E8BF51CA"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/mixed; boundary="0-318679095-1164905132=:69610"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] porting to kernel 2.2 
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,68 +15,212 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig30F605258A02D711E8BF51CA
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+--0-318679095-1164905132=:69610
+Content-Type: multipart/alternative; boundary="0-1240062379-1164905132=:69610"
 
-Markus Franke wrote:
-> Jan Kiszka wrote:
->> CONFIG_PREEMPT helps here to reduce the worst case (PREEMPT_RT even
->> more, but it currently collides with patching the kernel). On the othe=
-r
->> hand, it increases the overhead for your Linux subsystem (check with
->> lmbench e.g.). Still, depending on what you need, you are able to tune=
-
->> Linux'es own preemption model freely when using Xenomai and I-pipe.
->=20
-> So at the moment it is not possible to use PREEMPT_RT-Patch and
-> Xenomai/Adeos together?
-
-[adding the list to CC again]
-
-If you browse the Xenomai and I-pipe code, you will find some hints that
-this once worked and Xenomai is basically prepared for it.
-
-To combine both patches today, we would have to adopt I-pipe not only to
-genirq (which is almost done for 2.6.19), but also to the full
-hrtimer+dyntick (clocksource/clockevent) infrastructure. Moreover, quite
-some time has passed since the last I-pipe/-rt combo patch, and both
-PREEMPT_RT and I-pipe changed since then. Do there might be more subtle
-issues hidden for a combination.
+--0-1240062379-1164905132=:69610
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
 
-Still, this is technically feasible and will come over the time when
-PREEMPT_RT continues to "leak" into mainline. The question is if using
-the result (CONFIG_IPIPE+CONFIG_PREEMPT_RT) is also what you want:
-Combining both strategies also means adding overhead of I-pipe's
-paravirtualisations and PREEMPT_RT's IRQ threading & sleeping locks.
 
-The future development, Xenomai 3, therefore aims at rebasing the
-nucleus over the -rt patch while keeping its ability to run
-alternatively over vanilla + I-pipe. Depending on your requirements -
-full system preemptibility vs. focused RT-subsystem - you will then be
-able to switch the model without application or driver rewrites.
+Hi all 
+Previously i was working with 2.1 version of xenomai kernel but now i have kernel  2.2 and my previous code flags me error about  rt_task_wait_period() which i have fixed to rt_task_wait_period(NULL) and also gives me warning rt_start_time is deprecated and i have removed this line because in 2.2 system timer automatically starts but still by 
+rt_task_set_periodic gives error   "system timer not stared" and my program exits due to return statement showing that peridodic mode is not set.i am attaching my code.Please figure out the problem and help me about the bug in program.Thanks all.
 
-Jan
+ 
+---------------------------------
+Cheap Talk? Check out Yahoo! Messenger's low PC-to-Phone call rates.
+--0-1240062379-1164905132=:69610
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+
+<br><br><b><i></i></b>Hi all <br>Previously i was working with 2.1 version of xenomai kernel but now i have kernel&nbsp; 2.2 and my previous code flags me error about&nbsp; rt_task_wait_period() which i have fixed to rt_task_wait_period(NULL) and also gives me warning rt_start_time is deprecated and i have removed this line because in 2.2 system timer automatically starts but still by <br>rt_task_set_periodic gives error&nbsp;&nbsp; "system timer not stared" and my program exits due to return statement showing that peridodic mode is not set.i am attaching my code.Please figure out the problem and help me about the bug in program.Thanks all.<br><p>&#32;
+<hr size=1>Cheap Talk? <a href="http://us.rd.yahoo.com/mail_us/taglines/postman8/*http://us.rd.yahoo.com/evt=39663/*http://voice.yahoo.com">Check out</a> Yahoo! Messenger's low PC-to-Phone call rates.
+--0-1240062379-1164905132=:69610--
+
+--0-318679095-1164905132=:69610
+Content-Type: text/x-csrc; name="doppel_task.c"
+Content-Description: 4248410318-doppel_task.c
+Content-Disposition: inline; filename="doppel_task.c"
+
+#include <math.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+
+#include <native/task.h>
+#include <native/queue.h>
+#include <native/intr.h>
 
 
---------------enig30F605258A02D711E8BF51CA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+#define STACK_SIZE 8192
+#define STD_PRIO1 2
+#define STD_PRIO2 1
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+RT_TASK zaehler1_task_ptr;
+RT_TASK zaehler2_task_ptr;
+int count1 = 0;
+int count2 = 0;
+int i;
+int end = 0;
 
-iD8DBQFFbvn4niDOoMHTA+kRAoBhAJ9FMXl4UFfMbQopebZXcgeoDArGIQCfS7HY
-FB/Vuy2plKaaz3g2tsWEmik=
-=7bwt
------END PGP SIGNATURE-----
+//                      --s-ms-us-ns
+RTIME task_period_ns1 =   1000000000llu;
+RTIME task_period_ns2 =  10000000000llu;
 
---------------enig30F605258A02D711E8BF51CA--
+
+void zaehler1_task(void *cookie){
+        int ret;
+        
+// ************************* Xenomai-Krempel ********************************************************************
+        ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns1));
+     switch(-ret){
+      case EINVAL:   printf("Task is not a task descriptor\n");
+                    break;
+      case EIDRM:  printf( "Task is a deleted task descriptor\n");
+                    rt_task_sleep(50000); // wait 50us
+                    break;
+      case ETIMEDOUT: printf("idate different from TM_INFINITE\n");
+                    break;
+      case EWOULDBLOCK: printf("system timer not stared\n");
+                    break;
+      case EPERM:    printf("task is null\n");
+      break;
+    }   
+     
+      if (ret) {
+                printf("error while set periodic, code %d\n",ret);
+                return;
+        }
+// ************************* Ende Xenomai-Krempel ****************************************************************
+
+
+// ********************** Beginn des wiederholt ausgefuehrten Codes **********************************************
+        while(!end){
+    /*      
+          ret = rt_task_set_mode(0, T_PRIMARY, NULL);
+                if (ret) {
+                        printf("error while rt_task_set_mode, code %d\n",ret);
+                        return;
+                }
+      */          
+             ret = rt_task_wait_period(NULL);
+                printf("T1:Start\n");
+
+                if (ret) {
+                        printf("error while rt_task_wait_period, code %d\n",ret);
+                        return;
+                }
+                count1++;
+
+                printf("T1:Ende:%d\n", count1);
+
+                fflush(NULL);
+        }
+// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
+}
+
+
+void zaehler2_task(void *cookie){
+	int ret;	
+	long ii;
+	long jj;
+	double a;
+        unsigned long overrun;
+// ************************* Xenomai-Krempel ********************************************************************
+	ret = rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_period_ns2));
+	if (ret) {
+		printf("error while set periodic, code %d\n",ret);
+		return;
+	}
+// ************************* Ende Xenomai-Krempel ****************************************************************
+
+
+// ********************** Beginn des wiederholt ausgefuehrten Codes **********************************************
+	while(!end){
+	/*	ret = rt_task_set_mode(0, T_PRIMARY, NULL);
+		if (ret) {
+			printf("error while rt_task_set_mode, code %d\n",ret);
+			return;
+		}
+	 */	
+      ret = rt_task_wait_period(NULL);
+		
+		printf("\t\tT2:Start\n");
+
+		if (ret) {
+			printf("error while rt_task_wait_period, code %d\n",ret);
+			return;
+		}
+
+                for(ii=0; ii<200; ii++) {
+		 	for(jj=0; jj<1000000; jj++) {
+				a = (double)ii * (double)jj;
+			}
+		}              
+
+                count2++;
+                printf("\t\tT2:Ende:%d\n", count2++);
+
+		fflush(NULL);
+        }
+// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
+}
+       
+
+
+// signal-handler, to ensure clean exit on Ctrl-C
+void clean_exit(int dummy) {
+	printf("cleanup\n");
+	end = 1;
+	rt_task_delete(&zaehler1_task_ptr);
+	rt_task_delete(&zaehler2_task_ptr);
+	printf("end\n");
+}
+
+int main(int argc, char *argv[]) {
+	int err, ret;
+	printf("start\n");
+	// install signal handler
+	signal(SIGTERM, clean_exit);	
+	signal(SIGINT, clean_exit);	
+	// start timer
+	//ret = rt_timer_start(TM_ONESHOT);
+/*	switch (ret) {
+		case 0:       printf("Mit dem Fahrrad nich inn ersten Wagen\n\n");
+		              break;
+		case -EBUSY:  printf("timer is running\n");
+		              break;
+		case -ENOSYS: printf("can't start timer\n");
+		              return ret;
+	}
+
+*/
+
+	/* create zaehler1_task */
+	err = rt_task_create(&zaehler1_task_ptr,"alpha",STACK_SIZE,STD_PRIO1,0);
+	/* create zaehler2_task */
+	err = rt_task_create(&zaehler2_task_ptr,"beta",STACK_SIZE,STD_PRIO2,0);
+
+	/* start zaehler1_task */
+	err = rt_task_start(&zaehler1_task_ptr,&zaehler1_task,NULL);
+
+	/* start zaehler2_task */
+	err = rt_task_start(&zaehler2_task_ptr,&zaehler2_task,NULL);
+
+	// wait for signal & return of signal handler
+	pause();
+	fflush(NULL);
+	return 0;
+}
+
+--0-318679095-1164905132=:69610--
 
