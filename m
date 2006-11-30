@@ -1,15 +1,20 @@
-Message-ID: <456ECCE8.1070706@domain.hid>
-Date: Thu, 30 Nov 2006 13:22:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] structure alignement problem in RTDM?
-References: <20061130073522.3BBF9EE753@domain.hid>
-	<456E8F94.8050600@domain.hid> <456E9BAC.3060508@domain.hid>
-In-Reply-To: <456E9BAC.3060508@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE1D97872B0642D93CEC420C2"
-Sender: jan.kiszka@domain.hid
+Date: Thu, 30 Nov 2006 13:37:45 +0100
+From: Benjamin Zores <benjamin.zores@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
+Message-Id: <20061130133745.272ab4b1.benjamin.zores@domain.hid>
+In-Reply-To: <456AD5EB.5040901@domain.hid>
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<4566C5AF.7030107@domain.hid>
+	<20061124113009.08c0a490.benjamin.zores@domain.hid>
+	<4569E699.6050003@domain.hid>
+	<20061127092143.e633cd91.benjamin.zores@domain.hid>
+	<456ACA35.8030206@domain.hid>
+	<20061127125419.3852edd9.benjamin.zores@domain.hid>
+	<456AD5EB.5040901@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,56 +24,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE1D97872B0642D93CEC420C2
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Mon, 27 Nov 2006 13:11:23 +0100
+Wolfgang Grandegger <wg@domain.hid> wrote:
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Marc Brown wrote:
->>
->>> Hi,
->>>
->>> It seems that there are still structure alignment problems in RTDM (w=
-hile running xenotest), as already=20
->>> talked about with Philippe. Compiled with a GCC 4.0.3-2 (on x86), her=
-e is the=20
->>> problem (output trace and xenomai /proc are provided herewith):
->>
->> I rather suspect that you built all testing devices into the kernel or=
+> Benjamin Zores wrote:
+> > On Mon, 27 Nov 2006 12:21:25 +0100
+> > Wolfgang Grandegger <wg@domain.hid> wrote:
+> > 
+> >>> Well, I hack a bit my patch to make it compile and the kernel already booted.
+> >>> Though it hangs when loading the SATA driver.
+> >>> I have no idea why atm.
+> >> Problems with IRQs?
+> > 
+> > Probably, as when unplugging the SATA drive, the boot goes further
+> > but then hang at USB detection (both are handlign IRQs a lot i guess).
+> > Would be interesting if someone could test on other board than just mine.
+> 
+> As I pointed out in my previous mail, the IRQ handling is not yet 
+> correct for powerpc. Try to correct his first.
 
->> loaded xeno_switchtest before xeno_timerbench so that the latency test=
+The 2.6.19 having been released out, and working much better on my card
+than the vanilla 2.6.18 used to be, I'm now more kind to adapt my patch to
+this latest kernel.
 
->> happens to open the switchtest device. Try "-D1" with latency, or chec=
-k
->> /proc/xenomai/rtdm/rttestX/information for the actual mapping.
->> [We need to resolve this more gracefully...]
->=20
-> A way to solve this may be to use the same method as switchtest: open
-> all rttest devices in turn until the first ioctl succeeds.
->=20
+However the IRQ handling API seem to have changed a lot
+and i was wondering if some work on porting Adeos
+(x86/ppc, not yet powerpc of course) patches already have been started
+by someone here ?
 
-Yeah, I'm going to check something in this direction (while still
-keeping -D to override any automatism).
+(i.e. something i can work from to adapt my new patch)
 
-
---------------enigE1D97872B0642D93CEC420C2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFbszoniDOoMHTA+kRAqtFAJwIWgaCLtCYtLmZS2KfPxjI0m8ySgCfSDg6
-AE9S/C1HHcCQJv3R8nBK01E=
-=8Vn9
------END PGP SIGNATURE-----
-
---------------enigE1D97872B0642D93CEC420C2--
+Ben
 
