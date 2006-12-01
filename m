@@ -1,78 +1,57 @@
-Message-ID: <54b161f50611160754td24368dx150aa449dca1f80c@domain.hid>
-Date: Thu, 16 Nov 2006 16:54:11 +0100
-From: "Frits de Klark" <mailing.xenomai@domain.hid>
-Subject: Re: [Xenomai-help] invalid parameter for xeno_rtcan_mem.ko
-In-Reply-To: <455C8766.5030905@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_93230_13034488.1163692451661"
-References: <54b161f50611160723r355a603awc1d8e1234e5ed44d@domain.hid>
-	<455C8766.5030905@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <456EDA4B.3060809@domain.hid>
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<4566C5AF.7030107@domain.hid>
+	<20061124113009.08c0a490.benjamin.zores@domain.hid>
+	<4569E699.6050003@domain.hid>
+	<20061127092143.e633cd91.benjamin.zores@domain.hid>
+	<456ACA35.8030206@domain.hid>
+	<20061127125419.3852edd9.benjamin.zores@domain.hid>
+	<456AD5EB.5040901@domain.hid>
+	<20061130133745.272ab4b1.benjamin.zores@domain.hid>
+	<456EDA4B.3060809@domain.hid>
+Content-Type: text/plain
+Date: Fri, 01 Dec 2006 23:46:40 +0100
+Message-Id: <1165013200.4952.177.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_93230_13034488.1163692451661
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Thu, 2006-11-30 at 14:19 +0100, Jan Kiszka wrote:
 
-Hi,
+> Anyway, there is an unreleased work-in-progress patch for x86 over -rc6
+> by Philippe. I recently had the chance to test it and hack a bit on the
+> SMP IO-APIC part. It seems to work fine under UP, but SMP had some
+> issues that are identified, but still need to be addressed - thanks to
+> genirq, now in a widely arch-independent way.
+> 
+> Philippe, I know you are very busy, but shouldn't we make a pre-release
+> available already, also to discuss further how to deal best with genirq
+> on other platforms beyond x86?
 
-do you mean I should have better provided a patch? I'd love to do so, but
-I'm not (yet) much of a Linux developer and I've never created a patch
-before. But I guess there's no escaping the need of learning how to do so
-very soon :)
+Actually, the draft patch I sent you did not boot on my SMP box today,
+so qemu seems to have been a bit too friendly. Knowing that, issuing a
+half-baked patch would have made no sense, so I finally refrained from
+doing that. Since I'm now basically in love with the genirq layer (at
+least for x86) compared to the utter mess that we had to endure
+previously, I've decided to tackle the issue completely, and rewrite the
+I-pipe interrupt flow in order to leverage it. Will post something asap.
 
-Best regards,
+-- 
+Philippe.
 
-Frits
 
-On 11/16/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> Frits de Klark wrote:
-> > Hello everyone,
-> >
-> > I tried to load the xeno_rtcan_mem module. I got a message that
-> parameter
-> > 'io' is unknown. After a modinfo I found out that the actual parameter
-> > should be 'mem'. I suggest you fix this, since it can be somewhat
-> > confusing.
->
-> I simple patch would explain better that you are referring to the
-> message in rtcan_mem_init(). And it would already fix the issue. :)
->
-> Jan
->
->
->
->
-
-------=_Part_93230_13034488.1163692451661
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi,<br>
-<br>
-do you mean I should have better provided a patch? I'd love to do so,
-but I'm not (yet) much of a Linux developer and I've never created a
-patch before. But I guess there's no escaping the need of learning how
-to do so very soon :)<br>
-<br>
-Best regards,<br>
-<br>
-Frits<br><br><div><span class="gmail_quote">On 11/16/06, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Frits de Klark wrote:<br>&gt; Hello everyone,<br>&gt;<br>&gt; I tried to load the xeno_rtcan_mem module. I got a message that parameter<br>&gt; 'io' is unknown. After a modinfo I found out that the actual parameter<br>&gt; should be 'mem'. I suggest you fix this, since it can be somewhat
-<br>&gt; confusing.<br><br>I simple patch would explain better that you are referring to the<br>message in rtcan_mem_init(). And it would already fix the issue. :)<br><br>Jan<br><br><br><br></blockquote></div><br>
-
-------=_Part_93230_13034488.1163692451661--
 
