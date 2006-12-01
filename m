@@ -1,12 +1,16 @@
-Message-ID: <457002EB.8080106@domain.hid>
-Date: Fri, 01 Dec 2006 11:24:43 +0100
+Message-ID: <4570047A.6070109@domain.hid>
+Date: Fri, 01 Dec 2006 11:31:22 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>	<20061130133745.272ab4b1.benjamin.zores@domain.hid>	<456EDA4B.3060809@domain.hid>
+	<200611301806.51699.paul_c@domain.hid>
+In-Reply-To: <200611301806.51699.paul_c@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5DD7EB9A7BFC3CA4A1FB2B4E"
+	boundary="------------enig8C3030DA8C51A04A35ADCD3F"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [ANNOUNCE] Xenomai Example Repository
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,42 +20,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5DD7EB9A7BFC3CA4A1FB2B4E
+--------------enig8C3030DA8C51A04A35ADCD3F
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Paul wrote:
+> On Thursday 30 November 2006 13:19, Jan Kiszka wrote:
+>> Philippe, I know you are very busy, but shouldn't we make a pre-releas=
+e
+>> available already, also to discuss further how to deal best with genir=
+q
+>> on other platforms beyond x86?
+>=20
+> I have an x86_64 box waiting for a Xenomai port - I don't see much poin=
+t in=20
+> hacking 2.6.17 and earlier when 2.6.19 is going to be a major change in=
+ key=20
+> areas.. It also looks like there is a closer integration of x86_64 and =
+plain=20
+> old ix86 code in the 2.6.19 tree, so this may simplify the task of=20
+> maintaining a 64bit patch.
 
-the new Xenomai example repository has been created. I don't want to
-repeat here what is explained already on the related wiki page, please
-have a look at
+For sure, there is not much point in starting on old code (the "stable"
+2.6.16 series /may/ turn out to be an exception one day).
 
-	http://www.xenomai.org/index.php/Examples
+An x86_64 port will be highly welcome! Feel invited to post I-pipe
+related topics also to adeos-main@gna.org.
 
-Instead, let me sketch what could be done next:
-
- o Port existing examples, snippets, demos from ksrc/skins/* over, make
-   them compilable and runnable if required.
-
- o Identify what kind of examples are lacking. You, the user, is needed
-   here. What do *you* think is missing, what would be helpful to show?
-
- o Check what is needed to compile kernel-based examples over PPC 2.4.
-   Philippe indicated that some switches are likely missing (x86 is fine
-   already, other archs are 2.6-only).
-
- o Regarding RTDM: driver patterns would be nice. Someone (who I don't
-   recall ATM, sorry) once posted a template for a PCI driver. Feel
-   invited to repost an updated version. Any further suggestion or ready
-   code is welcome as well.
+One hint that may ease testing/debugging: Have a look at qemu for
+x86_64. At least on x86, it already helped me a lot to debug weird
+kernel issues without long run-instrument-build-rerun cycles. All it
+takes is a minimal system image for a target. You can easily attach a
+debugger to the kernel, and you can even emulate SMP (though debugging
+is not perfect in that case). Of course, you cannot identify latency
+issues this way, but you will likely already be happy when things don't
+crash anymore. :)
 
 Jan
 
 
---------------enig5DD7EB9A7BFC3CA4A1FB2B4E
+--------------enig8C3030DA8C51A04A35ADCD3F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -60,10 +72,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFcALrniDOoMHTA+kRAoqlAJ0Q6NU4ugvXcT3Cc57nEvU5/Q66BwCeJJWr
-s8lphWVm8OYINmXBY0NBDk8=
-=bnm3
+iD8DBQFFcAR6niDOoMHTA+kRAgnvAKCAd7Xrof9/BOUx6MLSovRwPtiYygCfd51/
+G9OhN3Vvh9eUFwv7gWfGl9w=
+=oVM+
 -----END PGP SIGNATURE-----
 
---------------enig5DD7EB9A7BFC3CA4A1FB2B4E--
+--------------enig8C3030DA8C51A04A35ADCD3F--
 
