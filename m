@@ -1,12 +1,13 @@
-Message-ID: <45705C11.2010502@domain.hid>
-Date: Fri, 01 Dec 2006 17:45:05 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [ANNOUNCE] Xenomai Example Repository
-References: <457002EB.8080106@domain.hid>
-In-Reply-To: <457002EB.8080106@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Subject: Re: [Xenomai-core] libnative versioning
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45704CAB.5060502@domain.hid>
+References: <45704CAB.5060502@domain.hid>
+Content-Type: text/plain
+Date: Fri, 01 Dec 2006 17:56:43 +0100
+Message-Id: <1164992204.4952.109.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,43 +18,37 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
+On Fri, 2006-12-01 at 16:39 +0100, Jan Kiszka wrote:
 > Hi,
 > 
-> the new Xenomai example repository has been created. I don't want to
-> repeat here what is explained already on the related wiki page, please
-> have a look at
+> we just had some fun here with incompatible native libraries. A program
+> was built against some 2.2 release and was then started on a target with
+> 2.3 libs installed. The result: undefined symbol rt_mutex_lock. The
+> reason: this function was renamed to rt_mutex_acquire in trunk to
+> resolve a naming conflict in recent kernels.
 > 
-> 	http://www.xenomai.org/index.php/Examples
-> 
-> Instead, let me sketch what could be done next:
-> 
->  o Port existing examples, snippets, demos from ksrc/skins/* over, make
->    them compilable and runnable if required.
-> 
->  o Identify what kind of examples are lacking. You, the user, is needed
->    here. What do *you* think is missing, what would be helpful to show?
-> 
->  o Check what is needed to compile kernel-based examples over PPC 2.4.
->    Philippe indicated that some switches are likely missing (x86 is fine
->    already, other archs are 2.6-only).
+> So we now have incompatible libraries and should either increment some
+> version number of libnative or export the necessary aliases for
+> lock/unlock. What is preferred?
 
-Some time ago I sent a patch for RTnet using the "kernel CFLAGS 
-capturing" trick to get proper switches for 2.4:
+The Xenomai ABI has been kept compatible between versions, so we want to
+provide the proper aliases for user-space; the conflict is kernel-space
+only, and there is no reason to ask user-space apps to conform to some
+obscure change that took place within the vanilla kernel API. Actually,
+I already wrappers in include/native/mutex.h, but unfortunately as
+macros, so dynamic binding could not work. I'm fixing this. Thanks.
 
-http://sourceforge.net/mailarchive/forum.php?thread_id=9493711&forum_id=24610
-
-We could do the same trick here.
-
-> 
->  o Regarding RTDM: driver patterns would be nice. Someone (who I don't
->    recall ATM, sorry) once posted a template for a PCI driver. Feel
->    invited to repost an updated version. Any further suggestion or ready
->    code is welcome as well.
 > 
 > Jan
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
-Wolfgang.
+
 
