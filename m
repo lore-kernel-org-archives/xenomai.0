@@ -1,13 +1,14 @@
-Subject: Re: [Xenomai-core] libnative versioning
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45704CAB.5060502@domain.hid>
-References: <45704CAB.5060502@domain.hid>
-Content-Type: text/plain
-Date: Fri, 01 Dec 2006 17:56:43 +0100
-Message-Id: <1164992204.4952.109.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <457064F3.5050300@domain.hid>
+Date: Fri, 01 Dec 2006 18:22:59 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [ANNOUNCE] Xenomai Example Repository
+References: <457002EB.8080106@domain.hid> <45705C11.2010502@domain.hid>
+In-Reply-To: <45705C11.2010502@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3B30FFFA836869C92A748305"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,38 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-12-01 at 16:39 +0100, Jan Kiszka wrote:
-> Hi,
-> 
-> we just had some fun here with incompatible native libraries. A program
-> was built against some 2.2 release and was then started on a target with
-> 2.3 libs installed. The result: undefined symbol rt_mutex_lock. The
-> reason: this function was renamed to rt_mutex_acquire in trunk to
-> resolve a naming conflict in recent kernels.
-> 
-> So we now have incompatible libraries and should either increment some
-> version number of libnative or export the necessary aliases for
-> lock/unlock. What is preferred?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3B30FFFA836869C92A748305
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-The Xenomai ABI has been kept compatible between versions, so we want to
-provide the proper aliases for user-space; the conflict is kernel-space
-only, and there is no reason to ask user-space apps to conform to some
-obscure change that took place within the vanilla kernel API. Actually,
-I already wrappers in include/native/mutex.h, but unfortunately as
-macros, so dynamic binding could not work. I'm fixing this. Thanks.
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Hi,
+>>
+>> the new Xenomai example repository has been created. I don't want to
+>> repeat here what is explained already on the related wiki page, please=
 
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+>> have a look at
+>>
+>>     http://www.xenomai.org/index.php/Examples
+>>
+>> Instead, let me sketch what could be done next:
+>>
+>>  o Port existing examples, snippets, demos from ksrc/skins/* over, mak=
+e
+>>    them compilable and runnable if required.
+>>
+>>  o Identify what kind of examples are lacking. You, the user, is neede=
+d
+>>    here. What do *you* think is missing, what would be helpful to show=
+?
+>>
+>>  o Check what is needed to compile kernel-based examples over PPC 2.4.=
+
+>>    Philippe indicated that some switches are likely missing (x86 is fi=
+ne
+>>    already, other archs are 2.6-only).
+>=20
+> Some time ago I sent a patch for RTnet using the "kernel CFLAGS
+> capturing" trick to get proper switches for 2.4:
+>=20
+> http://sourceforge.net/mailarchive/forum.php?thread_id=3D9493711&forum_=
+id=3D24610
+>=20
+>=20
+> We could do the same trick here.
+
+Yeah, I had a look at this before. The point is that I would prefer to
+keep things _simple_ and self-contained. This capturing requires some
+helper Makefile and complex call nestings that likely only people with
+advanced make and shell skills can understand and adopt to their projects=
+=2E
+
+But maybe things are that complicated already, and this is just
+different complexity. How do you compile simple out-of-tree modules
+against 2.4 PPC kernels? Are there any standard flags? Or is it
+different for each board or each compiler version or whatever?
+
+Jan
 
 
+--------------enig3B30FFFA836869C92A748305
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFcGTzniDOoMHTA+kRAqqgAJ4nnYid1fcFdFul7hUY6/iGTnI7rwCeLqDA
+Sq6YGCx8jfAsH9HN7h8k5JM=
+=RZvL
+-----END PGP SIGNATURE-----
+
+--------------enig3B30FFFA836869C92A748305--
 
