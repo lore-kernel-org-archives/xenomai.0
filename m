@@ -1,66 +1,56 @@
-Message-ID: <455D6F86.2050404@domain.hid>
-Date: Fri, 17 Nov 2006 09:15:02 +0100
+Message-ID: <45704CAB.5060502@domain.hid>
+Date: Fri, 01 Dec 2006 16:39:23 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Draft for a RTDM I2C driver
-References: <455D674E.2020300@domain.hid>
-In-Reply-To: <455D674E.2020300@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE2C6F5027AE812685959D130"
+	boundary="------------enig6E84456974DE32EC4C7164DA"
 Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] libnative versioning
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Dirk Eibach <eibach@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE2C6F5027AE812685959D130
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig6E84456974DE32EC4C7164DA
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Dirk Eibach wrote:
-> Hello,
->=20
-> I have spent some time designing a RTDM I2C driver based on the linux
-> i2c driver. It's stripped down in some aspects but porting existing
-> clients and adapters should be fairly easy.
-> For this draft I have ported the IBM PPC4xx driver, because that is wha=
-t
-> I have here for testing.
->=20
-> It's my first RTDM project, so I hope I haven't messed things up too mu=
-ch.
->=20
-> Any comments welcome!
+Hi,
 
-[I pulled this thread over to xenomai-core, given that it is definitely
-about to leave the level of "How do I use Xenomai?". Hope that's fine
-for you.]
+we just had some fun here with incompatible native libraries. A program
+was built against some 2.2 release and was then started on a target with
+2.3 libs installed. The result: undefined symbol rt_mutex_lock. The
+reason: this function was renamed to rt_mutex_acquire in trunk to
+resolve a naming conflict in recent kernels.
+
+So we now have incompatible libraries and should either increment some
+version number of libnative or export the necessary aliases for
+lock/unlock. What is preferred?
 
 Jan
 
 
---------------enigE2C6F5027AE812685959D130
+--------------enig6E84456974DE32EC4C7164DA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.2 (MingW32)
+Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFXW+GniDOoMHTA+kRAlywAJ0VNcacfXYpE2fF+09nNRT9t3Zu6gCcDEVP
-NZMdH9tHPXKo1SC3JGUH3Lk=
-=t/19
+iD8DBQFFcEyrniDOoMHTA+kRAjgxAJ4gpc2bP0WKQX2AkTqK4ncXQXRKwQCbB5LR
+wejqDWlYN6EaZovGyVzsNcw=
+=tAmE
 -----END PGP SIGNATURE-----
 
---------------enigE2C6F5027AE812685959D130--
+--------------enig6E84456974DE32EC4C7164DA--
 
