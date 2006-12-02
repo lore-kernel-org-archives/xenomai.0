@@ -1,15 +1,12 @@
-Message-ID: <4571491D.502@domain.hid>
-Date: Sat, 02 Dec 2006 10:36:29 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45716330.7000306@domain.hid>
+Date: Sat, 02 Dec 2006 12:27:44 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
-	architecture.
-References: <20061124105346.e442448d.benjamin.zores@domain.hid>	<4566C5AF.7030107@domain.hid>	<20061124113009.08c0a490.benjamin.zores@domain.hid>	<4569E699.6050003@domain.hid>	<20061127092143.e633cd91.benjamin.zores@domain.hid>	<456ACA35.8030206@domain.hid>	<20061127125419.3852edd9.benjamin.zores@domain.hid>	<456AD5EB.5040901@domain.hid>	<20061130133745.272ab4b1.benjamin.zores@domain.hid>	<456EDA4B.3060809@domain.hid>
-	<1165013200.4952.177.camel@domain.hid>
-	<1165014875.4952.199.camel@domain.hid>
-In-Reply-To: <1165014875.4952.199.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD328D975AA1CDC5370243814"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] fix i386 nmi build for 2.6.19
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,53 +16,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Fri, 2006-12-01 at 23:46 +0100, Philippe Gerum wrote:
->> On Thu, 2006-11-30 at 14:19 +0100, Jan Kiszka wrote:
->>
->>> Anyway, there is an unreleased work-in-progress patch for x86 over -rc6
->>> by Philippe. I recently had the chance to test it and hack a bit on the
->>> SMP IO-APIC part. It seems to work fine under UP, but SMP had some
->>> issues that are identified, but still need to be addressed - thanks to
->>> genirq, now in a widely arch-independent way.
->>>
->>> Philippe, I know you are very busy, but shouldn't we make a pre-release
->>> available already, also to discuss further how to deal best with genirq
->>> on other platforms beyond x86?
->> Actually, the draft patch I sent you did not boot on my SMP box today,
->> so qemu seems to have been a bit too friendly. Knowing that, issuing a
->> half-baked patch would have made no sense, so I finally refrained from
->> doing that. Since I'm now basically in love with the genirq layer (at
->> least for x86) compared to the utter mess that we had to endure
->> previously, I've decided to tackle the issue completely, and rewrite the
->> I-pipe interrupt flow in order to leverage it. Will post something asap.
->>
-> 
-> Ok, here we are. I've just merged 2.6.19-ipipe-1.6-00. It has been
-> tested on a low-end classic Pentium 90Mhz, a dusty two-way Celeron
-> 750Mhz, and on a terrible Celeron 1GHz oldish laptop. Looks ok so far,
-> and even passed the horrid "dohell" test on the SMP box, just smiling.
-> However, I don't have the required hw at hand to check if our friend the
-> MSI support is not killing us once more. This said, the MSI support in
-> 2.6.19 also conforms to the genirq specs, so there's hope.
-> 
-> The patch is available from the Adeos download area, and I've also
-> committed it to the SVN trunk/.
-> 
-> Feedback welcome,
-> 
-> PS: I have the corresponding quilt-managed patches available upon
-> request, to the people who want to use this work as a reference for
-> porting to other archs.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD328D975AA1CDC5370243814
+Content-Type: multipart/mixed; boundary="------------040401040501010307010709"
 
-You mean that you have separate patches for the common and arch 
-dependent part. That would be nice. I'm interested! As a consequence we 
-could provide separated patches in general and prepare-kernel.sh applies 
-them in sequence. Just an idea for the future.
+This is a multi-part message in MIME format.
+--------------040401040501010307010709
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Wolfgang.
+As the subject states. Compiles and runs fine - which implies that the
+whole 2.6.19-ipipe-1.6-00 patch works perfectly on my Thinkpad. Also
+right now while typing this mail. :)
 
+Jan
+
+
+--------------040401040501010307010709
+Content-Type: text/x-patch;
+ name="fix-nmi-for-2.6.19-i386.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-nmi-for-2.6.19-i386.patch"
+
+Index: ksrc/arch/i386/nmi.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ksrc/arch/i386/nmi.c	(Revision 1914)
++++ ksrc/arch/i386/nmi.c	(Arbeitskopie)
+@@ -72,11 +72,13 @@ static rthal_nmi_wd_t rthal_nmi_wds[NR_C
+ static unsigned long rthal_nmi_perfctr_msr;
+ static unsigned int rthal_nmi_p4_cccr_val;
+ static void (*rthal_nmi_emergency) (struct pt_regs *);
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
+ static void (*rthal_linux_nmi_tick) (struct pt_regs *);
+=20
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+ #define MSR_P4_IQ_CCCR0		0x36C
+-#define nmi_active (nmi_watchdog !=3D NMI_NONE)
++#define rthal_nmi_active (nmi_watchdog !=3D NMI_NONE)
+ static inline void wrmsrl(unsigned long msr, unsigned long long val)
+ {
+ 	unsigned long lo, hi;
+@@ -84,9 +86,15 @@ static inline void wrmsrl(unsigned long=20
+ 	hi =3D val >> 32;
+ 	wrmsr(msr, lo, hi);
+ }
+-#else /* Linux >=3D 2.6 */
++#else /* Linux 2.6.0..18 */
+ extern int nmi_active;
+-#endif /* Linux >=3D 2.6 */
++#define rthal_nmi_active	nmi_active
++#endif /* Linux 2.6.0..18 */
++
++#else /* Linux >=3D 2.6.19 */
++static int (*rthal_linux_nmi_tick) (struct pt_regs *, unsigned);
++#define rthal_nmi_active	atomic_read(&nmi_active)
++#endif /* Linux >=3D 2.6.19 */
+=20
+ static void rthal_touch_nmi_watchdog(void)
+ {
+@@ -105,7 +113,15 @@ static void rthal_touch_nmi_watchdog(voi
+ 	}
+ }
+=20
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
++#define CALL_LINUX_NMI		rthal_linux_nmi_tick(regs)
++#define NMI_RETURN		return
+ static void rthal_nmi_watchdog_tick(struct pt_regs *regs)
++#else /* Linux >=3D 2.6.19 */
++#define CALL_LINUX_NMI		rthal_linux_nmi_tick(regs, reason)
++#define NMI_RETURN		return 1
++static int rthal_nmi_watchdog_tick(struct pt_regs *regs, unsigned reason=
+)
++#endif /* Linux >=3D 2.6.19 */
+ {
+ 	int cpu =3D rthal_processor_id();
+ 	rthal_nmi_wd_t *wd =3D &rthal_nmi_wds[cpu];
+@@ -125,7 +141,7 @@ static void rthal_nmi_watchdog_tick(stru
+=20
+ 	if ((long long)(now - wd->next_linux_check) >=3D 0) {
+=20
+-		rthal_linux_nmi_tick(regs);
++		CALL_LINUX_NMI;
+=20
+ 		do {
+ 			wd->next_linux_check +=3D RTHAL_CPU_FREQ;
+@@ -150,6 +166,7 @@ static void rthal_nmi_watchdog_tick(stru
+ 	}
+ =09
+ 	wrmsrl(wd->perfctr_msr, now - wd->next_linux_check);
++	NMI_RETURN;
+ }
+=20
+ static int earlyshots_read_proc(char *page,
+@@ -175,7 +192,7 @@ static int earlyshots_read_proc(char *pa
+=20
+ int rthal_nmi_request(void (*emergency) (struct pt_regs *))
+ {
+-	if (!nmi_active || !nmi_watchdog_tick)
++	if (!rthal_nmi_active || !nmi_watchdog_tick)
+ 		return -ENODEV;
+=20
+ 	if (rthal_linux_nmi_tick)
+Index: ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ChangeLog	(Revision 1914)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,7 @@
++2006-12-02  Jan Kiszka  <jan.kiszka@domain.hid>
++
++	* ksrc/arch/i386/nmi.c: Fix build against 2.6.19.
++
+ 2006-12-02  Jeff Webb <jeff.webb@domain.hid>
+=20
+ 	* ksrc/skins/posix/syscall.c (__pse51_sem_timed_wait): Fix return
+
+
+--------------040401040501010307010709--
+
+--------------enigD328D975AA1CDC5370243814
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFcWM0niDOoMHTA+kRAvdAAJ98dD2r+FckenhD4kGtctI+ECQlXgCdHLke
+I2/uU6EjhKnGcWX2LfaLcnk=
+=LfEd
+-----END PGP SIGNATURE-----
+
+--------------enigD328D975AA1CDC5370243814--
 
