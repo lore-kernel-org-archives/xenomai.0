@@ -1,13 +1,14 @@
-Message-ID: <4572F206.8050708@domain.hid>
-Date: Sun, 03 Dec 2006 16:49:26 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45730D18.4040109@domain.hid>
+Date: Sun, 03 Dec 2006 18:44:56 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTCAN: multiple sockets on one device
-References: <DD39B5C3F4963040ADC9768BE7E430CB015D51BC@is-hdq-exchange.marel.net>
-	<4565C1D7.9060509@domain.hid>
-In-Reply-To: <4565C1D7.9060509@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] porting to kernel 2.2
+References: <20061203150211.80319.qmail@domain.hid>
+In-Reply-To: <20061203150211.80319.qmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2FA9102E147461B607D71F01"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,29 +18,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: mani bhatti <imranbashirbhatti@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Daniel Schnell wrote:
->> Hi,
->>  
->> If one opens two sockets to one CAN port and wants to use one socket
->> file descriptor for reading and the other for writing, is it possible to
->> limit the writing socket to _write only_, so it doesn't receive messages
->> ?
-> 
-> Option 1: Do not bind the socket, use sendto/sendmsg for transmitting
-> (send requires binding).
-> 
-> Option 2: Register an impossible filter for the write-only socket. This
-> is suboptimal ATM. Actually we should allow registering an empty filter
-> list for this purpose. This has been recently discussed on the socketcan
-> list, but I'm not aware of any concrete result.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2FA9102E147461B607D71F01
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have committed an update allowing the registration of an empty filter 
-list. Have a look to the utility program "rtcansend.c" to see how to use it.
+mani bhatti wrote:
+>=20
+> Note: forwarded message attached.
 
-Wolfgang.
+Your first message made it to this list already. Probably the limited
+information prevented any quick response of some guru.
 
+So, mind telling us more about what your system actually reports to you?
+Your program starts fine here (after adding mlockall), and this points
+to a potential configuration issue. What does your kernel console tell
+that is suspicious? Do existing tests run fine (=3D>testsuite)? What does=
+
+/proc/xenomai/ contain, specifically "timer" (when the timer is said to
+be not started...)? How did you configure the Xenomai part in your
+kernel .config, specifically the timer?
+
+Jan
+
+
+--------------enig2FA9102E147461B607D71F01
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.2 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFcw0YniDOoMHTA+kRAo2AAJ9O2bQc2EkayggHJ/Qqagne8ccm1ACcCKUY
+2DskbOlAmFmDbt6nw3bF4YE=
+=I1si
+-----END PGP SIGNATURE-----
+
+--------------enig2FA9102E147461B607D71F01--
 
