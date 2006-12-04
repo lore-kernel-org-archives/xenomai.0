@@ -1,12 +1,10 @@
-Message-ID: <45740D03.5090708@domain.hid>
-Date: Mon, 04 Dec 2006 12:56:51 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] size of the struct can_frame
-References: <54b161f50612040334v3244d551l56868ec221bd5dcb@domain.hid>
-In-Reply-To: <54b161f50612040334v3244d551l56868ec221bd5dcb@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Date: Mon, 4 Dec 2006 16:37:17 +0300
+Message-ID: <20061204133717.GA20186@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+From: Anthony Sharobaiko <anthony@domain.hid>
+Subject: [Xenomai-help] Xenomai install problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,45 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Frits de Klark <mailing.xenomai@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Frits de Klark wrote:
-> Hello everyone,
-> 
-> I noticed that the sizeof() function reports that the struct can_frame 
-> has a size of 16 bytes. I know that this is because of memory aligning 
-> done by the GNU compiler.
+Hi!
 
-This is just a structure to pass message data from and to the CAN driver.
+I try to get Xenomai running on arm (PXA board). Currently everything compiles perfectly, but testsuite examples simply segfault:
+=== cut here ===
+root@domain.hid# ./run 
+*
+*
+* Type ^C to stop this application.
+*
+*
+/usr/xenomai/bin/xeno-load: line 247:  1139 Segmentation fault
+$suflag $* $cmdargs
+=== cut here ===
 
-> But now I wonder if there are actually 16 bytes transferred over the CAN 
-> bus. I guess not, since it has such a strict and well-defined format, 
-> but I'd like to have this confirmed by someone, please.
+I use 2.6.16.29 kernel with ipipe-2.6.15-1.5-03. Some hunks were applied by hand, 
+but I'm sure that IPIPE works (I've used: http://www.mail-archive.com/adeos-main@gna.org to check).
 
-The format of the data actually transferred over the bus is defined in 
-the CAN bus standard. And the driver just programs the appropriate 
-registers of the CAN controller.
+Also, Xenomai (built into kernel) successfully registers domain:
+=== cut here ===
+root@domain.hid# cat Xenomai 
+Invariant head, Id=0x58454e4f
+irq0-25: passed
+irq26: wired
+irq27-191: passed
+irq192-193: passed, virtual
+irq194: wired, virtual
+=== cut here ===
 
-> The size of 16 bytes though, is also passed to the rt_dev_recv() and 
-> rt_dev_send() functions, so this is where I get confused: Are the 
-> correct bytes extracted from this 16 byte block at a later stage (the 
-> CAN driver)?
+Where should I dig to get a working testsuite? =)
 
-Yes, of course. And the internal ringer buffers for received messages 
-also use a "packed" format.
-
-> I'm asking this to make sure that if, for example, I'd like to store all 
-> the received frames in a binary file, I don't need to store all 16 
-> bytes, just the 13 (right?) that are in use.
-
-You need to store (5 + can_dlc) bytes.
-
-> 
-> I hope I made myself clear.
-> 
-> Thanks in advance and best regards!
-
-Wolfgang.
+-- 
+	WBR, Anthony Sharobaiko.
 
 
