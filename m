@@ -1,12 +1,13 @@
-Message-ID: <457445AB.8060203@domain.hid>
-Date: Mon, 04 Dec 2006 16:58:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Mon, 4 Dec 2006 19:07:11 +0300
+From: Anthony Sharobaiko <anthony@domain.hid>
 Subject: Re: [Xenomai-help] Xenomai install problems
-References: <20061204133717.GA20186@domain.hid>
-In-Reply-To: <20061204133717.GA20186@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Message-ID: <20061204160711.GA8055@domain.hid>
+References: <20061204133717.GA20186@domain.hid> <4574268C.7000705@domain.hid>
+	<20061204143948.GA20411@domain.hid> <45743D46.8000502@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45743D46.8000502@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,44 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anthony Sharobaiko <anthony@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Anthony Sharobaiko wrote:
-> Hi!
-> 
-> I try to get Xenomai running on arm (PXA board). Currently everything compiles perfectly, but testsuite examples simply segfault:
-> === cut here ===
-> root@domain.hid# ./run 
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> *
-> /usr/xenomai/bin/xeno-load: line 247:  1139 Segmentation fault
-> $suflag $* $cmdargs
-> === cut here ===
-> 
-> I use 2.6.16.29 kernel with ipipe-2.6.15-1.5-03. Some hunks were applied by hand, 
-> but I'm sure that IPIPE works (I've used: http://www.mail-archive.com/adeos-main@gna.org to check).
-> 
-> Also, Xenomai (built into kernel) successfully registers domain:
-> === cut here ===
-> root@domain.hid# cat Xenomai 
-> Invariant head, Id=0x58454e4f
-> irq0-25: passed
-> irq26: wired
-> irq27-191: passed
-> irq192-193: passed, virtual
-> irq194: wired, virtual
-> === cut here ===
-> 
-> Where should I dig to get a working testsuite? =)
+On Mon, Dec 04, 2006 at 04:22:46PM +0100, Jan Kiszka wrote:
+> You said you merged the patch for 2.6.15 on 2.6.16 and applied some
+> hunks manually. Did you check that the merge is obviously not hiding any
+> functional changes of the kernel?
 
-Maybe you got the syscall interception wrong ? Could you show us the
-difference between your version of arch/arm/kernel/entry-common.S and
-the original ?
+Well, I looked through all places with fuzz > 1. Some of them were not
+very clear to me, and when that test passed, I've decided I made them ok =)
+I'll check them again and post (to adeos-main@ ?).
+
+> Do you have a chance to test a 2.6.15 kernel as well to see if this works?
+
+Unforunately, no. Vendor-specific patch is available only for 2.6.16.
+
 
 -- 
-                                                 Gilles Chanteperdrix
+	WBR, Anthony Sharobaiko.
+
 
