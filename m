@@ -1,14 +1,12 @@
-Message-ID: <45745F6F.2050101@domain.hid>
-Date: Mon, 04 Dec 2006 18:48:31 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4575370B.5070002@domain.hid>
+Date: Tue, 05 Dec 2006 10:08:27 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Adeos-main] [PATCH] I-pipe tracer for ARM
 References: <E1GrHXk-00023w-Oq@domain.hid>
 In-Reply-To: <E1GrHXk-00023w-Oq@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAD6BA21A063211C17DD35F80"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,238 +18,28 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Sebastian Smolorz <ssm@domain.hid>
 Cc: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAD6BA21A063211C17DD35F80
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
 Sebastian Smolorz wrote:
 > Hi,
->=20
-> here comes a preliminary version of the missing ARM-parts for the I-pip=
-e
-
-Cooool.
-
-> tracer. It's not yet complete, some features for the tracing of IRQs-of=
-f=20
-> times are missing, but will soon be added. Besides of that, the tracer =
-seems=20
+> 
+> here comes a preliminary version of the missing ARM-parts for the I-pipe 
+> tracer. It's not yet complete, some features for the tracing of IRQs-off 
+> times are missing, but will soon be added. Besides of that, the tracer seems 
 > to work. ;-)
->=20
-> The following traces were recorded on a S3C2440. It would be nice if so=
-meone=20
-> could have a look at them and determine if everything looks sane so far=
-=2E
 
-Only some quick remarks below.
+That's nice.
 
->=20
-> --
-> Sebastian
->=20
+> 
+> The following traces were recorded on a S3C2440. It would be nice if someone 
+> could have a look at them and determine if everything looks sane so far.
 
-[snipped code]
+The patch looks ok, a few remarks however:
+- you include the full head.S in the patch whereas you most likely just
+added the empty mcount;
+- I see no patch of any Kconfig, did you forget them ?
+- the arm_return_address function seem to rely on frame pointers, so
+should not the tracer option require the CONFIG_FRAME_POINTER option to
+be enabled ?
 
-Wow, looks like it was a lot of work. Why did you have to add so many
-stuff to make tracing work?
-
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> I-pipe worst-case tracing service on 2.6.15/ipipe-1.5-03
-> ------------------------------------------------------------
-> Begin: 21055672 cycles, Trace Points: 3 (-10/+10), Length: 4651 us
->=20
->  +----- Hard IRQs ('|': locked)
->  |+---- <unused>
->  ||+--- <unused>
->  |||+-- <unused>
->  ||||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)=
-
->  |||||                        +---------- Delay flag ('+': > 1 us, '!':=
- > 10 us)
->  |||||                        |        +- NMI noise ('N')
->  |||||                        |        |
->       Type    User Val.   Time    Delay  Function (Parent)
->      +func                 -15    1.333N __ipipe_stall_root+0x10 (run_t=
-imer_softirq+0x38)
-                                        ^^^
-There is "NMI noise" marked in a lot of lines. I don't know if your
-board has NMI support at all, but it would surely not fire that often.
-Something is screwed up, either only in the trace_point recording or
-(more critical) in the locking.
-
->  |   +begin   0x80000001   -13    1.333N __ipipe_stall_root+0x34 (run_t=
-imer_softirq+0x38)
->  |   #end     0x80000001   -12    1.444N __ipipe_stall_root+0x4c (run_t=
-imer_softirq+0x38)
->      #func                 -10    1.444N __ipipe_unstall_root+0x10 (run=
-_timer_softirq+0x19c)
->  |   #begin   0x80000000    -9    1.555  __ipipe_unstall_root+0x30 (run=
-_timer_softirq+0x19c)
->  |   +end     0x80000000    -7    1.333N __ipipe_unstall_root+0x68 (run=
-_timer_softirq+0x19c)
->      +func                  -6    1.444N __ipipe_stall_root+0x10 (__do_=
-softirq+0x74)
->  |   +begin   0x80000001    -5    1.555  __ipipe_stall_root+0x34 (__do_=
-softirq+0x74)
->  |   #end     0x80000001    -3    2.111N __ipipe_stall_root+0x4c (__do_=
-softirq+0x74)
->      +func                  -1    1.444N default_idle+0x10 (cpu_idle+0x=
-48)
->> |   +begin   0x80000000     0+   1.555  default_idle+0x44 (cpu_idle+0x=
-48)
-> :|   +func                   1! 4650.111N s3c24xx_default_idle+0x10 (de=
-fault_idle+0x78)
-
-You are tracing idle! Likely you have to account for the halt operation
-reenabling IRQs before falling asleep.
-
-> <|   +end     0x80000000  4651    1.666N default_idle+0x8c (cpu_idle+0x=
-48)
->  |   +func                4653    1.333N __ipipe_grab_irq+0x10 (__irq_s=
-vc+0x24)
->  |   +func                4654    1.555N __ipipe_handle_irq+0x10 (__ipi=
-pe_grab_irq+0xc8)
->  |   +func                4656    1.333N __ipipe_ack_timerirq+0x10 (__i=
-pipe_handle_irq+0x150)
->  |   +func                4657    1.333N ipipe_test_and_stall_pipeline_=
-from+0x10 (__ipipe_ack_timerirq+0x20)
->  |   #func                4658    1.444N __ipipe_mach_acktimer+0x10 (__=
-ipipe_ack_timerirq+0x28)
->  |   #func                4660    1.444N s3c_irq_ack+0x10 (__ipipe_ack_=
-timerirq+0x44)
->  |   #func                4661    1.555N s3c_irq_unmask+0x10 (__ipipe_a=
-ck_timerirq+0x50)
->  |   +func                4663    1.444N __ipipe_walk_pipeline+0x10 (__=
-ipipe_handle_irq+0x1a8)
->  |   +func                4664    1.666N __ipipe_sync_stage+0x10 (__ipi=
-pe_walk_pipeline+0x9c)
->  |   #func                4666    0.000N asm_do_IRQ+0x14 (__ipipe_sync_=
-stage+0x1f8)
->=20
->=20
-> I-pipe frozen back-tracing service on 2.6.15/ipipe-1.5-03
-> ------------------------------------------------------------
-> Freeze: 18284279888 cycles, Trace Points: 30 (+10)
->=20
->  +----- Hard IRQs ('|': locked)
->  |+---- <unused>
->  ||+--- <unused>
->  |||+-- <unused>
->  ||||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)=
-
->  |||||                        +---------- Delay flag ('+': > 1 us, '!':=
- > 10 us)
->  |||||                        |        +- NMI noise ('N')
->  |||||                        |        |
->       Type    User Val.   Time    Delay  Function (Parent)
-> :    #func                 -90+   1.333N vma_prio_tree_next+0x10 (updat=
-e_mmu_cache+0x144)
-> :    #func                 -89+   2.333  prio_tree_next+0x14 (vma_prio_=
-tree_next+0x64)
-> :    #func                 -86+   1.555N prio_tree_left+0x10 (prio_tree=
-_next+0x128)
-> :    #func                 -85+   1.555N prio_tree_right+0x10 (prio_tre=
-e_next+0x180)
-> :    #func                 -83+   1.333N prio_tree_parent+0x10 (prio_tr=
-ee_next+0x170)
-> :    #func                 -82+   1.777N prio_tree_right+0x10 (prio_tre=
-e_next+0x180)
-> :    #func                 -80+   1.666N __ipipe_unstall_root+0x10 (upd=
-ate_mmu_cache+0x150)
-> :|   #begin   0x80000000   -78+   1.555N __ipipe_unstall_root+0x30 (upd=
-ate_mmu_cache+0x150)
-> :|   +end     0x80000000   -77+   9.666N __ipipe_unstall_root+0x68 (upd=
-ate_mmu_cache+0x150)
-> :    +func                 -67+   1.444N __up_read+0x10 (do_page_fault+=
-0x1d4)
-> :    +func                 -66+   1.777N __ipipe_test_and_stall_root+0x=
-10 (__up_read+0x18)
-> :|   +begin   0x80000001   -64+   1.777  __ipipe_test_and_stall_root+0x=
-34 (__up_read+0x18)
-> :|   #end     0x80000001   -62+   1.555N __ipipe_test_and_stall_root+0x=
-4c (__up_read+0x18)
-> :    #func                 -61+   1.555N __ipipe_restore_root+0x10 (__u=
-p_read+0xd4)
-> :    #func                 -59+   1.555N __ipipe_unstall_root+0x10 (__i=
-pipe_restore_root+0x24)
-> :|   #begin   0x80000000   -57+   2.222  __ipipe_unstall_root+0x30 (__i=
-pipe_restore_root+0x24)
-> :|   +end     0x80000000   -55!  12.555N __ipipe_unstall_root+0x68 (__i=
-pipe_restore_root+0x24)
-> :    +func                 -43+   3.333N __ipipe_syscall_root+0x10 (vec=
-tor_swi+0x64)
-> :    +func                 -39+   1.777N sys_write+0x14 (ret_fast_sysca=
-ll+0x0)
-> :    +func                 -38+   4.222N fget_light+0x10 (sys_write+0x2=
-4)
-> :    +func                 -33+   3.444N vfs_write+0x10 (sys_write+0x50=
-)
-> :    +func                 -30+   5.000N rw_verify_area+0x14 (vfs_write=
-+0x94)
-> :    +func                 -25+   4.333N __ipipe_frozen_ctrl+0x14 (vfs_=
-write+0xc4)
-> :    +func                 -21+   2.111N simple_strtol+0x10 (__ipipe_fr=
-ozen_ctrl+0x9c)
-> :    +func                 -18+   6.000N simple_strtoul+0x10 (simple_st=
-rtol+0x30)
-> :    +func                 -12+   1.777N ipipe_trace_frozen_reset+0x10 =
-(__ipipe_frozen_ctrl+0xfc)
-> :    +func                 -11+   2.777  __ipipe_global_path_lock+0x10 =
-(ipipe_trace_frozen_reset+0x14)
-> :|   +begin   0x80000001    -8+   6.000N __ipipe_global_path_lock+0x30 =
-(ipipe_trace_frozen_reset+0x14)
-> :|   +end     0x80000001    -2+   2.333N __ipipe_global_path_unlock+0x6=
-8 (ipipe_trace_frozen_reset+0x68)
-> <    +freeze  0xffffffff     0   97.444N __ipipe_frozen_ctrl+0x108 (vfs=
-_write+0xc4)
-
-Hmm, takes quite a long time to complete the freeze though you only have
-10 post-trace points (which defines its complexity). Unusual, also when
-comparing with other traced functions.
-
->      +func                  97    3.222N do_PrefetchAbort+0x10 (ret_fro=
-m_exception+0x0)
->      +func                 100    2.333N do_translation_fault+0x14 (do_=
-PrefetchAbort+0x1c)
->      +func                 103    2.777N do_page_fault+0x14 (do_transla=
-tion_fault+0x2c)
->      +func                 105    2.222N __down_read_trylock+0x10 (do_p=
-age_fault+0xbc)
->      +func                 108    1.888N __ipipe_test_and_stall_root+0x=
-10 (__down_read_trylock+0x18)
->  |   +begin   0x80000001   109    1.888N __ipipe_test_and_stall_root+0x=
-34 (__down_read_trylock+0x18)
->  |   #end     0x80000001   111    2.111N __ipipe_test_and_stall_root+0x=
-4c (__down_read_trylock+0x18)
->      #func                 113    1.777N __ipipe_restore_root+0x10 (__d=
-own_read_trylock+0x4c)
->      #func                 115    1.555N __ipipe_unstall_root+0x10 (__i=
-pipe_restore_root+0x24)
->  |   #begin   0x80000000   117    0.000N __ipipe_unstall_root+0x30 (__i=
-pipe_restore_root+0x24)
->=20
->=20
-
-Jan
-
-
---------------enigAD6BA21A063211C17DD35F80
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFdF9vniDOoMHTA+kRAhI/AJ4/opVM4YnyIJrfi/KfzKSd5gf7pgCfftdc
-qzSp2kL5G+jtf6PMqL4D1e8=
-=jv1Z
------END PGP SIGNATURE-----
-
---------------enigAD6BA21A063211C17DD35F80--
+-- 
+                                                 Gilles Chanteperdrix
 
