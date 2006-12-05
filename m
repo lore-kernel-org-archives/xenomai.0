@@ -1,13 +1,13 @@
-Message-ID: <457977E7.40606@domain.hid>
-Date: Fri, 08 Dec 2006 15:34:15 +0100
+Message-ID: <45754D10.1000501@domain.hid>
+Date: Tue, 05 Dec 2006 11:42:24 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] I/O privilege losted and killed message
-References: <s577092a.032@domain.hid> <457820AF.4070403@domain.hid>
-In-Reply-To: <457820AF.4070403@domain.hid>
+Subject: Re: [Xenomai-help] vxworks- and posix-skin simultaneously
+References: <5D63919D95F87E4D9D34FF7748CE2C2A6C6377@domain.hid>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A6C6377@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig37140DE4CAC9E7A8C34B59B0"
+	boundary="------------enig7071A1EA2EF70FE0D0C1DF27"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,104 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nicolas BLANCHARD <n.blanchard@domain.hid>
+To: Roderik_Wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig37140DE4CAC9E7A8C34B59B0
+--------------enig7071A1EA2EF70FE0D0C1DF27
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Nicolas BLANCHARD wrote:
->> Hello,
->>
->> Sometime i lose my i/o privilege put with the system call ioperm (in
->> the main function of my program).
->>
->> My application stop with a "killed" message in the console and  in
->> /proc/xenomai/fault i've an "general fault".
->> To ignore this problem, i use the call system iopl (with full
->> privilege) or recall ioperm before each inb or outb.
->> But there is a problem, why i/o privilege are losted ?
->>
->> In attachment you can find an archive with an example (application and=
+Roderik_Wildenburg@domain.hid wrote:
+> Can anybody tell me about the actual state of using vxworks-skin and po=
+six-skin simultaneously ? Is it possible, compiling one application with =
+vxWorks-skin and an other one with the posix-skin and to use/execute thes=
+e two applications simultaneously on one system ?
 
->> source) witch show the problem.
->> This program has 2 task :
->> - task_1 priority 23 period 100 ms, lock a mutex, access to /dev/rtc,
->> unlock the mutex, outb on hardware.
->> - task 2 priority 25 period 1 ms, do nothing !
->>
->> I put a 1 ms period to task_2 because it's near the speedest period on=
+Yes, feasible. There are example applications available for both skins,
+so setting up your own quick test will not take you much time.
 
->> my cpu (166 MHz).
->> With this period it stop immediatly.
->> If i put 10 ms it's need 1 or 2 minutes.
->>
->> On my Pentium 4 (Ubuntu on VmWare worstation under WindowsXP), i put 3=
-0
->> ms (the more speed before overrun).
->>
->> If i use iopl (and not ioperm), no problem.
->> If i just have task_1, no problem.
->> If i don't use mutex (lock for Rtc access) on task_2, no problem.
->>
->> I use Xenomai Xenomai 2.3-rc2 (adeos 1.5-02), same probleme with
->> 2.2.3.
->>
->> If you have an idea.
 >=20
-> No idea yet and no time to dig out the reason. But I can confirm the
-> sporadic lost of ioperms of a Xenomai task that enters secondary mode
-> (QEMU UP with CONFIG_XENO_OPT_RPIDISABLE and CONFIG_PREEMPT_NONE).
->=20
+> In an earlier posting I have read, that all skins (or at least the nati=
+ve and the posix one) should be compiled as modules, so they do not overi=
+de the timer mode. Is this still true ? And if yes, dosn?t need the posix=
+ skin an aperiodic timer, but the timer is set to periodic mode by the vx=
+works skin ? So, can an vxworks application and an posix applications run=
+ together ??
 
-This should be the explanation for this effect:
+It's true that the vxworks skin still forces the nucleus into periodic
+timer mode. This is a known shortcoming of the current timer subsystem.
+As announced earlier, we are aiming at a redesign to overcome this
+during the 2.4 development cycle. Ideas exist, remaining issues are also
+identified. But our resources are still limited, so there is no promise
+on a time-frame.
 
-A shadow thread with an I/O-permission map enters secondary mode and
-gets switched away. A Linux process without such a map happens to become
-active. Later Linux switches the relaxed shadow in again, but due to
-lazy permission map restoring, the previous map without any permission
-remains active. Now we harden the thread again, but this special path
-doesn't take us along wrap_switch_iobitmap() in xnarch_switch_to().
-Therefore the next I/O access causes a fault.
-
-This ugly hack made the test case succeed for me:
-
---- ../../ksrc/nucleus/shadow.c (revision 1930)
-+++ ../../ksrc/nucleus/shadow.c (working copy)
-@@ -648,6 +648,8 @@ int xnshadow_harden(void)
- 	xnpod_switch_fpu(xnpod_current_sched());
- #endif /* CONFIG_XENO_HW_FPU */
-
-+	wrap_switch_iobitmap(current, rthal_processor_id());
-+
- 	if (xnthread_signaled_p(thread))
- 		xnpod_dispatch_signals();
-
-
-This hack is lacking IRQ protection, and it must be put in some
-xnarch_switch_iobitmap abstraction as this affair is x86-only. Philippe,
-do you agree and would you accept such an approach?
+Anyway, if you do not rely on having sub-tick timer precision for the
+posix applications you are planning, the available support should
+already be fine for you.
 
 Jan
 
 
-
---------------enig37140DE4CAC9E7A8C34B59B0
+--------------enig7071A1EA2EF70FE0D0C1DF27
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
+Version: GnuPG v1.4.5 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFeXfnncNeS9Q0k+IRAplPAJ9dd7xldzvSxOdjbxVJ9wBiWE6siwCeN+Zy
-arngksIcyI2PmJZZkNH5sgc=
-=LN1s
+iD8DBQFFdU0QniDOoMHTA+kRAhGdAJwJhNihEPMH7u/6sOKIr7yLxKNx7wCfSHOO
+JzYfc27c9icvJGDEyUNUNRs=
+=6POY
 -----END PGP SIGNATURE-----
 
---------------enig37140DE4CAC9E7A8C34B59B0--
+--------------enig7071A1EA2EF70FE0D0C1DF27--
 
