@@ -1,15 +1,14 @@
-Message-ID: <45753DAB.20207@domain.hid>
-Date: Tue, 05 Dec 2006 10:36:43 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Sebastian Smolorz <ssm@domain.hid>
 Subject: Re: [Adeos-main] [PATCH] I-pipe tracer for ARM
-References: <E1GrHXk-00023w-Oq@domain.hid> <45745F6F.2050101@domain.hid>
-	<E1GrWZ5-000089-Ou@domain.hid>
-In-Reply-To: <E1GrWZ5-000089-Ou@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig56EBB03DB2F28A2CB7AF2BFA"
-Sender: jan.kiszka@domain.hid
+Date: Tue, 5 Dec 2006 11:18:09 +0100
+References: <E1GrHXk-00023w-Oq@domain.hid> <4575370B.5070002@domain.hid>
+In-Reply-To: <4575370B.5070002@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1GrXNE-0004fl-MZ@mailer.emlix.com>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,48 +17,51 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig56EBB03DB2F28A2CB7AF2BFA
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Gilles,
 
-Sebastian Smolorz wrote:
->>> <    +freeze  0xffffffff     0   97.444N __ipipe_frozen_ctrl+0x108
->>> (vfs_write+0xc4)
->> Hmm, takes quite a long time to complete the freeze though you only ha=
-ve
->> 10 post-trace points (which defines its complexity). Unusual, also whe=
-n
->> comparing with other traced functions.
->=20
-> It seems that it doesn't depend on post-trace-points. When I reduce the=
-m to 2=20
-> the value for the freeze does not get smaller. Maybe it has something t=
-o do=20
-> with the following lines?
+Gilles Chanteperdrix wrote:
+> Sebastian Smolorz wrote:
+> > Hi,
+> >
+> > here comes a preliminary version of the missing ARM-parts for the I-pipe
+> > tracer. It's not yet complete, some features for the tracing of IRQs-off
+> > times are missing, but will soon be added. Besides of that, the tracer
+> > seems to work. ;-)
+>
+> That's nice.
+>
+> > The following traces were recorded on a S3C2440. It would be nice if
+> > someone could have a look at them and determine if everything looks sane
+> > so far.
+>
+> The patch looks ok, a few remarks however:
+> - you include the full head.S in the patch whereas you most likely just
+> added the empty mcount;
 
-Are you tracing into vmalloc'ed memory? And what results do you get with
-latency -f?
+I diff'ed over a ipipe cvs repository where head.S does not exist. Of course, 
+if I would create the patch over a ipipe'd linux kernel the empty mcount 
+would be the only change in head.S
 
-Jan
+> - I see no patch of any Kconfig, did you forget them ?
 
+As far as I remember no change in any Kconfig file was needed.
 
---------------enig56EBB03DB2F28A2CB7AF2BFA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> - the arm_return_address function seem to rely on frame pointers, so
+> should not the tracer option require the CONFIG_FRAME_POINTER option to
+> be enabled ?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+You mean the existing contents of kernel/ipipe/Kconfig.debug are not enough?
 
-iD8DBQFFdT2rniDOoMHTA+kRAmLcAJ9PmOA8jn1Id7drnUYwEThwPXD/tACeNlVX
-eCL4aAolYp+E9qMRBIewfpI=
-=J+ff
------END PGP SIGNATURE-----
+...
+config IPIPE_TRACE
+	bool "Latency tracing"
+	depends on IPIPE_DEBUG
+	select FRAME_POINTER
+...
 
---------------enig56EBB03DB2F28A2CB7AF2BFA--
+--
+Sebastian
 
