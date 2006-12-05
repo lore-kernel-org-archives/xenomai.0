@@ -1,10 +1,12 @@
-Message-ID: <4582D4D0.3060404@domain.hid>
-Date: Fri, 15 Dec 2006 18:01:04 +0100
-From: Markus Franke <Markus.Franke@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090008000708070106050508"
-Subject: [Xenomai-help] measuring external interrupt latency
-Reply-To: Markus.Franke@domain.hid
+Date: Tue, 5 Dec 2006 15:08:30 +0300
+From: Anthony Sharobaiko <anthony@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai install problems
+Message-ID: <20061205120830.GA8491@domain.hid>
+References: <20061204133717.GA20186@domain.hid> <457445AB.8060203@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <457445AB.8060203@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,50 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------090008000708070106050508
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+On Mon, Dec 04, 2006 at 04:58:35PM +0100, Gilles Chanteperdrix wrote:
+>> I try to get Xenomai running on arm (PXA board). Currently everything
+>> compiles perfectly, but testsuite examples simply segfault:
+> Maybe you got the syscall interception wrong ? Could you show us the
+> difference between your version of arch/arm/kernel/entry-common.S and
+> the original ?
 
-Dear Xenomai users/developers,
+Yep, thanks! I've overlooked some minor modification there.
 
-I want to measure external interrupt latencies. Therefore, I have a
-parallel port loopback connector (25 pins). Pin 9 (D7) and Pin 10 (ACK)
-are connected. I would like to trigger an interrupt via Pin 9 and
-measure the time till the ISR is entered.
+Now, I'm getting this:
+=== cut here ===
+root@domain.hid# ./run 
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTD|      14.153|      14.769|      39.384|       0|      14.153|
+39.384
+RTD|      14.153|      14.461|      35.384|       0|      14.153|
+39.384
+RTD|      14.153|      14.769|      39.692|       0|      14.153|
+39.692
+=== cut here ===
 
-Can somebody give me a hint how to start writing such an application. I
-read something about RTDM and I also had a look on the IRQ-Loop
-testsuite. I am wondering whether I can reuse some of this code which is
-written there. Besides, is it really necessary to use the RTDM framework?
+After printing these lines board hangs in some strange way: it does not reply
+to ping, does not reply on serial console, but heartbeat LED works =/
 
-Sorry, but I am really new to Xenomai. I just want to have some small
-hints how to start developing.
+Number of output lines seems to be random (sometimes it ends on 'warming up...')
+Changing priority in latency.c to LOPRIO didn't help.
 
+Hmm, any suggestions? 
 
-Thanks in advance,
+-- 
+	WBR, Anthony Sharobaiko.
 
-Markus Franke
-
---------------090008000708070106050508
-Content-Type: text/x-vcard; charset=utf-8;
- name="Markus.Franke.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="Markus.Franke.vcf"
-
-begin:vcard
-fn:Markus Franke
-n:Franke;Markus
-adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
-email;internet:Markus.Franke@domain.hid
-x-mozilla-html:FALSE
-url:http://www.tu-chemnitz.de/~franm
-version:2.1
-end:vcard
-
-
---------------090008000708070106050508--
 
