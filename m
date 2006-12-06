@@ -1,13 +1,10 @@
-Message-ID: <4576E1F9.5030707@domain.hid>
-Date: Wed, 06 Dec 2006 16:30:01 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Wed, 6 Dec 2006 08:11:35 -0800 (PST)
+From: mani bhatti <imranbashirbhatti@domain.hid>
+In-Reply-To: <4576E1F9.5030707@domain.hid>
 MIME-Version: 1.0
-References: <995989.36703.qm@domain.hid>
-In-Reply-To: <995989.36703.qm@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig804071FFA8A4FD791BE3B244"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/alternative; boundary="0-485984728-1165421495=:69459"
+Content-Transfer-Encoding: 8bit
+Message-ID: <293.69459.qm@domain.hid>
 Subject: [Xenomai-help] Re: problem persists with rt_queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,41 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: mani bhatti <imranbashirbhatti@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig804071FFA8A4FD791BE3B244
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+--0-485984728-1165421495=:69459
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-mani bhatti wrote:
-> Hi=20
-> I had a problem of rt_queue overflow in xenomai 2.1.Then installed xeno=
-mai 2.2.5 but previous poblem with rt_queue is still there.I repeat the p=
-roblem that when there is no listener on the queue the sender the sender =
-displays the error message=20
->=20
+Hi
+Please tell me how can i do the following 
+
+run the test over SVN trunk 
+
+Thanks a lot for the gr8 help Jan.
+
+
+
+
+Jan Kiszka <jan.kiszka@domain.hid> wrote: mani bhatti wrote:
+> Hi 
+> I had a problem of rt_queue overflow in xenomai 2.1.Then installed xenomai 2.2.5 but previous poblem with rt_queue is still there.I repeat the problem that when there is no listener on the queue the sender the sender displays the error message 
+> 
 > rt_queue_send(queue_input) failed sent bytes: 0
 > rt_queue_send(queue_input) failed sent bytes: 0
 > rt_queue_send(queue_input) failed sent bytes: 0
 > rt_queue_alloc(queue_inout, 8) failed
->=20
->=20
->  and then stops and if i try to start my program again following messag=
-e=20
->=20
+> 
+> 
+>  and then stops and if i try to start my program again following message 
+> 
 > start
 > rt_queue_alloc(queue_inout, 8) failed
 > Segmentation fault
->=20
-> is displayed and program doesnot work at all.I would be very thankful f=
-or the correcting me what wrong am i doing.the code for the sender is att=
-ached.
+> 
+> is displayed and program doesnot work at all.I would be very thankful for the correcting me what wrong am i doing.the code for the sender is attached.
 
-=2E..and your code still runs fine (SVN trunk, but the required patch is
-in 2.2.5 as well). Moreover, stopping and restarting also causes no probl=
-em.
+...and your code still runs fine (SVN trunk, but the required patch is
+in 2.2.5 as well). Moreover, stopping and restarting also causes no problem.
 
 So, please check:
 
@@ -71,19 +70,17 @@ both branches. It should really not show up the same way as before.
 Jan
 
 
---------------enig804071FFA8A4FD791BE3B244
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+ 
+---------------------------------
+Want to start your own business? Learn how on Yahoo! Small Business.
+--0-485984728-1165421495=:69459
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-iD8DBQFFduH5niDOoMHTA+kRAveuAJ9cvidP6b1mi6V1dC+JE1NNcUUB2QCfW9bO
-k3lOxAli2GsLa7LC8CUAWsI=
-=wWDb
------END PGP SIGNATURE-----
+Hi<br>Please tell me how can i do the following <br><pre><tt><tt><span style="text-decoration: underline;">run the test over SVN trunk</span> <br><br>Thanks a lot for the gr8 help Jan.<br></tt></tt></pre><br><br><br><b><i>Jan Kiszka &lt;jan.kiszka@domain.hid&gt;</i></b> wrote:<blockquote class="replbq" style="border-left: 2px solid rgb(16, 16, 255); margin-left: 5px; padding-left: 5px;"> mani bhatti wrote:<br>&gt; Hi <br>&gt; I had a problem of rt_queue overflow in xenomai 2.1.Then installed xenomai 2.2.5 but previous poblem with rt_queue is still there.I repeat the problem that when there is no listener on the queue the sender the sender displays the error message <br>&gt; <br>&gt; rt_queue_send(queue_input) failed sent bytes: 0<br>&gt; rt_queue_send(queue_input) failed sent bytes: 0<br>&gt; rt_queue_send(queue_input) failed sent bytes: 0<br>&gt; rt_queue_alloc(queue_inout, 8) failed<br>&gt; <br>&gt; <br>&gt;  and then stops and if i try to start my program again following
+ message <br>&gt; <br>&gt; start<br>&gt; rt_queue_alloc(queue_inout, 8) failed<br>&gt; Segmentation fault<br>&gt; <br>&gt; is displayed and program doesnot work at all.I would be very thankful for the correcting me what wrong am i doing.the code for the sender is attached.<br><br>...and your code still runs fine (SVN trunk, but the required patch is<br>in 2.2.5 as well). Moreover, stopping and restarting also causes no problem.<br><br>So, please check:<br><br> - content of /proc/xenomai/version<br><br>If this actually gives "2.2.5":<br><br> - run the test over SVN trunk (make sure you actually run trunk via<br>   /proc/xenomai/version, should give "2.3-rc2")<br><br> - report your findings<br><br>Again, *precisely* your problem was understood, fixed, and applied to<br>both branches. It should really not show up the same way as before.<br><br>Jan<br><br></blockquote><br><p>&#32;
 
---------------enig804071FFA8A4FD791BE3B244--
+<hr size=1>Want to start your own business? Learn how on <a href="http://us.rd.yahoo.com/evt=41244/*http://smallbusiness.yahoo.com/r-index">Yahoo! Small Business.</a>
+--0-485984728-1165421495=:69459--
 
