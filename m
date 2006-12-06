@@ -1,12 +1,25 @@
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for 2.6.18 merged PowerPC
+	architecture.
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <457686F3.1080008@domain.hid>
-References: <457686F3.1080008@domain.hid>
+In-Reply-To: <4575AE62.8000403@domain.hid>
+References: <20061124105346.e442448d.benjamin.zores@domain.hid>
+	<4566C5AF.7030107@domain.hid>
+	<20061124113009.08c0a490.benjamin.zores@domain.hid>
+	<4569E699.6050003@domain.hid>
+	<20061127092143.e633cd91.benjamin.zores@domain.hid>
+	<456ACA35.8030206@domain.hid>
+	<20061127125419.3852edd9.benjamin.zores@domain.hid>
+	<456AD5EB.5040901@domain.hid>
+	<20061130133745.272ab4b1.benjamin.zores@domain.hid>
+	<45754723.6050503@domain.hid>
+	<20061205133516.b3b9ae85.benjamin.zores@domain.hid>
+	<45756F92.6060001@domain.hid> <45757B28.50009@domain.hid>
+	<4575AE62.8000403@domain.hid>
 Content-Type: text/plain
-Date: Wed, 06 Dec 2006 12:40:38 +0100
-Message-Id: <1165405238.7218.102.camel@domain.hid>
+Date: Wed, 06 Dec 2006 12:46:44 +0100
+Message-Id: <1165405604.7218.109.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: How to hook genirq best
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -17,126 +30,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2006-12-06 at 10:01 +0100, Jan Kiszka wrote:
-> Hi all,
-
-> I had a look at the related part in 2.6.19-i386-1.6-01 meanwhile, and
-> there seems to be a concise pattern for the irq_chip changes:
+On Tue, 2006-12-05 at 18:37 +0100, Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+> > Wolfgang Grandegger wrote:
+> >> Benjamin Zores wrote:
+> >>> On Tue, 05 Dec 2006 11:17:07 +0100
+> >>> Wolfgang Grandegger <wg@domain.hid> wrote:
+> >>>
+> >>>> I have now a preliminary patch for adeos-ipipe-2.6.19-ppc-1.5-00. The
+> >>>> porting was rather straight-forward, as the ppc tree does not use the
+> >>>> new "genirq" interface, in contrast to the powerpc tree (that's what
+> >>>> you have realized as well).
+> >>> Well, i guess the old "ppc" arch is bound to die sooner or later.
+> >>> New developments should always be done against "powerpc" arch imho.
+> >> Well, the powerpc tree is still highly experimental and only a few
+> >> embedded boards are already supported. I guess it will take a long time
+> >> before the ppc tree finally gets buried, especially because porting is
+> >> not really trivial (due to OF, IRQ layer, etc.),
+> >>
+> >>>> Therefore the port of the powerpc tree should be based on Philippe's
+> >>>> new adeos-ipipe-2.6.19-i386-1.6-00. Unfortunately, I still do not
+> >>>> have a board by hand supported by the powerpc tree.
+> >>> I haven't had much much time investigating the problem till now.
+> >>> But from what i've seen from Philippe's splitted patches, many of them
+> >>> that were supposed to be generic (i.e. don't have i386 in their name)
+> >>> still have references to x86 changes.
+> >>> Is it a normal behavior ?
+> >> Unfortunately, "generic" applies only to the Linux part. I realized,
+> >> that the new IPIPE support for the genirqs requires even more
+> >> arch-specific modifications than the old interface :-( on PowerPC.
+> > 
+> > How comes? I haven't found time to analyse this for the latest x86
+> > patch, but there it should be "more generic" than before. Do you think
+> > this is a genirq issue or an I-pipe problem?
 > 
-> .ipipe_ack = (.mask_ack) ? .mask_ack : .ack;
-> .ipipe_eoi = .eoi;
-> 
+> Well, it's nothing serious and we should discuss this issue in a 
+> separated thread. I just wanted to have a closer look to the new port 
+> before asking. At a first glance I saw that the irq_chip structure has 
+> two new elements, ipipe_ack and ipipe_eoi. This requires patching of 
+> every PIC interface. There are a few for x86 but plenty for PowerPC. 
+> Philippe, is this really necessary? I would prefer the old style using 
+> "#ifndef CONFIG_IPIPE" around the "chip->ack" in common code.
 
-The complete pattern is:
-
-.ipipe_ack = .mask_ack | .ack
-.ipipe_eoi = .eoi
-.mask_ack | .ack = nop
-
-Then, target routines from the addressed IRQ chip controllers have to be
-ironed with hw interrupt masking for spinlock control.
-
-> I agree with Wolfgang, these changes indeed require a lot of patching
-> already on x86 because often two versions of the irq_chip definition
-> have to be provided (and there is the risk to miss one as it currently
-> seems to be the case in visws_apic.c).
-
-The Colbalt PIIx4 has not been patched on purpose: it deals with a
-master multiplexed interrupt which feeds a number of virtual IRQs
-downward. Problem is that this scheme requires a specific I-pipe
-handling (like we added for ARM) to act as the demux, and which is not
-available yet for x86. So better not patch than patching erroneously or
-incompletely; it's the principle of least surprise: Cobalt+PIIx4 is not
-usable yet with the I-pipe, and one would know it immediately.
-
-Finding the appropriate spots for patching the descriptors is basically
-a matter of grepping 'struct irq_chip' in the arch-dep section. It's
-manageable.
-
-> 
-> I must confess that I do not see the advantage of the approach to patch
-> the irq_chip definitions directly. Rather, one of the following ways
-> should scale better over a large number of irq_chips:
-> 
-> A) Perform patching during runtime when I-pipe is taking over the IRQs.
-> Should be a trivial loop over all IRQ descriptors. Either overwrite the
-> existing irq_chips (i.e. like sketched above) or provide new pseudo
-> irq_chip structures to Linux.
-
-This approach - which used to be the one followed with legacy Adeos
-patches - was the source of major dysfunctioning at boot time on x86,
-particularly with PCI irq routing on APIC-enabled systems. Same with MSI
-stuff. It still works fine on ppc (and likely ARM) though. This said, at
-that time, we used to shuffle the IDT contents too, so maybe it's time
-to have a second look.
+As just replied to Jan, this is a matter of the arch maintainer's taste.
+If you ask me, I would see no issue changing kernel/irq/chip.c on a
+per-port basis, for implementing the best/safest approach. Changes in
+the I-pipe core layer are not likely to happen there, anyway, so I don't
+see any maintenance hell showing up because we fork the implementation
+there.
 
 > 
-> B) Patch the users of chip->ack/eoi/mask_ack or whatever. Given that
-> this should basically be confined to kernel/irq/chip.c,
-
-This was the implementation of the draft patch I sent. It's ok, as soon
-as you can rely on the above assumption. That's the whole point.
-
->  it looks
-> manageable too and would also avoid any useless runtime checks for NULL
-> handlers
->  or even calling void functions.
+> Wolfgang,
 > 
-
-AFAIC, this is something which is perfectly acceptable for platforms
-that require/need it. This is the purpose of decoupling Adeos ports:
-allow each arch to implement the best approach. Blackfin, x86, ia64 have
-few PICs, so patching the irq_chip descriptor is more elegant than
-fiddling with the generic IRQ flow control (/me think), basically
-because this is a per-arch, per-PIC logic. ARM, and ppc's would likely
-prefer the other approach due to the huge number of PIC variants.
-
-The other important issue is that patching the call sites does not
-preclude from analysing each and every PIC control routine, for ironing
-them. When the number of PICs is small enough, it's clearly safer to
-have all changes at one location (i.e. the PIC management file). At
-least, you know what has been adapted; but it's (only) a matter of
-(maintainer's) taste.
-
-> 
-> Another topic is how to deal with pending IRQs. I haven't looked through
-> all cases yet, but already the fasteoi one seems to differ in I-pipe
-> when comparing to a similar situation in -rt: threaded IRQs. -rt ends
-> (eoi) and masks such IRQs that are about to be deferred to thread
-> context, I-pipe only ends them.
-
---- arch/i386/kernel/ipipe.c~	2006-12-03 18:12:59.000000000 +0100
-+++ arch/i386/kernel/ipipe.c	2006-12-06 12:36:21.000000000 +0100
-@@ -167,10 +167,12 @@
- static int __ipipe_ack_irq(unsigned irq)
- {
- 	irq_desc_t *desc = irq_desc + irq;
-+
-+	desc->chip->ipipe_ack(irq);
-+
- 	if (desc->handle_irq == &handle_fasteoi_irq)
- 		desc->chip->ipipe_eoi(irq);
--	else
--		desc->chip->ipipe_ack(irq);
-+
- 	return 1;
- }
- 
-This is not relevant to the way we hook genirq though; we need to handle
-this in the primary I-pipe handler anyway.
-
->  Generally, the question remains for me
-> if at least IRQs arriving to a stalled I-pipe domain should always be
-> masked on ack and unmask when being replayed.
-
-What particular (problematic) case do you have in mind regarding this?
-
-> 
-> Jan
-> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
