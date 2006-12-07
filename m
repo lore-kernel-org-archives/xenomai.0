@@ -1,21 +1,10 @@
-Message-ID: <4586A55E.6040506@domain.hid>
-Date: Mon, 18 Dec 2006 15:27:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] consolidate testsuite installation
-References: <457BDF99.1020405@domain.hid>
-	<1165778549.8255.17.camel@domain.hid>		<457CA36C.5060805@domain.hid>
-	<1165828053.5025.8.camel@domain.hid> <457D23CA.0@domain.hid>
-	<457E6A01.4090500@domain.hid> <457EA179.5070606@domain.hid>
-	<457EAACF.3060307@domain.hid> <457EAD7F.2040902@domain.hid>
-	<457EC0CE.5040307@domain.hid> <4580312F.1000907@domain.hid>
-	<458662A1.1010703@domain.hid> <458689FD.6050508@domain.hid>
-	<45869859.9050804@domain.hid>
-In-Reply-To: <45869859.9050804@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD4BE3EB949C14C84410A232A"
-Sender: jan.kiszka@domain.hid
+Message-ID: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>
+From: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+Date: Thu, 7 Dec 2006 14:09:07 +0100
+Content-Type: text/plain; charset="US-ASCII"
+Subject: [Xenomai-core] [BUG] module usage counter of xenomai native
+ corrupted (version 2.2.0 and 2.2.5)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -25,45 +14,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD4BE3EB949C14C84410A232A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> I would apply now, but all my autotool versions I have around seem to =
-be
->> different from yours. Should I just check-in the source part and leave=
+there seems to be a bug in rt_task_create(). When no more memory is
+available, the module usage counter of xeno_native is decremented. I
+guess it is not incremented before, however, so the counter gets 0 and
+wraps then to a negative number. It is therefore not possible to remove
+the module.
 
->> the bootstrap run pending until anyone of you can kick it?
->=20
-> You can commit the changes, I will run the auto-tools once it is done. =
-I
-> am not sure I have the proper versions of the autotools either, but any=
+I appended a small program to demonstrate this. It simply eats up all
+memory from xenomai by registering as much mutexes as possible,
+and then tries to execute rt_task_create(), which fails. When started
+again, the bug occurs at rt_task_shadow(), as the mutexes have never
+been deleted.
+Compile with  gcc -O2 -Wall `xeno-config --xeno-cflags` `xeno-config
+ --xeno-ldflags` -lrtdm -lnative -o rttest rttest.c
+then simply run it, and watch the output of lsmod before and after.
 
-> reasonably recent version should be Ok anyway.
->=20
-
-Done. Also the dist-fix for scripts/help_from_kconfig.pl was applied.
+Tested with xenomai 2.2.{0,5} and linux 2.6.17.8, modules loaded:
+xeno_native and xeno_nucleus.
 
 
---------------enigD4BE3EB949C14C84410A232A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Thomas Wiedemann
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFhqVeniDOoMHTA+kRAtfHAJ9xpXaAPWA+sGIgsocoitf72c0IhgCfU/Hu
-ttQwbaugVVSGo6ZW6j6jwJo=
-=miT+
------END PGP SIGNATURE-----
+----
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/mutex.h>
 
---------------enigD4BE3EB949C14C84410A232A--
+
+static RT_TASK child, parent;
+
+/* the entry point of the child process */
+void childfn(void *cookie) {
+        while(1) {
+                rt_task_sleep(1000000000L);
+                fprintf(stderr, "  hello, i'm the child.\n");
+        }
+}
+
+
+int main(int argc, char *argv[]) {
+        int num=0;
+
+        mlockall(MCL_CURRENT|MCL_FUTURE);
+
+        /* rt_task_shadow() can be ommitted, the bug still occurrs */
+        if((num=rt_task_shadow(&parent,"rtserialtest",50,0))!=0) {
+                fprintf(stderr,"Error creating rt task: %i ('%s')!\n", 
+num, strerror(-num));
+                exit(0);
+        }
+
+ 
+        fprintf(stderr, "Clobbering all mutexes... \n");
+        while(1) {
+                int i;
+                RT_MUTEX m;
+                if((i=rt_mutex_create(&m,NULL))<0) {
+                        fprintf(stderr,"  -> After creating %i mutexes: 
+Error <%i> ('%s')\n",num,i,strerror(-i));
+                        break;
+                }
+                num++;
+        }
+ 
+        fprintf(stderr, "Creating child process ...\n");
+        num=rt_task_create(&child, "rt_mutex_clobber_child", 0, 50, 0);
+        if(num != 0) {
+                fprintf(stderr, "  -> rt_task_create: failed: 
+%s\n",strerror(-num));
+        } else {
+                fprintf(stderr, "  -> rt_task_create: OK! no bug.!\n");
+        }
+ 
+        return 0;
+}
+
+----
 
