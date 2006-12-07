@@ -1,9 +1,15 @@
-Message-Id: <s577092a.032@domain.hid>
-Date: Wed, 06 Dec 2006 15:39:42 +0100
-From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
-Subject: [Xenomai-help] I/O privilege losted and killed message
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=__PartB3978D3E.0__="
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
+Subject: Re: [Xenomai-help] Crash using userspace interrupts
+Date: Thu, 7 Dec 2006 11:03:07 +0100
+References: <200612051557.44787.s.zimmermann@domain.hid>
+	<4576CA98.7020408@domain.hid> <4576D862.6010600@domain.hid>
+In-Reply-To: <4576D862.6010600@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200612071103.07896.s.zimmermann@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,177 +21,107 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---=__PartB3978D3E.0__=
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Am Mittwoch, 6. Dezember 2006 15:49 schrieb Jan Kiszka:
+> Gilles Chanteperdrix wrote:
+> > Jan Kiszka wrote:
+> >> Stephan Zimmermann wrote:
+> >>> Am Dienstag, 5. Dezember 2006 16:06 schrieb Jan Kiszka:
+> >>>> Stephan Zimmermann wrote:
+> >>>>> Hello List,
+> >>>>> I am facing a crashing kernel when I use some rt_interupt_xxx
+> >>>>> funtions in my application.
+> >>>>>
+> >>>>> System: Dualcore AMD with Debian 3.1, kernel 2.7.17.14 with Xenomai
+> >>>>> SVN rev 1920.
+> >>>>>
+> >>>>> Kernel crashes, leaving the following last words in syslog, the
+> >>>>> system keeps responding, but I am unable to restart my application.
+> >>>>>
+> >>>>> <syslog>
+> >>>>> I-pipe: Domain Xenomai registered.
+> >>>>> Dec  5 15:24:07 localhost kernel: Xenomai: hal/x86 started.
+> >>>>> Dec  5 15:24:07 localhost kernel: Xenomai: real-time nucleus v2.3-r=
+c1
+> >>>>> (Baroque) loaded.
+> >>>>
+> >>>> #1920 implies -rc2. Something is probably inconsistent in your build.
+> >>>
+> >>> Well you where right, my build was broken somehow. I reinstalled
+> >>> everything (Kernel, Xenomai) from clean sources, leading to a build
+> >>> which claims to be rc2. Nevertheless my system crashes, giving
+> >>> the same errormessages in syslog.
+> >>> Things change if I run the same program on a single-cpu machine
+> >>> or compile my kernel without SMP support, then everything seems to wo=
+rk
+> >>> fine.
+> >>>
+> >>> Thanks again, Stephan
+> >>>
+> >>> <syslog>
+> >>> I-pipe: Domain Xenomai registered.
+> >>> Dec  6 11:38:08 localhost kernel: Xenomai: hal/x86 started.
+> >>> Dec  6 11:38:08 localhost kernel: Xenomai: real-time nucleus v2.3-rc2
+> >>> (Baroque) loaded. Dec  6 11:38:08 localhost kernel: Xenomai: starting
+> >>> native API services. Dec  6 11:39:13 localhost kernel:        waiter =
+=3D
+> >>> kernel/xenomai/nucleus/intr.c:627 (xnintr_attach(), CPU #1) Dec  6
+> >>> 11:39:13 localhost kernel:        owner  =3D <NULL>:0 (<NULL>(), CPU =
+#0)
+> >>> Dec  6 11:39:13 localhost kernel:        d8e31e88 c02d426e c02dfcdd
+> >>> f96a3385 00000000 00000000 00000000 00000000 Dec  6 11:39:13 localhost
+> >>> kernel:        00000000 c03bf080 db303124 00000000 f966af7b db30312c
+> >>> db303120 00000000 Dec  6 11:39:13 localhost kernel:        00000001
+> >>> 00000000 00000001 00000000 00000000 00000000 db303120 00000007 Dec  6
+> >>> 11:39:13 localhost kernel: Call Trace:
+> >>> Dec  6 11:39:13 localhost kernel:  <f96a3385> xnintr_attach+0xd1/0x287
+> >>> [xeno_nucleus]  <f966af7b> rt_intr_create+0x941/0x988 [xeno_native] D=
+ec
+> >>>  6 11:39:13 localhost kernel:  <f965efba> __rt_intr_create+0xaf/0xf6
+> >>> [xeno_native]  <f965eec5> rt_intr_handler+0x0/0x46 [xeno_native] Dec =
+ 6
+> >>> 11:39:13 localhost kernel:  <f9664227> rt_mutex_release+0x323/0x32f
+> >>> [xeno_native]  <f96c87b3> hisyscall_event+0x13e/0x251 [xeno_nucleus]
+> >>> Dec  6 11:39:13 localhost kernel:  <f96c8675> hisyscall_event+0x0/0x2=
+51
+> >>> [xeno_nucleus]  <c0135c55> __ipipe_dispatch_event+0xd6/0x1dc Dec  6
+> >>> 11:39:13 localhost kernel:  <c011075a> __ipipe_syscall_root+0x9e/0x14=
+7=20
+> >>> <c0102ad6> sysenter_past_esp+0x3b/0x67 Dec  6 11:39:13 localhost
+> >>> kernel: Xenomai: watchdog triggered -- killing runaway thread
+> >>> 'CAN-ISR-2' </syslog>
+> >>
+> >> That all sounds quite weird, also the spinlock debugger output above
+> >> that says no one is owning the lock, but we are spinning on it.
+> >
+> > This may happen if the lock is not initialized, because an unlocked lock
+> > need to be initialized with ~0. Does the following patch help ?
+> >
+> >
+> >
+> > ------------------------------------------------------------------------
+> >
+> > Index: ksrc/nucleus/intr.c
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > --- ksrc/nucleus/intr.c	(r=C3=A9vision 1920)
+> > +++ ksrc/nucleus/intr.c	(copie de travail)
+> > @@ -40,7 +40,7 @@
+> >  #define XNINTR_MAX_UNHANDLED	1000
+> >
+> >  #ifdef CONFIG_SMP
+> > -xnlock_t intrlock;
+> > +xnlock_t intrlock =3D XNARCH_LOCK_UNLOCKED;
+> >  #endif /* CONFIG_SMP */
+> >
+> >  xnintr_t nkclock;
+>
+> That should explain it (hmm, and probably a bug for my highscore...).
+> Please apply.
+>
+> Jan
 
-Hello,
+Seems to be solved.=20
 
-Sometime i lose my i/o privilege put with the system call ioperm (in
-the main function of my program).
-
-My application stop with a "killed" message in the console and  in
-/proc/xenomai/fault i've an "general fault".
-To ignore this problem, i use the call system iopl (with full
-privilege) or recall ioperm before each inb or outb.
-But there is a problem, why i/o privilege are losted ?
-
-In attachment you can find an archive with an example (application and
-source) witch show the problem.
-This program has 2 task :
-- task_1 priority 23 period 100 ms, lock a mutex, access to /dev/rtc,
-unlock the mutex, outb on hardware.
-- task 2 priority 25 period 1 ms, do nothing !
-
-I put a 1 ms period to task_2 because it's near the speedest period on
-my cpu (166 MHz).
-With this period it stop immediatly.
-If i put 10 ms it's need 1 or 2 minutes.
-
-On my Pentium 4 (Ubuntu on VmWare worstation under WindowsXP), i put 30
-ms (the more speed before overrun).
-
-If i use iopl (and not ioperm), no problem.
-If i just have task_1, no problem.
-If i don't use mutex (lock for Rtc access) on task_2, no problem.
-
-I use Xenomai Xenomai 2.3-rc2 (adeos 1.5-02), same probleme with
-2.2.3.
-
-If you have an idea.
-
-thanks
-nicolas blanchard
-
-
---=__PartB3978D3E.0__=
-Content-Type: application/octet-stream; name="xeno-Nico_04.tar.gz"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="xeno-Nico_04.tar.gz"
-
-H4sICKzQdkUAA2ZyLjEzMzE5LjAueGVuby1OaWNvXzA0LnRhcgDUWntwVNd5P+feu9IFLWj1AAOS
-zQqELTWwqxePOGCeAmFjjEHCD4zXq90r7YZ9efdeRTTQCC9gKTK27KQ2dR8B263jJPXQemJ37KSG
-QLFpOq3HaYNnMtOxm9hdYpzBU0JlEKjfdx67dy/CTjzOH72jo3N/3/ed7/vO437nsaffSCQXbIyG
-koGmNn/KSEeT4WgokDbJF/g0wbN44ULMmxcvbLLn8LS2tDYvJs1NC1sXLlwIjGbS1NzW3NJKvE1f
-pBPXeqyMGUx7vSQBbfBpcp/F/3/6fKN9w1pKaR4rRCWIDg1qehvkfzGX09uIl5SSBjIX8hKGIQ2A
-DKR34R2TC5IGSYVUDUqq92g6pirAVYJHRWIPlMVUW0EIJixPPJzPaIeBBykChL2QSgRfgawJ+E3A
-w/QOYEwlwgamBpBvANuYvIC9Nt6d75vhidpClvfHot3+WHhBLJqw+n2ZpK+F0z3C93Ubu0Rb8YRP
-hbAxE9IsQbte5G5IZZAqhVyJaI+pkKZDmo3tBekGrPcEfqkOLG3qDvok2zv6W27zeQoR7SueaZCu
-gzQDUimkyYJeM4F9j8hvprwONaIDHxR16hL41wLPFvJLBV4g8HqBl6PvD2vM/Uqw3C74nYJ/r8Bf
-FTgqcJvAOwVeIvCQwGsEXiP82SDw09J/gQ/ieHqG2/eQj8d3CPkPBL9Z4EUCfxeS9zHp7xSykRbX
-b7rAuwTe7Si/RODbBN4v8HcEftzhz3OAD9nwlxz2XnS0x33AXwP+YZ9XwKgqEfI5wX+dFB4vpJ85
-8H859BEY/4mgGe0zcPA3kbQZMIOZHYFQ2giaRh5i4DQZisaNdCCRaTGjoR0ZEogmomZByjADcl7J
-E8NGzOCa4pZp9F+FC5Y4DoYetKJpo2AM+GES6AFLBaE0KAlmDBK4tS+w2eiNZkwjvToWzGQM8CnQ
-G08muMuBQN6PrwWj0jusdMqMoGJeawECmWhvHGRJMmUkSCiWBAsgGkKhRSSaDJkxkkpHE2YPAUkj
-njJ3QpXxPRgO41sUCqbjSEgEYySw/g7wIhxNBKyMAVUIoC7hVzwYTZB4LBnaEYzFsEDGyoBRkDLC
-QTMIwt2ZjGj2ANLXbVi/anWgxScmSkVECmrrX5VhlUV1lUnwdyo4MpYgpY7ybx3HhCcanYKlX6AF
-/gVSiAWcr+T5OozXEghgMyAvBVot5qDcizmYqsccBmgD5hCI5mMOgacJcxjpbZhDAFuCOQSjpZhD
-0FyBOQTQNZiDxQ7MIbBtwByc2YQ5DNpOzCGo3o05BNP7MIcg9wDmEGTDmENwjmAOATqGOQTbFOYQ
-sLqG3s+e1XN/B67nVPA7dxqcO3WcjC/0gMT4vGrxPY7PwxpG8PXMu+PwzMOaRpB35i2GscYRbKYz
-RxnGmkcwzJ45wjC2QASb+MwhhrElIg2IRxjGFolgj54ZYBhbJoKh7kyKYWyhyArEDzCMLRXpQLyJ
-YWyxyCbEKxjGlovcjbiJYWzByAOIvQxjS0awQmc8DGOLRlKICcPYspF+xOeuIMYWjgyw+jOMLR0Z
-ZPVnGFs8MsLqzzC2fOQgqz/D2AORQ6z+DGNPRL7L6s8w9kjkCKs/4OaP7h96L/urc5s6N0deeBRr
-Av/u3BrZMazpOT/Inx8Zgb7bksOJa8/x5dDF2bPacHYMWPuOmsr4W9kT2rbtx4dr64/zPh5YxmKt
-6f6wNntUe3YXdu/bhzEb9ux72/rwpAv59JQQPzwfVhigqfIfsM/hZdIbWj3Sxt86dZzZzp7tONB+
-fkirzy0Ho0Pto9ndo8QqHW4/D9KzIBtaU68Pt49CpkHZDojUuX1QtTcAo07I2dAC3iNgOdd4Ja/F
-dAOxHwt08gI6Tvr5glr9o8i7mxUYy+4eIzuxwFNInAvEA+1voW2Un5SqHxhuH0Mvozb9VQW//gpL
-fXR5fFyIzYFX6dJah0uvouwxECh/2TUAAks91qST7K3yw1L+4hGs8pePon0VYgBqxYF8eBDo2VFa
-vu/EFWbjINpQLk/o1ttoaivwZIcMt+vDXe7B9rGeoa7R8pfbx4a7Rn8jmA0HoBxYeflyvkWwI0Z5
-R4zyjhgTms+h5jEYKNIf6xhQR9CXvrF8efRFlvCOAO+fx/K+zHjDhUWprfM22EpiSy3BIk/JIlu3
-7DnbBOIwoNlwyh4th79jOe3Yu1rjCRDHoJw7COIH9pk4mKAuT4/xoYKRukCtFtQl8B1AOWTmBi5x
-WnmR5K8vFUkiM7dV0GiR5NFiSWTm5l9CX85j/0PjCVneGmyJsZT7wdsA6C7eFji75I5csg1y0T5L
-L7HvEptmKzbNLi7jER+C+zr7BwFl0yPMFzZCBi5i257P7j7PeuW88KMf9bRdYiOJvPdblzSZG0H5
-40M/z/0vvLiQlX2bDN1X7x4y6z1YeKizPq88M7HyEVR++qL4+IRTK4YKTtVMXO5FLPedi8WVm+mo
-3D/xyrEh9+wnE+r5Keq56yKr3IpV5flvP/fSJ6Jysz69ckz5kxMr/yUqv/hJceVOfbPg1C0Tl6OP
-A+8nn+RHBowdDbxgQ/qAMbrt/u042O/a2nxhSy4LjD3Hn6/CuOzO/ekoFMriRHPgWx4WLc81vnVs
-VPnyycz0odPj1X8/3H4ue5I2jg5dZNT02ewJ97b7A9vFBze0/XyumWnsAo1D1ujQ7rEDLzF9r+H/
-xivHrigfquPVr2R/Q7NXxq3f5nDVP7z9/LA1Orx7bOjs9uNsvoBJ4jDuLbOj42bla7Usng+vHst+
-qAHF+h8+aYyIueX1T9DiLyvZ3JL7ISDOz6+vFNIeihghr2096WULzGavkU5754Xne5N98GYlMjd7
-58Us2POk04aV9m6AxZ73dly+bjZDk4k/bPT502aI9IS9qe6ClBEyrbThlWxQmOd1JWLFOrgnfEVd
-7ATu8a7hZ8s1/bxKW4vdumAw696VoZCRsfnAl+W4G2iQrMbJpHPlltuahQRf53s7uZdML6PbNw0T
-cHEFbCejypZilXZXr1Z5NZeptJHZWg8eey7X1jJdEDmum3GPj3ta3Gd7xV6sY4+mYzys3gtrY8wf
-0nTU/BLl5wEYF6YJvTiO3PDJYSDH7wjPA/CsAOPhpv2aju8dkOP+DD/VKpHD55fUgQ4uJrHsOcjf
-3Kc5jwZ+pwfPUuT7IqjLWkhbIfVA6oO0H9KTkP4G0suQTkL6OaQPIF2AVDKo6dMh3QhpEaS1kLZC
-6oHUB2k/pCcHCzYawB6LjetWr77Z27BuY1ejt9XX5lvkbejqthKmxdGCZouhlsbPKdnma/K15iUZ
-kpILP6/kH8L6Z+hkD54P8T0bmwbYOd0cWx+2MX4ZlfzcIB+LOCYrxRjFsXcC6PW2clzvn+fL4RQ3
-w3ZgNJ/xXylx6l38GB/b1z/Mx6586pj8H8P/xwk/sXHsfPH5et5oLZi6DOXFnruZPKfmQQu5ACAE
-m/uElQpYKdzHR3vJEjDPdsz/CC9WqN0MmpkNRjhD3gHMgwP5SL62EAUsxPtlHGLm+wptSWVb/gSS
-z+fP7MyEjVTGH21dsshvxHr8LED4thB/txWNhfn/sL8Xd+8LWnytvkWctMBMG0YROZSx8MDQu3KL
-t8XXvMj35WZCBw4wy9XM8jbRG5i6idi94+eu4CZKK1XwWIzqyl8iqVQZ5sStSCxR8OhOcanRhEk0
-l7IWO9il7MesVMHjJiAKLdtZAQ03VnQmKqEuFQ+NXHegvUeYQ1uZQw/B/9+pmtg4C5CFlfSH0mb0
-C2sgHHoK6WH++KFFcNeHQxIFV3/GJ0VlmPeFiD+SjBt+PLv3rwmaQb/Rb6RDURgDgdtBosffb/v5
-gyhvsqZSYfaL9iaMsDcUCaah6dVMJAmzQ56Mra2UqrFkoreYCGWLSpaIkqyA7CVejv1Dgm4nFGnT
-hQnRudw5TZsNzaEK/S6tZBXAAdfs0kCgLxgjrhsQK3NhAGyGl2ehzKRKikeykwP41eAsaBLX7Eag
-Tc5jrQWFJ/cnIsFEOGYApbQNi5adBLI8K0vFgiEjkoyFjTTRS9aWJlPBBy2DlKwzuUVBaCElHVhW
-mauRyZs7Azg3BzZtWLm6veOODWvaN5OS9Xj+KVmk5GdopGy2QgoneXZTmt4gTemNwhQrfXtXZ/vd
-RZr1PzpHbTxoAtRadpmpDrGTQ1KvVpea8UDGCBF12r8T7jkQ4hBI1OmcoCEhkrTSRL2OU3QmEg7u
-JOoMTnEzShIKzeQEDxJ2GtAt6ixOYYa+xgrVcMoMJsMotZxSi5RoJpwxiXo9J3mJOw7xjuZDIZ1O
-cej/ANbltGtKMN1L6LSbsCEsfepaYHwPGOWvs++aNbxleqKwPCOU+2H1e1jt44TW3KYgYZOnJ0zo
-TZy7C4INBtukZXYTpZuimVPcFAwoaHUluIsLTknBWAZ4gGsl7gs2N1sIXUuxHG4epZvt0s1/A8ai
-Yenm+meFX9zNW/OOuDGm06siPd1GUesOrplR7uVldE90s2ESer9UUfnXqIFNCzRMkYqlMHpwn0Kg
-XhRF2AcQSyiW28MOeakRxs/LOv8nHhh+xaTdwt8ergA+G20mnphGt5jJFKEVSHapeCBQZZ+OaPku
-Hm3xNKRKTEy08j3KiAfzxJYCEfdeVbbJilZ9RWEM3EKLWN2HUzV9Xvm8sTrxhcVqWkE8JRW0kqp6
-jT5Pr8JVA62gnpJK+D9valWZOrVmKrhcT9SpZWW3wOpDhVedv2ptQL257Ctl66uWuxVYHbtuJOur
-mAbQOqFGHTQC/Zoay0lZGapw4QshJVWUVpWVoQ1CSqeAHDe3BIzpFHgoO6kOrPpBYPL0vACEDiyK
-enlhtw/gcjfn3+TGKq8AJVNc+SJYgallFDmElBeqhnRPW5FYhY/pLlZVWWxhfZVkVBUK82a6qn3u
-YqOiBTn00tQp8J+KfQqdYD1DiFzQsOWGS8G1j3qU0Na6tmXz5qgzvPfcWzfnvm0KBUVzmerrJ1JN
-cHfn48upF5jYponEfv8hCgs+vp4Q/uWEf8uYR0DABa3qo3X+unt6FZXTcHGrzgbaMljtMQouqtTJ
-XGpZr9/ftKyujmlgMwn7xe9qZ61M2h9NhGJW2MCGI0UE9qNwEamY3x01RQlcW0AkynP4T2rX4FkQ
-9awMIba1CzzRpC9C2Bwcghf41vmvSPCusneYvuEdAhjO0PAGA8HcmTIy8AqLcjaZcio2IU4i6jQa
-P31K/7Z+uvdHkF7TX+vV/S++3/vjv32iT3/infd79RZNUWf7dH9Wo2q3LwbCTxxCcnMvZK816xd+
-dFq/R18m0i36f+tHdOvHir8KFClr8D/o1ZudhJbT98BildLBL3yQJByDpK4wRnBzolZS2edAwW2K
-OolyjHtP3NvD+y7drWmDlO+78cHGigFeOVXfp6ya4pJ0nB7xS3DScepLTkDHiavVRpe/7+O09JFS
-oHdktf14BiC+p8K68XPF6OIlZvF6li+hP32veY0V6QTrYMeuTp4ekSIh4svsjJvBbsjNNM8j8g34
-RjpFfImkafhWrlq/wAz2El8kmIkQX3hnAgry3EwTX2/C8oGBTBTWXXYQAF7aiKEcf0nFTNQchf/w
-CcB/9kuxL51kv6P6jEigJx2E1aAvZCbTGTDAs6+G0sxYMB4NgYGkyf5xbbxkdwbEQsl43Eggzei2
-egPBdDDRa2QkTFndoKCAo4meZF60uztt9EkEocSQ78IfDrCyv8dTwz8gtpdld24oPx+Sj/w9GON4
-qZBjd2Mo/61XPprImwm/K4JyeIbVAXL/YuPLezSLCT/HYnYfArviQoxL2JR3ZvC+hyrl9oKcxs/A
-nP6tI+x7ZOdYeIb1JihaYbMr79vghviKkMOzLzyAWGHzWcpjCJ0k6wFyHSX8zMxeD8QxmxyetW0q
-4WdwmqiflLOEr3jegVONXsrP55z1SNnkvCDnBbkBW31l+33dJofz7yEwMlBydX/sseuDkOYtL9wt
-stt9mBTGwQqQWwFy7zjs4vOYTW7G45o+o6LAs8v9mZDDvmN3sSqK7xxJuUM2uXqQq7+G3PM2OfwF
-df417P5A1BXl2B2vCn6/y2WTQ/0/tOnD+wd4wOXUh+lVmxyesbpBLjKB3HGbnAlyZmXhvoPdv1PC
-Psrhb8V7K4vvbUm5fyXFdzFQ7sYJxv1ph9yRKn7nSD6yLT9wyN0Nk8xzNix5FxxyYyC3rvRqOYUW
-y62uLdxNsst5HHKnYPC1qlfL1TrkxryEfNuGZbs0OuRG6gj5jwnqgYdg9rtvxhxC2ibwT45l+VQ3
-gs9QXzwXXUUKcWiSQ199EyHftw0Yu0/OB+MqYeW5VEMec8sdecwtYDzkmBvAuMcxH8XyjF7ltxpZ
-HOOYd1RHHvPe35TH/JafvD+nipt73jwuY/jQoMRuzn9M4ikMr8jjqQxjHOC4nOHawxLzL6A+jysY
-np/H7MZY/rcDVcw8+jMS85WQO4/5Lx5mHk9neG8e2yMq4hkOPNOBZzlwjQPXOvD1DnyDA892YK8D
-1znwnKJxo5GPx90O3ODAfge+2YHx8vUJ0X8K9N9eBx/jt+wfCv2DJ8P1eVxBvk8K/UOhf3Au2yvu
-KVBo3zcg3/WM5E9nceqszd6vIK8Zurb9c5B7bfYvE/5bjrQ/mRbGE4XxNIMW+4M3C84/WtB/VXvQ
-Ymw68DcA4zGLJuqzjxbW5ajvm7QwHqlSRb5FC+1FFH6/0o5fceA3aWG8UmUa+U8H/2NaWO9Xgr2L
-wj95P3aSCEbyfuwshX9v8n5mneDL+7KtAsv7nSsB9wv7Fcp0shEw3n26Vdi7X8jL+7Qppfg+bZ/g
-y/u0wwLL+7RPCyzve35PKex3UP9LSiF+IH5VKexjEP9UlJf3b38hsLx/e1Zgef+WiqAr79+WAx4Q
-47ECxl+Nyg/47xT6v6QW34ddrBb2S8hfCviRZ2R7XkfWCf3y/m4YMB6h6YK/Qy3EGy/Y6xPy8n7u
-oFp8v/dRtbg/Dgks7/cecZQ/IbC83/sLgeX93o8d9RlV+e9nzJ7iJuVa8X3faq3Y/jytuL8WacX3
-fdsFX973fUAr1NcD9Y3b5jgvpD2AD9raZ9DBf8phjwS7owvY/mwL+bTfxsTeFTPcb+HPL5/7Z6RQ
-MBaz3dnFjX7GtHp6QGkgsLrzjs2BDeu3dAYCgNYUoVtX5wHs01J4PSHsa2tb1EpSmLWASDgZ6I0l
-u4OxANv3BYJWP2H7r0DYisd3SgPtG9cU9EuwdvPK29vzCI39XztX25u6DYU/Y2n/wet6q4QFCKFl
-UylXpSlt2SCpUtDd1TZFlLeiUqhoe9tp7X77zrHjxDahb0P9MGEhJfHbOT7HPvaxHyPek1p7ca3v
-35qV9oH4/jLbnw8Pv3q1VsMFcihhcD3n3b8YFFiJiCDCDHoh5zlu+ge1ZugfHZ3V8fjloFkP1Wy8
-ZLynryG/Gfp5fz+BHYfD6/DiPtqVkhNUjDgI52YW8sMlAXmGtsb47ZUByOMzE9Fr9KOEFxHmMW5b
-b00CO5c396XGMKZliDaHcye7+AtYb5lEdASAuwxRcQ4qV6WN8uJ4cjkekenyt4CQy3ESNl2LjkDm
-CiGBNx+Xfy7nR6iAXnh7cTe9zJ8/cOg5A75rMtJg+OrOkAanV8iFUrPT0PvRockrQPzr8MbwkHb/
-L9rQX1XAW37l7e0l9//scrlkJ/f/ynj/r1QuOev7fx8RfohOIOgeTOuFq6vuNH/xmUixMIJnWlR0
-BqFmA2s1UuOGvektyybF8TOQAj+u+LyYEB1ZpKQwA6zVhiwvcMfiercag+zYpsDOUaAKZUecSgad
-Vqn9ULQrhEC3gNkIt68pm4AxpSJQCxH40OJPpxJjDmhi7yukUMitJLRPgnrtkBbJt9m4T8UcZ7Cv
-bHc+MsnfJHN/MZ4MjKJJMvCRiRvINvHFrnwFUliD6vM5voPW7nq3VIAj+MsVNB6yQRZocoqNNbZE
-dSarb0gNlvnxMaYDTGQyfP4yNt6GjP1jumFhdZZEBGorFGgArUYOVe74nIMTnrGVyB4U0wob3lHD
-a7TrEZuMS5WzFAwu0OcUUU7DPhDB2dXYENDbDYv6YXDoe82vhSy+fQmyBYzzfO+g6bu/FrJ2tiBI
-QgV71FaIMmQvpxK3g/VXyGzRoO1CnWG70apbdIvrQ+affl/V6lsOEUZRMlWzCtjaDWiYlTQB3k11
-Eb4kNQ13HMsNNHXSnfdpF+u5iTqIOsT4GKPmd1jtwuBzKhg/mNwM0tNtZAx+uCBWKrYgtWSXaNRC
-YJ2P2yrFUcGGhd6t+bLR2OLDmTU56dAmxU+tH6fhqlVBZ85hfF7i2xOB39OqzYCjmAHnP5uBjxjs
-S+DlSwb721XnvFV1zsepzW3Wa17nlHZOfY+eNY65+nTPxECFwJMpUUw4RRQH01QwuJWHq2i8OlxB
-bjwnykwbrqlAfT5oV9fUVq3hEeQXvRvWIoRcWXyWxS767fc/QTXQQgE9pOgLQK/gWKsKUfql8GOM
-ltsM3U4Q1L02faT4ddRpd4I66y6SZwMCgVpQFLEbx6MsFHzDa0dJsHwxeIS1oIhlpdv1oKUWx5jX
-lz/pnKrFISK1NMlorhJmDtncAlMCr28rElhschvgfDK7CxJk/qHBjKFt0R2LFtEkQi5ImRiluIyL
-LvB4NuWdgnBDrTnI6qTqdZpNU+1dSy96yBMCjlHgguhjWNCIVlMb7GoIDEpg2ynBI+rUYgpSiep3
-R4QxMSsZnB80UvIugkEFRcWxN8wfi7adLXKvZDK5sxa2Jgw1g0mf5TD9FkvC5yKT6NnG4ogsuykW
-fBYT/7ME1YsxsoGTFOG8oAiHK8KJFLHzSkUodvVtinDeoYh3qiHd+j+jB0fXg/NaPaSTItxkRbsu
-hjSSM/MBLOGm6GY8kZc9t9UExf9vdS8HQ1g/rJgG+/+f5f6//ZNdZv5/yd4ulnZK6P+X1v//8zHh
-fDwNTwP/OKi1zqpU+gMoQvyDX85oEpefUUJ+q3t+6PrgWR1XFSAj1MMvU/Rm0+F4RK7n0JMe6G6V
-bho3F4PJBJ5SYZPmcjyLSQhM8buQLLMCsa77XOFezyTuUbN2fBYGbSSzPCtnazjpjm7gc0Sah6Ic
-FMtN+P7CC8UnfV6enH45lNi6vu8Dp5/yM1jO5nsks2m4rgmpMWfwsUdzPZqb0c19yAmCxaaiaE2R
-naWJSHgm/EHdbIGwu4t5Yf2hS4lmQSvZfz7MWqzDOqzD/yn8Cz5d+4gAUAAA
-
---=__PartB3978D3E.0__=--
+Thank you, Stephan
 
