@@ -1,15 +1,15 @@
-Subject: Re: [Xenomai-core] Re: [Adeos-main] Latency trace on ARM
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200612182252.15490.Sebastian.Smolorz@domain.hid>
-References: <E1GutB2-0005VT-Vb@domain.hid>
-	<E1GwKz1-0008O4-Mn@domain.hid> <1166473710.17298.15.camel@domain.hid>
-	<200612182252.15490.Sebastian.Smolorz@domain.hid>
-Content-Type: text/plain
-Date: Mon, 18 Dec 2006 23:04:16 +0100
-Message-Id: <1166479456.17298.35.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <457826BC.1080008@domain.hid>
+Date: Thu, 07 Dec 2006 15:35:40 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [BUG] module usage counter of xenomai native
+	corrupted (version 2.2.0 and 2.2.5)
+References: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>
+In-Reply-To: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7EA42E0CB1F3C7F2321B9206"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,40 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
-Cc: adeos-main@gna.org, Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2006-12-18 at 22:52 +0100, Sebastian Smolorz wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2006-12-18 at 17:04 +0100, Sebastian Smolorz wrote:
-> > > Jan Kiszka wrote:
-> > > > If you have anything more pending, please post soon, Gilles is
-> > > > collecting the ARM stuff for Xenomai 2.3.
-> > >
-> > > Attached are all patches that I posted in the last two months but didn't
-> > > get into Ipipe CVS or Xenomai svn. The first file pools all patches for
-> > > Ipipe, here comes an overview what it comprises:
-> > >
-> > > - I-pipe for Samsung S3C24xx
-> > > - I-pipe tracer for ARM
-> > > - Introduce __ipipe_mach_release_timer()
-> > > - Fix ipipe_tsc2ns()
-> > > - Don't activate the tracer too early during the boot process
-> > >
-> > > Please consider these patches for Xenomai 2.3. Thanks!
-> >
-> > They will be included. The point is that we are not using the Adeos CVS
-> > anymore, waiting to switch to git asap.
-> 
-> OK, didn't know that. These patches are the most current, please take them and 
-> not the ones posted before. Thank you!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7EA42E0CB1F3C7F2321B9206
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Gilles maintains the ARM support; he will push upstream the patch that I
-will merge eventually. In any case, 2.3 final won't be rolled out
-without the updated ARM patch in. Thanks.
+Thomas Wiedemann wrote:
+> Hi,
+>=20
+> there seems to be a bug in rt_task_create(). When no more memory is
+> available, the module usage counter of xeno_native is decremented. I
+> guess it is not incremented before, however, so the counter gets 0 and
+> wraps then to a negative number. It is therefore not possible to remove=
 
--- 
-Philippe.
+> the module.
+>=20
+> I appended a small program to demonstrate this. It simply eats up all
+> memory from xenomai by registering as much mutexes as possible,
+> and then tries to execute rt_task_create(), which fails. When started
+> again, the bug occurs at rt_task_shadow(), as the mutexes have never
+> been deleted.
+> Compile with  gcc -O2 -Wall `xeno-config --xeno-cflags` `xeno-config
+>  --xeno-ldflags` -lrtdm -lnative -o rttest rttest.c
+> then simply run it, and watch the output of lsmod before and after.
+>=20
+> Tested with xenomai 2.2.{0,5} and linux 2.6.17.8, modules loaded:
+> xeno_native and xeno_nucleus.
+>=20
+
+Confirmed. Requires a closer look to find the leak path.
+
+Thanks for reporting so thoroughly,
+Jan
 
 
+
+--------------enig7EA42E0CB1F3C7F2321B9206
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFeCa9niDOoMHTA+kRAp/tAJ4poU9hV60aw2xO+RVB/2U5o0bwfQCfdqGb
+3qXY7baq5mNQRH7TV4XsEq8=
+=8f09
+-----END PGP SIGNATURE-----
+
+--------------enig7EA42E0CB1F3C7F2321B9206--
 
