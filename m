@@ -1,14 +1,13 @@
-Message-ID: <457820B7.3030603@domain.hid>
-Date: Thu, 07 Dec 2006 15:09:59 +0100
+Message-ID: <457820AF.4070403@domain.hid>
+Date: Thu, 07 Dec 2006 15:09:51 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] problems using rt_queue_alloc: returns 0 although
-	enough memory available (xenomai 2.2.3)
-References: <OF0E0E01F1.79314A79-ONC125723D.002F4B91-C125723D.004B0598@domain.hid>
-In-Reply-To: <OF0E0E01F1.79314A79-ONC125723D.002F4B91-C125723D.004B0598@domain.hid>
+Subject: Re: [Xenomai-help] I/O privilege losted and killed message
+References: <s577092a.032@domain.hid>
+In-Reply-To: <s577092a.032@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAEBBF5938736B6FC88B8DFB7"
+	boundary="------------enigFD866F9244D26B4573A60860"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,44 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: juergen.lanner@domain.hid
+To: Nicolas BLANCHARD <n.blanchard@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAEBBF5938736B6FC88B8DFB7
+--------------enigFD866F9244D26B4573A60860
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-juergen.lanner@domain.hid wrote:
-> Hi gentlemen!
+Nicolas BLANCHARD wrote:
+> Hello,
 >=20
-> I had a problem with real time queues recently and want to know if I
-> understood something wrong or if it is a real problem.
+> Sometime i lose my i/o privilege put with the system call ioperm (in
+> the main function of my program).
 >=20
-> The problem was that I couldn't alloc enough memory for my message in t=
-he
-> internal buffer before sending it.
+> My application stop with a "killed" message in the console and  in
+> /proc/xenomai/fault i've an "general fault".
+> To ignore this problem, i use the call system iopl (with full
+> privilege) or recall ioperm before each inb or outb.
+> But there is a problem, why i/o privilege are losted ?
 >=20
-> I tried to bring some light into the problem by printing the data I get=
+> In attachment you can find an archive with an example (application and
+> source) witch show the problem.
+> This program has 2 task :
+> - task_1 priority 23 period 100 ms, lock a mutex, access to /dev/rtc,
+> unlock the mutex, outb on hardware.
+> - task 2 priority 25 period 1 ms, do nothing !
+>=20
+> I put a 1 ms period to task_2 because it's near the speedest period on
+> my cpu (166 MHz).
+> With this period it stop immediatly.
+> If i put 10 ms it's need 1 or 2 minutes.
+>=20
+> On my Pentium 4 (Ubuntu on VmWare worstation under WindowsXP), i put 30=
 
-> from rt_queue_inquire to see the queue's state in more detail.
-> But this seems ok (at least from my point of view)
+> ms (the more speed before overrun).
 >=20
-> Did anybody see the problem as well? What could be the reason?
+> If i use iopl (and not ioperm), no problem.
+> If i just have task_1, no problem.
+> If i don't use mutex (lock for Rtc access) on task_2, no problem.
+>=20
+> I use Xenomai Xenomai 2.3-rc2 (adeos 1.5-02), same probleme with
+> 2.2.3.
+>=20
+> If you have an idea.
 
-I do not yet fully understand your problem (a self-contained demo
-program can help to explain a scenario better). But if you are trying to
-find out how many memory is still free in a queue-pool, rt_queue_inquire
-will not help you. It always returns the full pool size without any
-message allocated.
-
-Maybe we could enhance this interface by the currently available pool
-memory if this is desired.
+No idea yet and no time to dig out the reason. But I can confirm the
+sporadic lost of ioperms of a Xenomai task that enters secondary mode
+(QEMU UP with CONFIG_XENO_OPT_RPIDISABLE and CONFIG_PREEMPT_NONE).
 
 Jan
 
 
---------------enigAEBBF5938736B6FC88B8DFB7
+--------------enigFD866F9244D26B4573A60860
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -65,10 +79,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFeCC3ncNeS9Q0k+IRAguUAKCW6bdX89+LsYcTx13WAATf02pCvQCfYPvj
-n2Rk13+n5zz6ICzU64BKX8w=
-=8qKb
+iD8DBQFFeCCvniDOoMHTA+kRAq30AJ960oPKonUofMPY3ErdBQaUUVXj6gCcDHqy
+Fd+ZmksECamrnZYiocG9vmQ=
+=Q4kr
 -----END PGP SIGNATURE-----
 
---------------enigAEBBF5938736B6FC88B8DFB7--
+--------------enigFD866F9244D26B4573A60860--
 
