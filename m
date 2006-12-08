@@ -1,16 +1,14 @@
-Message-ID: <45795DE1.70000@domain.hid>
-Date: Fri, 08 Dec 2006 13:43:13 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45796841.4040106@domain.hid>
+Date: Fri, 08 Dec 2006 14:27:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Buildbot: Failure building Xenomai kernel for
-	TQM860
-References: <200612081309.31003.niklaus.giger@domain.hid>
-	<45795D28.8010606@domain.hid>
-In-Reply-To: <45795D28.8010606@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2367CF6AD0EAEC623AF431AB"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [BUG] module usage counter of
+	xenomai	native	corrupted (version 2.2.0 and 2.2.5)
+References: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>	<457826BC.1080008@domain.hid>
+	<4579248A.8040201@domain.hid> <4579387F.7030505@domain.hid>
+	<457956F3.6090904@domain.hid>
+In-Reply-To: <457956F3.6090904@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080606010507030809090605"
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,77 +18,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2367CF6AD0EAEC623AF431AB
-Content-Type: multipart/mixed; boundary="------------090500040809080704010104"
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------090500040809080704010104
+--------------080606010507030809090605
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Wolfgang Grandegger wrote:
-> Hi Niklaus,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
 >=20
-> I just compiled my Linux 2.4 kernel for TQM860L with the latest revisio=
-n
-> of Xenomai and I cannot reproduce your problem. In you linker path ther=
-e
-> are no Xenomai objects. How does it come? Do you use --arch=3Dppc with
-> prepare_kernel (--arch=3Dpowerpc is not valid any more for the ppc tree=
-).
+>>Gilles Chanteperdrix wrote:
+>>
+>>>Jan Kiszka wrote:
+>>>
+>>>
+>>>>Thomas Wiedemann wrote:
+>>>>
+>>>>
+>>>>
+>>>>>Hi,
+>>>>>
+>>>>>there seems to be a bug in rt_task_create(). When no more memory is
+>>>>>available, the module usage counter of xeno_native is decremented. I
+>>>>>guess it is not incremented before, however, so the counter gets 0 a=
+nd
+>>>>>wraps then to a negative number. It is therefore not possible to rem=
+ove
+>>>>>the module.
+>>>>>
+>>>>>I appended a small program to demonstrate this. It simply eats up al=
+l
+>>>>>memory from xenomai by registering as much mutexes as possible,
+>>>>>and then tries to execute rt_task_create(), which fails. When starte=
+d
+>>>>>again, the bug occurs at rt_task_shadow(), as the mutexes have never
+>>>>>been deleted.
+>>>>>Compile with  gcc -O2 -Wall `xeno-config --xeno-cflags` `xeno-config
+>>>>>--xeno-ldflags` -lrtdm -lnative -o rttest rttest.c
+>>>>>then simply run it, and watch the output of lsmod before and after.
+>>>>>
+>>>>>Tested with xenomai 2.2.{0,5} and linux 2.6.17.8, modules loaded:
+>>>>>xeno_native and xeno_nucleus.
+>>>>>
+>>>>
+>>>>Confirmed. Requires a closer look to find the leak path.
+>>>
+>>>Here is what happens: the task is created with the XNSHADOW bit, and
+>>>destroyed before it was xnshadow_mapped, but the deletion hook calls
+>>>xnshadow_unmap because the task has the XNSHADOW bit. And xnshadow_unm=
+ap
+>>> decrements the module count.
+>>
+>>Here is an untested quick fix.
+>>
+>>
+>>
+>>-----------------------------------------------------------------------=
+-
+>>
+>>Index: ksrc/nucleus/shadow.c
+>>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>--- ksrc/nucleus/shadow.c	(r=C3=A9vision 1930)
+>>+++ ksrc/nucleus/shadow.c	(copie de travail)
+>>@@ -888,6 +888,9 @@
+>>=20
+>> 	p =3D xnthread_archtcb(thread)->user_task;	/* May be !=3D current */
+>>=20
+>>+	if (!xnshadow_thrptd(p))
+>>+		return;
+>>+
+>> 	magic =3D xnthread_get_magic(thread);
+>>=20
+>> 	for (muxid =3D 0; muxid < XENOMAI_MUX_NR; muxid++) {
 >=20
+>=20
+> Nope, shows unwanted side effects, probably because xnshadow_thrptd is
+> already NULL'ed in do_taskexit_event. Looks like it takes an extra flag=
+, no?
 
-The problem pops up with CONFIG_XENO_OPT_SCALABLE_SCHED.
+Setting xnshadow_thrptd to NULL in do_taskexit_event does not seem to be
+ that useful. Here comes version 2.
 
-The definition of xnlogerr is not visible to queue.h, namely to the
-inline function getmlq. Here is possible solution at XENO_ASSERT level.
+--=20
+                                                 Gilles Chanteperdrix
 
-Jan
-
---------------090500040809080704010104
-Content-Type: text/plain;
- name="assert-with-xnarch_logerr.patch"
-Content-Transfer-Encoding: quoted-printable
+--------------080606010507030809090605
+Content-Type: text/x-patch;
+	name="xeno-avoid-unmapping-not-yet-mapped-shadow.2.diff"
 Content-Disposition: inline;
- filename="assert-with-xnarch_logerr.patch"
+	filename="xeno-avoid-unmapping-not-yet-mapped-shadow.2.diff"
+Content-Transfer-Encoding: quoted-printable
 
-Index: include/nucleus/assert.h
+Index: ksrc/nucleus/shadow.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/nucleus/assert.h	(revision 1930)
-+++ include/nucleus/assert.h	(working copy)
-@@ -27,7 +27,7 @@
- #define XENO_ASSERT(subsystem,cond,action)  do { \
-     if (unlikely(CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
-         xnarch_trace_panic_freeze(); \
--        xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__,=
- (#cond)); \
-+        xnarch_logerr("assertion failed at %s:%d (%s)\n", __FILE__, __LI=
-NE__, (#cond)); \
-         xnarch_trace_panic_dump(); \
-         action; \
-     } \
+--- ksrc/nucleus/shadow.c	(r=C3=A9vision 1930)
++++ ksrc/nucleus/shadow.c	(copie de travail)
+@@ -888,6 +888,9 @@
+=20
+ 	p =3D xnthread_archtcb(thread)->user_task;	/* May be !=3D current */
+=20
++	if (!xnshadow_thrptd(p))
++		return;
++
+ 	magic =3D xnthread_get_magic(thread);
+=20
+ 	for (muxid =3D 0; muxid < XENOMAI_MUX_NR; muxid++) {
+@@ -1639,8 +1642,6 @@
+ 		xnshadow_relax(0);
+=20
+ 	xnlock_get_irqsave(&nklock, s);
+-	/* Prevent wakeup call from xnshadow_unmap(). */
+-	xnshadow_thrptd(p) =3D NULL;
+ 	xnthread_archtcb(thread)->user_task =3D NULL;
+ 	/* xnpod_delete_thread() -> hook -> xnshadow_unmap(). */
+ 	xnpod_delete_thread(thread);
 
---------------090500040809080704010104--
-
---------------enig2367CF6AD0EAEC623AF431AB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFeV3hncNeS9Q0k+IRAnM9AKCUpRPVjdDFn35LsprcgGUOzcIQEACeLSJW
-p1daJdkZ5/B27okasYtbr6c=
-=ysBN
------END PGP SIGNATURE-----
-
---------------enig2367CF6AD0EAEC623AF431AB--
+--------------080606010507030809090605--
 
