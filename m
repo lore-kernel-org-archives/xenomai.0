@@ -1,14 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4575A1E9.80105@domain.hid>
-References: <45704CAB.5060502@domain.hid> <1164992204.4952.109.camel@domain.hid>
-	<4575A1E9.80105@domain.hid>
-Content-Type: text/plain
-Date: Wed, 06 Dec 2006 18:08:04 +0100
-Message-Id: <1165424884.7218.148.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: libnative versioning
-Reply-To: rpm@xenomai.org
+Message-ID: <45795DE1.70000@domain.hid>
+Date: Fri, 08 Dec 2006 13:43:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Buildbot: Failure building Xenomai kernel for
+	TQM860
+References: <200612081309.31003.niklaus.giger@domain.hid>
+	<45795D28.8010606@domain.hid>
+In-Reply-To: <45795D28.8010606@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2367CF6AD0EAEC623AF431AB"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,39 +20,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, 2006-12-05 at 17:44 +0100, Jan Kiszka wrote:
-> Index: include/native/mutex.h
-> ===================================================================
-> --- include/native/mutex.h	(revision 1920)
-> +++ include/native/mutex.h	(working copy)
-> @@ -121,10 +121,6 @@ int rt_mutex_release(RT_MUTEX *mutex);
->  int rt_mutex_inquire(RT_MUTEX *mutex,
->  		     RT_MUTEX_INFO *info);
->  
-> -#ifdef __cplusplus
-> -}
-> -#endif
-> -
->  #ifdef __KERNEL__
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,18)
->  static inline int __deprecated_call__ rt_mutex_lock(RT_MUTEX *mutex, RTIME timeout)
-> @@ -146,4 +142,8 @@ int rt_mutex_unlock(RT_MUTEX *mutex);
->  
->  #endif /* __KERNEL__ */
->  
-> +#ifdef __cplusplus
-> +}
-> +#endif
-> +
->  #endif /* !_XENO_MUTEX_H */
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2367CF6AD0EAEC623AF431AB
+Content-Type: multipart/mixed; boundary="------------090500040809080704010104"
 
-Applied, thanks.
+This is a multi-part message in MIME format.
+--------------090500040809080704010104
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Philippe.
+Wolfgang Grandegger wrote:
+> Hi Niklaus,
+>=20
+> I just compiled my Linux 2.4 kernel for TQM860L with the latest revisio=
+n
+> of Xenomai and I cannot reproduce your problem. In you linker path ther=
+e
+> are no Xenomai objects. How does it come? Do you use --arch=3Dppc with
+> prepare_kernel (--arch=3Dpowerpc is not valid any more for the ppc tree=
+).
+>=20
 
+The problem pops up with CONFIG_XENO_OPT_SCALABLE_SCHED.
 
+The definition of xnlogerr is not visible to queue.h, namely to the
+inline function getmlq. Here is possible solution at XENO_ASSERT level.
+
+Jan
+
+--------------090500040809080704010104
+Content-Type: text/plain;
+ name="assert-with-xnarch_logerr.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="assert-with-xnarch_logerr.patch"
+
+Index: include/nucleus/assert.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- include/nucleus/assert.h	(revision 1930)
++++ include/nucleus/assert.h	(working copy)
+@@ -27,7 +27,7 @@
+ #define XENO_ASSERT(subsystem,cond,action)  do { \
+     if (unlikely(CONFIG_XENO_OPT_DEBUG_##subsystem > 0 && !(cond))) { \
+         xnarch_trace_panic_freeze(); \
+-        xnlogerr("assertion failed at %s:%d (%s)\n", __FILE__, __LINE__,=
+ (#cond)); \
++        xnarch_logerr("assertion failed at %s:%d (%s)\n", __FILE__, __LI=
+NE__, (#cond)); \
+         xnarch_trace_panic_dump(); \
+         action; \
+     } \
+
+--------------090500040809080704010104--
+
+--------------enig2367CF6AD0EAEC623AF431AB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFeV3hncNeS9Q0k+IRAnM9AKCUpRPVjdDFn35LsprcgGUOzcIQEACeLSJW
+p1daJdkZ5/B27okasYtbr6c=
+=ysBN
+-----END PGP SIGNATURE-----
+
+--------------enig2367CF6AD0EAEC623AF431AB--
 
