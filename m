@@ -1,15 +1,16 @@
-Subject: Re: [Xenomai-core] Re: [patch] memory barriers in intr.c ::
-	xnintr_lock/unlock()
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45774C35.3070101@domain.hid>
-References: <b647ffbd0611111559y8e66c37m12deb64828a85d08@domain.hid>
-	<45774C35.3070101@domain.hid>
-Content-Type: text/plain
-Date: Fri, 08 Dec 2006 18:54:01 +0100
-Message-Id: <1165600441.9091.32.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <4579A8CE.2040608@domain.hid>
+Date: Fri, 08 Dec 2006 19:02:54 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [BUG] module usage counter of
+	xenomai	native	corrupted (version 2.2.0 and 2.2.5)
+References: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>	<457826BC.1080008@domain.hid>
+	<4579248A.8040201@domain.hid> <4579387F.7030505@domain.hid>
+	<457956F3.6090904@domain.hid> <45796841.4040106@domain.hid>
+	<45797CC0.8010609@domain.hid>
+In-Reply-To: <45797CC0.8010609@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,56 +21,47 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
 
-On Thu, 2006-12-07 at 00:03 +0100, Jan Kiszka wrote:
-> Dmitry Adamushko wrote:
-> > Hello,
-> > 
-> > following the recent discussion with Jan, here is a patch that aims at
-> > allowing xnintr_lock/unlock actually do what they were supposed to do in
-> > the first instance.
-> > 
-> 
-> [...]
-> 
-> > 
-> > --- xenomai/ksrc/nucleus/intr-old.c	2006-11-12 00:17:56.000000000 +0100
-> > +++ xenomai/ksrc/nucleus/intr.c	2006-11-12 00:22:15.000000000 +0100
-> > @@ -135,12 +135,14 @@ static inline void xnintr_shirq_lock(xni
-> >  {
-> >  #ifdef CONFIG_SMP
-> >  	xnarch_atomic_inc(&shirq->active);
-> > +	xnarch_memory_barrier();
-> >  #endif
-> >  }
-> >  
-> >  static inline void xnintr_shirq_unlock(xnintr_shirq_t *shirq)
-> >  {
-> >  #ifdef CONFIG_SMP
-> > +	xnarch_memory_barrier();
-> >  	xnarch_atomic_dec(&shirq->active);
-> >  #endif
-> >  }
-> 
-> As Dmitry and I are still a bit undecided about who to evolve such RCU
-> locks best but still face this SMP bug in the current code, we are
-> suggesting now to merge the patch above as-is for 2.3 - before things
-> get lost for the release.
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>>Index: ksrc/nucleus/shadow.c
+>>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>--- ksrc/nucleus/shadow.c	(r=C3=A9vision 1930)
+>>+++ ksrc/nucleus/shadow.c	(copie de travail)
+>>@@ -888,6 +888,9 @@
+>>=20
+>> 	p =3D xnthread_archtcb(thread)->user_task;	/* May be !=3D current */
+>>=20
+>>+	if (!xnshadow_thrptd(p))
+>>+		return;
+>>+
+>> 	magic =3D xnthread_get_magic(thread);
+>>=20
+>> 	for (muxid =3D 0; muxid < XENOMAI_MUX_NR; muxid++) {
+>>@@ -1639,8 +1642,6 @@
+>> 		xnshadow_relax(0);
+>>=20
+>> 	xnlock_get_irqsave(&nklock, s);
+>>-	/* Prevent wakeup call from xnshadow_unmap(). */
+>>-	xnshadow_thrptd(p) =3D NULL;
+>> 	xnthread_archtcb(thread)->user_task =3D NULL;
+>> 	/* xnpod_delete_thread() -> hook -> xnshadow_unmap(). */
+>> 	xnpod_delete_thread(thread);
+>=20
+>=20
+> Can't comment on the correctness of the second hunk, but it
+> unfortunately doesn't change the situation that test case does not
+> longer terminate with the first hunk applied. May look like a trivial
+> issue - but it isn't. :->
+>=20
 
-Ack. It's in my patch queue. Given the changes, the risk for regression
-is zero and the situation could only improve with those, so this is
-going to be applied last.
+Indeed. And xnshadow_thrptd(current) =3D=3D NULL is used by xnpod_schedul=
+e,
+so the patch is probably completely incorrect.
 
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
-
-
+--=20
+                                                 Gilles Chanteperdrix
 
