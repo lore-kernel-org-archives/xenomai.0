@@ -1,19 +1,14 @@
-Subject: Re: [Xenomai-core] [BUG] module usage counter
-	of	xenomai	native	corrupted (version 2.2.0 and 2.2.5)
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1165613734.9091.59.camel@domain.hid>
-References: <OF7997031E.1BD006A7-ONC125723D.0046EB70-C125723D.0048376B@retarus.de>
-	<457826BC.1080008@domain.hid> <4579248A.8040201@domain.hid>
-	<4579387F.7030505@domain.hid> <457956F3.6090904@domain.hid>
-	<45796841.4040106@domain.hid> <45797CC0.8010609@domain.hid>
-	<4579A8CE.2040608@domain.hid> <1165602165.9091.45.camel@domain.hid>
-	<4579B76C.8060804@domain.hid>  <1165613734.9091.59.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Date: Mon, 11 Dec 2006 19:06:45 +0100
-Message-Id: <1165860406.5025.105.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+Message-ID: <457E6A01.4090500@domain.hid>
+Date: Tue, 12 Dec 2006 09:36:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] [PATCH] consolidate testsuite installation
+References: <457BDF99.1020405@domain.hid>
+	<1165778549.8255.17.camel@domain.hid>		<457CA36C.5060805@domain.hid>
+	<1165828053.5025.8.camel@domain.hid> <457D23CA.0@domain.hid>
+In-Reply-To: <457D23CA.0@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,97 +19,57 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2006-12-08 at 22:35 +0100, Philippe Gerum wrote:
-> On Fri, 2006-12-08 at 20:05 +0100, Jan Kiszka wrote:
-> > Philippe Gerum wrote:
-> > > On Fri, 2006-12-08 at 19:02 +0100, Gilles Chanteperdrix wrote:
-> > >> Jan Kiszka wrote:
-> > >>> Gilles Chanteperdrix wrote:
-> > >>>> Index: ksrc/nucleus/shadow.c
-> > >>>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > >>>> --- ksrc/nucleus/shadow.c	(r=C3=A9vision 1930)
-> > >>>> +++ ksrc/nucleus/shadow.c	(copie de travail)
-> > >>>> @@ -888,6 +888,9 @@
-> > >>>>
-> > >>>> 	p =3D xnthread_archtcb(thread)->user_task;	/* May be !=3D curre=
-nt */
-> > >>>>
-> > >>>> +	if (!xnshadow_thrptd(p))
-> > >>>> +		return;
-> > >>>> +
-> > >>>> 	magic =3D xnthread_get_magic(thread);
-> > >>>>
-> > >>>> 	for (muxid =3D 0; muxid < XENOMAI_MUX_NR; muxid++) {
-> > >>>> @@ -1639,8 +1642,6 @@
-> > >>>> 		xnshadow_relax(0);
-> > >>>>
-> > >>>> 	xnlock_get_irqsave(&nklock, s);
-> > >>>> -	/* Prevent wakeup call from xnshadow_unmap(). */
-> > >>>> -	xnshadow_thrptd(p) =3D NULL;
-> > >>>> 	xnthread_archtcb(thread)->user_task =3D NULL;
-> > >>>> 	/* xnpod_delete_thread() -> hook -> xnshadow_unmap(). */
-> > >>>> 	xnpod_delete_thread(thread);
-> > >>>
-> > >>> Can't comment on the correctness of the second hunk, but it
-> > >>> unfortunately doesn't change the situation that test case does no=
-t
-> > >>> longer terminate with the first hunk applied. May look like a tri=
-vial
-> > >>> issue - but it isn't. :->
-> > >>>
-> > >> Indeed. And xnshadow_thrptd(current) =3D=3D NULL is used by xnpod_=
-schedule,
-> > >> so the patch is probably completely incorrect.
-> > >>
-> > >=20
-> > > We should rather check the TCB backlink to the Linux task. Could so=
-meone
-> > > who can reproduce this issue, test the following patch? TIA,
-> > >=20
-> > > --- ksrc/nucleus/shadow.c	(revision 1931)
-> > > +++ ksrc/nucleus/shadow.c	(working copy)
-> > > @@ -888,6 +888,10 @@
-> > > =20
-> > >  	p =3D xnthread_archtcb(thread)->user_task;	/* May be !=3D current=
- */
-> > > =20
-> > > +	xnltt_log_event(xeno_ev_shadowunmap, thread->name, p ? p->pid : -=
-1);
-> > > +	if (!p)
-> > > +		goto renice_and_exit;
-> > > +
-> > >  	magic =3D xnthread_get_magic(thread);
-> > > =20
-> > >  	for (muxid =3D 0; muxid < XENOMAI_MUX_NR; muxid++) {
-> > > @@ -907,10 +911,6 @@
-> > >  		}
-> > >  	}
-> > > =20
-> > > -	xnltt_log_event(xeno_ev_shadowunmap, thread->name, p ? p->pid : -=
-1);
-> > > -	if (!p)
-> > > -		goto renice_and_exit;
-> > > -
-> > >  	xnshadow_thrptd(p) =3D NULL;
-> > > =20
-> > >  	if (p->state !=3D TASK_RUNNING) {
-> > >=20
-> >=20
-> > Doesn't work, usage counter is now incremented. BTW, this patch slipp=
-ed
->=20
->=20
-> Ok, I will try to reproduce it here before fixing.
->=20
+Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> 
+>>On Mon, 2006-12-11 at 01:16 +0100, Jan Kiszka wrote:
+>>
+>>>Philippe Gerum wrote:
+>>>
+>>>>On Sun, 2006-12-10 at 11:21 +0100, Jan Kiszka wrote:
+>>>>
+>>>>>The only part of the Xenomai user-space package not yet following
+>>>>>standard installation rules is the testsuite. It gets installed to
+>>>>>$prefix/testsuite, by default /usr/testsuite. The attached patch is an
+>>>>>approach to overcome this unusual layout.
+>>>>
+>>>>Ack. Implementation-wise, we have to fix the following though:
+>>>>
+>>>>xeno-load.in needs to be fixed, so that passing a single dot as argument
+>>>>correctly picks the default runinfo target in the current directory.
+>>>>This currently does not work as expected.
+>>>
+>>>[obviously now fixed in svn]
+>>>
+>>>
+>>>>The second patch works around a problem with sudo relying on the
+>>>>contents of the user's PATH variable. This won't work for people using a
+>>>>version of sudo compiled with the secure path option by their favourite
+>>>>distro. In that case, /usr/xenomai/bin (or whatever the user picked to
+>>>>install xenomai) won't appear in that secure path, so the binary program
+>>>>given in the runinfo file won't be found. A possible option is to
+>>>>provide a relative path to locate the binary program,
+>>>>e.g. ../../../../bin/latency for the latency test, as the example patch
+>>>>shows. Not pretty, but the other way would need to autoconfiscate the
+>>>>runinfo files, or at least run them through sed before installing, so
+>>>>that we could substitute some placeholder with $exec_prefix.
+>>>
+>>>Relative paths are not fully safe, 
+>>
+>>Why, provided the sudo sub-shell in xeno-load changes dir to the
+>>target_dir variable contents?
+>>
+> 
+> 
+> Because exec_prefix (=>bindir) may be different from prefix
+> (=>pkgdatadir), thus there is no fixed relation between the .runinfo
+> location and the binaries until after the installation.
 
-Now fixed in both branches, v2.2.x and trunk.
+Since the testsuite scripts are supposed to be run on the target, I
+think they should be installed under exec_prefix.
 
---=20
-Philippe.
-
-
+-- 
+                                                 Gilles Chanteperdrix
 
