@@ -1,15 +1,13 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-help] rt_misc_get_io_region()
-Date: Tue, 12 Dec 2006 20:16:19 +0100
-References: <457E5C81.3060006@domain.hid>
-In-Reply-To: <457E5C81.3060006@domain.hid>
+Message-ID: <457FF5B6.7070509@domain.hid>
+Content-Class: urn:content-classes:message
+Date: Wed, 13 Dec 2006 13:44:38 +0100
+From: "Niklaus Burren" <niklaus.burren@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-15"
+	format=flowed;
+	charset="ISO-8859-15"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200612122016.19683.niklaus.giger@domain.hid>
-Reply-To: niklaus.giger@domain.hid
+Subject: [Xenomai-help] Symbols undefined [Scanned]
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,64 +19,42 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Am Dienstag, 12. Dezember 2006 08:38 schrieb Niklaus Burren:
-> We want to write a Xenomai application that can access the
-> GPIO pins of our ARM-Prozessor (PXA-270). To get the memory
-> region I found the function rt_misc_get_io_region(). Unfortunately
-> there is no discription of this function in the API documentation.
-> Does this function work like request_mem_region()?
->
-> After the call of the rt_misc_get_io_region() fuction it is also
-> necessary to call the ioremap() function?
->
-> Please can you give me a little example, how you can map and access
-> memory in Xenomai?
-I don't think that mapping memory very different for RT tasks. 
+Hello
 
-Here are the snippets from my code which I used (today!) to turn on and off 
-LEDs connected to the GPIO-pins of my PPC405 based board.
+Im trying to create a Xenomai kernel module for a ARM processor 
+(PXA-270). In this module I register a interrupt handler with the 
+function rt_inter_create(). When I compile the module I get the 
+following warnings:
 
-#include <sys/mman.h>
+*** Warning: "rt_intr_delete" 
+[/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
+*** Warning: "rt_intr_create" 
+[/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
+*** Warning: "rt_intr_enable" 
+[/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
 
-#define MAP_SIZE 4096UL
-void  *mapDirectIoRegister(char *addr, int nSize)
-{
-    void *map_base;
-    off_t target = ((unsigned int) addr) & ~MAP_MASK;
-    int fd;
+I don't know what is wrong. In my makefile I have defined the paths to 
+the libraries and the include files of xenomai:
 
-    if((fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) {
-        printf("/dev/mem could not be opened.\n");
-        exit(1);
-    }
+obj-m = latency-test.o
 
-  // Map one page
-    map_base = mmap((void *)target, nSize, PROT_READ | PROT_WRITE, MAP_SHARED,
-		 fd, target);
-   <.. error handling>
-   return map_base;
-}
-static uint32 *ledRegister;
+XENODIR = /opt/carme/rootfs/usr/xenomai
+KDIR	= /opt/carme/linux-2.6.15-col2
+PWD	= $(shell pwd)
 
-<init proc>
-    ledRegister = (uint32 *)mapDirectIoRegister((char *)GPIO_OR, 4);
-    ledRegister[1] = 0x7ffe0000; /* Three State Control  (GPIO_TCR) */
+EXTRA_CFLAGS = -I $(XENODIR)/include -L $(XENODIR)/lib
 
-void   sysLedSet(uint8 value)
-{
-    ledRegister[0] =  ((uint32) value)) << 23;
-}
+all:
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 
->
-> I think that is a topic that is interessting for a lot of people.
->
-> Regards
->
-> Niklaus Burren
-Best regards from another Swiss Chlaus.
+clean:
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 
--- 
-Niklaus Giger
-Wieshoschet 6
-CH-8753 Mollis
+
+Has someone an idea what is wrong?
+
+Kind Regards
+
+Niklaus Burren
+
 
