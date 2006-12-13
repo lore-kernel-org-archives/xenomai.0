@@ -1,16 +1,9 @@
-Message-ID: <457EC0CE.5040307@domain.hid>
-Date: Tue, 12 Dec 2006 15:46:38 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] consolidate testsuite installation
-References: <457BDF99.1020405@domain.hid>
-	<1165778549.8255.17.camel@domain.hid>		<457CA36C.5060805@domain.hid>
-	<1165828053.5025.8.camel@domain.hid> <457D23CA.0@domain.hid>
-	<457E6A01.4090500@domain.hid> <457EA179.5070606@domain.hid>
-	<457EAACF.3060307@domain.hid> <457EAD7F.2040902@domain.hid>
-In-Reply-To: <457EAD7F.2040902@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Message-ID: <OFB8D5A1F2.BF19F8AC-ONC1257243.0056784B@uk.marconicomms.com>
+From: "Thomas Necker" <Thomas.Necker@domain.hid>
+Date: Wed, 13 Dec 2006 17:25:35 +0100
+Content-Type: multipart/mixed; boundary="=_mixed 005A3B83C1257243_="
+Subject: [Xenomai-core] [PATCH] pSOS tm_-calls
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,31 +13,146 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
->>At some point in time:
->>https://mail.gna.org/public/xenomai-help/2006-09/msg00181.html
->>
->>I started to use exec_prefix and prefix for separating the binaries,
->>libraries and script that need to be installed on the target from the
->>include files, documentation and xeno-config script that need to be
->>installed on the host.
->>
-> 
-> 
-> OK, appears reasonable, though I cannot asses if it's a standard usage.
+--=_mixed 005A3B83C1257243_=
+Content-Type: text/plain; charset="us-ascii"
 
-Do not know either if it is standard, but it may be useful to some users.
+Here come some patches that add the following functions to the pSOS direct 
+syscall interface:  tm_wkafter,  tm_cancel, tm_evafter, tm_get, tm_set
+Please note:
+- The registry entries are not exported. Those timers only exist a short 
+period of time in contrast to queues, tasks, etc. I don't see why anyone 
+want to see that under /proc.
+- I had to manipulate the xnpod_primary_p check at the beginning of 
+tm_ev_after otherwise I got a permission error. I'm absolutely not sure 
+whether xnpod_unblockable_p is the right thing to do here. It just works 
+for the moment. Please check.
+- I'm not sure about the attributes for the calls in __systab. Please 
+check.
+- I'm still looking for a suitable place for k_fatal in user space. 
+Instead of creating a new file I suggest to put it in init.c and implement 
+it as exit(1) for the moment until it's been decided about the mapping to 
+the kernel call.
 
-> 
-> What do you suggest as a replacement for $(pkgdatadir) then?
-> $(exec_prefix)/share/xenomai? Or where to put the testsuite start scripts?
+Regards,
+Thomas
 
-I am Ok with anything under $(exec_prefix)...
 
--- 
-                                                 Gilles Chanteperdrix
+
+--=_mixed 005A3B83C1257243_=
+Content-Type: application/octet-stream; name="src_skins_psos_tm.c.diff"
+Content-Disposition: attachment; filename="src_skins_psos_tm.c.diff"
+Content-Transfer-Encoding: base64
+
+MjFhMjIsNDYKPiAKPiB1X2xvbmcgdG1fd2thZnRlcih1X2xvbmcgdGlja3MpCj4gewo+IAlyZXR1
+cm4gWEVOT01BSV9TS0lOQ0FMTDEoX19wc29zX211eGlkLCBfX3Bzb3NfdG1fd2thZnRlciwgdGlj
+a3MpOwo+IH0KPiAKPiB1X2xvbmcgdG1fY2FuY2VsKHVfbG9uZyB0bWlkKQo+IHsKPiAJcmV0dXJu
+IFhFTk9NQUlfU0tJTkNBTEwxKF9fcHNvc19tdXhpZCwgX19wc29zX3RtX2NhbmNlbCwgdG1pZCk7
+Cj4gfQo+IAo+IHVfbG9uZyB0bV9ldmFmdGVyKHVfbG9uZyB0aWNrcywgdV9sb25nIGV2ZW50cywg
+dV9sb25nICp0bWlkX3IpCj4gewo+IAlyZXR1cm4gWEVOT01BSV9TS0lOQ0FMTDMoX19wc29zX211
+eGlkLCBfX3Bzb3NfdG1fZXZhZnRlciwgdGlja3MsIGV2ZW50cywgdG1pZF9yKTsKPiB9Cj4gCj4g
+dV9sb25nIHRtX2dldCh1X2xvbmcgKmRhdGVfciwgdV9sb25nICp0aW1lX3IsIHVfbG9uZyAqdGlj
+a3NfcikKPiB7Cj4gCXJldHVybiBYRU5PTUFJX1NLSU5DQUxMMyhfX3Bzb3NfbXV4aWQsIF9fcHNv
+c190bV9nZXQsIGRhdGVfciwgdGltZV9yLCB0aWNrc19yKTsKPiB9Cj4gCj4gdV9sb25nIHRtX3Nl
+dCh1X2xvbmcgZGF0ZSwgdV9sb25nIHRpbWUsIHVfbG9uZyB0aWNrcykKPiB7Cj4gCXJldHVybiBY
+RU5PTUFJX1NLSU5DQUxMMyhfX3Bzb3NfbXV4aWQsIF9fcHNvc190bV9zZXQsIGRhdGUsIHRpbWUs
+IHRpY2tzKTsKPiB9Cg==
+
+--=_mixed 005A3B83C1257243_=
+Content-Type: application/octet-stream; name="include_psos_tm.h.diff"
+Content-Disposition: attachment; filename="include_psos_tm.h.diff"
+Content-Transfer-Encoding: base64
+
+NDBhNDEsNDUKPiAjaWZkZWYgQ09ORklHX1hFTk9fT1BUX1JFR0lTVFJZCj4gICAgIHhuaGFuZGxl
+X3QgaGFuZGxlOwo+ICAgICBjaGFyIG5hbWVbWE5PQkpFQ1RfTkFNRV9MRU5dOyAvKiBOYW1lIG9m
+IHRpbWVyICovCj4gI2VuZGlmIC8qIENPTkZJR19YRU5PX09QVF9SRUdJU1RSWSAqLwo+IAo=
+
+--=_mixed 005A3B83C1257243_=
+Content-Type: application/octet-stream; name="ksrc_skins_psos_syscall.c.diff"
+Content-Disposition: attachment; filename="ksrc_skins_psos_syscall.c.diff"
+Content-Transfer-Encoding: base64
+
+MjhhMjkKPiAjaW5jbHVkZSA8cHNvcysvdG0uaD4KOTU5YTk2MSwxMDYwCj4gLyoKPiAgKiB1X2xv
+bmcgdG1fd2thZnRlcih1X2xvbmcgdGlja3MpCj4gICovCj4gCj4gc3RhdGljIGludCBfX3RtX3dr
+YWZ0ZXIoc3RydWN0IHRhc2tfc3RydWN0ICpjdXJyLCBzdHJ1Y3QgcHRfcmVncyAqcmVncykKPiB7
+Cj4gCXVfbG9uZwl0aWNrcywgZXJyOwo+IAo+IAl0aWNrcwk9IF9feG5fcmVnX2FyZzEocmVncyk7
+Cj4gCj4gCWVyciA9IHRtX3drYWZ0ZXIodGlja3MpOwo+IAo+IAlyZXR1cm4gZXJyOwo+IH0KPiAK
+PiAvKgo+ICAqIHVfbG9uZyB0bV9jYW5jZWwodV9sb25nIHRtaWQpCj4gICovCj4gCj4gc3RhdGlj
+IGludCBfX3RtX2NhbmNlbChzdHJ1Y3QgdGFza19zdHJ1Y3QgKmN1cnIsIHN0cnVjdCBwdF9yZWdz
+ICpyZWdzKQo+IHsKPiAJeG5oYW5kbGVfdCBoYW5kbGUgPSBfX3huX3JlZ19hcmcxKHJlZ3MpOwo+
+IAlwc29zdG1fdCAqdG07Cj4gCj4gCXRtID0gKHBzb3N0bV90ICopeG5yZWdpc3RyeV9mZXRjaCho
+YW5kbGUpOwo+IAo+IAlpZiAoIXRtKQo+IAkJcmV0dXJuIEVSUl9PQkpJRDsKPiAKPiAJcmV0dXJu
+IHRtX2NhbmNlbCgodV9sb25nKXRtKTsKPiB9Cj4gCj4gLyoKPiAgKiB1X2xvbmcgdG1fZXZhZnRl
+cih1X2xvbmcgdGlja3MsIHVfbG9uZyBldmVudHMsIHVfbG9uZyAqdG1pZF9yKQo+ICAqLwo+IAo+
+IHN0YXRpYyBpbnQgX190bV9ldmFmdGVyKHN0cnVjdCB0YXNrX3N0cnVjdCAqY3Vyciwgc3RydWN0
+IHB0X3JlZ3MgKnJlZ3MpCj4gewo+IAl1X2xvbmcgdGlja3MsIGV2ZW50cywgdG1pZCwgZXJyOwo+
+IAo+IAlwc29zdG1fdCAqdG07Cj4gCWlmICghX194bl9hY2Nlc3Nfb2sKPiAJICAgIChjdXJyLCBW
+RVJJRllfV1JJVEUsIF9feG5fcmVnX2FyZzQocmVncyksIHNpemVvZih0bWlkKSkpCj4gCQlyZXR1
+cm4gLUVGQVVMVDsKPiAKPiAJdGlja3MgPSBfX3huX3JlZ19hcmcxKHJlZ3MpOwo+IAlldmVudHMg
+PSBfX3huX3JlZ19hcmcyKHJlZ3MpOwo+IAo+IAllcnIgPSB0bV9ldmFmdGVyKHRpY2tzLCBldmVu
+dHMsICZ0bWlkKTsKPiAKPiAJaWYgKGVyciA9PSBTVUNDRVNTKSB7Cj4gCQl0bSA9IChwc29zc2Vt
+X3QgKil0bWlkOwo+IAkJLyogQ29weSBiYWNrIHRoZSByZWdpc3RyeSBoYW5kbGUuICovCj4gCQl0
+bWlkID0gdG0tPmhhbmRsZTsKPiAJCV9feG5fY29weV90b191c2VyKGN1cnIsICh2b2lkIF9fdXNl
+ciAqKV9feG5fcmVnX2FyZzMocmVncyksICZ0bWlkLAo+IAkJCQkgIHNpemVvZih0bWlkKSk7Cj4g
+CX0KPiAKPiAJcmV0dXJuIGVycjsKPiB9Cj4gCj4gLyoKPiAgKiB1X2xvbmcgdG1fZ2V0KHVfbG9u
+ZyAqZGF0ZV9yLCB1X2xvbmcgKnRpbWVfciwgdV9sb25nICp0aWNrc19yKQo+ICAqLwo+IAo+IHN0
+YXRpYyBpbnQgX190bV9nZXQoc3RydWN0IHRhc2tfc3RydWN0ICpjdXJyLCBzdHJ1Y3QgcHRfcmVn
+cyAqcmVncykKPiB7Cj4gCXVfbG9uZwlkYXRlLCB0aW1lLCB0aWNrcywgZXJyOwo+IAo+IAllcnIg
+PSB0bV9nZXQoZGF0ZSwgdGltZSwgdGlja3MpOwo+IAlpZiAoZXJyID09IFNVQ0NFU1MpIHsKPiAJ
+CV9feG5fY29weV90b191c2VyKGN1cnIsICh2b2lkIF9fdXNlciAqKV9feG5fcmVnX2FyZzEocmVn
+cyksICZkYXRlLAo+IAkJCQkgIHNpemVvZihkYXRlKSk7Cj4gCQlfX3huX2NvcHlfdG9fdXNlcihj
+dXJyLCAodm9pZCBfX3VzZXIgKilfX3huX3JlZ19hcmcxKHJlZ3MpLCAmdGltZSwKPiAJCQkJICBz
+aXplb2YodGltZSkpOwo+IAkJX194bl9jb3B5X3RvX3VzZXIoY3VyciwgKHZvaWQgX191c2VyICop
+X194bl9yZWdfYXJnMShyZWdzKSwgJnRpY2tzLAo+IAkJCQkgIHNpemVvZih0aWNrcykpOwo+IAl9
+Cj4gCj4gCXJldHVybiBlcnI7Cj4gfQo+IAo+IC8qCj4gICogdV9sb25nIHRtX3NldCh1X2xvbmcg
+ZGF0ZSwgdV9sb25nIHRpbWUsIHVfbG9uZyB0aWNrcykKPiAgKi8KPiAKPiBzdGF0aWMgaW50IF9f
+dG1fc2V0KHN0cnVjdCB0YXNrX3N0cnVjdCAqY3Vyciwgc3RydWN0IHB0X3JlZ3MgKnJlZ3MpCj4g
+ewo+IAl1X2xvbmcJZGF0ZSwgdGltZSwgdGlja3MsIGVycjsKPiAKPiAJZGF0ZSA9IF9feG5fcmVn
+X2FyZzEocmVncyk7Cj4gCXRpbWUgPSBfX3huX3JlZ19hcmcyKHJlZ3MpOwo+IAl0aWNrcyA9IF9f
+eG5fcmVnX2FyZzMocmVncyk7Cj4gCj4gCWVyciA9IHRtX3NldChkYXRlLCB0aW1lLCB0aWNrcyk7
+Cj4gCj4gCXJldHVybiBlcnI7Cj4gfQo+IAo+IAo5ODhhMTA5MCwxMDk0Cj4gCVtfX3Bzb3NfdG1f
+d2thZnRlcl0gPSB7Jl9fdG1fd2thZnRlciwgX194bl9leGVjX3ByaW1hcnl9LAkJLy90YmMKPiAJ
+W19fcHNvc190bV9jYW5jZWxdID0geyZfX3RtX2NhbmNlbCwgX194bl9leGVjX2FueX0sCQkvL3Ri
+Ywo+IAlbX19wc29zX3RtX2V2YWZ0ZXJdID0geyZfX3RtX2V2YWZ0ZXIsIF9feG5fZXhlY19wcmlt
+YXJ5fSwJCS8vdGJjCj4gCVtfX3Bzb3NfdG1fZ2V0XSA9IHsmX190bV9nZXQsIF9feG5fZXhlY19h
+bnl9LAkJLy90YmMKPiAJW19fcHNvc190bV9zZXRdID0geyZfX3RtX3NldCwgX194bl9leGVjX2Fu
+eX0sCQkvL3RiYwo=
+
+--=_mixed 005A3B83C1257243_=
+Content-Type: application/octet-stream; name="ksrc_skins_psos_tm.c.diff"
+Content-Disposition: attachment; filename="ksrc_skins_psos_tm.c.diff"
+Content-Transfer-Encoding: base64
+
+NjUsNjhkNjQKPCAjaWZkZWYgQ09ORklHX1hFTk9fT1BUX1JFR0lTVFJZCjwgCXhucmVnaXN0cnlf
+cmVtb3ZlKHRtLT5oYW5kbGUpOwo8ICNlbmRpZiAvKiBDT05GSUdfWEVOT19PUFRfUkVHSVNUUlkg
+Ki8KPCAKMTAxLDExN2Q5Ngo8ICNpZmRlZiBDT05GSUdfWEVOT19PUFRfUkVHSVNUUlkKPCAJewo8
+IAkJc3RhdGljIHVuc2lnbmVkIGxvbmcgdG1faWRzOwo8IAkJdV9sb25nIGVycjsKPCAKPCAJCXNw
+cmludGYodG0tPm5hbWUsICJhbm9uJWx1IiwgdG1faWRzKyspOwo8IAo8IAkJZXJyID0geG5yZWdp
+c3RyeV9lbnRlcih0bS0+bmFtZSwgdG0sICZ0bS0+aGFuZGxlLCAwKTsKPCAKPCAJCWlmIChlcnIp
+IHsKPCAJCQl0bS0+aGFuZGxlID0gWE5fTk9fSEFORExFOwo8IAkJCXRtX2NhbmNlbCgodV9sb25n
+KXRtKTsKPCAJCQlyZXR1cm4gZXJyOwo8IAkJfQo8IAl9CjwgI2VuZGlmIC8qIENPTkZJR19YRU5P
+X09QVF9SRUdJU1RSWSAqLwo8IAoyNDJjMjIxCjwgCWlmICh4bnBvZF91bmJsb2NrYWJsZV9wKCkp
+Ci0tLQo+IAlpZiAoeG5wb2RfcHJpbWFyeV9wKCkpCjI0NCwyNDVkMjIyCjwgLy8JaWYgKHhucG9k
+X3ByaW1hcnlfcCgpKQo8IC8vCQlyZXR1cm4gLUVQRVJNOwoyNzMsMjc2ZDI0OQo8ICNpZmRlZiBD
+T05GSUdfWEVOT19PUFRfUkVHSVNUUlkKPCAJeG5yZWdpc3RyeV9yZW1vdmUodG0tPmhhbmRsZSk7
+CjwgI2VuZGlmIC8qIENPTkZJR19YRU5PX09QVF9SRUdJU1RSWSAqLwo8IAo=
+
+--=_mixed 005A3B83C1257243_=
+Content-Type: application/octet-stream; name="include_psos_syscall.h.diff"
+Content-Disposition: attachment; filename="include_psos_syscall.h.diff"
+Content-Transfer-Encoding: base64
+
+NTUsNTljNTUsNjQKPCAjZGVmaW5lIF9fcHNvc19ybl9jcmVhdGUgICAgMjkKPCAjZGVmaW5lIF9f
+cHNvc19ybl9kZWxldGUgICAgMzAKPCAjZGVmaW5lIF9fcHNvc19ybl9pZGVudCAgICAgMzEKPCAj
+ZGVmaW5lIF9fcHNvc19ybl9nZXRzZWcgICAgMzIKPCAjZGVmaW5lIF9fcHNvc19ybl9yZXRzZWcg
+ICAgMzMKLS0tCj4gI2RlZmluZSBfX3Bzb3NfdG1fd2thZnRlciAgIDI5Cj4gI2RlZmluZSBfX3Bz
+b3NfdG1fY2FuY2VsICAgIDMwCj4gI2RlZmluZSBfX3Bzb3NfdG1fZXZhZnRlciAgIDMxCj4gI2Rl
+ZmluZSBfX3Bzb3NfdG1fZ2V0ICAgICAgIDMyCj4gI2RlZmluZSBfX3Bzb3NfdG1fc2V0ICAgICAg
+IDMzCj4gI2RlZmluZSBfX3Bzb3Nfcm5fY3JlYXRlICAgIDM0Cj4gLy8jZGVmaW5lIF9fcHNvc19y
+bl9kZWxldGUgICAgMzAKPiAvLyNkZWZpbmUgX19wc29zX3JuX2lkZW50ICAgICAzMQo+IC8vI2Rl
+ZmluZSBfX3Bzb3Nfcm5fZ2V0c2VnICAgIDMyCj4gLy8jZGVmaW5lIF9fcHNvc19ybl9yZXRzZWcg
+ICAgMzMK
+
+--=_mixed 005A3B83C1257243_=--
 
