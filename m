@@ -1,14 +1,12 @@
-Message-ID: <4579CD41.6060102@domain.hid>
-Date: Fri, 08 Dec 2006 21:38:25 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45802F00.1090008@domain.hid>
+Date: Wed, 13 Dec 2006 17:49:04 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] [PATCH] ppc mvme5500
-References: <1165537720.4578b1b879da9@domain.hid>
-	<45795320.5060806@domain.hid>
-	<1165595720.45799448b0adc@domain.hid>
-In-Reply-To: <1165595720.45799448b0adc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7826283157D86B9FAB3C58CB"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] 2.6.19: Fix irq_disable in early start_kernel
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,118 +15,97 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: barbalace@domain.hid
-Cc: adeos-main@gna.org
+To: adeos-main <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7826283157D86B9FAB3C58CB
+Content-Type: multipart/mixed; boundary="------------020406020302030401090607"
 
-barbalace@domain.hid wrote:
-> ;-) Yes, the problem are the Linux spin_* functions, sincerly I don't understand
-> why there are this spin_* functions (maybe for another architecture, different
-> from ppc???).
-> 'in_le32' and 'out_le32' are substantially atomic, are declared in
-> include/asm-ppc/io.h:
-> 
-> extern inline unsigned in_le32(const volatile unsigned __iomem *addr)
-> {
-> 	unsigned ret;
-> 
-> 	__asm__ __volatile__("lwbrx %0,0,%1;\n"
-> 			     "twi 0,%0,0;\n"
-> 			     "isync" : "=r" (ret) :
-> 			     "r" (addr), "m" (*addr));
-> 	return ret;
-> }
-> extern inline void out_le32(volatile unsigned __iomem *addr, int val)
-> {
-> 	__asm__ __volatile__("stwbrx %1,0,%2; eieio" : "=m" (*addr) :
-> 			     "r" (val), "r" (addr));
-> }
-> 
-> The load istruction is lwbrx and the store istruction is stwbrx: one istruction
-> = atomic (do you agree?). isync and eieio are synchronization istruction, if
-> executed in a second time doesn't change the behaviour.
+This is a multi-part message in MIME format.
+--------------020406020302030401090607
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yes, but there are these eieio and sync instructions which have to do 
-with out of order accesses. To be sure I ask on the linuxppc-embedded ML 
-  and the answer is here: 
-http://ozlabs.org/pipermail/linuxppc-embedded/2006-December/025456.html
+Hi Philippe,
 
-> I test this patch with and without the IPIPE enabled.
->>From my point of view I think is better to remove the spin_* in the ppc arch to
-> avoid the spinlock overhead. For a portability issue is better to use a pragma
-> #ifdef structure.
+this was a nice bug: After applying some totally unrelated cleanup patch
+that removes a few useless EXPORT_SYMBOLS from ipipe, I got this during
+boot:
 
-Therefore my previous patch should be the right fix. I case it works, 
-I'm going to integrate it into the PPC ADEOS IPIPE patches.
+=2E..
+Xenomai: hal/x86 started.
+BUG: unable to handle kernel NULL pointer dereference at virtual address
+000000f1
+=2E..
+EIP is at kref_get+0x9/0x43
+=2E..
+Call Trace:
+ [<c020e077>] kobject_get+0x12/0x17
+ [<c01c28ae>] sysfs_create_link+0xda/0x140
+ [<c02412bb>] class_device_add+0x217/0x3dc
+ [<c0241492>] class_device_register+0x12/0x15
+ [<c0241519>] class_device_create+0x84/0xa5
+ [<c022fe47>] misc_register+0x109/0x140
+ [<c0142748>] xnheap_mount+0x9a/0xa2
+ [<c03fad0c>] __xeno_sys_init+0xd9/0x15d
+ [<c01004d0>] init+0x127/0x2dc
+ [<c0103e97>] kernel_thread_helper+0x7/0x10
 
-Wolfgang.
+The reason: xnheap_dev.dev=3D1!? But that field is located untouched in a=
 
-> Antonio
-> 
-> 
-> Quoting Wolfgang Grandegger <wg@domain.hid>:
-> 
->> barbalace@domain.hid wrote:
->>> I'm working on linux 2.6.14 + ipipe + xenomai2.2.0 (refer to thread
->>> https://mail.gna.org/public/xenomai-help/2006-05/msg00082.html, maybe the
->> same
->>> case-study).
->>>
->>> I'm using ipipe patch:
->>>   adeos-ipipe-2.6.14-ppc-1.3-05.patch
->>>
->>> this and next patch I tried, doesn't work and some write on the flash, if
->> you
->>> doesn't protect it again write (with on-board jumpers).
->>>
->>> I make this simple patch (that I past at the end of the mail).
->>> To use it I recommend to:
->>> 1. extract a Vanilla linux kernel
->>> 2. patch it with the Motorola patch (BSP)
->>> 3. patch it with the ipipe patch (adeos-ipipe-2.6.14-ppc-1.3-05.patch)
->>> 4. apply this patch
->>>
->>> I test it only with write protect enable on the MVME5500 board; flash and
->> eeprom
->>> were not writeable, ensure this with a cat on /proc/cpuinfo.
->> Ah, oh, this is another prime example of PIC code requiring a patch,
->> also on PowerPC :-(. The problem are the Linux spin_* functions in
->> include/asm-ppc/mv64x60.h:
->>
->> /* Define I/O routines for accessing registers on the 64x60 bridge. */
->> extern inline void
->> mv64x60_write(struct mv64x60_handle *bh, u32 offset, u32 val) {
->> 	ulong	flags;
->>
->> 	spin_lock_irqsave(&mv64x60_lock, flags);
->> 	out_le32(bh->v_base + offset, val);
->> 	spin_unlock_irqrestore(&mv64x60_lock, flags);
->> }
->>
->> extern inline u32
->> mv64x60_read(struct mv64x60_handle *bh, u32 offset) {
->> 	ulong	flags;
->> 	u32     reg;
->>
->> 	spin_lock_irqsave(&mv64x60_lock, flags);
->> 	reg = in_le32(bh->v_base + offset);
->> 	spin_unlock_irqrestore(&mv64x60_lock, flags);
->> 	return reg;
->> }
->>
->> Why not just iron them with the "spin_*_hw" variants, or remove them
->> completely? That's what your patch does as well. I think the out_le32
->> and in_le32 functions already access the registers atomically. To be
->> save, use "spin_*_hw". Does the attached patch work with and without
->> IPIPE enabled?
->>
->> Thanks for reporting.
->>
->> Wolfgang.
->>
->>> regards,
->>>   Antonio Barbalace
-[...]
+static structure, i.e. *must* be 0! Interrupting the kernel shortly
+after boot already returned it as 1. Finally, after breaking at the
+beginning of start_kernel, I got the expected 0 and then quickly found
+the messed-up piece of code a few lines below.
 
+Please apply attached patch, I suspect it is a typo (ipipe isn't
+initialised at this point to handle such requests, so the stall bit
+ended up in xnheap_dev for me - who knows what can happen on other
+setups...).
+
+Jan
+
+--------------020406020302030401090607
+Content-Type: text/plain;
+ name="fix-irq_disable-in-start_kernel.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline; filename="fix-irq_disable-in-start_kernel.patch"
+
+---
+ init/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6.19/init/main.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.19.orig/init/main.c
++++ linux-2.6.19/init/main.c
+@@ -489,7 +489,7 @@ asmlinkage void __init start_kernel(void
+ 	unwind_init();
+ 	lockdep_init();
+=20
+-	local_irq_disable_head();
++	local_irq_disable_hw();
+ 	early_boot_irqs_off();
+ 	early_init_irq_lock_class();
+=20
+
+--------------020406020302030401090607--
+
+--------------enig7826283157D86B9FAB3C58CB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFgC8AniDOoMHTA+kRAvmiAJ9PFw3GaSPxPwBmsAsa5FUfuiBFTwCeLp9T
+c50e7IRPXbRZ/b6D1jECGXs=
+=yrNY
+-----END PGP SIGNATURE-----
+
+--------------enig7826283157D86B9FAB3C58CB--
 
