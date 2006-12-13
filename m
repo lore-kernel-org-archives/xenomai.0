@@ -1,12 +1,15 @@
-Message-ID: <457FF9FE.5090507@domain.hid>
-Date: Wed, 13 Dec 2006 14:02:54 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45800AA5.9000603@domain.hid>
+Date: Wed, 13 Dec 2006 15:13:57 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Symbols undefined [Scanned]
-References: <457FF5B6.7070509@domain.hid>
-In-Reply-To: <457FF5B6.7070509@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai patched SMP kernel and "nosmp" kernel
+	parameter
+References: <12829436.1165928388617.JavaMail.ngmail@domain.hid>
+In-Reply-To: <12829436.1165928388617.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBD482F1312C58BCACD33A398"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,47 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Niklaus Burren <niklaus.burren@domain.hid>
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Niklaus Burren wrote:
-> Hello
-> 
-> Im trying to create a Xenomai kernel module for a ARM processor 
-> (PXA-270). In this module I register a interrupt handler with the 
-> function rt_inter_create(). When I compile the module I get the 
-> following warnings:
-> 
-> *** Warning: "rt_intr_delete" 
-> [/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
-> *** Warning: "rt_intr_create" 
-> [/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
-> *** Warning: "rt_intr_enable" 
-> [/home/student/work/xenomai/latency-test/latency-test.ko] undefined!
-> 
-> I don't know what is wrong. In my makefile I have defined the paths to 
-> the libraries and the include files of xenomai:
-> 
-> obj-m = latency-test.o
-> 
-> XENODIR = /opt/carme/rootfs/usr/xenomai
-> KDIR    = /opt/carme/linux-2.6.15-col2
-> PWD    = $(shell pwd)
-> 
-> EXTRA_CFLAGS = -I $(XENODIR)/include -L $(XENODIR)/lib
-> 
-> all:
->     $(MAKE) -C $(KDIR) M=$(PWD) modules
-> 
-> clean:
->     $(MAKE) -C $(KDIR) M=$(PWD) clean
-> 
-> 
-> Has someone an idea what is wrong?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBD482F1312C58BCACD33A398
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Have you enabled support for interrupts in the native skin? Check for 
-CONFIG_XENO_OPT_NATIVE_INTR in your config file.
+M. Koehrer wrote:
+> Hi everybody,
+>=20
+> I have a SMP kernel 2.6.17.7 on a Dual Core Pentium 4 running.
+> SMP is enabled at the kernel configuration.
+> This works fine.
+> However, I want to compare UP with SMP operation, that's why
+> I want to boot the system with the "nosmp" kernel parameter.
+> However, booting of the PC with  nosmp does not work.
+> First it starts fine, however when trying to access hdb (which is the C=
+D ROM
+> drive in my system) to get info about it, the message
+> "hdb: lost interrupt"
+> appears, and booting is stopped.=20
+>=20
+> Does the nosmp parameter work with a Xenomai patched kernel?
+> Or what could be wrong with it....
+>=20
+> I am using the latest Xenomai SVN #1948.
+> The kernel patch is adeos-ipipe-2.6.17-i386-1.5-02.patch
+>=20
+> Any ideas on this?
 
-Wolfgang.
+Same for maxcpus=3D0? I'm asking as this configures the system more
+aggressively smp-less on x86 (patching spinlock alternatives for UP,
+configuring LAPIC mode etc.).
 
+Jan
+
+
+--------------enigBD482F1312C58BCACD33A398
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFgAqmniDOoMHTA+kRAiavAJ977cKoiuscCJYazkp1fcKSX5Jk6QCfYKA4
+/QktfuN6HeyLm63AHiGga3k=
+=avbS
+-----END PGP SIGNATURE-----
+
+--------------enigBD482F1312C58BCACD33A398--
 
