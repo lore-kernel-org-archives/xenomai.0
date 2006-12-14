@@ -1,13 +1,16 @@
-Message-ID: <45814504.7050905@domain.hid>
-Content-Class: urn:content-classes:message
-Date: Thu, 14 Dec 2006 13:35:16 +0100
-From: "Niklaus Burren" <niklaus.burren@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: [Xenomai-help] Handling a interrupt from user space on PPC405
+Date: Thu, 14 Dec 2006 13:43:56 +0100
+References: <200612132315.54899.niklaus.giger@domain.hid>
+	<4580F7B2.8060600@domain.hid>
+In-Reply-To: <4580F7B2.8060600@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
-	format=flowed;
-	charset="ISO-8859-15"
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Registering Interrupt Handler [Scanned]
+Content-Disposition: inline
+Message-Id: <200612141343.57539.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +20,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Heikki Lindholm <holindho@domain.hid>, Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello
+Am Donnerstag, 14. Dezember 2006 08:05 schrieb Heikki Lindholm:
+> Niklaus Giger kirjoitti:
+> > Hi
+> >
+> > I tried to use the FIT (Fixed Interrupt Timer) on my PPC405GPr board,
+> > which uses 0x1010 as its interrupt vector in a user space (vxworks-skin)
+> > application.
+> > <..>
+> >   RT_INTR FITnterrupt;
+> >   res = rt_intr_create(&FITnterrupt, 0, 0x1010, I_NOAUTOENA);
+> > <..>
+> > But I got -22 EINVAL as error.
+> > Could somebody please tell me, what is wrong with my example.
+>
+> The 0x1010 is the HW interrupt vector, but the argument should be the
+> interrupt _line_. Besides, last time I checked, the ppc405 FIT isn't
+> even 'wired' in the kernel; actually, there's no space for the interrupt
+> prologue code, which basically results that no handler is called when
+> the FIT interrupt occurs.
+>
+Thanks a lot for your tip. 
+I did now test using IPIPE_TRAP_UNKNOWN, where my main test routine looks like 
+this.
+>   int res, j;
+>   RT_INTR FITnterrupt;
+>   printf("\n%s:", __FUNCTION__);
+>   // res = rt_intr_create(&FITnterrupt, "sysAuxClk", 0x1010, I_NOAUTOENA);
+>   // returns -22 EINVAL
+>   res = rt_intr_create(&FITnterrupt, 0, IPIPE_TRAP_UNKNOWN, I_NOAUTOENA);
+>   perror("rt_intr_create returned " );
+>   printf("%s: rt_intr_create return %d errno %s\n", __FUNCTION__, res,
+> strerror(res)); if (res != 0) exit(1);
+>
+>   res = rt_intr_enable(&FITnterrupt);
+>   printf("%s: rt_intr_enable return %d errno %s\n", __FUNCTION__, res,
+> strerror(res));
+>
+>   for (j=0; j < 3; j++)
+>   {
+>     /* Timeout is one second in timer jiffies, as with vxworks we have the
+> periodic time */ res = rt_intr_wait(&FITnterrupt, sysClkRateGet());
+>     printf("%s: rt_intr_wait return %d errno %s\n", __FUNCTION__, res,
+> strerror(res)); }
+>   res = rt_intr_disable(&FITnterrupt);
+>   printf("%s: rt_intr_disable return %d errno %s\n", __FUNCTION__, res,
+> strerror(res));
+>
+>   res = rt_intr_delete(&FITnterrupt);
+>   printf("%s: rt_intr_delete return %d errno %s\n", __FUNCTION__, res,
+> strerror(res)); exit(0);
 
-I try to register an interrupt handler for an externel interrupt(GPIO 
-105) in a xenomai (2.2.2) kernel module on a ARM processor (PXA 270).
-I create a interrupt object with the rt_intr_create() function without 
-an error. After that I enable the interrupt with rt_intr_enable(). When 
-I run the kernel module on the PXA270 board and put a square signal to 
-the GPIO 105 pin the interrupt handler is never called.
+My output at the target now looks like.
+> __xeno_user_init: rt_intr_enable return 0 errno Success
+> __xeno_user_init: rt_intr_wait return -110 errno Unknown error 4294967186
+> __xeno_user_init: rt_intr_wait return -110 errno Unknown error 4294967186
+> __xeno_user_init: rt_intr_wait return -110 errno Unknown error 4294967186
+> __xeno_user_init: rt_intr_disable return 0 errno Success
+> __xeno_user_init: rt_intr_delete return 0 errno Success
 
-// Interrupt Handler
-int int_handler(struct xnintr *intr)
-{
-    printk("Interrupt detected\n");
-    return RT_INTR_HANDLED;
-}
+This is what I expect, as this interrupt should not occur.
+IPIPE_TRAP_UNKNOWN however cannot be found in any *.h exported 
+to /usr/xenomai/include. I found it in include/asm-ppc/ipipe.h in the patched 
+Linux kernel.
+So I suppose, that some how Xenomai should export this definition to user 
+space, too. 
 
-----
+Dealing with FIT and other interrupts will take some more time. But I would 
+like to thank you and Wolfgang for your help, as your answers helped me a lot 
+to see the problem.
 
-// Enalbe Interrupt in init_module()
-err = rt_intr_create(&intr_desc, "GPIO_INT", 10, &int_handler, NULL, NULL);
+Best regards
 
-rt_intr_enable(&intr_desc);
-
-On PXA270 all externel interrupts on GPIO's have the same interrupt 
-number (10). Is that a problem? When I get the pin status from the pin 
-level register GPLR3 I can detect the square signal at the pin. But the 
-interrupt handler function int_handler() is never called.
-
-Is there any other initialization that I had to do?
-
-Kind Regards
-
-Niklaus Burren
-
+-- 
+Niklaus Giger
 
