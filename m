@@ -1,10 +1,10 @@
-Subject: Re: [Adeos-main] [PATCH] cleanup unused EXPORTs
+Subject: Re: [Adeos-main] [PATCH] avoid suboptimal use of ipipe_lock_cpu
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45803953.7020608@domain.hid>
-References: <45803953.7020608@domain.hid>
+In-Reply-To: <45803F34.9000003@domain.hid>
+References: <45803F34.9000003@domain.hid>
 Content-Type: text/plain
-Date: Thu, 14 Dec 2006 21:46:53 +0100
-Message-Id: <1166129213.23946.156.camel@domain.hid>
+Date: Thu, 14 Dec 2006 21:47:22 +0100
+Message-Id: <1166129243.23946.158.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Reply-To: rpm@xenomai.org
@@ -19,59 +19,84 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-On Wed, 2006-12-13 at 18:33 +0100, Jan Kiszka wrote:
-> As I'm unable to find any modular users of the symbols below, I suggest
-> to remove the EXPORTs and make __ipipe_pipelock static.
+On Wed, 2006-12-13 at 18:58 +0100, Jan Kiszka wrote:
+> Hi,
+> 
+> while disassembling that bug in start_kernel, I noticed that
+> ipipe_lock_cpu(flags) is used in a suboptimal way in some
+> ipipe_XXX_head() services, i.e. when the flags are actually of no
+> interest. The compiler still generates the unneeded pushf/pop <reg>, and
+> this in a hot-path.
+> 
+> Attached patch should perform better. Lightly tested, but QEMU SMP still
+> works here.
 
-Looks ok. I've queued this for the next release. Thanks.
+Merged, thanks.
 
 > 
 > Jan
-> plain text document attachment (cleanup-exports.patch)
+> plain text document attachment (avoid-ipipe_lock_cpu.patch)
 > ---
->  include/linux/ipipe.h |    2 --
->  kernel/ipipe/core.c   |    7 +------
->  2 files changed, 1 insertion(+), 8 deletions(-)
+>  include/linux/ipipe.h |    8 ++++----
+>  kernel/ipipe/core.c   |    8 ++++----
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 > 
-> Index: linux-2.6.19-ipipe/include/linux/ipipe.h
+> Index: linux-2.6.19/include/linux/ipipe.h
 > ===================================================================
-> --- linux-2.6.19-ipipe.orig/include/linux/ipipe.h
-> +++ linux-2.6.19-ipipe/include/linux/ipipe.h
-> @@ -241,8 +241,6 @@ extern unsigned long __ipipe_virtual_irq
+> --- linux-2.6.19.orig/include/linux/ipipe.h
+> +++ linux-2.6.19/include/linux/ipipe.h
+> @@ -471,18 +471,18 @@ static inline void ipipe_restore_pipelin
+>  static inline void ipipe_stall_pipeline_head(void)
+>  {
+>  	ipipe_declare_cpuid;
+> -	unsigned long flags;
 >  
->  extern struct list_head __ipipe_pipeline;
+> -	ipipe_lock_cpu(flags);
+> +	local_irq_disable_hw();
+> +	ipipe_load_cpuid();
+>  	__set_bit(IPIPE_STALL_FLAG, &__ipipe_pipeline_head()->cpudata[cpuid].status);
+>  }
 >  
-> -extern ipipe_spinlock_t __ipipe_pipelock;
-> -
->  extern int __ipipe_event_monitors[];
+>  static inline unsigned long ipipe_test_and_stall_pipeline_head(void)
+>  {
+> -	unsigned long flags;
+>  	ipipe_declare_cpuid;
 >  
->  /* Private interface */
-> Index: linux-2.6.19-ipipe/kernel/ipipe/core.c
+> -	ipipe_lock_cpu(flags);
+> +	local_irq_disable_hw();
+> +	ipipe_load_cpuid();
+>  	return __test_and_set_bit(IPIPE_STALL_FLAG, &__ipipe_pipeline_head()->cpudata[cpuid].status);
+>  }
+>  
+> Index: linux-2.6.19/kernel/ipipe/core.c
 > ===================================================================
-> --- linux-2.6.19-ipipe.orig/kernel/ipipe/core.c
-> +++ linux-2.6.19-ipipe/kernel/ipipe/core.c
-> @@ -47,7 +47,7 @@ struct ipipe_domain ipipe_root =
->  DEFINE_PER_CPU(struct ipipe_domain *, ipipe_percpu_domain) =
->  	{ &ipipe_root };
+> --- linux-2.6.19.orig/kernel/ipipe/core.c
+> +++ linux-2.6.19/kernel/ipipe/core.c
+> @@ -303,10 +303,10 @@ void fastcall ipipe_restore_pipeline_fro
+>  void ipipe_unstall_pipeline_head(void)
+>  {
+>  	struct ipipe_domain *head;
+> -	unsigned long flags;
+>  	ipipe_declare_cpuid;
 >  
-> -ipipe_spinlock_t __ipipe_pipelock = IPIPE_SPIN_LOCK_UNLOCKED;
-> +static IPIPE_DEFINE_SPINLOCK(__ipipe_pipelock);
+> -	ipipe_lock_cpu(flags);
+> +	local_irq_disable_hw();
+> +	ipipe_load_cpuid();
+>  	head = __ipipe_pipeline_head();
+>  	__clear_bit(IPIPE_STALL_FLAG, &head->cpudata[cpuid].status);
 >  
->  LIST_HEAD(__ipipe_pipeline);
+> @@ -323,9 +323,9 @@ void ipipe_unstall_pipeline_head(void)
+>  void fastcall __ipipe_restore_pipeline_head(struct ipipe_domain *head, unsigned long x)
+>  {
+>  	ipipe_declare_cpuid;
+> -	unsigned long flags;
 >  
-> @@ -1396,12 +1396,7 @@ EXPORT_SYMBOL(__ipipe_restore_root);
->  EXPORT_SYMBOL(__ipipe_test_and_stall_root);
->  EXPORT_SYMBOL(__ipipe_test_root);
->  EXPORT_SYMBOL(__ipipe_dispatch_event);
-> -EXPORT_SYMBOL(__ipipe_dispatch_wired);
-> -EXPORT_SYMBOL(__ipipe_sync_stage);
->  EXPORT_SYMBOL(__ipipe_pipeline);
-> -EXPORT_SYMBOL(__ipipe_pipelock);
-> -EXPORT_SYMBOL(__ipipe_virtual_irq_map);
-> -
->  EXPORT_SYMBOL(ipipe_register_domain);
->  EXPORT_SYMBOL(ipipe_unregister_domain);
->  EXPORT_SYMBOL(ipipe_free_virq);
+> -	ipipe_lock_cpu(flags);
+> +	local_irq_disable_hw();
+> +	ipipe_load_cpuid();
+>  
+>  	if (x) {
+>  #ifdef CONFIG_DEBUG_KERNEL
 > _______________________________________________
 > Adeos-main mailing list
 > Adeos-main@domain.hid
