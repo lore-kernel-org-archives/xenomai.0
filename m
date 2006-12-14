@@ -1,14 +1,13 @@
-Message-ID: <45819EFA.2090908@domain.hid>
-Date: Thu, 14 Dec 2006 19:59:06 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Adeos-main] Latency trace on ARM
-References: <E1GutB2-0005VT-Vb@domain.hid>
-In-Reply-To: <E1GutB2-0005VT-Vb@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD9A913F4E488B690C319BA9E"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Adeos-main] [PATCH] cleanup unused EXPORTs
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45803953.7020608@domain.hid>
+References: <45803953.7020608@domain.hid>
+Content-Type: text/plain
+Date: Thu, 14 Dec 2006 21:46:53 +0100
+Message-Id: <1166129213.23946.156.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,56 +16,68 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: adeos-main@gna.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD9A913F4E488B690C319BA9E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2006-12-13 at 18:33 +0100, Jan Kiszka wrote:
+> As I'm unable to find any modular users of the symbols below, I suggest
+> to remove the EXPORTs and make __ipipe_pipelock static.
 
-Sebastian Smolorz wrote:
-> Hi,
->=20
-> we all know that the latency test should not be run with a period of 10=
-0 us=20
-> because it easily gets locked up. The attached trace illustrates this p=
-roblem=20
-> in detail. It shows that a timer interrupt needs about 50 us to be proc=
-essed.=20
-> Furthermore, there is not enough time between two timer interrupts for =
-the=20
-> latency task to get all its work done.
->=20
-> The current I-pipe tracer patch for ARM is available at=20
-> http://opensource.emlix.com/ipipe-s3c24xx/download/ipipe-tracer-arm.pat=
-ch_v4
->=20
-> Comments welcome.
+Looks ok. I've queued this for the next release. Thanks.
 
-Something is still broken, given all those "N"s in Delay column. Is
-there something like NMI at all on your board?
+> 
+> Jan
+> plain text document attachment (cleanup-exports.patch)
+> ---
+>  include/linux/ipipe.h |    2 --
+>  kernel/ipipe/core.c   |    7 +------
+>  2 files changed, 1 insertion(+), 8 deletions(-)
+> 
+> Index: linux-2.6.19-ipipe/include/linux/ipipe.h
+> ===================================================================
+> --- linux-2.6.19-ipipe.orig/include/linux/ipipe.h
+> +++ linux-2.6.19-ipipe/include/linux/ipipe.h
+> @@ -241,8 +241,6 @@ extern unsigned long __ipipe_virtual_irq
+>  
+>  extern struct list_head __ipipe_pipeline;
+>  
+> -extern ipipe_spinlock_t __ipipe_pipelock;
+> -
+>  extern int __ipipe_event_monitors[];
+>  
+>  /* Private interface */
+> Index: linux-2.6.19-ipipe/kernel/ipipe/core.c
+> ===================================================================
+> --- linux-2.6.19-ipipe.orig/kernel/ipipe/core.c
+> +++ linux-2.6.19-ipipe/kernel/ipipe/core.c
+> @@ -47,7 +47,7 @@ struct ipipe_domain ipipe_root =
+>  DEFINE_PER_CPU(struct ipipe_domain *, ipipe_percpu_domain) =
+>  	{ &ipipe_root };
+>  
+> -ipipe_spinlock_t __ipipe_pipelock = IPIPE_SPIN_LOCK_UNLOCKED;
+> +static IPIPE_DEFINE_SPINLOCK(__ipipe_pipelock);
+>  
+>  LIST_HEAD(__ipipe_pipeline);
+>  
+> @@ -1396,12 +1396,7 @@ EXPORT_SYMBOL(__ipipe_restore_root);
+>  EXPORT_SYMBOL(__ipipe_test_and_stall_root);
+>  EXPORT_SYMBOL(__ipipe_test_root);
+>  EXPORT_SYMBOL(__ipipe_dispatch_event);
+> -EXPORT_SYMBOL(__ipipe_dispatch_wired);
+> -EXPORT_SYMBOL(__ipipe_sync_stage);
+>  EXPORT_SYMBOL(__ipipe_pipeline);
+> -EXPORT_SYMBOL(__ipipe_pipelock);
+> -EXPORT_SYMBOL(__ipipe_virtual_irq_map);
+> -
+>  EXPORT_SYMBOL(ipipe_register_domain);
+>  EXPORT_SYMBOL(ipipe_unregister_domain);
+>  EXPORT_SYMBOL(ipipe_free_virq);
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+-- 
+Philippe.
 
-BTW, two asses the tracer's overhead, you may want to run some
-consecutive ipipe_trace_specials and watch the result in the log. Should
-be around 1.something per trace point.
 
-Jan
-
-
---------------enigD9A913F4E488B690C319BA9E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFgZ76niDOoMHTA+kRAtjSAJ4hUSD1KWmlMw2uznAkhoNFz2dhcgCdFVWK
-00hCVb5jLBH7bVQZ1G4RGYw=
-=Aw6W
------END PGP SIGNATURE-----
-
---------------enigD9A913F4E488B690C319BA9E--
 
