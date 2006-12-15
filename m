@@ -1,12 +1,14 @@
-Message-ID: <45827471.8000606@domain.hid>
-Date: Fri, 15 Dec 2006 11:09:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <32779704.1166179579925.JavaMail.ngmail@domain.hid>
+Date: Fri, 15 Dec 2006 11:46:19 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: Re: [Xenomai-help] Xenomai patched SMP kernel and "nosmp" kernel
+In-Reply-To: <45826122.9050209@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Registering Interrupt Handler [Scanned]
-References: <45814504.7050905@domain.hid> <4581526A.7010304@domain.hid>
-	<45825668.3030703@domain.hid>
-In-Reply-To: <45825668.3030703@domain.hid>
-Content-Type: multipart/mixed; boundary="------------010702000209090109080707"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <45826122.9050209@domain.hid> <45800AA5.9000603@domain.hid>
+	<12829436.1165928388617.JavaMail.ngmail@domain.hid>
+	<10171906.1166169332781.JavaMail.ngmail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,57 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Niklaus Burren <niklaus.burren@domain.hid>
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
 Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------010702000209090109080707
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Hi Jan,
 
-Niklaus Burren wrote:
-> Hello Gilles
-> 
-> Thank you for your tip. I use now this makro in the rt_intr_create() 
-> function. Unfortunately it has no effect. The function int_handler() is 
-> never called when I put a square signal to the correct GPIO pin.
-> 
-> Is there anything else I had to do?
+I have used an standard vanilla kernel without any patches and this deliver=
+ed the same results.=20
+It seems to be an issue that is not related to Xenomai or Adeos.
+When I pass the kernel parameter hdb=3Dnoprobe
+the kernel boots fine (however, I can not access the CD-ROM drive anymore..=
+.).
+I think the reason for that could be, that my hard disk is a SATA drive and=
+ the only IDE
+device is the CD ROM on hdb, I do not have a hda device.
+There are many entries on that somewhere in the internet...
+I'll try the same on a 2.6.19.1 kernel to see if this solves the issue.
 
-Could you try applying the following patch and tell me what gets printed
-when you put the square signal on the GPIO pin ?
+Thanks for the hints!
 
--- 
-                                                 Gilles Chanteperdrix
+Regards
 
---------------010702000209090109080707
-Content-Type: text/x-patch;
- name="ipipe-trace-pxa-irq-demux.diff"
-Content-Disposition: inline;
- filename="ipipe-trace-pxa-irq-demux.diff"
-Content-Transfer-Encoding: quoted-printable
+Mathias
 
-Index: arch/arm/mach-pxa/irq.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- arch/arm/mach-pxa/irq.c	(r=C3=A9vision 2407)
-+++ arch/arm/mach-pxa/irq.c	(copie de travail)
-@@ -236,10 +236,14 @@
- 		i =3D 4;
- #endif /* PXA_LAST_GPIO >=3D 96 */
- 		for (; i; i--) {
-+			printk("mask[%d] =3D 0x%08x\n", i - 1, mask[i - 1]);
- 			loop |=3D mask[i - 1];
- 			while (mask[i - 1]) {
- 				irq =3D fls(mask[i - 1]) - 1;
- 				mask[i - 1] &=3D ~(1 << irq);
-+				printk("demux irq IRQ_GPIO(%d): %d\n",
-+				       (i - 1) * 32 + irq,
-+				       IRQ_GPIO((i - 1) * 32 + irq));
- 				irq =3D IRQ_GPIO((i - 1) * 32 + irq);
-=20
- 				__ipipe_handle_irq(irq, regs);
 
---------------010702000209090109080707--
+> M. Koehrer wrote:
+> > Hi Jan,
+> >=20
+> > I tried the kernel parameter maxcpus=3D0 on my SMP enabled, Xenomai-pat=
+ched
+> kernel (same as in mails below).
+> > The kernel does not boot.
+> > It stops after a couple of messages:
+> > IOAPIC[0]: Invalid reference to IRQ 0
+>=20
+> OK, a few things more to verify:
+>=20
+>  - kernel boots fine with your scenario except CONFIG_IPIPE disabled?
+>  - problem persists with 2.6.19-ipipe-1.6-02?
+>=20
+> And could you post your .config and the boot log?
+>=20
+> Jan
+>=20
+>=20
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
