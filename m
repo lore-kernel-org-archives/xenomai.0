@@ -1,12 +1,14 @@
-Date: Tue, 5 Dec 2006 15:08:30 +0300
-From: Anthony Sharobaiko <anthony@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai install problems
-Message-ID: <20061205120830.GA8491@domain.hid>
-References: <20061204133717.GA20186@domain.hid> <457445AB.8060203@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <457445AB.8060203@domain.hid>
+Message-ID: <4582D65A.9010708@domain.hid>
+Date: Fri, 15 Dec 2006 18:07:38 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Registering Interrupt Handler [Scanned]
+References: <45814504.7050905@domain.hid> <4581526A.7010304@domain.hid>
+	<45825668.3030703@domain.hid> <45827471.8000606@domain.hid>
+	<45828192.4020105@domain.hid>
+In-Reply-To: <45828192.4020105@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,50 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Niklaus Burren <niklaus.burren@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Mon, Dec 04, 2006 at 04:58:35PM +0100, Gilles Chanteperdrix wrote:
->> I try to get Xenomai running on arm (PXA board). Currently everything
->> compiles perfectly, but testsuite examples simply segfault:
-> Maybe you got the syscall interception wrong ? Could you show us the
-> difference between your version of arch/arm/kernel/entry-common.S and
-> the original ?
+Niklaus Burren wrote:
+> When I apply the patch the kernel hangs while startup with a dot (see 
+> line 3):
+> 
+> 01 eth0: link down
+> 02 Sending BOOTP requests .<6>eth0: link up, full-duplex, lpa 0x45E1
+> 03 .
 
-Yep, thanks! I've overlooked some minor modification there.
-
-Now, I'm getting this:
-=== cut here ===
-root@domain.hid# ./run 
-*
-*
-* Type ^C to stop this application.
-*
-*
-== Sampling period: 100 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-worst
-RTD|      14.153|      14.769|      39.384|       0|      14.153|
-39.384
-RTD|      14.153|      14.461|      35.384|       0|      14.153|
-39.384
-RTD|      14.153|      14.769|      39.692|       0|      14.153|
-39.692
-=== cut here ===
-
-After printing these lines board hangs in some strange way: it does not reply
-to ping, does not reply on serial console, but heartbeat LED works =/
-
-Number of output lines seems to be random (sometimes it ends on 'warming up...')
-Changing priority in latency.c to LOPRIO didn't help.
-
-Hmm, any suggestions? 
+Are you sure it is related with the patch ? Does the ethernet driver use
+a GPIO ?
 
 -- 
-	WBR, Anthony Sharobaiko.
-
+                                                 Gilles Chanteperdrix
 
