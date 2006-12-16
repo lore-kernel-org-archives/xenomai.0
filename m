@@ -1,10 +1,10 @@
-Message-ID: <45836E95.2060004@domain.hid>
-Date: Fri, 15 Dec 2006 20:57:09 -0700
-From: Jim Cromie <jim.cromie@domain.hid>
+Message-ID: <45842874.6080103@domain.hid>
+Date: Sat, 16 Dec 2006 18:10:12 +0100
+From: Hannes Mayer <h.mayer@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] ltt / ngltt
-References: <5D63919D95F87E4D9D34FF7748CE2C2A6C6D2F@ARVMAIL1.mra.roland-man.biz>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A6C6D2F@ARVMAIL1.mra.roland-man.biz>
+Subject: Re: [Xenomai-help] user space interrupt
+References: <279913.29791.qm@domain.hid>
+In-Reply-To: <279913.29791.qm@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,22 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
+To: mani bhatti <imranbashirbhatti@domain.hid>
 Cc: xenomai@xenomai.org
 
-Roderik_Wildenburg@domain.hid wrote:
-> Does anybody know the actual state of the LinuxTraceTool respectively
-> the ngLtt ?
-> Is it applicable for Xenomai (I know, that the tracepoints are already
-> supported by Xenomai). 
-> Or even better, is anybody already using ngLtt with Xenomai.
->
-> Thank you for your information
-> Roderik
->   
+mani bhatti wrote:
+> Hi all
+> i am trying to access parallel port form a user space task.i have copied 
+> code from an example which runs parallel port in interrupt mode but the 
+> problem is that when i run program i get following message
+> 
+> "iopl err"
+> 
+> due to this piece of  code
+>        
+> // ask for permission to access the parallel port from user-space
+>         if (iopl(3)) {
+>                 printf("iopl err\n");
+>                 exit(1);
+>         }
+> 
 
-http://search.gmane.org/?query=LTT&group=gmane.linux.real-time.xenomai.users
-http://search.gmane.org/?query=LTT&group=gmane.linux.real-time.xenomai.devel
+Have a look here:
+http://www.captain.at/xenomai-parallel-port-interrupt.php
 
-have a number of posts from the princpals. 
+Ciao,
+Hannes.
+
 
