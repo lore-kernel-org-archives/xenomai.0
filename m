@@ -1,16 +1,12 @@
-Message-ID: <1166294491.45843ddb59d3d@domain.hid>
-Date: Sat, 16 Dec 2006 19:41:31 +0100
+Message-ID: <1166352114.45851ef2b1652@domain.hid>
+Date: Sun, 17 Dec 2006 11:41:54 +0100
 From: barbalace@domain.hid
-References: <20061122151901.29256.9846.Mailman@domain.hid>
-	<1166273496.4583ebd839182@domain.hid>
-	<45840394.6050004@domain.hid>
-	<1166286924.4584204ca04e9@domain.hid>
-	<4584347F.1020602@domain.hid>
-In-Reply-To: <4584347F.1020602@domain.hid>
+Subject: RE: [Xenomai-help] Re: RTAI porting to ppc
+References: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F8AB@mspex01.go.mts.com>
+In-Reply-To: <B4D14EA407C38B4DAF92B8EAC9249D7F02D0F8AB@mspex01.go.mts.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Re: RTAI porting to ppc
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,180 +16,431 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: "Rosenow, Jim" <Jim.Rosenow@domain.hid>
 Cc: xenomai@xenomai.org
 
-> barbalace@domain.hid wrote:
-> > Quoting Jan Kiszka <jan.kiszka@domain.hid>:
-> >
-> >> I interpret this as "too slow for me", correct? Do you mind posting =
-your
-> >> test scenario (board/CPU, ipipe/Xenomai/kernel versions, test progra=
-m,
-> >> etc.) and your requirements to a related list? You will be welcome. =
-Just
-> >> make sure that you test under adequate load, because anything else i=
-s of
-> >> limited use for a hard RT benchmark. See also xenomai/TROUBLESHOOTIN=
-G.
-> >
-> > test scenario is MVME5500/MPC7455, ADEOS/ipipe ppc-1.3-05 Xenomai2.2
-> > kernel2.6.14, test program consist in a simple real-time interrupt ha=
-ndler
-> in
-> > kernel space registered with Xenomai/native skin. The interrupt is
-> generated
-> > from a VME board (with know response time) on an clock signal. The
-> interrupt
-> > handler simple write a VME location generating a square clock where t=
-he
-> level
-> > of the output change every interrupt.
+Quoting "Rosenow, Jim" <Jim.Rosenow@domain.hid>:
+> Hi Antonio,
 >
-> OK.
+> I tried to use the MVME5500 with Xenomai and wound up having to return
+> the board to Motorola for repair after the first test run.  I see you
+> had the same problem, yet you must have figured out how to make this
+> combination work.
 >
-> Why not Xenomai 2.2.5 with pipe-1.5? Moreover, current development head
-> is 2.6.18, soon .19 (Wolfgang is currently preparing the first PowerPC
-> tree ports). Just to avoid that some micros got optimised meanwhile.
+> May I ask what combination of patches you used to get this combination
+> running?
 
-The BSP for my board is for kernel 2.6.14 ;-) , I've patched with Wolfgan=
-g
-gt64260 pic code for ipipe, some ipipe patch >2.6.14 write on flash memor=
-y and
-the board must be send to Motorola. So I prefer to stay to 2.6.14 for the
-moment.
+For all that use the MVME5500 I suggest to:
 
-> > Is a very simple scenario. I only want to measure the interrupt dispa=
-tching
-> time
-> > to compare between Linux/Xenomai/RTAI/VxWorks. The jitter in scheduli=
-ng and
-> in
-> > the interrupt dispatching I compare too. I know that under high load =
-system
-> > lost  a deterministic beahavior.
+Disable the write enable on the board with the on-board jumper.
+For a MVME5500 v5500a_ih revision the jumper are to be:
+
+J9 without jumper
+J15 without jumper
+J30 without jumper
+
+This configuration is the one I use, I don't have much time to test if wi=
+th
+jumpers after the patch all work well.
+
+Now how to patch the kernel:
+
+1. extract a vanilla kernel 2.6.14:
+bash-3.00# tar -xvf linux-2.6.14.tar.bz2 cd linux-2.6.14
+2. patch with the Motorola patch:
+bash-3.00# patch -Np1 <../patch-2.6.14-ecc.11012006
+
+3. there are some patch that resolve some problems... apply there
+
+4. From Xenomai base directory
+scripts/prepare-kernel.sh --linux=3D/usr/src/linux-2.6.14/
+--adeos=3D/usr/src/xenomai-2.2.0/ksrc/arch/powerpc/patches/adeos-ipipe-2.=
+6.14-ppc-1.3-05.patch
+--arch=3Dppc
+5. From Linux base directory
+patch -Np1 < ../patch-2.6.14-ecc.11012006-rfx01-1.3-05.ipipe-01
+6. configure and make the kernel kernel
+make xconfig
+
+I'm not sure at 100% that this patch resolve the problem of the non contr=
+elled
+write on the flashes and eeproms.
+
+I write to the community too, see:
+https://mail.gna.org/public/adeos-main/2006-12/msg00043.html
+
+Wolfgang suggest me to make a different change for patching the problem (=
+see
+adeos mailing list). Feel free to use one or the other. Mine could improv=
+e
+system speed.
+
+> Thanks and regards,
 >
-> A hard real-time system doesn't lose determinism, but it will surely
-> expose worse numbers. Still, even lightly unloaded boxes can show high
-> latencies - it just takes much longer to happen.
-Ok
+> Jim Rosenow
+> MTS Systems Corp.
 
-> > I made some test with system load and unload.
-> > With a loaded system the same test in Linux-kernel on Linux/ipipe Xen=
-omai
-> > mounted are very slowly compared to Xenomai registered ones.
->
-> And I have to understand what you mean. What are the two scenarios
-> precisely that you compare under load here?
->
-> > I read the xenomai/TROUBLESHOOTING but latency killers are off in my
-> kernel. Now
->
-> I was referring to TROUBLESHOOTING for appropriate load like the cache
-> calibrator. People often think that ping -f or similar tight loops are
-> already triggering the worst case.
+Here is my patch: (for ipipe, the Wolfgang one is called like mv64x60)
 
-A... under load for me is intended with data transfer on (ethernet transe=
-fers)
-or/and some data intesive calculation (matrix transpose with altivec and
-without).
-I use the same C code (with they API) for Linux, Xenomai and VxWorks. (Fo=
-r the
-moment I don't try VxWorks skin)
 
-I've not think at the cache calibrator issue... This could be a very inte=
-resting
-thing.
+--START---------------- patch-2.6.14-ecc.11012006-rfx01-1.3-05.ipipe-01--=
+-------
+diff -u -r linux-2.6.14-ecc.11012006-rfx01-ipipe/.config~
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/.config~
+--- linux-2.6.14-ecc.11012006-rfx01-ipipe/.config~	2006-11-29 17:18:42.00=
+0000000
++0100
++++ linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/.config~	2006-11-30
+21:47:54.000000000 +0100
+@@ -1,7 +1,7 @@
+ #
+ # Automatically generated make config: don't edit
+ # Linux kernel version: 2.6.14
+-# Wed Nov 29 17:18:42 2006
++# Thu Nov 30 21:47:54 2006
+ #
+ CONFIG_MMU=3Dy
+ CONFIG_GENERIC_HARDIRQS=3Dy
+@@ -132,6 +132,7 @@
+ CONFIG_MV64X60_NEW_BASE=3D0xf1000000
+ # CONFIG_MV64X60_USE_SRAM is not set
+ # CONFIG_SMP is not set
++CONFIG_IPIPE=3Dy
+ # CONFIG_HIGHMEM is not set
+ # CONFIG_HZ_100 is not set
+ CONFIG_HZ_250=3Dy
+diff -u -r linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/platforms/mvme5=
+500.c
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/platforms/mvme5500.c
+---
+linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/platforms/mvme5500.c	2006-=
+11-29
+16:05:25.000000000 +0100
++++
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/platforms/mvme5500.c=
+	2006-12-06
+14:07:29.000000000 +0100
+@@ -26,7 +26,7 @@
+ #include <linux/console.h>
+ #include <linux/delay.h>
+ #include <linux/irq.h>
+-#include <linux/seq_file.h>
++#include <linux/seq_file.h>  /* IPIPE: other ppc arch file remove this l=
+ine */
+ #include <linux/root_dev.h>
+ #include <linux/serial.h>
+ #include <linux/tty.h>
+diff -u -r linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/syslib/gt64260_=
+pic.c
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/syslib/gt64260_pic.c
+---
+linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/syslib/gt64260_pic.c	2005-=
+10-28
+02:02:08.000000000 +0200
++++
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/syslib/gt64260_pic.c=
+	2006-12-06
+13:50:42.000000000 +0100
+@@ -32,6 +32,11 @@
+  *    input.
+  */
 
-> > the situation is: VxWorks 73uS, Linux pure 79uS and Xenomai 78uS, all
-> results
->
-> Well, I heavily doubt that those 79 us over vanilla Linux remain stable
-> if you let your test run for an hour or longer and keep the system
-> loaded. Or are you testing with some -rt patch applied?
++/*
++ * Modified by: A. Barbalace <barbalac@domain.hid> CNR Consorzio RFX P=
+adova
++ *
++*/
++
+ #include <linux/stddef.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+@@ -52,8 +57,19 @@
 
-Test doesn't remain stable under load neither for one minute, you are rig=
-ht.
-I don't use rt patch.
+ /* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D forward declaration =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D */
 
-> > all well. This test use a semaphore to start data acquisition on VME,=
- the
-> > semaphore is signaled in the interrupt handler. This result are the s=
-ame if
-> the
-> > system is loaded for VxWorks and Xenomai but not for Linux, it depend=
-s on
-> the
-> > load the acquisition could be 100uS or more.
->
-> IIRC, VxWorks is MMU-less. Did you configure Xenomai without user-space
-> support as well (.config would be interesting, also when posting to the
-> list)? Of course, this only makes sense of you plan to push everything
-> RT-wise into kernel, and this is not recommended (fault confinement,
-> debugging, legal issues, ...).
++static inline void gt64260pic_write(struct mv64x60_handle *bh, u32 offse=
+t, u32
+val)
++{
++	out_le32(bh->v_base + offset, val);
++}
++
++static inline u32 gt64260pic_read(struct mv64x60_handle *bh, u32 offset)
++{
++	return in_le32(bh->v_base + offset);
++}
++
+ static void gt64260_unmask_irq(unsigned int);
+ static void gt64260_mask_irq(unsigned int);
++/* static void gt64260_end_irq(unsigned int); */
 
-For the moment I'm only in kernel space, but I think to go user-space in
-january.
-Do you think MMU overhead is about a 1uS?
+ /* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D local declarations =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D */
 
->
-> >
-> > Another detail: a read/write operation on the VME bus take between 1 =
-and
-> 2uS. I
-> > need 32  read and one write. The IRQ chain 'round' take some time... =
-I plan
-> to
-> > review VME/VITA specification jet to determin a possible required tim=
-e.
->
-> Means that most of your ~80 us could be VME access?
+@@ -63,6 +79,7 @@
+ 	.disable  =3D gt64260_mask_irq,
+ 	.ack      =3D gt64260_mask_irq,
+ 	.end      =3D gt64260_unmask_irq,
++	/* .end      =3D gt64260_end_irq */
+ };
 
-Yes, this could be true. Some test tell me that a read (that required VME=
- bus
-access and handshaking) require (1,5 - 2)uS; get_tlb() from the first rea=
-d to
-the first write tell me values in the range [53 - 58]uS (more or less). W=
-ith
-Linux. Some tests with VxWorks are not jet done. Interrupt acknowledge
-daisy-chain I think require a couple of uS.
+ u32 gt64260_irq_base =3D 0;	/* GT64260 handles the next 96 IRQs from her=
+e */
+@@ -92,10 +109,10 @@
+ 	ppc_cached_irq_mask[2] =3D 0;
 
-> >
-> > With RTAI immediate dispatching I want to see if we can go below the
-> VxWorks
-> > required time.
->
-> Already tried the latency tracer with Xenomai? It can show you roughly
-> what latency some part of the IRQ path causes ("roughly", because the
-> tracer comes with an overhead and cache disturbances). I will also give
-> you a clue what RTAI may improve and what is hardware related (before
-> writing a single painful line of code). See, once again, irqbench on ho=
-w
-> to trigger a back-trace on the longest delay.
->
-A... Another interesting idea! I plan to try it.
+ 	/* disable all interrupts and clear current interrupts */
+-	mv64x60_write(&bh, MV64x60_GPP_INTR_MASK, ppc_cached_irq_mask[2]);
+-	mv64x60_write(&bh, MV64x60_GPP_INTR_CAUSE, 0);
+-	mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_LO, ppc_cached_irq_mask[0])=
+;
+-	mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_HI, ppc_cached_irq_mask[1])=
+;
++	gt64260pic_write(&bh, MV64x60_GPP_INTR_MASK, ppc_cached_irq_mask[2]);
++	gt64260pic_write(&bh, MV64x60_GPP_INTR_CAUSE, 0);
++	gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_LO, ppc_cached_irq_mask[=
+0]);
++	gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_HI, ppc_cached_irq_mask[=
+1]);
 
-> >
-> > Do you think I must change some settings? From my point of view resul=
-ts are
-> ok.
->
-> I personally cannot comment on your PPC board, but on the general
-> picture: I once measured 10% better worst-case with RTAI on low-end x86
-> (user-space loop), so you /may/ get below current Xenomai numbers and
-> save a few micros. The cons are that you have to port, stabilise, and
-> maintain quite some code unless you plan this as a disposable
-> development. Something you should look at from both sides. Still,
-> design-wise sane optimisations are welcome at any time, and I also
-> pushed several patches of this kind into I-pipe and Xenomai over the
-> last year.
->
-> Jan
+ 	/* use the gt64260 for all (possible) interrupt sources */
+ 	for (i =3D gt64260_irq_base; i < (gt64260_irq_base + 96); i++)
+@@ -126,18 +143,18 @@
+ 	int irq;
+ 	int irq_gpp;
 
->From this point I agree to you that I feel Xenomai community more open to=
- ppc
-architecture then RTAI.
+-	irq =3D mv64x60_read(&bh, GT64260_IC_MAIN_CAUSE_LO);
++	irq =3D gt64260pic_read(&bh, GT64260_IC_MAIN_CAUSE_LO);
+ 	irq =3D __ilog2((irq & 0x3dfffffe) & ppc_cached_irq_mask[0]);
 
-Thanks a lot,
-Antonio
+ 	if (irq =3D=3D -1) {
+-		irq =3D mv64x60_read(&bh, GT64260_IC_MAIN_CAUSE_HI);
++		irq =3D gt64260pic_read(&bh, GT64260_IC_MAIN_CAUSE_HI);
+ 		irq =3D __ilog2((irq & 0x0f000db7) & ppc_cached_irq_mask[1]);
+
+ 		if (irq =3D=3D -1)
+ 			irq =3D -2; /* bogus interrupt, should never happen */
+ 		else {
+ 			if (irq >=3D 24) {
+-				irq_gpp =3D mv64x60_read(&bh,
++				irq_gpp =3D gt64260pic_read(&bh,
+ 					MV64x60_GPP_INTR_CAUSE);
+ 				irq_gpp =3D __ilog2(irq_gpp &
+ 					ppc_cached_irq_mask[2]);
+@@ -146,7 +163,7 @@
+ 					irq =3D -2;
+ 				else {
+ 					irq =3D irq_gpp + 64;
+-					mv64x60_write(&bh,
++					gt64260pic_write(&bh,
+ 						MV64x60_GPP_INTR_CAUSE,
+ 						~(1 << (irq - 64)));
+ 				}
+@@ -155,7 +172,7 @@
+ 		}
+ 	}
+
+-	(void)mv64x60_read(&bh, MV64x60_GPP_INTR_CAUSE);
++	(void)gt64260pic_read(&bh, MV64x60_GPP_INTR_CAUSE);
+
+ 	if (irq < 0)
+ 		return (irq);
+@@ -183,19 +200,23 @@
+
+ 	if (irq > 31)
+ 		if (irq > 63) /* unmask GPP irq */
+-			mv64x60_write(&bh, MV64x60_GPP_INTR_MASK,
+-				ppc_cached_irq_mask[2] |=3D (1 << (irq - 64)));
++			gt64260pic_write(&bh, MV64x60_GPP_INTR_MASK, ppc_cached_irq_mask[2] |=
+=3D (1 <<
+(irq - 64)));
+ 		else /* mask high interrupt register */
+-			mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_HI,
+-				ppc_cached_irq_mask[1] |=3D (1 << (irq - 32)));
++			gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_HI, ppc_cached_irq_mas=
+k[1] |=3D
+(1 << (irq - 32)));
+ 	else /* mask low interrupt register */
+-		mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_LO,
+-			ppc_cached_irq_mask[0] |=3D (1 << irq));
++		gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_LO, ppc_cached_irq_mask=
+[0] |=3D
+(1 << irq));
+
+-	(void)mv64x60_read(&bh, MV64x60_GPP_INTR_MASK);
++	(void)gt64260pic_read(&bh, MV64x60_GPP_INTR_MASK);
+ 	return;
+ }
++/*static void
++gt64260_end_irq(unsigned int irq)
++{
++	if (!ipipe_root_domain_p || (!irq_desc[irq].status & (IRQ_DISABLED |
+IRQ_INPROGRESS)))
++		gt64260_unmask_irq(irq);
+
++	return;
++}*/
+ /* gt64260_mask_irq()
+  *
+  *  This function disables the requested interrupt.
+@@ -216,16 +237,16 @@
+
+ 	if (irq > 31)
+ 		if (irq > 63) /* mask GPP irq */
+-			mv64x60_write(&bh, MV64x60_GPP_INTR_MASK,
++			gt64260pic_write(&bh, MV64x60_GPP_INTR_MASK,
+ 				ppc_cached_irq_mask[2] &=3D ~(1 << (irq - 64)));
+ 		else /* mask high interrupt register */
+-			mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_HI,
++			gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_HI,
+ 				ppc_cached_irq_mask[1] &=3D ~(1 << (irq - 32)));
+ 	else /* mask low interrupt register */
+-		mv64x60_write(&bh, GT64260_IC_CPU_INTR_MASK_LO,
++		gt64260pic_write(&bh, GT64260_IC_CPU_INTR_MASK_LO,
+ 			ppc_cached_irq_mask[0] &=3D ~(1 << irq));
+
+-	(void)mv64x60_read(&bh, MV64x60_GPP_INTR_MASK);
++	(void)gt64260pic_read(&bh, MV64x60_GPP_INTR_MASK);
+ 	return;
+ }
+
+@@ -234,19 +255,19 @@
+ {
+ 	printk(KERN_ERR "gt64260_cpu_error_int_handler: %s 0x%08x\n",
+ 		"Error on CPU interface - Cause regiser",
+-		mv64x60_read(&bh, MV64x60_CPU_ERR_CAUSE));
++		gt64260pic_read(&bh, MV64x60_CPU_ERR_CAUSE));
+ 	printk(KERN_ERR "\tCPU error register dump:\n");
+ 	printk(KERN_ERR "\tAddress low  0x%08x\n",
+-	       mv64x60_read(&bh, MV64x60_CPU_ERR_ADDR_LO));
++	       gt64260pic_read(&bh, MV64x60_CPU_ERR_ADDR_LO));
+ 	printk(KERN_ERR "\tAddress high 0x%08x\n",
+-	       mv64x60_read(&bh, MV64x60_CPU_ERR_ADDR_HI));
++	       gt64260pic_read(&bh, MV64x60_CPU_ERR_ADDR_HI));
+ 	printk(KERN_ERR "\tData low     0x%08x\n",
+-	       mv64x60_read(&bh, MV64x60_CPU_ERR_DATA_LO));
++	       gt64260pic_read(&bh, MV64x60_CPU_ERR_DATA_LO));
+ 	printk(KERN_ERR "\tData high    0x%08x\n",
+-	       mv64x60_read(&bh, MV64x60_CPU_ERR_DATA_HI));
++	       gt64260pic_read(&bh, MV64x60_CPU_ERR_DATA_HI));
+ 	printk(KERN_ERR "\tParity       0x%08x\n",
+-	       mv64x60_read(&bh, MV64x60_CPU_ERR_PARITY));
+-	mv64x60_write(&bh, MV64x60_CPU_ERR_CAUSE, 0);
++	       gt64260pic_read(&bh, MV64x60_CPU_ERR_PARITY));
++	gt64260pic_write(&bh, MV64x60_CPU_ERR_CAUSE, 0);
+ 	return IRQ_HANDLED;
+ }
+
+@@ -257,36 +278,36 @@
+ 	unsigned int pci_bus =3D (unsigned int)dev_id;
+
+ 	if (pci_bus =3D=3D 0) {	/* Error on PCI 0 */
+-		val =3D mv64x60_read(&bh, MV64x60_PCI0_ERR_CAUSE);
++		val =3D gt64260pic_read(&bh, MV64x60_PCI0_ERR_CAUSE);
+ 		printk(KERN_ERR "%s: Error in PCI %d Interface\n",
+ 			"gt64260_pci_error_int_handler", pci_bus);
+ 		printk(KERN_ERR "\tPCI %d error register dump:\n", pci_bus);
+ 		printk(KERN_ERR "\tCause register 0x%08x\n", val);
+ 		printk(KERN_ERR "\tAddress Low    0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI0_ERR_ADDR_LO));
++		       gt64260pic_read(&bh, MV64x60_PCI0_ERR_ADDR_LO));
+ 		printk(KERN_ERR "\tAddress High   0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI0_ERR_ADDR_HI));
++		       gt64260pic_read(&bh, MV64x60_PCI0_ERR_ADDR_HI));
+ 		printk(KERN_ERR "\tAttribute      0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI0_ERR_DATA_LO));
++		       gt64260pic_read(&bh, MV64x60_PCI0_ERR_DATA_LO));
+ 		printk(KERN_ERR "\tCommand        0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI0_ERR_CMD));
+-		mv64x60_write(&bh, MV64x60_PCI0_ERR_CAUSE, ~val);
++		       gt64260pic_read(&bh, MV64x60_PCI0_ERR_CMD));
++		gt64260pic_write(&bh, MV64x60_PCI0_ERR_CAUSE, ~val);
+ 	}
+ 	if (pci_bus =3D=3D 1) {	/* Error on PCI 1 */
+-		val =3D mv64x60_read(&bh, MV64x60_PCI1_ERR_CAUSE);
++		val =3D gt64260pic_read(&bh, MV64x60_PCI1_ERR_CAUSE);
+ 		printk(KERN_ERR "%s: Error in PCI %d Interface\n",
+ 			"gt64260_pci_error_int_handler", pci_bus);
+ 		printk(KERN_ERR "\tPCI %d error register dump:\n", pci_bus);
+ 		printk(KERN_ERR "\tCause register 0x%08x\n", val);
+ 		printk(KERN_ERR "\tAddress Low    0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI1_ERR_ADDR_LO));
++		       gt64260pic_read(&bh, MV64x60_PCI1_ERR_ADDR_LO));
+ 		printk(KERN_ERR "\tAddress High   0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI1_ERR_ADDR_HI));
++		       gt64260pic_read(&bh, MV64x60_PCI1_ERR_ADDR_HI));
+ 		printk(KERN_ERR "\tAttribute      0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI1_ERR_DATA_LO));
++		       gt64260pic_read(&bh, MV64x60_PCI1_ERR_DATA_LO));
+ 		printk(KERN_ERR "\tCommand        0x%08x\n",
+-		       mv64x60_read(&bh, MV64x60_PCI1_ERR_CMD));
+-		mv64x60_write(&bh, MV64x60_PCI1_ERR_CAUSE, ~val);
++		       gt64260pic_read(&bh, MV64x60_PCI1_ERR_CMD));
++		gt64260pic_write(&bh, MV64x60_PCI1_ERR_CAUSE, ~val);
+ 	}
+ 	return IRQ_HANDLED;
+ }
+@@ -301,8 +322,8 @@
+ 		gt64260_cpu_error_int_handler, SA_INTERRUPT, CPU_INTR_STR, 0)))
+ 		printk(KERN_WARNING "Can't register cpu error handler: %d", rc);
+
+-	mv64x60_write(&bh, MV64x60_CPU_ERR_MASK, 0);
+-	mv64x60_write(&bh, MV64x60_CPU_ERR_MASK, 0x000000fe);
++	gt64260pic_write(&bh, MV64x60_CPU_ERR_MASK, 0);
++	gt64260pic_write(&bh, MV64x60_CPU_ERR_MASK, 0x000000fe);
+
+ 	/* Register PCI 0 error interrupt handler */
+ 	if ((rc =3D request_irq(MV64360_IRQ_PCI0, gt64260_pci_error_int_handler=
+,
+@@ -310,8 +331,8 @@
+ 		printk(KERN_WARNING "Can't register pci 0 error handler: %d",
+ 			rc);
+
+-	mv64x60_write(&bh, MV64x60_PCI0_ERR_MASK, 0);
+-	mv64x60_write(&bh, MV64x60_PCI0_ERR_MASK, 0x003c0c24);
++	gt64260pic_write(&bh, MV64x60_PCI0_ERR_MASK, 0);
++	gt64260pic_write(&bh, MV64x60_PCI0_ERR_MASK, 0x003c0c24);
+
+ 	/* Register PCI 1 error interrupt handler */
+ 	if ((rc =3D request_irq(MV64360_IRQ_PCI1, gt64260_pci_error_int_handler=
+,
+@@ -319,10 +340,11 @@
+ 		printk(KERN_WARNING "Can't register pci 1 error handler: %d",
+ 			rc);
+
+-	mv64x60_write(&bh, MV64x60_PCI1_ERR_MASK, 0);
+-	mv64x60_write(&bh, MV64x60_PCI1_ERR_MASK, 0x003c0c24);
++	gt64260pic_write(&bh, MV64x60_PCI1_ERR_MASK, 0);
++	gt64260pic_write(&bh, MV64x60_PCI1_ERR_MASK, 0x003c0c24);
+
+ 	return 0;
+ }
+
+ arch_initcall(gt64260_register_hdlrs);
++
+diff -u -r linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/syslib/i8259.c
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/syslib/i8259.c
+--- linux-2.6.14-ecc.11012006-rfx01-ipipe/arch/ppc/syslib/i8259.c	2005-10=
+-28
+02:02:08.000000000 +0200
++++
+linux-2.6.14-ecc.11012006-rfx01-ipipe.rfx01/arch/ppc/syslib/i8259.c	2006-=
+12-06
+14:06:19.000000000 +0100
+@@ -157,7 +157,8 @@
+ 	.flags =3D IORESOURCE_BUSY,
+ };
+
+-static struct irqaction i8259_irqaction =3D {
++//static struct irqaction i8259_irqaction =3D {		// IPIPE: remove static
+declaration like other IPIPE patch
++struct irqaction i8259_irqaction =3D {
+ 	.handler =3D no_action,
+ 	.flags =3D SA_INTERRUPT,
+ 	.mask =3D CPU_MASK_NONE,
+-- END ---------------- patch-2.6.14-ecc.11012006-rfx01-1.3-05.ipipe-01--=
+-------
 
