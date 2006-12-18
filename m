@@ -1,10 +1,12 @@
-Message-ID: <4577E600.6030608@domain.hid>
-Date: Thu, 07 Dec 2006 10:59:28 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Mon, 18 Dec 2006 13:49:17 +0100
+From: Benjamin Zores <benjamin.zores@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] ADEOS IPIPE PPC patches upgrade
+Message-Id: <20061218134917.c76ac833.benjamin.zores@domain.hid>
+In-Reply-To: <458685C6.40204@domain.hid>
+References: <458685C6.40204@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Differences between IPIPE v1.5 and v1.6
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,15 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Philippe,
+On Mon, 18 Dec 2006 13:12:54 +0100
+Wolfgang Grandegger <wg@domain.hid> wrote:
 
-what are the major differences between the ADEOS-IPIPE patch versions 
-v1.5 and v1.6, apart from support for the new genirq layer. I realized, 
-that the arch specific files ipipe-core.c and ipipe-root.c have been 
-merged into ipipe.c.
+> Hallo,
+> 
+> attached is patch for Xenomai upgrading the ADEOS IPIPE patches for the 
+> PPC tree. Here is the ChangeLog entry:
+> 
+> 2006-12-18  Wolfgang Grandegger  <wg@domain.hid>
+> 
+>          * ksrc/arch/powerpc/patches: Upgrade to 2.6.14-ppc-1.5-02,
+>          2.6.18-ppc-1.5-01 and 2.6.19-ppc-1.5-01. These patches fix
+>          the problems with PIC for Galileo's GT64260 reported by Antonio
+>          Barbalace and add support for 2.6.19.
 
-Wolfgang.
+Hi,
+
+Got the same for 2.6.19 on powerpc arch ?
+Or should I try to port it as I did for 2.6.18 ?
+
+Ben
 
