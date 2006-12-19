@@ -1,19 +1,16 @@
-Message-ID: <17183977.1166537582101.JavaMail.ngmail@domain.hid>
-Date: Tue, 19 Dec 2006 15:13:02 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-Subject: Aw: Re: Aw: Re: [Xenomai-help] NMI watchdog: Loading of xeno_native
-	leads...
-In-Reply-To: <4587E404.2050101@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: AW: [Xenomai-help] prepare kernel fails
+Date: Tue, 19 Dec 2006 20:54:54 +0100
+References: <5D63919D95F87E4D9D34FF7748CE2C2A6F92C7@domain.hid>
+	<4586A0E6.6060608@domain.hid> <4586A820.3040509@domain.hid>
+In-Reply-To: <4586A820.3040509@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <4587E404.2050101@domain.hid> <4587B287.2060603@domain.hid>
-	<358035.1166518774710.JavaMail.ngmail@domain.hid>
-	<4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
-	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
-	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
-	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
-	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200612192054.54573.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,65 +20,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Roderik_Wildenburg@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-Hi Jan,
+Am Montag, 18. Dezember 2006 15:39 schrieb Gilles Chanteperdrix:
+> Jan Kiszka wrote:
+> > @all: please give the -rc3 tar.bz2 hell! New files can easily slip
+> > through the developer fingers when it comes to distribution (I know this
+> > very well /wrt RTnet...).
+>
+> The way around this is to run automated scripts using the result of a
+> make distcheck instead of using an svn checkout. Niklaus, how hard would
+> it be to change the buildbot to do this ?
+What do you want the buildbot do to exactly?
+a) First svn checkout followed by make distcheck?  This is easy. eg. I would 
+just add an additional step before the "configured
+xenomai"
 
-I think you are right.
-The NMI watchdog (Realtime) kernel parameter in the kernel configuration wa=
-s
-accidentally disabled (perhaps because I tried in between with a non-APIC I=
-RQ).
-Now I have again the error situation of this morning:
-Even with gcc-3.3 I am not able to load the xeno_native module when NMI wat=
-chdog
-is enabled, the system directly reboots (without printing to the serial con=
-sole)
-The printout I have sent before was the printout of the standard linux NMI =
-but
-not of the Xenomai NMI.
+b) Grab tarballs, extract them to clean directory? Here I need to study the 
+buildbot a bit better, as it does no concept for tarballs as ChangeSources. 
+But I might write a small script which polls 
+http://download.gna.org/xenomai/testing/ and
+http://download.gna.org/xenomai/stable/ for new tarballs. If found I would 
+unpack it somewhere and submit the change to some new builders Buildbot 
+(similar to the /buildbot-full/).
+This will probably take a few hours of work, but quite for some time I felt 
+uncomfortable about neither testing branches nor releases.
+If this solution works I would suggest that the release manager should delay 
+announcing the availability of a new releases till he has examined the 
+results of the buildbot.
 
-I.e., it seems _not_ to be the reason of the compiler that leads to the beh=
-aviour!
+What variant do you prefer?
 
-Regards
+Best regards
 
-Mathias
-> M. Koehrer wrote:
-> > Hi Jan,
-> >=20
-> > I tried to enable the kernel hacking parameters you proposed.
-> > However, now I get a "NMI early shots: 0" message many times per second=
-.
-> > These seems to slow down everything dramatically, it is hard to work wi=
-th
-> the
-> > system. What are the early shots messages and how can I avoid them?
->=20
-> My feeling is that the issue you saw with gcc-4.1.2 is still unsolved,
-> just the recompilation made some stuff move around. Now, with additional
-> features activated, the issue seems to pop up again in a different way.
->=20
-> So again my suggestion: forget about the NMI for a while, check if we
-> can make progress with other debugging switches.
->=20
-> Further question to tighten the test case: do the basic Xenomai
-> testsuite programs run without noticeable problems on your box?
->=20
-> Jan
->=20
->=20
+P.S: I still the following error when running the simulator testsuite:
+Some problems were reported in:
+vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2004); got 
+SEQ("Test2",1999)
+vxworks->t010823-2: <b> t010823-2.c:166, test finished: 1 failures/ 33 tests
+(Just fixed an error running the test_sim.rb in the buildbot).
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+-- 
+Niklaus Giger
 
