@@ -1,14 +1,13 @@
-Message-ID: <45881A69.1040704@domain.hid>
-Date: Tue, 19 Dec 2006 17:59:21 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Adeos-main] Re: [RFC] git workflow
-References: <20061219164222.EB5D735261B@atlas.denx.de>
-In-Reply-To: <20061219164222.EB5D735261B@atlas.denx.de>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4A79BA39E88524954269DB80"
-Sender: jan.kiszka@domain.hid
+From: Wolfgang Denk <wd@domain.hid>
+Subject: Re: [Adeos-main] Re: [RFC] git workflow 
+Mime-version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+In-reply-to: Your message of "Tue, 19 Dec 2006 17:59:21 +0100."
+	<45881A69.1040704@domain.hid> 
+Date: Tue, 19 Dec 2006 22:30:10 +0100
+Sender: wd@domain.hid
+Message-Id: <20061219213010.AF2A4352664@domain.hid>
+Content-Transfer-Encoding: quoted-printable
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,67 +16,65 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Wolfgang Denk <wd@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, adeos-main <adeos-main@gna.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4A79BA39E88524954269DB80
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Dear Jan,
 
-Wolfgang Denk wrote:
-> In message <4587F9CE.3060403@domain.hid> you wrote:
->> Once there is a public tree with 2.6.20-rc1 + ipipe + -rc2, you cannot=
+in message <45881A69.1040704@domain.hid> you wrote:
+>
+> This is one of my motivations to push git forward. Having
+> 2.6.20-rcX+ipipe already available for download and testing may help to
+> follow the kernel development on the bleeding edge more closely.
 
->> simply turn that tree into 2.6.20-rc1 + -rc2 + ipipe. The order of
->> patches is practically frozen once published. In your private tree you=
+Agreed.
 
->> are, of course, free to do this and then extract some patch to post
->> upstream.
->=20
-> I'm not sure if it really makes sense to maintain this as a git
-> repository - that would be OK if we wanted to provide a pre-patched
-> tree to the public (which might be a good thing to have, btw.).
+> The other aspect is that when you merge the kernel patches into a
+> working ipipe tree and you get a conflict, you also directly obtain
+> information about what change caused it and maybe what the background o=
+f
+> that patch was. That's at least my theory which still needs to be prove=
+n
+> in practice.
 
-This is one of my motivations to push git forward. Having
-2.6.20-rcX+ipipe already available for download and testing may help to
-follow the kernel development on the bleeding edge more closely.
+THis will work, but if you go this route you will sonn have the git
+repo only, as it will become more and more difficult to extract the
+ipipe patches which you need anyway.
 
-The other aspect is that when you merge the kernel patches into a
-working ipipe tree and you get a conflict, you also directly obtain
-information about what change caused it and maybe what the background of
-that patch was. That's at least my theory which still needs to be proven
-in practice.
+That's why I recommend to use stgit to maintain the ipipe patches. So
+you have a clearly defined flow of information.
 
->=20
-> As long as we're basicly trying to manage the patches in a way that
-> integrates well with git we should do exactly that: manage the
-> patches under git, i. e. use stgit (see http://www.procode.org/stgit/).=
+> I heard about it before, but I still have to take a closer look. Does
+> this generate also some kind of publishable git tree with history for
+> the managed patches? ...
 
+Yes, it does.
 
-I heard about it before, but I still have to take a closer look. Does
-this generate also some kind of publishable git tree with history for
-the managed patches? One problem with a stack might be that we loose
-information about ipipe changes themselves. My idea is that some
-modification to the ipipe core stored as commit in the reference tree
-could directly be pulled by other arch maintainers.
+>                  ... One problem with a stack might be that we loose
+> information about ipipe changes themselves. ...
 
-Jan
+No, that's not true, as the patches itself are managed under git,  so
+you have the full power of git for the patch history, too.
 
+This will be much more powerful than the  other  approach  -  if  you
+maintain  a  patched  tree  under git, it will be pretty difficult to
+find out which changes make up the ipipe patch, and which  are  other
+stuff.
 
---------------enig4A79BA39E88524954269DB80
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+>                                         ... My idea is that some
+> modification to the ipipe core stored as commit in the reference tree
+> could directly be pulled by other arch maintainers.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+That sounds as if you are planning  to  use  stgit  already,  without
+knowing it yet :-)
 
-iD8DBQFFiBppniDOoMHTA+kRAvANAJ4mPJSkublQynsj2Ok3U2gDUukFLgCfQOCj
-v1sAtUdDsF+cIOe9TPx/pEU=
-=UaFK
------END PGP SIGNATURE-----
+Best regards,
 
---------------enig4A79BA39E88524954269DB80--
+Wolfgang Denk
+
+--=20
+Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+"Just think, with VLSI we can have 100 ENIACS on a chip!"
+- Alan Perlis
 
