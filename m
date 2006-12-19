@@ -1,83 +1,134 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <13574091.1166708188484.JavaMail.ngmail@domain.hid>
-References: <b647ffbd0612210509r7494454fqc820f83a4b1f8719@domain.hid>
-	<b647ffbd0612210245p12227990j2584147720e95adc@domain.hid>
-	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
-	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
-	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
-	<15069404.1166690889417.JavaMail.ngmail@domain.hid>
-	<458A4DE0.5030005@domain.hid>
-	<2890274.1166696466862.JavaMail.ngmail@domain.hid>
-	<16382545.1166699974895.JavaMail.ngmail@domain.hid>
-	<1166700491.4936.5.camel@domain.hid>
-	<25528819.1166701882755.JavaMail.ngmail@domain.hid>
-	<13574091.1166708188484.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain
-Date: Thu, 21 Dec 2006 15:13:13 +0100
-Message-Id: <1166710393.4960.13.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Re: Re: Re: Re: A fairly small rtnet/Xenomai
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+Message-ID: <4587F9CE.3060403@domain.hid>
+Date: Tue, 19 Dec 2006 15:40:14 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Adeos-main] Re: [RFC] git workflow
+References: <4582E67C.70108@domain.hid>
+	<4587E99D.9070404@domain.hid>	<4587ECF0.4000907@domain.hid>
+	<4587EFE2.8040302@domain.hid> <4587F5F9.7050906@domain.hid>
+In-Reply-To: <4587F5F9.7050906@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig530421E927DCE20EC425E896"
+Sender: jan.kiszka@domain.hid
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Thu, 2006-12-21 at 14:36 +0100, M. Koehrer wrote:
-> Hi all,
-> 
-> some more interesing measurements:
-> 1) Even when I remove the printf() completely, the system freezes.
-> My realtimetask is then
-> static void realtimetask(void *arg)
-> {
->     system("ls -l");
->     rt_task_sleep(1000000000ULL);
-> 
-> }
-> 
-> 2) When I replace the printf() by a gepid() the behaviour is the same.
-> 
-> 3) Jan, your application using the rt_task_shadow behaves the very same (it freezes)!
-> 
-> 4) A getpid() directly after system does not help - however, a printf at this position helps to
-> prevent the freeze.
-> 
-> But now, I found one very interesting thing:
-> When I rename my /lib/tls to /lib/tls.disabled, it works!!!!
-> It seems to be (once more) a ugly thread local storage stuff.
-> The ldd dependency of xeno_crash show libc and libpthread that are take from 
-> /lib/tls/i686/cmov directory.
-> Perhaps that could give a hint!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig530421E927DCE20EC425E896
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Please check the following assertions on your setup:
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>> Jan Kiszka wrote:
+>>>>
+>>>>
+>>>>> ...
+>>>>> [Keeping up-to-date]
+>>>>> 1. The original kernel tree may have been updated, and the ipipe pa=
+tch
+>>>>>   needs to be rebased
+>>>>>
+>>>>>   # git fetch
+>>>>>   # git rebase origin
+>>>> I meanwhile learned that rebasing doesn't work well with public git
+>>>> tree. Once you pushed some tree, say, linux-2.6.19 + ipipe-patch1..n=
 
-- does enabling the debug option for the Xenomai nucleus cause Xenomai
-warnings to appear (messages about forced switches of the crashtest task
-to secondary mode), even over 2.6.17 with the very same test code?
+>>>> out, you cannot rebase to 2.6.20 + ipipe-patch1..n without breaking =
+the
+>>>> linear history.
+>>>>
+>>>> Either we only push out final trees (but that would lock-out early
+>>>> testers that may want to pull from devel-head), or we need to evolve=
 
-- does enabling CONFIG_DEBUG_SPINLOCK and CONFIG_DEBUG_SPINLOCK_SLEEP in
-the kernel hacking section cause Linux warnings to appear while the test
-code runs over 2.6.19, before the box crashes?
+>>>> with ipipe patches deeply merged. That means when we have 2.6.19 + i=
+pipe
+>>>> cleanly on top of it, pulling 2.6.20 origin may cause conflicts (lik=
+e
+>>>> the paravirt stuff does on i386 ATM). We would then have to merge th=
+e
+>>>> upstream patches into the I-pipe tree, effectively adopting them to
+>>>> I-pipe. An extraction of a potential I-pipe patch stack would be mor=
+e
+>>>> complicated that way, but not infeasible.
+>>>>
+>>>> Comments?
+>>> I am a complete git newbie myself. But the simpler way I would imagin=
+e
+>>
+>> Then I'm at least not alone. :)
+>>
+>>
+>>> to develop the I-pipe would be to create one branch for each version =
+of
+>>> the kernel. We would then use a script to generate all architectures
+>>> specific patches.
+>>>
+>>> Porting from one version to the next means merging the difference
+>>> between the ipipe branch for linux 2.x.y and the linux 2.x.y sources
+>>> with the linux-2.x.y+1 sources.
+>>
+>> Of course, we could branch per major release and rebase on top of new
+>> kernel versions. But that would mean we have to wait until the officia=
+l
+>> release to publish our trees. Otherwise, the risk would be the later
+>> fixes require a rebase.
+>=20
+> Is it a big deal ?
 
-- does the bug still occurs after the call to the system() routine has
-been replaced by the following frag?
+Once there is a public tree with 2.6.20-rc1 + ipipe + -rc2, you cannot
+simply turn that tree into 2.6.20-rc1 + -rc2 + ipipe. The order of
+patches is practically frozen once published. In your private tree you
+are, of course, free to do this and then extract some patch to post
+upstream.
 
-    if (vfork() == 0)
-            execlp("/bin/ls", "ls", "-l", NULL);
-    else
-            wait(NULL);
+>=20
+>> The point is likely how to extract ipipe stuff from a fully merged git=
 
--- 
-Philippe.
+>> tree. I think this should not be that tricky - as long as every patch =
+in
+>> some series only touches existing files exclusively (i.e. no two patch=
+es
+>> modify the same source file). Then we could simply apply some diff mas=
+k
+>> (git diff origin..master file1 file2 file3...) to generate those
+>> individual patches for reference to anyone willing to port stuff to a
+>> new arch or board.
+>=20
+> Yes, what we need is something similar to "svn merge" functionality.
+>=20
+
+That's integrated in git-pull.
+
+Jan
 
 
+--------------enig530421E927DCE20EC425E896
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFh/nOniDOoMHTA+kRAkFGAJ9UJHzhDe1tR39ElQJwCpgNVdEwUQCggagW
+W/8Vy+CI2RAUHNBK8qmDv3o=
+=YKgg
+-----END PGP SIGNATURE-----
+
+--------------enig530421E927DCE20EC425E896--
 
