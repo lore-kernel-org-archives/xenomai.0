@@ -1,13 +1,16 @@
-Message-ID: <45758AF3.6010907@domain.hid>
-Date: Tue, 05 Dec 2006 16:06:27 +0100
-From: Jan Kiszka <kiszka@domain.hid>
+Message-ID: <4587A2D4.3020102@domain.hid>
+Date: Tue, 19 Dec 2006 09:29:08 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Crash using userspace interrupts
-References: <200612051557.44787.s.zimmermann@domain.hid>
-In-Reply-To: <200612051557.44787.s.zimmermann@domain.hid>
+Subject: Re: [Xenomai-help] NMI watchdog: Loading of xeno_native leads to
+References: <45879DE5.5080507@domain.hid>
+	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
+	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
+In-Reply-To: <4970132.1166516081275.JavaMail.ngmail@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig93F162E299C095A672078E93"
+	boundary="------------enig33CEC634D857052D10843F76"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,50 +20,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephan Zimmermann <s.zimmermann@domain.hid>
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig93F162E299C095A672078E93
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig33CEC634D857052D10843F76
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Stephan Zimmermann wrote:
-> Hello List,
-> I am facing a crashing kernel when I use some rt_interupt_xxx funtions =
-in my application.
+M. Koehrer wrote:
+> Hi Jan,
 >=20
-> System: Dualcore AMD with Debian 3.1, kernel 2.7.17.14 with Xenomai SVN=
- rev 1920.=20
+> here is my /proc/interrupts=20
 >=20
-> Kernel crashes, leaving the following last words in syslog, the system =
-keeps responding,=20
-> but I am unable to restart my application.
->=20
-> <syslog>
-> I-pipe: Domain Xenomai registered.
-> Dec  5 15:24:07 localhost kernel: Xenomai: hal/x86 started.
-> Dec  5 15:24:07 localhost kernel: Xenomai: real-time nucleus v2.3-rc1 (=
-Baroque) loaded.
+>            CPU0
+>   0:     331260   IO-APIC-edge      timer
+>   1:          8   IO-APIC-edge      i8042
+>   7:          0   IO-APIC-edge      parport0
+>   9:          0   IO-APIC-fasteoi   acpi
+>  14:         12   IO-APIC-edge      ide0
+>  16:       1022   IO-APIC-fasteoi   eth0
+>  19:       2358   IO-APIC-fasteoi   libata
+> NMI:     331248
+> LOC:     331233
+> ERR:          0
+> MIS:          0
 
-#1920 implies -rc2. Something is probably inconsistent in your build.
+Nothing unusual on first sight.
+
+>=20
+> I have enclosed a config.gz file of my 2.6.19.1 kernel.
+
+Two things to try:
+ - CONFIG_XENO_HW_NMI_DEBUG_LATENCY_MAX=3D100 (i.e. default again)
+ - CONFIG_PROFILING=3Dy (I'm not sure ATM if it may interfere with
+                       Xenomai's watchdog)
 
 Jan
 
 
---------------enig93F162E299C095A672078E93
+--------------enig33CEC634D857052D10843F76
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (MingW32)
+Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFdYrzncNeS9Q0k+IRAgP0AKClx1zQGFAddep8Ru7UGpVcxwUc5ACgp3tY
-hOXcfCkhH17PP1yhKcPFtPM=
-=ulJC
+iD8DBQFFh6LaniDOoMHTA+kRAlH0AJ4zwBeMOBDqfhmb40+VM+TuD5PySwCfYJB8
+7ChQgtA2ZbxVMzSIrrZMw6Y=
+=+Z17
 -----END PGP SIGNATURE-----
 
---------------enig93F162E299C095A672078E93--
+--------------enig33CEC634D857052D10843F76--
 
