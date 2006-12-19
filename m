@@ -1,15 +1,18 @@
-Message-ID: <2579704.1166520394117.JavaMail.ngmail@domain.hid>
-Date: Tue, 19 Dec 2006 10:26:34 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-Subject: Re: [Xenomai-help] NMI watchdog: Loading of xeno_native leads...
-In-Reply-To: <358035.1166518774710.JavaMail.ngmail@domain.hid>
+Message-ID: <4587B059.7040800@domain.hid>
+Date: Tue, 19 Dec 2006 10:26:49 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <358035.1166518774710.JavaMail.ngmail@domain.hid>
-	<4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
+Subject: Re: Aw: Re: [Xenomai-help] NMI watchdog: Loading of xeno_native leads
+	to
+References: <4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
 	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
 	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
+	<358035.1166518774710.JavaMail.ngmail@domain.hid>
+In-Reply-To: <358035.1166518774710.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2C024FADB952BF7E1FD36553"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,104 +22,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi!
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2C024FADB952BF7E1FD36553
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-It was the compiler!!! Using gcc-3.3 solved the issue.
-That means, that somehow gcc-4.1.2 must not be used with Xenomai currently.=
-..
-=20
-This allowed me to catch the system hang I was hunting for since yesterday.=
-..
-And I got it.
-I write the information I found on the console (I have not tried with conso=
-le redirection yet...).
-CPU 0, eip c010122d
-EIP 0060:[<c010122d>]
-EFLAGS 00000246
-EIP is at mwait_idle_with_hints+0x2c/0x2e
-eax:0 ebx:c0498000 ecx:0 edx:0
-
-Call Trace
-mwait_idle+0x0/0x2e
-mwait_idle+0x1d/0x2e
-cpu_idle+0x44/0x86
-start_kernel+0x1f1/0x1f5
-unknown_bootoption+0x0/0x191
-
-I'll try to reproduce the same with console redirection, however, I hope th=
-is could help already!
-
-Regards
-
-Mathias
+M. Koehrer wrote:
 > Hi!
 >=20
-> I have modified the configuration to disable profiling and to set the NMI
-> time value to 100.
+> I have modified the configuration to disable profiling and to set the N=
+MI time value to 100.
 > However, there is no difference.
 > Could this be a compiler issue?
 > I am using gcc 4.1.2 (debian etch prerelease)
-> I try to recompile the kernel using an older gcc-3.3 to see if this helps=
-.
->=20
-> Regards
->=20
-> Mathias
-> > > here is my /proc/interrupts=20
-> > >=20
-> > >            CPU0
-> > >   0:     331260   IO-APIC-edge      timer
-> > >   1:          8   IO-APIC-edge      i8042
-> > >   7:          0   IO-APIC-edge      parport0
-> > >   9:          0   IO-APIC-fasteoi   acpi
-> > >  14:         12   IO-APIC-edge      ide0
-> > >  16:       1022   IO-APIC-fasteoi   eth0
-> > >  19:       2358   IO-APIC-fasteoi   libata
-> > > NMI:     331248
-> > > LOC:     331233
-> > > ERR:          0
-> > > MIS:          0
-> >=20
-> > Nothing unusual on first sight.
-> >=20
-> > >=20
-> > > I have enclosed a config.gz file of my 2.6.19.1 kernel.
-> >=20
-> > Two things to try:
-> >  - CONFIG_XENO_HW_NMI_DEBUG_LATENCY_MAX=3D100 (i.e. default again)
-> >  - CONFIG_PROFILING=3Dy (I'm not sure ATM if it may interfere with
-> >                        Xenomai's watchdog)
-> >=20
-> > Jan
-> >=20
-> >=20
->=20
-> --=20
-> Mathias Koehrer
-> mathias_koehrer@domain.hid
->=20
->=20
-> Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-> ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCns=
-tig
-> und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer=
-,
-> nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-> http://www.arcor.de/rd/emf-dsl-2
->=20
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+My feeling is no (I'm using 4.1 here, .2 should only fix regressions in
+theory).
+
+> I try to recompile the kernel using an older gcc-3.3 to see if this hel=
+ps.
+
+After that let us forget about the NMI for a while and check if the soft
+watchdog + CONFIG_XENO_OPT_DEBUG_NUCLEUS may already reveal some detail
+of the RTnet issue.
+
+Jan
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+--------------enig2C024FADB952BF7E1FD36553
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFh7BZniDOoMHTA+kRAssyAJ9jubG+n/z1uHX3tdZ1GC6L2JsSfQCeNxZt
+5xXzqjVMpquQNhhrJryviD4=
+=0Ee/
+-----END PGP SIGNATURE-----
+
+--------------enig2C024FADB952BF7E1FD36553--
 
