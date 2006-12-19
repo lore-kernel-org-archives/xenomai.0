@@ -1,16 +1,14 @@
-Message-ID: <4587A2D4.3020102@domain.hid>
-Date: Tue, 19 Dec 2006 09:29:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4587A7F5.4030602@domain.hid>
+Date: Tue, 19 Dec 2006 09:51:01 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] NMI watchdog: Loading of xeno_native leads to
-References: <45879DE5.5080507@domain.hid>
-	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
-	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
-In-Reply-To: <4970132.1166516081275.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig33CEC634D857052D10843F76"
-Sender: jan.kiszka@domain.hid
+Subject: Re: AW: [Xenomai-help] prepare kernel fails
+References: <5D63919D95F87E4D9D34FF7748CE2C2A6F92C7@domain.hid>	
+	<4586A0E6.6060608@domain.hid> <4586A820.3040509@domain.hid>
+	<1166473522.17298.13.camel@domain.hid>
+In-Reply-To: <1166473522.17298.13.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,58 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: Roderik_Wildenburg@domain.hid, xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig33CEC634D857052D10843F76
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Philippe Gerum wrote:
+> On Mon, 2006-12-18 at 15:39 +0100, Gilles Chanteperdrix wrote:
+> 
+>>Jan Kiszka wrote:
+>>
+>>>@all: please give the -rc3 tar.bz2 hell! New files can easily slip
+>>>through the developer fingers when it comes to distribution (I know this
+>>>very well /wrt RTnet...).
+>>
+>>The way around this is to run automated scripts using the result of a
+>>make distcheck instead of using an svn checkout. Niklaus, how hard would
+>>it be to change the buildbot to do this ?
+>>
+> 
+> 
+> Make distcheck did not choke on the issue, that's precisely the problem.
+> It does not try to prepare a kernel for patching.
+> 
 
-M. Koehrer wrote:
-> Hi Jan,
->=20
-> here is my /proc/interrupts=20
->=20
->            CPU0
->   0:     331260   IO-APIC-edge      timer
->   1:          8   IO-APIC-edge      i8042
->   7:          0   IO-APIC-edge      parport0
->   9:          0   IO-APIC-fasteoi   acpi
->  14:         12   IO-APIC-edge      ide0
->  16:       1022   IO-APIC-fasteoi   eth0
->  19:       2358   IO-APIC-fasteoi   libata
-> NMI:     331248
-> LOC:     331233
-> ERR:          0
-> MIS:          0
+Make distcheck would not choke, but the error would be caught if the
+buildbot script used the contents of the generated tarball instead of
+using an svn checkout.
 
-Nothing unusual on first sight.
-
->=20
-> I have enclosed a config.gz file of my 2.6.19.1 kernel.
-
-Two things to try:
- - CONFIG_XENO_HW_NMI_DEBUG_LATENCY_MAX=3D100 (i.e. default again)
- - CONFIG_PROFILING=3Dy (I'm not sure ATM if it may interfere with
-                       Xenomai's watchdog)
-
-Jan
-
-
---------------enig33CEC634D857052D10843F76
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFh6LaniDOoMHTA+kRAlH0AJ4zwBeMOBDqfhmb40+VM+TuD5PySwCfYJB8
-7ChQgtA2ZbxVMzSIrrZMw6Y=
-=+Z17
------END PGP SIGNATURE-----
-
---------------enig33CEC634D857052D10843F76--
+-- 
+                                                 Gilles Chanteperdrix
 
