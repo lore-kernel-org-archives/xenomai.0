@@ -1,15 +1,10 @@
-Message-ID: <4588F8D0.5060605@domain.hid>
-Date: Wed, 20 Dec 2006 09:48:16 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <458915DB.80909@domain.hid>
+Date: Wed, 20 Dec 2006 11:52:11 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-help] prepare kernel fails
-References: <5D63919D95F87E4D9D34FF7748CE2C2A6F92C7@domain.hid>
-	<200612192054.54573.niklaus.giger@domain.hid>
-	<45884DC5.2030701@domain.hid>
-	<200612192202.58982.niklaus.giger@domain.hid>
-In-Reply-To: <200612192202.58982.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="------------050501080608050700010902"
+Subject: [Xenomai-help] install an interrupt-handler from a kernel module
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,23 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: Roderik_Wildenburg@domain.hid, xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-Niklaus Giger wrote:
-> Am Dienstag, 19. Dezember 2006 21:38 schrieb Jan Kiszka:
->>I rather think c) is desired: checkout from svn, make dist, untar that
->>archive and continue to work with *those* sources.
-> 
-> This solution is also easily integretable into the actual Buildbot. I suppose 
-> do it would be sufficient to add it only to the daily "full" builds. But I 
-> would need to know how the release is exactly generated. E.g. after a 
-> checkout to clean directory there is no Makefile and therefore "make dist" 
-> fails miserably. Could somebody please tell me the exact steps?
+This is a multi-part message in MIME format.
+--------------050501080608050700010902
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-You need to create a build tree by running the configure script, then
-run make dist (or preferably "make distcheck") in this build tree.
+Dear Xenomai-Users/Developers,
 
--- 
-                                                 Gilles Chanteperdrix
+I have a basic question. Installing an interrupt handler is possible via
+"rt_intr_create()", both from user-space and from a kernel module.
+What happens when I do a "rt_intr_create()" from the module_init()
+routine? By which priority, interrupts are delegated to my ISR? Do I
+need to create an extra realtime task via "rt_task_create()" in order to
+achieve hard realtime response, or is it enough to install the
+interrupt-handler from module_init().
+
+
+Thanks for help,
+Markus Franke
+
+--------------050501080608050700010902
+Content-Type: text/x-vcard; charset=utf-8;
+ name="Markus.Franke.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="Markus.Franke.vcf"
+
+begin:vcard
+fn:Markus Franke
+n:Franke;Markus
+adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
+email;internet:Markus.Franke@domain.hid
+x-mozilla-html:FALSE
+url:http://www.tu-chemnitz.de/~franm
+version:2.1
+end:vcard
+
+
+--------------050501080608050700010902--
 
