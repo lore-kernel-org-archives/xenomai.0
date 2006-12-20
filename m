@@ -1,21 +1,10 @@
-Message-ID: <31078593.1166623877982.JavaMail.ngmail@domain.hid>
-Date: Wed, 20 Dec 2006 15:11:17 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <45894179.8060805@domain.hid>
+Date: Wed, 20 Dec 2006 07:29:26 -0800 (PST)
+From: mani bhatti <imranbashirbhatti@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_43953_1818513.1166623877980"
-References: <45894179.8060805@domain.hid> <4587E404.2050101@domain.hid>
-	<4587B287.2060603@domain.hid>
-	<358035.1166518774710.JavaMail.ngmail@domain.hid>
-	<4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
-	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
-	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
-	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
-	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
-	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
-Subject: [Xenomai-help] Aw: Re: A fairly small rtnet/Xenomai application
- that freezes the PC
+Content-Type: multipart/mixed; boundary="0-742605428-1166628566=:38100"
+Content-Transfer-Encoding: 8bit
+Message-ID: <697982.38100.qm@domain.hid>
+Subject: [Xenomai-help] rt_intr_create() fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,118 +14,154 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-------=_Part_43953_1818513.1166623877980
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_43952_23807843.1166623877980"
+--0-742605428-1166628566=:38100
+Content-Type: multipart/alternative; boundary="0-1523260492-1166628566=:38100"
 
-------=_Part_43952_23807843.1166623877980
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+--0-1523260492-1166628566=:38100
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-Hi Jan,
-
-enclosed is the ethereal dump file.
-Unfortunately I do not have a slow machine... (We try to get the fastest ma=
-chines running...).
-
-Thanks for checking the application.
-
-Mathias
-> > after a long debug-reboot-try-again-session I was able to reduce the
-> problem I had
-> > to a very short application that leads to a complete system freeze on a
-> 2.6.19.1 kernel.
-> > As with my PC I am not able to run the NMI stuff within Xenomai, I forw=
-ard
-> the application to you
-> > and the list. Perhaps somebody can try out the enclosed application wit=
-h
-> the latest Xenomai version
-> > on 2.6.19.1.
->=20
-> Thanks for the test case, I will give this a try ASAP.
->=20
-> > Please adjust the IP settings in the C file and in the xenorun script t=
-o
-> your setup.
-> > It is sufficient to send out UDP frames, if the remote device does not
-> answer this does not hurt.
-> > However the remote device should listen on a specified port to avoid IC=
-MP
-> complains about
-> > no-opened UDP ports...
-> > Using Ethereal I monitored the traffic.
-> > Here is the summary of it:
-> > ARP request/response (from the xenorun script)
-> > ARP request/response (from the applicaion)
-> > UDP message to port 18765 (no answer)
-> > 2 seconds later: UDP message to port 18765 (no answer)
-> > 2+5=3D7 seconds later: ARP request/response (from the application)
-> > 2 seconds later: UDP message to port 18765
-> > Here the system freezes. I do not see the message "Step A".
->=20
-> Could you set me the Ethereal dump for reference? Just in case the test
-> does not kick immediately for me and I need to check the event flow.
->=20
-> >=20
-> > One important piece is the system() call out of the realtime applicatio=
-n
-> to do a rtroute.
-> > When I remove this call, there is no error...
-> >=20
-> >=20
-> > I am using Xenomai SVN #1969 and the included 2.6.19.1 patch. Pentium 4
-> UP.
->=20
-> Do you have a different (slower) execution platform at hand to check if
-> the CPU speed as influence on the lock-up? I hope it is not the case -
-> makes tracking easier. But it wouldn't be the first time.
->=20
-> >=20
-> > Any feedback on this is highly welcome!
-> >=20
->=20
-> You will get it.
->=20
-> Thanks again,
-> Jan
->=20
->=20
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+Hi all
+i am trying to create a user space parallel port interrupt but the problem is that   err=rt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,I_NOAUTOENA);
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
-------=_Part_43952_23807843.1166623877980--
+returns -22 instead of zero which means success.i dont have idea what this error code  -22 means.please help me in this regard.i am attaching the sample code.If some one can send me some basic working user space xenomai  code i would be  very thankful.Thanks,
 
-------=_Part_43953_1818513.1166623877980
-Content-Type: application/octet-stream
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename=rtnet_crashtest.tcpdump
+ __________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+--0-1523260492-1166628566=:38100
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 
-1MOyoQIABAAAAAAAAAAAAP//AAABAAAAdzWJRcunCwA8AAAAPAAAAP///////wAwSFr5CwgGAAEI
-AAYEAAEAMEha+QvAqCjxAAAAAAAAwKgoCwAAAAAAAAAAAAAAAAAAAAAAAHc1iUWkqAsAPAAAADwA
-AAAAMEha+QsAYDQAMe8IBgABCAAGBAACAGA0ADHvwKgoCwAwSFr5C8CoKPEAAAAAAAAAAAAAAAAA
-AAAAAAB4NYlFgs8LADwAAAA8AAAA////////ADBIWvkLCAYAAQgABgQAAQAwSFr5C8CoKPEAAAAA
-AADAqCgLAAAAAAAAAAAAAAAAAAAAAAAAeDWJRU7QCwA8AAAAPAAAAAAwSFr5CwBgNAAx7wgGAAEI
-AAYEAAIAYDQAMe/AqCgLADBIWvkLwKgo8QAAAAAAAAAAAAAAAAAAAAAAAHk1iUUU5AsAPgAAAD4A
-AAAAYDQAMe8AMEha+QsIAEUAADAAAEAA/xGpb8CoKPHAqCgLJxBJTQAcvQsAAAAAAAAAAAAAAAAA
-AAAAAAAAAHs1iUXT5AsAPgAAAD4AAAAAYDQAMe8AMEha+QsIAEUAADAAAUAA/xGpbsCoKPHAqCgL
-JxBJTQAcvQsAAAAAAAAAAAAAAAAAAAAAAAAAAII1iUXk+QsAPAAAADwAAAD///////8AMEha+QsI
-BgABCAAGBAABADBIWvkLwKgo8QAAAAAAAMCoKAsAAAAAAAAAAAAAAAAAAAAAAACCNYlF7/oLADwA
-AAA8AAAAADBIWvkLAGA0ADHvCAYAAQgABgQAAgBgNAAx78CoKAsAMEha+QvAqCjxAAAAAAAAAAAA
-AAAAAAAAAAAAhDWJRU4jDAA+AAAAPgAAAABgNAAx7wAwSFr5CwgARQAAMAACQAD/EaltwKgo8cCo
-KAsnEElNABy9CwAAAAAAAAAAAAAAAAAAAAAAAAAA
-------=_Part_43953_1818513.1166623877980--
+Hi all<br>i am trying to create a user space parallel port interrupt but the problem is that &nbsp; err=rt_intr_create(&amp;intr_desc,"MyIrq",IRQ_NUMBER,I_NOAUTOENA);<br><br><br>returns -22 instead of zero which means success.i dont have idea what this error code&nbsp; -22 means.please help me in this regard.i am attaching the sample code.If some one can send me some basic working user space xenomai&nbsp; code i would be&nbsp; very thankful.Thanks,<br><p>&#32;__________________________________________________<br>Do You Yahoo!?<br>Tired of spam?  Yahoo! Mail has the best spam protection around <br>http://mail.yahoo.com 
+--0-1523260492-1166628566=:38100--
 
+--0-742605428-1166628566=:38100
+Content-Type: text/x-csrc; name="parinterrupt.c"
+Content-Description: 18037014-parinterrupt.c
+Content-Disposition: inline; filename="parinterrupt.c"
+
+
+#include <math.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/io.h>
+#include <sys/mman.h>
+
+#include <native/task.h>
+#include <native/queue.h>
+#include <native/intr.h>
+
+
+
+#define STACK_SIZE 8192
+#define STD_PRIO1 2
+#define STD_PRIO2 1
+#define IRQ_NUMBER 7 
+#define BASEPORT 0x378
+#define PARPORTINT 7
+
+
+RT_TASK zaehler1_task_ptr;
+RT_TASK zaehler2_task_ptr;
+RT_INTR intr_desc;
+
+int count1 = 0;
+int count2 = 0;
+int i;
+int end = 0;
+
+//                      --s-ms-us-ns
+RTIME task_period_ns1 =   1000000000llu;
+RTIME task_period_ns2 =  10000000000llu;
+
+
+void zaehler2_task(void *cookie){
+	int ret;	
+	long ii;
+	long jj;
+	double a;
+        unsigned long overrun;
+        int err;
+
+	while(!end){
+	
+         err = rt_intr_wait(&intr_desc,TM_INFINITE);
+         printf("Error is %d\n",err);
+
+                printf("\nInterrupt occured");
+
+		fflush(NULL);
+        }
+// ********************** Ende des wiederholt ausgefuehrten Codes ***********************************************
+}
+       
+
+
+// signal-handler, to ensure clean exit on Ctrl-C
+void clean_exit(int dummy) {
+	printf("cleanup\n");
+	end = 1;
+	rt_task_delete(&zaehler2_task_ptr);
+        rt_intr_delete(&intr_desc);	
+        printf("end\n");
+}
+
+int main(int argc, char *argv[]) {
+	int err, ret;
+	printf("start\n");
+	// install signal handler
+	signal(SIGTERM, clean_exit);	
+	signal(SIGINT, clean_exit);	
+	
+        // ask for permission to access the parallel port from user-space
+	if (iopl(3)) {  
+	      perror("iopl"); 
+          //	printf("iopl err\n");
+		exit(1);
+	}
+
+
+         outb_p(0x10, BASEPORT + 2);
+         mlockall(MCL_CURRENT | MCL_FUTURE);
+         err = rt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,I_NOAUTOENA);
+         printf("rt_intr_create=%i\n", err);
+
+         switch(-err)
+
+          {
+             case ENOMEM  :
+             printf("fail to allocate dynamic memory");
+             break;
+
+             case EBUSY:
+             printf("Busy");
+             break;
+             }
+
+        rt_intr_enable (&intr_desc);
+   
+
+
+	/* create zaehler2_task */
+	err = rt_task_create(&zaehler2_task_ptr,"beta",STACK_SIZE,STD_PRIO2,0);
+
+	/* start zaehler2_task */
+	err = rt_task_start(&zaehler2_task_ptr,&zaehler2_task,NULL);
+
+	// wait for signal & return of signal handler
+	pause();
+	fflush(NULL);
+	return 0;
+}
+
+--0-742605428-1166628566=:38100--
 
