@@ -1,15 +1,16 @@
-Message-ID: <b647ffbd0612201121l2562ce4bq430d1db5166a5903@domain.hid>
-Date: Wed, 20 Dec 2006 20:21:18 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] install an interrupt-handler from a kernel module
-In-Reply-To: <45894FA5.1070709@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Subject: Re: AW: [Xenomai-help] prepare kernel fails
+Date: Wed, 20 Dec 2006 21:09:33 +0100
+References: <5D63919D95F87E4D9D34FF7748CE2C2A6F92C7@domain.hid>
+	<45897603.5070703@domain.hid> <45897750.6000905@domain.hid>
+In-Reply-To: <45897750.6000905@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-15"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <458915DB.80909@domain.hid>
-	<b647ffbd0612200340had5a21ajd1bcb7cd871d06fb@domain.hid>
-	<45894FA5.1070709@domain.hid>
+Message-Id: <200612202109.34082.niklaus.giger@domain.hid>
+Reply-To: niklaus.giger@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,71 +20,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-On 20/12/06, Markus Franke <Markus.Franke@domain.hid> wrote:
-
-
-Then I misundertood you. See below.
-
-
-> My code for the kernel module looks something like that:
+Am Mittwoch, 20. Dezember 2006 18:48 schrieb Gilles Chanteperdrix:
+> Jan Kiszka wrote:
+> > (Gilles?) has to run bootstrap
 >
-> ---snip---
-> int myisr(xnintr_t* cookie)
-> {
->         printk("interrupt fired")
-> }
->
-> module_init()
-> {
->         rt_intr_create(...,my_isr,...);
->         rt_intr_enable(...);
->         register_chrdev(...);
-> }
-> ---snap---
+> Done.
+Thanks. 
 
-that's ok.
+If would simplify setting up the buildbot if I could run "make distcheck" 
+without a need to use sudo.
 
+Calling "make SUDO= distcheck" resulted in errors like:
+make[3]: Nothing to be done for `install-data-am'.
+mknod: `/tmp/am-dc-17903//dev/rtp0': Operation not permitted
 
->
-> What about if I write something like that:
->
-> ---snip---
-> int myroutine()
-> {
->         rt_intr_create(...,my_isr,...);
->         rt_intr_enable(...);
->         register_chrdev(...);
-> }
->
-> module_init()
-> {
->         rt_task_create(...);
->         rt_task_start(...,myroutine,...);
-> }
-> ---snap---
->
-> I can't see any difference whether to start a realtime task explicitly
-> vi "rt_task_create" or not.
+If you need too much time, I will just modify my sudoers to add another
+script (to the scripts able to use sudo without passwords). But I would 
+prefert to be able to go the other way.
 
-In this example, the "myroutine" task is used only to setup an ISR and
-register a character device and then it _exits_. It's absolutely not
-necessary and your first example is ok.
-
-Look at docs for rt_intr_create()
-
- * This service can be called from:
- *
- * - Kernel module initialization/cleanup code
- * - Kernel-based task
-
-The way how it's registered has no effect on deterministic behavior
-wrt irq latencies.
-
-
--- 
-Best regards,
-Dmitry Adamushko
+Niklaus
 
