@@ -1,13 +1,10 @@
-From: Wolfgang Denk <wd@domain.hid>
-Subject: Re: [Adeos-main] Re: [RFC] git workflow 
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-In-reply-to: Your message of "Tue, 19 Dec 2006 17:59:21 +0100."
-	<45881A69.1040704@domain.hid> 
-Date: Tue, 19 Dec 2006 22:30:10 +0100
-Sender: wd@domain.hid
-Message-Id: <20061219213010.AF2A4352664@domain.hid>
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <1a8b03710612191717k32dc37e1k9ef4d27ca1ec48aa@domain.hid>
+Date: Wed, 20 Dec 2006 09:17:00 +0800
+From: "fengli zhang" <zflandwjj@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_18475_17390427.1166577420370"
+Subject: [Adeos-main] installing problems with adeos-based rtai
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,65 +13,52 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-Dear Jan,
+------=_Part_18475_17390427.1166577420370
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-in message <45881A69.1040704@domain.hid> you wrote:
->
-> This is one of my motivations to push git forward. Having
-> 2.6.20-rcX+ipipe already available for download and testing may help to
-> follow the kernel development on the bleeding edge more closely.
+Hi,
 
-Agreed.
+ I have been trying to insatall adios-based rtai. But there always serval
+problems I coud't understand complete, which as ollows:Take linux-2.6.10 and
+rtai-3.4 for example.
 
-> The other aspect is that when you merge the kernel patches into a
-> working ipipe tree and you get a conflict, you also directly obtain
-> information about what change caused it and maybe what the background o=
-f
-> that patch was. That's at least my theory which still needs to be prove=
-n
-> in practice.
+1.    I don't know the difference between adeos-based rtai and rthal-based
+rtai. In my opinion, they both act as a interrupt dispatcher which receive
+interruptions from the hardware layer and control them .
 
-THis will work, but if you go this route you will sonn have the git
-repo only, as it will become more and more difficult to extract the
-ipipe patches which you need anyway.
+ 2.   I still don't know how to install adeos-based rtai after reading many
+articles about installing rtai. There are two ideas about it :
 
-That's why I recommend to use stgit to maintain the ipipe patches. So
-you have a clearly defined flow of information.
+(1). After downloading rtai-3.4 ,do I still need to download an adeos patch
+for linux , e.g.adeos-linux-2.6.10-i386-r13, and patch the kernel?
+(2). The  rtai-3.4 itself contains the adeos patch for linux already,and
+what I need to do is just patch the linux using which is located in
+rtaidir/rtai-3.4/base/arch/i386/patches/hal-linux-
+2.6.10-i386-r13.patchafter I unzip the
+rtai-3.4.tar.bz2.
 
-> I heard about it before, but I still have to take a closer look. Does
-> this generate also some kind of publishable git tree with history for
-> the managed patches? ...
+ I don't know which one is all right. Please let me know if you have some
+ideas about it.
+Thanks in advance
+Regards
+Fengli Zhang
 
-Yes, it does.
+------=_Part_18475_17390427.1166577420370
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
->                  ... One problem with a stack might be that we loose
-> information about ipipe changes themselves. ...
+<div>Hi,<br><br>&nbsp;I have been trying to insatall adios-based rtai. But there always serval problems I coud&#39;t understand complete, which as ollows:Take linux-2.6.10 and rtai-3.4 for example.<br><br>1. &nbsp; &nbsp;I don&#39;t know the difference between adeos-based rtai and rthal-based rtai. In my opinion, they both act as a interrupt dispatcher which receive interruptions from the hardware layer&nbsp;and control them .
+<br><br>&nbsp;2.&nbsp;&nbsp;&nbsp;I still don&#39;t know how to install adeos-based rtai after reading many articles about installing rtai. There are two ideas about it :<br><br>(1).&nbsp;After downloading rtai-3.4 ,do I still need to download an adeos patch for linux , 
+e.g.adeos-linux-2.6.10-i386-r13, and patch the kernel?<br>(2). The &nbsp;rtai-3.4 itself contains the adeos patch for linux already,and what I need to do is just patch the linux using which is located in rtaidir/rtai-3.4/base/arch/i386/patches/hal-linux- 
+2.6.10-i386-r13.patch after I unzip the rtai-3.4.tar.bz2.<br><br>&nbsp;I don&#39;t know which one is all right. Please let me know if you have some ideas about it.</div>
+<div>Thanks in advance</div>
+<div>Regards</div>
+<div>Fengli Zhang<br>&nbsp;</div>
 
-No, that's not true, as the patches itself are managed under git,  so
-you have the full power of git for the patch history, too.
-
-This will be much more powerful than the  other  approach  -  if  you
-maintain  a  patched  tree  under git, it will be pretty difficult to
-find out which changes make up the ipipe patch, and which  are  other
-stuff.
-
->                                         ... My idea is that some
-> modification to the ipipe core stored as commit in the reference tree
-> could directly be pulled by other arch maintainers.
-
-That sounds as if you are planning  to  use  stgit  already,  without
-knowing it yet :-)
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-"Just think, with VLSI we can have 100 ENIACS on a chip!"
-- Alan Perlis
+------=_Part_18475_17390427.1166577420370--
 
