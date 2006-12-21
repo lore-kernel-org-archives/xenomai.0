@@ -1,13 +1,12 @@
-Message-ID: <45880ED8.9040306@domain.hid>
-Date: Tue, 19 Dec 2006 17:10:00 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+From: Niklaus Giger <niklaus.giger@domain.hid>
+Date: Thu, 21 Dec 2006 22:59:05 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [PATCH] ADEOS IPIPE PPC patches upgrade
-References: <458685C6.40204@domain.hid>	<20061218134917.c76ac833.benjamin.zores@domain.hid>	<45869247.6020704@domain.hid>
-	<20061219134433.fb10846e.benjamin.zores@domain.hid>
-In-Reply-To: <20061219134433.fb10846e.benjamin.zores@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_pOwiFTjB9m36/jG"
+Message-Id: <200612212259.06016.niklaus.giger@domain.hid>
+Subject: [Xenomai-core] Patches: README.install & examples/common for
+	cross-compiling
+Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,61 +16,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Benjamin Zores <benjamin.zores@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Benjamin Zores wrote:
-> On Mon, 18 Dec 2006 14:06:15 +0100
-> Wolfgang Grandegger <wg@domain.hid> wrote:
-> 
->> I don't understand your questions. These patches are for the PPC tree. 
->> The POWERPC is still not supported. Do you already have a working port 
->> for the PowerPC tree 2.6.18?
-> 
-> I send one a month ago but which wasn't 100% complete.
-> Now, here's an updated one for both ppc and powerpc arch.
-> It based on your patch + the equivalent functions ported to merged powerpc architecture.
-> This time it should compile fine but i haven't tested if ppc arch still works
-> (i can't do so).
-> 
-> I just remove the xenomai parts from your patch (which obviously had nothing to do
-> in adeos patch itself).
-> 
-> With ipipe enabled on my card, the kernels boots up
-> but still hangs due to IRQ problems has it used to do in 2.6.18.
-> It seems to hang at SATA driver load (does the same for USB/I2C and so on after all)
->  but if I had printk() in each function from ipipe-root.c it goes in an endless
-> loop of:
-> 
-> ...
-> __ipipe_handle_irq:226
-> __ipipe_do_timer:404
-> __ipipe_grab_timer:357
-> __ipipe_handle_irq:226
-> __ipipe_do_timer:404
-> __ipipe_grab_timer:357
-> ...
-> 
-> and seems to never go further :-(
+--Boundary-00=_pOwiFTjB9m36/jG
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Well, in the meantime I started the porting of IPIPE v1.6 over the 
-PowerPC tree on my Icecube-MPC5200 board ... and it seems to hang at the 
-same location :-(.
+Hi
 
-> Do you have an idea where and why this might come from ?
+After switching my development environment to a MacMini and using the ELDK 4.0 
+I discovered that my examples for building using a cross-compiler for my 
+PPC405 target were not correct. (Maybe a few of my previous problems were 
+caused by not correctly specifying the target ARCH.)
 
-No yet but it seems not to be related with interrupts.
+Also I would like to adapt and document the examples/common/Makefile to the 
+needs for cross-compiling (KSRC/XENOCONFIG/DESTDIR useage). Also I added a 
+target "install" to copy the generated application to $(DESTDIR)/usr/xenomai.
 
-> FYI, the vanilla 2.6.19 kernel boots up my card fine and goes to userspace
-> but seems to also hang a few time later (but at least it boots up to user space).
+Could someone please commit these (or a improved version of it) patches?
 
-The PowerPC tree is highly experimental, ... not really a good setup to 
-do the porting.
+Thanks in advance
 
-> Anyhow, please consider this patch for review and if possible test it/apply it.
+-- 
+Niklaus Giger
 
-OK, I will have a closer look when time permits.
+--Boundary-00=_pOwiFTjB9m36/jG
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="common.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="common.patch"
 
-Wolfgang.
+Index: examples/common/Makefile
+===================================================================
+--- examples/common/Makefile	(Revision 1970)
++++ examples/common/Makefile	(Arbeitskopie)
+@@ -3,9 +3,9 @@
+ ### List of applications to be build
+ APPLICATIONS = hw_direct_io
+ 
+-### Note: to override the search path for the xeno-config script, use "make XENO=..."
++### Note: to override the search path for the xeno-config script, use "make XENOCONFIG=..."
++### Note: if you installed it into a non standard place add DESTDIR=/path/to/installed/xenomai"
+ 
+-
+ ### List of modules to be build
+ MODULES =
+ 
+@@ -24,7 +24,9 @@
+ ### Sanity check
+ ifeq ($(XENOCONFIG),)
+ all::
+-	@echo ">>> Invoke make like this: \"make XENO=/path/to/xeno-config\" <<<"
++	@echo ">>> Invoke make like this: \"make XENOCONFIG=/path/to/xeno-config\" <<<"
++	@echo ">>> add KSRC=.. to override the default kernel source at /lib/modules/$(shell uname -r)/build <<<"
++	@echo ">>> add DESTDIR=/path/to/installed/xenomai if you installed it into a non standard place <<<"
+ 	@echo
+ endif
+ 
+@@ -40,6 +42,9 @@
+ clean::
+ 	$(RM) $(APPLICATIONS) *.o
+ 
++install:   $(APPLICATIONS)
++	cp $(APPLICATIONS) $(DESTDIR)/usr/xenomai/bin
++
+ endif
+ 
+ 
+@@ -80,3 +85,4 @@
+ 	$(RM) -R .tmp*
+ 
+ endif
++
 
+--Boundary-00=_pOwiFTjB9m36/jG
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="readme.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="readme.patch"
+
+Index: README.INSTALL
+===================================================================
+--- README.INSTALL	(Revision 1957)
++++ README.INSTALL	(Arbeitskopie)
+@@ -276,19 +276,20 @@
+ -----------------------------------------
+ 
+ A typical cross-compilation setup, in order to build Xenomai for a
+-PowerPC-405-based system:
++PowerPC-405-based system (assuming an ELDK cross-compiler and a 2.6.14 kernel)
+ 
+ $ $xenomai_root/scripts/prepare-kernel.sh --arch=powerpc \
+   --adeos=$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14-ppc-X.Y-ZZ.patch \
+   --linux=$linux_tree
+ $ cd $linux_tree
+-$ mkdir ../build-powerpc-405-2.6.14
+-$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 xconfig/gconfig/menuconfig 
++$ build_root /path/to/build-powerpc-405-2.6.14
++$ mkdir $build_root
++$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=$build_root xconfig/gconfig/menuconfig 
+ # select the kernel and Xenomai options
+-$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=../build-powerpc-405-2.6.14 bzImage modules 
++$ make ARCH=ppc CROSS_COMPILE=powerpc-405-linux-gnu- O=$build_root bzImage modules 
+ # then install as needed
+-$ mkdir $build_root && cd $build_root
+-$ $xenomai_root/configure --build=i686-linux --host=powerpc-405-linux-gnu
++$ cd $build_root
++$ $xenomai_root/configure --build=i686-linux --host=powerpc-405-linux-gnu CC=ppc_4xx-gcc CXX=ppc_4xx-g++ LD=ppc_4xx-ld
+ $ make install
+ 
+ 2.3 Building for the IPF
+
+--Boundary-00=_pOwiFTjB9m36/jG--
 
