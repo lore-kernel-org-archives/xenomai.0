@@ -1,25 +1,18 @@
-Message-ID: <458A4DE0.5030005@domain.hid>
-Date: Thu, 21 Dec 2006 10:03:28 +0100
+Message-ID: <458A4E75.1020108@domain.hid>
+Date: Thu, 21 Dec 2006 10:05:57 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <31078593.1166623877982.JavaMail.ngmail@domain.hid>
-	<45894179.8060805@domain.hid> <4587E404.2050101@domain.hid>
-	<4587B287.2060603@domain.hid>
-	<358035.1166518774710.JavaMail.ngmail@domain.hid>
-	<4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
-	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
-	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
-	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
-	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
-	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
-	<15069404.1166690889417.JavaMail.ngmail@domain.hid>
-In-Reply-To: <15069404.1166690889417.JavaMail.ngmail@domain.hid>
+Subject: Re: AW: [Xenomai-help] prepare kernel fails
+References: <5D63919D95F87E4D9D34FF7748CE2C2A6F92C7@domain.hid>
+	<45897750.6000905@domain.hid>
+	<200612202109.34082.niklaus.giger@domain.hid>
+	<200612202119.06051.niklaus.giger@domain.hid>
+	<458A4B63.2020101@domain.hid>
+In-Reply-To: <458A4B63.2020101@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig336562E4628A1B799A3A4786"
+	boundary="------------enigB6C395629FAD250AE36B8941"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: A fairly small rtnet/Xenomai application that
-	freezes the
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -29,54 +22,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: niklaus.giger@domain.hid
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig336562E4628A1B799A3A4786
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigB6C395629FAD250AE36B8941
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-M. Koehrer wrote:
-> Hi Jan,
+Gilles Chanteperdrix wrote:
+> Niklaus Giger wrote:
+>> Am Mittwoch, 20. Dezember 2006 21:09 schrieb Niklaus Giger:
+>>
+>>> Am Mittwoch, 20. Dezember 2006 18:48 schrieb Gilles Chanteperdrix:
+>>>
+>>>> Jan Kiszka wrote:
+>>>>
+>>>>> (Gilles?) has to run bootstrap
+>>>> Done.
+>>> Thanks.
+>>>
+>>> If would simplify setting up the buildbot if I could run "make distch=
+eck"
+>>> without a need to use sudo.
+>>>
+>>> Calling "make SUDO=3D distcheck" resulted in errors like:
+>>> make[3]: Nothing to be done for `install-data-am'.
+>>> mknod: `/tmp/am-dc-17903//dev/rtp0': Operation not permitted
+>>>
+>>> If you need too much time, I will just modify my sudoers to add anoth=
+er
+>>> script (to the scripts able to use sudo without passwords). But I wou=
+ld
+>>> prefert to be able to go the other way.
+>> I just found out that "make SUDO=3Dfalse distcheck" builds the tarball=
+ without=20
+>> failures. Is this the way to go for the buildbot script?
 >=20
-> meanwhile I have done a couple of additional tests.
-> With one of the PCs I have, I have disabled the Memory Cache to slow it=
- down.
-> The effect was the very same.=20
-> I have reproduced the behaviour on another PC (also P4, but different m=
-ainboard).
-> The system freezes as well.
-> And finally, I have found out that printing out a line with printf() di=
-rectly after the system() call provides
-> a workaround.Then the system is stable.
+> If you find it an acceptable solution, go that way.
 >=20
-> I have replaced the system() call where I called rtroute with a simple =
-call to "ls -l" (i.e system("ls -l") ).
-> Then the system freezes as well.
-> It looks to me as if a system() call out of the realtime task is not pr=
-operly handled.
-> An printf() after the system() call seems to move the system back on tr=
-ack...
->=20
-> Hope that helps a little bit to identify the issue...
 
-Unfortunately not yet. I tried with exactly the same configuration you
-once mailed on a Pentium M 1.3 GHz - but all worked fine. The obvious
-differences are the CPU speed (I may have access to a crash box with
-more GHz next week) and the NIC (rt_eepro100 in my case).
+Yeah, I this should be enough to test for distribution regressions.
 
-As my hope of being able to reproduce it on my own is not that high, I
-would like to ask you to try nailing down the lock-up on kernel level.
-That means trying to identify (via printk e.g. - if this doesn't make
-the bug jump around) which function is still executed and where we do
-not get.
-
-TIA,
 Jan
 
 
---------------enig336562E4628A1B799A3A4786
+--------------enigB6C395629FAD250AE36B8941
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -85,10 +76,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFik3kniDOoMHTA+kRAnqkAJ0YR5w4niQm+n8itEw7JC2HDm0/cgCeNJkl
-6o0r4xcHQ/9EKjNqa5DDJJY=
-=tyX3
+iD8DBQFFik51niDOoMHTA+kRArO/AJ9Kc7SnPXZQGkpaL2u1LD0IVs+oswCfQ5hE
+TnYvaygSzBTA/UQQI38cVpo=
+=S4P0
 -----END PGP SIGNATURE-----
 
---------------enig336562E4628A1B799A3A4786--
+--------------enigB6C395629FAD250AE36B8941--
 
