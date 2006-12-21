@@ -1,22 +1,14 @@
-Message-ID: <b647ffbd0612210743m2b208cb2w6e9054336fd68028@domain.hid>
-Date: Thu, 21 Dec 2006 16:43:17 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <8403506.1166715370788.JavaMail.ngmail@domain.hid>
+Message-ID: <458AADEE.6070005@domain.hid>
+Date: Thu, 21 Dec 2006 16:53:18 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <b647ffbd0612210509r7494454fqc820f83a4b1f8719@domain.hid>
-	<2890274.1166696466862.JavaMail.ngmail@domain.hid>
-	<16382545.1166699974895.JavaMail.ngmail@domain.hid>
-	<1166700491.4936.5.camel@domain.hid>
-	<25528819.1166701882755.JavaMail.ngmail@domain.hid>
-	<13574091.1166708188484.JavaMail.ngmail@domain.hid>
-	<1166710393.4960.13.camel@domain.hid>
-	<12420573.1166713240349.JavaMail.ngmail@domain.hid>
-	<b647ffbd0612210717u4b8f0505m65d01bc2824a144a@domain.hid>
-	<8403506.1166715370788.JavaMail.ngmail@domain.hid>
-Subject: [Xenomai-help] Re: Re: A fairly small rtnet/Xenomai...
+Subject: Re: [Xenomai-help] please i need help for rt_intr_create() fails
+References: <16509.54449.qm@domain.hid>
+In-Reply-To: <16509.54449.qm@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig134BC7555548C5C02FAFF351"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,19 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: mani bhatti <imranbashirbhatti@domain.hid>
+Cc: xenomai@xenomai.org
 
-> when I use fork() instead of vfork() I have the freeze again.
-> I.e. using vfork() it works fine, using fork() freezes the system.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig134BC7555548C5C02FAFF351
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Gilles: is this not the end point of the fork vs. vfork epopee ? :)
+mani bhatti wrote:
+> Hi all
+> i am trying to create a user space parallel port interrupt but the prob=
+lem is that   err=3Drt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,I_NOAUTO=
+ENA);
+>=20
+> returns -22 instead of zero which means success.i dont have idea what t=
+his error code  -22 means.please help me in this regard.i am attaching th=
+e sample code.If some one can send me some basic working user space xenom=
+ai  code i would be  very thankful.Thanks,
 
-Anyway, it looks your remarks about fork() make sense. But if it's
-true indeed, a more nicer solution would be required.
+Your test loads fine for me over latest Xenomai (but I see no reason why
+older versions should fail). Maybe your kernel/userspace pair is out of
+sync.
+
+If the problem persists, add some printk into the path the
+rt_intr_create syscall takes. Start here:
+
+http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/skins/native/sysca=
+ll.c#3066
+
+Jan
 
 
--- 
-Best regards,
-Dmitry Adamushko
+--------------enig134BC7555548C5C02FAFF351
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFiq3uniDOoMHTA+kRAjDHAJ4jGcLaN6xXGhMGeXkfM/aL2pFdpACcDstv
+RrFjpMaiTuy9RDp8VB2kuT4=
+=bTuz
+-----END PGP SIGNATURE-----
+
+--------------enig134BC7555548C5C02FAFF351--
 
