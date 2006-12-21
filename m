@@ -1,114 +1,101 @@
-Message-ID: <45798B74.90108@domain.hid>
-Date: Fri, 08 Dec 2006 16:57:40 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <458A8B8A.8060401@domain.hid>
+Date: Thu, 21 Dec 2006 14:26:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] [PATCH] I-pipe tracer for ARM
-References: <E1GrHXk-00023w-Oq@domain.hid>
-	<E1Grrzu-0008JP-G8@domain.hid> <45769862.1060208@domain.hid>
-	<E1GrzHI-0003oE-S6@domain.hid>
-In-Reply-To: <E1GrzHI-0003oE-S6@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC3D1FAF64C5546C01E94B245"
-Sender: jan.kiszka@domain.hid
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>, adeos-main@gna.org
+Subject: Re: [Xenomai-help] Re: A fairly small rtnet/Xenomai application that
+	freezes the
+References: <458A4DE0.5030005@domain.hid>	
+	<7145056.1166514841031.JavaMail.ngmail@domain.hid>	
+	<4970132.1166516081275.JavaMail.ngmail@domain.hid>	
+	<2579704.1166520394117.JavaMail.ngmail@domain.hid>	
+	<4383100.1166529856857.JavaMail.ngmail@domain.hid>	
+	<13529671.1166621136153.JavaMail.ngmail@domain.hid>	
+	<15069404.1166690889417.JavaMail.ngmail@domain.hid>	
+	<2890274.1166696466862.JavaMail.ngmail@domain.hid>	
+	<458A67B6.8000207@domain.hid> <458A7185.8070803@domain.hid>
+	<b647ffbd0612210450r4e515046v4eb69da0f6c6c0b3@domain.hid>
+In-Reply-To: <b647ffbd0612210450r4e515046v4eb69da0f6c6c0b3@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC3D1FAF64C5546C01E94B245
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Dmitry Adamushko wrote:
+> On 21/12/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> 
+>>Gilles Chanteperdrix wrote:
+> 
+> ...
+> 
+>>>>static void realtimetask(void *arg)
+>>>>{
+>>>>    system("ls -l");
+>>>
+>>>If you want to use system (or any function calling fork, eg popen or
+>>>vfork) with Xenomai, you have to make sure to fault all pages mapped
+>>>with write permission after the fork before trying to use services in
+>>>priimary mode, because fork write protects all pages with write
+>>>permission and notably the threads stacks. A piece of code that faults
+>>>all pages follows.
+>>
+>>Let me check if I got this correctly: fork calls mark all pages
+>>write-protected - also those of the father process, or only those of the
+>>new child?
+> 
+> 
+> It's copy-on-write policy. fork() creates a separate address space for
+> a child (vm_struct, vm_area(s), all the page tables) but it still
+> points to the same physical pages as parent's address space. Now what
+> if either a child or parent want to modify writeable pages? That's why
+> copy-on-write. A new page will be allocated when a write request is
+> commited. And yep, to address this issue, the vm areas of (in fact,
+> related areas in page tables) both parent and child are marked as
+> copy-on-write.
+> 
+> But I don't think this is an issue here :
+> 
+> 1) by the moment system() returns -> the child has finished and there
+> is no need to allocate new pages on parent's write requests (not sure
+> how linux handles it - have to check);
 
-Sebastian Smolorz wrote:
-> Jan Kiszka wrote:
->> Then would you mind moving the trace enabling point as I said and post=
- a
->> patch?
->=20
-> See attachment.
+After the fork and the child has returned, the pages remain write
+protected. A fault that would occur after that would do almost nothing,
+but still causes a migration to secondary mode.
 
-Thanks, works fine here. Philippe, please include in the next release.
+> 
+> 2) (I'd expect logically) the parent did mlockall() in advance for
+> even future allocations, so I'd expect copy-on-write is not applicable
+> fot it -> all the pages should have been duplicated for a child. Well,
+> it's a brief idea. Have to check.
 
->=20
->> And if you have any idea for a characteristic CONFIG-switch that=20
->> should lower the default TRACE_SHIFT (CONFIG_EMBEDDED? Or per arch?),
->> you are welcome as well. TIA.
->=20
-> Why not lower the default value globally to 13?
+I have checked, mlockall has no effect on copy-on-write.
 
-Because I like to have those 16K trace points that 14 gives us. And who
-knows if the next small embedded platform will not scream for 12?
+> 
+> so it's likely that it's just a side - effect.
+> 
+> Mathias: if printf() helps (after system()) so could you try e.g.
+> fopen(), fclose() instead? Also, please, do what previously was
+> suggested with rt_task_delete(NULL) at the end.
+> 
+> Another situation would be if one does fork() in real-time app. and
+> then both parent and child continue their execution (worth checking).
+> 
+> p.s. vfork() is a different beast. Here a child is supposed to call
+> exec*() rigth after fork() so it's allowed to "borrow" parent's
+> address space (vm_struct -> all vm_area(s)) and the parent is blocked
+> in the mean time. As a result, no need for copy-on-write.
 
->=20
-> --
-> Sebastian
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> --- ipipe/v2.6/common/kernel/ipipe/tracer.c	2006-10-12 20:08:50.0000000=
-00 +0200
-> +++ ipipe.work/v2.6/common/kernel/ipipe/tracer.c	2006-12-06 16:53:23.00=
-0000000 +0100
-> @@ -100,12 +100,10 @@ enum ipipe_trace_type
-> =20
-> =20
->  #ifdef CONFIG_IPIPE_TRACE_VMALLOC
-> -#define IPIPE_DEFAULT_TRACE_STATE   0
-> =20
->  static struct ipipe_trace_path *trace_paths[NR_CPUS];
-> =20
->  #else /* !CONFIG_IPIPE_TRACE_VMALLOC */
-> -#define IPIPE_DEFAULT_TRACE_STATE   CONFIG_IPIPE_TRACE_ENABLE_VALUE
-> =20
->  static struct ipipe_trace_path trace_paths[NR_CPUS][IPIPE_TRACE_PATHS]=
- =3D
->  	{ [0 ... NR_CPUS-1] =3D
-> @@ -115,7 +113,7 @@ static struct ipipe_trace_path trace_pat
->  	};
->  #endif /* CONFIG_IPIPE_TRACE_VMALLOC */
-> =20
-> -int ipipe_trace_enable =3D IPIPE_DEFAULT_TRACE_STATE;
-> +int ipipe_trace_enable =3D 0;
-> =20
->  static int active_path[NR_CPUS] =3D
->  	{ [0 ... NR_CPUS-1] =3D IPIPE_DEFAULT_ACTIVE };
-> @@ -1217,8 +1215,8 @@ void __init __ipipe_init_tracer(void)
->  			trace_paths[cpu][path].end   =3D -1;
->  		}
->  	}
-> -	ipipe_trace_enable =3D CONFIG_IPIPE_TRACE_ENABLE_VALUE;
->  #endif /* CONFIG_IPIPE_TRACE_VMALLOC */
-> +	ipipe_trace_enable =3D CONFIG_IPIPE_TRACE_ENABLE_VALUE;
-> =20
->  	trace_dir =3D create_proc_entry("trace", S_IFDIR, ipipe_proc_root);
-> =20
+I think to remember that glibc vfork is just fork.
 
-Jan
-
-
---------------enigC3D1FAF64C5546C01E94B245
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFeYt0niDOoMHTA+kRAqmXAJ985pdj+WhKQJjGrQmeh9J45/pH4gCcDcPM
-PaB9imFt8UOLUrra71mUt98=
-=AxWg
------END PGP SIGNATURE-----
-
---------------enigC3D1FAF64C5546C01E94B245--
+-- 
+                                                 Gilles Chanteperdrix
 
