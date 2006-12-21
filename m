@@ -1,25 +1,24 @@
-Message-ID: <458A67B6.8000207@domain.hid>
-Date: Thu, 21 Dec 2006 11:53:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <12420573.1166713240349.JavaMail.ngmail@domain.hid>
+Date: Thu, 21 Dec 2006 16:00:40 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <1166710393.4960.13.camel@domain.hid>
 MIME-Version: 1.0
-References: <458A4DE0.5030005@domain.hid>
-	<31078593.1166623877982.JavaMail.ngmail@domain.hid>
-	<45894179.8060805@domain.hid> <4587E404.2050101@domain.hid>
-	<4587B287.2060603@domain.hid>
-	<358035.1166518774710.JavaMail.ngmail@domain.hid>
-	<4587A2D4.3020102@domain.hid> <45879DE5.5080507@domain.hid>
-	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
-	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <1166710393.4960.13.camel@domain.hid>
+	<b647ffbd0612210509r7494454fqc820f83a4b1f8719@domain.hid>
+	<b647ffbd0612210245p12227990j2584147720e95adc@domain.hid>
 	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
 	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
 	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
 	<15069404.1166690889417.JavaMail.ngmail@domain.hid>
+	<458A4DE0.5030005@domain.hid>
 	<2890274.1166696466862.JavaMail.ngmail@domain.hid>
-In-Reply-To: <2890274.1166696466862.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Re: A fairly small rtnet/Xenomai application that
-	freezes the
+	<16382545.1166699974895.JavaMail.ngmail@domain.hid>
+	<1166700491.4936.5.camel@domain.hid>
+	<25528819.1166701882755.JavaMail.ngmail@domain.hid>
+	<13574091.1166708188484.JavaMail.ngmail@domain.hid>
+Subject: [Xenomai-help] Re: Re: Re: Re: Re: A fairly small rtnet/Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -29,54 +28,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org
 
-M. Koehrer wrote:
-> Hi Jan, hi everybody,
-> 
-> I have stripped down my program that is crashing Xenomai even further.
-> (I have attached the complete source code).
-> No rtnet is required.
-> Now I have the following real time task:
-> 
-> static void realtimetask(void *arg)
-> {
->     system("ls -l");
+Hi Philippe,
 
-If you want to use system (or any function calling fork, eg popen or
-vfork) with Xenomai, you have to make sure to fault all pages mapped
-with write permission after the fork before trying to use services in
-priimary mode, because fork write protects all pages with write
-permission and notably the threads stacks. A piece of code that faults
-all pages follows.
+here are some of the results:=20
+> Please check the following assertions on your setup:
+>=20
+> - does enabling the debug option for the Xenomai nucleus cause Xenomai
+> warnings to appear (messages about forced switches of the crashtest task
+> to secondary mode), even over 2.6.17 with the very same test code?
+Yes, on 2.6.17 I get the line
+Xenomai: Switching crashtest to secondary mode after exception #14 from use=
+r-space at 0xb7ff2c7c (pid 1616)
+On 2.6.19.1, the system freezes, i.e. I cannot see any message.
 
-static void fault_vm(void)
-{
-        FILE *maps = fopen("/proc/self/maps", "r");
-        unsigned begin, end, pagesize=getpagesize();
-        char buffer[128];
-        int rc;
+>=20
+> - does enabling CONFIG_DEBUG_SPINLOCK and CONFIG_DEBUG_SPINLOCK_SLEEP in
+> the kernel hacking section cause Linux warnings to appear while the test
+> code runs over 2.6.19, before the box crashes?
+I am about to recompile the kernel, this takes a while...
 
-        if (!maps) {
-                perror("fopen");
-                exit(EXIT_FAILURE);
-        }
+> - does the bug still occurs after the call to the system() routine has
+> been replaced by the following frag?
+>=20
+>     if (vfork() =3D=3D 0)
+>             execlp("/bin/ls", "ls", "-l", NULL);
+>     else
+>             wait(NULL);
+>=20
+I have replaced the system() call by your code fragement. And yes, this wor=
+ks!
+No freeze!
 
-        while ((rc = fscanf(maps, "%x-%x",&begin, &end) == 2)) {
-                fgets(buffer, 128, maps);
+Regards
 
-                if(buffer[2] != 'w')
-                        continue;
+Mathias
 
-                for (; begin != end; begin += pagesize)
-                        *(volatile int *) begin = *(volatile int *) begin;
-        }
-
-        fclose(maps);
-}
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
--- 
-                                                 Gilles Chanteperdrix
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
