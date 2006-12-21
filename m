@@ -1,51 +1,88 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Subject: Re: [Adeos-main] [PATCH] I-pipe tracer for ARM
-Date: Wed, 6 Dec 2006 09:19:28 +0100
-References: <E1GrHXk-00023w-Oq@domain.hid>
-	<200612051934.14391.Sebastian.Smolorz@domain.hid>
-	<4575BFBF.1080306@domain.hid>
-In-Reply-To: <4575BFBF.1080306@domain.hid>
+Message-ID: <b647ffbd0612210450r4e515046v4eb69da0f6c6c0b3@domain.hid>
+Date: Thu, 21 Dec 2006 13:50:33 +0100
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] Re: A fairly small rtnet/Xenomai application that
+	freezes the
+In-Reply-To: <458A7185.8070803@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <E1Grrzu-0008JP-G8@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+References: <458A4DE0.5030005@domain.hid>
+	<7145056.1166514841031.JavaMail.ngmail@domain.hid>
+	<4970132.1166516081275.JavaMail.ngmail@domain.hid>
+	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
+	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
+	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
+	<15069404.1166690889417.JavaMail.ngmail@domain.hid>
+	<2890274.1166696466862.JavaMail.ngmail@domain.hid>
+	<458A67B6.8000207@domain.hid> <458A7185.8070803@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, adeos-main@gna.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Sebastian Smolorz wrote:
-> > Jan Kiszka wrote:
-> >>
-> >> Try if smaller CONFIG_IPIPE_TRACE_SHIFT makes it boot without
-> >> CONFIG_IPIPE_TRACE_VMALLOC.
+On 21/12/06, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Gilles Chanteperdrix wrote:
+...
+> >> static void realtimetask(void *arg)
+> >> {
+> >>     system("ls -l");
 > >
-> > I already tried that but it didn't help. First with IPIPE_TRACE_SHIFT set
-> > to 10 and after modifying Kconfig.debug with a value of 5. Booting
-> > impossible.
+> > If you want to use system (or any function calling fork, eg popen or
+> > vfork) with Xenomai, you have to make sure to fault all pages mapped
+> > with write permission after the fork before trying to use services in
+> > priimary mode, because fork write protects all pages with write
+> > permission and notably the threads stacks. A piece of code that faults
+> > all pages follows.
 >
-> What about starting disabled and arming the tracer later via
-> /proc/ipipe/trace/enable? This sounds like it's not a size issue
-> (TRACE_SHIFT=5 is ridiculous small), rather some memory section is
-> accessed too early.
+> Let me check if I got this correctly: fork calls mark all pages
+> write-protected - also those of the father process, or only those of the
+> new child?
 
-It seems to be a combined problem. When the tracer is disabled at boot time, 
-the system starts if IPIPE_TRACE_SHIFT < 14, but not if >= 14. With the 
-tracer enabled at boot time the IPIPE_TRACE_SHIFT value is not relevant, no 
-boot at all.
+It's copy-on-write policy. fork() creates a separate address space for
+a child (vm_struct, vm_area(s), all the page tables) but it still
+points to the same physical pages as parent's address space. Now what
+if either a child or parent want to modify writeable pages? That's why
+copy-on-write. A new page will be allocated when a write request is
+commited. And yep, to address this issue, the vm areas of (in fact,
+related areas in page tables) both parent and child are marked as
+copy-on-write.
 
-But the freeze lasts again a long time (between 90-100). I wonder if this is 
-related to the ARM cache nature.
+But I don't think this is an issue here :
 
---
-Sebastian
+1) by the moment system() returns -> the child has finished and there
+is no need to allocate new pages on parent's write requests (not sure
+how linux handles it - have to check);
+
+2) (I'd expect logically) the parent did mlockall() in advance for
+even future allocations, so I'd expect copy-on-write is not applicable
+fot it -> all the pages should have been duplicated for a child. Well,
+it's a brief idea. Have to check.
+
+so it's likely that it's just a side - effect.
+
+Mathias: if printf() helps (after system()) so could you try e.g.
+fopen(), fclose() instead? Also, please, do what previously was
+suggested with rt_task_delete(NULL) at the end.
+
+Another situation would be if one does fork() in real-time app. and
+then both parent and child continue their execution (worth checking).
+
+p.s. vfork() is a different beast. Here a child is supposed to call
+exec*() rigth after fork() so it's allowed to "borrow" parent's
+address space (vm_struct -> all vm_area(s)) and the parent is blocked
+in the mean time. As a result, no need for copy-on-write.
+
+
+-- 
+Best regards,
+Dmitry Adamushko
 
