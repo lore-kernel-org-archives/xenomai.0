@@ -1,24 +1,21 @@
-Message-ID: <12420573.1166713240349.JavaMail.ngmail@domain.hid>
-Date: Thu, 21 Dec 2006 16:00:40 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <1166710393.4960.13.camel@domain.hid>
+Message-ID: <b647ffbd0612210712w113eb98ag7a32d228f7863e6d@domain.hid>
+Date: Thu, 21 Dec 2006 16:12:50 +0100
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] Re: A fairly small rtnet/Xenomai application that
+	freezes the
+In-Reply-To: <458A9E27.3000509@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <1166710393.4960.13.camel@domain.hid>
-	<b647ffbd0612210509r7494454fqc820f83a4b1f8719@domain.hid>
-	<b647ffbd0612210245p12227990j2584147720e95adc@domain.hid>
-	<2579704.1166520394117.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <458A4DE0.5030005@domain.hid>
 	<4383100.1166529856857.JavaMail.ngmail@domain.hid>
 	<13529671.1166621136153.JavaMail.ngmail@domain.hid>
 	<15069404.1166690889417.JavaMail.ngmail@domain.hid>
-	<458A4DE0.5030005@domain.hid>
 	<2890274.1166696466862.JavaMail.ngmail@domain.hid>
-	<16382545.1166699974895.JavaMail.ngmail@domain.hid>
-	<1166700491.4936.5.camel@domain.hid>
-	<25528819.1166701882755.JavaMail.ngmail@domain.hid>
-	<13574091.1166708188484.JavaMail.ngmail@domain.hid>
-Subject: [Xenomai-help] Re: Re: Re: Re: Re: A fairly small rtnet/Xenomai
+	<458A67B6.8000207@domain.hid> <458A7185.8070803@domain.hid>
+	<b647ffbd0612210450r4e515046v4eb69da0f6c6c0b3@domain.hid>
+	<458A8B8A.8060401@domain.hid> <458A9E27.3000509@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,53 +25,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi Philippe,
+On 21/12/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> Gilles Chanteperdrix wrote:
+> > Dmitry Adamushko wrote:
+> >>p.s. vfork() is a different beast. Here a child is supposed to call
+> >>exec*() rigth after fork() so it's allowed to "borrow" parent's
+> >>address space (vm_struct -> all vm_area(s)) and the parent is blocked
+> >>in the mean time. As a result, no need for copy-on-write.
+> >
+> >
+> > I think to remember that glibc vfork is just fork.
+>
+> At least, linuxthread's vfork is the same as linuxthread's fork.
+>
 
-here are some of the results:=20
-> Please check the following assertions on your setup:
->=20
-> - does enabling the debug option for the Xenomai nucleus cause Xenomai
-> warnings to appear (messages about forced switches of the crashtest task
-> to secondary mode), even over 2.6.17 with the very same test code?
-Yes, on 2.6.17 I get the line
-Xenomai: Switching crashtest to secondary mode after exception #14 from use=
-r-space at 0xb7ff2c7c (pid 1616)
-On 2.6.19.1, the system freezes, i.e. I cannot see any message.
+Well, I'm looking at glibc-2.3 :
 
->=20
-> - does enabling CONFIG_DEBUG_SPINLOCK and CONFIG_DEBUG_SPINLOCK_SLEEP in
-> the kernel hacking section cause Linux warnings to appear while the test
-> code runs over 2.6.19, before the box crashes?
-I am about to recompile the kernel, this takes a while...
+1) ./sysdeps/unix/sysv/linux/i386/vfork.S
 
-> - does the bug still occurs after the call to the system() routine has
-> been replaced by the following frag?
->=20
->     if (vfork() =3D=3D 0)
->             execlp("/bin/ls", "ls", "-l", NULL);
->     else
->             wait(NULL);
->=20
-I have replaced the system() call by your code fragement. And yes, this wor=
-ks!
-No freeze!
+  - if there is a vfork syscall - it's used, otherwise - fork.
 
-Regards
+  - If per-arch code doesn't provide an implementation, the generic (
+== notmal fork() ) is used.
 
-Mathias
+2) linux (I'm looking at 2.6.12.6) does provide a separate vfork()
+(sys_vfork => do_fork() with additional flags CLONE_VFORK | CLONE_VM).
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+And it looks like it works as it should be in theory (at least briefly
+following the CLONE_VFORK logic in do_fork() and knowing that CLONE_VM
+is used for threads to share a vm_struct).
+
+Anyway, I was refering to vfork() as it should be in theory in the
+context of copy-on-write policy.
+
+Indeed, your remarks make sense. We should know when Markus conducts
+the tests suggested by Philippe. Although, the use of fork() in
+multi-threaded applications is sometimes tricky. I do remember once I
+had a problem but just can't recall any details (just that it was
+memory leaks :)
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+> --
+>                                                  Gilles Chanteperdrix
+
+-- 
+Best regards,
+Dmitry Adamushko
 
