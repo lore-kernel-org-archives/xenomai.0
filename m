@@ -1,8 +1,11 @@
-Message-ID: <458BB057.9090009@domain.hid>
-Date: Fri, 22 Dec 2006 11:15:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <9386881.1166783234553.JavaMail.ngmail@domain.hid>
+Date: Fri, 22 Dec 2006 11:27:14 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <458BB057.9090009@domain.hid>
 MIME-Version: 1.0
-References: <458ACFDA.8070300@domain.hid>	
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <458BB057.9090009@domain.hid> <458ACFDA.8070300@domain.hid>	
 	<25528819.1166701882755.JavaMail.ngmail@domain.hid>	
 	<13574091.1166708188484.JavaMail.ngmail@domain.hid>	
 	<1166710393.4960.13.camel@domain.hid>	
@@ -13,10 +16,7 @@ References: <458ACFDA.8070300@domain.hid>
 	<9212697.1166778373331.JavaMail.ngmail@domain.hid>	
 	<458BA432.2000205@domain.hid>
 	<b647ffbd0612220140m504db8e4x52ca45477e425d44@domain.hid>
-In-Reply-To: <b647ffbd0612220140m504db8e4x52ca45477e425d44@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Re: A fairly small rtnet/Xenomai...
+Subject: [Xenomai-help] Re: Re: A fairly small rtnet/Xenomai...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,35 +26,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org, dmitry.adamushko@domain.hid
+Cc: xenomai@xenomai.org
 
-Dmitry Adamushko wrote:
-> On 22/12/06, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> 
->>In absence of a better solution, I would recommend to use the "fault_vm"
->> function after each fork.
-> 
-> 
-> But it's not safe. It doesn't stop any other rt threads (if there are
-> a few in this app.) from touching the wp-pages (it's not only about
-> stacks after all) in the mean time. So fault_vm() only increases the
-> probability of not-crashing but doesn't eliminate it completely.
-> 
-> So all the contextes have to be blocked starting from the moment
-> fork() is about to be called and till the moment a subsequent
-> fault_vm() is done.
-> It's ugly and that suggests fork() is not ok here at all.
-> 
-> And btw, vfork() should be a funny thing being called from
-> multi-threaded app. It blocks a calling context and borrows its
-> address space while other threads are continuing to run, well, with
-> the same context (maybe it's handled somehow, have to check).
+Hi Gilles,
 
-fault_vm is safe to use only if you are calling fork at a time when
-there is only one thread. So, if your application is forking at init, it
-should be OK.
+> fault_vm is safe to use only if you are calling fork at a time when
+> there is only one thread. So, if your application is forking at init, it
+> should be OK.
+Do you mean there must be only one real time thread?=20
+That means, when I have an application that creates multiple real time thre=
+ads,
+I can not rely on fault_vm() ?
+In this case I have to do the "hard" way by using a different (non real tim=
+e)
+context to do the forks and system() calls.
+As this is hard to understand, I strongly recommend that there is Xenomai s=
+upport
+for this! I.e. a Xenomai API that can be called with a (callback-)function =
+pointer and
+a user data pointer.=20
+When a (realtime) thread calls this function, the real time thread is block=
+ed.=20
+The callback function is then called from a safe context and
+after exit of the callback function the real time thread is resumed.
 
--- 
-                                                 Gilles Chanteperdrix
+Regards
+
+Mathias
+
+
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
