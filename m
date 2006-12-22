@@ -1,9 +1,23 @@
-Message-ID: <19747995.1166787148515.JavaMail.ngmail@domain.hid>
-Date: Fri, 22 Dec 2006 12:32:28 +0100 (CET)
+Message-ID: <28348634.1166787644219.JavaMail.ngmail@domain.hid>
+Date: Fri, 22 Dec 2006 12:40:44 +0100 (CET)
 From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <1166786437.4960.180.camel@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
+References: <1166786437.4960.180.camel@domain.hid> <458BB057.9090009@domain.hid>
+	<458ACFDA.8070300@domain.hid>
+	<25528819.1166701882755.JavaMail.ngmail@domain.hid>
+	<13574091.1166708188484.JavaMail.ngmail@domain.hid>
+	<1166710393.4960.13.camel@domain.hid>
+	<12420573.1166713240349.JavaMail.ngmail@domain.hid>
+	<b647ffbd0612210717u4b8f0505m65d01bc2824a144a@domain.hid>
+	<8403506.1166715370788.JavaMail.ngmail@domain.hid>
+	<b647ffbd0612210743m2b208cb2w6e9054336fd68028@domain.hid>
+	<9212697.1166778373331.JavaMail.ngmail@domain.hid>
+	<458BA432.2000205@domain.hid>
+	<b647ffbd0612220140m504db8e4x52ca45477e425d44@domain.hid>
+	<9386881.1166783234553.JavaMail.ngmail@domain.hid>
 Subject: [Xenomai-help] Re: Re: Re: A fairly small rtnet/Xenomai...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -14,54 +28,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dmitry.adamushko@domain.hid, mathias_koehrer@domain.hid
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
 Cc: xenomai@xenomai.org
 
-Hi Dmitry,=20
+Hi Philippe,=20
 
->=20
-> > As this is hard to understand, I strongly recommend that there is Xenom=
-ai
-> support
-> > for this! I.e. a Xenomai API that can be called with a (callback-)funct=
-ion
-> pointer and
-> > a user data pointer.
-> > When a (realtime) thread calls this function, the real time thread is
-> blocked.
-> > The callback function is then called from a safe context and
-> > after exit of the callback function the real time thread is resumed.
->=20
-> I haven't got your idea. Did you get the cause of the problem with fork()=
- ?
-Yes, I think I got it (more or less).
-
-However, as a typical user of a OS I do not want to take care of this
-very specific things. I want to call an OS-API that is doing the job for me=
-.
-I.e. in my example, I want to call an API that allows me to execute whateve=
-r
-external application without any risk and side effects.
->From the functional point of view I want to use the "system()" call.
-When it is not save to call system() directly (due to all the things that h=
-ave been
-discussed), I think it is important to document this (e.g. in the Wiki) _an=
-d_ to
-provide an easy usable replacement for it, i.e. something like a rt_task_sy=
-stem()
-that does all the required things internally for me and behaves on the func=
-tional side exactly
-like the standard system() does.
-The Xenomai Native example is a very good example for a cleanly designed AP=
-I that
-can be easily (and nearly intuitively) used.=20
-Any workarounds (I call it workaround as the intuitive, straightforward app=
-roach is not possible)
-that are required to get a problem solved, weakens the whole OS (Xenomai).
+I agree. To fix the root cause is actually the very best to do!
+This eases the life of users and developers.
 
 Regards
 
 Mathias
+
+>=20
+> Sorry, but no, no way, I won't merge anything like this, ever. This is
+> the wrong way to go. The right way is to fix the COW issue at kernel
+> level - probably the I-pipe has to provide the required support -
+> because this is where those dirty details belong to. This is definitely
+> not an API issue, because you just cannot tell application developers to
+> care about arch-specific VM issues when using a so-called generic API
+> that has to work the same way on all archs (e.g. MMU-less platforms
+> don't care about this, others would). What could be considered as a
+> bearable limitation right now must not have any impact on long-term
+> principles, and the API stuff belongs to that category of issues.
+
 
 --=20
 Mathias Koehrer
