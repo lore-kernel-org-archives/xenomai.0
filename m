@@ -1,12 +1,13 @@
-Date: Sat, 23 Dec 2006 00:55:33 +0100
-From: Matthias Fechner <idefix@domain.hid>
-Message-ID: <20061222235532.GA82200@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Matthias Fechner <idefix@domain.hid>
-Subject: [Xenomai-help] Xenomai on AMD64?
-Reply-To: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Xenomai on AMD64?
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20061222235532.GA82200@domain.hid>
+References: <20061222235532.GA82200@domain.hid>
+Content-Type: text/plain
+Date: Sat, 23 Dec 2006 09:35:05 +0100
+Message-Id: <1166862906.2380.2.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,20 +19,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+On Sat, 2006-12-23 at 00:55 +0100, Matthias Fechner wrote:
+> Hi,
+> 
+> I checked now xenomai if it could run on a AMD64 architecture but I
+> could only see patches for ppc, arm, i386 and ia64.
+> 
+> Is the AMD64 architecture not supported?
+> 
 
-I checked now xenomai if it could run on a AMD64 architecture but I
-could only see patches for ppc, arm, i386 and ia64.
+It's not yet.
 
-Is the AMD64 architecture not supported?
-
-Thx and a merry christmas,
-Matthias
-
+> Thx and a merry christmas,
+> Matthias
+> 
 -- 
+Philippe.
 
-"Programming today is a race between software engineers striving to
-build bigger and better idiot-proof programs, and the universe trying to
-produce bigger and better idiots. So far, the universe is winning." --
-Rich Cook
+
 
