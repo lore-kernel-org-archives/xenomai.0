@@ -1,15 +1,14 @@
 From: Niklaus Giger <niklaus.giger@domain.hid>
-Subject: Re: [Xenomai-core] Buildbot detects failure in recent build
-Date: Sat, 23 Dec 2006 21:58:34 +0100
-References: <200612231931.23828.niklaus.giger@domain.hid>
-	<1166900039.17393.3.camel@domain.hid>
-In-Reply-To: <1166900039.17393.3.camel@domain.hid>
+Subject: Re: [Xenomai-core] Patches: README.install & examples/common for
+	cross-compiling
+Date: Sat, 23 Dec 2006 22:19:20 +0100
+References: <200612212259.06016.niklaus.giger@domain.hid>
+	<458B8D26.4030407@domain.hid>
+In-Reply-To: <458B8D26.4030407@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200612232158.34758.niklaus.giger@domain.hid>
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_Y1ZjF/btVFIYmIk"
+Message-Id: <200612232219.20729.niklaus.giger@domain.hid>
 Reply-To: niklaus.giger@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,48 +19,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Am Samstag, 23. Dezember 2006 19:53 schrieb Philippe Gerum:
-> On Sat, 2006-12-23 at 19:31 +0100, Niklaus Giger wrote:
-> > Hi Philippe
-> >
-> > It seems that your revision 1978 or 1979 broke building PSOS+ on ppc and
-> > PPC405.
+--Boundary-00=_Y1ZjF/btVFIYmIk
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Am Freitag, 22. Dezember 2006 08:45 schrieb Wolfgang Grandegger:
+> Hi Niklaus,
 >
-> Fixed, thanks. Btw, could you ask the buildbot to spam me gently each
-> time a commit wrecks the Xenomai boat? It would be easier for me than
-> tracking the WEB interface status. TIA,
-Sorry for a (wrong positive) mail from my test installation.=20
+> Niklaus Giger wrote:
+> > Hi
+> >
+> > After switching my development environment to a MacMini and using the
+> > ELDK 4.0 I discovered that my examples for building using a
+> > cross-compiler for my PPC405 target were not correct. (Maybe a few of my
+> > previous problems were caused by not correctly specifying the target
+> > ARCH.)
+> >
+> > Also I would like to adapt and document the examples/common/Makefile to
+> > the needs for cross-compiling (KSRC/XENOCONFIG/DESTDIR useage). Also I
+> > added a target "install" to copy the generated application to
+> > $(DESTDIR)/usr/xenomai.
+>
+> Hm, I don't have examples/common/Makefile in my SVN Xenomai tree. And
+Added by revision 1970 only. Makefile came from Jan for my example 
+hw_direct_io.
+> /usr/xenomai should be the configurable.
+Does the attached patch look better for you (using EXEC_PREFIX) ?
 
-You should receive an email on build failures. I changed the buildbot setup=
- so=20
-that failures while running the test on my CPU-board are only flagged as=20
-warnings, as they were often reporting failures in my setup.
-As my PPC405 board is also used for may other development work, it is=20
-sometimes unavailable for the buildbot and the buildbot would also flag thi=
-s=20
-as an error.
-The sim is reporting error since quite a few weeks, but Gilles never fixed=
-=20
-this error (which is probably just an expectation or a time value which has=
-=20
-varied a little bit):
-Some problems were reported in:
-vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2004); g=
-ot=20
-SEQ("Test2",1999)
-vxworks->t010823-2: t010823-2.c:166, test finished: 1 failures/ 33 tests
-If you want I could also made a failure in this buildstep be considered onl=
-y a=20
-warning.
+Best regards
 
-If you receive too many emails just let me know and I will try to improve t=
-his=20
-situation.
-
-Joyeux no=EBl
-
+-- 
 Niklaus Giger
+
+--Boundary-00=_Y1ZjF/btVFIYmIk
+Content-Type: text/x-diff;
+  charset="iso-8859-1";
+  name="make.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="make.patch"
+
+Index: examples/common/Makefile
+===================================================================
+--- examples/common/Makefile	(Revision 1980)
++++ examples/common/Makefile	(Arbeitskopie)
+@@ -3,9 +3,9 @@
+ ### List of applications to be build
+ APPLICATIONS = hw_direct_io
+ 
+-### Note: to override the search path for the xeno-config script, use "make XENO=..."
++### Note: to override the search path for the xeno-config script, use "make XENOCONFIG=..."
++### Note: if you installed it into a non standard place add DESTDIR=/path/to/installed/xenomai"
+ 
+-
+ ### List of modules to be build
+ MODULES =
+ 
+@@ -14,6 +14,8 @@
+ 
+ ### Note: to override the kernel source path, use "make KSRC=..."
+ 
++# default place to install the resulting binaries
++EXEC_PREFIX := $(DESTDIR)/usr/xenomai/bin
+ 
+ 
+ ###### USER SPACE BUILD (no change required normally) ######
+@@ -24,7 +26,9 @@
+ ### Sanity check
+ ifeq ($(XENOCONFIG),)
+ all::
+-	@echo ">>> Invoke make like this: \"make XENO=/path/to/xeno-config\" <<<"
++	@echo ">>> Invoke make like this: \"make XENOCONFIG=/path/to/xeno-config\" <<<"
++	@echo ">>> add KSRC=.. to override the default kernel source at /lib/modules/$(shell uname -r)/build <<<"
++	@echo ">>> add DESTDIR=/path/to/installed/xenomai if you installed it into a non standard place <<<"
+ 	@echo
+ endif
+ 
+@@ -40,6 +44,9 @@
+ clean::
+ 	$(RM) $(APPLICATIONS) *.o
+ 
++install::   $(APPLICATIONS)
++	cp $(APPLICATIONS) $(EXEC_PREFIX)/
++
+ endif
+ 
+ 
+@@ -80,3 +87,4 @@
+ 	$(RM) -R .tmp*
+ 
+ endif
++
+
+--Boundary-00=_Y1ZjF/btVFIYmIk--
 
