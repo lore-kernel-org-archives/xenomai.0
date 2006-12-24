@@ -1,13 +1,15 @@
-From: Wolfgang Denk <wd@domain.hid>
-Subject: Re: [Xenomai-core] Patches: README.install 
-Mime-version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-In-reply-to: Your message of "Sat, 23 Dec 2006 23:51:32 +0100."
-	<200612232351.33192.niklaus.giger@domain.hid> 
-Date: Sun, 24 Dec 2006 00:47:23 +0100
-Sender: wd@domain.hid
-Message-Id: <20061223234723.476513535D2@domain.hid>
+Subject: Re: [Xenomai-core] Buildbot detects failure in recent build
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200612232158.34758.niklaus.giger@domain.hid>
+References: <200612231931.23828.niklaus.giger@domain.hid>
+	<1166900039.17393.3.camel@domain.hid>
+	<200612232158.34758.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Date: Sun, 24 Dec 2006 01:06:41 +0100
+Message-Id: <1166918801.17393.13.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,87 +22,61 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: niklaus.giger@domain.hid
 Cc: xenomai@xenomai.org
 
-Dear Niklaus,
-
-in message <200612232351.33192.niklaus.giger@domain.hid> you wrote:
+On Sat, 2006-12-23 at 21:58 +0100, Niklaus Giger wrote:
+> Am Samstag, 23. Dezember 2006 19:53 schrieb Philippe Gerum:
+> > On Sat, 2006-12-23 at 19:31 +0100, Niklaus Giger wrote:
+> > > Hi Philippe
+> > >
+> > > It seems that your revision 1978 or 1979 broke building PSOS+ on pp=
+c and
+> > > PPC405.
+> >
+> > Fixed, thanks. Btw, could you ask the buildbot to spam me gently each
+> > time a commit wrecks the Xenomai boat? It would be easier for me than
+> > tracking the WEB interface status. TIA,
+> Sorry for a (wrong positive) mail from my test installation.=20
 >=20
-> Thanks your for spotting my errors. I should have rechecked this patch =
-before=20
-> submitting it, as it was based on a outdated script. Please review the=20
-> attached patch again which is based on a script which actually ran and=20
-> produced a running kernel.
+> You should receive an email on build failures. I changed the buildbot s=
+etup so=20
+> that failures while running the test on my CPU-board are only flagged a=
+s=20
+> warnings, as they were often reporting failures in my setup.
+> As my PPC405 board is also used for may other development work, it is=20
+> sometimes unavailable for the buildbot and the buildbot would also flag=
+ this=20
+> as an error.
+> The sim is reporting error since quite a few weeks, but Gilles never fi=
+xed=20
+> this error (which is probably just an expectation or a time value which=
+ has=20
+> varied a little bit):
+> Some problems were reported in:
+> vxworks->t010823-2:t010823-2.c:163: Expected sequence: SEQ("Test2",2004=
+); got=20
+> SEQ("Test2",1999)
+> vxworks->t010823-2: t010823-2.c:166, test finished: 1 failures/ 33 test=
+s
+> If you want I could also made a failure in this buildstep be considered=
+ only a=20
+> warning.
+
+No problem for now. If I ever get sick of these warnings, I will spam
+Gilles in turn. Eh.
+
 >=20
-> I would also thanks you for providing the ELDK. It was really a lot eas=
-ier
-> to setup the ELDK once I switched from my PPC PowerBook to a MacMini. I=
- can=20
-> really recommend it.
+> If you receive too many emails just let me know and I will try to impro=
+ve this=20
+> situation.
+>=20
 
-Thanks. I'm glad you like it.
+Great, thanks. Let's see how this evolves; my mail filters will help me
+handling the notifications appropriately.
 
-> The only addition to the ELDK I made to run xeno-test was to copy my=20
-> Debian /usr/bin/which to the rootfs.
-
-alias which=3D'type -p'
-
->  -----------------------------------------
-> =20
->  A typical cross-compilation setup, in order to build Xenomai for a
-> -PowerPC-405-based system:
-> +PowerPC-405-based system. Here we use an ELDK cross-compiler and a
-> +2.6.14 kernel.
-> =20
-> -$ $xenomai_root/scripts/prepare-kernel.sh --arch=3Dpowerpc \
-> -  --adeos=3D$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14=
--ppc-X.Y-ZZ.patch \
-> +$ $xenomai_root/scripts/prepare-kernel.sh --arch=3Dppc \
-> +  --adeos=3D$xenomai_root/ksrc/arch/powerpc/patches/adeos-ipipe-2.6.14=
--ppc-1.5-*.patch \
->    --linux=3D$linux_tree
->  $ cd $linux_tree
-> -$ mkdir ../build-powerpc-405-2.6.14
-> -$ make ARCH=3Dppc CROSS_COMPILE=3Dpowerpc-405-linux-gnu- O=3D../build-=
-powerpc-405-2.6.14 xconfig/gconfig/menuconfig=20
-> +$ build_root /path/to/eldk
-
-"/path/to/eldk" might be misleading - at least  it  needs  an  expla-
-nation;  I  would interpret this as "/opt/eldk", which is the default
-installation directory of the ELDK, while I guess you  actually  mean
-"/opt/eldk/ppc_4xx" ?
-
-> +$ mkdir $build_root
-> +$ make ARCH=3Dppc CROSS_COMPILE=3Dppc_4xx- O=3D$build_root xconfig/gco=
-nfig/menuconfig
->  # select the kernel and Xenomai options
-> -$ make ARCH=3Dppc CROSS_COMPILE=3Dpowerpc-405-linux-gnu- O=3D../build-=
-powerpc-405-2.6.14 bzImage modules=20
-> -# then install as needed
-> -$ mkdir $build_root && cd $build_root
-> -$ $xenomai_root/configure --build=3Di686-linux --host=3Dpowerpc-405-li=
-nux-gnu
-> +$ make ARCH=3Dppc CROSS_COMPILE=3Dppc_4xx- O=3D$build_root bzImage mod=
-ules \
-> +  modules_install
-
-Be careful here. "modules_install" will try to run the native depmod,
-which will not work. Recent builds (*) of the ELDK will allow to  add
-a "DEPMOD=3D/opt/eldk/usr/bin/depmod.pl" argument to the make call.
-
-[This extension was added in July, so you will have to wait for  ELDK
-version 4.1 unless you build the ELDK from scratch from the sources.]
-
-
-Thanks, and a Merry Christmas and a Happy New Year!
-
-Best regards,
-
-Wolfgang Denk
-
+> Joyeux no=EBl
+>=20
+> Niklaus Giger
 --=20
-Software Engineering:  Embedded and Realtime Systems,  Embedded Linux
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-READ THIS BEFORE OPENING PACKAGE: According to Certain Suggested Ver-
-sions of the Grand Unified Theory, the Primary Particles Constituting
-this Product May Decay to Nothingness Within the  Next  Four  Hundred
-Million Years.
+Philippe.
+
+
 
