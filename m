@@ -1,14 +1,10 @@
-Subject: Re: [Xenomai-core] Buildbot detects failure in recent build
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200612232158.34758.niklaus.giger@domain.hid>
-References: <200612231931.23828.niklaus.giger@domain.hid>
-	<1166900039.17393.3.camel@domain.hid>
-	<200612232158.34758.niklaus.giger@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Date: Sun, 24 Dec 2006 01:31:58 +0100
-Message-Id: <1166920318.17393.30.camel@domain.hid>
+Content-Type: text/plain
+Date: Tue, 26 Dec 2006 12:03:59 +0100
+Message-Id: <1167131039.4148.7.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai v2.3
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,20 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Sat, 2006-12-23 at 21:58 +0100, Niklaus Giger wrote:
 
-> Joyeux no=C3=ABl
+Here is Xenomai v2.3. Five months work, 660 commits since v2.2 which
+brought the following:
 
-Merci Niklaus, de m=C3=AAme. Fr=C3=B5hliches Weihnachten und gl=C5=A9ckli=
-ch neues Jahr!
-(eh, sounds a bit like ARTE tv, isn't it?)
+o RTDM-based CAN implementation.
 
-In other words, Merry Christmas and Happy New Year to all.
+o A lot of PowerPC work (major I-pipe upgrade to kernel 2.6.18).
 
---=20
+o A lot of ARM work (I-pipe tracer, board support for the Samsung
+S3C24xx series).
+
+o A lot of Blackfin work (I-pipe tracer, major I-pipe upgrade to
+kernel 2.6.18 for the BF53x boards).
+
+o A lot of x86 work (major I-pipe upgrades to kernels 2.6.19 and
+2.4.34).
+
+o Direct syscall interface to the pSOS skin for running real-time
+applications in regular user-space context.
+
+o Nucleus updates in various areas (aperiodic timers management,
+runtime accounting, software watchdog, message pipes, shared interrupt
+support, debug infrastructure).
+
+o Assorted bug fixes all over the map.
+
+See the ChangeLog for details.
+
+http://download.gna.org/xenomai/stable/xenomai-2.3.0.tar.bz2
+
+-- 
 Philippe.
 
 
