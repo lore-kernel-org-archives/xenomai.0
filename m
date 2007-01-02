@@ -1,16 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <459A6CFD.4030805@domain.hid>
-References: <459A31E3.40807@domain.hid> <1167744149.30347.2.camel@domain.hid>
-	<459A5E92.6030504@domain.hid> <1167745769.30347.6.camel@domain.hid>
-	<459A64A9.4060707@domain.hid> <1167747223.30347.10.camel@domain.hid>
-	<459A6A88.8000803@domain.hid>  <459A6CFD.4030805@domain.hid>
-Content-Type: text/plain
-Date: Wed, 03 Jan 2007 18:47:57 +0100
-Message-Id: <1167846477.18647.26.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <459A2B04.5060201@domain.hid>
+Date: Tue, 02 Jan 2007 10:51:00 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Recommendation for ARM/blackfin based buildbot
+	test	machine
+References: <200612301553.05588.niklaus.giger@domain.hid>
+In-Reply-To: <200612301553.05588.niklaus.giger@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: SVN checkin #2010
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,18 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai@xenomai.org
 
-On Tue, 2007-01-02 at 15:32 +0100, Gilles Chanteperdrix wrote:
-
-> What about a greedy version like this.
+Niklaus Giger wrote:
+> Hi
 > 
+> Can anybody recommend a cheap (Anything below 200 US$ will probably fit into 
+> our family budget) ARM system, where I could test the ARM port of Xenomai? 
+> E.g. could I buy a LinkSys NSLU2 (around 100 Euros)? It seems that at least 
+> Debian is quite popular on it. 
+> 
+> Best regards
 
-Applied, thanks.
+ARM is not like x86: every ARM processor has its own interrupt
+controller and timer management, so the I-pipe patch need to be adapted
+to each board. Currently, the I-pipe patch supports the Integrator, the
+IMX21, SA1100 and PXA based boards and s3c2410, and there should be a
+port to AT91 soon. According to linux configuration, the LinkSys NSLU2
+is based on Intel IXP4XX processors, for which there is not yet an
+official port. But if you are willing to do the port, we will be glad to
+help.
 
 -- 
-Philippe.
-
-
+                                                 Gilles Chanteperdrix
 
