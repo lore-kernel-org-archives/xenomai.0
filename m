@@ -2,8 +2,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <459D14C4.40300@domain.hid>
 References: <459D14C4.40300@domain.hid>
 Content-Type: text/plain
-Date: Thu, 04 Jan 2007 16:16:08 +0100
-Message-Id: <1167923768.6722.35.camel@domain.hid>
+Date: Thu, 04 Jan 2007 16:17:39 +0100
+Message-Id: <1167923859.6722.38.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: [Xenomai-core] Re: [BUG] timerbench tests don't work with SVN
@@ -27,6 +27,11 @@ On Thu, 2007-01-04 at 15:52 +0100, Jan Kiszka wrote:
 > enabled (haven't tested the off case yet), latency -t1/2 no longer work.
 > I have no time to look at this, so I just dump my report here. :)
 > 
+
+Btw, it works fine on my testboxes UP/SMP, so this may be a
+config-dependent issue which I have overlooked. Please send me
+your .config. TIA,
+
 > Jan
 > 
 > 
@@ -36,14 +41,6 @@ On Thu, 2007-01-04 at 15:52 +0100, Jan Kiszka wrote:
 > RTDM is locked to one base (configured at compile or module load time)
 > and cannot be shared.
 > 
-
-This is the same situation than before, except that now, RTDM can choose
-the timebase it is locked on. There is no conversion API right now, but
-we could define xntbase_convert(inbase, rtdm_base), with inbase being
-extracted from xnthread_timebase(xnpod_current_thread()) for primary
-context services. The question remains open on how to get the inbase
-pointer for seconday mode callers though.
-
 -- 
 Philippe.
 
