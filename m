@@ -1,11 +1,14 @@
-Date: Mon, 8 Jan 2007 17:22:16 +0100
-From: Kai Timmer <email@domain.hid>
-Message-ID: <20070108162216.GD23411@domain.hid>
+Message-ID: <45A27591.1020106@domain.hid>
+Date: Mon, 08 Jan 2007 17:47:13 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Arinc skin
+References: <20070108162015.GB21510@domain.hid>
+In-Reply-To: <20070108162015.GB21510@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5gxpn/Q6ypwruk0T"
-Content-Disposition: inline
-Subject: [Xenomai-help] xenomai on blackfin/uclinux does not compile
+	protocol="application/pgp-signature";
+	boundary="------------enig1591D06E35EDCB8DE20279FF"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,73 +20,41 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-
---5gxpn/Q6ypwruk0T
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1591D06E35EDCB8DE20279FF
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
-it tried to compile xenomai 2.3.0 with the uClinux 2006R1 RC2 Release
-for a Blackfin (BF537). The kernel patch i used was the=20
-adeos-ipipe-R06R1RC2-bf53x-1.4-03.patch file. It applied fine to the
-source tree.
-But now if i=B4going to compile the uClinux distribution i always get this
-error:
+Matthias Fechner wrote:
+> Hi,
+>=20
+> had anyone started to implement a arinc653 skin?
 
-/------------------------------------------------------------------------
-kernel/built-in.o: In function `xntimer_do_tick_aperiodic':
-kernel/xenomai/nucleus/timer.c:(.text+0x24244): undefined reference to
-`bfin_write_TCOUNT'
-kernel/xenomai/nucleus/timer.c:(.text+0x2424c): undefined reference to
-`bfin_write_TCNTL'
-kernel/built-in.o: In function `xntimer_do_start_aperiodic':
-kernel/xenomai/nucleus/timer.c:(.text+0x24a42): undefined reference to
-`bfin_write_TCOUNT'
-kernel/xenomai/nucleus/timer.c:(.text+0x24a4a): undefined reference to
-`bfin_write_TCNTL'
-kernel/built-in.o: In function `xntimer_do_stop_aperiodic':
-kernel/xenomai/nucleus/timer.c:(.text+0x24dde): undefined reference to
-`bfin_write_TCOUNT'
-kernel/xenomai/nucleus/timer.c:(.text+0x24de6): undefined reference to
-`bfin_write_TCNTL'
-arch/blackfin/xenomai/built-in.o: In function `rthal_timer_release':
-(.text+0x2b4): undefined reference to `bfin_write_TCNTL'
-arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
-(.text+0x2ee): undefined reference to `bfin_write_TCNTL'
-arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
-(.text+0x2f6): undefined reference to `bfin_write_TSCALE'
-make[1]: *** [.tmp_vmlinux1] Error 1
-make[1]: Leaving directory
-`/home/kai/workspace/studium/praktika/dspschool/uClinux-dist/linux-2.6.x'
-make: *** [linux] Error 1
-/------------------------------------------------------------------------
+Someone once started to work on an IMA380 skin (which seems to be
+ARINC-derived) - but likely for internal purpose only, no code yet
+popped up here. You may search the ML archive on this (I remember some
+discussion on how to switch time-slices).
 
-I also tried to apply the xenomai patches to uClinux 2006R2 RC2. But
-all of the included patchfiles failed to apply.
+Anyway, such thing should be doable without significant pain. Are you
+planning to work on it? Keep in mind that contributed code will receive
+the pleasure of peer review and could be included in mainline... :)
 
-I would be very pleased if someone can tell me whats going wrong.
-
-Greets,
---=20
-Kai Timmer             | Jabber-ID: kait@domain.hid
-PGP-Key ID: 0x8295374E | Blog: http://www.kaitimmer.de
-------------------------------------------------------
-   http://chemnitzer.linux-tage.de (3.-4. M=E4rz 2007)
+Jan
 
 
---5gxpn/Q6ypwruk0T
+--------------enig1591D06E35EDCB8DE20279FF
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-Content-Disposition: inline
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFom+4/PH6zoKVN04RAlyQAJ46Ycniw2g1vnttWoVDYXHiLUMgSQCgsjca
-V+QTOlmPpDfPt4fNOhzKE34=
-=9qW2
+iD8DBQFFonWRniDOoMHTA+kRAhJWAJ4nQRPRALlqdvragy6ZWE+ncHn91wCbBiiJ
+KgzS1S4DS2kGZAg3T7WILXU=
+=ytV5
 -----END PGP SIGNATURE-----
 
---5gxpn/Q6ypwruk0T--
+--------------enig1591D06E35EDCB8DE20279FF--
 
