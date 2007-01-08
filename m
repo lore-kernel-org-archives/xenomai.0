@@ -1,14 +1,13 @@
-Message-ID: <45A27591.1020106@domain.hid>
-Date: Mon, 08 Jan 2007 17:47:13 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Arinc skin
-References: <20070108162015.GB21510@domain.hid>
-In-Reply-To: <20070108162015.GB21510@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1591D06E35EDCB8DE20279FF"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] xenomai on blackfin/uclinux does not compile
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20070108162216.GD23411@domain.hid>
+References: <20070108162216.GD23411@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Date: Mon, 08 Jan 2007 19:20:06 +0100
+Message-Id: <1168280406.27800.16.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,43 +17,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Kai Timmer <email@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1591D06E35EDCB8DE20279FF
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2007-01-08 at 17:22 +0100, Kai Timmer wrote:
+> Hello,
+> it tried to compile xenomai 2.3.0 with the uClinux 2006R1 RC2 Release
+> for a Blackfin (BF537). The kernel patch i used was the=20
+> adeos-ipipe-R06R1RC2-bf53x-1.4-03.patch file. It applied fine to the
+> source tree.
+> But now if i=B4going to compile the uClinux distribution i always get t=
+his
+> error:
 
-Matthias Fechner wrote:
-> Hi,
+We are still tracking a moving target on Blackfin, and 2.3 has been
+ported to the project's CVS head which defines the missing symbols.
+Please use ksrc/arch/blackfin/ipipe-bf53x-CVS-20061215-1.6-00 over a
+kernel extracted from the Blackfin CVS/SVN as of this date instead.
+Actually, 1.4-03 should have been removed from the patch series.
+
 >=20
-> had anyone started to implement a arinc653 skin?
+> /----------------------------------------------------------------------=
+--
+> kernel/built-in.o: In function `xntimer_do_tick_aperiodic':
+> kernel/xenomai/nucleus/timer.c:(.text+0x24244): undefined reference to
+> `bfin_write_TCOUNT'
+> kernel/xenomai/nucleus/timer.c:(.text+0x2424c): undefined reference to
+> `bfin_write_TCNTL'
+> kernel/built-in.o: In function `xntimer_do_start_aperiodic':
+> kernel/xenomai/nucleus/timer.c:(.text+0x24a42): undefined reference to
+> `bfin_write_TCOUNT'
+> kernel/xenomai/nucleus/timer.c:(.text+0x24a4a): undefined reference to
+> `bfin_write_TCNTL'
+> kernel/built-in.o: In function `xntimer_do_stop_aperiodic':
+> kernel/xenomai/nucleus/timer.c:(.text+0x24dde): undefined reference to
+> `bfin_write_TCOUNT'
+> kernel/xenomai/nucleus/timer.c:(.text+0x24de6): undefined reference to
+> `bfin_write_TCNTL'
+> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_release':
+> (.text+0x2b4): undefined reference to `bfin_write_TCNTL'
+> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
+> (.text+0x2ee): undefined reference to `bfin_write_TCNTL'
+> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
+> (.text+0x2f6): undefined reference to `bfin_write_TSCALE'
+> make[1]: *** [.tmp_vmlinux1] Error 1
+> make[1]: Leaving directory
+> `/home/kai/workspace/studium/praktika/dspschool/uClinux-dist/linux-2.6.=
+x'
+> make: *** [linux] Error 1
+> /----------------------------------------------------------------------=
+--
+>=20
+> I also tried to apply the xenomai patches to uClinux 2006R2 RC2. But
+> all of the included patchfiles failed to apply.
+>=20
+> I would be very pleased if someone can tell me whats going wrong.
+>=20
+> Greets,
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
+Philippe.
 
-Someone once started to work on an IMA380 skin (which seems to be
-ARINC-derived) - but likely for internal purpose only, no code yet
-popped up here. You may search the ML archive on this (I remember some
-discussion on how to switch time-slices).
 
-Anyway, such thing should be doable without significant pain. Are you
-planning to work on it? Keep in mind that contributed code will receive
-the pleasure of peer review and could be included in mainline... :)
-
-Jan
-
-
---------------enig1591D06E35EDCB8DE20279FF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFonWRniDOoMHTA+kRAhJWAJ4nQRPRALlqdvragy6ZWE+ncHn91wCbBiiJ
-KgzS1S4DS2kGZAg3T7WILXU=
-=ytV5
------END PGP SIGNATURE-----
-
---------------enig1591D06E35EDCB8DE20279FF--
 
