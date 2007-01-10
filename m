@@ -1,13 +1,11 @@
-Subject: Re: [Xenomai-help] xenomai on blackfin/uclinux does not compile
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20070108162216.GD23411@domain.hid>
-References: <20070108162216.GD23411@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Date: Mon, 08 Jan 2007 19:20:06 +0100
-Message-Id: <1168280406.27800.16.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Reply-To: rpm@xenomai.org
+Message-ID: <15523442.1168430357436.JavaMail.ngmail@domain.hid>
+Date: Wed, 10 Jan 2007 12:59:17 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_30044_11252437.1168430357435"
+Subject: [Xenomai-help] Xenomai Bug: rt_intr_create with NULL-name leads to
+ Kernel oops in /proc/xenomai/irq
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,69 +15,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Kai Timmer <email@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2007-01-08 at 17:22 +0100, Kai Timmer wrote:
-> Hello,
-> it tried to compile xenomai 2.3.0 with the uClinux 2006R1 RC2 Release
-> for a Blackfin (BF537). The kernel patch i used was the=20
-> adeos-ipipe-R06R1RC2-bf53x-1.4-03.patch file. It applied fine to the
-> source tree.
-> But now if i=B4going to compile the uClinux distribution i always get t=
-his
-> error:
+------=_Part_30044_11252437.1168430357435
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_30043_8275978.1168430357435"
 
-We are still tracking a moving target on Blackfin, and 2.3 has been
-ported to the project's CVS head which defines the missing symbols.
-Please use ksrc/arch/blackfin/ipipe-bf53x-CVS-20061215-1.6-00 over a
-kernel extracted from the Blackfin CVS/SVN as of this date instead.
-Actually, 1.4-03 should have been removed from the patch series.
+------=_Part_30043_8275978.1168430357435
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
->=20
-> /----------------------------------------------------------------------=
---
-> kernel/built-in.o: In function `xntimer_do_tick_aperiodic':
-> kernel/xenomai/nucleus/timer.c:(.text+0x24244): undefined reference to
-> `bfin_write_TCOUNT'
-> kernel/xenomai/nucleus/timer.c:(.text+0x2424c): undefined reference to
-> `bfin_write_TCNTL'
-> kernel/built-in.o: In function `xntimer_do_start_aperiodic':
-> kernel/xenomai/nucleus/timer.c:(.text+0x24a42): undefined reference to
-> `bfin_write_TCOUNT'
-> kernel/xenomai/nucleus/timer.c:(.text+0x24a4a): undefined reference to
-> `bfin_write_TCNTL'
-> kernel/built-in.o: In function `xntimer_do_stop_aperiodic':
-> kernel/xenomai/nucleus/timer.c:(.text+0x24dde): undefined reference to
-> `bfin_write_TCOUNT'
-> kernel/xenomai/nucleus/timer.c:(.text+0x24de6): undefined reference to
-> `bfin_write_TCNTL'
-> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_release':
-> (.text+0x2b4): undefined reference to `bfin_write_TCNTL'
-> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
-> (.text+0x2ee): undefined reference to `bfin_write_TCNTL'
-> arch/blackfin/xenomai/built-in.o: In function `rthal_timer_request':
-> (.text+0x2f6): undefined reference to `bfin_write_TSCALE'
-> make[1]: *** [.tmp_vmlinux1] Error 1
-> make[1]: Leaving directory
-> `/home/kai/workspace/studium/praktika/dspschool/uClinux-dist/linux-2.6.=
-x'
-> make: *** [linux] Error 1
-> /----------------------------------------------------------------------=
---
->=20
-> I also tried to apply the xenomai patches to uClinux 2006R2 RC2. But
-> all of the included patchfiles failed to apply.
->=20
-> I would be very pleased if someone can tell me whats going wrong.
->=20
-> Greets,
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Hi all,
+
+I am just trying out the interrupt mechanism of Xenomai.
+For that, I have create a kernel module that uses rt_intr_create (from the =
+native skin) to
+create an IRQ handler. So far that looks fine.
+However, I noticed, that I have to pass a non-NULL argument  name to rt_int=
+r_create().
+Otherwise, cat /proc/xenomai/irq crashes with a kernel oops.
+I think this is a bug as the API documentation allows the usage of a NULL n=
+ame in rt_intr_create.
+Probably, the zero pointer will not be checked in the proc reading function=
+.
+I am using 2.6.19.1 on a Pentium 4 (UP) with Xenomai 2.3.
+
+I have enclosed a minimum kernel module that leads to a kernel oops to see =
+the effect.
+
+Here is the kernel oops:
+---------- BEGIN ----------
+BUG: unable to handle kernel NULL pointer dereference at virtual address 00=
+00000
+0
+ printing eip:
+*pde =3D 00000000
+Oops: 0000 [#1]
+PREEMPT
+Modules linked in: irqtest e1000
+CPU:    0
+EIP:    0060:[<c0144daf>]    Not tainted VLI
+EFLAGS: 00010046   (2.6.19.1 #5)
+EIP is at xnintr_irq_proc+0x8c/0xcd
+eax: d881a02a   ebx: d881a021   ecx: 00000580   edx: e097770c
+esi: 00000000   edi: d881a02a   ebp: 00000000   esp: d9443ee4
+ds: 007b   es: 007b   ss: 0068
+Process cat (pid: 2480, ti=3Dd9442000 task=3Dc15c6030 task.ti=3Dd9442000)
+Stack: d881a015 0000000b 00000580 d881a02a c0261afb d881a015 d881a021 00000=
+00b
+       00000580 d881a000 c0145836 0000000b d881a021 00000000 d9443fa4 00000=
+400
+       d881a000 00000400 c01bced0 d881a000 d9443f50 00000000 00000400 d9443=
+f54
+Call Trace:
+ [<c0261afb>] sprintf+0x2b/0x2f
+ [<c0145836>] irq_read_proc+0x85/0xea
+ [<c01bced0>] proc_file_read+0x11c/0x24c
+ [<c0185fc7>] vfs_read+0xa0/0x170
+ [<c0186407>] sys_read+0x4b/0x71
+ [<c0103146>] syscall_call+0x7/0xb
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Code: 83 e5 01 c1 e1 07 8b 91 8c e5 4c c0 89 de 85 d2 74 34 be 3f 27 3e c0 =
+89 df
+ ac aa 84 c0 75 fa 8d 43 09 89 44 24 0c 8b 72 18 89 c7 <ac> aa 84 c0 75 fa =
+8b 52
+ 18 31 c0 83 c9 ff 89 d7 f2 ae f7 d1 49
+EIP: [<c0144daf>] xnintr_irq_proc+0x8c/0xcd SS:ESP 0068:d9443ee4
+--------- END ---------------
+
+Regards
+
+Mathias
+
+
+
 --=20
-Philippe.
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
+------=_Part_30043_8275978.1168430357435--
+
+------=_Part_30044_11252437.1168430357435
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=irqtest.tgz
+
+H4sIAO3SpEUAA+2V32/aMBDHeZ3/ilNHp9BRSKoCEh2TUGEdKtCJttIeJkXGMSIjONR2KqZp//vs
+ODC2ov14aPuw+zzkh+/u6/M5vsTyTnOla6z0ePiG5umpvQethp+/B+7dPfqtUuA3GkHQ8FvNk5If
+nBj/EviPmNOWTGkqAUoJnTIqf+fHpXqKhJ4W8jIWLMkiDm+SWGTr+jKNsoTX5m8fWBSb82ifYcGl
+4ImxwEPqR7CSsdALrwJH9QehXEqR7o+0ocacSmBpxNW+aKNrPLKVtlmRHbOgOr7n1i5z0+iqdzvs
+h8PBeX983fcOLj4MDypnhJi91zGDyU04GN9MwPqH6fSzsZhHiOUddCAIzogrSriiki49M1y1rlXw
+rcZWxYasuUiXNA6NTzinIkq49JSWGTMmYeXhyF4r5CuxS7QhNjpTZqIii/B9d9wb9ntnuYfkOpOi
+cDKzfStSE7EOXVbeVmwGntRhvggmOdXce7VZURXGt8NhFfLc9yRp1mKXU8mFnJyl2LqDvt2HNvys
+DjMaJzz6JGwpNxFFvoEbMdnuylxd5hnYhgNzqmDKuYAkpRGPQGWMcaVmWZJ8cZJktwC+E8wLQO7T
+OAKWcCqyVVEFyMtgfVxUkWnEE75bByvrEt2RMzz3MXw2RnTBZ2YbH3OOP/R/v/Wj/we+HQ+CZjPA
+/v8UkJew+QRApzDN4iSCeL2mOmRUgGvt4M4YIeYEHTNodzanuMbc2BLsYNlbUa2yqTndhzVWPayl
+1bKXh5jGYu+LdK/b4le/KVV8n+eOGyH9jzeTbnj+bti9uIbXHTge1DMl60Vzq2/+BYTMuWkw0nZY
+QmiStMGpLFKjsn3cjLLKth7kRdkbdS/7FTg+h1xbSVbP/zww6pS989tJbzCpFMVRxHZm8zHZGf4x
+NCwCCcmbWvtvw3Pv/7t/IQiCIAiCIAiCIAiCIAiCIAiCIAiCII7v7hefHwAoAAA=
+------=_Part_30044_11252437.1168430357435--
 
 
