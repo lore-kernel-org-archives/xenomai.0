@@ -1,16 +1,17 @@
-Message-ID: <459C190E.3080601@domain.hid>
-Date: Wed, 03 Jan 2007 21:58:54 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <b647ffbd0701100621k25126a1bldb0bef19be65c92b@domain.hid>
+Date: Wed, 10 Jan 2007 15:21:03 +0100
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Bug: rt_intr_create with NULL-name leads
+	to Kernel oops in /proc/xenomai/irq
+In-Reply-To: <45A4F18A.4040209@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] parallelport module for
-	measuring	external	interrupt latency
-References: <459B6DAD.4030406@domain.hid>	<459B7C6C.9030401@domain.hid>	<459B8382.7060508@domain.hid>	<459B8A19.2060809@domain.hid>
-	<459C13C5.9010007@domain.hid>
-In-Reply-To: <459C13C5.9010007@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig32488AA84F42E3053CAF4041"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <15523442.1168430357436.JavaMail.ngmail@domain.hid>
+	<45A4DDA8.6090800@domain.hid>
+	<b647ffbd0701100549y5d143e8at8e9ac5ab8e1826d6@domain.hid>
+	<45A4F18A.4040209@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,55 +21,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig32488AA84F42E3053CAF4041
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+> > +     if (!err && name) {
+> > +             xnpnode_t *pnode = &__intr_pnode;
+> >
+> > -     if (!err)
+> > -             err =
+> > -                 xnregistry_enter(intr->name, intr, &intr->handle,
+> > -                                  &__intr_pnode);
+> > +             if (!*name) {
+> > +                     /* Since this is an anonymous object (empty name on entry)
+>
+> Isn't a NULL name representing an anonymous object as well?
 
-Markus Franke wrote:
-> Jan Kiszka wrote:
->> Even if the notification is not time-critical, you first have to get o=
-ut
->> of the Xenomai context in a sane manner. rtdm_nrtsig may help if you
->> don't want to use the RT scheduler for user task wakeup.
->=20
-> OK. Thank you for the hint with rtdm_nrtsig_*. The kernel-module works =
-now.
->=20
-> But I have still a problem when generating interrupts with a high
-> frequency, let's say 100us. Then I get large latencies in the range of
-> 1,5 seconds. Can you see any reason for this. An intervall of 1ms works=
+Anonymous objects are supported only for user-space clients.
+We agreed on it with Philippe when similar code was introduced for
+other objects. In this case, name is not NULL but "\0" on entry of
+native::rt_object_create (object = mutex,event,etc.).
 
-> without any problems and the latencies reach maybe 13us in worst case.
+Now, don't ask me why the same is not applicable for the kernel-side
+objects as I'll have to think about it (can't recall right now) and
+may overheat. Likely, just some political issues. Yes, we want to make
+life of kernel-side developers a bit more difficult. Namely, want an
+object to be exported via registry? Give a valid name upon its
+creation.
 
-Unless you have a very slow hardware that already overruns at 10 KHz
-(rather unlikely) or some SMI-related latencies bite you (see
-TROUBLESHOOTING) - I have no clue right now. Do standard Xenomai tests
-show similar abnormal latencies?
+> > -     xnintr_init(&intr->intr_base, name, irq, isr, iack, mode);
+> >       xnobject_copy_name(intr->name, name);
+> > +     xnintr_init(&intr->intr_base, intr->name, irq, isr, iack, mode);
+>
+> This will set xnintr_t::name to "" if name is NULL - intentionally?
 
-If no, you may want to try the ipipe latency tracer: enable it in the
-kernel hacking section and put a xntrace_user_freeze() in your
-application right after when it detected some extreme latency. See the
-wiki for more details on the tracer.
+xnintr_t::name becomes a reference to RT_INTR::name. The later one
+exists as long as the former anyway so there shoudn't be a broken
+reference.
 
-Jan
+Just in case xnintr::name is used somewhere else, aside of xnintr_irq_proc().
+
+>
+> Jan
+>
 
 
---------------enig32488AA84F42E3053CAF4041
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFnBkSniDOoMHTA+kRAjV+AJ0f5XQQ20RjJ0Wy1Ck3ZXZ8PGkJBwCghLkX
-mi/fIuWUjEkKy5X3H4QfnNA=
-=bHVF
------END PGP SIGNATURE-----
-
---------------enig32488AA84F42E3053CAF4041--
+-- 
+Best regards,
+Dmitry Adamushko
 
