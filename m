@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [BUG?] registry usage + module removal causes
-	kernel	oops (xenomai native)
-In-Reply-To: <45A6C97A.4090406@domain.hid>
-References: <OF4D873F49.344BC96D-ONC1257260.005DC836-C1257260.00617F2A@retarus.de>
-	<45A67C77.3070006@domain.hid>  <45A6C97A.4090406@domain.hid>
+Subject: Re: [Xenomai-core] Nocow patch.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45A6554D.2060900@domain.hid>
+References: <45A52B04.1010706@domain.hid>  <45A6554D.2060900@domain.hid>
 Content-Type: text/plain
-Date: Fri, 12 Jan 2007 10:11:38 +0100
-Message-Id: <1168593099.31022.18.camel@domain.hid>
+Date: Sat, 13 Jan 2007 19:57:53 +0100
+Message-Id: <1168714673.21854.17.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-From: Philippe Gerum <philippe.gerum@domain.hid>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,55 +18,128 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Thomas Wiedemann <Thomas.Wiedemann@domain.hid>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2007-01-12 at 00:34 +0100, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > Thomas Wiedemann wrote:
-> >> Another bug appeared for objects registered at the registry. When
-> >> using xeno-native and xeno-rtdm, the order of removal seems to be
-> >> important. I appended a small code sample to register a mutex at
-> >> the registry. After the program exits, the modules can not be unloaded
-> >> in the order
-> >>   1) xeno-native
-> >>   2) xeno-rtdm,
-> >> but the other way around works fine. Instead, rmmod ends up with a
-> >> segmentation fault, dmesg output appended.
-> >>
-> >> I tested this on xenomai 2.3.0/linux 2.6.19 and 2.2.5-svn/linux2.6.17.14.
-> >>
-> > 
-> > Looks like it's related to the left-over mutex in the registry. Probably
-> > the other order just papers the issue. $Someone should give your code a
-> > try, maybe I can check later with a debugger.
+On Thu, 2007-01-11 at 16:18 +0100, Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+> > This was run on x86, but need further testing before inclusion.
 > 
-> Yet another reason to address auto-cleanup soon: I thought to remember
-> the native skin keeps track of resources in a global list and kills them
-> on rmmod, but that's only true for a few.
+> Here is a new version, after testing. It appears to run fine. I tested
+> forking in real-time applications both before and after calling
+> rt_task_shadow, and vmallocing areas of 256 Mo, and memseting them both
+> from a non-realtime or real-time context and it works.
 > 
-> Instead stalled named resources are kept in the registry. On
-> unregistration of the last skin xnregistry_cleanup() is called. It tries
-> to kill the stalled entries from proc but their roots may have already
-> been removed (here: the native skin's proc root).
-> 
-> Philippe, this makes the sweep loop in xnregistry_cleanup rather fragile
-> and of questionable use.
+> The next step is to clean up the patch, but I have to admit that I need
+> some help: should I keep the functions in the files where I put them ?
+> in what headers should I declare them ? Should I define an empty
+> ipipe_update_nofault_mms when CONFIG_IPIPE is not set in order to avoid
+> a few #ifdefs ?
 
-It has never been meant as something skins should rely on or "use".
-Interfaces that do not cleanup their place before leaving are just ugly
-examples of unleashed procrastination, and it happens that I wrote one
-of them. The cleanup loop in the registry unload code is solely a best
-effort that may, or may not work depending on the setup (i.e. modular vs
-static), this is _not_ an exported or exportable "feature".
+> diff -Naurdp -x '*~' ipipe-2.6.19/arch/i386/mm/fault.c ipipe-2.6.19-nocow/arch/i386/mm/fault.c
+> --- ipipe-2.6.19/arch/i386/mm/fault.c	2007-01-10 09:44:52.000000000 +0100
+> +++ ipipe-2.6.19-nocow/arch/i386/mm/fault.c	2007-01-11 09:58:49.000000000 +0100
+> @@ -654,3 +654,19 @@ void vmalloc_sync_all(void)
+>  	}
+>  }
+>  #endif
+> +
+> +#ifdef CONFIG_IPIPE
+> +int ipipe_arch_map_vm_area_to_mm(struct mm_struct *mm,
+> +				 unsigned long start,
+> +				 unsigned long end)
+> +{
 
->  I guess all skins have to handle this on their
-> own, and we should just bark loudly here if something remained.
+__ipipe_pin_range_mapping() would better identify an internal routine
+which somehow wires the mapping of a virtual address range into a
+memory context.
 
-Yes. The registry has to maintain the basic information and likely
-provide a simple mechanism over that which would allow the skins to
-cleanup properly, but the skins would have to trigger this cleanup on
-their own. I'm working on this.
+[...]
+
+> +
+> +#if CONFIG_IPIPE
+> +	struct list_head nofault;
+
+s,nofault,pinned, ?  The point is that the NOFAULT feature does not
+really disable all faults, but only faults leading to lazy/ondemand
+mappings. E.g. pathological faults would still raise exceptions.
+
+> +#endif /* CONFIG_IPIPE */
+>  };
+>  
+>  struct sighand_struct {
+> diff -Naurdp -x '*~' ipipe-2.6.19/kernel/fork.c ipipe-2.6.19-nocow/kernel/fork.c
+> --- ipipe-2.6.19/kernel/fork.c	2007-01-10 09:44:53.000000000 +0100
+> +++ ipipe-2.6.19-nocow/kernel/fork.c	2007-01-11 15:32:25.000000000 +0100
+> @@ -385,6 +385,7 @@ void mmput(struct mm_struct *mm)
+>  
+>  	if (atomic_dec_and_test(&mm->mm_users)) {
+>  		ipipe_cleanup_notify(mm);
+> +		ipipe_destroy_nofault_mm(mm);
+
+We may want to merge both into the notification trigger. Those
+nitty-gritty I-pipe details ought to be gathered; after all, removing
+the mm from the pinned mm queue is also a cleanup operation. This
+would also remove the need for adding a placeholder in the
+!CONFIG_IPIPE case.
+
+[...]
+
+> -
+> +#ifdef CONFIG_IPIPE
+> +	ipipe_update_nofault_mms(start, end);
+
+I'd suggest something like __ipipe_update_all_pinned_mm().
+
+[...]
+
+> +#ifdef CONFIG_IPIPE
+> +#include <linux/vmalloc.h>	/* For vmlist */
+> +#endif /* CONFIG_IPIPE */
+
+No need for noisy conditional here. Including linux/vmalloc.h has no
+undesirable side-effect in the !CONFIG_IPIPE case anyway.
+
+[...]
+
+> +
+> +#ifdef CONFIG_IPIPE
+> +static LIST_HEAD(nofault_mms);
+> +static DEFINE_RWLOCK(nofault_mms_lock);
+> +
+> +static int ipipe_fault_pte_range(struct mm_struct *mm, pmd_t *pmd,
+> +				 struct vm_area_struct *vma,
+> +				 unsigned long addr, unsigned long
+
+[...]
+
+> +static int ipipe_fault_pmd_range(struct mm_struct *mm, pud_t *pud,
+> +				 struct vm_area_struct *vma,
+> +				 unsigned long addr, unsigned long end)
+
+[...]
+
+> +static int ipipe_fault_pud_range(struct mm_struct *mm, pgd_t *pgd,
+> +				 struct vm_area_struct *vma,
+> +				 unsigned long addr, unsigned long end)
+
+[...]
+
+Those routines are good candidates for inlining.
+
+> +int ipipe_disable_task_faults(struct task_struct *tsk)
+> +{
+
+ipipe_disable_ondemand_mappings() would be more accurate.
+
+[...]
+
+> +#ifdef CONFIG_IPIPE
+> +	ipipe_update_nofault_mms((unsigned long) area->addr, end);
+> +#endif /* CONFIG_IPIPE */
+
+Better define a nop placeholder for __ipipe_update_all_pinned_mm()
+in the !CONFIG_IPIPE case instead of the conditional.
 
 -- 
 Philippe.
