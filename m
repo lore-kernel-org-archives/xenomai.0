@@ -1,12 +1,13 @@
-Message-ID: <459A31E3.40807@domain.hid>
-Date: Tue, 02 Jan 2007 11:20:19 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45ABA9FC.7070606@domain.hid>
+Date: Mon, 15 Jan 2007 17:21:16 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0C1F9E2BD599F610A4F3D108"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] SVN checkin #2010
+Subject: Re: [Xenomai-core] IPIPE for ARM9 i.MX and AT91RM9200 ?
+References: <45AB9D58.3060308@domain.hid> <45ABA0C7.3050407@domain.hid>
+	<45ABA6E4.3030707@domain.hid> <45ABA91F.909@domain.hid>
+In-Reply-To: <45ABA91F.909@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,41 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0C1F9E2BD599F610A4F3D108
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Gilles,
 
-Hi all - and happy new year,
+>>>> are there IPIPE Patches for recent kernels (2.6.19) available for
+>>>> Freescale's i.MX1/i.MXL and Atmel's AT91RM9200 cpus available.
+>>> The IPIPE patches for ARM exist for linux 2.6.14 and 2.6.15. There is an
+>>> i.MX21 port for 2.6.14 and an AT91 port for 2.6.15...
+>>
+>> Thanks very much.
+>>
+>> Where can I find the AT91 patches? The i.MX stuff seems to be in xenomai-2.3.0.
+> 
+> Yes, the AT91 port should be in the next release of the 2.3 branch.
+> 
+> In the meantime, you can find them in Xenomai svn repository, either
+> under trunk/ksrc/arc/arm/patches/at91 or
+> branches/v2.3.x/ksrc/arch/arm/patches/at91.
 
-I haven't looked at all the new code yet, only the commit messages. I
-found something similar to my fast-forward-on-timer-overrun patch in
-#2010 and wondered if Gilles' original concerns on side effects for the
-POSIX skin were addressed [1]. I recalled that my own final summary on
-this was "leave it as it is" [2].
+Ok. Thanks.
 
-Jan
+IIUC then 2.6.15 was before the introduction of the generic irq layer.
 
-[1]https://mail.gna.org/public/xenomai-core/2006-08/msg00122.html
-[2]https://mail.gna.org/public/xenomai-core/2006-08/msg00133.html
+So would these make it easier to port to a newer kernel? Or harder?
 
-
---------------enig0C1F9E2BD599F610A4F3D108
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFmjHjniDOoMHTA+kRAlJaAKCB8/3C/4GWPj9gODmgP67qbaP/lwCeKhDW
-XMoVn3uIy7I3dJu0ZKjEvXw=
-=hN7w
------END PGP SIGNATURE-----
-
---------------enig0C1F9E2BD599F610A4F3D108--
+Steven
 
