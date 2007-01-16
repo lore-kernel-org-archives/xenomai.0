@@ -1,16 +1,12 @@
-Message-ID: <25dd9bf10701160518o129cd728ne1b1dfb99149556a@domain.hid>
-Date: Tue, 16 Jan 2007 18:48:10 +0530
-From: "Subramani Venkatesh" <subbu31mani@domain.hid>
+Message-ID: <20070116132851.19872.qmail@domain.hid>
+Date: Tue, 16 Jan 2007 13:28:51 +0000 (GMT)
+From: somshekar kadam <som_kadam@domain.hid>
 Subject: Re: [Adeos-main] Porting IPIPE on MIPS Architecture,
 	User Process running error, Kernel hangs.
-In-Reply-To: <45ACCDEC.2080807@domain.hid>
+In-Reply-To: <1168943855.17557.45.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_108001_31810519.1168953490480"
-References: <25dd9bf10701160219w72c8e522l33f4eb9cec59b869@domain.hid>
-	<45ACB7EB.1060708@domain.hid>
-	<25dd9bf10701160444s1eed7edfwabd5302b022902aa@domain.hid>
-	<45ACCDEC.2080807@domain.hid>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,58 +15,75 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org, Subramani Venkatesh <subbu31mani@domain.hid>
 Cc: adeos-main@gna.org
 
-------=_Part_108001_31810519.1168953490480
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi Phillipe , 
 
-Well Jan, with respect to PIC(i8259) I don't see many changes as compared to
-code in Linux-2.6 on X86. But timer and whole Interrupt system changes. Will
-look closely in it.  Have to put more effort on System calls as Phillipe
-said, Will look into it and have to write test code with other customozed
-domain like Registering with timer interrupt and try passing it to Linux
-after handling it.
+  Thanks A lot for Helping on the MIPS Port for Adoes.
 
-Subbu
+Thanks And Regards
+Neelu
 
-On 1/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->
-> Subramani Venkatesh wrote:
-> > BTW Jan, may I know how different is the IPIPE port on the Linux-2.6.10and
-> > the current IPIPE port on Linux-2.6.16 or Linux-2.6.18.
->
-> As you already picked a fairly new I-pipe core (1.5), the differences
-> will be around the kernel subsystems that changed meanwhile. Philippe
-> may better comment on details, still I guess no one here has tracked the
-> MIPS development to be aware of important changes there. Aspects to
-> check are specifically the timer and the IRQ subsystems. Both are under
-> heavy reconstruction recently, heading toward more generic
-> implementation which is a Good Thing also for I-pipe.
->
-> When you upgrade, going to head (then likely 2.6.20) is recommended to
-> avoid doing work twice - given that this kernel is stable in vanilla
-> form for you.
->
-> Jan
->
->
->
->
+--- Philippe Gerum <rpm@xenomai.org> wrote:
 
-------=_Part_108001_31810519.1168953490480
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> On Tue, 2007-01-16 at 15:49 +0530, Subramani
+> Venkatesh wrote:
+> > Hello All,
+> > I am currently porting Adeos-ipipe on one of my
+> MIPS architecture. I
+> > am using I-Pipe 1.5-01, X86 as reference to my
+> porting. So Far I did
+> > relevant changes in
+> > 1.Interrupts handlers
+> > 2. System calls
+> > 3. Pagefault Handler 
+> > Except Exception handling, I mean critcial bug
+> events.
+> > With this changes I am able to Boot Linux kernel
+> and also able to
+> > mount Ramdisk successfully.
+> > 
+> 
+> [...]
+> 
+> > Opening console is successfull and executing
+> /sbin/init
+> > Algorithmics/MIPS FPU Emulator v1.5
+> > INIT: version 2.85 booting
+> > grep: error while loading shared libraries:
+> libc.so.6: failed to map
+> > segment from shared object: Error 4090
+> 
+> There is likely something fishy in the syscall
+> interception path from
+> arch/mips/kernel/entry.S; all the syscalls seem to
+> return error values
+> mistakenly once the pipelining is in effect. You may
+> want to check your
+> changes in this area.
+> 
+> Btw, it would be nice to work in an open manner and
+> post your code on
+> this list if you want to ask for help about it here.
+> Contribution has to
+> work both ways. TIA,
+> 
+> -- 
+> Philippe.
+> 
+> 
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+> 
 
-Well Jan, with respect to PIC(i8259) I don&#39;t see many changes as compared to code in Linux-2.6 on X86. But timer and whole Interrupt system changes. Will look closely in it.&nbsp; Have to put more effort on System calls as Phillipe said, Will look into it and have to write test code with other customozed domain like Registering with timer interrupt and try passing it to Linux after handling it.
-<br><br>Subbu<br><br><div><span class="gmail_quote">On 1/16/07, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Subramani Venkatesh wrote:<br>&gt; BTW Jan, may I know how different is the IPIPE port on the Linux-2.6.10 and<br>&gt; the current IPIPE port on Linux-2.6.16 or Linux-2.6.18.<br><br>As you already picked a fairly new I-pipe core (
-1.5), the differences<br>will be around the kernel subsystems that changed meanwhile. Philippe<br>may better comment on details, still I guess no one here has tracked the<br>MIPS development to be aware of important changes there. Aspects to
-<br>check are specifically the timer and the IRQ subsystems. Both are under<br>heavy reconstruction recently, heading toward more generic<br>implementation which is a Good Thing also for I-pipe.<br><br>When you upgrade, going to head (then likely 
-2.6.20) is recommended to<br>avoid doing work twice - given that this kernel is stable in vanilla<br>form for you.<br><br>Jan<br><br><br><br></blockquote></div><br>
 
-------=_Part_108001_31810519.1168953490480--
+
+		
+__________________________________________________________
+Yahoo! India Answers: Share what you know. Learn something new
+http://in.answers.yahoo.com/
 
