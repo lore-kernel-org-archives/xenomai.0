@@ -1,11 +1,13 @@
-Message-ID: <45ABBB19.3050500@domain.hid>
-Date: Mon, 15 Jan 2007 18:34:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45AD4144.1060006@domain.hid>
+Date: Tue, 16 Jan 2007 15:19:00 -0600
+From: Jeff Webb <jeff.webb@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Search in the API-doc-trunk?
-References: <200701151720.13175.nils.kemper@domain.hid>
-In-Reply-To: <200701151720.13175.nils.kemper@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] xeno_16550A and 8250.nr_uarts=0
+References: <45A68383.3070203@domain.hid>
+	<45A6CB80.9060306@domain.hid>	<45A802CD.8010606@domain.hid>
+	<45AA3D26.2040409@domain.hid> <45AB8CC0.8020008@domain.hid>
+In-Reply-To: <45AB8CC0.8020008@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,23 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nils Kemper <nils.kemper@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Nils Kemper wrote:
-> Hi,
-> if I follow the links from the Xenomai-Wiki to the trunk-version of the 
-> API-documentation (http://www.xenomai.org/index.php/API_documentation), the 
-> search feature doesn't really work like in the versions before:
-> e.g. if I search for "rt_heap", it doesn't return any results and for "rt_" 
-> there are only 45 matched documents found vs. 179 in version 2.2 
-> (http://www.xenomai.org/documentation/branches/v2.2.x/html/api/index.html).
-> Is this planned and I have to use another search-"entry"?
+Jan Kiszka wrote:
+> Here is an untested variant of your patch, implementing my ideas. I
+> currently don't have my hands on any hardware that is able to stress the
+> code appropriately, and you have the ultimate test case anyway. So
+> please let me know if it works for you. Note: You /should/ be able to
+> leave the irq parameter open with this approach.
 
-No, this is a mistake, search.idx in the trunk seems to only index RTDM
- documentation. This reminds me that we should add a link to the
-documentation of the 2.3.x branch.
+I applied the v2 patch and recompiled the kernel with xeno_16550A built in.  Everything seems to work fine for me with and without the irq parameter specified.
 
--- 
-                                                 Gilles Chanteperdrix
+Thanks,
+
+Jeff
 
