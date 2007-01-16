@@ -1,51 +1,58 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17866.56537.695811.3523@domain.hid>
-Date: Thu, 8 Feb 2007 09:18:33 +0100
-Subject: Re: [Xenomai-core] system() question
-In-Reply-To: <45CAE1C2.5040207@domain.hid>
-References: <45C9F9CD.6000101@domain.hid> <45C9F2F9.3020204@domain.hid>
-	<45CAE1C2.5040207@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Content-Transfer-Encoding: Quoted-Printable
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] Porting IPIPE on MIPS Architecture, User Process
+	running error, Kernel hangs.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <25dd9bf10701160219w72c8e522l33f4eb9cec59b869@domain.hid>
+References: <25dd9bf10701160219w72c8e522l33f4eb9cec59b869@domain.hid>
+Content-Type: text/plain
+Date: Tue, 16 Jan 2007 11:37:34 +0100
+Message-Id: <1168943855.17557.45.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Subramani Venkatesh <subbu31mani@domain.hid>
+Cc: adeos-main@gna.org
 
-St=E9phane ANCELOT wrote:
- > my linux user task uses a system() call in order to call a bash script=
-=20
- > to restart the realtime task as follow :
- >=20
- > user interface C call :
- > system("restart_task.sh");
- > give back hand to user interface
- > ....
- >=20
- >=20
- >=20
- >=20
- > bash script restart_task.sh :
- > killall -15 mytask
- > sleep 2
- > mytask &
- >=20
- >=20
- > system call dies because sh script has been launched
+On Tue, 2007-01-16 at 15:49 +0530, Subramani Venkatesh wrote:
+> Hello All,
+> I am currently porting Adeos-ipipe on one of my MIPS architecture. I
+> am using I-Pipe 1.5-01, X86 as reference to my porting. So Far I did
+> relevant changes in
+> 1.Interrupts handlers
+> 2. System calls
+> 3. Pagefault Handler 
+> Except Exception handling, I mean critcial bug events.
+> With this changes I am able to Boot Linux kernel and also able to
+> mount Ramdisk successfully.
+> 
 
-Try calling daemon(0,0) in mytask instead of using "&" to make it run in
-the background.
+[...]
 
---=20
+> Opening console is successfull and executing /sbin/init
+> Algorithmics/MIPS FPU Emulator v1.5
+> INIT: version 2.85 booting
+> grep: error while loading shared libraries: libc.so.6: failed to map
+> segment from shared object: Error 4090
+
+There is likely something fishy in the syscall interception path from
+arch/mips/kernel/entry.S; all the syscalls seem to return error values
+mistakenly once the pipelining is in effect. You may want to check your
+changes in this area.
+
+Btw, it would be nice to work in an open manner and post your code on
+this list if you want to ask for help about it here. Contribution has to
+work both ways. TIA,
+
+-- 
+Philippe.
 
 
-					    Gilles Chanteperdrix.
 
