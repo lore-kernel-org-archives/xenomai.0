@@ -1,14 +1,11 @@
-Message-ID: <45AD4144.1060006@domain.hid>
-Date: Tue, 16 Jan 2007 15:19:00 -0600
-From: Jeff Webb <jeff.webb@domain.hid>
+Message-ID: <cbe23c50701170051r46cadf4cha5b144d17df2ec77@domain.hid>
+Date: Wed, 17 Jan 2007 09:51:47 +0100
+From: "Eric Noulard" <eric.noulard@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] xeno_16550A and 8250.nr_uarts=0
-References: <45A68383.3070203@domain.hid>
-	<45A6CB80.9060306@domain.hid>	<45A802CD.8010606@domain.hid>
-	<45AA3D26.2040409@domain.hid> <45AB8CC0.8020008@domain.hid>
-In-Reply-To: <45AB8CC0.8020008@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] Compiling Linux+Xenomai 32bits kernel on FC6 x86_64?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,19 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Here is an untested variant of your patch, implementing my ideas. I
-> currently don't have my hands on any hardware that is able to stress the
-> code appropriately, and you have the ultimate test case anyway. So
-> please let me know if it works for you. Note: You /should/ be able to
-> leave the irq parameter open with this approach.
+Hi all,
 
-I applied the v2 patch and recompiled the kernel with xeno_16550A built in.  Everything seems to work fine for me with and without the irq parameter specified.
+I am a Xenomai beginner.
 
-Thanks,
+I am trying to compile and boot a 32bits (adeos/xenomai patched) Linux Kernel
+on a Fedora Core 6 x86_64 system and I do run into trouble
+getting an early
 
-Jeff
+"runaway loop modprobe binfmt-464c"
+at boot time.
+
+I did compile the patched kernel using
+
+cd /path/to/patched_linux_src
+make ARCH=i386 O=/path/to/builddir menuconfig
+make O=/path/to/builddir menuconfig
+cp arch/i386/boot/bzImage /boot/vmlinuz-2.6.19-xenomai-2.3
+cp System.map /boot/System.map-2.6.19-xenomai-2.3
+make O=/path/to/builddir menuconfig modules_install
+mkinitrd initrd-x2.6.19-xenomai-2.3.img  2.6.19-xenomai-2.3
+cp initrd-x2.6.19-xenomai-2.3.img /boot
+
+and then update grub.conf accordingly
+
+So here is my question:
+
+Is it possible to run/boot a 32bit xenomai on a 64 bit system
+or should I really need to install a 32bit only system on my 64 bit machine?
+If yes how to do this properly?
+If no
+   - is there a planned support for 64bit in xenomai/adeos?
+   - what should I do to use Xenomai on my 64 bit machine?
+
+Thanks in advance.
+-- 
+Erk
 
