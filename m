@@ -1,10 +1,12 @@
-Message-ID: <45AF494C.8010105@domain.hid>
-Date: Thu, 18 Jan 2007 11:17:48 +0100
-From: Steven Scholz <steven.scholz@domain.hid>
+Message-ID: <45AF45D2.3010504@domain.hid>
+Date: Thu, 18 Jan 2007 11:02:58 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] special glibc support for Xenomai?
-References: <45AE059C.9050605@domain.hid>		<1169033628.17493.35.camel@domain.hid>	<45AE0C86.9080101@domain.hid>	<1169036056.17493.43.camel@domain.hid>	<45AE1E91.8050900@domain.hid>
-	<45AE25D2.5070706@domain.hid> <45AF44A1.6060509@domain.hid>
+References: <45AE059C.9050605@domain.hid>		<1169033628.17493.35.camel@domain.hid>
+	<45AE0C86.9080101@domain.hid>	<1169036056.17493.43.camel@domain.hid>
+	<45AE1E91.8050900@domain.hid> <45AE25D2.5070706@domain.hid>
+	<45AF44A1.6060509@domain.hid>
 In-Reply-To: <45AF44A1.6060509@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -21,18 +23,6 @@ To: Steven Scholz <steven.scholz@domain.hid>
 Cc: xenomai@xenomai.org
 
 Steven Scholz wrote:
-> Gilles,
-> 
->>> Sorry. I have to ask again. What am I supposed to do with these lines?
->>> Shell I use all of it whenn calling arm-softfloat-linux-gnu-gcc to compile
->>> my application?
->> Yes, you should pass the result of xeno-config --posix-cflags and
->> xeno-config --posix-ldflags to arm-softfloat-linux-gnu-gcc. When running
->> xeno-config --posix-ldflags here, I get:
->>
->> -Wl,--wrap,pthread_create -Wl,--wrap,pthread_setschedparam
->> ...
-> 
 > Ah. Thanks! Passing these flags seems to work now.
 > But I had to copy and paste it from your mail since when I run ./xeno-config
 > --posix-ldflags I get
@@ -40,12 +30,13 @@ Steven Scholz wrote:
 > POSIX support is not available
 > 
 > ???
+> 
+> How is that?
 
-Ah. Ok. Nevermind. I was using the script on my developent hsot where no
-xenomai libs are install. Running it directly on the target I get all these
-linker flags as well.
+These flags are stored in the posix.wrappers file. xeno-config has to
+find it. So, if you installed Xenomai with DESTDIR set to a non null
+value you should set DESTDIR to the same value in xeno-config environment.
 
-Thanks
-
-Steven
+-- 
+                                                 Gilles Chanteperdrix
 
