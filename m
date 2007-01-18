@@ -1,16 +1,15 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-help] Compiling Linux+Xenomai 32bits
-	kernel	on	FC6	x86_64?
-Date: Thu, 18 Jan 2007 20:36:14 +0000
-References: <cbe23c50701170051r46cadf4cha5b144d17df2ec77@domain.hid>
-	<45AF5E27.9040600@domain.hid> <45AF5FA5.3080201@domain.hid>
-In-Reply-To: <45AF5FA5.3080201@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Subject: Re: [Xenomai-help] irq conflict
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45AFD3E2.8090200@domain.hid>
+References: <45ADEDDC.5060407@domain.hid> <45AEA9A7.7000001@domain.hid>
+	<45AFC392.5050705@domain.hid>  <45AFD3E2.8090200@domain.hid>
+Content-Type: text/plain
+Date: Thu, 18 Jan 2007 21:40:29 +0100
+Message-Id: <1169152829.25556.25.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200701182036.14132.paul_c@domain.hid>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,35 +20,63 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
+
+On Thu, 2007-01-18 at 21:09 +0100, Jan Kiszka wrote:
+> Theo Veenker wrote:
+> > Jan Kiszka wrote:
+> >> Theo Veenker wrote:
+> >>> Hi all,
+> >>>
+> >>> I need to run xenomai on a HP Compaq nc6320. I use kernel 2.6.17.14
+> >>> and xenomai 2.2.5. The non-realtime kernel runs fine on this laptop,
+> >>
+> >> Means the same kernel with I-pipe (and Xenomai) disabled or the same
+> >> kernel version and .config, but unpatched?
+> > 
+> > The latter.
+> > 
+> >>
+> >>> but the xenomai pactched kernel gives several of these messages:
+> >>>
+> >>>   IRQ routing conflict for xxxx.xx.xx.x, have irq 11, want irq 10
+> >>>
+> >>> And some things (e.g. mouse, network) then don't work, not properly
+> >>> anyway. The same kernel runs fine however on other systems.
+> >>>
+> >>> Any clue what I can do about it?
+> >>
+> >> Please provide bootlogs for both rt and non-rt kernel startup. And the
+> >> .config.
+> > 
+> > I 'solved' it by enabling ACPI (without processor module and others).
+> > Looks good. I don't see high latencies with the latency test. Under
+> > what conditions might ACPI affect real-time behaviour?
+> 
+> CONFIG_ACPI_PROCESSOR, because it allows deep sleep states with
+> significant wakeup latencies.
+> 
+> But back to your original issue: You mean your notebook booted fine
+> under vanilla Linux with ACPI disabled? That would mean I-pipe relies on
+> ACPI here without stating this anywhere. In that case /something/ needs
+> fixing: code, config deps, or doc.
+> 
+
+It doesn't, at least, not willingly. Before drawing any conclusion,
+please try 2.6.19 with the same configuration first: the generic irq
+layer may have had a positive influence on the I-pipe in this area.
+
+> Jan
+> 
+> 
+> PS: Please take care to not drop the list from CC.
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
 
-Hi Jan
-
-On Thursday 18 January 2007 11:53, Jan Kiszka wrote:
-> BTW, posting your current status as patch would be the best start for a
-> discussion and for inviting others to join the hack. Even if it's just
-> uncompilable incomplete stuff.
-
-http://zathras.tuxcnc.org/ipipe contains a snapshot of the hacks to date..
-
-adeos-ipipe-2.6.19-i386-1.6-01.patch - The baseline patch being used as a 
-reference.
-
-adeos-ipipe-2.6.19-x86_64-1.6.patch - A diff of a vanilla kernel + the above 
-patch.
-
-linux-2.6.19-xeno_x86_64.tar.bz2 - Tarball of the tree with the above patches 
-applied.
-
-linux-2.6.19.tar.bz2 - The original virgin tarball.
-
-Please note: The x86_64 stuff is incomplete, will not compile, and will eat 
-the cat.
-
-I've tried to get to grips with git and Wolfgang's repository, but somehow 
-managed to trash copies on my main dev box and zathras (my web server).
-
-
-Regards, Paul.
 
