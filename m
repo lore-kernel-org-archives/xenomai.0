@@ -1,15 +1,16 @@
-Message-ID: <45AF45D2.3010504@domain.hid>
-Date: Thu, 18 Jan 2007 11:02:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-help] Compiling Linux+Xenomai 32bits kernel
+	on	FC6	x86_64?
+Date: Thu, 18 Jan 2007 11:18:27 +0000
+References: <cbe23c50701170051r46cadf4cha5b144d17df2ec77@domain.hid>
+	<45AE3ED4.7040506@domain.hid> <45AE68CF.5080200@domain.hid>
+In-Reply-To: <45AE68CF.5080200@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] special glibc support for Xenomai?
-References: <45AE059C.9050605@domain.hid>		<1169033628.17493.35.camel@domain.hid>
-	<45AE0C86.9080101@domain.hid>	<1169036056.17493.43.camel@domain.hid>
-	<45AE1E91.8050900@domain.hid> <45AE25D2.5070706@domain.hid>
-	<45AF44A1.6060509@domain.hid>
-In-Reply-To: <45AF44A1.6060509@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200701181118.27226.paul_c@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,24 +20,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steven Scholz <steven.scholz@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Steven Scholz wrote:
-> Ah. Thanks! Passing these flags seems to work now.
-> But I had to copy and paste it from your mail since when I run ./xeno-config
-> --posix-ldflags I get
-> 
-> POSIX support is not available
-> 
-> ???
-> 
-> How is that?
 
-These flags are stored in the posix.wrappers file. xeno-config has to
-find it. So, if you installed Xenomai with DESTDIR set to a non null
-value you should set DESTDIR to the same value in xeno-config environment.
+Hi Jan
 
--- 
-                                                 Gilles Chanteperdrix
+On Wednesday 17 January 2007 18:19, Jan Kiszka wrote:
+> >> But the best is a Xenomai which supports 64-bit AMD processors :)
+
+I've made a tentative stab at a couple of the kernel sources, but must admit 
+the assembly code scares the heck out of me....
+
+> [Really, it depends on someone feeling enough need to work on this (or
+> sponsor the work). A few pieces are already there from previous RTAI
+> efforts towards x86-64 support. But now it takes a clean implementation
+> over recent Linux/I-pipe/Xenomai.]
+
+How much value is the 2.6.10 x86_64 patch from RTAI when it comes to working 
+on an I-pipe port for 2.6.19 ?
+
+(I may well have an AMD64 socket 939 processor available for loan next week if 
+that would help).
+
+
+Regards, Paul.
 
