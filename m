@@ -1,14 +1,14 @@
-Message-ID: <45AEA9A7.7000001@domain.hid>
-Date: Wed, 17 Jan 2007 23:56:39 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45AF44A1.6060509@domain.hid>
+Date: Thu, 18 Jan 2007 10:57:53 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] irq conflict
-References: <45ADEDDC.5060407@domain.hid>
-In-Reply-To: <45ADEDDC.5060407@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigFB50A49B101682BCC3FF09A1"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] special glibc support for Xenomai?
+References: <45AE059C.9050605@domain.hid>		<1169033628.17493.35.camel@domain.hid>
+	<45AE0C86.9080101@domain.hid>	<1169036056.17493.43.camel@domain.hid>
+	<45AE1E91.8050900@domain.hid> <45AE25D2.5070706@domain.hid>
+In-Reply-To: <45AE25D2.5070706@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,60 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <Theo.Veenker@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFB50A49B101682BCC3FF09A1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Gilles,
 
-Theo Veenker wrote:
-> Hi all,
->=20
-> I need to run xenomai on a HP Compaq nc6320. I use kernel 2.6.17.14
-> and xenomai 2.2.5. The non-realtime kernel runs fine on this laptop,
+>> Sorry. I have to ask again. What am I supposed to do with these lines?
+>> Shell I use all of it whenn calling arm-softfloat-linux-gnu-gcc to compile
+>> my application?
+> 
+> Yes, you should pass the result of xeno-config --posix-cflags and
+> xeno-config --posix-ldflags to arm-softfloat-linux-gnu-gcc. When running
+> xeno-config --posix-ldflags here, I get:
+> 
+> -Wl,--wrap,pthread_create -Wl,--wrap,pthread_setschedparam
+> ...
 
-Means the same kernel with I-pipe (and Xenomai) disabled or the same
-kernel version and .config, but unpatched?
+Ah. Thanks! Passing these flags seems to work now.
+But I had to copy and paste it from your mail since when I run ./xeno-config
+--posix-ldflags I get
 
-> but the xenomai pactched kernel gives several of these messages:
->=20
->   IRQ routing conflict for xxxx.xx.xx.x, have irq 11, want irq 10
->=20
-> And some things (e.g. mouse, network) then don't work, not properly
-> anyway. The same kernel runs fine however on other systems.
->=20
-> Any clue what I can do about it?
+POSIX support is not available
 
-Please provide bootlogs for both rt and non-rt kernel startup. And the
-=2Econfig.
+???
 
->=20
-> Anyone running xenomai on a recent Compaq laptop?
->=20
-> Regards,
->=20
-> Theo
->=20
->=20
+How is that?
 
-Jan
-
-
---------------enigFB50A49B101682BCC3FF09A1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFFrqmoniDOoMHTA+kRAiPyAJ9jfude9MT4RPi1pLjb9HnpRuRiJQCfVR8f
-FxqcZdpyNlIz0mE6INsFXQ8=
-=BoMC
------END PGP SIGNATURE-----
-
---------------enigFB50A49B101682BCC3FF09A1--
+Steven
 
