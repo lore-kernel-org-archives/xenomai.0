@@ -1,5 +1,5 @@
-Message-ID: <45B4ACA2.1090202@domain.hid>
-Date: Mon, 22 Jan 2007 13:22:58 +0100
+Message-ID: <45B4BD4D.8010206@domain.hid>
+Date: Mon, 22 Jan 2007 14:34:05 +0100
 From: Stephan Zimmermann <s.zimmermann@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] weired behaviour around userspace interrupts
@@ -29,15 +29,16 @@ Jan Kiszka schrieb:
 > Which Xenomai version? We recently fixed some maybe related issues, both
 > in trunk and the v2.3.x branch. Please give one of them a try as well.
 
-Sorry, forgot to tell you about the versions I use...
-I am using Xenomai 2.3 (from Download area / stable, the version from 
-December 26.). I guess I need to use svn to access newer versions? I 
-will checkout and run some tests now and write again later.
+I just checked out braches/v2.3.x rev 2077, patched a fresh 2.6.17.14 
+Kernel an rebuilded everything (was a kernel rebuild necessary?).
 
-Stepahn
+Seems to work for now. Thanks for your Hint.
 
-> 
-> Jan
-> 
+Stephan
+
+
+P.S. I think it would be great if you could announce maintenance 
+releases for stable (and how to get them) on the xenomai website, making 
+post's like mine disappear from the list ;)
 
 
