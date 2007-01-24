@@ -1,15 +1,14 @@
-Message-ID: <b647ffbd0701240208r1db2372end68276616cbebd69@domain.hid>
-Date: Wed, 24 Jan 2007 11:08:48 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] isolating unwanted mode switch
-In-Reply-To: <200701231627.51851.jweber@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <200701231448.35285.jweber@domain.hid>
-	<b647ffbd0701231345n33a7ecafm879ca25bdedab2fe@domain.hid>
-	<200701231627.51851.jweber@domain.hid>
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 24 Jan 2007 11:22:01 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01903C10@domain.hid>
+In-Reply-To: <b647ffbd0701240208r1db2372end68276616cbebd69@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: [Xenomai-help] Patching latest Denx 2.4.25-devel kernel with
+	xenomai-2.3.0 fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,63 +18,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-On 23/01/07, Jeff Weber <jweber@domain.hid> wrote:
-> Dimitry:
-> > ...
-> > exceptions (CPU exceptions, e.g. page faults). I presume, you have
-> > done mlockall(CURRENT | FUTURE), haven't you?
-> Yes.  my Linux application follows this this model:
->
-> main () {
->          mlockall(MCL_CURRENT | MCL_FUTURE);
->         rt_task_shadow( ... )  // become a realtime thread
->
->         // for N threads:
->                 rt_task_spawn( ... ) // fork off child RT thread
-> }
->
-> It is one of the child RT threads that encounters the SIGXCPU unwanted mode
-> switch.  It this the correct way to call mlockall() ?
+Hi,
 
-Looks ok. Just to avoid getting into the same trap twice. You don't
-use system(), fork() or alike beasts in your code, do you?
+I want to patch the latest Denx 2.4.25 kernel with Xenomai-2.3.0
+
+The prepare-kernel.sh skript fails with the following message:
+
+[root@domain.hid xenomai-2.3.0]# scripts/prepare-kernel.sh --arch=3Dppc
+--adeos=3Dksrc/arch/powerpc/patches/adeos-ipipe-2.4.25-ppc-CVS-20060707-1=
+.
+2-01.patch --linux=3D../linuxppc_2_4_devel-git-xenomai-2.3.0
+patching file arch/ppc/config.in
+Hunk #1 succeeded at 858 (offset 40 lines).
+patching file arch/ppc/kernel/Makefile
+patching file arch/ppc/kernel/entry.S
+patching file arch/ppc/kernel/head.S
+patching file arch/ppc/kernel/head_440.S
+patching file arch/ppc/kernel/head_44x.S
+patching file arch/ppc/kernel/head_4xx.S
+patching file arch/ppc/kernel/head_8xx.S
+patching file arch/ppc/kernel/head_e500.S
+patching file arch/ppc/kernel/idle.c
+patching file arch/ppc/kernel/ipipe-core.c
+patching file arch/ppc/kernel/ipipe-root.c
+patching file arch/ppc/kernel/irq.c
+patching file arch/ppc/kernel/ppc_ksyms.c
+patching file arch/ppc/kernel/traps.c
+patching file arch/ppc/mm/fault.c
+patching file include/asm-ppc/hw_irq.h
+patching file include/asm-ppc/ipipe.h
+patching file include/asm-ppc/mmu_context.h
+patching file include/asm-ppc/system.h
+patching file include/linux/ipipe.h
+patching file include/linux/sched.h
+Hunk #3 succeeded at 424 with fuzz 1.
+patching file init/main.c
+Hunk #1 succeeded at 412 (offset 3 lines).
+patching file kernel/Makefile
+patching file kernel/exit.c
+patching file kernel/fork.c
+patching file kernel/ipipe/Makefile
+patching file kernel/ipipe/core.c
+patching file kernel/ipipe/generic.c
+patching file kernel/printk.c
+patching file kernel/sched.c
+patching file kernel/signal.c
+?
 
 
-> > Moreover, enable "Nucleus debugging support" in your kernel config. If
-> > it's an exception indeed, you would see a message like :
-> Will do.  I always stayed away from enabling XENO_OPT_DEBUG in the past
-> because of the associated "scary" warning:
->         "... Do not switch this option on unless you really know what you
->         are doing."
-> While I was reconfiguring my kernel, I came across the related config:
-> XENO_OPT_DEBUG_QUEUES, which has even "scarier" warning:
->         "... It adds even more runtime
->         overhead then CONFIG_XENO_OPT_DEBUG, use with care."
->
-> Is the  XENO_OPT_DEBUG_QUEUES option safe and useful to enable too?
-
-None of them will blow your boards up (or at least, they were not
-designed to act this way :) They are helpful in debugging of some -
-primarily internal - issues but may provide some useful info in
-general.
-
-DEBUG_QUEUES enables additional debugging messages for various queue
-operations, that's not something you need know.
-
-On the other hand, the "switch to secondary mode..." message that is
-enabled by XENO_OPT_DEBUG may give you an address where the exception
-has been taken.
+Then the script unexpectedly exits without error (but a ?).
 
 
->
->         thanks,
->         Jeff
->
+Any hints appreciated.
 
--- 
+
+
 Best regards,
-Dmitry Adamushko
+
+Daniel Schnell.
+
+
 
