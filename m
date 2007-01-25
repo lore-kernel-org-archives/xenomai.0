@@ -1,16 +1,14 @@
-Subject: Re: [Xenomai-help] Re: A fairly small rtnet/Xenomai...
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200701042157.43201.niklaus.giger@domain.hid>
-References: <1167216287.31795.18.camel@domain.hid>
-	<23680523.1167726237795.JavaMail.ngmail@domain.hid>
-	<1167731631.23346.7.camel@domain.hid>
-	<200701042157.43201.niklaus.giger@domain.hid>
-Content-Type: text/plain
-Date: Fri, 05 Jan 2007 11:57:21 +0100
-Message-Id: <1167994641.6702.65.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Reply-To: rpm@xenomai.org
+Message-ID: <45B88D14.4020909@domain.hid>
+Date: Thu, 25 Jan 2007 11:57:24 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] xenomai and CONFIG_PREEMPT_RT ?
+References: <45B87D35.3070000@domain.hid>
+In-Reply-To: <45B87D35.3070000@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig686B4BEDBC3E1B5120359669"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,57 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: niklaus.giger@domain.hid
-Cc: xenomai@xenomai.org
+To: Steven Scholz <steven.scholz@domain.hid>
+Cc: Xenomai Help <xenomai@xenomai.org>
 
-On Thu, 2007-01-04 at 21:57 +0100, Niklaus Giger wrote:
-> Am Dienstag, 2. Januar 2007 10:53 schrieb Philippe Gerum:
-> > On Tue, 2007-01-02 at 09:23 +0100, M. Koehrer wrote:
-> > > Happy new year to all!
-> > >
-> > > Back in the office, I tried out the patches from Chilles and Philippe.
-> > > And yes, it is working now! No crash!
-> > > Using these patches, I can now call a system() call out of a rea ltime
-> > > task that is followed by a rt_task_sleep() and a printf() without crash
-> > > on a 2.6.19 kernel.
-> > >
-> > > Thanks for the support!
-> > >
-> > > Best regards
-> > >
-> > > Mathias
-> > >
-> > > > > here comes a workaround for the COW issue on Linux 2.6.19. The patch
-> > > > > relies on a new VM_NOCOW flag which should be set for real-time
-> > > > > application if you use Xenomai trunk.
-> > > > >
-> > > > > It would be nice if you could test it.
-> > > >
-> > > > You will additionally need to apply this patch to the Xenomai tree in
-> > > > order to activate the COW-disable feature:
-> >
-> > Great, thanks. Niklaus, could you check the vm-nocow patch for 2.6.14 on
-> > the ppc board (the hcu, IIRC) that exhibited strange faults in
-> > user-space while running the latency test, especially when enabling the
-> > nucleus debug option (the one which also used to cause secondary switch
-> > warnings being sent by Xenomai to the kernel log)? TIA,
-> Here the results. I had no problems running xeno-test.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig686B4BEDBC3E1B5120359669
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Nice.
+Steven Scholz wrote:
+> Hi all,
+>=20
+> is it possible (and reasonable) to use Ingo's real time patches from
+> http://people.redhat.com/mingo/realtime-preempt combined with xenomai?
 
-> I did set in my .config
-> CONFIG_XENO_OPT_DEBUG=y
-> CONFIG_XENO_OPT_DEBUG_NUCLEUS=y
-> 
-> Attached is my .config and the output of xeno-test.
-> 
-> If you need the results of another combination just let me know.
+Starting to become a FAQ :). See also our roadmap or browse the mailing
+list archive (e.g.
+https://mail.gna.org/public/xenomai-help/2006-11/msg00336.html).
 
-That's fine, thanks.
+To repeat the essence:
 
--- 
-Philippe.
+ o Combining both patches is currently challenging due to both touching
+   similar subsystems. Unless concrete requirements emerge, a combined
+   patch may not appear before PREEMPT_RT is mainline (due to
+   maintenance costs).
+
+ o Xenomai for PREEMPT_RT is on our roadmap (also independently of
+   PREEMPT_RT becoming mainline). It aims at supporting Xenomai's skins
+   as-is over the PREEMPT_RT infrastructure as an alternative to the
+   I-pipe/co-scheduling path, but will most probably not obsolete the
+   latter.
+
+ o There are application scenarios imaginable where the combined usage
+   of both RT-technologies (I-pipe over PREEMPT_RT) would make sense and
+   add value, but the common case with Xenomai will be to choose one
+   base technology during system configuration.
+
+Regarding the unavoidable question "When?": Resources are finite and
+require careful schedule. So that schedule depends on users explaining
+their needs for certain features, on contributors starting to commit
+themselves on the development, or on sponsors pushing the work on
+desired features.
+
+Jan
 
 
+--------------enig686B4BEDBC3E1B5120359669
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFuI0XniDOoMHTA+kRAie/AJ9HyD2DMQzlRbO1cfySRvT5GmRSfACePfVQ
+zn9iVMe/hh/vSXSI73UFpqU=
+=QC9D
+-----END PGP SIGNATURE-----
+
+--------------enig686B4BEDBC3E1B5120359669--
 
