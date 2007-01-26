@@ -1,10 +1,14 @@
-Date: Fri, 26 Jan 2007 07:40:33 -0800 (PST)
-From: mani bhatti <imranbashirbhatti@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-971533593-1169826033=:56382"
-Content-Transfer-Encoding: 8bit
-Message-ID: <81707.56382.qm@domain.hid>
-Subject: [Xenomai-help] isa reading
+Subject: Re: [Xenomai-help] BUG: unable to handle kernel paging request
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1169811995.462.13.camel@domain.hid>
+References: <1169811995.462.13.camel@domain.hid>
+Content-Type: text/plain
+Date: Fri, 26 Jan 2007 17:07:47 +0100
+Message-Id: <1169827668.3346.61.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,27 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Victor Shulyak <V.I.Shulyak@domain.hid>
+Cc: Ace Help <xenomai@xenomai.org>
 
---0-971533593-1169826033=:56382
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+On Fri, 2007-01-26 at 17:46 +0600, Victor Shulyak wrote:
+> Hello,
+> 
+> Today I upgraded my system to xenomai 2.3.0 + kernel 2.6.19.2.
+> I encountered the following syslog message:
+> 
+> BUG: unable to handle kernel paging request at virtual address 0d40004a
+> while no xenomai application running.
+> 
+> The system didn't crash, just such kernel message.
+> 
+> 
+> p4, nvidia geforce 4, FC6, gnome + compiz manager, gcc 4.1.1 shipped
+> with FC6, NVIDIA-Linux-x86-1.0-9631 nvidia driver.
+> 
 
-Hi all
-I want to know Which function are most appropriate for reading and writing to a memory mapped isa card if one is writing a kernel module for isa.Thanks.
+> BUG: unable to handle kernel paging request at virtual address >
+0d40004a
+> printing eip:
+> c7b84d51
+> *pde = 00000000
+> Oops: 0002 [#1]
 
- 
----------------------------------
-No need to miss a message. Get email on-the-go 
-with Yahoo! Mail for Mobile. Get started.
---0-971533593-1169826033=:56382
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+I guess that you already know what kind of answer you would obtain on
+the LKML when reporting faults with Nvidia modules loaded, right?
+However, since there seem to be a clean backtrace, maybe we could give a
+try anyway. Could you objdump your kernel image, then locate the faulty
+routine containing eip=0xc7b84d51? TIA,
 
-Hi all<br>I want to know Which function are most appropriate for reading and writing to a memory mapped isa card if one is writing a kernel module for isa.Thanks.<br><p>&#32;
+> Thanks, Victor
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-<hr size=1>No need to miss a message. <a href="http://us.rd.yahoo.com/evt=43910/*http://mobile.yahoo.com/mail
-">Get email on-the-go </a><br>with Yahoo! Mail for Mobile. <a href="http://us.rd.yahoo.com/evt=43910/*http://mobile.yahoo.com/mail
-">Get started.</a>
---0-971533593-1169826033=:56382--
+
 
