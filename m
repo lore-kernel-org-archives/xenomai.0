@@ -1,14 +1,9 @@
-Subject: Re: [Xenomai-core] rt_task_create() hangs ?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45B75FFB.6030205@domain.hid>
-References: <45B75FFB.6030205@domain.hid>
-Content-Type: text/plain
-Date: Fri, 26 Jan 2007 00:29:42 +0100
-Message-Id: <1169767782.5028.150.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Message-ID: <OF08EED954.3DF48206-ONC125726F.004BA080@domain.hid>
+From: "Markus Osterried" <Markus.Osterried@domain.hid>
+Date: Fri, 26 Jan 2007 15:34:39 +0100
+MIME-Version: 1.0
+Content-type: text/plain; charset=us-ascii
+Subject: [Xenomai-core] Questions about pSOS task mode and task priority
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,60 +13,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Steven Scholz <steven.scholz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2007-01-24 at 14:32 +0100, Steven Scholz wrote:
-> Hi all,
-> 
-> we're doing the first steps with Xenomai and stumbled about some problems.
-> 
-> On our AT91RM9200 (adeos-ipipe-2.6.14-arm-1.5-04,
-> ipipe-2.6.14-at91-1.5-04.patch) a simple application (that just creates and
-> destroys two threads)
-> 
-> 	rt_task_create(&task_1,"task_1",0,50,0);
-> 	rt_task_create(&task_2,"task_2",0,51,0);
-> 	...
-> 	rt_task_delete(&task_2);
-> 	rt_task_delete(&task_1);
-> 
-> runs fine when started for the first time. But when started again it hangs
-> in the rt_task_create() for the second task.
-> Funny enough it all runs fine when we first delete task1 and then task2 ...
-> 
+Hello,
 
-Could you post the full source of your test app? It's impossible to
-infere anything from this description without understanding who actually
-does what in your app. TIA.
+I work together with Thomas Necker on a legacy pSOS project to get it
+ported to Xenomai.
+I have already ported a great amount of code and most of it works fine.
 
-> On an x86 (adeos-ipipe-2.6.19-i386-1.6-03) the application runs fine. Either
-> way.
-> 
-> We noticed that on the AT91RM9200 we don't see the
-> 
-> Xenomai: POSIX: destroyed thread c14a0320
-> 
-> message. Not even when running (and stopping) cyclictest. I suspect that
-> this is leading to our problems.
-> 
+But we have a pSOS task which (sometimes) works in non-preemptive mode
+(T_NOPREEMPT).
+When this task calls ev_receive() it gets back the error code -EPERM from
+underlying xnpod_unblockable_p().
+It seems to be not allowed in Xenomai to call a blockable syscall in
+non-preemptive mode.
+With original pSOS this was allowed and "non-preemptive" meant that a
+runnable task cannot be preempted by other tasks but can block itself.
+Why is this different in Xenomai and is it possible to implement the same
+behaviour in Xenomai core?
 
-This message is not issued by the native Xenomai API, but by the POSIX
-one, so those issues are not necessarily related.
+Another problem is that we have a root task creating and starting some
+other tasks.
+The new tasks are mostly created with prio 80 and the root task wants to
+run the new tasks until their first blocking syscall.
+Therefore the root task lowers its priority to one less the priority of the
+new task, i.e. 79.
+Then the root task raise its prio back to 240.
+Immediately after lowering its prio, the root task should be preempted and
+the new task should run.
+But this doesn't happen. Why not?
 
-> Any idea?
-> 
-> Thanks a million!
-> 
-> --
-> Steven
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+Thank you.
+
+Regards
+Markus
+
 
 
 
