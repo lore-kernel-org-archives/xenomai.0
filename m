@@ -1,14 +1,14 @@
+Message-ID: <b647ffbd0701261046m52172774lf5a7b4d08e090583@domain.hid>
+Date: Fri, 26 Jan 2007 19:46:19 +0100
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-help] BUG: unable to handle kernel paging request
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1169811995.462.13.camel@domain.hid>
-References: <1169811995.462.13.camel@domain.hid>
-Content-Type: text/plain
-Date: Fri, 26 Jan 2007 17:07:47 +0100
-Message-Id: <1169827668.3346.61.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <1169827668.3346.61.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <1169811995.462.13.camel@domain.hid>
+	<1169827668.3346.61.camel@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,45 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Victor Shulyak <V.I.Shulyak@domain.hid>
-Cc: Ace Help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Fri, 2007-01-26 at 17:46 +0600, Victor Shulyak wrote:
-> Hello,
-> 
-> Today I upgraded my system to xenomai 2.3.0 + kernel 2.6.19.2.
-> I encountered the following syslog message:
-> 
-> BUG: unable to handle kernel paging request at virtual address 0d40004a
-> while no xenomai application running.
-> 
-> The system didn't crash, just such kernel message.
-> 
-> 
-> p4, nvidia geforce 4, FC6, gnome + compiz manager, gcc 4.1.1 shipped
-> with FC6, NVIDIA-Linux-x86-1.0-9631 nvidia driver.
-> 
+>
+> I guess that you already know what kind of answer you would obtain on
+> the LKML when reporting faults with Nvidia modules loaded, right?
+> However, since there seem to be a clean backtrace, maybe we could give a
+> try anyway. Could you objdump your kernel image, then locate the faulty
+> routine containing eip=0xc7b84d51? TIA,
 
-> BUG: unable to handle kernel paging request at virtual address >
-0d40004a
-> printing eip:
-> c7b84d51
-> *pde = 00000000
-> Oops: 0002 [#1]
+But it doesn't point to either some part of the kernel code
 
-I guess that you already know what kind of answer you would obtain on
-the LKML when reporting faults with Nvidia modules loaded, right?
-However, since there seem to be a clean backtrace, maybe we could give a
-try anyway. Could you objdump your kernel image, then locate the faulty
-routine containing eip=0xc7b84d51? TIA,
+--->   .text : 0xc0100000 - 0xc030a212   (2088 kB)
 
-> Thanks, Victor
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+or any kernel module (not vmalloc'ed area).
+
+Unless some code would copy another code at this location (kmalloc'ed)
+and then execute it.
+
+Let's suppose we can believe in sanity of the call trace, then would
+you, Victor, provide a disassembled code for
+__ipipe_handle_exception() ?
+
+Call Trace:
+ [<c0112566>] __ipipe_handle_exception+0x58/0x11e
+ [<c01050f4>] do_divide_error+0x0/0xb1
+ [<c0309202>] error_code+0x3e/0x4c
+
+
+Memory: 384496k/393152k available (2088k kernel code, 8108k reserved,
+633k data, 180k init, 0k highmem)
+virtual kernel memory layout:
+    fixmap  : 0xfffb7000 - 0xfffff000   ( 288 kB)
+    vmalloc : 0xd8800000 - 0xfffb5000   ( 631 MB)
+    lowmem  : 0xc0000000 - 0xd7ff0000   ( 383 MB)
+   .init : 0xc03ac000 - 0xc03d9000   ( 180 kB)
+   .data : 0xc030a212 - 0xc03a88f4   ( 633 kB)
+   .text : 0xc0100000 - 0xc030a212   (2088 kB)
+
+
 -- 
-Philippe.
-
-
+Best regards,
+Dmitry Adamushko
 
