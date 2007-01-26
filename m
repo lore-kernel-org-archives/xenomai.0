@@ -1,16 +1,10 @@
-From: Jeff Weber <jweber@domain.hid>
-Subject: Re: [Xenomai-help] isolating unwanted mode switch
-Date: Thu, 25 Jan 2007 11:04:50 -0600
-References: <200701231448.35285.jweber@domain.hid>
-	<200701241152.21747.jweber@domain.hid>
-	<1169722218.5028.21.camel@domain.hid>
-In-Reply-To: <1169722218.5028.21.camel@domain.hid>
+Message-ID: <45B9B1E0.1000305@domain.hid>
+Date: Fri, 26 Jan 2007 08:46:40 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <200701251104.50567.jweber@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] [Xenomai-core] rt_task_create() hangs ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,47 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-A correction to my previous post on this problem: the memory in question wa=
-s=20
-previously allocated heap, that was apparently not yet paged in.  The point=
-er=20
-to the memory was in bss, so, at the time, I assumed the page fault memory=
-=20
-was in bss as well.  I have a "solution" which is working for now, to write=
-=20
-(zero out)  dynamically allocated memory before first use.  (The dynamic=20
-allocation is after the mlockall() ).
+Hi all,
 
-My application is a legacy C++ program, which has an initialization phase:=
-=20
-where all RT tasks are created and all memory is allocated; and a run phase=
-:=20
-where the task T_WARNSW mode is enabled, to report unwanted modes switches.=
- =20
-I am in the process of porting this application from Linux-2.4.27+rtai-3.1.=
-0=20
-to Linux-2.6.17.14+Xenomai-2.2.4.  (As a side note, it has now become=20
-interesting to consider how and if page faults were affectinging the=20
-Linux-2.4+RTAI version of this application.)
+we're doing the first steps with Xenomai and stumbled about some problems.
 
-=46rom the discussions in this thread, there will always be a non-zero=20
-probability that my application will still encounter future page faults. So=
-=20
-I've decided to enable T_WARNSW for the applicaion while under development,=
-=20
-but T_WARNSW will not be enabled for deployed applications.  Instead, I may=
-=20
-periodically parse /proc/xenomai/faults, and /proc/xenomai/stat .
+On our AT91RM9200 (adeos-ipipe-2.6.14-arm-1.5-04,
+ipipe-2.6.14-at91-1.5-04.patch) a simple application (that just creates and
+destroys two threads)
 
-	Jeff
+	rt_task_create(&task_1,"task_1",0,50,0);
+	rt_task_create(&task_2,"task_2",0,51,0);
+	...
+	rt_task_delete(&task_2);
+	rt_task_delete(&task_1);
 
-On Thursday 25 January 2007 04:50, Philippe Gerum wrote:
+runs fine when started for the first time. But when started again it hangs
+in the rt_task_create() for the second task.
+Funny enough it all runs fine when we first delete task1 and then task2 ...
 
-> Gilles is working on a patch that solves a number of on-demand mapping
-> issues initially observed on ARM and ppc, but generic enough to affect
-> other archs; I'll merge it into the I-pipe 1.7 series for x86 in a near
-> future.
+On an x86 (adeos-ipipe-2.6.19-i386-1.6-03) the application runs fine. Either
+way.
+
+We noticed that on the AT91RM9200 we don't see the
+
+Xenomai: POSIX: destroyed thread c14a0320
+
+message. Not even when running (and stopping) cyclictest. I suspect that
+this is leading to our problems.
+
+Any idea?
+
+Thanks a million!
+
+--
+Steven
 
