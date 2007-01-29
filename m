@@ -1,15 +1,15 @@
-Subject: Re: [Xenomai-help] BUG: unable to handle kernel paging request
-From: Victor Shulyak <V.I.Shulyak@domain.hid>
-In-Reply-To: <1169852516.3346.77.camel@domain.hid>
-References: <1169811995.462.13.camel@domain.hid>
-	<1169827668.3346.61.camel@domain.hid>
-	<b647ffbd0701261046m52172774lf5a7b4d08e090583@domain.hid>
-	<1169851606.3346.75.camel@domain.hid>  <1169852516.3346.77.camel@domain.hid>
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Date: Mon, 29 Jan 2007 18:23:29 +0600
-Message-Id: <1170073409.26457.8.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45BE0272.5050401@domain.hid>
+Date: Mon, 29 Jan 2007 15:19:30 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Some Input needed about latency and cyclictest
+	results
+References: <ac3922a00701290419q529f609h61c1c910711dbc5e@domain.hid>
+In-Reply-To: <ac3922a00701290419q529f609h61c1c910711dbc5e@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF5897BC9E23E25B1B94A8B22"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,46 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Syed Amer Gilani <amg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hello
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF5897BC9E23E25B1B94A8B22
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
+Syed Amer Gilani wrote:
+> I am currently in the process of writing a report about how well the
+> realtime results are with xenomai for a project. For this i am of
+> course using latency and cyclictest. But the results are somewhat odd.
+> With Load from dd and external ping -f, latency returns results i am
+> expecting: http://systec.de/dump/latency-load.png
+> But without Load there is a odd "hole" from 3us to 5us:
+> http://systec.de/dump/latency-noload.png
+> Can this somehow be explained?
 
-> > > > However, since there seem to be a clean backtrace, maybe we could give a
-> > > > try anyway. Could you objdump your kernel image, then locate the faulty
-> > > > routine containing eip=0xc7b84d51?
-I can apply objdump to kernel modules, but when this utility was applied
-to kernel image, error message is displayed
-objdump: /boot/vmlinuz-xenomai: File format not recognized
-How could I objdump my kernel image?
+Maybe a cache granularity effect: either the caches are hot and can
+serve most requests of the benchmark directly so that you get latencies
+<3 us, or parts of them have been overwritten, and it takes typically >5
+us to replace the required content.
 
+> cyclictest also has this hole: http://systec.de/dump/cyclictest.png
+> But i am not sure if i completely understand what cyclictest does. Is
+> it the same as latency just for the posix skin?
 
-> > > Let's suppose we can believe in sanity of the call trace, then would
-> > > you, Victor, provide a disassembled code for
-> > > __ipipe_handle_exception() ?
-> > >
-I will do this with pleasure, one thing to know, which tools can help
-me?
+Yes and no. latency can benchmark timed user space, kernel space, and
+IRQ handler scenarios, but only for one event per program instance.
+cyclictest can also run multiple events (tasks), but only in user space.
+latency is using native+rtdm skin, cyclictest the posix skin. So the
+best comparison between both tools is running a single task in user
+space at the same interval with each of them (and let them run roughly
+the same time...).
 
-
-> > --- arch/i386/kernel/entry.S~	2006-12-16 13:32:29.000000000 +0100
-> > +++ arch/i386/kernel/entry.S	2007-01-26 23:44:59.000000000 +0100
-> > @@ -1032,7 +1032,7 @@
-> >  	RING0_INT_FRAME
-> >  	pushl $0			# no error code
-> >  	CFI_ADJUST_CFA_OFFSET 4
-> > -	pushl $do_divide_error
-> > +	PUSH_XVEC(do_divide_error)
-> 
-> s,PUSH_XVEC,PUSH_XCODE,
-> 
-> >  	CFI_ADJUST_CFA_OFFSET 4
-> >  	jmp error_code
-> >  	CFI_ENDPROC
-
-I did so.
+Jan
 
 
-Thanks, Victor
+--------------enigF5897BC9E23E25B1B94A8B22
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFvgJ4niDOoMHTA+kRArYAAJwLZ1bWFDq8ykukDlRMFs2g4678wQCfQTsO
+4MrXdhiNRHsbOqfbyxyqGrk=
+=pRLj
+-----END PGP SIGNATURE-----
+
+--------------enigF5897BC9E23E25B1B94A8B22--
 
