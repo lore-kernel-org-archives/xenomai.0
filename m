@@ -1,13 +1,12 @@
-Message-ID: <459A64A9.4060707@domain.hid>
-Date: Tue, 02 Jan 2007 14:56:57 +0100
+Message-ID: <45BF1D8A.2030909@domain.hid>
+Date: Tue, 30 Jan 2007 11:27:22 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <459A31E3.40807@domain.hid> <1167744149.30347.2.camel@domain.hid>	
-	<459A5E92.6030504@domain.hid> <1167745769.30347.6.camel@domain.hid>
-In-Reply-To: <1167745769.30347.6.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Subject: Re: [Xenomai-core] rt_task_create() hangs ?
+References: <45B75FFB.6030205@domain.hid>
+In-Reply-To: <45B75FFB.6030205@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: SVN checkin #2010
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,53 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Steven Scholz <steven.scholz@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2007-01-02 at 14:30 +0100, Gilles Chanteperdrix wrote:
+Steven Scholz wrote:
+> We noticed that on the AT91RM9200 we don't see the
 > 
->>Philippe Gerum wrote:
->>
->>>On Tue, 2007-01-02 at 11:20 +0100, Jan Kiszka wrote:
->>>
->>>
->>>>Hi all - and happy new year,
->>>>
->>>>I haven't looked at all the new code yet, only the commit messages. I
->>>>found something similar to my fast-forward-on-timer-overrun patch in
->>>>#2010 and wondered if Gilles' original concerns on side effects for the
->>>>POSIX skin were addressed [1]. I recalled that my own final summary on
->>>>this was "leave it as it is" [2].
->>>>
->>>
->>>
->>>The best approach is to update the POSIX skin so that it does not rely
->>>on the timer code to act in a sub-optimal way; that's why this patch
->>>found its way in. Scheduling and processing timer shots uselessly is a
->>>bug, not a feature in this case.
->>
->>There is some work to be done on the posix skin anyway, this will all be
->>at once. By the way, I tested the trunk on ARM, and I still get a lockup
->>when the latency period is too low. I wonder if we should not compare to
->>"now + nkschedlat", or even use xnarch_get_cpu_tsc() instead of "now".
+> Xenomai: POSIX: destroyed thread c14a0320
 > 
-> 
-> You mean as below, in order to account for the time spent in the handler(s)?	
-> 
-> -	while ((xntimerh_date(&timer->aplink) += timer->interval) < now)
-> +	while ((xntimerh_date(&timer->aplink) += timer->interval) < xnarch_get_cpu_tsc())
-> 		    ;
-> 
+> message. Not even when running (and stopping) cyclictest. I suspect that
+> this is leading to our problems.
 
-I mean even:
-
-	while ((xntimerh_date(&timer->aplink) += timer->interval) <
-		xnarch_get_cpu_tsc() + nkschedlat)
-                 ;
-
-Because if the timer date is between now and now + nkschedlat, its
-handler will be called again.
+This message only appears if CONFIG_XENO_OPT_DEBUG_POSIX is enabled, are
+you sure it is enabled in the AT91 kernel configuration ?
 
 -- 
                                                  Gilles Chanteperdrix
