@@ -1,14 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <459A5E92.6030504@domain.hid>
-References: <459A31E3.40807@domain.hid> <1167744149.30347.2.camel@domain.hid>
-	<459A5E92.6030504@domain.hid>
-Content-Type: text/plain
-Date: Tue, 02 Jan 2007 14:49:29 +0100
-Message-Id: <1167745769.30347.6.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: SVN checkin #2010
-Reply-To: rpm@xenomai.org
+Date: Tue, 30 Jan 2007 07:49:41 +0000 (GMT)
+From: somshekar kadam <som_kadam@domain.hid>
+In-Reply-To: <1170082406.4973.24.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <400777.67348.qm@domain.hid>
+Subject: [Xenomai-core] Xenomai Bits on MIPS
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,41 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org, Thomas Necker <Thomas.Necker@domain.hid>
 
-On Tue, 2007-01-02 at 14:30 +0100, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Tue, 2007-01-02 at 11:20 +0100, Jan Kiszka wrote:
-> > 
-> >>Hi all - and happy new year,
-> >>
-> >>I haven't looked at all the new code yet, only the commit messages. I
-> >>found something similar to my fast-forward-on-timer-overrun patch in
-> >>#2010 and wondered if Gilles' original concerns on side effects for the
-> >>POSIX skin were addressed [1]. I recalled that my own final summary on
-> >>this was "leave it as it is" [2].
-> >>
-> > 
-> > 
-> > The best approach is to update the POSIX skin so that it does not rely
-> > on the timer code to act in a sub-optimal way; that's why this patch
-> > found its way in. Scheduling and processing timer shots uselessly is a
-> > bug, not a feature in this case.
-> 
-> There is some work to be done on the posix skin anyway, this will all be
-> at once. By the way, I tested the trunk on ARM, and I still get a lockup
-> when the latency period is too low. I wonder if we should not compare to
-> "now + nkschedlat", or even use xnarch_get_cpu_tsc() instead of "now".
+Hi All, 
 
-You mean as below, in order to account for the time spent in the handler(s)?	
+  I am porting Xenomai on MIPS, I am beginner o
+Xenomai, please help me in understanding this point. 
 
--	while ((xntimerh_date(&timer->aplink) += timer->interval) < now)
-+	while ((xntimerh_date(&timer->aplink) += timer->interval) < xnarch_get_cpu_tsc())
-		    ;
+whats the purpose of bits directory in include
+directory, please throw some light on this, I see it
+for 64 bit adoption , correct me if am wrong, what are
+the depedency of it on xenomai. 
 
--- 
-Philippe.
+Please comment. 
+
+Thanks And Regards
+Neelu
 
 
+
+
+		
+__________________________________________________________
+Yahoo! India Answers: Share what you know. Learn something new
+http://in.answers.yahoo.com/
 
