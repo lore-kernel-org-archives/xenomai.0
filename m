@@ -1,58 +1,37 @@
-Subject: Re: [Adeos-main] Porting IPIPE on MIPS Architecture, User Process
-	running error, Kernel hangs.
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <25dd9bf10701160219w72c8e522l33f4eb9cec59b869@domain.hid>
-References: <25dd9bf10701160219w72c8e522l33f4eb9cec59b869@domain.hid>
-Content-Type: text/plain
-Date: Tue, 16 Jan 2007 11:37:34 +0100
-Message-Id: <1168943855.17557.45.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <bc4264770701300000p1efec34fme7d1db2d4a0441aa@domain.hid>
+Date: Tue, 30 Jan 2007 03:00:48 -0500
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Subramani Venkatesh <subbu31mani@domain.hid>
-Cc: adeos-main@gna.org
+Content-Disposition: inline
+Subject: [Xenomai-help] installing-what about adeos
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Tue, 2007-01-16 at 15:49 +0530, Subramani Venkatesh wrote:
-> Hello All,
-> I am currently porting Adeos-ipipe on one of my MIPS architecture. I
-> am using I-Pipe 1.5-01, X86 as reference to my porting. So Far I did
-> relevant changes in
-> 1.Interrupts handlers
-> 2. System calls
-> 3. Pagefault Handler 
-> Except Exception handling, I mean critcial bug events.
-> With this changes I am able to Boot Linux kernel and also able to
-> mount Ramdisk successfully.
-> 
+Hi,
 
-[...]
+I am completely new to xenomai so please forgive stupid questions.
 
-> Opening console is successfull and executing /sbin/init
-> Algorithmics/MIPS FPU Emulator v1.5
-> INIT: version 2.85 booting
-> grep: error while loading shared libraries: libc.so.6: failed to map
-> segment from shared object: Error 4090
+I am trying to follow the installation instructions README.INSTALL but
+in the the first step (
+running kernel-prepare.sh) I am confused by the adeos argument. I do
+not have adeos installed or  patched my kernel with it.
 
-There is likely something fishy in the syscall interception path from
-arch/mips/kernel/entry.S; all the syscalls seem to return error values
-mistakenly once the pipelining is in effect. You may want to check your
-changes in this area.
+I have seen adeos mentioned a lot in all the documentation, but what
+is it, where must I find it and  how must I install it?
 
-Btw, it would be nice to work in an open manner and post your code on
-this list if you want to ask for help about it here. Contribution has to
-work both ways. TIA,
+TIA
 
--- 
-Philippe.
+Kind regards,
 
-
+Roland Tollenaar
 
