@@ -1,14 +1,12 @@
-Message-ID: <45BF0E00.3020202@domain.hid>
-Date: Tue, 30 Jan 2007 10:21:04 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45BF17CE.9030808@domain.hid>
+Date: Tue, 30 Jan 2007 11:02:54 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai Bits on MIPS
-References: <400777.67348.qm@domain.hid>
-In-Reply-To: <400777.67348.qm@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4F78AB07E64B8B6CE5DEF295"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] I-pipe patch for linux 2.6.19 on ARM.
+References: <45BF08D8.5050208@domain.hid>
+In-Reply-To: <45BF08D8.5050208@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,54 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: somshekar kadam <som_kadam@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4F78AB07E64B8B6CE5DEF295
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Gilles Chanteperdrix wrote:
+> Hi,
+> 
+> here comes the I-pipe patch for linux 2.6.19 on ARM. In addition to the
+> upgrade to linux 2.6.19, the AT91 port is improved:
+> - it waits for the console to be enabled or about 2 minutes before
+> panicing if the configured frequency is wrong;
+> - the timer counter used as time source is chosen when configuring the
+> kernel;
+> - it uses the kernel clock interface in order to enable the timer
+> counter clock instead of tweaking directly the registers.
+> 
 
-somshekar kadam wrote:
-> Hi All,=20
->=20
->   I am porting Xenomai on MIPS, I am beginner o
-> Xenomai, please help me in understanding this point.=20
->=20
-> whats the purpose of bits directory in include
-> directory, please throw some light on this, I see it
-> for 64 bit adoption , correct me if am wrong, what are
-> the depedency of it on xenomai.=20
->=20
-> Please comment.=20
+A few more words about this patch; I had to reduce the list of files
+included in asm-arm/ipipe.h and include linux/irq.h in
+kernel/ipipe/core.c otherwise the kernel did not compile with
+CONFIG_PREEMPT enabled. There are a few new enable_irq in entry-armv.S
+and I was not sure what to do about them, so I simply leaved them.
 
-Yes, but first on the netiquette:
-
- o Please don't reply to arbitrary threads when starting a new one, it
-   confuses people's mail clients.
-
- o Please don't put arbitrary people in CC when starting a new thread.
-
-Now on the bits directory: It contains arch-dependent internal helper
-functions of the related nucleus core modules. Check them carefully for
-potential adoptions that might be required on MIPS.
-
-Jan
-
-
---------------enig4F78AB07E64B8B6CE5DEF295
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFFvw4AniDOoMHTA+kRAuXfAJ99ZlFsKTDPkufxwoD0mpvnQkmkdwCeOoTt
-iGs/Fz+LfPVEi2L3AS9tPjc=
-=0/BQ
------END PGP SIGNATURE-----
-
---------------enig4F78AB07E64B8B6CE5DEF295--
+-- 
+                                                 Gilles Chanteperdrix
 
