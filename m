@@ -1,10 +1,13 @@
-Message-ID: <45C05207.1090105@domain.hid>
-Date: Wed, 31 Jan 2007 09:23:35 +0100
+Message-ID: <45C05975.3060900@domain.hid>
+Date: Wed, 31 Jan 2007 09:55:17 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] I-pipe patch for linux 2.6.19 on ARM.
-References: <45BF08D8.5050208@domain.hid> <45BF8A92.8010900@domain.hid>
-In-Reply-To: <45BF8A92.8010900@domain.hid>
+Subject: Re: Antwort: Re: [Xenomai-core] Questions about pSOS task mode and
+	task priority
+References: <OF5910DE28.1586BCD6-ONC125726F.005E4D75@domain.hid>	
+	<1169832375.3346.67.camel@domain.hid> <45BDF5D8.4020607@domain.hid>
+	<1170204016.21219.49.camel@domain.hid>
+In-Reply-To: <1170204016.21219.49.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,33 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Steven Scholz <steven.scholz@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Markus Osterried <Markus.Osterried@domain.hid>, xenomai@xenomai.org, Thomas Necker <Thomas.Necker@domain.hid>
 
-Steven Scholz wrote:
-> Gilles,
+Philippe Gerum wrote:
+> On Mon, 2007-01-29 at 14:25 +0100, Gilles Chanteperdrix wrote:
+> 
+>>Philippe Gerum wrote:
+>>
+>>>On Fri, 2007-01-26 at 18:16 +0100, Thomas Necker wrote:
+>>>
+>>>
+>>>>So it clearly states that a non-preemtible task may block (and 
+>>>>rescheduling occurs in
+>>>>this case).
+>>>
+>>>
+>>>Ok, so this is a must fix. Will do. Thanks for reporting.
+>>
+>>I had a look at the OSEK specification, it also has non-preemptible
+>>tasks. So, I guess we should add an xnpod_locked_schedule that simply does
+>>
+>>if (xnthread_test_state(xnpod_current_sched()->runthread, XNLOCK)) {
+>>	xnpod_unlock_sched();
+>>	xnpod_lock_sched();
+>>} else
+>>	xnpod_schedule();
+>>
+>>and call this xnpod_locked_schedule() instead of xnpod_schedule() in
+>>these skins.
 > 
 > 
->>here comes the I-pipe patch for linux 2.6.19 on ARM. In addition to the
->>upgrade to linux 2.6.19, the AT91 port is improved:
+> The more I think of it, the more it becomes obvious that the current
+> implementation of the scheduler locks is uselessly restrictive.
+> Actually, the only thing we gain from not allowing threads to block
+> while holding such kind of lock is the opportunity to panic at best if
+> the debug switch is on, or to go south badly if not.
 > 
+> Even the pattern above would not solve the issue in fact, because things
+> like xnsynch_sleep_on() which fire a rescheduling call would have to
+> either get a special argument telling us about the policy in this
+> matter, or forcibly unlock the scheduler behind the curtains before
+> calling xnpod_suspend() internally. While we are at it, we would be
+> better off incorporating the latter at the core, and assume that
+> callers/skins that do _not_ want to allow sleeping schedlocks did the
+> proper sanity checks to prevent this before running the rescheduling
+> procedure. Other would just benefit from the feature.
 > 
-> Thanks very much.
-> 
-> 
->>I have not tested the other ports, so, please test the patch on the ARM
->>you use if you can.
-> 
-> 
-> Did you actually try this patch against a vanilla 2.6.19 + 2.6.19-at91.patch.gz?
+> In short, the following patch against 2.3.0 stock fixes the issue,
+> allowing threads to block while holding the scheduler lock. 
 
-No, the patch is intended to be used with a vanilla 2.6.19, this make
-the I-pipe patch for ARM much easier to maintain.
-
-> c) Kernel with adoes-ipipe compiles (after fixing the above), but xenomai
-> does not compile and bails out with
-
-You must get recent xenomai sources from svn trunk or v2.3.x branch.
+Ok, but this means that the skins which use XNLOCK with the previous
+meaning need fixing.
 
 -- 
                                                  Gilles Chanteperdrix
