@@ -1,11 +1,15 @@
-Date: Thu, 1 Feb 2007 03:25:23 -0800 (PST)
-From: poornima r <rpoornar@domain.hid>
-Subject: Re: [Adeos-main] switchbench tests with IPIPE tracer disabled
-In-Reply-To: <45C1C335.5070007@domain.hid>
+Message-ID: <45C1D050.7080405@domain.hid>
+Date: Thu, 01 Feb 2007 12:34:40 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Message-ID: <936257.30688.qm@domain.hid>
+Subject: Re: [Adeos-main] switchbench tests with IPIPE tracer disabled
+References: <70651.51913.qm@domain.hid>
+	<45C1C335.5070007@domain.hid>
+In-Reply-To: <45C1C335.5070007@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5F6F945201EA3D4B7E7BB79C"
+Sender: jan.kiszka@domain.hid
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,263 +18,219 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: adeos-main@gna.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5F6F945201EA3D4B7E7BB79C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-1)I am using open source kernel from Kernel.org,
-but what is meant by vanilla kernel from Kernel.org?
-
-2)With sampling period of 500usec the system simply
-hangs without printing any results (./latenct -p500)
-
-3)cyclictest with -t1 option (without IPIPE-tracer)
-root@domain.hid# ./cyclictest -t1
-2.04 0.50 0.17 8/27 174
-
-T: 0 (    0) P:99 I:    1000 C:       0 Min: 1000000
-Act:       0 Avg:       0 Max:-1000000
-Illegal instruction
-
-4)Output of /proc/xenomai/faults after the illegal
-instruction:-
-root@domain.hid# cat
-/proc/xenomai/faults
-TRAP         CPU0
-  0:            0    (Data or instruction access)
-  1:            0    (Alignment)
-  2:            0    (Altivec unavailable)
-  3:            0    (Program check exception)
-  4:            0    (Machine check exception)
-  5:            0    (Unknown)
-  6:            0    (Instruction breakpoint)
-  7:            0    (Run mode exception)
-  8:            0    (Single-step exception)
-  9:            0    (Non-recoverable exception)
- 10:            1    (Software emulation)
- 11:            0    (Debug)
- 12:            0    (SPE)
- 13:            0    (Altivec assist)
-
-5)Running switchtest:-
-root@domain.hid# ./switchtest -n
---The system hangs wihtout printing any results
-
-Thanks,
-Poornima
-
-
---- Wolfgang Grandegger <wg@domain.hid> wrote:
-
+Wolfgang Grandegger wrote:
 > poornima r wrote:
-> > Hi,
-> > 
-> > Thanks for the reply.
-> > 
-> > Linux version:linux-2.6.18
-> > Xenomai: xenomai-2.3.0 (Stable version)
-> > adeos patch: adeos-ipipe-2.6.18-ppc-1.5-01.patch
-> 
-> OK, I'm curious, did you use the vanilla kernel from
-> kernel.org?
+>> Hi,
+>>
+>> Thanks for the reply.
+>>
+>> Linux version:linux-2.6.18
+>> Xenomai: xenomai-2.3.0 (Stable version)
+>> adeos patch: adeos-ipipe-2.6.18-ppc-1.5-01.patch
+>=20
+> OK, I'm curious, did you use the vanilla kernel from kernel.org?
 > More comments below.
-> 
-> > The tests were run as follows:
-> > 1)The sampling period in the code for latency and
-> > switchbench was changed to 1000000000ns(to remove
-> > overrun error) 
-> > 2)switchtest was run with -n5 option
-> > 3)cyclictest was run with  -t5 option(5 threads 
-> > were created.)
-> > 4)cyclictest was terminated with Illegal
-> instruction
-> > (after creating 5 threads) with IPIPE tracer
-> enabled.
-> 
-> > 
-> > These were the results without I-PIPE Tracer
-> option:
-> > (All the tests were run without any load)
-> > 1)LATENCY TEST:-
-> > User mode:-
-> > /mnt/out_xen/bin# ./latency -t0
-> > == Sampling period: 1000000 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (periodic user-mode task, 1000000
-> us
-> > period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat
-> > max|-overrun|----lat best|---lat worst
-> > RTD|     167.000|     167.000|     167.000|      
-> 0|  
-> >   167.000|     167.000
-> > RTD|     176.000|     176.000|     176.000|      
-> 0|  
-> >   167.000|     176.000
-> > RTD|     168.000|     168.000|     168.000|      
-> 0|  
-> >   167.000|     176.000
-> > RTD|     171.000|     171.000|     171.000|      
-> 0|  
-> >   167.000|     176.000
->  >
-> > Kernel mode:-
-> > root@domain.hid# ./latency -t1
-> > == Sampling period: 1000000 us
-> > == Test mode: in-kernel periodic task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:00  (in-kernel periodic task, 1000000
-> us
-> > period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat
-> > max|-overrun|----lat best|---lat worst
-> > RTD|     123.000|     123.000|     123.000|      
-> 0|  
-> >   123.000|     123.000
-> > RTD|     125.000|     125.000|     125.000|      
-> 0|  
-> >   123.000|     125.000
-> > RTD|     128.333|     128.333|     128.333|      
-> 0|  
-> >   123.000|     128.333
-> > RTD|     127.000|     127.000|     127.000|      
-> 0|  
-> >   123.000|     128.333
-> > 
-> > Interrupt mode:-
-> > root@domain.hid# ./latency -t2
-> > == Sampling period: 1000000 us
-> > == Test mode: in-kernel timer handler
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (in-kernel timer handler, 1000000
-> us
-> > period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat
-> > max|-overrun|----lat best|---lat worst
-> > RTD|      45.334|      45.334|      45.334|      
-> 0|  
-> >    45.334|      45.334
-> > RTD|      45.000|      45.000|      45.000|      
-> 0|  
-> >    45.000|      45.334
-> > RTD|      46.000|      46.000|      46.000|      
-> 0|  
-> >    45.000|      46.000
-> > RTD|      47.334|      47.334|      47.334|      
-> 0|  
-> >    45.000|      47.334
-> > RTD|      46.334|      46.334|      46.334|      
-> 0|  
-> >    45.000|      47.334
-> 
-> I remember similar figures from measurements under
-> 2.4. I guess you 
-> tested without load!? Nevertheless, most of the
-> latency is due to code 
-> execution time because the system is very slow and
-> the caches are small.
-> The sampling period is 1 second. I think "-p500"
-> should already work.
-> 
-> > 2)CYCLICTEST RESULTS:-
-> > root@domain.hid# ./cyclictest
-> -t5
-> > 5.14 3.71 1.72 6/31 216
-> > 
-> > T: 0 (    0) P:99 I:    1000 C:       0 Min:
-> 1000000
-> > Act:       0 Avg:       0 Max:-1000000
-> > T: 1 (    0) P:98 I:    1500 C:       0 Min:
-> 1000000
-> > Act:       0 Avg:       0 Max:-1000000
-> > T: 2 (  212) P:97 I:    2000 C:    8112 Min:    
-> 169
-> > Act:     189 Avg:     204 Max:     288
-> > T: 3 (    0) P:96 I:    2500 C:       0 Min:
-> 1000000
-> > Act:       0 Avg:       0 Max:-1000000
-> > T: 4 (  216) P:95 I:    3000 C:   21596 Min:    
-> 180
-> > Act:    1279 Avg:     702 Max:    1336
-> 
-> Hm, this looks bogus. What returns "./cyclictest"
-> without options (or -t1)?
-> 
-> > 3)SWITCHBENCH TEST RESULTS:-
-> > root@domain.hid# ./switchbench
-> -n5
-> > == Sampling period: 1000000 us
-> > == Do not interrupt this program
-> > RTH|     lat min|     lat avg|     lat max|       
-> > lost
-> > RTD|     229.333|      45.666|     229.333|       
->   
-> > 0
-> > 
-> > Test results with IPIPE tracer enabled
-> > 1)LATENCY TEST RESULTS:-
-> > User mode:-
-> > root@domain.hid# ./latency -t0
-> > == Sampling period: 1000000 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (periodic user-mode task, 1000000
-> us
-> > period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat
-> > max|-overrun|----lat best|---lat worst
-> > RTD|     340.000|     340.000|     340.000|      
-> 0|  
-> >   340.000|     340.000
-> > RTD|     338.666|     338.666|     338.666|      
-> 0|  
-> >   338.666|     340.000
-> > RTD|     341.000|     341.000|     341.000|      
-> 0|  
-> >   338.666|     341.000
-> > RTD|     342.000|     342.000|     342.000|      
-> 0|  
-> >   338.666|     342.000
-> > 
-> > 2)kernel mode:-
-> > root@domain.hid# ./latency -t1
-> > == Sampling period: 1000000 us
-> > == Test mode: in-kernel periodic task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:00  (in-kernel periodic task, 1000000
-> us
-> > period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat
-> > max|-overrun|----lat best|---lat worst
-> > RTD|     303.333|     303.333|     303.333|      
-> 0|  
-> >   303.333|     303.333
-> > RTD|     309.666|     309.666|     309.666|      
-> 0|  
-> >   303.333|     309.666
-> > RTD|     325.000|     325.000|     325.000|      
-> 0|  
-> >   303.333|     325.000
-> > RTD|     306.333|     306.333|     306.333|      
-> 0|  
-> >   303.333|     325.000
-> > 
-> > Interrupt mode:-
-> > root@domain.hid# ./latency -t2
-> 
-=== message truncated ===
+>=20
+>> The tests were run as follows:
+>> 1)The sampling period in the code for latency and
+>> switchbench was changed to 1000000000ns(to remove
+>> overrun error) 2)switchtest was run with -n5 option
+>> 3)cyclictest was run with  -t5 option(5 threads were created.)
+>> 4)cyclictest was terminated with Illegal instruction
+>> (after creating 5 threads) with IPIPE tracer enabled.
+>=20
+>>
+>> These were the results without I-PIPE Tracer option:
+>> (All the tests were run without any load)
+>> 1)LATENCY TEST:-
+>> User mode:-
+>> /mnt/out_xen/bin# ./latency -t0
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: periodic user-mode task
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:01  (periodic user-mode task, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|     167.000|     167.000|     167.000|       0|    167.000|   =20
+>> 167.000
+>> RTD|     176.000|     176.000|     176.000|       0|    167.000|   =20
+>> 176.000
+>> RTD|     168.000|     168.000|     168.000|       0|    167.000|   =20
+>> 176.000
+>> RTD|     171.000|     171.000|     171.000|       0|    167.000|   =20
+>> 176.000
+>>
+>> Kernel mode:-
+>> root@domain.hid# ./latency -t1
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: in-kernel periodic task
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:00  (in-kernel periodic task, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|     123.000|     123.000|     123.000|       0|    123.000|   =20
+>> 123.000
+>> RTD|     125.000|     125.000|     125.000|       0|    123.000|   =20
+>> 125.000
+>> RTD|     128.333|     128.333|     128.333|       0|    123.000|   =20
+>> 128.333
+>> RTD|     127.000|     127.000|     127.000|       0|    123.000|   =20
+>> 128.333
+>>
+>> Interrupt mode:-
+>> root@domain.hid# ./latency -t2
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: in-kernel timer handler
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:01  (in-kernel timer handler, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|      45.334|      45.334|      45.334|       0|     45.334|    =20
+>> 45.334
+>> RTD|      45.000|      45.000|      45.000|       0|     45.000|    =20
+>> 45.334
+>> RTD|      46.000|      46.000|      46.000|       0|     45.000|    =20
+>> 46.000
+>> RTD|      47.334|      47.334|      47.334|       0|     45.000|    =20
+>> 47.334
+>> RTD|      46.334|      46.334|      46.334|       0|     45.000|    =20
+>> 47.334
+>=20
+> I remember similar figures from measurements under 2.4. I guess you
+> tested without load!? Nevertheless, most of the latency is due to code
+> execution time because the system is very slow and the caches are small=
+=2E
+> The sampling period is 1 second. I think "-p500" should already work.
+>=20
+>> 2)CYCLICTEST RESULTS:-
+>> root@domain.hid# ./cyclictest -t5
+>> 5.14 3.71 1.72 6/31 216
+>>
+>> T: 0 (    0) P:99 I:    1000 C:       0 Min: 1000000
+>> Act:       0 Avg:       0 Max:-1000000
+>> T: 1 (    0) P:98 I:    1500 C:       0 Min: 1000000
+>> Act:       0 Avg:       0 Max:-1000000
+>> T: 2 (  212) P:97 I:    2000 C:    8112 Min:     169
+>> Act:     189 Avg:     204 Max:     288
+>> T: 3 (    0) P:96 I:    2500 C:       0 Min: 1000000
+>> Act:       0 Avg:       0 Max:-1000000
+>> T: 4 (  216) P:95 I:    3000 C:   21596 Min:     180
+>> Act:    1279 Avg:     702 Max:    1336
+>=20
+> Hm, this looks bogus. What returns "./cyclictest" without options (or -=
+t1)?
+>=20
+>> 3)SWITCHBENCH TEST RESULTS:-
+>> root@domain.hid# ./switchbench -n5
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Do not interrupt this program
+>> RTH|     lat min|     lat avg|     lat max|       lost
+>> RTD|     229.333|      45.666|     229.333|          0
+>>
+>> Test results with IPIPE tracer enabled
+>> 1)LATENCY TEST RESULTS:-
+>> User mode:-
+>> root@domain.hid# ./latency -t0
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: periodic user-mode task
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:01  (periodic user-mode task, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|     340.000|     340.000|     340.000|       0|    340.000|   =20
+>> 340.000
+>> RTD|     338.666|     338.666|     338.666|       0|    338.666|   =20
+>> 340.000
+>> RTD|     341.000|     341.000|     341.000|       0|    338.666|   =20
+>> 341.000
+>> RTD|     342.000|     342.000|     342.000|       0|    338.666|   =20
+>> 342.000
+>>
+>> 2)kernel mode:-
+>> root@domain.hid# ./latency -t1
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: in-kernel periodic task
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:00  (in-kernel periodic task, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|     303.333|     303.333|     303.333|       0|    303.333|   =20
+>> 303.333
+>> RTD|     309.666|     309.666|     309.666|       0|    303.333|   =20
+>> 309.666
+>> RTD|     325.000|     325.000|     325.000|       0|    303.333|   =20
+>> 325.000
+>> RTD|     306.333|     306.333|     306.333|       0|    303.333|   =20
+>> 325.000
+>>
+>> Interrupt mode:-
+>> root@domain.hid# ./latency -t2
+>> =3D=3D Sampling period: 1000000 us
+>> =3D=3D Test mode: in-kernel timer handler
+>> =3D=3D All results in microseconds
+>> warming up...
+>> RTT|  00:00:01  (in-kernel timer handler, 1000000 us
+>> period, priority 99)
+>> RTH|-----lat min|-----lat avg|-----lat
+>> max|-overrun|----lat best|---lat worst
+>> RTD|     153.334|     153.334|     153.334|       0|    153.334|   =20
+>> 153.334
+>> RTD|     154.667|     154.667|     154.667|       0|    153.334|   =20
+>> 154.667
+>> RTD|     164.334|     164.334|     164.334|       0|    153.334|   =20
+>> 164.334
+>> RTD|     154.667|     154.667|     154.667|       0|    153.334|   =20
+>> 164.334
+>> RTD|     163.667|     163.667|     163.667|       0|    153.334|   =20
+>> 164.334
+>=20
+> The IPIPE tracer seems to add quit some code, Jan, does this look OK fo=
+r
+> you?
+
+I've seen almost 2 times higher numbers on an old Pentium I 133 MHz. But
+I'm lacking information to relate this particular system to that values.
+The increment appears to be fairly high.
+
+BTW, latests i-pipe patches for x86 now include a simple calibration
+loop to estimate the minimum tracing overhead per function call. So,
+when looking at a real trace, one might be able to asses the impact bette=
+r.
+
+Jan
 
 
+--------------enig5F6F945201EA3D4B7E7BB79C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
- 
-____________________________________________________________________________________
-Be a PS3 game guru.
-Get your game face on with the latest PS3 news and previews at Yahoo! Games.
-http://videogames.yahoo.com/platform?platform=120121
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFFwdBQniDOoMHTA+kRAsRbAJ43AA931Ecbp/zYe4dEyI4fDOixwgCfQ8BQ
+AJWm653ufL/G+t7Y3Qs1z2o=
+=Qgr1
+-----END PGP SIGNATURE-----
+
+--------------enig5F6F945201EA3D4B7E7BB79C--
 
