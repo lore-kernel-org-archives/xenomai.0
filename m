@@ -1,12 +1,12 @@
-Message-ID: <45C1F351.6080109@domain.hid>
-Date: Thu, 01 Feb 2007 15:04:01 +0100
-From: Steven Scholz <steven.scholz@domain.hid>
+Message-ID: <45C225D1.7060503@domain.hid>
+Date: Thu, 01 Feb 2007 18:39:29 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] rt_task_create() hangs ?
-References: <45B75FFB.6030205@domain.hid> <45C1E625.1010600@domain.hid>
-	<45C1EA10.9060109@domain.hid>
-In-Reply-To: <45C1EA10.9060109@domain.hid>
-Content-Type: multipart/mixed; boundary="------------030500050500040605000603"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5974B17FF6A067EF2D9FB369"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [BUG] timer issues with SVN head
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,132 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------030500050500040605000603
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5974B17FF6A067EF2D9FB369
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hi Gilles,
+Hi,
 
->> I now tested Gille's brand new adeos-ipipe-2.6.19-arm-1.6-01.patch. The
->> above problems disapeared. I even do see a "Xenomai: POSIX: destroyed
->> thread" now.
->>
->> So is this a known bug of ipipe-1.5 vs ipipe-1.6?
->> Or does anyone remember a bug like that?
-> 
-> I do not think there is such a known bug. There were some recent fixes
-> in the native skin, but as far as I remember they were for anonymous
-> objects. In any case, as Philippe already told you, it is hard to say
-> anything without seeing any code. 
-Did he? I never saw that mail. :-(
-However I attach the file that hangs when starting it for the second time.
+just to save my current finding and maybe trigger some feedback:
 
-PLEASE NOTE: I just found that the programm runs fine again and again even
-under 2.6.14 iff I deselect CONFIG_XENO_HW_FPU. With CONFIG_XENO_HW_FPU=y it
-will hang...
+We just tried both 2.3.x-SVN and trunk with our "reference robot". While
+2.3.x behaves fine, weird things happened with trunk /wrt some serial
+device. We saw reception timeouts and no serial IRQs.
 
-So I am now suspecting that it would hang with your new
-adeos-ipipe-2.6.19-arm-1.6-01.patch as well...
-Problem is: I can only compile your patch with FPU disabled! Otehrwise he
-complains about a missing fp_init() !!!
+So I fired up a second box with plain latency test (all the latest: SVN,
+2.6.19.2, ipipe-i386-1.6-06):
 
-BTW: Is CONFIG_XENO_HW_FPU intended for HW floating point support!? Or for
-floating point emulation done by the kernel? NWFPE? Are there actually ARM
-cpus with HW FPU?
+> root@domain.hid :/root# latency     =20
+> =3D=3D Sampling period: 100 us
+> =3D=3D Test mode: periodic user-mode task
+> =3D=3D All results in microseconds
+> warming up...
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat=
+ worst
+> RTD| 1299105.405| 1505168.638|  -14316.105|    3671| 1299105.405|  -143=
+16.105
+> RTD| 1220704.831| 1779065.782|-1220608.470|    7345| 1220704.831|-12206=
+08.470
+> RTD|   14316.105|-1760409.537|-1554398.542|   11018| 1220704.831|-12206=
+08.470
+> RTD|   14316.105| 2122222.174|-1966597.124|   14691| 1220704.831|-12206=
+08.470
+> RTD|   14316.105| 1709930.735| 1916083.739|   18372| 1220704.831|-12206=
+08.470
 
-> As for the posix skin messages about
-> objects destruction, they only appear if an option is selected in the
-> kernel configuration. Are you sure this option was enabled when you did
-> not see the messages ?
-Yes I am.
+Houston, I think we have a problem.
 
--- 
-Steven
+Periodic mode is on, but all skins are using the master time base. I
+suspect some time conversion issues. I'll try to dig deeper -- later.
 
---------------030500050500040605000603
-Content-Type: text/plain;
- name="threadtest1.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="threadtest1.c"
+Jan
 
 
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/mman.h>
+--------------enig5974B17FF6A067EF2D9FB369
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-#include <native/task.h>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFFwiXSniDOoMHTA+kRAtJeAJ4gwfLX7V9I9UyNRJ+d9Hz2QCi4mACffdVV
+K5xrquTz39cJnuJuqnEKHzo=
+=gG6l
+-----END PGP SIGNATURE-----
 
-#define STATE_TASK_1_CREATED       1
-#define STATE_TASK_2_CREATED       2
-
-unsigned int my_state = 0;
-
-RT_TASK  task_1;
-RT_TASK  task_2;
-
-/* .................................................................................... */
-
-
-void cleanup_all(void) {
-
-
-  if (my_state & STATE_TASK_2_CREATED) {
-    printf("delete task_2\n");
-    rt_task_delete(&task_2);
-    my_state &= ~STATE_TASK_2_CREATED;
-  }
-
-  if (my_state & STATE_TASK_1_CREATED) {
-    printf("delete task_1\n");
-    rt_task_delete(&task_1);
-    my_state &= ~STATE_TASK_1_CREATED;
-  }
-
-}
-
-
-/* .................................................................................... */
-
-int main(int argc, char* argv[]) {
-  int ret = 0;
-
-  /* no memory-swapping for this programm */
-  mlockall(MCL_CURRENT | MCL_FUTURE);
-
-
-  /* create task_1 */
-  ret = rt_task_create(&task_1,"task_1",0,50,0);
-  if (ret) {
-    printf("failed to create task_1, code %d\n",ret);
-    goto error;
-  }
-  my_state |= STATE_TASK_1_CREATED;
-  printf("created task_1\n");
-
-
-
-  /* create task_2 */
-  ret = rt_task_create(&task_2,"task_2",0,51,0);
-  if (ret) {
-    printf("failed to create task_2, code %d\n",ret);
-    goto error;
-  }
-  my_state |= STATE_TASK_2_CREATED;
-  printf("created task_2\n");
-
-error:
-  cleanup_all();
-  return ret;
-}
-
-
-
---------------030500050500040605000603--
+--------------enig5974B17FF6A067EF2D9FB369--
 
