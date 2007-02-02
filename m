@@ -1,14 +1,11 @@
-Message-ID: <22474211.1170411361268.JavaMail.ngmail@domain.hid>
-Date: Fri, 2 Feb 2007 11:16:01 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-Subject: Re: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-In-Reply-To: <1170409755.4981.11.camel@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <1170409755.4981.11.camel@domain.hid>
-	<19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170408789.4981.1.camel@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C746B4.09E5E6F4"
+Date: Fri, 2 Feb 2007 11:22:27 +0100
+Message-ID: <AD78122AD7C05B4B936EBAD7F49738C0AB2B99@domain.hid>
+From: "Lauener Nathan" <Nathan.Lauener@domain.hid>
+Subject: [Xenomai-help] rt_dev_open() returns -EBUSY
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,64 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi!
+This is a multi-part message in MIME format.
 
-I have one kernel module for a special driver running.
-If I do not load this kernel module, everything seems to work fine.
-That means, this kernel module is probably causing the issue...
-I have to look closer to it...
-Sorry for any confusion!
+------_=_NextPart_001_01C746B4.09E5E6F4
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+A couple of days ago I updated my system from Xenomai 2.2.0 and kernel
+2.6.17.8 to Xenomai 2.3.0 and kernel 2.6.19.2. Everything worked well
+until I tried to open my driver for the parallel port. The function
+rt_dev_open() always returns -EBUSY even after loading the module and
+trying to open the device for the first time. I had been using the
+driver for several weeks without any problems and havn't touched the
+code. Any hints?
 
 Regards
-
-Mathias=20
-
-
-> On Fri, 2007-02-02 at 10:33 +0100, Philippe Gerum wrote:
-> > On Fri, 2007-02-02 at 09:43 +0100, M. Koehrer wrote:
-> > > Hi everybody,
-> > >=20
-> > > I have a strange issue frequently when reading /proc/xenomai/stat.
-> > > I do a cat /proc/xenomai/stat and I get an "Cannot allocate memory"
-> error.
-> > > This happens typcially after I have started and terminated by
-> application that uses a number of tasks.
-> > > I am able to reproduce it deterministically...
-> > > While the application is running, I can see the stat values perfectly=
-.
-> > > Here is the head output of all /proc/xenomai/* files:
-> >=20
-> > At first sight looking at the code, there seems to be a memory leak
-> > caused by an unfree kmalloc() block in the sched & stat sequence
-> > routines. Will confirm and fix. Thanks,
-> >=20
->=20
-> Not confirmed for the leakage part regarding kmalloc(). We do have a
-> seq_release_private() freeing the allocated block, so back to square #1.
-> This said, some kernel memory is not released somewhere, as running
-> vmstat tells me here.
->=20
-> Btw, is the rest of your system functional after the error occurs, or is
-> a reboot needed afterwise?
->=20
-> --=20
-> Philippe.
->=20
->=20
->=20
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+Nathan =20
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+------_=_NextPart_001_01C746B4.09E5E6F4
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7651.59">
+<TITLE>rt_dev_open() returns -EBUSY</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">A couple of days ago I updated my =
+system from Xenomai 2.2.0 and kernel 2.6.17.8 to Xenomai 2.3.0 and =
+kernel 2.6.19.2. Everything worked well until I tried to open my driver =
+for the parallel port. The function rt_dev_open() always returns -EBUSY =
+even after loading the module and trying to open the device for the =
+first time. I had been using the driver for several weeks without any =
+problems and havn't touched the code. Any hints?</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Regards</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Nathan&nbsp; </FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C746B4.09E5E6F4--
 
