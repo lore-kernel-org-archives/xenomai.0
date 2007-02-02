@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [BUG] timer issues with SVN head
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45C225D1.7060503@domain.hid>
-References: <45C225D1.7060503@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Feb 2007 10:40:13 +0100
-Message-Id: <1170409213.4981.4.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45C30B90.5080302@domain.hid>
+Date: Fri, 02 Feb 2007 10:59:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] rt_task_create() hangs ?
+References: <45B75FFB.6030205@domain.hid> <45C1E625.1010600@domain.hid>
+	<45C1EA10.9060109@domain.hid> <45C1F351.6080109@domain.hid>
+In-Reply-To: <45C1F351.6080109@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,37 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Steven Scholz <steven.scholz@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2007-02-01 at 18:39 +0100, Jan Kiszka wrote:
-> Hi,
+Steven Scholz wrote:
+> Hi Gilles,
 > 
-> just to save my current finding and maybe trigger some feedback:
 > 
-> We just tried both 2.3.x-SVN and trunk with our "reference robot". While
-> 2.3.x behaves fine, weird things happened with trunk /wrt some serial
-> device. We saw reception timeouts and no serial IRQs.
+>>>I now tested Gille's brand new adeos-ipipe-2.6.19-arm-1.6-01.patch. The
+>>>above problems disapeared. I even do see a "Xenomai: POSIX: destroyed
+>>>thread" now.
+>>>
+>>>So is this a known bug of ipipe-1.5 vs ipipe-1.6?
+>>>Or does anyone remember a bug like that?
+>>
+>>I do not think there is such a known bug. There were some recent fixes
+>>in the native skin, but as far as I remember they were for anonymous
+>>objects. In any case, as Philippe already told you, it is hard to say
+>>anything without seeing any code. 
 > 
-> So I fired up a second box with plain latency test (all the latest: SVN,
-> 2.6.19.2, ipipe-i386-1.6-06):
+> Did he? I never saw that mail. :-(
+> However I attach the file that hangs when starting it for the second time.
 > 
-> > root@domain.hid :/root# latency      
-> > == Sampling period: 100 us
-> > == Test mode: periodic user-mode task
-> > == All results in microseconds
-> > warming up...
-> > RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> > RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
-> > RTD| 1299105.405| 1505168.638|  -14316.105|    3671| 1299105.405|  -14316.105
+> PLEASE NOTE: I just found that the programm runs fine again and again even
+> under 2.6.14 iff I deselect CONFIG_XENO_HW_FPU. With CONFIG_XENO_HW_FPU=y it
+> will hang...
+> 
+> So I am now suspecting that it would hang with your new
+> adeos-ipipe-2.6.19-arm-1.6-01.patch as well...
+> Problem is: I can only compile your patch with FPU disabled! Otehrwise he
+> complains about a missing fp_init() !!!
 
-I can't reproduce this here, so this is likely an untested configuration
-issue again.
-
-.config welcome. TIA,
+I have tried several compilations with Xenomai FPU and kernel FPU
+emulation enabled, they all compile fine here. Could you send me your
+.config ?
 
 -- 
-Philippe.
-
-
+                                                 Gilles Chanteperdrix
 
