@@ -1,13 +1,13 @@
 Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
 	memory
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45C309BF.9090808@domain.hid>
+In-Reply-To: <1170415388.4981.36.camel@domain.hid>
 References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
 	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
-	<45C309BF.9090808@domain.hid>
+	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
 Content-Type: text/plain
-Date: Fri, 02 Feb 2007 12:23:07 +0100
-Message-Id: <1170415388.4981.36.camel@domain.hid>
+Date: Fri, 02 Feb 2007 13:44:29 +0100
+Message-Id: <1170420270.4981.58.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -24,42 +24,48 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, 2007-02-02 at 10:51 +0100, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2007-02-02 at 10:33 +0100, Philippe Gerum wrote:
+On Fri, 2007-02-02 at 12:23 +0100, Philippe Gerum wrote:
+> On Fri, 2007-02-02 at 10:51 +0100, Gilles Chanteperdrix wrote:
+> > Philippe Gerum wrote:
+> > > On Fri, 2007-02-02 at 10:33 +0100, Philippe Gerum wrote:
+> > > 
+> > >>On Fri, 2007-02-02 at 09:43 +0100, M. Koehrer wrote:
+> > >>
+> > >>>Hi everybody,
+> > >>>
+> > >>>I have a strange issue frequently when reading /proc/xenomai/stat.
+> > >>>I do a cat /proc/xenomai/stat and I get an "Cannot allocate memory" error.
+> > >>>This happens typcially after I have started and terminated by application that uses a number of tasks.
+> > >>>I am able to reproduce it deterministically...
+> > >>>While the application is running, I can see the stat values perfectly.
+> > >>>Here is the head output of all /proc/xenomai/* files:
+> > >>
+> > >>At first sight looking at the code, there seems to be a memory leak
+> > >>caused by an unfree kmalloc() block in the sched & stat sequence
+> > >>routines. Will confirm and fix. Thanks,
+> > >>
+> > > 
+> > > 
+> > > Not confirmed for the leakage part regarding kmalloc(). We do have a
+> > > seq_release_private() freeing the allocated block, so back to square #1.
+> > > This said, some kernel memory is not released somewhere, as running
+> > > vmstat tells me here.
+> > > 
+> > > Btw, is the rest of your system functional after the error occurs, or is
+> > > a reboot needed afterwise?
 > > 
-> >>On Fri, 2007-02-02 at 09:43 +0100, M. Koehrer wrote:
-> >>
-> >>>Hi everybody,
-> >>>
-> >>>I have a strange issue frequently when reading /proc/xenomai/stat.
-> >>>I do a cat /proc/xenomai/stat and I get an "Cannot allocate memory" error.
-> >>>This happens typcially after I have started and terminated by application that uses a number of tasks.
-> >>>I am able to reproduce it deterministically...
-> >>>While the application is running, I can see the stat values perfectly.
-> >>>Here is the head output of all /proc/xenomai/* files:
-> >>
-> >>At first sight looking at the code, there seems to be a memory leak
-> >>caused by an unfree kmalloc() block in the sched & stat sequence
-> >>routines. Will confirm and fix. Thanks,
-> >>
+> > Do you observe the same leakage without the nocow patch ?
 > > 
-> > 
-> > Not confirmed for the leakage part regarding kmalloc(). We do have a
-> > seq_release_private() freeing the allocated block, so back to square #1.
-> > This said, some kernel memory is not released somewhere, as running
-> > vmstat tells me here.
-> > 
-> > Btw, is the rest of your system functional after the error occurs, or is
-> > a reboot needed afterwise?
 > 
-> Do you observe the same leakage without the nocow patch ?
+> Yes, 2.6.19-1.6-04 (without nowcow) has the same problem. But the
+> interesting things is that reading /proc/interrupts in loop seems to
+> silently eat kernel memory by small chunks too. I'm now trying on a
+> vanilla kernel.
 > 
 
-Yes, 2.6.19-1.6-04 (without nowcow) has the same problem. But the
-interesting things is that reading /proc/interrupts in loop seems to
-silently eat kernel memory by small chunks too. I'm now trying on a
-vanilla kernel.
+Confirmed. A vanilla 2.6.19 silently eats memory when
+reading /proc/interrupts in loop. Mathias, could you please confirm this
+on your box too? TIA,
 
 -- 
 Philippe.
