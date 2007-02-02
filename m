@@ -1,13 +1,18 @@
-Message-ID: <b647ffbd0702091314y5c452cd2wc48f126763b9b3@domain.hid>
-Date: Fri, 9 Feb 2007 22:14:54 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] Strange deadlock.
-In-Reply-To: <45CCCD10.9000008@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <Pine.LNX.4.64.0702021705370.12191@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
+	<1170426719.4981.66.camel@domain.hid> <45C34DEE.2020101@domain.hid>
+	<200702021455.51991.paul_c@domain.hid>
+	<Pine.LNX.4.64.0702021705370.12191@domain.hid>
+Content-Type: text/plain
+Date: Fri, 02 Feb 2007 16:16:41 +0100
+Message-Id: <1170429402.4981.79.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <45CCCD10.9000008@domain.hid>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,27 +22,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Maksym Veremeyenko <verem@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: "Rus V. Brushkoff" <rus@domain.hid>
+Cc: xenomai@xenomai.org
 
-> I found dead lock in my program and looking for reason, but i found
-> something strange. Is possible mutex state looks like:
-> [root@domain.hid /]# cat /proc/xenomai/registry/native/mutexes/coll_VDCP_1
-> =locked by bus_monitor_proc[0] depth=1
-> +vdcp[0030]m
-> +bus_monitor_proc[0]
+On Fri, 2007-02-02 at 17:07 +0200, Rus V. Brushkoff wrote:
+> :On Friday 02 February 2007 14:42, Jan Kiszka wrote:
+> :> >>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP
+> :> >> doesn't.
+> :> Must be .config-dependent. My UP box (.config attached) doesn't expose
+> :> any leak on /proc/interrupt loops with 2.6.19.2.
+> :
+> :x86_64 SMP on 2.6.19.2 doesn't appear to leak here either. Perhap 
+> :http://lkml.org/lkml/2006/12/26/112 might have been a contributary fix..
+> 
+>  With my config (attached) plain 2.6.19.2 x86_64 SMP leaks memory, so this 
+> is config related.
+> 
 
-Just to put aside a few (quite) weird assumptions :
+I don't know for Paul, but unlike Jan, we both run with
+CONFIG_DEBUG_KERNEL features on. I'm going to check if this makes a
+difference on my setup.
 
-(1) did you have another task that has been using this mutex and has
-(somehow) exited by the moment of lockup?
-
-(2) bus_monitor_proc[0] is created once and never
-exits_then_created_again while the program is running ?
-
-TIA,
-
+> :
+> :
+> 
+> 		Rus
+> _______________________________________________ Xenomai-help mailing list Xenomai-help@domain.hid https://mail.gna.org/listinfo/xenomai-help
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
+
+
 
