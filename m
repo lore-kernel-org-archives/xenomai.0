@@ -1,21 +1,18 @@
-Message-ID: <bc4264770702220557x7d43d767m5383e8d8ce60204a@domain.hid>
-Date: Thu, 22 Feb 2007 13:57:11 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] CAN driver
-In-Reply-To: <45DD9DB0.1010103@domain.hid>
+Message-ID: <45C34DEE.2020101@domain.hid>
+Date: Fri, 02 Feb 2007 15:42:54 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <45DC1D05.1000206@domain.hid> <45DD8438.4030306@domain.hid>
-	<bc4264770702220406i1c8608cy3f748416f589f5c6@domain.hid>
-	<45DD8B42.1020709@domain.hid>
-	<bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>
-	<45DD9294.1060109@domain.hid>
-	<bc4264770702220502p13556486l3d59ad7b4b3ff737@domain.hid>
-	<45DD9814.4060809@domain.hid>
-	<bc4264770702220536veb7de41saf40e41fccbbf377@domain.hid>
-	<45DD9DB0.1010103@domain.hid>
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>	<1170408789.4981.1.camel@domain.hid>
+	<1170409755.4981.11.camel@domain.hid>	<45C309BF.9090808@domain.hid>
+	<1170415388.4981.36.camel@domain.hid>	<1170420270.4981.58.camel@domain.hid>	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+In-Reply-To: <1170426719.4981.66.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC7E6E6FBF029285BA0EBABB4"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,700 +22,208 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org
+Cc: "Rus V. Brushkoff" <rus@domain.hid>, xenomai@xenomai.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC7E6E6FBF029285BA0EBABB4
+Content-Type: multipart/mixed; boundary="------------030504040100080608050108"
 
-This is a bit better.
+This is a multi-part message in MIME format.
+--------------030504040100080608050108
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-/proc/rtcan/rtcan0/info
+Philippe Gerum wrote:
+> On Fri, 2007-02-02 at 14:59 +0200, Rus V. Brushkoff wrote:
+>> :> Yes, 2.6.19-1.6-04 (without nowcow) has the same problem. But the
+>> :> interesting things is that reading /proc/interrupts in loop seems t=
+o
+>> :> silently eat kernel memory by small chunks too. I'm now trying on a=
 
+>> :> vanilla kernel.
+>> :Confirmed. A vanilla 2.6.19 silently eats memory when
+>> :reading /proc/interrupts in loop. Mathias, could you please confirm t=
+his
+>> :on your box too? TIA,
+>>
+>>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP=20
+>> doesn't.
+>=20
+> Thanks. I do have a leak on UP here though; vmstat or any other command=
 
-Device     rtcan0
-Controller <virtual>
-Board      <virtual>
-Clock-Hz   0
-Baudrate   undefined
-Bit-time   brp=0 prop_seg=0 phase_seg1=0 phase_seg2=0 sjw=0 sam=0
-Ctrl-Mode
-State      stopped
-TX-Counter 0
-RX-Counter 0
-Errors     0
-Refcount   0
+> do not eat this memory (at least neither ps or top report any continuou=
+s
+> growth of their vm space while running the test), so I would wildly
+> guess that's a kernel-based leakage occurring somewhere in the procfs
+> support.
 
-for rtcan1
+Must be .config-dependent. My UP box (.config attached) doesn't expose
+any leak on /proc/interrupt loops with 2.6.19.2.
 
-Device     rtcan1
-Controller <virtual>
-Board      <virtual>
-Clock-Hz   0
-Baudrate   undefined
-Bit-time   brp=0 prop_seg=0 phase_seg1=0 phase_seg2=0 sjw=0 sam=0
-Ctrl-Mode
-State      stopped
-TX-Counter 0
-RX-Counter 0
-Errors     0
-Refcount   0
+Jan
 
+--------------030504040100080608050108
+Content-Type: application/octet-stream;
+ name="config.bz2"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="config.bz2"
 
-And after ./rtcanconfig rtcan0 --baudrate=500000 start
+QlpoOTFBWSZTWZbIP60ACMxfgGgQXOf//z////C////gYCMc6AAH3FHlRUvo8hwgIvGFXPuu
+dQAJxIJVUmwQTIBo7hpA6KaVQaaNd2AJV7aqHrtddu7bt2d29Mexh9zvY32Hzmvt7vo+9vg0
+0gE0AAmhNDUwmQQaanoahp4aJPUD1BpoTQCBMkxKniT9UyTNQ9RpoAyDAIyGDTTRJqepJ4zV
+RkYnpNNAAZBhGgAAAEmkkSbQpppqnp6npTT0j1NNAAGjIGgANACUIVPCTMkPUxNNGJ6gAZNG
+gxAAAASIQgmmQCE0TSTRoZMgAAAAAd/yJ9Af+f6s4YdGGmFZ67QPNrNNQqpFUFkV3obsx08s
+piTbKGJG2F/1D4FHHS1CwvMsHH6wQgwYQDkeGArEfdSVg5SVmJ/fD+WXSFRQzpv0khJrfpZy
+iofRd3bVrYpls4t93Wz+iemBtpUKKkUWHVBQVaypKlZMGo4WYmYURmOIRQUFxFEaIiEUFgKG
+JRxWBUFK1BRpVBQFK42e7Xjq6lWVYhWCkF8WVxlGslQtsBrYLCpBQFd0sUxBVIChNkwXKprJ
+hkbZUqXdpiVkkU0wMZMSatVQN9tsVZHVG2loLJbZiKVXGVkUxkrUWAZaY40VlRQUtrW20FKS
+HrQJWBAfPRLlpyT4s8ti6ePZh7tVO5ovRLORad+UM045FRgNtLRtWLC8ZUcN0LhRVRUtNsKz
+OdhjjKWNq5mMXKVS2sqUUeVuWlQ3tXGKFSUbZQqzfJcGy1FCoIkszRlCo3jDRmzMmlW0F2lM
+7TeakiIMWLWZNQz/L1K49/Hdc6P1Pzzb6fcq/hvYfxw6/R6KMu4/YHmUu/0o8dYMAQABA7BZ
+XlfeMIsGVShPYSWRkvBtH1KkZrXFQPtetvwX4lKyhI3LypanRaqVF5BIrI4FIYlQHmJ6vUqS
+LygUokiYeTGxs0aM2YZpUB/azNo/J69Z4zLlM9mcYrAhBSRDoWBSNkaaaJH49DMiuC6Ya+WG
+LCeFnwsH80xFOZxjPDPQFOymrGB9tf48K56LFy2VRZukKeirb5HLf8/nwWDwv5eW3XR7iwlk
+3+Xrqn8aflX+jvSe6qqPzk+31uZG6g+vRZl60LSbSeru+2KRT7NolPvWshzLGtxqV/I+KqF3
+64/Lx4zzUdsqF1lP3ZoWLZPqBS3q7+Zri5l35XIOnb+1XnovffbZonT9GcYG24SmZzi6h7Km
+wv4OhpljkZS3x1JeNcFLKR5geqv3V7v7bOOlph9CH5cS8Hef+VPejn5Av37s0eHZVtTXZIV6
+3Lthc0WrMNNOHwltnmNDs6/eyFNl1eeY3ll9NzDXoJljMW62UV621apleyvJ873YYy/W7RWO
+b8Ivx6YF7Fe9qq9yxZf0yq0ytO8jDHG1uetC1zdw22lvk1pBFu/76U1ic7/Lb5u4wSeze18N
+iIIs2Nfl8SjXf5+o8575+ed5e94cr3LXZjyhyocOtujdjI6rLhv34YR0ZHMuu2ZipW+d1Ra/
+0v5pOfztHp8bY82+g768rNryNd3k0vHvSFK+I98xrZZ9m9aS7Yk62UFVI3C93izPHjzVPDVx
+32x4W1Beo4uXSOW7Ztr1yoW8RulTjVAMqC8vp7PDvx7vOz22Kz0rD2/gEAAIYMb8WGmSKlzz
+cz5pCr5RyiAAhG/VzMWlxyjROYypstxclkboNlLN7YZNLYe2q6Qqll+H9gfoifABAAAB5Vfx
+l+yoEDOZ0Tv59KsLfV2bZ5rV2aMgipvZYPYLvpcn8M+/xr3cfZR6dqxhtgNdMvWWdu2H9+nH
+h4J1foQioP2zXpI3aKIOKj9Yu3ngaTLYbj+zamyJtvvrTGXe1ng4yYmhZNixOM+S2dwO2W89
+HGocsKJ1m/z8fk+fX3xnH0juqu+vu5ZfZvs+3NrdoABuFOadduYqtsauAysEvexjjOpgT0QD
+nfBXWhw49tj3vwosq08qP70dLMvykHwKi/l57na68mV9ObGbO2ubVrpHTn+76PNiaCnRbxdU
+8oisdSxCRcosBVql7df8XuTFw4oI2Tq3M3W2jfw23tNJoKrW/jkSwZYpqD5UJ53ml/nqoCxS
+NG1GylSU2HG2tGnfe7mtl0/V6lT68S0xnA1796PalPbbWIll94FJL8HwYKJuGk/hMhnbGaPC
+EInbbFrBeIA5vPeYuf+vi1aEe4NnX6v0X2e5joOzoQd1CkAJ4KIdnPR7Wnyun0sxxzZ45vzY
+MRCjZYRURMOludj1z6nIh2d3NRM8VAxCI7lng4Aa4NBRES5vuHQAk+y/hpFWCIq0NbDwrGgp
+uV4UGZV7FrqtY8gcFoARmHq2/O270d7u/bo61TkwBUcLjoxD4qOxrQFDWFjeZl38d2T6efCq
+3CVXdFLRHkrI2uslzPyEcWNkcpv8aaWY2Mydhj3dfjR8pWzb5ltyNNLIujHDCqzOM2rmI22a
+VVM1MfM1u9lXY+6U6bDYxtzYU6OGxa4RIcWb4ro0TIay/WVZnOM2DCnHSmrnJkGwvhLhhK62
+yRpXadC8br3Tiqige1tnmkM79SkfvkPlaVi0Sa6/eiXlYofnxp1F6xY01pPB84G9ZeLrbbrT
+sVrj7t+RSDF7616rmSw07bQxeJdlbi7W+24ZCLAn2xpXftS+tuopF5eZi81dh/4AOkS7698U
+wqwe+fWrIb0LlabUdWt7ACNVBUAXCnuUM0RdFfHT8tfq862Xxqco75d74ta1OiSEY2g4LHb3
+uS+D6QJEgNqTHhrOYCkoiQ0Pw3fIcukN0WOzi1rd7GTveJ+qn164wckh7HxpB2eTRdU2jZUo
+WWjWsk9NRZmVXpLVOa3TjKogztNHJWKDEtQ0wPHSpB3qaV4SWCEFVEaKakJ1oGzS+F1zyOzv
+UpWqjoLunnvWKphxUN3qFGZ72Ot+c3BOJ2sOQvM9XaJf4nPA0tpq2wfuESgCpEpJLxCJcCbZ
+RRSQw3NOmseI5BlTIW/bImqc88W9g6/DuIY+fW9MeHHmYHEKO0ra2mPDruRTZ59+UG0pjPx7
+ypLZinnDf34rEIuw4LoEczcjphLnPPBEGNGSKHe62KefjkmIsCPl2vd27JFiiKjIhHrS4NBW
+MFgiKONDwS99KqQSWABIMpMgC3NtMO5bo2ouCLXOjJ9hVzUmWleN7QDP+tr33zdhYNf8Qn+L
+Fkm8mmdXRZNRkfI+Otq0CNRW8MzPviiRsE9c4QW/GT5gCBScjOGsXGpKSR8tahs25l7uyMMg
+eaLab+18i1jGF+GQiJ+icYTRmYzA6pHQ5EX0iDba9JNDZBvy3mcsREG24KLILMTBQ5dT053b
+ptidSqJMmkjvni9GuIJ2+Z7n9LAGhjYhjTYRVigqxBWCxEVYCwWCxQBRURQYiIjFFVUUYgkY
+yCkEQQURUZEWRhFIoqigiosRFUViMGJBBBYKIKqMVYMYRVILFIqxH2NgrCCiiIoKREgiLFgs
+gqIsUUAWLILBiCqjFiKMFZplAUVUQVRYRQgoLAEYIpEVEUWCiwUQRFBgosWIjFEjGAqyKpIo
+iQUkUiogqDIigxWDERURgRRVUkiwVGCjFDQepkOr1e7WGbM0ZsZfp7Zqxq1YO4VK9nsGresh
+0KBAO/QraEdrqGMJqFwXzoM3JPV22jXVXsHQMUe7u40+soKkIKK6/SbEbLqwjG64nTw78Db1
+7Mh7DSfhftPUtgb1mH4IdlXcpWscCOgGhJNji+JYl4ptQT9hHpcgyHeFy+q2VgefZhWh1luH
+YVDTd0uzBKHrvKJSHZQRdkpImFxexbpZXWry9a9aPxvBsxfkaESxMYGZqxgxnL28Vd1gZZmG
+opChxIPIYLmEpd3elBIcI8gSTBcaBRjoVbCpWA6ZBCIOry3V/llbAEcaoF97Sy+GtxZQdZsz
+krS2obmIEP024ADbZBe4VfQVi9NLrxJc8glpjqeuJw8NwNK5Vb3/pSwh8tYWvWfZkptVhpXy
+wpNWs8OcetLiUsC4cW9tfUJxU6yawoLBAPm/E2zCZ7afs30Z3faJHkhws84jQmD1odrZBJcx
+iFEBZu3Ja+VaErmWeZLQbvSrWVl2wpc5IP6Dl66DJ1AoCPagm8tW2SROe3VK8C28FEqlSDIX
+TVX5q97gRgopHUvBorIUcdxAjJG0WQagKJ+a4BTilwQ5CBDCmvDvrLQbETVRiL7T3nfL265V
+mrYyKbEuELRENDFbtfrFYvk4D2IAFijDwFsmOo53avEunMquORDyRsoFPPYbKoUD8M7aQmno
+R3jBWryYLDS7NBurGaDIhm21ACu2tlm1+YMCIkRyMcoBG7zNduU2iwerMaCcHvKormFZaUEI
+zyDmHrVWlalJAcqFCzqqyDyn3u0OaPVEUWtEGy3avhAfn93kU4pX5N+P6aYeL5yDwkO9Fikh
+6nTDQ/CeZq9NBs8yJISTp7fFeaK/agM683X1Y7JsbbOY0fUBgL7Mpouy3jaSumsrRr2ccfTt
+JpHTt9NtTj79deUduPp146U1MqDumfHMhBvSqNep8o/BohZvv5kOfIjV3VdJLeLF4g4vD+F5
+UdCAnvpWR8s/DtCbVuPnCS8lWubECAsb8MTlp3+N12vfAQ/VsnK7J03ps9DfUJ0QUhA5umCw
+DGSBUgQWEgKBILAUD37ZEYBFCEFBYLIYwKgCyCkRFKhJCsgiKLIFSfTZIExIAHkHhoThCz0G
+HQKjlCdOgvNs66NhWCSeFvMaI2ZaSc2pBmfNXCXRhrhPA7CsKhuElQ2wtQGSOlpwEEOGazMb
+ri1dorzlFqckZSFrlpYcELhU0FII4sszYgPoo07sMoEI5YA6yXfRRIjylIgXqbgS991fZWvY
+hQiC76hbsSgZkPnr5ZlE7PscNoMXIFs0Tamc/FnpTV8rFdfXHSyqypUoXT06O1hCENoBIF28
+DyZ7aHe+XaJZVG6GC1fUq3S09Uc34ro7ITgiyZXXxr5yma6LjLbEBUEcyYXDzaE2Lj1EJrXU
+DzfMf69pHoZGSaHOzbbaHPCpDIFU9Ofe0Z0ZJ+2ChJpFbRZ+Y8ylm0LtwmQodh30Nl7VpEGB
+hwRCKqJGJXcY5h6PS0x11yeMc/XQZ65XM7yy1Fwl6wc2kEoVqHzrpFKmBjlCQ3xeBg4ND0Pi
+hgaZQ8EqdeTYbpKapVS5hobL9QIA35aMQr7vx6fTercT+iK2WfLik41JoNHi/tMP3HdYiBpG
+UyQBrB1sEOHGj+l4mxaSohFxtCDtAFDHxOKRqxdqno7GCKhO6QIKT1dwM2UYSJejlEkp766C
+mznpMUt5MxjGfAuBLaw0GLYCqH4mzdg6bkAggksxTZJWO4hQKjVtO89xPGkTYrBXCaafFQxE
+6dw3jQVr4rnO9UxoFURBZ0RAFGT0RQtcxdXR2VGZbiV+EUS3ld0BwpajCnIUNZR1I3u/doq8
+nRgCOa5sS04MZeZoiukpZsG99boxk5p8srceZmuy1L8KayrEhuvWuxp3CopovQOBlfc0Lspk
+AxlPk5JGlmRiNrX2e5RLgGWbChL9iKBlAXK9jzMqJDluod3C1n4iJIyRhpMZ94OHY7X9cQdL
+F9oHooOBjgws3SyvB01gmCPzyeJXZoNX9YZmKebSMzKK1VSHQduV1oVu57wcFoiSPu/Zb4kF
+6GE7uH764eD3xCMlHFqoOhG6+7AsYxDLREM3JmIkmCqo6VChxZDnjcQSKi6kJtLvMO1MqJJT
+gl2cN+hcquhdS3EGCz3sliKGklViCDOe8kkJJSYAyRrpas7Q2KGiRptjLoEcrUiVZotbEDoB
+U0CXpKhIYTdrvlCaRdEZyP2qLqBPJDveKCkSWZJCsrOzqT6cvnGWUQHSIGTklGtxAY22mHoA
+557ezT4Mvl6rDZPefDrtNIUuL4fCz4AjIn6eKWVoGdpkSmGhh7xbo5hkJIaj0QWz5yh8zQz5
+knrk2lYNNj1nRmqiiIHRwa6+X2wUUbYfZ9oQLDipVtocKkW+Vt6hiASSu0iGuq3paZwcXief
+Pfnzxts25WphdNWujvskCnM54wwDpwKyOnP5DfNGgjPqdTQ4hVRNxE0A0kJDNc7d+HTRXqyb
+NMcKL5TWuAFGqF7UjxtGm2ZwTpb8fLAXOevnQBQ20AnTlsACG8il3VVV47PtuRNlItNtDvbE
+n7WqS8RzSlqJbRg6nz+N54bEh24iEw5aZ40KLNveM+kNn2YS0h+qqi9yCIzIUp6BOyKR50j6
+9shFspcTYy1g7E5PjuypWr2wWH1WhANtKSzJHkU5k8DcO0WMoJaCphPLHWMpVWSIyyXgKO88
+iVs5YZP2YjOssyvfrExBaBzqdrajUo95JOTCRe3sa+EIPM2O2w5233mUtnx2kJa4+fIKP2OX
+jq4ZwJlt5XMpZb3TYeX5ZLIeJgcwrvq7cKYnll5lQebQImDbUS+J0ea+scKoqUJJhbBgtL3A
+e1E7whKMiCUtYcJQ89KiUbzCnJUfD38LQLCJZJfG0ERGw7L3lAXaDbhwiQtAvDFzNNFbwhGm
+tgx9pLTGzI3JSgxyFu0aPed/0K2skKtfUhlZ12ohvXvzAxUQHHW7hsCHcmyAIqMM3sO6CyYK
+Znlqdn355EhloUZEVFj5BqFrHuv1eTh627SE1Cw1nIN8HTPjqTNeMCkURHQSnHPs1SIUs9bL
+dVtukRp6s0sTeh050Q0Tqmyw1tNAxmlpb4lEAkfBnwFpnGIzY8t9emws2S+PhhdyqEoaBIjA
+5OTOz5MYc7eil6X++xaQpChgIbM1MeH89bytoPB0ODfdxhHkhEJd1n1JRS0hCOL8u1zVib8d
+cihm2kIMbJDd5v4z1BrSwW0QepWYCTQatBZsj2lLLO35KDyw+WeDMSzz+LHskO0I6ydyqk7N
+GrRvaDveOQ8b5tvq4WW5HfDihstXZhoNdJirXnQSHTSVBWvQrDQXvg7V6dP5a8p7MR075c3w
+b5bUAQJGLEEVa0i3aF1tW48AmzKr5+09M7JjL9szOlDPCA43rnsKK2dRXNB2jqvNq/D1M91n
+Sf3pq+kon13K/CBwQRKi7SGjdhuMLOUp0jijCGnq60kq7EMmkqYCQeNaoTkh3Q5XPSZKuRk1
+WE/bzeTfOUX9iTWQ0MEbSTsxzU/Zzzs9VBVIHJziICKUxih2ZJbhfJ4fh89RI20WsJGsQseb
+z400GX09rx3NAwJSMgwVZOIfWKTbfS+UChGbcADw5gQviQiREyFxcCnDyOmwUAcnkjnlmElv
+jxVAyWLiOhlW+ywXtdqKUKcpgC0uDOYqzb7DeZflzNH8Wi6MjHXLOTAJpA0tWwmAtKBj5uGu
+6lBok0CbXw1ys5sAo1GsygbfqFqzFECuQOsSqKgO4ifXXZzppxwnyhM7y4VIGsHTYqapokiA
+kjQXUIjEBHyY+sE8/gMduSpF4A78b1KnJfbPb/jqXp5DZCIlWfeynr8XD4tgyPK7ad8vPh5+
+hFmoRZgkoGhGiXaA8yoagL5+Y6a3Y1eyIMeQdeLiDi0cbbhklUI83rIObsxzViZBqCOnKeeN
+YlIKvYVO5JnezvQ4Bnp8Kdkx4SVA2rDZkQb663h2YzMhOa9QoeLdN8LSzq2eajs6dX2H4TiK
+S3FUDqx+xpGRlCy613eUp336PwkuDAABmSIxbz0P0u8w2SBBjA+DcpkItzeHt+3dPrNffpkv
+N4gm5D1HAtLbFr2fadeIhGBcOh1eeznrpNlAmyQuiMLDHCQU+Ra1KjK6RfQKgoy4CICBEpnN
+U93CdjZyFoRU9AqEc0eRho57ctZ8n07QZwUUlzQtuTwuqVkLuXgK/W9Z6VH5ZNq7dmTKxHOf
+jOFtArcj41pKtDTzakrAgkoQJni60i839EBQ608GHkJG+cmKnCeXdmS5QIcJ2Qx5b2O/3evW
+SbcZZUqqcubhIoH8421C58qAiDIsoNqG/Vqvzj2sfhuyvz4uFtbjccHYIxHR7XA6VZdtRzO/
+ebygyXeZKAMSKwOYlVDSbD0985vYhPFgqqG3Q592kUeRlXjVufE8kgcsOTUNcXg0sEW6ayUf
+XkUck5hkmuvlUicADxgeWREA5vTTvEDvLpIvu8C4olYxVF6prtaKSlhRTA7zxKDrBGOA33VP
+ugSw6FA7c4F2cuM69ihUMt9IkKz/T+5ckdy7JweV9vpxhb82+enzFOTRDQX6QcmEfaGGIFM3
+k+eKirF0li6TviU52Sb0uzicJA29XLMmpaWFoBZVIIQSIEiiJPBE45kGK+KNBgTAo5PDrNwh
+H4YxKjC0kuNKWWG3HKFFM+d6C3nxrCbLTgqlhsEQ7jHKEYcNXU+toMqbxvDa0U6mcBkw8fbu
+WmlaoPEEJurRt7G2TKRBhEC+zDHSZOTIp59JKwmKPnpSFXZ7mUcmiGIPEFVKIiOQAOGU28rA
+bfidqCxFNrsMWo6XXf6tZ48oAEWntcKUqdHw2SG7DVjstygDTcWXW3U5wqdCtJAmDIQYqoUk
+Q8se289UkpSFmQF5Uej0IWMQQwZRRzoEHAGBDSN9MP5bQSnC7FuxswzrmHIt1pavZbkFO9+2
+xRnTBwNwYheWVfi1VWZnbIjERgkmEkLNzRHs+d+PVaYcC0mBBbOC1fLyOK9X5aQPL39dALGw
+DuzHKBsv5CMbODjBxJRTQyVdrFUHr21vO+gROZe1QxOMdO2bCHwckEjJ4izEq6gnL9MG1oYx
+JQhRiPgw6i1UUgOSNZLdZRsIedTv6q3XFxg1pOTiYNTZVYUCoAEF/biY2lIYZO1W8lFtMkJo
+QVqyOZO8pUgBjIjBimWaiWCAEbSVZ4IgIRosGYhUrWJHQw5cmLmyHyE/18v0E1/9H6xNQ/Op
+UgrPmMGhfZGrGj7uCYHEqnTR8K0UZz4DtTvHyRvk6E8ThC915JSonhwbIiSLu1xX/fFCjnN9
+72f5s+8R6ygGwH9qUiJGNn34MVlre6pn+NiqsNyjiwGl3DEEXeE6p3TNZd8zAe0hhMl/cVlu
+hgAFEnGhgnnsNIK4mzqV3xa+DuhWxNRczVnlunU8I4gmEhfJniH9n51+fjTx/eubuFWN27LE
+U7X6sKrbVWnZJ1gr3dTAmNlfg83AYSoS2wUXfVvaytSsAoGgGTOC+ugYphHPq0oa5NLJ+U9Y
+Wu8I92LCeXtIZiABGS0b6n4zEL5bn3pvAUUir8PYPTPLiSx6WonrVEJoBQO7T5g+FEHQesQx
+UCw7PDbEYlypmGIbGUVMQX+K7u2GwQIWef1d0pqJblQdxJIM+fRSILTs2rCpndLqDB3xVk6o
+yTDGCDpKAkAO0Wzj5vHImYQAAIO8CY8QRol891d4YUCC+i1gBFyk29fVRAOgdYAF6hUIJRrg
+fV9P6q/lb67cKdFnUYLyLSA+u30xo04mjpcx9wbtSA0LRNNNL/sSAUQAH8lhbgKIYiRsLrIb
+u1MUYwlLCmiIHggRg74wqV1aVxbJLSyS/fyjS0P8P28mxAAjJUgxGoPA3NVMEe3x9MntH69d
+wyTiO5mPakxB8O7pnLVj/CtBkUE/RBgglYHmLAGvf776Jcnt9fBx2v+YCj8RCKr97p9GkACN
+CaGtota+U3qHk42AupxsxLCE1cAKFUVIQdKCBX5xkwDuKTfgk50FHgoSQTJQssWKOXP8cHUo
+HgCXNK8fc23CpOHlo93xKqKCrDANJ3Unt9uPPvJz54AWaSBuWXvEv71ayO0Q13cNzJJBaACN
+J0RNBFCdtDgVKB6AsnRJXy3FZyMgwAEP8u8WrhqoX8loEACOz7Trg4ZtyqqrXV9voBEutQA9
+/z0S0ALRJJoBCWbQhEa8jVVDrp+Ea3EACILMyTxFsz6QbGHqB2zshxQfanFJbNm1SICZNzcA
+ThtA9InKVqmjmmWBRPyilY5SmXj7isY/fgnT4DoungK+NfYQSACSQSiEoL8IoxtkvxM/jyr2
+/j9unnyMEZ1EiFfpcvJ8c0OU7bcOvNl2lbJemmqcqIiqAiIlnQtXy7nKrrD7Lmea7rgmsv+L
+uSKcKEhLZB/WgA==
+--------------030504040100080608050108--
 
-Device     rtcan0
-Controller <virtual>
-Board      <virtual>
-Clock-Hz   0
-Baudrate   undefined
-Bit-time   brp=0 prop_seg=0 phase_seg1=0 phase_seg2=0 sjw=0 sam=0
-Ctrl-Mode
-State      active
-TX-Counter 0
-RX-Counter 0
-Errors     0
-Refcount   0
+--------------enigC7E6E6FBF029285BA0EBABB4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Why is the Baudrate undefined? I thought rtconfig should set this to 500000 ?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Is this all fine now? I oculd have sworn that I checked proc/rtcan
-after I had recompiled the kernel with the virtual driver.
+iD8DBQFFw03uniDOoMHTA+kRAjv3AJ9itoJFvK+5tXB0iEzCP2m5+TvBKACZAd0W
+J+8SBoXxFJ8+RxUAS8vQGWw=
+=uJVn
+-----END PGP SIGNATURE-----
 
-Anyhow. Is there a small program that I can compile to test the
-virtual can with? I presume i can send it messages with rtcansend and
-read the messages with rtcanrecieve?
-
-I still have the outstanding question of what the module will be
-called for the PEAK CAN dongle. I have to find it after make modules
-to squirrle it away so i can load it after booting due to the
-complications with my live distribution.  You said that I cannot build
-that into the kernel statically correct? Can it be loaded without the
-actual device being connected?
-
-Maybe a small suggestion. Would it not be better to have the virtual
-can driver built into the kernel by default. As a new user I did not
-select it, saw no reason to.
-
-
-Thanks.
-
-Roland.
-
-
-On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
-> roland Tollenaar wrote:
-> > Hi Wolfgang,
-> >
-> > I did this
-> >
-> > #/var> grep -r "Xenomai" ./  >> dmesg.txt
-> >
-> > I found what you are looking for you will find it in the message attached.
-> >
-> > I did the same for rtcan which should yield the last 4 lines
-> >
-> > and found this:
-> >
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: rtcan: registered rtcan0
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: rtcan0: VIRT driver loaded
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: rtcan: registered rtcan1
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: rtcan1: VIRT driver loaded
-> > ./log/dmesg:rtcan: registered rtcan0
-> > ./log/dmesg:rtcan0: VIRT driver loaded
-> > ./log/dmesg:rtcan: registered rtcan1
-> > ./log/dmesg:rtcan1: VIRT driver loaded
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: rtcan: registered rtcan0
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: rtcan0: VIRT driver loaded
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: rtcan: registered rtcan1
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: rtcan1: VIRT driver loaded
-> > ./adm/dmesg:rtcan: registered rtcan0
-> > ./adm/dmesg:rtcan0: VIRT driver loaded
-> > ./adm/dmesg:rtcan: registered rtcan1
-> > ./adm/dmesg:rtcan1: VIRT driver loaded
-> >
-> >
-> > Hope this helps us?
->
-> OK, now, what is the output of /proc/rtcan?
->
-> >
-> > Regards,
-> >
-> > Roland
-> >
-> >
-> > On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
-> >> roland Tollenaar wrote:
-> >> > Hi Wolfgang,
-> >> >
-> >> > sorry to ask a stupid question here but where would I find the complete
-> >> > boot log
-> >> >
-> >> > I am checking /var/log/
-> >> >
-> >> > but am not sure which one you would want?
-> >>
-> >> Output of "dmesg" please or the log of your console output. You should
-> >> find lines similar to the following:
-> >>
-> >> I-pipe: Domain Xenomai registered.
-> >> Xenomai: hal/powerpc started.
-> >> Xenomai: real-time nucleus v2.4-devel (Bells Of Lal) loaded.
-> >> Xenomai: starting native API services.
-> >> Xenomai: starting POSIX services.
-> >> Xenomai: starting RTDM services.
-> >> RT-Socket-CAN 0.20.2 - (C) 2006 RT-Socket-CAN Development Team
-> >> rtcan: registered rtcan0
-> >> rtcan0: VIRT driver loaded
-> >> rtcan: registered rtcan1
-> >> rtcan1: VIRT driver loaded
-> >>
-> >> >
-> >> > Xenomai itself must be running because the the programs in the
-> >> > testsuite seem to be working.
-> >> >
-> >> > Roland
-> >> >
-> >> > On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
-> >> >> roland Tollenaar wrote:
-> >> >> > Hi,
-> >> >> >
-> >> >> >>
-> >> >> >> Without device it will not register anyhow and see above.
-> >> >> >>
-> >> >> >
-> >> >> > I have now built the kernel with the virtual driver statically built
-> >> >> > into it. No difference still no devices.
-> >> >> >
-> >> >> >>
-> >> >> >> The driver for the dongle will not start properly when statically
-> >> >> linked
-> >> >> >> into the kernel. There should be a log message, though.
-> >> >> >>
-> >> >> > No log message unless I am missing something. What is the module
-> >> >> > called? After the
-> >> >> > make modules in the kernel building process I will have to find
-> >> it and
-> >> >> > store it somewhere I will try loading it manually when the new
-> >> kernel
-> >> >> > is booted.
-> >> >> >
-> >> >> > The virtual driver I can build in statically?
-> >> >> >
-> >> >> >
-> >> >> >>
-> >> >> >> Can you post the compete dmesg output?
-> >> >> >>
-> >> >> >
-> >> >> > It is attached as a txt file. The errors regarding ehci, ohci, uhci
-> >> >> > and mass_storage are results of trying to load modules that I have
-> >> >> > statically built into the kernel.
-> >> >>
-> >> >> I'm missing Xenomai related messages? Could you send the complete boot
-> >> >> log please.
-> >> >>
-> >> >> Wolfgang.
-> >> >>
-> >> >> >
-> >> >> > Regards,
-> >> >> >
-> >> >> > Roland
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> >
-> >> >> >> > I have checked the .config for the kernel build and CAN is
-> >> >> statically
-> >> >> >> > built into it.
-> >> >> >> >
-> >> >> >> > I would prefer to statically build these things into the kernel
-> >> >> due to
-> >> >> >> > unwieldiness of my ditribution. If this is not possible I will
-> >> make
-> >> >> >> > modules. But is this the cause of problem I am having?
-> >> >> >> > I have no device hooked to my system (PEAK dongle on its way) and
-> >> >> the
-> >> >> >> > virtual driver and TX loopback ability  has been excluded from
-> >> the
-> >> >> >> > kernel build. Is this possibly why i have no devices listed in
-> >> >> >> > proc/rtcan/devices?
-> >> >> >> Wolfgang.
-> >> >> >>
-> >> >> >> > On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
-> >> >> >> >> roland Tollenaar wrote:
-> >> >> >> >> > Hi Jan,
-> >> >> >> >> >
-> >> >> >> >> >>
-> >> >> >> >> >> rtcanX are networking devices, but only visible in the
-> >> >> context of
-> >> >> >> >> >> RTDM/AF_CAN.
-> >> >> >> >> > What is this?
-> >> >> >> >> >
-> >> >> >> >> > To enable them, use rtcanconfig as explained in the README.
-> >> >> >> >> > Which README are you referring to? The only one I know of that
-> >> >> says
-> >> >> >> >> > something about rtcanconfig is in /src/utils/can and it
-> >> does not
-> >> >> >> >> > explain how to use ctrlmode and bittime. There is an example
-> >> >> in it
-> >> >> >> >> >
-> >> >> >> >> > rtcanconfig rtcan0 --baudrate=125000 start.
-> >> >> >> >> >
-> >> >> >> >> > If I try
-> >> >> >> >> >
-> >> >> >> >> > rtcanconfig rtcan0 --baudrate=125000 start
-> >> >> >> >> >
-> >> >> >> >> > I get:
-> >> >> >> >> >
-> >> >> >> >> > "Can't get interface index for rtcan0, code=-19"
-> >> >> >> >> >
-> >> >> >> >> > Any idea what is wrong?
-> >> >> >> >>
-> >> >> >> >> Your devices have not yet show up on your system. I guess there
-> >> >> is no
-> >> >> >> >> entry in /proc/rtcan/devices. Check your boot log.
-> >> >> >> >>
-> >> >> >> >> Wolfgang.
-> >> >> >> >>
-> >> >> >> >>
-> >> >> >> >
-> >> >> >> >
-> >> >> >>
-> >> >> >>
-> >> >> >
-> >> >> >
-> >> >>
-> >> ------------------------------------------------------------------------
-> >> >> >
-> >> >> > veReady SeekComplete Error }
-> >> >> > hdc: packet command error: error=0x54 { AbortedCommand
-> >> >> LastFailedSense=0x05 }
-> >> >> > ide: failed opcode was: unknown
-> >> >> > hdc: packet command error: status=0x51 { DriveReady SeekComplete
-> >> >> Error }
-> >> >> > hdc: packet command error: error=0x54 { AbortedCommand
-> >> >> LastFailedSense=0x05 }
-> >> >> > ide: failed opcode was: unknown
-> >> >> > hdc: packet command error: status=0x51 { DriveReady SeekComplete
-> >> >> Error }
-> >> >> > hdc: packet command error: error=0x54 { AbortedCommand
-> >> >> LastFailedSense=0x05 }
-> >> >> > ide: failed opcode was: unknown
-> >> >> > hdc: packet command error: status=0x51 { DriveReady SeekComplete
-> >> >> Error }
-> >> >> > hdc: packet command error: error=0x54 { AbortedCommand
-> >> >> LastFailedSense=0x05 }
-> >> >> > ide: failed opcode was: unknown
-> >> >> > UDF-fs: No partition found (1)
-> >> >> > XFS: bad magic number
-> >> >> > XFS: SB validate failed
-> >> >> > NTFS volume version 3.1.
-> >> >> > spurious 8259A interrupt: IRQ7.
-> >> >> > UDF-fs: No partition found (1)
-> >> >> > XFS: bad magic number
-> >> >> > XFS: SB validate failed
-> >> >> > Linux agpgart interface v0.101 (c) Dave Jones
-> >> >> > fuse init (API version 7.6)
-> >> >> > NTFS volume version 3.1.
-> >> >> > input: PS/2 Synaptics TouchPad as /class/input/input1
-> >> >> > Intel ISA PCIC probe: not found.
-> >> >> > Databook TCIC-2 PCMCIA probe: not found.
-> >> >> > PCI: Found IRQ 4 for device 0000:02:03.0
-> >> >> > PCI: Sharing IRQ 4 with 0000:00:1f.3
-> >> >> > PCI: Sharing IRQ 4 with 0000:00:1f.5
-> >> >> > PCI: Sharing IRQ 4 with 0000:00:1f.6
-> >> >> > IRQ routing conflict for 0000:02:03.0, have irq 11, want irq 4
-> >> >> > Yenta: CardBus bridge found at 0000:02:03.0 [1584:3000]
-> >> >> > Yenta: adjusting diagnostic: 40 -> 60
-> >> >> > Yenta: Enabling burst memory read transactions
-> >> >> > Yenta: Using CSCINT to route CSC interrupts to PCI
-> >> >> > Yenta: Routing CardBus interrupts to PCI
-> >> >> > Yenta TI: socket 0000:02:03.0, mfunc 0x005c1d22, devctl 0x44
-> >> >> > Yenta TI: socket 0000:02:03.0 probing PCI interrupt failed, trying
-> >> >> to fix
-> >> >> > Yenta TI: socket 0000:02:03.0 no PCI interrupts. Fish. Please
-> >> report.
-> >> >> > Yenta: no PCI IRQ, CardBus support disabled for this socket.
-> >> >> > Yenta: check your BIOS CardBus, BIOS IRQ or ACPI settings.
-> >> >> > Yenta: ISA IRQ mask 0x02c0, PCI irq 0
-> >> >> > Socket status: 30000006
-> >> >> > pcmcia: parent PCI bridge I/O window: 0xc000 - 0xcfff
-> >> >> > cs: IO port probe 0xc000-0xcfff: clean.
-> >> >> > pcmcia: parent PCI bridge Memory window: 0xffd00000 - 0xffdfffff
-> >> >> > pcmcia: parent PCI bridge Memory window: 0x88000000 - 0x89ffffff
-> >> >> > pcmcia: Detected deprecated PCMCIA ioctl usage.
-> >> >> > pcmcia: This interface will soon be removed from the kernel; please
-> >> >> expect breakage unless you upgrade to new tools.
-> >> >> > pcmcia: see
-> >> >> http://www.kernel.org/pub/linux/utils/kernel/pcmcia/pcmcia.html for
-> >> >> details.
-> >> >> > cs: IO port probe 0xc00-0xcff: clean.
-> >> >> > cs: IO port probe 0x820-0x8ff: clean.
-> >> >> > cs: IO port probe 0x800-0x80f: clean.
-> >> >> > cs: IO port probe 0x3e0-0x4ff: excluding 0x4d0-0x4d7
-> >> >> > cs: IO port probe 0x100-0x3af: excluding 0x378-0x37f
-> >> >> > cs: IO port probe 0xa00-0xaff: clean.
-> >> >> > 8139too Fast Ethernet driver 0.9.27
-> >> >> > PCI: Found IRQ 3 for device 0000:02:0b.0
-> >> >> > PCI: Sharing IRQ 3 with 0000:00:1d.1
-> >> >> > eth0: RealTek RTL8139 at 0xc800, 00:03:0d:14:95:c4, IRQ 3
-> >> >> > eth0:  Identified 8139 chip type 'RTL-8100B/8139D'
-> >> >> > ieee1394: Initialized config rom entry `ip1394'
-> >> >> > PCI: Found IRQ 5 for device 0000:02:0a.0
-> >> >> > PCI: Sharing IRQ 5 with 0000:00:1d.2
-> >> >> > PCI: Sharing IRQ 5 with 0000:00:1f.1
-> >> >> > ohci1394: fw-host0: OHCI-1394 1.1 (PCI): IRQ=[5]
-> >> >> MMIO=[ffdff800-ffdfffff]  Max Packet=[2048]  IR/IT contexts=[4/8]
-> >> >> > PCI: Found IRQ 4 for device 0000:00:1f.5
-> >> >> > PCI: Sharing IRQ 4 with 0000:00:1f.3
-> >> >> > PCI: Sharing IRQ 4 with 0000:00:1f.6
-> >> >> > IRQ routing conflict for 0000:02:03.0, have irq 11, want irq 4
-> >> >> > PCI: Setting latency timer of device 0000:00:1f.5 to 64
-> >> >> > intel8x0_measure_ac97_clock: measured 55427 usecs
-> >> >> > intel8x0: clocking to 48000
-> >> >> > ieee1394: Host added: ID:BUS[0-00:1023]  GUID[00030d4975701d84]
-> >> >> > i8xx TCO timer: initialized (0x0860). heartbeat=30 sec (nowayout=0)
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > agpgart: Detected an Intel 865 Chipset.
-> >> >> > agpgart: AGP aperture is 64M @ 0xf8000000
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > shpchp: Unknown symbol acpi_get_name
-> >> >> > shpchp: Unknown symbol acpi_evaluate_object
-> >> >> > kobject_register failed for ehci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > ohci_hcd: 2005 April 22 USB 1.1 'Open' Host Controller (OHCI) Driver
-> >> >> (PCI)
-> >> >> > kobject_register failed for ohci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c032636c>] bus_add_driver+0x5c/0xa0
-> >> >> >  [<c0326e37>] driver_register+0x57/0x90
-> >> >> >  [<c02ea732>] __pci_register_driver+0x52/0x80
-> >> >> >  [<f8ecf02e>] ohci_hcd_pci_init+0x2e/0x35 [ohci_hcd]
-> >> >> >  [<c012e6e2>] sys_init_module+0x102/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for uhci_hcd (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > kobject_register failed for usb_storage (-17)
-> >> >> >  [<c02ddf56>] kobject_register+0x36/0x50
-> >> >> >  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
-> >> >> >  [<c012e4c9>] load_module+0x909/0x9f0
-> >> >> >  [<c012e623>] sys_init_module+0x43/0x190
-> >> >> >  [<c01029c8>] syscall_call+0x7/0xb
-> >> >> > eth0: link up, 100Mbps, full-duplex, lpa 0x45E1
-> >> >> > eth0: link up, 100Mbps, full-duplex, lpa 0x45E1
-> >> >> > NET: Registered protocol family 10
-> >> >> > lo: Disabled Privacy Extensions
-> >> >> > IPv6 over IPv4 tunneling driver
-> >> >> > eth0: no IPv6 routers present
-> >> >>
-> >> >>
-> >> >
-> >> >
-> >>
-> >>
-> >
-> > ------------------------------------------------------------------------
-> >
-> > ./log/messages:Feb 22 14:00:59 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -nq xeno_nucleus
-> > ./log/messages:Feb 22 14:00:59 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_native
-> > ./log/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_rtdm
-> > ./log/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_timerbench
-> > ./log/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/usr/xenomai/bin/latency
-> > ./adm/messages:Feb 22 14:00:59 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -nq xeno_nucleus
-> > ./adm/messages:Feb 22 14:00:59 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_native
-> > ./adm/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_rtdm
-> > ./adm/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/sbin/modprobe -n xeno_timerbench
-> > ./adm/messages:Feb 22 14:01:00 (none) sudo:     root : TTY=pts/4 ; PWD=/mnt/appusb/xenomai/share/xenomai/testsuite/latency ; USER=root ; COMMAND=/usr/xenomai/bin/latency
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: I-pipe: Domain Xenomai registered.
-> > ./log/syslog:Feb 22 13:21:38 (none) kernel: Xenomai: SMI-enabled chipset found but SMI workaround not enabled (check
-> > ./log/messages:Feb 22 13:21:38 (none) kernel: Xenomai: hal/x86 started.
-> > ./log/messages:Feb 22 13:21:38 (none) kernel: Xenomai: real-time nucleus v2.3 (Baroque) loaded.
-> > ./log/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting native API services.
-> > ./log/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting POSIX services.
-> > ./log/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting RTDM services.
-> > ./log/dmesg:I-pipe: Domain Xenomai registered.
-> > ./log/dmesg:Xenomai: hal/x86 started.
-> > ./log/dmesg:Xenomai: real-time nucleus v2.3 (Baroque) loaded.
-> > ./log/dmesg:Xenomai: SMI-enabled chipset found but SMI workaround not enabled (check
-> > ./log/dmesg:Xenomai: starting native API services.
-> > ./log/dmesg:Xenomai: starting POSIX services.
-> > ./log/dmesg:Xenomai: starting RTDM services.
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: I-pipe: Domain Xenomai registered.
-> > ./adm/syslog:Feb 22 13:21:38 (none) kernel: Xenomai: SMI-enabled chipset found but SMI workaround not enabled (check
-> > ./adm/messages:Feb 22 13:21:38 (none) kernel: Xenomai: hal/x86 started.
-> > ./adm/messages:Feb 22 13:21:38 (none) kernel: Xenomai: real-time nucleus v2.3 (Baroque) loaded.
-> > ./adm/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting native API services.
-> > ./adm/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting POSIX services.
-> > ./adm/messages:Feb 22 13:21:38 (none) kernel: Xenomai: starting RTDM services.
-> > ./adm/dmesg:I-pipe: Domain Xenomai registered.
-> > ./adm/dmesg:Xenomai: hal/x86 started.
-> > ./adm/dmesg:Xenomai: real-time nucleus v2.3 (Baroque) loaded.
-> > ./adm/dmesg:Xenomai: SMI-enabled chipset found but SMI workaround not enabled (check
-> > ./adm/dmesg:Xenomai: starting native API services.
-> > ./adm/dmesg:Xenomai: starting POSIX services.
-> > ./adm/dmesg:Xenomai: starting RTDM services.
->
->
->
+--------------enigC7E6E6FBF029285BA0EBABB4--
 
