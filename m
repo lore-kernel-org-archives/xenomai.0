@@ -1,13 +1,23 @@
-Message-ID: <45D2DD6E.5030800@domain.hid>
-Date: Wed, 14 Feb 2007 10:59:10 +0100
-From: Markus Franke <Markus.Franke@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
-References: <45D25145.3000407@domain.hid>
-	<45D2CE27.5040303@domain.hid>
-In-Reply-To: <45D2CE27.5040303@domain.hid>
-Content-Type: multipart/mixed; boundary="------------070208000803020907070802"
-Reply-To: Markus.Franke@domain.hid
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
+	<1170409755.4981.11.camel@domain.hid> <45C309BF.9090808@domain.hid>
+	<1170415388.4981.36.camel@domain.hid> <1170420270.4981.58.camel@domain.hid>
+	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
+	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
+	<1170520703.8282.6.camel@domain.hid>
+	<b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
+Content-Type: text/plain
+Date: Sat, 03 Feb 2007 20:06:26 +0100
+Message-Id: <1170529586.8282.38.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,74 +27,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------070208000803020907070802
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-Jan Kiszka wrote:
-> Markus Franke wrote:
->>I am running some latency tests with irqbench/irqloop. I am wondering
->>whether it would be possible to achieve better results when activating
->>CONFIG_PREEMPT and CONFIG_PREEMPT_VOLUNTARILY during the kernel
->>configuration and running irqloop in User Mode over this kernel?
+On Sat, 2007-02-03 at 19:20 +0100, Dmitry Adamushko wrote:
+> Hi,
 > 
+> are there any other memory pools increasing while "MemFree" is decreasing?
 > 
-> Nope.
+> cat /proc/meminfo
 > 
+> If it's kmalloc() - related, I'd expect "Slab" to be increasing..  [1]
 > 
->>Does it make any sense?
+> Moreover, if it's left to be running for quite some time, does it
+> actually causes an "out-of-memory" problem in the end?  [2]
 > 
+> I have run "while true ; do cat /proc/interrupts; done" for some time
+> and "MemFree" is going down but what's going up is "Buffers" +
+> "Cached" (mainly, the first one) and not
+> "Slab".
 > 
-> Nope. :)
-> The Linux kernel is already fully preemptible by Xenomai once you
-> applied the I-pipe patch. Therefore, you are free to pick the Linux
-> preemption strategy according to your *Linux* load, independent of what
-> the real-time part needs.
+> cat /proc/interrupts returns file content which is different every
+> time and might be cached (likely - "Buffers").. Actually, do you
+> observe similar behaviour when reading any other /proc file (or even
+> any regular) ?
+> 
+> After all, Linux memory manager is quite dynamic in its behaviour, and
+> "MemFree" does not really answer a question "how much memory is free"
+> as there are some _reclaimable_ sources of memory ("buffers" and
+> "cached")..
+> 
+> So what's about [1]? Of course, if you can encounter [2] after some time..
+> 
 
-Well, "Native-API-Tour.pdf" states that everytime a mode switch from
-Primary Domain to Secondary Domain is made (e.g. Linux system call like
-ioctl()), Xenomai can ease from the
-"continuous trend of improvements of Linux 2.6 regarding
-preemptability". So CONFIG_PREEMPT should have an impact on measurements
-with Xenomai, maybe not with irqbench/irqloop. The problem here is that
-we don't have a mode switch, right? When running irqloop as User-Task it
-simply runs in Secondary Mode, right?
+Really, what I see here very much looks like a constant leakage on an
+otherwise idle system, not some artefact from the mm; albeit the cached
+mem seems stable, the free memory goes down irremediably. Not all /proc
+entries seem to cause the issue, and the interesting thing is
+that /proc/interrupts and /proc/xenomai/sched|stat all use the seqfile
+support to output their data.
 
-> Do you have CONFIG_DEBUG_PREEMPT set as well then? This option still as
-> a small but measurable impact on Xenomai due to micro-dependencies that
-> as scheduled to be removed in the near future.
+Anyway, I did not dig the issue enough code-wise to remove all the
+conditionals from my wording, but there seems to be something wrong
+somewhere, and that's not Xenomai related. Or, the Linux VM is seasoned
+enough to try to make people think it loses memory albeit it doesn't.
 
-I cannot see anything like
-
-CONFIG_DEBUG_PREEMPT=y
-or
-#CONFIG_DEBUG_PREEMPT is not set
-
-in my config-file. The parameter simply doesn't exist.
-
-Markus
-
---------------070208000803020907070802
-Content-Type: text/x-vcard; charset=utf-8;
- name="Markus.Franke.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="Markus.Franke.vcf"
-
-begin:vcard
-fn:Markus Franke
-n:Franke;Markus
-adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
-email;internet:Markus.Franke@domain.hid
-x-mozilla-html:FALSE
-url:http://www.tu-chemnitz.de/~franm
-version:2.1
-end:vcard
+-- 
+Philippe.
 
 
---------------070208000803020907070802--
 
