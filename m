@@ -1,60 +1,54 @@
-Message-ID: <45BE2C1B.9000909@domain.hid>
-Date: Mon, 29 Jan 2007 18:17:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-core] rtdm over x86_64
+Date: Sat, 3 Feb 2007 23:32:09 +0000
+References: <200702031313.20104.paul_c@domain.hid> <45C4A580.3000904@domain.hid>
+In-Reply-To: <45C4A580.3000904@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] negative results in latency histogram.
-References: <ac3922a00701290846q1f394bfl53efd41353a0ecb0@domain.hid>
-In-Reply-To: <ac3922a00701290846q1f394bfl53efd41353a0ecb0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7CF91439DA780E2F95B450C7"
-Sender: jan.kiszka@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200702032332.09067.paul_c@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Syed Amer Gilani <amg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7CF91439DA780E2F95B450C7
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Saturday 03 February 2007 15:08, Jan Kiszka wrote:
+> Yeah, when looking at this issue with 64-bit glasses, this urgently
+> needs fixing (I wonder why ia64 didn't stumble yet?).
 
-Syed Amer Gilani wrote:
-> When i use latency with the in-kernel timer handler i get negative
-> results but those don't show up in the Histogram (-h). They are just
-> counted as positive values?
+Perhaps different compiler and/or warning flags ?
+ Using gcc-4.1 at the moment..
 
-Yep.
+> init/Kconfig:572: can't open file "arch/x86_64/xenomai/Kconfig"
+>
+> Anyone any idea? Is something missing, or is the prepare script broken?
 
-> Bug or purpose?
+I must admit, saw the first of the commits announced on 
+http://cia.navi.cx/stats/project/xenomai and butchered a tree to see what 
+else was needed.. I'll wait for Philippe to finish his commits before 
+preempting him again.
 
-I guess this was just established to simplify the code. But feel free to
-enhance the statistics with support for negative histogram buckets,
-patches are welcome!
+> PS: Once we have in-tree RTDM services and drivers running, are you
+> interested in a RTnet excursion over x64? I should be able to make this
+> compile, but for testing...
 
-Jan
+RTnet across a local net and/or a machine in your lab via the internet - Could 
+be fun :)
+ If you have some ready to run code, I can set aside an afternoon to run some 
+tests - Perhaps even set up an ssh session so that you can monitor the 
+results.
 
 
---------------enig7CF91439DA780E2F95B450C7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Regards, Paul.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFFviwbniDOoMHTA+kRAk81AJ9kSkCmBICg2ycsoqSyCzG7Zb1N/ACfUdHI
-pweHl+XVgbOTtU3f91O5o9s=
-=EExA
------END PGP SIGNATURE-----
-
---------------enig7CF91439DA780E2F95B450C7--
 
