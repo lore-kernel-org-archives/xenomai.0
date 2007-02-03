@@ -1,11 +1,18 @@
-Subject: Re: [Xenomai-help] fata: removing non-linked element...
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45D1C61B.7030503@domain.hid>
-References: <45CC651C.6060402@domain.hid> <45CC68F3.1000003@domain.hid>
-	<45D1C033.9010002@domain.hid>  <45D1C61B.7030503@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0702031807260.22251@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
+	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
+	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
+	<1170420270.4981.58.camel@domain.hid>
+	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
+	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
 Content-Type: text/plain
-Date: Tue, 13 Feb 2007 15:25:42 +0100
-Message-Id: <1171376742.885.3.camel@domain.hid>
+Date: Sat, 03 Feb 2007 17:38:22 +0100
+Message-Id: <1170520703.8282.6.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -19,52 +26,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: "Rus V. Brushkoff" <rus@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, 2007-02-13 at 15:07 +0100, Jan Kiszka wrote:
-> Stephan Zimmermann wrote:
-> > I wasn't able to isolate the section of my code that causes the crash by
-> > now. The only thing I figured out by now is that the particular crash
-> > does not happen with 2.3.x rev 2077.
-> > So I guess some change from 2077 to the 2139 revision did break something.
+On Sat, 2007-02-03 at 18:08 +0200, Rus V. Brushkoff wrote:
+> On Fri, 2 Feb 2007, Rus V. Brushkoff wrote:
 > 
-> Could you track the issue a bit more down? There are not to many
-> "interesting" changes to 2.3.x. A few milestones I found in the ChangeLog:
+> ::>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP 
+> ::> doesn't.
+> ::Thanks. I do have a leak on UP here though; vmstat or any other command
+> ::do not eat this memory (at least neither ps or top report any continuous
+> ::growth of their vm space while running the test), so I would wildly
+> ::guess that's a kernel-based leakage occurring somewhere in the procfs
+> ::support.
+> : May be the time to announce this to linux-kernel, last rc7 for 2.6.20 
+> :is out ;)
 > 
-> - 2092: Allow sleeping scheduler locks
-> - 2108: Before RPI rework
+> Does anybody seeing memleak has nvidia module loaded ?
 > 
-> Anything after 2108 only makes sense to dissect when you switch on
 
-s,on,off,
+Not here.
 
-> XENO_OPT_RPIDISABLE (RPI was buggy until 2139).
+> :
+> :
 > 
-> > I'll go on trying to make it reproducible in a small demo program.
-> > 
-> > By the way, I see a Pentium M crash reliable when I do the following,
-> > don't know if it's related:
-> > 
-> > - load nucleus and native module
-> > - start / stop my app
-> > - reload the modules
-> > - start my app --> crash
-> > 
-> > I attached 'screenshots' of a total freeze with backtrace and some
-> > messages I extracted  from syslog (both on Pentium M).
-> 
-> Looks like some memory corruption. Your application is not messing
-> around on raw (kernel) memory and/or hardware? Keep in mind that changes
-> to the kernel code also moves offsets, potentially unrevealing a
-> pre-existing corruption that so far just hit harmless regions.
-> 
-> Jan
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> 		Rus
 -- 
 Philippe.
 
