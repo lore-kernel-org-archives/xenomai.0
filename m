@@ -1,11 +1,18 @@
-Content-Transfer-Encoding: 7bit
-Content-Class: urn:content-classes:message
+Date: Sat, 3 Feb 2007 18:08:47 +0200 (EET)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+In-Reply-To: <Pine.LNX.4.64.0702021635150.12191@domain.hid>
+Message-ID: <Pine.LNX.4.64.0702031807260.22251@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
+	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
+	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
+	<1170420270.4981.58.camel@domain.hid>
+	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C74F67.7F058F2D"
-Date: Tue, 13 Feb 2007 13:07:13 +0100
-Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A8018AD@ARVMAIL1.mra.roland-man.biz>
-From: <Roderik_Wildenburg@domain.hid>
-Subject: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,82 +22,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+On Fri, 2 Feb 2007, Rus V. Brushkoff wrote:
 
-------_=_NextPart_001_01C74F67.7F058F2D
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+::>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP 
+::> doesn't.
+::Thanks. I do have a leak on UP here though; vmstat or any other command
+::do not eat this memory (at least neither ps or top report any continuous
+::growth of their vm space while running the test), so I would wildly
+::guess that's a kernel-based leakage occurring somewhere in the procfs
+::support.
+: May be the time to announce this to linux-kernel, last rc7 for 2.6.20 
+:is out ;)
 
-Can anybody tell me, how I have to set the 2. parameter (starttp) of
-pthread_make_periodic_np ?
-When I use clock_gettime to fill startp I get a giant timeout value in
-the /proc/xenomai/sched list and my task never gets periodic.
+Does anybody seeing memleak has nvidia module loaded ?
 
-Is this just a problem of my hardware(PPC)/xenomai(2.3) combination or
-does anybody else have the same problem.=20
+:
+:
 
-See attached code example for easier testing.
-
-Thanks a lot for your help
-Roderik
-
-MAN Roland Druckmaschinen AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
-
-------_=_NextPart_001_01C74F67.7F058F2D
-Content-Type: application/octet-stream;
-	name="pperiodic.c"
-Content-Transfer-Encoding: base64
-Content-Description: pperiodic.c
-Content-Disposition: attachment;
-	filename="pperiodic.c"
-
-I2luY2x1ZGUgPHRpbWUuaD4KI2luY2x1ZGUgPGVycm5vLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4K
-I2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHBvc2l4
-L3B0aHJlYWQuaD4KI2luY2x1ZGUgPHN0ZGlvLmg+CgojZGVmaW5lIENZQ1RBU0tfUFJJICAgIDEK
-I2RlZmluZSBDWUNUQVNLX1NUQUNLX1NJWkUgIDgxOTIKCgpwdGhyZWFkX3QgY3lrdGFza2lkOwoK
-dm9pZCBjeWNfdGFzayh2b2lkICp0MmR1bW15KQp7CiAgIGludCBuUmVzdWx0OwogICBzdHJ1Y3Qg
-dGltZXNwZWMgdHN0YXJ0OwogICBzdHJ1Y3QgdGltZXNwZWMgdHBlcmlvZDsKICAgaW50IGN5YzsK
-ICAgdW5zaWduZWQgbG9uZyBuT3ZlcnJ1bjsKCgogICBpZiggKG5SZXN1bHQ9Y2xvY2tfZ2V0dGlt
-ZShDTE9DS19SRUFMVElNRSwmdHN0YXJ0KSkhPTApCiAgICAgIHByaW50ZigiISFXQVJOSU5HISEg
-Y2xvY2tfZ2V0dGltZSBmYWlsZWQiKTsKICAgZWxzZQogICAgICBwcmludGYoImNsb2NrX2dldHRp
-bWUgOiAlbGQgJWxkXG4iLHRzdGFydC50dl9zZWMsdHN0YXJ0LnR2X25zZWMpOwoKICAgdHN0YXJ0
-LnR2X3NlYyArKzsKICAgdHN0YXJ0LnR2X25zZWMgPSAxMDAwMDA7CgogICB0cGVyaW9kLnR2X3Nl
-YyA9IDE7ICAgIC8vIHNlYwogICB0cGVyaW9kLnR2X25zZWMgPSAwOyAgICAgIC8vIG5zZWMKCiAg
-IHByaW50ZigicGVyaW9kIDogJWxkICVsZFxuIix0cGVyaW9kLnR2X3NlYyx0cGVyaW9kLnR2X25z
-ZWMpOwoKICAgaWYgKCggblJlc3VsdCA9IHB0aHJlYWRfbWFrZV9wZXJpb2RpY19ucChwdGhyZWFk
-X3NlbGYoKSwmdHN0YXJ0LCZ0cGVyaW9kKSkgPT0gMCkKICAgewogICAgICB3aGlsZSAoMSkKICAg
-ICAgewogICAgICAgICBwcmludGYoIkN5a2xlVGFzayAlZFxuIixjeWMrKyk7CiAgICAgICAgIGlm
-ICgoblJlc3VsdCA9IHB0aHJlYWRfd2FpdF9ucCgmbk92ZXJydW4pKSAhPSAwKQogICAgICAgICAg
-ICBwcmludGYoInN5c3RpY2sgb3ZlcnJ1biAlZCIsbk92ZXJydW4pOwogICAgICB9CiAgIH0KICAg
-ZWxzZQogICB7CiAgICAgIHByaW50ZigiZmFpbGVkIHRvIHN0YXJ0IHRpbWVyIik7CiAgIH0KfQoK
-dm9pZCBfX3hlbm9fdXNlcl9leGl0ICh2b2lkKQp7Cn0KCmludCBfX3hlbm9fdXNlcl9pbml0ICh2
-b2lkKQp7CiAgICBzdHJ1Y3Qgc2NoZWRfcGFyYW0gcGFybTsKICAgIHB0aHJlYWRfYXR0cl90IGF0
-dHI7CiAgICBpbnQgcmMgPSAwLCBmZCA9IC0xOwoKCiAgICBwdGhyZWFkX2F0dHJfaW5pdCgmYXR0
-cik7CiAgICBwdGhyZWFkX2F0dHJfc2V0aW5oZXJpdHNjaGVkKCZhdHRyLCAxKTsKICAgIHB0aHJl
-YWRfYXR0cl9zZXRzY2hlZHBvbGljeSgmYXR0ciwgU0NIRURfRklGTyk7CgoKICAgIHB0aHJlYWRf
-YXR0cl9zZXRzdGFja3NpemUoJmF0dHIsIENZQ1RBU0tfU1RBQ0tfU0laRSk7CiAgICBwYXJtLnNj
-aGVkX3ByaW9yaXR5ID0gQ1lDVEFTS19QUkk7CiAgICBwdGhyZWFkX2F0dHJfc2V0c2NoZWRwYXJh
-bSgmYXR0ciwgJnBhcm0pOwogICAgcmMgPSBwdGhyZWFkX2NyZWF0ZSgmY3lrdGFza2lkLCAmYXR0
-ciwgJmN5Y190YXNrLCBOVUxMKTsKICAgIGlmIChyYykKICAgIHsKICAgICAgICBwcmludGYoInB0
-aHJlYWRfY3JlYXRlKGN5a3Rhc2spOiAlZFxuIiwgcmMpOwogICAgfQoKICAgIHJldHVybiByYzsK
-fQoKCmludCBtYWluIChpbnQgYWMsIGNoYXIgKmF2W10pCgp7CiAgICBzaWdzZXRfdCBtYXNrOwog
-ICAgaW50IHJjLCBzaWc7CgogICAgc2lnZW1wdHlzZXQoJm1hc2spOwogICAgc2lnYWRkc2V0KCZt
-YXNrLFNJR0lOVCk7CiAgICBzaWdhZGRzZXQoJm1hc2ssU0lHVEVSTSk7CiAgICBzaWdhZGRzZXQo
-Jm1hc2ssU0lHSFVQKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdBTFJNKTsKCiAgICBwdGhyZWFk
-X3NpZ21hc2soU0lHX0JMT0NLLCAmbWFzaywgTlVMTCk7CgogICAgbWxvY2thbGwoTUNMX0NVUlJF
-TlR8TUNMX0ZVVFVSRSk7CgogICAgcmMgPSBfX3hlbm9fdXNlcl9pbml0KCk7CgogICAgaWYgKHJj
-KQogICAgewogICAgICAgIHByaW50ZigiX194ZW5vX3VzZXJfaW5pdDogJWRcbiIsIC1yYyk7CiAg
-ICAgICAgcmV0dXJuIC1yYzsKICAgIH0KCiAgICBzaWd3YWl0KCZtYXNrLCAmc2lnKTsKICAgIF9f
-eGVub191c2VyX2V4aXQoKTsKCiAgICByZXR1cm4gMDsKfQo=
-
-------_=_NextPart_001_01C74F67.7F058F2D--
+		Rus
 
