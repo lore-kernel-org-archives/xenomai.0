@@ -1,10 +1,14 @@
-From: Paul <paul_c@domain.hid>
-Date: Sat, 3 Feb 2007 13:13:20 +0000
+Message-ID: <45C4A580.3000904@domain.hid>
+Date: Sat, 03 Feb 2007 16:08:48 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_wpIxF5BwqPkNGfd"
-Message-Id: <200702031313.20104.paul_c@domain.hid>
-Subject: [Xenomai-core] rtdm over x86_64
+Subject: Re: [Xenomai-core] rtdm over x86_64
+References: <200702031313.20104.paul_c@domain.hid>
+In-Reply-To: <200702031313.20104.paul_c@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8AB445550F90B14CB348E1FC"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,65 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_wpIxF5BwqPkNGfd
-Content-Type: text/plain;
-  charset="utf-8"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8AB445550F90B14CB348E1FC
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+
+Paul wrote:
+> Hi Jan
+>=20
+>  Just a small patch to get the ball rolling with an x86_64 support..
+>=20
+> The attached resolves a compile time warning of:=20
+>=20
+> kernel/xenomai/skins/rtdm/core.c: In function =E2=80=98_rtdm_ioctl=E2=80=
+=99:
+> kernel/xenomai/skins/rtdm/core.c:408: warning: comparison is always fal=
+se due=20
+> to limited range of data type
+>=20
+
+Yeah, when looking at this issue with 64-bit glasses, this urgently
+needs fixing (I wonder why ia64 didn't stumble yet?).
+
+Your patch points in the right direction, but it needs a bit fine-tuning
+and also has to include the ioctl handlers of drivers. I will work out a
+fix and inform you. I'll have to rely on your test lab. :)
+
+But first I need some build environment. A quick shot ended here when
+trying to configure a patch and prepared 2.6.19 kernel:
+
+# make ARCH=3Dx86_64 CC=3D"gcc -m64" oldconfig
+=2E..
+init/Kconfig:572: can't open file "arch/x86_64/xenomai/Kconfig"
+
+Anyone any idea? Is something missing, or is the prepare script broken?
+
+Jan
 
 
-Hi Jan
-
- Just a small patch to get the ball rolling with an x86_64 support..
-
-The attached resolves a compile time warning of:=20
-
-kernel/xenomai/skins/rtdm/core.c: In function =E2=80=98_rtdm_ioctl=E2=80=99:
-kernel/xenomai/skins/rtdm/core.c:408: warning: comparison is always false d=
-ue=20
-to limited range of data type
+PS: Once we have in-tree RTDM services and drivers running, are you
+interested in a RTnet excursion over x64? I should be able to make this
+compile, but for testing...
 
 
-Regards, Paul.
+--------------enig8AB445550F90B14CB348E1FC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFFxKWBniDOoMHTA+kRAnoFAJ4nixrXVPHPbNpADJvLrW20UJ354gCdGBxQ
+zPmTEWf5qPJUQZu1ckW2o9A=
+=y1c7
+-----END PGP SIGNATURE-----
 
---Boundary-00=_wpIxF5BwqPkNGfd
-Content-Type: text/x-diff;
-  charset="utf-8";
-  name="rtdm_skin.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="rtdm_skin.patch"
-
-Index: include/rtdm/rtdm.h
-===================================================================
---- include/rtdm/rtdm.h	(revision 2105)
-+++ include/rtdm/rtdm.h	(working copy)
-@@ -248,7 +248,7 @@ int     _rtdm_open   (rtdm_user_info_t *
- int     _rtdm_socket (rtdm_user_info_t *user_info, int protocol_family,
-                       int socket_type, int protocol);
- int     _rtdm_close  (rtdm_user_info_t *user_info, int fd, int forced);
--int     _rtdm_ioctl  (rtdm_user_info_t *user_info, int fd, int request, ...);
-+int     _rtdm_ioctl  (rtdm_user_info_t *user_info, int fd, unsigned int request, ...);
- ssize_t _rtdm_read   (rtdm_user_info_t *user_info, int fd, void *buf,
-                       size_t nbyte);
- ssize_t _rtdm_write  (rtdm_user_info_t *user_info, int fd, const void *buf,
-Index: ksrc/skins/rtdm/core.c
-===================================================================
---- ksrc/skins/rtdm/core.c	(revision 2105)
-+++ ksrc/skins/rtdm/core.c	(working copy)
-@@ -393,7 +393,7 @@ do {                                    
- } while (0)
- 
- 
--int _rtdm_ioctl(rtdm_user_info_t *user_info, int fd, int request, ...)
-+int _rtdm_ioctl(rtdm_user_info_t *user_info, int fd, unsigned int request, ...)
- {
-     va_list args;
-     void    *arg;
-
---Boundary-00=_wpIxF5BwqPkNGfd--
+--------------enig8AB445550F90B14CB348E1FC--
 
