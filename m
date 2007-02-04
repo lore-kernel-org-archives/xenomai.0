@@ -1,16 +1,24 @@
-Message-ID: <45D5F9CA.9060605@domain.hid>
-Date: Fri, 16 Feb 2007 19:36:58 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] heap allocation in xenomai
-References: <528bc2040702160148j5c63209fi40face4810613bfd@domain.hid>	
-	<45D58770.6030201@domain.hid>
-	<528bc2040702160328o5d35d085s3cbe0953ac29163e@domain.hid>
-In-Reply-To: <528bc2040702160328o5d35d085s3cbe0953ac29163e@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6006F5F15221148DD8C0E165"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <Pine.LNX.4.64.0702040912210.300@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
+	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
+	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
+	<1170420270.4981.58.camel@domain.hid>
+	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
+	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
+	<1170520703.8282.6.camel@domain.hid>
+	<Pine.LNX.4.64.0702040912210.300@domain.hid>
+Content-Type: text/plain
+Date: Sun, 04 Feb 2007 10:12:00 +0100
+Message-Id: <1170580320.4208.1.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,48 +28,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: manoj kumar <manojkpanghal@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "Rus V. Brushkoff" <rus@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6006F5F15221148DD8C0E165
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Sun, 2007-02-04 at 09:16 +0200, Rus V. Brushkoff wrote:
+> On Sat, 3 Feb 2007, Philippe Gerum wrote:
+> 
+> :> Does anybody seeing memleak has nvidia module loaded ?
+> :Not here.
+> 
+>  Ok, the last thing I've can see - seems like leak occured at the 
+> boxes with some uptime - where any interrupt counter is big ehough (nearly 
+> 9 decimal digits). Does anybody can confirm/disprove this suggestion ?
+> 
 
-[please keep the CC]
+I can reproduce the issue systematically even on a freshly booted box
+reading /proc/interrupts in loop.
 
-manoj kumar wrote:
-> thanks jan
->=20
-> What is the limitation of size for heap creation? Is it 2Gb as given by=
-
-> XNHEAP_MAXEXTSZ (1 << 32)?b
-
-Yes, given that you have enough (kernel) memory...
-
->=20
-> What is the limitation of size of data that can be read or write on the=
-
-> pipe?
-
-Basically the same as above. Pipes are built on top of heaps.
-
-Jan
+> :
+> 
+> 		Rus
+-- 
+Philippe.
 
 
---------------enig6006F5F15221148DD8C0E165
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF1fnKniDOoMHTA+kRAlQtAJ9/OGE5SyoImreT+HAJtCSxY4f73QCePmlV
-ovalhs3S/+Q0XE0pQtWNWxo=
-=JH49
------END PGP SIGNATURE-----
-
---------------enig6006F5F15221148DD8C0E165--
 
