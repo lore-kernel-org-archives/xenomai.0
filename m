@@ -1,17 +1,22 @@
-Message-ID: <bc4264770702220339m1b8dfcbfk11f9c05e2a0aed91@domain.hid>
-Date: Thu, 22 Feb 2007 11:39:54 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] CAN driver
-In-Reply-To: <45DD7C42.9070407@domain.hid>
+Date: Mon, 5 Feb 2007 12:02:37 +0200 (EET)
+From: "Rus V. Brushkoff" <rus@domain.hid>
+Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
+	memory
+In-Reply-To: <b647ffbd0702040601x4352c3acya1dd1ae1d5dc63e6@domain.hid>
+Message-ID: <Pine.LNX.4.64.0702051200580.4599@domain.hid>
+References: <19981456.1170405795640.JavaMail.ngmail@domain.hid> 
+	<1170420270.4981.58.camel@domain.hid>
+	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
+	<1170426719.4981.66.camel@domain.hid>
+	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
+	<Pine.LNX.4.64.0702031807260.22251@domain.hid> 
+	<1170520703.8282.6.camel@domain.hid>
+	<b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
+	<1170529586.8282.38.camel@domain.hid>
+	<b647ffbd0702040554m4f9569f1u4b976bc292c6f94c@domain.hid>
+	<b647ffbd0702040601x4352c3acya1dd1ae1d5dc63e6@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <45DC1D05.1000206@domain.hid> <45DC2478.2020602@domain.hid>
-	<45DC39DE.8050802@domain.hid> <45DC3E6C.8040905@domain.hid>
-	<45DD5DC0.6040402@domain.hid>
-	<bc4264770702220214y697c57abv9d5170b64fad40eb@domain.hid>
-	<45DD7C42.9070407@domain.hid>
+Content-Type: MULTIPART/MIXED; BOUNDARY="655616-372452546-1170669757=:4599"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,42 +26,129 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi Jan,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
->
-> rtcanX are networking devices, but only visible in the context of
-> RTDM/AF_CAN.
-What is this?
+--655616-372452546-1170669757=:4599
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 
- To enable them, use rtcanconfig as explained in the README.
-Which README are you referring to? The only one I know of that says
-something about rtcanconfig is in /src/utils/can and it does not
-explain how to use ctrlmode and bittime. There is an example in it
+On Sun, 4 Feb 2007, Dmitry Adamushko wrote:
 
-rtcanconfig rtcan0 --baudrate=125000 start.
+:ok, could somebody post 2 snapshots of /proc/meminfo taken :
+:
+:[1] a few seconds after starting the test;
+:
+:[2] quite some time later when the memory leak is already noticeable
+:(but the test is still running)
 
-If I try
+4 logs attached.
 
-rtcanconfig rtcan0 --baudrate=125000 start
+:
+:
 
-I get:
+		Rus
+--655616-372452546-1170669757=:4599
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name=4
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.64.0702051202370.4599@domain.hid>
+Content-Description: 
+Content-Disposition: attachment; filename=4
 
-"Can't get interface index for rtcan0, code=-19"
+TWVtVG90YWw6ICAgICAgMjA1NzQ2NCBrQg0KTWVtRnJlZTogICAgICAgIDMz
+NDA1NiBrQg0KQnVmZmVyczogICAgICAgIDEwNjQ1MiBrQg0KQ2FjaGVkOiAg
+ICAgICAgMTI0MTM3NiBrQg0KU3dhcENhY2hlZDogICAgICAgICAgMCBrQg0K
+QWN0aXZlOiAgICAgICAgMTIwMzY5NiBrQg0KSW5hY3RpdmU6ICAgICAgIDI2
+NzAyNCBrQg0KU3dhcFRvdGFsOiAgICAgNzgyMzYxMiBrQg0KU3dhcEZyZWU6
+ICAgICAgNzgyMzYxMiBrQg0KRGlydHk6ICAgICAgICAgICAgIDIwNCBrQg0K
+V3JpdGViYWNrOiAgICAgICAgICAgMCBrQg0KQW5vblBhZ2VzOiAgICAgIDEy
+Mjg5NiBrQg0KTWFwcGVkOiAgICAgICAgICAzOTM0MCBrQg0KU2xhYjogICAg
+ICAgICAgIDIyMTA2MCBrQg0KU1JlY2xhaW1hYmxlOiAgIDE5OTE3NiBrQg0K
+U1VucmVjbGFpbTogICAgICAyMTg4NCBrQg0KUGFnZVRhYmxlczogICAgICAg
+Mzg1NiBrQg0KTkZTX1Vuc3RhYmxlOiAgICAgICAgMCBrQg0KQm91bmNlOiAg
+ICAgICAgICAgICAgMCBrQg0KQ29tbWl0TGltaXQ6ICAgODg1MjM0NCBrQg0K
+Q29tbWl0dGVkX0FTOiAgIDI4MjY3MiBrQg0KVm1hbGxvY1RvdGFsOiAzNDM1
+OTczODM2NyBrQg0KVm1hbGxvY1VzZWQ6ICAgIDMwNTEzNiBrQg0KVm1hbGxv
+Y0NodW5rOiAzNDM1OTQzMjY5NSBrQg0KSHVnZVBhZ2VzX1RvdGFsOiAgICAg
+MA0KSHVnZVBhZ2VzX0ZyZWU6ICAgICAgMA0KSHVnZVBhZ2VzX1JzdmQ6ICAg
+ICAgMA0KSHVnZXBhZ2VzaXplOiAgICAgMjA0OCBrQg0K
 
-Any idea what is wrong?
+--655616-372452546-1170669757=:4599
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name=3
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.64.0702051202371.4599@domain.hid>
+Content-Description: 
+Content-Disposition: attachment; filename=3
 
-Regards,
+TWVtVG90YWw6ICAgICAgMjA1NzQ2NCBrQg0KTWVtRnJlZTogICAgICAgIDM0
+MjQ4OCBrQg0KQnVmZmVyczogICAgICAgIDEwNTM3NiBrQg0KQ2FjaGVkOiAg
+ICAgICAgMTI0MDM0NCBrQg0KU3dhcENhY2hlZDogICAgICAgICAgMCBrQg0K
+QWN0aXZlOiAgICAgICAgMTE5NzU5MiBrQg0KSW5hY3RpdmU6ICAgICAgIDI2
+NTQ0OCBrQg0KU3dhcFRvdGFsOiAgICAgNzgyMzYxMiBrQg0KU3dhcEZyZWU6
+ICAgICAgNzgyMzYxMiBrQg0KRGlydHk6ICAgICAgICAgICAgIDEyNCBrQg0K
+V3JpdGViYWNrOiAgICAgICAgICAgMCBrQg0KQW5vblBhZ2VzOiAgICAgIDEx
+NzM2MCBrQg0KTWFwcGVkOiAgICAgICAgICAzODkzMiBrQg0KU2xhYjogICAg
+ICAgICAgIDIyMDU3MiBrQg0KU1JlY2xhaW1hYmxlOiAgIDE5OTA5NiBrQg0K
+U1VucmVjbGFpbTogICAgICAyMTQ3NiBrQg0KUGFnZVRhYmxlczogICAgICAg
+Mzc4OCBrQg0KTkZTX1Vuc3RhYmxlOiAgICAgICAgMCBrQg0KQm91bmNlOiAg
+ICAgICAgICAgICAgMCBrQg0KQ29tbWl0TGltaXQ6ICAgODg1MjM0NCBrQg0K
+Q29tbWl0dGVkX0FTOiAgIDI3NDYwNCBrQg0KVm1hbGxvY1RvdGFsOiAzNDM1
+OTczODM2NyBrQg0KVm1hbGxvY1VzZWQ6ICAgIDMwNTEzNiBrQg0KVm1hbGxv
+Y0NodW5rOiAzNDM1OTQzMjY5NSBrQg0KSHVnZVBhZ2VzX1RvdGFsOiAgICAg
+MA0KSHVnZVBhZ2VzX0ZyZWU6ICAgICAgMA0KSHVnZVBhZ2VzX1JzdmQ6ICAg
+ICAgMA0KSHVnZXBhZ2VzaXplOiAgICAgMjA0OCBrQg0K
 
-Roland.
+--655616-372452546-1170669757=:4599
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name=2
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.64.0702051202372.4599@domain.hid>
+Content-Description: 
+Content-Disposition: attachment; filename=2
 
+TWVtVG90YWw6ICAgICAgMjA1NzQ2NCBrQg0KTWVtRnJlZTogICAgICAgIDM0
+MzA3NiBrQg0KQnVmZmVyczogICAgICAgIDEwNDkxMiBrQg0KQ2FjaGVkOiAg
+ICAgICAgMTI0MDIyOCBrQg0KU3dhcENhY2hlZDogICAgICAgICAgMCBrQg0K
+QWN0aXZlOiAgICAgICAgMTE5NzEzNiBrQg0KSW5hY3RpdmU6ICAgICAgIDI2
+NTE4MCBrQg0KU3dhcFRvdGFsOiAgICAgNzgyMzYxMiBrQg0KU3dhcEZyZWU6
+ICAgICAgNzgyMzYxMiBrQg0KRGlydHk6ICAgICAgICAgICAgICA4MCBrQg0K
+V3JpdGViYWNrOiAgICAgICAgICAgMCBrQg0KQW5vblBhZ2VzOiAgICAgIDEx
+NzIyOCBrQg0KTWFwcGVkOiAgICAgICAgICAzODkwOCBrQg0KU2xhYjogICAg
+ICAgICAgIDIyMDM4NCBrQg0KU1JlY2xhaW1hYmxlOiAgIDE5OTAyOCBrQg0K
+U1VucmVjbGFpbTogICAgICAyMTM1NiBrQg0KUGFnZVRhYmxlczogICAgICAg
+MzczMiBrQg0KTkZTX1Vuc3RhYmxlOiAgICAgICAgMCBrQg0KQm91bmNlOiAg
+ICAgICAgICAgICAgMCBrQg0KQ29tbWl0TGltaXQ6ICAgODg1MjM0NCBrQg0K
+Q29tbWl0dGVkX0FTOiAgIDI3NDMxNiBrQg0KVm1hbGxvY1RvdGFsOiAzNDM1
+OTczODM2NyBrQg0KVm1hbGxvY1VzZWQ6ICAgIDMwNTEzNiBrQg0KVm1hbGxv
+Y0NodW5rOiAzNDM1OTQzMjY5NSBrQg0KSHVnZVBhZ2VzX1RvdGFsOiAgICAg
+MA0KSHVnZVBhZ2VzX0ZyZWU6ICAgICAgMA0KSHVnZVBhZ2VzX1JzdmQ6ICAg
+ICAgMA0KSHVnZXBhZ2VzaXplOiAgICAgMjA0OCBrQg0K
 
+--655616-372452546-1170669757=:4599
+Content-Type: TEXT/PLAIN; charset=US-ASCII; name=1
+Content-Transfer-Encoding: BASE64
+Content-ID: <Pine.LNX.4.64.0702051202373.4599@domain.hid>
+Content-Description: 
+Content-Disposition: attachment; filename=1
 
->
-> Jan
->
->
->
+TWVtVG90YWw6ICAgICAgMjA1NzQ2NCBrQg0KTWVtRnJlZTogICAgICAgIDM0
+MzEyMCBrQg0KQnVmZmVyczogICAgICAgIDEwNDc3MiBrQg0KQ2FjaGVkOiAg
+ICAgICAgMTI0MDIyNCBrQg0KU3dhcENhY2hlZDogICAgICAgICAgMCBrQg0K
+QWN0aXZlOiAgICAgICAgMTE5NzE0OCBrQg0KSW5hY3RpdmU6ICAgICAgIDI2
+NTA1MiBrQg0KU3dhcFRvdGFsOiAgICAgNzgyMzYxMiBrQg0KU3dhcEZyZWU6
+ICAgICAgNzgyMzYxMiBrQg0KRGlydHk6ICAgICAgICAgICAgICA2OCBrQg0K
+V3JpdGViYWNrOiAgICAgICAgICAgMCBrQg0KQW5vblBhZ2VzOiAgICAgIDEx
+NzE0MCBrQg0KTWFwcGVkOiAgICAgICAgICAzODkwOCBrQg0KU2xhYjogICAg
+ICAgICAgIDIyMDQ4OCBrQg0KU1JlY2xhaW1hYmxlOiAgIDE5OTAzMiBrQg0K
+U1VucmVjbGFpbTogICAgICAyMTQ1NiBrQg0KUGFnZVRhYmxlczogICAgICAg
+Mzc3MiBrQg0KTkZTX1Vuc3RhYmxlOiAgICAgICAgMCBrQg0KQm91bmNlOiAg
+ICAgICAgICAgICAgMCBrQg0KQ29tbWl0TGltaXQ6ICAgODg1MjM0NCBrQg0K
+Q29tbWl0dGVkX0FTOiAgIDI4MjYwNCBrQg0KVm1hbGxvY1RvdGFsOiAzNDM1
+OTczODM2NyBrQg0KVm1hbGxvY1VzZWQ6ICAgIDMwNTEzNiBrQg0KVm1hbGxv
+Y0NodW5rOiAzNDM1OTQzMjY5NSBrQg0KSHVnZVBhZ2VzX1RvdGFsOiAgICAg
+MA0KSHVnZVBhZ2VzX0ZyZWU6ICAgICAgMA0KSHVnZVBhZ2VzX1JzdmQ6ICAg
+ICAgMA0KSHVnZXBhZ2VzaXplOiAgICAgMjA0OCBrQg0K
+
+--655616-372452546-1170669757=:4599--
 
