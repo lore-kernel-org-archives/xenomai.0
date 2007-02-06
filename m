@@ -1,5 +1,5 @@
-Message-ID: <45C89FEC.1090704@domain.hid>
-Date: Tue, 06 Feb 2007 16:34:04 +0100
+Message-ID: <45C8BE36.7040905@domain.hid>
+Date: Tue, 06 Feb 2007 18:43:18 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] I-pipe patch for linux 2.6.19 on ARM.
@@ -33,7 +33,8 @@ Steven Scholz wrote:
 > 
 > Did you test with "latency"?
 
-Yes, latency hangs if the period is too small. latency -p 1000 runs fine.
+If you have a JTAG probe and are able to trace what the processor is
+doing when latency hangs, I am interested.
 
 -- 
                                                  Gilles Chanteperdrix
