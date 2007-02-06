@@ -1,15 +1,12 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-help] CAN driver
-Date: Fri, 23 Feb 2007 13:52:20 +0000
-References: <45DC1D05.1000206@domain.hid> <200702231231.08664.paul_c@domain.hid>
-	<bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>
-In-Reply-To: <bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200702231352.20211.paul_c@domain.hid>
+Message-ID: <17864.63903.244809.994959@domain.hid>
+Date: Tue, 6 Feb 2007 22:56:47 +0100
+Subject: Re: [Xenomai-help] Multiple NIC trouble
+In-Reply-To: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>
+References: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,28 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
+To: Eric Noulard <eric.noulard@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
+
+Eric Noulard wrote:
+ > How would you suggest me to investigate that problem?
+
+You should tell us what driver use your eth0 board, in order to see if
+other people are able to reproduce the problem you have. Try enabling
+kernel debugging and NMI watchdog. If it does not help, then add printks
+in your ethernet driver code to try and see where exactly it hangs. Then
+show here the result of your investigations, maybe people will have an
+idea of why it hangs.
+
+-- 
 
 
-Hi Roland
-
-On Friday 23 February 2007 13:25, roland Tollenaar wrote:
-> Does anyone know what the future of the parallel port is going to be?
-> Will it be disappearing from the PC,s in the near future or will it
-> still be around on new machines for a while?
-
-I think you'll find many commodity manufacturers already label the parallel 
-port as "legacy".. In fact, a number of laptops are shipped without one!
-
- I don't think we will see the parallel port disappear for a few years, but 
-the time will come - The alternatives are PCI cards (worth fitting one if 
-only to take advantage of the faster IO read/writes), or using one of the low 
-cost fpga cards with custom firmware. It has been muted in some quarters that 
-the PCI bus will also disappear, so the fpga option may not sound as daft as 
-it might first appear.
-
-
-Regards, Paul.
-
+					    Gilles Chanteperdrix.
 
