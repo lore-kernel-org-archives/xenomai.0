@@ -1,14 +1,11 @@
-Message-ID: <45DEA9D0.6060100@domain.hid>
-Date: Fri, 23 Feb 2007 09:46:08 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>
+Date: Tue, 6 Feb 2007 22:37:26 +0100
+From: "Eric Noulard" <eric.noulard@domain.hid>
 MIME-Version: 1.0
-Subject: The "product" Xenomai (was: [Xenomai-help] hello xenomai world?)
-References: <45DE006F.5000400@domain.hid> <45DE33BF.7090601@domain.hid>
-In-Reply-To: <45DE33BF.7090601@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig43403D60D5482CBA90FE9615"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] Multiple NIC trouble
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,123 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig43403D60D5482CBA90FE9615
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I am about to begin to use Xenomai
+on a dual-core x86_64 box.
 
-Roland Tollenaar wrote:
->> Your feedback is appreciated and helps improving things. Just a certai=
-n
->> part of your verbosity might have been avoidable by digging a bit deep=
-er
->> and checking twice, no? :)
-> :)
-> Perhaps. We are all in a big hurry and there are lots of bits and piece=
-s
-> with lots of documentation. Most of it not so bad actually but not
-> really unified. If I from my point of view were to comment, then I woul=
-d
-> say that a single unified manual would have really made life a lot
-> easier. Then again I have a handicap with my distribution so it may hav=
-e
-> been a lot simpler had I been working on a fixed installation instead o=
-f
-> a windows laptop which turns into linux when it has a usb stick in it.
-> On yet a third hand, I do think that a lot of people will only start
-> recompiling kernels when they enter this real-time story. A combined
-> really slow step-by-step instruction set of how to compile the kernel
-> with xenomai would make it a lot more accessible.
+I installed FC6 i386 (32bits) since the adeos patch for x86_64
+was not there when I did the install, I may go back
+to run xenomai on x86_64 since I install both systems (x86_64 and i386)
 
-Well, compiling your own kernel is often one central key to the system
-development. But you are right, it's an entry barrier to getting started
-with real-time _application_ development. That's why I hope we will
-manage to create and maintain some pre-compiled binary packages one day,
-both for kernel and user space part, with standard PC as target. Yet
-another item on the to-do list...
+Nevertheless I have three 32bits kernels
 
->=20
-> On even yet another hand (I'm counting with my feet by now) I don;t
-> really know what the objective of xenomai is. So far it appears to be a=
-n
-> impressively engineered product for which I don't doubt there should be=
+2.6.19-vanilla     (pure kernel.org kernel)
+2.6.20-rc1-rtXX (precompiled from Ingo Molnar)
+2.6.19-xenomai (vanilla + adeos-ipipe-2.6.19-i386-1.6-03.patch)
 
+The box has 3 ethernet interface (2 on-board + 1 on an additionnal NIC)
 
-Xenomai is not a "product". It's an open source project, a developer and
-user community.
+eth0 is the additionnal NIC
+eth1,eth2 the on-board I/F
 
-> decent interest. Industry however is rather demanding when it comes to
-> development time (which is where my hurry comes from) and would
-> generally not go through the motions I am trying to rush through here.
-> We typically want a platform on which one can start developing for the
-> application ASAP. Now even though what I am doing is relatively speakin=
-g
-> the easy bit (compared to developing the rt-patches and drivers), there=
+eth1 used for corporate LAN
+eth0 "should" be used for private network (only 2 machines for now)
 
-> are still too many man hours involved in just getting to the final
-> platform.
+With this config the machine boots properly with the non-xenomai
+kernels with eth1 and eth0 up and running.
 
-Keep in mind: You haven't bought a box with some CD and a manual, nor
-have you signed a support contract by downloading Xenomai. Anything you
-can get from Xenomai must be contributed by someone else first,
-including some quick-start-in-five-minutes package or support around it.
-Should really become general knowledge about open source.
+If I boot the xenomai kernel the machine hangs
+(even sysrq does not help) as soon as  the system tries to ifup eth0.
 
-There are also commercial support solutions available, but that's not
-what happens *here*, in this particular forum.
+If I disable eth0 the xenomai kernel boots until the end.
+If I try to ifup eth0 "manually" afterward I got the same "hang".
 
->=20
-> Apparently -from how I understand the documentation- the objective, or
-> one of the objectives of xenomai, is to make porting to it from other R=
-T
-> operating systems as easy as possible. Having to struggle ones bottom
-> off to get xenomai installed and understanding how it works, would rub =
-a
-> lot of the shine off this (I speak based only on the twinkels I have
-> seen so far :)) otherwise hyper-promising bit of software engineering.
+I have no log and sysrq does not work !!
 
-You can be sure that we know there are always things to improve to lower
-the entrance barrier. But there are also more than enough other things
-to do, and no one here has been hired to address this specific issue. So
-we have to look how things get improved incrementally whenever time permi=
-ts.
+How would you suggest me to investigate that problem?
 
-We are aware that helping beginners to get familiar with Xenomai is an
-"investment" in potential future contributors (though the return rate is
-yet improvable as well). That's also one reason why we are hanging
-around here - even for free. :)
-
->=20
-> Anyhow, must catch some quick sleep. Sorry again for all the questions.=
-
-> Especially the stupid ones :)
->=20
-> Thanks for tolerating and responding to them.
->=20
-> Ah, one last thing, if you want to remind me about our contribution to
-> the documentation that would be good.
-
-Be careful, I typically actually do so! ;)
-
-Jan
-
-
---------------enig43403D60D5482CBA90FE9615
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3qnQniDOoMHTA+kRAjDIAJ9djAhfJoaFUrKHQiDbBm2rHLhMXQCffxuk
-JZK5Y6/notig/1uUZAJjXko=
-=9/3G
------END PGP SIGNATURE-----
-
---------------enig43403D60D5482CBA90FE9615--
+-- 
+Erk
 
