@@ -1,16 +1,11 @@
-Subject: Re: [Adeos-main] switchbench tests with IPIPE tracer disabled
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45C1F0CA.6020806@domain.hid>
-References: <70651.51913.qm@domain.hid>
-	<45C1C335.5070007@domain.hid> <45C1D050.7080405@domain.hid>
-	<45C1EEBB.1080609@domain.hid>  <45C1F0CA.6020806@domain.hid>
-Content-Type: text/plain
-Date: Thu, 01 Feb 2007 15:19:18 +0100
-Message-Id: <1170339558.5030.54.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C74AB2.52D6D5DF"
+Date: Wed, 7 Feb 2007 13:20:15 +0100
+Message-ID: <903DF812C6E12E48BD944B9C6DE719CD02786ED9@domain.hid>
+From: "Miguel Casas Sanchez" <mcasas@domain.hid>
+Subject: [Adeos-main] availability of adeos for arm and kernel 2.6.8
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,27 +14,71 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org, Wolfgang Grandegger <wg@domain.hid>
+To: adeos-main@gna.org
 
-On Thu, 2007-02-01 at 14:53 +0100, Jan Kiszka wrote:
+This is a multi-part message in MIME format.
 
-> http://www.denx.de/cgi-bin/gitweb.cgi?p=ipipe-2.6.git;a=commitdiff;h=fbf44bc1edb77d433a327d1796128d036188635e
-> (there are no tags in the non-arch branch, are there?)
-> 
+------_=_NextPart_001_01C74AB2.52D6D5DF
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-No.
+Hi all,
 
-> In the x86 branch, that was merged for 1.6-05.
-> 
-> Jan
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
-Philippe.
+I'm pretty new to this list so excuse me if my question sounds pesky :)
 
+I have a arm920 and would like to set rtai 3.2, however I cannot find in =
+the CVS any ARM patch for earlier kernels than 2.6.14. Is there any =
+patch available for my architecture and previous kernel versions? =
+Concretely I am interested in 2.6.8.1.
 
+cheers
+
+--------------------------
+   Miguel Casas-S=E1nchez
+Embedded Software Engineer
+   Sepsa/I+D/Software
+ mcasas  at  sepsa dot es
+--------------------------
+
+------_=_NextPart_001_01C74AB2.52D6D5DF
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7638.1">
+<TITLE>availability of adeos for arm and kernel 2.6.8</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/plain format -->
+
+<P><FONT SIZE=3D2>Hi all,<BR>
+<BR>
+I'm pretty new to this list so excuse me if my question sounds pesky =
+:)<BR>
+<BR>
+I have a arm920 and would like to set rtai 3.2, however I cannot find in =
+the CVS any ARM patch for earlier kernels than 2.6.14. Is there any =
+patch available for my architecture and previous kernel versions? =
+Concretely I am interested in 2.6.8.1.<BR>
+<BR>
+cheers<BR>
+<BR>
+--------------------------<BR>
+&nbsp;&nbsp; Miguel Casas-S=E1nchez<BR>
+Embedded Software Engineer<BR>
+&nbsp;&nbsp; Sepsa/I+D/Software<BR>
+&nbsp;mcasas&nbsp; at&nbsp; sepsa dot es<BR>
+--------------------------</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C74AB2.52D6D5DF--
 
