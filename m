@@ -1,13 +1,9 @@
-Message-ID: <45C8BE36.7040905@domain.hid>
-Date: Tue, 06 Feb 2007 18:43:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <OFE7CBFD2B.465864F1-ONC125727B.00390D6E@uk.marconicomms.com>
+From: "Markus Osterried" <Markus.Osterried@domain.hid>
+Date: Wed, 7 Feb 2007 11:36:28 +0100
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] I-pipe patch for linux 2.6.19 on ARM.
-References: <45BF08D8.5050208@domain.hid> <45BF17CE.9030808@domain.hid>
-	<45C89F17.5040306@domain.hid>
-In-Reply-To: <45C89F17.5040306@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain; charset=us-ascii
+Subject: [Xenomai-core] Found bug in pSOS ev_receive()
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,25 +13,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Steven Scholz <steven.scholz@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Steven Scholz wrote:
-> Gilles,
-> 
-> 
->>>here comes the I-pipe patch for linux 2.6.19 on ARM. In addition to the
->>>upgrade to linux 2.6.19, the AT91 port is improved:
-> 
-> 
-> Using vanilla 2.6.19, your new patch and xenomai from SVN as of yesterday
-> the test programm "latency" hangs randomly after a while ...
-> 
-> Did you test with "latency"?
+Hello,
 
-If you have a JTAG probe and are able to trace what the processor is
-doing when latency hangs, I am interested.
+in pSOS skin function ev_receive() in file event.c I've found a bug.
+When  ev_receive() is called with EV_WAIT and an event is received, the
+task is unblocked and everything is okay, then in this case the copy of the
+actual received events into *events_r is missing.
 
--- 
-                                                 Gilles Chanteperdrix
+Regards
+Markus
+
+
+
 
