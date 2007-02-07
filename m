@@ -1,16 +1,10 @@
-Message-ID: <cbe23c50702070603t75e5bf59w5ddbc0b20280ee09@domain.hid>
-Date: Wed, 7 Feb 2007 15:03:12 +0100
-From: "Eric Noulard" <eric.noulard@domain.hid>
-Subject: Re: [Xenomai-help] Multiple NIC trouble
-In-Reply-To: <45C9BA26.1040205@domain.hid>
+Message-ID: <45C9E90D.2050307@domain.hid>
+Date: Wed, 07 Feb 2007 15:58:21 +0100
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>
-	<17864.63903.244809.994959@domain.hid>
-	<cbe23c50702062357m6d8b913fsc65af3339ba092de@domain.hid>
-	<45C9B7C4.8050705@domain.hid> <45C9BA26.1040205@domain.hid>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] system freeze with 2.3.x latest svn
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,48 +14,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-2007/2/7, Jan Kiszka <jan.kiszka@domain.hid>:
-> Jan Kiszka wrote:
-> > Eric Noulard wrote:
-> >> 2007/2/6, Jan Kiszka <jan.kiszka@domain.hid>:
-> >>>  o check if you have MSI enabled, if yes, try to disable it
-> >> Sorry but I don't know what MSI is?
-> >> Could you tell me how to check (and may be some
-> >> pointer to valuable information which explains what it is)?
-> >
-> > Your /proc/interrupts output already suggests it: CONFIG_PCI_MSI is set
-> > in your config.
+Hello,
+I get the following message and a completely frozen system when I run my
+applications after upgrading to branches/v2.3.x  rev. 2137. (Everything=20
+worked fine on revision 2077)
 
-It is I've checked the .config.
-Nevertheless it is set in the vanilla config as well.
+'Xenomai: fatal: re-enqueuing a relaxed thread in the RPI queue'
 
-I've seen documentation in kernel source Documentation/MSI-HOWTO.txt
-so I will read it at least to know in which way it is related to
-interrupt handling.
+Maybe I did s.th. stupid again?
 
->> It's worth trying the disable it, because even plain
-> > Linux has problems with certain board/device combinations. But I don't
-> > recall if tg3 was recently involved in such, it may still be an ipipe
-> > bug here.
+I did 'svn -r 2137 up' in the source directory and recompiled=20
+everything (kernel, xenomai, my application). It's a AMD-X2 with Kernel=20
+2.6.17.14, running Debian Sarge. My colleague tells me he saw the same=20
+when experimenting with trunk.
 
-I will try this.
+some additional infos:
 
->
-> On the other hand, CONFIG_ACPI is not set which may cause problems on
-> modern systems as well.
+'svn info' gives me:
+------------------------------------------------------------------
+linux1:~/xenomai_svn_test/xenomai$ svn info
+Pfad: .
+URL: http://svn.gna.org/svn/xenomai/branches/v2.3.x
+UUID des Projektarchivs: c6d672ea-8702-0410-b560-f74c916a59fe
+Revision: 2137
+Knotentyp: Verzeichnis
+Plan: normal
+Letzter Autor: rpm
+Letzte ge=E4nderte Rev: 2137
+Letztes =C4nderungsdatum: 2007-02-07 12:13:48 +0100 (Mi, 07 Feb 2007)
+Eigenschaften zuletzt ge=E4ndert: 2007-01-22 13:20:30 +0100 (Mo, 22 Jan 200=
+7)
 
-I may try that too.
-Why may this overall non ACPI config cause problem?
 
-> You only need to disable CONFIG_ACPI_PROCESSOR
-> for hard RT, the rest of ACPI can safely be enabled. Or is it disabled
-> in your vanilla setup as well?
+the following code leads to the crash, shortly after entering main():
+--------------------------------------------------------------------
+#include <iostream>
+#include <sys/mman.h>
+#include <assert.h>
+#include "native/task.h"
+#include "native/timer.h"
+#include "native/queue.h"
+#include "native/intr.h"
 
-My vanilla config has both ACPI and ACPI_PROCESSOR enabled ('y')
+#include <sys/io.h>
 
--- 
-Erk
+RT_TASK maintask;
+RT_TASK inttask;
+RT_TASK intcreatortask;
+
+#define LPT_BASE	0x378
+#define LPT_INT		7
+
+bool finish =3D false;
+
+void int_task(void* cookie){
+	int err =3D 0;
+	int counter =3D 0;
+	RT_INTR lptint;
+=09
+	err =3D rt_intr_create(&lptint,"parp_int",7,0);
+	std::cout << "interrupt create:" << err << std::endl;
+=09
+	err =3D rt_intr_enable(&lptint);
+	std::cout << "interrupt enable:" << err << std::endl;
+=09
+	// switch int mode on
+	outb_p(0x10, LPT_BASE + 2);
+=09
+	// all pins =3D 0
+	outb_p(0x00, LPT_BASE );
+=09
+	while(!finish){
+		err =3D rt_intr_wait(&lptint, 100);
+		if(err >=3D 0 ){
+			counter++;
+			std::cout << "got " << err << " loop: " << counter << std::endl;
+		}
+	}
+=09
+	err =3D rt_intr_disable(&lptint);
+	std::cout << "interrupt disable:" << err << std::endl;
+=09
+	err =3D rt_intr_delete(&lptint);
+	std::cout << "interrupt delete:" << err << std::endl;
+}
+
+void int_creator_task(void* cookie){
+	char ob =3D 0x00;
+	for(int i =3D 0; i < 1000; i++){=09
+		rt_task_sleep(100);
+		outb_p(ob,LPT_BASE);
+		if(ob){
+			ob =3D 0x00;
+		}else{
+			ob =3D 0xFF;
+		}
+	}
+	finish =3D true;
+}
+
+int main(void){
+	int err;
+=09
+	std::cout << "xenomai interrupt test" << std::endl;
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+=09
+	if (iopl(3)) {
+		printf("iopl err\n");
+		exit(1);
+	}
+=09
+	err =3D rt_task_shadow (&maintask,"maintask",10,0);
+	std::cout << "task shadow:" << err << std::endl;
+=09
+	err =3D rt_timer_set_mode(1000000);
+	std::cout << "timer set mode:" << err << std::endl;
+=09
+	rt_task_spawn(&inttask,"interrupt-task",1024,50,T_JOINABLE,int_task,NULL);
+=09
+	rt_task_spawn(&intcreatortask,"interrupt-creator-task",1024,50,T_JOINABLE,=
+int_creator_task,NULL);
+=09
+	rt_task_join(&intcreatortask);
+	rt_task_join(&inttask);
+=09
+	std::cout << "task's finished, exiting" << std::endl;
+=09
+	return 0;
+}
+
 
