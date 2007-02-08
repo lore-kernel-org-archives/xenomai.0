@@ -1,13 +1,9 @@
-Message-ID: <45C9F43E.3090401@domain.hid>
-Date: Wed, 07 Feb 2007 16:46:06 +0100
-From: Stephan Zimmermann <s.zimmermann@domain.hid>
+Message-ID: <45CB3B5C.9020200@domain.hid>
+Date: Thu, 08 Feb 2007 17:01:48 +0200
+From: Maksym Veremeyenko <verem@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] system freeze with 2.3.x latest svn
-References: <45C9E90D.2050307@domain.hid>
-	<1170861123.21675.33.camel@domain.hid>
-In-Reply-To: <1170861123.21675.33.camel@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="------------070909030905010002020406"
+Subject: [Xenomai-help] 2.6.20 compiling problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,151 +15,210 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Philippe Gerum schrieb:
-> On Wed, 2007-02-07 at 15:58 +0100, Stephan Zimmermann wrote:
->> Hello,
->> I get the following message and a completely frozen system when I run my
->> applications after upgrading to branches/v2.3.x  rev. 2137. (Everything =
+This is a multi-part message in MIME format.
+--------------070909030905010002020406
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-MIME-Autoconverted: from 8bit to quoted-printable by kazbek.m1stereo.tv id
+	l18F1m3r010220
 
->> worked fine on revision 2077)
->>
->> 'Xenomai: fatal: re-enqueuing a relaxed thread in the RPI queue'
->>
->> Maybe I did s.th. stupid again?
->=20
-> No, I did, by committing a half-baked patch attempting to fix a priority
-> inversion seen with the pSOS emulator. Now really, really fixed by #2139
-> in v2.3.x, and #2140 in trunk/. Hopefully.
+Hi!
 
-Works. Thx.
+i try to compile xenomai-2.3.0 + kernel-2.6.20 +=20
+adeos-ipipe-2.6.20-i386-1.7-01 but get a compiler errors:
 
->=20
->> I did 'svn -r 2137 up' in the source directory and recompiled=20
->> everything (kernel, xenomai, my application). It's a AMD-X2 with Kernel =
+kernel/xenomai/nucleus/registry.c:71:70: error: macro "DECLARE_WORK"=20
+passed 3 arguments, but takes just 2
+kernel/xenomai/nucleus/registry.c:71: warning: type defaults to =E2=80=98=
+int=E2=80=99 in=20
+declaration of =E2=80=98DECLARE_WORK=E2=80=99
+kernel/xenomai/nucleus/registry.c: In function =E2=80=98registry_proc_sch=
+edule=E2=80=99:
+kernel/xenomai/nucleus/registry.c:388: error: =E2=80=98registry_proc_work=
+=E2=80=99=20
+undeclared (first use in this function)
+kernel/xenomai/nucleus/registry.c:388: error: (Each undeclared=20
+identifier is reported only once
+kernel/xenomai/nucleus/registry.c:388: error: for each function it=20
+appears in.)
+make[3]: *** [kernel/xenomai/nucleus/registry.o] Error 1
+make[2]: *** [kernel/xenomai/nucleus] Error 2
+make[1]: *** [kernel/xenomai] Error 2
+make: *** [kernel] Error 2
 
->> 2.6.17.14, running Debian Sarge. My colleague tells me he saw the same=20
->> when experimenting with trunk.
->>
->> some additional infos:
->>
->> 'svn info' gives me:
->> ------------------------------------------------------------------
->> linux1:~/xenomai_svn_test/xenomai$ svn info
->> Pfad: .
->> URL: http://svn.gna.org/svn/xenomai/branches/v2.3.x
->> UUID des Projektarchivs: c6d672ea-8702-0410-b560-f74c916a59fe
->> Revision: 2137
->> Knotentyp: Verzeichnis
->> Plan: normal
->> Letzter Autor: rpm
->> Letzte ge=E4nderte Rev: 2137
->> Letztes =C4nderungsdatum: 2007-02-07 12:13:48 +0100 (Mi, 07 Feb 2007)
->> Eigenschaften zuletzt ge=E4ndert: 2007-01-22 13:20:30 +0100 (Mo, 22 Jan =
-2007)
->>
->>
->> the following code leads to the crash, shortly after entering main():
->> --------------------------------------------------------------------
->> #include <iostream>
->> #include <sys/mman.h>
->> #include <assert.h>
->> #include "native/task.h"
->> #include "native/timer.h"
->> #include "native/queue.h"
->> #include "native/intr.h"
->>
->> #include <sys/io.h>
->>
->> RT_TASK maintask;
->> RT_TASK inttask;
->> RT_TASK intcreatortask;
->>
->> #define LPT_BASE	0x378
->> #define LPT_INT		7
->>
->> bool finish =3D false;
->>
->> void int_task(void* cookie){
->> 	int err =3D 0;
->> 	int counter =3D 0;
->> 	RT_INTR lptint;
->> =09
->> 	err =3D rt_intr_create(&lptint,"parp_int",7,0);
->> 	std::cout << "interrupt create:" << err << std::endl;
->> =09
->> 	err =3D rt_intr_enable(&lptint);
->> 	std::cout << "interrupt enable:" << err << std::endl;
->> =09
->> 	// switch int mode on
->> 	outb_p(0x10, LPT_BASE + 2);
->> =09
->> 	// all pins =3D 0
->> 	outb_p(0x00, LPT_BASE );
->> =09
->> 	while(!finish){
->> 		err =3D rt_intr_wait(&lptint, 100);
->> 		if(err >=3D 0 ){
->> 			counter++;
->> 			std::cout << "got " << err << " loop: " << counter << std::endl;
->> 		}
->> 	}
->> =09
->> 	err =3D rt_intr_disable(&lptint);
->> 	std::cout << "interrupt disable:" << err << std::endl;
->> =09
->> 	err =3D rt_intr_delete(&lptint);
->> 	std::cout << "interrupt delete:" << err << std::endl;
->> }
->>
->> void int_creator_task(void* cookie){
->> 	char ob =3D 0x00;
->> 	for(int i =3D 0; i < 1000; i++){=09
->> 		rt_task_sleep(100);
->> 		outb_p(ob,LPT_BASE);
->> 		if(ob){
->> 			ob =3D 0x00;
->> 		}else{
->> 			ob =3D 0xFF;
->> 		}
->> 	}
->> 	finish =3D true;
->> }
->>
->> int main(void){
->> 	int err;
->> =09
->> 	std::cout << "xenomai interrupt test" << std::endl;
->> 	mlockall(MCL_CURRENT | MCL_FUTURE);
->> =09
->> 	if (iopl(3)) {
->> 		printf("iopl err\n");
->> 		exit(1);
->> 	}
->> =09
->> 	err =3D rt_task_shadow (&maintask,"maintask",10,0);
->> 	std::cout << "task shadow:" << err << std::endl;
->> =09
->> 	err =3D rt_timer_set_mode(1000000);
->> 	std::cout << "timer set mode:" << err << std::endl;
->> =09
->> 	rt_task_spawn(&inttask,"interrupt-task",1024,50,T_JOINABLE,int_task,NUL=
-L);
->> =09
->> 	rt_task_spawn(&intcreatortask,"interrupt-creator-task",1024,50,T_JOINAB=
-LE,int_creator_task,NULL);
->> =09
->> 	rt_task_join(&intcreatortask);
->> 	rt_task_join(&inttask);
->> =09
->> 	std::cout << "task's finished, exiting" << std::endl;
->> =09
->> 	return 0;
->> }
->>
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
 
+
+--=20
+________________________________________
+Maksym Veremeyenko
+
+
+--------------070909030905010002020406
+Content-Type: application/x-gzip;
+ name="config.gz"
+Content-Disposition: inline;
+ filename="config.gz"
+Content-Transfer-Encoding: base64
+
+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
+--------------070909030905010002020406--
 
