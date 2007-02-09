@@ -1,12 +1,10 @@
-Message-ID: <45CB44CF.3090802@domain.hid>
-Date: Thu, 08 Feb 2007 16:42:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45CC651C.6060402@domain.hid>
+Date: Fri, 09 Feb 2007 13:12:12 +0100
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] 2.6.20 compiling problems
-References: <45CB3B5C.9020200@domain.hid> <45CB42EB.400@domain.hid>
-In-Reply-To: <45CB42EB.400@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: Quoted-Printable
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] fata: removing non-linked element...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,44 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Maksym Veremeyenko wrote:
->=20
->>Hi!
->>
->>i try to compile xenomai-2.3.0 + kernel-2.6.20 +
->>adeos-ipipe-2.6.20-i386-1.7-01 but get a compiler errors:
->>
->>kernel/xenomai/nucleus/registry.c:71:70: error: macro "DECLARE_WORK"
->>passed 3 arguments, but takes just 2
->>kernel/xenomai/nucleus/registry.c:71: warning: type defaults to =E2=80=98=
-int=E2=80=99 in
->>declaration of =E2=80=98DECLARE_WORK=E2=80=99
->>kernel/xenomai/nucleus/registry.c: In function =E2=80=98registry_proc_s=
-chedule=E2=80=99:
->>kernel/xenomai/nucleus/registry.c:388: error: =E2=80=98registry_proc_wo=
-rk=E2=80=99
->>undeclared (first use in this function)
->>kernel/xenomai/nucleus/registry.c:388: error: (Each undeclared
->>identifier is reported only once
->>kernel/xenomai/nucleus/registry.c:388: error: for each function it
->>appears in.)
->>make[3]: *** [kernel/xenomai/nucleus/registry.o] Error 1
->>make[2]: *** [kernel/xenomai/nucleus] Error 2
->>make[1]: *** [kernel/xenomai] Error 2
->>make: *** [kernel] Error 2
->>
->=20
->=20
-> That's due to the work queue changes in 2.6.20. You need latest Xenomai
-> SVN, either v2.3.x or trunk.
+Hi,
+I just saw the following errormessages while running some tests with my 
+application.
 
-Please also note that Xenomai trunk is not yet fully ready for 2.6.20.
-The FP support does not work at the moment. The work is in progress.
+"Xenoami: fatal: removing non-linked element, holder=ef9a5794 
+qslot=f96f70d0 at include/xenoami/nucleus/queue.h:422"
+"Xenomai: Stuck on nucleus lock f96f6380"
 
---=20
-                                                 Gilles Chanteperdrix
+Followed by pressing the reset-button...
+
+I Run Xenomai 2.3 rev 2139 on AMD X2, kernel 2.6.17.14, debian sarge.
+
+May this be due to an misbehaviour in my app, or does it look like 
+something xenomai related? I am not sure how to interpret these messages.
+
+Thanks in advance, Stephan
+
+
 
