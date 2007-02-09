@@ -1,13 +1,12 @@
-Message-ID: <45CC8621.3030709@domain.hid>
-Date: Fri, 09 Feb 2007 15:33:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45CCEB58.8020103@domain.hid>
+Date: Fri, 09 Feb 2007 22:44:56 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] system() question
-References: <45C9F9CD.6000101@domain.hid>	<45C9F2F9.3020204@domain.hid>	<45CAE1C2.5040207@domain.hid>	<17866.56537.695811.3523@domain.hid>	<45CC8A19.6080109@domain.hid>
-	<45CC7E33.3020707@domain.hid>
-In-Reply-To: <45CC7E33.3020707@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: Quoted-Printable
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDC6F73CF7B793DC4F23F15BA"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] xnpod_suspend_thread and past absolute timeouts
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,30 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> St=E9phane ANCELOT wrote:
->=20
->>I tried it, but did not help, I manged to do the trick using=20
->>start-stop-daemon
->=20
->=20
-> If I understand correctly the problem you have, it is not related at al=
-l
-> with Xenomai. What you want is to make your application a real daemon.
-> The easy way to do this is to call the glibc function named "daemon" th=
-e
-> hard way is to call fork twice, call setsid and setpgrp.
-> start-stop-daemon will not do the trick.
->=20
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDC6F73CF7B793DC4F23F15BA
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-It is enough to fork only once, to call setsid in the child and call
-_exit in the father. That is what the daemon function does. Anyway, this
-is basic unix knowledge, for which you will get more acurate details at
-other places.
+Hi Philippe,
 
---=20
-                                                 Gilles Chanteperdrix
+RTnet revealed a problem of rtdm_task_sleep_until in trunk. When being
+called with a past date, it blocks forever because xnpod_suspend_thread
+considers such timeouts as infinite:
+
+http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/pod.c?v=3D=
+SVN-trunk#1456
+
+Are there users relying on this property of xnpod_suspend_thread? If
+yes, I would unfortunately have to catch this case in RTDM.
+
+Jan
+
+
+--------------enigDC6F73CF7B793DC4F23F15BA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFFzOteniDOoMHTA+kRArWmAJsEiYlxJV/Uvlaa/3IB15zo+3RXIwCeLBGf
+lU2oug20RPO9tYIuJ9XAibI=
+=1CvU
+-----END PGP SIGNATURE-----
+
+--------------enigDC6F73CF7B793DC4F23F15BA--
 
