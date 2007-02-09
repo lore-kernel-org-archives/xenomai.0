@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-core] [PATCH] Fix warnings for kernel 2.4 builds
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45CC3866.8070706@domain.hid>
-References: <45CC3866.8070706@domain.hid>
-Content-Type: text/plain
-Date: Fri, 09 Feb 2007 10:16:18 +0100
-Message-Id: <1171012579.25642.0.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Message-ID: <45CC8A19.6080109@domain.hid>
+Date: Fri, 09 Feb 2007 14:50:01 +0000
+From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] system() question
+References: <45C9F9CD.6000101@domain.hid>	<45C9F2F9.3020204@domain.hid>	<45CAE1C2.5040207@domain.hid>
+	<17866.56537.695811.3523@domain.hid>
+In-Reply-To: <17866.56537.695811.3523@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,36 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2007-02-09 at 10:01 +0100, Jan Kiszka wrote:
-> Index: include/asm-generic/wrappers.h
-> ===================================================================
-> --- include/asm-generic/wrappers.h	(Revision 2167)
-> +++ include/asm-generic/wrappers.h	(Arbeitskopie)
-> @@ -257,8 +257,6 @@ unsigned long __va_to_kva(unsigned long 
->  					   &(p)->pending.signal, \
->  					   &(p)->signal->shared_pending.signal)
->  
-> -#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,5,0) */
-> -
->  #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,20)
->  #define DECLARE_WORK_NODATA(f, n)	DECLARE_WORK(f, n, NULL)
->  #define DECLARE_WORK_FUNC(f)		void f(void *cookie)
-> @@ -267,4 +265,6 @@ unsigned long __va_to_kva(unsigned long 
->  #define DECLARE_WORK_FUNC(f)		void f(struct work_struct *work)
->  #endif /* >= 2.6.20 */
->  
-> +#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2,5,0) */
-> +
->  #endif /* _XENO_ASM_GENERIC_WRAPPERS_H */
-> 
+I tried it, but did not help, I manged to do the trick using=20
+start-stop-daemon
 
-Merged, thanks.
-
--- 
-Philippe.
-
+Gilles Chanteperdrix wrote:
+> St=E9phane ANCELOT wrote:
+>  > my linux user task uses a system() call in order to call a bash script=
+=20
+>  > to restart the realtime task as follow :
+>  >=20
+>  > user interface C call :
+>  > system("restart_task.sh");
+>  > give back hand to user interface
+>  > ....
+>  >=20
+>  >=20
+>  >=20
+>  >=20
+>  > bash script restart_task.sh :
+>  > killall -15 mytask
+>  > sleep 2
+>  > mytask &
+>  >=20
+>  >=20
+>  > system call dies because sh script has been launched
+>=20
+> Try calling daemon(0,0) in mytask instead of using "&" to make it run in
+> the background.
+>=20
 
 
