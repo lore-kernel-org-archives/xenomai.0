@@ -2,8 +2,8 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <17871.38937.833989.444025@domain.hid>
-Date: Sun, 11 Feb 2007 23:26:33 +0100
+Message-ID: <17871.39246.260267.579855@domain.hid>
+Date: Sun, 11 Feb 2007 23:31:42 +0100
 Subject: Re: [Xenomai-core] [BUG] trunk: screwed Linux irq state
 In-Reply-To: <45CF951B.8080404@domain.hid>
 References: <45CF951B.8080404@domain.hid>
@@ -63,9 +63,9 @@ Jan Kiszka wrote:
  > 
  > Anyone any idea? No-COW is now both in trunk and 2.3.x, right?
 
-In order to see if it is the effect of the no-cow patch, comment out the
-I-pipe portion in copy_one_pte, in mm/memory.c. This code should have an
-effect only if you are forking in a real-time application, though.
+alloc_page_vma in copy_one_pte uses the GFP_HIGHUSER flag, whereas the
+bug suggests we are in an atomic section, so maybe we should use 
+GFP_ATOMIC | __GFP_HIGHMEM
 
 -- 
 
