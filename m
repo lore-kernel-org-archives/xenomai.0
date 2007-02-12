@@ -1,19 +1,21 @@
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1170429402.4981.79.camel@domain.hid>
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170426719.4981.66.camel@domain.hid> <45C34DEE.2020101@domain.hid>
-	<200702021455.51991.paul_c@domain.hid>
-	<Pine.LNX.4.64.0702021705370.12191@domain.hid>
-	<1170429402.4981.79.camel@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Feb 2007 16:29:08 +0100
-Message-Id: <1170430148.4981.80.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45D0652D.4070500@domain.hid>
+Date: Mon, 12 Feb 2007 14:01:33 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Multiple NIC trouble
+References: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>	
+	<17864.63903.244809.994959@domain.hid>	
+	<cbe23c50702062357m6d8b913fsc65af3339ba092de@domain.hid>	
+	<45C9B7C4.8050705@domain.hid>	
+	<cbe23c50702080711s18459ea7le22545518bfc7c6f@domain.hid>	
+	<45CB4291.408@domain.hid>	
+	<cbe23c50702090849i3bfff5a0j64acbcd58163f880@domain.hid>	
+	<45CCA96C.7080605@domain.hid>
+	<cbe23c50702120058s2bf042d0o95bb1a69997e921a@domain.hid>
+	<45D034FF.90900@domain.hid>
+In-Reply-To: <45D034FF.90900@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,38 +25,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Fri, 2007-02-02 at 16:16 +0100, Philippe Gerum wrote:
-> On Fri, 2007-02-02 at 17:07 +0200, Rus V. Brushkoff wrote:
-> > :On Friday 02 February 2007 14:42, Jan Kiszka wrote:
-> > :> >>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP
-> > :> >> doesn't.
-> > :> Must be .config-dependent. My UP box (.config attached) doesn't expose
-> > :> any leak on /proc/interrupt loops with 2.6.19.2.
-> > :
-> > :x86_64 SMP on 2.6.19.2 doesn't appear to leak here either. Perhap 
-> > :http://lkml.org/lkml/2006/12/26/112 might have been a contributary fix..
-> > 
-> >  With my config (attached) plain 2.6.19.2 x86_64 SMP leaks memory, so this 
-> > is config related.
-> > 
-> 
-> I don't know for Paul, but unlike Jan, we both run with
-> CONFIG_DEBUG_KERNEL features on. I'm going to check if this makes a
-> difference on my setup.
-> 
+Jan Kiszka wrote:
+> But can someone explain *why* there is a clash? Is it due to I-pipe
+> injecting tick events *aside* HPET-generated ticks? I think we should
+> address this clash when I-pipe has to be adopted to clock_event/dyntick
+> in 2.6.21.
 
-Nope, it does not.
+Maybe the rthal code assume that the local APIC is initialized, whereas
+it is not, when using the HPET ?
 
-> > :
-> > :
-> > 
-> > 		Rus
-> > _______________________________________________ Xenomai-help mailing list Xenomai-help@domain.hid https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
-
-
+                                                 Gilles Chanteperdrix
 
