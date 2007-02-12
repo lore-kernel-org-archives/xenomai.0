@@ -1,10 +1,11 @@
-Date: Mon, 12 Feb 2007 07:55:37 -0800 (PST)
-From: mani bhatti <imranbashirbhatti@domain.hid>
+Message-ID: <b131c9f0702120811l64e300dbu7819f7254bdc6aa0@domain.hid>
+Date: Mon, 12 Feb 2007 18:11:12 +0200
+From: "vikesh rambaran" <vikesh.rambaran@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="0-1271499515-1171295737=:52919"
-Content-Transfer-Encoding: 8bit
-Message-ID: <775081.52919.qm@domain.hid>
-Subject: [Xenomai-help] interrupts test
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_31093_26993215.1171296672455"
+Subject: [Xenomai-help] Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE
+	disabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,103 +17,64 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0-1271499515-1171295737=:52919
-Content-Type: multipart/alternative; boundary="0-126260276-1171295737=:52919"
+------=_Part_31093_26993215.1171296672455
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
---0-126260276-1171295737=:52919
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+Hi there
 
-Hi 
-I have attached a  kernel module parint.c.When i insert parint.ko  into kernel i get the following message from kernel .
+I'm using ubuntu 6.06 LTS.
+I patched a 2.6.19.1 vanilla kernel with xenomai 2.3.0 adeos
+(Processor type is Pentuim III)
+The realtime section has been left at the default settings.
 
-Request_irq returns 0
-Interrupt generated. You should see the handler-message
-Badness in enable_irq at kernel/irq/manage.c:126
- [<c012da81>] enable_irq+0x68/0xdf
- [<c80be033>] init_module+0x22/0x52 [parint]
- [<c80be000>] handler+0x0/0x11 [parint]
- [<c012c78a>] sys_init_module+0xb5/0x221
- [<c0102898>] syscall_call+0x7/0xb
+The kernel compiles and boots ok.
 
+Userspace Xenomai has been compiled with the --disable-x86-tsc option
 
+When i try to run the latency test, i get the following error
 
-Please if some one can point out the mistake i would be very helpful.
-Thanks.
+Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled
+(modprobe xeno_native?)
 
- 
----------------------------------
- Get your own web address.
- Have a HUGE year through Yahoo! Small Business.
---0-126260276-1171295737=:52919
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
+The kernel .config file shows that the native skin is supposed to be
+compiled
+into the kernel and CONFIG_SENO_OPT_PERVASIVE=y
 
-Hi <br>I have attached a&nbsp; kernel module parint.c.When i insert parint.ko&nbsp; into kernel i get the following message from kernel .<br><br>Request_irq returns 0<br>Interrupt generated. You should see the handler-message<br>Badness in enable_irq at kernel/irq/manage.c:126<br>&nbsp;[&lt;c012da81&gt;] enable_irq+0x68/0xdf<br>&nbsp;[&lt;c80be033&gt;] init_module+0x22/0x52 [parint]<br>&nbsp;[&lt;c80be000&gt;] handler+0x0/0x11 [parint]<br>&nbsp;[&lt;c012c78a&gt;] sys_init_module+0xb5/0x221<br>&nbsp;[&lt;c0102898&gt;] syscall_call+0x7/0xb<br><br><br><br>Please if some one can point out the mistake i would be very helpful.<br>Thanks.<br><p>&#32;
+Any help to solve this problem would be appreciated
 
-<hr size=1>
-<a href="http://us.rd.yahoo.com/evt=49678/*http://smallbusiness.yahoo.com/domains/?p=BESTDEAL"> Get your own web address.</a><br> Have a HUGE year through <a href="
-http://us.rd.yahoo.com/evt=49678/*http://smallbusiness.yahoo.com/domains/?p=BESTDEAL">Yahoo! Small Business.</a>
---0-126260276-1171295737=:52919--
+Thanx
+Vicki
 
---0-1271499515-1171295737=:52919
-Content-Type: text/x-csrc; name="parint.c"
-Content-Description: 4109319093-parint.c
-Content-Disposition: inline; filename="parint.c"
+------=_Part_31093_26993215.1171296672455
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-#include <linux/module.h>
-#include <linux/interrupt.h>
-#include <asm/io.h>
+Hi there<br>
+<br>
+I&#39;m using ubuntu 6.06 LTS.<br>
+I patched a <a href="http://2.6.19.1">2.6.19.1</a> vanilla kernel with xenomai 2.3.0 adeos<br>
+(Processor type is Pentuim III)<br>
+The realtime section has been left at the default settings.<br>
+<br>
+The kernel compiles and boots ok. <br>
+<br>
+Userspace Xenomai has been compiled with the --disable-x86-tsc option<br>
+<br>
+When i try to run the latency test, i get the following error<br>
+<br>
+Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled<br>
+(modprobe xeno_native?)<br>
+<br>
+The kernel .config file shows that the native skin is supposed to be compiled<br>
+into the kernel and CONFIG_SENO_OPT_PERVASIVE=y<br>
+<br>
+Any help to solve this problem would be appreciated<br>
+<br>
+Thanx<br>
+Vicki
 
-#define BASEPORT 0x378
-
-static int handler(void)
-{
-	// do stuff
-	printk(">>> PARALLEL PORT INT HANDLED\n");
-	return IRQ_HANDLED;
-}
-
-int xinit_module(void)
-{
-	int ret;
-	ret = request_irq(7, handler, SA_INTERRUPT, "parallelport", NULL);
-	enable_irq(7);
-        printk("\nRequest_irq returns %d \n",ret);
-
-	//set port to interrupt mode; pins are output
-	outb_p(0x10, BASEPORT + 2); 
-
-//	printk("Generating interrupt now on all output pins (intr/ACK = pin 10)\n");
-	
-	//generate interrupt
-	outb_p(0, BASEPORT);
-	outb_p(255, BASEPORT);
-	outb_p(0, BASEPORT);
-//	printk("Interrupt generated. You should see the handler-message\n");
-	return 0;
-}
-
-void xcleanup_module(void)
-{
-	disable_irq(7);
-	free_irq(7, NULL);
-}
-
-module_init(xinit_module);
-module_exit(xcleanup_module);
-MODULE_LICENSE("GPL");
-
---0-1271499515-1171295737=:52919
-Content-Type: application/octet-stream; name=Makefile
-Content-Transfer-Encoding: base64
-Content-Description: 402397780-Makefile
-Content-Disposition: attachment; filename=Makefile
-
-b2JqLW0JOj0gcGFyaW50Lm8KCktESVIJOj0gL2xpYi9tb2R1bGVzLyQoc2hl
-bGwgdW5hbWUgLXIpL2J1aWxkClBXRAkJOj0gJChzaGVsbCBwd2QpCgpkZWZh
-dWx0OgoJJChNQUtFKSAtQyAkKEtESVIpIFNVQkRJUlM9JChQV0QpIG1vZHVs
-ZXMK
-
---0-1271499515-1171295737=:52919--
+------=_Part_31093_26993215.1171296672455--
 
