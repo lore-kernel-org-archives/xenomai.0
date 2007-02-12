@@ -1,17 +1,14 @@
-Date: Fri, 2 Feb 2007 16:36:43 +0200 (EET)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-In-Reply-To: <1170426719.4981.66.camel@domain.hid>
-Message-ID: <Pine.LNX.4.64.0702021635150.12191@domain.hid>
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
-	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
-	<1170420270.4981.58.camel@domain.hid>
-	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
-	<1170426719.4981.66.camel@domain.hid>
+Message-ID: <45D029B8.1030805@domain.hid>
+Date: Mon, 12 Feb 2007 09:47:52 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: Re: [Xenomai-help] Make error
+References: <e45fe62b0702112124r71b9e03fv8413028178857a57@domain.hid>
+In-Reply-To: <e45fe62b0702112124r71b9e03fv8413028178857a57@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1333D2A700994C6D4E0F10EA"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,25 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Preetam Joshi <j.preetam@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2 Feb 2007, Philippe Gerum wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1333D2A700994C6D4E0F10EA
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-:>  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP 
-:> doesn't.
-:
-:Thanks. I do have a leak on UP here though; vmstat or any other command
-:do not eat this memory (at least neither ps or top report any continuous
-:growth of their vm space while running the test), so I would wildly
-:guess that's a kernel-based leakage occurring somewhere in the procfs
-:support.
+Preetam Joshi wrote:
+> Hi all,
+>=20
+> I am using xenomai with linux kernel 2.6.19 and have applied the patch
+> successfully. I have created my own examples in the native section unde=
+r
+> xenomai-2.3.0/examples/native and am tryuing to run the makefile in it.=
 
- May be the time to announce this to linux-kernel, last rc7 for 2.6.20 
-is out ;)
+>=20
+> But i get the error as /usr/bin/ld: cannot find -lnative
+> collect2: ld returned 1 exit status
+>=20
+> How do i resolve this error.
+>=20
 
-:
-:
+The example Makefiles from the SVN repository can provide the required
+compiler/linker flags, you just need to pass the Xenomai user space
+installation path (make XENO=3D<path-to-xenomai>).
 
-		Rus
+Jan
+
+
+--------------enig1333D2A700994C6D4E0F10EA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF0Cm+niDOoMHTA+kRAiZaAJwKBIc0R46PvkhXghv1R+oYcJ+6mACaAxAT
+X2W699+d+4gqUngXOMrXE4M=
+=JnAA
+-----END PGP SIGNATURE-----
+
+--------------enig1333D2A700994C6D4E0F10EA--
 
