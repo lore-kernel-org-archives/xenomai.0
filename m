@@ -1,11 +1,13 @@
-Message-ID: <24461688.1170430564542.JavaMail.ngmail@domain.hid>
-Date: Fri, 2 Feb 2007 16:36:04 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Message-ID: <45D0F1E2.3020201@domain.hid>
+Date: Tue, 13 Feb 2007 00:01:54 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Standard linux assignment of processes to CPUs
- depends on Xenomai Config
+Subject: Re: [Xenomai-help] interrupt latencies (irqloop/irqbench)
+References: <45D0E411.4010807@domain.hid>
+	<45D0EDBC.5020402@domain.hid>
+In-Reply-To: <45D0EDBC.5020402@domain.hid>
+Content-Type: multipart/mixed; boundary="------------020805030901090603050400"
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,42 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-Hi everybody,
+This is a multi-part message in MIME format.
+--------------020805030901090603050400
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-I just noted another very interesting thing.
-When I have the Xenomai support built directly into the kernel (no modules)=
-,
-the Linux scheduler assigns all Linux tasks to CPU 0 (I have a SMP with a D=
-ual Core CPU).
-Using e.g. taskset I can of course force tasks to run on CPU 1 but it will =
-not be done
-automatically.
+Jan Kiszka wrote:
+> This test mode exploits the I-pipe support for multiple domains
+> intensively. 
 
-However, when I use modules for the Xenomai stuff, the Linux scheduler assi=
-gns
-the tasks to both available CPUs...
+I know....I read the nice txt-document :-)
 
-This behaviour looks very strange to me...
-My setup: Kernel 2.6.19.2, SMP, Pentium 4 D, Xenomai 2.3. + COW patches.
-Any idea on this?!?
+> By default, Xenomai is configured to be the topmost domain
+> and is optimised for this use case. But it can also be "second-best" and
+> let someone else be first in the interrupt pipeline - e.g. xeno_irqloop.
+> To achieve this, switch off CONFIG_XENO_OPT_PIPELINE_HEAD (nucleus
+> option) and retry the test.
 
-Thanks and regards
+Ok I understand. It would be good if such a hint would be in this txt-file.
 
-Mathias
+> Then there is a bug - in the doc. :)
+
+Why? The above information is simply missing. :-)
+
+Regards,
+Markus
+
+--------------020805030901090603050400
+Content-Type: text/x-vcard; charset=utf-8;
+ name="Markus.Franke.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="Markus.Franke.vcf"
+
+begin:vcard
+fn:Markus Franke
+n:Franke;Markus
+adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
+email;internet:Markus.Franke@domain.hid
+x-mozilla-html:FALSE
+url:http://www.tu-chemnitz.de/~franm
+version:2.1
+end:vcard
 
 
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  44,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+--------------020805030901090603050400--
 
