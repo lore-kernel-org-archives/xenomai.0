@@ -1,17 +1,14 @@
-Subject: Re: [Xenomai-help] fata: removing non-linked element...
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45D200C3.1030001@domain.hid>
-References: <45CC651C.6060402@domain.hid> <45CC68F3.1000003@domain.hid>
-	<45D1C033.9010002@domain.hid>  <45D1C61B.7030503@domain.hid>
-	<1171376742.885.3.camel@domain.hid>  <45D1CAFA.6050408@domain.hid>
-	<1171385716.885.17.camel@domain.hid>  <45D200C3.1030001@domain.hid>
-Content-Type: text/plain
-Date: Tue, 13 Feb 2007 19:58:08 +0100
-Message-Id: <1171393088.885.37.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Message-ID: <45D20F8E.9040900@domain.hid>
+Date: Tue, 13 Feb 2007 20:20:46 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+References: <5D63919D95F87E4D9D34FF7748CE2C2A8018AD@ARVMAIL1.mra.roland-man.biz>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A8018AD@ARVMAIL1.mra.roland-man.biz>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6DE1BF66DAB2423798280C97"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,56 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Roderik_Wildenburg@domain.hid
+Cc: Xenomai-help@domain.hid
 
-On Tue, 2007-02-13 at 19:17 +0100, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Tue, 2007-02-13 at 15:28 +0100, Jan Kiszka wrote:
-> >> Philippe Gerum wrote:
-> >>> On Tue, 2007-02-13 at 15:07 +0100, Jan Kiszka wrote:
-> >>>> Stephan Zimmermann wrote:
-> >>>>> I wasn't able to isolate the section of my code that causes the crash by
-> >>>>> now. The only thing I figured out by now is that the particular crash
-> >>>>> does not happen with 2.3.x rev 2077.
-> >>>>> So I guess some change from 2077 to the 2139 revision did break something.
-> >>>> Could you track the issue a bit more down? There are not to many
-> >>>> "interesting" changes to 2.3.x. A few milestones I found in the ChangeLog:
-> >>>>
-> >>>> - 2092: Allow sleeping scheduler locks
-> >>>> - 2108: Before RPI rework
-> >>>>
-> >>>> Anything after 2108 only makes sense to dissect when you switch on
-> >>> s,on,off,
-> >> Nope. If this switch is off, RPI is enabled while known to be buggy, right?
-> >>
-> > 
-> > Btw, RPI was not buggy so so that it could cause crashes; it was failing
-> > to _always_ keep a thread's priority consistent across domain migration,
-> > which is quite different. IOW, do not start switching on RPIDISABLE
-> > blindly when your box goes south, it's most likely unrelated to what has
-> > been fixed recently.
-> 
-> Well, I recalled some temporary locking changes on RPI somewhere in this
-> period. My feeling was to better exclude their potential side-effects
-> from the testing rounds.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6DE1BF66DAB2423798280C97
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-This temporary issue that was introduced by #2109 while rewriting the
-RPI support has been fixed by #2139, and caused a debug assertion to
-trigger (btw, Stephan, make sure to enable CONFIG_XENO_OPT_DEBUG when
-testing). So if the tested revisions did include #2139, then we have the
-same crash happening, regardless of whether we use the old or (totally)
-new RPI implementation anyway.
+Roderik_Wildenburg@domain.hid wrote:
+> Can anybody tell me, how I have to set the 2. parameter (starttp) of
+> pthread_make_periodic_np ?
+> When I use clock_gettime to fill startp I get a giant timeout value in
+> the /proc/xenomai/sched list and my task never gets periodic.
+>=20
+> Is this just a problem of my hardware(PPC)/xenomai(2.3) combination or
+> does anybody else have the same problem.=20
+>=20
+> See attached code example for easier testing.
+>=20
 
-My point is that we need to be extra careful about not leading people to
-disable RPI blindly (at least in its recent and more complete
-incarnation) while it's actually _that_ feature which happens to prevent
-priority inversions when secondary mode is involved, e.g:
-https://mail.gna.org/public/xenomai-core/2007-01/msg00081.html
+Confirmed over v2.3.x in periodic mode, aperiodic is fine. Gilles?
 
--- 
-Philippe.
+> Thanks a lot for your help
+> Roderik
+>=20
+> MAN Roland Druckmaschinen AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Ral=
+l, Paul Steidle
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+
+Hah, I waited for the first footer of this kind appearing on mailing
+lists! As far as I understood the new German law, this is not required
+when you post to public forums. But probably your corporate mail server
+injects this automatically.
+
+Jan
 
 
+--------------enig6DE1BF66DAB2423798280C97
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF0g+OniDOoMHTA+kRAu2BAJ4q8it6tK9EBjiOo+0txoTEdNz8xgCfdDzk
+BHSucNXLf2T3Y6Hl0JsuCuQ=
+=4Cin
+-----END PGP SIGNATURE-----
+
+--------------enig6DE1BF66DAB2423798280C97--
 
