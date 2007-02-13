@@ -1,20 +1,11 @@
-Message-ID: <45D192EB.9030608@domain.hid>
-Date: Tue, 13 Feb 2007 11:28:59 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-Transfer-Encoding: 7bit
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Make error
-References: <e45fe62b0702112124r71b9e03fv8413028178857a57@domain.hid>	
-	<45D029B8.1030805@domain.hid>	
-	<e45fe62b0702120448i7b23bd24o4fa88a05237a69a@domain.hid>	
-	<45D0666C.8070409@domain.hid>	
-	<e45fe62b0702122319k463327b6o8cd72dde6af895a@domain.hid>	
-	<45D171F9.7000705@domain.hid>
-	<e45fe62b0702130021i5ec6c345m699a9abcc2e665c0@domain.hid>
-In-Reply-To: <e45fe62b0702130021i5ec6c345m699a9abcc2e665c0@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig08093884CC5E949F2A77F2CF"
-Sender: jan.kiszka@domain.hid
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C74F67.7F058F2D"
+Date: Tue, 13 Feb 2007 13:07:13 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A8018AD@ARVMAIL1.mra.roland-man.biz>
+From: <Roderik_Wildenburg@domain.hid>
+Subject: [Xenomai-help] pthread_make_periodic_np and clock_gettime
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,48 +15,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Preetam Joshi <j.preetam@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig08093884CC5E949F2A77F2CF
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C74F67.7F058F2D
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Preetam Joshi wrote:
-> I have taken the makefile from
->=20
-> Using the one under test suite /xenomai/src/testsuite/switchbench/
->=20
-> n modified for mytask jus replaced all the witchbench related statement=
-s
-> with mytask
->=20
-> It works for switchbench or latency or switchsuite but not for my examp=
-le.
+Can anybody tell me, how I have to set the 2. parameter (starttp) of
+pthread_make_periodic_np ?
+When I use clock_gettime to fill startp I get a giant timeout value in
+the /proc/xenomai/sched list and my task never gets periodic.
 
-Unless you are planning to write an extension of the Xenomai user space
-part, you don't need to make your life that hard. Just follow my
-suggestions and use the makefiles from the examples repos.
+Is this just a problem of my hardware(PPC)/xenomai(2.3) combination or
+does anybody else have the same problem.=20
 
-Jan
+See attached code example for easier testing.
 
-PS: The CC, take care of it...
+Thanks a lot for your help
+Roderik
 
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
---------------enig08093884CC5E949F2A77F2CF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------_=_NextPart_001_01C74F67.7F058F2D
+Content-Type: application/octet-stream;
+	name="pperiodic.c"
+Content-Transfer-Encoding: base64
+Content-Description: pperiodic.c
+Content-Disposition: attachment;
+	filename="pperiodic.c"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I2luY2x1ZGUgPHRpbWUuaD4KI2luY2x1ZGUgPGVycm5vLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4K
+I2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHBvc2l4
+L3B0aHJlYWQuaD4KI2luY2x1ZGUgPHN0ZGlvLmg+CgojZGVmaW5lIENZQ1RBU0tfUFJJICAgIDEK
+I2RlZmluZSBDWUNUQVNLX1NUQUNLX1NJWkUgIDgxOTIKCgpwdGhyZWFkX3QgY3lrdGFza2lkOwoK
+dm9pZCBjeWNfdGFzayh2b2lkICp0MmR1bW15KQp7CiAgIGludCBuUmVzdWx0OwogICBzdHJ1Y3Qg
+dGltZXNwZWMgdHN0YXJ0OwogICBzdHJ1Y3QgdGltZXNwZWMgdHBlcmlvZDsKICAgaW50IGN5YzsK
+ICAgdW5zaWduZWQgbG9uZyBuT3ZlcnJ1bjsKCgogICBpZiggKG5SZXN1bHQ9Y2xvY2tfZ2V0dGlt
+ZShDTE9DS19SRUFMVElNRSwmdHN0YXJ0KSkhPTApCiAgICAgIHByaW50ZigiISFXQVJOSU5HISEg
+Y2xvY2tfZ2V0dGltZSBmYWlsZWQiKTsKICAgZWxzZQogICAgICBwcmludGYoImNsb2NrX2dldHRp
+bWUgOiAlbGQgJWxkXG4iLHRzdGFydC50dl9zZWMsdHN0YXJ0LnR2X25zZWMpOwoKICAgdHN0YXJ0
+LnR2X3NlYyArKzsKICAgdHN0YXJ0LnR2X25zZWMgPSAxMDAwMDA7CgogICB0cGVyaW9kLnR2X3Nl
+YyA9IDE7ICAgIC8vIHNlYwogICB0cGVyaW9kLnR2X25zZWMgPSAwOyAgICAgIC8vIG5zZWMKCiAg
+IHByaW50ZigicGVyaW9kIDogJWxkICVsZFxuIix0cGVyaW9kLnR2X3NlYyx0cGVyaW9kLnR2X25z
+ZWMpOwoKICAgaWYgKCggblJlc3VsdCA9IHB0aHJlYWRfbWFrZV9wZXJpb2RpY19ucChwdGhyZWFk
+X3NlbGYoKSwmdHN0YXJ0LCZ0cGVyaW9kKSkgPT0gMCkKICAgewogICAgICB3aGlsZSAoMSkKICAg
+ICAgewogICAgICAgICBwcmludGYoIkN5a2xlVGFzayAlZFxuIixjeWMrKyk7CiAgICAgICAgIGlm
+ICgoblJlc3VsdCA9IHB0aHJlYWRfd2FpdF9ucCgmbk92ZXJydW4pKSAhPSAwKQogICAgICAgICAg
+ICBwcmludGYoInN5c3RpY2sgb3ZlcnJ1biAlZCIsbk92ZXJydW4pOwogICAgICB9CiAgIH0KICAg
+ZWxzZQogICB7CiAgICAgIHByaW50ZigiZmFpbGVkIHRvIHN0YXJ0IHRpbWVyIik7CiAgIH0KfQoK
+dm9pZCBfX3hlbm9fdXNlcl9leGl0ICh2b2lkKQp7Cn0KCmludCBfX3hlbm9fdXNlcl9pbml0ICh2
+b2lkKQp7CiAgICBzdHJ1Y3Qgc2NoZWRfcGFyYW0gcGFybTsKICAgIHB0aHJlYWRfYXR0cl90IGF0
+dHI7CiAgICBpbnQgcmMgPSAwLCBmZCA9IC0xOwoKCiAgICBwdGhyZWFkX2F0dHJfaW5pdCgmYXR0
+cik7CiAgICBwdGhyZWFkX2F0dHJfc2V0aW5oZXJpdHNjaGVkKCZhdHRyLCAxKTsKICAgIHB0aHJl
+YWRfYXR0cl9zZXRzY2hlZHBvbGljeSgmYXR0ciwgU0NIRURfRklGTyk7CgoKICAgIHB0aHJlYWRf
+YXR0cl9zZXRzdGFja3NpemUoJmF0dHIsIENZQ1RBU0tfU1RBQ0tfU0laRSk7CiAgICBwYXJtLnNj
+aGVkX3ByaW9yaXR5ID0gQ1lDVEFTS19QUkk7CiAgICBwdGhyZWFkX2F0dHJfc2V0c2NoZWRwYXJh
+bSgmYXR0ciwgJnBhcm0pOwogICAgcmMgPSBwdGhyZWFkX2NyZWF0ZSgmY3lrdGFza2lkLCAmYXR0
+ciwgJmN5Y190YXNrLCBOVUxMKTsKICAgIGlmIChyYykKICAgIHsKICAgICAgICBwcmludGYoInB0
+aHJlYWRfY3JlYXRlKGN5a3Rhc2spOiAlZFxuIiwgcmMpOwogICAgfQoKICAgIHJldHVybiByYzsK
+fQoKCmludCBtYWluIChpbnQgYWMsIGNoYXIgKmF2W10pCgp7CiAgICBzaWdzZXRfdCBtYXNrOwog
+ICAgaW50IHJjLCBzaWc7CgogICAgc2lnZW1wdHlzZXQoJm1hc2spOwogICAgc2lnYWRkc2V0KCZt
+YXNrLFNJR0lOVCk7CiAgICBzaWdhZGRzZXQoJm1hc2ssU0lHVEVSTSk7CiAgICBzaWdhZGRzZXQo
+Jm1hc2ssU0lHSFVQKTsKICAgIHNpZ2FkZHNldCgmbWFzayxTSUdBTFJNKTsKCiAgICBwdGhyZWFk
+X3NpZ21hc2soU0lHX0JMT0NLLCAmbWFzaywgTlVMTCk7CgogICAgbWxvY2thbGwoTUNMX0NVUlJF
+TlR8TUNMX0ZVVFVSRSk7CgogICAgcmMgPSBfX3hlbm9fdXNlcl9pbml0KCk7CgogICAgaWYgKHJj
+KQogICAgewogICAgICAgIHByaW50ZigiX194ZW5vX3VzZXJfaW5pdDogJWRcbiIsIC1yYyk7CiAg
+ICAgICAgcmV0dXJuIC1yYzsKICAgIH0KCiAgICBzaWd3YWl0KCZtYXNrLCAmc2lnKTsKICAgIF9f
+eGVub191c2VyX2V4aXQoKTsKCiAgICByZXR1cm4gMDsKfQo=
 
-iD8DBQFF0ZLwniDOoMHTA+kRAsLsAJ9AHfPLsGtkxJkMIdOQCljq9aK11wCfetRk
-lNmJVlyNoeDDUiWfjiKRFKA=
-=KwT6
------END PGP SIGNATURE-----
-
---------------enig08093884CC5E949F2A77F2CF--
+------_=_NextPart_001_01C74F67.7F058F2D--
 
