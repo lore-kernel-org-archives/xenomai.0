@@ -1,11 +1,11 @@
-Message-ID: <45D1BED7.8010904@domain.hid>
-Date: Tue, 13 Feb 2007 14:36:23 +0100
+Message-ID: <45D1C033.9010002@domain.hid>
+Date: Tue, 13 Feb 2007 14:42:11 +0100
 From: Stephan Zimmermann <s.zimmermann@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] fata: removing non-linked element...
 References: <45CC651C.6060402@domain.hid> <45CC68F3.1000003@domain.hid>
 In-Reply-To: <45CC68F3.1000003@domain.hid>
-Content-Type: multipart/mixed; boundary="------------020703040408070102080202"
+Content-Type: multipart/mixed; boundary="------------080409040603090006090501"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,17 +18,17 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 Cc: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------020703040408070102080202
+--------------080409040603090006090501
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
 
-I wasn't able to isolate the section of my code that causes the crash by 
-now. The only thing I figured out by now is that the particular crash 
+I wasn't able to isolate the section of my code that causes the crash by
+now. The only thing I figured out by now is that the particular crash
 does not happen with 2.3.x rev 2077.
 So I guess some change from 2077 to the 2139 revision did break something.
 I'll go on trying to make it reproducible in a small demo program.
 
-By the way, I see a Pentium M crash reliable when I do the following, 
+By the way, I see a Pentium M crash reliable when I do the following,
 don't know if it's related:
 
 - load nucleus and native module
@@ -36,14 +36,15 @@ don't know if it's related:
 - reload the modules
 - start my app --> crash
 
-I attached 'screenshots' of a total freeze with backtrace and some 
+I attached 'screenshots' of a total freeze with backtrace and some
 messages I extracted  from syslog (both on Pentium M).
 
 Stephan
 
 
 
---------------020703040408070102080202
+
+--------------080409040603090006090501
 Content-Type: application/x-gzip;
  name="crashes.tar.gz"
 Content-Transfer-Encoding: base64
@@ -2719,5 +2720,5 @@ SnK0hH9N70Ld0vW1mP5VKscaBjCAAcy20QDJoHxQGj4NNgL8nFqIlkV1itgnbJ6qBqE67y2/
 zXQH/DSeuhYFAX4aAhKU8K8spXBKn+Km089w5GUsWzllvG5IG/QFAE//NByumo0SBLy23Aks
 Shd2QTK5M5AXXZapA/6SNBeGq3aKuJSJBOGCNDJV9nSmBZGRH7ViZuMelz37+5nk2rVr165d
 u3bt2rVr165du3bt2rVr165du/b/1/8BDE3iFwCAAgA=
---------------020703040408070102080202--
+--------------080409040603090006090501--
 
