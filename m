@@ -5,8 +5,8 @@ References: <45CC651C.6060402@domain.hid> <45CC68F3.1000003@domain.hid>
 	<45D1C033.9010002@domain.hid>  <45D1C61B.7030503@domain.hid>
 	<1171376742.885.3.camel@domain.hid>  <45D1CAFA.6050408@domain.hid>
 Content-Type: text/plain
-Date: Tue, 13 Feb 2007 15:47:22 +0100
-Message-Id: <1171378042.885.6.camel@domain.hid>
+Date: Tue, 13 Feb 2007 17:55:15 +0100
+Message-Id: <1171385716.885.17.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -44,8 +44,11 @@ On Tue, 2007-02-13 at 15:28 +0100, Jan Kiszka wrote:
 > Nope. If this switch is off, RPI is enabled while known to be buggy, right?
 > 
 
-So, if you want to check whether RPI causes some trouble or not, so as
-to "dissect" what it does, you need to keep this switch off.
+Btw, RPI was not buggy so so that it could cause crashes; it was failing
+to _always_ keep a thread's priority consistent across domain migration,
+which is quite different. IOW, do not start switching on RPIDISABLE
+blindly when your box goes south, it's most likely unrelated to what has
+been fixed recently.
 
 > [That's why I voted for positive logic in trunk -- it twists your brain. ;)]
 > 
