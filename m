@@ -1,15 +1,13 @@
-Message-ID: <45D2CF9E.40308@domain.hid>
-Date: Wed, 14 Feb 2007 10:00:14 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45D2DD6C.9010005@domain.hid>
+Date: Wed, 14 Feb 2007 10:59:08 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
 References: <45D25145.3000407@domain.hid>
-	<45D2CE27.5040303@domain.hid>
-In-Reply-To: <45D2CE27.5040303@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1531B78334531466DF9BA4C2"
-Sender: jan.kiszka@domain.hid
+	<45D2CE27.5040303@domain.hid> <45D2CF9E.40308@domain.hid>
+In-Reply-To: <45D2CF9E.40308@domain.hid>
+Content-Type: multipart/mixed; boundary="------------000102030607000303050103"
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,78 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1531B78334531466DF9BA4C2
+This is a multi-part message in MIME format.
+--------------000102030607000303050103
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-Jan Kiszka wrote:
-> Markus Franke wrote:
->> Dear all,
->>
->> I am running some latency tests with irqbench/irqloop. I am wondering
->> whether it would be possible to achieve better results when activating=
+> Hmm, I should have better said "tiny". This experience is based on
+> I-pipe tracer observations, and I guess you don't have that thing on,
+> have you?
 
->> CONFIG_PREEMPT and CONFIG_PREEMPT_VOLUNTARILY during the kernel
->> configuration and running irqloop in User Mode over this kernel?
->=20
-> Nope.
->=20
->> Does it make any sense?
->=20
-> Nope. :)
->=20
->> I think in theory it should give better results because
->> this irqloop runs in secondary(linux) domain when started, right? An
->> increasing preemptibility of the linux kernel should be better for the=
+I have set:
 
->> irqloop-task.
->=20
-> The Linux kernel is already fully preemptible by Xenomai once you
-> applied the I-pipe patch. Therefore, you are free to pick the Linux
-> preemption strategy according to your *Linux* load, independent of what=
+---snip---
+# CONFIG_IPIPE_DEBUG is not set
+CONFIG_IPIPE_TRACE_ENABLE_VALUE=0
+---snap---
 
-> the real-time part needs.
->=20
-> Unless you have interactive Linux programs running, I can suggest to
-> pick PREEMPT_VOLUNTARILY or even PREEMPT_NONE, specifically on low-end
-> hardware.
->=20
->> All tests were made under heavy I/O and CPU load by means of "dd",
->> "pingflood" and "cpuburn". Nevertheless, I can only achieve worse
->> results when activating CONFIG_PREEMPT.
->=20
-> Do you have CONFIG_DEBUG_PREEMPT set as well then? This option still as=
+in both kernels (either with preempt or without).
 
-> a small but measurable impact on Xenomai due to micro-dependencies that=
+> How much is the difference? How long did you measure to exclude noise.
 
-> as scheduled to be removed in the near future.
+The difference is about 1 us (in average and worst case) when running
+irqloop in IRQ handler mode.
 
-Hmm, I should have better said "tiny". This experience is based on
-I-pipe tracer observations, and I guess you don't have that thing on,
-have you?
-
-How much is the difference? How long did you measure to exclude noise.
-
-Jan
+I have been running the measurements for 1 minute under heavy load with
+an interrupt frequency of 1 ms. This gives 60000 samples. Is this too
+less in order to exclude noise?
 
 
---------------enig1531B78334531466DF9BA4C2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Regards,
+Markus Franke
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+--------------000102030607000303050103
+Content-Type: text/x-vcard; charset=utf-8;
+ name="Markus.Franke.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="Markus.Franke.vcf"
 
-iD8DBQFF0s+eniDOoMHTA+kRAh3EAJ9rkLU1T78cgmny5vZ3pT/HGLqo4wCffqN7
-aNta0jdlNLnwHxgOyoPLHy8=
-=5Boy
------END PGP SIGNATURE-----
+begin:vcard
+fn:Markus Franke
+n:Franke;Markus
+adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
+email;internet:Markus.Franke@domain.hid
+x-mozilla-html:FALSE
+url:http://www.tu-chemnitz.de/~franm
+version:2.1
+end:vcard
 
---------------enig1531B78334531466DF9BA4C2--
+
+--------------000102030607000303050103--
 
