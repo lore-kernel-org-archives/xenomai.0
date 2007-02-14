@@ -1,23 +1,16 @@
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170409755.4981.11.camel@domain.hid> <45C309BF.9090808@domain.hid>
-	<1170415388.4981.36.camel@domain.hid> <1170420270.4981.58.camel@domain.hid>
-	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
-	<1170426719.4981.66.camel@domain.hid>
-	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
-	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
-	<1170520703.8282.6.camel@domain.hid>
-	<b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
-Content-Type: text/plain
-Date: Sat, 03 Feb 2007 20:06:26 +0100
-Message-Id: <1170529586.8282.38.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Message-ID: <45D2E1D1.6060407@domain.hid>
+Date: Wed, 14 Feb 2007 11:17:53 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
+References: <45D25145.3000407@domain.hid>
+	<45D2CE27.5040303@domain.hid> <45D2CF9E.40308@domain.hid>
+	<45D2DD6C.9010005@domain.hid>
+In-Reply-To: <45D2DD6C.9010005@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1F3F072983A46A89076F3FA4"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,53 +20,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Markus.Franke@domain.hid
+Cc: Xenomai-help@domain.hid
 
-On Sat, 2007-02-03 at 19:20 +0100, Dmitry Adamushko wrote:
-> Hi,
-> 
-> are there any other memory pools increasing while "MemFree" is decreasing?
-> 
-> cat /proc/meminfo
-> 
-> If it's kmalloc() - related, I'd expect "Slab" to be increasing..  [1]
-> 
-> Moreover, if it's left to be running for quite some time, does it
-> actually causes an "out-of-memory" problem in the end?  [2]
-> 
-> I have run "while true ; do cat /proc/interrupts; done" for some time
-> and "MemFree" is going down but what's going up is "Buffers" +
-> "Cached" (mainly, the first one) and not
-> "Slab".
-> 
-> cat /proc/interrupts returns file content which is different every
-> time and might be cached (likely - "Buffers").. Actually, do you
-> observe similar behaviour when reading any other /proc file (or even
-> any regular) ?
-> 
-> After all, Linux memory manager is quite dynamic in its behaviour, and
-> "MemFree" does not really answer a question "how much memory is free"
-> as there are some _reclaimable_ sources of memory ("buffers" and
-> "cached")..
-> 
-> So what's about [1]? Of course, if you can encounter [2] after some time..
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1F3F072983A46A89076F3FA4
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Really, what I see here very much looks like a constant leakage on an
-otherwise idle system, not some artefact from the mm; albeit the cached
-mem seems stable, the free memory goes down irremediably. Not all /proc
-entries seem to cause the issue, and the interesting thing is
-that /proc/interrupts and /proc/xenomai/sched|stat all use the seqfile
-support to output their data.
+Markus Franke wrote:
+>> Hmm, I should have better said "tiny". This experience is based on
+>> I-pipe tracer observations, and I guess you don't have that thing on,
+>> have you?
+>=20
+> I have set:
+>=20
+> ---snip---
+> # CONFIG_IPIPE_DEBUG is not set
+> CONFIG_IPIPE_TRACE_ENABLE_VALUE=3D0
+> ---snap---
+>=20
+> in both kernels (either with preempt or without).
+>=20
+>> How much is the difference? How long did you measure to exclude noise.=
 
-Anyway, I did not dig the issue enough code-wise to remove all the
-conditionals from my wording, but there seems to be something wrong
-somewhere, and that's not Xenomai related. Or, the Linux VM is seasoned
-enough to try to make people think it loses memory albeit it doesn't.
+>=20
+> The difference is about 1 us (in average and worst case) when running
+> irqloop in IRQ handler mode.
+>=20
+> I have been running the measurements for 1 minute under heavy load with=
 
--- 
-Philippe.
+> an interrupt frequency of 1 ms. This gives 60000 samples. Is this too
+> less in order to exclude noise?
+
+1 us is definitely in the noise region even on today's high-end PCs,
+specifically when running the test that short. 1/2 hour, or better
+several hours are required to gain reliable worst-case numbers.
+
+Regarding the average, your test duration is likely enough. It indicates
+that CONFIG_PREEMPT worsens the cache hit-rate slightly.
+
+Jan
 
 
+--------------enig1F3F072983A46A89076F3FA4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF0uHSniDOoMHTA+kRAs1TAJ9dgA+SaoJR6VY5W5A295W/4zUIwQCggM8r
+w3C9ZAFLHAGydKzT7QnczVM=
+=lIKY
+-----END PGP SIGNATURE-----
+
+--------------enig1F3F072983A46A89076F3FA4--
 
