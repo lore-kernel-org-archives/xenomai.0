@@ -1,15 +1,13 @@
-Message-ID: <45D2E1D1.6060407@domain.hid>
-Date: Wed, 14 Feb 2007 11:17:53 +0100
+Message-ID: <45D2E468.3080402@domain.hid>
+Date: Wed, 14 Feb 2007 11:28:56 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
-References: <45D25145.3000407@domain.hid>
-	<45D2CE27.5040303@domain.hid> <45D2CF9E.40308@domain.hid>
-	<45D2DD6C.9010005@domain.hid>
-In-Reply-To: <45D2DD6C.9010005@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1F3F072983A46A89076F3FA4"
+References: <45D25145.3000407@domain.hid>	<45D2CE27.5040303@domain.hid>
+	<45D2DD6E.5030800@domain.hid>
+In-Reply-To: <45D2DD6E.5030800@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,59 +21,61 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Markus.Franke@domain.hid
 Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1F3F072983A46A89076F3FA4
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
 Markus Franke wrote:
->> Hmm, I should have better said "tiny". This experience is based on
->> I-pipe tracer observations, and I guess you don't have that thing on,
->> have you?
->=20
-> I have set:
->=20
-> ---snip---
-> # CONFIG_IPIPE_DEBUG is not set
-> CONFIG_IPIPE_TRACE_ENABLE_VALUE=3D0
-> ---snap---
->=20
-> in both kernels (either with preempt or without).
->=20
->> How much is the difference? How long did you measure to exclude noise.=
+> Jan Kiszka wrote:
+>> Markus Franke wrote:
+>>> I am running some latency tests with irqbench/irqloop. I am wondering
+>>> whether it would be possible to achieve better results when activating
+>>> CONFIG_PREEMPT and CONFIG_PREEMPT_VOLUNTARILY during the kernel
+>>> configuration and running irqloop in User Mode over this kernel?
+>>
+>> Nope.
+>>
+>>
+>>> Does it make any sense?
+>>
+>> Nope. :)
+>> The Linux kernel is already fully preemptible by Xenomai once you
+>> applied the I-pipe patch. Therefore, you are free to pick the Linux
+>> preemption strategy according to your *Linux* load, independent of what
+>> the real-time part needs.
+> 
+> Well, "Native-API-Tour.pdf" states that everytime a mode switch from
+> Primary Domain to Secondary Domain is made (e.g. Linux system call like
+> ioctl()), Xenomai can ease from the
+> "continuous trend of improvements of Linux 2.6 regarding
+> preemptability". So CONFIG_PREEMPT should have an impact on measurements
+> with Xenomai, maybe not with irqbench/irqloop. The problem here is that
+> we don't have a mode switch, right? When running irqloop as User-Task it
+> simply runs in Secondary Mode, right?
 
->=20
-> The difference is about 1 us (in average and worst case) when running
-> irqloop in IRQ handler mode.
->=20
-> I have been running the measurements for 1 minute under heavy load with=
+Of course, irqloop runs in *primary* mode to be able to handle the
+events deterministically. So it is not directly affected by CONFIG_PREEMPT.
 
-> an interrupt frequency of 1 ms. This gives 60000 samples. Is this too
-> less in order to exclude noise?
+Yes, if you have an RT thread that issues syscalls and wishes to have
+them handled as fast as possible, CONFIG_PREEMPT should be enabled (and
+CONFIG_XENO_OPT_RPIDISABLE should remain off, maybe you even want to
+consider CONFIG_XENO_OPT_ISHIELD then). Such RT application designs are
+tricky to get correct and deterministic, so it's often better to not
+rely on these properties and rather seek a clear separation of pure RT
+threads on the one side and Linux syscall issuing non-RT or RT
+borderline threads (low-prio RT threads that are being switched back and
+forth between primary and secondary mode) on the other.
 
-1 us is definitely in the noise region even on today's high-end PCs,
-specifically when running the test that short. 1/2 hour, or better
-several hours are required to gain reliable worst-case numbers.
+> 
+>> Do you have CONFIG_DEBUG_PREEMPT set as well then? This option still as
+>> a small but measurable impact on Xenomai due to micro-dependencies that
+>> as scheduled to be removed in the near future.
+> 
+> I cannot see anything like
+> 
+> CONFIG_DEBUG_PREEMPT=y
+> or
+> #CONFIG_DEBUG_PREEMPT is not set
+> 
+> in my config-file. The parameter simply doesn't exist.
 
-Regarding the average, your test duration is likely enough. It indicates
-that CONFIG_PREEMPT worsens the cache hit-rate slightly.
+Shadowed by CONFIG_DEBUG=n likely.
 
 Jan
-
-
---------------enig1F3F072983A46A89076F3FA4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF0uHSniDOoMHTA+kRAs1TAJ9dgA+SaoJR6VY5W5A295W/4zUIwQCggM8r
-w3C9ZAFLHAGydKzT7QnczVM=
-=lIKY
------END PGP SIGNATURE-----
-
---------------enig1F3F072983A46A89076F3FA4--
 
