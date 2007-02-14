@@ -1,20 +1,12 @@
-Message-ID: <45D0B9D2.1050901@domain.hid>
-Date: Mon, 12 Feb 2007 20:02:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45D338C2.9030203@domain.hid>
+Date: Wed, 14 Feb 2007 17:28:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] [BUG] trunk: screwed Linux irq state
-References: <45CF951B.8080404@domain.hid>	<1171233732.5035.24.camel@domain.hid>	
-	<17871.41373.425284.839228@domain.hid>	
-	<1171237780.5035.30.camel@domain.hid>	
-	<17871.45750.434103.944040@domain.hid>	<45CFB49F.1050000@domain.hid>	
-	<45CFBE7B.3050906@domain.hid> <45D05431.10409@domain.hid>	
-	<45D068C0.8090208@domain.hid>
-	<1171287998.5001.4.camel@domain.hid>	 <45D0704D.9000304@domain.hid>
-	<1171289404.5001.14.camel@domain.hid>	 <45D07C14.1090107@domain.hid>
-	<1171293049.5001.20.camel@domain.hid>
-In-Reply-To: <1171293049.5001.20.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigD09C3BC4A96A0CE9B805203C"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Extended CAN frame filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,77 +16,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Mon, 2007-02-12 at 15:39 +0100, Gilles Chanteperdrix wrote:
-> 
->>Philippe Gerum wrote:
->>
->>>On Mon, 2007-02-12 at 14:49 +0100, Jan Kiszka wrote:
->>>
->>>
->>>>Philippe Gerum wrote:
->>>>
->>>>
->>>>>On Mon, 2007-02-12 at 14:16 +0100, Gilles Chanteperdrix wrote:
->>>>>
->>>>>
->>>>>>Jan Kiszka wrote:
->>>>>>
->>>>>>
->>>>>>>Jan Kiszka wrote:
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>>>2.6.19 didn't magically start to work as well. Instead I have a back
->>>>>>>>trace now, see attachment.
->>>>>>>>
->>>>>>>>I included a full set of 16k points, but the thrilling things are around
->>>>>>>>-73 to -25: Some Linux process with IRQs on gets preempted by an RT-IRQ
->>>>>>>>(RTnet NIC). That triggers an RT kernel thread to run for a while (RTnet
->>>>>>>>stack manager, prio 98). But when returning to Linux again, its IRQs
->>>>>>>>remain masked now. The reason must be that weird exception at -62. Don't
->>>>>>>>know where it comes from and why is there no report about THAT issue in
->>>>>>>>the kernel logs.
->>>>>>>
->>>>>>>The cause of this page fault will get tracked down later today, but the
->>>>>>>way it is handled already causes some doubts to me. To make discussion
->>>>>>>easier, here is the relevant excerpt from the trace:
->>>>>>
->>>>>>Maybe this fault is due to the No-cow patch ? Before the no-cow patch,
->>>>>>vmalloced areas were added to all processes page directories, now they
->>>>>>are added only to the page directories of processes with the VM_PINNED
->>>>>>flag. So, if ipipe_test_root tries to access some module memory area
->>>>>>over the context of a non-realtime thread, a fault will occur.
->>>>>>
->>>>>
->>>>>Yes, it's a minor fault occurring due to on-demand memory mapping, this
->>>>>is why we don't get any alarming message in the kernel log.
->>>>>
->>>>
->>>>Looks like it's something that should never happen, for sure.
->>>
->>>
->>>Now that vmalloc & ioremap memory may have their pte set on demand anew
->>>due to the nocow patch, minor faults in kernel space are possible again,
->>>but this should only happen on behalf of the Linux domain, this is not
->>>expected to happen in primary mode.
->>
->>Does not a primary mode IRQ handler borrow the mmu context from the
->>tasks it preempts ?
->>
-> 
-> 
-> Yes, this is where the problem stands if we happen to preempt a regular
-> task and tread over code which might trigger minor faults. The best way
-> to check this would be to somehow enable VM_PINNED for all tasks. Back
-> to square #1.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigD09C3BC4A96A0CE9B805203C
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Ok. I'll try to change this and send a patch ASAP.
+Hi Wolfgang,
 
--- 
-                                                 Gilles Chanteperdrix
+unless I messed something up, the first patch aligns the implementation o=
+f
+Socket-CAN filters in Xenomai with their current specification. Right now=
+, if you
+set a filter on a standard frame ID, you will also receive extended frame=
+s with
+the same ID. In contrast, when the extended bit is set, only extended fra=
+mes are
+received, not standard frames with the same ID (that's again spec-conform=
+ing).
+
+--- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
++++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+@@ -55,11 +55,11 @@ void rtcan_raw_print_filter(struct rtcan
+ static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+ 					  can_filter_t *filter)
+ {
+-   if (filter->can_id & CAN_EFF_FLAG)
+-	recv_filter->can_mask =3D ((filter->can_mask & CAN_EFF_MASK) |
+-				 CAN_EFF_FLAG);
++    if (filter->can_id & CAN_EFF_FLAG)
++	recv_filter->can_mask =3D filter->can_mask & CAN_EFF_MASK;
+     else
+-	recv_filter->can_mask =3D (filter->can_mask & CAN_SFF_MASK);
++	recv_filter->can_mask =3D filter->can_mask & CAN_SFF_MASK;
++    recv_filter->can_mask |=3D CAN_EFF_FLAG;
+=20
+     recv_filter->can_id =3D filter->can_id & recv_filter->can_mask;
+ }=20
+
+
+However, I wonder if this behaviour is useful. You can now either set a f=
+ilter
+for extended frames or standard frame, not for both frame type, just vary=
+ing on
+the ID length. If we consider EFF just as another bit of the CAN ID, we c=
+ould
+take this into account for the mask:
+
+--- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
++++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+@@ -55,11 +55,12 @@ void rtcan_raw_print_filter(struct rtcan
+ static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+ 					  can_filter_t *filter)
+ {
+-   if (filter->can_id & CAN_EFF_FLAG)
+-	recv_filter->can_mask =3D ((filter->can_mask & CAN_EFF_MASK) |
+-				 CAN_EFF_FLAG);
++    if (filter->can_id & CAN_EFF_FLAG)
++	recv_filter->can_mask =3D filter->can_mask &
++				(CAN_EFF_MASK | CAN_EFF_FLAG);
+     else
+-	recv_filter->can_mask =3D (filter->can_mask & CAN_SFF_MASK);
++	recv_filter->can_mask =3D filter->can_mask &
++				(CAN_SFF_MASK | CAN_EFF_FLAG);
+=20
+     recv_filter->can_id =3D filter->can_id & recv_filter->can_mask;
+ }
+
+
+Note: this alternative patch would also require a patch to rtdm/rtcan.h.
+
+Actually, the second variant was what I intuitively expected. What is the=
+
+behaviour of non-RT Socket-CAN here?
+
+Jan
+
+
+PS: A few lines above those hunks is still a "#if 0" code block. Either m=
+ake
+this configurable or please clean it up.
+
+
+
+--------------enigD09C3BC4A96A0CE9B805203C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF0zjCniDOoMHTA+kRAog2AKCDiA9lR3x/YTGxYDq9shKXVsZ+aACZAX3w
+gJyfI2cTyDC5LGsZmstXmWU=
+=CZPH
+-----END PGP SIGNATURE-----
+
+--------------enigD09C3BC4A96A0CE9B805203C--
 
