@@ -1,13 +1,13 @@
-Message-ID: <45D2CE27.5040303@domain.hid>
-Date: Wed, 14 Feb 2007 09:53:59 +0100
+Message-ID: <45D2CE1A.2030700@domain.hid>
+Date: Wed, 14 Feb 2007 09:53:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
-References: <45D25145.3000407@domain.hid>
-In-Reply-To: <45D25145.3000407@domain.hid>
+Subject: Re: AW: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+References: <5D63919D95F87E4D9D34FF7748CE2C2A801A67@domain.hid>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A801A67@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig64E1D2B612514E16B17A0891"
+	boundary="------------enigC1B49D8AF78410BEF30D410B"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,54 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid
+To: Roderik_Wildenburg@domain.hid
 Cc: Xenomai-help@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig64E1D2B612514E16B17A0891
+--------------enigC1B49D8AF78410BEF30D410B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Markus Franke wrote:
-> Dear all,
+Roderik_Wildenburg@domain.hid wrote:
+>> Hah, I waited for the first footer of this kind appearing on=20
+>> mailing lists! As far as I understood the new German law,=20
+>> this is not required when you post to public forums. But=20
+>> probably your corporate mail server injects this automatically.
+>>
+>> Jan
 >=20
-> I am running some latency tests with irqbench/irqloop. I am wondering
-> whether it would be possible to achieve better results when activating
-> CONFIG_PREEMPT and CONFIG_PREEMPT_VOLUNTARILY during the kernel
-> configuration and running irqloop in User Mode over this kernel?
+> You are right. I was surprised by myself seeing this footer in the mail=
+ing list.
+> I don=B4t have any influence on this, as our mailserver adds the statem=
+ent to my mails automatically.
+> But, I don=B4t think that you or the xenomai group has a problem with t=
+his, as it makes obvious who is working with xenomai, dont=B4t you ?
 
-Nope.
+Provided people can translate Druckmaschinen=3D=3Dprinting machines. ;)
 
-> Does it make any sense?
-
-Nope. :)
-
-> I think in theory it should give better results because
-> this irqloop runs in secondary(linux) domain when started, right? An
-> increasing preemptibility of the linux kernel should be better for the
-> irqloop-task.
-
-The Linux kernel is already fully preemptible by Xenomai once you
-applied the I-pipe patch. Therefore, you are free to pick the Linux
-preemption strategy according to your *Linux* load, independent of what
-the real-time part needs.
-
-Unless you have interactive Linux programs running, I can suggest to
-pick PREEMPT_VOLUNTARILY or even PREEMPT_NONE, specifically on low-end
-hardware.
-
-> All tests were made under heavy I/O and CPU load by means of "dd",
-> "pingflood" and "cpuburn". Nevertheless, I can only achieve worse
-> results when activating CONFIG_PREEMPT.
-
-Do you have CONFIG_DEBUG_PREEMPT set as well then? This option still as
-a small but measurable impact on Xenomai due to micro-dependencies that
-as scheduled to be removed in the near future.
+I was rather referring to information like who's your CEO, or your
+company's tax number. Granted, I've seen far longer footers on mailing
+list before ("This mail may be confident..."). Never mind, let's go back
+to business.
 
 Jan
 
 
---------------enig64E1D2B612514E16B17A0891
+--------------enigC1B49D8AF78410BEF30D410B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -74,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF0s4oniDOoMHTA+kRAla7AJ928fCeyr0e3Lz8WLTYVNpsSagljwCePcky
-7xZ/7XftLPL7gVcW3MLEk1Y=
-=uNLS
+iD8DBQFF0s4fniDOoMHTA+kRAv+sAJ9IEWYEfWaudFr4c0sFPnlIRJ90VACeIG78
+MppiYhQ371za8CgqKLgrxrs=
+=5W9t
 -----END PGP SIGNATURE-----
 
---------------enig64E1D2B612514E16B17A0891--
+--------------enigC1B49D8AF78410BEF30D410B--
 
