@@ -1,21 +1,12 @@
-Message-ID: <b647ffbd0702031020u2d02d234k309e5fa830c79d21@domain.hid>
-Date: Sat, 3 Feb 2007 19:20:07 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-In-Reply-To: <1170520703.8282.6.camel@domain.hid>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170409755.4981.11.camel@domain.hid> <45C309BF.9090808@domain.hid>
-	<1170415388.4981.36.camel@domain.hid> <1170420270.4981.58.camel@domain.hid>
-	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
-	<1170426719.4981.66.camel@domain.hid>
-	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
-	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
-	<1170520703.8282.6.camel@domain.hid>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: AW: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+Date: Wed, 14 Feb 2007 09:17:42 +0100
+Message-ID: <5D63919D95F87E4D9D34FF7748CE2C2A801A67@domain.hid>
+From: <Roderik_Wildenburg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,38 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai help <xenomai@xenomai.org>
+To: jan.kiszka@domain.hid
+Cc: Xenomai-help@domain.hid
 
-Hi,
+>=20
+> Hah, I waited for the first footer of this kind appearing on=20
+> mailing lists! As far as I understood the new German law,=20
+> this is not required when you post to public forums. But=20
+> probably your corporate mail server injects this automatically.
+>=20
+> Jan
 
-are there any other memory pools increasing while "MemFree" is decreasing?
+You are right. I was surprised by myself seeing this footer in the =
+mailing list.
+I don=B4t have any influence on this, as our mailserver adds the =
+statement to my mails automatically.
+But, I don=B4t think that you or the xenomai group has a problem with =
+this, as it makes obvious who is working with xenomai, dont=B4t you ?
 
-cat /proc/meminfo
+Roderik
 
-If it's kmalloc() - related, I'd expect "Slab" to be increasing..  [1]
-
-Moreover, if it's left to be running for quite some time, does it
-actually causes an "out-of-memory" problem in the end?  [2]
-
-I have run "while true ; do cat /proc/interrupts; done" for some time
-and "MemFree" is going down but what's going up is "Buffers" +
-"Cached" (mainly, the first one) and not
-"Slab".
-
-cat /proc/interrupts returns file content which is different every
-time and might be cached (likely - "Buffers").. Actually, do you
-observe similar behaviour when reading any other /proc file (or even
-any regular) ?
-
-After all, Linux memory manager is quite dynamic in its behaviour, and
-"MemFree" does not really answer a question "how much memory is free"
-as there are some _reclaimable_ sources of memory ("buffers" and
-"cached")..
-
-So what's about [1]? Of course, if you can encounter [2] after some time..
-
--- 
-Best regards,
-Dmitry Adamushko
+MAN Roland Druckmaschinen AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
