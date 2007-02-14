@@ -1,17 +1,15 @@
-Message-ID: <45D30687.1090201@domain.hid>
-Date: Wed, 14 Feb 2007 13:54:31 +0100
-From: Markus Franke <Markus.Franke@domain.hid>
+Message-ID: <45D34A6F.9050406@domain.hid>
+Date: Wed, 14 Feb 2007 18:44:15 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CONFIG_PREEMPT & irqbench
-References: <45D25145.3000407@domain.hid>	
-	<45D2CE27.5040303@domain.hid>
-	<45D2DD6E.5030800@domain.hid>	
-	<45D2E468.3080402@domain.hid>
-	<45D2E86C.2010200@domain.hid>
-	<b647ffbd0702140410r14617bdbt58f60cd9049c52af@domain.hid>
-In-Reply-To: <b647ffbd0702140410r14617bdbt58f60cd9049c52af@domain.hid>
-Content-Type: multipart/mixed; boundary="------------050202030101070303090606"
-Reply-To: Markus.Franke@domain.hid
+Subject: Re: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+References: <5D63919D95F87E4D9D34FF7748CE2C2A8018AD@ARVMAIL1.mra.roland-man.biz>	<45D20F8E.9040900@domain.hid>
+	<17874.6444.25366.622467@domain.hid>
+In-Reply-To: <17874.6444.25366.622467@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7AE3981C554EA454DF5FA9D7"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,63 +19,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Roderik_Wildenburg@domain.hid, Xenomai-help@domain.hid
 
-This is a multi-part message in MIME format.
---------------050202030101070303090606
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7AE3981C554EA454DF5FA9D7
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
-> On 14/02/07, Markus Franke <Markus.Franke@domain.hid> wrote:
-> 
->> Jan Kiszka wrote:
->> > Of course, irqloop runs in *primary* mode to be able to handle the
->> > events deterministically. So it is not directly affected by
->> CONFIG_PREEMPT.
->>
->> If I start irqloop in User-Mode, a thread is simply created via Linux
->> system call pthread_create() which interacts with the
->> xeno_irqbench-driver via ioctl(). But then I don't understand why
->> irqloop is running in Primary (Xenomai) Mode? Because of the interaction
->> with the RTDM-based driver?
->> I am just wondering because I can't see something like rt_task_create().
-> 
-> 
-> There is life beyond the native skin. e.g. the posix one.
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Roderik_Wildenburg@domain.hid wrote:
+>  > > Can anybody tell me, how I have to set the 2. parameter (starttp) =
+of
+>  > > pthread_make_periodic_np ?
+>  > > When I use clock_gettime to fill startp I get a giant timeout valu=
+e in
+>  > > the /proc/xenomai/sched list and my task never gets periodic.
+>  > >=20
+>  > > Is this just a problem of my hardware(PPC)/xenomai(2.3) combinatio=
+n or
+>  > > does anybody else have the same problem.=20
+>  > >=20
+>  > > See attached code example for easier testing.
+>  > >=20
+>  >=20
+>  > Confirmed over v2.3.x in periodic mode, aperiodic is fine. Gilles?
+>=20
+> Ok. I will have a look at it.
+>=20
 
-Thank you very much for this hint. :-)
-Now I got it.
+Hmm, something went wrong here. I think I passed a too fast tick_arg to
+the kernel yesterday which smashed the timing. I'm now running the
+pperiodic demo at tick_arg=3D1000000 successfully.
 
-> After all, Xenomai is all about skins (layers implementing various RT
-> API interfaces).
-> 
-> So pthread_create() as well as ioctl() you may see in irqloop are
-> implemented ("shadowed") by the posix skin.
+So, Roderik, either you did some similar mistake, or it's a PPC issue.
 
-Actually I should know this.
-
-Regards,
-Markus
-
-
---------------050202030101070303090606
-Content-Type: text/x-vcard; charset=utf-8;
- name="Markus.Franke.vcf"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="Markus.Franke.vcf"
-
-begin:vcard
-fn:Markus Franke
-n:Franke;Markus
-adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
-email;internet:Markus.Franke@domain.hid
-x-mozilla-html:FALSE
-url:http://www.tu-chemnitz.de/~franm
-version:2.1
-end:vcard
+Jan
 
 
---------------050202030101070303090606--
+--------------enig7AE3981C554EA454DF5FA9D7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF00pvniDOoMHTA+kRAqT5AJ9kAM1tIibYUlA5T211MfJBKAQTCQCfSuuf
+SeP7TSdPXOwl9Fow5t18kM0=
+=MZJe
+-----END PGP SIGNATURE-----
+
+--------------enig7AE3981C554EA454DF5FA9D7--
 
