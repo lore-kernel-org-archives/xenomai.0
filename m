@@ -1,13 +1,23 @@
-Message-ID: <45D42130.80609@domain.hid>
-Date: Thu, 15 Feb 2007 10:00:32 +0100
+Message-ID: <45D421EA.5070507@domain.hid>
+Date: Thu, 15 Feb 2007 10:03:38 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: AW: [Xenomai-help] pthread_make_periodic_np and clock_gettime
-References: <5D63919D95F87E4D9D34FF7748CE2C2A82C5D7@domain.hid>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A82C5D7@domain.hid>
+Subject: Re: [Xenomai-help] Make error
+References: <e45fe62b0702112124r71b9e03fv8413028178857a57@domain.hid>	
+	<45D029B8.1030805@domain.hid>	
+	<e45fe62b0702120448i7b23bd24o4fa88a05237a69a@domain.hid>	
+	<45D0666C.8070409@domain.hid>	
+	<e45fe62b0702122319k463327b6o8cd72dde6af895a@domain.hid>	
+	<45D171F9.7000705@domain.hid>	
+	<e45fe62b0702130021i5ec6c345m699a9abcc2e665c0@domain.hid>	
+	<45D192EB.9030608@domain.hid>	
+	<e45fe62b0702132157p2e52a36ficb37516e98269ee@domain.hid>	
+	<45D2CE22.5010105@domain.hid>
+	<e45fe62b0702142319s5ccce2cbkadbcd1b921a4b653@domain.hid>
+In-Reply-To: <e45fe62b0702142319s5ccce2cbkadbcd1b921a4b653@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0E68A7F327B43D02C4BFBDE6"
+	boundary="------------enig8A490BB41A32BE90E6F34DAB"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,87 +28,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
+To: Preetam Joshi <j.preetam@domain.hid>
 Cc: Xenomai-help@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0E68A7F327B43D02C4BFBDE6
+--------------enig8A490BB41A32BE90E6F34DAB
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Roderik_Wildenburg@domain.hid wrote:
-> Sorry for the stupid question but: what is tick_arg ? Do  I have to con=
-figure it within Xenomai or is it a kernel parameter ?=20
-
-tick_arg is a nucleus module parameter, overloading
-CONFIG_XENO_OPT_TIMING_PERIOD which requires XENO_OPT_TIMING_PERIODIC.
-What setup do you have?
-
-My problem was that I accidentally started the kernel at tick_arg=3D1000
-(1 us), which didn't caused a locked up system because I ran it in qemu.
-Just the tick conversion routines got confused. On a real target, you
-will not be able to use such a system at all.
-
-> The timing of my target in principal is fine. When I set=20
->    tstart.tv_sec=3D0;
->    tstart.tv_nsec=3D0;=20
-> both to zero, my task gets peiodic (task runs every second). Just when =
-using clock_gettime(CLOCK_REALTIME,&tstart) I get into trouble.
+Preetam Joshi wrote:
+> Hi,
 >=20
-> Roderik
+> Do u mean to say that if i have created my tasks using native xenomai A=
+PI's
+> like rt_task_create , then inside those tasks i will have to use posix =
+skin
+> calls like pthread_setschedpolicy, etc...?
 >=20
+> Is that so.
+
+Nope. If you picked the native skin API, all scheduler setup for a RT
+task should be done through that interface.
+
 >=20
->> -----Urspr=FCngliche Nachricht-----
->> Von: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
->> Gesendet: Mittwoch, 14. Februar 2007 18:44
->> An: Gilles Chanteperdrix
->> Cc: Wildenburg, Roderik RAEK3 MRA; Xenomai-help@domain.hid
->> Betreff: Re: [Xenomai-help] pthread_make_periodic_np and clock_gettime=
-
->>
->> Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>  > Roderik_Wildenburg@domain.hid wrote:
->>>  > > Can anybody tell me, how I have to set the 2.=20
->> parameter (starttp)=20
->>> of  > > pthread_make_periodic_np ?
->>>  > > When I use clock_gettime to fill startp I get a giant timeout=20
->>> value in  > > the /proc/xenomai/sched list and my task=20
->> never gets periodic.
->>>  > >
->>>  > > Is this just a problem of my hardware(PPC)/xenomai(2.3)=20
->>> combination or  > > does anybody else have the same problem.
->>>  > >
->>>  > > See attached code example for easier testing.
->>>  > >
->>>  >
->>>  > Confirmed over v2.3.x in periodic mode, aperiodic is=20
->> fine. Gilles?
->>> Ok. I will have a look at it.
->>>
->> Hmm, something went wrong here. I think I passed a too fast=20
->> tick_arg to the kernel yesterday which smashed the timing.=20
->> I'm now running the pperiodic demo at tick_arg=3D1000000 successfully.=
-
->>
->> So, Roderik, either you did some similar mistake, or it's a PPC issue.=
-
->>
->> Jan
->>
->>
+> Cant i just have context switch between the tasks themselves say low
+> priority and a high priority task created by rt_task_create.
 >=20
-> MAN Roland Druckmaschinen AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Ral=
-l, Paul Steidle
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-> USt-Ident-Nr. DE 250200933
+> Reason being i have created two tasks using the rt_task_create API and =
+my
+> high priority task is runnning and my low priority task has slept, so a=
+s
+> soon as my low priority task has expired its sleep time and gets ready =
+to
+> run,
+>=20
+> The low priority task preempts my high priority task and even its prior=
+ity
+> gets raised to that of the high priority task and starts executing. The=
+
+> higgh priority task gets suspended altogether amidst its running. Simpl=
+y
+> baffled by the behavior?
+
+If you have found a weird behaviour of Xenomai, please post some
+as-small-as-possible demo code that exposes the issue. We will have a
+look at it.
+
+Jan
 
 
-
---------------enig0E68A7F327B43D02C4BFBDE6
+--------------enig8A490BB41A32BE90E6F34DAB
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -107,10 +86,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF1CExniDOoMHTA+kRAotAAJ9YuGAfjJAi6l6QTfbux0QpDVJOTgCgg/B4
-3Z/5Ci+1lP8UMM9JNwXy3eY=
-=nPwX
+iD8DBQFF1CHqniDOoMHTA+kRArntAJ4ytpsb98PwzyIwWEmXGBxqpheWtgCcDUR1
+sIadUzcsu/8Eq9nlBBSJ5HM=
+=kEJ6
 -----END PGP SIGNATURE-----
 
---------------enig0E68A7F327B43D02C4BFBDE6--
+--------------enig8A490BB41A32BE90E6F34DAB--
 
