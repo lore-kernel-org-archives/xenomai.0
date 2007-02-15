@@ -1,12 +1,14 @@
-Message-ID: <45D40FC0.1000703@domain.hid>
-Date: Thu, 15 Feb 2007 08:46:08 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45D42130.80609@domain.hid>
+Date: Thu, 15 Feb 2007 10:00:32 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] interrupts test
-References: <775081.52919.qm@domain.hid>
-In-Reply-To: <775081.52919.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: AW: [Xenomai-help] pthread_make_periodic_np and clock_gettime
+References: <5D63919D95F87E4D9D34FF7748CE2C2A82C5D7@domain.hid>
+In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2A82C5D7@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig0E68A7F327B43D02C4BFBDE6"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,92 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: mani bhatti <imranbashirbhatti@domain.hid>
-Cc: xenomai@xenomai.org
+To: Roderik_Wildenburg@domain.hid
+Cc: Xenomai-help@domain.hid
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig0E68A7F327B43D02C4BFBDE6
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-you program does not use Xenomai services and is therefore off-topic 
-here, nevertheless...
+Roderik_Wildenburg@domain.hid wrote:
+> Sorry for the stupid question but: what is tick_arg ? Do  I have to con=
+figure it within Xenomai or is it a kernel parameter ?=20
 
-mani bhatti wrote:
-> Hi
-> I have attached a  kernel module parint.c.When i insert parint.ko  into 
-> kernel i get the following message from kernel .
-> 
-> Request_irq returns 0
-> Interrupt generated. You should see the handler-message
-> Badness in enable_irq at kernel/irq/manage.c:126
->  [<c012da81>] enable_irq+0x68/0xdf
->  [<c80be033>] init_module+0x22/0x52 [parint]
->  [<c80be000>] handler+0x0/0x11 [parint]
->  [<c012c78a>] sys_init_module+0xb5/0x221
->  [<c0102898>] syscall_call+0x7/0xb
-> 
-> 
-> 
-> Please if some one can point out the mistake i would be very helpful.
-> Thanks.
-> 
-> ------------------------------------------------------------------------
-> Get your own web address. 
-> <http://us.rd.yahoo.com/evt=49678/*http://smallbusiness.yahoo.com/domains/?p=BESTDEAL>
-> Have a HUGE year through Yahoo! Small Business. < 
-> http://us.rd.yahoo.com/evt=49678/*http://smallbusiness.yahoo.com/domains/?p=BESTDEAL> 
-> 
-> 
-> 
-> ------------------------------------------------------------------------
-> 
-> #include <linux/module.h>
-> #include <linux/interrupt.h>
-> #include <asm/io.h>
-> 
-> #define BASEPORT 0x378
-> 
-> static int handler(void)
-> {
-> 	// do stuff
-> 	printk(">>> PARALLEL PORT INT HANDLED\n");
-> 	return IRQ_HANDLED;
-> }
-> 
-> int xinit_module(void)
-> {
-> 	int ret;
-> 	ret = request_irq(7, handler, SA_INTERRUPT, "parallelport", NULL);
-> 	enable_irq(7);
+tick_arg is a nucleus module parameter, overloading
+CONFIG_XENO_OPT_TIMING_PERIOD which requires XENO_OPT_TIMING_PERIODIC.
+What setup do you have?
 
-I think that's the reason for the oops. Remove the unbalanced 
-enable_irq() and disable_irq() from you code example. request_irq() and 
-disable_irq() already enabled/disable the interrupts.
+My problem was that I accidentally started the kernel at tick_arg=3D1000
+(1 us), which didn't caused a locked up system because I ran it in qemu.
+Just the tick conversion routines got confused. On a real target, you
+will not be able to use such a system at all.
 
->         printk("\nRequest_irq returns %d \n",ret);
-> 
-> 	//set port to interrupt mode; pins are output
-> 	outb_p(0x10, BASEPORT + 2); 
-> 
-> //	printk("Generating interrupt now on all output pins (intr/ACK = pin 10)\n");
-> 	
-> 	//generate interrupt
-> 	outb_p(0, BASEPORT);
-> 	outb_p(255, BASEPORT);
-> 	outb_p(0, BASEPORT);
-> //	printk("Interrupt generated. You should see the handler-message\n");
-> 	return 0;
-> }
-> 
-> void xcleanup_module(void)
-> {
-> 	disable_irq(7);
-> 	free_irq(7, NULL);
-> }
-> 
-> module_init(xinit_module);
-> module_exit(xcleanup_module);
-> MODULE_LICENSE("GPL");
+> The timing of my target in principal is fine. When I set=20
+>    tstart.tv_sec=3D0;
+>    tstart.tv_nsec=3D0;=20
+> both to zero, my task gets peiodic (task runs every second). Just when =
+using clock_gettime(CLOCK_REALTIME,&tstart) I get into trouble.
+>=20
+> Roderik
+>=20
+>=20
+>> -----Urspr=FCngliche Nachricht-----
+>> Von: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+>> Gesendet: Mittwoch, 14. Februar 2007 18:44
+>> An: Gilles Chanteperdrix
+>> Cc: Wildenburg, Roderik RAEK3 MRA; Xenomai-help@domain.hid
+>> Betreff: Re: [Xenomai-help] pthread_make_periodic_np and clock_gettime=
 
-In gerneral, you should use RTDM services in a Xenomai driver module.
+>>
+>> Gilles Chanteperdrix wrote:
+>>> Jan Kiszka wrote:
+>>>  > Roderik_Wildenburg@domain.hid wrote:
+>>>  > > Can anybody tell me, how I have to set the 2.=20
+>> parameter (starttp)=20
+>>> of  > > pthread_make_periodic_np ?
+>>>  > > When I use clock_gettime to fill startp I get a giant timeout=20
+>>> value in  > > the /proc/xenomai/sched list and my task=20
+>> never gets periodic.
+>>>  > >
+>>>  > > Is this just a problem of my hardware(PPC)/xenomai(2.3)=20
+>>> combination or  > > does anybody else have the same problem.
+>>>  > >
+>>>  > > See attached code example for easier testing.
+>>>  > >
+>>>  >
+>>>  > Confirmed over v2.3.x in periodic mode, aperiodic is=20
+>> fine. Gilles?
+>>> Ok. I will have a look at it.
+>>>
+>> Hmm, something went wrong here. I think I passed a too fast=20
+>> tick_arg to the kernel yesterday which smashed the timing.=20
+>> I'm now running the pperiodic demo at tick_arg=3D1000000 successfully.=
 
-Wolfgang.
+>>
+>> So, Roderik, either you did some similar mistake, or it's a PPC issue.=
+
+>>
+>> Jan
+>>
+>>
+>=20
+> MAN Roland Druckmaschinen AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Ral=
+l, Paul Steidle
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+
+
+
+--------------enig0E68A7F327B43D02C4BFBDE6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF1CExniDOoMHTA+kRAotAAJ9YuGAfjJAi6l6QTfbux0QpDVJOTgCgg/B4
+3Z/5Ci+1lP8UMM9JNwXy3eY=
+=nPwX
+-----END PGP SIGNATURE-----
+
+--------------enig0E68A7F327B43D02C4BFBDE6--
 
