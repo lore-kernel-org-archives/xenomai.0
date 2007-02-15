@@ -1,12 +1,12 @@
-Message-ID: <45D41BD9.9020403@domain.hid>
-Date: Thu, 15 Feb 2007 09:37:45 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45D45AEA.50404@domain.hid>
+Date: Thu, 15 Feb 2007 14:06:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <45D35545.20100@domain.hid>
-In-Reply-To: <45D35545.20100@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: RT-CAN tx_sem
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig951E072AD68496810E68851D"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] I-pipe 1.7 breaks mlockall safety check
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,29 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Hi Wolfgang,
-> 
-> fiddling with the CAN utils, I noticed the behaviour that rtcansend on
-> freshly registered but stopped devices simply blocks. And when you
-> meanwhile call rtcanconfig up on that device, rtcansend will continue to
-> block.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig951E072AD68496810E68851D
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-This is a bug, the send function should return an error in that case.
+Hi all,
 
-> The reason is that during startup of CAN devices the tx-semaphore is
-> re-initialised while it is already set up during device registration.
-> Re-init on an already initialised rtdm_sem is, say, undefined.
-> 
-> So rtdm_sem should better only be initialised/destroyed by the drivers.
-> Trying to send on a shut down CAN device could be catched differently,
-> e.g. via the device state. This likely needs more thoughts, take it as a
-> note that $something should be done.
+I think I found another unwanted side-effect of the no-cow changes:
 
-I'm going to check this later today or tomorrow.
+With the I-pipe 1.7 patch series the test for missing mlockall no longer
+works. I just - once again - wrote a test program that was lacking this
+call, but only with I-pipe 1.6-06 (same Xenomai version: latest trunk) I
+get the usual error message on startup.
 
-Wolfgang.
+Jan
+
+
+--------------enig951E072AD68496810E68851D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF1FrqniDOoMHTA+kRAmT6AJ4/FXbLOzGFMnjVRBP5zyVCy4COwQCfcfxi
+lEUiT3+ngIEXlRRBXJbxn/w=
+=DPNX
+-----END PGP SIGNATURE-----
+
+--------------enig951E072AD68496810E68851D--
 
