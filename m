@@ -1,12 +1,12 @@
-Message-ID: <45D35545.20100@domain.hid>
-Date: Wed, 14 Feb 2007 19:30:29 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45D41B31.6070400@domain.hid>
+Date: Thu, 15 Feb 2007 09:34:57 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7E93586BBD1A37B08535C997"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] RT-CAN tx_sem
+References: <45D338C2.9030203@domain.hid>
+In-Reply-To: <45D338C2.9030203@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: Extended CAN frame filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,46 +16,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7E93586BBD1A37B08535C997
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Jan,
 
-Hi Wolfgang,
+Jan Kiszka wrote:
+> Hi Wolfgang,
+> 
+> unless I messed something up, the first patch aligns the implementation of
+> Socket-CAN filters in Xenomai with their current specification. Right now, if you
+> set a filter on a standard frame ID, you will also receive extended frames with
+> the same ID. In contrast, when the extended bit is set, only extended frames are
+> received, not standard frames with the same ID (that's again spec-conforming).
+> 
+> --- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
+> +++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+> @@ -55,11 +55,11 @@ void rtcan_raw_print_filter(struct rtcan
+>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+>  					  can_filter_t *filter)
+>  {
+> -   if (filter->can_id & CAN_EFF_FLAG)
+> -	recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
+> -				 CAN_EFF_FLAG);
+> +    if (filter->can_id & CAN_EFF_FLAG)
+> +	recv_filter->can_mask = filter->can_mask & CAN_EFF_MASK;
+>      else
+> -	recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
+> +	recv_filter->can_mask = filter->can_mask & CAN_SFF_MASK;
+> +    recv_filter->can_mask |= CAN_EFF_FLAG;
+>  
+>      recv_filter->can_id = filter->can_id & recv_filter->can_mask;
+>  } 
+> 
+> 
+> However, I wonder if this behaviour is useful. You can now either set a filter
+> for extended frames or standard frame, not for both frame type, just varying on
+> the ID length. If we consider EFF just as another bit of the CAN ID, we could
+> take this into account for the mask:
+> 
+> --- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
+> +++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+> @@ -55,11 +55,12 @@ void rtcan_raw_print_filter(struct rtcan
+>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+>  					  can_filter_t *filter)
+>  {
+> -   if (filter->can_id & CAN_EFF_FLAG)
+> -	recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
+> -				 CAN_EFF_FLAG);
+> +    if (filter->can_id & CAN_EFF_FLAG)
+> +	recv_filter->can_mask = filter->can_mask &
+> +				(CAN_EFF_MASK | CAN_EFF_FLAG);
+>      else
+> -	recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
+> +	recv_filter->can_mask = filter->can_mask &
+> +				(CAN_SFF_MASK | CAN_EFF_FLAG);
+>  
+>      recv_filter->can_id = filter->can_id & recv_filter->can_mask;
+>  }
+> 
+> 
+> Note: this alternative patch would also require a patch to rtdm/rtcan.h.
+> 
+> Actually, the second variant was what I intuitively expected. What is the
+> behaviour of non-RT Socket-CAN here?
 
-fiddling with the CAN utils, I noticed the behaviour that rtcansend on
-freshly registered but stopped devices simply blocks. And when you
-meanwhile call rtcanconfig up on that device, rtcansend will continue to
-block.
+Hm, good question. I'm going to ask on the Socket-CAN-ML later today.
 
-The reason is that during startup of CAN devices the tx-semaphore is
-re-initialised while it is already set up during device registration.
-Re-init on an already initialised rtdm_sem is, say, undefined.
+> 
+> Jan
+> 
+> 
+> PS: A few lines above those hunks is still a "#if 0" code block. Either make
+> this configurable or please clean it up.
 
-So rtdm_sem should better only be initialised/destroyed by the drivers.
-Trying to send on a shut down CAN device could be catched differently,
-e.g. via the device state. This likely needs more thoughts, take it as a
-note that $something should be done.
+OK.
 
-Jan
+Wolfgang.
 
-
---------------enig7E93586BBD1A37B08535C997
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF01VFniDOoMHTA+kRAkbzAJ49r+l0AjQrnkHb1WRe0pmusnjrIACfefOy
-U6tauGDNX3Deqc/yPjdyEsk=
-=0szF
------END PGP SIGNATURE-----
-
---------------enig7E93586BBD1A37B08535C997--
 
