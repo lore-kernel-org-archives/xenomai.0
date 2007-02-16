@@ -1,15 +1,12 @@
-Message-ID: <45D5746C.1090003@domain.hid>
-Date: Fri, 16 Feb 2007 10:07:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45D5A56F.8080900@domain.hid>
+Date: Fri, 16 Feb 2007 13:37:03 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <45D45AEA.50404@domain.hid> <1171547803.24117.8.camel@domain.hid>	
-	<45D46704.9050109@domain.hid> <1171560346.24117.77.camel@domain.hid>
-In-Reply-To: <1171560346.24117.77.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC69D89203A7E693327823969"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: I-pipe 1.7 breaks mlockall safety check
+References: <45D338C2.9030203@domain.hid>
+In-Reply-To: <45D338C2.9030203@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: Extended CAN frame filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,71 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC69D89203A7E693327823969
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Hi Wolfgang,
+> 
+> unless I messed something up, the first patch aligns the implementation of
+> Socket-CAN filters in Xenomai with their current specification. Right now, if you
+> set a filter on a standard frame ID, you will also receive extended frames with
+> the same ID. In contrast, when the extended bit is set, only extended frames are
+> received, not standard frames with the same ID (that's again spec-conforming).
+> 
+> --- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
+> +++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+> @@ -55,11 +55,11 @@ void rtcan_raw_print_filter(struct rtcan
+>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+>  					  can_filter_t *filter)
+>  {
+> -   if (filter->can_id & CAN_EFF_FLAG)
+> -	recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
+> -				 CAN_EFF_FLAG);
+> +    if (filter->can_id & CAN_EFF_FLAG)
+> +	recv_filter->can_mask = filter->can_mask & CAN_EFF_MASK;
+>      else
+> -	recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
+> +	recv_filter->can_mask = filter->can_mask & CAN_SFF_MASK;
+> +    recv_filter->can_mask |= CAN_EFF_FLAG;
+>  
+>      recv_filter->can_id = filter->can_id & recv_filter->can_mask;
+>  } 
+> 
+> 
+> However, I wonder if this behaviour is useful. You can now either set a filter
+> for extended frames or standard frame, not for both frame type, just varying on
+> the ID length. If we consider EFF just as another bit of the CAN ID, we could
+> take this into account for the mask:
+> 
+> --- ksrc/drivers/can/rtcan_raw_filter.c	(Revision 2178)
+> +++ ksrc/drivers/can/rtcan_raw_filter.c	(Arbeitskopie)
+> @@ -55,11 +55,12 @@ void rtcan_raw_print_filter(struct rtcan
+>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
+>  					  can_filter_t *filter)
+>  {
+> -   if (filter->can_id & CAN_EFF_FLAG)
+> -	recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
+> -				 CAN_EFF_FLAG);
+> +    if (filter->can_id & CAN_EFF_FLAG)
+> +	recv_filter->can_mask = filter->can_mask &
+> +				(CAN_EFF_MASK | CAN_EFF_FLAG);
+>      else
+> -	recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
+> +	recv_filter->can_mask = filter->can_mask &
+> +				(CAN_SFF_MASK | CAN_EFF_FLAG);
+>  
+>      recv_filter->can_id = filter->can_id & recv_filter->can_mask;
+>  }
+> 
+> 
+> Note: this alternative patch would also require a patch to rtdm/rtcan.h.
+> 
+> Actually, the second variant was what I intuitively expected. What is the
+> behaviour of non-RT Socket-CAN here?
 
-Philippe Gerum wrote:
-> On Thu, 2007-02-15 at 14:58 +0100, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Thu, 2007-02-15 at 14:06 +0100, Jan Kiszka wrote:
->>>> Hi all,
->>>>
->>>> I think I found another unwanted side-effect of the no-cow changes:
->>>>
->>>> With the I-pipe 1.7 patch series the test for missing mlockall no lo=
-nger
->>>> works. I just - once again - wrote a test program that was lacking t=
-his
->>>> call, but only with I-pipe 1.6-06 (same Xenomai version: latest trun=
-k) I
->>>> get the usual error message on startup.
->>>>
->>> I can't reproduce this with 1.7-01 here. Which Xenomai codebase are y=
-ou
->>> currently using (trunk/, 2.3.x maintenance or stock 2.3)?
->> Specifically trunk, but the first observation was over 2.3.x
->> maintenance. The test code is using the posix skin.
->=20
-> I still don't find any explanation for that behaviour, only trivially
-> testing with and without mlockall() in a bare main routine though.
->=20
-> In relation to this, I've rolled out 1.7-02/x86, so that we could close=
+I checked the filter related code of Socket-CAN. They use a more 
+sophisticated filtering scheme:
 
-> the last pending issue(s) holding v2.3.1 wrt the interrupt pipeline
-> support. Specifically, the -nocow related changes have been amended, an=
-d
-> we are now back to the implementation that prevailed in the 1.6 series
-> wrt vmalloc and ioremap memory, while still retaining the ability to
-> break COW eagerly for the RT threads.
->=20
-> Feedback welcome on this.
->=20
+   if      (filter.can_id & 0x40000000) [CAN_RTR_FLAG]
+     accept if ((can_id & filter->can_mask) == filter->can_id)
+   else if (filter.can_id & 0x20000000) [CAN_INV_FILTER]
+     accept if ((can_id & filter->can_mask) != filter->can_id)
+   else if (filter->can_mask == 0)
+     accept all messages
+   else if filter.can_id & 0x80000000) [CAN_EFF_FLAG]
+     accept if (can_id == filter->can_id)
+   else
+     accept if (can_id == filter->can_id)
 
-=46rom first tests it looks like the BUGs on RTnet startup are resolved
-with 1.7-02. I will have a look at the mlockall issue again to
-understand what happens precisely there (I'm still lacking the warning).
+In other words, you can define a positive or negative filter using id 
+and mask, accept all messages or require an exact id match for standard 
+or extended frames. Well, we need something compatible and for this 
+reason I triggered a discussion on the Socket-CAN-ML.
 
-Jan
-
-
---------------enigC69D89203A7E693327823969
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF1XRsniDOoMHTA+kRAoAGAJ9sdLhRsiiiipY2FbOlwLlaeGpWaACfWwdE
-0L9lnm1+eEk236Polhm4q+M=
-=8Z/n
------END PGP SIGNATURE-----
-
---------------enigC69D89203A7E693327823969--
+Wolfgang.
 
