@@ -1,14 +1,10 @@
-Message-ID: <b647ffbd0702160120kd993582y51080c1a45a97e88@domain.hid>
-Date: Fri, 16 Feb 2007 10:20:12 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] Sharing interrupts between several RT pci devices
-	and non RT devices
-In-Reply-To: <20070216081932.323430@domain.hid>
+Message-ID: <528bc2040702160148j5c63209fi40face4810613bfd@domain.hid>
+Date: Fri, 16 Feb 2007 15:18:15 +0530
+From: "manoj kumar" <manojkpanghal@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <20070216081932.323430@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2213_23933769.1171619295113"
+Subject: [Xenomai-help] heap allocation in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,38 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steffen Mehlfeld <S.Mehlfeld@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> But as soon as i start returning XN_ISR_PROPAGATE from the isr, i get the message
-> "Xenomai: xnintr_edge_shirq_handler(): failed to get the IRQ9 line free.", which i think
-> doesn't mean, that all is going well.
+------=_Part_2213_23933769.1171619295113
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Try returning XN_ISR_NONE | XN_ISR_PROPAGATE.
+Hi,
 
-I can't see an analog for XN_ISR_PROPAGATE in the rtdm though. So it's
-somewhat not recommended.
+Could anybody tell me about heap allocation in xenomai by API
+rt_heap_create().
 
-However, an interrupt line will remain disabled until the linux domain
-gets control back and a corresponding eth driver handles an interrupt
-(and then linux does .end == unmask the irq line).
-i.e. Interrupts from your RT devices won't be seen in the mean time
-and, in fact, you lose any determinism wrt rt interrupt handling.
+Why heap creation is required? Please tell the uses in detail?
 
-Actually, masking an edge-triggered interrupt line is not a _must_ to
-handle it properly... but that would require some rework of the
-interrupt handling path; can't say right now whether it would nicely
-fit into the existing framework.
+Can kmalloc & free be used in any RT program at kernel space? If yes, Are
+there any limitation on that? if Yes, then which are those.
 
-Another approach was illustrated by an additional patch posted once by
-Jan, there must be a link somewhere around. Non-rt driver must provide
-a tiny rt-stub function which will be executed from the rt domain and
-"shut up" a corresponding device if it's issued this interrupt. The
-actual handling is done in the linux domain later but we are not
-dependent on how soon as the line is free for rt devices.
+Thanks & Regards
+Manoj
 
+------=_Part_2213_23933769.1171619295113
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
--- 
-Best regards,
-Dmitry Adamushko
+<div>Hi,</div>
+<div>&nbsp;</div>
+<div>Could anybody tell me about heap allocation in xenomai by API rt_heap_create().</div>
+<div>&nbsp;</div>
+<div>Why heap creation is required? Please tell the uses in detail?</div>
+<div>&nbsp;</div>
+<div>Can kmalloc &amp; free be used in any RT program at kernel space? If yes,&nbsp;Are there any limitation on that? if Yes, then which are those.</div>
+<div>&nbsp;</div>
+<div>Thanks &amp; Regards</div>
+<div>Manoj</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+------=_Part_2213_23933769.1171619295113--
 
