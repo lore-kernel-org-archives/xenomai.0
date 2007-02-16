@@ -1,5 +1,5 @@
-Message-ID: <45D5E493.4080405@domain.hid>
-Date: Fri, 16 Feb 2007 18:06:27 +0100
+Message-ID: <45D5E5C3.7030508@domain.hid>
+Date: Fri, 16 Feb 2007 18:11:31 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] fata: removing non-linked element...
@@ -12,7 +12,7 @@ References: <45CC651C.6060402@domain.hid>
 In-Reply-To: <45D59F98.8020006@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE27D9214FFDD94EA299311D6"
+	boundary="------------enig1403B58DEA1AE6DBA3488E8C"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -27,83 +27,47 @@ To: Stephan Zimmermann <s.zimmermann@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE27D9214FFDD94EA299311D6
+--------------enig1403B58DEA1AE6DBA3488E8C
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Stephan Zimmermann wrote:
-> ...
-> P.S.: For running the attaced program, you need a
-> magic-parallel-port-interrupt-loopback-device. (Connecting pins 9 and 1=
-0
-> of the parallel port will do the trick.)
+> Hi again,
+> we did some testing with the different verions you told us on some
+> different Systems. I will try to sum up what we experienced.
+>=20
+> Testsystems:
+> --------------------------------------------
+> SMP1 - AMDx2 with Kernel 2.6.19
+> SMP2 - AMDx2 with Kernel 2.6.17
+> PM1 - Celeron M with Kernel 2.6.17 (ETX Industrial Board)
+> PM2 - Pentium M with Kernel 2.6.17 (Notebook)
+>=20
+> Testet revisions where 2077, 2092, 2108, 2184
+>=20
+> The test was running and terminating our application continuously,
+> reloading xenomai modules between each start.
+>=20
+> Results:
+> --------------------------------------------
+> SMP1:
+> The application runs as intended. While rebooting the system the kernel=
 
-=2E..
+> showed some backtraces according to bad paages. Revision 2184 leads to =
+a
+> complete crashed  System like I described in the original mail (2187 on=
 
-> -----------------------------------------------------------------------=
--
->=20
-> #include <iostream>
-> #include <sys/mman.h>
-> #include <assert.h>
-> #include "native/task.h"
-> #include "native/timer.h"
-> #include "native/queue.h"
-> #include "native/intr.h"
->=20
-> #include <signal.h>
-> #include <sys/io.h>
->=20
-> RT_TASK maintask;
-> RT_TASK inttask;
-> RT_TASK intcreatortask;
-> RT_TASK queue_endtask;
->=20
-> RT_INTR lptint;
->=20
-> #define LPT_BASE		0x378
-> #define LPT_INT			7
->=20
-> #define PERIOD_TIME 	10
-> #define TIMEBASE 		10000
+> Kernel 2.6.20 does that too). It is possible to work around this crash
+> by disabling priority coupling (activating the option in kernel config)=
+=2E
 
-=2E..
-
->=20
-> int main(void){
-> 	std::cout << "xenomai interrupt test" << std::endl;
-> 	mlockall(MCL_CURRENT | MCL_FUTURE);
-> =09
-> 	signal(SIGTERM,  catch_signal);
-> 	signal(SIGKILL,  catch_signal);
-> 	signal(SIGQUIT,  catch_signal);
-> 	signal(SIGINT ,  catch_signal);=09
-> =09
-> 	if (iopl(3)) { =20
-> 		printf("iopl err\n");
-> 		exit(1);
-> 	}
-> =09
-> 	int err;
->=20
-> 	err =3D rt_task_shadow (&maintask,"maintask",10,0);
-> 	std::cout << "task shadow:" << err << std::endl;
-> =09
-> 	err =3D rt_timer_set_mode(TIMEBASE);
-
-Do you know that you are requesting a timer tick rate of 100 kHz? I just
-managed to lock up my poor 266 MHz board running your code. :)
-
-Maybe we are seeing all this weird behaviour due to kernel stack
-overruns. Try to switch on CONFIG_DEBUG_STACKOVERFLOW and
-CONFIG_DEBUG_STACK_USAGE.
-
-/me now watching what happens at 10 kHz...
+I-pipe version? 1.7-00/01 was fragile for me too, 1.7-02 looks fine so
+far. This could be one bug, anything on 2.6.17 must be something else.
 
 Jan
 
 
---------------enigE27D9214FFDD94EA299311D6
+--------------enig1403B58DEA1AE6DBA3488E8C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -112,10 +76,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF1eSTniDOoMHTA+kRAkHBAJ4sneoa8G600slEaIE1a293akz+1gCaA35Y
-yfs0wwpYEKKE6TOb3Rst1Wk=
-=GrtW
+iD8DBQFF1eXDniDOoMHTA+kRAqffAJ4uAUZOHrqexnp12CKbrgi628fPTQCdEC0R
+Rq8mUD3p3xiVyi0uR+BLP6s=
+=lxqZ
 -----END PGP SIGNATURE-----
 
---------------enigE27D9214FFDD94EA299311D6--
+--------------enig1403B58DEA1AE6DBA3488E8C--
 
