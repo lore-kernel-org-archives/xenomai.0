@@ -1,15 +1,14 @@
-Message-ID: <45D5EC76.6020405@domain.hid>
-Date: Fri, 16 Feb 2007 18:40:06 +0100
+Message-ID: <45D5F0AD.9010404@domain.hid>
+Date: Fri, 16 Feb 2007 18:58:05 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Sharing interrupts between several RT pci devices
-	and non RT devices
-References: <20070216081932.323430@domain.hid> <45D5739B.5030507@domain.hid>
-	<20070216130634.216140@domain.hid>
-In-Reply-To: <20070216130634.216140@domain.hid>
+Subject: Re: [Xenomai-help] fata: removing non-linked element...
+References: <45CC651C.6060402@domain.hid>	<45CC68F3.1000003@domain.hid>		<45D1C033.9010002@domain.hid>	<45D1C61B.7030503@domain.hid>		<1171376742.885.3.camel@domain.hid>	<45D1CAFA.6050408@domain.hid>		<1171385716.885.17.camel@domain.hid>	<45D200C3.1030001@domain.hid>	<1171393088.885.37.camel@domain.hid>	<45D59F98.8020006@domain.hid>
+	<45D5E493.4080405@domain.hid>
+In-Reply-To: <45D5E493.4080405@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigDA145C0FFF05A41E5C8E6609"
+	boundary="------------enig2871697B0326BA7397308C72"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,77 +19,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steffen Mehlfeld <S.Mehlfeld@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Stephan Zimmermann <s.zimmermann@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA145C0FFF05A41E5C8E6609
+--------------enig2871697B0326BA7397308C72
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Steffen Mehlfeld wrote:
-> Jan Kiszka wrote:
->=20
->> For the sake of cleanness: XN_xxx flags are for internal use only (ski=
-ns
->> like RTDM do so), you are expected to work with RTDM_IRQTYPE_xxx here.=
+Jan Kiszka wrote:
+> ...
+> /me now watching what happens at 10 kHz...
 
->=20
-> done so.
->=20
->>> Another solution would be not to share interrupts between rt and
->> non-rt-devices, but i have no clue how to do this, as i'm new to the w=
-hole driver
->> development thing. As far as i understand, the PCI-BIOS tells each dev=
-ice
->> via config-space which irq it has to use. Therefore it's pointless to =
-call
->> rtdm_irq_request() with a irq-line other than that from config-space, =
-as it
->> uses the irq from config-space anyway.=20
->>> Is there a way to specify which irq a pci device should use?
->> If the physical IRQs end up on the same line physical line, you have
->> lost. Then you can only write a special stub driver for your non-RT
->> device, that works over RTDM, detects if the event is for that device,=
+Bad news are sometimes good news:
 
->> shuts the IRQ up inside the hardware (there is always some kind of mas=
-k
->> register), and signals the arrival e.g. via rtdm_nrtsig to the Linux
->> handler. When Linux is able to execute its driver, it can analyse the
->> IRQ reason and take the measures to finally re-enable IRQs on that
->> device again.
->>
->> That's of course still slower than an unshared IRQ design, but it is
->> deterministic even when you face an unpredictable non-RT IRQ load.
->=20
-> That won't work for me, because the cards are supposed to run on lots o=
-f different machines, with lots of different devices and therefore device=
--drivers that may share the irq-line with this rt-device.
+# ./main
+# rmmod xeno_native
+# modprobe xeno_native
+# ./main
 
-Sounds a bit like "dynamic RT-system configuration" - scary. ;)
+> [  629.916921] Xenomai: stopping RTDM services.
+> [  632.954058] Xenomai: stopping native API services.
+> [  641.763276] Xenomai: starting native API services.
+> [  643.849294] BUG: unable to handle kernel paging request at virtual a=
+ddress c484eb58
+> [  643.857099]  printing eip:
+> [  643.859835] c013a173
+> [  643.862050] *pde =3D 03fdb067
+> [  643.864868] *pte =3D 00000000
+> [  643.867696] Oops: 0000 [#1]
+> [  643.870517] PREEMPT
+> [  643.872747] Modules linked in: xeno_native 8139too eepro100 sd_mod s=
+csi_mod
+> [  643.879873] CPU:    0
+> [  643.879884] EIP:    0060:[<c013a173>]    Not tainted VLI
+> [  643.879904] EFLAGS: 00013046   (2.6.19.3 #28)
+> [  643.891932] EIP is at xnheap_init_mapped+0x144/0x1a8
+> [  643.896944] eax: c484eb58   ebx: 00000000   ecx: c48e2458   edx: 000=
+00000
+> [  643.903787] esi: c480f000   edi: 00004000   ebp: c1311eb8   esp: c13=
+11e9c
+> [  643.910620] ds: 007b   es: 007b   ss: 0068
+> [  643.914763] Process interrupt-task (pid: 955, ti=3Dc1310000 task=3Dc=
+13d6a90 task.ti=3Dc1310000)
+> [  643.922808] Stack: 00001000 00000000 c48e2458 00000000 00004000 c131=
+1fbc ffffffff c1311ee4
+> [  643.931373]        c4861edb c0137176 00000060 00003246 c0139d1b c131=
+1f04 c48e2420 c48e2420
+> [  643.939942]        c1311fbc 00000200 c1311f40 c485ee54 000fa000 0000=
+0200 c13d6a90 00002710
+> [  643.948522] Call Trace:
+> [  643.951232]  [<c4861edb>] rt_queue_create+0x9f/0x24a [xeno_native]
+> [  643.957870]  [<c485ee54>] __rt_queue_create+0xa5/0x101 [xeno_native]=
 
->=20
-> On my development machine, the cards irq-line depends on the presence o=
-f other pci-cards, on the used pci-slot and some other parameters i can't=
- figure out (sometimes it's on 9, 10, 11, ...).=20
+> [  643.964579]  [<c0142ed0>] hisyscall_event+0x13f/0x238
+> [  643.969744]  [<c013738e>] __ipipe_dispatch_event+0x82/0x118
+> [  643.975421]  [<c010a001>] __ipipe_syscall_root+0x73/0xd8
+> [  643.980827]  [<c0102dc0>] system_call+0x20/0x38
+> [  643.985462]  [<b7e2953a>] 0xb7e2953a
+> [  643.989100]  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> [  643.992707] Code: 55 e8 8b 45 ec 89 90 8c 00 00 00 89 98 90 00 00 00=
+ fa a1 04 d2 2e c0 0f ba 68 08 00 19 d2 a1 84
+> d4 46 c0 89 d3 8b 4d ec 83 e3 01 <8b> 10 89 41 04 89 11 89 4a 04 89 08 =
+8b 0d 04 d2 2e c0 ff 05 88
+> [  644.012858] EIP: [<c013a173>] xnheap_init_mapped+0x144/0x1a8 SS:ESP =
+0068:c1311e9c
 
-The line is the physical trace on the board or in the chipset. What you
-first of all see are moving numbers for your IRQs. But do the sharing
-change as well unpredictably? Typically, there are fixed assignments
-between PCI slots and lines.
-
->=20
-> Is there no known way how to influence this (maybe via config-space)?
-
-None I'm aware of. Some people reported BIOS options on the IRQ mapping,
-but I never saw such thing. Normally, only flipping PCI cards or
-disabling devices (or not using them) helps to get a line physically free=
-=2E
+Should be fixable - once we understood what happens here. :)
 
 Jan
 
 
---------------enigDA145C0FFF05A41E5C8E6609
+PS: Xenomai v2.3.x, kernel 2.6.19, ipipe-1.6-06
+
+
+--------------enig2871697B0326BA7397308C72
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -99,10 +103,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF1ex2niDOoMHTA+kRAg2/AJ9a+Hmpf+k9cNo3HlGI6/+Jd2SbEgCePO3q
-xQb797FtCD6QYwijYKXBLwk=
-=caeu
+iD8DBQFF1fCtniDOoMHTA+kRAqTFAJwN+CoOZyk0vHahcHY5B2OjS6kOhgCfX91N
+EL6FQqeBnmw9hXXyxgFkIcM=
+=qAHs
 -----END PGP SIGNATURE-----
 
---------------enigDA145C0FFF05A41E5C8E6609--
+--------------enig2871697B0326BA7397308C72--
 
