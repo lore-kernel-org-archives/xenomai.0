@@ -1,18 +1,15 @@
-Message-ID: <45D5E5C3.7030508@domain.hid>
-Date: Fri, 16 Feb 2007 18:11:31 +0100
+Message-ID: <45D5EC76.6020405@domain.hid>
+Date: Fri, 16 Feb 2007 18:40:06 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] fata: removing non-linked element...
-References: <45CC651C.6060402@domain.hid>
-	<45CC68F3.1000003@domain.hid>		<45D1C033.9010002@domain.hid>
-	<45D1C61B.7030503@domain.hid>		<1171376742.885.3.camel@domain.hid>
-	<45D1CAFA.6050408@domain.hid>		<1171385716.885.17.camel@domain.hid>
-	<45D200C3.1030001@domain.hid>	<1171393088.885.37.camel@domain.hid>
-	<45D59F98.8020006@domain.hid>
-In-Reply-To: <45D59F98.8020006@domain.hid>
+Subject: Re: [Xenomai-help] Sharing interrupts between several RT pci devices
+	and non RT devices
+References: <20070216081932.323430@domain.hid> <45D5739B.5030507@domain.hid>
+	<20070216130634.216140@domain.hid>
+In-Reply-To: <20070216130634.216140@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig1403B58DEA1AE6DBA3488E8C"
+	boundary="------------enigDA145C0FFF05A41E5C8E6609"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,51 +20,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stephan Zimmermann <s.zimmermann@domain.hid>
-Cc: xenomai@xenomai.org
+To: Steffen Mehlfeld <S.Mehlfeld@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1403B58DEA1AE6DBA3488E8C
+--------------enigDA145C0FFF05A41E5C8E6609
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Stephan Zimmermann wrote:
-> Hi again,
-> we did some testing with the different verions you told us on some
-> different Systems. I will try to sum up what we experienced.
+Steffen Mehlfeld wrote:
+> Jan Kiszka wrote:
 >=20
-> Testsystems:
-> --------------------------------------------
-> SMP1 - AMDx2 with Kernel 2.6.19
-> SMP2 - AMDx2 with Kernel 2.6.17
-> PM1 - Celeron M with Kernel 2.6.17 (ETX Industrial Board)
-> PM2 - Pentium M with Kernel 2.6.17 (Notebook)
->=20
-> Testet revisions where 2077, 2092, 2108, 2184
->=20
-> The test was running and terminating our application continuously,
-> reloading xenomai modules between each start.
->=20
-> Results:
-> --------------------------------------------
-> SMP1:
-> The application runs as intended. While rebooting the system the kernel=
+>> For the sake of cleanness: XN_xxx flags are for internal use only (ski=
+ns
+>> like RTDM do so), you are expected to work with RTDM_IRQTYPE_xxx here.=
 
-> showed some backtraces according to bad paages. Revision 2184 leads to =
-a
-> complete crashed  System like I described in the original mail (2187 on=
+>=20
+> done so.
+>=20
+>>> Another solution would be not to share interrupts between rt and
+>> non-rt-devices, but i have no clue how to do this, as i'm new to the w=
+hole driver
+>> development thing. As far as i understand, the PCI-BIOS tells each dev=
+ice
+>> via config-space which irq it has to use. Therefore it's pointless to =
+call
+>> rtdm_irq_request() with a irq-line other than that from config-space, =
+as it
+>> uses the irq from config-space anyway.=20
+>>> Is there a way to specify which irq a pci device should use?
+>> If the physical IRQs end up on the same line physical line, you have
+>> lost. Then you can only write a special stub driver for your non-RT
+>> device, that works over RTDM, detects if the event is for that device,=
 
-> Kernel 2.6.20 does that too). It is possible to work around this crash
-> by disabling priority coupling (activating the option in kernel config)=
+>> shuts the IRQ up inside the hardware (there is always some kind of mas=
+k
+>> register), and signals the arrival e.g. via rtdm_nrtsig to the Linux
+>> handler. When Linux is able to execute its driver, it can analyse the
+>> IRQ reason and take the measures to finally re-enable IRQs on that
+>> device again.
+>>
+>> That's of course still slower than an unshared IRQ design, but it is
+>> deterministic even when you face an unpredictable non-RT IRQ load.
+>=20
+> That won't work for me, because the cards are supposed to run on lots o=
+f different machines, with lots of different devices and therefore device=
+-drivers that may share the irq-line with this rt-device.
+
+Sounds a bit like "dynamic RT-system configuration" - scary. ;)
+
+>=20
+> On my development machine, the cards irq-line depends on the presence o=
+f other pci-cards, on the used pci-slot and some other parameters i can't=
+ figure out (sometimes it's on 9, 10, 11, ...).=20
+
+The line is the physical trace on the board or in the chipset. What you
+first of all see are moving numbers for your IRQs. But do the sharing
+change as well unpredictably? Typically, there are fixed assignments
+between PCI slots and lines.
+
+>=20
+> Is there no known way how to influence this (maybe via config-space)?
+
+None I'm aware of. Some people reported BIOS options on the IRQ mapping,
+but I never saw such thing. Normally, only flipping PCI cards or
+disabling devices (or not using them) helps to get a line physically free=
 =2E
-
-I-pipe version? 1.7-00/01 was fragile for me too, 1.7-02 looks fine so
-far. This could be one bug, anything on 2.6.17 must be something else.
 
 Jan
 
 
---------------enig1403B58DEA1AE6DBA3488E8C
+--------------enigDA145C0FFF05A41E5C8E6609
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -76,10 +99,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF1eXDniDOoMHTA+kRAqffAJ4uAUZOHrqexnp12CKbrgi628fPTQCdEC0R
-Rq8mUD3p3xiVyi0uR+BLP6s=
-=lxqZ
+iD8DBQFF1ex2niDOoMHTA+kRAg2/AJ9a+Hmpf+k9cNo3HlGI6/+Jd2SbEgCePO3q
+xQb797FtCD6QYwijYKXBLwk=
+=caeu
 -----END PGP SIGNATURE-----
 
---------------enig1403B58DEA1AE6DBA3488E8C--
+--------------enigDA145C0FFF05A41E5C8E6609--
 
