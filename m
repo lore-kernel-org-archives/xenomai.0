@@ -1,20 +1,11 @@
-Date: Sun, 4 Feb 2007 09:16:21 +0200 (EET)
-From: "Rus V. Brushkoff" <rus@domain.hid>
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-In-Reply-To: <1170520703.8282.6.camel@domain.hid>
-Message-ID: <Pine.LNX.4.64.0702040912210.300@domain.hid>
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
-	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
-	<1170420270.4981.58.camel@domain.hid>
-	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
-	<1170426719.4981.66.camel@domain.hid>
-	<Pine.LNX.4.64.0702021635150.12191@domain.hid>
-	<Pine.LNX.4.64.0702031807260.22251@domain.hid>
-	<1170520703.8282.6.camel@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+Date: Fri, 16 Feb 2007 14:08:34 +0100
+From: "Steffen Mehlfeld" <S.Mehlfeld@domain.hid>
+Message-ID: <20070216130834.323430@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Subject: Re: [Xenomai-help] Sharing interrupts between several RT pci devices
+	and non RT devices
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,19 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Sat, 3 Feb 2007, Philippe Gerum wrote:
+Jan Kiszka wrote:
 
-:> Does anybody seeing memleak has nvidia module loaded ?
-:Not here.
+> For the sake of cleanness: XN_xxx flags are for internal use only (skins
+> like RTDM do so), you are expected to work with RTDM_IRQTYPE_xxx here.
 
- Ok, the last thing I've can see - seems like leak occured at the 
-boxes with some uptime - where any interrupt counter is big ehough (nearly 
-9 decimal digits). Does anybody can confirm/disprove this suggestion ?
+done so.
 
-:
+> > Another solution would be not to share interrupts between rt and
+> non-rt-devices, but i have no clue how to do this, as i'm new to the whole driver
+> development thing. As far as i understand, the PCI-BIOS tells each device
+> via config-space which irq it has to use. Therefore it's pointless to call
+> rtdm_irq_request() with a irq-line other than that from config-space, as it
+> uses the irq from config-space anyway. 
+> > Is there a way to specify which irq a pci device should use?
+> 
+> If the physical IRQs end up on the same line physical line, you have
+> lost. Then you can only write a special stub driver for your non-RT
+> device, that works over RTDM, detects if the event is for that device,
+> shuts the IRQ up inside the hardware (there is always some kind of mask
+> register), and signals the arrival e.g. via rtdm_nrtsig to the Linux
+> handler. When Linux is able to execute its driver, it can analyse the
+> IRQ reason and take the measures to finally re-enable IRQs on that
+> device again.
+> 
+> That's of course still slower than an unshared IRQ design, but it is
+> deterministic even when you face an unpredictable non-RT IRQ load.
 
-		Rus
+That won't work for me, because the cards are supposed to run on lots of different machines, with lots of different devices and therefore device-drivers that may share the irq-line with this rt-device.
+
+On my development machine, the cards irq-line depends on the presence of other pci-cards, on the used pci-slot and some other parameters i can't figure out (sometimes it's on 9, 10, 11, ...). 
+
+Is there no known way how to influence this (maybe via config-space)?
+
+Anyway, thanks a lot for the useful information (thanks to Dmitry Adamushko also),
+
+Steffen
 
