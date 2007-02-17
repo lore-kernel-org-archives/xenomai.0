@@ -1,16 +1,17 @@
-Message-ID: <45D74F70.2090200@domain.hid>
-Date: Sat, 17 Feb 2007 19:54:40 +0100
+Message-ID: <45D74FE2.7030001@domain.hid>
+Date: Sat, 17 Feb 2007 19:56:34 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Extended CAN frame filtering
-References: <45D338C2.9030203@domain.hid> <45D5A56F.8080900@domain.hid>
-	<45D711DF.8060802@domain.hid> <45D741AE.9020501@domain.hid>
-	<45D7475E.1030504@domain.hid>
-In-Reply-To: <45D7475E.1030504@domain.hid>
+References: <45D425B8.7070401@domain.hid>
+	<45D60C78.5090106@domain.hid>	<45D61C5C.8090201@domain.hid>
+	<45D709E4.80409@domain.hid>	<45D73F0B.8090703@domain.hid>
+	<45D74592.1020804@domain.hid>
+In-Reply-To: <45D74592.1020804@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAF128FDBA180BE267B034796"
+	boundary="------------enig06260C3FE65E1F11904403E2"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: Magics of [CAN] message filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,54 +22,50 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: socketcan-core@domain.hid, Oliver Hartkopp <socketcan@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAF128FDBA180BE267B034796
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig06260C3FE65E1F11904403E2
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Wolfgang Grandegger wrote:
->>> Index: ksrc/drivers/can/rtcan_raw_filter.c
->>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->>> --- ksrc/drivers/can/rtcan_raw_filter.c    (revision 2193)
->>> +++ ksrc/drivers/can/rtcan_raw_filter.c    (working copy)
->>> @@ -55,13 +55,13 @@ void rtcan_raw_print_filter(struct rtcan
->>>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,=
-
->>>                        can_filter_t *filter)
->>>  {
->>> -   if (filter->can_id & CAN_EFF_FLAG)
->>> -    recv_filter->can_mask =3D ((filter->can_mask & CAN_EFF_MASK) |
->>> -                 CAN_EFF_FLAG);
->>> -    else
->>> -    recv_filter->can_mask =3D (filter->can_mask & CAN_SFF_MASK);
->>> -
->>> -    recv_filter->can_id =3D filter->can_id & recv_filter->can_mask;
->>> +    if (filter->can_id & CAN_INV_FILTER) {
->>> +    recv_filter->can_id =3D filter->can_id & ~CAN_INV_FILTER;
->>> +    recv_filter->can_mask =3D filter->can_mask | CAN_INV_FILTER;
->>> +    } else {
->>> +    recv_filter->can_id =3D filter->can_id;
->>> +    recv_filter->can_mask =3D filter->can_mask & ~CAN_INV_FILTER;
->>> +    }
+> Jan Kiszka wrote:
+>> Oliver Hartkopp wrote:
+>>> When you're touching anything inside your API, have you ever thought =
+to add
+>>>
+>>> __attribute__ ((aligned(8)))
+>>>
+>>> to the data[8] element of the struct can_frame?
+>>>
+>>> This would enable you to make 64 bit compares directly in the data
+>>> section of the can_frame ...
+>>>
+>>> typedef __u32 canid_t;
+>>>
+>>> struct can_frame {
+>>>     canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+>>>     __u8    can_dlc; /* data length code: 0 .. 8 */
+>>>     __u8    data[8] __attribute__ ((aligned(8)));
+>>> };
+>> [Swallowing down my well-known opinion on typeof(can_dlc) :)]
 >>
->> Why do you push CAN_INV_FILTER internally into the mask instead of
->> keeping it in the filter's ID - as the pseudo code above states?
+>> Yes, this should be done, already for the more urging sake of
+>> unambiguous layout of the structure across the kernel/user space borde=
+r.
 >=20
-> To simplify the filter calculation. It actually avoids the expression
-> (filter->can_id & ~CAN_INV_FILTER). As this is in a very frequently
-> called function, I think it's worth the trick.
->=20
+> Is this not already the case? At least the size of struct can_frame is =
 
-Ack. I missed that point on first run.
+> 16 bytes.
+
+On all target archs? With all supported compilers? Better make it explici=
+t.
 
 Jan
 
 
---------------enigAF128FDBA180BE267B034796
+--------------enig06260C3FE65E1F11904403E2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -77,10 +74,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF109wniDOoMHTA+kRAk+4AJ4qhU25QErsceW0Cq63KZujQjQE4QCfSvwB
-PpDEIjjuas6sDXaGwq7nVUg=
-=CqTB
+iD8DBQFF10/iniDOoMHTA+kRAuq4AJ4s6f/u1WDogRKO6gTtmoo7ryaviQCdGiK8
+NWgn/nWcVqKc1arRGyIZiMk=
+=Eizs
 -----END PGP SIGNATURE-----
 
---------------enigAF128FDBA180BE267B034796--
+--------------enig06260C3FE65E1F11904403E2--
 
