@@ -1,16 +1,14 @@
-Message-ID: <45D6D6CB.4030602@domain.hid>
-Date: Sat, 17 Feb 2007 11:19:55 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <45D35545.20100@domain.hid> <45D45F63.5050009@domain.hid>
-	<45D461DC.20303@domain.hid> <45D4661D.7010506@domain.hid>
-	<45D46E55.7020907@domain.hid> <45D48E27.1090200@domain.hid>
-In-Reply-To: <45D48E27.1090200@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig62F3E8DFEAC8AD05A6087829"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: RT-CAN tx_sem
+Subject: Re: [Xenomai-core] [RFC][PATCH 1/2] real-time print library
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45D6C4B6.7010302@domain.hid>
+References: <45D6C4B6.7010302@domain.hid>
+Content-Type: text/plain
+Date: Sat, 17 Feb 2007 13:12:25 +0100
+Message-Id: <1171714345.18347.25.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,143 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig62F3E8DFEAC8AD05A6087829
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Sat, 2007-02-17 at 10:02 +0100, Jan Kiszka wrote:
+> This is a stand-alone real-time library for printf services. It is
+> embedded into the Xenomai user space part but actually doesn't depend
+> on any Xenomai service, just using plain Linux POSIX.
+> 
+> The librtprint API looks much like the printf(3) man page:
 
-Wolfgang Grandegger wrote:
-> Jan Kiszka wrote:
->> Wolfgang Grandegger wrote:
->>> Jan Kiszka wrote:
->>>> Wolfgang Grandegger wrote:
->>>>> Hi Jan,
->>>>>
->>>>> Jan Kiszka wrote:
->>>>>> Hi Wolfgang,
->>>>>>
->>>>>> fiddling with the CAN utils, I noticed the behaviour that
->>>>>> rtcansend on
->>>>>> freshly registered but stopped devices simply blocks. And when you=
+[...]
 
->>>>>> meanwhile call rtcanconfig up on that device, rtcansend will
->>>>>> continue to
->>>>>> block.
->>>>> I see the expected behavior on stopped devices:
->>>>>
->>>>>   bash-2.05b# rtcansend rtcan0
->>>>>   rt_dev_send: Network is down
->>>>>
->>>>> This is, because the tx_sem is marked "destroyed" already when the
->>>>> device gets initialized. I wonder why your app blocks.
->>>> Unlikely, because the sem is _not_ marked destroyed on startup:
->>>>
->>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/r=
-tcan_dev.c#181
->>>>
->>>>
->>> You missed
->>>
->>>     /* Set dummy state for following call */
->>>     dev->state =3D CAN_STATE_ACTIVE;
->>>     /* Enter reset mode */
->>>     rtcan_sja_mode_stop(dev, NULL);
->>>
->>> in the init part of rtcan_sja1000.c and rtcan_mscan.c, ...
->>>
->>>> In case it makes a subtle difference: I tested with xeno_can_virt,
->>>> but I
->>>> think I saw the same effect on real SJA1000 hw as well.
->>> ... which is missing in rtcan_virt.c. I already thought moving it to =
-the
->>> common part. The attached patch fixes that.
->>
->> I'm still not happy with this pattern, at least it's hidden from the
->> drivers now. But do not rtcan_sja1000.c and rtcan_mscan.c require some=
+> Further features:
+>  o Explicit or on-demand thread buffer creation
+>  o Override of default buffer size and polling period via environment
+>    variables ("RT_PRINT_BUFFER" and "RT_PRINT_PERIOD")
+>  o Support for buffer names (useful for the following patch e.g.)
+>  o Target output stream can be specified for each print invocation
+>  o Breaks all builds except for x86 (missing ubarrier.h headers) :o)
+> 
 
->> changes as well to avoid double destruction when this happens in gener=
-ic
->> code from now on?
->=20
-> Well, what needs a better implementaion is the code fragment shown abov=
-e
-> but I don't have a quick solution at hand. Therefore I tend to the
-> attached patch.
->=20
->>>>>> The reason is that during startup of CAN devices the tx-semaphore =
-is
->>>>>> re-initialised while it is already set up during device registrati=
-on.
->>>>>> Re-init on an already initialised rtdm_sem is, say, undefined.
->>>>> That makes definitely trouble. A CAN_MODE_START should only start t=
-he
->>>>> device if it's not active. The attached patch fixes this. Another
->>>>> possibility would be to force a CAN_MODE_STOP in case the device is=
+ubarrier.h is redundant. include/asm-*/atomic.h is already there for
+such purpose.
 
->>>>> already active (=3Drestart).
->>>>>
->>>>>> So rtdm_sem should better only be initialised/destroyed by the
->>>>>> drivers.
->>>>>> Trying to send on a shut down CAN device could be catched
->>>>>> differently,
->>>>>> e.g. via the device state. This likely needs more thoughts, take i=
-t
->>>>>> as a
->>>>>> note that $something should be done.
->>>>> With the fix above I do not see further problems with the existing
->>>>> implementation using the "destroyed" state to mark the device
->>>>> unavailable.
->>>> The problem of double init remains. I don't think that the sem state=
+> The code is stuffed into src/rtprint for now as patch 2/2 will need this
+> lib to be built before the skin libraries. Better suggestions are
+> welcome though.
 
->>>> should be used for encoding the CAN device state towards potential
->>>> senders.
->>> As I see it, Sebastian's trick saves code and synchronization.
->>
->> Well, we are discussing a single test here. Or doesn't dev->state hold=
+I basically agree that we need to provide more
+co-scheduler-based-rt-safe services, so a non-intrusive print out
+support should be welcome. A few things more:
 
->> the require information as well. Moreover, the existing pattern was ea=
-sy
->> to get wrong between core and driver.
->=20
-> We speak about adding:
->=20
->  if (!CAN_STATE_OPERATING(dev->state)) {
->     if (dev->state =3D=3D CAN_STATE_SLEEPING)
->         return-ECOMM;
->     else
->         return-ENETDOWN;
->  }
->=20
-> before calling rtdm_sem_timeddown().
->=20
+- looking beyond print out, we will probably want to iron more ANSI
+services in the future. In order to prevent API proliferation, let's
+consider the hardened print out support as the beginning of some
+libansi_rt service collection.
 
-I thought about this issue again and found the reason for my vague bad
-feeling: re-init is not atomic, thus racy. But also the test+sem_init
-pattern I suggested is not save.
+- the same way libpthread_rt shadows 1003.1c services to iron them over
+a co-scheduler, we should do the same for the ironed ANSI services. In
+that sense, there is no need for rt_printf, rt_vsprintf and so on, we
+just need to shadow printf, vsprintf and friends the same way we did for
+pthread_create and such for substituting the 1003.1c support. Again, API
+proliferation, especially of non-orthogonal stuff, needs to be fought
+now. The bonus is that we would not have to ask people to rely on crufty
+preprocessor tricks in order to compile their code in either real-time
+layers X3 is going to provide (i.e. I-pipe-based co-scheduler and native
+preemption). This would be consistent with the all-time Xenomai's
+mantra, i.e. "integrate as seamlessly as you can, don't get uselessly
+peculiar".
 
-I guess we need to enhance rtdm_XXX_init in this regard to make the
-RT-CAN use case an officially allowed one. /me is planning to spend more
-thoughts on this the next days.
-
-Jan
+-- 
+Philippe.
 
 
---------------enig62F3E8DFEAC8AD05A6087829
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFF1tbLniDOoMHTA+kRAtKHAKCEtP3ht2kLRJvOfz1chJ7oaqfotwCfdtKp
-2sX48KR3wsqAlv9UK4SB9rY=
-=GLZX
------END PGP SIGNATURE-----
-
---------------enig62F3E8DFEAC8AD05A6087829--
 
