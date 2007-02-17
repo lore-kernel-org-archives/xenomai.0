@@ -1,12 +1,12 @@
-Message-ID: <45D6C4BA.2030900@domain.hid>
-Date: Sat, 17 Feb 2007 10:02:50 +0100
+Message-ID: <45D6C4B6.7010302@domain.hid>
+Date: Sat, 17 Feb 2007 10:02:46 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig9CE870623C9B7CF7E0CE1ADE"
+	boundary="------------enigC6542B1ABB455123FD8D58A4"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [RFC][PATCH 2/2] examplary syscall instrumentation
+Subject: [Xenomai-core] [RFC][PATCH 1/2] real-time print library
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,88 +19,75 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9CE870623C9B7CF7E0CE1ADE
-Content-Type: multipart/mixed; boundary="------------020401030001090403010100"
+--------------enigC6542B1ABB455123FD8D58A4
+Content-Type: multipart/mixed; boundary="------------080400060409000407080500"
 
 This is a multi-part message in MIME format.
---------------020401030001090403010100
+--------------080400060409000407080500
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Based on librtprint, this is an attempt to unintrusively (/wrt timing)
-instrument Xenomai syscalls inside the user space libs.
+This is a stand-alone real-time library for printf services. It is
+embedded into the Xenomai user space part but actually doesn't depend
+on any Xenomai service, just using plain Linux POSIX.
 
-The support is compiled into the skin libs if --enable-debug was passed
-to configure. To switch rt-syscall tracing on for an RT application, the
-environment variable XNTRACE_SYS has to be defined (to whatever). Output
-happens to stderr so far. Here is a demo trace of the rtprint example
-from the previous patch:
+The librtprint API looks much like the printf(3) man page:
 
-> # XNTRACE_SYS=3D examples/native/rtprint
-> [b7df36c0 Task 1] ENTER rt_task_shadow(task=3D0xbfd55aa8, name=3DTask 1=
-, prio=3D10, mode=3D0x0)
-> [b7df36c0 Task 1]  EXIT rt_task_shadow() =3D 0
-> [b7df36c0 Task 1] ENTER rt_task_create(task=3D0xbfd55aa0, name=3DTask 2=
-, stksize=3D0, prio=3D11, mode=3D0x0)
-> [b7df36c0 Task 1]  EXIT rt_task_create() =3D 0
-> [b7df36c0 Task 1] ENTER rt_task_start(task=3D0xbfd55aa0, entry=3D0x8048=
-754, cookie=3D(nil))
-> [b7f65b90 Task 2] ENTER rt_task_trampoline(cookie=3D(nil))
-> This triggers auto-init of rt_print for the calling thread.
-> A last switch to secondary mode can occure here, but future invocations=
- of rt_printf are safe.
-> [b7f65b90 Task 2] ENTER rt_task_sleep(delay=3D3333333)
-> [b7df36c0 Task 1]  EXIT rt_task_start() =3D 0
-> [b7df36c0 Task 1] ENTER rt_task_sleep(delay=3D5000000)
-> [b7f65b90 Task 2]  EXIT rt_task_sleep() =3D 0
-> b7f65b90 Task 2: #1 Yet another RT printer - but to stderr.
-> [b7f65b90 Task 2] ENTER rt_task_sleep(delay=3D3333333)
-> [b7df36c0 Task 1]  EXIT rt_task_sleep() =3D 0
-=2E..
+rt_vfprintf
+rt_vprintf
+rt_fprintf
+rt_printf
 
-Besides introducing the generic bits of rt-syscall tracing, this patch
-also instruments very few functions of the native and the posix skin. As
-I said earlier, full instrumentation like this requires a) a consensus
-that we want this and b) quite some typing work which could luckily
-happen step by step.
+Moreover it provides a few setup/cleanup services as you can grab from
+the code and the included example.
 
-Yet further ideas to enhance this approach:
- o Time stamping based on cheap TSCs could be added.
- o A lib-internal handler for SIGXCHG could be installed, and the
-   related mode switch signal could be forced on. That way the tracing
-   back-end would become aware of switches from primary to secondary
-   mode and could report this automatically.
- o Support to dump the trace to a file could be provided (already
-   possibly via redirection "2>output-file", but may contain stderr
-   stuff from the traced program).
+The basic idea of librtprint is to keep the print side as cheap as
+possible: no locks, no syscalls at all. Each thread that uses rt_printf
+& friends has its own local ring buffer. A central (per process) non-RT
+output thread takes care of forwarding the content of all thread ring
+buffers to the output streams. The message order is preserved loosely by
+a global sequence counter (arch-dependent CPU-wide or system-wide
+atomic_inc_return might be used in the future). The output thread uses
+periodic polling (default: 10 Hz) to avoid the need for special
+signalling mechanisms.
 
-OK, looking forward to any feedback.
+Further features:
+ o Explicit or on-demand thread buffer creation
+ o Override of default buffer size and polling period via environment
+   variables ("RT_PRINT_BUFFER" and "RT_PRINT_PERIOD")
+ o Support for buffer names (useful for the following patch e.g.)
+ o Target output stream can be specified for each print invocation
+ o Breaks all builds except for x86 (missing ubarrier.h headers) :o)
+
+The code is stuffed into src/rtprint for now as patch 2/2 will need this
+lib to be built before the skin libraries. Better suggestions are
+welcome though.
 
 Jan
 
---------------020401030001090403010100
+--------------080400060409000407080500
 Content-Type: text/x-patch;
- name="rtsystrace.patch"
+ name="librtprint.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="rtsystrace.patch"
+ filename="librtprint.patch"
 
 ---
- configure.in                    |   20 ++++++++---
- include/asm-generic/Makefile.am |    2 -
- include/asm-generic/bits/bind.h |   12 +++++++
- include/asm-generic/usystrace.h |   59 +++++++++++++++++++++++++++++++++=
-+
- src/skins/native/Makefile.am    |    2 -
- src/skins/native/init.c         |    3 +
- src/skins/native/task.c         |   68 ++++++++++++++++++++++++++++++++-=
--------
- src/skins/posix/Makefile.am     |    2 -
- src/skins/posix/clock.c         |   26 ++++++++++++---
- src/skins/posix/init.c          |    3 +
- src/skins/posix/mutex.c         |   21 +++++++++++-
- src/skins/posix/thread.c        |   15 ++++++--
- 12 files changed, 200 insertions(+), 33 deletions(-)
+ configure.in                 |    1=20
+ examples/native/Makefile     |    8 +
+ examples/native/rtprint.c    |   48 +++++++
+ include/Makefile.am          |    5=20
+ include/asm-i386/Makefile.am |    2=20
+ include/asm-i386/ubarrier.h  |   26 ++++
+ include/rtprint.h            |   59 +++++++++
+ src/Makefile.am              |    2=20
+ src/rtprint/Makefile.am      |   12 +
+ src/rtprint/api.c            |  273 ++++++++++++++++++++++++++++++++++++=
++++++++
+ src/rtprint/init.c           |   75 +++++++++++
+ src/rtprint/internal.h       |   69 ++++++++++
+ src/rtprint/output.c         |   92 ++++++++++++++
+ 13 files changed, 669 insertions(+), 3 deletions(-)
 
 Index: xenomai/configure.in
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
@@ -108,112 +95,167 @@ Index: xenomai/configure.in
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 --- xenomai.orig/configure.in
 +++ xenomai/configure.in
-@@ -111,15 +111,22 @@ dnl
-=20
- dnl Debug build (default: off)
-=20
--debug_symbols=3D
--AC_MSG_CHECKING(for debug symbols)
-+CONFIG_DEBUG=3D
-+AC_MSG_CHECKING(for debug support)
- AC_ARG_ENABLE(debug,
- 	AS_HELP_STRING([--enable-debug], [Enable debug support in nucleus and d=
-ebug symbols in programs]),
- 	[case "$enableval" in
--	y | yes) debug_symbols=3Dy ;;
--	*) unset debug_symbols ;;
-+	y | yes) CONFIG_DEBUG=3Dy ;;
-+	*) unset CONFIG_DEBUG ;;
- 	esac])
--AC_MSG_RESULT(${debug_symbols:-no})
-+AC_MSG_RESULT(${CONFIG_DEBUG:-no})
-+
-+if test x$CONFIG_DEBUG =3D xy ; then
-+	SYSTRACE_LIB=3D"-L\$(top_builddir)/src/rtprint -lrtprint"
-+else
-+	unset SYSTRACE_LIB
-+fi
-+AC_SUBST(SYSTRACE_LIB)
-=20
- dnl SMP support (default: off)
-=20
-@@ -419,6 +426,7 @@ dnl don't need to make particular cases=20
- dnl also be compiled in user-space libs.
- dnl
-=20
-+test x$CONFIG_DEBUG =3D xy && AC_DEFINE(CONFIG_DEBUG,1,[config])
- test x$CONFIG_XENO_X86_SEP =3D xy && AC_DEFINE(CONFIG_XENO_X86_SEP,1,[co=
-nfig])
- test x$CONFIG_SMP =3D xy && AC_DEFINE(CONFIG_SMP,1,[config])
- test x$CONFIG_X86_TSC =3D xy && AC_DEFINE(CONFIG_X86_TSC,1,[config])
-@@ -531,7 +539,7 @@ case $XENO_TARGET_ARCH in
-         ;;
- esac
-=20
--if test x$debug_symbols =3D xy; then
-+if test x$CONFIG_DEBUG =3D xy; then
-    XENO_USER_CFLAGS=3D"-g $XENO_USER_CFLAGS"
- else
-    XENO_USER_CFLAGS=3D"-O2 $XENO_USER_CFLAGS"
-Index: xenomai/include/asm-generic/Makefile.am
+@@ -611,6 +611,7 @@ AC_CONFIG_FILES([ \
+ 	scripts/xeno-load \
+ 	scripts/xeno-test \
+ 	src/Makefile \
++	src/rtprint/Makefile \
+ 	src/skins/Makefile \
+        	src/skins/posix/Makefile \
+        	src/skins/native/Makefile \
+Index: xenomai/examples/native/Makefile
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-generic/Makefile.am
-+++ xenomai/include/asm-generic/Makefile.am
-@@ -1,5 +1,5 @@
- includedir =3D $(prefix)/include/asm-generic
+--- xenomai.orig/examples/native/Makefile
++++ xenomai/examples/native/Makefile
+@@ -1,7 +1,7 @@
+ ###### CONFIGURATION ######
 =20
--include_HEADERS =3D features.h hal.h syscall.h system.h wrappers.h
-+include_HEADERS =3D features.h hal.h syscall.h system.h usystrace.h wrap=
-pers.h
+ ### List of applications to be build
+-APPLICATIONS =3D trivial-periodic sigxcpu
++APPLICATIONS =3D trivial-periodic sigxcpu rtprint
 =20
- SUBDIRS =3D bits
-Index: xenomai/include/asm-generic/bits/bind.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-generic/bits/bind.h
-+++ xenomai/include/asm-generic/bits/bind.h
-@@ -8,6 +8,10 @@
- #include <signal.h>
- #include <asm/xenomai/syscall.h>
+ ### Note: to override the search path for the xeno-config script, use "m=
+ake XENO=3D..."
 =20
-+#ifdef CONFIG_DEBUG
-+int __xeno_systrace;
-+#endif /* CONFIG_DEBUG */
+@@ -44,6 +44,12 @@ endif
+=20
+=20
+=20
++###### SPECIAL TARGET RULES ######
++rtprint: rtprint.c
++	$(CC) $(CFLAGS) $? $(LDFLAGS) -lrtprint -o $@
 +
- void xeno_handle_mlock_alert(int sig);
-=20
- static inline int
-@@ -21,6 +25,10 @@ xeno_bind_skin(unsigned skin_magic, cons
- 	xeno_arch_features_check();
- #endif /* xeno_arch_features_check */
-=20
-+#ifdef CONFIG_DEBUG
-+	__xeno_systrace =3D !!getenv("XNTRACE_SYS");
-+#endif /* CONFIG_DEBUG */
 +
- 	muxid =3D XENOMAI_SYSBIND(skin_magic,
- 				XENOMAI_FEAT_DEP, XENOMAI_ABI_REV, &finfo);
- 	switch (muxid) {
-@@ -75,6 +83,10 @@ xeno_bind_skin_opt(unsigned skin_magic,=20
- 	xeno_arch_features_check();
- #endif /* xeno_arch_features_check */
-=20
-+#ifdef CONFIG_DEBUG
-+	__xeno_systrace =3D !!getenv("XNTRACE_SYS");
-+#endif /* CONFIG_DEBUG */
 +
- 	muxid =3D XENOMAI_SYSBIND(skin_magic,
- 				XENOMAI_FEAT_DEP, XENOMAI_ABI_REV, &finfo);
- 	switch (muxid) {
-Index: xenomai/include/asm-generic/usystrace.h
+ ###### KERNEL MODULE BUILD (no change required normally) ######
+ ifneq ($(MODULES),)
+=20
+Index: xenomai/examples/native/rtprint.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 --- /dev/null
-+++ xenomai/include/asm-generic/usystrace.h
++++ xenomai/examples/native/rtprint.c
+@@ -0,0 +1,48 @@
++#include <stdio.h>
++#include <sys/mman.h>
++#include <native/task.h>
++#include <rtprint.h>
++
++void task2_func(void *arg)
++{
++	int i =3D 0;
++
++	rt_printf("This triggers auto-init of rt_print for the "
++		  "calling thread.\n"
++		  "A last switch to secondary mode can occure here, "
++		  "but future invocations of rt_printf are safe.\n");
++
++	rt_task_set_mode(0, T_WARNSW, NULL);
++
++	while (1) {
++		rt_task_sleep(3333333LL);
++		rt_fprintf(stderr, "%s: #%d Yet another RT printer - "
++			   "but to stderr.\n", rt_print_buffer_name(), ++i);
++	}
++}
++
++int main(int argc, char **argv)
++{
++	RT_TASK task1, task2;
++	int i =3D 0;
++
++	mlockall(MCL_CURRENT|MCL_FUTURE);
++
++	/* Perform auto-init of rt_print buffers if the task doesn't do so */
++	rt_print_auto_init(1);
++
++	/* Initialise the rt_print buffer for this task explicitly */
++	rt_print_init(4096, "Task 1");
++
++	rt_task_shadow(&task1, "Task 1", 10, 0);
++	rt_task_spawn(&task2, "Task 2", 0, 11, 0, task2_func, NULL);
++
++	/* To demonstrate that rt_printf is safe */
++	rt_task_set_mode(0, T_WARNSW, NULL);
++
++	while (1) {
++		rt_task_sleep(5000000LL);
++		rt_printf("%s: #%d Hello RT world!\n",
++			  rt_print_buffer_name(), ++i);
++	}
++}
+Index: xenomai/include/Makefile.am
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/Makefile.am
++++ xenomai/include/Makefile.am
+@@ -1,3 +1,8 @@
++includedir =3D $(prefix)/include
++
++include_HEADERS =3D \
++	rtprint.h
++
+ nodist_include_HEADERS=3D$(CONFIG_HEADER)
+=20
+ SUBDIRS =3D \
+Index: xenomai/include/asm-i386/Makefile.am
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-i386/Makefile.am
++++ xenomai/include/asm-i386/Makefile.am
+@@ -1,6 +1,6 @@
+ includedir =3D $(prefix)/include/asm-i386
+=20
+ include_HEADERS =3D atomic.h calibration.h features.h \
+-		hal.h smi.h syscall.h system.h wrappers.h fptest.h
++		hal.h smi.h syscall.h system.h wrappers.h fptest.h ubarrier.h
+=20
+ SUBDIRS =3D bits
+Index: xenomai/include/asm-i386/ubarrier.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/include/asm-i386/ubarrier.h
+@@ -0,0 +1,26 @@
++/*
++ * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
++ *
++ * Xenomai is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published
++ * by the Free Software Foundation; either version 2 of the License,
++ * or (at your option) any later version.
++ *
++ * Xenomai is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with Xenomai; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
++ * 02111-1307, USA.
++ */
++
++#ifndef _XENO_ASM_I386_UBARRIER_H
++#define _XENO_ASM_I386_UBARRIER_H
++
++#define rmb()	__asm__ __volatile__ ("lock; addl $0,0(%%esp)": : :"memory=
+")
++#define wmb()	__asm__ __volatile__ ("": : :"memory")
++
++#endif /* _XENO_ASM_I386_UBARRIER_H */
+Index: xenomai/include/rtprint.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/include/rtprint.h
 @@ -0,0 +1,59 @@
 +/*
 + * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
@@ -234,453 +276,624 @@ Index: xenomai/include/asm-generic/usystrace.h
  USA.
 + */
 +
-+#ifndef _XENO_ASM_GENERIC_USYSTRACE_H
-+#define _XENO_ASM_GENERIC_USYSTRACE_H
++#ifndef _RTPRINT_H
++#define _RTPRINT_H
 +
-+#include <xeno_config.h>
++#ifdef __KERNEL__
++
++#define rt_printf(format, ...)	printk(format __VA_ARGS__)
++
++static inline int rt_print_init(size_t buffer_size, const char *buffer_n=
+ame)
++{
++	return 0;
++}
++
++#define rt_print_cleanup()	do { } while (0)
++
++static inline void rt_print_auto_init(int enable)
++{
++}
++
++static inline const char *rt_print_buffer_name(void)
++{
++	return "<unknown>";
++}
++
++#else /* !__KERNEL__ */
++
++#include <stdio.h>
++#include <stdarg.h>
++
++int rt_vfprintf(FILE *stream, const char *format, va_list args);
++int rt_vprintf(const char *format, va_list args);
++int rt_fprintf(FILE *stream, const char *format, ...);
++int rt_printf(const char *format, ...);
++
++int rt_print_init(size_t buffer_size, const char *name);
++void rt_print_cleanup(void);
++void rt_print_auto_init(int enable);
++const char *rt_print_buffer_name(void);
++
++#endif /* !KERNEL */
++
++#endif /* !_RTPRINT_H */
+Index: xenomai/src/Makefile.am
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/src/Makefile.am
++++ xenomai/src/Makefile.am
+@@ -1,2 +1,2 @@
+=20
+-SUBDIRS =3D include skins testsuite utils
++SUBDIRS =3D include rtprint skins testsuite utils
+Index: xenomai/src/rtprint/Makefile.am
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/src/rtprint/Makefile.am
+@@ -0,0 +1,12 @@
++lib_LTLIBRARIES =3D librtprint.la
++
++librtprint_la_LDFLAGS =3D -version-info 0:0:0 -lpthread
++
++librtprint_la_SOURCES =3D \
++	init.c \
++	output.c \
++	api.c
++
++librtprint_la_CPPFLAGS =3D \
++	@XENO_USER_CFLAGS@ \
++	-I$(top_srcdir)/include
+Index: xenomai/src/rtprint/api.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/src/rtprint/api.c
+@@ -0,0 +1,273 @@
++/*
++ * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 =
+ USA.
++ */
++
++#include <errno.h>
++#include <stdarg.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
 +#include <rtprint.h>
++#include <asm/xenomai/ubarrier.h>
 +
-+#define SYSTRACE_VOID				"<void>"
++#include "internal.h"
 +
-+#define systrace_str(string)			(string) ? string : "(nil)"
++int rt_vfprintf(FILE *stream, const char *format, va_list args)
++{
++	struct print_buffer *buffer =3D pthread_getspecific(__buffer_key);
++	off_t write_pos, read_pos;
++	struct entry_head *head;
++	int len;
++	int res;
 +
-+#ifdef CONFIG_DEBUG
++	if (!buffer) {
++		res =3D 0;
++		if (__auto_init)
++			res =3D rt_print_init(0, NULL);
++		else
++			res =3D EIO;
 +
-+extern int __xeno_systrace;
-+
-+#define systrace_init()				rt_print_auto_init(1)
-+#define systrace_init_thread(name)		rt_print_init(0, name)
-+
-+#define systrace_enter(func, arg_format, ...) \
-+do { \
-+	if (__xeno_systrace) \
-+		rt_fprintf(stderr, "[%s] ENTER %s(" arg_format ")\n", \
-+			   rt_print_buffer_name(), func, ##__VA_ARGS__); \
-+} while (0)
-+
-+#define systrace_exit(func, ret_format, ...) \
-+do { \
-+	if (__xeno_systrace) \
-+		rt_fprintf(stderr, "[%s]  EXIT %s() =3D " ret_format "\n", \
-+			   rt_print_buffer_name(), func, ##__VA_ARGS__); \
-+} while (0)
-+
-+#else /* !CONFIG_DEBUG */
-+
-+#define systrace_init()				do { } while (0)
-+#define systrace_init_thread(name)		do { } while (0)
-+#define systrace_enter(func, arg_format, ...)	do { } while (0)
-+#define systrace_exit(func, ret_format, ...)	do { } while (0)
-+
-+#endif /* !CONFIG_DEBUG */
-+
-+#endif /* !_XENO_ASM_GENERIC_USYSTRACE_H */
-Index: xenomai/src/skins/native/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/native/Makefile.am
-+++ xenomai/src/skins/native/Makefile.am
-@@ -1,6 +1,6 @@
- lib_LTLIBRARIES =3D libnative.la
-=20
--libnative_la_LDFLAGS =3D -version-info 0:0:0 -lpthread
-+libnative_la_LDFLAGS =3D -version-info 0:0:0 -lpthread @SYSTRACE_LIB@
-=20
- libnative_la_SOURCES =3D \
- 	alarm.c \
-Index: xenomai/src/skins/native/init.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/native/init.c
-+++ xenomai/src/skins/native/init.c
-@@ -26,6 +26,7 @@
- #include <native/task.h>
- #include <asm-generic/bits/bind.h>
- #include <asm-generic/bits/mlock_alert.h>
-+#include <asm-generic/usystrace.h>
-=20
- pthread_key_t __native_tskey;
-=20
-@@ -49,4 +50,6 @@ void __init_xeno_interface(void)
- 		fprintf(stderr, "Xenomai: failed to allocate new TSD key?!\n");
- 		exit(1);
- 	}
-+
-+	systrace_init();
- }
-Index: xenomai/src/skins/native/task.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/native/task.c
-+++ xenomai/src/skins/native/task.c
-@@ -26,6 +26,7 @@
- #include <limits.h>
- #include <native/syscall.h>
- #include <native/task.h>
-+#include <asm-generic/usystrace.h>
-=20
- extern pthread_key_t __native_tskey;
-=20
-@@ -54,6 +55,8 @@ static void *rt_task_trampoline(void *co
- 	struct rt_arg_bulk bulk;
- 	long err;
-=20
-+	systrace_init_thread(iargs->name);
-+
- 	if (iargs->prio > 0) {
- 		/* Ok, this looks like weird, but we need this. */
- 		param.sched_priority =3D sched_get_priority_max(SCHED_FIFO);
-@@ -85,8 +88,11 @@ static void *rt_task_trampoline(void *co
- 		err =3D XENOMAI_SYSCALL2(__xn_sys_barrier, &entry, &cookie);
- 	while (err =3D=3D -EINTR);
-=20
--	if (!err)
-+	if (!err) {
-+		systrace_enter(__FUNCTION__, "cookie=3D%p", cookie);
- 		entry(cookie);
-+		systrace_exit(__FUNCTION__, SYSTRACE_VOID);
++		if (res) {
++			errno =3D res;
++			return -1;
++		}
++		buffer =3D pthread_getspecific(__buffer_key);
 +	}
-=20
-       fail:
-=20
-@@ -103,6 +109,10 @@ int rt_task_create(RT_TASK *task,
- 	pthread_t thid;
- 	int err;
-=20
-+	systrace_enter(__FUNCTION__, "task=3D%p, name=3D%s, stksize=3D%d, "
-+		       "prio=3D%d, mode=3D0x%x", task, systrace_str(name),
-+		       stksize, prio, mode);
 +
- 	/* Migrate this thread to the Linux domain since we are about to
- 	   issue a series of regular kernel syscalls in order to create
- 	   the new Linux thread, which in turn will be mapped to a
-@@ -135,24 +145,39 @@ int rt_task_create(RT_TASK *task,
- 	}
- 	pthread_attr_setschedparam(&thattr, &param);
-=20
--	err =3D pthread_create(&thid, &thattr, &rt_task_trampoline, &iargs);
-+	err =3D -pthread_create(&thid, &thattr, &rt_task_trampoline, &iargs);
-=20
--	if (err)
--		return -err;
-+	if (!err) {
-+		/* Wait for sync with rt_task_trampoline() */
-+		err =3D XENOMAI_SYSCALL1(__xn_sys_completion, &completion);
++	/* Take a snapshot of the ring buffer state */
++	write_pos =3D buffer->write_pos;
++	read_pos =3D buffer->read_pos;
++	rmb();
++
++	/* Is our write limit the end of the ring buffer? */
++	if (write_pos >=3D read_pos) {
++		/* Keep a savety margin to the end for at least an empty entry */
++		len =3D buffer->size - write_pos - sizeof(struct entry_head);
++
++		/* Special case: We were stuck at the end of the ring buffer
++		   with space left there only for one empty entry. Now
++		   read_pos was moved forward and we can wrap around. */
++		if (len =3D=3D 0 && read_pos > sizeof(struct entry_head)) {
++			/* Write out empty entry */
++			head =3D buffer->ring + write_pos;
++			head->seq_no =3D __seq_no;
++			head->text[0] =3D 0;
++
++			/* Forward to the ring buffer start */
++			write_pos =3D 0;
++			len =3D read_pos - 1;
++		}
++	} else {
++		/* Our limit is the read_pos ahead of our write_pos. One byte
++		   margin is required to detect a full ring. */
++		len =3D read_pos - write_pos - 1;
 +	}
-=20
--	/* Wait for sync with rt_task_trampoline() */
--	return XENOMAI_SYSCALL1(__xn_sys_completion, &completion);
-+	systrace_exit(__FUNCTION__, "%d", err);
-+	return err;
- }
-=20
- int rt_task_start(RT_TASK *task, void (*entry) (void *cookie), void *coo=
-kie)
- {
--	return XENOMAI_SKINCALL3(__native_muxid,
--				 __native_task_start, task, entry, cookie);
-+	int err;
 +
-+	systrace_enter(__FUNCTION__, "task=3D%p, entry=3D%p, cookie=3D%p",
-+		       task, entry, cookie);
++	/* Account for head length */
++	len -=3D sizeof(struct entry_head);
++	if (len < 0)
++		len =3D 0;
 +
-+	err =3D XENOMAI_SKINCALL3(__native_muxid,
-+				__native_task_start, task, entry, cookie);
++	head =3D buffer->ring + write_pos;
 +
-+	systrace_exit(__FUNCTION__, "%d", err);
-+	return err;
- }
-=20
- int rt_task_shadow(RT_TASK *task, const char *name, int prio, int mode)
- {
- 	struct rt_arg_bulk bulk;
-+	int err;
++	res =3D vsnprintf(head->text, len, format, args);
 +
-+	systrace_init_thread(name);
-+	systrace_enter(__FUNCTION__, "task=3D%p, name=3D%s, prio=3D%d, mode=3D0=
-x%x",
-+		       task, systrace_str(name), prio, mode);
-=20
- 	/* rt_task_delete requires asynchronous cancellation */
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-@@ -165,8 +190,11 @@ int rt_task_shadow(RT_TASK *task, const=20
- 	bulk.a4 =3D (u_long)mode;
- 	bulk.a5 =3D (u_long)pthread_self();
-=20
--	return XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
--				 NULL);
-+	err =3D XENOMAI_SKINCALL2(__native_muxid, __native_task_create, &bulk,
-+				NULL);
++	if (res < len) {
++		/* Text was written completely, res contains its length */
++		len =3D res;
++	} else {
++		/* Text was truncated, remove closing \0 that entry_head
++		   already includes */
++		len--;
++	}
 +
-+	systrace_exit(__FUNCTION__, "%d", err);
-+	return err;
- }
-=20
- int rt_task_bind(RT_TASK *task, const char *name, RTIME timeout)
-@@ -216,8 +244,16 @@ int rt_task_set_periodic(RT_TASK *task,=20
-=20
- int rt_task_wait_period(unsigned long *overruns_r)
- {
--	return XENOMAI_SKINCALL1(__native_muxid,
--				 __native_task_wait_period, overruns_r);
-+	int err;
++	/* If we were able to write some text, finalise the entry */
++	if (len > 0) {
++		head->seq_no =3D ++__seq_no;
++		head->dest =3D stream;
 +
-+	systrace_enter(__FUNCTION__, "overruns_r=3D%p", overruns_r);
++		/* Move forward by text and head length */
++		write_pos +=3D len + sizeof(struct entry_head);
++	}
 +
-+	err =3D XENOMAI_SKINCALL1(__native_muxid,
-+				__native_task_wait_period, overruns_r);
++	/* Wrap around early if there is more space on the other side */
++	if (write_pos >=3D buffer->size - RT_PRINT_LINE_BREAK &&
++	    read_pos <=3D write_pos && read_pos > buffer->size - write_pos) {
++		/* An empty entry marks the wrap-around */
++		head =3D buffer->ring + write_pos;
++		head->seq_no =3D __seq_no;
++		head->text[0] =3D 0;
 +
-+	systrace_exit(__FUNCTION__, "%d, *overruns_r=3D%d", err,
-+		      (overruns_r) ? *overruns_r : 0);
-+	return err;
- }
-=20
- int rt_task_set_priority(RT_TASK *task, int prio)
-@@ -228,8 +264,14 @@ int rt_task_set_priority(RT_TASK *task,=20
-=20
- int rt_task_sleep(RTIME delay)
- {
--	return XENOMAI_SKINCALL1(__native_muxid, __native_task_sleep, &delay);
-+	int err;
-=20
-+	systrace_enter(__FUNCTION__, "delay=3D%llu", delay);
++		write_pos =3D 0;
++	}
 +
-+	err =3D XENOMAI_SKINCALL1(__native_muxid, __native_task_sleep, &delay);=
++	/* All entry data must be written before we can update write_pos */
++	wmb();
++
++	buffer->write_pos =3D write_pos;
++
++	return res;
++}
++
++int rt_vprintf(const char *format, va_list args)
++{
++	return rt_vfprintf(stdout, format, args);
++}
++
++int rt_fprintf(FILE *stream, const char *format, ...)
++{
++	va_list args;
++	int n;
++
++	va_start(args, format);
++	n =3D rt_vfprintf(stream, format, args);
++	va_end(args);
++
++	return n;
++}
++
++int rt_printf(const char *format, ...)
++{
++	va_list args;
++	int n;
++
++	va_start(args, format);
++	n =3D rt_vfprintf(stdout, format, args);
++	va_end(args);
++
++	return n;
++}
++
++static void set_buffer_name(struct print_buffer *buffer, const char *nam=
+e)
++{
++	int n;
++
++	n =3D sprintf(buffer->name, "%08lx", (unsigned long)pthread_self());
++	if (name) {
++		buffer->name[n++] =3D ' ';
++		strncpy(buffer->name+n, name, sizeof(buffer->name)-n-1);
++		buffer->name[sizeof(buffer->name)-1] =3D 0;
++	}
++}
++
++int rt_print_init(size_t buffer_size, const char *buffer_name)
++{
++	struct print_buffer *buffer =3D pthread_getspecific(__buffer_key);
++	size_t size =3D buffer_size;
++
++	if (!size)
++		size =3D __default_buffer_size;
++	else if (size < RT_PRINT_LINE_BREAK)
++		return EINVAL;
++
++	if (buffer) {
++		/* Only set name if buffer size is unchanged or default */
++		if (size =3D=3D buffer->size || !buffer_size) {
++			set_buffer_name(buffer, buffer_name);
++			return 0;
++		}
++		__cleanup_buffer(buffer);
++	}
++
++	buffer =3D malloc(sizeof(*buffer));
++	if (!buffer)
++		return ENOMEM;
++
++	buffer->ring =3D malloc(size);
++	if (!buffer->ring) {
++		free(buffer);
++		return ENOMEM;
++	}
++	memset(buffer->ring, 0, size);
++
++	buffer->read_pos  =3D 0;
++	buffer->write_pos =3D 0;
++
++	buffer->size =3D size;
++
++	set_buffer_name(buffer, buffer_name);
++
++	buffer->prev =3D NULL;
++
++	pthread_mutex_lock(&__buffer_lock);
++
++	buffer->next =3D __first_buffer;
++	if (__first_buffer)
++		__first_buffer->prev =3D buffer;
++	__first_buffer =3D buffer;
++
++	pthread_mutex_unlock(&__buffer_lock);
++
++	pthread_setspecific(__buffer_key, buffer);
++
++	return 0;
++}
++
++void rt_print_auto_init(int enable)
++{
++	__auto_init =3D enable;
++}
++
++void __cleanup_buffer(struct print_buffer *buffer)
++{
++	struct print_buffer *prev, *next;
++
++	pthread_setspecific(__buffer_key, NULL);
++
++	pthread_mutex_lock(&__buffer_lock);
++
++	__print_buffers();
++
++	prev =3D buffer->prev;
++	next =3D buffer->next;
++
++	if (prev)
++		prev->next =3D next;
++	else
++		__first_buffer =3D next;
++	if (next)
++		next->prev =3D prev;
++
++	pthread_mutex_unlock(&__buffer_lock);
++
++	free(buffer->ring);
++	free(buffer);
++}
++
++void rt_print_cleanup(void)
++{
++	__cleanup_buffer(pthread_getspecific(__buffer_key));
++}
++
++const char *rt_print_buffer_name(void)
++{
++	struct print_buffer *buffer =3D pthread_getspecific(__buffer_key);
++
++	if (!buffer) {
++		int res =3D -1;
++
++		if (__auto_init)
++			res =3D rt_print_init(0, NULL);
++
++		if (res)
++			return NULL;
++
++		buffer =3D pthread_getspecific(__buffer_key);
++	}
++
++	return buffer->name;
++}
+Index: xenomai/src/rtprint/init.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/src/rtprint/init.c
+@@ -0,0 +1,75 @@
++/*
++ * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 =
+ USA.
++ */
++
++#include <errno.h>
++#include <limits.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "internal.h"
++
++struct print_buffer *__first_buffer;
++uint32_t __seq_no;
++size_t __default_buffer_size;
++struct timespec __print_period;
++int __auto_init;
++pthread_mutex_t __buffer_lock;
++pthread_key_t __buffer_key;
++
++static __attribute__ ((constructor)) void __init_rtprint(void)
++{
++	pthread_t thread;
++	pthread_attr_t thattr;
++	const char *value_str;
++	unsigned long long period;
++
++	__first_buffer =3D NULL;
++	__seq_no =3D 0;
++	__auto_init =3D 0;
++
++	__default_buffer_size =3D RT_PRINT_DEFAULT_BUFFER;
++	value_str =3D getenv(RT_PRINT_BUFFER_ENV);
++	if (value_str) {
++		errno =3D 0;
++		__default_buffer_size =3D strtol(value_str, NULL, 10);
++		if (errno || __default_buffer_size < RT_PRINT_LINE_BREAK) {
++			fprintf(stderr, "Invalid %s\n", RT_PRINT_BUFFER_ENV);
++			exit(1);
++		}
++	}
++
++	period =3D RT_PRINT_DEFAULT_PERIOD;
++	value_str =3D getenv(RT_PRINT_PERIOD_ENV);
++	if (value_str) {
++		errno =3D 0;
++		period =3D strtoll(value_str, NULL, 10);
++		if (errno) {
++			fprintf(stderr, "Invalid %s\n", RT_PRINT_PERIOD_ENV);
++			exit(1);
++		}
++	}
++	__print_period.tv_sec  =3D period / 1000;
++	__print_period.tv_nsec =3D (period % 1000) * 1000000;
++
++	pthread_mutex_init(&__buffer_lock, NULL);
++	pthread_key_create(&__buffer_key, (void (*)(void*))__cleanup_buffer);
++
++	pthread_attr_init(&thattr);
++	pthread_attr_setstacksize(&thattr, PTHREAD_STACK_MIN);
++	pthread_create(&thread, &thattr, __printer_thread, NULL);
++}
+Index: xenomai/src/rtprint/internal.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/src/rtprint/internal.h
+@@ -0,0 +1,69 @@
++/*
++ * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 =
+ USA.
++ */
++
++#ifndef _RTPRINT_INTERNAL_H
++#define _RTPRINT_INTERNAL_H
++
++#include <pthread.h>
++#include <inttypes.h>
++#include <unistd.h>
++
++#define RT_PRINT_BUFFER_ENV		"RT_PRINT_BUFFER"
++#define RT_PRINT_DEFAULT_BUFFER		16*1024
++
++#define RT_PRINT_PERIOD_ENV		"RT_PRINT_PERIOD"
++#define RT_PRINT_DEFAULT_PERIOD		100 /* ms */
++
++#define RT_PRINT_LINE_BREAK		256
++
++struct entry_head {
++	FILE *dest;
++	uint32_t seq_no;
++	char text[1];
++} __attribute__((packed));
++
++struct print_buffer {
++	off_t write_pos;
++
++	struct print_buffer *next, *prev;
++
++	void *ring;
++	size_t size;
++
++	char name[32];
++
++	/*
++	 * Keep read_pos separated from write_pos to optimise write
++	 * caching on SMP.
++	 */
++	off_t read_pos;
++};
++
++extern struct print_buffer *__first_buffer;
++extern uint32_t __seq_no;
++extern int __auto_init;
++extern size_t __default_buffer_size;
++extern struct timespec __print_period;
++extern pthread_mutex_t __buffer_lock;
++extern pthread_key_t __buffer_key;
++
++void __cleanup_buffer(struct print_buffer *buffer);
++void __print_buffers(void);
++void *__printer_thread(void *arg);
++
++#endif /* !_RTPRINT_INTERNAL_H */
+Index: xenomai/src/rtprint/output.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- /dev/null
++++ xenomai/src/rtprint/output.c
+@@ -0,0 +1,92 @@
++/*
++ * Copyright (C) 2007 Jan Kiszka <jan.kiszka@domain.hid>.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 =
+ USA.
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include <time.h>
++#include <asm/xenomai/ubarrier.h>
++
++#include "internal.h"
++
++static inline uint32_t get_next_seq_no(struct print_buffer *buffer)
++{
++	struct entry_head *head =3D buffer->ring + buffer->read_pos;
++	return head->seq_no;
++}
++
++static struct print_buffer *get_next_buffer(void)
++{
++	struct print_buffer *pos =3D __first_buffer;
++	struct print_buffer *buffer =3D NULL;
++	uint32_t next_seq_no;
++
++	while (pos) {
++		if (pos->read_pos !=3D pos->write_pos &&
++		    (!buffer || get_next_seq_no(pos) < next_seq_no)) {
++			buffer =3D pos;
++			next_seq_no =3D get_next_seq_no(pos);
++		}
++		pos =3D pos->next;
++	}
++
++	return buffer;
++}
++
++void __print_buffers(void)
++{
++	struct print_buffer *buffer;
++	struct entry_head *head;
++	off_t read_pos;
++	int len;
++
++	while (1) {
++		buffer =3D get_next_buffer();
++		if (!buffer)
++			break;
++
++		read_pos =3D buffer->read_pos;
++		head =3D buffer->ring + read_pos;
++		len =3D strlen(head->text);
++
++		if (len) {
++			/* Print out non-empty entry and proceed */
++			fprintf(head->dest, "%s", head->text);
++			read_pos +=3D sizeof(*head) + len;
++		} else {
++			/* Emptry entries mark the wrap-around */
++			read_pos =3D 0;
++		}
++
++		rmb();
++		buffer->read_pos =3D read_pos;
++		wmb();
++	}
++}
++
++void *__printer_thread(void *arg)
++{
++	while (1) {
++		nanosleep(&__print_period, NULL);
++
++		pthread_mutex_lock(&__buffer_lock);
++
++		__print_buffers();
++
++		pthread_mutex_unlock(&__buffer_lock);
++	}
++}
 
-+
-+	systrace_exit(__FUNCTION__, "%d", err);
-+	return err;
- }
-=20
- int rt_task_sleep_until(RTIME date)
-Index: xenomai/src/skins/posix/Makefile.am
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/Makefile.am
-+++ xenomai/src/skins/posix/Makefile.am
-@@ -2,7 +2,7 @@ includedir =3D $(prefix)/include/posix
-=20
- lib_LTLIBRARIES =3D libpthread_rt.la
-=20
--libpthread_rt_la_LDFLAGS =3D -version-info 0:0:0 -lpthread
-+libpthread_rt_la_LDFLAGS =3D -version-info 0:0:0 -lpthread @SYSTRACE_LIB=
-@
-=20
- libpthread_rt_la_SOURCES =3D \
- 	init.c \
-Index: xenomai/src/skins/posix/clock.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/clock.c
-+++ xenomai/src/skins/posix/clock.c
-@@ -20,6 +20,7 @@
- #include <pthread.h>		/* For pthread_setcanceltype. */
- #include <posix/syscall.h>
- #include <time.h>
-+#include <asm-generic/xenomai/usystrace.h>
-=20
- extern int __pse51_muxid;
-=20
-@@ -39,15 +40,22 @@ int __wrap_clock_getres(clockid_t clock_
-=20
- int __wrap_clock_gettime(clockid_t clock_id, struct timespec *tp)
- {
--	int err =3D -XENOMAI_SKINCALL2(__pse51_muxid,
--				     __pse51_clock_gettime,
--				     clock_id,
--				     tp);
-+	int err;
-+
-+	systrace_enter("clock_gettime", "clock_id=3D%d, tp=3D%p", clock_id, tp)=
-;
-+
-+	err =3D XENOMAI_SKINCALL2(__pse51_muxid,
-+				 __pse51_clock_gettime,
-+				 clock_id,
-+				 tp);
-+
-+	systrace_exit("clock_gettime", "%d, tp=3D{%d, %d}", err,
-+		      tp ? tp->tv_sec : 0, tp ? tp->tv_nsec : 0);
-=20
- 	if (!err)
- 		return 0;
-=20
--	errno =3D err;
-+	errno =3D -err;
- 	return -1;
- }
-=20
-@@ -71,6 +79,11 @@ int __wrap_clock_nanosleep(clockid_t clo
- {
- 	int err, oldtype;
-=20
-+	systrace_enter("clock_nanosleep", "clock_id=3D%d, flags=3D0x%x, "
-+		       "rqtp=3D%p {%d, %d}, rmtp=3D%p", clock_id, flags, rqtp,
-+		       rqtp ? rqtp->tv_sec : 0, rqtp ? rqtp->tv_nsec : 0,
-+		       rmtp);
-+
- 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
-=20
- 	err =3D -XENOMAI_SKINCALL4(__pse51_muxid,
-@@ -79,6 +92,9 @@ int __wrap_clock_nanosleep(clockid_t clo
-=20
- 	pthread_setcanceltype(oldtype, NULL);
-=20
-+	systrace_exit("clock_nanosleep", "%d, rmtp=3D{%d, %d}", err,
-+		      rmtp ? rmtp->tv_sec : 0, rmtp ? rmtp->tv_nsec : 0);
-+
- 	return err;
- }
-=20
-Index: xenomai/src/skins/posix/init.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/init.c
-+++ xenomai/src/skins/posix/init.c
-@@ -28,6 +28,7 @@
- #include <rtdm/syscall.h>
- #include <asm-generic/bits/bind.h>
- #include <asm-generic/bits/mlock_alert.h>
-+#include <asm-generic/xenomai/usystrace.h>
-=20
- int __pse51_muxid =3D -1;
- int __rtdm_muxid =3D -1;
-@@ -85,4 +86,6 @@ void __init_posix_interface(void)
- 		}
- 		fork_handler_registered =3D 1;
- 	}
-+
-+	systrace_init();
- }
-Index: xenomai/src/skins/posix/mutex.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/mutex.c
-+++ xenomai/src/skins/posix/mutex.c
-@@ -19,6 +19,7 @@
- #include <errno.h>
- #include <posix/syscall.h>
- #include <pthread.h>
-+#include <asm-generic/xenomai/usystrace.h>
-=20
- extern int __pse51_muxid;
-=20
-@@ -97,12 +98,16 @@ int __wrap_pthread_mutex_lock(pthread_mu
- 	union __xeno_mutex *_mutex =3D (union __xeno_mutex *)mutex;
- 	int err;
-=20
-+	systrace_enter("pthread_mutex_lock", "mutex=3D%p", mutex);
-+
- 	do {
- 		err =3D XENOMAI_SKINCALL1(__pse51_muxid,
- 					__pse51_mutex_lock,
- 					&_mutex->shadow_mutex);
- 	} while (err =3D=3D -EINTR);
-=20
-+	systrace_exit("pthread_mutex_lock", "%d", -err);
-+
- 	return -err;
- }
-=20
-@@ -112,12 +117,17 @@ int __wrap_pthread_mutex_timedlock(pthre
- 	union __xeno_mutex *_mutex =3D (union __xeno_mutex *)mutex;
- 	int err;
-=20
-+	systrace_enter("pthread_mutex_timedlock", "mutex=3D%p, to=3D%p {%d, %d}=
-",
-+		       mutex, to, to ? to->tv_sec : 0, to ? to->tv_nsec : 0);
-+
- 	do {
- 		err =3D XENOMAI_SKINCALL2(__pse51_muxid,
- 					__pse51_mutex_timedlock,
- 					&_mutex->shadow_mutex, to);
- 	} while (err =3D=3D -EINTR);
-=20
-+	systrace_exit("pthread_mutex_timedlock", "%d", -err);
-+
- 	return -err;
- }
-=20
-@@ -132,7 +142,14 @@ int __wrap_pthread_mutex_trylock(pthread
- int __wrap_pthread_mutex_unlock(pthread_mutex_t * mutex)
- {
- 	union __xeno_mutex *_mutex =3D (union __xeno_mutex *)mutex;
-+	int err;
-=20
--	return -XENOMAI_SKINCALL1(__pse51_muxid,
--				  __pse51_mutex_unlock, &_mutex->shadow_mutex);
-+	systrace_enter("pthread_mutex_unlock", "mutex=3D%p", mutex);
-+
-+	err =3D -XENOMAI_SKINCALL1(__pse51_muxid,
-+				 __pse51_mutex_unlock, &_mutex->shadow_mutex);
-+
-+	systrace_exit("pthread_mutex_unlock", "%d", err);
-+
-+	return err;
- }
-Index: xenomai/src/skins/posix/thread.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/src/skins/posix/thread.c
-+++ xenomai/src/skins/posix/thread.c
-@@ -22,6 +22,7 @@
- #include <pthread.h>
- #include <semaphore.h>
- #include <posix/syscall.h>
-+#include <asm-generic/xenomai/usystrace.h>
-=20
- extern int __pse51_muxid;
-=20
-@@ -36,18 +37,22 @@ int __wrap_pthread_setschedparam(pthread
- 	pthread_t myself =3D pthread_self();
- 	int err, promoted;
-=20
-+	systrace_enter("pthread_setschedparam", "pthread=3D%p, policy=3D%d, "
-+		       "param=3D%p {%d}", thread, policy, param,
-+		       param ? param->sched_priority : 0);
-+
- 	err =3D -XENOMAI_SKINCALL5(__pse51_muxid,
- 				 __pse51_thread_setschedparam,
- 				 thread, policy, param, myself, &promoted);
-=20
--	if (err =3D=3D EPERM)
--		return __real_pthread_setschedparam(thread, policy, param);
--
- 	if (!err && promoted) {
- 		signal(SIGHARDEN, &__pthread_sigharden_handler);
- 		if (policy !=3D SCHED_OTHER)
- 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
--	}
-+	} else if (err =3D=3D EPERM)
-+		err =3D __real_pthread_setschedparam(thread, policy, param);
-+
-+	systrace_exit("pthread_setschedparam", "%d%", err);
-=20
- 	return err;
- }
-@@ -114,7 +119,9 @@ static void *__pthread_trampoline(void *
- 	if (!err) {
- 		if (policy !=3D SCHED_OTHER)
- 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
-+		systrace_enter("pthread_trampoline", "cookie=3D%p", cookie);
- 		status =3D start(cookie);
-+		systrace_exit("pthread_trampoline", "%p", status);
- 	} else
- 		status =3D (void *)-err;
-=20
 
+--------------080400060409000407080500--
 
---------------020401030001090403010100--
-
---------------enig9CE870623C9B7CF7E0CE1ADE
+--------------enigC6542B1ABB455123FD8D58A4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -689,10 +902,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFF1sS6niDOoMHTA+kRAj9PAKCA1oN1xgAKd8ugGC04sJQPJ9HD4gCggjV1
-BsmahJkkZsJyX6PhbmPg1WQ=
-=8yrG
+iD8DBQFF1sS2niDOoMHTA+kRAlXrAJ94dyY/Xpk0IO1XGqU3rZswQ7hXNQCcDDX0
+OTU19nMdTRrp46+ZCKm01cs=
+=/Nwd
 -----END PGP SIGNATURE-----
 
---------------enig9CE870623C9B7CF7E0CE1ADE--
+--------------enigC6542B1ABB455123FD8D58A4--
 
