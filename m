@@ -1,13 +1,16 @@
-From: Niklaus Giger <niklaus.giger@domain.hid>
-Date: Sun, 18 Feb 2007 13:51:53 +0100
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
+Subject: Re: [Xenomai-core] Buildbot: sim fails
+	../../ksrc/nucleus/pod.c:1440: label `unlock_and_exit' used but not
+	defined
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200702181342.38077.niklaus.giger@domain.hid>
+References: <200702181342.38077.niklaus.giger@domain.hid>
+Content-Type: text/plain
+Date: Sun, 18 Feb 2007 15:42:20 +0100
+Message-Id: <1171809740.13484.0.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200702181351.53069.niklaus.giger@domain.hid>
-Subject: [Xenomai-core] buildbot: how to setup for ppc with 2.6.19 kernel?
-Reply-To: niklaus.giger@domain.hid
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,47 +20,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: niklaus.giger@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi
+On Sun, 2007-02-18 at 13:42 +0100, Niklaus Giger wrote:
+> Hi
+> 
+> Since February 12 building the sim fails with
+> if ../gcic/gcic -DHAVE_CONFIG_H -I. -I. -I../include  -D__IN_XENO__ --gcic-backend=/var/buildbot/bin/sim/libexec/gcic --kernel-code  -I./../include -I../../include   -g -MT 
+> pod.o -MD -MP -MF ".deps/pod.Tpo" -c -o pod.o ../../ksrc/nucleus/pod.c; \
+>         then mv -f ".deps/pod.Tpo" ".deps/pod.Po"; else rm -f ".deps/pod.Tpo"; 
+> exit 1; fi
+> ../../ksrc/nucleus/pod.c:59: warning: parameter names (without types) in 
+> function declaration
+> ../../ksrc/nucleus/pod.c:59: warning: data definition has no type or storage 
+> class
+> ../../ksrc/nucleus/pod.c: In function `xnpod_suspend_thread':
+> ../../ksrc/nucleus/pod.c:1440: label `unlock_and_exit' used but not defined
+> make[1]: *** [pod.o] Fehler 1
+> make[1]: Leaving directory `/var/buildbot/slave/sim_f/build/sim/nucleus'
+> 
+> For details look at:
+> http://ngiger.dyndns.org/buildbot-full/sim_f/builds/98/step-make_sim/1
 
-Compiling ppc fails for me with 2.6.19 kernels. 
-( I compile on a Pegasos PPC 601 Debian Linux).
-
-If I use ARCH=ppc then I get the following error:
->   CHK     include/linux/version.h
->   CHK     include/linux/utsrelease.h
->   CHK     include/linux/compile.h
-> gcc: include/asm/byteorder.h: No such file or directory
-> gcc: no input files
->   CC      arch/ppc/xenomai/hal.o
-> arch/ppc/xenomai/hal.c: In function 'rthal_arch_init':
-> arch/ppc/xenomai/hal.c:353: error: invalid type argument of '->'
-> make[1]: *** [arch/ppc/xenomai/hal.o] Fehler 1
-
-Trying to use ARCH=powerpc fails already while configuring the kernel
-like this:
->  make ARCH=powerpc menuconfig
->   HOSTCC  scripts/kconfig/mconf.o
->   HOSTLD  scripts/kconfig/mconf
-> scripts/kconfig/mconf arch/powerpc/Kconfig
-> init/Kconfig:564:warning: 'select' used by config symbol 'XENOMAI' refer to
-> undefined symbol 'IPIPE' #
-> # configuration written to .config
-> #
-And a make gives me
->  make ARCH=powerpc menuconfig
->   HOSTCC  scripts/kconfig/mconf.o
->   HOSTLD  scripts/kconfig/mconf
-> scripts/kconfig/mconf arch/powerpc/Kconfig
-> init/Kconfig:564:warning: 'select' used by config symbol 'XENOMAI' refer to
-> undefined symbol 'IPIPE' #
-> # configuration written to .config
-> #
-What is wrong? Did I miss something in my setup? Wrong config?
-
-Best regards
+Fixed, thanks.
 
 -- 
-Niklaus Giger
+Philippe.
+
+
 
