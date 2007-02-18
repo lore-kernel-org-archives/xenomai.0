@@ -1,17 +1,15 @@
-Message-ID: <45D8987C.5080805@domain.hid>
-Date: Sun, 18 Feb 2007 19:18:36 +0100
+Message-ID: <45D899C2.8080000@domain.hid>
+Date: Sun, 18 Feb 2007 19:24:02 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Extended CAN frame filtering
-References: <45D338C2.9030203@domain.hid> <45D5A56F.8080900@domain.hid>
-	<45D711DF.8060802@domain.hid> <45D741AE.9020501@domain.hid>
-	<45D7475E.1030504@domain.hid> <45D74F70.2090200@domain.hid>
-	<45D76A71.20504@domain.hid>
-In-Reply-To: <45D76A71.20504@domain.hid>
+References: <45D425B8.7070401@domain.hid>	<45D60C78.5090106@domain.hid>	<45D61C5C.8090201@domain.hid>	<45D709E4.80409@domain.hid>	<45D73F0B.8090703@domain.hid>	<45D74592.1020804@domain.hid>
+	<45D74FE2.7030001@domain.hid>
+In-Reply-To: <45D74FE2.7030001@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig520B981E90D56A4A5E1967CB"
+	boundary="------------enig40B67B93DA741DE444941B04"
 Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: Magics of [CAN] message filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,31 +20,56 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: socketcan-core@domain.hid, Oliver Hartkopp <socketcan@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig520B981E90D56A4A5E1967CB
+--------------enig40B67B93DA741DE444941B04
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Wolfgang Grandegger wrote:
-> ...
-> Attached is a revised patch including change log entry. As this patch
-> just extends the existing filter capabilities, it could be applied to
-> trunk and the 2.3.x branch as well.
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Jan Kiszka wrote:
+>>> Oliver Hartkopp wrote:
+>>>> When you're touching anything inside your API, have you ever thought=
+ to add
+>>>>
+>>>> __attribute__ ((aligned(8)))
+>>>>
+>>>> to the data[8] element of the struct can_frame?
+>>>>
+>>>> This would enable you to make 64 bit compares directly in the data
+>>>> section of the can_frame ...
+>>>>
+>>>> typedef __u32 canid_t;
+>>>>
+>>>> struct can_frame {
+>>>>     canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+>>>>     __u8    can_dlc; /* data length code: 0 .. 8 */
+>>>>     __u8    data[8] __attribute__ ((aligned(8)));
+>>>> };
+>>> [Swallowing down my well-known opinion on typeof(can_dlc) :)]
+>>>
+>>> Yes, this should be done, already for the more urging sake of
+>>> unambiguous layout of the structure across the kernel/user space bord=
+er.
+>> Is this not already the case? At least the size of struct can_frame is=
+=20
+>> 16 bytes.
+>=20
+> On all target archs? With all supported compilers? Better make it expli=
+cit.
 
-You are just forgetting the other changes to the filter mechanism you
-implemented.
+gcc -Os is such an example, toasting the assumed can_frame layout by
+moving that 3-byte hole *after* data.
 
-Thanks for the patch, I just merged your patch into trunk. For v2.3.x, I
-applied my first patch I sent on Wednesday to align it to what was
-specified on release of 2.3. No breakage inside the stable series unless
-something really forces us.
+So this was an urging ABI bug, and I applied the alignment to both
+stable and trunk Xenomai SVNs. Thanks to Oliver for insisting on this!
 
 Jan
 
 
---------------enig520B981E90D56A4A5E1967CB
+--------------enig40B67B93DA741DE444941B04
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -55,10 +78,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFF2JiAniDOoMHTA+kRAnMqAJ9f/fl20KvA8ia2INLP2oXBZ+nFgACdGdDc
-VPumxmhuUzl2maaOFEhMP14=
-=kByY
+iD8DBQFF2JnCniDOoMHTA+kRAqSPAJ9TSpGXSmNOH0jjpIf3GbzUntKLKwCfaJ8i
+G/LlxxQGLhVg52ZojOuhFhc=
+=M1aH
 -----END PGP SIGNATURE-----
 
---------------enig520B981E90D56A4A5E1967CB--
+--------------enig40B67B93DA741DE444941B04--
 
