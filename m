@@ -1,13 +1,15 @@
-Message-ID: <45D76A71.20504@domain.hid>
-Date: Sat, 17 Feb 2007 21:49:53 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: Extended CAN frame filtering
-References: <45D338C2.9030203@domain.hid> <45D5A56F.8080900@domain.hid>
-	<45D711DF.8060802@domain.hid> <45D741AE.9020501@domain.hid>
-	<45D7475E.1030504@domain.hid> <45D74F70.2090200@domain.hid>
-In-Reply-To: <45D74F70.2090200@domain.hid>
-Content-Type: multipart/mixed; boundary="------------020008010906040908010308"
+Subject: Re: [Xenomai-core] [RFC][PATCH 1/2] real-time print library
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <45D73EC0.2030601@domain.hid>
+References: <45D6C4B6.7010302@domain.hid> <1171714345.18347.25.camel@domain.hid>
+	<45D73EC0.2030601@domain.hid>
+Content-Type: text/plain
+Date: Sun, 18 Feb 2007 01:44:50 +0100
+Message-Id: <1171759490.18347.162.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,236 +22,163 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------020008010906040908010308
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->>>> Index: ksrc/drivers/can/rtcan_raw_filter.c
->>>> ===================================================================
->>>> --- ksrc/drivers/can/rtcan_raw_filter.c    (revision 2193)
->>>> +++ ksrc/drivers/can/rtcan_raw_filter.c    (working copy)
->>>> @@ -55,13 +55,13 @@ void rtcan_raw_print_filter(struct rtcan
->>>>  static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
->>>>                        can_filter_t *filter)
->>>>  {
->>>> -   if (filter->can_id & CAN_EFF_FLAG)
->>>> -    recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
->>>> -                 CAN_EFF_FLAG);
->>>> -    else
->>>> -    recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
->>>> -
->>>> -    recv_filter->can_id = filter->can_id & recv_filter->can_mask;
->>>> +    if (filter->can_id & CAN_INV_FILTER) {
->>>> +    recv_filter->can_id = filter->can_id & ~CAN_INV_FILTER;
->>>> +    recv_filter->can_mask = filter->can_mask | CAN_INV_FILTER;
->>>> +    } else {
->>>> +    recv_filter->can_id = filter->can_id;
->>>> +    recv_filter->can_mask = filter->can_mask & ~CAN_INV_FILTER;
->>>> +    }
->>> Why do you push CAN_INV_FILTER internally into the mask instead of
->>> keeping it in the filter's ID - as the pseudo code above states?
->> To simplify the filter calculation. It actually avoids the expression
->> (filter->can_id & ~CAN_INV_FILTER). As this is in a very frequently
->> called function, I think it's worth the trick.
->>
+On Sat, 2007-02-17 at 18:43 +0100, Jan Kiszka wrote: 
+> Philippe Gerum wrote:
+> > On Sat, 2007-02-17 at 10:02 +0100, Jan Kiszka wrote:
+> >> This is a stand-alone real-time library for printf services. It is
+> >> embedded into the Xenomai user space part but actually doesn't depend
+> >> on any Xenomai service, just using plain Linux POSIX.
+> >>
+> >> The librtprint API looks much like the printf(3) man page:
+> > 
+> > [...]
+> > 
+> >> Further features:
+> >>  o Explicit or on-demand thread buffer creation
+> >>  o Override of default buffer size and polling period via environment
+> >>    variables ("RT_PRINT_BUFFER" and "RT_PRINT_PERIOD")
+> >>  o Support for buffer names (useful for the following patch e.g.)
+> >>  o Target output stream can be specified for each print invocation
+> >>  o Breaks all builds except for x86 (missing ubarrier.h headers) :o)
+> >>
+> > 
+> > ubarrier.h is redundant. include/asm-*/atomic.h is already there for
+> > such purpose.
 > 
-> Ack. I missed that point on first run.
+> Guess you mean Xenomai's atomic.h, not the kernel ones.
 
-Attached is a revised patch including change log entry. As this patch 
-just extends the existing filter capabilities, it could be applied to 
-trunk and the 2.3.x branch as well.
+Yes, since this needs to be user-space readable.
 
-Wolfgang.
+>  I didn't
+> realised that it is also used from user space already. OK, will #define
+> something like xnarch_rmb/wmb (or xnarch_read_memory_barrier?) in that
+> file instead.
+> 
+> > 
+> >> The code is stuffed into src/rtprint for now as patch 2/2 will need this
+> >> lib to be built before the skin libraries. Better suggestions are
+> >> welcome though.
+> > 
+> > I basically agree that we need to provide more
+> > co-scheduler-based-rt-safe services, so a non-intrusive print out
+> > support should be welcome. A few things more:
+> 
+> Actually, rt-safe printing is independent of co- vs. native scheduling.
+> Even with a fully preemptible kernel, the worst-case complexity of
+> normal printf may not be acceptable. I think rt_printf is generally
+> useful in real-time programs.
 
---------------020008010906040908010308
-Content-Type: text/x-patch;
- name="xenomai-rtcan-filter-2.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-rtcan-filter-2.patch"
+You seem to be talking specifically about a (non-intrusive) trace
+logging feature, rather than plain printf() then, because the latter
+does not make much sense to be used in a real-time scenario unless the
+caller does accept to pay the price of running a complex operation
+anyway.
 
-Index: include/rtdm/rtcan.h
-===================================================================
---- include/rtdm/rtcan.h	(revision 2193)
-+++ include/rtdm/rtcan.h	(working copy)
-@@ -289,9 +289,15 @@ typedef can_id_t can_err_mask_t;
-  * @anchor CAN_xxx_FLAG @name CAN ID flags
-  * Flags within a CAN ID indicating special CAN frame attributes
-  * @{ */
--#define CAN_EFF_FLAG  0x80000000 /**< extended frame           */
--#define CAN_RTR_FLAG  0x40000000 /**< remote transmission flag */
--#define CAN_ERR_FLAG  0x20000000 /**< error frame (see @ref Errors) */
-+/** Extended frame */
-+#define CAN_EFF_FLAG  0x80000000
-+/** Remote transmission frame */
-+#define CAN_RTR_FLAG  0x40000000
-+/** Error frame (see @ref Errors) */
-+#define CAN_ERR_FLAG  0x20000000
-+/** Invert CAN filter definition (used for struct can_filter) */
-+#define CAN_INV_FILTER CAN_ERR_FLAG
-+
- /** @} */
- 
- 
-@@ -446,23 +452,30 @@ typedef enum CAN_STATE can_state_t;
-  *
-  * This filter works as follows:
-  * A received CAN ID is AND'ed bitwise with @c can_mask and then compared to
-- * @c can_id. If this comparison is true the message will be received by the
-- * socket.
-+ * @c can_id. This also includes the @ref CAN_EFF_FLAG and @ref CAN_RTR_FLAG
-+ * of @ref CAN_xxx_FLAG. If this comparison is true, the message will be
-+ * received by the socket. The logic can be inverted with the @c can_id flag
-+ * @ref CAN_INV_FILTER :
-+ *
-+ * @code
-+ * if (can_id & CAN_INV_FILTER) {
-+ *    if ((received_can_id & can_mask) != (can_id & ~CAN_INV_FILTER))
-+ *       accept-message;
-+ * } else {
-+ *    if ((received_can_id & can_mask) == can_id)
-+ *       accept-message;
-+ * }
-+ * @endcode
-  *
-- * Multiple filters can be arranged in a filter list and set with 
-- * @ref Sockopts. If one of these filters matches a CAN ID upon reception 
-+ * Multiple filters can be arranged in a filter list and set with
-+ * @ref Sockopts. If one of these filters matches a CAN ID upon reception
-  * of a CAN frame, this frame is accepted.
-  *
-- * @note Only @ref CAN_EFF_FLAG of @ref CAN_xxx_FLAG "CAN ID flags" is
-- * valid for @c can_id and none for @c can_mask. This means that the RTR bit
-- * is not taken into account while filtering messages.
-- *
-- * Extended IDs are received only if @ref CAN_EFF_FLAG is set in
-- * @c can_id. If it is cleared only standard IDs are accepted.
-  */
- typedef struct can_filter {
- 
--    /** CAN ID which must match with incoming IDs after passing the mask */
-+    /** CAN ID which must match with incoming IDs after passing the mask.
-+     *  The filter logic can be inverted with the flag @ref CAN_INV_FILTER. */
-     uint32_t    can_id;
- 
-     /** Mask which is applied to incoming IDs. See @ref CAN_xxx_MASK
-@@ -470,12 +483,11 @@ typedef struct can_filter {
-     uint32_t    can_mask;
- } can_filter_t;
- 
--
- /**
-  * Socket address structure for the CAN address family
-  */
- struct sockaddr_can {
--    /** CAN address family, must be @c AF_CAN */    
-+    /** CAN address family, must be @c AF_CAN */
-     sa_family_t  can_family;
-     /** Interface index of CAN controller. See @ref SIOCGIFINDEX. */
-     int          can_ifindex;
-Index: ChangeLog
-===================================================================
---- ChangeLog	(revision 2193)
-+++ ChangeLog	(working copy)
-@@ -1,3 +1,9 @@
-+2007-02-17  Wolfgang Grandegger  <wg@domain.hid>
-+
-+	* ksrc/drivers/can/rtcan_raw.c, ksrc/drivers/can/rtcan_raw_filter.c,
-+	ksrc/drivers/can/rtcan_module.c, include/rtdm/rtcan.h: The CAN filter
-+	definition can now be inverted with the can_id flag CAN_INV_FILTER.
-+
- 2007-02-16  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* ksrc/skins/native/queue.c (rt_queue_delete): 
-@@ -57,7 +63,6 @@
- 
- 	* ksrc/nucleus/pipe.c (xnpipe_write): Use regular copy_from_user()
- 	and check return value.
--
- 2007-02-07  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* ksrc/arch/i386/patches: Upgrade to 2.6.19-1.7-01.
-Index: ksrc/drivers/can/rtcan_module.c
-===================================================================
---- ksrc/drivers/can/rtcan_module.c	(revision 2193)
-+++ ksrc/drivers/can/rtcan_module.c	(working copy)
-@@ -262,11 +262,11 @@ static int rtcan_read_proc_filter(char *
-     rtdm_lockctx_t lock_ctx;
-     RTCAN_PROC_PRINT_VARS(80);
- 
--    /*  fd __CAN_ID__ _CAN_Mask_ MatchCount
--     *   3 0x12345678 0x12345678 1234567890
-+    /*  fd __CAN_ID__ _CAN_Mask_ Inv MatchCount
-+     *   3 0x12345678 0x12345678  no 1234567890
-      */
--    
--    if (!RTCAN_PROC_PRINT("fd __CAN_ID__ _CAN_Mask_ MatchCount\n"))
-+
-+    if (!RTCAN_PROC_PRINT("fd __CAN_ID__ _CAN_Mask_ Inv MatchCount\n"))
-         goto done;
- 
-     rtdm_lock_get_irqsave(&rtcan_recv_list_lock, lock_ctx);
-@@ -275,10 +275,13 @@ static int rtcan_read_proc_filter(char *
-     while (recv_listener != NULL) {
- 	context = rtcan_socket_context(recv_listener->sock);
- 
--	if (!RTCAN_PROC_PRINT("%2d 0x%08x 0x%08x %10d\n",
--			      context->fd, 
-+	if (!RTCAN_PROC_PRINT("%2d 0x%08x 0x%08x %s %10d\n",
-+			      context->fd,
- 			      recv_listener->can_filter.can_id,
--			      recv_listener->can_filter.can_mask,
-+			      recv_listener->can_filter.can_mask &
-+			      ~CAN_INV_FILTER,
-+			      (recv_listener->can_filter.can_mask &
-+			       CAN_INV_FILTER) ? "yes" : " no",
- 			      recv_listener->match_count))
- 	    break;
- 	recv_listener = recv_listener->next;
-Index: ksrc/drivers/can/rtcan_raw.c
-===================================================================
---- ksrc/drivers/can/rtcan_raw.c	(revision 2193)
-+++ ksrc/drivers/can/rtcan_raw.c	(working copy)
-@@ -67,7 +67,10 @@ static struct rtdm_device rtcan_proto_ra
- 
- static inline int rtcan_accept_msg(uint32_t can_id, can_filter_t *filter)
- {
--    return ((can_id & filter->can_mask) == filter->can_id);
-+    if ((filter->can_mask & CAN_INV_FILTER))
-+	return ((can_id & filter->can_mask) != filter->can_id);
-+    else
-+	return ((can_id & filter->can_mask) == filter->can_id);
- }
- 
- 
-Index: ksrc/drivers/can/rtcan_raw_filter.c
-===================================================================
---- ksrc/drivers/can/rtcan_raw_filter.c	(revision 2193)
-+++ ksrc/drivers/can/rtcan_raw_filter.c	(working copy)
-@@ -55,13 +55,13 @@ void rtcan_raw_print_filter(struct rtcan
- static inline void rtcan_raw_mount_filter(can_filter_t *recv_filter,
- 					  can_filter_t *filter)
- {
--   if (filter->can_id & CAN_EFF_FLAG)
--	recv_filter->can_mask = ((filter->can_mask & CAN_EFF_MASK) |
--				 CAN_EFF_FLAG);
--    else
--	recv_filter->can_mask = (filter->can_mask & CAN_SFF_MASK);
--
--    recv_filter->can_id = filter->can_id & recv_filter->can_mask;
-+    if (filter->can_id & CAN_INV_FILTER) {
-+	recv_filter->can_id = filter->can_id & ~CAN_INV_FILTER;
-+	recv_filter->can_mask = filter->can_mask | CAN_INV_FILTER;
-+    } else {
-+	recv_filter->can_id = filter->can_id;
-+	recv_filter->can_mask = filter->can_mask & ~CAN_INV_FILTER;
-+    }
- }
- 
- 
+If, on the other hand, you want to provide more efficient replacements
+of existing standard routines in terms of performance, then those should
+bear the standard names. Otherwise, people would start mixing printf()
+and rt_printf() in their application [experience already showed us that
+it's inevitable], and for instance, you would start receiving complaints
+about inaccurate output order, leading to incorrect interpretation of
+traces, because both implementations would obviously rely on distinct
+internal buffers.
 
---------------020008010906040908010308--
+> 
+> > 
+> > - looking beyond print out, we will probably want to iron more ANSI
+> > services in the future. In order to prevent API proliferation, let's
+> > consider the hardened print out support as the beginning of some
+> > libansi_rt service collection.
+> 
+> I was already considering to include the TLSF memory allocator for
+> real-time malloc/free into some Xenomai library, but there were still
+> technical issues with its lacking 64-bit support e.g., preventing some
+> quick-hack.
+> 
+> What further services do you have on your radar? My impression is that
+> there will not be a lot beyond printing and memory allocation.
+> 
+
+And that would already be enough to explain why we would not want to ask
+people to stuff their Makefile with LDFLAGS += -lrt_printf -lrt_malloc,
+IMO. Because after a few years, my feeling is that the LDFLAGS would
+grow out of any reasonable proportion, and our maintenance burden the
+same way.
+
+I would also consider things like stdio in general, not just printf, by
+mean of server thread(s) the way you did it. Being able to send/receive
+a file stream without resorting -at least explicitely- to a proxy thread
+would simplify a bunch of existing applications for instance.
+
+Aside of purely ANSI services, there are some POSIX/SVID calls which are
+not relevant to libpthread_rt, but for which a hardened counterpart
+would make sense over a co-kernel, like SunRPC (over RTNet's UDP, that
+is), syslog routines, random, or libcrypt members for instance.
+
+My point being that we cannot anticipate the exact list of features we
+would want to harden in the future, but we do know already that
+applications ported/created over Xenomai are always more complex, so we
+will likely need more of those features. Componentization must have a
+limit, and my guts feeling is that going for a specific API for each and
+every feature would lead to maintenance chaos and user confusion.
+Additionally, sharing internal routines common to those features would
+be possible with a centralized architecture (unless we go for
+yet-another-library exporting those routines).
+
+> > 
+> > - the same way libpthread_rt shadows 1003.1c services to iron them over
+> > a co-scheduler, we should do the same for the ironed ANSI services. In
+> > that sense, there is no need for rt_printf, rt_vsprintf and so on, we
+> > just need to shadow printf, vsprintf and friends the same way we did for
+> > pthread_create and such for substituting the 1003.1c support. Again, API
+> > proliferation, especially of non-orthogonal stuff, needs to be fought
+> > now. The bonus is that we would not have to ask people to rely on crufty
+> > preprocessor tricks in order to compile their code in either real-time
+> > layers X3 is going to provide (i.e. I-pipe-based co-scheduler and native
+> > preemption). This would be consistent with the all-time Xenomai's
+> > mantra, i.e. "integrate as seamlessly as you can, don't get uselessly
+> > peculiar".
+> > 
+> 
+> Think of RTDM: we have transparent overloading with the POSIX skin, but
+> all others use the explicit selection via rt_dev prefix. I forgot to
+> mention this, but my plan was to apply the same pattern for librtprint
+> services.
+> 
+> I don't think we should overload every printf outside the POSIX skin's
+> scope automatically. Well, at least for the native skin, which is in my
+> opinion quite a lot about _explicit_ real-time programming, I would
+> really prefer to keep it like it is even under Xenomai 3.
+> 
+
+IMO, the only way to make "explicit real-time programming" a rule is to
+disable all access to real-time unsafe calls, i.e. basically to the
+glibc, and this is obviously something we don't want to, because this
+would contradict the fundamental goal of Xenomai toward integration
+within the regular Linux programming model.
+
+Because of this, that's a fact of life that users are most often going
+to consider that a commonly used glibc routine they need is real-time
+safe enough to be used until proven wrong (*), instead of suspecting
+such routine to be unsafe a priori, and looking for a safe replacement
+in some specific API we might provide (this is why we all had to warn a
+number of people countless times on the list about their use of printf()
+in deemed time-critical sections from various pieces of code they showed
+us).
+
+This is also the reason why I still think we should "upgrade" the
+commonly used standard routines to be real-time aware by gradually
+providing hardened replacements for them, not trying to convince people
+about the fact that using standard routines might not be the right
+solution to common problems in the real-time case.
+
+(*) actually, the real problem is that some users might think that we
+are smart enough to make deterministic and efficient code out of any
+regular Linux service they might think of, albeit the founder of the
+Xenomai project might be a total bonehead. Oh, well, anyway...
+
+-- 
+Philippe.
+
+
 
