@@ -1,15 +1,17 @@
-Message-ID: <45D899C2.8080000@domain.hid>
-Date: Sun, 18 Feb 2007 19:24:02 +0100
+Message-ID: <45D89B66.6050907@domain.hid>
+Date: Sun, 18 Feb 2007 19:31:02 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <45D425B8.7070401@domain.hid>	<45D60C78.5090106@domain.hid>	<45D61C5C.8090201@domain.hid>	<45D709E4.80409@domain.hid>	<45D73F0B.8090703@domain.hid>	<45D74592.1020804@domain.hid>
-	<45D74FE2.7030001@domain.hid>
-In-Reply-To: <45D74FE2.7030001@domain.hid>
+Subject: Re: [Xenomai-core] Re: RT-CAN tx_sem
+References: <45D35545.20100@domain.hid>
+	<45D45F63.5050009@domain.hid>	<45D461DC.20303@domain.hid>
+	<45D4661D.7010506@domain.hid>	<45D46E55.7020907@domain.hid>
+	<45D48E27.1090200@domain.hid> <45D6D6CB.4030602@domain.hid>
+In-Reply-To: <45D6D6CB.4030602@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig40B67B93DA741DE444941B04"
+	boundary="------------enigD2E2B863B723AD153C14E1FA"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: Magics of [CAN] message filtering
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,56 +22,35 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Wolfgang Grandegger <wg@domain.hid>
-Cc: socketcan-core@domain.hid, Oliver Hartkopp <socketcan@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig40B67B93DA741DE444941B04
+--------------enigD2E2B863B723AD153C14E1FA
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Jan Kiszka wrote:
->>> Oliver Hartkopp wrote:
->>>> When you're touching anything inside your API, have you ever thought=
- to add
->>>>
->>>> __attribute__ ((aligned(8)))
->>>>
->>>> to the data[8] element of the struct can_frame?
->>>>
->>>> This would enable you to make 64 bit compares directly in the data
->>>> section of the can_frame ...
->>>>
->>>> typedef __u32 canid_t;
->>>>
->>>> struct can_frame {
->>>>     canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
->>>>     __u8    can_dlc; /* data length code: 0 .. 8 */
->>>>     __u8    data[8] __attribute__ ((aligned(8)));
->>>> };
->>> [Swallowing down my well-known opinion on typeof(can_dlc) :)]
->>>
->>> Yes, this should be done, already for the more urging sake of
->>> unambiguous layout of the structure across the kernel/user space bord=
-er.
->> Is this not already the case? At least the size of struct can_frame is=
-=20
->> 16 bytes.
+> I thought about this issue again and found the reason for my vague bad
+> feeling: re-init is not atomic, thus racy. But also the test+sem_init
+> pattern I suggested is not save.
 >=20
-> On all target archs? With all supported compilers? Better make it expli=
-cit.
+> I guess we need to enhance rtdm_XXX_init in this regard to make the
+> RT-CAN use case an officially allowed one. /me is planning to spend mor=
+e
+> thoughts on this the next days.
 
-gcc -Os is such an example, toasting the assumed can_frame layout by
-moving that 3-byte hole *after* data.
+OK, done, rtdm_{event,sem,mutex}_init are now protected by the nklock in
+trunk. This should make the in-place re-initialisation of RTDM IPC
+objects race-free and allow to use them in RT-CAN as originally
+intended. I think I will back-port that pieces also to v2.3.x later.
 
-So this was an urging ABI bug, and I applied the alignment to both
-stable and trunk Xenomai SVNs. Thanks to Oliver for insisting on this!
+What patch should now go in to avoid double init/destroy and fix rtcan_vi=
+rt?
 
 Jan
 
 
---------------enig40B67B93DA741DE444941B04
+--------------enigD2E2B863B723AD153C14E1FA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -78,10 +59,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFF2JnCniDOoMHTA+kRAqSPAJ9TSpGXSmNOH0jjpIf3GbzUntKLKwCfaJ8i
-G/LlxxQGLhVg52ZojOuhFhc=
-=M1aH
+iD8DBQFF2JtmniDOoMHTA+kRAswOAJ9miCirurweAhTWNWnxxfOjB6GoFACfUXnD
+t9Bl/plgaj/6+EgSvefPf2k=
+=hg+P
 -----END PGP SIGNATURE-----
 
---------------enig40B67B93DA741DE444941B04--
+--------------enigD2E2B863B723AD153C14E1FA--
 
