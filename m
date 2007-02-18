@@ -1,16 +1,14 @@
-Message-ID: <45D89B66.6050907@domain.hid>
-Date: Sun, 18 Feb 2007 19:31:02 +0100
+Message-ID: <45D8AB43.8050609@domain.hid>
+Date: Sun, 18 Feb 2007 20:38:43 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: RT-CAN tx_sem
-References: <45D35545.20100@domain.hid>
-	<45D45F63.5050009@domain.hid>	<45D461DC.20303@domain.hid>
-	<45D4661D.7010506@domain.hid>	<45D46E55.7020907@domain.hid>
-	<45D48E27.1090200@domain.hid> <45D6D6CB.4030602@domain.hid>
-In-Reply-To: <45D6D6CB.4030602@domain.hid>
+Subject: Re: [Xenomai-core] [RFC][PATCH 1/2] real-time print library
+References: <45D6C4B6.7010302@domain.hid> <1171714345.18347.25.camel@domain.hid>	
+	<45D73EC0.2030601@domain.hid> <1171759490.18347.162.camel@domain.hid>
+In-Reply-To: <1171759490.18347.162.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD2E2B863B723AD153C14E1FA"
+	boundary="------------enigD453B9B9984ED49C959BE62F"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,36 +19,231 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD2E2B863B723AD153C14E1FA
+--------------enigD453B9B9984ED49C959BE62F
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> I thought about this issue again and found the reason for my vague bad
-> feeling: re-init is not atomic, thus racy. But also the test+sem_init
-> pattern I suggested is not save.
+Philippe Gerum wrote:
+> On Sat, 2007-02-17 at 18:43 +0100, Jan Kiszka wrote:=20
+>> Philippe Gerum wrote:
+>>> On Sat, 2007-02-17 at 10:02 +0100, Jan Kiszka wrote:
+>>>> The code is stuffed into src/rtprint for now as patch 2/2 will need =
+this
+>>>> lib to be built before the skin libraries. Better suggestions are
+>>>> welcome though.
+>>> I basically agree that we need to provide more
+>>> co-scheduler-based-rt-safe services, so a non-intrusive print out
+>>> support should be welcome. A few things more:
+>> Actually, rt-safe printing is independent of co- vs. native scheduling=
+=2E
+>> Even with a fully preemptible kernel, the worst-case complexity of
+>> normal printf may not be acceptable. I think rt_printf is generally
+>> useful in real-time programs.
 >=20
-> I guess we need to enhance rtdm_XXX_init in this regard to make the
-> RT-CAN use case an officially allowed one. /me is planning to spend mor=
+> You seem to be talking specifically about a (non-intrusive) trace
+> logging feature, rather than plain printf() then, because the latter
+> does not make much sense to be used in a real-time scenario unless the
+> caller does accept to pay the price of running a complex operation
+> anyway.
+
+No, I'm also talking about plain printf scenarios from hard-RT threads.
+There is a difference between just doing a fairly simple snprintf to
+format the output and going into the kernel to write it to some console,
+file, network link, or whatever.
+
+>=20
+> If, on the other hand, you want to provide more efficient replacements
+> of existing standard routines in terms of performance, then those shoul=
+d
+> bear the standard names. Otherwise, people would start mixing printf()
+> and rt_printf() in their application [experience already showed us that=
+
+> it's inevitable], and for instance, you would start receiving complaint=
+s
+> about inaccurate output order, leading to incorrect interpretation of
+> traces, because both implementations would obviously rely on distinct
+> internal buffers.
+
+I agree that there is an ordering issue when writing to stdout or stderr
+/wrt to standard glibc routines. But the question is where to draw the
+line. We surely do not want to redirect each and every file write to a
+server thread _automatically_ (would be quite a performance PITA...)
+just because some fprintf may otherwise happen to come out in an
+unexpected order. We cannot avoid that the user has to be - to some
+degree - really _aware_ of what (s)he's doing.
+
+>=20
+>>> - looking beyond print out, we will probably want to iron more ANSI
+>>> services in the future. In order to prevent API proliferation, let's
+>>> consider the hardened print out support as the beginning of some
+>>> libansi_rt service collection.
+>> I was already considering to include the TLSF memory allocator for
+>> real-time malloc/free into some Xenomai library, but there were still
+>> technical issues with its lacking 64-bit support e.g., preventing some=
+
+>> quick-hack.
+>>
+>> What further services do you have on your radar? My impression is that=
+
+>> there will not be a lot beyond printing and memory allocation.
+>>
+>=20
+> And that would already be enough to explain why we would not want to as=
+k
+> people to stuff their Makefile with LDFLAGS +=3D -lrt_printf -lrt_mallo=
+c,
+> IMO. Because after a few years, my feeling is that the LDFLAGS would
+> grow out of any reasonable proportion, and our maintenance burden the
+> same way.
+
+So your point is single vs. multiple rt-helper libs? I don't see a
+problem bundling fairly small services (a few kB) into a single lib,
+common to all skins. But once it takes a bit more to provide a certain
+service, we have to keep memory-restricted embedded applications in
+mind. Configuring features at build time is one way. Providing
+reasonably clustered libraries is another. Hard to draw a line now
+without having all components already at hand or at least in mind.
+
+>=20
+> I would also consider things like stdio in general, not just printf, by=
+
+> mean of server thread(s) the way you did it. Being able to send/receive=
+
+> a file stream without resorting -at least explicitely- to a proxy threa=
+d
+> would simplify a bunch of existing applications for instance.
+
+Yeah, the way rt_printf writes out data might be extended to a common
+pattern also for other stdio output services. If async stdio-like
+reading is also worth providing in a generic way is something I would
+like to see backed up by concrete application scenarios. Maybe.
+
+>=20
+> Aside of purely ANSI services, there are some POSIX/SVID calls which ar=
 e
-> thoughts on this the next days.
+> not relevant to libpthread_rt, but for which a hardened counterpart
+> would make sense over a co-kernel, like SunRPC (over RTNet's UDP, that
+> is), syslog routines, random, or libcrypt members for instance.
+>=20
+> My point being that we cannot anticipate the exact list of features we
+> would want to harden in the future, but we do know already that
+> applications ported/created over Xenomai are always more complex, so we=
 
-OK, done, rtdm_{event,sem,mutex}_init are now protected by the nklock in
-trunk. This should make the in-place re-initialisation of RTDM IPC
-objects race-free and allow to use them in RT-CAN as originally
-intended. I think I will back-port that pieces also to v2.3.x later.
+> will likely need more of those features. Componentization must have a
+> limit, and my guts feeling is that going for a specific API for each an=
+d
+> every feature would lead to maintenance chaos and user confusion.
+> Additionally, sharing internal routines common to those features would
+> be possible with a centralized architecture (unless we go for
+> yet-another-library exporting those routines).
 
-What patch should now go in to avoid double init/destroy and fix rtcan_vi=
-rt?
+Well, would you be more happy if we call the printing library
+libstdio_rt without yet implementing all the related services, but
+pointing out the potential path of this lib in the future?
+
+>=20
+>>> - the same way libpthread_rt shadows 1003.1c services to iron them ov=
+er
+>>> a co-scheduler, we should do the same for the ironed ANSI services. I=
+n
+>>> that sense, there is no need for rt_printf, rt_vsprintf and so on, we=
+
+>>> just need to shadow printf, vsprintf and friends the same way we did =
+for
+>>> pthread_create and such for substituting the 1003.1c support. Again, =
+API
+>>> proliferation, especially of non-orthogonal stuff, needs to be fought=
+
+>>> now. The bonus is that we would not have to ask people to rely on cru=
+fty
+>>> preprocessor tricks in order to compile their code in either real-tim=
+e
+>>> layers X3 is going to provide (i.e. I-pipe-based co-scheduler and nat=
+ive
+>>> preemption). This would be consistent with the all-time Xenomai's
+>>> mantra, i.e. "integrate as seamlessly as you can, don't get uselessly=
+
+>>> peculiar".
+>>>
+>> Think of RTDM: we have transparent overloading with the POSIX skin, bu=
+t
+>> all others use the explicit selection via rt_dev prefix. I forgot to
+>> mention this, but my plan was to apply the same pattern for librtprint=
+
+>> services.
+>>
+>> I don't think we should overload every printf outside the POSIX skin's=
+
+>> scope automatically. Well, at least for the native skin, which is in m=
+y
+>> opinion quite a lot about _explicit_ real-time programming, I would
+>> really prefer to keep it like it is even under Xenomai 3.
+>>
+>=20
+> IMO, the only way to make "explicit real-time programming" a rule is to=
+
+> disable all access to real-time unsafe calls, i.e. basically to the
+> glibc, and this is obviously something we don't want to, because this
+> would contradict the fundamental goal of Xenomai toward integration
+> within the regular Linux programming model.
+
+No, disabling such access is surely a no-go. But I really think we
+should strengthen the mode-switch detection, maybe be considering to
+invert its default (always or just for debugging). Mode-switch detection
+by the user space tracer could be a first step in this direction
+(without immediately breaking the API).
+
+>=20
+> Because of this, that's a fact of life that users are most often going
+> to consider that a commonly used glibc routine they need is real-time
+> safe enough to be used until proven wrong (*), instead of suspecting
+> such routine to be unsafe a priori, and looking for a safe replacement
+> in some specific API we might provide (this is why we all had to warn a=
+
+> number of people countless times on the list about their use of printf(=
+)
+> in deemed time-critical sections from various pieces of code they showe=
+d
+> us).
+>=20
+> This is also the reason why I still think we should "upgrade" the
+> commonly used standard routines to be real-time aware by gradually
+> providing hardened replacements for them, not trying to convince people=
+
+> about the fact that using standard routines might not be the right
+> solution to common problems in the real-time case.
+>=20
+> (*) actually, the real problem is that some users might think that we
+> are smart enough to make deterministic and efficient code out of any
+> regular Linux service they might think of, albeit the founder of the
+> Xenomai project might be a total bonehead. Oh, well, anyway...
+>=20
+
+As I said, overloading, just trying to shadow the differences doesn't
+solve the problem automagically. You often need special configuration
+APIs for the shadowed one, thus you need understanding of its
+mechanisms. And you need access to the original functions because of
+drawbacks of the hardened variants (if they had none, we could just
+submit glibc or whatever patches...).
+
+Overloading is only as long comfortable as you _mostly_ make use of the
+replacement services in your application. Once it is the other way
+around, this automatism becomes quite a PITA. We luckily already have
+two programming models with POSIX vs. native skin matching both use
+cases, and I consider this a strength, not a weakness of Xenomai.
+
+Granted, alternatives can cause confusion, and we may have to improve
+beginner guides on the homepage or wherever to underline and explain
+these differences more explicitly.
 
 Jan
 
 
---------------enigD2E2B863B723AD153C14E1FA
+--------------enigD453B9B9984ED49C959BE62F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -59,10 +252,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFF2JtmniDOoMHTA+kRAswOAJ9miCirurweAhTWNWnxxfOjB6GoFACfUXnD
-t9Bl/plgaj/6+EgSvefPf2k=
-=hg+P
+iD8DBQFF2KtDniDOoMHTA+kRArRSAJ9AcWIOasj0Z5zpe58satTyu2gAogCfV0Oi
+/f04RC3fmdp6N88GrbEjShM=
+=vw3O
 -----END PGP SIGNATURE-----
 
---------------enigD2E2B863B723AD153C14E1FA--
+--------------enigD453B9B9984ED49C959BE62F--
 
