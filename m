@@ -1,14 +1,18 @@
-Message-ID: <45D8B818.1090500@domain.hid>
-Date: Sun, 18 Feb 2007 21:33:28 +0100
+Message-ID: <45D8B8EF.3020204@domain.hid>
+Date: Sun, 18 Feb 2007 21:37:03 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <45D8B15C.5050707@domain.hid>
-In-Reply-To: <45D8B15C.5050707@domain.hid>
+Subject: Re: [Xenomai-core] Re: RT-CAN tx_sem
+References: <45D35545.20100@domain.hid>
+	<45D45F63.5050009@domain.hid>	<45D461DC.20303@domain.hid>
+	<45D4661D.7010506@domain.hid>	<45D46E55.7020907@domain.hid>
+	<45D48E27.1090200@domain.hid> <45D6D6CB.4030602@domain.hid>
+	<45D89B66.6050907@domain.hid> <45D8AEB3.4020909@domain.hid>
+In-Reply-To: <45D8AEB3.4020909@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6DCD080043495CFCEEC2AF72"
+	boundary="------------enig77B9898BC5283BB7F65971AD"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: More RTCAN patches
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,74 +26,46 @@ To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6DCD080043495CFCEEC2AF72
+--------------enig77B9898BC5283BB7F65971AD
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Wolfgang Grandegger wrote:
-> Hi Jan,
->=20
-> I have two more patches in my quilt stack:
+> Jan Kiszka wrote:
+>> Jan Kiszka wrote:
+>>> I thought about this issue again and found the reason for my vague ba=
+d
+>>> feeling: re-init is not atomic, thus racy. But also the test+sem_init=
 
-Sigh. ;)
-
+>>> pattern I suggested is not save.
+>>>
+>>> I guess we need to enhance rtdm_XXX_init in this regard to make the
+>>> RT-CAN use case an officially allowed one. /me is planning to spend m=
+ore
+>>> thoughts on this the next days.
+>>
+>> OK, done, rtdm_{event,sem,mutex}_init are now protected by the nklock =
+in
+>> trunk. This should make the in-place re-initialisation of RTDM IPC
+>> objects race-free and allow to use them in RT-CAN as originally
+>> intended. I think I will back-port that pieces also to v2.3.x later.
+>>
+>> What patch should now go in to avoid double init/destroy and fix
+>> rtcan_virt?
 >=20
->   2007-02-18  Wolfgang Grandegger  <wg@domain.hid>
+> Attached. Thanks.
 >=20
->   * ksrc/drivers/can/rtcan_raw.c, ksrc/drivers/can/rtcan_socket.h:  add=
 
->     prefix RTCAN_ to TIMESTAMP_SIZE, HAS_TIMESTAMP and HAS_NO_TIMESTAMP=
+Just applied to trunk.
 
->     to avoid name clashes, e.g. TIMESTAMP_SIZE is used by the kernel
->     starting with 2.6.20.
-
-These are only internal flags, right? Should go into stable as well
-then, I guess.
-
->=20
->   * include/rtdm/rtcan.h: add "__attribute__ ((aligned(8)))" to the
->     data[8] element of the struct can_frame.
-
-Was already committed.
-
->=20
->   2007-02-18  Wolfgang Grandegger  <wg@domain.hid>
->=20
->   * include/rtdm/rtcan.h
->     ksrc/drivers/can/Config.in,
->     ksrc/drivers/can/Kconfig,
->     ksrc/drivers/can/rtcan_dev.h,
->     ksrc/drivers/can/rtcan_module.c,
->     ksrc/drivers/can/rtcan_raw.c,
->     ksrc/drivers/can/rtcan_raw.h,
->     ksrc/drivers/can/rtcan_socket.c,
->     ksrc/drivers/can/rtcan_socket.h,
->     ksrc/drivers/can/rtcan_socket.h,
->     ksrc/drivers/can/rtcan_virt.c,
->     ksrc/drivers/can/sja1000/rtcan_sja1000.c,
->     ksrc/drivers/can/mscan/rtcan_mscan.c,
->     src/utils/can/rtcansend.c: The socket option CAN_RAW_TX_LOOPBACK
->     has been renamed to CAN_RAW_LOOPBACK to be compatible with the
->     Socket-CAN implementation. Furthermore, all lower and upper case
->     strings "tx_loopback" have been replaced with "loopback" (to
->     shorten names).
-
-Will commit to trunk.
-
->=20
-> The first one also fixes the alignment issue discussed on the Socket-CA=
-N
->  mailing list.
->=20
-> Any comments or objections?
->=20
-> Wolfgang.
->=20
+To avoid lock nesting where possible, I reordered some code in
+rtcan_raw_sendmsg. Please re-check if I messed anything up. Then I could
+commit to stable, too.
 
 Jan
 
 
---------------enig6DCD080043495CFCEEC2AF72
+--------------enig77B9898BC5283BB7F65971AD
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -98,10 +74,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFF2LgYniDOoMHTA+kRAhNkAJ4i2fUdwbrAQ8XZTZFrgNDLwHUzCQCfehX+
-Ry2oTzcpGrFpMrnwp2dAA0Q=
-=zM2X
+iD8DBQFF2LjvniDOoMHTA+kRAgNIAJ0fgkzS2LmbJgaU3zcZsGAFQdtOHACfR6b+
+GJGTfWRACK11CHfNQWl8c4U=
+=lvJt
 -----END PGP SIGNATURE-----
 
---------------enig6DCD080043495CFCEEC2AF72--
+--------------enig77B9898BC5283BB7F65971AD--
 
