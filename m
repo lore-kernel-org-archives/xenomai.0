@@ -1,12 +1,10 @@
-Subject: Re: [Xenomai-core] Buildbot: sim fails
-	../../ksrc/nucleus/pod.c:1440: label `unlock_and_exit' used but not
-	defined
+Subject: Re: [Xenomai-core] buildbot: how to setup for ppc with 2.6.19 kernel?
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200702181342.38077.niklaus.giger@domain.hid>
-References: <200702181342.38077.niklaus.giger@domain.hid>
+In-Reply-To: <200702181351.53069.niklaus.giger@domain.hid>
+References: <200702181351.53069.niklaus.giger@domain.hid>
 Content-Type: text/plain
-Date: Sun, 18 Feb 2007 15:42:20 +0100
-Message-Id: <1171809740.13484.0.camel@domain.hid>
+Date: Sun, 18 Feb 2007 15:53:54 +0100
+Message-Id: <1171810434.13484.2.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -23,25 +21,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: niklaus.giger@domain.hid
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2007-02-18 at 13:42 +0100, Niklaus Giger wrote:
+On Sun, 2007-02-18 at 13:51 +0100, Niklaus Giger wrote:
 > Hi
 > 
-> Since February 12 building the sim fails with
-> if ../gcic/gcic -DHAVE_CONFIG_H -I. -I. -I../include  -D__IN_XENO__ --gcic-backend=/var/buildbot/bin/sim/libexec/gcic --kernel-code  -I./../include -I../../include   -g -MT 
-> pod.o -MD -MP -MF ".deps/pod.Tpo" -c -o pod.o ../../ksrc/nucleus/pod.c; \
->         then mv -f ".deps/pod.Tpo" ".deps/pod.Po"; else rm -f ".deps/pod.Tpo"; 
-> exit 1; fi
-> ../../ksrc/nucleus/pod.c:59: warning: parameter names (without types) in 
-> function declaration
-> ../../ksrc/nucleus/pod.c:59: warning: data definition has no type or storage 
-> class
-> ../../ksrc/nucleus/pod.c: In function `xnpod_suspend_thread':
-> ../../ksrc/nucleus/pod.c:1440: label `unlock_and_exit' used but not defined
-> make[1]: *** [pod.o] Fehler 1
-> make[1]: Leaving directory `/var/buildbot/slave/sim_f/build/sim/nucleus'
+> Compiling ppc fails for me with 2.6.19 kernels. 
+> ( I compile on a Pegasos PPC 601 Debian Linux).
 > 
-> For details look at:
-> http://ngiger.dyndns.org/buildbot-full/sim_f/builds/98/step-make_sim/1
+> If I use ARCH=ppc then I get the following error:
+> >   CHK     include/linux/version.h
+> >   CHK     include/linux/utsrelease.h
+> >   CHK     include/linux/compile.h
+> > gcc: include/asm/byteorder.h: No such file or directory
+> > gcc: no input files
+> >   CC      arch/ppc/xenomai/hal.o
+> > arch/ppc/xenomai/hal.c: In function 'rthal_arch_init':
+> > arch/ppc/xenomai/hal.c:353: error: invalid type argument of '->'
+> > make[1]: *** [arch/ppc/xenomai/hal.o] Fehler 1
+> 
 
 Fixed, thanks.
 
