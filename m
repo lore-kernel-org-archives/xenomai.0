@@ -1,14 +1,14 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-core] prepare-kernel options
-Date: Wed, 28 Feb 2007 13:51:46 +0000
-References: <200702281217.36362.paul_c@domain.hid> <45E57D55.10402@domain.hid>
-In-Reply-To: <45E57D55.10402@domain.hid>
+Message-ID: <45D9E59B.8040002@domain.hid>
+Date: Mon, 19 Feb 2007 18:59:55 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200702281351.46807.paul_c@domain.hid>
+References: <45D9DF65.9000300@domain.hid>
+In-Reply-To: <45D9DF65.9000300@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB2ADA28354739136F6993C21"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Re: RT-Socket-CAN versioning
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,49 +18,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Wednesday 28 February 2007 13:02, Jan Kiszka wrote:
-<snip>
-> [Related question from my side:]
->
-> Would you be willing to provide debian package generation rules for
-> Xenomai? Something that would spit out .deb files when calling, say,
-> "make deb KERNEL=linux-2.6.x.tar.bz2 CONFIG=my-kernel-config" in a
-> configured userland build directory? That way we could automatise binary
-> package generation for kernel, user libs, development headers, and
-> documentation. And that would allow us to finally distribute them for
-> generic targets like x86 and x86_64 along with the usual tar files.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB2ADA28354739136F6993C21
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-To have a Debian rule set is indeed my ultimate goal (but I wouldn't want t 
-tread on anyone's toes if it is already in hand). - I suspect a number of 
-potential users would like to try Xenomai but are put off by kernel 
-compilation... But rather than a `make deb` rule, a small script would be 
-better - Debian's packaging system generates (amongst other things) a source 
-tarball, and to include auto-generated files doesn't feel right.. Calling the 
-`make dist` rule may solve that issue.
+Wolfgang Grandegger wrote:
+> Hi Jan,
+>=20
+> currently the RT-Socket-CAN drivers maintains it's own version or
+> release number. As RT-Socket-CAN is part of Xenomai, I do not see the
+> need for it (and so far I did not update it). What is the intended use
+> of "driver_version" in "struct rtdm_device"?
 
-> I think such a feature (maybe later enhanceable by RPM) would both be
-> interesting for replicable custom installations as well as for a
-> reference kernel distribution to provide a Xenomai quick-start.
+Actually, I was thinking about this too yesterday. The idea of the
+separate versioning for RTDM drivers is to signal the users if something
+in the driver really changed. It's fairly obvious what to do with it for
+out-of-tree drivers, but for in-tree it might be worth considering the
+policy.
 
-Indeed - Point a potential user to a repository, let them experiment with a 
-(hopefully) working kernel, and when they need/want specific vmlinuz options, 
-they have a reference point to work from. The "Debian way" also greatly 
-simplifies the task of building packages.
+The current model, maintained more or less properly for the existing
+drivers, is to increment independently of Xenomai according to major or
+minor changes. One may ease this burden for the driver developer by
+simply filling in Xenomai's version here. That would just let the
+revisions increase on every Xenomai release, even if the driver remained
+untouched. The tag would still have a meaning for out-of-tree drivers,
+but for in-tree it would be fairly meaningless.
 
-<snip>
-> Would this build procedure already help you?
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/README.INSTALL?a=i386#203
+Well, whatever is commonly preferred, it should then be applied
+consistently on all RTDM drivers in Xenomai. What are the opinions on
+this list (I will comment afterwards)?
 
-Ah, yes.. It's the same doc in the top level Xenomai tree ;)
+> Furthermore, there is also
+> "profile_version" (which does not show up n the Doxygen docu for some
+> strange reason).
 
-As Gilles has pointed out, there are already a couple of options in 
-prepare-kernel.sh to aid package generation - If nobody else is working on 
-that area, I'll put a patch together over the next few days and submit it for 
-review.
+The automatic update from the latest SVN must be broken on
+www.xenomai.org, there is more stuff missing.
+
+> The latter one seems suitable to reflect CAN API changes.
+
+Exactly. That's why I incremented that in SVN trunk's rtcan.h. A correct
+profile version is definitely a must to let applications handle relevant
+changes.
+
+Jan
 
 
-Regards, Paul.
+--------------enigB2ADA28354739136F6993C21
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF2eWbniDOoMHTA+kRAtxRAJ4pLMEdebcyZytQzlBPaxJyvHDxsgCfTzag
+/b4KOJZC7JEhk9zmkkSgidA=
+=ROpH
+-----END PGP SIGNATURE-----
+
+--------------enigB2ADA28354739136F6993C21--
 
