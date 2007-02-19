@@ -1,13 +1,20 @@
+Subject: Re: [Xenomai-core] Re: I-pipe 1.7 breaks mlockall safety check
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200702212030.41554.paul_c@domain.hid>
-References: <200702212030.41554.paul_c@domain.hid>
+In-Reply-To: <17882.5512.521970.784116@domain.hid>
+References: <45D45AEA.50404@domain.hid> <1171547803.24117.8.camel@domain.hid>
+	<45D46704.9050109@domain.hid> <1171560346.24117.77.camel@domain.hid>
+	<45D5746C.1090003@domain.hid> <45D8DF58.2090804@domain.hid>
+	<17880.57781.152126.164326@domain.hid>
+	<1171842613.13484.17.camel@domain.hid>
+	<17880.60750.537420.707178@domain.hid>
+	<45D95218.6000602@domain.hid>
+	<45D9989E.4070103@domain.hid> <17882.5512.521970.784116@domain.hid>
 Content-Type: text/plain
-Date: Thu, 22 Feb 2007 01:42:01 +0100
-Message-Id: <1172104922.3551.122.camel@domain.hid>
+Date: Mon, 19 Feb 2007 23:43:18 +0100
+Message-Id: <1171924998.18310.21.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Re: [Adeos-main] x86_64 ipipe on 2.6.19
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,60 +25,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2007-02-21 at 20:30 +0000, Paul wrote:
-> Hi Philippe
+On Mon, 2007-02-19 at 22:24 +0100, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > May this hunk explain the behaviour?
+>  > 
+>  > http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/arch/i386/patches/adeos-ipipe-2.6.20-i386-1.7-02.patch?a=i386;v=SVN-2.3.x#7755
+>  > 
+>  > munlockall is realised via mlockall, so OR'ing here would never take
+>  > away any flag.
 > 
->  After compiling the current git sources for x86_64 on 2.6.19 and failing 
-> miserably to boot under qemu, I finally tried on a live box - An AMD64 X2.
-
-I can also boot it under qemu (0.8.2) here, actually this is how I wrote
-the basic Adeos support before switching to real hw. Could you send me
-some boot log and .config? Maybe a bug is sleeping that triggers with
-your configuration and that doesn't with mine.
-
-> This booted fine and appeared to be stable enough for the short time I had it 
-> running, so the next stage would be to run some tests with Xenomai..
+> My intent was to avoid that the VM_PINNED flag be cleared by mlockall.
+> So, I guess the correct pattern is:
 > 
-
-The current status (as of today's SVN head) for Xenomai/x86_64 is:
-- user-space tasking is fragile and barely usable yet.
-- kernel-space tasking is ok.
-- kernel level interrupt handling though the pipeline is ok.
-- switchtest is broken, with funky results regarding the FPU management
-in real-time mode.
-- I-pipe-wise, there also remains a random bug to fix in the syscall
-interception which affects non real-time stuff when the box undergoes
-real-time operations.
-- the I-pipe tracer works nicely enough to have saved my day a couple of
-times already when hunting double fault bugs, at least when the machine
-recovered from such bugs by being able to kill the offending Linux task
-and gave me access to the frozen trace log. (Memo: tell Jan about his
-recently adopted status of Benefactor of the Hacking Humanity for having
-written this piece of code).
-
->  Just wondering if it would make more sense to switch to 2.6.20 or continue 
-> with the current branch.
+> current->mm->def_flags = current->mm->def_flags & ~VM_LOCKED | def_flags;
 > 
 
-I'll probably stick to 2.6.19 because the effort to make this running
-over 2.6.20, waiting for 2.6.21 to be out shortly after, would be
-overkill, particularly in the context of stabilizing the initial
-I-pipe/x86_64 port. By the time the latter is ready for production use,
-2.6.21 will soon be available I guess, and the effort to port from
-2.6.20 to 2.6.21 would likely be much greater than upgrading from 2.6.19
-to 2.6.20 anyway, given the number and the nature of the changed
-announced to the LKML.
+In such a case, I would suggest the following, so that we don't copy
+unwanted regular flags unexpectedly:
 
-> 
-> Regards, Paul.
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -162,10 +162,10 @@ asmlinkage long sys_munlock(unsigned long start, size_t len)
+ static int do_mlockall(int flags)
+ {
+ 	struct vm_area_struct * vma, * prev = NULL;
+-	unsigned int def_flags = 0;
++	unsigned int def_flags = current->mm->def_flags & VM_PINNED;
+ 
+ 	if (flags & MCL_FUTURE)
+-		def_flags = VM_LOCKED;
++		def_flags |= VM_LOCKED;
+ 	current->mm->def_flags = def_flags;
+ 	if (flags == MCL_FUTURE)
+ 		goto out;
+
 -- 
 Philippe.
 
