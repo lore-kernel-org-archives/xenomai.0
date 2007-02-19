@@ -1,14 +1,14 @@
+From: Jeff Weber <jweber@domain.hid>
+Subject: Re: [Xenomai-help] tracer from user space
+Date: Mon, 19 Feb 2007 16:54:32 -0600
+References: <45D6C540.9020707@domain.hid>
+In-Reply-To: <45D6C540.9020707@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17882.8656.513391.469444@domain.hid>
-Date: Mon, 19 Feb 2007 23:16:48 +0100
-Subject: Re: [Xenomai-help] getting started (Part 2)
-In-Reply-To: <45D98774.7070400@domain.hid>
-References: <45D887EF.8010404@domain.hid>
-	<17880.36271.503322.588359@domain.hid>
-	<45D98774.7070400@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <200702191654.32541.jweber@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,106 +18,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai Help <xenomai@xenomai.org>
 
-Roland Tollenaar wrote:
- > Hi
- > 
- > I have followed the directives of Richard and Gilles (thanks) and now 
- > have a rough idea of what the steps should be to install Xenomai. I 
- > still have some questions before I start.
- > 
- > I apologize in advance for amount of text surrounding the not so many 
- > questions. I have tried to be a clear as possible.
- > 
- > A
- > The first part of the installation is preparing the kernel
- > I have 2.6.16 kernel so I have downloaded the
- > adeos-ipipe-2.6.16-i386-1.5-02.patch.
- > I have no idea what architecture I have but i386 sounds familiar. :)
- > How can I test what architecture I have?
- > Is this the correct patch?
- > Calling prepare-kernel.sh with its arguments seems straight-forward 
- > after that.
+Ok,  here's the trace I captured from user space code when rt_task_wait_nex=
+t_period() overran by 10s of milliseconds, which
+should "never happen" , and is the latency I'm hunting down.
 
-To test what architecture you have, run uname -m. You are using the
-correct patch, but why 2.6.16 ? If you have no particular reason to
-choose a kernel revision, then use the latest one.
+ |||+-- Xenomai
+ ||||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+ |||||                        +---------- Delay flag ('+': > 1 us, '!': > 1=
+0 us)
+ |||||                        |        +- NMI noise ('N')
+ |||||                        |        |
+      Type    User Val.   Time    Delay  Function (Parent)
+:|  # func                 -61    0.573  xnpod_schedule+0xe [xeno_nucleus] =
+(xnpod_suspend_thread+0x118 [xeno_nucleus])
+:|  # [   -1] -<?>-   90   -60    0.833  xnpod_schedule+0x97 [xeno_nucleus]=
+ (xnpod_suspend_thread+0x118 [xeno_nucleus])
+:|  # func                 -59+   1.624  __switch_to+0xe (xnpod_schedule+0x=
+646 [xeno_nucleus])
+:|  # [12906] -<?>-   35   -58+   1.110  xnpod_schedule+0x6c0 [xeno_nucleus=
+] (xnintr_irq_handler+0x9a [xeno_nucleus])
+:|  + func                 -56    0.565  __ipipe_walk_pipeline+0xe (__ipipe=
+_handle_irq+0x88)
+:|  + end     0xffffff05   -56!  38.026  common_interrupt+0x34 (<080fb1a7>)
+:   + func                 -18    0.543  __ipipe_syscall_root+0x11 (sysente=
+r_past_esp+0x3b)
+:   + func                 -17    0.456  __ipipe_dispatch_event+0xe (__ipip=
+e_syscall_root+0x59)
+:|  + begin   0x80000001   -17    0.706  __ipipe_dispatch_event+0x1e1 (__ip=
+ipe_syscall_root+0x59)
+:|  + end     0x80000001   -16    0.539  __ipipe_dispatch_event+0x1cf (__ip=
+ipe_syscall_root+0x59)
+:   + func                 -16+   1.446  hisyscall_event+0xe [xeno_nucleus]=
+ (__ipipe_dispatch_event+0xd3)
+:   + func                 -14    0.454  __rt_task_set_mode+0x11 [xeno_nati=
+ve] (hisyscall_event+0x162 [xeno_nucleus])
+:   + func                 -14    0.535  rt_task_set_mode+0xe [xeno_native]=
+ (__rt_task_set_mode+0x5b [xeno_native])
+:   + func                 -13    0.458  xnpod_set_thread_mode+0xe [xeno_nu=
+cleus] (rt_task_set_mode+0x9b [xeno_native])
+:|  + begin   0x80000001   -13    0.936  xnpod_set_thread_mode+0x18d [xeno_=
+nucleus] (rt_task_set_mode+0x9b [xeno_native])
+:|  # func                 -12    0.556  __ipipe_restore_pipeline_head+0x11=
+ (xnpod_set_thread_mode+0xca [xeno_nucleus])
+:|  + end     0x80000000   -11    0.800  __ipipe_restore_pipeline_head+0x53=
+ (xnpod_set_thread_mode+0xca [xeno_nucleus])
+:|  + begin   0x80000001   -10    0.628  __ipipe_dispatch_event+0x1be (__ip=
+ipe_syscall_root+0x59)
+:|  + end     0x80000001   -10+   3.944  __ipipe_dispatch_event+0x18f (__ip=
+ipe_syscall_root+0x59)
+:   + func                  -6    0.443  __ipipe_syscall_root+0x11 (sysente=
+r_past_esp+0x3b)
+:   + func                  -5    0.434  __ipipe_dispatch_event+0xe (__ipip=
+e_syscall_root+0x59)
+:|  + begin   0x80000001    -5    0.722  __ipipe_dispatch_event+0x1e1 (__ip=
+ipe_syscall_root+0x59)
+:|  + end     0x80000001    -4    0.553  __ipipe_dispatch_event+0x1cf (__ip=
+ipe_syscall_root+0x59)
+:   + func                  -4    0.609  hisyscall_event+0xe [xeno_nucleus]=
+ (__ipipe_dispatch_event+0xd3)
+:   + func                  -3    0.887  xnshadow_sys_trace+0x14 [xeno_nucl=
+eus] (hisyscall_event+0x162 [xeno_nucleus])
+:   + func                  -2    0.597  ipipe_trace_frozen_reset+0xe (xnsh=
+adow_sys_trace+0x94 [xeno_nucleus])
+:   + func                  -2    0.467  __ipipe_global_path_lock+0xe (ipip=
+e_trace_frozen_reset+0x13)
+:|  + begin   0x80000001    -1+   1.084  __ipipe_global_path_lock+0x4d (ipi=
+pe_trace_frozen_reset+0x13)
+:|  + end     0x80000001     0    0.581  __ipipe_global_path_unlock+0x5c (i=
+pipe_trace_frozen_reset+0x3b)
+<   + freeze  0x0000001f     0    0.617  xnshadow_sys_trace+0x8b [xeno_nucl=
+eus] (hisyscall_event+0x162 [xeno_nucleus])
+ |  + begin   0x80000001     0    0.559  __ipipe_dispatch_event+0x1be (__ip=
+ipe_syscall_root+0x59)
+ |  + end     0x80000001     1    1.956  __ipipe_dispatch_event+0x18f (__ip=
+ipe_syscall_root+0x59)
 
- > 
- > B
- > Compiling the kernel. My biggest worry here is the configuration. 
- > Knowing nothing of such configurations I would like to avoid having to 
- > make uneducated guesses in this stage. Is it possible to get hold of the 
- > current kernel configuration and load that in the
- > make menuconfig
- > stage?
- > If yes, how?
+I'm new to interpreting the trace output, and haven't yet been able to unde=
+rstand the line by line output.  However, I'm curious
+about the timing "lump" at time -56  (common_interrupt+0x34 ).. What is goi=
+ng on there?
 
-By default, when running the configuration frontend, it will load the
-kernel configuration from the running kernel. About selecting options,
-there are (at least) two kinds of kernels:
-- the one tailored for a particular machine, it will not use an initrd
-  have the root partition driver and root filesystem built-in, and only
-  a few modules;
-- a generic one, that will boot on a maximum of machines, it will come
-  with as much modules as possible and with an initrd which selects the
-  driver for the root partition and the root filesystem before booting.
+	thanks,
+	Jeff
 
-About Xenomai now: there are a few options that you should avoid, they
-are documented in the TROUBLESHOOTING file, except one: the HPET timer
-option, which should be also avoided though it is not documented. 
+On Saturday 17 February 2007 03:05, Jan Kiszka wrote:
+> Jeff Weber wrote:
+> > I need to isolate an unacceptable latency resuming a primary mode
+>
+> task, by
+>
+> > determining the events the events that preceeded the delay, preferably
+>
+> from
+>
+> > userspace. =A0I cannot rule out a userspace coding error contributing to
+>
+> the
+>
+> > latency.
+> >
+> > Is this a job better suited to task switch hooks, or the ipipe tracer,
+>
+> or
+>
+> > perhaps yet another tool?
+>
+> Hard to say, but often the tracer is a good starting point, at least to
+> rule out certain causes.
 
- > 
- > C
- > Subsequently calling
- > make
- > then
- > make modules_install install
- > What happens in this install step? What files/directories are installed 
- > and where? Reason I ask is because I am running from liveUSB and booting 
- > with syslinux so I will have to write the kernel image (vmlinuz on my 
- > system) to /dev/sda1 (via where ever it is mounted of course) and not to 
- > /boot/ on that same drive.
-
-make modules_install installs the compiled modules under
-/lib/modules/<kernel-revision>
-
-make install installs the bzImage, .config and System.map in /boot under
-the names vmlinuz-<kernel-revision>, config-<kernel-revision> and
-System.map-<kernel-revision>. It also creates a symbolic link between
-the last installed kernel and /boot/vmlinuz.
-
- > 
- > Another question in this regard is that my current kernel image is 
- > called vmlinuz not bzImage the documentation talks about all the time. 
- > What is the difference? Can I rename the bzImage to vmlinuz. Take note 
- > of the fact that the USB has a FAT filesystem. Thus symbolic links do 
- > not work and I instead have to make copies instead.
-
-Yes, vmlinuz and bzImage are the same thing.
-
- > 
- > Then captain's universe mutters about creating the initial RAM-disk (if 
- > I need one). How do I know whether I need one? I know that running from 
- > a liveUSB I do need what is called initrd.gz in the boot process, but is 
- > this what the documentation is talking about?
-
-initrd are mostly useful for generic kernels.
-
- > 
- > How do I finally set up the new kernel to be booted. Is it sufficient to 
- > write it (vmlinuz) to the position where the current kernel image is 
- > located? (safely renaming the current kernel image to "vmlinuz-old" of 
- > course :))
-
-I have never used syslinux, but reading rapidly its documentation, it
-does not seem to be necessary to re-run syslinux after each kernel
-installation.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+=2D-=20
+Jeff Weber
+American Superconductor Corp.
 
