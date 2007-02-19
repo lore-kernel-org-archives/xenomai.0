@@ -1,14 +1,17 @@
-Message-ID: <45D98774.7070400@domain.hid>
-Date: Mon, 19 Feb 2007 12:18:12 +0100
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] getting started (Part 2)
-References: <45D887EF.8010404@domain.hid>
-	<17880.36271.503322.588359@domain.hid>
-In-Reply-To: <17880.36271.503322.588359@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-help] Standard linux assignment of processes to CPUs
+	depends on Xenomai Config
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <b647ffbd0702190301h468a2bbemafff7b9d592e7e@domain.hid>
+References: <24461688.1170430564542.JavaMail.ngmail@domain.hid>
+	<45D97B38.6060202@domain.hid>
+	<b647ffbd0702190301h468a2bbemafff7b9d592e7e@domain.hid>
+Content-Type: text/plain
+Date: Mon, 19 Feb 2007 12:23:21 +0100
+Message-Id: <1171884201.9958.4.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Reply-To: rolandtollenaar@domain.hid
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,84 +21,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-help@domain.hid
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-Hi
-
-I have followed the directives of Richard and Gilles (thanks) and now 
-have a rough idea of what the steps should be to install Xenomai. I 
-still have some questions before I start.
-
-I apologize in advance for amount of text surrounding the not so many 
-questions. I have tried to be a clear as possible.
-
-A
-The first part of the installation is preparing the kernel
-I have 2.6.16 kernel so I have downloaded the
-adeos-ipipe-2.6.16-i386-1.5-02.patch.
-I have no idea what architecture I have but i386 sounds familiar. :)
-How can I test what architecture I have?
-Is this the correct patch?
-Calling prepare-kernel.sh with its arguments seems straight-forward 
-after that.
-
-B
-Compiling the kernel. My biggest worry here is the configuration. 
-Knowing nothing of such configurations I would like to avoid having to 
-make uneducated guesses in this stage. Is it possible to get hold of the 
-current kernel configuration and load that in the
-make menuconfig
-stage?
-If yes, how?
-
-C
-Subsequently calling
-make
-then
-make modules_install install
-What happens in this install step? What files/directories are installed 
-and where? Reason I ask is because I am running from liveUSB and booting 
-with syslinux so I will have to write the kernel image (vmlinuz on my 
-system) to /dev/sda1 (via where ever it is mounted of course) and not to 
-/boot/ on that same drive.
-
-Another question in this regard is that my current kernel image is 
-called vmlinuz not bzImage the documentation talks about all the time. 
-What is the difference? Can I rename the bzImage to vmlinuz. Take note 
-of the fact that the USB has a FAT filesystem. Thus symbolic links do 
-not work and I instead have to make copies instead.
-
-Then captain's universe mutters about creating the initial RAM-disk (if 
-I need one). How do I know whether I need one? I know that running from 
-a liveUSB I do need what is called initrd.gz in the boot process, but is 
-this what the documentation is talking about?
-
-How do I finally set up the new kernel to be booted. Is it sufficient to 
-write it (vmlinuz) to the position where the current kernel image is 
-located? (safely renaming the current kernel image to "vmlinuz-old" of 
-course :))
-
-Sorry again for so many newbie questions.
-
-RR
-
-
-
-Gilles Chanteperdrix wrote:
-> Roland Tollenaar wrote:
->  > Could anyone direct me to somewhat more 
->  > "my-first-xenomai&kernel-experience" instructions?
+On Mon, 2007-02-19 at 12:01 +0100, Dmitry Adamushko wrote:
+> Hi,
 > 
-> Hi Roland,
+> I suppose, that's what happens.
 > 
-> You will find detailed information on how to build a kernel there:
-> http://www.digitalhermit.com/linux/Kernel-Build-HOWTO.html
+> __xeno_sys_init() (./ksrc/nucleus/module.c) which is module_init() and
+> when compiled in -> initcall()
 > 
-> Once you have read that, the instructions in Xenomai README.INSTALL
-> should be enough to learn the rest.
+> calls xnarch_init() (./include/asm-i386/bits/init.h)
 > 
-> If you have some problem during the build process, do not hesitate to
-> ask questions here.
+> This one amongst other things does
 > 
+> ...
+> #ifdef CONFIG_SMP
+>         /* Make sure the init sequence is kept on the same CPU when
+>            running as a module. */
+>         set_cpus_allowed(current, cpumask_of_cpu(0));
+> #endif /* CONFIG_SMP */
+> 
+> In fact, "running as a module" seems to be a bit
+> misleading here.  Then another macro should be used in addition,
+> MODULE or how it's called.
+> 
+> Now guess who is a "current" here? It's "init" (pid 0).
+> 
+> init() -> do_basic_setup() -> do_initcalls() -> ... ->
+> __xeno_sys_init() -> xnarch_init()
+> 
+> "init" is a first process to run and all the rest will inherit its
+> "cpus_allowed" field.
+> 
+> That's it.
+> 
+
+Eh, that's what I call a nice one Dmitry. This is the perfect example of
+legacy code stabbing us in the back. We should indeed definitely check
+for MODULE && SMP.
+
+-- 
+Philippe.
+
+
 
