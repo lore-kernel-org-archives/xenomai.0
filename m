@@ -1,12 +1,11 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45DB5A29.9080506@domain.hid>
+Date: Tue, 20 Feb 2007 21:29:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17861.63466.119293.917982@domain.hid>
-Date: Sun, 4 Feb 2007 16:12:42 +0100
-Subject: Re: [Xenomai-help] rt descriptors
-In-Reply-To: <1170412112.11967.6.camel@domain.hid>
-References: <1170412112.11967.6.camel@domain.hid>
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: [Xenomai-help] pcspeaker
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,38 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Victor Shulyak <V.I.Shulyak@domain.hid>
-Cc: xenomai <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-Victor Shulyak wrote:
- > Hello
- > 
- > Can I use RT_HEAP (or others descriptors) in the following way:
- > 
- > RT_HEAP h_desc;
- > create descriptor (rt_heap_create (&h_desc,...)
- > 
- > fork
- > child process: rt_task_shadow () and rt_heap_alloc (&h_desc, ...)
- > parent process: rt_heap_alloc (&h_desc, ...)
- > 
- > Will h_desc be valid and usable in child processes?
+Hi
 
-forking in a xenomai process is not yet fully supported. You can do it,
-but you will get unwanted switches to secondary mode because of page
-faults. This issue is solved by the following patch:
+I have some form of kernel recompiled in which I have the power
+management turned off. The PCspeaker is also unselected but it comes
+alive anyway. This is the result -or so it seems- of the soundcard
+driver. I would like to rmmod the sound card driver after booting if
+this interferes with xenomai but there are so many dependencies snd-this
+and snd-that, that its not trivial.
 
-https://mail.gna.org/public/xenomai-core/2007-01/msg00092.html
+-Is this sound-card driver a problem for xenomai?
+-how can I be sure that the pc speaker is harmless for xenomai
 
-but the patch has not yet been merged with the I-pipe patch, so, if you
-want to call fork in your xenomai programs, you have to apply
-this patch after the I-pipe patch.
+Kind regards,
 
-Now, about the rt descriptors, I would expect them to be usable in child
-processes as well.
+Roland.
 
--- 
-
-
-					    Gilles Chanteperdrix.
 
