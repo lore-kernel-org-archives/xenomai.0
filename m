@@ -1,14 +1,11 @@
-Message-ID: <45DB5FC0.6060004@domain.hid>
-Date: Tue, 20 Feb 2007 21:53:20 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <bc4264770702201537x2bd55cc1l713471dafc23f301@domain.hid>
+Date: Tue, 20 Feb 2007 23:37:56 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] pcspeaker
-References: <45DB5A29.9080506@domain.hid>
-In-Reply-To: <45DB5A29.9080506@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1AB186280E67EAAABFF2B646"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] tsc enable or disable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,51 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1AB186280E67EAAABFF2B646
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Roland Tollenaar wrote:
-> Hi
->=20
-> I have some form of kernel recompiled in which I have the power
-> management turned off. The PCspeaker is also unselected but it comes
-> alive anyway. This is the result -or so it seems- of the soundcard
-> driver. I would like to rmmod the sound card driver after booting if
-> this interferes with xenomai but there are so many dependencies snd-thi=
-s
-> and snd-that, that its not trivial.
->=20
-> -Is this sound-card driver a problem for xenomai?
+I have a  xenomai kernel running!
 
-Nope.
+I have tested using the testsuit latency ./run program. initially I
+got this message
 
-> -how can I be sure that the pc speaker is harmless for xenomai
+Xenomai: incompatible feature set.
+(required="sep tsc", present= "sep", missing="tsc")
 
-Yes, as long as you are not targeting a very low-end x86 platform (any
-pre-Pentium system without TSC support). But Xenomai will warn you then
-during kernel configuration.
+Which I "sorted" by configuring the user part of xenomai with --disable-x86-tsc
 
-Jan
+However I understood from previous mails that TSC was good. Did I miss
+a setting when configuring the kernel?
 
+What does this TSC mean. The documentation is very spars about this.
 
---------------enig1AB186280E67EAAABFF2B646
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Ehh and while I think about it, what is displayed by the latency test. I get
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+lat min  lat ave latmax overrun lat best
+20.11   29.33   52.79  0            19.276
 
-iD8DBQFF21/AniDOoMHTA+kRArTeAKCBThpnqWdNaijKwx5eHd8zUhKoOQCZAdQd
-P8zUvKCzwc/osN8uFQneUUs=
-=/v3w
------END PGP SIGNATURE-----
+typical.
 
---------------enig1AB186280E67EAAABFF2B646--
+The period seems to be 100micro seconds so what do the figures above
+mean? 20 microseconds is typically the shortest period I could run at?
+Or >52.79? Some light on this would be great.
+
+Kind regards,
+
+And thanks for all the help.
+
+Roland.
 
