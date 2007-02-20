@@ -1,5 +1,6 @@
-Message-ID: <45DAC3A8.2000707@domain.hid>
-Date: Tue, 20 Feb 2007 10:47:20 +0100
+Message-ID: <45DACA75.8030001@domain.hid>
+Date: Tue, 20 Feb 2007 11:16:21 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] patching continues
 References: <45D9F759.7020006@domain.hid>
@@ -7,8 +8,6 @@ References: <45D9F759.7020006@domain.hid>
 In-Reply-To: <cbe23c50702192323h370cd65fg3490d82fea34cd33@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,50 +19,6 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Eric Noulard <eric.noulard@domain.hid>
 Cc: Xenomai-help@domain.hid
-
-Hi Eric and List,
-
-This is what I did:
-
-
-1-copy kernel code from linux-2.6.16 into a new directory under 
-/usr/src/linux-2.6.16-ipipe
-2-Extract xenomai (latest) in /usr/src/xenomai<version>
-3-Place adeos patch 2.6.16-1.5-02 into tmp
-4-cd /usr/src/xenomai<version>
-5-prepare-kerne.sh --linux=/usr/src/linux-2.6.16-ipipe 
---adeos=/tmp/adeos<version>.patch --arch=i386
-6-cd /usr/src/linux-2.6.16-ipipe
-7-cp /usr/src/linux-2.6.16-ipipe/somewhere/defconfig 
-/usr/src/linux-2.6.16-ipipe/.config
-8-make menuconfig (load .config, switch off powermanagement, select CAN 
-module & PEAK parallel port module)
-9-make all
-10-make modules_install
-11-find bzImage remane to vmlinuz (what current kernel is called) copy 
-it to /boot.
-12-reboot
-
-result
-runs until I get this message:
-VFS Cannot open root device
-"ram0"or unknown-block(0,0)
-Please append a correct "root=" boot option
-Kernel panic-not syncing:VFS: unable to mount root fs on unknown -block(0,0)
-
-
-Keep in mind that my Slax USB uses neither grub nor lilo but syslinux.
-I realize that i should do something to initrd but do not know what
-
-mkinitrd is not on my system. Where must I get it?
-
-Thanks for the help, I really need it. :(
-
-Regards,
-
-Roland
-
-
 
 Eric Noulard wrote:
 > 2007/2/19, Roland Tollenaar <rwatollenaar@domain.hid>:
@@ -97,8 +52,17 @@ Eric Noulard wrote:
 > Note that you still to update your lilo.conf / grub.conf file for
 > adding your freshly
 > compiled kernel.
-> 
->>
+
+On my FC5 distro I simply do:
+
+   $ make bzImage
+   $ make modules
+   # make modules_install
+   # make install
+
+Then I reboot and select the new entry in the grub boot loader. I guess 
+this works for other distros as well.
+
 >> 2
 >> Then the make modules install generates the lib/modules/2.6.16-pipe
 >> directory but it has only a very few modules. Not nearly as many as the
@@ -112,7 +76,13 @@ Eric Noulard wrote:
 > 
 > you may try to diff the .config obtained for your currently running kernel
 > with the one used for xenomai-patched kernel.
-> 
+
+Copy the .config from you vanilla kernel to the Xenomai/iPipe kernel and 
+do "make menuconfig" selecting Xenomai options. On FC5 I can find the 
+.config for my running kernel in /boot or it might be visible via PROC 
+file system (/proc/config.gz if CONFIG_IKCONFIG is set). Unfortunately 
+this selects plenty of modules and building them takes very long.
+
 >>
 >> Might anyone be able to give some hints as to what I could be doing 
 >> wrong?
@@ -127,4 +97,5 @@ Eric Noulard wrote:
 > (missing files, kernel does not boot, no new kernel boot menu...)
 > 
 > 
+
 
