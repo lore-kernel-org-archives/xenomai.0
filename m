@@ -1,61 +1,57 @@
-Subject: Re: [Xenomai-help] Error: cat: /proc/xenomai/stat: Cannot allocate
-	memory
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <Pine.LNX.4.64.0702021456170.12191@domain.hid>
-References: <19981456.1170405795640.JavaMail.ngmail@domain.hid>
-	<1170408789.4981.1.camel@domain.hid> <1170409755.4981.11.camel@domain.hid>
-	<45C309BF.9090808@domain.hid>  <1170415388.4981.36.camel@domain.hid>
-	<1170420270.4981.58.camel@domain.hid>
-	<Pine.LNX.4.64.0702021456170.12191@domain.hid>
-Content-Type: text/plain
-Date: Fri, 02 Feb 2007 15:31:59 +0100
-Message-Id: <1170426719.4981.66.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45DC1F14.4030300@domain.hid>
+Date: Wed, 21 Feb 2007 11:29:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] Enhanced RTDM device closure
+References: <45DC0623.3080706@domain.hid> <45DC0939.6070207@domain.hid>
+	<45DC0CAA.2050001@domain.hid> <45DC139A.6020302@domain.hid>
+	<45DC1773.1080803@domain.hid>
+In-Reply-To: <45DC1773.1080803@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Rus V. Brushkoff" <rus@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2007-02-02 at 14:59 +0200, Rus V. Brushkoff wrote:
-> :> Yes, 2.6.19-1.6-04 (without nowcow) has the same problem. But the
-> :> interesting things is that reading /proc/interrupts in loop seems to
-> :> silently eat kernel memory by small chunks too. I'm now trying on a
-> :> vanilla kernel.
-> :Confirmed. A vanilla 2.6.19 silently eats memory when
-> :reading /proc/interrupts in loop. Mathias, could you please confirm this
-> :on your box too? TIA,
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+>>I have to have a closer look at the code. But you are right, since the
+>>ppd cannot vanish under our feet, maybe is it possible to call
+>>xnshadow_ppd_get without holding the nklock at all. We "only" have to
+>>suppose that the lists manipulation routines will never set the list to
+>>an inconsistent state.
 > 
->  Tested on K8 x86_64 SMP and K8 x86 UP : SMP system leaks memory, UP 
-> doesn't.
+> 
+> As long as process A's ppd can take a place in the same list as process
+> B's one, you need locking (or RCU :-/). That's my point about the hash
+> chain approach.
+> 
+> I can only advertise the idea again to maintain the ppd pointers as an
+> I-pipe task_struct key. On fork/clone, you just have to make sure that
+> the child either gets a copy of the parent's pointer when it will share
+> the mm, or its key is NULL'ified, or automatic Xenomai skin binding is
+> triggered to generate in a new ppd.
 
-Thanks. I do have a leak on UP here though; vmstat or any other command
-do not eat this memory (at least neither ps or top report any continuous
-growth of their vm space while running the test), so I would wildly
-guess that's a kernel-based leakage occurring somewhere in the procfs
-support.
+I agree with the idea of the ptd. Nevertheless, I think it is possible
+to access an xnqueue in a lockless fashion. Concurrent insertions and
+deletions only matter if they take place before (in list order) the
+target. When we are walking the list, only the "next" pointers matters.
+Now, if we look at the "next" pointers in the insertion routine, we see:
 
-> 
-> :
-> :
-> 
-> 		Rus
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+   holder->next = head->next;
+   head->next = holder;
+
+So, maybe we just need to add a compiler barrier, but it looks like we
+can never see a wrong pointer when walking the list.
+
 -- 
-Philippe.
-
-
+                                                 Gilles Chanteperdrix
 
