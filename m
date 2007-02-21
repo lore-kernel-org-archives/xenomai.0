@@ -1,16 +1,13 @@
-Message-ID: <45E59B54.4000502@domain.hid>
-Date: Wed, 28 Feb 2007 16:10:12 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45DC139A.6020302@domain.hid>
+Date: Wed, 21 Feb 2007 10:40:42 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [BUG] trunk: oops with Stephan's stress test
-References: <45DEDED6.4070202@domain.hid>	<1172237401.26738.13.camel@domain.hid>		<45DEED50.4070007@domain.hid>	<1172238537.26738.15.camel@domain.hid>	<45DEF482.9030903@domain.hid>	<45E58CE3.20807@domain.hid>
-	<45E58FB4.6070603@domain.hid> <45E59574.50808@domain.hid>
-	<45E599F1.5020205@domain.hid>
-In-Reply-To: <45E599F1.5020205@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBC081DA3B1D5ECCEA0F21514"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Enhanced RTDM device closure
+References: <45DC0623.3080706@domain.hid> <45DC0939.6070207@domain.hid>
+	<45DC0CAA.2050001@domain.hid>
+In-Reply-To: <45DC0CAA.2050001@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,97 +17,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Stephan Zimmermann <s.zimmermann@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBC081DA3B1D5ECCEA0F21514
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Stephan Zimmermann wrote:
-> Jan Kiszka schrieb:
->> Jan Kiszka wrote:
->>> Stephan Zimmermann wrote:
->>>> Jan Kiszka schrieb:
->>>>> Philippe Gerum wrote:
->>>>>> On Fri, 2007-02-23 at 14:34 +0100, Jan Kiszka wrote:
->>>>>>
->>>>>>> Attached with 3000 points (to play safe).
->>>>>> Great, thanks.
->>>>>>
->>>>> FYI: Switching prio-coupling off doesn't let it trigger anymore. Wh=
-ich
->>>>> /may/ mean that it's related to this feature, but which may also me=
-an
->>>>> that this corner-case race is just far more unlikely in non-RPI set=
-ups
->>>>> (and the effects Stephan see are all related to the same bug -
->>>>> hopefully).
->>>>>
->>>>> Jan
->>>>>
->>>> To trigger you again, I just updated my Pentium M Notebook to 2.3.x =
-svn
->>>> revision 2264, recompiled everything and gave it a try. (kernel 2.6.=
-20)
->>>> Some runs of my already well-known software and the machine freezes
->>>> during shutdown. No oops, no backtrace, no error message. It doesn't=
-
->>>> matter if priority coupling is enabled or not, when it tells me
->>>> 'Stopping K Display Manager: kdm' the cursor freezes, that's it. My
->>>> colleague report's the same beahviour on his AMD SMP mashine. The
->>>> Celeron M crashes during reboot showing ugly backtraces like before.=
-
->>                            ^^^^
->> _Re_boot - now I read your message correctly. So you are not facing
->> elementary boot issues on some boxes, but always memory corruption
->> *after* running your demo code, right?
->=20
-> yes, exactly
->=20
+Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+> 
+>>Jan Kiszka wrote:
 >>
->> Then we should try to find out what mechanism of Xenomai might cause t=
-he
->> corruption. Could you, step by step, simplify your test, e.g. leaving
->> out some of the tasks or not using the message queues? This would help=
+>>>Hi,
+>>>
+>>>a few changes of the RTDM layer were committed to trunk recently. They
+>>>make handling of RTDM file descriptors more handy:
+>>>
+>>> o rt_dev_close/POSIX-close now polls as long as the underlying device
+>>>   reports -EAGAIN. No more looping inside the application is required.
+>>>   This applies to the usual non-RT invocation of close, the corner
+>>>   case "close from RT context" can still return EAGAIN.
+>>>
+>>> o Automatic cleanup of open file descriptors has been implemented. This
+>>>   is not yet the perfect design (*), but a straightforward approach to
+>>>   ease the cleanup after application crashes or other unexpected
+>>>   terminations.
+>>>
+>>>The code is still young, so testers are welcome.
+>>>
+>>>Jan
+>>>
+>>>
+>>>(*) Actually, I would like to see generic per-process file descriptor
+>>>tables one day, used by both the POSIX and the RTDM skin. The FD table
+>>>should be obtained via xnshadow_ppd_get().
+>>
+>>I agree for the file descriptor table, but I do not see why it should be
+>>bound to xnshadow_ppd_get. The file descriptor table could be
+>>implemented in an object like fashion, where the caller is responsible
+>>to pass the same pointer to the creation, use and desctruction routines.
+> 
+> 
+> But where to get this pointer from when I enter, say, rtdm_ioctl on
+> behalf of some process? The caller just passes an integer, the file
+> descriptor.
 
->> to focus the analysis on (hopefully) only a few facilities.
->=20
-> Yes, I will try this. May take some time, stand by.
+Yes, the pointer would be obtained via xnshadow_ppd_get, but it does not
+have to be built-in the nucleus, this can be done by the skins.
 
-I'm not going to leave. ;)
+> 
+> 
+>>This would allow, for example, to have a descriptor table for
+>>kernel-space threads. Another feature that would be interesting for the
+> 
+> 
+> I don't see the need to offer kernel threads private fd tables. They can
+> perfectly continue to use a common, then kernel-only table. There are
+> too few of those threads, and there is no clear concept of a process
+> boundary in kernel space.
 
->=20
->> Still, the compiler question remains relevant. 2.6.20 e.g. warns me th=
-at
->> gcc 4.1.0 may miscompile the kernel (but I'm using a SUSE-patched
->> version that so far behaves).
->=20
-> We are using gcc 3.3 - the debian 3.1 standard compiler - on all of our=
+I mean having one descriptor table for the kernel space as a whole, but
+the kernel space descriptor table does not have to be of a different
+type from the user-space descriptor tables.
 
-> Linux boxes. Maybe we should give a try to some newer release?
+> 
+> 
+>>posix skin would be to have a callback called at process fork time in
+>>order to duplicate the fd table.
+> 
+> 
+> Ack. IIRC, this callback could also serve to solve the only consistency
+> issue of the ipipe_get_ptd() approach.
+> 
+> 
+>>
+>> But first this requires
+>>
+>>>lock-less xnshadow_ppd_get() based on ipipe_get_ptd() to keep the
+>>>overhead limited. Yet another story.
+>>
+>>xnshadow_ppd_get is already lockless, usual callers have to hold the
+>>nklock for other reasons anyway.
+>>
+> 
+> 
+> OK, depends on the POV :). Mine is that the related RTDM services do not
+> hold nklock and will never have to. Moreover, there is no need for
+> locking design-wise, because per-process data cannot vanish under the
+> caller unless the caller vanishes. The need currently only comes from
+> the hashing-based lookup (reminds me of the WCET issues kernel futexes
+> have...).
 
-Hmm, should not be the reason. Older compilers are often suboptimal, but
-they are not known to break stuff. There is probably no way around
-understanding what happens...
+I have to have a closer look at the code. But you are right, since the
+ppd cannot vanish under our feet, maybe is it possible to call
+xnshadow_ppd_get without holding the nklock at all. We "only" have to
+suppose that the lists manipulation routines will never set the list to
+an inconsistent state.
 
-Jan
+Something else that I would like is that the fd table be bound to the
+nucleus registry. This would allow to factor the registry implementation.
 
-
---------------enigBC081DA3B1D5ECCEA0F21514
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF5ZtUniDOoMHTA+kRAoAlAJwMpsQPXJa7LbmI4pbW3RXeBHUD/gCfWCVk
-2pwxhOgnbHC7C1Rh36IfQwc=
-=lFCO
------END PGP SIGNATURE-----
-
---------------enigBC081DA3B1D5ECCEA0F21514--
+-- 
+                                                 Gilles Chanteperdrix
 
