@@ -1,15 +1,13 @@
-Message-ID: <45DC509B.7040403@domain.hid>
-Date: Wed, 21 Feb 2007 15:00:59 +0100
+Message-ID: <45DC51F8.7090508@domain.hid>
+Date: Wed, 21 Feb 2007 15:06:48 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN driver
-References: <45DC1D05.1000206@domain.hid> <45DC2478.2020602@domain.hid>
-	<45DC39DE.8050802@domain.hid> <45DC3E6C.8040905@domain.hid>
-	<45DC4281.8030903@domain.hid> <45DC44FA.6050703@domain.hid>
-In-Reply-To: <45DC44FA.6050703@domain.hid>
+Subject: Re: [Xenomai-help] real-time ethernet
+References: <45DC4C85.8090807@domain.hid>
+In-Reply-To: <45DC4C85.8090807@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5153D2B51B2AE5EE5AEF559F"
+	boundary="------------enig551A038D497875CD08FED70F"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,38 +22,42 @@ To: rolandtollenaar@domain.hid
 Cc: Xenomai-help@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5153D2B51B2AE5EE5AEF559F
+--------------enig551A038D497875CD08FED70F
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Roland Tollenaar wrote:
 > Hi,
 >=20
-> depending on advice on my email on the tsc problem I am having I will
-> now try and find out how the user-space side of xenomai is to be used.
-> Make a simple structure as a Qt thread (in which I intend to write the
-> application) and then dig into the CAN stuff.
->=20
-> So in regard to this:
->>> Yeah, maybe already a link (README) from the examples repos would be
->>> enough to point beginners to them. Or maybe we should ask some beginn=
-ers
->>> what they expect, what they didn't understand... (Roland?)
-> I will comment on as soon as I have enough insight in xenomai's typical=
+> Again a bit of advice required. I have the choice of interacting with a=
 
-> usage. Before then my opinion will probably not be worth much.
->=20
-> Besides we are only now going to order the PEAKCAN dongle so I will onl=
-y
-> be able to test something next week.
+> remoteIO station via ethernet or CAN as well. I need CAN anyway for the=
 
-xeno_can_virt may help to do some testing even without hardware. It
-emulates a local virtual CAN bus between 2 or more nodes.
+> sensor but I suspect that communicating with the remote IO station via
+> ethernet might be substantially easier programming than doing this with=
+
+> CANOpen.
+>=20
+> Can anyone confirm this? Does anyone with experience in both prefer one=
+
+> or the other?
+>=20
+> And what can be said about this and xenomai? Would I use the standard
+> sys/socket library or is there a real-time xenomai implementation of th=
+e
+> same functionality?
+
+Check
+
+http://www.rtnet.org
+http://www.xenomai.org/index.php/RTnet:Main.
+
+If it is simple to set up? Well, I'm probably the wrong person to ask...
 
 Jan
 
 
---------------enig5153D2B51B2AE5EE5AEF559F
+--------------enig551A038D497875CD08FED70F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -64,10 +66,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF3FCbniDOoMHTA+kRAvhhAJ9/hrooPYLDxpU82jcszjaqj6dqrwCfXSBH
-/iFswScIX4+rE8IbXD1DCMI=
-=lb6C
+iD8DBQFF3FH4niDOoMHTA+kRAo33AJ9nty+iQ62V1fbEgeCeQQ1IdTHBHACfbBPV
+6suVnAu7jz/PXL517jaoyUs=
+=zTwd
 -----END PGP SIGNATURE-----
 
---------------enig5153D2B51B2AE5EE5AEF559F--
+--------------enig551A038D497875CD08FED70F--
 
