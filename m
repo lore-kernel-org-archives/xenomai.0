@@ -1,16 +1,13 @@
-Subject: Re: [Xenomai-core] Re: (was: [Xenomai-help] CAN driver)
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <17884.45903.468384.157899@domain.hid>
-References: <45DC1D05.1000206@domain.hid> <45DC2478.2020602@domain.hid>
-	<45DC39DE.8050802@domain.hid> <45DC3E6C.8040905@domain.hid>
-	<45DC4281.8030903@domain.hid> <45DC9C9D.4050107@domain.hid>
-	<17884.45903.468384.157899@domain.hid>
+In-Reply-To: <200702212030.41554.paul_c@domain.hid>
+References: <200702212030.41554.paul_c@domain.hid>
 Content-Type: text/plain
-Date: Thu, 22 Feb 2007 01:06:04 +0100
-Message-Id: <1172102765.3551.87.camel@domain.hid>
+Date: Thu, 22 Feb 2007 01:42:01 +0100
+Message-Id: <1172104922.3551.122.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Re: [Adeos-main] x86_64 ipipe on 2.6.19
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,38 +18,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>, xenomai@xenomai.org
 
-On Wed, 2007-02-21 at 22:02 +0100, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Wolfgang Grandegger wrote:
->  > >>> BTW: some time ago I provided a patch to make the CAN utility programs
->  > >>> part of the Doxygen documentation. IIRC, we said it's nice to have
->  > >>> hyperlinked examples in general.
->  > >>
->  > >> Some link at hand? Does it still apply? Sounds like something worth to
->  > >> apply.
->  > > 
->  > > See https://mail.gna.org/public/xenomai-core/2006-11/msg00033.html.
->  > > My patch was for the CAN utilities only. The idea was to have a more
->  > > general implementation including code snippets and now examples as well.
->  > > 
->  > > Wolfgang.
->  > > 
->  > 
->  > Gilles, as you are planning to regenerate the docs for trunk anyway,
->  > would you merge this patch (or better the corrected version) at that chance?
+On Wed, 2007-02-21 at 20:30 +0000, Paul wrote:
+> Hi Philippe
 > 
-> I compiled doxygen 1.4.6 and generated the documentation with it, but I
-> do not get the nice tabs at the top of the page, so the next step is to
-> ask Philippe: where did you get the version of doxygen 1.4.6 that
-> generates such a nice output ?
+>  After compiling the current git sources for x86_64 on 2.6.19 and failing 
+> miserably to boot under qemu, I finally tried on a live box - An AMD64 X2.
+
+I can also boot it under qemu (0.8.2) here, actually this is how I wrote
+the basic Adeos support before switching to real hw. Could you send me
+some boot log and .config? Maybe a bug is sleeping that triggers with
+your configuration and that doesn't with mine.
+
+> This booted fine and appeared to be stable enough for the short time I had it 
+> running, so the next stage would be to run some tests with Xenomai..
 > 
 
-Well, I started having those tabs generated after I switched to Ubuntu
-(Dapper).
+The current status (as of today's SVN head) for Xenomai/x86_64 is:
+- user-space tasking is fragile and barely usable yet.
+- kernel-space tasking is ok.
+- kernel level interrupt handling though the pipeline is ok.
+- switchtest is broken, with funky results regarding the FPU management
+in real-time mode.
+- I-pipe-wise, there also remains a random bug to fix in the syscall
+interception which affects non real-time stuff when the box undergoes
+real-time operations.
+- the I-pipe tracer works nicely enough to have saved my day a couple of
+times already when hunting double fault bugs, at least when the machine
+recovered from such bugs by being able to kill the offending Linux task
+and gave me access to the frozen trace log. (Memo: tell Jan about his
+recently adopted status of Benefactor of the Hacking Humanity for having
+written this piece of code).
 
+>  Just wondering if it would make more sense to switch to 2.6.20 or continue 
+> with the current branch.
+> 
+
+I'll probably stick to 2.6.19 because the effort to make this running
+over 2.6.20, waiting for 2.6.21 to be out shortly after, would be
+overkill, particularly in the context of stabilizing the initial
+I-pipe/x86_64 port. By the time the latter is ready for production use,
+2.6.21 will soon be available I guess, and the effort to port from
+2.6.20 to 2.6.21 would likely be much greater than upgrading from 2.6.19
+to 2.6.20 anyway, given the number and the nature of the changed
+announced to the LKML.
+
+> 
+> Regards, Paul.
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 -- 
 Philippe.
 
