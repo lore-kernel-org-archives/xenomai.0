@@ -1,16 +1,17 @@
-Message-ID: <45DDCEE0.7070901@domain.hid>
-Date: Thu, 22 Feb 2007 18:12:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Resent-Message-ID: <17885.65345.330936.157857@domain.hid>
+Resent-To: xenomai@xenomai.org
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] possible future conflict w LOCAL_APIC
-References: <451C586A.7020309@domain.hid>
-	<1159628606.5014.33.camel@domain.hid>	<4522A377.5030503@domain.hid>
-	<45DDCC6D.6020908@domain.hid>
-In-Reply-To: <45DDCC6D.6020908@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigCA490DEEF359771E5696CF24"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17885.64178.571612.926051@domain.hid>
+In-Reply-To: <45DD54A4.5040204@domain.hid>
+References: <45DC1D05.1000206@domain.hid> <45DC2478.2020602@domain.hid>
+	<45DC39DE.8050802@domain.hid> <45DC3E6C.8040905@domain.hid>
+	<45DC4281.8030903@domain.hid> <45DC9C9D.4050107@domain.hid>
+	<45DD54A4.5040204@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 22 Feb 2007 21:18:58 +0100
+Subject: [Xenomai-core] Re: (was: [Xenomai-help] CAN driver)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,64 +21,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: =?ISO-8859-15?Q?Jan_R=FCdiger?= <ruediger@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigCA490DEEF359771E5696CF24
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Wolfgang Grandegger wrote:
+ > Hi Gilles and Jan,
+ > 
+ > Jan Kiszka wrote:
+ > > Wolfgang Grandegger wrote:
+ > >>>> BTW: some time ago I provided a patch to make the CAN utility programs
+ > >>>> part of the Doxygen documentation. IIRC, we said it's nice to have
+ > >>>> hyperlinked examples in general.
+ > >>> Some link at hand? Does it still apply? Sounds like something worth to
+ > >>> apply.
+ > >> See https://mail.gna.org/public/xenomai-core/2006-11/msg00033.html.
+ > >> My patch was for the CAN utilities only. The idea was to have a more
+ > >> general implementation including code snippets and now examples as well.
+ > >>
+ > >> Wolfgang.
+ > >>
+ > > 
+ > > Gilles, as you are planning to regenerate the docs for trunk anyway,
+ > > would you merge this patch (or better the corrected version) at that chance?
+ > 
+ > Attached is a revised patch for hyper-linking with example and utility 
+ > programs. Apart from the CAN utilities, I have also added cross-link.c 
+ > for RTserial and the code snippets of the native skin by adding 
+ > "@example" tags to the appropriate source files. For the "demos" of the 
+ > skins it was not obvious for me where to put them. The examples are then 
+ > also part of the PDF documentation. Please have a look, hope you like 
+ > it. I personally find the hyper-linking very useful.
 
-Jan R=FCdiger wrote:
-> Hello
->=20
-> Few months ago there was a discussion about disabling local apic in the=
-
-> kernel. The last point in this discussion was:
->=20
->> update:
->>
->> Ingo Molnar has voiced strong preference that the config option remain=
-,
->> citing 60kb growth in its removal.  So its probably safe for now ;-)
->=20
-> Now i have the problem that i cant disable the X86_UP_APIC anymore when=
-
-> building the kernel 2.6.19. Normally this isn't a problem since it is
-
-???
-
-There is no "select X86_UP_APIC" in kbuild that would make this mandatory=
-=2E
-
-> disabled during boot (my machine doesn't have APIC). But xenomai is
-> build with enabled APIC and thus refuses to run on the new kernel.
->=20
-> Is there a way to disable APIC during kernel build? or can i build
-> xenomai without APIC?
-
-We are running Xenomai over 2.6.19 (and later) here, mostly on APIC-less
-(or broken) boxes. There is no known issue.
-
-I don't see why you shouldn't be able to switch "Local APIC support on
-uniprocessors" off.
-
-Jan
+Hi, I have included your patch, but there is again some doxygen magic
+that I do not understand, there are only a few links to the examples in
+the documented files. For example in native condition variables
+documentation page, there is no link to the cond.c example, but the
+example is included (whereas examples sources that are not mentioned in
+the source are not included at all). Any idea what could be the cause ?
+-- 
 
 
---------------enigCA490DEEF359771E5696CF24
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3c7gniDOoMHTA+kRAsmoAJ9pfiw37bYm+kCNlFFKgr4dMnSBYgCfTcdM
-czZk/wQA9aPfSNkaCcSUQnQ=
-=ag1J
------END PGP SIGNATURE-----
-
---------------enigCA490DEEF359771E5696CF24--
+					    Gilles Chanteperdrix.
 
