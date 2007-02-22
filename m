@@ -1,19 +1,20 @@
-Message-ID: <bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>
-Date: Thu, 22 Feb 2007 12:34:58 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] CAN driver
-In-Reply-To: <45DD8B42.1020709@domain.hid>
+Message-ID: <45DD9294.1060109@domain.hid>
+Date: Thu, 22 Feb 2007 13:54:44 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_22627_9331430.1172147698771"
-References: <45DC1D05.1000206@domain.hid> <45DC39DE.8050802@domain.hid>
-	<45DC3E6C.8040905@domain.hid> <45DD5DC0.6040402@domain.hid>
-	<bc4264770702220214y697c57abv9d5170b64fad40eb@domain.hid>
-	<45DD7C42.9070407@domain.hid>
-	<bc4264770702220339m1b8dfcbfk11f9c05e2a0aed91@domain.hid>
-	<45DD8438.4030306@domain.hid>
-	<bc4264770702220406i1c8608cy3f748416f589f5c6@domain.hid>
+Subject: Re: [Xenomai-help] CAN driver
+References: <45DC1D05.1000206@domain.hid> <45DC39DE.8050802@domain.hid>	
+	<45DC3E6C.8040905@domain.hid> <45DD5DC0.6040402@domain.hid>	
+	<bc4264770702220214y697c57abv9d5170b64fad40eb@domain.hid>	
+	<45DD7C42.9070407@domain.hid>	
+	<bc4264770702220339m1b8dfcbfk11f9c05e2a0aed91@domain.hid>	
+	<45DD8438.4030306@domain.hid>	
+	<bc4264770702220406i1c8608cy3f748416f589f5c6@domain.hid>	
 	<45DD8B42.1020709@domain.hid>
+	<bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>
+In-Reply-To: <bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,377 +24,470 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-------=_Part_22627_9331430.1172147698771
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+roland Tollenaar wrote:
+> Hi,
+> 
+>>
+>> Without device it will not register anyhow and see above.
+>>
+> 
+> I have now built the kernel with the virtual driver statically built
+> into it. No difference still no devices.
+> 
+>>
+>> The driver for the dongle will not start properly when statically linked
+>> into the kernel. There should be a log message, though.
+>>
+> No log message unless I am missing something. What is the module
+> called? After the
+> make modules in the kernel building process I will have to find it and
+> store it somewhere I will try loading it manually when the new kernel
+> is booted.
+> 
+> The virtual driver I can build in statically?
+> 
+> 
+>>
+>> Can you post the compete dmesg output?
+>>
+> 
+> It is attached as a txt file. The errors regarding ehci, ohci, uhci
+> and mass_storage are results of trying to load modules that I have
+> statically built into the kernel.
 
-Hi,
+I'm missing Xenomai related messages? Could you send the complete boot 
+log please.
 
->
-> Without device it will not register anyhow and see above.
->
+Wolfgang.
 
-I have now built the kernel with the virtual driver statically built
-into it. No difference still no devices.
+> 
+> Regards,
+> 
+> Roland
+> 
+> 
+> 
+> 
+> 
+>> > I have checked the .config for the kernel build and CAN is statically
+>> > built into it.
+>> >
+>> > I would prefer to statically build these things into the kernel due to
+>> > unwieldiness of my ditribution. If this is not possible I will make
+>> > modules. But is this the cause of problem I am having?
+>> > I have no device hooked to my system (PEAK dongle on its way) and the
+>> > virtual driver and TX loopback ability  has been excluded from the
+>> > kernel build. Is this possibly why i have no devices listed in
+>> > proc/rtcan/devices?
+>> Wolfgang.
+>>
+>> > On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
+>> >> roland Tollenaar wrote:
+>> >> > Hi Jan,
+>> >> >
+>> >> >>
+>> >> >> rtcanX are networking devices, but only visible in the context of
+>> >> >> RTDM/AF_CAN.
+>> >> > What is this?
+>> >> >
+>> >> > To enable them, use rtcanconfig as explained in the README.
+>> >> > Which README are you referring to? The only one I know of that says
+>> >> > something about rtcanconfig is in /src/utils/can and it does not
+>> >> > explain how to use ctrlmode and bittime. There is an example in it
+>> >> >
+>> >> > rtcanconfig rtcan0 --baudrate=125000 start.
+>> >> >
+>> >> > If I try
+>> >> >
+>> >> > rtcanconfig rtcan0 --baudrate=125000 start
+>> >> >
+>> >> > I get:
+>> >> >
+>> >> > "Can't get interface index for rtcan0, code=-19"
+>> >> >
+>> >> > Any idea what is wrong?
+>> >>
+>> >> Your devices have not yet show up on your system. I guess there is no
+>> >> entry in /proc/rtcan/devices. Check your boot log.
+>> >>
+>> >> Wolfgang.
+>> >>
+>> >>
+>> >
+>> >
+>>
+>>
+> 
+> ------------------------------------------------------------------------
+> 
+> veReady SeekComplete Error }
+> hdc: packet command error: error=0x54 { AbortedCommand LastFailedSense=0x05 }
+> ide: failed opcode was: unknown
+> hdc: packet command error: status=0x51 { DriveReady SeekComplete Error }
+> hdc: packet command error: error=0x54 { AbortedCommand LastFailedSense=0x05 }
+> ide: failed opcode was: unknown
+> hdc: packet command error: status=0x51 { DriveReady SeekComplete Error }
+> hdc: packet command error: error=0x54 { AbortedCommand LastFailedSense=0x05 }
+> ide: failed opcode was: unknown
+> hdc: packet command error: status=0x51 { DriveReady SeekComplete Error }
+> hdc: packet command error: error=0x54 { AbortedCommand LastFailedSense=0x05 }
+> ide: failed opcode was: unknown
+> UDF-fs: No partition found (1)
+> XFS: bad magic number
+> XFS: SB validate failed
+> NTFS volume version 3.1.
+> spurious 8259A interrupt: IRQ7.
+> UDF-fs: No partition found (1)
+> XFS: bad magic number
+> XFS: SB validate failed
+> Linux agpgart interface v0.101 (c) Dave Jones
+> fuse init (API version 7.6)
+> NTFS volume version 3.1.
+> input: PS/2 Synaptics TouchPad as /class/input/input1
+> Intel ISA PCIC probe: not found.
+> Databook TCIC-2 PCMCIA probe: not found.
+> PCI: Found IRQ 4 for device 0000:02:03.0
+> PCI: Sharing IRQ 4 with 0000:00:1f.3
+> PCI: Sharing IRQ 4 with 0000:00:1f.5
+> PCI: Sharing IRQ 4 with 0000:00:1f.6
+> IRQ routing conflict for 0000:02:03.0, have irq 11, want irq 4
+> Yenta: CardBus bridge found at 0000:02:03.0 [1584:3000]
+> Yenta: adjusting diagnostic: 40 -> 60
+> Yenta: Enabling burst memory read transactions
+> Yenta: Using CSCINT to route CSC interrupts to PCI
+> Yenta: Routing CardBus interrupts to PCI
+> Yenta TI: socket 0000:02:03.0, mfunc 0x005c1d22, devctl 0x44
+> Yenta TI: socket 0000:02:03.0 probing PCI interrupt failed, trying to fix
+> Yenta TI: socket 0000:02:03.0 no PCI interrupts. Fish. Please report.
+> Yenta: no PCI IRQ, CardBus support disabled for this socket.
+> Yenta: check your BIOS CardBus, BIOS IRQ or ACPI settings.
+> Yenta: ISA IRQ mask 0x02c0, PCI irq 0
+> Socket status: 30000006
+> pcmcia: parent PCI bridge I/O window: 0xc000 - 0xcfff
+> cs: IO port probe 0xc000-0xcfff: clean.
+> pcmcia: parent PCI bridge Memory window: 0xffd00000 - 0xffdfffff
+> pcmcia: parent PCI bridge Memory window: 0x88000000 - 0x89ffffff
+> pcmcia: Detected deprecated PCMCIA ioctl usage.
+> pcmcia: This interface will soon be removed from the kernel; please expect breakage unless you upgrade to new tools.
+> pcmcia: see http://www.kernel.org/pub/linux/utils/kernel/pcmcia/pcmcia.html for details.
+> cs: IO port probe 0xc00-0xcff: clean.
+> cs: IO port probe 0x820-0x8ff: clean.
+> cs: IO port probe 0x800-0x80f: clean.
+> cs: IO port probe 0x3e0-0x4ff: excluding 0x4d0-0x4d7
+> cs: IO port probe 0x100-0x3af: excluding 0x378-0x37f
+> cs: IO port probe 0xa00-0xaff: clean.
+> 8139too Fast Ethernet driver 0.9.27
+> PCI: Found IRQ 3 for device 0000:02:0b.0
+> PCI: Sharing IRQ 3 with 0000:00:1d.1
+> eth0: RealTek RTL8139 at 0xc800, 00:03:0d:14:95:c4, IRQ 3
+> eth0:  Identified 8139 chip type 'RTL-8100B/8139D'
+> ieee1394: Initialized config rom entry `ip1394'
+> PCI: Found IRQ 5 for device 0000:02:0a.0
+> PCI: Sharing IRQ 5 with 0000:00:1d.2
+> PCI: Sharing IRQ 5 with 0000:00:1f.1
+> ohci1394: fw-host0: OHCI-1394 1.1 (PCI): IRQ=[5]  MMIO=[ffdff800-ffdfffff]  Max Packet=[2048]  IR/IT contexts=[4/8]
+> PCI: Found IRQ 4 for device 0000:00:1f.5
+> PCI: Sharing IRQ 4 with 0000:00:1f.3
+> PCI: Sharing IRQ 4 with 0000:00:1f.6
+> IRQ routing conflict for 0000:02:03.0, have irq 11, want irq 4
+> PCI: Setting latency timer of device 0000:00:1f.5 to 64
+> intel8x0_measure_ac97_clock: measured 55427 usecs
+> intel8x0: clocking to 48000
+> ieee1394: Host added: ID:BUS[0-00:1023]  GUID[00030d4975701d84]
+> i8xx TCO timer: initialized (0x0860). heartbeat=30 sec (nowayout=0)
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> agpgart: Detected an Intel 865 Chipset.
+> agpgart: AGP aperture is 64M @ 0xf8000000
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> shpchp: Unknown symbol acpi_get_name
+> shpchp: Unknown symbol acpi_evaluate_object
+> kobject_register failed for ehci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> ohci_hcd: 2005 April 22 USB 1.1 'Open' Host Controller (OHCI) Driver (PCI)
+> kobject_register failed for ohci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c032636c>] bus_add_driver+0x5c/0xa0
+>  [<c0326e37>] driver_register+0x57/0x90
+>  [<c02ea732>] __pci_register_driver+0x52/0x80
+>  [<f8ecf02e>] ohci_hcd_pci_init+0x2e/0x35 [ohci_hcd]
+>  [<c012e6e2>] sys_init_module+0x102/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for uhci_hcd (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> kobject_register failed for usb_storage (-17)
+>  [<c02ddf56>] kobject_register+0x36/0x50
+>  [<c012d0ed>] mod_sysfs_setup+0x3d/0xb0
+>  [<c012e4c9>] load_module+0x909/0x9f0
+>  [<c012e623>] sys_init_module+0x43/0x190
+>  [<c01029c8>] syscall_call+0x7/0xb
+> eth0: link up, 100Mbps, full-duplex, lpa 0x45E1
+> eth0: link up, 100Mbps, full-duplex, lpa 0x45E1
+> NET: Registered protocol family 10
+> lo: Disabled Privacy Extensions
+> IPv6 over IPv4 tunneling driver
+> eth0: no IPv6 routers present
 
-
->
-> The driver for the dongle will not start properly when statically linked
-> into the kernel. There should be a log message, though.
->
-No log message unless I am missing something. What is the module
-called? After the
-make modules in the kernel building process I will have to find it and
-store it somewhere I will try loading it manually when the new kernel
-is booted.
-
-The virtual driver I can build in statically?
-
-
->
-> Can you post the compete dmesg output?
->
-
- It is attached as a txt file. The errors regarding ehci, ohci, uhci
-and mass_storage are results of trying to load modules that I have
-statically built into the kernel.
-
-
-Regards,
-
-Roland
-
-
-
-
-
-> > I have checked the .config for the kernel build and CAN is statically
-> > built into it.
-> >
-> > I would prefer to statically build these things into the kernel due to
-> > unwieldiness of my ditribution. If this is not possible I will make
-> > modules. But is this the cause of problem I am having?
-> > I have no device hooked to my system (PEAK dongle on its way) and the
-> > virtual driver and TX loopback ability  has been excluded from the
-> > kernel build. Is this possibly why i have no devices listed in
-> > proc/rtcan/devices?
-> Wolfgang.
->
-> > On 2/22/07, Wolfgang Grandegger <wg@domain.hid> wrote:
-> >> roland Tollenaar wrote:
-> >> > Hi Jan,
-> >> >
-> >> >>
-> >> >> rtcanX are networking devices, but only visible in the context of
-> >> >> RTDM/AF_CAN.
-> >> > What is this?
-> >> >
-> >> > To enable them, use rtcanconfig as explained in the README.
-> >> > Which README are you referring to? The only one I know of that says
-> >> > something about rtcanconfig is in /src/utils/can and it does not
-> >> > explain how to use ctrlmode and bittime. There is an example in it
-> >> >
-> >> > rtcanconfig rtcan0 --baudrate=125000 start.
-> >> >
-> >> > If I try
-> >> >
-> >> > rtcanconfig rtcan0 --baudrate=125000 start
-> >> >
-> >> > I get:
-> >> >
-> >> > "Can't get interface index for rtcan0, code=-19"
-> >> >
-> >> > Any idea what is wrong?
-> >>
-> >> Your devices have not yet show up on your system. I guess there is no
-> >> entry in /proc/rtcan/devices. Check your boot log.
-> >>
-> >> Wolfgang.
-> >>
-> >>
-> >
-> >
->
->
-
-------=_Part_22627_9331430.1172147698771
-Content-Type: text/plain; name=dmesg.txt; charset=ANSI_X3.4-1968
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_eyh89y6d
-Content-Disposition: attachment; filename="dmesg.txt"
-
-dmVSZWFkeSBTZWVrQ29tcGxldGUgRXJyb3IgfQpoZGM6IHBhY2tldCBjb21tYW5kIGVycm9yOiBl
-cnJvcj0weDU0IHsgQWJvcnRlZENvbW1hbmQgTGFzdEZhaWxlZFNlbnNlPTB4MDUgfQppZGU6IGZh
-aWxlZCBvcGNvZGUgd2FzOiB1bmtub3duCmhkYzogcGFja2V0IGNvbW1hbmQgZXJyb3I6IHN0YXR1
-cz0weDUxIHsgRHJpdmVSZWFkeSBTZWVrQ29tcGxldGUgRXJyb3IgfQpoZGM6IHBhY2tldCBjb21t
-YW5kIGVycm9yOiBlcnJvcj0weDU0IHsgQWJvcnRlZENvbW1hbmQgTGFzdEZhaWxlZFNlbnNlPTB4
-MDUgfQppZGU6IGZhaWxlZCBvcGNvZGUgd2FzOiB1bmtub3duCmhkYzogcGFja2V0IGNvbW1hbmQg
-ZXJyb3I6IHN0YXR1cz0weDUxIHsgRHJpdmVSZWFkeSBTZWVrQ29tcGxldGUgRXJyb3IgfQpoZGM6
-IHBhY2tldCBjb21tYW5kIGVycm9yOiBlcnJvcj0weDU0IHsgQWJvcnRlZENvbW1hbmQgTGFzdEZh
-aWxlZFNlbnNlPTB4MDUgfQppZGU6IGZhaWxlZCBvcGNvZGUgd2FzOiB1bmtub3duCmhkYzogcGFj
-a2V0IGNvbW1hbmQgZXJyb3I6IHN0YXR1cz0weDUxIHsgRHJpdmVSZWFkeSBTZWVrQ29tcGxldGUg
-RXJyb3IgfQpoZGM6IHBhY2tldCBjb21tYW5kIGVycm9yOiBlcnJvcj0weDU0IHsgQWJvcnRlZENv
-bW1hbmQgTGFzdEZhaWxlZFNlbnNlPTB4MDUgfQppZGU6IGZhaWxlZCBvcGNvZGUgd2FzOiB1bmtu
-b3duClVERi1mczogTm8gcGFydGl0aW9uIGZvdW5kICgxKQpYRlM6IGJhZCBtYWdpYyBudW1iZXIK
-WEZTOiBTQiB2YWxpZGF0ZSBmYWlsZWQKTlRGUyB2b2x1bWUgdmVyc2lvbiAzLjEuCnNwdXJpb3Vz
-IDgyNTlBIGludGVycnVwdDogSVJRNy4KVURGLWZzOiBObyBwYXJ0aXRpb24gZm91bmQgKDEpClhG
-UzogYmFkIG1hZ2ljIG51bWJlcgpYRlM6IFNCIHZhbGlkYXRlIGZhaWxlZApMaW51eCBhZ3BnYXJ0
-IGludGVyZmFjZSB2MC4xMDEgKGMpIERhdmUgSm9uZXMKZnVzZSBpbml0IChBUEkgdmVyc2lvbiA3
-LjYpCk5URlMgdm9sdW1lIHZlcnNpb24gMy4xLgppbnB1dDogUFMvMiBTeW5hcHRpY3MgVG91Y2hQ
-YWQgYXMgL2NsYXNzL2lucHV0L2lucHV0MQpJbnRlbCBJU0EgUENJQyBwcm9iZTogbm90IGZvdW5k
-LgpEYXRhYm9vayBUQ0lDLTIgUENNQ0lBIHByb2JlOiBub3QgZm91bmQuClBDSTogRm91bmQgSVJR
-IDQgZm9yIGRldmljZSAwMDAwOjAyOjAzLjAKUENJOiBTaGFyaW5nIElSUSA0IHdpdGggMDAwMDow
-MDoxZi4zClBDSTogU2hhcmluZyBJUlEgNCB3aXRoIDAwMDA6MDA6MWYuNQpQQ0k6IFNoYXJpbmcg
-SVJRIDQgd2l0aCAwMDAwOjAwOjFmLjYKSVJRIHJvdXRpbmcgY29uZmxpY3QgZm9yIDAwMDA6MDI6
-MDMuMCwgaGF2ZSBpcnEgMTEsIHdhbnQgaXJxIDQKWWVudGE6IENhcmRCdXMgYnJpZGdlIGZvdW5k
-IGF0IDAwMDA6MDI6MDMuMCBbMTU4NDozMDAwXQpZZW50YTogYWRqdXN0aW5nIGRpYWdub3N0aWM6
-IDQwIC0+IDYwClllbnRhOiBFbmFibGluZyBidXJzdCBtZW1vcnkgcmVhZCB0cmFuc2FjdGlvbnMK
-WWVudGE6IFVzaW5nIENTQ0lOVCB0byByb3V0ZSBDU0MgaW50ZXJydXB0cyB0byBQQ0kKWWVudGE6
-IFJvdXRpbmcgQ2FyZEJ1cyBpbnRlcnJ1cHRzIHRvIFBDSQpZZW50YSBUSTogc29ja2V0IDAwMDA6
-MDI6MDMuMCwgbWZ1bmMgMHgwMDVjMWQyMiwgZGV2Y3RsIDB4NDQKWWVudGEgVEk6IHNvY2tldCAw
-MDAwOjAyOjAzLjAgcHJvYmluZyBQQ0kgaW50ZXJydXB0IGZhaWxlZCwgdHJ5aW5nIHRvIGZpeApZ
-ZW50YSBUSTogc29ja2V0IDAwMDA6MDI6MDMuMCBubyBQQ0kgaW50ZXJydXB0cy4gRmlzaC4gUGxl
-YXNlIHJlcG9ydC4KWWVudGE6IG5vIFBDSSBJUlEsIENhcmRCdXMgc3VwcG9ydCBkaXNhYmxlZCBm
-b3IgdGhpcyBzb2NrZXQuClllbnRhOiBjaGVjayB5b3VyIEJJT1MgQ2FyZEJ1cywgQklPUyBJUlEg
-b3IgQUNQSSBzZXR0aW5ncy4KWWVudGE6IElTQSBJUlEgbWFzayAweDAyYzAsIFBDSSBpcnEgMApT
-b2NrZXQgc3RhdHVzOiAzMDAwMDAwNgpwY21jaWE6IHBhcmVudCBQQ0kgYnJpZGdlIEkvTyB3aW5k
-b3c6IDB4YzAwMCAtIDB4Y2ZmZgpjczogSU8gcG9ydCBwcm9iZSAweGMwMDAtMHhjZmZmOiBjbGVh
-bi4KcGNtY2lhOiBwYXJlbnQgUENJIGJyaWRnZSBNZW1vcnkgd2luZG93OiAweGZmZDAwMDAwIC0g
-MHhmZmRmZmZmZgpwY21jaWE6IHBhcmVudCBQQ0kgYnJpZGdlIE1lbW9yeSB3aW5kb3c6IDB4ODgw
-MDAwMDAgLSAweDg5ZmZmZmZmCnBjbWNpYTogRGV0ZWN0ZWQgZGVwcmVjYXRlZCBQQ01DSUEgaW9j
-dGwgdXNhZ2UuCnBjbWNpYTogVGhpcyBpbnRlcmZhY2Ugd2lsbCBzb29uIGJlIHJlbW92ZWQgZnJv
-bSB0aGUga2VybmVsOyBwbGVhc2UgZXhwZWN0IGJyZWFrYWdlIHVubGVzcyB5b3UgdXBncmFkZSB0
-byBuZXcgdG9vbHMuCnBjbWNpYTogc2VlIGh0dHA6Ly93d3cua2VybmVsLm9yZy9wdWIvbGludXgv
-dXRpbHMva2VybmVsL3BjbWNpYS9wY21jaWEuaHRtbCBmb3IgZGV0YWlscy4KY3M6IElPIHBvcnQg
-cHJvYmUgMHhjMDAtMHhjZmY6IGNsZWFuLgpjczogSU8gcG9ydCBwcm9iZSAweDgyMC0weDhmZjog
-Y2xlYW4uCmNzOiBJTyBwb3J0IHByb2JlIDB4ODAwLTB4ODBmOiBjbGVhbi4KY3M6IElPIHBvcnQg
-cHJvYmUgMHgzZTAtMHg0ZmY6IGV4Y2x1ZGluZyAweDRkMC0weDRkNwpjczogSU8gcG9ydCBwcm9i
-ZSAweDEwMC0weDNhZjogZXhjbHVkaW5nIDB4Mzc4LTB4MzdmCmNzOiBJTyBwb3J0IHByb2JlIDB4
-YTAwLTB4YWZmOiBjbGVhbi4KODEzOXRvbyBGYXN0IEV0aGVybmV0IGRyaXZlciAwLjkuMjcKUENJ
-OiBGb3VuZCBJUlEgMyBmb3IgZGV2aWNlIDAwMDA6MDI6MGIuMApQQ0k6IFNoYXJpbmcgSVJRIDMg
-d2l0aCAwMDAwOjAwOjFkLjEKZXRoMDogUmVhbFRlayBSVEw4MTM5IGF0IDB4YzgwMCwgMDA6MDM6
-MGQ6MTQ6OTU6YzQsIElSUSAzCmV0aDA6ICBJZGVudGlmaWVkIDgxMzkgY2hpcCB0eXBlICdSVEwt
-ODEwMEIvODEzOUQnCmllZWUxMzk0OiBJbml0aWFsaXplZCBjb25maWcgcm9tIGVudHJ5IGBpcDEz
-OTQnClBDSTogRm91bmQgSVJRIDUgZm9yIGRldmljZSAwMDAwOjAyOjBhLjAKUENJOiBTaGFyaW5n
-IElSUSA1IHdpdGggMDAwMDowMDoxZC4yClBDSTogU2hhcmluZyBJUlEgNSB3aXRoIDAwMDA6MDA6
-MWYuMQpvaGNpMTM5NDogZnctaG9zdDA6IE9IQ0ktMTM5NCAxLjEgKFBDSSk6IElSUT1bNV0gIE1N
-SU89W2ZmZGZmODAwLWZmZGZmZmZmXSAgTWF4IFBhY2tldD1bMjA0OF0gIElSL0lUIGNvbnRleHRz
-PVs0LzhdClBDSTogRm91bmQgSVJRIDQgZm9yIGRldmljZSAwMDAwOjAwOjFmLjUKUENJOiBTaGFy
-aW5nIElSUSA0IHdpdGggMDAwMDowMDoxZi4zClBDSTogU2hhcmluZyBJUlEgNCB3aXRoIDAwMDA6
-MDA6MWYuNgpJUlEgcm91dGluZyBjb25mbGljdCBmb3IgMDAwMDowMjowMy4wLCBoYXZlIGlycSAx
-MSwgd2FudCBpcnEgNApQQ0k6IFNldHRpbmcgbGF0ZW5jeSB0aW1lciBvZiBkZXZpY2UgMDAwMDow
-MDoxZi41IHRvIDY0CmludGVsOHgwX21lYXN1cmVfYWM5N19jbG9jazogbWVhc3VyZWQgNTU0Mjcg
-dXNlY3MKaW50ZWw4eDA6IGNsb2NraW5nIHRvIDQ4MDAwCmllZWUxMzk0OiBIb3N0IGFkZGVkOiBJ
-RDpCVVNbMC0wMDoxMDIzXSAgR1VJRFswMDAzMGQ0OTc1NzAxZDg0XQppOHh4IFRDTyB0aW1lcjog
-aW5pdGlhbGl6ZWQgKDB4MDg2MCkuIGhlYXJ0YmVhdD0zMCBzZWMgKG5vd2F5b3V0PTApCnNocGNo
-cDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFj
-cGlfZXZhbHVhdGVfb2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciBlaGNpX2hjZCAo
-LTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVk
-Pl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4
-OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAx
-MDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3Ig
-dWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAog
-WzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2Fk
-X21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4
-MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKc2hwY2hwOiBVbmtub3duIHN5
-bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9v
-YmplY3QKYWdwZ2FydDogRGV0ZWN0ZWQgYW4gSW50ZWwgODY1IENoaXBzZXQuCmFncGdhcnQ6IEFH
-UCBhcGVydHVyZSBpcyA2NE0gQCAweGY4MDAwMDAwCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNw
-aV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0Cmtv
-YmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciBlaGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtv
-YmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4
-M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIz
-Pl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwr
-MHg3LzB4Ygprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgdWhjaV9oY2QgKC0xNykKIFs8YzAy
-ZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNm
-c19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAog
-WzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lz
-Y2FsbF9jYWxsKzB4Ny8weGIKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNo
-cGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKc2hwY2hwOiBVbmtub3du
-IHN5bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0
-ZV9vYmplY3QKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIGVoY2lfaGNkICgtMTcpCiBbPGMw
-MmRkZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lz
-ZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAK
-IFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5
-c2NhbGxfY2FsbCsweDcvMHhiCmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciB1aGNpX2hjZCAo
-LTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVk
-Pl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4
-OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAx
-MDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4YgpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlf
-Z2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdApzaHBj
-aHA6IFVua25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBh
-Y3BpX2V2YWx1YXRlX29iamVjdAprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgZWhjaV9oY2Qg
-KC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBl
-ZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsw
-eDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMw
-MTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9y
-IHVoY2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAK
-IFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9h
-ZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8w
-eDE5MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCnNocGNocDogVW5rbm93biBz
-eW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVf
-b2JqZWN0CnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25v
-d24gc3ltYm9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZv
-ciBlaGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUw
-CiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxv
-YWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMv
-MHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0X3JlZ2lzdGVy
-IGZhaWxlZCBmb3IgdWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVy
-KzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAx
-MmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21v
-ZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKc2hwY2hw
-OiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNw
-aV9ldmFsdWF0ZV9vYmplY3QKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNo
-cGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKa29iamVjdF9yZWdpc3Rl
-ciBmYWlsZWQgZm9yIGVoY2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3Rl
-cisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMw
-MTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9t
-b2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCmtvYmpl
-Y3RfcmVnaXN0ZXIgZmFpbGVkIGZvciB1aGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmpl
-Y3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2Qv
-MHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0g
-c3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3
-LzB4YgpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3du
-IHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdApzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlf
-Z2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdAprb2Jq
-ZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgZWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2Jq
-ZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNk
-LzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5d
-IHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4
-Ny8weGIKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIHVoY2lfaGNkICgtMTcpCiBbPGMwMmRk
-ZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNf
-c2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8
-YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2Nh
-bGxfY2FsbCsweDcvMHhiCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBj
-aHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0CnNocGNocDogVW5rbm93biBz
-eW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVf
-b2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciBlaGNpX2hjZCAoLTE3KQogWzxjMDJk
-ZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2Zz
-X3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBb
-PGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNj
-YWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgdWhjaV9oY2QgKC0x
-NykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5d
-IG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkw
-OS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAy
-OWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dl
-dF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKc2hwY2hw
-OiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNw
-aV9ldmFsdWF0ZV9vYmplY3QKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIGVoY2lfaGNkICgt
-MTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+
-XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5
-MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEw
-MjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciB1
-aGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBb
-PGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRf
-bW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgx
-OTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4YgpzaHBjaHA6IFVua25vd24gc3lt
-Ym9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29i
-amVjdApzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3du
-IHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdAprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3Ig
-ZWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAog
-WzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2Fk
-X21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4
-MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKa29iamVjdF9yZWdpc3RlciBm
-YWlsZWQgZm9yIHVoY2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3Rlcisw
-eDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJl
-NGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1
-bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCnNocGNocDog
-VW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlf
-ZXZhbHVhdGVfb2JqZWN0CnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBj
-aHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIg
-ZmFpbGVkIGZvciBlaGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIr
-MHgzNi8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEy
-ZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9k
-dWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0
-X3JlZ2lzdGVyIGZhaWxlZCBmb3IgdWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0
-X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4
-YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5
-c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8w
-eGIKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBz
-eW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dl
-dF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKa29iamVj
-dF9yZWdpc3RlciBmYWlsZWQgZm9yIGVoY2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVj
-dF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8w
-eGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBz
-eXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcv
-MHhiCmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciB1aGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1
-Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3Nl
-dHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMw
-MTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxs
-X2NhbGwrMHg3LzB4YgpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hw
-OiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdApzaHBjaHA6IFVua25vd24gc3lt
-Ym9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29i
-amVjdAprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgZWhjaV9oY2QgKC0xNykKIFs8YzAyZGRm
-NTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19z
-ZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxj
-MDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2Fs
-bF9jYWxsKzB4Ny8weGIKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIHVoY2lfaGNkICgtMTcp
-CiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBt
-b2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkv
-MHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjlj
-OD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRf
-bmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0CnNocGNocDog
-VW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlf
-ZXZhbHVhdGVfb2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciBlaGNpX2hjZCAoLTE3
-KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMwMTJkMGVkPl0g
-bW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9kdWxlKzB4OTA5
-LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAKIFs8YzAxMDI5
-Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3IgdWhj
-aV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxj
-MDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21v
-ZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVsZSsweDQzLzB4MTkw
-CiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKc2hwY2hwOiBVbmtub3duIHN5bWJv
-bCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmpl
-Y3QKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2dldF9uYW1lCnNocGNocDogVW5rbm93biBz
-eW1ib2wgYWNwaV9ldmFsdWF0ZV9vYmplY3QKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIGVo
-Y2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8
-YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9t
-b2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5
-MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhiCmtvYmplY3RfcmVnaXN0ZXIgZmFp
-bGVkIGZvciB1aGNpX2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgz
-Ni8weDUwCiBbPGMwMTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRj
-OT5dIGxvYWRfbW9kdWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxl
-KzB4NDMvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4YgpzaHBjaHA6IFVu
-a25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hwOiBVbmtub3duIHN5bWJvbCBhY3BpX2V2
-YWx1YXRlX29iamVjdApzaHBjaHA6IFVua25vd24gc3ltYm9sIGFjcGlfZ2V0X25hbWUKc2hwY2hw
-OiBVbmtub3duIHN5bWJvbCBhY3BpX2V2YWx1YXRlX29iamVjdAprb2JqZWN0X3JlZ2lzdGVyIGZh
-aWxlZCBmb3IgZWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0X3JlZ2lzdGVyKzB4
-MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4YjAKIFs8YzAxMmU0
-Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5c19pbml0X21vZHVs
-ZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8weGIKa29iamVjdF9y
-ZWdpc3RlciBmYWlsZWQgZm9yIHVoY2lfaGNkICgtMTcpCiBbPGMwMmRkZjU2Pl0ga29iamVjdF9y
-ZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNfc2V0dXArMHgzZC8weGIw
-CiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8YzAxMmU2MjM+XSBzeXNf
-aW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2NhbGxfY2FsbCsweDcvMHhi
-CnNocGNocDogVW5rbm93biBzeW1ib2wgYWNwaV9nZXRfbmFtZQpzaHBjaHA6IFVua25vd24gc3lt
-Ym9sIGFjcGlfZXZhbHVhdGVfb2JqZWN0CmtvYmplY3RfcmVnaXN0ZXIgZmFpbGVkIGZvciBlaGNp
-X2hjZCAoLTE3KQogWzxjMDJkZGY1Nj5dIGtvYmplY3RfcmVnaXN0ZXIrMHgzNi8weDUwCiBbPGMw
-MTJkMGVkPl0gbW9kX3N5c2ZzX3NldHVwKzB4M2QvMHhiMAogWzxjMDEyZTRjOT5dIGxvYWRfbW9k
-dWxlKzB4OTA5LzB4OWYwCiBbPGMwMTJlNjIzPl0gc3lzX2luaXRfbW9kdWxlKzB4NDMvMHgxOTAK
-IFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4YgpvaGNpX2hjZDogMjAwNSBBcHJpbCAy
-MiBVU0IgMS4xICdPcGVuJyBIb3N0IENvbnRyb2xsZXIgKE9IQ0kpIERyaXZlciAoUENJKQprb2Jq
-ZWN0X3JlZ2lzdGVyIGZhaWxlZCBmb3Igb2hjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2Jq
-ZWN0X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDMyNjM2Yz5dIGJ1c19hZGRfZHJpdmVyKzB4NWMv
-MHhhMAogWzxjMDMyNmUzNz5dIGRyaXZlcl9yZWdpc3RlcisweDU3LzB4OTAKIFs8YzAyZWE3MzI+
-XSBfX3BjaV9yZWdpc3Rlcl9kcml2ZXIrMHg1Mi8weDgwCiBbPGY4ZWNmMDJlPl0gb2hjaV9oY2Rf
-cGNpX2luaXQrMHgyZS8weDM1IFtvaGNpX2hjZF0KIFs8YzAxMmU2ZTI+XSBzeXNfaW5pdF9tb2R1
-bGUrMHgxMDIvMHgxOTAKIFs8YzAxMDI5Yzg+XSBzeXNjYWxsX2NhbGwrMHg3LzB4Ygprb2JqZWN0
-X3JlZ2lzdGVyIGZhaWxlZCBmb3IgdWhjaV9oY2QgKC0xNykKIFs8YzAyZGRmNTY+XSBrb2JqZWN0
-X3JlZ2lzdGVyKzB4MzYvMHg1MAogWzxjMDEyZDBlZD5dIG1vZF9zeXNmc19zZXR1cCsweDNkLzB4
-YjAKIFs8YzAxMmU0Yzk+XSBsb2FkX21vZHVsZSsweDkwOS8weDlmMAogWzxjMDEyZTYyMz5dIHN5
-c19pbml0X21vZHVsZSsweDQzLzB4MTkwCiBbPGMwMTAyOWM4Pl0gc3lzY2FsbF9jYWxsKzB4Ny8w
-eGIKa29iamVjdF9yZWdpc3RlciBmYWlsZWQgZm9yIHVzYl9zdG9yYWdlICgtMTcpCiBbPGMwMmRk
-ZjU2Pl0ga29iamVjdF9yZWdpc3RlcisweDM2LzB4NTAKIFs8YzAxMmQwZWQ+XSBtb2Rfc3lzZnNf
-c2V0dXArMHgzZC8weGIwCiBbPGMwMTJlNGM5Pl0gbG9hZF9tb2R1bGUrMHg5MDkvMHg5ZjAKIFs8
-YzAxMmU2MjM+XSBzeXNfaW5pdF9tb2R1bGUrMHg0My8weDE5MAogWzxjMDEwMjljOD5dIHN5c2Nh
-bGxfY2FsbCsweDcvMHhiCmV0aDA6IGxpbmsgdXAsIDEwME1icHMsIGZ1bGwtZHVwbGV4LCBscGEg
-MHg0NUUxCmV0aDA6IGxpbmsgdXAsIDEwME1icHMsIGZ1bGwtZHVwbGV4LCBscGEgMHg0NUUxCk5F
-VDogUmVnaXN0ZXJlZCBwcm90b2NvbCBmYW1pbHkgMTAKbG86IERpc2FibGVkIFByaXZhY3kgRXh0
-ZW5zaW9ucwpJUHY2IG92ZXIgSVB2NCB0dW5uZWxpbmcgZHJpdmVyCmV0aDA6IG5vIElQdjYgcm91
-dGVycyBwcmVzZW50Cg==
-------=_Part_22627_9331430.1172147698771--
 
