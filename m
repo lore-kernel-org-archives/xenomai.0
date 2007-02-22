@@ -1,15 +1,13 @@
-Message-ID: <45DD5BA1.4080101@domain.hid>
-Date: Thu, 22 Feb 2007 10:00:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45DDCC6D.6020908@domain.hid>
+Date: Thu, 22 Feb 2007 18:01:33 +0100
+From: =?ISO-8859-1?Q?Jan_R=FCdiger?= <ruediger@domain.hid>
 MIME-Version: 1.0
-References: <45DC1D05.1000206@domain.hid>
-	<45DC2478.2020602@domain.hid>	<45DC39DE.8050802@domain.hid>
-	<45DC3E6C.8040905@domain.hid> <45DC4281.8030903@domain.hid>
-	<45DC9C9D.4050107@domain.hid> <45DD54A4.5040204@domain.hid>
-In-Reply-To: <45DD54A4.5040204@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: (was: [Xenomai-help] CAN driver)
+Subject: Re: [Xenomai-core] possible future conflict w LOCAL_APIC
+References: <451C586A.7020309@domain.hid> <1159628606.5014.33.camel@domain.hid>
+	<4522A377.5030503@domain.hid>
+In-Reply-To: <4522A377.5030503@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,45 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Wolfgang Grandegger wrote:
-> Hi Gilles and Jan,
-> 
-> Jan Kiszka wrote:
-> 
->>Wolfgang Grandegger wrote:
->>
->>>>>BTW: some time ago I provided a patch to make the CAN utility programs
->>>>>part of the Doxygen documentation. IIRC, we said it's nice to have
->>>>>hyperlinked examples in general.
->>>>
->>>>Some link at hand? Does it still apply? Sounds like something worth to
->>>>apply.
->>>
->>>See https://mail.gna.org/public/xenomai-core/2006-11/msg00033.html.
->>>My patch was for the CAN utilities only. The idea was to have a more
->>>general implementation including code snippets and now examples as well.
->>>
->>>Wolfgang.
->>>
->>
->>Gilles, as you are planning to regenerate the docs for trunk anyway,
->>would you merge this patch (or better the corrected version) at that chance?
-> 
-> 
-> Attached is a revised patch for hyper-linking with example and utility 
-> programs. Apart from the CAN utilities, I have also added cross-link.c 
-> for RTserial and the code snippets of the native skin by adding 
-> "@example" tags to the appropriate source files. For the "demos" of the 
-> skins it was not obvious for me where to put them. The examples are then 
-> also part of the PDF documentation. Please have a look, hope you like 
-> it. I personally find the hyper-linking very useful.
+Hello
 
-Ok. I finally got doxygen 1.4.6 tabs (the problem was the filesystem
-rights of the tabs.css file), I will include your patch tonight.
+Few months ago there was a discussion about disabling local apic in the
+kernel. The last point in this discussion was:
 
--- 
-                                                 Gilles Chanteperdrix
+> update:
+>=20
+> Ingo Molnar has voiced strong preference that the config option remain,
+> citing 60kb growth in its removal.  So its probably safe for now ;-)
+
+Now i have the problem that i cant disable the X86_UP_APIC anymore when
+building the kernel 2.6.19. Normally this isn't a problem since it is
+disabled during boot (my machine doesn't have APIC). But xenomai is
+build with enabled APIC and thus refuses to run on the new kernel.
+
+Is there a way to disable APIC during kernel build? or can i build
+xenomai without APIC?
+
+thanks allot in advance
+
+jan r=FCdiger
+
+
 
