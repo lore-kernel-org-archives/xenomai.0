@@ -1,18 +1,21 @@
-Message-ID: <45DDB2DB.4010104@domain.hid>
-Date: Thu, 22 Feb 2007 16:12:27 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45DDB542.2050601@domain.hid>
+Date: Thu, 22 Feb 2007 16:22:42 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] hello xenomai world?
-References: <bc4264770702220311m604b0dcdh2543e40405451147@domain.hid>	
-	<45DD7E00.8020505@domain.hid>	
-	<bc4264770702220456se1cb181r8aee5fde75c93db4@domain.hid>	
-	<45DD99D1.9000600@domain.hid>
-	<bc4264770702220641me28831ahd9e10cf1b689510c@domain.hid>
-In-Reply-To: <bc4264770702220641me28831ahd9e10cf1b689510c@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAF3A53C958426F1BAF9C8897"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] CAN driver
+References: <45DC1D05.1000206@domain.hid> <45DD8B42.1020709@domain.hid>	
+	<bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>	
+	<45DD9294.1060109@domain.hid>	
+	<bc4264770702220502p13556486l3d59ad7b4b3ff737@domain.hid>	
+	<45DD9814.4060809@domain.hid>	
+	<bc4264770702220536veb7de41saf40e41fccbbf377@domain.hid>	
+	<45DD9DB0.1010103@domain.hid>	
+	<bc4264770702220557x7d43d767m5383e8d8ce60204a@domain.hid>	
+	<45DDA504.4070408@domain.hid>
+	<bc4264770702220652m138956ceh32713b862ee1080a@domain.hid>
+In-Reply-To: <bc4264770702220652m138956ceh32713b862ee1080a@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,104 +26,58 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAF3A53C958426F1BAF9C8897
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
 roland Tollenaar wrote:
-> Hi Jan,
->=20
->> See, you seem to manage choosing the complicated, non-standard way of
->> doing things first. Now try to solve your issues one by one, not in
->> arbitrary order.
-> :)  Its not quite as arbitrary as it may seem.
->=20
->> 1. Make your kernel boot fine, including all desired modules, without
->> having it issue any kind of error messages. Bootlogs are under /var/lo=
-g,
->> just look into those files.
-> All sorted out! Remember that the kernel was fine.  I could only
-> realized that something was missing when I tried rtcanconfig and I
-> could not find the /rtcan0 and /rtcan1. For someone entirely new to
-> both xenomai and rt-can its not surprising this take place. I stuck as
-> closely as possible to the default suggestion in the kernel config.
-> AFAIK the virtual device was not selected.
->=20
+> Hi Wolfgang,
+> 
+>> And /proc/rtcan/devices is also useful.
+> 
+> Device rtcan0 Baudrate undefined State active TXCounter 7 RXCounter 5 
+> Errors 0
+> Device rtcan1 Baudrate undefined State stopped TXCounter 0 RXCounter 0 
+> Errors 0
+> 
+>> > virtual can with? I presume i can send it messages with rtcansend and
+>> > read the messages with rtcanrecieve?
+>> src/utils/can/README?
+> Works. Can send and recieve messages on it. Interesting may be this:
+> If i send with rtcansend then in another console recieve the messages
+> will not display. I would have expected the messages to be in the
+> stack and display (depending how many messages the stack can hold).
+> Why is that expectation incorrect?
 
-Feel free to write down some "first steps with CAN under Xenomai" once
-you are through (=3D>wiki)! The virtual devices are not explicitly
-documented yet. But making them default on the other hand is overkill,
-because they are special to most users (with real hardware).
+There is no per device stack. The messages will be delivered directly to 
+  the sockets receive buffer if it is listening and the filter does match.
 
->=20
->> 2. Check where you have installed the user space part. Default is
->> /usr/xenomai, and for a first run it's probably wise to keep this.
-> Sorted! Absolutely, this is where I have had it installed all the
-> time. It seems to be in perfect shape.
->=20
->> 3. Check if you can build the examples repository. If you installed th=
-e
->> user space part to default location, it must work with only providing
->> the "make KSRC=3D<path-to-kernel-src>" as described in the Makefile.
->> Inside examples/native, you even just need to type "make".
-> Well this is not quite the case. I install to the correct places
-> actually I have from the start used the directories exactly as they
-> are suggested int he documentation. I have jsut reinstalled and the
-> make procedure seems fine. My install directory works and the programs
-> therein are now all functioning. Even rtcongi rtcansend and rtcanrecv.
-> Running make in /examples/native says
->=20
-> Invoke make like this: make /path to xeno-config/. Which is why I was
-> going on about the config variables. I wil now try and find
-> xeno-config if it exists and see how that works. On the other hand I
-> don;t doubt that the application will compile. I need to find out what
-> libraries to include for this particular one for the next steps. See
-> later.
+> 
+>> > I still have the outstanding question of what the module will be
+>> > called for the PEAK CAN dongle. I have to find it after make modules
+>> > to squirrle it away so i can load it after booting due to the
+>> > complications with my live distribution.  You said that I cannot build
+>> > that into the kernel statically correct? Can it be loaded without the
+>> > actual device being connected?
+>>
+>> I said, it can be statically linked into the kernel but it will not work
+>> (without modification, we can discuss this issue when you have a PCAN
+>> dongle). What should a driver without hardware be good for?
+> Good question. On the other hand it would be useful to know which
+> module I have to
+> pick out and load. Then I can compile the kernel for that so long and
+> make a structure that loads it after booting. But that can be done
+> later too.
 
-Ack, my bad. The example makefiles do not assume /usr/xenomai (or,
-alternatively, /usr/xenomai/bin/xeno-config) as default for XENO. Will fi=
-x.
+You can do it now, just try and then ask questions.
 
-Meanwhile try "make XENO=3D/usr/xenomai".
-
->=20
-> The point being that 1, 2 and 3 have been completed in that order. To
-> lay out the structure of what is planned next:
->=20
-> 4-Get a task ala trivial-task compiled into a qt C++ project. (for
-> which I need to know what libraries are required)
->=20
-> 5-Write this task to read CAN messages ever 1 ms and write them to cons=
-ole.
->=20
-> 6-Get multiple tasks into the project running at different times
->=20
-> I do understand your consternation, I have been very verbose on this
-> list today.
-
-Your feedback is appreciated and helps improving things. Just a certain
-part of your verbosity might have been avoidable by digging a bit deeper
-and checking twice, no? :)
-
-Jan
-
-
---------------enigAF3A53C958426F1BAF9C8897
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3bLbniDOoMHTA+kRArLrAJ9EEdRz2cIkR8uYItKvpHat7IFApACePCty
-fLp5s52wLDrLHKGhIwa4ro8=
-=uESn
------END PGP SIGNATURE-----
-
---------------enigAF3A53C958426F1BAF9C8897--
+> 
+>> > Maybe a small suggestion. Would it not be better to have the virtual
+>> > can driver built into the kernel by default. As a new user I did not
+>> > select it, saw no reason to.
+>>
+>> Might be useful, indeed. BTW: there is a help available for each
+>> configuration option?
+> There should be. I think I used the help. Will check again for you
+> when I change the configuration to load the PEAK driver as a module.
+> 
+> Roland.
 
