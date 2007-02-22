@@ -1,14 +1,17 @@
-Message-ID: <45DD7E00.8020505@domain.hid>
-Date: Thu, 22 Feb 2007 12:26:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <bc4264770702220339m1b8dfcbfk11f9c05e2a0aed91@domain.hid>
+Date: Thu, 22 Feb 2007 11:39:54 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] CAN driver
+In-Reply-To: <45DD7C42.9070407@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] hello xenomai world?
-References: <bc4264770702220311m604b0dcdh2543e40405451147@domain.hid>
-In-Reply-To: <bc4264770702220311m604b0dcdh2543e40405451147@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2AB619CC49827D8D868B5D37"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <45DC1D05.1000206@domain.hid> <45DC2478.2020602@domain.hid>
+	<45DC39DE.8050802@domain.hid> <45DC3E6C.8040905@domain.hid>
+	<45DD5DC0.6040402@domain.hid>
+	<bc4264770702220214y697c57abv9d5170b64fad40eb@domain.hid>
+	<45DD7C42.9070407@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,55 +21,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2AB619CC49827D8D868B5D37
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Jan,
 
-roland Tollenaar wrote:
-> Hi,
->=20
-> I must be making a big mistake. I am browsing through latency in
-> testsuit trying to learn how to set up some tasks that will execute at
-> regular intervals. I kind of had RTAI examples in mind which seemed
-> rather simple to me. Looking at the code in latency is a horrible
-> shock.
->=20
-> Is it at all possible to explain in a couple of lines how a periodic
-> task can be run, lets say a hello world example that puts out the line
-> "hello xenomai world" exactly every 1ms?
+>
+> rtcanX are networking devices, but only visible in the context of
+> RTDM/AF_CAN.
+What is this?
 
-See examples/native/trivial-periodic.c
+ To enable them, use rtcanconfig as explained in the README.
+Which README are you referring to? The only one I know of that says
+something about rtcanconfig is in /src/utils/can and it does not
+explain how to use ctrlmode and bittime. There is an example in it
 
-Also read the comments. :)
+rtcanconfig rtcan0 --baudrate=125000 start.
 
-To overcome the latency issue of printf, there is some patch in sight:
+If I try
 
-https://mail.gna.org/public/xenomai-core/2007-02/msg00087.html
+rtcanconfig rtcan0 --baudrate=125000 start
 
-specifically
+I get:
 
-https://mail.gna.org/public/xenomai-core/2007-02/msg00089.html
+"Can't get interface index for rtcan0, code=-19"
 
-Jan
+Any idea what is wrong?
+
+Regards,
+
+Roland.
 
 
---------------enig2AB619CC49827D8D868B5D37
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3X4AniDOoMHTA+kRAp3BAJ9OjDw9a3ObnGyq+GuRZ451uF/jogCeKX/O
-57EixWltcORHpv+z2HB9U08=
-=1LXE
------END PGP SIGNATURE-----
-
---------------enig2AB619CC49827D8D868B5D37--
+>
+> Jan
+>
+>
+>
 
