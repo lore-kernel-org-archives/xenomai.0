@@ -1,21 +1,14 @@
-Message-ID: <45DDB542.2050601@domain.hid>
-Date: Thu, 22 Feb 2007 16:22:42 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45DDB8A6.9090703@domain.hid>
+Date: Thu, 22 Feb 2007 16:37:10 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN driver
-References: <45DC1D05.1000206@domain.hid> <45DD8B42.1020709@domain.hid>	
-	<bc4264770702220434v13302afcg3f790e823f08169c@domain.hid>	
-	<45DD9294.1060109@domain.hid>	
-	<bc4264770702220502p13556486l3d59ad7b4b3ff737@domain.hid>	
-	<45DD9814.4060809@domain.hid>	
-	<bc4264770702220536veb7de41saf40e41fccbbf377@domain.hid>	
-	<45DD9DB0.1010103@domain.hid>	
-	<bc4264770702220557x7d43d767m5383e8d8ce60204a@domain.hid>	
-	<45DDA504.4070408@domain.hid>
-	<bc4264770702220652m138956ceh32713b862ee1080a@domain.hid>
-In-Reply-To: <bc4264770702220652m138956ceh32713b862ee1080a@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Hello world with questions
+References: <bc4264770702220523r6af8f8at6d709a0e9079bd6c@domain.hid>
+In-Reply-To: <bc4264770702220523r6af8f8at6d709a0e9079bd6c@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9DD8459513BFF7875ACB6E90"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,58 +19,170 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9DD8459513BFF7875ACB6E90
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
 roland Tollenaar wrote:
-> Hi Wolfgang,
-> 
->> And /proc/rtcan/devices is also useful.
-> 
-> Device rtcan0 Baudrate undefined State active TXCounter 7 RXCounter 5 
-> Errors 0
-> Device rtcan1 Baudrate undefined State stopped TXCounter 0 RXCounter 0 
-> Errors 0
-> 
->> > virtual can with? I presume i can send it messages with rtcansend and
->> > read the messages with rtcanrecieve?
->> src/utils/can/README?
-> Works. Can send and recieve messages on it. Interesting may be this:
-> If i send with rtcansend then in another console recieve the messages
-> will not display. I would have expected the messages to be in the
-> stack and display (depending how many messages the stack can hold).
-> Why is that expectation incorrect?
+> Hi,
+>=20
+> I have copy-pasted the trivial app into the body of this mail. To
+> understand what is
+> going on I have sprinkled and garnished it with questions.
+>=20
+>=20
+> [These are standard headers I presume]
+> #include <stdio.h>
+> #include <signal.h>
+> #include <unistd.h>
+> #include <sys/mman.h>
 
-There is no per device stack. The messages will be delivered directly to 
-  the sockets receive buffer if it is listening and the filter does match.
+Jep.
 
-> 
->> > I still have the outstanding question of what the module will be
->> > called for the PEAK CAN dongle. I have to find it after make modules
->> > to squirrle it away so i can load it after booting due to the
->> > complications with my live distribution.  You said that I cannot build
->> > that into the kernel statically correct? Can it be loaded without the
->> > actual device being connected?
->>
->> I said, it can be statically linked into the kernel but it will not work
->> (without modification, we can discuss this issue when you have a PCAN
->> dongle). What should a driver without hardware be good for?
-> Good question. On the other hand it would be useful to know which
-> module I have to
-> pick out and load. Then I can compile the kernel for that so long and
-> make a structure that loads it after booting. But that can be done
-> later too.
+>=20
+>=20
+> [These are xenomai headers. What libraries must be linked in with them?=
+]
+> #include <native/task.h>
+> #include <native/timer.h>
 
-You can do it now, just try and then ask questions.
+-lnative, see examples.
 
-> 
->> > Maybe a small suggestion. Would it not be better to have the virtual
->> > can driver built into the kernel by default. As a new user I did not
->> > select it, saw no reason to.
->>
->> Might be useful, indeed. BTW: there is a help available for each
->> configuration option?
-> There should be. I think I used the help. Will check again for you
-> when I change the configuration to load the PEAK driver as a module.
-> 
+>=20
+> [I see this macro is called later as an argument. What is its function?=
+]
+> RT_TASK demo_task;
+
+It's a type in fact. Actually, this is bad style, derived from the
+original RTAI API mess. I think we should establish something like
+rt_task_t etc. on the long-term for the Xenomai native skin, keeping the
+current names only for legacy code (Philippe?).
+
+>=20
+> /* NOTE: error handling omitted. */
+>=20
+> void demo(void *arg)
+> {
+>=20
+>           RTIME now, previous;
+>=20
+>     /*
+>      * Arguments: &task (NULL=3Dself),
+>      *            start time,
+>      *            period (here: 1 s)
+>      */
+>     rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+>=20
+>     previous =3D rt_timer_read();
+>=20
+>     while (1) {
+>         rt_task_wait_period(NULL);
+>         now =3D rt_timer_read();
+>=20
+>         /*
+>          * NOTE: printf may have unexpected impact on the timing of
+>          *       your program. It is used here in the critical loop
+>          *       only for demonstration purposes.
+>          */
+>         printf("Time since last turn: %ld.%06ld ms\n",
+>                (long)(now - previous) / 1000000,
+>                (long)(now - previous) % 1000000);
+>                previous =3D now;
+>     }
+> }
+>=20
+>=20
+> [The purpose of this function eludes me ?]
+> void catch_signal(int sig)
+> {
+> }
+
+POSIX signal handling (not Xenomai-related): makes pause() below return
+when some of the caught signals arrive.
+
+>=20
+> int main(int argc, char* argv[])
+> {
+>=20
+> [What is happening here?]
+>     signal(SIGTERM, catch_signal);
+>     signal(SIGINT, catch_signal);
+
+# man signal
+
+>=20
+> [Does this mean I cannot access global variables if this program is
+> running in a thread? That would be a disastrous limitation!]
+>     /* Avoids memory swapping for this program */
+>     mlockall(MCL_CURRENT|MCL_FUTURE);
+
+??? There is no such limitation. It's the plain thread programming model
+like with normal pthreads.
+
+# man mlockall
+
+>=20
+>     /*
+>      * Arguments: &task,
+>      *            name,
+>      *            stack size (0=3Ddefault),
+>      *            priority,
+>      *            mode (FPU, start suspended, ...)
+>      */
+> [I presume this sets the function "demo" as a real-time task?]
+>     rt_task_create(&demo_task, "trivial", 0, 99, 0);
+
+No, it just creates that task object, the function is set below.
+
+>=20
+>     /*
+>      * Arguments: &task,
+>      *            task function,
+>      *            function argument
+>      */
+>     rt_task_start(&demo_task, &demo, NULL);
+> [Is RTASK a task label? What happens if there are more than 1 task to
+> run in separate threads?]
+
+RT_TASK is the type of a task /descriptor/ (like a file descriptor or
+pthread_t). You can have more tasks by playing with more descriptors.
+
+>=20
+> [How is the loop broken to get to this part of the program?]
+>     pause();
+
+see above
+
+>=20
+>     rt_task_delete(&demo_task);
+> }
+>=20
+>=20
+> Kindly,
+>=20
 > Roland.
+>=20
+
+HTH,
+Jan
+
+
+--------------enig9DD8459513BFF7875ACB6E90
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF3bimniDOoMHTA+kRAtaoAJ9v1PCFe4CoGhFtLu9jHvzhuTwTOQCdHu83
+Qa53Svx9sYjgtAJtklIEHEU=
+=b0fk
+-----END PGP SIGNATURE-----
+
+--------------enig9DD8459513BFF7875ACB6E90--
 
