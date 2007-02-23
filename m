@@ -1,11 +1,13 @@
-Message-ID: <45DEF6AA.5030609@domain.hid>
-Date: Fri, 23 Feb 2007 15:14:02 +0100
+Message-ID: <45DEF72C.2090807@domain.hid>
+Date: Fri, 23 Feb 2007 15:16:12 +0100
 From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] latency hangs on AT91RM9200
-References: <45DECFAF.60304@domain.hid> <45DEE913.9080809@domain.hid>
-	<45DEF122.2060406@domain.hid> <45DEF605.2060402@domain.hid>
-In-Reply-To: <45DEF605.2060402@domain.hid>
+References: <45DECFAF.60304@domain.hid> <45DEE913.9080809@domain.hid>	
+	<45DEF122.2060406@domain.hid>
+	<1172239058.26738.18.camel@domain.hid>	
+	<45DEF28D.3090506@domain.hid> <1172239953.26738.29.camel@domain.hid>
+In-Reply-To: <1172239953.26738.29.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,28 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: rpm@xenomai.org
 Cc: Xenomai-core@domain.hid
 
-Gilles,
+Philippe,
 
->> Sure but I would still not expect the system to hang!
->> As I said missing a deadline is bad but ok.
->> But hanging the whole system is not quite ok.
+>>>> But I don't get the output of __backtrace()!
+>>> Before calling your backtrace helper, try adding:
+>>>
+>>> 	ipipe_set_printk_sync(ipipe_current_domain);
+>> And then use printk() instead of my_printk()?
+>>
 > 
-> I want this bug solved too, especially since I am not sure that we will
-> only see it with too short periods.
+> Yes, switching this on is a brute force attempt to bypass any
+> bufferization and allow printk to call the console driver directly
+> regardless of the current domain - this may, or may not work, depending
+> on the level of brokenness of the current situation (this said, if I
+> don't get why printascii() as used by my_printk() does not send the
+> characters to the uart as expected).
 
-Makes us two! ;-)
-
-> I would add the call to printascii(printk_buff) directly in vprintk, and
-> use printk. Note however that special care must be taken to avoid
-> recursion when calling printk inside schedule, because printk may use
-> schedule. Anyway, I think the tracer will give better results than a
-> simple backtrace.
 Ok. Thanks.
 
-So what exactly shell I do? I have never worked with "the tracer".
+But since BUG() does the backtrace as well, there's no need for my hack.
+As you said replacing return with BUG() is enough.
+
+But as you can see from the backtrace, there's not muzch info ....
 
 Steven
+
 
