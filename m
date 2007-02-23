@@ -1,16 +1,15 @@
-Message-ID: <45DEEF73.6080608@domain.hid>
-Date: Fri, 23 Feb 2007 14:43:15 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Paul <paul_c@domain.hid>
 Subject: Re: [Xenomai-help] CAN driver
-References: <45DC1D05.1000206@domain.hid>
-	<45DEC91C.7040702@domain.hid>	<bc4264770702230404w42cc72c2ke9d6f3affe2e7244@domain.hid>	<200702231231.08664.paul_c@domain.hid>
+Date: Fri, 23 Feb 2007 13:52:20 +0000
+References: <45DC1D05.1000206@domain.hid> <200702231231.08664.paul_c@domain.hid>
 	<bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>
 In-Reply-To: <bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig78998E9401B4581FE4BB776B"
-Sender: jan.kiszka@domain.hid
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200702231352.20211.paul_c@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,45 +22,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig78998E9401B4581FE4BB776B
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
 
-roland Tollenaar wrote:
-> hi Paul,
->=20
-> Thanks for the urls. They are very helpful.
->=20
+Hi Roland
+
+On Friday 23 February 2007 13:25, roland Tollenaar wrote:
 > Does anyone know what the future of the parallel port is going to be?
 > Will it be disappearing from the PC,s in the near future or will it
 > still be around on new machines for a while?
 
-Already vanished from laptops, will probably disappear from commodity
-desktop hardware in the next years as well. But I guess industrial
-boards will stick to it a bit longer.
+I think you'll find many commodity manufacturers already label the parallel 
+port as "legacy".. In fact, a number of laptops are shipped without one!
 
-USB has reached up, at least for lab scenarios (and your CAN dongle it
-surely intended for such a use case). RT and USB is still an engineering
-task to be finished. First approaches are there for Xenomai, but they
-need stabilisation and interface standardisation.
+ I don't think we will see the parallel port disappear for a few years, but 
+the time will come - The alternatives are PCI cards (worth fitting one if 
+only to take advantage of the faster IO read/writes), or using one of the low 
+cost fpga cards with custom firmware. It has been muted in some quarters that 
+the PCI bus will also disappear, so the fpga option may not sound as daft as 
+it might first appear.
 
-Jan
 
+Regards, Paul.
 
---------------enig78998E9401B4581FE4BB776B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3u9zniDOoMHTA+kRAqR0AJ9BZ6H+QNiR0YhM+PFFKHg8Ue9YIwCfawpu
-Zek9LEcqbsJ27EZAL1KZ/lI=
-=bvI3
------END PGP SIGNATURE-----
-
---------------enig78998E9401B4581FE4BB776B--
 
