@@ -1,15 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45DEED50.4070007@domain.hid>
-References: <45DEDED6.4070202@domain.hid> <1172237401.26738.13.camel@domain.hid>
-	<45DEED50.4070007@domain.hid>
-Content-Type: text/plain
-Date: Fri, 23 Feb 2007 14:48:57 +0100
-Message-Id: <1172238537.26738.15.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45DEF0FE.4010506@domain.hid>
+Date: Fri, 23 Feb 2007 14:49:50 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-core] latency hangs on AT91RM9200
+References: <45DECFAF.60304@domain.hid>
+In-Reply-To: <45DECFAF.60304@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Re: [BUG] trunk: oops with Stephan's stress test
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,23 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Steven Scholz <steven.scholz@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-On Fri, 2007-02-23 at 14:34 +0100, Jan Kiszka wrote:
-
-> Attached with 3000 points (to play safe).
-
-Great, thanks.
-
->  Hmm, I'm seeing prio values of
-> 257 there. Normal, bug, or broken output?
+Steven Scholz wrote:
+> Hi,
 > 
+> i pick up this issue again.
+> 
+> I am running 2.6.19 + adeos-ipipe-2.6.19-arm-1.6-02.patch + xenomai-svn-2007-02-22
+> on an AT91RM9200 (160MHz/80MHz).
+> 
+> When starting "latency -p 200" it runs for a while printing
+> 
+> RTT|  00:05:37  (periodic user-mode task, 200 us period, priority 99)
+> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+> RTD|      11.200|     139.200|     236.800|       1|      10.800|     280.800
+> RTD|      11.200|     146.400|     253.200|       1|      10.800|     280.800
+> RTD|      11.200|     144.400|     240.400|       1|      10.800|     280.800
+> 
+> but then hangs. The timer LED stops blinking. No "soft lockup detected" appears.
 
-Normal. IRQ thread priority.
+Easy to reproduce with
 
--- 
-Philippe.
+~ # cat /dev/zero > /dev/null &
+~ # latency -p 200
 
-
+--
+Steven
 
