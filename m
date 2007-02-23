@@ -1,11 +1,16 @@
-Message-ID: <cbe23c50702061337yc411319l881b9402e4677d6d@domain.hid>
-Date: Tue, 6 Feb 2007 22:37:26 +0100
-From: "Eric Noulard" <eric.noulard@domain.hid>
+Message-ID: <45DEA9F2.4020104@domain.hid>
+Date: Fri, 23 Feb 2007 09:46:42 +0100
+From: =?ISO-8859-15?Q?Jan_R=FCdiger?= <ruediger@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <451C586A.7020309@domain.hid>
+	<1159628606.5014.33.camel@domain.hid>	<4522A377.5030503@domain.hid>
+	<45DDCC6D.6020908@domain.hid> <45DDCEE0.7070901@domain.hid>
+	<45DDD478.7070403@domain.hid> <45DEA6D9.6010306@domain.hid>
+In-Reply-To: <45DEA6D9.6010306@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] Multiple NIC trouble
+Subject: [Xenomai-help] Re: [Xenomai-core] possible future conflict w
+	LOCAL_APIC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,42 +20,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-I am about to begin to use Xenomai
-on a dual-core x86_64 box.
+Hi
 
-I installed FC6 i386 (32bits) since the adeos patch for x86_64
-was not there when I did the install, I may go back
-to run xenomai on x86_64 since I install both systems (x86_64 and i386)
+> 
+> Do you happen to have SMP on? It takes away the choice of UP_APIC,
+> because it assumes to find an APIC in any case.
+> 
+thx allot, SMP was enabled by default, disabling this and setting the
+sub architecture from "default" to "PC-compatible" finally gives me the
+choice to disable LOCAL_APIC.
 
-Nevertheless I have three 32bits kernels
+> Unless you need it otherwise, CONFIG_PREEMPT is not required for good
+> Xenomai latencies.
+> 
+> Jan
+> 
+> 
+> PS: Please take care of CC, I re-added xenomai-help.
+> 
 
-2.6.19-vanilla     (pure kernel.org kernel)
-2.6.20-rc1-rtXX (precompiled from Ingo Molnar)
-2.6.19-xenomai (vanilla + adeos-ipipe-2.6.19-i386-1.6-03.patch)
 
-The box has 3 ethernet interface (2 on-board + 1 on an additionnal NIC)
 
-eth0 is the additionnal NIC
-eth1,eth2 the on-board I/F
-
-eth1 used for corporate LAN
-eth0 "should" be used for private network (only 2 machines for now)
-
-With this config the machine boots properly with the non-xenomai
-kernels with eth1 and eth0 up and running.
-
-If I boot the xenomai kernel the machine hangs
-(even sysrq does not help) as soon as  the system tries to ifup eth0.
-
-If I disable eth0 the xenomai kernel boots until the end.
-If I try to ifup eth0 "manually" afterward I got the same "hang".
-
-I have no log and sysrq does not work !!
-
-How would you suggest me to investigate that problem?
-
--- 
-Erk
 
