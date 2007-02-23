@@ -1,12 +1,18 @@
-Message-ID: <45DE968B.7090209@domain.hid>
-Date: Fri, 23 Feb 2007 08:23:55 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45DEA6D9.6010306@domain.hid>
+Date: Fri, 23 Feb 2007 09:33:29 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Fwd: Re: [Xenomai-help] hello xenomai world?]
-References: <45DE006F.5000400@domain.hid> <45DE33BF.7090601@domain.hid>
-In-Reply-To: <45DE33BF.7090601@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <451C586A.7020309@domain.hid>
+	<1159628606.5014.33.camel@domain.hid>	<4522A377.5030503@domain.hid>
+	<45DDCC6D.6020908@domain.hid> <45DDCEE0.7070901@domain.hid>
+	<45DDD478.7070403@domain.hid>
+In-Reply-To: <45DDD478.7070403@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF1913B8AE764E46FD8F064C1"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-help] Re: [Xenomai-core] possible future conflict w
+	LOCAL_APIC
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,83 +22,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
+To: =?ISO-8859-15?Q?Jan_R=FCdiger?= <ruediger@domain.hid>
 Cc: xenomai@xenomai.org
 
-Roland Tollenaar wrote:
-> Hi,
->>> Invoke make like this: make /path to xeno-config/. Which is why I was
->>> going on about the config variables. I wil now try and find
->>> xeno-config if it exists and see how that works. On the other hand I
->>> don;t doubt that the application will compile. I need to find out what
->>> libraries to include for this particular one for the next steps. See
->>> later.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF1913B8AE764E46FD8F064C1
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Jan R=FCdiger wrote:
+> Jan Kiszka wrote:
+>> Jan R=FCdiger wrote:
+>>> Hello
+>>>
+>>> Few months ago there was a discussion about disabling local apic in t=
+he
+>>> kernel. The last point in this discussion was:
+>>>
+>>>> update:
+>>>>
+>>>> Ingo Molnar has voiced strong preference that the config option rema=
+in,
+>>>> citing 60kb growth in its removal.  So its probably safe for now ;-)=
+
+>>> Now i have the problem that i cant disable the X86_UP_APIC anymore wh=
+en
+>>> building the kernel 2.6.19. Normally this isn't a problem since it is=
+
+>> ???
 >>
->> Ack, my bad. The example makefiles do not assume /usr/xenomai (or,
->> alternatively, /usr/xenomai/bin/xeno-config) as default for XENO. Will 
->> fix.
->>
->> Meanwhile try "make XENO=/usr/xenomai".
-> Ok this does compile. however when running the resulting sigxcpu there 
-> is an error while loading the shared libraries. cannot find 
-> libnative.so.0. This may be a result of the library installation. From 
-> long ago I remember that to install a library ldsomethingorother must be 
-> run to amend a certain library file. Due to the live nature of my 
-> installation this file whatever it is called might get overwritten.
-> What is strange is that the other applications don't seem to have this 
-> problem. Latency testsuitapp runs for example.
-> 
-> 
->> Your feedback is appreciated and helps improving things. Just a certain
->> part of your verbosity might have been avoidable by digging a bit deeper
->> and checking twice, no? :)
-> :)
-> Perhaps. We are all in a big hurry and there are lots of bits and pieces 
-> with lots of documentation. Most of it not so bad actually but not 
-> really unified. If I from my point of view were to comment, then I would 
-> say that a single unified manual would have really made life a lot 
-> easier. Then again I have a handicap with my distribution so it may have 
-> been a lot simpler had I been working on a fixed installation instead of 
-> a windows laptop which turns into linux when it has a usb stick in it. 
-> On yet a third hand, I do think that a lot of people will only start 
-> recompiling kernels when they enter this real-time story. A combined 
-> really slow step-by-step instruction set of how to compile the kernel 
-> with xenomai would make it a lot more accessible.
-> 
-> On even yet another hand (I'm counting with my feet by now) I don;t 
-> really know what the objective of xenomai is. So far it appears to be an 
-> impressively engineered product for which I don't doubt there should be 
-> decent interest. Industry however is rather demanding when it comes to 
-> development time (which is where my hurry comes from) and would 
-> generally not go through the motions I am trying to rush through here. 
-> We typically want a platform on which one can start developing for the 
-> application ASAP. Now even though what I am doing is relatively speaking 
-> the easy bit (compared to developing the rt-patches and drivers), there 
-> are still too many man hours involved in just getting to the final 
-> platform.
-> 
-> Apparently -from how I understand the documentation- the objective, or 
-> one of the objectives of xenomai, is to make porting to it from other RT 
-> operating systems as easy as possible. Having to struggle ones bottom 
-> off to get xenomai installed and understanding how it works, would rub a 
-> lot of the shine off this (I speak based only on the twinkels I have 
-> seen so far :)) otherwise hyper-promising bit of software engineering.
-> 
-> Anyhow, must catch some quick sleep. Sorry again for all the questions. 
-> Especially the stupid ones :)
-> 
-> Thanks for tolerating and responding to them.
-> 
-> Ah, one last thing, if you want to remind me about our contribution to 
-> the documentation that would be good.
+>> There is no "select X86_UP_APIC" in kbuild that would make this mandat=
+ory.
+>=20
+> Thanks for your fast reply. Actually the option X86_UP_APIC is missing
+> when doing "make menuconfig" under "Processor type and Feature" and als=
+o
+> in the .config file. Thats why i can't disable it.
+> As far as i understood it, this option was taken away an replaced with
+> the possibility to have noapic flag at boot time.
+> With this, however, xenomai ist still build with APIC enabled and
+> refuses to run.
 
-To speed up your development you could:
+Do you happen to have SMP on? It takes away the choice of UP_APIC,
+because it assumes to find an APIC in any case.
 
-- take training courses on Embedded Linux and Xenomai.
-- hire an expert.
+>=20
+> My 2.6.19.2 kernel was downloaded from kernel.org. All i did was "make
+> cloneconfig" and then enabling xenomai and a few other things
+> (preemption etc.)
 
-Xenomai is free software and any active participation or even sponsoring 
-is welcome to improve the software and documentation.
+Unless you need it otherwise, CONFIG_PREEMPT is not required for good
+Xenomai latencies.
 
-Wolfgang.
+Jan
+
+
+PS: Please take care of CC, I re-added xenomai-help.
+
+
+--------------enigF1913B8AE764E46FD8F064C1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF3qbaniDOoMHTA+kRApTPAJ0TEw6+dwpRXbwT94zUksFPMMzTKQCfcZuW
+oxZ0lag0UrLksXZK+3efo/M=
+=WegJ
+-----END PGP SIGNATURE-----
+
+--------------enigF1913B8AE764E46FD8F064C1--
 
