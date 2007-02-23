@@ -1,13 +1,16 @@
-Message-ID: <45DF02B0.4090406@domain.hid>
-Date: Fri, 23 Feb 2007 16:05:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45DF0393.5010808@domain.hid>
+Date: Fri, 23 Feb 2007 16:09:07 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] latency hangs on AT91RM9200
 References: <45DECFAF.60304@domain.hid>	<45DEE913.9080809@domain.hid>	<45DEF122.2060406@domain.hid>	<45DEF605.2060402@domain.hid>
-	<45DEF6AA.5030609@domain.hid> <45DEFB2F.10103@domain.hid>
-In-Reply-To: <45DEFB2F.10103@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<45DEF6AA.5030609@domain.hid>	<45DEF872.5050608@domain.hid>
+	<45DF021A.3080807@domain.hid>
+In-Reply-To: <45DF021A.3080807@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig5CEC5AA33D8031A2F28302E3"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,45 +23,48 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Steven Scholz <steven.scholz@domain.hid>
 Cc: Xenomai-core@domain.hid
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig5CEC5AA33D8031A2F28302E3
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
 Steven Scholz wrote:
-> Hi,
-> 
-> 
->>>schedule. Anyway, I think the tracer will give better results than a
->>>simple backtrace.
+> Jan,
+>=20
+>>> So what exactly shell I do? I have never worked with "the tracer".
+>>>
+>> Start here: http://www.xenomai.org/index.php/I-pipe:Tracer
 >>
->>Ok. Thanks.
->>
->>So what exactly shell I do? I have never worked with "the tracer".
-> 
-> 
-> Just enabled
-> 
-> CONFIG_IPIPE_DEBUG=y
-> CONFIG_IPIPE_TRACE=y
-> CONFIG_IPIPE_TRACE_ENABLE=y
-> CONFIG_IPIPE_TRACE_MCOUNT=y
-> CONFIG_IPIPE_TRACE_IRQSOFF=y
-> CONFIG_IPIPE_TRACE_SHIFT=15
-> # CONFIG_IPIPE_TRACE_VMALLOC is not set
-> CONFIG_IPIPE_TRACE_ENABLE_VALUE=1
-> 
-> but get
-> 
->   CC      arch/arm/kernel/asm-offsets.s
-> In file included from include/linux/bitops.h:9,
->                  from include/linux/thread_info.h:20,
->                  from include/linux/preempt.h:9,
->                  from include/linux/spinlock.h:49,
->                  from include/linux/capability.h:45,
->                  from include/linux/sched.h:46,
->                  from arch/arm/kernel/asm-offsets.c:13:
-> include/asm/bitops.h: In function `____atomic_set_bit':
-> include/asm/bitops.h:40: warning: implicit declaration of function `local_test_iflag_hw'
+>> I haven't followed all details (while hacking on other bugs :)), but y=
+ou
+>> have two options to catch a trace: the one described on that page *if*=
 
-At first sight, replacing local_test_iflag_hw with
-raw_irqs_disabled_flags should work.
+>> your board survives the crash, or via ipipe_trace_panic_freeze()
+>> followed by ipipe_trace_panic_dump() (+ switching to sync printk mode
+>> first).
+>=20
+> Do I need CONFIG_IPIPE_TRACE_MCOUNT=3Dy for the ipipe_trace_panic_dump(=
+)?
 
--- 
-                                                 Gilles Chanteperdrix
+Yes, because this is what adds per-function call trace points. Otherwise
+the information is fairly thin.
+
+Jan
+
+
+--------------enig5CEC5AA33D8031A2F28302E3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF3wOUniDOoMHTA+kRAhdtAJwL/5aPB2A4x4J75eZfPDzSgaHMrgCfZ2VQ
+0jagubJOZV2KYlUMqQBih2I=
+=Sq3U
+-----END PGP SIGNATURE-----
+
+--------------enig5CEC5AA33D8031A2F28302E3--
 
