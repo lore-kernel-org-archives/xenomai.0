@@ -1,12 +1,14 @@
-Message-ID: <45DEC477.2070901@domain.hid>
-Date: Fri, 23 Feb 2007 11:39:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45DEC483.3080803@domain.hid>
+Date: Fri, 23 Feb 2007 11:40:03 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-core] soft lockup detected on AT91RM9200
 References: <45DEBF20.2060907@domain.hid>
 In-Reply-To: <45DEBF20.2060907@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: Quoted-Printable
-Subject: [Xenomai-core] Re: soft lockup detected on AT91RM9200
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF468D32E7AEA50EED6433D7F"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,6 +20,11 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Steven Scholz <steven.scholz@domain.hid>
 Cc: Xenomai-core@domain.hid
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF468D32E7AEA50EED6433D7F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
 Steven Scholz wrote:
 > Hi Gilles,
@@ -84,19 +91,33 @@ r leds blinks very slowly.
 > I'd say 10 times slower.
 >=20
 > Ideas? How can I help with debugging this?
+>=20
 
-100us is too small, as I already told you here:
+ARM platforms have hardware-related worst-case latencies in the range of
+200 us under Linux (or is the AT91 mmu-less?). So if you set up a task
+with a 100 us period and load your system, you will more sooner than
+later see a total overload of both RT and non-RT part - not to speak of
+countless deadline misses.
 
-https://mail.gna.org/public/xenomai-core/2007-02/msg00019.html
+What happens if you move your task period more in the range of, say, 500
+down to 300 us?
 
-The latency process spend 100% of its time handling the timer ticks, and
-the kernel detects a soft lockup.
+Jan
 
-The difference between I-pipe patch 1.6-01 and 1.6-02 is that the return
-=66rom exception is correctly handled. Maybe it is what allows the kernel
-to print a clean message. Maybe it is because you now have enabled the
-soft lockup detector whereas you previously did not.
 
---=20
-                                                 Gilles Chanteperdrix
+--------------enigF468D32E7AEA50EED6433D7F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF3sSDniDOoMHTA+kRAjv6AJ9/gS99ucKWEH2O7tKENABbw04LwACfb9qg
+zDTfM+aWSWKZ+no1H+u2jPk=
+=67yR
+-----END PGP SIGNATURE-----
+
+--------------enigF468D32E7AEA50EED6433D7F--
 
