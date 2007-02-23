@@ -1,55 +1,51 @@
-Message-ID: <45C19C09.20903@domain.hid>
-Date: Thu, 01 Feb 2007 08:51:37 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] switchbench tests with IPIPE tracer disabled
-References: <79744.96382.qm@domain.hid>
-In-Reply-To: <79744.96382.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: poornima r <rpoornar@domain.hid>
-Cc: adeos-main@gna.org
+Message-ID: <17887.19492.921482.412573@domain.hid>
+Date: Fri, 23 Feb 2007 21:18:44 +0100
+Subject: Re: [Xenomai-help] include-path conundrum types.h
+In-Reply-To: <bc4264770702231136u74de12f3q9bbcfe980390c5f8@domain.hid>
+References: <bc4264770702231136u74de12f3q9bbcfe980390c5f8@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
-poornima r wrote:
-> Hi,
-> 
-> I was able to run latency and switchbench tests on
-> MPC860 board with IPIPE tracer feature
-> enabled/disabled.
+roland Tollenaar wrote:
+ > Hi
+ > 
+ > In the first steps of introducing xenomai into my project I notice
+ > that there seems to
+ > be a strange misdirection in one of the header files.
+ > 
+ > #include <asm/xenomai/system.h>
+ > 
+ > in <nucleus/types.h> does not seem to make sense. I seem to have to
+ > change this to
+ > 
+ > #include <asm-i386/system.h>
+ > 
+ > But before I start hacking perhaps someone wants to shed some light on
+ > what is going on here?
 
-Nice, what versions of Linux and Xenomai did you use for your tests? It 
-is known that Linux 2.6 does not yet work properly for 8xx. It would 
-also be nice if you could briefly post your results on this list as well.
+Have a look at /usr/xenomai/include, there, asm and asm/xenomai are
+symbolic links. If these symbolic links have not been set-up, then you
+have an installation problem.
 
-> Interrupt & scheduling Latencies and switching
-> latencies (with IPIPE tracer option disabled) were
-> having lower values when compared to latency values
-> with IPIPE tracer enabled. 
+Changing from asm to asm-i386 would make nucleus/types.h only work on
+i386, whereas by using the asm symbolic link, it works on any
+architecture.
 
-The ipipe tracer introduces some overhead (extra code) and as this CPU 
-is very slow, you will notice it.
+-- 
 
-> cyclictest test results were same with or without
-> IPIPE tracer enabled. 
 
-Your results would really be of interest.
-
-> Is this reduced context switching latency in
-> switchbench test due to timer interrupt?  
-
-Likely it also due to overhead introduced by the ipipe tracer.
-
-BTW: the switchtest should run as well with the option "-n" (for not 
-using the FPU),
-
-Wolfgang.
-
+					    Gilles Chanteperdrix.
 
