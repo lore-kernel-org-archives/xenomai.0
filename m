@@ -1,17 +1,11 @@
-Subject: Re: [Xenomai-help] Compile-time error with xenomai x86_64
-	port	(probably dualcore related)
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45E589D3.6090206@domain.hid>
-References: <45E45506.10208@domain.hid> <45E456EC.2090207@domain.hid>
-	<45E5865B.1020602@domain.hid> <45E58710.3020601@domain.hid>
-	<45E589D3.6090206@domain.hid>
-Content-Type: text/plain
-Date: Wed, 28 Feb 2007 15:36:01 +0100
-Message-Id: <1172673361.23961.38.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <bc4264770702231136u74de12f3q9bbcfe980390c5f8@domain.hid>
+Date: Fri, 23 Feb 2007 19:36:53 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Subject: [Xenomai-help] include-path conundrum types.h
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,29 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Matthias Scheer <scheer@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-On Wed, 2007-02-28 at 14:55 +0100, Matthias Scheer wrote:
-> Jan Kiszka wrote:
-> >>> I'm sorry but including linux/cpumask.h doesn't fix the problem. The
-> >> error stays the same. Any more tips?
-> > 
-> > Please post your .config then.
-> 
-> Using a clean defconfig together with your patch fixed it.
-> 
+Hi
 
-Does the bug trigger again if you remove the patch while retaining your
-defconfig?
+In the first steps of introducing xenomai into my project I notice
+that there seems to
+be a strange misdirection in one of the header files.
 
-> Thanx again.
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+#include <asm/xenomai/system.h>
 
+in <nucleus/types.h> does not seem to make sense. I seem to have to
+change this to
 
+#include <asm-i386/system.h>
+
+But before I start hacking perhaps someone wants to shed some light on
+what is going on here?
+
+Regards,
+
+Roland
 
