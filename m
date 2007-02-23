@@ -1,18 +1,20 @@
-Message-ID: <45DEA6D9.6010306@domain.hid>
-Date: Fri, 23 Feb 2007 09:33:29 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <bc4264770702230214l630ec862i1072083dd0236cb5@domain.hid>
+Date: Fri, 23 Feb 2007 10:14:20 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] CAN driver
+In-Reply-To: <45DE0A43.8030800@domain.hid>
 MIME-Version: 1.0
-References: <451C586A.7020309@domain.hid>
-	<1159628606.5014.33.camel@domain.hid>	<4522A377.5030503@domain.hid>
-	<45DDCC6D.6020908@domain.hid> <45DDCEE0.7070901@domain.hid>
-	<45DDD478.7070403@domain.hid>
-In-Reply-To: <45DDD478.7070403@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF1913B8AE764E46FD8F064C1"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-help] Re: [Xenomai-core] possible future conflict w
-	LOCAL_APIC
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <45DC1D05.1000206@domain.hid> <45DD9814.4060809@domain.hid>
+	<bc4264770702220536veb7de41saf40e41fccbbf377@domain.hid>
+	<45DD9DB0.1010103@domain.hid>
+	<bc4264770702220557x7d43d767m5383e8d8ce60204a@domain.hid>
+	<45DDA504.4070408@domain.hid>
+	<bc4264770702220652m138956ceh32713b862ee1080a@domain.hid>
+	<45DDB542.2050601@domain.hid> <45DDFF9D.5020104@domain.hid>
+	<45DE0A43.8030800@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,77 +24,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?Jan_R=FCdiger?= <ruediger@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF1913B8AE764E46FD8F064C1
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Wolfgang,
 
-Jan R=FCdiger wrote:
-> Jan Kiszka wrote:
->> Jan R=FCdiger wrote:
->>> Hello
->>>
->>> Few months ago there was a discussion about disabling local apic in t=
-he
->>> kernel. The last point in this discussion was:
->>>
->>>> update:
->>>>
->>>> Ingo Molnar has voiced strong preference that the config option rema=
-in,
->>>> citing 60kb growth in its removal.  So its probably safe for now ;-)=
+> Well, the modules name is xeno_can_peak_dng.ko as listed when doing:
+>
+>    $ make modules
+>    ...
+>    LD [M]  drivers/xenomai/can/sja1000/xeno_can_peak_dng.ko
+Yes I have this.
 
->>> Now i have the problem that i cant disable the X86_UP_APIC anymore wh=
-en
->>> building the kernel 2.6.19. Normally this isn't a problem since it is=
+>                                        ^^^^^^^^^^^^^^^^^^^^
+> And I load the modules with the following command:
+>
+>    $ modprobe xeno_can_peak_dng type=epp io=0x378 irq=7
+I am having trouble here. The above line returns:
+FATAL Module xeno_can_peak_dng not found
 
->> ???
->>
->> There is no "select X86_UP_APIC" in kbuild that would make this mandat=
-ory.
->=20
-> Thanks for your fast reply. Actually the option X86_UP_APIC is missing
-> when doing "make menuconfig" under "Processor type and Feature" and als=
-o
-> in the .config file. Thats why i can't disable it.
-> As far as i understood it, this option was taken away an replaced with
-> the possibility to have noapic flag at boot time.
-> With this, however, xenomai ist still build with APIC enabled and
-> refuses to run.
+even when I call it from the directory the driver is in.
 
-Do you happen to have SMP on? It takes away the choice of UP_APIC,
-because it assumes to find an APIC in any case.
+insmod from the directory I have the driver in returns:
 
->=20
-> My 2.6.19.2 kernel was downloaded from kernel.org. All i did was "make
-> cloneconfig" and then enabling xenomai and a few other things
-> (preemption etc.)
+insmod: error inserting 'xeno_can_peak_dng.ko': -1 no such device.
 
-Unless you need it otherwise, CONFIG_PREEMPT is not required for good
-Xenomai latencies.
+Any idea what may be wrong?
 
-Jan
+Regards,
+
+Roland
 
 
-PS: Please take care of CC, I re-added xenomai-help.
 
-
---------------enigF1913B8AE764E46FD8F064C1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF3qbaniDOoMHTA+kRApTPAJ0TEw6+dwpRXbwT94zUksFPMMzTKQCfcZuW
-oxZ0lag0UrLksXZK+3efo/M=
-=WegJ
------END PGP SIGNATURE-----
-
---------------enigF1913B8AE764E46FD8F064C1--
+>
+> Wolfgang.
+>
+>
 
