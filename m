@@ -1,12 +1,10 @@
-Message-ID: <45DECD52.5010305@domain.hid>
-Date: Fri, 23 Feb 2007 12:17:38 +0100
+Message-ID: <45DECFAF.60304@domain.hid>
+Date: Fri, 23 Feb 2007 12:27:43 +0100
 From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-References: <45DEBF20.2060907@domain.hid> <45DEC477.2070901@domain.hid>
-In-Reply-To: <45DEC477.2070901@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] Re: soft lockup detected on AT91RM9200
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] latency hangs on AT91RM9200
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,46 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+To: Xenomai-core@domain.hid
 
-Gilles,
+Hi,
 
->> When starting latency with 100=B5s period I get
->>
->> ~ # latency
->> =3D=3D Sampling period: 100 us
->> =3D=3D Test mode: periodic user-mode task
->> =3D=3D All results in microseconds
->> warming up...
->> BUG: soft lockup detected on CPU#0!
->> ...
->>
->> Ideas? How can I help with debugging this?
->=20
-> 100us is too small, as I already told you here:
->=20
-> https://mail.gna.org/public/xenomai-core/2007-02/msg00019.html
+i pick up this issue again.
 
-No. That's probably a different thing. I am going to write a mail soon.
+I am running 2.6.19 + adeos-ipipe-2.6.19-arm-1.6-02.patch + xenomai-svn-2007-02-22
+on an AT91RM9200 (160MHz/80MHz).
 
-> The latency process spend 100% of its time handling the timer ticks, an=
-d
-> the kernel detects a soft lockup.
->=20
-> The difference between I-pipe patch 1.6-01 and 1.6-02 is that the retur=
-n
-> from exception is correctly handled. Maybe it is what allows the kernel
-> to print a clean message. Maybe it is because you now have enabled the
-> soft lockup detector whereas you previously did not.
-Ok. Maybe.
+When starting "latency -p 200" it runs for a while printing
 
-I don't care about missing deadlines. That's fine iff I overload the syst=
-em.
+RTT|  00:05:37  (periodic user-mode task, 200 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+RTD|      11.200|     139.200|     236.800|       1|      10.800|     280.800
+RTD|      11.200|     146.400|     253.200|       1|      10.800|     280.800
+RTD|      11.200|     144.400|     240.400|       1|      10.800|     280.800
 
-But I still would have expected printout on the serial console. But ok,
-maybe the print in latency is done in a non-realtime task. So fair enough=
-.
+but then hangs. The timer LED stops blinking. No "soft lockup detected" appears.
 
+Using a BDI200 it looks like that in kernel/sched.c:schedule() he is returning
+in the lines
+
+#ifdef CONFIG_IPIPE
+        if (unlikely(!ipipe_root_domain_p))
+                return;
+#endif /* CONFIG_IPIPE */
+
+When stepping trough I only see him getting into schedule() but leaving
+it in the above lines and in include/linux/proc_fs.h:proc_net_fops_create() ...
+
+-- 
 Steven
 
