@@ -1,12 +1,19 @@
-Message-ID: <45E0AF7F.1070506@domain.hid>
-Date: Sat, 24 Feb 2007 22:34:55 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
-References: <45D9DF65.9000300@domain.hid> <45D9E59B.8040002@domain.hid>
-In-Reply-To: <45D9E59B.8040002@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <17888.41453.933445.213344@domain.hid>
+References: <1170205077.21219.67.camel@domain.hid>
+	<1172247508.26738.67.camel@domain.hid>
+	<17887.18450.939044.430454@domain.hid>
+	<1172312265.2161.7.camel@domain.hid>
+	<17888.41453.933445.213344@domain.hid>
+Content-Type: text/plain
+Date: Sat, 24 Feb 2007 23:46:44 +0100
+Message-Id: <1172357204.2161.67.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: RT-Socket-CAN versioning
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Re: [Adeos-main] Re: Heads up: Xenomai port over
+	x86_64 has started
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,41 +23,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi Jan,
-
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Hi Jan,
->>
->> currently the RT-Socket-CAN drivers maintains it's own version or
->> release number. As RT-Socket-CAN is part of Xenomai, I do not see the
->> need for it (and so far I did not update it). What is the intended use
->> of "driver_version" in "struct rtdm_device"?
+On Sat, 2007-02-24 at 21:37 +0100, Gilles Chanteperdrix wrote:
+>  > > 
+>  > > Ok, I will do it. Do you have an URL of a datasheet at hand (since the
+>  > > x86 code does not work, there must be some difference) ?
+>  > 
+>  > AFAICS, you still have an i387 to deal with. I would rather suspect an
+>  > issue with some revised logic in the regular task switching code.
+>  > Sidenote: the Xenomai/x86_64 switch code eliminates the "switch-to-self"
+>  > issue we discussed recently for x86, and I noticed this would break our
+>  > x86 FPU logic doing so, so maybe there is something to dig here. I'll
+>  > check this asap.
 > 
-> Actually, I was thinking about this too yesterday. The idea of the
-> separate versioning for RTDM drivers is to signal the users if something
-> in the driver really changed. It's fairly obvious what to do with it for
-> out-of-tree drivers, but for in-tree it might be worth considering the
-> policy.
-> 
-> The current model, maintained more or less properly for the existing
-> drivers, is to increment independently of Xenomai according to major or
-> minor changes. One may ease this burden for the driver developer by
-> simply filling in Xenomai's version here. That would just let the
-> revisions increase on every Xenomai release, even if the driver remained
-> untouched. The tag would still have a meaning for out-of-tree drivers,
-> but for in-tree it would be fairly meaningless.
-> 
-> Well, whatever is commonly preferred, it should then be applied
-> consistently on all RTDM drivers in Xenomai. What are the opinions on
-> this list (I will comment afterwards)?
+> I got switchtest to work on x86 without the "switch-to-self" switch,
+> both with and without fxsr, could you try the following patch on 
+> x86_64 ?
 
-OK, no other opinions so far. Then let's keep the current versioning 
-scheme. I'm going to boost the RT-Socket-CAN version number to 0.90.0 
-with the next commit and to 1.0.0 for the next official release (2.4.x?).
+Eh, that's a strike, thanks. The switchtest now works smoothly with this
+patch applied. Added to the fact that I've just fixed the CONFIG_SMP
++CONFIG_PREEMPT issue [1], what remains to get a fully functional
+preliminary x86_64 port is to solve the CONFIG_SMP+CONFIG_IPIPE_TRACE,
+and we should be done.
 
-Wolfgang.
+>From that point, the rest is about chasing latency spots if any, and
+solve still-to-be-raised issues.
+
+[1]
+http://download.gna.org/adeos/patches/v2.6/x86_64/adeos-ipipe-2.6.19-x86_64-1.0-03.patch
+
+-- 
+Philippe.
+
+
 
