@@ -1,60 +1,61 @@
-Message-ID: <45EFE384.1070602@domain.hid>
-Date: Thu, 08 Mar 2007 11:20:52 +0100
-From: Steven Scholz <steven.scholz@domain.hid>
+Message-ID: <bc4264770702250638k6b2a2737raef60866a3dc3401@domain.hid>
+Date: Sun, 25 Feb 2007 14:38:54 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] xenomai preempting interrupt handler ?
-References: <45EFD796.7050002@domain.hid>	
-	<1173346938.17515.16.camel@domain.hid> <45EFE089.9000508@domain.hid>
-	<1173349157.17515.19.camel@domain.hid>
-In-Reply-To: <1173349157.17515.19.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] timing, scheduling. some theory?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Thu, 2007-03-08 at 11:08 +0100, Steven Scholz wrote:
->> Philippe,
->>
->>>> using an oscilloscope I found that the AT91RM9200 spends up to 300=B5=
-s in the
->>>> interrupt handler for ethernet controller.
->>>>
->>>> Now I wonder if this interrupt handler will be preempted by Xenomai =
-if there
->>>> is a high priority, periodic real time task?
->>> Hw interrupts are forcibly enabled before entering any Linux IRQ
->>> handler, exactely to prevent the issue you described (e.g. fiddling w=
-ith
->>> an IDE controller in PIO mode also gives funky latency results unless
->>> the latter is true), so the answer is yes.
->> Thanks.
->>
->>>>  Thus will the duration of the
->>>> ethernet interrupt handler add the the worst case latency?
->>> Not from Linux IRQ handlers; you may want to check this using the
->>> tracer. If hw interrupts are masked there, then it's a blatant bug.
->> How could I check this using the tracer? Small hint please?
->=20
-> http://www.xenomai.org/index.php/I-pipe:Tracer
+Hi,
 
-I know this. But I was asking how I could use it to check the above probl=
-em.
+Ok I have the framework of my application up. Qt, user-interface, 2
+tasks running in parallel, one @ 1ms the other @ 2ms.
 
-Is "Trace IRQs-off times CONFIG_IPIPE_TRACE_IRQSOFF ... Instrument each
-disable and re-enable of hardware IRQs. This allows to identify the longe=
-st
-path in a system with IRQs disabled." the important stuff?
+Next step is to start incorporating the work that must be performed in
+the tasks but before I do so it will be useful to have some
+understanding of how the scheduling takes place.
 
---
-Steven
+I fear the above might not convey my question clearly. I find it hard
+to explain exactly what I mean by this so I will pose the question
+differently.
+
+What does
+
+rt_task_wait_period();
+
+do exactly? It will be followed by the work that must be done in the
+task but does the work get performed while rt_task_wait_period(); is
+"waiting" or does nothing happen while the program is on that call?
+
+In the latter case I will have no real control over when the task is
+complete. On a fast machine the task will be finished sooner than on a
+slower machine.
+
+For example say I am setting outputs based on calculations (e.g. QR
+decompositions, singular value decompositions etc) processing certain
+inputs. If I read the inputs  first after calling
+rt_task_wait_period() then  do the calculations and finally set the
+outputs the time difference between reading the inputs and setting
+outputs will (in the best case) depend on the the speed of the
+machine.
+
+In this scenario there are obviously more optimal manners to structure
+the program but I am using it as an example.
+
+Anyhow is there any documentation that elucidates these aspects of xenomai?
+
+Regards,
+
+Roland.
 
