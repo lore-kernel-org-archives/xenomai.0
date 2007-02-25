@@ -1,12 +1,12 @@
-Subject: Re: [Xenomai-core] x86_64 - Initial results.
+Subject: Re: [Xenomai-core] Kernel lockup with lapic on old AMD Athlon
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200702251842.25248.paul_c@domain.hid>
-References: <200702241526.22786.paul_c@domain.hid>
-	<200702251557.19205.paul_c@domain.hid> <45E1B345.4050304@domain.hid>
-	<200702251842.25248.paul_c@domain.hid>
+In-Reply-To: <45E1A6C0.6030908@domain.hid>
+References: <45E1641F.1050009@domain.hid>
+	<17889.38390.369037.176076@domain.hid>
+	<45E1A6C0.6030908@domain.hid>
 Content-Type: text/plain
-Date: Sun, 25 Feb 2007 23:00:30 +0100
-Message-Id: <1172440830.12230.56.camel@domain.hid>
+Date: Sun, 25 Feb 2007 23:03:22 +0100
+Message-Id: <1172441002.12230.57.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -20,17 +20,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2007-02-25 at 18:42 +0000, Paul wrote:
-
-> Results are still the same - Latency goes to pot and hangs as soon as X starts 
-> up. Quite likely the offending trace isn't getting logged..
+On Sun, 2007-02-25 at 16:09 +0100, Wolfgang Grandegger wrote:
+> Gilles Chanteperdrix wrote:
+> > Wolfgang Grandegger wrote:
+> >  > Hello,
+> >  > 
+> >  > here is the boot log of an hangup of 2.6.20 with I-pipe 1.7-02 and 
+> >  > Xenomai todays trunk. I already reported this hangup a while ago but now 
+> >  > I get an oops. At that time Gilles said that lapic on old Athlons might 
+> >  > be buggy. Does the attached boot log confirm this assumption? 2.6.20-rt8 
+> >  > is working, BTW.
+> > 
+> > What I had observed with an old Athlon were some random lockups. I was
+> > trying to setup a samba print server at the time, and the lockup always
+> > occured when some windows machine was trying to use the shared printer
+> > through network. I think the IO-APIC was also enabled. Then, at some
+> > later time, I read somewhere on the internet that the IO-APIC or LAPIC
+> > could be buggy on some Athlons, so I understood what had happened to
+> > me. So, I did not investigate this issue any further.
+> 
+> I didn't either, especially because it works with lapic disabled in the 
+> kernel config. I just thought that this oops might be useful to somebody.
 > 
 
-Just for the purpose of digging the issue further, does this particular
-problem persist when MTRRs are switched off from the kernel config?
+Does the following help?
+
+--- ksrc/arch/i386/hal.c	(revision 2256)
++++ ksrc/arch/i386/hal.c	(working copy)
+@@ -119,23 +119,26 @@
+     }
+ }
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,19)
+-irqreturn_t rthal_broadcast_to_local_timers(int irq,
+-                                            void *dev_id, struct pt_regs *regs)
+-#else /* >= 2.6.19 */
+-irqreturn_t rthal_broadcast_to_local_timers(int irq,
+-                                            void *dev_id)
+-#endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,5,0)
++#include <asm/smpboot.h>
++static inline void send_IPI_all(int vector)
+ {
+-    unsigned long flags;
++	unsigned long flags;
+ 
+-    rthal_local_irq_save_hw(flags);
+-    apic_wait_icr_idle();
+-    apic_write_around(APIC_ICR,
+-                      APIC_DM_FIXED | APIC_DEST_ALLINC | LOCAL_TIMER_VECTOR);
+-    rthal_local_irq_restore_hw(flags);
++	rthal_local_irq_save_hw(flags);
++	apic_wait_icr_idle();
++	apic_write_around(APIC_ICR,
++			  APIC_DM_FIXED | APIC_DEST_ALLINC | INT_DEST_ADDR_MODE | LOCAL_TIMER_VECTOR);
++	rthal_local_irq_restore_hw(flags);
++}
++#else
++#include <mach_ipi.h>
++#endif
+ 
+-    return IRQ_HANDLED;
++DECLARE_LINUX_IRQ_HANDLER(rthal_broadcast_to_local_timers, irq, dev_id)
++{
++	send_IPI_all(LOCAL_TIMER_VECTOR);
++	return IRQ_HANDLED;
+ }
+ 
+ unsigned long rthal_timer_calibrate(void)
+Index: include/asm-i386/wrappers.h
+===================================================================
+--- include/asm-i386/wrappers.h	(revision 2256)
++++ include/asm-i386/wrappers.h	(working copy)
+@@ -131,12 +131,19 @@
+ 						void *dev_id,
+ 						struct pt_regs *regs);
+ 
++#define DECLARE_LINUX_IRQ_HANDLER(fn, irq, dev_id)		\
++	irqreturn_t fn(int irq, void *dev_id, struct pt_regs *regs)
++
+ #define rthal_irq_chip_end(irq)	rthal_irq_chip_enable(irq)
+ #else /* >= 2.6.19 */
+ #define rthal_irq_chip_enable(irq)   ({ rthal_irq_descp(irq)->chip->enable(irq); 0; })
+ #define rthal_irq_chip_disable(irq)  ({ rthal_irq_descp(irq)->chip->disable(irq); 0; })
+ #define rthal_irq_chip_end(irq)      ({ rthal_irq_descp(irq)->ipipe_end(irq, rthal_irq_descp(irq)); 0; })
+ typedef irq_handler_t rthal_irq_host_handler_t;
++
++#define DECLARE_LINUX_IRQ_HANDLER(fn, irq, dev_id)	\
++	irqreturn_t fn(int irq, void *dev_id)
++
+ #endif
+ 
+ #endif /* _XENO_ASM_I386_WRAPPERS_H */
 
 -- 
 Philippe.
