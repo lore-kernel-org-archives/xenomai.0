@@ -1,128 +1,46 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-core] Debian rule set.
-Date: Wed, 7 Mar 2007 23:47:36 +0000
-References: <200703070332.47745.paul_c@domain.hid>
-	<17903.17256.565923.470161@domain.hid>
-In-Reply-To: <17903.17256.565923.470161@domain.hid>
+Message-ID: <bc4264770702250612p3c7ca7e6q344420f40a05cd87@domain.hid>
+Date: Sun, 25 Feb 2007 14:12:30 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] rt_timer_start()
+In-Reply-To: <17889.38267.536073.99875@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_Y807F6WklaC13Q6"
-Message-Id: <200703072347.36647.paul_c@domain.hid>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
+	<17889.38267.536073.99875@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
---Boundary-00=_Y807F6WklaC13Q6
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi,
 
-On Wednesday 07 March 2007 22:57, Gilles Chanteperdrix wrote:
-> =A0> be a minor issue with the --includedir option.
 >
-> The attached patch should solve this issue.
+> My bad, I sent you the URL of an old version of the Native API tour,
+> this has been fixed in later releases. The correct URL is:
+>
+> http://www.xenomai.org/documentation/trunk/pdf/Native-API-Tour-rev-C.pdf
 
-That works for me.. Attached is a second draft of the rule set - Took the=20
-liberty of adding the files to the EXTRA_DIST rule as well as packaging the=
-=20
-includes under /usr/include/xenomai.
+Don't worry. You did not send me the URL just the title. I found the
+version on www.xenomai.org under publications. Maybe that link should
+be updated?
 
+Regards,
 
-Regards, Paul.
+Roland
 
-
-
-
---Boundary-00=_Y807F6WklaC13Q6
-Content-Type: application/x-bzip2;
-  name="debian_rules.2.patch.bz2"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="debian_rules.2.patch.bz2"
-
-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
-
---Boundary-00=_Y807F6WklaC13Q6--
+>
+> --
+>
+>
+>                                             Gilles Chanteperdrix.
+>
 
