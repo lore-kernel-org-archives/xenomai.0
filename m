@@ -1,37 +1,64 @@
-Message-ID: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
-Date: Sun, 25 Feb 2007 13:28:44 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Message-ID: <45E161AA.9070005@domain.hid>
+Date: Sun, 25 Feb 2007 11:15:06 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] rt_timer_start()
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+Subject: Re: [Adeos-main] Scheduling of different domains in Adeos
+References: <45E15BC1.2000303@domain.hid>
+In-Reply-To: <45E15BC1.2000303@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig849044CDB8159388CA55B1D5"
+Sender: jan.kiszka@domain.hid
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Markus.Franke@domain.hid
+Cc: adeos-main@gna.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig849044CDB8159388CA55B1D5
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-The Native API tour dictates that rt_timer_start() MUST be called in
-all userspace applications that access the rt_timer.
+Markus Franke wrote:
+> Dear Adeos Developers/Users,
+>=20
+> while I was reading some papers about Adeos I was wondering how
+> scheduling is done with Adeos, if there are several domains (e.g. each
+> is an own operating system) working on top of it. Is there some kind of=
 
-It displays and example very similar to the example trivial_periodic.c
+> a master-scheduler which selects the domain which is allowed to run nex=
+t
+> based on a static priority?
+>=20
 
-howeve trivial_periodic.c does not call the rt_timer_start() even
-though it does have calls such as rt_timer_read.
+Scheduling takes place only based on the domain priority, each time a
+new asynchronous event (interrupt) arrives or a domain reports to be
+idle. There is no explicit source file or function called "scheduler",
+you will find its logic in the dispatching code of pipelined interrupts
+and in ipipe_suspend_domain().
 
-and it seems to work.
+Jan
 
-Why is that?
 
-Regards,
+--------------enig849044CDB8159388CA55B1D5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Roland
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF4WGrniDOoMHTA+kRAqISAJ9wXtmofiIArJP/fDImS/kjiV0JCwCaAp74
++05R0Wf7BmhmQ/TIYd/lqYc=
+=oPqX
+-----END PGP SIGNATURE-----
+
+--------------enig849044CDB8159388CA55B1D5--
 
