@@ -1,34 +1,37 @@
-Message-ID: <45E15BC1.2000303@domain.hid>
-Date: Sun, 25 Feb 2007 10:49:53 +0100
-From: Markus Franke <Markus.Franke@domain.hid>
+Message-ID: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
+Date: Sun, 25 Feb 2007 13:28:44 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Scheduling of different domains in Adeos
-Reply-To: Markus.Franke@domain.hid
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+Content-Disposition: inline
+Subject: [Xenomai-help] rt_timer_start()
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Dear Adeos Developers/Users,
+Hi,
 
-while I was reading some papers about Adeos I was wondering how
-scheduling is done with Adeos, if there are several domains (e.g. each
-is an own operating system) working on top of it. Is there some kind of
-a master-scheduler which selects the domain which is allowed to run next
-based on a static priority?
+The Native API tour dictates that rt_timer_start() MUST be called in
+all userspace applications that access the rt_timer.
 
-Thanks for enlightment,
+It displays and example very similar to the example trivial_periodic.c
 
-Markus Franke
+howeve trivial_periodic.c does not call the rt_timer_start() even
+though it does have calls such as rt_timer_read.
 
+and it seems to work.
 
+Why is that?
 
+Regards,
 
+Roland
 
