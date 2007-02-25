@@ -1,12 +1,18 @@
-Message-ID: <45DB66B4.6050700@domain.hid>
-Date: Tue, 20 Feb 2007 22:23:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig639A8211BC27566784AE60AE"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] Catch HPET conflict
+Subject: Re: [Xenomai-core] Re: [Adeos-main] Re: Heads up: Xenomai port
+	over x86_64 has started
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200702250018.16829.paul_c@domain.hid>
+References: <1170205077.21219.67.camel@domain.hid>
+	<1172357204.2161.67.camel@domain.hid>
+	<200702250015.35735.paul_c@domain.hid>
+	<200702250018.16829.paul_c@domain.hid>
+Content-Type: text/plain
+Date: Sun, 25 Feb 2007 12:26:43 +0100
+Message-Id: <1172402803.12230.2.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,57 +22,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig639A8211BC27566784AE60AE
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Sun, 2007-02-25 at 00:18 +0000, Paul wrote:
+> On Sunday 25 February 2007 00:15, Paul wrote:
+> > Hi Philippe
+> >
+> > On Saturday 24 February 2007 22:46, Philippe Gerum wrote:
+> > > Added to the fact that I've just fixed the CONFIG_SMP
+> > > +CONFIG_PREEMPT issue [1], what remains to get a fully functional
+> > > preliminary x86_64 port is to solve the CONFIG_SMP+CONFIG_IPIPE_TRACE,
+> > > and we should be done.
+> >
+> > If CONFIG_PREEMPT is not enabled, the kernel compile fails with:
+> >
+> > arch/x86_64/kernel/built-in.o: In function `__ipipe_preempt_schedule_irq':
+> > arch/x86_64/kernel/ipipe.c:471: undefined reference to
+> > `preempt_schedule_irq' make[1]: *** [.tmp_vmlinux1] Error 1
+> > make[1]: Leaving directory `/var/tmp/linux-2.6.19.3'
+> > make: *** [debian/stamp-build-kernel] Error 2
+> >
+> > The attached patch addresses the problem..
+> 
+> Scrub that - It exposes another problem in thunk.S which I missed...
+> 
+> 
 
-As long as there is obviously a conflict, catch it during kernel
-configuration and urge the user to disable CONFIG_HPET_TIMER.
+Thanks. 1.0-04 should fix both issues.
 
-Jan
-
-
-Index: scripts/Kconfig.frag
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- scripts/Kconfig.frag	(Revision 2216)
-+++ scripts/Kconfig.frag	(Arbeitskopie)
-@@ -11,8 +11,13 @@ comment "NOTE: Xenomai conflicts with PC
- comment "(menu Device Drivers/Input device support/Miscellaneous devices=
-)"
- 	depends on !X86_TSC && X86 && INPUT_PCSPKR
-=20
-+comment "NOTE: Xenomai currently conflicts with HPET support."
-+	depends on HPET_TIMER
-+comment "(menu Processor type and features)"
-+	depends on HPET_TIMER
-+
- config XENOMAI
--	depends on X86_TSC || !X86 || !INPUT_PCSPKR
-+	depends on (X86_TSC || !X86 || !INPUT_PCSPKR) && !HPET_TIMER
- 	bool "Xenomai"
- 	default y
-         select IPIPE
+> Regards, Paul.
+-- 
+Philippe.
 
 
-
---------------enig639A8211BC27566784AE60AE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF22a1niDOoMHTA+kRAjtoAJ0fG6aru6PvFfCkDtQh/9qV2wJiLgCggtAJ
-0e9ERK0FaBVxltKV1HmMTmY=
-=jzPw
------END PGP SIGNATURE-----
-
---------------enig639A8211BC27566784AE60AE--
 
