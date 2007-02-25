@@ -1,14 +1,10 @@
-Message-ID: <45E161AA.9070005@domain.hid>
-Date: Sun, 25 Feb 2007 11:15:06 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45E220D7.6060004@domain.hid>
+Date: Mon, 26 Feb 2007 00:50:47 +0100
+From: trem <trem@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Scheduling of different domains in Adeos
-References: <45E15BC1.2000303@domain.hid>
-In-Reply-To: <45E15BC1.2000303@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig849044CDB8159388CA55B1D5"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] port 2.6.19 x86_64 to 2.6.20
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,48 +13,22 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Markus.Franke@domain.hid
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig849044CDB8159388CA55B1D5
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi
 
-Markus Franke wrote:
-> Dear Adeos Developers/Users,
->=20
-> while I was reading some papers about Adeos I was wondering how
-> scheduling is done with Adeos, if there are several domains (e.g. each
-> is an own operating system) working on top of it. Is there some kind of=
+I've tried to port the 2.6.19 x86_64 adeos patch to 2.6.20. you can find
+it here :
+http://zarb.org/~trem/adeos-ipipe-2.6.20-x86_64-1.7-03-trem.patch
 
-> a master-scheduler which selects the domain which is allowed to run nex=
-t
-> based on a static priority?
->=20
+I can apply it with with prepare_kernel.sh (from xenomai svn), but I haven't
+tested it yet (I mean run kernel).
 
-Scheduling takes place only based on the domain priority, each time a
-new asynchronous event (interrupt) arrives or a domain reports to be
-idle. There is no explicit source file or function called "scheduler",
-you will find its logic in the dispatching code of pipelined interrupts
-and in ipipe_suspend_domain().
+I hope this patch is good enough to be used. Otherwise, I'd be pleased
+to fix it (maybe with a bit of help).
 
-Jan
+regards,
+trem
 
 
---------------enig849044CDB8159388CA55B1D5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF4WGrniDOoMHTA+kRAqISAJ9wXtmofiIArJP/fDImS/kjiV0JCwCaAp74
-+05R0Wf7BmhmQ/TIYd/lqYc=
-=oPqX
------END PGP SIGNATURE-----
-
---------------enig849044CDB8159388CA55B1D5--
 
