@@ -1,48 +1,46 @@
-Message-ID: <45E999D3.80704@domain.hid>
-Date: Sat, 03 Mar 2007 17:52:51 +0200
-From: Heikki Lindholm <holindho@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] MPC8641D and CONFIG_PPC_MERGE
-References: <45E8D44F.7070200@domain.hid>
-	<45E90B60.6060406@domain.hid> <45E92BDF.60909@domain.hid>
-	<45E994FB.6000004@domain.hid>
-In-Reply-To: <45E994FB.6000004@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <17889.38267.536073.99875@domain.hid>
+Date: Sun, 25 Feb 2007 14:56:11 +0100
+Subject: Re: [Xenomai-help] rt_timer_start()
+In-Reply-To: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
+References: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jeff Koftinoff <jeffk@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jeff Koftinoff kirjoitti:
-> Thank you for your responses, Wolfgang.
-> 
-> I still have some confusion; I was able to build and run a xenomai 2.2.0 
-> patched linux 2.6.14 kernel on a Apple EMac, which has a 7447A processor 
-> in it - with no changes, and was able to get good latency results in my 
-> tests.
+roland Tollenaar wrote:
+ > Hi,
+ > 
+ > The Native API tour dictates that rt_timer_start() MUST be called in
+ > all userspace applications that access the rt_timer.
+ > 
+ > It displays and example very similar to the example trivial_periodic.c
+ > 
+ > howeve trivial_periodic.c does not call the rt_timer_start() even
+ > though it does have calls such as rt_timer_read.
+ > 
+ > and it seems to work.
+ > 
+ > Why is that?
 
-I think the older kernels still supported Apple hardware under the "ppc" 
-arch, but in the more recent kernels it's moved to the "powerpc" arch.
+My bad, I sent you the URL of an old version of the Native API tour,
+this has been fixed in later releases. The correct URL is:
 
-> I am currently playing with a 8641D dual core power pc, it is basically 
-> two 7448 processors in one package which is almost identical to the 
-> 7447A, along with peripherals (ethernet/serial/pcie).  Yet I can't seem 
-> to get xenomai compiled for it, even in non-smp mode.
-> The 8641D needs a newer kernel than 2.6.14 ( 2.6.19 is okay ).
-> What should I do?
+http://www.xenomai.org/documentation/trunk/pdf/Native-API-Tour-rev-C.pdf
 
-If you have followed Linux kernel development and understand the new 
-genirq stuff (and eventually irq threads), or are willing to dig into 
-it, then why not start a brave porting effort and try to, for example, 
-first make your eMac work on newer kernels with adeos/xenomai stuff applied.
+-- 
 
--- Heikki Lindholm
+
+					    Gilles Chanteperdrix.
 
