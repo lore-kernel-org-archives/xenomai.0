@@ -1,77 +1,55 @@
-Message-ID: <45E40448.5050107@domain.hid>
-Date: Tue, 27 Feb 2007 11:13:28 +0100
+Message-ID: <45E19067.1@domain.hid>
+Date: Sun, 25 Feb 2007 14:34:31 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Adeos-main] Scheduling of different domains in Adeos
-References: <45E15BC1.2000303@domain.hid>
-	<45E161AA.9070005@domain.hid>
-	<45E2FAB3.2000305@domain.hid>
-	<45E3116E.70402@domain.hid>
-	<45E3E323.7060209@domain.hid>
-In-Reply-To: <45E3E323.7060209@domain.hid>
+Subject: Re: [Xenomai-help] rt_timer_start()
+References: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
+In-Reply-To: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAFA1D84053E5C0AED24B210F"
+	boundary="------------enig4CF9C32339085861C5CF0595"
 Sender: jan.kiszka@domain.hid
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Markus.Franke@domain.hid
-Cc: adeos-main@gna.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAFA1D84053E5C0AED24B210F
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig4CF9C32339085861C5CF0595
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Markus Franke wrote:
-> Jan Kiszka wrote:
->> See above: each domain (which may contain an OS) has a certain priorit=
-y,
->> and the one with the highest priority which has events pending gets th=
-e
->> CPU. That's what the Adeos/I-pipe patch does on event arrival or domai=
-n
->> suspension.
+roland Tollenaar wrote:
+> Hi,
 >=20
-> Ok, this I know already.
+> The Native API tour dictates that rt_timer_start() MUST be called in
+> all userspace applications that access the rt_timer.
 >=20
->> Adeos doesn't do full CPU virtualisation. Therefore, the domains must
->> cooperate on those resources (memory management, FPU, etc.) that aren'=
-t
->> switched by the nano-kernel. Adeos is not qemu or kvm, if this is what=
-
->> you have in mind.
+> It displays and example very similar to the example trivial_periodic.c
 >=20
-> So if you want to get working more than one operating system, each
-> embodied in it's own domain, you have to adapt the operating systems in=
-
-> order to get also some kind of CPU virtualization. But these changes ar=
-e
-> not part of the Adeos-Patches for the Linux kernel, right?
-
-They are included as far as Linux as root domain is concerned, i.e. the
-lowest prioritised domain, hosting the whole stack.
-
+> howeve trivial_periodic.c does not call the rt_timer_start() even
+> though it does have calls such as rt_timer_read.
 >=20
-> Has anybody ever tried to set up a system with let's say two Linux
-> kernels working on top of Adeos, simultaneously?
+> and it seems to work.
+>=20
+> Why is that?
 
-Don't know, but I also don't think so. There is still quite a difference
-between stacking Linux and Xenomai on top of Adeos (with Linux as root).
-Xenomai was built with the constraints of running cooperatively on top
-of Linux already in mind.
+That tour was written before rt_timer_start() got deprecated.
+
+Always check the latest API documentation when something appears
+contradictory.
 
 Jan
 
 
-
---------------enigAFA1D84053E5C0AED24B210F
+--------------enig4CF9C32339085861C5CF0595
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -80,10 +58,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF5ARIniDOoMHTA+kRAhe1AKCBN12MB1ajkf/IE7hjJUrl7QeKGgCfZ7w/
-cnfaf9wQQCvyubP7x4xDHF0=
-=r6pj
+iD8DBQFF4ZBnniDOoMHTA+kRApCwAJ4ky+ALypkxomFbCIUM6qzmINNlbACdFNyY
+kgyncvU14SQvfRextARijfQ=
+=1KLc
 -----END PGP SIGNATURE-----
 
---------------enigAFA1D84053E5C0AED24B210F--
+--------------enig4CF9C32339085861C5CF0595--
 
