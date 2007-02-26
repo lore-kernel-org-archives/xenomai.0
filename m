@@ -1,17 +1,13 @@
-Message-ID: <bc4264770702230700p541ffe5du7ffe69371ab6d744@domain.hid>
-Date: Fri, 23 Feb 2007 15:00:03 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] CAN driver
-In-Reply-To: <45DEEF73.6080608@domain.hid>
+Message-ID: <45E33F5C.3030408@domain.hid>
+Date: Mon, 26 Feb 2007 21:13:16 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-help] newby question, can/socket stuff
+References: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>	<17891.12915.944793.970838@domain.hid>
+	<bc4264770702261158m3c55e540r914f4839bbf11e5d@domain.hid>
+In-Reply-To: <bc4264770702261158m3c55e540r914f4839bbf11e5d@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <45DC1D05.1000206@domain.hid> <45DEC91C.7040702@domain.hid>
-	<bc4264770702230404w42cc72c2ke9d6f3affe2e7244@domain.hid>
-	<200702231231.08664.paul_c@domain.hid>
-	<bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>
-	<45DEEF73.6080608@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,23 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-> USB has reached up, at least for lab scenarios (and your CAN dongle it
-> surely intended for such a use case). RT and USB is still an engineering
-> task to be finished. First approaches are there for Xenomai, but they
-> need stabilisation and interface standardisation.
+roland Tollenaar wrote:
+>>
+>> And follow the links, you will arrive at:
+>> http://www.xenomai.org/documentation/trunk/html/api/group__rtcan.html
+> 
+> Actually this is where I had been spending most of my time before
+> posting my mail.
+> 
+> I must be blind because I really do not see anything remotely
+> resembling functions like:
+> 
+> rt_dev_ioctl(arg1, arg2, and maybe arg 3 don;t know off by heart anymore)
+> 
+> Are you sure the above is the link I must look at?
 
-How long is the development of RT-USB-CAN expected to take still.
-Months or years?
+The RTDM user API is listed at 
+http://www.xenomai.org/documentation/trunk/html/api/group__userapi.html 
+including rt_dev_ioctl() but this will point you back to the profiles.
 
-Roland
+Wolfgang.
 
-
->
-> Jan
->
->
->
 
