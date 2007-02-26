@@ -1,115 +1,65 @@
-Message-ID: <b647ffbd0703201721g1752e0falbe3fed8df405b3f8@domain.hid>
-Date: Wed, 21 Mar 2007 01:21:19 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai support for ARM926EJ
-In-Reply-To: <17920.13832.789072.876398@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_178637_28642621.1174436479099"
-References: <fdba73240703151522l3aa73a81v84661caf17f489ae@domain.hid>
-	<17914.63535.18893.207257@domain.hid>
-	<fdba73240703201122w447cce8bl186ba32df55665c7@domain.hid>
-	<17920.13832.789072.876398@domain.hid>
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17891.12915.944793.970838@domain.hid>
+Date: Mon, 26 Feb 2007 20:18:11 +0100
+Subject: Re: [Xenomai-help] newby question, can/socket stuff
+In-Reply-To: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>
+References: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_178637_28642621.1174436479099
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+roland Tollenaar wrote:
+ > Hi,
+ > 
+ > I am looking through the rtcan code provided with the xenomai package
+ > and I realize one thing:
+ > 
+ > I know too little of the basic socket programming. Not even sure my
+ > wording in the previous sentence is capturing the correct area of
+ > ignorance.
+ > 
+ > I suspect very strongly that the rtcan functionality is designed to
+ > piggyback on whatever standard iocontrol is taking place in functions
+ > like
+ > 
+ > ret = rt_dev_ioctl(can_fd, SIOCGIFINDEX, &ifr);
+ > 
+ > and
+ > ret = rt_dev_ioctl(can_fd, SIOCSCANBAUDRATE, &ifr);
+ > 
+ > But exactly what is happening is beyond me at the moment.
+ > 
+ > Now I can obviously try to copy like a chinaman (no disrespect
+ > intended!) and not understand what I am doing but it is not really a
+ > mode of operation I relish.
+ > 
+ > I have briefly tried to locate the rt_dev_ioctl back to a xenomai
+ > header but have not managed to trace it yet.
+ > 
+ > Is it defined in the standard linux ioctl headers? Where can I find
+ > some info on what arguments these functions are passed etc?
+ > 
+ > Much appreciated.
 
-On 20/03/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> Muruganandam Ganapathy wrote:
->  > The board is based on the Fujitsu SOC which has the ARM926EJ processor
-core.
->  >
->  > This board has SPI, I2C and 10/100 ethernet interfaces and it can
-support
->  > 16/32MB SDRAM
->  > and 4/8MB flash memory.
->
-> You still do not tell us the name of the board, but it is probably not
-> supported.
->
->  >
->  >
->  > In addition, I would like to know the interrupt reponse  mesaured with
->  > Xenomai in ARM9
->  > processor based platforms, if any.
->  > The interrupt response expected is around 40 -50 microseconds in our
-case.
->  > The interrupt response I mean, it is the time between the generation of
-the
->  > interrupt and the actual ISR invocation.
->  >
->  >
->  > Whether use of Xenomai will enable us meet this timing reqirement.
->
-> The latencies I have observed so far on ARM are usually larger than 150
-> microseconds, but these are userspace dispatch latencies.
->
-> So, you could improve situation if you stay in interrupt handlers.
->
-> Another way to improve the situation a bit more is to use ucLinux, if
-> your platform is supported.
->
-> Still, IMHO, 40-50 microseconds is too ambitious.
+If you start from:
+http://www.xenomai.org/documentation/trunk/html/api/group__userapi.html#g72b69315a44f235b05627a0c257c01f4
 
-Gilles, as I understood the question was about the interrupt latency, not
-the scheduling one.
-
-I guess, the vitually tagged cache is an additional component of high
-scheduling latencies on ARM.
-
-The interrupt latency should be ok though.
-
->
-> --
->
->
->                                             Gilles Chanteperdrix.
->
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
->
-
+And follow the links, you will arrive at:
+http://www.xenomai.org/documentation/trunk/html/api/group__rtcan.html
 
 -- 
-Best regards,
-Dmitry Adamushko
 
-------=_Part_178637_28642621.1174436479099
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<br>On 20/03/07, Gilles Chanteperdrix &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<br>&gt; Muruganandam Ganapathy wrote:<br>&gt;&nbsp;&nbsp;&gt; The board is based on the Fujitsu SOC which has the ARM926EJ processor core.
-<br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt; This board has SPI, I2C and 10/100 ethernet interfaces and it can support<br>&gt;&nbsp;&nbsp;&gt; 16/32MB SDRAM<br>&gt;&nbsp;&nbsp;&gt; and 4/8MB flash memory.<br>&gt; <br>&gt; You still do not tell us the name of the board, but it is probably not
-<br>&gt; supported.<br>&gt; <br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt; In addition, I would like to know the interrupt reponse&nbsp;&nbsp;mesaured with<br>&gt;&nbsp;&nbsp;&gt; Xenomai in ARM9<br>&gt;&nbsp;&nbsp;&gt; processor based platforms, if any.<br>
-&gt;&nbsp;&nbsp;&gt; The interrupt response expected is around 40 -50 microseconds in our case.<br>&gt;&nbsp;&nbsp;&gt; The interrupt response I mean, it is the time between the generation of the<br>&gt;&nbsp;&nbsp;&gt; interrupt and the actual ISR invocation.
-<br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt; Whether use of Xenomai will enable us meet this timing reqirement.<br>&gt; <br>&gt; The latencies I have observed so far on ARM are usually larger than 150<br>&gt; microseconds, but these are userspace dispatch latencies.
-<br>&gt; <br>&gt; So, you could improve situation if you stay in interrupt handlers.<br>&gt; <br>&gt; Another way to improve the situation a bit more is to use ucLinux, if<br>&gt; your platform is supported.<br>&gt; <br>&gt; Still, IMHO, 40-50 microseconds is too ambitious.
-<br>
-<br>
-Gilles, as I understood the question was about the interrupt latency, not the scheduling one.<br>
-<br>
-I guess, the vitually tagged cache is an additional component of high scheduling latencies on ARM.<br>
-<br>
-The interrupt latency should be ok though.<br>
-<br>&gt; <br>&gt; --<br>&gt; <br>&gt; <br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-Gilles Chanteperdrix.<br>&gt; <br>&gt; _______________________________________________<br>&gt; Xenomai-core mailing list<br>&gt; <a href="mailto:Xenomai-core@domain.hid">Xenomai-core@domain.hid</a><br>&gt; <a href="https://mail.gna.org/listinfo/xenomai-core">
-https://mail.gna.org/listinfo/xenomai-core</a><br>&gt; <br><br><br>-- <br>Best regards,<br>Dmitry Adamushko<br>
-
-------=_Part_178637_28642621.1174436479099--
+					    Gilles Chanteperdrix.
 
