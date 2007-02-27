@@ -1,12 +1,14 @@
+Message-ID: <bc4264770702271434x6efb5955sd75768a39f14c187@domain.hid>
+Date: Tue, 27 Feb 2007 22:34:11 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] CAN question
+In-Reply-To: <45E46D5C.8040001@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17892.41807.168752.212360@domain.hid>
-Date: Tue, 27 Feb 2007 22:31:59 +0100
-Subject: Re: [Xenomai-help] task not being scheduled
-In-Reply-To: <200702271509.33805.jweber@domain.hid>
-References: <45E494AC.5050603@domain.hid> <200702271509.33805.jweber@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Disposition: inline
+References: <bc4264770702270848t6a65ec84nb72f9df20a52ba8f@domain.hid>
+	<45E46D5C.8040001@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,18 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
-Cc: Xenomai Help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jeff Weber wrote:
- > I will try the CONFIG_XENO_OPT_TIMER_LIST.  I have about 18 RT tasks,
- > of which only a few are ever runnable at the same time.
+Hi .
 
-The thing that matters for selecting the timer list data structure is
-the number of pending timers.
+It sounds like I will be setting to listen_only in most practical
+cases with a fully operational bus connected. Correct?
 
--- 
+Thanks.
+
+Roland
 
 
-					    Gilles Chanteperdrix.
+
+On 2/27/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> roland Tollenaar wrote:
+> > Hi,
+> >
+> > In choosing listen_only or Loop_back. What am I actually selecting?
+> > The documentation only tells me that the parameter sets loop_back or
+> > listen_only mode. Not what the difference is between those modes.
+> > Again one of those general network programming features I presume.
+>
+> Both modes affect the controller directly if it supports it. Listen-only
+> means that this CAN node will not acknowledge incoming frames even if
+> they are correct, it will just sit there and sniff passively.
+>
+> Loopback means that the hardware emulates a fully working bus (i.e.
+> correctly terminated) with only one node that simply receives what it sends.
+>
+> [Granted, documentation might be improvable here for CAN beginners.
+> Still, you need basic some CAN understanding to deal with real-life
+> issues anyway.]
+>
+> >
+> > When working with the virtual device. Does it matter which mode is chosen?
+>
+> Nope, none of them is emulated so far.
+>
+> Jan
+>
+>
+>
 
