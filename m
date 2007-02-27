@@ -1,14 +1,17 @@
-Message-ID: <45E4791B.6030304@domain.hid>
-Date: Tue, 27 Feb 2007 19:31:55 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] task not being scheduled
-References: <200702271214.01911.jweber@domain.hid> <45E478BB.40301@domain.hid>
-In-Reply-To: <45E478BB.40301@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD4CABA232A82A56A832CC1FE"
-Sender: jan.kiszka@domain.hid
+Subject: RE: [Xenomai-help] Kernel-OOps
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01B53705@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB01B5368C@is-hdq-exchange.marel.net>
+	<DD39B5C3F4963040ADC9768BE7E430CB01B536B3@domain.hid>
+	<1172587094.27967.10.camel@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01B53705@domain.hid>
+Content-Type: text/plain
+Date: Tue, 27 Feb 2007 20:03:23 +0100
+Message-Id: <1172603004.10171.24.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,50 +21,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
-Cc: Xenomai Help <xenomai@xenomai.org>
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD4CABA232A82A56A832CC1FE
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Tue, 2007-02-27 at 14:51 +0000, Daniel Schnell wrote:
+> Philippe Gerum wrote:
+> >
+> > Some usage patterns involving permanent mode switches inside a large
+> > set of real-time threads that only rarely relinquish the CPU to other
+> > regular Linux tasks may cause this. This is specific to 2.4 kernels.
+> > I will raise this value in the next patch update. Thanks,   
+> 
+> I think simply increasing this value to some other magic number could
+> not be enough until somebody stumbles again upon this limit. How about
+> implementing a kernel configuration option with a default value
+> (although it is only 2.4 specific) ? This is probably a ipipe patch
+> specific option ?
+> 
 
-Jan Kiszka wrote:
-> Jeff Weber wrote:
->> I have system where a 100Hz periodic task is occasionally over running=
- it's
->> periodic task wakeup by 10s of msec.  To debug the problem, I froze an=
- ipipe
->> verbose trace upon an -ETIMEDOUT error return from rt_task_wait_period=
-().
->> A filtered output of the trace appears below.  This trace includes eve=
-ry
->> occurence of the task, which is pid 7380.
->=20
-> Please post the unfiltered (but compressed) trace. It's not yet obvious=
+It's not a magic value, it means that up to 32 memory contexts may be
+stalled in the drop queue at any point in time, waiting for a normal
+Linux task to be switched in to flush them, while a large number of
+Xenomai threads is going through frequent domain migrations. Hitting
+this limit _is_ where the problem lies, not the static limit itself, and
+it tells that something needs to be fixed in the application, so that it
+does not starve the regular Linux activities this way.
 
-> from the excerpt below what happens.
->=20
+IOW, it's ok to raise this compile-time value to account for
+applications living on the edge, but we should not make a feature out of
+an application design issue, by adding such a configuration knob.
 
-=2E..and include your .config as well, please.
-
-Thanks,
-Jan
+-- 
+Philippe.
 
 
---------------enigD4CABA232A82A56A832CC1FE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF5HkbniDOoMHTA+kRAssGAJ4xE+5dxgagHUVAspdTHjxtz7TVeACcDSsP
-60LhhNLkuoZ4pJr1mb/kIg8=
-=QJrn
------END PGP SIGNATURE-----
-
---------------enigD4CABA232A82A56A832CC1FE--
 
