@@ -1,11 +1,15 @@
-Message-ID: <45E45506.10208@domain.hid>
-Date: Tue, 27 Feb 2007 16:57:58 +0100
-From: Matthias Scheer <scheer@domain.hid>
+Message-ID: <45E456EC.2090207@domain.hid>
+Date: Tue, 27 Feb 2007 17:06:04 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=sha1; boundary="------------ms000803000601040306070108"
-Subject: [Xenomai-help] Compile-time error with xenomai x86_64 port
-	(probably dualcore related)
+Subject: Re: [Xenomai-help] Compile-time error with xenomai x86_64
+	port	(probably dualcore related)
+References: <45E45506.10208@domain.hid>
+In-Reply-To: <45E45506.10208@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4242D5D463036EB8E7292363"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,161 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Matthias Scheer <scheer@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a cryptographically signed message in MIME format.
-
---------------ms000803000601040306070108
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4242D5D463036EB8E7292363
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Dear developers,
+Matthias Scheer wrote:
+> Dear developers,
+>=20
+> I'm trying to compile the latest /trunk version together with the adeos=
 
-I'm trying to compile the latest /trunk version together with the adeos
-x86_64 patch v1.00.04. The kernel version is 2.6.19.5. The compiling is
-done on an Athlon 64 X2 and stops with these error messages:
+> x86_64 patch v1.00.04. The kernel version is 2.6.19.5. The compiling is=
 
-  CC      kernel/xenomai/nucleus/pod.o
-kernel/xenomai/nucleus/pod.c:944:48: error: macro "cpus_equal" passed 3
-arguments, but takes just 2
-kernel/xenomai/nucleus/pod.c: In function =E2=80=98xnpod_start_thread=E2=80=
-=99:
-kernel/xenomai/nucleus/pod.c:944: error: =E2=80=98cpus_equal=E2=80=99 und=
-eclared (first
-use in this function)
-kernel/xenomai/nucleus/pod.c:944: error: (Each undeclared identifier is
-reported only once
-kernel/xenomai/nucleus/pod.c:944: error: for each function it appears in.=
-)
+> done on an Athlon 64 X2 and stops with these error messages:
+>=20
+>   CC      kernel/xenomai/nucleus/pod.o
+> kernel/xenomai/nucleus/pod.c:944:48: error: macro "cpus_equal" passed 3=
 
-Notice the _macro "cpus_equal"_ error, which eventually uses the
-identifier CPU_MASK_ALL which contains more than one element on a
-dualcore system. Does this explanation make sense? And is there a easy
-way to fix it? (maybe with a variable number of arguments)
+> arguments, but takes just 2
+> kernel/xenomai/nucleus/pod.c: In function =E2=80=98xnpod_start_thread=E2=
+=80=99:
+> kernel/xenomai/nucleus/pod.c:944: error: =E2=80=98cpus_equal=E2=80=99 u=
+ndeclared (first
+> use in this function)
+> kernel/xenomai/nucleus/pod.c:944: error: (Each undeclared identifier is=
 
-Thanks for your time,
-Matthias Scheer
+> reported only once
+> kernel/xenomai/nucleus/pod.c:944: error: for each function it appears i=
+n.)
+>=20
+> Notice the _macro "cpus_equal"_ error, which eventually uses the
+> identifier CPU_MASK_ALL which contains more than one element on a
+> dualcore system. Does this explanation make sense? And is there a easy
+> way to fix it? (maybe with a variable number of arguments)
+>=20
+
+Does this help?
+
+--- include/asm-generic/system.h        (Revision 2262)
++++ include/asm-generic/system.h        (Arbeitskopie)
+@@ -32,6 +32,7 @@
+ #include <linux/errno.h>
+ #include <linux/vmalloc.h>
+ #include <linux/mm.h>
++#include <linux/cpumask.h>
+ #include <asm/uaccess.h>
+ #include <asm/param.h>
+ #include <asm/mmu_context.h>
+
+[At least it is cleaner than relying on cpumask.h being implicitly
+included.]
+
+Jan
 
 
+--------------enig4242D5D463036EB8E7292363
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---------------ms000803000601040306070108
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUJDCC
-BfowggTioAMCAQICAQUwDQYJKoZIhvcNAQEFBQAwaTELMAkGA1UEBhMCREUxETAPBgNVBAcT
-CE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0Ex
-GzAZBgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZTAeFw0wNDA0MTQxMTM4MjFaFw0wOTA2MDEw
-MDAwMDBaMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hlbjEMMAoGA1UEChMDVFVN
-MQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNBMRswGQYJKoZIhvcNAQkB
-FgxjYUBpbi50dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5Qgv7SiZa
-DH5l15BZa6IxKQ48eK3dtkoNMzBbW47XTjoq9ysF9JREBX/QB/HgOJC2QWm023XzAy8msk9/
-zlNfEZeI5HUxSnHgY1DQW02DkDMhFJVCkTM6jpwF7eFTejBedlnbZ3fpcdecqjP/Nkx49ISC
-Bzagy6P46gKEtE4b+mxRLny1PbSiGXWW1+pN4H/2V0ZomiYA2/hDoeC+8xEHxUrqoZH4UAMA
-Sqlkn4l7AAwloOkNq2QuFlDjjKAY8SsMhZsqepm89+IFOBrrmQETc3/Yy37HarV27IR9Lj0/
-5KzZV/S/zGe92axQX7Qx2AFDZ0pMxsJDCxsYMNRVtbs7AgMBAAGjggKiMIICnjAPBgNVHRMB
-Af8EBTADAQH/MB0GA1UdDgQWBBQ2JDnrZkentz0eO8OylQxm+kUR+zCBkwYDVR0jBIGLMIGI
-gBQCvdsbL7CxV7/qbSYAMonyMhk6/KFtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11
-ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZ
-BgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZYIBAzAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0lBBYw
-FAYIKwYBBQUHAwIGCCsGAQUFBwMEMDcGA1UdHwQwMC4wLKAqoCiGJmh0dHA6Ly9jYS5pbi50
-dW0uZGUvY3Jscy9nMi9jYV9jcmwuY3JsMAkGA1UdEgQCMAAwEQYJYIZIAYb4QgEBBAQDAgEG
-MIGWBglghkgBhvhCAQ0EgYgWgYVaZXJ0aWZpa2F0IGZ1ZXIgUkJHLUJlbnV0emVyLUNBLCBh
-dXNnZXN0ZWxsdCB2b24gUkJHLUNBIDIuR2VuZXJhdGlvbiwgRmFrdWx0YWV0IGZ1ZXIgSW5m
-b3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11ZW5jaGVuMDIGCWCGSAGG
-+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4vY2EtcmV2PzA6BglghkgBhvhC
-AQgELRYraHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy91c2VyY2Fwb2wuaHRtbDBHBgNV
-HSAEQDA+MDwGDSsGAQQBgZg+ZYFIAQEwKzApBggrBgEFBQcCARYdaHR0cDovL2NhLmluLnR1
-bS5kZS9wb2xpY2llcy8wDQYJKoZIhvcNAQEFBQADggEBAHQVyKpo5sOzp39lbk5dCLoB8XLt
-KdqCcA/e6owBqYzJMK1Sfz/cB4Zvm956ya1dROs4vq/mrlUy7BoLqu/EtWl6+dLpiu+GOKNu
-q25olT9GzD7OAC8Y6PdWuiV8LinE0E+goBMFVYM65+s7fD2gUdg5pLdREURRFuF1AYIRPSV6
-0G6zcHx8KXRM68Xt+0Tjv4LxzSdgPO6QwfYM1OUnVnfc0DkIXIJAGOp0YWZEl7MXKq5YM/65
-v8DD9N6JjW+v/CwX6Zx82MVi9jpDy0hah6DkQPsTHbRP08WTjjuBakQ3qjJNRd33lLIzNZnp
-HNRf+jH+aVxh8KqhQOJF5mv/r4QwggcPMIIF96ADAgECAgJJpzANBgkqhkiG9w0BAQUFADBy
-MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UE
-CxMCSU4xGDAWBgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4u
-dHVtLmRlMB4XDTA2MDUxNTE3MjU1MVoXDTA3MDUzMTAwMDAwMFowfzELMAkGA1UEBhMCREUx
-ETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMRgwFgYDVQQD
-Ew9NYXR0aGlhcyBTY2hlZXIxKDAmBgkqhkiG9w0BCQEWGW1hdHRoaWFzLnNjaGVlckBpbi50
-dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDkcey//SBIE0jN2OmtBToq
-Vf+UHA6noM/brk1o58em6/9Msiv3Fh25w7Owm7DqGGH/BgFw+5m/cVEagtdN7++RpycHovhu
-LmRuRAkXV1QaK/MMJaNIKbH+kpotGobD24xFxa+qv/T+5dDUdHf5uCKd5RtoIIN02ciHXcSs
-wgr9PZ3PfjORdHpM9nQ0o8/Dvwpz9MVVwnhZNr0wtc5Uki7IaFqwfkw4QcO/zmuNkjJTXbzS
-Q9u2cKl4aCsIpj6GRrPpcHgFBCRSPfED32VFHXToO+Eb6GhYy1R6UfF2ygn0lBYANFL6gDNO
-TcDOL6R08iFn7rJwAInMLfcEVj/ZXPDfAgMBAAGjggOgMIIDnDAMBgNVHRMBAf8EAjAAMB0G
-A1UdDgQWBBToiGGw4svCZVZMK8pkRpC1ILhKAzCBkwYDVR0jBIGLMIGIgBQ2JDnrZkentz0e
-O8OylQxm+kUR+6FtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYD
-VQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZBgkqhkiG9w0BCQEW
-DGNhQGluLnR1bS5kZYIBBTAOBgNVHQ8BAf8EBAMCBLAwHQYDVR0lBBYwFAYIKwYBBQUHAwIG
-CCsGAQUFBwMEMIG0BgNVHREEgawwgamBEHNjaGVlckBpbi50dW0uZGWBGW1hdHRoaWFzLnNj
-aGVlckBpbi50dW0uZGWBIHNjaGVlckBpbmZvcm1hdGlrLnR1LW11ZW5jaGVuLmRlgSltYXR0
-aGlhcy5zY2hlZXJAaW5mb3JtYXRpay50dS1tdWVuY2hlbi5kZYERc2NoZWVyQGNzLnR1bS5l
-ZHWBGm1hdHRoaWFzLnNjaGVlckBjcy50dW0uZWR1MAkGA1UdEgQCMAAwOwYDVR0fBDQwMjAw
-oC6gLIYqaHR0cDovL2NhLmluLnR1bS5kZS9jcmxzL2cyL3VzZXJjYV9jcmwuY3JsMBEGCWCG
-SAGG+EIBAQQEAwIFoDCBsgYJYIZIAYb4QgENBIGkFoGhRGllc2VzIFplcnRpZmlrYXQgd3Vy
-ZGUgYXVzZ2VzdGVsbHQgZnVlciBNYXR0aGlhcyBTY2hlZXIgdm9uIGRlciBSQkctQmVudXR6
-ZXItQ0EgKDIuR2VuZXJhdGlvbiksIEZha3VsdGFldCBmdWVyIEluZm9ybWF0aWsgZGVyIFRl
-Y2huaXNjaGVuIFVuaXZlcnNpdGFldCBNdWVuY2hlbi4wNgYJYIZIAYb4QgEDBCkWJ2h0dHA6
-Ly9jYS5pbi50dW0uZGUvY2dpLWJpbi91c2VyY2EtcmV2PzAyBglghkgBhvhCAQQEJRYjaHR0
-cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL2NhLXJldj8wLAYJYIZIAYb4QgEIBB8WHWh0dHA6
-Ly9jYS5pbi50dW0uZGUvcG9saWNpZXMvMEcGA1UdIARAMD4wPAYNKwYBBAGBmD5lgUgBATAr
-MCkGCCsGAQUFBwIBFh1odHRwOi8vY2EuaW4udHVtLmRlL3BvbGljaWVzLzANBgkqhkiG9w0B
-AQUFAAOCAQEAqN+O9+SCY9WrjyYhYX7OqMB2kRG7KFYkdyY9Ig99srfG071pAbZT4K+jfJkA
-nbkrts1p5cycNpwE4cuHEFM8wq4LGapG4CQzcZz7ABcKZPN4/YG90r/TpQHl/xQNQ/j0k2OF
-pC0QyVFAFAJ2T0OpoYg/VwMi/HNYqe2eCbbto5P4ib0WkxrWJPqunEwmJCxdxJN+uhJj3+LY
-nws2Ymopxc/nv0eg/XfiJqB+7woNPStWL54cg4HZQe03Ikp+o+718XQ0CcEJC3FbNYAu4g14
-AgJc4itIISFb6LCHNC142baO/aYcMps/m/x4NeWmLq5tJ0ffXvhlJpEh3GWYtuacvDCCBw8w
-ggX3oAMCAQICAkmnMA0GCSqGSIb3DQEBBQUAMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhN
-dWVuY2hlbjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0
-emVyLUNBMRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUwHhcNMDYwNTE1MTcyNTUxWhcN
-MDcwNTMxMDAwMDAwWjB/MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNV
-BAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMTD01hdHRoaWFzIFNjaGVlcjEoMCYGCSqG
-SIb3DQEJARYZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAORx7L/9IEgTSM3Y6a0FOipV/5QcDqegz9uuTWjnx6br/0yyK/cWHbnD
-s7CbsOoYYf8GAXD7mb9xURqC103v75GnJwei+G4uZG5ECRdXVBor8wwlo0gpsf6Smi0ahsPb
-jEXFr6q/9P7l0NR0d/m4Ip3lG2ggg3TZyIddxKzCCv09nc9+M5F0ekz2dDSjz8O/CnP0xVXC
-eFk2vTC1zlSSLshoWrB+TDhBw7/Oa42SMlNdvNJD27ZwqXhoKwimPoZGs+lweAUEJFI98QPf
-ZUUddOg74RvoaFjLVHpR8XbKCfSUFgA0UvqAM05NwM4vpHTyIWfusnAAicwt9wRWP9lc8N8C
-AwEAAaOCA6AwggOcMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFOiIYbDiy8JlVkwrymRGkLUg
-uEoDMIGTBgNVHSMEgYswgYiAFDYkOetmR6e3PR47w7KVDGb6RRH7oW2kazBpMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xDzAN
-BgNVBAMTBlJCRy1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlggEFMA4GA1UdDwEB
-/wQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwgbQGA1UdEQSBrDCBqYEQ
-c2NoZWVyQGluLnR1bS5kZYEZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZYEgc2NoZWVyQGlu
-Zm9ybWF0aWsudHUtbXVlbmNoZW4uZGWBKW1hdHRoaWFzLnNjaGVlckBpbmZvcm1hdGlrLnR1
-LW11ZW5jaGVuLmRlgRFzY2hlZXJAY3MudHVtLmVkdYEabWF0dGhpYXMuc2NoZWVyQGNzLnR1
-bS5lZHUwCQYDVR0SBAIwADA7BgNVHR8ENDAyMDCgLqAshipodHRwOi8vY2EuaW4udHVtLmRl
-L2NybHMvZzIvdXNlcmNhX2NybC5jcmwwEQYJYIZIAYb4QgEBBAQDAgWgMIGyBglghkgBhvhC
-AQ0EgaQWgaFEaWVzZXMgWmVydGlmaWthdCB3dXJkZSBhdXNnZXN0ZWxsdCBmdWVyIE1hdHRo
-aWFzIFNjaGVlciB2b24gZGVyIFJCRy1CZW51dHplci1DQSAoMi5HZW5lcmF0aW9uKSwgRmFr
-dWx0YWV0IGZ1ZXIgSW5mb3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11
-ZW5jaGVuLjA2BglghkgBhvhCAQMEKRYnaHR0cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL3Vz
-ZXJjYS1yZXY/MDIGCWCGSAGG+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4v
-Y2EtcmV2PzAsBglghkgBhvhCAQgEHxYdaHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy8w
-RwYDVR0gBEAwPjA8Bg0rBgEEAYGYPmWBSAEBMCswKQYIKwYBBQUHAgEWHWh0dHA6Ly9jYS5p
-bi50dW0uZGUvcG9saWNpZXMvMA0GCSqGSIb3DQEBBQUAA4IBAQCo34735IJj1auPJiFhfs6o
-wHaREbsoViR3Jj0iD32yt8bTvWkBtlPgr6N8mQCduSu2zWnlzJw2nAThy4cQUzzCrgsZqkbg
-JDNxnPsAFwpk83j9gb3Sv9OlAeX/FA1D+PSTY4WkLRDJUUAUAnZPQ6mhiD9XAyL8c1ip7Z4J
-tu2jk/iJvRaTGtYk+q6cTCYkLF3Ek366EmPf4tifCzZiainFz+e/R6D9d+ImoH7vCg09K1Yv
-nhyDgdlB7TciSn6j7vXxdDQJwQkLcVs1gC7iDXgCAlziK0ghIVvosIc0LXjZto79phwymz+b
-/Hg15aYurm0nR99e+GUmkSHcZZi25py8MYIDajCCA2YCAQEweDByMQswCQYDVQQGEwJERTER
-MA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMT
-D1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJpzAJBgUr
-DgMCGgUAoIIBxzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0w
-NzAyMjcxNTU3NThaMCMGCSqGSIb3DQEJBDEWBBSuhLySa9xPxGZlDHx0IVi4ewqK8zBSBgkq
-hkiG9w0BCQ8xRTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIB
-QDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDCBhwYJKwYBBAGCNxAEMXoweDByMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAW
-BgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJ
-pzCBiQYLKoZIhvcNAQkQAgsxeqB4MHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hl
-bjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNB
-MRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUCAkmnMA0GCSqGSIb3DQEBAQUABIIBALh/
-m+82QP74LhAPiHrP44JiTo4QEJo4ak+XQUe9M4Acb/GbYYgOt0D4vWdfWsEc4GvPxHq7Hu0B
-b/NvEDRZuRk+JBPSYtBhXCEpUU3LEiFi4/LFZxup+GeTFCxFW4T7ApTvX7hElZkDyKkckoAo
-FnVilaDl1XPqOsJ2TyjqiGPZce5U2Ju+xbLwYZ6xqDLybmkT1jNGm/e7mRpCUxDgzJPrKfjY
-YD5sGF72hFQHLQGCK/sv596ULwtlybnbsuXSCDRN4lOm4frPER3uLqzbIiH2zFsgfqwM5s1s
-9g+Y31uG7whrOv2UX2oKXBUw3g16kqylgho4TpYLkEljiXsM51YAAAAAAAA=
---------------ms000803000601040306070108--
+iD8DBQFF5FbsniDOoMHTA+kRAgB5AJ9igKz0TzP0G2uiBhTfm+3DLzdMZwCeJQz7
+1c2tGmzrYB+D3xsQsUVmKZA=
+=ENR7
+-----END PGP SIGNATURE-----
+
+--------------enig4242D5D463036EB8E7292363--
 
