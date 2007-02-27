@@ -1,12 +1,14 @@
-Message-ID: <45DC0939.6070207@domain.hid>
-Date: Wed, 21 Feb 2007 09:56:25 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45E403F9.5060803@domain.hid>
+Date: Tue, 27 Feb 2007 11:12:09 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Enhanced RTDM device closure
-References: <45DC0623.3080706@domain.hid>
-In-Reply-To: <45DC0623.3080706@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Some doc improvements
+References: <45E3F802.5020907@domain.hid>
+In-Reply-To: <45E3F802.5020907@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEEFB88F3F0F0F9F43298EF82"
+Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,51 +18,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Hi,
-> 
-> a few changes of the RTDM layer were committed to trunk recently. They
-> make handling of RTDM file descriptors more handy:
-> 
->  o rt_dev_close/POSIX-close now polls as long as the underlying device
->    reports -EAGAIN. No more looping inside the application is required.
->    This applies to the usual non-RT invocation of close, the corner
->    case "close from RT context" can still return EAGAIN.
-> 
->  o Automatic cleanup of open file descriptors has been implemented. This
->    is not yet the perfect design (*), but a straightforward approach to
->    ease the cleanup after application crashes or other unexpected
->    terminations.
-> 
-> The code is still young, so testers are welcome.
-> 
-> Jan
-> 
-> 
-> (*) Actually, I would like to see generic per-process file descriptor
-> tables one day, used by both the POSIX and the RTDM skin. The FD table
-> should be obtained via xnshadow_ppd_get().
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEEFB88F3F0F0F9F43298EF82
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I agree for the file descriptor table, but I do not see why it should be
-bound to xnshadow_ppd_get. The file descriptor table could be
-implemented in an object like fashion, where the caller is responsible
-to pass the same pointer to the creation, use and desctruction routines.
-This would allow, for example, to have a descriptor table for
-kernel-space threads. Another feature that would be interesting for the
-posix skin would be to have a callback called at process fork time in
-order to duplicate the fd table.
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> attached is a patch improving the Doxygen generated documentation. If
+> nobody complains, I will commit it to the trunk. Nevertheless, it
+> remains the problem, that some symbols are not hyperlinked, mainly most=
+
+> of the rt_dev_* functions. For some strange reasons it works for a few,=
+
+> e.g. rt_dev_setsockopt. I tried Doxygen v1.5.1, which didn't help (but
+
+Maybe due to the ugly doxy-hacks that I applied all over RTDM. Making
+doxygen output work AND look nice seems to be an endless journey.
+
+> it has the nice frames, BTW). I'm going to report the problem on the
+> Doxygen ML when time permits.
+>=20
+> Wolfgang.
+>=20
+>=20
+> -----------------------------------------------------------------------=
+-
+>=20
+> Index: include/rtdm/rttesting.h
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- include/rtdm/rttesting.h	(revision 2239)
+> +++ include/rtdm/rttesting.h	(working copy)
+> @@ -50,8 +50,8 @@
+>   * Specific return values: none @n
+>   * @n
+>   * @b IOCTL @n
+> - * Mandatory Environments: see @ref IOCTLs below @n
+> - * Specific return values: see @ref IOCTLs below @n
+> + * Mandatory Environments: see @ref TSTIOCTLs below @n
+> + * Specific return values: see @ref TSTIOCTLs below @n
+
+I also spotted this, good that you address it!
+
+Ack to the whole from my side.
+
+Thanks,
+Jan
 
 
- But first this requires
-> lock-less xnshadow_ppd_get() based on ipipe_get_ptd() to keep the
-> overhead limited. Yet another story.
+--------------enigEEFB88F3F0F0F9F43298EF82
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-xnshadow_ppd_get is already lockless, usual callers have to hold the
-nklock for other reasons anyway.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
--- 
-                                                 Gilles Chanteperdrix
+iD8DBQFF5AP5niDOoMHTA+kRAoGlAJ9u2Td+7DJ5YOX/kZUBKjIDJl4szwCeL2gR
+9F15gFAEL7Xaq7ITFTDXtnc=
+=1yxX
+-----END PGP SIGNATURE-----
+
+--------------enigEEFB88F3F0F0F9F43298EF82--
 
