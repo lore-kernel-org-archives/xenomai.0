@@ -1,10 +1,14 @@
-From: Paul <paul_c@domain.hid>
-Date: Tue, 27 Feb 2007 21:06:30 +0000
-MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_W1J5FHgsmxRyFS1"
-Message-Id: <200702272106.30750.paul_c@domain.hid>
-Subject: [Xenomai-core] x86_64 - missing header
+Subject: Re: [Xenomai-core] x86_64 - missing header
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200702272106.30750.paul_c@domain.hid>
+References: <200702272106.30750.paul_c@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Date: Tue, 27 Feb 2007 23:47:25 +0100
+Message-Id: <1172616446.10171.36.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,59 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
---Boundary-00=_W1J5FHgsmxRyFS1
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Tue, 2007-02-27 at 21:06 +0000, Paul wrote:
+> Hi Philippe
+> 
+> Trying very hard to keep up with the rate of commits - The latest 1.0-05 patch 
+> in conjuntion with r2264 fails with the error:
+> 
+> arch/x86_64/xenomai/hal.c:51:22: error: mach_ipi.h: No such file or directory
+> arch/x86_64/xenomai/hal.c: In function ‘rthal_broadcast_to_local_timers’:
+> arch/x86_64/xenomai/hal.c:104: warning: implicit declaration of 
+> function ‘send_IPI_all’
+> 
+> Looks like mach_ipi.h is missing from my 2.6.19 tree, but the function is 
+> declared in asm/mach_apic.h - The attached patch resolves this minor problem.
+> 
+
+Merged, thanks.
+
+Btw, I'm keeping an eye on the MTRR issue, which also happens over ia32
+when starting X. This problem might have ramifications outside of the
+mtrr driver code though. This definitely needs more investigations.
+
+The urgent issue that remains to be fixed so far in the x86_64 patch
+concerns the pipelining of the debug exceptions, so that GDB could be
+usable with Xenomai apps in user-space. I'm on it.
+
+-- 
+Philippe.
 
 
-Hi Philippe
-
-Trying very hard to keep up with the rate of commits - The latest 1.0-05 pa=
-tch=20
-in conjuntion with r2264 fails with the error:
-
-arch/x86_64/xenomai/hal.c:51:22: error: mach_ipi.h: No such file or directo=
-ry
-arch/x86_64/xenomai/hal.c: In function =E2=80=98rthal_broadcast_to_local_ti=
-mers=E2=80=99:
-arch/x86_64/xenomai/hal.c:104: warning: implicit declaration of=20
-function =E2=80=98send_IPI_all=E2=80=99
-
-Looks like mach_ipi.h is missing from my 2.6.19 tree, but the function is=20
-declared in asm/mach_apic.h - The attached patch resolves this minor proble=
-m.
-
-
-Regards, Paul.
-
-
-
-
---Boundary-00=_W1J5FHgsmxRyFS1
-Content-Type: text/x-diff;
-  charset="utf-8";
-  name="mach_ipi.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="mach_ipi.patch"
-
-Index: ksrc/arch/x86_64/hal.c
-===================================================================
---- ksrc/arch/x86_64/hal.c	(revision 2264)
-+++ ksrc/arch/x86_64/hal.c	(working copy)
-@@ -48,7 +48,7 @@
- #include <asm/io_apic.h>
- #include <asm/apic.h>
- #include <asm/xenomai/hal.h>
--#include <mach_ipi.h>
-+#include <asm/mach_apic.h>
- #include <stdarg.h>
- 
- static struct {
-
---Boundary-00=_W1J5FHgsmxRyFS1--
 
