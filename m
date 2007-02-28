@@ -1,16 +1,14 @@
-Message-ID: <45E5A51F.2040802@domain.hid>
-Date: Wed, 28 Feb 2007 16:51:59 +0100
-From: Matthias Scheer <scheer@domain.hid>
+Message-ID: <bc4264770702281000g248e1964hba0ff19a0988f82f@domain.hid>
+Date: Wed, 28 Feb 2007 18:00:39 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] warnings and tangled threads.
+In-Reply-To: <45E5357B.4090107@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Compile-time error with
-	xenomai	x86_64	port	(probably dualcore related)
-References: <45E45506.10208@domain.hid>
-	<45E456EC.2090207@domain.hid>		<45E5865B.1020602@domain.hid>
-	<45E58710.3020601@domain.hid>		<45E589D3.6090206@domain.hid>
-	<1172673361.23961.38.camel@domain.hid> <45E59676.6000203@domain.hid>
-In-Reply-To: <45E59676.6000203@domain.hid>
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=sha1; boundary="------------ms090605040909030700060006"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <bc4264770702271525q6d5d164lfa34b421a64eeb70@domain.hid>
+	<45E5357B.4090107@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,145 +18,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a cryptographically signed message in MIME format.
+HI
 
---------------ms090605040909030700060006
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+> That seems to be due to non-default -Wmissing-field-initializers, right?
+> Will have a look if we can quiet gcc.
+Possible.  I have received your patch. Will apply it (have to figure
+out how first) later and give feedback.
 
-Matthias Scheer wrote:
-> It seems the patch wasn't causing any different behaviour, as the bug
-> doesn't reappear. I'm going to enable options step by step to see which
-> one triggered the bug in the first place.
-> 
-> I'll let you guys know.
 
-CONFIG_NR_CPUS was set too high (128). After reducing the number to 32,
-compilation of pod.o succeeds.
 
-Matthias
+> > If rtcanrecv is not running then my application has no problems. I can
+> > see that it is writing by reading out /proc/rtcan/rtcan0/info looking
+> > at TxCount.
+> >
+> > I call can_write() directly after rt_task_wait_period so i did not
+> > think it necessary to use rt_task_shadow or such like in it.
+>
+> rt_task_shadow() is required if you call blocking services like
+> rt_task_wait_period from a task AND you didn't create it via some other
+> native service (rt_task_spawn or rt_task_create/start).
+Well then my code should be correct.
 
---------------ms090605040909030700060006
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUJDCC
-BfowggTioAMCAQICAQUwDQYJKoZIhvcNAQEFBQAwaTELMAkGA1UEBhMCREUxETAPBgNVBAcT
-CE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0Ex
-GzAZBgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZTAeFw0wNDA0MTQxMTM4MjFaFw0wOTA2MDEw
-MDAwMDBaMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hlbjEMMAoGA1UEChMDVFVN
-MQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNBMRswGQYJKoZIhvcNAQkB
-FgxjYUBpbi50dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5Qgv7SiZa
-DH5l15BZa6IxKQ48eK3dtkoNMzBbW47XTjoq9ysF9JREBX/QB/HgOJC2QWm023XzAy8msk9/
-zlNfEZeI5HUxSnHgY1DQW02DkDMhFJVCkTM6jpwF7eFTejBedlnbZ3fpcdecqjP/Nkx49ISC
-Bzagy6P46gKEtE4b+mxRLny1PbSiGXWW1+pN4H/2V0ZomiYA2/hDoeC+8xEHxUrqoZH4UAMA
-Sqlkn4l7AAwloOkNq2QuFlDjjKAY8SsMhZsqepm89+IFOBrrmQETc3/Yy37HarV27IR9Lj0/
-5KzZV/S/zGe92axQX7Qx2AFDZ0pMxsJDCxsYMNRVtbs7AgMBAAGjggKiMIICnjAPBgNVHRMB
-Af8EBTADAQH/MB0GA1UdDgQWBBQ2JDnrZkentz0eO8OylQxm+kUR+zCBkwYDVR0jBIGLMIGI
-gBQCvdsbL7CxV7/qbSYAMonyMhk6/KFtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11
-ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZ
-BgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZYIBAzAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0lBBYw
-FAYIKwYBBQUHAwIGCCsGAQUFBwMEMDcGA1UdHwQwMC4wLKAqoCiGJmh0dHA6Ly9jYS5pbi50
-dW0uZGUvY3Jscy9nMi9jYV9jcmwuY3JsMAkGA1UdEgQCMAAwEQYJYIZIAYb4QgEBBAQDAgEG
-MIGWBglghkgBhvhCAQ0EgYgWgYVaZXJ0aWZpa2F0IGZ1ZXIgUkJHLUJlbnV0emVyLUNBLCBh
-dXNnZXN0ZWxsdCB2b24gUkJHLUNBIDIuR2VuZXJhdGlvbiwgRmFrdWx0YWV0IGZ1ZXIgSW5m
-b3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11ZW5jaGVuMDIGCWCGSAGG
-+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4vY2EtcmV2PzA6BglghkgBhvhC
-AQgELRYraHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy91c2VyY2Fwb2wuaHRtbDBHBgNV
-HSAEQDA+MDwGDSsGAQQBgZg+ZYFIAQEwKzApBggrBgEFBQcCARYdaHR0cDovL2NhLmluLnR1
-bS5kZS9wb2xpY2llcy8wDQYJKoZIhvcNAQEFBQADggEBAHQVyKpo5sOzp39lbk5dCLoB8XLt
-KdqCcA/e6owBqYzJMK1Sfz/cB4Zvm956ya1dROs4vq/mrlUy7BoLqu/EtWl6+dLpiu+GOKNu
-q25olT9GzD7OAC8Y6PdWuiV8LinE0E+goBMFVYM65+s7fD2gUdg5pLdREURRFuF1AYIRPSV6
-0G6zcHx8KXRM68Xt+0Tjv4LxzSdgPO6QwfYM1OUnVnfc0DkIXIJAGOp0YWZEl7MXKq5YM/65
-v8DD9N6JjW+v/CwX6Zx82MVi9jpDy0hah6DkQPsTHbRP08WTjjuBakQ3qjJNRd33lLIzNZnp
-HNRf+jH+aVxh8KqhQOJF5mv/r4QwggcPMIIF96ADAgECAgJJpzANBgkqhkiG9w0BAQUFADBy
-MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UE
-CxMCSU4xGDAWBgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4u
-dHVtLmRlMB4XDTA2MDUxNTE3MjU1MVoXDTA3MDUzMTAwMDAwMFowfzELMAkGA1UEBhMCREUx
-ETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMRgwFgYDVQQD
-Ew9NYXR0aGlhcyBTY2hlZXIxKDAmBgkqhkiG9w0BCQEWGW1hdHRoaWFzLnNjaGVlckBpbi50
-dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDkcey//SBIE0jN2OmtBToq
-Vf+UHA6noM/brk1o58em6/9Msiv3Fh25w7Owm7DqGGH/BgFw+5m/cVEagtdN7++RpycHovhu
-LmRuRAkXV1QaK/MMJaNIKbH+kpotGobD24xFxa+qv/T+5dDUdHf5uCKd5RtoIIN02ciHXcSs
-wgr9PZ3PfjORdHpM9nQ0o8/Dvwpz9MVVwnhZNr0wtc5Uki7IaFqwfkw4QcO/zmuNkjJTXbzS
-Q9u2cKl4aCsIpj6GRrPpcHgFBCRSPfED32VFHXToO+Eb6GhYy1R6UfF2ygn0lBYANFL6gDNO
-TcDOL6R08iFn7rJwAInMLfcEVj/ZXPDfAgMBAAGjggOgMIIDnDAMBgNVHRMBAf8EAjAAMB0G
-A1UdDgQWBBToiGGw4svCZVZMK8pkRpC1ILhKAzCBkwYDVR0jBIGLMIGIgBQ2JDnrZkentz0e
-O8OylQxm+kUR+6FtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYD
-VQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZBgkqhkiG9w0BCQEW
-DGNhQGluLnR1bS5kZYIBBTAOBgNVHQ8BAf8EBAMCBLAwHQYDVR0lBBYwFAYIKwYBBQUHAwIG
-CCsGAQUFBwMEMIG0BgNVHREEgawwgamBEHNjaGVlckBpbi50dW0uZGWBGW1hdHRoaWFzLnNj
-aGVlckBpbi50dW0uZGWBIHNjaGVlckBpbmZvcm1hdGlrLnR1LW11ZW5jaGVuLmRlgSltYXR0
-aGlhcy5zY2hlZXJAaW5mb3JtYXRpay50dS1tdWVuY2hlbi5kZYERc2NoZWVyQGNzLnR1bS5l
-ZHWBGm1hdHRoaWFzLnNjaGVlckBjcy50dW0uZWR1MAkGA1UdEgQCMAAwOwYDVR0fBDQwMjAw
-oC6gLIYqaHR0cDovL2NhLmluLnR1bS5kZS9jcmxzL2cyL3VzZXJjYV9jcmwuY3JsMBEGCWCG
-SAGG+EIBAQQEAwIFoDCBsgYJYIZIAYb4QgENBIGkFoGhRGllc2VzIFplcnRpZmlrYXQgd3Vy
-ZGUgYXVzZ2VzdGVsbHQgZnVlciBNYXR0aGlhcyBTY2hlZXIgdm9uIGRlciBSQkctQmVudXR6
-ZXItQ0EgKDIuR2VuZXJhdGlvbiksIEZha3VsdGFldCBmdWVyIEluZm9ybWF0aWsgZGVyIFRl
-Y2huaXNjaGVuIFVuaXZlcnNpdGFldCBNdWVuY2hlbi4wNgYJYIZIAYb4QgEDBCkWJ2h0dHA6
-Ly9jYS5pbi50dW0uZGUvY2dpLWJpbi91c2VyY2EtcmV2PzAyBglghkgBhvhCAQQEJRYjaHR0
-cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL2NhLXJldj8wLAYJYIZIAYb4QgEIBB8WHWh0dHA6
-Ly9jYS5pbi50dW0uZGUvcG9saWNpZXMvMEcGA1UdIARAMD4wPAYNKwYBBAGBmD5lgUgBATAr
-MCkGCCsGAQUFBwIBFh1odHRwOi8vY2EuaW4udHVtLmRlL3BvbGljaWVzLzANBgkqhkiG9w0B
-AQUFAAOCAQEAqN+O9+SCY9WrjyYhYX7OqMB2kRG7KFYkdyY9Ig99srfG071pAbZT4K+jfJkA
-nbkrts1p5cycNpwE4cuHEFM8wq4LGapG4CQzcZz7ABcKZPN4/YG90r/TpQHl/xQNQ/j0k2OF
-pC0QyVFAFAJ2T0OpoYg/VwMi/HNYqe2eCbbto5P4ib0WkxrWJPqunEwmJCxdxJN+uhJj3+LY
-nws2Ymopxc/nv0eg/XfiJqB+7woNPStWL54cg4HZQe03Ikp+o+718XQ0CcEJC3FbNYAu4g14
-AgJc4itIISFb6LCHNC142baO/aYcMps/m/x4NeWmLq5tJ0ffXvhlJpEh3GWYtuacvDCCBw8w
-ggX3oAMCAQICAkmnMA0GCSqGSIb3DQEBBQUAMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhN
-dWVuY2hlbjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0
-emVyLUNBMRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUwHhcNMDYwNTE1MTcyNTUxWhcN
-MDcwNTMxMDAwMDAwWjB/MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNV
-BAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMTD01hdHRoaWFzIFNjaGVlcjEoMCYGCSqG
-SIb3DQEJARYZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAORx7L/9IEgTSM3Y6a0FOipV/5QcDqegz9uuTWjnx6br/0yyK/cWHbnD
-s7CbsOoYYf8GAXD7mb9xURqC103v75GnJwei+G4uZG5ECRdXVBor8wwlo0gpsf6Smi0ahsPb
-jEXFr6q/9P7l0NR0d/m4Ip3lG2ggg3TZyIddxKzCCv09nc9+M5F0ekz2dDSjz8O/CnP0xVXC
-eFk2vTC1zlSSLshoWrB+TDhBw7/Oa42SMlNdvNJD27ZwqXhoKwimPoZGs+lweAUEJFI98QPf
-ZUUddOg74RvoaFjLVHpR8XbKCfSUFgA0UvqAM05NwM4vpHTyIWfusnAAicwt9wRWP9lc8N8C
-AwEAAaOCA6AwggOcMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFOiIYbDiy8JlVkwrymRGkLUg
-uEoDMIGTBgNVHSMEgYswgYiAFDYkOetmR6e3PR47w7KVDGb6RRH7oW2kazBpMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xDzAN
-BgNVBAMTBlJCRy1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlggEFMA4GA1UdDwEB
-/wQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwgbQGA1UdEQSBrDCBqYEQ
-c2NoZWVyQGluLnR1bS5kZYEZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZYEgc2NoZWVyQGlu
-Zm9ybWF0aWsudHUtbXVlbmNoZW4uZGWBKW1hdHRoaWFzLnNjaGVlckBpbmZvcm1hdGlrLnR1
-LW11ZW5jaGVuLmRlgRFzY2hlZXJAY3MudHVtLmVkdYEabWF0dGhpYXMuc2NoZWVyQGNzLnR1
-bS5lZHUwCQYDVR0SBAIwADA7BgNVHR8ENDAyMDCgLqAshipodHRwOi8vY2EuaW4udHVtLmRl
-L2NybHMvZzIvdXNlcmNhX2NybC5jcmwwEQYJYIZIAYb4QgEBBAQDAgWgMIGyBglghkgBhvhC
-AQ0EgaQWgaFEaWVzZXMgWmVydGlmaWthdCB3dXJkZSBhdXNnZXN0ZWxsdCBmdWVyIE1hdHRo
-aWFzIFNjaGVlciB2b24gZGVyIFJCRy1CZW51dHplci1DQSAoMi5HZW5lcmF0aW9uKSwgRmFr
-dWx0YWV0IGZ1ZXIgSW5mb3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11
-ZW5jaGVuLjA2BglghkgBhvhCAQMEKRYnaHR0cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL3Vz
-ZXJjYS1yZXY/MDIGCWCGSAGG+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4v
-Y2EtcmV2PzAsBglghkgBhvhCAQgEHxYdaHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy8w
-RwYDVR0gBEAwPjA8Bg0rBgEEAYGYPmWBSAEBMCswKQYIKwYBBQUHAgEWHWh0dHA6Ly9jYS5p
-bi50dW0uZGUvcG9saWNpZXMvMA0GCSqGSIb3DQEBBQUAA4IBAQCo34735IJj1auPJiFhfs6o
-wHaREbsoViR3Jj0iD32yt8bTvWkBtlPgr6N8mQCduSu2zWnlzJw2nAThy4cQUzzCrgsZqkbg
-JDNxnPsAFwpk83j9gb3Sv9OlAeX/FA1D+PSTY4WkLRDJUUAUAnZPQ6mhiD9XAyL8c1ip7Z4J
-tu2jk/iJvRaTGtYk+q6cTCYkLF3Ek366EmPf4tifCzZiainFz+e/R6D9d+ImoH7vCg09K1Yv
-nhyDgdlB7TciSn6j7vXxdDQJwQkLcVs1gC7iDXgCAlziK0ghIVvosIc0LXjZto79phwymz+b
-/Hg15aYurm0nR99e+GUmkSHcZZi25py8MYIDajCCA2YCAQEweDByMQswCQYDVQQGEwJERTER
-MA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMT
-D1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJpzAJBgUr
-DgMCGgUAoIIBxzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0w
-NzAyMjgxNTUxNTlaMCMGCSqGSIb3DQEJBDEWBBSepqTrOeknLogAvvxEv/ipHjI/HDBSBgkq
-hkiG9w0BCQ8xRTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIB
-QDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDCBhwYJKwYBBAGCNxAEMXoweDByMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAW
-BgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJ
-pzCBiQYLKoZIhvcNAQkQAgsxeqB4MHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hl
-bjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNB
-MRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUCAkmnMA0GCSqGSIb3DQEBAQUABIIBACS9
-bUsVhxzCj2x0IM6y7/M+bKHR8UCGPPSAsQYNBww0YlK1VrYR1Iz+dEJpGKyXc/pwPBGp7xnc
-R9ZIjn3EE7hwJAR6eKhpkxQ+lBjAuHAUhs3nYxOivrGfo7CDhEcZYfupI6lp83H5AJifG8ap
-cwJMcUuD0sO4tVhVKJNSLMTbRJjVL2qFbcT3jtmFqy7sRIo+wsZ9o6oghvOUrK+QlC+EbjfC
-BDEeigTvvp3LLUPhlM90K4/QQ1dAg1fcmT3pw97zlrV9Hr/hxi0MszExIwhdSmI1Z2CJi0ch
-3YuScXBDmBNX+7qnb1SBF73jKTWpOGPHeSOBjTExEwuVkgtPIrMAAAAAAAA=
---------------ms090605040909030700060006--
+> If the problem persists even with clean rt_task setup (rt_task_shadow
+> etc.), I guess it's best you post your code.
+Without changing my code I cannot repeat the behavior myself. Very
+strange. I have tried just about everything but after starting up the
+PC this morning there is no way I can repeat the behaviour I describe
+above.
+
+So the can_write seems to be working for now. If it happens again I
+will post the code.
+
+
+I have more of a problem with reading. I am doing something wrong. The
+program does not return from the call rt_dev_recvfrom. Below is the
+simple read function I am presuming that whatever I am doing wrong
+will be blatantly obvious to all except me:)
+
+void can_read(const char * device, can_frame_t * frame){
+
+	int  ret;
+    	struct ifreq ifr;
+	struct sockaddr_can addr;
+    	socklen_t addrlen = sizeof(addr);
+	struct sockaddr_can recv_addr;
+
+	strncpy(ifr.ifr_name, device, IFNAMSIZ);
+	ret = rt_dev_ioctl(can_fd, SIOCGIFINDEX, &ifr);
+	if (ret < 0) {
+		fprintf(stderr, "rt_dev_ioctl get index: %s\n", strerror(-ret));
+		return;
+	}
+
+	recv_addr.can_family = AF_CAN;
+    	recv_addr.can_ifindex = ifr.ifr_ifindex;
+    	ret = rt_dev_bind(can_fd, (struct sockaddr *)&recv_addr,
+sizeof(struct sockaddr_can));
+
+	if (ret < 0) {
+		fprintf(stderr, "rt_dev_bind: %s\n", strerror(-ret));
+		return;
+	}
+	
+printf("going in");
+	ret = rt_dev_recvfrom(can_fd, (void *)frame, sizeof(can_frame_t), 0,
+(struct sockaddr *)&addr, &addrlen);
+printf("coming out");
+
+
+}//can_read
+
+
+Regards,
+
+Roland
+
+
+
+
+>
+> Jan
+>
+>
+>
 
