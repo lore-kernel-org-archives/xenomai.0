@@ -1,18 +1,15 @@
-Message-ID: <45DF0840.4090603@domain.hid>
-Date: Fri, 23 Feb 2007 16:29:04 +0100
+Message-ID: <45E53578.5080204@domain.hid>
+Date: Wed, 28 Feb 2007 08:55:36 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN driver
-References: <45DC1D05.1000206@domain.hid> <45DEC91C.7040702@domain.hid>	
-	<bc4264770702230404w42cc72c2ke9d6f3affe2e7244@domain.hid>	
-	<200702231231.08664.paul_c@domain.hid>	
-	<bc4264770702230525j202f68a7r4b8d143790a9b398@domain.hid>	
-	<45DEEF73.6080608@domain.hid>
-	<bc4264770702230700p541ffe5du7ffe69371ab6d744@domain.hid>
-In-Reply-To: <bc4264770702230700p541ffe5du7ffe69371ab6d744@domain.hid>
+Subject: Re: [Xenomai-help] CAN question
+References: <bc4264770702270848t6a65ec84nb72f9df20a52ba8f@domain.hid>	
+	<45E46D5C.8040001@domain.hid>
+	<bc4264770702271434x6efb5955sd75768a39f14c187@domain.hid>
+In-Reply-To: <bc4264770702271434x6efb5955sd75768a39f14c187@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig7929A18FF5A0B71C23DEEFE4"
+	boundary="------------enig960168AC29C8DB40E75CF2BF"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -27,30 +24,24 @@ To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7929A18FF5A0B71C23DEEFE4
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig960168AC29C8DB40E75CF2BF
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 roland Tollenaar wrote:
->> USB has reached up, at least for lab scenarios (and your CAN dongle it=
-
->> surely intended for such a use case). RT and USB is still an engineeri=
-ng
->> task to be finished. First approaches are there for Xenomai, but they
->> need stabilisation and interface standardisation.
+> Hi .
 >=20
-> How long is the development of RT-USB-CAN expected to take still.
-> Months or years?
+> It sounds like I will be setting to listen_only in most practical
+> cases with a fully operational bus connected. Correct?
 
-Until our pain with current special PC104 RS-422 cards gets too huge and
-we start working on USB dongle integration again - or someone considers
-an RT-USB stack worth to work on or to sponsor. There is no automatism
-when relying on pure "open source magic".
+Err? What are practical cases for you?
+
+Both modes are _debugging_ features.
 
 Jan
 
 
---------------enig7929A18FF5A0B71C23DEEFE4
+--------------enig960168AC29C8DB40E75CF2BF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -59,10 +50,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF3whAniDOoMHTA+kRAmu9AJ44Mxby08Y3CWxhXwHByHLOiEf/vwCfWORD
-lFWoiB6NRna2tr9ynHPuZ9k=
-=FwhB
+iD8DBQFF5TV4niDOoMHTA+kRAmByAJ9TXelRmNyzfs9OycktEK6ktwr8aACeNlGR
+BkOcBZznZsDgWEXpR16Bp4g=
+=DOMa
 -----END PGP SIGNATURE-----
 
---------------enig7929A18FF5A0B71C23DEEFE4--
+--------------enig960168AC29C8DB40E75CF2BF--
 
