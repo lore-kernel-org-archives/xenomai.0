@@ -1,15 +1,18 @@
-Message-ID: <45E53FF0.7050200@domain.hid>
-Date: Wed, 28 Feb 2007 09:40:16 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] warnings and tangled threads.
-References: <bc4264770702271525q6d5d164lfa34b421a64eeb70@domain.hid>
-	<45E5357B.4090107@domain.hid>
-In-Reply-To: <45E5357B.4090107@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig808FDFE5A1F0AAF74E80775E"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] Kernel-OOps
+Date: Wed, 28 Feb 2007 08:59:52 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01B5387C@is-hdq-exchange.marel.net>
+In-Reply-To: <1172603004.10171.24.camel@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB01B5368C@is-hdq-exchange.marel.net>
+	<DD39B5C3F4963040ADC9768BE7E430CB01B536B3@domain.hid>
+	<1172587094.27967.10.camel@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01B53705@domain.hid>
+	<1172603004.10171.24.camel@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,117 +22,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig808FDFE5A1F0AAF74E80775E
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Jan Kiszka wrote:
-> roland Tollenaar wrote:
->> Hi,
->>
->> Ok I have CAN functionality of some form running in my tasks.
->> Initializing seems to be successful and I have written some kind of
->> wrapper to create a can_write() function of my own which also seems to=
-
->> be -kind of-  working. I have one question and one problem.
->>
->> I keep on getting this compile warning
->>
->> In file included from /mnt/appusb/xenomai/include/rtdm/rtcan.h:250,
->>                 from cancom.cpp:15:
->> /mnt/appusb/xenomai/include/rtdm/rtdm.h: In function `ssize_t
->> rt_dev_sendto(int, const void*, size_t, int, const sockaddr*,
->> socklen_t)':
->> /mnt/appusb/xenomai/include/rtdm/rtdm.h:323: warning: missing
->> initializer for member `msghdr::msg_flags'
->>
->> Its in rtdm.h so I have not looked closely at it yet but I presume I
->> must be doing something wrong to be getting it?
+Philippe Gerum wrote:
 >=20
-> That seems to be due to non-default -Wmissing-field-initializers, right=
-?
-> Will have a look if we can quiet gcc.
+> It's not a magic value, it means that up to 32 memory contexts may be
+> stalled in the drop queue at any point in time, waiting for a normal
+> Linux task to be switched in to flush them, while a large number of
+> Xenomai threads is going through frequent domain migrations. Hitting
+> this limit _is_ where the problem lies, not the static limit itself,
+> and it tells that something needs to be fixed in the application, so
+> that it does not starve the regular Linux activities this way.     =20
 >=20
-
-This works for me here (and is a bit more telling as well):
-
---- include/rtdm/rtdm.h (Revision 2265)
-+++ include/rtdm/rtdm.h (Arbeitskopie)
-@@ -295,13 +295,22 @@ static inline ssize_t rt_dev_recvfrom(in
-                                       struct sockaddr *from,
-                                       socklen_t *fromlen)
- {
--    struct iovec    iov =3D {buf, len};
--    struct msghdr   msg =3D
--        {from, (from !=3D NULL) ? *fromlen : 0, &iov, 1, NULL, 0};
--    int             ret;
-+    struct iovec iov =3D {
-+        .iov_base =3D buf,
-+        .iov_len =3D len
-+    };
-+    struct msghdr msg =3D
-+        .msg_name =3D from,
-+        .msg_namelen =3D from ? *fromlen : 0,
-+        .msg_iov =3D &iov,
-+        .msg_iovlen =3D 1,
-+        .msg_control =3D NULL,
-+        .msg_controllen =3D 0
-+    };
-+    int ret;
-=20
-     ret =3D rt_dev_recvmsg(fd, &msg, flags);
--    if ((ret >=3D 0) && (from !=3D NULL))
-+    if (ret >=3D 0 && from)
-         *fromlen =3D msg.msg_namelen;
-     return ret;
- }
-@@ -345,9 +354,18 @@ static inline ssize_t rt_dev_sendto(int=20
-                                     int flags, const struct sockaddr *to=
-,
-                                     socklen_t tolen)
- {
--    struct iovec    iov =3D {(void *)buf, len};
--    struct msghdr   msg =3D
--        {(struct sockaddr *)to, tolen, &iov, 1, NULL, 0};
-+    struct iovec iov =3D {
-+        .iov_base =3D (void *)buf,
-+        .iov_len =3D len
-+    };
-+    struct msghdr msg =3D {
-+        .msg_name =3D (struct sockaddr *)to,
-+        .msg_namelen =3D tolen,
-+        .msg_iov =3D &iov,
-+        .msg_iovlen =3D 1,
-+        .msg_control =3D NULL,=20
-+        .msg_controllen =3D 0
-+    };
-=20
-     return rt_dev_sendmsg(fd, &msg, flags);
- }
+> IOW, it's ok to raise this compile-time value to account for
+> applications living on the edge, but we should not make a feature out
+> of an application design issue, by adding such a configuration knob. =20
 
 
-Can you confirm it?
+I do not understand. In my opionion no application behaviour should ever
+cause the Kernel to oops. Playing around with Kernel configuration
+values, to come around such Oopses is where the problem lies and not in
+the application itself. I do nat have fully understood what exactly does
+the Kernel cause to oops in this specific case, but a killall of an
+application is similar to e.g. a caught SIGSEGV, which might happen in
+normal development, and looks very weird if it leads to a Kernel crash
+whatsoever. In my opinion the BUG_ON() call inside sched.c is a bug and
+should be replaced by something that handles the situation more
+gracefully.
 
-Jan
 
 
---------------enig808FDFE5A1F0AAF74E80775E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Best regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF5T/wniDOoMHTA+kRAmmKAJ921z2t3fg9P1TMH0TB798nz7ky1ACeKAQj
-jGdySXpTzhV3pC8Ymz4p8Ek=
-=WvVj
------END PGP SIGNATURE-----
-
---------------enig808FDFE5A1F0AAF74E80775E--
+Daniel Schnell.
 
