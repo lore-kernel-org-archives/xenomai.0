@@ -1,12 +1,14 @@
-Message-ID: <45E5817E.5050001@domain.hid>
-Date: Wed, 28 Feb 2007 14:19:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Paul <paul_c@domain.hid>
 Subject: Re: [Xenomai-core] prepare-kernel options
-References: <200702281217.36362.paul_c@domain.hid>
-In-Reply-To: <200702281217.36362.paul_c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Date: Wed, 28 Feb 2007 13:51:46 +0000
+References: <200702281217.36362.paul_c@domain.hid> <45E57D55.10402@domain.hid>
+In-Reply-To: <45E57D55.10402@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200702281351.46807.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,40 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-Paul wrote:
-> A little background - On Debian installations, a set of tools have been 
-> provided to allow kernel packages to be quickly & simply generated. It is 
-> something I do quite regularly with the following steps:
->  * Extract kernel sources in /tmp
->  * Apply patches
->  * Copy an existing .config over - Run `make oldconfig`
->  * make-kpkg binary-arch (produces kernel-image and kernel-header packages)
->  * Install/reboot
-> 
-> It may sound a long winded method, but it does allow me to use the generated 
-> packages to install on any number of other machines.
-> 
-> The problem - prepare-kernel.sh creates symlinks to assorted files in the 
-> Xenomai source tree. Not a problem if the same tree exists in the same 
-> location on the target machine. As yet, there is no xenomai Debian package, 
-> and the build location may not be the same as the install location - This 
-> results in a large number of dangling symlinks which thwarts attempts to 
-> compile out of tree modules using the kernel-headers package. I suspect the 
-> same issues would exist for RPM packages and NFS mounted targets.
-> 
-> A solution - Instead of creating symlinks, the files need to be copied in to 
-> the kernel source tree. Most people will use symlinks as it simplifies the 
-> `svn up`/make process and avoids having to run prepare-kernel each time. I 
-> propose a trivial patch that retains the original behaviour and provides an 
-> option to turn off symlinks (patch attached).
+On Wednesday 28 February 2007 13:02, Jan Kiszka wrote:
+<snip>
+> [Related question from my side:]
+>
+> Would you be willing to provide debian package generation rules for
+> Xenomai? Something that would spit out .deb files when calling, say,
+> "make deb KERNEL=linux-2.6.x.tar.bz2 CONFIG=my-kernel-config" in a
+> configured userland build directory? That way we could automatise binary
+> package generation for kernel, user libs, development headers, and
+> documentation. And that would allow us to finally distribute them for
+> generic targets like x86 and x86_64 along with the usual tar files.
 
-In order to prepare for the Debianization, the options --outpatch,
---filterarch and --filterkvers were already added. That said, I see no
-problem with your patch.
+To have a Debian rule set is indeed my ultimate goal (but I wouldn't want t 
+tread on anyone's toes if it is already in hand). - I suspect a number of 
+potential users would like to try Xenomai but are put off by kernel 
+compilation... But rather than a `make deb` rule, a small script would be 
+better - Debian's packaging system generates (amongst other things) a source 
+tarball, and to include auto-generated files doesn't feel right.. Calling the 
+`make dist` rule may solve that issue.
 
--- 
-                                                 Gilles Chanteperdrix
+> I think such a feature (maybe later enhanceable by RPM) would both be
+> interesting for replicable custom installations as well as for a
+> reference kernel distribution to provide a Xenomai quick-start.
+
+Indeed - Point a potential user to a repository, let them experiment with a 
+(hopefully) working kernel, and when they need/want specific vmlinuz options, 
+they have a reference point to work from. The "Debian way" also greatly 
+simplifies the task of building packages.
+
+<snip>
+> Would this build procedure already help you?
+> http://www.rts.uni-hannover.de/xenomai/lxr/source/README.INSTALL?a=i386#203
+
+Ah, yes.. It's the same doc in the top level Xenomai tree ;)
+
+As Gilles has pointed out, there are already a couple of options in 
+prepare-kernel.sh to aid package generation - If nobody else is working on 
+that area, I'll put a patch together over the next few days and submit it for 
+review.
+
+
+Regards, Paul.
 
