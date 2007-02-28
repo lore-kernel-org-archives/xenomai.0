@@ -1,15 +1,14 @@
-Message-ID: <45E58AFE.7020609@domain.hid>
-Date: Wed, 28 Feb 2007 15:00:30 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45E58CE3.20807@domain.hid>
+Date: Wed, 28 Feb 2007 15:08:35 +0100
+From: Stephan Zimmermann <s.zimmermann@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] prepare-kernel options
-References: <200702281217.36362.paul_c@domain.hid> <45E57D55.10402@domain.hid>
-	<200702281351.46807.paul_c@domain.hid>
-In-Reply-To: <200702281351.46807.paul_c@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig400A6AC33D715CB645F347E4"
-Sender: jan.kiszka@domain.hid
+References: <45DEDED6.4070202@domain.hid> <1172237401.26738.13.camel@domain.hid>	
+	<45DEED50.4070007@domain.hid> <1172238537.26738.15.camel@domain.hid>
+	<45DEF482.9030903@domain.hid>
+In-Reply-To: <45DEF482.9030903@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: [BUG] trunk: oops with Stephan's stress test
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,91 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>, rlenglet@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig400A6AC33D715CB645F347E4
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Paul wrote:
-> On Wednesday 28 February 2007 13:02, Jan Kiszka wrote:
-> <snip>
->> [Related question from my side:]
+Jan Kiszka schrieb:
+> Philippe Gerum wrote:
+>> On Fri, 2007-02-23 at 14:34 +0100, Jan Kiszka wrote:
 >>
->> Would you be willing to provide debian package generation rules for
->> Xenomai? Something that would spit out .deb files when calling, say,
->> "make deb KERNEL=3Dlinux-2.6.x.tar.bz2 CONFIG=3Dmy-kernel-config" in a=
+>>> Attached with 3000 points (to play safe).
+>> Great, thanks.
+>>
+> 
+> FYI: Switching prio-coupling off doesn't let it trigger anymore. Which
+> /may/ mean that it's related to this feature, but which may also mean
+> that this corner-case race is just far more unlikely in non-RPI setups
+> (and the effects Stephan see are all related to the same bug - hopefully).
+> 
+> Jan
+> 
 
->> configured userland build directory? That way we could automatise bina=
-ry
->> package generation for kernel, user libs, development headers, and
->> documentation. And that would allow us to finally distribute them for
->> generic targets like x86 and x86_64 along with the usual tar files.
->=20
-> To have a Debian rule set is indeed my ultimate goal (but I wouldn't wa=
-nt t=20
-> tread on anyone's toes if it is already in hand). - I suspect a number =
-of=20
+To trigger you again, I just updated my Pentium M Notebook to 2.3.x svn 
+revision 2264, recompiled everything and gave it a try. (kernel 2.6.20)
+Some runs of my already well-known software and the machine freezes
+during shutdown. No oops, no backtrace, no error message. It doesn't
+matter if priority coupling is enabled or not, when it tells me 
+'Stopping K Display Manager: kdm' the cursor freezes, that's it. My 
+colleague report's the same beahviour on his AMD SMP mashine. The 
+Celeron M crashes during reboot showing ugly backtraces like before.
 
-Romain once worked on this. Don't know what happened to his effort, if
-something might be reusable or so. I CC'ed him.
-
-> potential users would like to try Xenomai but are put off by kernel=20
-> compilation... But rather than a `make deb` rule, a small script would =
-be=20
-> better - Debian's packaging system generates (amongst other things) a s=
-ource=20
-> tarball, and to include auto-generated files doesn't feel right.. Calli=
-ng the=20
-> `make dist` rule may solve that issue.
->=20
->> I think such a feature (maybe later enhanceable by RPM) would both be
->> interesting for replicable custom installations as well as for a
->> reference kernel distribution to provide a Xenomai quick-start.
->=20
-> Indeed - Point a potential user to a repository, let them experiment wi=
-th a=20
-> (hopefully) working kernel, and when they need/want specific vmlinuz op=
-tions,=20
-> they have a reference point to work from. The "Debian way" also greatly=
-=20
-> simplifies the task of building packages.
->=20
-> <snip>
->> Would this build procedure already help you?
->> http://www.rts.uni-hannover.de/xenomai/lxr/source/README.INSTALL?a=3Di=
-386#203
->=20
-> Ah, yes.. It's the same doc in the top level Xenomai tree ;)
->=20
-> As Gilles has pointed out, there are already a couple of options in=20
-> prepare-kernel.sh to aid package generation - If nobody else is working=
- on=20
-> that area, I'll put a patch together over the next few days and submit =
-it for=20
-> review.
->=20
-
-Great!
-
-Jan
-
-
---------------enig400A6AC33D715CB645F347E4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF5Yr+niDOoMHTA+kRAkGnAJ0Y95WM2p7S8xGVsdJXb6eMZ86O7QCfaonZ
-CyPJhoQMBLxJUHfYe/hcwu8=
-=Dack
------END PGP SIGNATURE-----
-
---------------enig400A6AC33D715CB645F347E4--
+Stephan
 
