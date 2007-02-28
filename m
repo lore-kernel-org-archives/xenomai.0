@@ -1,13 +1,14 @@
-Message-ID: <45DC0CAA.2050001@domain.hid>
-Date: Wed, 21 Feb 2007 10:11:06 +0100
+Message-ID: <45E58AFE.7020609@domain.hid>
+Date: Wed, 28 Feb 2007 15:00:30 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Enhanced RTDM device closure
-References: <45DC0623.3080706@domain.hid> <45DC0939.6070207@domain.hid>
-In-Reply-To: <45DC0939.6070207@domain.hid>
+Subject: Re: [Xenomai-core] prepare-kernel options
+References: <200702281217.36362.paul_c@domain.hid> <45E57D55.10402@domain.hid>
+	<200702281351.46807.paul_c@domain.hid>
+In-Reply-To: <200702281351.46807.paul_c@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6B2AD316C5C1669AC07C710A"
+	boundary="------------enig400A6AC33D715CB645F347E4"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,93 +19,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Paul <paul_c@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>, rlenglet@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6B2AD316C5C1669AC07C710A
+--------------enig400A6AC33D715CB645F347E4
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Hi,
+Paul wrote:
+> On Wednesday 28 February 2007 13:02, Jan Kiszka wrote:
+> <snip>
+>> [Related question from my side:]
 >>
->> a few changes of the RTDM layer were committed to trunk recently. They=
+>> Would you be willing to provide debian package generation rules for
+>> Xenomai? Something that would spit out .deb files when calling, say,
+>> "make deb KERNEL=3Dlinux-2.6.x.tar.bz2 CONFIG=3Dmy-kernel-config" in a=
 
->> make handling of RTDM file descriptors more handy:
->>
->>  o rt_dev_close/POSIX-close now polls as long as the underlying device=
-
->>    reports -EAGAIN. No more looping inside the application is required=
-=2E
->>    This applies to the usual non-RT invocation of close, the corner
->>    case "close from RT context" can still return EAGAIN.
->>
->>  o Automatic cleanup of open file descriptors has been implemented. Th=
-is
->>    is not yet the perfect design (*), but a straightforward approach t=
-o
->>    ease the cleanup after application crashes or other unexpected
->>    terminations.
->>
->> The code is still young, so testers are welcome.
->>
->> Jan
->>
->>
->> (*) Actually, I would like to see generic per-process file descriptor
->> tables one day, used by both the POSIX and the RTDM skin. The FD table=
-
->> should be obtained via xnshadow_ppd_get().
+>> configured userland build directory? That way we could automatise bina=
+ry
+>> package generation for kernel, user libs, development headers, and
+>> documentation. And that would allow us to finally distribute them for
+>> generic targets like x86 and x86_64 along with the usual tar files.
 >=20
-> I agree for the file descriptor table, but I do not see why it should b=
-e
-> bound to xnshadow_ppd_get. The file descriptor table could be
-> implemented in an object like fashion, where the caller is responsible
-> to pass the same pointer to the creation, use and desctruction routines=
-=2E
+> To have a Debian rule set is indeed my ultimate goal (but I wouldn't wa=
+nt t=20
+> tread on anyone's toes if it is already in hand). - I suspect a number =
+of=20
 
-But where to get this pointer from when I enter, say, rtdm_ioctl on
-behalf of some process? The caller just passes an integer, the file
-descriptor.
+Romain once worked on this. Don't know what happened to his effort, if
+something might be reusable or so. I CC'ed him.
 
-> This would allow, for example, to have a descriptor table for
-> kernel-space threads. Another feature that would be interesting for the=
-
-
-I don't see the need to offer kernel threads private fd tables. They can
-perfectly continue to use a common, then kernel-only table. There are
-too few of those threads, and there is no clear concept of a process
-boundary in kernel space.
-
-> posix skin would be to have a callback called at process fork time in
-> order to duplicate the fd table.
-
-Ack. IIRC, this callback could also serve to solve the only consistency
-issue of the ipipe_get_ptd() approach.
-
+> potential users would like to try Xenomai but are put off by kernel=20
+> compilation... But rather than a `make deb` rule, a small script would =
+be=20
+> better - Debian's packaging system generates (amongst other things) a s=
+ource=20
+> tarball, and to include auto-generated files doesn't feel right.. Calli=
+ng the=20
+> `make dist` rule may solve that issue.
 >=20
+>> I think such a feature (maybe later enhanceable by RPM) would both be
+>> interesting for replicable custom installations as well as for a
+>> reference kernel distribution to provide a Xenomai quick-start.
 >=20
->  But first this requires
->> lock-less xnshadow_ppd_get() based on ipipe_get_ptd() to keep the
->> overhead limited. Yet another story.
+> Indeed - Point a potential user to a repository, let them experiment wi=
+th a=20
+> (hopefully) working kernel, and when they need/want specific vmlinuz op=
+tions,=20
+> they have a reference point to work from. The "Debian way" also greatly=
+=20
+> simplifies the task of building packages.
 >=20
-> xnshadow_ppd_get is already lockless, usual callers have to hold the
-> nklock for other reasons anyway.
+> <snip>
+>> Would this build procedure already help you?
+>> http://www.rts.uni-hannover.de/xenomai/lxr/source/README.INSTALL?a=3Di=
+386#203
+>=20
+> Ah, yes.. It's the same doc in the top level Xenomai tree ;)
+>=20
+> As Gilles has pointed out, there are already a couple of options in=20
+> prepare-kernel.sh to aid package generation - If nobody else is working=
+ on=20
+> that area, I'll put a patch together over the next few days and submit =
+it for=20
+> review.
 >=20
 
-OK, depends on the POV :). Mine is that the related RTDM services do not
-hold nklock and will never have to. Moreover, there is no need for
-locking design-wise, because per-process data cannot vanish under the
-caller unless the caller vanishes. The need currently only comes from
-the hashing-based lookup (reminds me of the WCET issues kernel futexes
-have...).
+Great!
 
 Jan
 
 
---------------enig6B2AD316C5C1669AC07C710A
+--------------enig400A6AC33D715CB645F347E4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -113,10 +100,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF3AyqniDOoMHTA+kRAkjWAJ46+sjTEUyQZY/QA+mo8OAf9tO/FgCfVZ4O
-O35Dcye4Gz4V2pO03tWPtrM=
-=xpKb
+iD8DBQFF5Yr+niDOoMHTA+kRAkGnAJ0Y95WM2p7S8xGVsdJXb6eMZ86O7QCfaonZ
+CyPJhoQMBLxJUHfYe/hcwu8=
+=Dack
 -----END PGP SIGNATURE-----
 
---------------enig6B2AD316C5C1669AC07C710A--
+--------------enig400A6AC33D715CB645F347E4--
 
