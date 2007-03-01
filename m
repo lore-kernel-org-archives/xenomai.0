@@ -1,12 +1,11 @@
-Message-ID: <45E82460.1030809@domain.hid>
-Date: Fri, 02 Mar 2007 14:19:28 +0100
+Message-ID: <45E6B9D7.2000000@domain.hid>
+Date: Thu, 01 Mar 2007 12:32:39 +0100
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] problems installing peak CAN dongle
-References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>	<45E7E49C.2000005@domain.hid>	<bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>	<45E7F453.9090803@domain.hid>	<bc4264770703020228p4d01b96co85731b9657fce7b6@domain.hid>	<45E7FFA6.3060405@domain.hid>	<bc4264770703020250q3ead4769kb2cbcc67d130dc3f@domain.hid>
-	<bc4264770703020252i8856466i80dfc882b9ad3ce2@domain.hid>
-	<45E808C7.4010101@domain.hid> <45E80CDB.1040504@domain.hid>
-In-Reply-To: <45E80CDB.1040504@domain.hid>
+Subject: Re: [Xenomai-help] CAN rt_dev_recvfrom
+References: <bc4264770702281208u7d7ee013qa5be819a5856d4ea@domain.hid>
+	<45E5ED29.8070505@domain.hid> <45E6B77A.5030600@domain.hid>
+In-Reply-To: <45E6B77A.5030600@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
@@ -22,185 +21,36 @@ To: rolandtollenaar@domain.hid
 Cc: Xenomai-help@domain.hid
 
 Roland Tollenaar wrote:
-> Hi,
+> Hi Wolfgang,
 > 
->> Remember the special modes. You could configure the "loopback" mode of 
->> the device using "rtcanconfig -c loopback rtcan0".
+>>> Can this be confirmed or is rt_dev_recvfrom() behaving incorrectly in 
+>>> my case?
+>>
+>> rt_dev_recvfrom() reads message frames (one at a time) from an 
+>> internal socket buffer (there is actually a kernel configuration 
+>> option to configure the size). If no messages are available, it will 
+>> block by default, but it can also be used in non-blocking mode by 
+>> using the flag MSG_DONTWAIT. It seems, that your application is trying 
+>> to read messages periodically in polling mode. Either you do reading 
+>> and buffering in your own thread as you suggested above or you use 
+>> rt_dev_recvfrom() in non-blocking mode.
 > 
-> But the virtual device installs on rtcan0 Where will I find the loaded 
-> dongle? rtcan1?
-
-Inspect /proc/rtcan or watch the log messages.
-
-> Then I presume I will send a message on 1 and then see it appear on the 
-> rtcanrecv rtcan1 ?
-
-Yes, but with rtcan2.
-
+> Thanks for this. I have not tried it yet but I was looking for that flag 
+> in the hope that something like this would exist. I thought I had seen 
+> something like it but when I tried to locate it yesterday I failed. 
+> Don;t worry it is there, I just checked. Sorry.
 > 
-> If things are a bit slow on my side its because I am rushing around 
-> doing other mandatory things. Only reason I am busy with this as well at 
-> the moment is because I don;t want to lose the opportunity of having you 
-> all at your desks :)
+> Where can I find the buffer size option in the kernel config menu? What 
+> is the default size?
 
-Good, because I will be on holiday next week ;-).
+On the first menu of the RT-Socket-CAN configuration options:
+
+config XENO_DRIVERS_CAN_RXBUF_SIZE
+         depends on XENO_DRIVERS_CAN
+         int "Size of receive ring buffers (must be 2^N)"
+         default 1024
+
+Note that the messages are stored in "packed" format.
 
 Wolfgang.
-
-> Thanks, "ich melde mich" soon. :)
-> 
-> 
-> Roland.
-> 
->>
->> Wolfgang.
->>
->>>
->>> Roland
->>>
->>>
->>>
->>> On 3/2/07, roland Tollenaar <rolandtollenaar@domain.hid> wrote:
->>>> Hi,
->>>>
->>>> My situation is slightly different. The modules don;t get loaded for
->>>> some or other reason (not sure why because I do have parport support
->>>> <M> selected in the kernel config.
->>>>
->>>> My BIOS settings said ECP instead of EPP ( I still don;t know the
->>>> difference) I set it to EPP and the driver seems to load with modprobe
->>>> now.
->>>>
->>>> Interestingly enough before I changed the BIOS I did try
->>>>
->>>> modprobe xeno_can_peak_dng type=ecp io=0x378 irq=7
->>>>
->>>> but it tells me that ecp is an invalid argument? Why is that?
->>>>
->>>>
->>>> Kind regards,
->>>>
->>>> Roland
->>>>
->>>>
->>>> On 3/2/07, Markus Franke <Markus.Franke@domain.hid> 
->>>> wrote:
->>>> > roland Tollenaar wrote:
->>>> > > You mean this must be run as a boot option? Sorry I am not familiar
->>>> > > with the term kernel commandline.
->>>> >
->>>> > Yes, I mean boot option.
->>>> >
->>>> > >
->>>> > > Sounds like its worth a try.
->>>> > >
->>>> > > Lp and parport_pc are not loaded.
->>>> >
->>>> > In my case it was the problem that parport_pc and lp were loaded 
->>>> during
->>>> > system boot. When I removed these modules in order to load my parport
->>>> > module, the parallelport was always switched off by linux and it 
->>>> was not
->>>> > possible to activate it again.
->>>> >
->>>> > >
->>>> > > Thanks
->>>> > >
->>>> > > Roland
->>>> > >
->>>> > >> the kernel commandline.
->>>> > >> Maybe this can also help you.
->>>> > >>
->>>> > >> Regards,
->>>> > >> Markus Franke
->>>> > >>
->>>> > >> roland Tollenaar wrote:
->>>> > >> >> >
->>>> > >> >> > FATAL: Error inserting xeno_can_peak_dng 
->>>> (xeno_can_peak_dng.ko): No
->>>> > >> >> such
->>>> > >> >> > device
->>>> > >> >>
->>>> > >> >> Is there som additional kernel output visible via "dmesg"?
->>>> > >> >
->>>> > >> >
->>>> > >> > Yes:
->>>> > >> >
->>>> > >> > SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
->>>> > >> > sdb: Write Protect is off
->>>> > >> > sdb: Mode Sense: 43 00 00 00
->>>> > >> > sdb: assuming drive cache: write through
->>>> > >> > SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
->>>> > >> > sdb: Write Protect is off
->>>> > >> > sdb: Mode Sense: 43 00 00 00
->>>> > >> > sdb: assuming drive cache: write through
->>>> > >> > sdb: sdb1
->>>> > >> > sd 3:0:0:0: Attached scsi removable disk sdb
->>>> > >> > usb-storage: device scan complete
->>>> > >> > ERROR! No SJA1000 device found!
->>>> > >> > ERROR while trying to register SJA1000 device -19!
->>>> > >> > Init failed with -19
->>>> > >> >
->>>> > >> > are the final lines.
->>>> > >> >
->>>> > >> >
->>>> > >> >>
->>>> > >> >> How do you have configured the parport in the kernel? Are there
->>>> > >> modules
->>>> > >> >> loaded (check /proc/modules)? Retry after removing lp and 
->>>> parport_pc:
->>>> > >> >
->>>> > >> >
->>>> > >> > Have looked can't see any. Have attached the output of 
->>>> /proc/modules
->>>> > >> >
->>>> > >> >
->>>> > >> >>
->>>> > >> >>    $ rmmod lp
->>>> > >> >>    $ rmmod parport_pc
->>>> > >> >
->>>> > >> >
->>>> > >> > I get a message that it cannot find these modules in 
->>>> /proc/modules
->>>> > >> >
->>>> > >> >
->>>> > >> >
->>>> > >> >
->>>> > >> >
->>>> > >> >>
->>>> > >> >> Wolfgang.
->>>> > >> >>
->>>> > >> >
->>>> > >> >
->>>> > >> 
->>>> ------------------------------------------------------------------------ 
->>>>
->>>> > >> >
->>>> > >> > _______________________________________________
->>>> > >> > Xenomai-help mailing list
->>>> > >> > Xenomai-help@domain.hid
->>>> > >> > https://mail.gna.org/listinfo/xenomai-help
->>>> > >>
->>>> > >> --
->>>> > >> Nichts ist so praktisch wie eine gute Theorie!
->>>> > >>
->>>> > >
->>>> >
->>>> > --
->>>> > Nichts ist so praktisch wie eine gute Theorie!
->>>> >
->>>> >
->>>>
->>>
->>> _______________________________________________
->>> Xenomai-help mailing list
->>> Xenomai-help@domain.hid
->>> https://mail.gna.org/listinfo/xenomai-help
->>>
->>>
->>
->>
-> 
-> 
-
 
