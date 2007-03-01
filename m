@@ -1,11 +1,15 @@
-Message-ID: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
-Date: Sat, 3 Mar 2007 14:09:14 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Message-ID: <45E6C2CA.5000404@domain.hid>
+Date: Thu, 01 Mar 2007 13:10:50 +0100
 MIME-Version: 1.0
+Subject: Re: [Xenomai-help] CAN rt_dev_recvfrom
+References: <bc4264770702281208u7d7ee013qa5be819a5856d4ea@domain.hid>
+	<45E5ED29.8070505@domain.hid> <45E6B77A.5030600@domain.hid>
+	<45E6B9D7.2000000@domain.hid>
+In-Reply-To: <45E6B9D7.2000000@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] CAN errors and real-time behaviour
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,52 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>, Xenomai-help@domain.hid
 
-HI,
+Hi,
 
-I thought I would put this in a separate thread.
+>> Where can I find the buffer size option in the kernel config menu? 
+>> What is the default size?
+> 
+> On the first menu of the RT-Socket-CAN configuration options:
+> 
+> config XENO_DRIVERS_CAN_RXBUF_SIZE
+>         depends on XENO_DRIVERS_CAN
+>         int "Size of receive ring buffers (must be 2^N)"
+>         default 1024
+> 
+> Note that the messages are stored in "packed" format.
 
-The experiment works as follows. I have a 1ms and a 2 ms rt periodic task.
+Does this mean that the buffer will store 1024 can_frame's ?
 
-In the real-time periodic task I am only reading out the message
-buffer (only work done in the task). In the 2ms task I am doing
-nothing.
+If yes (or even if no) when rt_dev_recv is called, does it place the 
+last recieved message (youngest message) or the oldest (behave like a 
+FIFO) into *Buf?
 
-I always read-out the measured period times. This is done by writing
-the measured value into a variable which is displayed in a separate
-thread outside the rt tasks so the display does not influence the
-measurement. (Unlike  printf is said to do).
+Roland
 
-There is nothing connected to the rtcan2 device (Peak dongle). The
-applicaiton runs fine the tasktimes relatively well maintained
-(fluctuatin about 0.003ms) around 1ms and 2ms.
-
-The moment I write to the device using rtcansend eg:
-./rtcansend rtcan2 -i 0x700 0x03 0x02
-
-the buserror comes up and the protocol error. from that moment onwards
-the messagebuffer gets flooded and does not stop being flooded forever
-after.
-
-The period times then fluctuate badly up to 0.2ms around their nominal values.
-
-This is not desirable behavior. Firstly its not necessary to have the
-message buffer flooded all the time I would think. How do I change
-that so that I will only pick up an error once in response to a failed
-send?
-Secondly what am I doing wrong that breaks the real-time behaviour? If
-the bus gives an error on one part of the process I don;t want other
-processes that may have nothing to do with the CAN bus to misbehave.?
-
-I do suspect that if I can prevent the message buffer flooding forever
-and manage to clean it out that the behaviour will be better because
-if its flooded then messages get sent to dmesg well wherever dmesg
-reads from that is) and this may explain the behavior?
-
-Can anyone comment on this please?
-
-Regards,
-
-Roland.
+> 
+> Wolfgang.
+> 
 
