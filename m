@@ -1,16 +1,17 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Subject: Re: [Xenomai-help] CAN problem continued
-Date: Tue, 6 Mar 2007 14:29:25 +0100
-References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
-	<E1HOWd0-0008TE-LU@mailer.emlix.com>
-	<bc4264770703060455p489f6711t49a968a49344ece3@domain.hid>
-In-Reply-To: <bc4264770703060455p489f6711t49a968a49344ece3@domain.hid>
+Message-ID: <45E7371B.6080406@domain.hid>
+Date: Thu, 01 Mar 2007 21:27:07 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1HOZj9-00077R-TX@mailer.emlix.com>
+Subject: Re: [Xenomai-help] warnings and tangled threads.
+References: <bc4264770702271525q6d5d164lfa34b421a64eeb70@domain.hid>	
+	<45E5357B.4090107@domain.hid> <45E53FF0.7050200@domain.hid>	
+	<45E58964.5040304@domain.hid>
+	<bc4264770703011151r41b38f80m4e1dd3288ba08053@domain.hid>
+In-Reply-To: <bc4264770703011151r41b38f80m4e1dd3288ba08053@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7FBFC7C24C2C4159BB877B06"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,54 +24,124 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7FBFC7C24C2C4159BB877B06
+Content-Type: multipart/mixed; boundary="------------090001040002040508070003"
+
+This is a multi-part message in MIME format.
+--------------090001040002040508070003
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
 roland Tollenaar wrote:
-> Hi
->
-> > > > > Assertion failed! drivers/xenomai/can/rtcan_raw.c:rtcan_tx_push:171
-> > > > > dev->tx_socket == 0
-> > > > > (3) TX skb still in use
-> > > >
-> > > > Why are you trying to send loopback messages?
-> > >
-> > > I'm not. Of that I am certain.
-> >
-> > The above kernel message states it clearly. Something on your computer is
-> > trying to send loopback messages. The above message can *only* appear if
-> > loopback is activated. So please investigate this issue and switch it
-> > off.
->
-> The place i look is in proc/rtcan/rtcan2/info.
+> Hi,
+>=20
+> My hardware has arrived. Well some of it, the rest should be coming
+> tomorrow. So will be testing the CAN functionality for real if I
+> finally get some time to work on this project other than at night. :(
+>=20
+> In the mean time I still wanted to squeeze in applying the patch
+> below. However it fails, says something like
+>=20
+> Hunk1 failed at line 295
+> Hunk2 succeeded.......
+>=20
+> 1 out of 2 failed.
+>=20
+> This is what I did:
+> Put your patch in a file rtdmpatch in the root of the install (not the
+> source) directory. Then ran
+> patch -p0 < rtdmpatch.
+>=20
+> What am I doing wrong? Running it in the root of the source directory
+> won't make a difference will it?
+>=20
 
-Why do you have so many CAN interfaces? What about rtcan0 and rtcan1? Does 
-your CAN hardware have several CAN ports?
+Some mail clients tend to mess with inlined patches. I attached it as
+file, applicable against v2.3.x (trunk already contain the fix).
 
-> The mode is empty. 
-> Always. I don;t set the mode in the application and on running
-> rtcanrecv I don't specify loopback.
->
-> What else can I do to make certain there is no listen_only mode on?
+Jan
 
-You could explicitely call SIOCSCANCTRLMODE with 0.
+--------------090001040002040508070003
+Content-Type: text/plain;
+ name="rtdm-warning.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="rtdm-warning.patch"
 
->
-> > > this is not a kernel setting. loopback and listenonly capability is
-> > > set in the kernel but I am not using it at the moment. But it is
-> > > usefull for testing and it should not be a problem if not turned on?
-> >
-> > So far you are right.
-> >
-> > See above. I'm not convinced.
->
-> If its any consolation I have not seen that message for a while. But
-> of course I have debug messages turned off in the kernel config now.
+Index: include/rtdm/rtdm.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- include/rtdm/rtdm.h	(Revision 2270)
++++ include/rtdm/rtdm.h	(Arbeitskopie)
+@@ -268,13 +268,22 @@ static inline ssize_t rt_dev_recvfrom(in
+                                       struct sockaddr *from,
+                                       socklen_t *fromlen)
+ {
+-    struct iovec    iov =3D {buf, len};
+-    struct msghdr   msg =3D
+-        {from, (from !=3D NULL) ? *fromlen : 0, &iov, 1, NULL, 0};
+-    int             ret;
++    struct iovec iov =3D {
++        .iov_base =3D buf,
++        .iov_len =3D len
++    };
++    struct msghdr msg =3D {
++        .msg_name =3D from,
++        .msg_namelen =3D from ? *fromlen : 0,
++        .msg_iov =3D &iov,
++        .msg_iovlen =3D 1,
++        .msg_control =3D NULL,
++        .msg_controllen =3D 0
++    };
++    int ret;
+=20
+     ret =3D rt_dev_recvmsg(fd, &msg, flags);
+-    if ((ret >=3D 0) && (from !=3D NULL))
++    if (ret >=3D 0 && from)
+         *fromlen =3D msg.msg_namelen;
+     return ret;
+ }
+@@ -318,9 +327,18 @@ static inline ssize_t rt_dev_sendto(int=20
+                                     int flags, const struct sockaddr *to=
+,
+                                     socklen_t tolen)
+ {
+-    struct iovec    iov =3D {(void *)buf, len};
+-    struct msghdr   msg =3D
+-        {(struct sockaddr *)to, tolen, &iov, 1, NULL, 0};
++    struct iovec iov =3D {
++        .iov_base =3D (void *)buf,
++        .iov_len =3D len
++    };
++    struct msghdr msg =3D {
++        .msg_name =3D (struct sockaddr *)to,
++        .msg_namelen =3D tolen,
++        .msg_iov =3D &iov,
++        .msg_iovlen =3D 1,
++        .msg_control =3D NULL,=20
++        .msg_controllen =3D 0
++    };
+=20
+     return rt_dev_sendmsg(fd, &msg, flags);
+ }
 
-Without CONFIG_XENO_DRIVERS_CAN_DEBUG this message will never pop up.
+--------------090001040002040508070003--
 
-> Slight correction. I AM getting CAN errors at the moment
-> 000000088. I believe this is bus error and protocol error.
+--------------enig7FBFC7C24C2C4159BB877B06
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-If this is the can_id field what do the data fields say?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
---
-Sebastian
+iD8DBQFF5zcbniDOoMHTA+kRAn46AJ0Y6yPw+EfhB1G9klbF0xyUMB9QowCff26E
+jdWiH/Ru32UpxcIjnaLYQn0=
+=zyN4
+-----END PGP SIGNATURE-----
+
+--------------enig7FBFC7C24C2C4159BB877B06--
 
