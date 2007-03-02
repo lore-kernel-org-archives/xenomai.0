@@ -1,5 +1,5 @@
-Message-ID: <45E82887.8090809@domain.hid>
-Date: Fri, 02 Mar 2007 14:37:11 +0100
+Message-ID: <45E82F6E.1090702@domain.hid>
+Date: Fri, 02 Mar 2007 15:06:38 +0100
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] problems installing peak CAN dongle
 References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>	<45E7E49C.2000005@domain.hid>	<bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>	<45E7F453.9090803@domain.hid>	<bc4264770703020228p4d01b96co85731b9657fce7b6@domain.hid>	<45E7FFA6.3060405@domain.hid>	<bc4264770703020250q3ead4769kb2cbcc67d130dc3f@domain.hid>
@@ -20,8 +20,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>, Xenomai-help@domain.hid
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Xenomai-help@domain.hid
 
+Hi,
+
+Before I forget: I probably do need plug and play functionality. You did 
+say that your patch should not remove it?
+
+Regards,
+
+Roland
+
+Wolfgang Grandegger wrote:
+> Roland Tollenaar wrote:
+>> Hi,
+>>
+>>> Remember the special modes. You could configure the "loopback" mode 
+>>> of the device using "rtcanconfig -c loopback rtcan0".
+>>
+>> But the virtual device installs on rtcan0 Where will I find the loaded 
+>> dongle? rtcan1?
 > 
 > Inspect /proc/rtcan or watch the log messages.
 > 
@@ -29,33 +48,14 @@ To: Wolfgang Grandegger <wg@domain.hid>, Xenomai-help@domain.hid
 >> the rtcanrecv rtcan1 ?
 > 
 > Yes, but with rtcan2.
-Does this not depend on the outcome of the earlier inspection of 
-/proc/rtcan or is rtcan2 an educated guess? To clarify: I will be 
-sending and recieving on rtcan2 in loopback mode in order to test?
-
 > 
 >>
 >> If things are a bit slow on my side its because I am rushing around 
 >> doing other mandatory things. Only reason I am busy with this as well 
 >> at the moment is because I don;t want to lose the opportunity of 
 >> having you all at your desks :)
-
-While I think about it. How DO I apply your patch. I mean besides using 
-the patch tool, which installation steps must I repeat?
-1-patch your file
-2-run patch_kernel again
-3-rebuild the kernel
-4-rebuild the modules (make modules)
-5-Install modules
-(or can I skip 3 and only do 4 and 5?)
-
-Roland
-
 > 
 > Good, because I will be on holiday next week ;-).
-
-That is not good. You sure you don;t want to postpone for a week? :)
-
 > 
 > Wolfgang.
 > 
