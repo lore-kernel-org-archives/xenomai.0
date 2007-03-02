@@ -1,18 +1,14 @@
-Content-Type: text/plain; charset="us-ascii"
-Date: Mon, 12 Mar 2007 21:28:47 +0100
-From: karre@domain.hid
-In-Reply-To: <45F5B1B0.70306@domain.hid>
-Message-ID: <20070312202847.139510@domain.hid>
+Message-ID: <45E7F453.9090803@domain.hid>
+Date: Fri, 02 Mar 2007 10:54:27 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
-References: <45F2B8BB.6060804@domain.hid> <45F2DE0A.1010207@domain.hid>	
-	<bc4264770703110035g6625e8a1t4f195507d72aaf66@domain.hid>	
-	<45F3CD2C.5000400@domain.hid>	
-	<bc4264770703110402x55f7b13chca39ed02f983feac@domain.hid>	
-	<45F3F013.5000400@domain.hid> <45F471A9.1040005@domain.hid>
-	<bc4264770703121117i2f8648dep853a2ef30301ab67@domain.hid>
-	<45F5B1B0.70306@domain.hid>
+Subject: Re: [Xenomai-help] problems installing peak CAN dongle
+References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>	<45E7E49C.2000005@domain.hid>
+	<bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>
+In-Reply-To: <bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] RT samples
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,23 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Folks,
+I had the same problems with a parallelport dongle. When I removed the
+modules "parport_pc" and "lp" the parallel port device was always
+powered off and it was not possible to receive interrupts anymore. A
+workaround for this "power off" was to append "pnpbios=off"-option to
+the kernel commandline.
+Maybe this can also help you.
 
-I want to measure and evalutate different parameters of system load in Xenomai. Therefore, I am in need of RT samples that simply provide a variety of ressource usage (semaphores, threads, timers, ...).
+Regards,
+Markus Franke
 
-It is not very important what the tool actually does, as long as it can be run autonomously (latency from the testsuite would be a good example for that).
-
-Who knows good ressources for open source real-time applications?
-
-Btw, the type of skin (Native, POSIX, RTAI, ...) is not important. If it is software that is platform-dependant, than the architecture of choice would be x86. If there was not needed additional hardware, that would be ideal.
-
-Thanks a lot in advance!
-
-Richard
+roland Tollenaar wrote:
+>> >
+>> > FATAL: Error inserting xeno_can_peak_dng (xeno_can_peak_dng.ko): No
+>> such
+>> > device
+>>
+>> Is there som additional kernel output visible via "dmesg"?
+> 
+> 
+> Yes:
+> 
+> SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
+> sdb: Write Protect is off
+> sdb: Mode Sense: 43 00 00 00
+> sdb: assuming drive cache: write through
+> SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
+> sdb: Write Protect is off
+> sdb: Mode Sense: 43 00 00 00
+> sdb: assuming drive cache: write through
+> sdb: sdb1
+> sd 3:0:0:0: Attached scsi removable disk sdb
+> usb-storage: device scan complete
+> ERROR! No SJA1000 device found!
+> ERROR while trying to register SJA1000 device -19!
+> Init failed with -19
+> 
+> are the final lines.
+> 
+> 
+>>
+>> How do you have configured the parport in the kernel? Are there modules
+>> loaded (check /proc/modules)? Retry after removing lp and parport_pc:
+> 
+> 
+> Have looked can't see any. Have attached the output of /proc/modules
+> 
+> 
+>>
+>>    $ rmmod lp
+>>    $ rmmod parport_pc
+> 
+> 
+> I get a message that it cannot find these modules in /proc/modules
+> 
+> 
+> 
+> 
+> 
+>>
+>> Wolfgang.
+>>
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
-"Feel free" - 5 GB Mailbox, 50 FreeSMS/Monat ...
-Jetzt GMX ProMail testen: www.gmx.net/de/go/mailfooter/promail-out
+Nichts ist so praktisch wie eine gute Theorie!
 
