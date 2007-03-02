@@ -1,11 +1,14 @@
-Message-ID: <bc4264770703091023q585b5204x7333c0e8b9a4022d@domain.hid>
-Date: Fri, 9 Mar 2007 18:23:55 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Message-ID: <45E7F01D.2080304@domain.hid>
+Date: Fri, 02 Mar 2007 10:36:29 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Xenomai-help] problems installing peak CAN dongle
+References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>	
+	<45E7E49C.2000005@domain.hid>
+	<bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>
+In-Reply-To: <bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] RTCAN latency and RTR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,31 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+roland Tollenaar wrote:
+>> >
+>> > FATAL: Error inserting xeno_can_peak_dng (xeno_can_peak_dng.ko): No 
+>> such
+>> > device
+>>
+>> Is there som additional kernel output visible via "dmesg"?
+> 
+> Yes:
+> 
+> SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
+> sdb: Write Protect is off
+> sdb: Mode Sense: 43 00 00 00
+> sdb: assuming drive cache: write through
+> SCSI device sdb: 3963904 512-byte hdwr sectors (2030 MB)
+> sdb: Write Protect is off
+> sdb: Mode Sense: 43 00 00 00
+> sdb: assuming drive cache: write through
+> sdb: sdb1
+> sd 3:0:0:0: Attached scsi removable disk sdb
+> usb-storage: device scan complete
+> ERROR! No SJA1000 device found!
+> ERROR while trying to register SJA1000 device -19!
+> Init failed with -19
+> 
+> are the final lines.
 
-I was wondering whether someone could shed some light on an RTR based
-approach. If (which I hope not but do fear) the 200 microsecond Rx-ISR
-engagement time cannot be reduced or overcome, would an RTR approach
-offer an alternative?
+OK ==> the device cannot be accessed. Either the I/O address "0x378" and 
+partport type "epp" is incorrect (you did not answer my question on 
+that) or the parallel port is not operational (power off, etc.).
+Please check what is actually selected in the BIOS of your system.
 
-The thought:
-If I make an RTR call to my node at the beginning of the period and
-catch the response all within say 250microsec, I have 750 micoseconds
-for task "work" as long as I can suppress any further disruption from
-the Rx-ISR (i.e. block the rx interrupt or something during that
-period)
+>> How do you have configured the parport in the kernel? Are there modules
+>> loaded (check /proc/modules)? Retry after removing lp and parport_pc:
+> 
+> Have looked can't see any. Have attached the output of /proc/modules
+> 
+> 
+>>
+>>    $ rmmod lp
+>>    $ rmmod parport_pc
+> 
+> I get a message that it cannot find these modules in /proc/modules
 
-I have never used RTR before but can imagine that it relies on the
-normal receiving mechanism of the CAN driver to be up which of course
-would not help.
+Try "modporbe parport". If the module does not exists, configure and 
+rebuild your kernel with parport support.
 
-Are there any generic (userspace) C calls with which interrupts can be
-disabled (e.g. ioctl kind of things) which I could use to keep the
-Rx-ISR quiet during the 750ms?
+In the meantime I'm going to apply the fix Jan mentioned.
 
-Regards,
+Wolfgang.
 
-Roland.
 
