@@ -1,10 +1,18 @@
-Message-ID: <35481f3d0703160950t6100f375o169a0cfd7bd9e9b8@domain.hid>
-Date: Fri, 16 Mar 2007 17:50:35 +0100
-From: "xd yang" <yangxd614@domain.hid>
+Message-ID: <bc4264770703020233p2e271141r7bb73fb7627631de@domain.hid>
+Date: Fri, 2 Mar 2007 10:33:28 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Subject: Re: [Xenomai-help] problems installing peak CAN dongle
+In-Reply-To: <45E7FC1A.5080808@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_31727_21406465.1174063835112"
-Subject: [Xenomai-help] question
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>
+	<45E7E49C.2000005@domain.hid>
+	<bc4264770703020123s28450a37n60bb1e49798f32b8@domain.hid>
+	<45E7F453.9090803@domain.hid>
+	<45E7FAE3.2080005@domain.hid>
+	<45E7FC1A.5080808@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,50 +22,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Markus.Franke@domain.hid
+Cc: xenomai@xenomai.org
 
-------=_Part_31727_21406465.1174063835112
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+I just need to know where I must this command
 
-hi all,
-   i'm not quite clear about  how to communicate between a xenomai driver
-and a standard linux driver. For exemple, i have a xenomai PCI device driver
-,a standard linux driver  and a application in the user  space. I need to
-enter some commands  by the application,  which will be received by the
-standard linux driver, and then should be passed to the  xenomai task, also
-the same thing from xenomai to standard linux .
+pnpbios=off.
 
-  I noticed that there is a API message pipe service offered, with this API
-can i  solve this kind of question?  And for that Xenomai driver should open
-his side of pipe at the beginning to the end to ensure he could receive or
-send messages?
+I am going to try the boot options. Hold thumbs. :)
 
-   thanks a lot,
-xd_yang
+Roland
 
-------=_Part_31727_21406465.1174063835112
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-hi all,<br>
-&nbsp;&nbsp; i&#39;m not quite clear about&nbsp; how to communicate between
-a xenomai driver and a standard linux driver. For exemple, i have a
-xenomai PCI device driver ,a standard linux driver&nbsp; and a
-application in the user&nbsp; space. I need to enter some
-commands&nbsp; by the application,&nbsp; which will be received by the
-standard linux driver, and then should be passed to the&nbsp; xenomai
-task, also the same thing from xenomai to standard linux .<br>
-<br>
-&nbsp; I noticed that there is a API message pipe service offered, with
-this API&nbsp; can i&nbsp; solve this kind of question?&nbsp; And for
-that Xenomai driver should open his side of pipe at the beginning to
-the end to ensure he could receive or send messages?&nbsp; <br>
-<br>
-&nbsp;&nbsp; thanks a lot,<br>
-xd_yang<br>
-
-------=_Part_31727_21406465.1174063835112--
+On 3/2/07, Markus Franke <Markus.Franke@domain.hid> wrote:
+> Wolfgang Grandegger wrote:
+> > Good hint. Roland, could you try that first. I think this does not
+> > require the parport module loaded, doesn't it?
+>
+> No, it doesn't need the parport module nor the lp module beeing loaded.
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+>
+>
 
