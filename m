@@ -1,11 +1,11 @@
-Message-ID: <bc4264770703030554g658d3284y297b22af22375e0a@domain.hid>
-Date: Sat, 3 Mar 2007 13:54:57 +0000
+Message-ID: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
+Date: Sat, 3 Mar 2007 14:09:14 +0000
 From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] catching CAN errors
+Subject: [Xenomai-help] CAN errors and real-time behaviour
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +17,48 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+HI,
 
-What I cannot find an example of is how to filter for more than one error?
+I thought I would put this in a separate thread.
 
-ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
-&err_mask, sizeof(err_mask));
+The experiment works as follows. I have a 1ms and a 2 ms rt periodic task.
 
-will pick out the messages that correspond to err_mask. At the moment
-I seem to be picking up CAN_ERR_BUSERROR but not for example
-CAN_ERR_CRTL (mind you I presume the latter should have been
-CAN_ERR_CTRL which is a bit more intuitive). If I want to pick up both
-can I do this
+In the real-time periodic task I am only reading out the message
+buffer (only work done in the task). In the 2ms task I am doing
+nothing.
 
+I always read-out the measured period times. This is done by writing
+the measured value into a variable which is displayed in a separate
+thread outside the rt tasks so the display does not influence the
+measurement. (Unlike  printf is said to do).
 
-ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
-&err_mask1, sizeof(err_mask1));
+There is nothing connected to the rtcan2 device (Peak dongle). The
+applicaiton runs fine the tasktimes relatively well maintained
+(fluctuatin about 0.003ms) around 1ms and 2ms.
 
-ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
-&err_mask2, sizeof(err_mask2));
+The moment I write to the device using rtcansend eg:
+./rtcansend rtcan2 -i 0x700 0x03 0x02
 
-to set up to get errors of two types or can I only pick up one at a time.?
+the buserror comes up and the protocol error. from that moment onwards
+the messagebuffer gets flooded and does not stop being flooded forever
+after.
 
-This is what my CanID and the data sequence looks like:
+The period times then fluctuate badly up to 0.2ms around their nominal values.
 
-!0x00000088!<0x088> [8] 00 00 80 19 00 00 00 00
+This is not desirable behavior. Firstly its not necessary to have the
+message buffer flooded all the time I would think. How do I change
+that so that I will only pick up an error once in response to a failed
+send?
+Secondly what am I doing wrong that breaks the real-time behaviour? If
+the bus gives an error on one part of the process I don;t want other
+processes that may have nothing to do with the CAN bus to misbehave.?
 
-0x00000080 is CAN_ERR_BUSERROR  and
-0x00000008 is protocol violation CAN_ERR_PROT.
+I do suspect that if I can prevent the message buffer flooding forever
+and manage to clean it out that the behaviour will be better because
+if its flooded then messages get sent to dmesg well wherever dmesg
+reads from that is) and this may explain the behavior?
 
-So I seem to have those two errors. Correct?
-
--What is a protocol error?
-
-The values in data 2 and 3 seem to say
-
-data 2:  80 Error occurred on transmission
-data 3 19 Ack Slot?
-
-The first one I can understand I have nothing connected to the bus,
-the second one
-What does the second one mean?
-
+Can anyone comment on this please?
 
 Regards,
 
