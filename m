@@ -1,55 +1,39 @@
-Message-ID: <bc4264770702250541u5b07669exe178837f45a7f06@domain.hid>
-Date: Sun, 25 Feb 2007 13:41:34 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] rt_timer_start()
-In-Reply-To: <45E19067.1@domain.hid>
+Message-ID: <45E8D44F.7070200@domain.hid>
+Date: Fri, 02 Mar 2007 17:50:07 -0800
+From: Jeff Koftinoff <jeffk@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
-	<45E19067.1@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] MPC8641D and CONFIG_PPC_MERGE
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Ah Ok.
+Hi Everyone. I would really like to get Xenomai working on the new 
+Freescale 8641D dual core G4.
 
-Thanks.
+I see that for linux 2.6.19, Xenomai does not support CONFIG_PPC_MERGE 
+or architectures=powerpc instead of 'ppc'.
 
-Roland.
+Please forgive my ignorance; What exactly is the difference between 
+arch=ppc and arch=powerpc?
 
-On 2/25/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> roland Tollenaar wrote:
-> > Hi,
-> >
-> > The Native API tour dictates that rt_timer_start() MUST be called in
-> > all userspace applications that access the rt_timer.
-> >
-> > It displays and example very similar to the example trivial_periodic.c
-> >
-> > howeve trivial_periodic.c does not call the rt_timer_start() even
-> > though it does have calls such as rt_timer_read.
-> >
-> > and it seems to work.
-> >
-> > Why is that?
->
-> That tour was written before rt_timer_start() got deprecated.
->
-> Always check the latest API documentation when something appears
-> contradictory.
->
-> Jan
->
->
->
+What is involved in changing adeos to work under arch=powerpc on the 
+8641D in single core mode?
+
+How much more work is involved in changing adeos to support SMP on powerpc?
+
+Thanks for any information;
+
+Best Regards,
+
+Jeff Koftinoff
+jeffk@domain.hid
 
