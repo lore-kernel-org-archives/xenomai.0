@@ -1,121 +1,92 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45E9F580.3010107@domain.hid>
+Date: Sat, 03 Mar 2007 23:24:00 +0100
+From: trem <trem@domain.hid>
 MIME-Version: 1.0
+Subject: Re: [Adeos-main] port 2.6.19 x86_64 to 2.6.20
+References: <45E220D7.6060004@domain.hid> <1172469398.1764.79.camel@domain.hid>
+In-Reply-To: <1172469398.1764.79.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17930.56329.893396.220621@domain.hid>
-Date: Wed, 28 Mar 2007 23:20:09 +0200
-Subject: Re: [Xenomai-help] Preemptive scheduling 
-In-Reply-To: <20070328203115.190280@domain.hid>
-References: <20070328203115.190280@domain.hid>
-Content-Transfer-Encoding: Quoted-Printable
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jack Whorn <jackwhorn@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: 7bit
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: rpm@xenomai.org
+Cc: adeos-main@gna.org
 
-Jack Whorn wrote:
- > Hi,
- >=20
- > I`m new to Xenomai and I`m experiencing some issues.
- >=20
- > Why does a Xenomai thread (native skin) with an infinite loop hang the=
- system, though there are higher-priority RT-threads present, and
- > rt_task_set_mode periodically clears T_LOCK and T_SHIELD and sets T_RR=
-B?
- >=20
- > Isn`t the scheduler preemptive, first considering the thread`s priorit=
-y and subsequently the thread`s position in its priority`s ready queue?
- >=20
- > I have attached some sample code.
- >=20
- > Thanks for any hint,
- >=20
- > Jack
- >=20
- >=20
- > #include <stdio.h>
- > #include <unistd.h>
- > #include <stdlib.h>
- > #include <signal.h>
- > #include <string.h>
- > #include <sys/time.h>
- > #include <sys/io.h>
- > #include <sys/mman.h>
- > #include <sys/types.h>
- >=20
- > #include <native/task.h>
- > #include <native/queue.h>
- > #include <native/intr.h>
- > #include <native/timer.h>
- >=20
- >=20
- > #define STACK_SIZE 8192
- > #define PRIO 10
- >=20
- >=20
- > static RT_TASK timer_task_desc;
- >=20
- > //		              ..s.ms.=B5s.ns
- > static RTIME task_period_ns =3D   0100000000llu;
- >=20
- > static unsigned long overruns =3D 0;
- >=20
- > static void clean_exit(int dummy) {
- >=20
- >   rt_task_delete(&timer_task_desc);
- >=20
- > }
- >=20
- > static void thread(void *cookie) {
- >=20
- >   int ret;
- >   int i;
- >   int c;
- >=20
- >=20
- >   ret =3D rt_task_set_mode(T_LOCK, T_RRB, &c);
- >   if (ret)
- >     return;
- >=20
- >   ret =3D rt_task_set_periodic(NULL, TM_NOW, rt_timer_ns2ticks(task_pe=
-riod_ns));
- >   if (ret)
- >     return;
- >=20
- >   while (1) {
- >    =20
- >     ret =3D rt_task_set_mode(T_LOCK | T_SHIELD, T_RRB | T_PRIMARY, NUL=
-L);
- >     if (ret)
- >       return;
- >=20
- >     ret =3D rt_task_wait_period(&overruns);
- >     if (ret =3D=3D -ETIMEDOUT) {
- >     } else if (ret) {
- >       clean_exit(0);
- >     }
- >=20
- >     while (1);	/* infinite loop */
+Philippe Gerum wrote:
+> On Mon, 2007-02-26 at 00:50 +0100, trem wrote:
+>   
+>> Hi
+>>
+>> I've tried to port the 2.6.19 x86_64 adeos patch to 2.6.20. you can find
+>> it here :
+>> http://zarb.org/~trem/adeos-ipipe-2.6.20-x86_64-1.7-03-trem.patch
+>>     
+>
+> The good news is that moving to 2.6.20 does not seem to be too much of a
+> hell. Right?
+>
+>   
+Yes, there are few conflict so it's quite easy to port xenomai to 2.6.20.
+>> I can apply it with with prepare_kernel.sh (from xenomai svn), but I haven't
+>> tested it yet (I mean run kernel).
+>>
+>> I hope this patch is good enough to be used. Otherwise, I'd be pleased
+>> to fix it (maybe with a bit of help).
+>>
+>>     
+>
+> We are hopefully close to have a reasonably good patch for 2.6.19. Once
+> we achieve this, porting to 2.6.20 should be the next step. Thanks.
+>
+>   
+I've seen ths in the Changelog : "this closes the implementation phase
+of the x86_64 port."
+So I suppose that the patch for 2.6.19 is finished. I've tried it and it
+works fine.
+The result of latency is :
 
-Once your program enters this infinte loop, it never gets out, so :
-- your assumption that "t_task_set_mode periodically clears T_LOCK and
-  T_SHIELD and sets T_RRB" is false;
-- even if higher priority task runs, Linux, which is Xenomai idle task
-  never runs, so the system locks up.
+[trem@domain.hid bin]$ sudo ./latency -T 10
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
+worst
+RTD|       0.760|       1.073|       3.660|       0|       0.760|      
+3.660
+RTD|       0.737|       1.063|       3.012|       0|       0.737|      
+3.660
+RTD|       0.741|       1.083|       3.396|       0|       0.737|      
+3.660
+RTD|       0.755|       1.088|       2.344|       0|       0.737|      
+3.660
+RTD|       0.754|       1.093|       3.431|       0|       0.737|      
+3.660
+RTD|       0.755|       1.089|       5.119|       0|       0.737|      
+5.119
+RTD|       0.724|       1.091|       3.126|       0|       0.724|      
+5.119
+RTD|       0.762|       1.089|       3.171|       0|       0.724|      
+5.119
+RTD|       0.751|       1.097|       5.508|       0|       0.724|      
+5.508
+---|------------|------------|------------|--------|-------------------------
+RTS|       0.724|       1.085|       5.508|       0|    00:00:10/00:00:10
 
-In short, maybe you have observed some scheduling problems, but your
-example does not demonstrate them. Such misuse of Xenomai should be
-caught by the watchdog, if you enable it.
+If I don't mistake, I see a max latency of 5us. Is it realistic ?
+
+Now, the port to 2.6.20 is open ? we can work on ?
 
 
---=20
+trem
 
 
-					    Gilles Chanteperdrix.
+
 
