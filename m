@@ -1,15 +1,11 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-help] problems installing peak CAN dongle
-Date: Sun, 4 Mar 2007 10:01:46 +0000
-References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>
-	<45E7E31B.1090102@domain.hid>
-In-Reply-To: <45E7E31B.1090102@domain.hid>
+Message-ID: <bc4264770703040818l43d966a1tba5d14fa3937c93a@domain.hid>
+Date: Sun, 4 Mar 2007 16:18:31 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200703041001.46604.paul_c@domain.hid>
+Subject: [Xenomai-help] syslogd breaking rt behaviour of xenomai?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,38 +16,31 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
-Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
+Hi,
 
-Hi Jan
+I am using rtcan and so far its working. I have a device on a 1MB/s
+CAN line and its working well.
 
-On Friday 02 March 2007 08:40, Jan Kiszka wrote:
-> Maybe a conflict with parport_pc.
->
-> Wolfgang, do we always have to remove that module, or is there a chance
-> to cooperate with it without loosing real-time? When removing the Linux
-> parport layer, there is the risk that the port is powered off (see
-> irqbench), and xeno_can_peak_dng does not account for this yet.
+However my 1ms and 2ms periodic tasks start to have badly oscillating
+period-times as soon as my device puts so many messages in the message
+buffer that it starts overflowing.
 
-Apologies if you're already aware of the following...
-There are a series of calls within the parport subsystem that allow you to 
-register the driver and claim exclusive access to the port - This has several 
-advantages:
+At least that is my analysis of the situation. Because as soon as the
+bufferoverflows  syslogd starts writing system error messages telling
+(if dmesg is called) that the buffer is overflowing and that a message
+is discarded.
 
- * The IO address is validated (usefull for PCI cards).
- * IRQ & base addresses returned in a single struct.
- * Correct IEEE-1284 device present can be checked.
- * IEEE-1284 modes configured with a single call.
- * Numerous read/write calls for EPP/SP modes (depending on .config, not RT 
-safe).
+Now I can make the buffer larger but that will take longer to read out
+and I don;t mind losing the messages. So how do i tell syslogd that it
+is acceptable that the buffer is overflowing to make it less busy?
 
-Retaining parport_pc should avoid any problems with the port being powered off 
-and also allow easy access to PCI card based ports... Unfortunately I don't 
-have a Can dongle to test, so can only offer pointers to parport.h and 
-http://people.redhat.com/twaugh/parport/html/parportguide.html - Although the 
-doc relates to 2.4 series kernels, the info is valid for 2.6.xx (I'm using 
-parport_claim & friends for another project).
+How could I make syslogd more quiet in general. It seems that it can
+be a major real-time destroyer?
 
+Hope someone can help.
 
-Regards, Paul.
+Kind regards,
+
+Roland Tollenaar.
 
