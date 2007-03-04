@@ -1,11 +1,13 @@
-Message-ID: <bc4264770703040818l43d966a1tba5d14fa3937c93a@domain.hid>
-Date: Sun, 4 Mar 2007 16:18:31 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+Message-ID: <cbe23c50703040845v7125317amd915c3e199c9fd5f@domain.hid>
+Date: Sun, 4 Mar 2007 17:45:54 +0100
+From: "Eric Noulard" <eric.noulard@domain.hid>
+Subject: Re: [Xenomai-help] syslogd breaking rt behaviour of xenomai?
+In-Reply-To: <bc4264770703040818l43d966a1tba5d14fa3937c93a@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] syslogd breaking rt behaviour of xenomai?
+References: <bc4264770703040818l43d966a1tba5d14fa3937c93a@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,32 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+2007/3/4, roland Tollenaar <rolandtollenaar@domain.hid>:
+>
+> Now I can make the buffer larger but that will take longer to read out
+> and I don;t mind losing the messages. So how do i tell syslogd that it
+> is acceptable that the buffer is overflowing to make it less busy?
+>
+> How could I make syslogd more quiet in general. It seems that it can
+> be a major real-time destroyer?
+>
+> Hope someone can help.
 
-I am using rtcan and so far its working. I have a device on a 1MB/s
-CAN line and its working well.
+Which process is calling syslog ? Your RT task? Another process/daemon
+running on your system?
 
-However my 1ms and 2ms periodic tasks start to have badly oscillating
-period-times as soon as my device puts so many messages in the message
-buffer that it starts overflowing.
+Be it with Xenomai or not, using syslog system call
+in realtime application is a bad idea, moreover standard
+syslogd daemon has really bad performance regarding
+high volume of message.
 
-At least that is my analysis of the situation. Because as soon as the
-bufferoverflows  syslogd starts writing system error messages telling
-(if dmesg is called) that the buffer is overflowing and that a message
-is discarded.
+If it is your RT task which calls syslog you  should
+find a way to send message in another way.
+May be adding a message queue and a non-RT task,
+the RT task sends messages through message queue
+and the non-RT task finally call syslog.
 
-Now I can make the buffer larger but that will take longer to read out
-and I don;t mind losing the messages. So how do i tell syslogd that it
-is acceptable that the buffer is overflowing to make it less busy?
+Your RT task may be prepared to receive
+-ENOMEM if the queue if full.
 
-How could I make syslogd more quiet in general. It seems that it can
-be a major real-time destroyer?
+You may want to try alternatives syslog daemon
+implementation like syslog-ng (http://www.balabit.com/products/syslog_ng/)
+which exhibits far better performance than "standard" syslogd.
 
-Hope someone can help.
 
-Kind regards,
-
-Roland Tollenaar.
+-- 
+Erk
 
