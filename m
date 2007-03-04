@@ -1,15 +1,15 @@
-Message-ID: <45E6C2CA.5000404@domain.hid>
-Date: Thu, 01 Mar 2007 13:10:50 +0100
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-help] problems installing peak CAN dongle
+Date: Sun, 4 Mar 2007 10:01:46 +0000
+References: <bc4264770703020023o4e15cdafh6e254fff4b225e8a@domain.hid>
+	<45E7E31B.1090102@domain.hid>
+In-Reply-To: <45E7E31B.1090102@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN rt_dev_recvfrom
-References: <bc4264770702281208u7d7ee013qa5be819a5856d4ea@domain.hid>
-	<45E5ED29.8070505@domain.hid> <45E6B77A.5030600@domain.hid>
-	<45E6B9D7.2000000@domain.hid>
-In-Reply-To: <45E6B9D7.2000000@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Reply-To: rolandtollenaar@domain.hid
+Content-Disposition: inline
+Message-Id: <200703041001.46604.paul_c@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,31 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>, Xenomai-help@domain.hid
+To: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>
 
-Hi,
 
->> Where can I find the buffer size option in the kernel config menu? 
->> What is the default size?
-> 
-> On the first menu of the RT-Socket-CAN configuration options:
-> 
-> config XENO_DRIVERS_CAN_RXBUF_SIZE
->         depends on XENO_DRIVERS_CAN
->         int "Size of receive ring buffers (must be 2^N)"
->         default 1024
-> 
-> Note that the messages are stored in "packed" format.
+Hi Jan
 
-Does this mean that the buffer will store 1024 can_frame's ?
+On Friday 02 March 2007 08:40, Jan Kiszka wrote:
+> Maybe a conflict with parport_pc.
+>
+> Wolfgang, do we always have to remove that module, or is there a chance
+> to cooperate with it without loosing real-time? When removing the Linux
+> parport layer, there is the risk that the port is powered off (see
+> irqbench), and xeno_can_peak_dng does not account for this yet.
 
-If yes (or even if no) when rt_dev_recv is called, does it place the 
-last recieved message (youngest message) or the oldest (behave like a 
-FIFO) into *Buf?
+Apologies if you're already aware of the following...
+There are a series of calls within the parport subsystem that allow you to 
+register the driver and claim exclusive access to the port - This has several 
+advantages:
 
-Roland
+ * The IO address is validated (usefull for PCI cards).
+ * IRQ & base addresses returned in a single struct.
+ * Correct IEEE-1284 device present can be checked.
+ * IEEE-1284 modes configured with a single call.
+ * Numerous read/write calls for EPP/SP modes (depending on .config, not RT 
+safe).
 
-> 
-> Wolfgang.
-> 
+Retaining parport_pc should avoid any problems with the port being powered off 
+and also allow easy access to PCI card based ports... Unfortunately I don't 
+have a Can dongle to test, so can only offer pointers to parport.h and 
+http://people.redhat.com/twaugh/parport/html/parportguide.html - Although the 
+doc relates to 2.4 series kernels, the info is valid for 2.6.xx (I'm using 
+parport_claim & friends for another project).
+
+
+Regards, Paul.
 
