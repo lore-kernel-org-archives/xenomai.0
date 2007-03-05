@@ -1,12 +1,10 @@
-Message-ID: <45EBD9A3.9000303@domain.hid>
-Date: Mon, 05 Mar 2007 08:49:39 +0000
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Message-ID: <6177643.1173082156861.JavaMail.ngmail@domain.hid>
+Date: Mon, 5 Mar 2007 09:09:16 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN errors and real-time behaviour
-References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
-In-Reply-To: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Dual Core CPU - L2 Cache organization/reservation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,89 +14,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi,
-May be this related to your problem,I am trying to deal with some 
-problems regarding CAN applications when NOTHING IS CONNECTED and my 
-system  :
+Hi all,
 
-Like you I have a first  task that reads the CAN bus
-a second task is doing nothing than waiting for a a semaphore.
-A third  task begins to send two messages in can bus (the second message 
-has got error) and goes to 5ms peridoic loop
+I made excellent results with Xenomai and the dual core Pentium D CPU.
+I use one of the cores for real time code, the other core is used for house=
+keeping, communication...
+Excellent means, that the runtime jitter of the real time application is ex=
+tremely low.
+For example, I have a physical model running that takes about 40 microsecon=
+ds to run.
+The runtime jitter on the dual core CPU is less than 3 microseconds. On the=
+ uni processor machine,
+the runtime jitter is about 40-60 (!) microseconds.
+On the dual core CPU the model seems to run completely out of the cache whi=
+ch is perfect for achieving
+excellent computation times. On the UP system, the non-real time code seems=
+ to "eat up" the cache occasionally used by the real time core, i.e. the re=
+al time code has to re-load its cache from memory.
+
+Now I read about the way the cache is organized in Intel's Core 2 Duo serie=
+s. Here one common cache is=20
+used that is shared between both cores.
+I have now the fear, that the Core 2 Duo CPU does not show this excellent r=
+esults as the Pentium D as the non-real time code might "eat up" the cache =
+as it does on a UP system.
+
+Or is there a way that allows me to "reserve" parts of the common cache for=
+ one Core (or for the real time application, i.e. for certain physical addr=
+esses)?
+Of course a real Multi CPU system (Xeon based) might help (Server/Workstati=
+on), however these systems=20
+are fairly expensive compared to the Core 2 Duo desktop systems...
+
+Thanks for all feedback on this issue!
+
+Regards
+
+Mathias
 
 
-The major problem is as follow :
-I launch my RT TASK : no problem .I can do things in my linux console .
 
-Now,  I start X , X begins to launch and is frozen.If I plug the bus 
-CAN, "magician things " happen : X manage to launch and everything goes 
-normal  ......
-
-important NOTE for the behavour : CAN RX has got a timeout of almost 
-100ms and tx of 10 ms. if something goes wrong task 2 rt_task_sleeps for 
-a while.
-
-I think the problem is related to can driver behavour.Do you think it is 
-related to the same problem origin you have?
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
-roland Tollenaar wrote:
-> HI,
-> 
-> I thought I would put this in a separate thread.
-> 
-> The experiment works as follows. I have a 1ms and a 2 ms rt periodic task.
-> 
-> In the real-time periodic task I am only reading out the message
-> buffer (only work done in the task). In the 2ms task I am doing
-> nothing.
-> 
-> I always read-out the measured period times. This is done by writing
-> the measured value into a variable which is displayed in a separate
-> thread outside the rt tasks so the display does not influence the
-> measurement. (Unlike  printf is said to do).
-> 
-> There is nothing connected to the rtcan2 device (Peak dongle). The
-> applicaiton runs fine the tasktimes relatively well maintained
-> (fluctuatin about 0.003ms) around 1ms and 2ms.
-> 
-> The moment I write to the device using rtcansend eg:
-> ./rtcansend rtcan2 -i 0x700 0x03 0x02
-> 
-> the buserror comes up and the protocol error. from that moment onwards
-> the messagebuffer gets flooded and does not stop being flooded forever
-> after.
-> 
-> The period times then fluctuate badly up to 0.2ms around their nominal 
-> values.
-> 
-> This is not desirable behavior. Firstly its not necessary to have the
-> message buffer flooded all the time I would think. How do I change
-> that so that I will only pick up an error once in response to a failed
-> send?
-> Secondly what am I doing wrong that breaks the real-time behaviour? If
-> the bus gives an error on one part of the process I don;t want other
-> processes that may have nothing to do with the CAN bus to misbehave.?
-> 
-> I do suspect that if I can prevent the message buffer flooding forever
-> and manage to clean it out that the behaviour will be better because
-> if its flooded then messages get sent to dmesg well wherever dmesg
-> reads from that is) and this may explain the behavior?
-> 
-> Can anyone comment on this please?
-> 
-> Regards,
-> 
-> Roland.
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-> 
-
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
