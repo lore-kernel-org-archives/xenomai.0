@@ -1,15 +1,15 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Subject: Re: [Xenomai-help] catching CAN errors
-Date: Mon, 5 Mar 2007 16:18:14 +0100
-References: <bc4264770703030554g658d3284y297b22af22375e0a@domain.hid>
-	<E1HOELY-0008UB-JZ@mailer.emlix.com> <45EC2F61.2060307@domain.hid>
-In-Reply-To: <45EC2F61.2060307@domain.hid>
+Message-ID: <45EC4D36.2000600@domain.hid>
+Date: Mon, 05 Mar 2007 17:02:46 +0000
+From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1HOEww-0003QC-3Z@mailer.emlix.com>
+Subject: Re: [Xenomai-help] CAN errors and real-time behaviour (IRQ raise
+	forever and may lock system)
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
+	<E1HOBKy-0000tp-Kt@domain.hid> <45EC2FCF.70601@domain.hid>
+	<E1HOEOb-0000Hu-1R@mailer.emlix.com>
+In-Reply-To: <E1HOEOb-0000Hu-1R@mailer.emlix.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,108 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
+To: Sebastian Smolorz <ssm@domain.hid>
 Cc: xenomai@xenomai.org
 
-Roland Tollenaar wrote:
-> Hi,
->
-> Sebastian Smolorz wrote:
-> > How many messages are you receiving?
->
-> How do I count them?
+Sebastian Smolorz wrote:
+> St=E9phane ANCELOT wrote:
+>> Sebastian Smolorz wrote:
+>>> Note that the current implementation of RT-Socket-CAN shows this
+>>> behaviour on purpose. See also [1] ("may flood!"). Whether this is the
+>>> right handling or not may be discussed here. I admit that the current
+>>> implementation forces an application developer to take more
+>>> responsibility but that is not a bug of the underlying driver/stack per
+>>> se. Look, you don't connect anything to the CAN bus, start a *real-time*
+>>> application which sends a message to a non-existent CAN node. This is an
+>>> error situation an it is more than ever for a real-time task. So the
+>>> proper reaction for a RT-application would be to handle those errors and
+>>> e.g. shut down the CAN interface which in this case will force the CAN
+>>> hardware to stop its endless attempts to send the message.
+>> I agree and this is what I was doing , however this does not seem to
+>> work as expected in the driver.
+>=20
+> What does not work? The shutdown and stopping transmitting the CAN messag=
+es?
+>=20
+> --
+> Sebastian
+>=20
+>=20
+Yes, this is exactly what has happened to me and rolland problem , one=20
+rtcansend launched and BEI interrupt come always....
 
-Can you make your sending node send only, let's say, 10 messages and no more? 
-Then print out the number of received messages by your application and 
-compare.
 
+since the error management shoudl be done by appplication process, I=20
+think that BUS ERROR INTERRUPT can be reported however the ECC reading=20
+must not be done by the interrupt routine.
+Since it permits  a next bus error interrupt. the ECC reading should be=20
+left to user application eg through an ioctl.
 
-> > messages sent? Are there also overflows if you use rtcanrecv shipped with
-> > Xenomai instead of your app?
->
-> Still overflows. I know because I have had it receiving while my
-> application was running and when I first picked up the RT degradation I
-> turned it off just to see if rtcanrecv was not causing the problem.
+This  may be an option or a error mode selectable by the programmer at=20
+startup .
 
-Eh ... and what is the situation if you run rtcanrecv without your app?
-
-> >> Is the messagebuffer perhaps not cleaned out when I do a read?
-> >
-> > The message buffer is cleared unless you use MSG_PEEK.
->
-> Ok so we agree that my code snippet as posed should clear out the
-> buffer. That doubt is eliminated then.
-
-Yes.
-
->
-> >> I only
-> >> get an overflow when the sensor moves and emits readings.
-> >
-> > Hm, maybe you have another socket bound which you don't read from?
->
-> No. I am 100% certain that I only call rt_dev_bind (if it is called
-> that) once for my entire application in a kind of init routine. Ah sorry
-> I see what you are saying. Well I would have to have another bind to
-> rtcan2 as well I presume. And as I say, I only call bind once. But let
-> me understand this properly, does that mean that every socket created
-> has its own buffer ring?
-
-You got it. And for this reason there can be more than one buffer that 
-overflows.
-
->
-> >> the readings
-> >> are fine and I don;t have any masks set for errors anyway so I assume
-> >> that my reads are not cleaning out the entire buffer. I have pasted in
-> >> the code in which I do the reading. Am I doing something wrong?
-> >>
-> >>
-> >>
-> >> 	while(ret>=0){
-> >> 		ret = rt_dev_recv (can_fd, (void *)&Rxframe,
-> >> sizeof(can_frame_t), MSG_DONTWAIT);
-> >> 		if (ret < 0) {
-> >> 			switch (ret) {
-> >> 			case -ETIMEDOUT:
-> >> 				printf("rt_dev_recv: timed out");
-> >> 				break;
-> >> 			case -EBADF:
-> >> 				printf("rt_dev_recv: aborted because
-> >>                                              socket was closed");
-> >> 				break;
-> >> 			}
-> >> 		}
-> >>
-> >> 	}//while message buffer not empty
-> >> 	//when exiting this loop the message buffer will be empty??????
-> >
-> > Are you sure this loop gets executed more than a few times? The flag
-> > MSG_DONTWAIT indicates that rt_dev_recv shall return with -EAGAIN if the
-> > socket buffer is empty. If this is the case the while-loop is left.
-> > Further CAN messages would not be read. Maybe this is the reason for the
-> > overflows which appear *after* you read a message for the last time.
->
-> Sorry Sebastian, I lose you here. I know that -EAGAIN is returned if hte
-> socket buffer is empty. But that is the point. I read all messages in
-> the buffer until ret=-EAGAIN and that clears out the message buffer.
-> Indeed after I have read for the last time my application waits 1ms (or
-> what is left of it) then only reads again.
-
-The code above does not state this. I assume this only is the inner snippet 
-and the outer loop is missing?
-
-> If my node sends so many 
-> messages that I get an overflow in the mean time I will get a syslog
-> telling me the buffer is overflowing. This is what I assumed was
-> happening. This is what SEEMS to be happening. The thing is that the
-> node is supposed to only send one message every ms itself. I will have
-> to validate that somehow,
-
-I have another suspicion. Maybe the sending node does not get an acknowledge? 
-You don't run the CAN controller in listen only mode, do you? And what about 
-termination of your CAN bus?
-
--- 
-Sebastian
+what do you think ?
+Regards
+steph
 
