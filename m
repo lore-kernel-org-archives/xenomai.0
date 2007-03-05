@@ -1,14 +1,12 @@
-Message-ID: <45EBF37F.6090604@domain.hid>
-Date: Mon, 05 Mar 2007 10:39:59 +0000
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Message-ID: <45EBE903.6090202@domain.hid>
+Date: Mon, 05 Mar 2007 10:55:15 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN errors and real-time behaviour (IRQ raise
-	forever and may lock system)
-References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
-	<45EBD9A3.9000303@domain.hid>
-In-Reply-To: <45EBD9A3.9000303@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Porting GNU/Linux to Xenomai
+References: <38b44d590703041116o25fdab82jf2a53739c97a20fd@domain.hid>
+In-Reply-To: <38b44d590703041116o25fdab82jf2a53739c97a20fd@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,119 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
+To: Saiful Khan <saiful.etc@domain.hid>
 Cc: xenomai@xenomai.org
 
-I have checked what has happened when nothing plugged on canbus:
+Saiful Khan wrote:
+> Hello,
+> 
+> I have a normal GNU/Linux (Linux System Programming) application,
+> running on Linux properly. But due to some performance related issue. I
+> have installed Xenomai Linux with RTNet. And now I want this application
+> to run under xenomai with highest priority so that I can get the desired
+> real-time performance.
+> The application is little large consist of message queue, shared memory,
+> socket and several threads. Can you please suggest me :
+> what are the changes I need to do in the application?
+> Can I run the same application in xenomai (using the RTNet) without any
+> change?
+> Or  If I need to change what skin I have to prefer (POSIX/Native)?
+> I need to run it in user space or kernel space?
+> 
+> Please suggest me the simple way, what can I do to port the GNU/Linux
+> application in Xenomai using the RTNet?
 
-a bus error occured .
-when bus error occurs the ecc register contains possible error information.
-once we read the ecc register (in isr routine) the error code register=20
-mechanism is enabled again . Thus another bus error interrupt appears=20
-again and a new BEI ocurs
+If the application you have to port already uses the posix API, the
+simple way to port it to xenomai is to use the posix skin. Using xenomai
+posix skin is just a matter of using xeno-config in order to set
+correctly the compilation flags, you should have a look at
+ksrc/skins/posix/demos for details.
 
-In this case, the system spend time in the ISR routine of the CAN=20
-driver.It gives you enough time to run a linux console , but not to=20
-launch other tasks like X...
+Note however that only setting the compilation flag will not magically
+turn the application into a real-time application, you will have to
+inspect your application to find what exactly must be done in a high
+priority task, and in these high priority task, you will have to use
+only real-time services in order to avoid loosing determinism.
 
-It would be necessary to find a way to manage this kind of problem and=20
-avoiding enabling forever Bus Error Interrupt.
-Best Regards
-steph
+About RTnet, note that you will only get deterministic UDP, TCP can not
+be made deterministic.
 
-St=E9phane ANCELOT wrote:
-> Hi,
-> May be this related to your problem,I am trying to deal with some=20
-> problems regarding CAN applications when NOTHING IS CONNECTED and my=20
-> system  :
->=20
-> Like you I have a first  task that reads the CAN bus
-> a second task is doing nothing than waiting for a a semaphore.
-> A third  task begins to send two messages in can bus (the second message =
+About the user-space/kernel-space choice, you should start using
+user-space as much as possible, except for drivers code. If you do not
+get enough determinism, you will then have the freedom to move some
+parts to kernel-space.
 
-> has got error) and goes to 5ms peridoic loop
->=20
->=20
-> The major problem is as follow :
-> I launch my RT TASK : no problem .I can do things in my linux console .
->=20
-> Now,  I start X , X begins to launch and is frozen.If I plug the bus=20
-> CAN, "magician things " happen : X manage to launch and everything goes=20
-> normal  ......
->=20
-> important NOTE for the behavour : CAN RX has got a timeout of almost=20
-> 100ms and tx of 10 ms. if something goes wrong task 2 rt_task_sleeps for =
-
-> a while.
->=20
-> I think the problem is related to can driver behavour.Do you think it is =
-
-> related to the same problem origin you have?
->=20
->=20
-> roland Tollenaar wrote:
->> HI,
->>
->> I thought I would put this in a separate thread.
->>
->> The experiment works as follows. I have a 1ms and a 2 ms rt periodic=20
->> task.
->>
->> In the real-time periodic task I am only reading out the message
->> buffer (only work done in the task). In the 2ms task I am doing
->> nothing.
->>
->> I always read-out the measured period times. This is done by writing
->> the measured value into a variable which is displayed in a separate
->> thread outside the rt tasks so the display does not influence the
->> measurement. (Unlike  printf is said to do).
->>
->> There is nothing connected to the rtcan2 device (Peak dongle). The
->> applicaiton runs fine the tasktimes relatively well maintained
->> (fluctuatin about 0.003ms) around 1ms and 2ms.
->>
->> The moment I write to the device using rtcansend eg:
->> ./rtcansend rtcan2 -i 0x700 0x03 0x02
->>
->> the buserror comes up and the protocol error. from that moment onwards
->> the messagebuffer gets flooded and does not stop being flooded forever
->> after.
->>
->> The period times then fluctuate badly up to 0.2ms around their nominal=20
->> values.
->>
->> This is not desirable behavior. Firstly its not necessary to have the
->> message buffer flooded all the time I would think. How do I change
->> that so that I will only pick up an error once in response to a failed
->> send?
->> Secondly what am I doing wrong that breaks the real-time behaviour? If
->> the bus gives an error on one part of the process I don;t want other
->> processes that may have nothing to do with the CAN bus to misbehave.?
->>
->> I do suspect that if I can prevent the message buffer flooding forever
->> and manage to clean it out that the behaviour will be better because
->> if its flooded then messages get sent to dmesg well wherever dmesg
->> reads from that is) and this may explain the behavior?
->>
->> Can anyone comment on this please?
->>
->> Regards,
->>
->> Roland.
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
->>
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
->=20
-
+-- 
+                                                 Gilles Chanteperdrix
 
