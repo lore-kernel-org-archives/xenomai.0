@@ -1,12 +1,14 @@
-Message-ID: <45EBE903.6090202@domain.hid>
-Date: Mon, 05 Mar 2007 10:55:15 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] catching CAN errors
+Date: Mon, 5 Mar 2007 12:06:11 +0100
+References: <bc4264770703030554g658d3284y297b22af22375e0a@domain.hid>
+In-Reply-To: <bc4264770703030554g658d3284y297b22af22375e0a@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Porting GNU/Linux to Xenomai
-References: <38b44d590703041116o25fdab82jf2a53739c97a20fd@domain.hid>
-In-Reply-To: <38b44d590703041116o25fdab82jf2a53739c97a20fd@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1HOB10-0007rm-Hj@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,48 +18,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Saiful Khan <saiful.etc@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-Saiful Khan wrote:
-> Hello,
-> 
-> I have a normal GNU/Linux (Linux System Programming) application,
-> running on Linux properly. But due to some performance related issue. I
-> have installed Xenomai Linux with RTNet. And now I want this application
-> to run under xenomai with highest priority so that I can get the desired
-> real-time performance.
-> The application is little large consist of message queue, shared memory,
-> socket and several threads. Can you please suggest me :
-> what are the changes I need to do in the application?
-> Can I run the same application in xenomai (using the RTNet) without any
-> change?
-> Or  If I need to change what skin I have to prefer (POSIX/Native)?
-> I need to run it in user space or kernel space?
-> 
-> Please suggest me the simple way, what can I do to port the GNU/Linux
-> application in Xenomai using the RTNet?
+roland Tollenaar wrote:
+> Hi,
+>
+> What I cannot find an example of is how to filter for more than one error?
+>
+> ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
+> &err_mask, sizeof(err_mask));
+>
+> will pick out the messages that correspond to err_mask. At the moment
+> I seem to be picking up CAN_ERR_BUSERROR but not for example
+> CAN_ERR_CRTL (mind you I presume the latter should have been
+> CAN_ERR_CTRL which is a bit more intuitive). If I want to pick up both
+> can I do this
+>
+>
+> ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
+> &err_mask1, sizeof(err_mask1));
+>
+> ret = rt_dev_setsockopt(can_fd, SOL_CAN_RAW, CAN_RAW_ERR_FILTER,
+> &err_mask2, sizeof(err_mask2));
+>
+> to set up to get errors of two types or can I only pick up one at a time.?
 
-If the application you have to port already uses the posix API, the
-simple way to port it to xenomai is to use the posix skin. Using xenomai
-posix skin is just a matter of using xeno-config in order to set
-correctly the compilation flags, you should have a look at
-ksrc/skins/posix/demos for details.
+The error mask is called a *mask* because you can mask those errors you are 
+interested in. Of course you can set the error *bits* in one mask. Just OR 
+them.
 
-Note however that only setting the compilation flag will not magically
-turn the application into a real-time application, you will have to
-inspect your application to find what exactly must be done in a high
-priority task, and in these high priority task, you will have to use
-only real-time services in order to avoid loosing determinism.
 
-About RTnet, note that you will only get deterministic UDP, TCP can not
-be made deterministic.
+>
+> This is what my CanID and the data sequence looks like:
+>
+> !0x00000088!<0x088> [8] 00 00 80 19 00 00 00 00
+>
+> 0x00000080 is CAN_ERR_BUSERROR  and
+> 0x00000008 is protocol violation CAN_ERR_PROT.
+>
+> So I seem to have those two errors. Correct?
+>
+> -What is a protocol error?
 
-About the user-space/kernel-space choice, you should start using
-user-space as much as possible, except for drivers code. If you do not
-get enough determinism, you will then have the freedom to move some
-parts to kernel-space.
+Either consult the CAN specification or look at the protocol error types in 
+the RT-Socket-CAN documentation [1] which give you a rough overview what a 
+protocol error is. In short: It is a violation against the defined CAN 
+protocol.
 
--- 
-                                                 Gilles Chanteperdrix
+>
+> The values in data 2 and 3 seem to say
+>
+> data 2:  80 Error occurred on transmission
+> data 3 19 Ack Slot?
+>
+> The first one I can understand I have nothing connected to the bus,
+> the second one
+> What does the second one mean?
+
+It means that no one has ack'ed your transmission. This makes sense since you 
+didn't connect anything.
+
+
+[1] 
+http://www.xenomai.org/documentation/trunk/html/api/group__rtcan.html#g6cf7ee3a3d83315ed2589bb3bdb816b3
+
+--
+Sebastian
 
