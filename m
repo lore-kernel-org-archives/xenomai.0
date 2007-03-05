@@ -1,13 +1,15 @@
-Message-ID: <45EC55E2.90306@domain.hid>
-Date: Mon, 05 Mar 2007 18:39:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45EC5946.9030508@domain.hid>
+Date: Mon, 05 Mar 2007 18:54:14 +0100
+From: Markus Franke <Markus.Franke@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] how to ensure whethere application is running
-	on	Xenomai domain?
-References: <38b44d590703050928u2c1c9u22797bef6e57f186@domain.hid>
-In-Reply-To: <38b44d590703050928u2c1c9u22797bef6e57f186@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_pipe_write() returns -ENOMEM
+References: <45EC4111.6070104@domain.hid>
+	<45EC428E.5060306@domain.hid>
+	<45EC4AF4.7000808@domain.hid>
+	<45EC4F8E.905@domain.hid>
+In-Reply-To: <45EC4F8E.905@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080605080302010909030905"
+Reply-To: Markus.Franke@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Saiful Khan <saiful.etc@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Saiful Khan wrote:
-> Hello,
+This is a multi-part message in MIME format.
+--------------080605080302010909030905
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+OK. And if there is an overflow is there anything I can do during
+runtime, e.g. just to overwrite the data in the queue?
+
+Regards,
+Markus Franke
+
+Gilles Chanteperdrix wrote:
+> Markus Franke wrote:
 > 
-> I have ported my GNU/Linux(Posix) application in Xenomai, and I have
-> used the xenomai skin. My application is running in highest priority (99).
-> 1. How can I be sure that my application is running in Xenomai/Primary
-> domain with highest priority?
-
-cat /proc/xenomai/sched
-
-should give you a list of the threads that are actually known by xenomai.
-
-> 2. How can I ensure whethere it is switching to secondary mode due to
-> some calls like pritf()?
-
-You have an example of using the SIGXCPU signal for this purpose here:
-http://www.xenomai.org/documentation/trunk/html/api/sigxcpu_8c-example.html
-
-This example uses the native API, if you are using the posix api, you
-should replace rt_task_set_mode with pthread_set_mode_np, documented here:
-http://www.xenomai.org/documentation/trunk/html/api/group__posix__thread.html#g9dd3db5524fccb05a8868b7c33ccaa79
+>>what happens if rt_pipe_write() returns
+>>-ENOMEM? Does the data to be written simply get lost or is it simply
+>>enqeued at the end and the first element in the pipe get's lost?
+>>
+> 
+> 
+> No, the rt_pipe_write which returns an error fails.
+> 
 
 -- 
-                                                 Gilles Chanteperdrix
+Nichts ist so praktisch wie eine gute Theorie!
+
+--------------080605080302010909030905
+Content-Type: text/x-vcard; charset=utf-8;
+ name="Markus.Franke.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="Markus.Franke.vcf"
+
+begin:vcard
+fn:Markus Franke
+n:Franke;Markus
+adr;quoted-printable:;;Vettersstra=C3=9Fe 64/722;Chemnitz;Saxony;09126;Germany
+email;internet:Markus.Franke@domain.hid
+x-mozilla-html:FALSE
+url:http://www.tu-chemnitz.de/~franm
+version:2.1
+end:vcard
+
+
+--------------080605080302010909030905--
 
