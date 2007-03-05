@@ -1,11 +1,15 @@
-Message-ID: <45EC3209.1050208@domain.hid>
-Date: Mon, 05 Mar 2007 16:06:49 +0100
-From: Matthias Scheer <scheer@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] catching CAN errors
+Date: Mon, 5 Mar 2007 16:18:14 +0100
+References: <bc4264770703030554g658d3284y297b22af22375e0a@domain.hid>
+	<E1HOELY-0008UB-JZ@mailer.emlix.com> <45EC2F61.2060307@domain.hid>
+In-Reply-To: <45EC2F61.2060307@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-	micalg=sha1; boundary="------------ms010802060401090406080909"
-Subject: [Xenomai-help] another compilation issue (but fixed,
-	just a heads-up)
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1HOEww-0003QC-3Z@mailer.emlix.com>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,152 +19,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rolandtollenaar@domain.hid
+Cc: xenomai@xenomai.org
 
-This is a cryptographically signed message in MIME format.
+Roland Tollenaar wrote:
+> Hi,
+>
+> Sebastian Smolorz wrote:
+> > How many messages are you receiving?
+>
+> How do I count them?
 
---------------ms010802060401090406080909
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Can you make your sending node send only, let's say, 10 messages and no more? 
+Then print out the number of received messages by your application and 
+compare.
 
-Hi,
 
-compiling the latest trunk for i386 kernel 2.6.20.1 using the latest
-adeos patch I got four missing symbols while linking the kernel image.
+> > messages sent? Are there also overflows if you use rtcanrecv shipped with
+> > Xenomai instead of your app?
+>
+> Still overflows. I know because I have had it receiving while my
+> application was running and when I first picked up the RT degradation I
+> turned it off just to see if rtcanrecv was not causing the problem.
 
-The symbol in question was the fct 'smp_processor_id_hw', which is
-wrapped by a #define macro in linux/ipipe.h.
+Eh ... and what is the situation if you run rtcanrecv without your app?
 
-Fixed by adding an #include <linux/ipipe.h> in the following kernel
-include files:
+> >> Is the messagebuffer perhaps not cleaned out when I do a read?
+> >
+> > The message buffer is cleared unless you use MSG_PEEK.
+>
+> Ok so we agree that my code snippet as posed should clear out the
+> buffer. That doubt is eliminated then.
 
-include/asm/mach-default/mach-ipi.h
-include/asm/mach-es7000/mach-apic.h
-include/asm/mach-summit/mach-ipi.h
-include/asm/mach-bigsmp/mach-ipi.h
+Yes.
 
-Compiling was done on an Athlon64 X2 running kernel 2.6.18.2-i386.
+>
+> >> I only
+> >> get an overflow when the sensor moves and emits readings.
+> >
+> > Hm, maybe you have another socket bound which you don't read from?
+>
+> No. I am 100% certain that I only call rt_dev_bind (if it is called
+> that) once for my entire application in a kind of init routine. Ah sorry
+> I see what you are saying. Well I would have to have another bind to
+> rtcan2 as well I presume. And as I say, I only call bind once. But let
+> me understand this properly, does that mean that every socket created
+> has its own buffer ring?
 
-Matthias
+You got it. And for this reason there can be more than one buffer that 
+overflows.
 
---------------ms010802060401090406080909
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+>
+> >> the readings
+> >> are fine and I don;t have any masks set for errors anyway so I assume
+> >> that my reads are not cleaning out the entire buffer. I have pasted in
+> >> the code in which I do the reading. Am I doing something wrong?
+> >>
+> >>
+> >>
+> >> 	while(ret>=0){
+> >> 		ret = rt_dev_recv (can_fd, (void *)&Rxframe,
+> >> sizeof(can_frame_t), MSG_DONTWAIT);
+> >> 		if (ret < 0) {
+> >> 			switch (ret) {
+> >> 			case -ETIMEDOUT:
+> >> 				printf("rt_dev_recv: timed out");
+> >> 				break;
+> >> 			case -EBADF:
+> >> 				printf("rt_dev_recv: aborted because
+> >>                                              socket was closed");
+> >> 				break;
+> >> 			}
+> >> 		}
+> >>
+> >> 	}//while message buffer not empty
+> >> 	//when exiting this loop the message buffer will be empty??????
+> >
+> > Are you sure this loop gets executed more than a few times? The flag
+> > MSG_DONTWAIT indicates that rt_dev_recv shall return with -EAGAIN if the
+> > socket buffer is empty. If this is the case the while-loop is left.
+> > Further CAN messages would not be read. Maybe this is the reason for the
+> > overflows which appear *after* you read a message for the last time.
+>
+> Sorry Sebastian, I lose you here. I know that -EAGAIN is returned if hte
+> socket buffer is empty. But that is the point. I read all messages in
+> the buffer until ret=-EAGAIN and that clears out the message buffer.
+> Indeed after I have read for the last time my application waits 1ms (or
+> what is left of it) then only reads again.
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIUJDCC
-BfowggTioAMCAQICAQUwDQYJKoZIhvcNAQEFBQAwaTELMAkGA1UEBhMCREUxETAPBgNVBAcT
-CE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0Ex
-GzAZBgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZTAeFw0wNDA0MTQxMTM4MjFaFw0wOTA2MDEw
-MDAwMDBaMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hlbjEMMAoGA1UEChMDVFVN
-MQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNBMRswGQYJKoZIhvcNAQkB
-FgxjYUBpbi50dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5Qgv7SiZa
-DH5l15BZa6IxKQ48eK3dtkoNMzBbW47XTjoq9ysF9JREBX/QB/HgOJC2QWm023XzAy8msk9/
-zlNfEZeI5HUxSnHgY1DQW02DkDMhFJVCkTM6jpwF7eFTejBedlnbZ3fpcdecqjP/Nkx49ISC
-Bzagy6P46gKEtE4b+mxRLny1PbSiGXWW1+pN4H/2V0ZomiYA2/hDoeC+8xEHxUrqoZH4UAMA
-Sqlkn4l7AAwloOkNq2QuFlDjjKAY8SsMhZsqepm89+IFOBrrmQETc3/Yy37HarV27IR9Lj0/
-5KzZV/S/zGe92axQX7Qx2AFDZ0pMxsJDCxsYMNRVtbs7AgMBAAGjggKiMIICnjAPBgNVHRMB
-Af8EBTADAQH/MB0GA1UdDgQWBBQ2JDnrZkentz0eO8OylQxm+kUR+zCBkwYDVR0jBIGLMIGI
-gBQCvdsbL7CxV7/qbSYAMonyMhk6/KFtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11
-ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZ
-BgkqhkiG9w0BCQEWDGNhQGluLnR1bS5kZYIBAzAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0lBBYw
-FAYIKwYBBQUHAwIGCCsGAQUFBwMEMDcGA1UdHwQwMC4wLKAqoCiGJmh0dHA6Ly9jYS5pbi50
-dW0uZGUvY3Jscy9nMi9jYV9jcmwuY3JsMAkGA1UdEgQCMAAwEQYJYIZIAYb4QgEBBAQDAgEG
-MIGWBglghkgBhvhCAQ0EgYgWgYVaZXJ0aWZpa2F0IGZ1ZXIgUkJHLUJlbnV0emVyLUNBLCBh
-dXNnZXN0ZWxsdCB2b24gUkJHLUNBIDIuR2VuZXJhdGlvbiwgRmFrdWx0YWV0IGZ1ZXIgSW5m
-b3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11ZW5jaGVuMDIGCWCGSAGG
-+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4vY2EtcmV2PzA6BglghkgBhvhC
-AQgELRYraHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy91c2VyY2Fwb2wuaHRtbDBHBgNV
-HSAEQDA+MDwGDSsGAQQBgZg+ZYFIAQEwKzApBggrBgEFBQcCARYdaHR0cDovL2NhLmluLnR1
-bS5kZS9wb2xpY2llcy8wDQYJKoZIhvcNAQEFBQADggEBAHQVyKpo5sOzp39lbk5dCLoB8XLt
-KdqCcA/e6owBqYzJMK1Sfz/cB4Zvm956ya1dROs4vq/mrlUy7BoLqu/EtWl6+dLpiu+GOKNu
-q25olT9GzD7OAC8Y6PdWuiV8LinE0E+goBMFVYM65+s7fD2gUdg5pLdREURRFuF1AYIRPSV6
-0G6zcHx8KXRM68Xt+0Tjv4LxzSdgPO6QwfYM1OUnVnfc0DkIXIJAGOp0YWZEl7MXKq5YM/65
-v8DD9N6JjW+v/CwX6Zx82MVi9jpDy0hah6DkQPsTHbRP08WTjjuBakQ3qjJNRd33lLIzNZnp
-HNRf+jH+aVxh8KqhQOJF5mv/r4QwggcPMIIF96ADAgECAgJJpzANBgkqhkiG9w0BAQUFADBy
-MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UE
-CxMCSU4xGDAWBgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4u
-dHVtLmRlMB4XDTA2MDUxNTE3MjU1MVoXDTA3MDUzMTAwMDAwMFowfzELMAkGA1UEBhMCREUx
-ETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYDVQQKEwNUVU0xCzAJBgNVBAsTAklOMRgwFgYDVQQD
-Ew9NYXR0aGlhcyBTY2hlZXIxKDAmBgkqhkiG9w0BCQEWGW1hdHRoaWFzLnNjaGVlckBpbi50
-dW0uZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDkcey//SBIE0jN2OmtBToq
-Vf+UHA6noM/brk1o58em6/9Msiv3Fh25w7Owm7DqGGH/BgFw+5m/cVEagtdN7++RpycHovhu
-LmRuRAkXV1QaK/MMJaNIKbH+kpotGobD24xFxa+qv/T+5dDUdHf5uCKd5RtoIIN02ciHXcSs
-wgr9PZ3PfjORdHpM9nQ0o8/Dvwpz9MVVwnhZNr0wtc5Uki7IaFqwfkw4QcO/zmuNkjJTXbzS
-Q9u2cKl4aCsIpj6GRrPpcHgFBCRSPfED32VFHXToO+Eb6GhYy1R6UfF2ygn0lBYANFL6gDNO
-TcDOL6R08iFn7rJwAInMLfcEVj/ZXPDfAgMBAAGjggOgMIIDnDAMBgNVHRMBAf8EAjAAMB0G
-A1UdDgQWBBToiGGw4svCZVZMK8pkRpC1ILhKAzCBkwYDVR0jBIGLMIGIgBQ2JDnrZkentz0e
-O8OylQxm+kUR+6FtpGswaTELMAkGA1UEBhMCREUxETAPBgNVBAcTCE11ZW5jaGVuMQwwCgYD
-VQQKEwNUVU0xCzAJBgNVBAsTAklOMQ8wDQYDVQQDEwZSQkctQ0ExGzAZBgkqhkiG9w0BCQEW
-DGNhQGluLnR1bS5kZYIBBTAOBgNVHQ8BAf8EBAMCBLAwHQYDVR0lBBYwFAYIKwYBBQUHAwIG
-CCsGAQUFBwMEMIG0BgNVHREEgawwgamBEHNjaGVlckBpbi50dW0uZGWBGW1hdHRoaWFzLnNj
-aGVlckBpbi50dW0uZGWBIHNjaGVlckBpbmZvcm1hdGlrLnR1LW11ZW5jaGVuLmRlgSltYXR0
-aGlhcy5zY2hlZXJAaW5mb3JtYXRpay50dS1tdWVuY2hlbi5kZYERc2NoZWVyQGNzLnR1bS5l
-ZHWBGm1hdHRoaWFzLnNjaGVlckBjcy50dW0uZWR1MAkGA1UdEgQCMAAwOwYDVR0fBDQwMjAw
-oC6gLIYqaHR0cDovL2NhLmluLnR1bS5kZS9jcmxzL2cyL3VzZXJjYV9jcmwuY3JsMBEGCWCG
-SAGG+EIBAQQEAwIFoDCBsgYJYIZIAYb4QgENBIGkFoGhRGllc2VzIFplcnRpZmlrYXQgd3Vy
-ZGUgYXVzZ2VzdGVsbHQgZnVlciBNYXR0aGlhcyBTY2hlZXIgdm9uIGRlciBSQkctQmVudXR6
-ZXItQ0EgKDIuR2VuZXJhdGlvbiksIEZha3VsdGFldCBmdWVyIEluZm9ybWF0aWsgZGVyIFRl
-Y2huaXNjaGVuIFVuaXZlcnNpdGFldCBNdWVuY2hlbi4wNgYJYIZIAYb4QgEDBCkWJ2h0dHA6
-Ly9jYS5pbi50dW0uZGUvY2dpLWJpbi91c2VyY2EtcmV2PzAyBglghkgBhvhCAQQEJRYjaHR0
-cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL2NhLXJldj8wLAYJYIZIAYb4QgEIBB8WHWh0dHA6
-Ly9jYS5pbi50dW0uZGUvcG9saWNpZXMvMEcGA1UdIARAMD4wPAYNKwYBBAGBmD5lgUgBATAr
-MCkGCCsGAQUFBwIBFh1odHRwOi8vY2EuaW4udHVtLmRlL3BvbGljaWVzLzANBgkqhkiG9w0B
-AQUFAAOCAQEAqN+O9+SCY9WrjyYhYX7OqMB2kRG7KFYkdyY9Ig99srfG071pAbZT4K+jfJkA
-nbkrts1p5cycNpwE4cuHEFM8wq4LGapG4CQzcZz7ABcKZPN4/YG90r/TpQHl/xQNQ/j0k2OF
-pC0QyVFAFAJ2T0OpoYg/VwMi/HNYqe2eCbbto5P4ib0WkxrWJPqunEwmJCxdxJN+uhJj3+LY
-nws2Ymopxc/nv0eg/XfiJqB+7woNPStWL54cg4HZQe03Ikp+o+718XQ0CcEJC3FbNYAu4g14
-AgJc4itIISFb6LCHNC142baO/aYcMps/m/x4NeWmLq5tJ0ffXvhlJpEh3GWYtuacvDCCBw8w
-ggX3oAMCAQICAkmnMA0GCSqGSIb3DQEBBQUAMHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhN
-dWVuY2hlbjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0
-emVyLUNBMRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUwHhcNMDYwNTE1MTcyNTUxWhcN
-MDcwNTMxMDAwMDAwWjB/MQswCQYDVQQGEwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNV
-BAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMTD01hdHRoaWFzIFNjaGVlcjEoMCYGCSqG
-SIb3DQEJARYZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZTCCASIwDQYJKoZIhvcNAQEBBQAD
-ggEPADCCAQoCggEBAORx7L/9IEgTSM3Y6a0FOipV/5QcDqegz9uuTWjnx6br/0yyK/cWHbnD
-s7CbsOoYYf8GAXD7mb9xURqC103v75GnJwei+G4uZG5ECRdXVBor8wwlo0gpsf6Smi0ahsPb
-jEXFr6q/9P7l0NR0d/m4Ip3lG2ggg3TZyIddxKzCCv09nc9+M5F0ekz2dDSjz8O/CnP0xVXC
-eFk2vTC1zlSSLshoWrB+TDhBw7/Oa42SMlNdvNJD27ZwqXhoKwimPoZGs+lweAUEJFI98QPf
-ZUUddOg74RvoaFjLVHpR8XbKCfSUFgA0UvqAM05NwM4vpHTyIWfusnAAicwt9wRWP9lc8N8C
-AwEAAaOCA6AwggOcMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFOiIYbDiy8JlVkwrymRGkLUg
-uEoDMIGTBgNVHSMEgYswgYiAFDYkOetmR6e3PR47w7KVDGb6RRH7oW2kazBpMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xDzAN
-BgNVBAMTBlJCRy1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlggEFMA4GA1UdDwEB
-/wQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwgbQGA1UdEQSBrDCBqYEQ
-c2NoZWVyQGluLnR1bS5kZYEZbWF0dGhpYXMuc2NoZWVyQGluLnR1bS5kZYEgc2NoZWVyQGlu
-Zm9ybWF0aWsudHUtbXVlbmNoZW4uZGWBKW1hdHRoaWFzLnNjaGVlckBpbmZvcm1hdGlrLnR1
-LW11ZW5jaGVuLmRlgRFzY2hlZXJAY3MudHVtLmVkdYEabWF0dGhpYXMuc2NoZWVyQGNzLnR1
-bS5lZHUwCQYDVR0SBAIwADA7BgNVHR8ENDAyMDCgLqAshipodHRwOi8vY2EuaW4udHVtLmRl
-L2NybHMvZzIvdXNlcmNhX2NybC5jcmwwEQYJYIZIAYb4QgEBBAQDAgWgMIGyBglghkgBhvhC
-AQ0EgaQWgaFEaWVzZXMgWmVydGlmaWthdCB3dXJkZSBhdXNnZXN0ZWxsdCBmdWVyIE1hdHRo
-aWFzIFNjaGVlciB2b24gZGVyIFJCRy1CZW51dHplci1DQSAoMi5HZW5lcmF0aW9uKSwgRmFr
-dWx0YWV0IGZ1ZXIgSW5mb3JtYXRpayBkZXIgVGVjaG5pc2NoZW4gVW5pdmVyc2l0YWV0IE11
-ZW5jaGVuLjA2BglghkgBhvhCAQMEKRYnaHR0cDovL2NhLmluLnR1bS5kZS9jZ2ktYmluL3Vz
-ZXJjYS1yZXY/MDIGCWCGSAGG+EIBBAQlFiNodHRwOi8vY2EuaW4udHVtLmRlL2NnaS1iaW4v
-Y2EtcmV2PzAsBglghkgBhvhCAQgEHxYdaHR0cDovL2NhLmluLnR1bS5kZS9wb2xpY2llcy8w
-RwYDVR0gBEAwPjA8Bg0rBgEEAYGYPmWBSAEBMCswKQYIKwYBBQUHAgEWHWh0dHA6Ly9jYS5p
-bi50dW0uZGUvcG9saWNpZXMvMA0GCSqGSIb3DQEBBQUAA4IBAQCo34735IJj1auPJiFhfs6o
-wHaREbsoViR3Jj0iD32yt8bTvWkBtlPgr6N8mQCduSu2zWnlzJw2nAThy4cQUzzCrgsZqkbg
-JDNxnPsAFwpk83j9gb3Sv9OlAeX/FA1D+PSTY4WkLRDJUUAUAnZPQ6mhiD9XAyL8c1ip7Z4J
-tu2jk/iJvRaTGtYk+q6cTCYkLF3Ek366EmPf4tifCzZiainFz+e/R6D9d+ImoH7vCg09K1Yv
-nhyDgdlB7TciSn6j7vXxdDQJwQkLcVs1gC7iDXgCAlziK0ghIVvosIc0LXjZto79phwymz+b
-/Hg15aYurm0nR99e+GUmkSHcZZi25py8MYIDajCCA2YCAQEweDByMQswCQYDVQQGEwJERTER
-MA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAWBgNVBAMT
-D1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJpzAJBgUr
-DgMCGgUAoIIBxzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0w
-NzAzMDUxNTA2NDlaMCMGCSqGSIb3DQEJBDEWBBSBXIE+tAdQcVOUpooqty3mnHxfiDBSBgkq
-hkiG9w0BCQ8xRTBDMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIB
-QDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDCBhwYJKwYBBAGCNxAEMXoweDByMQswCQYDVQQG
-EwJERTERMA8GA1UEBxMITXVlbmNoZW4xDDAKBgNVBAoTA1RVTTELMAkGA1UECxMCSU4xGDAW
-BgNVBAMTD1JCRy1CZW51dHplci1DQTEbMBkGCSqGSIb3DQEJARYMY2FAaW4udHVtLmRlAgJJ
-pzCBiQYLKoZIhvcNAQkQAgsxeqB4MHIxCzAJBgNVBAYTAkRFMREwDwYDVQQHEwhNdWVuY2hl
-bjEMMAoGA1UEChMDVFVNMQswCQYDVQQLEwJJTjEYMBYGA1UEAxMPUkJHLUJlbnV0emVyLUNB
-MRswGQYJKoZIhvcNAQkBFgxjYUBpbi50dW0uZGUCAkmnMA0GCSqGSIb3DQEBAQUABIIBAJ89
-CKk+E23UgDecQdkXxHtXXRwOnrUg98ZwpteFqoKx9pNxFW1zyRUcGYJVeMYj+9OJJHtARHMP
-/dbunCa/g2ghdb0MA524HEKkufAez/30/6mWyAwTbLEKRfVh0KdR3TNRgpu0BJbU1eECA/3P
-5vj4yJkeeJBZLeSxDov3zGzt8dECIlUnRXlL8bSk9WmdbyUfcsgp22tkesQ0TqtQpcTAOSSW
-uU9YbIWdngf94W7U64c4PXEyXCjOaU7QNli1yQ25RooVmVgaZbTa5ji/td3cc09jzgzmSKmK
-DvgKoQbv5E9gShi5v/xIGOaijD4yW1Es02+jxma1jBZbbNKwKRQAAAAAAAA=
---------------ms010802060401090406080909--
+The code above does not state this. I assume this only is the inner snippet 
+and the outer loop is missing?
+
+> If my node sends so many 
+> messages that I get an overflow in the mean time I will get a syslog
+> telling me the buffer is overflowing. This is what I assumed was
+> happening. This is what SEEMS to be happening. The thing is that the
+> node is supposed to only send one message every ms itself. I will have
+> to validate that somehow,
+
+I have another suspicion. Maybe the sending node does not get an acknowledge? 
+You don't run the CAN controller in listen only mode, do you? And what about 
+termination of your CAN bus?
+
+-- 
+Sebastian
 
