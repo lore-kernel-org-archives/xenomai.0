@@ -1,14 +1,14 @@
-Message-ID: <45EBE237.1090906@domain.hid>
-Date: Mon, 05 Mar 2007 10:26:15 +0100
+Message-ID: <45EBF37F.6090604@domain.hid>
+Date: Mon, 05 Mar 2007 10:39:59 +0000
+From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] CAN errors and real-time behaviour
+Subject: Re: [Xenomai-help] CAN errors and real-time behaviour (IRQ raise
+	forever and may lock system)
 References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
 	<45EBD9A3.9000303@domain.hid>
 In-Reply-To: <45EBD9A3.9000303@domain.hid>
 Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,32 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi Stephane,
+I have checked what has happened when nothing plugged on canbus:
 
-I would have no idea whether the problems are related. I am too much of=20
-a novice myself. However I can confirm difference in behaviour between=20
-having the bus live and having an unplugged thus unterminated bus. From=20
-incidents I have seen this change in behaviour seems to be related to=20
-flooding of the buffer with error messages in the case of a bus that is=20
-down which results in system messages. But whether that would block X=20
-from starting up for example I don't know. From what I gather X is a=20
-normal program under linux and as such will not have priority over your=20
-real-time tasks. Perhaps with a bus down you also have syslogd busier=20
-than a one legged man in an ass-kicking contest, which along with the=20
-priority demanded by your rt tasks leaves no time for X. However once=20
-your bus is plugged in, syslogd stops complaining, processor time is=20
-freed up and X gets some quality, one-on-one time with the CPU?
+a bus error occured .
+when bus error occurs the ecc register contains possible error information.
+once we read the ecc register (in isr routine) the error code register=20
+mechanism is enabled again . Thus another bus error interrupt appears=20
+again and a new BEI ocurs
 
-But others would be better judges than I at this stage.
+In this case, the system spend time in the ISR routine of the CAN=20
+driver.It gives you enough time to run a linux console , but not to=20
+launch other tasks like X...
 
-Regards,
-
-Roland.
-
-
+It would be necessary to find a way to manage this kind of problem and=20
+avoiding enabling forever Bus Error Interrupt.
+Best Regards
+steph
 
 St=E9phane ANCELOT wrote:
 > Hi,
@@ -133,4 +126,11 @@ St=E9phane ANCELOT wrote:
 >>
 >=20
 >=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>=20
+>=20
+
 
