@@ -1,17 +1,11 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <bc4264770703051332u682ddd0av8fbd49520b3cf1b9@domain.hid>
+Date: Mon, 5 Mar 2007 21:32:23 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17900.31172.233075.597047@domain.hid>
-Date: Mon, 5 Mar 2007 21:12:52 +0100
-Subject: Re: [Xenomai-help] rt_pipe_write() returns -ENOMEM
-In-Reply-To: <45EC61B0.3020907@domain.hid>
-References: <45EC4111.6070104@domain.hid>
-	<45EC428E.5060306@domain.hid>
-	<45EC4AF4.7000808@domain.hid>
-	<45EC4F8E.905@domain.hid>
-	<45EC5946.9030508@domain.hid>
-	<45EC61B0.3020907@domain.hid>
+Content-Disposition: inline
+Subject: [Xenomai-help] need help. RT gone for a ball of chalk due to CAN
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,28 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Markus.Franke@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > Markus Franke wrote:
- > > OK. And if there is an overflow is there anything I can do during
- > > runtime, e.g. just to overwrite the data in the queue?
- > 
- > Why not something like:
- > 
- > while (-ENOMEM == rt_pipe_write(pipe, buf, size, mode)) {
- > 	RT_PIPE_MSG *msg;
- > 	rt_pipe_receive(pipe, &msg, TM_INFINITE);
- > 	rt_pipe_free(pipe, msgp);
- > }
+Hi,
 
-This will not work: pipe are a two-ways communication channel, so that
-calling rt_pipe_receive returns messages that were sent from
-user-space, and not the messages previously sent with rt_pipe_write. I
-am afraid what you want to do is not what rt pipes were designed for.
+This is the same issue as we were on about earlier. Only now i have
+brought the baud rate down and there is no logging of errors. dmesg
+stays clean.
 
--- 
+The application is still working in the sense that it reads the Can
+messages it recieves etc. Only the problem of the rocking period times
+as soon as I move the sensor and messages are read is as bad as ever.
 
+This can only mean that either I am calling some non-real-time
+function (which i am certainly not, no printf or that kind of thing)
+or rtcan is not as real-time as it is supposed to be. There are no
+error masks set so I don't know whether there are any errors.
 
-					    Gilles Chanteperdrix.
+The only thing worth noting is that since I brought the baudrate down,
+the state is "passive" and I cannot get it into "active" with start.
+
+Might this be the cause? Why would it be passive and not active like
+it used to be?
+
+Regards,
+
+Roland
 
