@@ -1,11 +1,14 @@
-Message-ID: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
-Date: Tue, 6 Mar 2007 08:03:11 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] CAN problem continued
+Date: Tue, 6 Mar 2007 09:18:05 +0100
+References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
+In-Reply-To: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Subject: [Xenomai-help] CAN problem continued
+Message-Id: <E1HOUrr-0000FF-0J@mailer.emlix.com>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,30 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+roland Tollenaar wrote:
+> And i get these messages in dmessage.
+>
+> Assertion failed! drivers/xenomai/can/rtcan_raw.c:rtcan_tx_push:171
+> dev->tx_socket == 0
+> (3) TX skb still in use
 
-FYI
+Why are you trying to send loopback messages? Please strip your application 
+down to the actual problematic situation. That means, remove all sending code 
+and deactivate CONFIG_XENO_DRIVERS_CAN_LOOPBACK. We don't need it here. 
+Please ensure that you open only one socket and bind it once. Start a RT 
+thread that does nothing else than receiving CAN messages with a blocking 
+call inside a while(1)-loop.
 
-With enlarged ring buffer the overflow still takes place.
-
-I have still not figured out why the can controller only runs in
-passive mode from my application.
-
-And i get these messages in dmessage.
-
-Assertion failed! drivers/xenomai/can/rtcan_raw.c:rtcan_tx_push:171
-dev->tx_socket == 0
-(3) TX skb still in use
-xeno_can: socket buffer overflow (fd=0), message discarded
-
-The top message only once the bottom one the famous message that
-happens all the time. I am now going to turn off the debug messages in
-the config. I think there is something wrong with rt-can's error
-logging behaviour.
-
-Regards,
-
-Roland.
+--
+Sebastian
 
