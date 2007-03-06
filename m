@@ -1,16 +1,16 @@
-Message-ID: <45ED93AE.5050007@domain.hid>
-Date: Tue, 06 Mar 2007 17:15:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] CAN problem continued
+Date: Tue, 6 Mar 2007 17:17:52 +0100
+References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
+	<E1HObh1-0008VE-H3@domain.hid>
+	<bc4264770703060750v171e9c23kd79de79dcdec3169@domain.hid>
+In-Reply-To: <bc4264770703060750v171e9c23kd79de79dcdec3169@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTCAN and tsc
-References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>	
-	<45ED84B8.3010307@domain.hid>	
-	<bc4264770703060753j1c67d6cat2b04e19f2ca376fa@domain.hid>	
-	<45ED8FC8.4090103@domain.hid>
-	<bc4264770703060811p41e0dff5s80d46c0d14314a15@domain.hid>
-In-Reply-To: <bc4264770703060811p41e0dff5s80d46c0d14314a15@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1HOcMA-000340-MK@mailer.emlix.com>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,13 +24,55 @@ To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
 roland Tollenaar wrote:
-> Ah. Will do so. But the problem I am having with the RTCAN gives
-> latencies of the order of 0.2ms fluctuating heavily and visible
-> immediately.
 
-0.2 ms is 200 us, so I would say that the latencies you observe are
-consistent with the results of the latency program.
+>
+> > - With your application running you state that the real-time behaviour of
+> > the system is bad. How do you detect this?
+>
+> I measure the period times. Here is the snippet
+>
+>
+> void cyclicloop(void *arg)
+> {
+> 	RTIME now, previous;
+>
+> 	/*
+> 	 * Arguments: &task (NULL=self),
+> 	 *            start time,
+> 	 *            period (here: 1 ms=1000000)
+> 	 */
+> 	rt_task_set_periodic(NULL, TM_NOW, TASK_PERIOD);
+> 	previous = rt_timer_read();
+>
+> 	while (!TasksHalt) {
+> 		rt_task_wait_period(NULL);
+> 		now = rt_timer_read();
+> 		//Read inputs here
+> 		atm60_configure(can_device);
+
+What does this function do?
+
+> 		//Set analog output here
+> 		//Do controller calculations here
+>
+>
+>
+>
+> 		//Get time period
+> 		double TimeVarTemp=(double)(now - previous);
+> 		Task1Period=TimeVarTemp/ 1000000;
+> 		//printf("Time since last turn: %f ms\n",Task1Period);
+> 		previous = now;
+>
+> 		/*
+> 		 * NOTE: printf may have unexpected impact on the timing of
+> 		 *       your program. It is used here in the critical loop
+> 		 *       only for demonstration purposes.
+> 		*/
+>
+> 	}
+> }//cyclicloop
 
 -- 
-                                                 Gilles Chanteperdrix
+Sebastian
 
