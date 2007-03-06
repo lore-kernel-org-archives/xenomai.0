@@ -1,16 +1,16 @@
-From: Sebastian Smolorz <ssm@domain.hid>
+Message-ID: <bc4264770703060854h503da372k360face734eb8be4@domain.hid>
+Date: Tue, 6 Mar 2007 16:54:15 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 Subject: Re: [Xenomai-help] RTCAN and tsc
-Date: Tue, 6 Mar 2007 17:45:58 +0100
+In-Reply-To: <E1HOcnN-0005Ys-PH@mailer.emlix.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
 	<45ED93AE.5050007@domain.hid>
 	<bc4264770703060832x4ddab7b8mbb1d477588af8608@domain.hid>
-In-Reply-To: <bc4264770703060832x4ddab7b8mbb1d477588af8608@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1HOcnN-0005Ys-PH@mailer.emlix.com>
+	<E1HOcnN-0005Ys-PH@mailer.emlix.com>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,58 +20,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
+To: Sebastian Smolorz <ssm@domain.hid>
 Cc: xenomai@xenomai.org
 
-roland Tollenaar wrote:
-> Hi
+> > What does output of latency mean? Is the above result simply stating
+> > that I have a crappy hardware structure and will never be able to
+> > achieve better latency or does it tell me there is something wrong
+> > with my application?
 >
-> I need to be educated a bit here if you don;t mind.
->
-> arming up...
-> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst RTD|      29.333|      29.333|      31.847|       0|      29.333|    
->  31.847 RTD|      29.333|      29.333|      35.199|       0|      29.333|  
->    35.199 RTD|      29.333|      29.333|      33.523|       0|      29.333|
->      35.199 RTD|      29.333|      29.333|      32.685|       0|     
-> 29.333|      35.199 RTD|      29.333|      29.333|      34.361|       0|   
->   29.333|      35.199 RTD|      29.333|      29.333|      33.523|       0| 
->     29.333|      35.199 RTD|      29.333|      29.333|      33.523|      
-> 0|      29.333|      35.199 RTD|      29.333|      29.333|      34.361|    
->   0|      29.333|      35.199 RTD|      29.333|      29.333|      32.685|  
->     0|      29.333|      35.199 RTD|      29.333|      29.333|      34.361|
->       0|      29.333|      35.199 RTD|      29.333|      31.847|    
-> 201.142|       0|      29.333|     201.142 RTD|      29.333|      59.504|  
->   205.333|       0|      29.333|     205.333 RTD|      29.333|      65.371|
->     201.142|       0|      29.333|     205.333 RTD|      29.333|     
-> 68.723|     201.980|       0|      29.333|     205.333 RTD|      29.333|   
->   64.533|     201.142|       0|      29.333|     205.333 RTD|      29.333| 
->     65.371|     204.495|       0|      29.333|     205.333 RTD|     
-> 29.333|      52.799|     201.142|       0|      29.333|     205.333 RTD|   
->   29.333|      65.371|     204.495|       0|      29.333|     205.333 RTD| 
->     29.333|      35.199|     201.142|       0|      29.333|     205.333
-> RTD|      29.333|      29.333|      34.361|       0|      29.333|    
-> 205.333 RTD|      29.333|      29.333|      33.523|       0|      29.333|  
->   205.333
-> ---|------------|------------|------------|--------|-----------------------
->--
->
->
-> What you see above (up to where max latecy jumps to 200) is the
-> behavior while my application is running but the node (rotary encoder)
-> is not moving so not sending any position signals. The moment I start
-> turning the encoder shaft the jump takes place.
->
-> What does output of latency mean? Is the above result simply stating
-> that I have a crappy hardware structure and will never be able to
-> achieve better latency or does it tell me there is something wrong
-> with my application?
+> That is still to discover. Please change the priorities of your RT Tasks lower
+> than 99 and run again,
+Will do.
 
-That is still to discover. Please change the priorities of your RT Tasks lower 
-than 99 and run again, Alternatively, do it with rtcansend/rtcanrecv as I 
-told you before.
+>Alternatively, do it with rtcansend/rtcanrecv as I
+> told you before.
+Below is the output with those running. The node is active but not
+moving and then the jump when the shaft is rotated.
 
--- 
-Sebastian
+My application is NOT running during this experiment.
+
+RTD|      28.495|      29.333|      44.419|       0|      28.495|      44.419
+RTD|      28.495|      29.333|      93.028|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      36.876|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      34.361|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      34.361|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      35.199|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      34.361|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      35.199|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      34.361|       0|      28.495|      93.028
+RTD|      28.495|      29.333|      35.199|       0|      28.495|      93.028
+RTD|      28.495|      34.361|     181.028|       0|      28.495|     181.028
+RTD|      28.495|      51.123|     183.542|       0|      28.495|     183.542
+RTD|      28.495|      49.447|     181.866|       0|      28.495|     183.542
+RTD|      28.495|      37.714|     181.866|       0|      28.495|     183.542
+RTD|      28.495|      37.714|     182.704|       0|      28.495|     183.542
+RTD|      28.495|      34.361|     185.219|       0|      28.495|     185.219
+RTD|      28.495|      48.609|     181.866|       0|      28.495|     185.219
+RTD|      28.495|      58.666|     183.542|       0|      28.495|     185.219
+RTD|      28.495|      58.666|     182.704|       0|      28.495|     185.219
+RTD|      28.495|      42.742|     182.704|       0|      28.495|     185.219
+RTD|      28.495|      31.847|     181.028|       0|      28.495|     185.219
+---|------------|------------|------------|--------|-------------------------
+
+
+Roland.
+
+
+
+>
+> --
+> Sebastian
+>
 
