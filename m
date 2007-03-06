@@ -1,16 +1,14 @@
-Message-ID: <bc4264770703060750v171e9c23kd79de79dcdec3169@domain.hid>
-Date: Tue, 6 Mar 2007 15:50:14 +0000
+Message-ID: <bc4264770703060753j1c67d6cat2b04e19f2ca376fa@domain.hid>
+Date: Tue, 6 Mar 2007 15:53:14 +0000
 From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] CAN problem continued
-In-Reply-To: <E1HObh1-0008VE-H3@domain.hid>
+Subject: Re: [Xenomai-help] RTCAN and tsc
+In-Reply-To: <45ED84B8.3010307@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
-	<E1HObQ1-00073u-B9@domain.hid>
-	<bc4264770703060723i66a0fa71sb138c0f2c839b314@domain.hid>
-	<E1HObh1-0008VE-H3@domain.hid>
+References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
+	<45ED84B8.3010307@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,110 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi
+> Just run latency -p 1000 with some load. If you observe abnormal
+> latencies with the latency test, then you have a hardware problem. If
+> you observe normal latencies with the latency test, then your
+> application has a problem.
 
-> So let me summarise:
-> - With rtcansend/rtcanrecv and without your application the communication with
-> the node is perfect (overflows?)
-No more overflows. Nowhere. Have the debug messaging back on,
-everything is quiet. Especially witht he blocking mode construction
-overflowing should (and is) be impossible.
+The results:
 
-> - With your application running you state that the real-time behaviour of the
-> system is bad. How do you detect this?
-I measure the period times. Here is the snippet
-
-
-void cyclicloop(void *arg)
-{
-	RTIME now, previous;
-
-	/*
-	 * Arguments: &task (NULL=self),
-	 *            start time,
-	 *            period (here: 1 ms=1000000)
-	 */
-	rt_task_set_periodic(NULL, TM_NOW, TASK_PERIOD);
-	previous = rt_timer_read();
-
-	while (!TasksHalt) {
-		rt_task_wait_period(NULL);
-		now = rt_timer_read();
-		//Read inputs here
-		atm60_configure(can_device);	
-		//Set analog output here
-		//Do controller calculations here
-		
-
-		
-		
-		//Get time period
-		double TimeVarTemp=(double)(now - previous);
-		Task1Period=TimeVarTemp/ 1000000;
-		//printf("Time since last turn: %f ms\n",Task1Period);
-		previous = now;
-
-		/*
-		 * NOTE: printf may have unexpected impact on the timing of
-		 *       your program. It is used here in the critical loop
-		 *       only for demonstration purposes.
-		*/
-		
-	}
-}//cyclicloop
-
-void catch_signal(int sig)
-{
-}
+RTD|      29.333|      31.009|     179.352|       0|      29.333|     204.495
+RTD|      29.333|      31.009|     201.142|       0|      29.333|     204.495
+RTD|      29.333|      31.009|     203.657|       0|      29.333|     204.495
+RTD|      29.333|      31.847|     201.980|       0|      29.333|     204.495
+RTD|      29.333|      31.009|     181.866|       0|      29.333|     204.495
+RTD|      29.333|      31.847|     201.142|       0|      29.333|     204.495
+RTD|      29.333|      31.009|     202.819|       0|      29.333|     204.495
+RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)
+RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat worst
+RTD|      29.333|      31.847|     209.523|       0|      29.333|     209.523
+RTD|      29.333|      31.847|     206.171|       0|      29.333|     209.523
+RTD|      29.333|      31.847|     204.495|       0|      29.333|     209.523
+RTD|      29.333|      31.847|     204.495|       0|      29.333|     209.523
+RTD|      29.333|      31.847|     203.657|       0|      29.333|     209.523
+RTD|      29.333|      31.847|     203.657|       0|      29.333|     209.523
+RTD|      29.333|      31.009|     178.514|       0|      29.333|     209.523
+RTD|      29.333|      30.171|     201.142|       0|      29.333|     209.523
+RTD|      29.333|      30.171|     199.466|       0|      29.333|     209.523
+RTD|      29.333|      31.009|     200.304|       0|      29.333|     209.523
+RTD|      29.333|      30.171|     180.190|       0|      29.333|     209.523
+RTD|      28.495|      31.009|     201.142|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     201.142|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     204.495|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     200.304|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     203.657|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     200.304|       0|      28.495|     209.523
+RTD|      29.333|      30.171|     201.142|       0|      28.495|     209.523
+RTD|      29.333|      30.171|     201.980|       0|      28.495|     209.523
+RTD|      29.333|      31.009|     202.819|       0|      28.495|     209.523
+---|------------|------------|------------|--------|-------------------------
+RTS|      28.495|      30.171|     209.523|       0|    00:00:42/00:00:42
 
 
-void task1(void)
-{
-	signal(SIGTERM, catch_signal);
-	signal(SIGINT, catch_signal);
-
-	// Avoids memory swapping for this program
-	//Not necessary here because QTThread must take care of this.Only
-needed once inthe entire program (multithread) Jan Kizka email
-	//Apparently IS necessary application otherwise seems to crash.
-placed in main()
-	//mlockall(MCL_CURRENT|MCL_FUTURE);
-
-	//
-	 // Arguments: &task,
-	 //            name,  [Name must be unique for each task]
-	 //            stack size (0=default),
-	 //            priority,
-	 //            mode (FPU, start suspended, ...)
-	 //
-	rt_task_create(&rt_task_1, "rt_task1", 0, 99, 0);
-
-	//
-	 // Arguments: &task,
-	 //            task function,
-	 //            function argument
-	 //
-	rt_task_start(&rt_task_1, &cyclicloop, NULL);
-
-	//if(!Task1Halt)
-	//	pause();
-
-	//rt_task_delete(&rt_task_1);
-
-}
-
-its actually straight from the trivial task example. The TaskPeriod1
-is a global variable which is displayed in another thread every 0.5
-seconds.
+IMHO this looks ok does it not?
 
 Roland
 
-
 >
 > --
-> Sebastian
+>                                                  Gilles Chanteperdrix
 >
 
