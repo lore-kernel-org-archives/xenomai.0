@@ -1,14 +1,15 @@
-Message-ID: <45EDD311.1060506@domain.hid>
-Date: Tue, 06 Mar 2007 21:46:09 +0100
+Message-ID: <b647ffbd0703061255p4c78d262n6a09c0b96661e9a5@domain.hid>
+Date: Tue, 6 Mar 2007 21:55:14 +0100
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+Subject: Re: [Xenomai-help] process memory not locked
+In-Reply-To: <38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTCAN and tsc
-References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>	<45ED84B8.3010307@domain.hid>	<bc4264770703060753j1c67d6cat2b04e19f2ca376fa@domain.hid>	<45ED8FC8.4090103@domain.hid>	<bc4264770703060811p41e0dff5s80d46c0d14314a15@domain.hid>	<45ED93AE.5050007@domain.hid>	<bc4264770703060832x4ddab7b8mbb1d477588af8608@domain.hid>	<45ED99E9.2000105@domain.hid>	<bc4264770703061017n6b38c7d1g183a0c1866c165@domain.hid>
-	<17901.49981.701410.464219@domain.hid>
-In-Reply-To: <17901.49981.701410.464219@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Reply-To: rolandtollenaar@domain.hid
+Content-Disposition: inline
+References: <38b44d590703060949lfa70769na93c19abd2ff248f@domain.hid>
+	<45EDAB66.9070700@domain.hid> <45EDAD18.9080701@domain.hid>
+	<38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,59 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai-help@domain.hid
+To: Saiful Khan <saiful.etc@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi,
+On 06/03/07, Saiful Khan <saiful.etc@domain.hid> wrote:
+> Hello,
+>
+> First of all thank you a lot. For the last several days I am getting lots of
+> help from you. As well as I achived some positive results also. By the way
+> my observation now is -
+>
+> mlockall is successfull
+>  pthread_attr_init() - is successfull
+> pthread_attr_setdetachstate() - successfull
+> Here I am getting the message "Xenomai - process memory not locked (missing
+> mlockall?) " and its stuck.
 
+Do I understand ("stuck") right that the following pthread_create() is
+never executed?
 
+> pthread_create()  - this is returning nothing not success(0) nor failure.
 
-Gilles Chanteperdrix wrote:
->>> Enable the I-pipe tracer, recompile your kernel, set
->>> /proc/ipipe/trace/back_trace_points to a larger value, and run latency
->>> with the -f flag. Show us the contents of /proc/ipipe/trace/frozen, and
->>> we may be able to give you an answer.
->>>
->>> For more details on the I-pipe tracer, see:
->>> http://www.xenomai.org/index.php/I-pipe:Tracer
->> Attached find the traces. The first one , frozentrace.txt is without
->> my application running.
->>
->> The frozentraceApptxt with my app running and frozentrace_rtcanrecv
->> with the node  alive but only read by rtcanrecv.
-> 
-> frozentraceApp.txt:
-> 
-> :|func     -217!  rtcan_sja_interrupt (xnintr_irq_handler)
-> :|func      -96   rtcan_rcv (rtcan_sja_interrupt)
-> 
-> 
-> and frozentrace_rtcanrecv.txt:
-> 
-> :|func     -164!  rtcan_sja_interrupt (xnintr_irq_handler)
-> :|func      -39   rtcan_rcv (rtcan_sja_interrupt)
-> 
-> look very consistent: the call to rtcan_sja_interrupt eats more than
-> 100 us.
+Could you insert additional debugging lines in your code as shown
+below and let us know of the outcome?
 
-What does this mean? This is as good as it gets? That is a problem. I 
-have a couple of thousand euros of new hardware betting on xenomai/rtcan 
-being real-time enough to do some serious feedback control of machinery. 
-Must I put that up for sale now? I'll start writing my resignation 
-letter......:(
+// btw does "attr" in your case allocated on stack?
 
-But more seriously rtcan_sja_interrupt I presume is a routine (interrupt 
-handler?) by the sound of things related to the sja chip. Is the 
-conclusion that something is wrong in rtcan_sja? Surely timing 
-inconsistencies of 200 micro seconds cannot be design?
+pthread_attr_init(&attr);
+printf("step 1\n");
+
+memset(&attr, 0, sizeof(pthread_attr_t)); // <--- touch the "attr" here
+printf("step 2\n")
+
+pthread_attr_setdetachstate(&attr, ...);
+
+printf("step 3\n");
+
+pthread_create(.., &attr, ...);
+
+So what's the last "step" printed?
 
 
-I will not be able to work on this tomorrow. So if I make less noise on 
-the list its only because I am on a plane not because I have lost 
-interest. :)
-
-Regards,
-
-Roland
-
-> 
+-- 
+Best regards,
+Dmitry Adamushko
 
