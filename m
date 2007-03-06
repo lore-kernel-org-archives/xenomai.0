@@ -1,13 +1,20 @@
-Message-ID: <38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
-Date: Wed, 7 Mar 2007 00:29:42 +0530
-From: "Saiful Khan" <saiful.etc@domain.hid>
-Subject: Re: [Xenomai-help] process memory not locked
-In-Reply-To: <45EDAD18.9080701@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_109988_27671514.1173207582497"
-References: <38b44d590703060949lfa70769na93c19abd2ff248f@domain.hid>
-	<45EDAB66.9070700@domain.hid> <45EDAD18.9080701@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17901.49981.701410.464219@domain.hid>
+Date: Tue, 6 Mar 2007 20:38:37 +0100
+Subject: Re: [Xenomai-help] RTCAN and tsc
+In-Reply-To: <bc4264770703061017n6b38c7d1g183a0c1866c165@domain.hid>
+References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
+	<45ED84B8.3010307@domain.hid>
+	<bc4264770703060753j1c67d6cat2b04e19f2ca376fa@domain.hid>
+	<45ED8FC8.4090103@domain.hid>
+	<bc4264770703060811p41e0dff5s80d46c0d14314a15@domain.hid>
+	<45ED93AE.5050007@domain.hid>
+	<bc4264770703060832x4ddab7b8mbb1d477588af8608@domain.hid>
+	<45ED99E9.2000105@domain.hid>
+	<bc4264770703061017n6b38c7d1g183a0c1866c165@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,65 +24,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_109988_27671514.1173207582497
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hello,
-
-First of all thank you a lot. For the last several days I am getting lots of
-help from you. As well as I achived some positive results also. By the way
-my observation now is -
-
-mlockall is successfull
-pthread_attr_init() - is successfull
-pthread_attr_setdetachstate() - successfull
-Here I am getting the message "Xenomai - process memory not locked (missing
-mlockall?)" and its stuck.
-pthread_create()  - this is returning nothing not success(0) nor failure.
-
-What can be the possible reason?
-
-Thanks and regards
-Saiful
-
-
-
-
-On 3/6/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
-> Gilles Chanteperdrix wrote:
-> >>2. What to do so that the thread also run in highest priority?
+> > Enable the I-pipe tracer, recompile your kernel, set
+> > /proc/ipipe/trace/back_trace_points to a larger value, and run latency
+> > with the -f flag. Show us the contents of /proc/ipipe/trace/frozen, and
+> > we may be able to give you an answer.
 > >
-> >
-> > Use pthread_attr_setschedparam, or pthread_setschedparam.
-> >
->
-> Start here and follow the links:
->
->
-> http://www.xenomai.org/documentation/branches/v2.3.x/html/api/group__posix__sched.html
->
-> --
->                                                  Gilles Chanteperdrix
->
+> > For more details on the I-pipe tracer, see:
+> > http://www.xenomai.org/index.php/I-pipe:Tracer
+> 
+> Attached find the traces. The first one , frozentrace.txt is without
+> my application running.
+> 
+> The frozentraceApptxt with my app running and frozentrace_rtcanrecv
+> with the node  alive but only read by rtcanrecv.
 
-------=_Part_109988_27671514.1173207582497
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+frozentraceApp.txt:
 
-Hello,<br><br>First of all thank you a lot. For the last several days I am getting lots of help from you. As well as I achived some positive results also. By the way my observation now is -<br>&nbsp;<br>mlockall is successfull<br>
-<span class="q">pthread_attr_init() - is successfull<br>pthread_attr_setdetachstate() - successfull<br>Here I am getting the message &quot;Xenomai - process memory not locked </span><span class="q">(missing mlockall?)</span>
-<span class="q">&quot; and its stuck. <br>pthread_create()&nbsp; - this is returning nothing not success(0) nor failure.<br><br>What can be the possible reason? <br><br>Thanks and regards<br>Saiful<br><br><br></span><br><br><div>
-<span class="gmail_quote">On 3/6/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Gilles Chanteperdrix wrote:<br>&gt;&gt;2. What to do so that the thread also run in highest priority?<br>&gt;<br>&gt;<br>&gt; Use pthread_attr_setschedparam, or pthread_setschedparam.<br>&gt;<br><br>Start here and follow the links:
-<br><br><a href="http://www.xenomai.org/documentation/branches/v2.3.x/html/api/group__posix__sched.html">http://www.xenomai.org/documentation/branches/v2.3.x/html/api/group__posix__sched.html</a><br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gilles Chanteperdrix
-<br></blockquote></div><br>
+:|func     -217!  rtcan_sja_interrupt (xnintr_irq_handler)
+:|func      -96   rtcan_rcv (rtcan_sja_interrupt)
 
-------=_Part_109988_27671514.1173207582497--
+
+and frozentrace_rtcanrecv.txt:
+
+:|func     -164!  rtcan_sja_interrupt (xnintr_irq_handler)
+:|func      -39   rtcan_rcv (rtcan_sja_interrupt)
+
+look very consistent: the call to rtcan_sja_interrupt eats more than
+100 us.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
