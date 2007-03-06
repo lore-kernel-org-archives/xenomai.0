@@ -1,12 +1,16 @@
-Message-ID: <45ED84B8.3010307@domain.hid>
-Date: Tue, 06 Mar 2007 16:11:52 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] CAN problem continued
+Date: Tue, 6 Mar 2007 16:17:46 +0100
+References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
+	<E1HObDh-00060e-TM@mailer.emlix.com>
+	<bc4264770703060710l792d6173v9aec4bfeff0715d3@domain.hid>
+In-Reply-To: <bc4264770703060710l792d6173v9aec4bfeff0715d3@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTCAN and tsc
-References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
-In-Reply-To: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1HObQ1-00073u-B9@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,20 +24,15 @@ To: roland Tollenaar <rolandtollenaar@domain.hid>
 Cc: xenomai@xenomai.org
 
 roland Tollenaar wrote:
-> Hi,
-> 
-> One thought did occur to me wrt to the problem of rtcan breaking RT
-> behaviour. I am not using TSC support (IPC's we have are all 486
-> processor family). I was told that this will give slightly worse
-> latency but at a 1ms period time this should not be a problem.
-> 
-> Just want to confirm at this stage that this is still correct?
+> > Could you do the following: Fire up rtcanrecv and send out the setup
+> > message to the node with rtcansend. Don't start your application during
+> > the whole time and watch what happens.
+> >
+> :( Its not one message, its about 6 can rtcanrecv run scripts?
 
-Just run latency -p 1000 with some load. If you observe abnormal
-latencies with the latency test, then you have a hardware problem. If
-you observe normal latencies with the latency test, then your
-application has a problem.
+I don't understand exactly. Could you elaborate on what is necessary to get 
+the node up?
 
 -- 
-                                                 Gilles Chanteperdrix
+Sebastian
 
