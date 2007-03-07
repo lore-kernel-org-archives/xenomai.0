@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="vCyHbiz4Nv"
-Content-Transfer-Encoding: 7bit
-Message-ID: <17903.17256.565923.470161@domain.hid>
-Date: Wed, 7 Mar 2007 23:57:44 +0100
+From: Paul <paul_c@domain.hid>
 Subject: Re: [Xenomai-core] Debian rule set.
-In-Reply-To: <200703070332.47745.paul_c@domain.hid>
+Date: Wed, 7 Mar 2007 23:47:36 +0000
 References: <200703070332.47745.paul_c@domain.hid>
+	<17903.17256.565923.470161@domain.hid>
+In-Reply-To: <17903.17256.565923.470161@domain.hid>
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_Y807F6WklaC13Q6"
+Message-Id: <200703072347.36647.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,362 +17,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+--Boundary-00=_Y807F6WklaC13Q6
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
---vCyHbiz4Nv
-Content-Type: text/plain; charset=us-ascii
-Content-Description: message body and .signature
-Content-Transfer-Encoding: 7bit
+On Wednesday 07 March 2007 22:57, Gilles Chanteperdrix wrote:
+> =A0> be a minor issue with the --includedir option.
+>
+> The attached patch should solve this issue.
 
-Paul wrote:
- > xenomai-dev - Headers, static libs, and xeno-config. I would have liked to 
- > move the headers in to a /usr/include/xenomai directory, but there appears to 
- > be a minor issue with the --includedir option.
-
-The attached patch should solve this issue.
-
--- 
+That works for me.. Attached is a second draft of the rule set - Took the=20
+liberty of adding the files to the EXTRA_DIST rule as well as packaging the=
+=20
+includes under /usr/include/xenomai.
 
 
-					    Gilles Chanteperdrix.
+Regards, Paul.
 
---vCyHbiz4Nv
-Content-Type: text/plain
-Content-Disposition: inline;
-	filename="xeno-install-headers-under-includedir.diff"
-Content-Transfer-Encoding: 7bit
 
-Index: include/uitron/Makefile.am
-===================================================================
---- include/uitron/Makefile.am	(revision 2279)
-+++ include/uitron/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/uitron
-+includesubdir = $(includedir)/uitron
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	defs.h \
- 	flag.h \
- 	mbx.h \
-Index: include/asm-ia64/bits/Makefile.am
-===================================================================
---- include/asm-ia64/bits/Makefile.am	(revision 2279)
-+++ include/asm-ia64/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-ia64/bits
-+includesubdir = $(includedir)/asm-ia64/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-ia64/Makefile.am
-===================================================================
---- include/asm-ia64/Makefile.am	(revision 2279)
-+++ include/asm-ia64/Makefile.am	(working copy)
-@@ -1,5 +1,5 @@
--includedir = $(prefix)/include/asm-ia64
-+includesubdir = $(includedir)/asm-ia64
- 
--include_HEADERS = atomic.h calibration.h features.h hal.h syscall.h system.h wrappers.h fptest.h
-+includesub_HEADERS = atomic.h calibration.h features.h hal.h syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/vxworks/Makefile.am
-===================================================================
---- include/vxworks/Makefile.am	(revision 2279)
-+++ include/vxworks/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/vxworks
-+includesubdir = $(includedir)/vxworks
- 
--include_HEADERS = syscall.h vxworks.h
-+includesub_HEADERS = syscall.h vxworks.h
-Index: include/native/Makefile.am
-===================================================================
---- include/native/Makefile.am	(revision 2279)
-+++ include/native/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/native
-+includesubdir = $(includedir)/native
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	alarm.h \
- 	cond.h \
- 	event.h \
-Index: include/asm-blackfin/bits/Makefile.am
-===================================================================
---- include/asm-blackfin/bits/Makefile.am	(revision 2279)
-+++ include/asm-blackfin/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-blackfin/bits
-+includesubdir = $(includedir)/asm-blackfin/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-blackfin/Makefile.am
-===================================================================
---- include/asm-blackfin/Makefile.am	(revision 2279)
-+++ include/asm-blackfin/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-blackfin
-+includesubdir = $(includedir)/asm-blackfin
- 
--include_HEADERS = atomic.h calibration.h features.h hal.h \
-+includesub_HEADERS = atomic.h calibration.h features.h hal.h \
- 		syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/asm-generic/bits/Makefile.am
-===================================================================
---- include/asm-generic/bits/Makefile.am	(revision 2279)
-+++ include/asm-generic/bits/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-generic/bits
-+includesubdir = $(includedir)/asm-generic/bits
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	bind.h \
- 	heap.h \
- 	intr.h \
-Index: include/asm-generic/Makefile.am
-===================================================================
---- include/asm-generic/Makefile.am	(revision 2279)
-+++ include/asm-generic/Makefile.am	(working copy)
-@@ -1,5 +1,5 @@
--includedir = $(prefix)/include/asm-generic
-+includesubdir = $(includedir)/asm-generic
- 
--include_HEADERS = features.h hal.h syscall.h system.h wrappers.h
-+includesub_HEADERS = features.h hal.h syscall.h system.h wrappers.h
- 
- SUBDIRS = bits
-Index: include/asm-powerpc/bits/Makefile.am
-===================================================================
---- include/asm-powerpc/bits/Makefile.am	(revision 2279)
-+++ include/asm-powerpc/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-powerpc/bits
-+includesubdir = $(includedir)/asm-powerpc/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-powerpc/Makefile.am
-===================================================================
---- include/asm-powerpc/Makefile.am	(revision 2279)
-+++ include/asm-powerpc/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-powerpc
-+includesubdir = $(includedir)/asm-powerpc
- 
--include_HEADERS = atomic.h calibration.h features.h hal.h \
-+includesub_HEADERS = atomic.h calibration.h features.h hal.h \
- 		syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/asm-arm/bits/Makefile.am
-===================================================================
---- include/asm-arm/bits/Makefile.am	(revision 2279)
-+++ include/asm-arm/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-arm/bits
-+includesubdir = $(includedir)/asm-arm/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-arm/Makefile.am
-===================================================================
---- include/asm-arm/Makefile.am	(revision 2279)
-+++ include/asm-arm/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-arm
-+includesubdir = $(includedir)/asm-arm
- 
--include_HEADERS = atomic.h calibration.h features.h hal.h \
-+includesub_HEADERS = atomic.h calibration.h features.h hal.h \
- 		syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/psos+/Makefile.am
-===================================================================
---- include/psos+/Makefile.am	(revision 2279)
-+++ include/psos+/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/psos+
-+includesubdir = $(includedir)/psos+
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	asr.h \
- 	defs.h \
- 	event.h \
-Index: include/rtai/Makefile.am
-===================================================================
---- include/rtai/Makefile.am	(revision 2279)
-+++ include/rtai/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/rtai
-+includesubdir = $(includedir)/rtai
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	fifo.h \
- 	intr.h \
- 	rt_mem_mgr.h \
-Index: include/posix/sys/Makefile.am
-===================================================================
---- include/posix/sys/Makefile.am	(revision 2279)
-+++ include/posix/sys/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/posix/sys
-+includesubdir = $(includedir)/posix/sys
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	ioctl.h \
- 	mman.h \
- 	socket.h
-Index: include/posix/Makefile.am
-===================================================================
---- include/posix/Makefile.am	(revision 2279)
-+++ include/posix/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/posix
-+includesubdir = $(includedir)/posix
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	errno.h \
- 	fcntl.h \
- 	mqueue.h \
-Index: include/vrtx/Makefile.am
-===================================================================
---- include/vrtx/Makefile.am	(revision 2279)
-+++ include/vrtx/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/vrtx
-+includesubdir = $(includedir)/vrtx
- 
--include_HEADERS = syscall.h vrtx.h
-+includesub_HEADERS = syscall.h vrtx.h
-Index: include/asm-sim/bits/Makefile.am
-===================================================================
---- include/asm-sim/bits/Makefile.am	(revision 2279)
-+++ include/asm-sim/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-sim/bits
-+includesubdir = $(includedir)/asm-sim/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h timer.h init.h
-Index: include/asm-sim/Makefile.am
-===================================================================
---- include/asm-sim/Makefile.am	(revision 2279)
-+++ include/asm-sim/Makefile.am	(working copy)
-@@ -1,16 +1,16 @@
--includedir = $(prefix)/include/asm-sim
-+includesubdir = $(includedir)/asm-sim
- 
--include_HEADERS = system.h
-+includesub_HEADERS = system.h
- 
- install-data-local:
--	$(mkinstalldirs) $(DESTDIR)$(includedir)
--	rm -f $(DESTDIR)$(includedir)/asm
--	$(LN_S) . $(DESTDIR)$(includedir)/asm
--	rm -f $(DESTDIR)$(includedir)/xenomai
--	$(LN_S) . $(DESTDIR)$(includedir)/xenomai
-+	$(mkinstalldirs) $(DESTDIR)$(includesubdir)
-+	rm -f $(DESTDIR)$(includesubdir)/asm
-+	$(LN_S) . $(DESTDIR)$(includesubdir)/asm
-+	rm -f $(DESTDIR)$(includesubdir)/xenomai
-+	$(LN_S) . $(DESTDIR)$(includesubdir)/xenomai
- 
- uninstall-local:
--	rm -f $(DESTDIR)$(includedir)/asm
--	rm -f $(DESTDIR)$(includedir)/xenomai
-+	rm -f $(DESTDIR)$(includesubdir)/asm
-+	rm -f $(DESTDIR)$(includesubdir)/xenomai
- 
- SUBDIRS = bits
-Index: include/rtdm/Makefile.am
-===================================================================
---- include/rtdm/Makefile.am	(revision 2279)
-+++ include/rtdm/Makefile.am	(working copy)
-@@ -1,9 +1,9 @@
--includedir = $(prefix)/include/rtdm
-+includesubdir = $(includedir)/rtdm
- 
- noinst_HEADERS = \
- 	syscall.h
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	rtdm.h \
- 	rtdm_driver.h \
- 	rtserial.h \
-Index: include/asm-i386/bits/Makefile.am
-===================================================================
---- include/asm-i386/bits/Makefile.am	(revision 2279)
-+++ include/asm-i386/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-i386/bits
-+includesubdir = $(includedir)/asm-i386/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-i386/Makefile.am
-===================================================================
---- include/asm-i386/Makefile.am	(revision 2279)
-+++ include/asm-i386/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-i386
-+includesubdir = $(includedir)/asm-i386
- 
--include_HEADERS = atomic.h calibration.h features.h \
-+includesub_HEADERS = atomic.h calibration.h features.h \
- 		hal.h smi.h switch.h syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/asm-x86_64/bits/Makefile.am
-===================================================================
---- include/asm-x86_64/bits/Makefile.am	(revision 2279)
-+++ include/asm-x86_64/bits/Makefile.am	(working copy)
-@@ -1,3 +1,3 @@
--includedir = $(prefix)/include/asm-x86_64/bits
-+includesubdir = $(includedir)/asm-x86_64/bits
- 
--include_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-+includesub_HEADERS = pod.h intr.h heap.h thread.h shadow.h timer.h init.h
-Index: include/asm-x86_64/Makefile.am
-===================================================================
---- include/asm-x86_64/Makefile.am	(revision 2279)
-+++ include/asm-x86_64/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/asm-x86_64
-+includesubdir = $(includedir)/asm-x86_64
- 
--include_HEADERS = atomic.h smi.h switch.h calibration.h features.h \
-+includesub_HEADERS = atomic.h smi.h switch.h calibration.h features.h \
- 		hal.h syscall.h system.h wrappers.h fptest.h
- 
- SUBDIRS = bits
-Index: include/nucleus/Makefile.am
-===================================================================
---- include/nucleus/Makefile.am	(revision 2279)
-+++ include/nucleus/Makefile.am	(working copy)
-@@ -1,6 +1,6 @@
--includedir = $(prefix)/include/nucleus
-+includesubdir = $(includedir)/nucleus
- 
--include_HEADERS = \
-+includesub_HEADERS = \
- 	assert.h \
- 	bheap.h \
- 	compiler.h \
 
---vCyHbiz4Nv--
+
+--Boundary-00=_Y807F6WklaC13Q6
+Content-Type: application/x-bzip2;
+  name="debian_rules.2.patch.bz2"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="debian_rules.2.patch.bz2"
+
+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
+
+--Boundary-00=_Y807F6WklaC13Q6--
 
