@@ -1,46 +1,37 @@
-Message-ID: <bc4264770702250612p3c7ca7e6q344420f40a05cd87@domain.hid>
-Date: Sun, 25 Feb 2007 14:12:30 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] rt_timer_start()
-In-Reply-To: <17889.38267.536073.99875@domain.hid>
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-core] --includedir ignored
+Date: Wed, 7 Mar 2007 23:53:51 +0000
+References: <200703051548.12008.paul_c@domain.hid>
+	<1173309302.5059.49.camel@domain.hid>
+In-Reply-To: <1173309302.5059.49.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <bc4264770702250528u1f7a4736s919eb998d064289b@domain.hid>
-	<17889.38267.536073.99875@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-Id: <200703072353.51568.paul_c@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi,
+On Wednesday 07 March 2007 23:15, Philippe Gerum wrote:
+> include/compat is not installed on purpose, since what goes to
+> $(prefix)/include is aimed at compiling user-space code only, and files
+> under the compat/ root are placeholders for compiling Xenomai-enabled
+> 2.4 kernels.
 
->
-> My bad, I sent you the URL of an old version of the Native API tour,
-> this has been fixed in later releases. The correct URL is:
->
-> http://www.xenomai.org/documentation/trunk/pdf/Native-API-Tour-rev-C.pdf
+OK - That makes sense.. If the compat/ includes are specific to 2.4 kernels, 
+then there would be little reason to put them in any 2.6 patches.
 
-Don't worry. You did not send me the URL just the title. I found the
-version on www.xenomai.org under publications. Maybe that link should
-be updated?
 
-Regards,
+Regards, Paul.
 
-Roland
-
->
-> --
->
->
->                                             Gilles Chanteperdrix.
->
 
