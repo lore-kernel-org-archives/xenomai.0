@@ -1,10 +1,12 @@
-From: Paul <paul_c@domain.hid>
-Date: Wed, 7 Mar 2007 03:32:47 +0000
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_fJj7F2nZqNOTmPY"
-Message-Id: <200703070332.47745.paul_c@domain.hid>
-Subject: [Xenomai-core] Debian rule set.
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17903.6084.618033.175847@domain.hid>
+Date: Wed, 7 Mar 2007 20:51:32 +0100
+Subject: Re: [Xenomai-core] Debian rule set.
+In-Reply-To: <200703070332.47745.paul_c@domain.hid>
+References: <200703070332.47745.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,121 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Paul <paul_c@domain.hid>
+Cc: xenomai@xenomai.org
 
---Boundary-00=_fJj7F2nZqNOTmPY
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Paul wrote:
+ > 
+ > Attached is a rule set for generating a series of Debian packages. Four 
+ > packages are generated, these are:
 
+That is great. It means that we should try and solve the includedir
+issue. However, from a maintenance point of view, would not it make mor
+sense to modify the prepare-kernel script to that it suits the needs of
+debian packaging than to have a second script almost like it in the
+debian directory ?
 
-Attached is a rule set for generating a series of Debian packages. Four 
-packages are generated, these are:
-
-linux-patch-xenomai - A collection of adeos-ipipe patches with the Xenomai 
-kernel parts tacked on. The script used to combine the parts is a hacked down 
-version of prepare-kernel.sh..
-
-xenomai-dev - Headers, static libs, and xeno-config. I would have liked to 
-move the headers in to a /usr/include/xenomai directory, but there appears to 
-be a minor issue with the --includedir option.
-
-xenomai-docs - All the API documentation in man, html, and pdf format as found 
-in the repository (don't see much point in regenerating and adding to build 
-dependencies).
-
-xenomai - The core libraries, run scripts, and assorted tests/utilities. The 
-configure options could probably do with some adjustments, but I've kept arch 
-dependant options segregated so conflicts can be kept to a minimum.
-
-A couple of general comments: Having a clear seperation of kernel & user space 
-sources has greatly simplified the task of packaging.. The dynamic libs all 
-have a 0.0.0 version - Would it not make sense to sync with the Xenomai 
-version ?
+-- 
 
 
-Regards, Paul.
-
-
-
-
---Boundary-00=_fJj7F2nZqNOTmPY
-Content-Type: application/x-bzip2;
-  name="debian_rules.patch.bz2"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="debian_rules.patch.bz2"
-
-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
-
---Boundary-00=_fJj7F2nZqNOTmPY--
+					    Gilles Chanteperdrix.
 
