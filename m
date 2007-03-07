@@ -1,15 +1,16 @@
-Message-ID: <b647ffbd0703061255p4c78d262n6a09c0b96661e9a5@domain.hid>
-Date: Tue, 6 Mar 2007 21:55:14 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] process memory not locked
-In-Reply-To: <38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] RTCAN and tsc
+Date: Wed, 7 Mar 2007 10:04:14 +0100
+References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
+	<17901.49981.701410.464219@domain.hid>
+	<45EDD311.1060506@domain.hid>
+In-Reply-To: <45EDD311.1060506@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <38b44d590703060949lfa70769na93c19abd2ff248f@domain.hid>
-	<45EDAB66.9070700@domain.hid> <45EDAD18.9080701@domain.hid>
-	<38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
+Message-Id: <E1HOs43-0008OG-Ki@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,48 +20,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Saiful Khan <saiful.etc@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: rolandtollenaar@domain.hid
+Cc: xenomai@xenomai.org
 
-On 06/03/07, Saiful Khan <saiful.etc@domain.hid> wrote:
-> Hello,
+Roland Tollenaar wrote:
+> Hi,
 >
-> First of all thank you a lot. For the last several days I am getting lots of
-> help from you. As well as I achived some positive results also. By the way
-> my observation now is -
+> Gilles Chanteperdrix wrote:
+> >>> Enable the I-pipe tracer, recompile your kernel, set
+> >>> /proc/ipipe/trace/back_trace_points to a larger value, and run latency
+> >>> with the -f flag. Show us the contents of /proc/ipipe/trace/frozen, and
+> >>> we may be able to give you an answer.
+> >>>
+> >>> For more details on the I-pipe tracer, see:
+> >>> http://www.xenomai.org/index.php/I-pipe:Tracer
+> >>
+> >> Attached find the traces. The first one , frozentrace.txt is without
+> >> my application running.
+> >>
+> >> The frozentraceApptxt with my app running and frozentrace_rtcanrecv
+> >> with the node  alive but only read by rtcanrecv.
+> >
+> > frozentraceApp.txt:
+> > :|func     -217!  rtcan_sja_interrupt (xnintr_irq_handler)
+> > :|func      -96   rtcan_rcv (rtcan_sja_interrupt)
+> >
+> > and frozentrace_rtcanrecv.txt:
+> > :|func     -164!  rtcan_sja_interrupt (xnintr_irq_handler)
+> > :|func      -39   rtcan_rcv (rtcan_sja_interrupt)
+> >
+> > look very consistent: the call to rtcan_sja_interrupt eats more than
+> > 100 us.
 >
-> mlockall is successfull
->  pthread_attr_init() - is successfull
-> pthread_attr_setdetachstate() - successfull
-> Here I am getting the message "Xenomai - process memory not locked (missing
-> mlockall?) " and its stuck.
+> What does this mean? This is as good as it gets?
 
-Do I understand ("stuck") right that the following pthread_create() is
-never executed?
+Hm. To be more verbose on what happens between the beginning of 
+rtcan_sja_interrupt and rtcan_rcv please remove the "inline" from the 
+functions rtcan_sja_err_interrupt in the file 
+ksrc/drivers/can/sja1000/rtcan_sja1000.c line 156 and from the function 
+rtcan_sja_rx_interrupt in the same file in line 87. Compile your 
+modules/kernel again and repeat the tracer/latency test.
 
-> pthread_create()  - this is returning nothing not success(0) nor failure.
-
-Could you insert additional debugging lines in your code as shown
-below and let us know of the outcome?
-
-// btw does "attr" in your case allocated on stack?
-
-pthread_attr_init(&attr);
-printf("step 1\n");
-
-memset(&attr, 0, sizeof(pthread_attr_t)); // <--- touch the "attr" here
-printf("step 2\n")
-
-pthread_attr_setdetachstate(&attr, ...);
-
-printf("step 3\n");
-
-pthread_create(.., &attr, ...);
-
-So what's the last "step" printed?
-
+I assume that most of the time is spent in the latter function where several 
+SJA HW regs are read out. A slow access to the regs could be the explanation 
+for the long time the interrupt handler has to spend.
 
 -- 
-Best regards,
-Dmitry Adamushko
+Sebastian
 
