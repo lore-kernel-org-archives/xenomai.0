@@ -1,13 +1,15 @@
-Message-ID: <e45fe62b0703080608i7317ae60v8f261e17851cfd45@domain.hid>
-Date: Thu, 8 Mar 2007 19:38:36 +0530
-From: "Preetam Joshi" <j.preetam@domain.hid>
-Subject: Re: [Xenomai-help] Mach - LPC22xx Support
-In-Reply-To: <45F00C03.7000604@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] RTCAN and tsc
+Date: Thu, 8 Mar 2007 15:12:38 +0100
+References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
+	<E1HOs43-0008OG-Ki@domain.hid> <45EFFE22.9060401@domain.hid>
+In-Reply-To: <45EFFE22.9060401@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_189303_5394658.1173362916146"
-References: <e45fe62b0703080135q7ec8865eg8cba0efe20102053@domain.hid>
-	<45F00C03.7000604@domain.hid>
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <E1HPJMF-0008IL-F2@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,46 +19,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rolandtollenaar@domain.hid
+Cc: xenomai@xenomai.org
 
-------=_Part_189303_5394658.1173362916146
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-But i am applying this on kernel that i have in my uClinux-dist
-
-On 3/8/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+Roland Tollenaar wrote:
+> Hi
 >
-> Preetam Joshi wrote:
-> > Is there no support for Mach-LPC22xx because i have applied the patch
-> > adeos adeos-ipipe-2.6.14-arm-1.3-04.patch for ARM but no where in the
-> > patch file do i find support for mach-LPC22xx. THere is support for
-> > mach-integrator due to which i get  compilation errors.  I have linux
-> > running on ARM LPC22xx platform for which i would like to know whether
-> > there is any support????
+> >> What does this mean? This is as good as it gets?
+> >
+> > Hm. To be more verbose on what happens between the beginning of
+> > rtcan_sja_interrupt and rtcan_rcv please remove the "inline" from the
+> > functions rtcan_sja_err_interrupt in the file
+> > ksrc/drivers/can/sja1000/rtcan_sja1000.c line 156 and from the function
+> > rtcan_sja_rx_interrupt in the same file in line 87. Compile your
+> > modules/kernel again and repeat the tracer/latency test.
+> >
+> > I assume that most of the time is spent in the latter function where
+> > several SJA HW regs are read out. A slow access to the regs could be the
+> > explanation for the long time the interrupt handler has to spend.
 >
-> Adeos I-pipe for ARM needs to be adapted to support a new machine. So,
-> some work is needed to have Adeos run on Mach-LPC22xx. I do not seem to
-> find LPC22xx in the kernel configuration, is there some separated patch
-> ? Maybe LPC22xx is supported by ucLinux ?
+> Where are the registers located? On the dongle or are these in the PC?
+
+These are registers located in the SJA1000 CAN controller.
+
+> Just to know whether there might not be a problem with the PEAK device.
+> Is there any way you could check what the access times are to
+> rtcan_sja_interrupt on your systems when performing the same experiment
+> and recieving messages (pref PDO with length 8) over the bus?
+
+Unfortunately, I do not have the opportunity to perform tests with the driver 
+ATM.
+
 >
-> --
->                                                  Gilles Chanteperdrix
+> I am developing on a pretty high-end machine here,
+
+Didn't you speak of 486's in a previous mail?
+
+> in fact every aspect 
+> almost as fast as is on the market at the moment so its would surprise
+> me if there is a hardware shortcoming if the registers you speak of are
+> on the PC.
 >
+> In the mean time I will try doing as you suggest, I presume you want me
+> to send the frozen trace to you again after that.
 
-------=_Part_189303_5394658.1173362916146
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Exactly.
 
-But i am applying this on kernel that i have in my uClinux-dist<br><br><div><span class="gmail_quote">On 3/8/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org
-</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Preetam Joshi wrote:<br>&gt; Is there no support for Mach-LPC22xx because i have applied the patch
-<br>&gt; adeos adeos-ipipe-2.6.14-arm-1.3-04.patch for ARM but no where in the<br>&gt; patch file do i find support for mach-LPC22xx. THere is support for<br>&gt; mach-integrator due to which i get&nbsp;&nbsp;compilation errors.&nbsp;&nbsp;I have linux
-<br>&gt; running on ARM LPC22xx platform for which i would like to know whether<br>&gt; there is any support????<br><br>Adeos I-pipe for ARM needs to be adapted to support a new machine. So,<br>some work is needed to have Adeos run on Mach-LPC22xx. I do not seem to
-<br>find LPC22xx in the kernel configuration, is there some separated patch<br>? Maybe LPC22xx is supported by ucLinux ?<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gilles Chanteperdrix<br></blockquote></div>
-<br>
+> Is it worth while removing the virtual driver from the kernel build and
+> running over rtcan0.
 
-------=_Part_189303_5394658.1173362916146--
+Turn it off although it is unlikely that it has something to do with the 
+problem. But you never know.
+
+> Is there any chance that you have never encountered 
+> this problem
+
+I never worked with the virtual device.
+
+-- 
+Sebastian
 
