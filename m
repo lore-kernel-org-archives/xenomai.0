@@ -1,15 +1,14 @@
-From: Paul <paul_c@domain.hid>
-Subject: Re: [Xenomai-core] --includedir ignored
-Date: Wed, 7 Mar 2007 23:53:51 +0000
-References: <200703051548.12008.paul_c@domain.hid>
-	<1173309302.5059.49.camel@domain.hid>
-In-Reply-To: <1173309302.5059.49.camel@domain.hid>
+Message-ID: <45EFC936.4080405@domain.hid>
+Date: Thu, 08 Mar 2007 09:28:38 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Subject: Re: [Xenomai-core] latency hangs on AT91RM9200
+References: <45DECFAF.60304@domain.hid> <45DF04F2.4020002@domain.hid>
+	<45DF192C.6020505@domain.hid> <45E2B3A1.8070102@domain.hid>
+	<45E2C2C3.1020202@domain.hid>
+In-Reply-To: <45E2C2C3.1020202@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200703072353.51568.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,19 +18,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-On Wednesday 07 March 2007 23:15, Philippe Gerum wrote:
-> include/compat is not installed on purpose, since what goes to
-> $(prefix)/include is aimed at compiling user-space code only, and files
-> under the compat/ root are placeholders for compiling Xenomai-enabled
-> 2.4 kernels.
+Hi Gilles,
 
-OK - That makes sense.. If the compat/ includes are specific to 2.4 kernels, 
-then there would be little reason to put them in any 2.6 patches.
+>> Ok, found the bug (actually, Philippe did), as almost expected, the way
+>> it is related to the latency program period is not really obvious. The
+>> bug is that in the macro "irq_handler" in entry-armv.S, the return value
+>> (in r0) of __ipipe_grab_irq is overriden by the subsequent call to
+>> get_irqnr_and_base.
+>>
+> 
+> Here comes a patch. Note that it will only work correctly with
+> CONFIG_PREEMPT disabled for now.
 
+Any progress with CONFIG_PREEMPT enabled ?
 
-Regards, Paul.
+Thanks!
 
+Steven
 
