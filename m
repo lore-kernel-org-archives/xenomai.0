@@ -1,13 +1,16 @@
-Message-ID: <b647ffbd0703100850g419b736bwe7dc5b1ab7f396fe@domain.hid>
-Date: Sat, 10 Mar 2007 17:50:07 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-Subject: Re: [Xenomai-help] Adding mips support in configure file of xenomai
-In-Reply-To: <528bc2040703092348k3cec93d5hc115718aad37ff7f@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <528bc2040703092348k3cec93d5hc115718aad37ff7f@domain.hid>
+Message-ID: <17906.62022.298174.875008@domain.hid>
+Date: Sat, 10 Mar 2007 19:00:38 +0100
+Subject: Re: [Xenomai-help] Mach - LPC22xx Support
+In-Reply-To: <e45fe62b0703080713x6e6bc227n86d9f026a6cb4015@domain.hid>
+References: <e45fe62b0703080135q7ec8865eg8cba0efe20102053@domain.hid>
+	<45F00C03.7000604@domain.hid>
+	<e45fe62b0703080608i7317ae60v8f261e17851cfd45@domain.hid>
+	<45F01E0B.7010908@domain.hid>
+	<e45fe62b0703080713x6e6bc227n86d9f026a6cb4015@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,46 +20,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: manoj kumar <manojkpanghal@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Preetam Joshi <j.preetam@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Preetam Joshi wrote:
+ > Hi Gilles,
+ >            Thanks a lot for your quick response. I am doing the same
+ > activity. I am trying to port the xenomai patchfor LPC22xx on uClinux. I am
+ > getting Undefined references for the symbols in ipipe-core.c,  ipipe-root.c.
+ > So i am trying to map and define the correct values  from those files to
+ > LPC22xx related files in arch/arm/mach-lpc22xx and in arch/arm/kernel. Is
+ > this right thing i am doing? If you have any idea about how to port , Please
+ > Let me know. It would be a great help from you.
 
->
-> I am working on mips board & i need to compile the xenomai soure &
-> libraries for mips architecture, so that i can develope application on
-> mips board.
-
-Xenomai doesn't support MIPS architecture at the moment.
-
-> whether for all this i need to update or add support for mips in
-> configure scripts file in xenomai source? if yes, then how approch
-> that, if no, then what is the altenative.
-
-to add support one would need to implement:
-
-(1) adeos-ipipe port over MIPS architecture;
-(2) Xenomai (arch-dependent part) port over MIPS;
-
-(3) additional board specific bits for (1) /and (2)/ where necessary.
-
-btw, I started some activity on (1) this week [ yep, good plan is
-nothing more but good intentions unless hard work starts immediately
-:) ]
-The initial port will be over Qemu. So I'm going to address the
-generic MIPS support + (most likely) MIPS Malta systems (as it's
-deemed to be emulated with the recent Qemu release).
-
-But I don't have any strict time-schedule as I 'm doing it in my spare
-time and just for fun :)
-
-
-> Thanks in advance
->
-> Regards
-> Manoj Kumar.
+Yes, you are doing the right thing. A simple way to do it is to have a
+look at other machines. What needs to be written for a new ARM machine is:
+- the hardware timer interrupt handling and timestamp counter emulation,
+  if your timer hardware is based on a decrementer, have a look at the
+  integrator implementation, if your timer hardware is based on a
+  free-running counter with match register, have a look at the PXA
+  implementation;
+- if needed, the GPIOs interrupt demultiplexing, all implemented ARMs so
+  far have this, so have a look at any of them.
 
 -- 
-Best regards,
-Dmitry Adamushko
+
+
+					    Gilles Chanteperdrix.
 
