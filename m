@@ -1,13 +1,19 @@
-Message-ID: <45F31F3C.6090009@domain.hid>
-Date: Sat, 10 Mar 2007 22:12:28 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
-MIME-Version: 1.0
+Message-ID: <bc4264770703110015l11f499adj5b29da53cf8a905e@domain.hid>
+Date: Sun, 11 Mar 2007 08:15:00 +0000
+From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 Subject: Re: [Xenomai-help] RTCAN and tsc
-References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid><E1HPfGn-0003K5-RF@mailer.emlix.com><bc4264770703090717u2a64c148g6000d0d64a488058@domain.hid><200703091538.54236.paul_c@domain.hid>	<bc4264770703090812u2fc582a6g3fbf1c382203da14@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01BB3EB3@domain.hid>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01BB3EB3@domain.hid>
+In-Reply-To: <45F31F3C.6090009@domain.hid>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <bc4264770703060706x5dafb942weec4d4c2c5756427@domain.hid>
+	<E1HPfGn-0003K5-RF@mailer.emlix.com>
+	<bc4264770703090717u2a64c148g6000d0d64a488058@domain.hid>
+	<200703091538.54236.paul_c@domain.hid>
+	<bc4264770703090812u2fc582a6g3fbf1c382203da14@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01BB3EB3@domain.hid>
+	<45F31F3C.6090009@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,37 +23,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org, Bernard Dautrevaux <bernard.dautrevaux@domain.hid>
 
-Daniel Schnell wrote:
-> roland Tollenaar wrote:
->> What baffles me a bit  then is that the behavior cannot be classified
->> as very "Real-Time" can it?     
-> 
-> Real-Time does mean the system reacts in time. There is nothing a
-> software can do if the hardware is not meeting your requirements of
-> beeing in time. Having reliable 0.5 ms real-time is e.g. for us
-> absolutely real-time and we chose carefully our hardware components that
-> this will never be exceeded. For us Xenomai and RTCAN on a MPC5200B
-> platform do a good job.
-> 
->  I cannot imagine that the developers of
->> rt-can overlooked this. I doubt that it will be possible to run a
->> discrete state-space controller successfully on a platform that
->> juggles around its period-times as badly as I am experiencing. And I
->> still need to read discrete IO and write DIO and AIO to another CAN
->> node which is not yet even connected.
-> 
-> Choose your hardware carefully. Parallel port CANS are certainly much
-> slower than e.g. PCI adapters. On a Laptop you have the possibility to
-> add e.g. PCCARD CAN. But before purchasing I would check how these are
-> supported and which typical access times you can expect. USB CAN is
-> certainly even slower, so this will be no option.
+Hi Wolfgang,
 
-To confirm that, the PCAN dongle is a nice cheap device for low CAN 
-speeds but not appropriate for 1MB/s. Please ask PEAK for more detailed 
-information (e.g. linux@domain.hid).
+I hope you had a good skiing vacation.
 
-Wolfgang.
+> To confirm that, the PCAN dongle is a nice cheap device for low CAN
+> speeds but not appropriate for 1MB/s. Please ask PEAK for more detailed
+> information (e.g. linux@domain.hid).
+
+Agreed. Still if it can be interrupted which I have the feeling should
+be possible it will function just fine.
+
+The core question I have at the moment is whether or not it is
+possible to make the receive interrupt handler interruptible.
+
+Roland.
+
+
+
+
+>
+> Wolfgang.
+>
 
