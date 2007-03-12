@@ -1,18 +1,17 @@
-Resent-Message-ID: <17908.31288.37141.125796@domain.hid>
-Resent-To: xenomai@xenomai.org
+From: Sebastian Smolorz <ssm@domain.hid>
+Subject: Re: [Xenomai-help] your pending RT-Socket-CAN problems (was rtcan
+	driver. rtcan_sja_interrupt made interruptible)
+Date: Mon, 12 Mar 2007 09:27:53 +0100
+References: <45F2B8BB.6060804@domain.hid>
+	<bc4264770703110035g6625e8a1t4f195507d72aaf66@domain.hid>
+	<45F3CD2C.5000400@domain.hid>
+In-Reply-To: <45F3CD2C.5000400@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17908.20496.71389.645920@domain.hid>
-In-Reply-To: <38b44d590703102107l159cda49rdf7ad7c1dc435b3@domain.hid>
-References: <38b44d590703060949lfa70769na93c19abd2ff248f@domain.hid>
-	<45EDAB66.9070700@domain.hid> <45EDAD18.9080701@domain.hid>
-	<38b44d590703061059x1ddc72aau9ead4838a7fa6cb7@domain.hid>
-	<17901.50169.379195.372477@domain.hid>
-	<38b44d590703102107l159cda49rdf7ad7c1dc435b3@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] process memory not locked
-Date: Sun, 11 Mar 2007 19:53:04 +0100
+Content-Disposition: inline
+Message-Id: <E1HQfsj-00025n-6a@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,32 +21,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Saiful Khan <saiful.etc@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Saiful Khan wrote:
- > Sorry for late reply. Actualy what I saw that in that application one
- > fork() is there, so basically child process is trying to create the thread
- > and fails. I removed the fork() and spawned the thread from the main and
- > succeed. But the application is so large that, if i remove the fork() then I
- > need to change the entire architecture of the application, another big
- > task... Can u please tell me what is the alternative of fork()?
- > 
- > Thanks and regards
- > Saiful
+Wolfgang Grandegger wrote:
+>
+> Access to the parallel port is slow, indeed. Looking to
+> rtcan_peak_dng_epp_readreg tells me, that 6 inb/outb are required to
+> read one register and if every inb/outb takes up 1-2 us ... puh ... the
+> problem gets obvious. Nevertheless, this problem is special for the PCAN
+> dongle and it seems to be a bad choice for RT-Socket-CAN. All other
+> devices can read/write registers much faster. I'm going to do some more
+> tests next week, also with other CAN hardware. Sebastian, have you
+> realized similar latency problems with SJA1000 on the ISA bus (which is
+> slow as well)?
 
-To quote mlockall manual page: "Memory  locks  are not inherited by a
-child created via fork(2) and are automatically removed (unlocked)
-during an execve(2) or when  the  process terminates."
+No, I didn't realize any latency problems with the ISA CAN controller. 
+However, I didn't made any discrete latency measure tests. But the fact that 
+the SJA1000 driver is used on all robots of the RTS with 1 MB/s laser 
+scanners and a few more CAN nodes shows me that the latency impact is not 
+critical.
 
-So, a forked child has to call mlockall to lock its memory.
+> >
+> > Sebastian's opinion is that making it interruptible would be "the
+> > start of chaos". I am sure he knows more about this than I ever will
+> > but only out of academic interest before I sort this problem out
+> > outside the realm of rtcan, I would like to know why.
+>
+> As I see it, the right solution would be to handle the CAN interrupts by
+> a service task and disabled the corresponding IRQ till it's handled. I
+> do not see a real problem with this method,
 
-Beware, however, that calling fork in a real-time application raises
-some issues which have been solved recently: only trunk and latest
-branch v2.3.x contain the fixes needed to safely call fork in a
-real-time application.
+I didn't say it's impossible. My point was that making the CAN ISR just 
+interruptible with no other changes is not enough.
+
+> but it requires substantial 
+> implementation effort.
+
+Right, and for users who don't have such hardware limits like Roland it is 
+probably more important that CAN interrupts are processed with no deferral. 
+So we would have to deal with both needs. Therefore my statement in a 
+previous mail that all the necessary work won't be done in five minutes.
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Sebastian
 
