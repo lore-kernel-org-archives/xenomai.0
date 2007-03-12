@@ -1,16 +1,10 @@
-Message-ID: <45F51B12.9050401@domain.hid>
-Date: Mon, 12 Mar 2007 10:19:14 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
+Date: Mon, 12 Mar 2007 11:01:28 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] your pending RT-Socket-CAN problems (was rtcan
-	driver. rtcan_sja_interrupt made interruptible)
-References: <45F2B8BB.6060804@domain.hid>
-	<bc4264770703110035g6625e8a1t4f195507d72aaf66@domain.hid>
-	<45F3CD2C.5000400@domain.hid>
-	<E1HQfsj-00025n-6a@domain.hid>
-In-Reply-To: <E1HQfsj-00025n-6a@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] RTDM and user space hardware drivers
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,54 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Sebastian Smolorz wrote:
-> Wolfgang Grandegger wrote:
->> Access to the parallel port is slow, indeed. Looking to
->> rtcan_peak_dng_epp_readreg tells me, that 6 inb/outb are required to
->> read one register and if every inb/outb takes up 1-2 us ... puh ... the
->> problem gets obvious. Nevertheless, this problem is special for the PCAN
->> dongle and it seems to be a bad choice for RT-Socket-CAN. All other
->> devices can read/write registers much faster. I'm going to do some more
->> tests next week, also with other CAN hardware. Sebastian, have you
->> realized similar latency problems with SJA1000 on the ISA bus (which is
->> slow as well)?
-> 
-> No, I didn't realize any latency problems with the ISA CAN controller. 
-> However, I didn't made any discrete latency measure tests. But the fact that 
-> the SJA1000 driver is used on all robots of the RTS with 1 MB/s laser 
-> scanners and a few more CAN nodes shows me that the latency impact is not 
-> critical.
+Hi everybody,
 
-OK, I did'nt expected that reading approx. 15 bytes is really critical. 
-But the problem exists and reading these from the ISA bus likely also 
-takes 10..20 us.
+the RTDM API is really very good as API for drivers.=20
+I have a real time (Xenomai) application in user space that has to access P=
+CI boards.
+The "classical" approach is now to use a kernel driver and to use RTDM as i=
+nterface
+between the user space application an the kernel space driver.
+However, for performance issues, I prefer to write a pure user mode driver.
+As the memory of the PCI board can be accesses from user space (using /dev/=
+mem)=20
+I want to write a pure user space driver  as this seems to me more efficien=
+t (and easier to debug) than
+a kernel driver.
+Also, only one application is accessing the driver at a time, I can link th=
+e driver directly to my application.
 
->>> Sebastian's opinion is that making it interruptible would be "the
->>> start of chaos". I am sure he knows more about this than I ever will
->>> but only out of academic interest before I sort this problem out
->>> outside the realm of rtcan, I would like to know why.
->> As I see it, the right solution would be to handle the CAN interrupts by
->> a service task and disabled the corresponding IRQ till it's handled. I
->> do not see a real problem with this method,
-> 
-> I didn't say it's impossible. My point was that making the CAN ISR just 
-> interruptible with no other changes is not enough.
-> 
->> but it requires substantial 
->> implementation effort.
-> 
-> Right, and for users who don't have such hardware limits like Roland it is 
-> probably more important that CAN interrupts are processed with no deferral. 
-> So we would have to deal with both needs. Therefore my statement in a 
-> previous mail that all the necessary work won't be done in five minutes.
+My questions are now:
+1. Is it possible to use the RTDM API also for pure user space drivers?
 
-Well, I know but it already got a rather high position on the wish list.
+2. Is there any experience concerning the performance of a user space drive=
+r versus a kernel space
+driver?
+In my use case, I have to write and read about 60 byte (each direction) of =
+(block) data to/from the PCI I/O system.
 
-Wolfgang,
+Thanks for any ideas or hints on that!
+
+Regards
+
+Mathias
 
 
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
