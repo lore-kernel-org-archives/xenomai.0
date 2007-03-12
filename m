@@ -1,12 +1,13 @@
-Message-ID: <45F53A89.4080409@domain.hid>
-Date: Mon, 12 Mar 2007 11:33:29 +0000
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM and user space hardware drivers
-References: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
-In-Reply-To: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 12 Mar 2007 13:46:24 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01BB4107@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: [Xenomai-help] rtcansend.c problem if using together with
+	-lpthread_rt
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,48 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 Hi,
 
-I think you need only a standard kernel driver that mmaps the memory 
-area of your pci board.
+Hunting down a RTCAN related bug in my application I ended up compiling
+the rtcansend.c function with our make environment.
 
-Thus, from user space program , you mmap it and can do whatever you want 
-in userspace world
+Basicly the compilation is done like this:
 
-Best Regards
-steph
+ppc_6xx-gcc -W -Wall -O2 -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+-I/usr/xenomai/include -c -o rtcansend.o rtcansend.c
+
+Linking:
+
+ppc_6xx-gcc  -o rtcansend rtcansend.o -L/usr/xenomai/lib -lpthread_rt
+-lnative -lrtdm -lpthread -lrt
+
+If run, the following happens:
+bash-2.05b# ./rtcansend rtcan0 -v -i0 01
+interface rtcan0
+s=3D0, ifr_name=3Drtcan0
+rt_task_shadow: Device or resource busy
+Cleaning up...
+
+If I leave away -lpthread_rt in the linking step, output is normal:
+
+bash-2.05b# test/rtcansend rtcan0 -v -i0 01
+interface rtcan0
+s=3D0, ifr_name=3Drtcan0
+<0x000> [1] 01
+Cleaning up...
+
+I am using svn version 2256.
+Am I doing here something fundamentally wrong in providing -lpthread_rt
+as an additional library ? Shouldn't the native skin and the POSIX skin
+just work together ?
 
 
+Best regards,
 
-M. Koehrer wrote:
-> Hi everybody,
-> 
-> the RTDM API is really very good as API for drivers. 
-> I have a real time (Xenomai) application in user space that has to access PCI boards.
-> The "classical" approach is now to use a kernel driver and to use RTDM as interface
-> between the user space application an the kernel space driver.
-> However, for performance issues, I prefer to write a pure user mode driver.
-> As the memory of the PCI board can be accesses from user space (using /dev/mem) 
-> I want to write a pure user space driver  as this seems to me more efficient (and easier to debug) than
-> a kernel driver.
-> Also, only one application is accessing the driver at a time, I can link the driver directly to my application.
-> 
-> My questions are now:
-> 1. Is it possible to use the RTDM API also for pure user space drivers?
-> 
-> 2. Is there any experience concerning the performance of a user space driver versus a kernel space
-> driver?
-> In my use case, I have to write and read about 60 byte (each direction) of (block) data to/from the PCI I/O system.
-> 
-> Thanks for any ideas or hints on that!
-> 
-> Regards
-> 
-> Mathias
-> 
-> 
+Daniel Schnell.
 
 
