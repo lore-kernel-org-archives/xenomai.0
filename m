@@ -1,17 +1,9 @@
-Message-ID: <e45fe62b0703122328i4be24be3qa98f4f89673da081@domain.hid>
-Date: Tue, 13 Mar 2007 11:58:33 +0530
-From: "Preetam Joshi" <j.preetam@domain.hid>
-Subject: Re: [Xenomai-help] Mach - LPC22xx Support
-In-Reply-To: <17906.62022.298174.875008@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_17298_32557130.1173767313601"
-References: <e45fe62b0703080135q7ec8865eg8cba0efe20102053@domain.hid>
-	<45F00C03.7000604@domain.hid>
-	<e45fe62b0703080608i7317ae60v8f261e17851cfd45@domain.hid>
-	<45F01E0B.7010908@domain.hid>
-	<e45fe62b0703080713x6e6bc227n86d9f026a6cb4015@domain.hid>
-	<17906.62022.298174.875008@domain.hid>
+Message-Id: <s5f66cc3.070@domain.hid>
+Date: Tue, 13 Mar 2007 09:21:34 +0100
+From: "Nicolas BLANCHARD" <n.blanchard@domain.hid>
+Subject: =?ISO-8859-1?Q?R=E9p.=20:=20[Xenomai-help]=20RT=20samples?=
+Mime-Version: 1.0
+Content-Type: multipart/alternative; boundary="=__Part9ABE241E.1__="
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,97 +13,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: karre@domain.hid, xenomai@xenomai.org
 
-------=_Part_17298_32557130.1173767313601
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+--=__Part9ABE241E.1__=
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Hi Gilles,
 
-i would like to know, the behavior of the following structure ! What do the
-members imply?
 
-static struct map_desc intcp_io_desc[] __initdata = {
- { IO_ADDRESS(INTEGRATOR_HDR_BASE),   INTEGRATOR_HDR_BASE,   SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_SC_BASE),    INTEGRATOR_SC_BASE,    SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_EBI_BASE),   INTEGRATOR_EBI_BASE,   SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_CT_BASE),    INTEGRATOR_CT_BASE,    SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_IC_BASE),    INTEGRATOR_IC_BASE,    SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_UART0_BASE), INTEGRATOR_UART0_BASE, SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_UART1_BASE), INTEGRATOR_UART1_BASE, SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_DBG_BASE),   INTEGRATOR_DBG_BASE,   SZ_4K,
-MT_DEVICE },
- { IO_ADDRESS(INTEGRATOR_GPIO_BASE),  INTEGRATOR_GPIO_BASE,  SZ_4K,
-MT_DEVICE },
- { 0xfc900000, 0xc9000000, SZ_4K, MT_DEVICE },
- { 0xfca00000, 0xca000000, SZ_4K, MT_DEVICE },
- { 0xfcb00000, 0xcb000000, SZ_4K, MT_DEVICE },
-};
-
-Ur inputs wud be valuable.
-
-Thanks and Regards,
-
-Preetam
-On 3/10/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> <karre@domain.hid> 12.03 21:28 >>>
+>Hi Folks,
 >
-> Preetam Joshi wrote:
-> > Hi Gilles,
-> >            Thanks a lot for your quick response. I am doing the same
-> > activity. I am trying to port the xenomai patchfor LPC22xx on uClinux. I
-> am
-> > getting Undefined references for the symbols in ipipe-core.c,
-> ipipe-root.c.
-> > So i am trying to map and define the correct values  from those files to
-> > LPC22xx related files in arch/arm/mach-lpc22xx and in arch/arm/kernel.
-> Is
-> > this right thing i am doing? If you have any idea about how to port ,
-> Please
-> > Let me know. It would be a great help from you.
->
-> Yes, you are doing the right thing. A simple way to do it is to have a
-> look at other machines. What needs to be written for a new ARM machine is:
-> - the hardware timer interrupt handling and timestamp counter emulation,
->   if your timer hardware is based on a decrementer, have a look at the
->   integrator implementation, if your timer hardware is based on a
->   free-running counter with match register, have a look at the PXA
->   implementation;
-> - if needed, the GPIOs interrupt demultiplexing, all implemented ARMs so
->   far have this, so have a look at any of them.
->
-> --
->
->
->                                             Gilles Chanteperdrix.
->
+>I want to measure and evalutate different parameters of system load in
+Xenomai. Therefore, I am in need of RT samples that simply >provide a
+variety of ressource usage (semaphores, threads, timers, ...).
+ 
+Have a look on http://svn.gna.org/svn/xenomai/trunk/examples/ 
 
-------=_Part_17298_32557130.1173767313601
+>
+>It is not very important what the tool actually does, as long as it
+can be run autonomously (latency from the testsuite would be a good
+>example for that).
+>
+>Who knows good ressources for open source real-time applications?
+>
+>Btw, the type of skin (Native, POSIX, RTAI, ...) is not important. If
+it is software that is platform-dependant, than the architecture of
+>choice would be x86. If there was not needed additional hardware, that
+would be ideal.
+>
+ 
+You could run linux+xenomai on your PC ...
+
+>Thanks a lot in advance!
+>
+>Richard
+>
+>-- 
+>"Feel free" - 5 GB Mailbox, 50 FreeSMS/Monat ...
+>Jetzt GMX ProMail testen: www.gmx.net/de/go/mailfooter/promail-out 
+>
+ 
+ 
+Blanchard nicolas
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid 
+https://mail.gna.org/listinfo/xenomai-help 
+
+
+--=__Part9ABE241E.1__=
 Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Description: HTML
 
-<br>Hi Gilles,<br><br>i would like to know, the behavior of the following structure ! What do the members imply?<br><br>static struct map_desc intcp_io_desc[] __initdata = {<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_HDR_BASE),&nbsp;&nbsp; INTEGRATOR_HDR_BASE,&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },
-<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_SC_BASE),&nbsp;&nbsp;&nbsp; INTEGRATOR_SC_BASE,&nbsp;&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_EBI_BASE),&nbsp;&nbsp; INTEGRATOR_EBI_BASE,&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_CT_BASE),&nbsp;&nbsp;&nbsp; INTEGRATOR_CT_BASE,&nbsp;&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },
-<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_IC_BASE),&nbsp;&nbsp;&nbsp; INTEGRATOR_IC_BASE,&nbsp;&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_UART0_BASE), INTEGRATOR_UART0_BASE, SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_UART1_BASE), INTEGRATOR_UART1_BASE, SZ_4K,&nbsp; MT_DEVICE },
-<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_DBG_BASE),&nbsp;&nbsp; INTEGRATOR_DBG_BASE,&nbsp;&nbsp; SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ IO_ADDRESS(INTEGRATOR_GPIO_BASE),&nbsp; INTEGRATOR_GPIO_BASE,&nbsp; SZ_4K,&nbsp; MT_DEVICE },<br>&nbsp;{ 0xfc900000, 0xc9000000, SZ_4K, MT_DEVICE },<br>
-&nbsp;{ 0xfca00000, 0xca000000, SZ_4K, MT_DEVICE },<br>&nbsp;{ 0xfcb00000, 0xcb000000, SZ_4K, MT_DEVICE },<br>};<br><br>Ur inputs wud be valuable.<br><br>Thanks and Regards,<br><br>Preetam<br><div><span class="gmail_quote">On 3/10/07, 
-<b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Preetam Joshi wrote:<br> &gt; Hi Gilles,<br> &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thanks a lot for your quick response. I am doing the same<br> &gt; activity. I am trying to port the xenomai patchfor LPC22xx on uClinux. I am<br> &gt; getting Undefined references for the symbols in 
-ipipe-core.c,&nbsp;&nbsp;ipipe-root.c.<br> &gt; So i am trying to map and define the correct values&nbsp;&nbsp;from those files to<br> &gt; LPC22xx related files in arch/arm/mach-lpc22xx and in arch/arm/kernel. Is<br> &gt; this right thing i am doing? If you have any idea about how to port , Please
-<br> &gt; Let me know. It would be a great help from you.<br><br>Yes, you are doing the right thing. A simple way to do it is to have a<br>look at other machines. What needs to be written for a new ARM machine is:<br>- the hardware timer interrupt handling and timestamp counter emulation,
-<br>&nbsp;&nbsp;if your timer hardware is based on a decrementer, have a look at the<br>&nbsp;&nbsp;integrator implementation, if your timer hardware is based on a<br>&nbsp;&nbsp;free-running counter with match register, have a look at the PXA<br>&nbsp;&nbsp;implementation;
-<br>- if needed, the GPIOs interrupt demultiplexing, all implemented ARMs so<br>&nbsp;&nbsp;far have this, so have a look at any of them.<br><br>--<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix.<br></blockquote>
-</div><br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1"=
+>
+<META content=3D"MSHTML 6.00.2900.2180" name=3DGENERATOR></HEAD>
+<BODY style=3D"MARGIN: 4px 4px 1px; FONT: 10pt Tahoma"><BR><BR>&gt;&gt;&gt;=
+&gt;=20
+&lt;karre@domain.hid&gt; 12.03 21:28 &gt;&gt;&gt;<BR>
+<DIV>&gt;Hi Folks,<BR>&gt;<BR>&gt;I want to measure and evalutate =
+different=20
+parameters of system load in Xenomai. Therefore, I am in need of RT =
+samples that=20
+simply &gt;provide a variety of ressource usage (semaphores, threads, =
+timers,=20
+...).</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>Have a look on <A=20
+href=3D"http://svn.gna.org/svn/xenomai/trunk/examples/">http://svn.gna.org/=
+svn/xenomai/trunk/examples/</A></DIV>
+<DIV><BR>&gt;<BR>&gt;It is not very important what the tool actually does, =
+as=20
+long as it can be run autonomously (latency from the testsuite would be a =
+good=20
+&gt;example for that).<BR>&gt;<BR>&gt;Who knows good ressources for open =
+source=20
+real-time applications?<BR>&gt;<BR>&gt;Btw, the type of skin (Native, =
+POSIX,=20
+RTAI, ...) is not important. If it is software that is platform-dependant, =
+than=20
+the architecture of &gt;choice would be x86. If there was not needed =
+additional=20
+hardware, that would be ideal.<BR>&gt;</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>You could run linux+xenomai on your PC ...</DIV>
+<DIV><BR>&gt;Thanks a lot in advance!<BR>&gt;<BR>&gt;Richard<BR>&gt;<BR>&gt=
+;--=20
+<BR>&gt;"Feel free" - 5 GB Mailbox, 50 FreeSMS/Monat ...<BR>&gt;Jetzt =
+GMX=20
+ProMail testen: <A=20
+href=3D"http://www.gmx.net/de/go/mailfooter/promail-out">www.gmx.net/de/go/=
+mailfooter/promail-out</A><BR>&gt;</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>&nbsp;</DIV>
+<DIV>Blanchard=20
+nicolas<BR>_______________________________________________<BR>Xenomai-help=
+=20
+mailing list<BR>Xenomai-help@domain.hid<BR><A=20
+href=3D"https://mail.gna.org/listinfo/xenomai-help">https://mail.gna.org/li=
+stinfo/xenomai-help</A><BR></DIV></BODY></HTML>
 
-------=_Part_17298_32557130.1173767313601--
+--=__Part9ABE241E.1__=--
 
