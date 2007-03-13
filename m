@@ -1,13 +1,11 @@
-Message-ID: <962875.1173800188148.JavaMail.ngmail@domain.hid>
-Date: Tue, 13 Mar 2007 16:36:28 +0100 (CET)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-Subject: Re: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
-In-Reply-To: <1173799174.16997.47.camel@domain.hid>
+Message-ID: <45F6C586.2050808@domain.hid>
+Date: Tue, 13 Mar 2007 16:38:46 +0100
+From: Edouard TISSERANT <edouard.tisserant@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <1173799174.16997.47.camel@domain.hid>
-	<11906791.1173797505269.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Xenomai: xnintr_irq_handler: IRQ0 not handled.
+	Disabling IRQ line.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,58 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Philippe,
+Hi all.
 
-thanks for your mail.
-I retried everything with all the files that are in the official Xenomai 2.=
-3.0 tar.bz2 file.
-I.e. I used kernel 2.6.19.2 and the adeos-ipipe-2.6.19-i386-1.6-03.patch th=
-at is in this version.
-The same result.
-It is a SMP kernel on a Dual Core Pentium. I use a isolcpus=3D1 kernel comm=
-and line.
+I'm trying to implement support for the CAN PCMCIA Peak card with 
+Xenomai in official Peak driver.
 
-I am about to try the latest svn version of Xenomai and a 2.6.20.2 kernel.
+First, I would like to know if someone already got success in writing 
+some Xenomai IRQ handler for some PCMCIA devices. Is that a nonsense ? I 
+believe I'm missing something in the way PCMCIA socket controller 
+handles interrupts, linux side.
 
-I will let you know when I have found out more...
+I can observe on my laptop that PCMCIA socket controller IRQ and card 
+IRQ do not conflict :
+
+----------------------
+cat /proc/interrupts
+           CPU0
+  0:     163304   IO-APIC-edge      timer, rthal_broadcast_timer
+  1:        178   IO-APIC-edge      i8042
+  8:          2   IO-APIC-edge      rtc
+  9:         72   IO-APIC-fasteoi   acpi
+ 12:        124   IO-APIC-edge      i8042
+ 14:      13347   IO-APIC-edge      ide0
+ 17:      36411   IO-APIC-fasteoi   uhci_hcd:usb5, HDA Intel, eth0
+ 18:          1   IO-APIC-fasteoi   uhci_hcd:usb4, yenta
+ 19:          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
+ 20:          0   IO-APIC-fasteoi   uhci_hcd:usb3
+[...]
+
+----------------------
+cat /proc/pcan
+
+*------------ PEAK-Systems CAN interfaces (www.peak-system.com) 
+-------------
+*--------------------------  Release_20070306_n  
+----------------------------
+*------------------- [mod] [isa] [pci] [dng] [pcc] [rt] 
+---------------------
+*--------------------- 2 interfaces @ major 000 found 
+-----------------------
+*n -type- ndev --base-- irq --btr- --read-- --write- --irqs-- -errors- 
+status
+40 pccard -NA- 00002100 003 0x001c 00000000 00000000 00000000 00000000 
+0x0000
+41 pccard -NA- 00002120 003 0x001c 00000000 00000000 00000000 00000000 
+0x0000
+----------------------
+
+In other worlds, PCMCIA subsystem claims that device IRQ is #3.
+
+When registering interrupt, I get this message :
+
+Xenomai: xnintr_irq_handler: IRQ0 not handled. Disabling IRQ line.
+
+Handler looses more than 90% of #3 IRQ's.
+
+Any experience about PCMCIA/Xenomai would be welcome.
 
 Regards
 
-Mathias
->=20
-> This would be the the sign that a problem exists at the I-pipe level
-> with your current patch. The fault should have been propagated form
-> primary to secondary domain, and obviously it's not.
->=20
-> >=20
-> > How can I catch a signal in a Xenomai real time task?
-> >=20
->=20
-> There is no difference with any regular Linux application.
->=20
-> > I am running Xenomai 2.3.0 + NOCOW patch.
-> > I have enclosed the .c file and a Makefile in a .tgz file.
->=20
-> Can't reproduce the issue with 1.7-03 here.
-> Please make sure to use a recent and official I-pipe patch if it's not
-> already the case, and not a testing patch as published on this list, so
-> that we don't start chasing wild gooses.
-> http://download.gna.org/adeos/patches/v2.6/
->=20
+Edouard.
 
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
-
-
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
 
