@@ -1,80 +1,74 @@
+Message-ID: <560b19a70703121726m6a82bbebhc5d0ea9a42218b33@domain.hid>
+Date: Tue, 13 Mar 2007 00:26:09 +0000
+From: "Ze Manel" <zemanel@domain.hid>
+Subject: Re: [Adeos-main] Kernel 2.6.20.2
+In-Reply-To: <1173739658.15636.35.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-5
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_18376_29127466.1173745569071"
+References: <560b19a70703121100x2a4a751dt4fc87b0176c3d587@domain.hid>
+	<17909.47427.625596.896918@domain.hid>
+	<560b19a70703121502w10bedeb8o27114ccdcd7b57c@domain.hid>
+	<1173739658.15636.35.camel@domain.hid>
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: rpm@xenomai.org
+Cc: adeos-main@gna.org
+
+------=_Part_18376_29127466.1173745569071
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17917.33694.978519.801152@domain.hid>
-Date: Sun, 18 Mar 2007 19:23:26 +0100
-Subject: Re: [Xenomai-help] mem usage and other application
-In-Reply-To: <45FD7860.5030308@domain.hid>
-References: <17913.899.384216.185459@domain.hid>
-	<45F90DC1.2030009@domain.hid> <45F97587.9020604@domain.hid>
-	<17917.29803.267170.622970@domain.hid>
-	<45FD7860.5030308@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Maksym Veremeyenko <verem@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+Content-Disposition: inline
 
-Maksym Veremeyenko wrote:
- > Gilles Chanteperdrix ~~~~~:
- > 
- > >  >        1. Kernel 2.6.17.14, Xenomai 2.3.0... r2299, Adeos 1.5-02
- > > Here, I assume you mean Xenomai branch v2.3.x revision 2299
- > release 2.3.0 and branch v2.3.x revision 2299 - both
- > 
- > >  >        2. Kernel 2.6.19.2, Xenomai r2299, Adeos 1.7-01
- > > Here, I assume you mean Xenomai trunk revision 2299
- > yes
- > 
- > > The problem is that if there is no difference with regard to FPU context
- > > management between release 2.3.0 and latest revision of branch
- > > v2.3.x. So, the difference must be somewhere else.
- > What is recommended configuration and version of kernel and Xenomai?
- > In my case
- > 2.6.20.3 upgrade failed due to Xenomai compilation,
- > 2.6.19 fault gdb to work properly,
- > 2.6.18 fail due to absent adeos-ipipe version.
- > I have to use 2.6.17.14 .....
+Yes that solve the problem. I compiled the kernel with the adeos patch.
+Thank you all.
 
-As far as I understood, Adeos version does not matter for your bug,
-what matters is xenomai revision. So, during your tests, you should keep
-the same Adeos version and only change Xenomai version. 
+On 12/03/07, Philippe Gerum <rpm@xenomai.org> wrote:
+>
+> On Mon, 2007-03-12 at 22:02 +0000, Ze Manel wrote:
+> > Sorry I didn't post it a second time, I patched kernel 2.6.20 and got
+> > the error and then got the 2.6.20.2 (the latest stable version) I
+> > thought it could have something to do, and got the same error, it was
+> > not a repost, more like a clarification of the problem, or an update
+> > on the problem.
+> > Sorry if it didn't seem so.
+>
+> > My .config is attached
+> > Thanks for the help
+> >
+>
+> Switch on CONFIG_X86_PC instead of CONFIG_X86_GENERICARCH for now
+> (Processor type and features -> sub-architecture type = PC-Compatible).
+> This will work around the issue until it is solved in a later Adeos
+> patch, and might even be more appropriate for your hardware.
+>
+> --
+> Philippe.
+>
+>
+>
 
-However, if you have difficulties with some versions of Adeos, you
-should report the errors here. We are interested in getting them
-solved.
-
- > 
- > > Could you send me your .config ?
- > attached
-
-I see that you you have selected the K7 processor. Be sure to use an
-Adeos version greater than 1.5-02, or select a processor that does not
-support 3DNow (I think K6 should do).
-
- > 
- > 
- > > Also, is it possible for you to try bisecting in v2.3.x branch ? v2.3.0
- > > release is revision 2004, and you know that revision 2299 does not work
- > > for you, so you would be able to tell us exactly which revision is the
- > > cause of your problem.
- > What trunk revisions should be tried?
-
-If revision 2299 of branch v2.3.x fails, you should stay in branch
-v2.3.x. Try revision 2150, if it fails, try revision 2075, if revision
-2150 works, try revision 2225, etc... Do not forget to rebuild kernel
-and reboot between tests. And tell us when you have found that revision
-n works and revision n+1 does not work.
 
 -- 
+<img> http://www.deec.uc.pt/common/img/deezoom.gif </img>
 
+------=_Part_18376_29127466.1173745569071
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-					    Gilles Chanteperdrix.
+Yes that solve the problem. I compiled the kernel with the adeos patch.<br>Thank you all. <br><br><div><span class="gmail_quote">On 12/03/07, <b class="gmail_sendername">Philippe Gerum</b> &lt;<a href="mailto:rpm@xenomai.org">
+rpm@xenomai.org</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">On Mon, 2007-03-12 at 22:02 +0000, Ze Manel wrote:<br>&gt; Sorry I didn&#39;t post it a second time, I patched kernel 
+2.6.20 and got<br>&gt; the error and then got the <a href="http://2.6.20.2">2.6.20.2</a> (the latest stable version) I<br>&gt; thought it could have something to do, and got the same error, it was<br>&gt; not a repost, more like a clarification of the problem, or an update
+<br>&gt; on the problem.<br>&gt; Sorry if it didn&#39;t seem so.<br><br>&gt; My .config is attached<br>&gt; Thanks for the help<br>&gt;<br><br>Switch on CONFIG_X86_PC instead of CONFIG_X86_GENERICARCH for now<br>(Processor type and features -&gt; sub-architecture type = PC-Compatible).
+<br>This will work around the issue until it is solved in a later Adeos<br>patch, and might even be more appropriate for your hardware.<br><br>--<br>Philippe.<br><br><br></blockquote></div><br><br clear="all"><br>-- <br>&lt;img&gt; 
+<a href="http://www.deec.uc.pt/common/img/deezoom.gif">http://www.deec.uc.pt/common/img/deezoom.gif</a> &lt;/img&gt;
+
+------=_Part_18376_29127466.1173745569071--
 
