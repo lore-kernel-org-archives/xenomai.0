@@ -1,14 +1,15 @@
+From: Paul <paul_c@domain.hid>
 Subject: Re: [Xenomai-core] debian/rules update
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200703121756.08070.paul_c@domain.hid>
+Date: Tue, 13 Mar 2007 20:32:26 +0000
 References: <200703121756.08070.paul_c@domain.hid>
-Content-Type: text/plain
-Date: Tue, 13 Mar 2007 17:30:31 +0100
-Message-Id: <1173803432.16997.71.camel@domain.hid>
-Mime-Version: 1.0
+	<1173803432.16997.71.camel@domain.hid>
+In-Reply-To: <1173803432.16997.71.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200703132032.26296.paul_c@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,36 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Mon, 2007-03-12 at 17:56 +0000, Paul wrote:
-> Attached, a patch to include code examples in the final -dev package along 
-> with some cleanup of the patches. Also contains a bug fix for the postinst 
-> script that I hit on when installing a new build.
-> 
 
-Merged, thanks.
+Hi Philippe
 
-> A question for the project admins: Do you have a Release Manager to coordinate 
-> package releases ?
-> 
+On Tuesday 13 March 2007 16:30, Philippe Gerum wrote:
+> > A question for the project admins: Do you have a Release Manager to
+> > coordinate package releases ?
+>
+> I'm currently coordinating the Xenomai releases, with input from the
+> sub-systems/architecture maintainers. I guess that by "package", you are
+> referring to another division of the work, though.
 
-I'm currently coordinating the Xenomai releases, with input from the
-sub-systems/architecture maintainers. I guess that by "package", you are
-referring to another division of the work, though.
+By "package", I mean binaries in the form of *.deb and/or *.rpm - Whilst I'm 
+happy to build and host i386/x86 Debian packages, I'm concerned about 
+treading on someone's toes without a discussion about revision numbers and 
+general policy about "official" releases. For example, the packages I've 
+built to date have used 2.3.50 even although a tarball of that version hasn't 
+been released.. That could well cause confusion for users and yourself if 
+bugs are reported. There is also a minor problem with keeping the 
+debian/changelog in sync.
 
-> 
-> Regards, Paul.
-> 
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+ One possible answer is for me to rebuild my repository from scratch and 
+append the SVN revision number to revision number so that we end up with 
+2.3.50-1~r2289 - This would allow an official 2.3.50-1 release to override 
+the ~r2289 revision..
 
+
+Regards, Paul.
 
 
