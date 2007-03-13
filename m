@@ -1,12 +1,10 @@
-Message-ID: <45F6E98B.4040803@domain.hid>
-Date: Tue, 13 Mar 2007 19:12:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 13 Mar 2007 20:03:42 +0100
+Message-Id: <448834650@domain.hid>
 MIME-Version: 1.0
+From: Jochen Behnke <JK.Behnke@domain.hid>
 Subject: Re: [Xenomai-help] App with pthreads using rt_task_shadow locks up
-References: <448721993@domain.hid>
-In-Reply-To: <448721993@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: quoted-printable
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,32 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jochen Behnke <JK.Behnke@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Jochen Behnke wrote:
-> Hello Gilles,
-> 
-> thanks for your response. 
-> At the moment I try to cut down my application to the minimum.
-> I also will install the latest version of the xenomai 2.2.x branch (2.2.5) and check whether I can reproduce the fault.  As I noticed that some functions have been changed (rt_mutex_lock/unlock no longer exist in Xenomai 2.3.x, they obviously have been renamed for some reason) I would rather stick to the 2.2.x branch. Is that reasonable in your opinion ?
-> Will the 2.2.x branch be maintained in the future ?
-> 
-> Thanks again.
-> 
-> Jochen
 
-Please do not forget to CC the list.
+Hello Gilles,
 
-rt_mutex_lock/rt_mutex_unlock were renamed
-rt_mutex_acquire/rt_mutex_release to avoid a conflict, as documented in
-API.CHANGES
+> Jochen Behnke wrote:
+> > Hello Gilles,
+> >=20
+> > thanks for your response.=20
+> > At the moment I try to cut down my application to the minimum.
+> > I also will install the latest version of the xenomai 2.2.x branch (2.=
+2.5) and check whether I can reproduce the fault.  As I noticed that some =
+functions have been changed (rt=5Fmutex=5Flock/unlock no longer exist in Xenom=
+ai 2.3.x, they obviously have been renamed for some reason) I would rather=
+ stick to the 2.2.x branch. Is that reasonable in your opinion =3F
+> > Will the 2.2.x branch be maintained in the future =3F
+> >=20
+> > Thanks again.
+> >=20
+> > Jochen
+>=20
+> Please do not forget to CC the list.
+I'm sorry. I just used the wrong reply button.
 
-Please try with Xenomai 2.3.0, or better with trunk. The aim of this
-check is for us to avoid chasing bugs that were already solved. For
-example if you are using fork() in your application, only I-pipe patches
-in the trunk will solve your problem.
+>=20
+> rt=5Fmutex=5Flock/rt=5Fmutex=5Funlock were renamed
+> rt=5Fmutex=5Facquire/rt=5Fmutex=5Frelease to avoid a conflict, as documented in
+> API.CHANGES
+I will have a look at this.
 
--- 
-                                                 Gilles Chanteperdrix
+>=20
+> Please try with Xenomai 2.3.0, or better with trunk. The aim of this
+> check is for us to avoid chasing bugs that were already solved. For
+> example if you are using fork() in your application, only I-pipe patches=
+
+> in the trunk will solve your problem.
+At the moment I don't use fork() but I can try using 2.3.x.
+I hope that I don't have to change too much code on my side.
+
+As soon as I have results, I'll post them here.
+
+Jochen
+
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+Viren-Scan f=FCr Ihren PC! Jetzt f=FCr jeden. Sofort, online und kostenlos.
+Gleich testen! http://www.pc-sicherheit.web.de/freescan/=3Fmc=3D022222
+
 
