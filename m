@@ -1,18 +1,11 @@
-Subject: Re: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
+Subject: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <15252298.1173871082792.JavaMail.ngmail@domain.hid>
-References: <1173868500.32259.10.camel@domain.hid>
-	<22180008.1173860253238.JavaMail.ngmail@domain.hid>
-	<1173825460.16997.107.camel@domain.hid>
-	<11906791.1173797505269.JavaMail.ngmail@domain.hid>
-	<45F6C278.4040709@domain.hid> <1173801179.16997.56.camel@domain.hid>
-	<17910.63947.624116.867944@domain.hid>
-	<1173825266.16997.105.camel@domain.hid>
-	<21950566.1173862047952.JavaMail.ngmail@domain.hid>
-	<15252298.1173871082792.JavaMail.ngmail@domain.hid>
+In-Reply-To: <45F7F81E.9040203@domain.hid>
+References: <17783933.1173875794637.JavaMail.ngmail@domain.hid>
+	<1173878793.32259.46.camel@domain.hid>  <45F7F81E.9040203@domain.hid>
 Content-Type: text/plain
-Date: Wed, 14 Mar 2007 14:32:53 +0100
-Message-Id: <1173879173.32259.52.camel@domain.hid>
+Date: Wed, 14 Mar 2007 14:33:39 +0100
+Message-Id: <1173879220.32259.54.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -26,38 +19,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2007-03-14 at 12:18 +0100, M. Koehrer wrote:
-> Hello Philippe,
-> 
-> here is a table of the test I have done:
-> With the Xenomai SVN (#2292) I used the patches in the SVN repository:
-> 2.6.19.2 with adeos-ipipe-2.6.19-i386-1.7-02.patch
-> 2.6.20.2 with adeos-ipipe-2.6.20-i386-1.7-02.patch
-> 
-> With Xenomai-2.3.0 I used 
-> 2.6.19.2 with adeos-ipipe-2.6.19-i386-1.6-03.patch
-> 
-> The result was, that with 2.6.20.2 it was working as expected,
-> with 2.6.19.2 there was the PC freeze.
-
-Ok, could you activate the nmi watchdog for the kernel (nmi_watchdog=2
-added to the bootparams) and CONFIG_FRAME_POINTER, and also the nucleus
-watchdog (CONFIG_XENO_OPT_WATCHDOG), in the failing case? Maybe one of
-them would trigger. TIA,
-
-> 
-> Regards
-> 
-> Mathias
-> > Could you confirm that, Adeos-wise, you tried both 2.6.19-1.6-03 (not
-> > working) and 2.6.20-1.7-02 (working)? if so, does 2.6.19-1.7-02 (or -03)
-> > also work in your configuration?
+On Wed, 2007-03-14 at 14:26 +0100, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Wed, 2007-03-14 at 13:36 +0100, M. Koehrer wrote:
 > > 
+> >>Hi Philippe, 
+> >>
+> >>I applied again the patch to the 2.6.19.2 (adeos-ipipe-2.6.19-i386-1.6-03.patch)
+> >>and also enabled the nucleus debug option.
+> >>But there is no change. The system still freezes.
+> >>
+> > 
+> > 
+> > Ok, thanks. So we did no enter the twilight zone, yet.
 > 
+> Ok, but since I already had a case of trying to relax a kicked thread, I
+> would vote for leaving the XENO_ASSERT.
 > 
+
+Ack.
+
 -- 
 Philippe.
 
