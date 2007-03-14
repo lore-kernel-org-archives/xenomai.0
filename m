@@ -1,17 +1,16 @@
-Subject: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1173825266.16997.105.camel@domain.hid>
-References: <11906791.1173797505269.JavaMail.ngmail@domain.hid>
+Message-ID: <22180008.1173860253238.JavaMail.ngmail@domain.hid>
+Date: Wed, 14 Mar 2007 09:17:33 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
+In-Reply-To: <1173825460.16997.107.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_51554_27435810.1173860253237"
+References: <1173825460.16997.107.camel@domain.hid>
+	<11906791.1173797505269.JavaMail.ngmail@domain.hid>
 	<45F6C278.4040709@domain.hid> <1173801179.16997.56.camel@domain.hid>
 	<17910.63947.624116.867944@domain.hid>
 	<1173825266.16997.105.camel@domain.hid>
-Content-Type: text/plain
-Date: Tue, 13 Mar 2007 23:37:40 +0100
-Message-Id: <1173825460.16997.107.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,136 +20,232 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: rpm@xenomai.org, gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Tue, 2007-03-13 at 23:34 +0100, Philippe Gerum wrote:
-> On Tue, 2007-03-13 at 20:21 +0100, Gilles Chanteperdrix wrote:
-> > Philippe Gerum wrote:
-> >  > On Tue, 2007-03-13 at 16:25 +0100, Gilles Chanteperdrix wrote:
-> >  > > M. Koehrer wrote:
-> >  > > > Hi all,
-> >  > > > 
-> >  > > > I have a problem to catch segment violations with Xenomai:
-> >  > > > For demonstration I use the following program:
-> >  > > > ------------------------------------------
-> >  > > > #include <stdio.h>
-> >  > > > #include <sys/mman.h>
-> >  > > > 
-> >  > > > #include <native/task.h>
-> >  > > > #include <native/sem.h>
-> >  > > > RT_TASK taska_desc;
-> >  > > > volatile int *pointer = 0;
-> >  > > > 
-> >  > > > void mytaska(void *cookie)
-> >  > > > {
-> >  > > >     int i;
-> >  > > >     for (i=0; i < 50; i++)
-> >  > > >     {
-> >  > > >         rt_task_sleep(50000000);
-> >  > > >         if (i > 20)
-> >  > > >         {
-> >  > > >             *pointer = 123;
-> >  > > >         }
-> >  > > >         printf("Hello %i\n", i);
-> >  > > >     }
-> >  > > >     printf("Hi, this is task A\n");
-> >  > > > }
-> >  > > > 
-> >  > > > int main(void)
-> >  > > > {
-> >  > > >     mlockall(MCL_CURRENT|MCL_FUTURE);
-> >  > > > 
-> >  > > >     rt_task_create(&taska_desc, "mytaska", 0, 81, T_JOINABLE);
-> >  > > >     rt_task_start(&taska_desc, &mytaska, NULL);
-> >  > > > 
-> >  > > >     rt_task_join(&taska_desc);
-> >  > > >     printf("Main: A joined\n");
-> >  > > > 
-> >  > > >     return 0;
-> >  > > > }
-> >  > > > ---------------------------------------
-> >  > > > Whenever i is greater than 20 a segment violation occurs, as I must not write
-> >  > > > to address 0 (the pointer is always NULL).
-> >  > > > However, what happens is, that my system freezes after printing out 18 or 19.
-> >  > > > I have to reset the PC to continue.
-> >  > > > When I write a printf() directly before the invalid assignment I get the usual linux
-> >  > > > "segmentation fault" error message.
-> >  > > > 
-> >  > > > How can I catch a signal in a Xenomai real time task?
-> >  > > > 
-> >  > > > I am running Xenomai 2.3.0 + NOCOW patch.
-> >  > > > 
-> >  > > > I have enclosed the .c file and a Makefile in a .tgz file.
-> >  > > > 
-> >  > > > Thanks for any feedback on that issue
-> >  > > 
-> >  > > It looks like the "relaxing a kicked thread" issue again. Could you try
-> >  > > the attached patch ?
-> >  > > 
-> >  > 
-> >  > Gasp. This patch would contradict what's going on into
-> >  > do_sigwake_event(); well, if you are right, we would have entered the
-> >  > twilight zone with full ignition of the auxiliary boosters.
-> >  > 
-> >  > Btw, XNRELAX is a state bit, not an information one. i.e.
-> >  > 
-> >  > -               if (xnthread_test_info(thread, XNKICKED)) {
-> >  > +               if (xnthread_test_info(thread, XNKICKED) && !xnthread_test_state(thread, XNRELAX)) {
-> > 
-> > The code in do_sigwake_event() prevents a relaxed thread from being
-> > kicked, but not the other way around. Who knows in what order
-> > things get done on an SMP system ?
-> > 
-> 
-> I still don't find any obvious issue there. I mean, if a thread is
-> kicked, then it must have been unblocked from a sleep state in primary
-> mode; that's the purpose of the related checks in do_sigwake_event().
-> Since relaxing is a self-targeted operation (i.e. only a thread may
-> relax itself, and no thread may direct a relaxing request to another
-> one), then the unblocked thread must go through
-> request_syscall_restart() first, on its way back from the blocking
-> syscall, to the high stage syscall dispatcher. And all this exclusively
-> runs in primary mode until request_syscall_restart() eventually relaxes
-> the signaled thread.
-> 
-> IOW, I still don't see how a kicked thread would resume execution on a
-> different CPU without first relaxing in request_syscall_restart(), which
-> clears the XNKICKED bit in the first place, and as such would prevent
-> the situation addressed by the previous patch.
-> 
-> Additionally, in case of a page fault causing the signal, the latter
-> would be sent over the context of the faulting thread, i.e. on the same
-> CPU, since we can't migrate threads at this point.
-> 
-> The best way to prove or contradict this analysis is to run the test
-> code, pulling the brake in case I'm wrong. Please Mathias, could you try
-> this on your system:
-> 
+------=_Part_51554_27435810.1173860253237
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_51553_19738594.1173860253237"
 
-Sorry, that one is better:
+------=_Part_51553_19738594.1173860253237
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> --- ksrc/nucleus/pod.c	(revision 2293)
-> +++ ksrc/nucleus/pod.c	(working copy)
-> @@ -1420,6 +1420,11 @@
->  		   the KICKED bit set, so that xnshadow_relax() is never
->  		   prevented from blocking the current thread. */
->  		if (xnthread_test_info(thread, XNKICKED)) {
-> +			XENO_ASSERT(NUCLEUS, (mask & XNRELAX) != 0,
+Hi all,
 
-+			XENO_ASSERT(NUCLEUS, (mask & XNRELAX) == 0,
+thanks for all the feedback on that issue.
+Since yesterday I did a couple of tests on kernel 2.6.19.2
+1. I used the adeos patch provided with xenomai-2.3.0=20
+SMP mode =3D> freeze with my program. I have enclosed the kernel config for=
+ this one
+UP mode =3D> freeze with my program
 
-> +				    xnpod_fatal("Relaxing a kicked thread"
-> +						"(thread=%s, mask=%lx)?!",
-> +						thread->name, mask);
-> +				);
->  			xnthread_clear_info(thread, XNRMID | XNTIMEO);
->  			xnthread_set_info(thread, XNBREAK);
->  			goto unlock_and_exit;
-> 
-> 
--- 
-Philippe.
+2. I added the patch from Philippe (the second one):
 
+--- ksrc/nucleus/pod.c=09=09 (revision 2293)
++++ ksrc/nucleus/pod.c=09=09 (working copy)
+@@ -1420,6 +1420,11 @@
+ =09=09 =09=09    the KICKED bit set, so that xnshadow_relax() is never
+ =09=09 =09=09    prevented from blocking the current thread. */
+ =09=09 =09=09 if (xnthread_test_info(thread, XNKICKED)) {
++=09=09 =09=09 =09=09 XENO_ASSERT(NUCLEUS, (mask & XNRELAX) =3D=3D 0,
++=09=09 =09=09 =09=09 =09=09     xnpod_fatal("Relaxing a kicked thread"
++=09=09 =09=09 =09=09 =09=09 =09=09 =09=09 "(thread=3D%s, mask=3D%lx)?!",
++=09=09 =09=09 =09=09 =09=09 =09=09 =09=09 thread->name, mask);
++=09=09 =09=09 =09=09 =09=09 );
+ =09=09 =09=09 =09=09 xnthread_clear_info(thread, XNRMID | XNTIMEO);
+ =09=09 =09=09 =09=09 xnthread_set_info(thread, XNBREAK);
+ =09=09 =09=09 =09=09 goto unlock_and_exit;
+
+I used this patch on the UP kernel 2.6.19.2. Same adeos version as before.
+The result  was the same =3D> PC freeze
+
+3. I tried kernel 2.6.20.2 and the same (SMP) configuration as with 2.6.19.=
+2
+I used the Xenomai subversion #2292 and the adeos patch that is in subversi=
+on
+(adeos-ipipe-2.6.20-i386-1.7-02.patch).
+And with that combination it is working! I get the expected "Segmentation f=
+ault" message.
+I don't know why, but it seems to be working!
+
+I will try to use the same Xenomai svn version on the 2.6.19.2 to see if th=
+is is a 2.6.19 issue...
+
+Regards
+
+Mathias
+
+
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
+------=_Part_51553_19738594.1173860253237--
+
+------=_Part_51554_27435810.1173860253237
+Content-Type: application/x-gzip
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=linux_config.gz
+
+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
+------=_Part_51554_27435810.1173860253237--
 
 
