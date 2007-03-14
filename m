@@ -1,13 +1,17 @@
-Message-ID: <45F7F81E.9040203@domain.hid>
-Date: Wed, 14 Mar 2007 14:26:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
-References: <17783933.1173875794637.JavaMail.ngmail@domain.hid>
-	<1173878793.32259.46.camel@domain.hid>
-In-Reply-To: <1173878793.32259.46.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: RE: [Xenomai-help] rtcansend.c problem if using
+	together	with-lpthread_rt
+Date: Wed, 14 Mar 2007 13:29:04 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01C21D79@domain.hid>
+In-Reply-To: <45F7F0BE.50402@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB01BB4107@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01C21D24@domain.hid>
+	<45F7F0BE.50402@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,25 +21,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2007-03-14 at 13:36 +0100, M. Koehrer wrote:
-> 
->>Hi Philippe, 
->>
->>I applied again the patch to the 2.6.19.2 (adeos-ipipe-2.6.19-i386-1.6-03.patch)
->>and also enabled the nucleus debug option.
->>But there is no change. The system still freezes.
->>
-> 
-> 
-> Ok, thanks. So we did no enter the twilight zone, yet.
+Wolfgang Grandegger wrote:
+=20
+> Hm, Gilles already answered
+> https://mail.gna.org/public/xenomai-help/2007-03/msg00198.html.
+>=20
 
-Ok, but since I already had a case of trying to relax a kicked thread, I
-would vote for leaving the XENO_ASSERT.
+Oh, yes !? Something with my Outlook-rules apparently went wrong grrr...
+*$@&% !!
 
--- 
-                                                 Gilles Chanteperdrix
+
+Best regards,
+
+Daniel Schnell.
 
