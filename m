@@ -1,13 +1,19 @@
-Message-ID: <45F7D8BF.90409@domain.hid>
-Date: Wed, 14 Mar 2007 12:13:03 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <15252298.1173871082792.JavaMail.ngmail@domain.hid>
+Date: Wed, 14 Mar 2007 12:18:02 +0100 (CET)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+Subject: Re: Re: [Xenomai-help] Howto catch SEGV signals in Xenomai
+In-Reply-To: <1173868500.32259.10.camel@domain.hid>
 MIME-Version: 1.0
-Subject: Re: =?ISO-8859-1?Q?R=E9p=2E_=3A_=5BXenomai-help=5D_RT_sa?=
-	=?ISO-8859-1?Q?mples?=
-References: <s5f66cc3.068@domain.hid> <20070313204835.118140@domain.hid>
-In-Reply-To: <20070313204835.118140@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <1173868500.32259.10.camel@domain.hid>
+	<22180008.1173860253238.JavaMail.ngmail@domain.hid>
+	<1173825460.16997.107.camel@domain.hid>
+	<11906791.1173797505269.JavaMail.ngmail@domain.hid>
+	<45F6C278.4040709@domain.hid> <1173801179.16997.56.camel@domain.hid>
+	<17910.63947.624116.867944@domain.hid>
+	<1173825266.16997.105.camel@domain.hid>
+	<21950566.1173862047952.JavaMail.ngmail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +23,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: karre@domain.hid
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
 Cc: xenomai@xenomai.org
 
-karre@domain.hid wrote:
->>> I want to measure and evalutate different parameters of system load in
->> Xenomai. Therefore, I am in need of RT samples that simply >provide a
->> variety of ressource usage (semaphores, threads, timers, ...).
->>  
->> Have a look on http://svn.gna.org/svn/xenomai/trunk/examples/ 
-> 
-> Thanks. I already knew these. Also, I tried rtcan_rtt.c, which didn`t compile yet (CAN_RAW and serveral mq_... - functions undefined).
+Hello Philippe,
 
-The following works for me:
+here is a table of the test I have done:
+With the Xenomai SVN (#2292) I used the patches in the SVN repository:
+2.6.19.2 with adeos-ipipe-2.6.19-i386-1.7-02.patch
+2.6.20.2 with adeos-ipipe-2.6.20-i386-1.7-02.patch
 
-$ cd /temp/xeno/test
-$ svn co http://svn.gna.org/svn/xenomai/trunk xenomai
-$ cd xenomai/
-$ ./configure --prefix=/temp/xeno/test/xenoinst
-$ make
-$ make install
-$ cd examples/rtdm/profiles/can
-$ make XENO=/temp/xeno/test/xenoinst
+With Xenomai-2.3.0 I used=20
+2.6.19.2 with adeos-ipipe-2.6.19-i386-1.6-03.patch
 
-Can you confirm that?
+The result was, that with 2.6.20.2 it was working as expected,
+with 2.6.19.2 there was the PC freeze.
 
-> Does anyone know other open source real time applications?
-> 
-> 
->>> Btw, the type of skin (Native, POSIX, RTAI, ...) is not important. If
->> it is software that is platform-dependant, than the architecture of
->>> choice would be x86. If there was not needed additional hardware, that
->> would be ideal.
->>  
->> You could run linux+xenomai on your PC ...
-> 
-> Of course I am doing that.
-> 
-> What I need now is some sample programs. Thanks in advance for any hint!
+Regards
 
-See http://www.xenomai.org/documentation/trunk/html/api/examples.html. 
-Also the test programs in "src/testsuite" are useful.
+Mathias
+> Could you confirm that, Adeos-wise, you tried both 2.6.19-1.6-03 (not
+> working) and 2.6.20-1.7-02 (working)? if so, does 2.6.19-1.7-02 (or -03)
+> also work in your configuration?
+>=20
 
-Wolfgang.
 
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
