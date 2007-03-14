@@ -1,94 +1,84 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Subject: Re: [Xenomai-core] debian/rules update
+Date: Wed, 14 Mar 2007 16:48:55 +0000
+References: <200703121756.08070.paul_c@domain.hid>
+	<200703132032.26296.paul_c@domain.hid>
+	<1173869781.32259.29.camel@domain.hid>
+In-Reply-To: <1173869781.32259.29.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17889.44695.352072.990692@domain.hid>
-Date: Sun, 25 Feb 2007 16:43:19 +0100
-Subject: Re: [Xenomai-help] timing, scheduling. some theory?
-In-Reply-To: <bc4264770702250638k6b2a2737raef60866a3dc3401@domain.hid>
-References: <bc4264770702250638k6b2a2737raef60866a3dc3401@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Disposition: inline
+Message-Id: <200703141648.55033.paul_c@domain.hid>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-roland Tollenaar wrote:
- > Hi,
- > 
- > Ok I have the framework of my application up. Qt, user-interface, 2
- > tasks running in parallel, one @ 1ms the other @ 2ms.
- > 
- > Next step is to start incorporating the work that must be performed in
- > the tasks but before I do so it will be useful to have some
- > understanding of how the scheduling takes place.
- > 
- > I fear the above might not convey my question clearly. I find it hard
- > to explain exactly what I mean by this so I will pose the question
- > differently.
- > 
- > What does
- > 
- > rt_task_wait_period();
- > 
- > do exactly? It will be followed by the work that must be done in the
- > task but does the work get performed while rt_task_wait_period(); is
- > "waiting" or does nothing happen while the program is on that call?
- > 
- > In the latter case I will have no real control over when the task is
- > complete. On a fast machine the task will be finished sooner than on a
- > slower machine.
- > 
- > For example say I am setting outputs based on calculations (e.g. QR
- > decompositions, singular value decompositions etc) processing certain
- > inputs. If I read the inputs  first after calling
- > rt_task_wait_period() then  do the calculations and finally set the
- > outputs the time difference between reading the inputs and setting
- > outputs will (in the best case) depend on the the speed of the
- > machine.
- > 
- > In this scenario there are obviously more optimal manners to structure
- > the program but I am using it as an example.
- > 
- > Anyhow is there any documentation that elucidates these aspects of xenomai?
+On Wednesday 14 March 2007 10:56, Philippe Gerum wrote:
+> On Tue, 2007-03-13 at 20:32 +0000, Paul wrote:
+> > Hi Philippe
+> >
+> > On Tuesday 13 March 2007 16:30, Philippe Gerum wrote:
+> > > > A question for the project admins: Do you have a Release Manager to
+> > > > coordinate package releases ?
+> > >
+> > > I'm currently coordinating the Xenomai releases, with input from the
+> > > sub-systems/architecture maintainers. I guess that by "package", you
+> > > are referring to another division of the work, though.
+> >
+> > By "package", I mean binaries in the form of *.deb and/or *.rpm - Whilst
+> > I'm happy to build and host i386/x86 Debian packages, I'm concerned about
+> > treading on someone's toes without a discussion about revision numbers
+> > and general policy about "official" releases.
+>
+> So far, we don't have an established policy for making distro-oriented
+> packages; a few people have contributed some of them from time to time,
+> but there is no "appointed" maintainer doing sustained work for the
+> project on this issue yet.
+>
+> >  For example, the packages I've
+> > built to date have used 2.3.50 even although a tarball of that version
+> > hasn't been released.. That could well cause confusion for users and
+> > yourself if bugs are reported. There is also a minor problem with keeping
+> > the debian/changelog in sync.
+> >
+> >  One possible answer is for me to rebuild my repository from scratch and
+> > append the SVN revision number to revision number so that we end up with
+> > 2.3.50-1~r2289 - This would allow an official 2.3.50-1 release to
+> > override the ~r2289 revision..
+>
+> It would be saner to use the commit number indeed, especially since it
+> allows decouple the package versioning from the source releases while
+> keeping a reference to a common history of changes.
+>
+> Some information about the current naming scheme I'm using for tagging
+> the intermediate development milestones:
+>
+> 1- when reopened after a major version X.Y has been rolled out, the
+> development branch (i.e. SVN trunk/) is always tagged as X.Y.50. There
+> is no X.Y.51 version and beyond; the next step is always to enter the
+> release candidate cycle when appropriate.
 
-Xenomai kernel implements the so-called "FIFO" scheduling policy, that
-is, the task which runs at any time is the task with the highest
-priority that has been ready for the longest time. Calling
-rt_task_wait_period suspends the calling task, and let other tasks
-run. 
+That sounds reasonable - Any packages built from trunk would probably better 
+off following an X.Y.50+r<svn tag>.
 
-If I understand correctly, what you want is to set some outputs at some
-precise deadline, I see two ways to do what you want:
-* either the time when you compute the output has no importance, and the
-  only thing that matters is when you set the output, in which case you
-  can call rt_task_wait_period right before setting the outputs, your
-  task will do
-  compute next output
-  go to sleep
-  set output
-  compute next output
-  go to sleep
-  set output
-  etc...
+> 2- when the development branch enters the release candidate cycle, this
+> tag is bumped to X.Y.90 for -rc1, X.Y.91 for -rc2 and so on.
+>
+> 3- a release candidate that goes final is eventually tagged as X.{Y
+> +1}.O, and the development cycle restarts at step 1.
 
-* or the time between reading input and setting output has to be as
-  fixed as possible, in which case what you will have to do is to
-  calibrate the WCET (worst case execution time) of the computations on
-  the machine you are running, setup rt_task_set_periodic so that your
-  task is woken up at (deadline - WCET), and in each loop, do the
-  computations, then busy wait until the deadline then set the
-  output. In order to busy wait, you may use rt_timer_tsc.
- 
-
--- 
+So X.{Y+1}.0 will always override an X.Y.50+rnnnn - Works for me.
 
 
-					    Gilles Chanteperdrix.
+Regards, Paul.
 
