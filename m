@@ -1,13 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45F902ED.6050900@domain.hid>
+Date: Thu, 15 Mar 2007 09:25:17 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <17912.24165.280703.746732@domain.hid>
-Date: Wed, 14 Mar 2007 21:43:17 +0100
-Subject: Re: [Xenomai-core] Xenomai on MIPS intial boot
-In-Reply-To: <403615.11286.qm@domain.hid>
-References: <45E403F9.5060803@domain.hid>
-	<403615.11286.qm@domain.hid>
+Subject: [Xenomai-core] ChangeLog for ADEOS IPIPE patches?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,22 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: somshekar kadam <som_kadam@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-somshekar kadam wrote:
- > 
- > Hi All, 
- > 
- >    I have implelented Xenomai for MIPS , as due to
- > some legal issues with project completion, I can
- > submit for Open source. I hope this is understood. 
+Hi all,
 
-Actually, it is not understood. What do you mean, you can or can not
-submit your work to open-source ?
+is there a ChangeLog for ADEOS IPIPE patches like
+ksrc/arch/arm/patches/adeos-ipipe-2.6.19-arm-1.6-03.patch ?
+
+Thanks.
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Steven
 
