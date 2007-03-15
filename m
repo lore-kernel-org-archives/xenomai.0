@@ -1,14 +1,12 @@
-Subject: Re: [Xenomai-help] App with pthreads using rt_task_shadow locks up
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <451485795@domain.hid>
-References: <451485795@domain.hid>
-Content-Type: text/plain
-Date: Thu, 15 Mar 2007 19:51:52 +0100
-Message-Id: <1173984712.8193.53.camel@domain.hid>
-Mime-Version: 1.0
+From: Jeff Weber <jweber@domain.hid>
+Date: Thu, 15 Mar 2007 15:21:57 -0500
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200703151521.58317.jweber@domain.hid>
+Subject: [Xenomai-help] HPET timer
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,53 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jochen Behnke <JK.Behnke@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai Help <xenomai@xenomai.org>
 
-On Thu, 2007-03-15 at 19:34 +0100, Jochen Behnke wrote:
-> Hello Philippe,
-> 
-> thanks for your response.
-> 
-> > On Thu, 2007-03-15 at 17:17 +0100, Jochen Behnke wrote:
-> > > Hello,
-> > > 
-> > > after hours of searching, I have finally found the problem. 
-> > > It was a bug in my "SimpleRPC" library. The thread function, responsible for the "lockup", mainly constists of an endless loop ( while(pObj->nRun) ) that polls a request queue. This was not a problem as long as this thread was a standard pthread. Turning this thread into a real-time task by adding a call to rt_task_shadow at the beginning of the thread function (before the while loop) resulted in a frozen linux system.
-> > > 
-> > > I used to work with the following system
-> > > Gentoo Linux
-> > > Linux Kernel 2.6.17 (IPIPE 1.4)
-> > > Xenomai 2.2.3
-> > > 
-> > > Now that I know, that upgrading to Xenomai 2.3.0 is not a problem, I plan to upgrade to the 2.3.x branch.
-> > > 
-> > 
-> > You may detect such kind of issues switching on the
-> > CONFIG_XENO_OPT_WATCHDOG option in the kernel configuration. Normally,
-> > this would pull the brake after more than 4 seconds of uninterrupted
-> > real-time activity in primary mode (i.e. without yielding control to the
-> > regular Linux activities).
-> 
-> That's great. I will check this out.
-> 
-> BTW, is there an easy way, other than reboot,  to release xenomai ressources (mutexes,...) that have not been freed after an application crash ? 
-> 
+I found the advisory against using the HPET timer in the wiki FAQ, and disabled both
+	CONFIG_HPET_TIMER
+	CONFIG_HPET_EMULATE_RTC
 
-This depends on the skin being used. The native one does not free the
-resources upon application exit yet (this feature is on the todo list
-for the upcoming 2.4 though), OTOH the POSIX skin does. A work-around
-with the native skin is to use constructs like the following one in your
-app to recycle the left overs; not pretty, but works, until we provide
-an automated support:
+in my kernel config.  Now I am having intermittent faults reading the TSC on my x86 CPU.
+Occasionally, reads of the TSC go backwards.  The tracer also shows one of my Xenomai
+kernel threads going into an infinite loop reading the TSC:
 
-if (rt_mutex_bind("some_mutex", &mutex_desc, ...) == 0) {
-	rt_mutex_delete(&mutex_desc);
-}
-err = rt_mutex_create("some_mutex", &mutex_desc);
+:|  +*end     0xffffff05  -798    0.675  common_interrupt+0x34 (do_gettimeofday+0x59)
+:   +*func                -797    0.585  get_offset_tsc+0x8 (do_gettimeofday+0x2a)
+:   +*func                -797    0.571  get_offset_tsc+0x8 (do_gettimeofday+0x2a)
+:   +*func                -796    0.496  get_offset_tsc+0x8 (do_gettimeofday+0x2a)
+...
+ad infinitum
 
+This behavior runs contrary to all the Xenomai configuration advice.  I would like
+to keep the HPET timer disabled so I can eventually upgrade to Xenomai-2.3.
+
+Any idea on what's happining with my HPET timer?
+
+config:
+linux-2.6.17.14
+ipipe-1.5-00
+xenomai-2.2.4
+cpu = VIA Nehemiah
+flags = fpu vme de pse tsc msr cx8 sep mtrr pge cmov pat mmx fxsr sse up rng rng_en ace ace_en
+motherboard:  Hercules EBX
+kernel config:
+# CONFIG_M586TSC is not set
+CONFIG_X86_TSC=y
+# CONFIG_HPET_TIMER is not set
+
+	thanks,
 -- 
-Philippe.
-
-
+Jeff Weber
+American Superconductor Corp.
 
