@@ -1,93 +1,85 @@
-Message-ID: <bc4264770702250836j54bed43bxb943d4cc88fbeb99@domain.hid>
-Date: Sun, 25 Feb 2007 16:36:01 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-Subject: Re: [Xenomai-help] timing, scheduling. some theory?
-In-Reply-To: <17889.44695.352072.990692@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <bc4264770702250638k6b2a2737raef60866a3dc3401@domain.hid>
-	<17889.44695.352072.990692@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Stelian Pop <stelian.pop@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
+Date: Thu, 15 Mar 2007 14:53:54 +0100
+Message-Id: <1173966835.16299.49.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] [PATCH - ARM] ldrex/strex syntax errors with recent
+	compilers
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-Hi
+Hi,
 
-> Xenomai kernel implements the so-called "FIFO" scheduling policy, that
-> is, the task which runs at any time is the task with the highest
-> priority that has been ready for the longest time. Calling
-> rt_task_wait_period suspends the calling task, and let other tasks
-> run.
->
-> If I understand correctly, what you want is to set some outputs at some
-You understand correctly.
+Trying to build a xenomai-enabled kernel using a recent compiler (tried
+with gcc version 4.1.1 (CodeSourcery ARM Sourcery G++ 2006q3-26), but
+all gcc > 4.1 might be affected) results in the following:
 
-> precise deadline, I see two ways to do what you want:
-> * either the time when you compute the output has no importance, and the
->   only thing that matters is when you set the output, in which case you
->   can call rt_task_wait_period right before setting the outputs, your
->   task will do
->   compute next output
->   go to sleep
->   set output
->   compute next output
->   go to sleep
->   set output
->   etc...
-Actually this is exactly what I had in mind only it is important
-(discrete state space controller computations) that the input is also
-read at exact intervals. So maybe:
+  CC      kernel/xenomai/nucleus/shadow.o
+/tmp/cc0XooxH.s: Assembler messages:
+/tmp/cc0XooxH.s:1464: Error: instruction does not accept this addressing =
+mode -- `ldrex r1,r2'
+/tmp/cc0XooxH.s:1466: Error: instruction does not accept this addressing =
+mode -- `strex r3,r1,r2'
 
-compute next output k+1
-go to sleep
-read input for k+2 computations
-set output k+1
-compute next output k+2
-go to sleep
-read input for k+3 computations
-set output k+2
->   etc...
+Older gcc (like gcc version 4.0.0 (DENX ELDK 4.1 4.0.0)) have no problem =
+with this.
 
-> * or the time between reading input and setting output has to be as
->   fixed as possible, in which case what you will have to do is to
->   calibrate the WCET (worst case execution time) of the computations on
->   the machine you are running, setup rt_task_set_periodic so that your
->   task is woken up at (deadline - WCET), and in each loop, do the
->   computations, then busy wait until the deadline then set the
->   output. In order to busy wait, you may use rt_timer_tsc.
+It appears that the patch below fixes the compile error. I also verified=20
+that gcc-4.0.0 generates identical code using both forms.
 
-Off hand I am not exactly sure why this second technique would give me
-a more fixed interval between reading input and writing output than
-the modified technique 1 I suggest above?
+Index: include/asm-arm/atomic.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- include/asm-arm/atomic.h	(r=E9vision 2299)
++++ include/asm-arm/atomic.h	(copie de travail)
+@@ -40,9 +40,9 @@
+     unsigned long tmp, tmp2;
+=20
+     __asm__ __volatile__("@ atomic_set_mask\n"
+-"1: ldrex   %0, %2\n"
++"1: ldrex   %0, [%2]\n"
+ "   orr     %0, %0, %3\n"
+-"   strex   %1, %0, %2\n"
++"   strex   %1, %0, [%2]\n"
+ "   teq     %1, #0\n"
+ "   bne     1b"
+     : "=3D&r" (tmp), "=3D&r" (tmp2)
+@@ -170,9 +170,9 @@
+     unsigned long tmp, tmp2;
+=20
+     __asm__ __volatile__("@ atomic_set_mask\n"
+-"1: ldrex   %0, %2\n"
++"1: ldrex   %0, [%2]\n"
+ "   orr     %0, %0, %3\n"
+-"   strex   %1, %0, %2\n"
++"   strex   %1, %0, [%2]\n"
+ "   teq     %1, #0\n"
+ "   bne     1b"
+     : "=3D&r" (tmp), "=3D&r" (tmp2)
+@@ -185,9 +185,9 @@
+     unsigned long tmp, tmp2;
+=20
+     __asm__ __volatile__("@ atomic_clear_mask\n"
+-"1: ldrex   %0, %2\n"
++"1: ldrex   %0, [%2]\n"
+ "   bic     %0, %0, %3\n"
+-"   strex   %1, %0, %2\n"
++"   strex   %1, %0, [%2]\n"
+ "   teq     %1, #0\n"
+ "   bne     1b"
+     : "=3D&r" (tmp), "=3D&r" (tmp2)
 
-Obviously one problem i have is the duration of obtaining input and
-setting output. Both will be coming in and going out over a CANOpen
-connection but from the moment the messages are on the bus I have no
-control over what happens. Of course this has nothing to do with
-xenomai but only with the deterministic characteristics of the CAN
-protocol. And AFAIK that is not good?
+--=20
+Stelian Pop <stelian.pop@domain.hid>
 
-
-Thanks.
-
-Roland.
-
-
->
->
-> --
->
->
->                                             Gilles Chanteperdrix.
->
 
