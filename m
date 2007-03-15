@@ -1,14 +1,10 @@
-Subject: Re: [Xenomai-core] ChangeLog for ADEOS IPIPE patches?
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45F902ED.6050900@domain.hid>
-References: <45F902ED.6050900@domain.hid>
-Content-Type: text/plain
-Date: Thu, 15 Mar 2007 09:44:17 +0100
-Message-Id: <1173948257.8193.4.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <45F90CD5.9080701@domain.hid>
+Date: Thu, 15 Mar 2007 10:07:33 +0100
+From: Steven Scholz <steven.scholz@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-core] kernel building problems with current svn and AT91
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,28 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Steven Scholz <steven.scholz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, 2007-03-15 at 09:25 +0100, Steven Scholz wrote:
-> Hi all,
-> 
-> is there a ChangeLog for ADEOS IPIPE patches like
-> ksrc/arch/arm/patches/adeos-ipipe-2.6.19-arm-1.6-03.patch ?
-> 
+Hi,
 
-No luck, not for this particular release, since we were transitioning
-from CVS to git at that time, and such information has been lost in the
-process.
-The old ChangeLog (when we were using CVS) is there,
-http://cvs.gna.org/cvsweb/ChangeLog?cvsroot=adeos
-Since we are now git-based, and the ARM branch has been recently merged
-into the official Adeos git repo, the summary of changes for this
-architecture can be found here:
-http://www.denx.de/cgi-bin/gitweb.cgi?p=ipipe-2.6.git;a=shortlog;h=ipipe-2.6.19-arm
+I just updated to the current xenomai svn.
 
--- 
-Philippe.
+After patching linux 2.6.19 for AT91RM9200 a
 
+ make ARCH=arm CROSS_COMPILE=arm-softfloat-linux-gnu- at91rm9200ek_defconfig
 
+results in
+
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/basic/docproc
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/kxgettext.o
+  SHIPPED scripts/kconfig/zconf.tab.c
+  SHIPPED scripts/kconfig/lex.zconf.c
+  SHIPPED scripts/kconfig/zconf.hash.c
+  HOSTCC  scripts/kconfig/zconf.tab.o
+  HOSTLD  scripts/kconfig/conf
+file arch/arm/xenomai/Kconfig already scanned?
+make[1]: *** [at91rm9200ek_defconfig] Error 1
+make: *** [at91rm9200ek_defconfig] Error 2
+
+--
+Steven
 
