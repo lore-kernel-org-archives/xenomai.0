@@ -1,16 +1,11 @@
-Subject: Re: [Xenomai-core] debian/rules update
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200703141648.56722.paul_c@domain.hid>
-References: <200703121756.08070.paul_c@domain.hid>
-	<45F7D59E.3090406@domain.hid> <1173870898.32259.41.camel@domain.hid>
-	<200703141648.56722.paul_c@domain.hid>
-Content-Type: text/plain
-Date: Thu, 15 Mar 2007 23:48:02 +0100
-Message-Id: <1173998883.8193.59.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Date: Fri, 16 Mar 2007 07:52:56 +0000 (GMT)
+From: somshekar kadam <som_kadam@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai on MIPS intial boot
+In-Reply-To: <1173956689.8193.14.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <851018.97559.qm@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,81 +15,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2007-03-14 at 16:48 +0000, Paul wrote:
-> On Wednesday 14 March 2007 11:14, Philippe Gerum wrote:
-> > On Wed, 2007-03-14 at 11:59 +0100, Gilles Chanteperdrix wrote:
-> > > Philippe Gerum wrote:
-> > > > On Tue, 2007-03-13 at 20:32 +0000, Paul wrote:
-> > > >>Hi Philippe
-> > > >>
-> > > >>On Tuesday 13 March 2007 16:30, Philippe Gerum wrote:
-> > > >>>>A question for the project admins: Do you have a Release Manager to
-> > > >>>>coordinate package releases ?
-> > > >>>
-> > > >>>I'm currently coordinating the Xenomai releases, with input from the
-> > > >>>sub-systems/architecture maintainers. I guess that by "package", you
-> > > >>> are referring to another division of the work, though.
-> > > >>
-> > > >>By "package", I mean binaries in the form of *.deb and/or *.rpm -
-> > > >> Whilst I'm happy to build and host i386/x86 Debian packages, I'm
-> > > >> concerned about treading on someone's toes without a discussion about
-> > > >> revision numbers and general policy about "official" releases.
-> > > >
-> > > > So far, we don't have an established policy for making distro-oriented
-> > > > packages; a few people have contributed some of them from time to time,
-> > > > but there is no "appointed" maintainer doing sustained work for the
-> > > > project on this issue yet.
-> > > >
-> > > >> For example, the packages I've
-> > > >>built to date have used 2.3.50 even although a tarball of that version
-> > > >> hasn't been released.. That could well cause confusion for users and
-> > > >> yourself if bugs are reported. There is also a minor problem with
-> > > >> keeping the debian/changelog in sync.
-> > > >>
-> > > >> One possible answer is for me to rebuild my repository from scratch
-> > > >> and append the SVN revision number to revision number so that we end
-> > > >> up with 2.3.50-1~r2289 - This would allow an official 2.3.50-1 release
-> > > >> to override the ~r2289 revision..
-> > > >
-> > > > It would be saner to use the commit number indeed, especially since it
-> > > > allows decouple the package versioning from the source releases while
-> > > > keeping a reference to a common history of changes.
-> > >
-> > > Do we really want to make debian packages with trunk ? Would not it make
-> > > sense to only make debian packages from stable releases ?
+Hi Philipe, 
+
+    Yes definately , we will talk and need your
+guidance to make it perfect, right now looking into
+syscall and xnarch_init_thread, once minimal is
+working , I will get back to you. 
+we are seeing now its able to go in syscall and
+failing to create task , this is the last hurdle,
+which we need to cross. now I am able to install
+libraries for xenomai, one thing I dont understand is
+its not able to create shared lib, for time being made
+it static and debuging. any pointers on this will be
+useful. 
+
+Thanks And Regards
+Neelu
+
+
+
+
+--- Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On Thu, 2007-03-15 at 10:45 +0000, somshekar kadam
+> wrote:
+> > Hi Gilles, 
+> > 
+> >   Right now I cant submit it, may be in the first
+> week
+> > of APRIL I will submit it. After my client accepts
+> the
+> > port and we shall submit it to open source.
+> 
+> Great, so I suggest that we talk about the following
+> issues
+> maybe, say, by the first week of April.
+> 
+> >  Right now
+> > compiled lib for xenomai, when i say make install
+> got
+> > some recursive error, and all lib are created as
+> > libnative.a , I dont understand why shared libs
+> are
+> > not created in the configure command for xenomai I
+> > give 
+> > ./configure --host=mips --prefix=/opt/neelu/xen
+> > --enable-shared=libnative CC=mips_fp_be-gcc. 
+> > 
+> > next command make 
+> > nex command make install 
+> > gives error, what I see is asm-mips soft link is
+> > broken, i created it manually still not working
+> any
+> > pointers on this. 
+> > 
+> > Thanks And Regards
+> > Neelu
+> > 
+> > 
+> > 
+> > 
+> > --- Gilles Chanteperdrix
+> > <gilles.chanteperdrix@xenomai.org> wrote:
+> > 
+> > > somshekar kadam wrote:
+> > >  > 
+> > >  > Hi All, 
+> > >  > 
+> > >  >    I have implelented Xenomai for MIPS , as
+> due
+> > > to
+> > >  > some legal issues with project completion, I
+> can
+> > >  > submit for Open source. I hope this is
+> > > understood. 
+> > > 
+> > > Actually, it is not understood. What do you
+> mean,
+> > > you can or can not
+> > > submit your work to open-source ?
+> > > 
+> > > -- 
+> > > 
+> > > 
+> > > 					    Gilles Chanteperdrix.
+> > > 
+> > 
+> > 
+> > 
+> > 		
 > >
-> > Not necessarily, the same way one may want to base his work on sid,
-> > because some features only available in the development branch are
-> > needed (e.g. support for multiple time bases is only available in the
-> > trunk/ and not with 2.3.x, and one would need such feature to run
-> > VxWorks and the POSIX skins in parallel for instance). Provided we do
-> > have a non-confusing way to name such intermediate releases, of course.
+>
+__________________________________________________________
+> > Yahoo! India Answers: Share what you know. Learn
+> something new
+> > http://in.answers.yahoo.com/
+> > 
+> > _______________________________________________
+> > Xenomai-core mailing list
+> > Xenomai-core@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-core
+> -- 
+> Philippe.
 > 
-> With a Debian pool style of repository, the X.Y.50+rnnn packages would always 
-> go in unstable (Sid) or even experimental. When the release number gets 
-> bumped up to X.{Y+1}.0, it would go in testing (Etch), and when Etch becomes 
-> the default "stable", any X.Y.0 releases would automatically migrate across.
-> Bug fixes to X.Y.{0+n} would normally appear in testing and/or stable leaving 
-> Sid to track the trunk of SVN - Primarily a repository management issue..
 > 
-> Following this proposal, the end user can opt for stable/testing or unstable. 
-> Should he/she choose, it is a simple matter to "downgrade" from unstable or 
-> track the unstable releases.. That said, I suspect most users would compile 
-> from source, perhaps using the debian/rules as an aid to install/remove.. 
-> Prebuilt binaries & kernels would most likely be used by people wanting to 
-> try Xenomai before committing time to a patch/build cycle.
 > 
 
-Ack, hence the importance of having Xenomai work out of the box on
-common hardware, so that succcesful tries lead to adoption.
-
-> 
-> Regards, Paul.
--- 
-Philippe.
 
 
+		
+__________________________________________________________
+Yahoo! India Answers: Share what you know. Learn something new
+http://in.answers.yahoo.com/
 
