@@ -1,11 +1,12 @@
-Date: Fri, 16 Mar 2007 07:52:56 +0000 (GMT)
-From: somshekar kadam <som_kadam@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai on MIPS intial boot
-In-Reply-To: <1173956689.8193.14.camel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Message-ID: <851018.97559.qm@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17914.63535.18893.207257@domain.hid>
+Date: Fri, 16 Mar 2007 21:03:59 +0100
+Subject: Re: [Xenomai-core] Xenomai support for ARM926EJ
+In-Reply-To: <fdba73240703151522l3aa73a81v84661caf17f489ae@domain.hid>
+References: <fdba73240703151522l3aa73a81v84661caf17f489ae@domain.hid>
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,118 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Muruganandam Ganapathy <muruganandam.ganapathy@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Philipe, 
+Muruganandam Ganapathy wrote:
+ > Hello,
+ > 
+ > I am new to Xenomai and trying to understand whether it is suitable for our
+ > need.
+ > We have a board based on ARM926EJ. I would like to know
+ > 
+ > 
+ > 1. is there Xenomai support for ARM926
 
-    Yes definately , we will talk and need your
-guidance to make it perfect, right now looking into
-syscall and xnarch_init_thread, once minimal is
-working , I will get back to you. 
-we are seeing now its able to go in syscall and
-failing to create task , this is the last hurdle,
-which we need to cross. now I am able to install
-libraries for xenomai, one thing I dont understand is
-its not able to create shared lib, for time being made
-it static and debuging. any pointers on this will be
-useful. 
-
-Thanks And Regards
-Neelu
-
+Xenomai supports most ARM processor cores. For example, the ARM926 is
+supported with the ARM integrator board. The real question is: does it
+support the particular board you use ? If not, then all you have to do
+is to adapt the I-pipe patch to the board you use.
 
 
+ >    I did google through and found that Xenomai is for the user application
+ >    In our case, we have a kernel mode driver/application which is very time
+ >    critical and we were unable to meet the timing requirement using the
+ > regular kernel.
 
---- Philippe Gerum <rpm@xenomai.org> wrote:
-
-> On Thu, 2007-03-15 at 10:45 +0000, somshekar kadam
-> wrote:
-> > Hi Gilles, 
-> > 
-> >   Right now I cant submit it, may be in the first
-> week
-> > of APRIL I will submit it. After my client accepts
-> the
-> > port and we shall submit it to open source.
-> 
-> Great, so I suggest that we talk about the following
-> issues
-> maybe, say, by the first week of April.
-> 
-> >  Right now
-> > compiled lib for xenomai, when i say make install
-> got
-> > some recursive error, and all lib are created as
-> > libnative.a , I dont understand why shared libs
-> are
-> > not created in the configure command for xenomai I
-> > give 
-> > ./configure --host=mips --prefix=/opt/neelu/xen
-> > --enable-shared=libnative CC=mips_fp_be-gcc. 
-> > 
-> > next command make 
-> > nex command make install 
-> > gives error, what I see is asm-mips soft link is
-> > broken, i created it manually still not working
-> any
-> > pointers on this. 
-> > 
-> > Thanks And Regards
-> > Neelu
-> > 
-> > 
-> > 
-> > 
-> > --- Gilles Chanteperdrix
-> > <gilles.chanteperdrix@xenomai.org> wrote:
-> > 
-> > > somshekar kadam wrote:
-> > >  > 
-> > >  > Hi All, 
-> > >  > 
-> > >  >    I have implelented Xenomai for MIPS , as
-> due
-> > > to
-> > >  > some legal issues with project completion, I
-> can
-> > >  > submit for Open source. I hope this is
-> > > understood. 
-> > > 
-> > > Actually, it is not understood. What do you
-> mean,
-> > > you can or can not
-> > > submit your work to open-source ?
-> > > 
-> > > -- 
-> > > 
-> > > 
-> > > 					    Gilles Chanteperdrix.
-> > > 
-> > 
-> > 
-> > 
-> > 		
-> >
->
-__________________________________________________________
-> > Yahoo! India Answers: Share what you know. Learn
-> something new
-> > http://in.answers.yahoo.com/
-> > 
-> > _______________________________________________
-> > Xenomai-core mailing list
-> > Xenomai-core@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-core
-> -- 
-> Philippe.
-> 
-> 
-> 
+No, Xenomai APIs exist both in kernel and user space and are symetrical
+as much as possible. So, it is up to you to choose if you want to
+program your application in kernel or user-space. Note however that for
+future-proof designs, it is recommended to only write driver code in
+kernel-space, using the RTDM API, and to write the rest of your
+application in user-space.
 
 
+ > 
+ > 2. If support is available, what is the version to use. I am running 2.6.19
+ >    on the board.
 
-		
-__________________________________________________________
-Yahoo! India Answers: Share what you know. Learn something new
-http://in.answers.yahoo.com/
+2.6.19 is only supported by the latest v2.3.x branch; since it has not
+yet been released you will have to download the sources via svn, by
+typing something like:
+
+svn co http://svn.gna.org/svn/xenomai/branches/v2.3.x xenomai
+
+Note that if the board you use is not supported, you will get undefined
+symbols building the kernel, and this is where your work will start:
+implementing the missing functions for the board you use. The missing
+functions concern hardware timer management, tsc emulation using the
+hardware timer, and interrupts demultiplexing. We can help you doing
+this work if you tell us which board you use.
+
+-- 
+
+
+					    Gilles Chanteperdrix.
 
