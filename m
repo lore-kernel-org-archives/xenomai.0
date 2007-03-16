@@ -1,13 +1,11 @@
-Message-ID: <45FA725E.9020402@domain.hid>
-Date: Fri, 16 Mar 2007 11:33:02 +0100
+Message-ID: <45FAA089.7030206@domain.hid>
+Date: Fri, 16 Mar 2007 14:50:01 +0100
 From: Theo Veenker <Theo.Veenker@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] xenomai on (old) laptop
-References: <45F91516.503@domain.hid> <45F9166F.3020901@domain.hid>
-	<1173952750.8193.11.camel@domain.hid> <45F91FCC.20906@domain.hid>
-In-Reply-To: <45F91FCC.20906@domain.hid>
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] [OT] monitoring vertical retrace for multi-head
+	setup?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,45 +17,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Xenomai <xenomai@xenomai.org>
 
-Theo Veenker wrote:
-> Philippe Gerum wrote:
-> 
->> On Thu, 2007-03-15 at 10:48 +0100, Gilles Chanteperdrix wrote:
->>
->>> Theo Veenker wrote:
->>>
->>>> Hi all,
->>>>
->>>> I'm preparing a Toshiba Satellite S1400-153E laptop for field work.
->>>> It used to run redhat 9 + RTLinux, but now it runs Ubuntu 6.06 +
->>>> Xenomai 2.3.
->>>>
->>>> Unfortunately the latency test shows high latencies (200..500us) at
->>>> irregular intervals (5..20 sec) whereas the typical max latency is
->>>> around 10 us. It doesn't seem to be related to any user action.
->>>>
->>>> I don't think this thing has SMI, anyway xenomai doesn't detect it.
->>>> It also doesn't have a local APIC. What could be the cause of these
->>>> high latencies?
->>>
->>>
->>> APM ?
->>>
->>
->>
->> You may also want to check for USB-related issues as explained in the
->> TROUBLESHOOTING file.
->>
-> 
-> I have APM, CPU Frequency Scaling and ACPI processor disabled in config.
-> I'll try to kill my USB stuff to see what happens.
+Hi all,
 
-Unfortunately that didn't have any effect (apart from the mouse being
-disabled). I think I will try to work my way around it. I need 1ms
-accuracy, so as long as the pathological latencies that occur irregularly
-don't exeed 500us I should be OK.
+Is there anyone on the list working in linguistic, vision or phonetics
+research using xenomai, rtai or rtlinux in their experiment applications?
+I particularly like to know if anyone has tackled the problem of monitoring
+vertical retrace in multi-headed setups. For single head setup it is not
+a problem, but so far I haven't found any information on how to do it
+(in software) for a multi-head (dual or quad) setup. I suppose it is
+vendor and board specific. The only solution I can come up with now is
+feeding the VGA vertical sync signal (directly or through a circuit) into
+the parallel port and monitor that, but I'd prefer a cleaner solution.
+Any ideas.
 
+Thanks,
 Theo
+
 
 
 
