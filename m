@@ -1,8 +1,14 @@
-From: xenomai@domain.hid
-Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
-	Various problems
-Date: Fri, 23 Mar 2007 14:04:36 +0000
-Message-Id: <032320071404.24123.4603DE73000D814600005E3B2216557996070E0301020A98@domain.hid>
+Message-ID: <45FD15BD.8000702@domain.hid>
+Date: Sun, 18 Mar 2007 11:34:37 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] RTDM and user space hardware drivers
+References: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
+In-Reply-To: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig837A434CB8CBBBE332E1319B"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -12,52 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig837A434CB8CBBBE332E1319B
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have been working on trying to find the optimal linux kernel configuration and have noticed a couple problems.  No matter what I do it seems that while cpu #2 is detected, nothing gets scheduled on it.  Also, there is always a modprobe process running at 100%cpu that I can't kill.  The command that is showed in top is "modprobe -s ac".  If I run it from the command line it hangs as well.  Latencies are however very acceptable when running xeno-test.  I do however see some negative values in the test output.
+M. Koehrer wrote:
+> Hi everybody,
+>=20
+> the RTDM API is really very good as API for drivers.=20
+> I have a real time (Xenomai) application in user space that has to acce=
+ss PCI boards.
+> The "classical" approach is now to use a kernel driver and to use RTDM =
+as interface
+> between the user space application an the kernel space driver.
+> However, for performance issues, I prefer to write a pure user mode dri=
+ver.
+> As the memory of the PCI board can be accesses from user space (using /=
+dev/mem)=20
+> I want to write a pure user space driver  as this seems to me more effi=
+cient (and easier to debug) than
+> a kernel driver.
+> Also, only one application is accessing the driver at a time, I can lin=
+k the driver directly to my application.
+>=20
+> My questions are now:
+> 1. Is it possible to use the RTDM API also for pure user space drivers?=
 
-The config file that I am using currently is the same as the one below just with CONFIG_XENO_HW_SMI_ALL.  This seems to give me the best latencies.
 
-Mike
+There is no RTDM driver API exported to user space yet, it's still just
+a plan for the future.
 
- -------------- Original message ----------------------
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> xenomai@domain.hid wrote:
-> >  -------------- Original message ----------------------
-> > From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> > 
-> >>xenomai@domain.hid wrote:
-> >>
-> >>>#
-> >>># SMI workaround
-> >>>#
-> >>># CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
-> >>>CONFIG_XENO_HW_SMI_DETECT=y
-> >>>CONFIG_XENO_HW_SMI_WORKAROUND=y
-> >>># CONFIG_XENO_HW_SMI_ALL is not set
-> >>># CONFIG_XENO_HW_SMI_INTEL_USB2 is not set
-> >>># CONFIG_XENO_HW_SMI_LEGACY_USB2 is not set
-> >>># CONFIG_XENO_HW_SMI_PERIODIC is not set
-> >>># CONFIG_XENO_HW_SMI_TCO is not set
-> >>># CONFIG_XENO_HW_SMI_MC is not set
-> >>>CONFIG_XENO_HW_SMI_APMC=y
-> >>># CONFIG_XENO_HW_SMI_LEGACY_USB is not set
-> >>>CONFIG_XENO_HW_SMI_BIOS=y
-> >>
-> >>Chances are that the latencies you get are due to the SMI you leave
-> >>enabled (APMC or BIOS). Could you try first with only
-> >>CONFIG_XENO_HW_SMI_ALL ?
-> >>
-> > WOW!!!  I did try that with the 2.6.17 kernel but it wouldnt boot,
-> > I had to enable APM.  It is working like  charm now.  Max latency
-> > is 4-5 us while running X.  If I drag a window around it goes up
-> > to 7us or so.  Deffinately a step in the righ direction!  Thanks.
-> 
-> Good news.
-> 
-> -- 
->                                                  Gilles Chanteperdrix
+>=20
+> 2. Is there any experience concerning the performance of a user space d=
+river versus a kernel space
+> driver?
+> In my use case, I have to write and read about 60 byte (each direction)=
+ of (block) data to/from the PCI I/O system.
 
+User space drivers can improve performance if you transfer a lot of data
+and save potential user/kernel copy-steps this way (though, zero-copy
+can also be realised with kernel drivers) or if you do a lot of driver
+calls and the call-overhead becomes noticeable. This works fairly well
+for exclusive devices (only one user process at a time). But once you
+have to share/multiplex a devices, performance quickly becomes worse.
+
+When going for a user space driver design, make sure you keep a clean
+separation between driver and application. [It will be one major goal of
+an RTDM for user space to support driver writers in this regard.]
+
+Jan
+
+
+--------------enig837A434CB8CBBBE332E1319B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF/RW9niDOoMHTA+kRAqyhAJ0dsmYqlkWZgoaM7q8/nk7TMQjwdwCfZzkU
+DD1HETTujpbjihlxML7URqA=
+=fvVg
+-----END PGP SIGNATURE-----
+
+--------------enig837A434CB8CBBBE332E1319B--
 
