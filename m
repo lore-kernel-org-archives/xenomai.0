@@ -1,79 +1,193 @@
-Subject: Re: [Adeos-main] port 2.6.19 x86_64 to 2.6.20
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <45EB0295.5070506@domain.hid>
-References: <45E220D7.6060004@domain.hid> <1172469398.1764.79.camel@domain.hid>
-	<45E9F580.3010107@domain.hid> <1172962682.13721.74.camel@domain.hid>
-	<45EB0295.5070506@domain.hid>
-Content-Type: text/plain
-Date: Thu, 08 Mar 2007 00:31:26 +0100
-Message-Id: <1173310287.5059.57.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: trem <trem@domain.hid>
-Cc: adeos-main@gna.org
+Message-ID: <45FD7860.5030308@domain.hid>
+Date: Sun, 18 Mar 2007 19:35:28 +0200
+From: Maksym Veremeyenko <verem@domain.hid>
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] mem usage and other application
+References: <17913.899.384216.185459@domain.hid>	<45F90DC1.2030009@domain.hid>	<45F97587.9020604@domain.hid>
+	<17917.29803.267170.622970@domain.hid>
+In-Reply-To: <17917.29803.267170.622970@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080004010408010805040107"
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Sun, 2007-03-04 at 18:32 +0100, trem wrote:
-> Hi
-> 
-> As I've got your start now, I've ported (at least tried) the 2.6.19
-> x86_64 adeos patch to 2.6.20.
-> I've tried it and it seems to works fine, here the latency :
-> 
-> [trem@domain.hid ~]$ cat latency_xenomai_2_6_20.txt
-> [trem@domain.hid bin]$ sudo ./latency -T 10
-> == Sampling period: 100 us
-> == Test mode: periodic user-mode task
-> == All results in microseconds
-> warming up...
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTD|       0.737|       1.067|       3.332|       0|       0.737|      
-> 3.332
-> RTD|       0.744|       1.067|       3.568|       0|       0.737|      
-> 3.568
-> RTD|       0.724|       1.080|       3.362|       0|       0.724|      
-> 3.568
-> RTD|       0.730|       1.070|       2.900|       0|       0.724|      
-> 3.568
-> RTD|       0.711|       1.071|       3.441|       0|       0.711|      
-> 3.568
-> RTD|       0.733|       1.066|       3.547|       0|       0.711|      
-> 3.568
-> RTD|       0.735|       1.079|       4.523|       0|       0.711|      
-> 4.523
-> RTD|       0.716|       1.072|       3.307|       0|       0.711|      
-> 4.523
-> RTD|       0.715|       1.066|       3.507|       0|       0.711|      
-> 4.523
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|       0.711|       1.071|       4.523|       0|    00:00:10/00:00:10
-> 
-> 
-> The patch (2.6.20 x86_64) can be found here :
-> http://zarb.org/~trem/adeos-ipipe-2.6.20-x86_64-1.7-07-trem.patch
-> 
+This is a multi-part message in MIME format.
+--------------080004010408010805040107
+Content-Type: text/plain; charset=KOI8-U; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-MIME-Autoconverted: from 8bit to quoted-printable by kazbek.m1stereo.tv id
+	l2IHZSmV003488
 
-s,1.7-07,1.0-07,
+Gilles Chanteperdrix =D0=C9=DB=C5=D4:
 
-> I hope it could be used.
-> 
+>  >        1. Kernel 2.6.17.14, Xenomai 2.3.0... r2299, Adeos 1.5-02
+> Here, I assume you mean Xenomai branch v2.3.x revision 2299
+release 2.3.0 and branch v2.3.x revision 2299 - both
 
-Nice. Will use this work as the upcoming 2.6.20/x86_64 baseline in my
-git repo. Thanks.
+>  >        2. Kernel 2.6.19.2, Xenomai r2299, Adeos 1.7-01
+> Here, I assume you mean Xenomai trunk revision 2299
+yes
 
--- 
-Philippe.
+> The problem is that if there is no difference with regard to FPU contex=
+t
+> management between release 2.3.0 and latest revision of branch
+> v2.3.x. So, the difference must be somewhere else.
+What is recommended configuration and version of kernel and Xenomai?
+In my case
+2.6.20.3 upgrade failed due to Xenomai compilation,
+2.6.19 fault gdb to work properly,
+2.6.18 fail due to absent adeos-ipipe version.
+I have to use 2.6.17.14 .....
+
+> Could you send me your .config ?
+attached
 
 
+> Also, is it possible for you to try bisecting in v2.3.x branch ? v2.3.0
+> release is revision 2004, and you know that revision 2299 does not work
+> for you, so you would be able to tell us exactly which revision is the
+> cause of your problem.
+What trunk revisions should be tried?
+
+
+--=20
+________________________________________
+Maksym Veremeyenko
+
+
+--------------080004010408010805040107
+Content-Type: application/x-bzip;
+ name="config-2.6.17.14.xenomai-r2299.bz2"
+Content-Disposition: inline;
+ filename="config-2.6.17.14.xenomai-r2299.bz2"
+Content-Transfer-Encoding: base64
+
+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
+LK+/nxaZqxXkaxwYNi3MD+LuSKcKEhl7wYgA
+--------------080004010408010805040107--
 
