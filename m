@@ -1,79 +1,107 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Date: Fri, 30 Mar 2007 15:06:47 +0200
-References: <460C60E9.6010307@domain.hid> <E1HXG3e-0006Jz-Rb@domain.hid>
-	<460D0246.5030108@domain.hid>
-In-Reply-To: <460D0246.5030108@domain.hid>
+Message-ID: <45FDA81F.2080004@domain.hid>
+Date: Sun, 18 Mar 2007 21:59:11 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-15"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1HXGoZ-000163-Vn@domain.hid>
-Subject: [Xenomai-core] Re: iovec overwriting by CAN stack
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
+	and real-time behaviour (IRQ raise forever and may lock system))
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>	<E1HOW5u-0006Ap-EW@mailer.emlix.com>	<45F7DEA8.2050309@domain.hid>	<E1HRSws-0007cE-R3@domain.hid>
+	<45FBD768.9050407@domain.hid> <45FD12D4.3070901@domain.hid>
+	<45FD238F.2050009@domain.hid>
+In-Reply-To: <45FD238F.2050009@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig86E89196392DEA57D1126E71"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Sebastian Smolorz wrote:
-> > Jan Kiszka wrote:
-> >> Wolfgang Grandegger wrote:
-> >>> Jan Kiszka wrote:
-> >>>> Hi Wolfgang,
-> >>>>
-> >>>> it's late, so I may have misread somecode, but don't you "update" the
-> >>>> iovec descriptors a user passes on send/recvmsg on return (namely
-> >>>> iovec_len)? I received some complaints about this /wrt to in-kernel
-> >>>> CAN stack usage.
-> >>>
-> >>> It's done here:
-> >>>
-> >>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/rtca
-> >>>n_ raw.c?v=SVN-trunk#881
-> >>>
-> >>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/rtca
-> >>>n_ raw.c?v=SVN-trunk#734
-> >>>
-> >>>
-> >>> I may have missed something. What are the real complaints? Is there a
-> >>> test program?
-> >>
-> >> Not yet (will commit the related patch to our RACK likely later today).
-> >> It's simply sending frames while re-using the msg+iovec structs in a
-> >> loop.
-> >>
-> >>>> I always considered the same well-know behaviour of RTnet a bug, but
-> >>>> now I found your code is doing this systematically, also for user
-> >>>> space callers. Is this behaviour undefined or even required according
-> >>>> POSIX or whatever?
-> >>>
-> >>> I don't know, it's Sebastian's Kode.
-> >>
-> >> Hmm, hope he will not say that he imitated RTnet...
-> >
-> > Rather an imitation of the Linux kernel's behaviour. The memcpy_toiovec()
-> > and memcpy_fromiovec() functions [1] also modify the original iovec.
-> >
-> >
-> > [1] http://lxr.free-electrons.com/source/net/core/iovec.c
->
-> But that's the kernel's private (and user-safe) copy. I failed to find
-> it writing that back to user space.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig86E89196392DEA57D1126E71
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hm. Ad hoc, I don't recall why the userspace's iovec is also updated. Perhaps 
-my intention was to make the use of rtcan_raw_sendmsg consistent for kernel 
-and userspace RT-Tasks so that both can rely on finding modified iovecs after 
-calling sendmsg/recvmsg. But I'm not absolutely sure if there isn't a better 
-explanation for this. I will try to find the reason in my backup memory. ;-)
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Wolfgang Grandegger wrote:
+>>> Back to our preferred solution 1. Attached is a patch for review
+>>> including some other fixes and suggestions accumulated over time:
+>>>
+>>>      * ksrc/drivers/can/*: To avoid unnecessary bus error interrupt
+>>>      flooding, the option CONFIG_XENO_DRIVERS_CAN_BUS_ERR now allows =
+to
+>>>      enable bus error interrupts "on demand" only if an application i=
+s
+>>>      interested in such errors. It is automatically selected for CAN
+>>>      controllers supporting bus error interrupts like the SJA1000.
+>>
+>> Jumping into this more or less blindly: Could you explain to me (as we=
+ll
+>> as the poor CAN users...) what the downsides of enabling
+>> CONFIG_XENO_DRIVERS_CAN_BUS_ERR are? If there isn't anything
+>> significant, I would strongly vote for keeping the switch forest as
+>> small as possible.
+>=20
+> The user has not to care and cannot even enable this option. It is auto=
 
--- 
-Sebastian
+> selected for SJA1000. The purpose of this config option is to suppress
+> correlated code for builds without SJA1000. About the functionality: as=
+
+
+Hmm, probably the attached help text confused me (who should see it BTW?)=
+=2E
+
+> you know, on the SJA1000 the bus error interrupt can result in high
+> error interrupt rates and even hang the system on slow processors. Just=
+
+> unplugging the CAN cable can cause such interrupt flooding. This proble=
+m
+> popped up again recently and Sebastian proposed:
+>=20
+>> Last summer we had a discussion about the BEI issue on the
+>> socketcan-ML. Two additional handling policies popped up:
+>> 1. The interface could restart itself after an amount of BEIs, thus
+>>    taking responsibility from the user application.
+>> 2. The BEI could be completely disabled if no one is interested in
+>>    this ype of error frame.
+>=20
+> As 2. is also my preferred solution, I have implemented it. The only
+> downside is that you do not see the error counter increasing when
+> /proc/rtcan/devices is inspected. We also discussed 1., but
+> RT-Socket-CAN does not restart the CAN controller by purpose and just
+> stoppping it requires user intervention.
+
+And if there is someone listening, how is the flooding issue on cable
+unplug etc. solved by option 2?
+
+What about something like option 3: After the first error occurred that
+may mark the beginning of a flood, disable that error interrupt until
+the next stop/start cycle or the user has read the event?
+
+Jan
+
+
+--------------enig86E89196392DEA57D1126E71
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFF/agfniDOoMHTA+kRAgzjAJ9by2T0o7Ts5ZV6J4pU9+UEvGHrqQCfT+42
+Xpc4uYDep2mfmOhoTOaOFGo=
+=ZrVJ
+-----END PGP SIGNATURE-----
+
+--------------enig86E89196392DEA57D1126E71--
 
