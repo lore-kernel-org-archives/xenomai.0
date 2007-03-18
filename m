@@ -1,15 +1,16 @@
-Message-ID: <45FE4FDE.7060604@domain.hid>
-Date: Mon, 19 Mar 2007 09:54:54 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45FD12D4.3070901@domain.hid>
+Date: Sun, 18 Mar 2007 11:22:12 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
 	and real-time behaviour (IRQ raise forever and may lock system))
-References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
-	<45FD238F.2050009@domain.hid> <45FDA81F.2080004@domain.hid>
-	<E1HTD6v-0004qo-QI@mailer.emlix.com>
-In-Reply-To: <E1HTD6v-0004qo-QI@mailer.emlix.com>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>	<E1HOW5u-0006Ap-EW@mailer.emlix.com>	<45F7DEA8.2050309@domain.hid>	<E1HRSws-0007cE-R3@domain.hid>
+	<45FBD768.9050407@domain.hid>
+In-Reply-To: <45FBD768.9050407@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig040D402E8415D997EA39A6BD"
+Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,77 +20,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-Sebastian Smolorz wrote:
-> Hi Jan,
-> 
-> Jan Kiszka wrote:
->> Wolfgang Grandegger wrote:
->>> you know, on the SJA1000 the bus error interrupt can result in high
->>> error interrupt rates and even hang the system on slow processors. Just
->>> unplugging the CAN cable can cause such interrupt flooding. This problem
->>>
->>> popped up again recently and Sebastian proposed:
->>>> Last summer we had a discussion about the BEI issue on the
->>>> socketcan-ML. Two additional handling policies popped up:
->>>> 1. The interface could restart itself after an amount of BEIs, thus
->>>>    taking responsibility from the user application.
->>>> 2. The BEI could be completely disabled if no one is interested in
->>>>    this ype of error frame.
->>> As 2. is also my preferred solution, I have implemented it. The only
->>> downside is that you do not see the error counter increasing when
->>> /proc/rtcan/devices is inspected. We also discussed 1., but
->>> RT-Socket-CAN does not restart the CAN controller by purpose and just
->>> stoppping it requires user intervention.
->> And if there is someone listening, how is the flooding issue on cable
->> unplug etc. solved by option 2?
-> 
-> Hm, maybe we could implement 1 additionally (but without automatical restart)?
-> 
->> What about something like option 3: After the first error occurred that
->> may mark the beginning of a flood, disable that error interrupt until
->> the next stop/start cycle or the user has read the event?
-> 
-> IIRC, there is no possibility to detect a "normal" bus error (acknowledge) 
-> appearing during normal operation from the one occuring when the cable is 
-> plugged off. The best indication is a high number of consecutive BEIs.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig040D402E8415D997EA39A6BD
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I agree. But the controller internally counts the errors as well 
-reflected by the change of the state to warning or passive. If the 
-application is interested in more details, it could listen on error 
-messages.
+Wolfgang Grandegger wrote:
+> Back to our preferred solution 1. Attached is a patch for review
+> including some other fixes and suggestions accumulated over time:
+>=20
+>      * ksrc/drivers/can/*: To avoid unnecessary bus error interrupt
+>      flooding, the option CONFIG_XENO_DRIVERS_CAN_BUS_ERR now allows to=
 
-Let's summarize the situation with 2. (on request bus errors) available:
+>      enable bus error interrupts "on demand" only if an application is
+>      interested in such errors. It is automatically selected for CAN
+>      controllers supporting bus error interrupts like the SJA1000.
 
-- Bus error interrupts are suppressed unless an application really
-   request them.
+Jumping into this more or less blindly: Could you explain to me (as well
+as the poor CAN users...) what the downsides of enabling
+CONFIG_XENO_DRIVERS_CAN_BUS_ERR are? If there isn't anything
+significant, I would strongly vote for keeping the switch forest as
+small as possible.
 
-- If an application listens on error messages, a high interrupt rate
-   could cause the socket buffer to overflow resulting in lost messages.
-   As far as I have seen, this is not yet a real problem but it gets
-   worse when debugging is configured and printk messages are generated:
+Jan
 
-   /* Overflow of socket's ring buffer! */
-   sock->rx_buf_full++;
-   RTCAN_RTDM_DBG("%s: socket buffer overflow (fd=%d), message "
-                  "discarded\n",
-		 rtcan_proto_raw_dev.driver_name, context->fd);
 
-   This can indeed hang the system and I tend just to downscale the
-   frequency of the log output by, let's say a factor of 10 or 20 and
-   adding to the log:
+--------------enig040D402E8415D997EA39A6BD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-   "Not all overflows are listed. Please inspect /proc/rtcan/sockets!"
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-Concerning 1. (stopping the device after n bus errors): I think this 
-conflicts somehow with 2. because the application explicitly wants to 
-receive them. If it realizes a high rate, it could react appropriately.
+iD8DBQFF/RLVniDOoMHTA+kRAhk4AJ9kYMxPmQpBIn3h2Mt1G4KTRooN5wCfSpMS
+gUi/kNNFMZT3EVCP04QlaHs=
+=x14j
+-----END PGP SIGNATURE-----
 
-For the moment I think 2. and downscaled printk's are already be a big 
-improvement and should make most users happy. Let's wait for some real 
-world application requiring solution 1.
-
-Wolfgang.
+--------------enig040D402E8415D997EA39A6BD--
 
