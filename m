@@ -1,47 +1,39 @@
-Date: Thu, 12 Apr 2007 10:01:41 +0100 (BST)
-From: somshekar kadam <som_kadam@domain.hid>
-In-Reply-To: <1176367891.5022.6.camel@domain.hid>
+Message-ID: <45FEA997.2030701@domain.hid>
+Date: Mon, 19 Mar 2007 17:17:43 +0200
+From: Maksym Veremeyenko <verem@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Message-ID: <396594.94914.qm@domain.hid>
-Subject: [Xenomai-core] Xenomai on MIPS MALTA
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] mem usage and other application
+References: <17913.899.384216.185459@domain.hid>	<45F90DC1.2030009@domain.hid>	<45F97587.9020604@domain.hid>	<17917.29803.267170.622970@domain.hid>	<45FD7860.5030308@domain.hid>
+	<17917.33694.978519.801152@domain.hid>
+In-Reply-To: <17917.33694.978519.801152@domain.hid>
+Content-Type: text/plain; charset=KOI8-U; format=flowed
+Content-Transfer-Encoding: quoted-printable
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi Phillep,
+Gilles Chanteperdrix =D0=C9=DB=C5=D4:
 
- good news xenomai porting for mips is done, user
-space application are working fine. once the formality
-with our client gets over we will submit the code to
-open source. People contirbuted for this project are
-Subramani,Manoj,Sanjeev,Nishit,Poornima and Neelu. 
+>  > > Could you send me your .config ?
+>  > attached
+>=20
+> I see that you you have selected the K7 processor. Be sure to use an
+> Adeos version greater than 1.5-02, or select a processor that does not
+> support 3DNow (I think K6 should do).
 
-Right now debugging an issue for kernel space module
-where rt task start goes for toss, will be fixed next
-week probably, subramni will be working on it. 
+Yes! Master!
+Shame on me - that is a problem.
+I changed to P3 and problem gone.
 
-we hope to deliver it for MIPS MALTA BOARD, as we need
-to get it working for Malta borad, after we release to
-our customer. 
-we will need help in fixing performance issues from
-open source community. 
-
-Thanks for everybody helping us in this project
-
-Thanks And regards
-Neelu
-
-
-
-      Send a FREE SMS to your friend's mobile from Yahoo! Messenger. Get it now at http://in.messenger.yahoo.com/
+--=20
+________________________________________
+Maksym Veremeyenko
 
