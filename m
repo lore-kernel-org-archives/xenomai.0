@@ -1,202 +1,124 @@
-Message-ID: <461B7079.7070703@domain.hid>
-Date: Tue, 10 Apr 2007 13:09:45 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <45FE8AA2.1030507@domain.hid>
+Date: Mon, 19 Mar 2007 14:05:38 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060000090709000609040601"
-Subject: [Xenomai-core] [ANNOUNCE] RTDM for Linux-rt
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
+	and real-time behaviour (IRQ raise forever and may lock system))
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
+	<45FDA81F.2080004@domain.hid> <E1HTD6v-0004qo-QI@mailer.emlix.com>
+	<E1HTDZN-0006rl-2g@domain.hid>
+	<45FE7578.4000306@domain.hid>
+In-Reply-To: <45FE7578.4000306@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9768C860DE465874996A259B"
+Sender: jan.kiszka@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>, ag-automation@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------060000090709000609040601
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9768C860DE465874996A259B
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Wolfgang Grandegger wrote:
+> Sebastian Smolorz wrote:
+>> Sebastian Smolorz wrote:
+>>> Hi Jan,
+>>>
+>>> Jan Kiszka wrote:
+>>>> Wolfgang Grandegger wrote:
+>>>>> you know, on the SJA1000 the bus error interrupt can result in high=
 
-we are proud to announce the first version of RTDM-native, a port of
-RTDM [1] over native Linux with the real-time preemption and
-high-resolution timer patch [2,3].
+>>>>> error interrupt rates and even hang the system on slow processors.
+>>>>> Just
+>>>>> unplugging the CAN cable can cause such interrupt flooding. This
+>>>>> problem
+>>>>>
+>>>>> popped up again recently and Sebastian proposed:
+>>>>>> Last summer we had a discussion about the BEI issue on the
+>>>>>> socketcan-ML. Two additional handling policies popped up:
+>>>>>> 1. The interface could restart itself after an amount of BEIs, thu=
+s
+>>>>>>    taking responsibility from the user application.
+>>>>>> 2. The BEI could be completely disabled if no one is interested in=
 
-RTDM, the Real-Time Driver Model, is an approach to unify the interfaces
-for developing device drivers and associated applications under
-real-time Linux. So far it was available for the dual-kernel hard
-real-time Linux extensions Xenomai [4] and RTAI [5]. This port now
-permits to use RTDM drivers like RTserial, RT-Socket-CAN and soon RTnet
-with Linux-rt as well. RTDM-native is actually on the road map [6] of
-Xenomai 3 aiming at support for native preemption.
+>>>>>>    this ype of error frame.
+>>>>> As 2. is also my preferred solution, I have implemented it. The onl=
+y
+>>>>> downside is that you do not see the error counter increasing when
+>>>>> /proc/rtcan/devices is inspected. We also discussed 1., but
+>>>>> RT-Socket-CAN does not restart the CAN controller by purpose and ju=
+st
+>>>>> stoppping it requires user intervention.
+>>>> And if there is someone listening, how is the flooding issue on cabl=
+e
+>>>> unplug etc. solved by option 2?
+>>> Hm, maybe we could implement 1 additionally (but without automatical
+>>> restart)?
+>>
+>> A more precise suggestion: What about letting BEIs appear until
+>> passive mode is reached and if the TX error counter doesn't count up
+>> any more (indication of start-up situation discovered by the SJA1000)
+>> the driver ceases to read out ECC any further (thanks Stephane for the=
 
-RTDM is also an option for OSADL's "Universal Fieldbus and Industrial
-I/O Framework" [7] and we believe, that this port makes it even more
-attractive as user I/O interface.
+>> hint). The controller would be still operating but not reporting BEIs
+>> any more. There has to be some mechanism to let BEIs through after the=
 
-Attached you can find a README on how to install and use RTDM-native and
-the current implementation status.
+>> situation has normalized. Maybe the driver could check inside the
+>> interrupt handler if active mode was reached again after the above
+>> situation occured.
+>=20
+> Well, this is rather sophisticated and needs some more careful
+> evaluation. We might also reach the passive level slowly without
+> flooding. Furthermore, the method should also be applicable for other
+> controllers.
 
-Special thanks go to the Open Source Automation Development Lab (OSADL)
-[7] for sponsoring this project.
+What is the current behaviour of other controllers?
 
-Wolfgang and Jan.
+>=20
+> Let's implement 1. and downscaled printk and wait for the users reactio=
+n
+> , see also my other mail. Then we should bring up this discussion again=
 
+> on the Socket-CAN-ML to negotiate a common solution.
 
-[1]
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/RTDM-and-Applications.pdf
-[2] http://people.redhat.com/mingo/realtime-preempt/
-[3] http://rt.wiki.kernel.org/index.php/Main_Page
-[4] http://www.xenomai.org
-[5] http://www.rtai.org
-[6] http://www.xenomai.org/index.php/Xenomai:Roadmap
-[7] http://www.osadl.org
+Instead of waiting on some user triggering a (potential) latency mine, I
+would prefer that we experimentally evaluate the effect. E.g. via an
+I-pipe tracer dump on a faster and a slower box. I would offer to run
+some demo code here on our PC104 Phytec boards as well.
 
+The problem is to define what degree of error-related IRQ load is
+generally acceptable. We surely can't do this, so we have to document
+the effect /at least/ and help the users to check it on their own - or
+we have to avoid it / make it insignificant compared to normal CAN
+operation (I'm still in favour of this path).
 
-
-
---------------060000090709000609040601
-Content-Type: text/plain;
- name="README.rtdm-native"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="README.rtdm-native"
-
-0. Introduction
----------------
-
-This is a first version of RTDM-native, a port of RTDM [1,2] over native
-Linux with the real-time preemption and high-resolution timer patch [3,4].
-RTDM, the Real-Time Driver Model, is an approach to unify the interfaces
-for developing device drivers and associated applications under real-time
-Linux. It is currently available for the dual-kernel hard real-time Linux
-extensions Xenomai [5] and RTAI [6]. This port permits to use RTDM drivers
-like RTserial, RT-Socket-CAN and soon RTnet under Linux-rt as well.
-RTDM-native is on the road map [7] of Xenomai 3 aiming at support for
-native preemption.
-
-
-1. Installation
----------------
-
-
-1.1 Downloading RTDM-native
----------------------------
-
-RTDM-native can be downloaded from Xenomai's SVN repository [8] as shown
-below:
-
-$ svn co http://svn.gna.org/svn/xenomai/branches/rtdm-native rtdm-native
-$ export RTDM_NATIVE_ROOT=$PWD/rtdm-native
-
-
-1.2 Preparing the target kernel
--------------------------------
-
-RTDM-native uses Xenomai's procedure of preparing the kernel tree [9].
-The shell script "scripts/prepare-kernel.sh" sets up the target kernel
-properly. The syntax is as follows:
-
-$ cd $RTDM_NATIVE_ROOT
-$ scripts/prepare-kernel.sh --rtdm-native --linux=<linux-srctree>
-
-    --rtdm-native tells the script that the kernel should be prepared for
-    RTDM-native. This requires a vanialla kernel with the real-time preemption
-    and high-resolution timer patch (CONFIG_PREEMPT_RT=y and
-    CONFIG_HIGH_RES_TIMERS=y).
-
-    --linux specifies the path of the target kernel source tree. Such
-    kernel tree being configured or not makes no difference and is
-    valid either way.
-
-For instance, the following command would prepare the Linux tree
-located at /usr/src/linux-2.6.20-rt8 in order to include the RTDM-native
-support:
-
-$ cd RTDM_NATIVE_ROOT
-$ scripts/prepare-kernel.sh --rtdm-native --linux=/usr/src/linux-2.6.20-rt8
-
-Note: The script will infer the location of the RTDM-native kernel code
-from its own location within the Xenomai source tree. In other words,
-if /usr/src/rtdm-native/script/prepare-kernel.sh is executing, then
-RTDM-native's kernel support available from /usr/src/rtdm-native/ksrc will
-be bound to the target kernel.
+Jan
 
 
-1.3 Configuring and building the target kernel
-----------------------------------------------
+--------------enig9768C860DE465874996A259B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Once the target kernel has been prepared, all RTDM-native configuration
-options are available from the "Real-time subsystem" toplevel menu.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-There are several configure options that cause large latencies; they
-should be avoided. Check Xenomai's TROUBLESHOOTING file [10] and the
-Real-Time Linux Wiki [3] for futher information and help. Once configured,
-the kernel should be built as usual.
+iD8DBQFF/oqjniDOoMHTA+kRAt+LAJ9VlcN53HtE8+oE9gUm2MY3+q0lswCeI/5q
+ieKF1+lIipeiL1WZ4F7Fx8c=
+=2sdk
+-----END PGP SIGNATURE-----
 
-If you want several different configs/builds at hand, you can reuse
-the same source by adding O=../build-<target> to each make invocation.
-See also section 2.2 of [9] for an example.
-
-
-1.4 Building the user-space support
------------------------------------
-
-The user space example and utilitiy programs are currently available in
-"examples/rtdm-native". To build them, just go this directory and type make:
-
-$ cd RTDM_NATIVE_ROOT/examples/rtdm-native
-$ make
-
-
-2. Availability and test cases
-------------------------------
-
-This port has preliminary and experimental support for RTDM task services.
-The implementation is not straight-forward, especially because of tricky
-parts like periodic mode, task removal and releasing locked resources.
-Nevertheless, the basic functionality is available and it should already
-be enough to get RTnet working.
-
-The RTDM-native port has been tested with the following RTDM named and
-protocol drivers:
-
-- RTserial
-- RT-Socket-CAN
-- irqbench (without kernel tasks)
-
-Note: for RTnet [11] further effort is required, mainly its build system
-must be adopted accordingly.
-
-
-3. To-Do List
--------------
-
-- Finalizing and testing RTDM task support.
-- Implementing PROC file-system support.
-- Fixing a few issues marked with "FIXME" in the source code.
-- Get RTnet built and working with RTDM-native.
-
-
-4. References
--------------
-
-[1] http://www.xenomai.org/documentation/branches/v2.3.x/pdf/RTDM-and-Applications.pdf
-[2] http://www.xenomai.org/documentation/trunk/html/api/group__rtdm.html
-[3] http://rt.wiki.kernel.org/index.php/Main_Page
-[4] http://people.redhat.com/mingo/realtime-preempt/
-[5] http://www.xenomai.org
-[6] http://www.rtai.org
-[7] http://www.xenomai.org/index.php/Xenomai:Roadmap
-[8] https://gna.org/svn/?group=xenomai
-[9] http://www.rts.uni-hannover.de/xenomai/lxr/source/README.INSTALL?v=SVN-trunk
-[10] http://www.rts.uni-hannover.de/xenomai/lxr/source/TROUBLESHOOTING?v=SVN-trunk
-[11] http://www.rtnet.org
-
---------------060000090709000609040601--
+--------------enig9768C860DE465874996A259B--
 
