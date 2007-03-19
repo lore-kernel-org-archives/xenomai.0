@@ -1,62 +1,55 @@
-Content-class: urn:content-classes:message
+From: Sebastian Smolorz <Sebastian.Smolorz@domain.hid>
+Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
+	and real-time behaviour (IRQ raise forever and may lock system))
+Date: Mon, 19 Mar 2007 17:56:22 +0100
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
+	<E1HTD6v-0004qo-QI@mailer.emlix.com> <45FEBEC5.8010608@domain.hid>
+In-Reply-To: <45FEBEC5.8010608@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+  charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Date: Wed, 18 Apr 2007 07:21:18 +0200
-Message-ID: <899865CA54E4444DAF2E3639C04C5F4805EC78@domain.hid>
-In-Reply-To: <17957.2183.25570.823923@domain.hid>
-From: "Richard Cochran" <richard.cochran@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] Adeos support for IXP4xx
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+Message-Id: <200703191756.23249.Sebastian.Smolorz@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?utf-8?q?St=C3=A9phane_ANCELOT?= <sancelot@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-> -----Original Message----- From: Gilles Chanteperdrix
->=20
-> For reasons explained on the wiki, I would rather see
-> ixp4xx_timer_interrupt implemented as:
->=20
-> 	if (__ipipe_mach_timerstolen) {
-> 		/* If some other domain has taken over the timer, then
-> 		 * do nothing (ipipe has acked it, and the other
-> 		 * domain has reprogramed it)
-> 		 */
-> 		timer_tick();
-> 		last_jiffy_time +=3D LATCH;
+St=C3=A9phane ANCELOT wrote:
+> > IIRC, there is no possibility to detect a "normal" bus error
+> > (acknowledge) appearing during normal operation from the one occuring
+> > when the cable is plugged off. The best indication is a high number of
+> > consecutive BEIs.
+>
+> I do not agree :
+> case normal :
+> In normal bus error condition, if error repeats the chip will go to
+> busoff state (unfortunately I don't know how to simulate this...)
+>
+> case unplugged (easy to simulate):
+> when the cable is not plugged it will not go to busoff condition.
 
-Okay, I see. This comment, which I copied from other ARM code, is
-misleading. In general, Linux cannot be sure that the "other domain"
-will never lose interrupts. If there is only one other domain, and
-that domain is Xenomai, then we trust it.
+I know that. Unfortunately, you took my above answer out of context. I repl=
+ied=20
+to:
 
-Even if Xenomai never loses a timer interrupt, is there some harm in
-leaving the loop in?
+> What about something like option 3: After the first error occurred that
+> may mark the beginning of a flood, disable that error interrupt until
+> the next stop/start cycle or the user has read the event?
 
-IMHO, it makes the code more clear to leave the loop, since:
+I was referring to *one* bus error. If one bus error occurs how will the=20
+driver know it is the beginning of a flood due to an unplugged cable? It ca=
+n=20
+only tell after serveral consecutive ones.
 
-1. You see the connection to the unmodified Linux ISR.
-
-2. The reason for _not_ looping is "invisible" knowledge.
-
-> Why 8 ? It looks suspiciously like you just copied the PXA code.=20
-
-Yes, indeed, it is copied. I put the question back to you: why 8 in
-the PXA code?
-
-If I know what 8 means, then I can put the right value for the
-IXP4xx ;^)
-
-(Probably this 8 really should be expressed as a macro-ized time
-value)
-
-Richard
+=2D-=20
+Sebastian
 
