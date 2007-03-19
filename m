@@ -1,72 +1,95 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <45FE4FDE.7060604@domain.hid>
+Date: Mon, 19 Mar 2007 09:54:54 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Message-ID: <17934.14577.400116.242615@domain.hid>
-Date: Sat, 31 Mar 2007 12:33:21 +0200
-Subject: Re: [Adeos-main] Re: Porting to Intel IXP425
-In-Reply-To: <1175290163.5363.16.camel@domain.hid>
-References: <899865CA54E4444DAF2E3639C04C5F4805EC60@domain.hid>
-	<460D219D.5070302@domain.hid> <1175290163.5363.16.camel@domain.hid>
-Content-Transfer-Encoding: Quoted-Printable
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: "=?ISO-8859-1?Q?Schl=E4gl?= Manfred jun." <manfred.schlaegl@domain.hid>
-Cc: adeos-main@gna.org
+Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
+	and real-time behaviour (IRQ raise forever and may lock system))
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>
+	<45FD238F.2050009@domain.hid> <45FDA81F.2080004@domain.hid>
+	<E1HTD6v-0004qo-QI@mailer.emlix.com>
+In-Reply-To: <E1HTD6v-0004qo-QI@mailer.emlix.com>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Sebastian Smolorz <ssm@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-Schl=E4gl "Manfred jun." wrote:
- > Am Freitag, den 30.03.2007, 16:41 +0200 schrieb Gilles Chanteperdrix:
- > > Richard Cochran wrote:
- > > >>The timer is aperiodic (most of the time) when running Xenomai, so
- > > >>__ipipe_mach_set_dec is called for each timer tick and programs th=
-e
- > > >>timer hardware for the next tick.
- > > >=20
- > > >=20
- > > > Okay, so does that mean that I should implement a "one-shot" timer=
-, or
- > > > are we talking about resetting the periodic timer once in a while?
- > > >=20
- > > > (BTW, in one-shot mode, the IXP425 timer does not do what the Deve=
-lopers
- > > > Manual, part 252480-006, says that it does!)
- > >=20
- > > Yes, the one shot mode is Xenomai default mode. The implementation o=
-f a
- > > periodic timer over the one-shot timer is already done by the generi=
-c
- > > ARM part of the Adeos patch.
- >=20
- > It's better to use a periodic implementation in background, because th=
-en
- > you are able to messure the lost ticks between a timer-interrupt and
- > programming next timer-event.
- >=20
- > Example with 16bit timer:
- >  * Periode: 27000 Ticks=20
- >  * Timer counts down to zero (Interrupt) & wrap around to 2^16-1=20
- >  * Reprogramm Timer with new Periode (lost-ticks =3D 2^16 - timerval)
- >=20
- > These lost-ticks should be added to the global time-stamp (returned by
- > get_tsc) and should mentioned at the linux-gettimeoffset-function also=
-=2E
- >=20
- >=20
- > Lost-ticks could sum up to a bothering time-error.
+Sebastian Smolorz wrote:
+> Hi Jan,
+> 
+> Jan Kiszka wrote:
+>> Wolfgang Grandegger wrote:
+>>> you know, on the SJA1000 the bus error interrupt can result in high
+>>> error interrupt rates and even hang the system on slow processors. Just
+>>> unplugging the CAN cable can cause such interrupt flooding. This problem
+>>>
+>>> popped up again recently and Sebastian proposed:
+>>>> Last summer we had a discussion about the BEI issue on the
+>>>> socketcan-ML. Two additional handling policies popped up:
+>>>> 1. The interface could restart itself after an amount of BEIs, thus
+>>>>    taking responsibility from the user application.
+>>>> 2. The BEI could be completely disabled if no one is interested in
+>>>>    this ype of error frame.
+>>> As 2. is also my preferred solution, I have implemented it. The only
+>>> downside is that you do not see the error counter increasing when
+>>> /proc/rtcan/devices is inspected. We also discussed 1., but
+>>> RT-Socket-CAN does not restart the CAN controller by purpose and just
+>>> stoppping it requires user intervention.
+>> And if there is someone listening, how is the flooding issue on cable
+>> unplug etc. solved by option 2?
+> 
+> Hm, maybe we could implement 1 additionally (but without automatical restart)?
+> 
+>> What about something like option 3: After the first error occurred that
+>> may mark the beginning of a flood, disable that error interrupt until
+>> the next stop/start cycle or the user has read the event?
+> 
+> IIRC, there is no possibility to detect a "normal" bus error (acknowledge) 
+> appearing during normal operation from the one occuring when the cable is 
+> plugged off. The best indication is a high number of consecutive BEIs.
 
-This is needed for machines where the hardware timer is based on a
-decrementer. But for machines with a free-running counter and a match
-register, reading the value of the free-running counter is
-simpler. IXP425 is in the  "free-running counter and match register
-category". So, its implementation should look like the one of the PXA.
+I agree. But the controller internally counts the errors as well 
+reflected by the change of the state to warning or passive. If the 
+application is interested in more details, it could listen on error 
+messages.
 
---=20
+Let's summarize the situation with 2. (on request bus errors) available:
 
+- Bus error interrupts are suppressed unless an application really
+   request them.
 
-					    Gilles Chanteperdrix.
+- If an application listens on error messages, a high interrupt rate
+   could cause the socket buffer to overflow resulting in lost messages.
+   As far as I have seen, this is not yet a real problem but it gets
+   worse when debugging is configured and printk messages are generated:
+
+   /* Overflow of socket's ring buffer! */
+   sock->rx_buf_full++;
+   RTCAN_RTDM_DBG("%s: socket buffer overflow (fd=%d), message "
+                  "discarded\n",
+		 rtcan_proto_raw_dev.driver_name, context->fd);
+
+   This can indeed hang the system and I tend just to downscale the
+   frequency of the log output by, let's say a factor of 10 or 20 and
+   adding to the log:
+
+   "Not all overflows are listed. Please inspect /proc/rtcan/sockets!"
+
+Concerning 1. (stopping the device after n bus errors): I think this 
+conflicts somehow with 2. because the application explicitly wants to 
+receive them. If it realizes a high rate, it could react appropriately.
+
+For the moment I think 2. and downscaled printk's are already be a big 
+improvement and should make most users happy. Let's wait for some real 
+world application requiring solution 1.
+
+Wolfgang.
 
