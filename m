@@ -1,15 +1,16 @@
-Message-ID: <45FD13D5.7010704@domain.hid>
-Date: Sun, 18 Mar 2007 11:26:29 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <45FF84F2.5050209@domain.hid>
+Date: Tue, 20 Mar 2007 07:53:38 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Xenomai: xnintr_irq_handler: IRQ0 not handled.
-	Disabling IRQ line.
-References: <45F6C586.2050808@domain.hid>
-In-Reply-To: <45F6C586.2050808@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE0B88A782F7496CC0A9D2B1E"
-Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] RT-Socket-CAN bus error handling (was CAN errors
+	and real-time behaviour (IRQ raise forever and may lock system))
+References: <bc4264770703030609w188a675cj618872986ff1071c@domain.hid>	<45FDA81F.2080004@domain.hid>
+	<E1HTD6v-0004qo-QI@mailer.emlix.com>	<E1HTDZN-0006rl-2g@domain.hid>	<45FE7578.4000306@domain.hid>
+	<45FE8AA2.1030507@domain.hid> <45FEF649.9060205@domain.hid>
+	<45FEFE64.5010206@domain.hid> <45FF0DC8.6000007@domain.hid>
+In-Reply-To: <45FF0DC8.6000007@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,104 +20,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Edouard TISSERANT <edouard.tisserant@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE0B88A782F7496CC0A9D2B1E
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>>>> The problem is to define what degree of error-related IRQ load is
+>>>> generally acceptable. We surely can't do this, so we have to document
+>>>> the effect /at least/ and help the users to check it on their own - or
+>>>> we have to avoid it / make it insignificant compared to normal CAN
+>>>> operation (I'm still in favour of this path).
+>>> We speak about a pathological situation and therefore I do not share
+>>> your concerns. When there are electrical problems or even the cable is
+>>> not connected, we do have an abnormal mode of operation and CAN
+>>> related real-time is broken anyhow. The bus error messages are then
+>>> useful for analyzing the problem. The effect of the bus error
+> 
+> I do understand, and that's why I was looking for some solution that
+> rate-controls such IRQs deterministically, but doesn't switch them off
+> altogether.
 
-Edouard TISSERANT wrote:
-> Hi all.
->=20
-> I'm trying to implement support for the CAN PCMCIA Peak card with
-> Xenomai in official Peak driver.
->=20
-> First, I would like to know if someone already got success in writing
-> some Xenomai IRQ handler for some PCMCIA devices. Is that a nonsense ? =
-I
-> believe I'm missing something in the way PCMCIA socket controller
-> handles interrupts, linux side.
->=20
-> I can observe on my laptop that PCMCIA socket controller IRQ and card
-> IRQ do not conflict :
->=20
-> ----------------------
-> cat /proc/interrupts
->           CPU0
->  0:     163304   IO-APIC-edge      timer, rthal_broadcast_timer
->  1:        178   IO-APIC-edge      i8042
->  8:          2   IO-APIC-edge      rtc
->  9:         72   IO-APIC-fasteoi   acpi
-> 12:        124   IO-APIC-edge      i8042
-> 14:      13347   IO-APIC-edge      ide0
-> 17:      36411   IO-APIC-fasteoi   uhci_hcd:usb5, HDA Intel, eth0
-> 18:          1   IO-APIC-fasteoi   uhci_hcd:usb4, yenta
-> 19:          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
-> 20:          0   IO-APIC-fasteoi   uhci_hcd:usb3
-> [...]
->=20
-> ----------------------
-> cat /proc/pcan
->=20
-> *------------ PEAK-Systems CAN interfaces (www.peak-system.com)
-> -------------
-> *--------------------------  Release_20070306_n=20
-> ----------------------------
-> *------------------- [mod] [isa] [pci] [dng] [pcc] [rt]
-> ---------------------
-> *--------------------- 2 interfaces @ major 000 found
-> -----------------------
-> *n -type- ndev --base-- irq --btr- --read-- --write- --irqs-- -errors-
-> status
-> 40 pccard -NA- 00002100 003 0x001c 00000000 00000000 00000000 00000000
-> 0x0000
-> 41 pccard -NA- 00002120 003 0x001c 00000000 00000000 00000000 00000000
-> 0x0000
-> ----------------------
->=20
-> In other worlds, PCMCIA subsystem claims that device IRQ is #3.
->=20
-> When registering interrupt, I get this message :
->=20
-> Xenomai: xnintr_irq_handler: IRQ0 not handled. Disabling IRQ line.
+OK, then lets first check if we need bus error rate control at all for 
+the sake of real-time. I will do some test a.s.s.p. I still believe that 
+most of the reported problems are due to heavy printk debuging output.
 
-IRQ0 is weird. Are you sure you are registering the IRQ with RTDM while
-providing the right number? What does /proc/xenomai/irq tell you?
+>>> interrupts on non-CAN related latencies is another issue but I think
+>>> it's not that critical either (handling a bus error just requires the
+>>> reading of 2 SJA1000 registers). But I agree, a more detailed analysis
+>>> of "bus error flooding" would help to understand the impact on the
+>>> real-time behavior.
+>> And also be aware, that heavy CAN traffic can cause similar latencies as
+>> well and when there is more than one CAN controller, they can accumulate
+>> (as I have observed with my PCAN dongle tests). Here a IRQ service task
+> 
+> Well, this argumentation doesn't help if some concrete CAN bus was
+> specified to _not_ deliver such high traffic.
+> 
+>> or threaded IRQs would help. Maybe this is the right way to go.
+> 
+> Again: threaded IRQs are no magic bullet. First of all, they add
+> latencies, specifically on low-end. And they can only help if IRQ
+> priorities can actually be lowered appropriately (or if you apply
+> round-robin or a similar CPU bandwidth policy).
 
->=20
-> Handler looses more than 90% of #3 IRQ's.
->=20
-> Any experience about PCMCIA/Xenomai would be welcome.
+I know, but if the servicing of interrupts takes too long and other task 
+should not suffer from that, it's the only reasonable solution, AFAIS.
 
-There is an RT-WLAN driver for an Asus PCMCIA adapter in RTnet. It's
-experimental, but not due to PCMCIA, and I've personally seen it working.=
+Nevertheless, I think we all agree that the patch for 2., the on-demand 
+bus error interrupts, should be commited, right?
 
+Wolfgang.
 
-Jan
-
-
-PS: At this chance, any plans to contribute PCMCIA support for PEAK
-hardware to the standard CAN stack of Xenomai? There was already some
-interest in such an alternative to the parport dongle e.g. The missing
-piece (driver code) should be small and easily derivable from existing
-SJA1000 adapter drivers.
-
-
---------------enigE0B88A782F7496CC0A9D2B1E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFF/RPVniDOoMHTA+kRAhQwAJ9HH7mf3G5kB2HzG9xYF+EdAj06OgCfZZKi
-23cT+anFGhEvK3BYPwh62jo=
-=zIun
------END PGP SIGNATURE-----
-
---------------enigE0B88A782F7496CC0A9D2B1E--
+Wolfgang.
 
