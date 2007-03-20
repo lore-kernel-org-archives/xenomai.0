@@ -1,55 +1,60 @@
-Message-ID: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>
-Date: Mon, 26 Feb 2007 19:08:08 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] newby question, can/socket stuff
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Message-ID: <17920.13832.789072.876398@domain.hid>
+Date: Tue, 20 Mar 2007 20:29:12 +0100
+Subject: Re: [Xenomai-core] Xenomai support for ARM926EJ
+In-Reply-To: <fdba73240703201122w447cce8bl186ba32df55665c7@domain.hid>
+References: <fdba73240703151522l3aa73a81v84661caf17f489ae@domain.hid>
+	<17914.63535.18893.207257@domain.hid>
+	<fdba73240703201122w447cce8bl186ba32df55665c7@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Muruganandam Ganapathy <muruganandam.ganapathy@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Muruganandam Ganapathy wrote:
+ > The board is based on the Fujitsu SOC which has the ARM926EJ processor core.
+ > 
+ > This board has SPI, I2C and 10/100 ethernet interfaces and it can support
+ > 16/32MB SDRAM
+ > and 4/8MB flash memory.
 
-I am looking through the rtcan code provided with the xenomai package
-and I realize one thing:
+You still do not tell us the name of the board, but it is probably not
+supported.
 
-I know too little of the basic socket programming. Not even sure my
-wording in the previous sentence is capturing the correct area of
-ignorance.
+ > 
+ > 
+ > In addition, I would like to know the interrupt reponse  mesaured with
+ > Xenomai in ARM9
+ > processor based platforms, if any.
+ > The interrupt response expected is around 40 -50 microseconds in our case.
+ > The interrupt response I mean, it is the time between the generation of the
+ > interrupt and the actual ISR invocation.
+ > 
+ > 
+ > Whether use of Xenomai will enable us meet this timing reqirement.
 
-I suspect very strongly that the rtcan functionality is designed to
-piggyback on whatever standard iocontrol is taking place in functions
-like
+The latencies I have observed so far on ARM are usually larger than 150
+microseconds, but these are userspace dispatch latencies.
 
-ret = rt_dev_ioctl(can_fd, SIOCGIFINDEX, &ifr);
+So, you could improve situation if you stay in interrupt handlers.
 
-and
-ret = rt_dev_ioctl(can_fd, SIOCSCANBAUDRATE, &ifr);
+Another way to improve the situation a bit more is to use ucLinux, if
+your platform is supported.
 
-But exactly what is happening is beyond me at the moment.
+Still, IMHO, 40-50 microseconds is too ambitious.
 
-Now I can obviously try to copy like a chinaman (no disrespect
-intended!) and not understand what I am doing but it is not really a
-mode of operation I relish.
+-- 
 
-I have briefly tried to locate the rt_dev_ioctl back to a xenomai
-header but have not managed to trace it yet.
 
-Is it defined in the standard linux ioctl headers? Where can I find
-some info on what arguments these functions are passed etc?
-
-Much appreciated.
-
-Regards,
-
-Roland.
+					    Gilles Chanteperdrix.
 
