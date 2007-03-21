@@ -1,13 +1,12 @@
-Message-ID: <46010E01.7060407@domain.hid>
-Date: Wed, 21 Mar 2007 11:50:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <460167F8.50703@domain.hid>
+Date: Wed, 21 Mar 2007 18:14:32 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Xenomai support for ARM926EJ
-References: <fdba73240703151522l3aa73a81v84661caf17f489ae@domain.hid>	<17914.63535.18893.207257@domain.hid>	<fdba73240703201122w447cce8bl186ba32df55665c7@domain.hid>	<17920.13832.789072.876398@domain.hid>	<b647ffbd0703201721g1752e0falbe3fed8df405b3f8@domain.hid>	<17920.60301.400005.135175@domain.hid>	<4600F735.2030205@domain.hid>
-	<4601059E.6040903@domain.hid> <46010B20.4050807@domain.hid>
-In-Reply-To: <46010B20.4050807@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <46002EE0.9040406@domain.hid>
+In-Reply-To: <46002EE0.9040406@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Re: RT-Socket-CAN bus error rate and latencies
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,43 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: socketcan-core@domain.hid, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
+Wolfgang Grandegger wrote:
+> Hello,
 > 
->>Jan Kiszka wrote:
->>
->>>I think implementing coloured caches (with reservations for RT
->>>processes) could be an option as well. Once RT context switches no
->>>longer require full cache flushes, those for non-RT processes could be
->>>made interruptible. But all this would require heavy Linux hacking, I'm
->>>afraid.
->>
->>Using TCM removes any cache effect and does not require Linux hacking.
->>
+> on the Xenomai mailing list the topic "bus error flooding" popped up 
+> again. Various users reported trouble due to high bus error rates and 
+> bad impact on latencies. Some discussion is going on on how to avoid 
+> such flooding. I have already implemented "on-demand" bus error 
+> interrupts. Bus error interrupts are then only enabled when at least one 
+> socket is listening on bus errors. But flooding can still occur and we 
+> are thinking about a better way of downscaling or temporarily disabling 
+> them. Socket-CAN currently restarts the controller after 200 bus errors.
+> My preferred solution for RT-Socket-CAN currently is to stop the CAN 
+> controller after a kernel configurable amount of successive bus errors. 
+> More clever ideas and comments are welcome?
+
+What do you think about the following method?
+
+   config XENO_DRIVERS_CAN_SJA1000_BUS_ERR_LIMIT
+	depends on XENO_DRIVERS_CAN_SJA1000
+	int "Maximum number of successive bus errors"
+	range 0 255
+	default 20
+	help
+
+	CAN bus errors are very useful for analyzing electrical problems
+         but they can come at a very high rate resulting in interrupt
+         flooding with bad impact on system performance and real-time
+         behavior. This option, if greater than 0, will limit the amount
+         of successive bus error interrupts. If the limit is reached, an
+         error message with "can_id = CAN_ERR_BUSERR_FLOOD" is sent. The
+         bus error counter gets reset on restart of the device and on any
+         successful message transmission or reception. Be aware that bus
+         error interrupts are only enabled if at least one socket is
+         listening on bus errors.
+
+I think it should make Sebastian and Jan happy, at least ;-).
+
 > 
+> To have some input, I have measured the bus error rate with the PEAK 
+> PCAN PCI card on my Icecube MPC5200 eval-board doing rtcansend without 
+> cable connected. Here are the results for the various baud-rates:
 > 
-> How is TCM managed? Can you push parts of I-pipe/Xenomai or even some
-> applications into it? Or does this only help here if you have a few ops
-> of an interrupt handler to be saved from the (RT-wise) lousy caching
-> architecture of ARM?
-
-TCM are 2 16K contiguous memory areas: one where data can be put, the
-other where code can be put. They are mapped into the address space, and
-once it is done, some data or code must be copied into them. Moving one
-function to the TCM should be pretty straight-forward, allowing several
-arbitrary functions to be in the TCM would probably require some more
-work: a possible implementation would be to put the functions and data
-in some specific sections that would be copied in the TCM at load time.
-
+>     125 KB/s  1926 BEI/s
+>     250 KB/s  3925 BEI/s
+>     500 KB/s  7856 BEI/s
+>    1000 KB/s 15700 BEI/s
 > 
-> [I threw coloured caches into the ring also to trigger some discussion
-> on a long-term solution for MMU-based Xenomai on ARM.]
+> The latency measured with "latency" from the testsuite reported an 
+> increase of the latency with load from 67 to 95us almost independently 
+> of the baud-rate. Sending messages with 8 byte payload from MSCAN to 
+> SJA1000 on the same node as fast as possible increased the latency up to 
+> 103us. This measurement did not include delivery of messages to sockets 
+> (actually no socket was listening).
+> 
+> Wolfgang.
 
-Right, TCM do not exist on all ARM.
-
--- 
-                                                 Gilles Chanteperdrix
+Wolfgang.
 
