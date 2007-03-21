@@ -1,12 +1,12 @@
-Message-ID: <4601554E.5040302@domain.hid>
-Date: Wed, 21 Mar 2007 16:54:54 +0100
+Message-ID: <46015C03.2090006@domain.hid>
+Date: Wed, 21 Mar 2007 17:23:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
-	Various problems
-References: <032120071354.7273.46013902000B45CE00001C692212020784070E0301020A98@domain.hid>
-In-Reply-To: <032120071354.7273.46013902000B45CE00001C692212020784070E0301020A98@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Subject: Re: [Xenomai-help] Newbie question : rt_timer_inquire and
+	RT_TIMER_INFO precisions
+References: <5C40CD1E4697424ABDE3AC57CF1B22C603221027@domain.hid>
+In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C603221027@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,94 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@domain.hid
+To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
 Cc: xenomai@xenomai.org
 
-xenomai@domain.hid wrote:
-> Hello,
+RAKOTOSALAMA, Nirilanto wrote:
+> Hello !!!
+> I'm total newbie in programming with xenomai (it's the purpose of my internship :-s) ! 
+> I've to use xenomai to implement a timer library so, I would like some precisions about 
+> RT_TIMER_INFO type. After reading the API I've understood what the RTIME period field is 
+> but I ignore what are the RTIME date and tsc fields (meanings ?, time unit ?, time origin ?).
 > 
-> Just to give you a little background, I am a software engineer with alot of experience in VxWorks.  I am currently investigating moving a large, high speed, data aquisition system from a multi single board computer, VME based system over to a PC with a PCI-Express expansion bus and create a portable slimmed down version.  While the time constraints I have are in the 10s of microseconds, I do have a need for consistency.  I have some experience with eCos but would like the bennefits that linux will offer.
-> 
-> I have a need for the same software work in various configurations in both a server configuration and a portable configuration.  The systems that I have are as follows :
-> 
-> Dell Precision M65 Laptop with 2.16ghz dual core processor
->    4gb memory
->   Nvidia Quadro FX350 Graphics
->    SATA disk
->    Configuration 1 :
->         Docking station containing Pentek 7131 Digital Receiver
->    Configuration 2:
->         ExpressCard expansion chassis containing multiple Pentek 7131 Digial Receivers
->                                  and IOTech 2100 Data Digital/Analog I/O cards
->   
-> Dell Precision 690 with 2 Dual core 5160 3ghz Processors (Woodcrest)
->   8gb memory
->   Nvidia Quadro 4500 
->   Multiple 15k SAS disks with both Perc5E and/or LSI Logic 8580E SAS Controller
->   Multiple slot expansion chassis connected 8x to the server containing multiple cards
-> 
-> I have tried the RTAI approach with little success and have since
-> switched to Xenomai with limited success. I currently am using the
-> 2.6.17 kernel due to no success with patching the .19 kernel.
-> When patching the .19 kernel for some reason the Real Time menu in
-> the configuration contains only the APM/ACPI warning and no menu
-> options  there were however no errors when patching.
+> Also, what is the difference between using rt_alarm_inquire and rt_timer_tsc ? I'd like to calulate
+> elapsed time since the timer start for example.
 
-Could you send us the .config which leads to this situation ?
+Xenomai has two time sources: the sytem timer, which counts the number
+of nanoseconds since 1970, and a hardware dependent high resolution
+counter which counts the time since an unspecified point in time
+(usually the system boot time). This hardware dependent high resolution
+counter is called "tsc" on a PC, and gave its name to Xenomai native API
+calls.
 
-> For the 2.6.17 kernel installation was fairly smooth but with one
-> hiccup.  For some reason, the patch did not add CONFIG_X86_TCS
-> to the configuration.
+rt_timer_tsc returns the value of this hardware dependent
+high-resolution counter.
+rt_timer_info returns the same thing in the tsc member of the
+RT_TIMER_INFO structure, and the value of the system timer at exactly
+the same time as when the high-resolution counter was read.
 
-I assume you are talking about the CONFIG_X86_TSC option. The reason why
-CONFIG_X86_TSC is not set is usually that you are configuring the kernel
-for a processor without tsc, for instance 486 or pentium.
+This allows to have a correspondance between the two time sources.
 
-Here again, sending your .config would help us.
+rt_alarm_inquire is not related to this and returns some information
+about a given alarm.
 
-> I added it manually by editing /arch/i386/Kconfig and adding an entry
-> for X86_TCS.  This allowed me to successfully run the tests supplied
-> with the Xenomai distribution.
-
-No, you should not have to do this. The fact that you have to manually
-modify arch/i386/Kconfig should ring a bell: you are doing something wrong.
-
-
-
-> All the above has been done on the M65 Laptop which does have an
-> ICH7 chipset.  I have tried both SMI enabled and disabled (ACPI
-> SMI must remain enabled inorder for video to work) with no change
-> in performance.  APM and CPU Freq scaling are disabled as well as
-> ACPI Processor.  In this configuration the tests would run to
-> completion but with disturbing results.  About ever 8-10 seconds
-> the latency goes from somewhere between 1-50 micro seconds to over
-> 700 microseconds.  (I'm assuming the output is in microseconds).
-> It continues this in a very predictable manner.
-
-This really looks like the TCO interrupt. Could you check that the SMI
-workaround does not display a message "SMI workaround failed!" when
-starting Xenomai nucleus?
-
-> I have read the
-> mailing list and have tried what others have recommended with no
-> change at all.  (Shared memory is enabled).  Also, occasionally
-> when I run the tests while running an X server it hard hangs the
-> system.  I am not expecting the same type of problems to present
-> themselves on my Server but I have a very large interest in
-> getting a portable system working.
-
-This is abnormal. Do your keyboard leds blink ?
-
-> Are there any hard and fast configurations that I should try?
-> Is there a repository of .config files for differen
-> kernel/hardware configurations?
-> 
-> Thanks in advance for your help.  If all goes well, I hope to
-> return the favor to those who can bennefit from my experience.
-
-The configuration which should work for Xenomai configuration items is
-the default configuration. If it does not work, then you came to the
-right place.
+Now, if you allow me, a little advice for the implementation of a "timer
+library": you could be tempted to create only one periodic alarm object
+with Xenomai, and to manage a timer list yourself. Don't do this.
+Creating an alarm object for each timer library object make Xenomai
+aware of the existence of all your application timers, this has several
+advantages:
+- it gives you information about all your timers in /proc/xenomai
+- it allows Xenomai to use its anticipation algorithm for all your timers
+- if you are concerned about the scalability of Xenomai timers list
+management, you can check the options in the "Scalability" menu of
+Xenomai configuration menu ("Real-time subsystem" sub-menu of kernel
+configuration menu).
 
 -- 
                                                  Gilles Chanteperdrix
