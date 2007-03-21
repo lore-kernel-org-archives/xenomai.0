@@ -1,15 +1,8 @@
-Message-ID: <460019CA.1090308@domain.hid>
-Date: Tue, 20 Mar 2007 18:28:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Subject: Re: [Xenomai-core] Re: [Xenomai-help] Xenomai v2.3.1
-References: <1174379951.5068.5.camel@domain.hid> <46000AFE.9070504@domain.hid>
-	<4600125A.6000304@domain.hid>
-In-Reply-To: <4600125A.6000304@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig00570DA6DE9ED7B4AF74B43B"
-Sender: jan.kiszka@domain.hid
+From: xenomai@domain.hid
+Date: Wed, 21 Mar 2007 13:54:10 +0000
+Message-Id: <032120071354.7273.46013902000B45CE00001C692212020784070E0301020A98@domain.hid>
+Subject: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
+	Various problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,79 +12,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig00570DA6DE9ED7B4AF74B43B
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Gilles Chanteperdrix wrote:
-> Bill Gatliff wrote:
->> Guys:
->>
->> Philippe Gerum wrote:
->>
->>> 	[posix]
->>> 	* Fix pthread_cond_wait() upon signal receipt (grab mutex anew).
->>> =20
->>
->> Probably OT, but someone was complaining to me the other day that=20
->> pthreads running on SCHED_FIFO/SCHED_RR that are blocked on mutexes=20
->> don't release in priority order.  This was on a stock 2.6.18 kernel,=20
->> "recent glibc" (I didn't catch which version or config), ARM9 platform=
-=2E
->>
->> First question: Is this actually true?
->>
->> Second question: Does Xenomai fix this?  Do more recent kernel=20
->> developments fix this?
->>
->> Point me at the appropriate RTFM or code if that's the appropriate=20
->> answer.  :)
->=20
-> The appropriate RTFM is the POSIX spec [1]
->=20
-> In short, it says: "If there are threads blocked on the mutex object
-> referenced by 'mutex' when pthread_mutex_unlock() is called, resulting
-> in the mutex becoming available, the scheduling policy shall determine
-> which thread shall acquire the mutex."
->=20
-> So, the correct implementation is to release a mutex in priority order.=
+Just to give you a little background, I am a software engineer with alot of experience in VxWorks.  I am currently investigating moving a large, high speed, data aquisition system from a multi single board computer, VME based system over to a PC with a PCI-Express expansion bus and create a portable slimmed down version.  While the time constraints I have are in the 10s of microseconds, I do have a need for consistency.  I have some experience with eCos but would like the bennefits that linux will offer.
 
->=20
-> I think the glibc implements this correctly (at least NPTL), on the
-> other hand, I believe it is not true for threads running with the
-> SCHED_OTHER policy, in order to prevent starvation.
+I have a need for the same software work in various configurations in both a server configuration and a portable configuration.  The systems that I have are as follows :
 
-The problem with stock kernel is the FUTEX_WAIT operation: That one is
-used by glibc to block on non-PI mutexes. It dequeues in FIFO order,
-regardless of the waiter's priority. FUTEX_LOCK_PI (used e.g. for
-PTHREAD_PRIO_INHERIT mutexes since glibc 2.5) is fine again.
+Dell Precision M65 Laptop with 2.16ghz dual core processor
+   4gb memory
+  Nvidia Quadro FX350 Graphics
+   SATA disk
+   Configuration 1 :
+        Docking station containing Pentek 7131 Digital Receiver
+   Configuration 2:
+        ExpressCard expansion chassis containing multiple Pentek 7131 Digial Receivers
+                                 and IOTech 2100 Data Digital/Analog I/O cards
+  
+Dell Precision 690 with 2 Dual core 5160 3ghz Processors (Woodcrest)
+  8gb memory
+  Nvidia Quadro 4500 
+  Multiple 15k SAS disks with both Perc5E and/or LSI Logic 8580E SAS Controller
+  Multiple slot expansion chassis connected 8x to the server containing multiple cards
 
-The -rt patch contains a fix for FUTEX_WAIT, and I think I saw some
-mainline patch once circulating as well. But it received a bit
-scepticism due to possible performance regression for futex users that
-don't care about priorities. And so nothing happened yet (I just checked
-latest git)...
+I have tried the RTAI approach with little success and have since switched to Xenomai with limited success.
+I currently am using the 2.6.17 kernel due to no success with patching the .19 kernel.  When patching the .19 kernel for some reason the Real Time menu in the configuration contains only the APM/ACPI warning and no menu options  there were however no errors when patching.
 
-Jan
+For the 2.6.17 kernel installation was fairly smooth but with one hiccup.  For some reason, the patch did not add CONFIG_X86_TCS to the configuration.  I added it manually by editing /arch/i386/Kconfig and adding an entry for X86_TCS.  This allowed me to successfully run the tests supplied with the Xenomai distribution.
 
+All the above has been done on the M65 Laptop which does have an ICH7 chipset.  I have tried both SMI enabled and disabled (ACPI SMI must remain enabled inorder for video to work) with no change in performance.  APM and CPU Freq scaling are disabled as well as ACPI Processor.  In this configuration the tests would run to completion but with disturbing results.  About ever 8-10 seconds the latency goes from somewhere between 1-50 micro seconds to over 700 microseconds.  (I'm assuming the output is in microseconds).  It continues this in a very predictable manner.  I have read the mailing list and have tried what others have recommended with no change at all.  (Shared memory is enabled).  Also, occasionally when I run the tests while running an X server it hard hangs the system.  I am not expecting the same type of problems to present themselves on my Server but I have a very large interest in getting a portable system working.
 
---------------enig00570DA6DE9ED7B4AF74B43B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Are there any hard and fast configurations that I should try?  Is there a repository of .config files for differen kernel/hardware configurations?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Thanks in advance for your help.  If all goes well, I hope to return the favor to those who can bennefit from my experience.
 
-iD8DBQFGABnKniDOoMHTA+kRAthnAJ9vqT30Dk6WPN2V9cf/NkL5iJgQSACcD4kd
-jSuN/9AYyiHgmjCgQ6oK00k=
-=O3bO
------END PGP SIGNATURE-----
+Michael Freedman
 
---------------enig00570DA6DE9ED7B4AF74B43B--
 
