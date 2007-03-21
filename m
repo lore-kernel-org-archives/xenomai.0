@@ -1,70 +1,26 @@
-Message-ID: <45E33BA0.6080903@domain.hid>
-Date: Mon, 26 Feb 2007 20:57:20 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <460191E0.7020606@domain.hid>
+Date: Wed, 21 Mar 2007 21:13:20 +0100
+From: Robin Walser <robinwalser45@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] newby question, can/socket stuff
-References: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>
-In-Reply-To: <bc4264770702261108l6b3f60b2w53e9e90e40d79b92@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Socket Buffer overflow
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-roland Tollenaar wrote:
-> Hi,
-> 
-> I am looking through the rtcan code provided with the xenomai package
-> and I realize one thing:
-> 
-> I know too little of the basic socket programming. Not even sure my
-> wording in the previous sentence is capturing the correct area of
-> ignorance.
+Hello,
 
-There are plenty text books on BSD socket programming and the rational 
-behind it.
+I must write on my socket(rt_dev_sendmsg()) verry fast. Often I have 
+then a memory overflow. Is it possible?
+How can I examine whether sufficient memory is available?
 
-> I suspect very strongly that the rtcan functionality is designed to
-> piggyback on whatever standard iocontrol is taking place in functions
-> like
-> 
-> ret = rt_dev_ioctl(can_fd, SIOCGIFINDEX, &ifr);
-> 
-> and
-> ret = rt_dev_ioctl(can_fd, SIOCSCANBAUDRATE, &ifr);
-> 
-> But exactly what is happening is beyond me at the moment.
-
-SIOCGIFINDEX gets the interface index for a named device and 
-SIOCSCANBAUDRATE allows to set the baudrate. The RT-Socket-CAN utilities 
-are now even hyperlinked with the API doc (still not 100% perfect yet) e.g.:
-
-http://www.xenomai.org/documentation/trunk/html/api/rtcanconfig_8c-example.html
-
-> Now I can obviously try to copy like a chinaman (no disrespect
-> intended!) and not understand what I am doing but it is not really a
-> mode of operation I relish.
-> 
-> I have briefly tried to locate the rt_dev_ioctl back to a xenomai
-> header but have not managed to trace it yet.
-
-> Is it defined in the standard linux ioctl headers? Where can I find
-> some info on what arguments these functions are passed etc?
-
-Hm, try:
-
-$ cd <xenomai-root>
-$ find . -name '*.[ch]' | xargs grep SIOCSCANBAUDRATE
-
-> Much appreciated.
-
-Wolfgang.
+Thanks.
 
