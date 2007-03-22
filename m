@@ -1,12 +1,12 @@
-Message-ID: <46015C03.2090006@domain.hid>
-Date: Wed, 21 Mar 2007 17:23:31 +0100
+Message-ID: <4602A486.70707@domain.hid>
+Date: Thu, 22 Mar 2007 16:45:10 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Newbie question : rt_timer_inquire and
-	RT_TIMER_INFO precisions
-References: <5C40CD1E4697424ABDE3AC57CF1B22C603221027@domain.hid>
-In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C603221027@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
+	Various problems
+References: <032220071508.5353.46029BD200057373000014E92216557996070E0301020A98@domain.hid>
+In-Reply-To: <032220071508.5353.46029BD200057373000014E92216557996070E0301020A98@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,49 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
-Cc: xenomai@xenomai.org
+To: xenomai@domain.hid, xenomai@xenomai.org
 
-RAKOTOSALAMA, Nirilanto wrote:
-> Hello !!!
-> I'm total newbie in programming with xenomai (it's the purpose of my internship :-s) ! 
-> I've to use xenomai to implement a timer library so, I would like some precisions about 
-> RT_TIMER_INFO type. After reading the API I've understood what the RTIME period field is 
-> but I ignore what are the RTIME date and tsc fields (meanings ?, time unit ?, time origin ?).
+xenomai@domain.hid wrote:
+>  -------------- Original message ----------------------
+> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 > 
-> Also, what is the difference between using rt_alarm_inquire and rt_timer_tsc ? I'd like to calulate
-> elapsed time since the timer start for example.
+>>xenomai@domain.hid wrote:
+>>
+>>>#
+>>># SMI workaround
+>>>#
+>>># CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
+>>>CONFIG_XENO_HW_SMI_DETECT=y
+>>>CONFIG_XENO_HW_SMI_WORKAROUND=y
+>>># CONFIG_XENO_HW_SMI_ALL is not set
+>>># CONFIG_XENO_HW_SMI_INTEL_USB2 is not set
+>>># CONFIG_XENO_HW_SMI_LEGACY_USB2 is not set
+>>># CONFIG_XENO_HW_SMI_PERIODIC is not set
+>>># CONFIG_XENO_HW_SMI_TCO is not set
+>>># CONFIG_XENO_HW_SMI_MC is not set
+>>>CONFIG_XENO_HW_SMI_APMC=y
+>>># CONFIG_XENO_HW_SMI_LEGACY_USB is not set
+>>>CONFIG_XENO_HW_SMI_BIOS=y
+>>
+>>Chances are that the latencies you get are due to the SMI you leave
+>>enabled (APMC or BIOS). Could you try first with only
+>>CONFIG_XENO_HW_SMI_ALL ?
+>>
+> WOW!!!  I did try that with the 2.6.17 kernel but it wouldnt boot,
+> I had to enable APM.  It is working like  charm now.  Max latency
+> is 4-5 us while running X.  If I drag a window around it goes up
+> to 7us or so.  Deffinately a step in the righ direction!  Thanks.
 
-Xenomai has two time sources: the sytem timer, which counts the number
-of nanoseconds since 1970, and a hardware dependent high resolution
-counter which counts the time since an unspecified point in time
-(usually the system boot time). This hardware dependent high resolution
-counter is called "tsc" on a PC, and gave its name to Xenomai native API
-calls.
-
-rt_timer_tsc returns the value of this hardware dependent
-high-resolution counter.
-rt_timer_info returns the same thing in the tsc member of the
-RT_TIMER_INFO structure, and the value of the system timer at exactly
-the same time as when the high-resolution counter was read.
-
-This allows to have a correspondance between the two time sources.
-
-rt_alarm_inquire is not related to this and returns some information
-about a given alarm.
-
-Now, if you allow me, a little advice for the implementation of a "timer
-library": you could be tempted to create only one periodic alarm object
-with Xenomai, and to manage a timer list yourself. Don't do this.
-Creating an alarm object for each timer library object make Xenomai
-aware of the existence of all your application timers, this has several
-advantages:
-- it gives you information about all your timers in /proc/xenomai
-- it allows Xenomai to use its anticipation algorithm for all your timers
-- if you are concerned about the scalability of Xenomai timers list
-management, you can check the options in the "Scalability" menu of
-Xenomai configuration menu ("Real-time subsystem" sub-menu of kernel
-configuration menu).
+Good news.
 
 -- 
                                                  Gilles Chanteperdrix
