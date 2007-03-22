@@ -1,12 +1,13 @@
-Message-ID: <46023A6D.5010002@domain.hid>
-Date: Thu, 22 Mar 2007 09:12:29 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <46029E6F.1080303@domain.hid>
+Date: Thu, 22 Mar 2007 16:19:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <460237BD.1020205@domain.hid>
-In-Reply-To: <460237BD.1020205@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <032220071428.1288.4602928900017779000005082216557996070E0301020A98@domain.hid>
+In-Reply-To: <032220071428.1288.4602928900017779000005082216557996070E0301020A98@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Re: RT-Socket-CAN bus error rate and latencies
+Subject: [Xenomai-core] Re: [Xenomai-help] New install of Xenomai 2.3 for
+ 2.6.17 kernel.... Various problems
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,46 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Hartkopp, Oliver (K-GEFE/E)" <oliver.hartkopp@domain.hid>
-Cc: socketcan-core@domain.hid, Oliver Hartkopp <socketcan@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@domain.hid
+Cc: xenomai@xenomai.org
 
-Hartkopp, Oliver (K-GEFE/E) wrote:
-> Even if i know, that my reply with our f*cking exchange mailserver will 
-> break the thread ...
-> 
-> Jan Kiszka wrote:
->> I think Oliver's suggestions points in the right direction. But instead
->> of only coding a timer into the stack, I still vote for closing the loop
->> over the application:
->>
->> After the first error in a potential series, the related error frame is
->> queued, listeners are woken up, and BEI is disabled for now. Once some
->> listener read the error frame *and* decided to call into the stack for
->> further bus errors, BEI is enabled again.
->>
->>   
-> IMO this is really a good idea! Even if it look just a bit different on 
-> (non-RT) socketcan, the procedure could look like this:
-> 
-> 1. BEI occurs => disable BEI & lauch receiption of one error frame for 
-> the user
-> 2. Wait for user interaction
-> 
-> I would suggest to create an IOCTL, where you can define, if you only 
-> want to receive one BE-frame (== default!) or every BE-frame (may flood 
-> your system). After an occurance of a BEI the BE-frames are disabled (in 
-> the default case) until the user decides to reenable it via the 
-> suggested IOCTL.
-> 
-> Does this look acceptable to you?
+xenomai@domain.hid wrote:
+> Thanks for the quick response.
 
-No extra IOCTL please. I would place re-enabling of BEI in sendmsg.
+You are welcome, but please do not drop the mailing list from the CC.
 
-> Btw. Currently the enabling of error frames (in socketcan) currently 
-> does not depend on subscribed listeners (what is definitely a good idea!).
+> I ended up completely rebuilding
+> the system so as to better understand what is on the system.
+> (This is my laptop).  I installed OpenSUSE 10.2, downloaded
+> the latest stable kernel (2.6.20.3), and downloaded Xenomai 2.31.
+> Installation was a little smoother this time.  I did have to select
+> Core 2 for processor type in order to see the options under Real Time
+> in the kernel config as 686 wouldnt show them.
 
-Why?
+So, if I use your config and select CONFIG_M686, I should not see the
+real-time menu in kernel config ? Well, I select CONFIG_M686
+(Pentium-Pro) and am still able to select everything in the Real-time
+submenu.
+If I select CONFIG_M586 I see a message:
+"Note: Xenomai conflicts with PC speaker support.
+(menu Device Drivers/Input device support/Miscellaneous devices)"
 
-Wolfgang.
+So, I go in the Device Drivers/Input device support/Miscellaneous
+devices menu, unselect "PC speaker support", and am still able to see
+the Real-time subsystem menu again.
 
+> TSC and IPIPE were
+> selected automatically.  I built the kernel both with HPET
+
+HPET is suspected not to work with Xenomai. But if you do not have a
+real HPET, this option should be harmless. Check the boot logs to know
+if the HPET is used.
+
+> and SMI work around both enabled and disabled with no change in
+> performance.  Xenomai was built with x86-sep, x86-tsc, and smp.
+> I did have to edit a couple files in the linux distro after the
+> patch to add an include reference to ipipe.h as others have had
+> to do.
+
+Could you tell us precisely what reference is missing in what file ?
+
+
+>  All built and installed fine.  When running I still see the wierd
+> latencies and for some reason I can not do anything with the network
+> card.  It is detected, and did get a DHCP address and can be pinged
+> from a remote system.  No getting in or out though.
+
+I can not tell what network card you have, since you enabled all of them
+in your kernel configuration. Another usual suspect in such a case is
+CONFIG_PCI_MSI. Try disabling it and please tell us the outcome.
+
+-- 
+                                                 Gilles Chanteperdrix
 
