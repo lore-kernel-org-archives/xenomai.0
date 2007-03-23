@@ -1,15 +1,11 @@
-Message-ID: <4603E145.3000909@domain.hid>
-Date: Fri, 23 Mar 2007 15:16:37 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: xenomai@domain.hid
 Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
 	Various problems
-References: <032320071404.24123.4603DE73000D814600005E3B2216557996070E0301020A98@domain.hid>
-In-Reply-To: <032320071404.24123.4603DE73000D814600005E3B2216557996070E0301020A98@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig8A6D9CBCC80DF34E89A5D4F0"
-Sender: jan.kiszka@domain.hid
+Date: Fri, 23 Mar 2007 14:30:53 +0000
+Message-Id: <032320071430.15600.4603E49C000EB7BC00003CF02216557996070E0301020A98@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="NextPart_Webmail_9m3u9jl4l_15600_1174660253_0"
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,11 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8A6D9CBCC80DF34E89A5D4F0
+
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_0
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+I disabled CONFIG_ACPI_AC and I got the same hang with ACPI_BATTERY.  I am using 2.31.  Any other suggestions?  I will remove all that hang but I feer that that is not the right way to go.
+
+Mike
+
+
+ -------------- Original message ----------------------
+From: Jan Kiszka <jan.kiszka@domain.hid>
+
+
+
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_0
+Content-Type: message/rfc822
+
+From: Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@domain.hid
+Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>,
+	xenomai@xenomai.org
+Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
+	Various problems
+Date: Fri, 23 Mar 2007 14:17:06 +0000
+Content-Type: Multipart/mixed;
+	boundary="NextPart_Webmail_9m3u9jl4l_15600_1174660253_1"
+
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_1
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
@@ -59,7 +82,7 @@ config.
 Jan
 
 
---------------enig8A6D9CBCC80DF34E89A5D4F0
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -73,5 +96,7 @@ T39vLdWN3DT8xKCWrEh1Yxg=
 =8mYO
 -----END PGP SIGNATURE-----
 
---------------enig8A6D9CBCC80DF34E89A5D4F0--
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_1--
+
+--NextPart_Webmail_9m3u9jl4l_15600_1174660253_0--
 
