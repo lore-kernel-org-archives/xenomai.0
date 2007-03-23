@@ -1,13 +1,14 @@
-Message-ID: <45FD15BD.8000702@domain.hid>
-Date: Sun, 18 Mar 2007 11:34:37 +0100
+Message-ID: <4603E145.3000909@domain.hid>
+Date: Fri, 23 Mar 2007 15:16:37 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] RTDM and user space hardware drivers
-References: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
-In-Reply-To: <17648569.1173693688643.JavaMail.ngmail@domain.hid>
+Subject: Re: [Xenomai-help] New install of Xenomai 2.3 for 2.6.17 kernel....
+	Various problems
+References: <032320071404.24123.4603DE73000D814600005E3B2216557996070E0301020A98@domain.hid>
+In-Reply-To: <032320071404.24123.4603DE73000D814600005E3B2216557996070E0301020A98@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig837A434CB8CBBBE332E1319B"
+	boundary="------------enig8A6D9CBCC80DF34E89A5D4F0"
 Sender: jan.kiszka@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,62 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: xenomai@domain.hid
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig837A434CB8CBBBE332E1319B
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig8A6D9CBCC80DF34E89A5D4F0
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-M. Koehrer wrote:
-> Hi everybody,
+xenomai@domain.hid wrote:
+> Hello,
 >=20
-> the RTDM API is really very good as API for drivers.=20
-> I have a real time (Xenomai) application in user space that has to acce=
-ss PCI boards.
-> The "classical" approach is now to use a kernel driver and to use RTDM =
-as interface
-> between the user space application an the kernel space driver.
-> However, for performance issues, I prefer to write a pure user mode dri=
-ver.
-> As the memory of the PCI board can be accesses from user space (using /=
-dev/mem)=20
-> I want to write a pure user space driver  as this seems to me more effi=
-cient (and easier to debug) than
-> a kernel driver.
-> Also, only one application is accessing the driver at a time, I can lin=
-k the driver directly to my application.
+> I have been working on trying to find the optimal linux kernel
+> configuration and have noticed a couple problems.  No matter what I
+> do it seems that while cpu #2 is detected, nothing gets scheduled on
+
+Sounds like some bug that was fixed in 2.3.1. Are you already using that
+version? If not: highly recommended.
+
+> it.  Also, there is always a modprobe process running at 100%cpu that
+> I can't kill.  The command that is showed in top is "modprobe -s ac".
+
+Probably due to SMI being disable. Don't know what that module precisely
+does when it loops, but it may wait on SMI-backed activity of the
+hardware that is now disabled. Try to switch off CONFIG_ACPI_AC in your
+config.
+
+> If I run it from the command line it hangs as well.  Latencies are
+> however very acceptable when running xeno-test.  I do however see
+> some negative values in the test output.
 >=20
-> My questions are now:
-> 1. Is it possible to use the RTDM API also for pure user space drivers?=
-
-
-There is no RTDM driver API exported to user space yet, it's still just
-a plan for the future.
-
+> The config file that I am using currently is the same as the one
+> below just with CONFIG_XENO_HW_SMI_ALL.  This seems to give me the
+> best latencies.
 >=20
-> 2. Is there any experience concerning the performance of a user space d=
-river versus a kernel space
-> driver?
-> In my use case, I have to write and read about 60 byte (each direction)=
- of (block) data to/from the PCI I/O system.
-
-User space drivers can improve performance if you transfer a lot of data
-and save potential user/kernel copy-steps this way (though, zero-copy
-can also be realised with kernel drivers) or if you do a lot of driver
-calls and the call-overhead becomes noticeable. This works fairly well
-for exclusive devices (only one user process at a time). But once you
-have to share/multiplex a devices, performance quickly becomes worse.
-
-When going for a user space driver design, make sure you keep a clean
-separation between driver and application. [It will be one major goal of
-an RTDM for user space to support driver writers in this regard.]
+> Mike
+>=20
 
 Jan
 
 
---------------enig837A434CB8CBBBE332E1319B
+--------------enig8A6D9CBCC80DF34E89A5D4F0
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -82,10 +68,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFF/RW9niDOoMHTA+kRAqyhAJ0dsmYqlkWZgoaM7q8/nk7TMQjwdwCfZzkU
-DD1HETTujpbjihlxML7URqA=
-=fvVg
+iD8DBQFGA+FFniDOoMHTA+kRAhkzAJ9k3zWSG7rP61NEZ+Y3TkSLv3gd1QCeMQha
+T39vLdWN3DT8xKCWrEh1Yxg=
+=8mYO
 -----END PGP SIGNATURE-----
 
---------------enig837A434CB8CBBBE332E1319B--
+--------------enig8A6D9CBCC80DF34E89A5D4F0--
 
