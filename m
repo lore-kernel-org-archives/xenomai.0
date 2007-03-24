@@ -1,14 +1,17 @@
-Message-ID: <b647ffbd0703240320ta4f54ccg344108ddd1f47958@domain.hid>
-Date: Sat, 24 Mar 2007 11:20:49 +0100
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
 Subject: Re: [Xenomai-help] [RT_PIPE] - User space read() not waking up
-In-Reply-To: <460481F2.5010408@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_243552_3767744.1174731649379"
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <b647ffbd0703240320ta4f54ccg344108ddd1f47958@domain.hid>
 References: <20070322215707.232970@domain.hid>
 	<b647ffbd0703230142n46a215ddv5ab0e2c984d0d93c@domain.hid>
 	<460481F2.5010408@domain.hid>
+	<b647ffbd0703240320ta4f54ccg344108ddd1f47958@domain.hid>
+Content-Type: text/plain
+Date: Sat, 24 Mar 2007 12:55:25 +0100
+Message-Id: <1174737325.20953.24.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,122 +21,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Viktor STARK <stark.viktor@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Viktor STARK <stark.viktor@domain.hid>, Xenomai help <xenomai@xenomai.org>
 
-------=_Part_243552_3767744.1174731649379
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Sat, 2007-03-24 at 11:20 +0100, Dmitry Adamushko wrote:
 
-Hello Viktor,
+> 
+>         3) Pipes seemed to be a good way to transfer data from kernel
+>         space.
+>         What other (maybe more deterministic) way would you suggest?
+>         I'm not 
+>         asking for a complete program architecture here just a half
+>         dozen words 
+>         describing how you would have done it.
+> 
+> rt_queue_*
+>  
 
+I would add that if you really want to keep the pipe semantics for
+exchanging data without crossing domains between real-time tasks, then
+you may access the real-time API of message pipes from user-space too.
+i.e.
+rt_pipe_create/bind/delete/read/write/stream() are all available from a
+user-space application, in which case data exchange will happen in
+primary mode.
 
-I do understand the domain separation, but if I got things right, pipes
-> can only be read using read() in user space. That's also what the API
-> documentation suggests.
+To sum up, given that you want to create a pipe in kernel space, to
+exchange data with a user-space program, the options with Xenomai's
+message pipes are:
 
+1) Implementing a real-time communication path between two Xenomai
+tasks, crossing the kernel/user-space boundary without leaving the
+deterministic primary domain: you have to create the kernel-side
+endpoint in your module, then bind the user-space endpoint to the latter
+using the proper interface, as shown below in the REALTIME_TO_REALTIME
+illustration.
 
-Pipes are designed to connect actors from /different/ domains, normally a
-flow of data is from primary --> secondary (linux). The actor in the
-secondary domain must not be hard real-time latency dependent, for the
-obvious reasons I described before.
+2) Implementing a communication path between a real-time Xenomai task in
+kernel space, and a regular user-space program: you still have to create
+the kernel-side endpoint in your module, then use the standard
+open/read/write routines to access to the pipe channel. This is what you
+are doing right now.
 
-Take a look at the queue interface (rt_queue_* for the native skin).
+kernel-side:
 
+void foo_task(void)
+{
+	for (;;) {
+		rt_pipe_read/write(&pipe_desc, ...);
+	}
+}
 
-1) Why does it happen every 10000 cycles (2 seconds)? The fact that this
-> erratic behaviour is so deterministic makes me think that it might not
-> be standard Linux related. I mean the fact that it happens every 2
-> seconds (and I mean 2e6 us, not just approximately 2 seconds) just makes
-> it look like it's provoked by something which is RT.
+int init_module(void)
+{
+	rt_pipe_create(&pipe_desc, "channel", ...);
+}
 
+user-space side:
 
-Maybe yes, maybe no. Some periodic linux activity (ISR, long
-interrupt/preemption disabled section, hight priority task) may be a reason
-as well.
-
-2) Even if my read() is scheduled, how comes I only get past the read()
-> after the second rt_pipe_write()? One would think that if my read() is
-> scheduled I could be waking up after 250 us or 300 us, no? But I'm
-> *always* woken up after 2 cycles (that is 400 us).
->
-
-Maybe something has to do with your part (driver + rt task) in the primary
-domain..
-
-Could you make a small sample program which still shows this "problem" and
-post it here?
-
-Additional option is to use the I-pipe tracer as Jan suggested.
-
-
-3) Pipes seemed to be a good way to transfer data from kernel space.
-> What other (maybe more deterministic) way would you suggest? I'm not
-> asking for a complete program architecture here just a half dozen words
-> describing how you would have done it.
-
-
-rt_queue_*
-
-Well, you may post your design briefly as well and ask for comments.
-
-
-Thanks in advance.
->
-> Best regards,
->
-> Viktor STARK
->
-
+int main(int argc, char *argv[])
+{
+#ifdef REALTIME_TO_REALTIME
+	/* promote main() to the Xenomai real-time space */
+	rt_task_shadow(&task_desc, __FUNCTION__, ...);
+	/* bind to the pipe created in kernel space */
+	rt_pipe_bind(&pipe_desc, "channel", TM_INFINITE);
+	for (;;) {
+		rt_pipe_read/write(&pipe_desc, "channel", ...);
+	}
+#else /* REALTIME_TO_REGULAR */
+	fd = open("/proc/xenomai/registry/native/pipes/channel",O_RDWR);
+	for (;;) {
+		read/write(fd, ...);
+	}
+#endif
+}
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
 
-------=_Part_243552_3767744.1174731649379
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-<br>
-Hello Viktor,<br>
-<br>
-<br>
-<div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">I do understand the domain separation, but if I got things right, pipes
-<br>can only be read using read() in user space. That&#39;s also what the API<br>documentation suggests.</blockquote><div><br>
-Pipes are designed to connect actors from /different/ domains, normally
-a flow of data is from primary --&gt; secondary (linux). The actor in
-the secondary domain must not be hard real-time latency dependent, for
-the obvious reasons I described before.<br>
-<br>
-Take a look at the queue interface (rt_queue_* for the native skin).<br>
-&nbsp;</div><br>
-<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">1) Why does it happen every 10000 cycles (2 seconds)? The fact that this
-<br>erratic behaviour is so deterministic makes me think that it might not<br>be standard Linux related. I mean the fact that it happens every 2<br>seconds (and I mean 2e6 us, not just approximately 2 seconds) just makes
-<br>
-it look like it&#39;s provoked by something which is RT.</blockquote><div><br>
-Maybe yes, maybe no. Some periodic linux activity (ISR, long
-interrupt/preemption disabled section, hight priority task) may be a
-reason as well.</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">2) Even if my read() is scheduled, how comes I only get past the read()
-<br>after the second rt_pipe_write()? One would think that if my read() is<br>scheduled I could be waking up after 250 us or 300 us, no? But I&#39;m
-<br>*always* woken up after 2 cycles (that is 400 us).<br>
-</blockquote><div><br>
-Maybe something has to do with your part (driver + rt task) in the primary domain..<br>
-<br>
-Could you make a small sample program which still shows this &quot;problem&quot; and post it here?<br>
-<br>
-Additional option is to use the I-pipe tracer as Jan suggested.<br>
-<br>
-<br>
-</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">3) Pipes seemed to be a good way to transfer data from kernel space.<br>What other (maybe more deterministic) way would you suggest? I&#39;m not
-<br>asking for a complete program architecture here just a half dozen words
-<br>describing how you would have done it.</blockquote><div><br>
-rt_queue_*<br>
-&nbsp;<br>
-Well, you may post your design briefly as well and ask for comments.<br>
-<br>
-</div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Thanks in advance.<br><br>Best regards,<br><br>Viktor STARK<br></blockquote></div>
-<br>-- <br>Best regards,<br>Dmitry Adamushko
-
-------=_Part_243552_3767744.1174731649379--
 
