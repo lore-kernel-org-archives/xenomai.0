@@ -1,44 +1,78 @@
-Message-ID: <bc4264770703051332u682ddd0av8fbd49520b3cf1b9@domain.hid>
-Date: Mon, 5 Mar 2007 21:32:23 +0000
-From: "roland Tollenaar" <rolandtollenaar@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [Xenomai-core] Spinlock question.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4607EDF2.2020600@domain.hid>
+References: <4607E038.8070505@domain.hid> <4607EA58.1070004@domain.hid>
+	<4607EDF2.2020600@domain.hid>
+Content-Type: text/plain
+Date: Mon, 26 Mar 2007 18:34:39 +0200
+Message-Id: <1174926879.7486.6.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] need help. RT gone for a ball of chalk due to CAN
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Hi,
+On Mon, 2007-03-26 at 17:59 +0200, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+> > Gilles Chanteperdrix wrote:
+> > 
+> >>Hi,
+> >>
+> >>I am porting a network driver from Linux to RTnet, and I have a sudden
+> >>doubt about what I am doing: is it safe to call a function like
+> >>wake_up_interruptible, from a non real-time context, with CONFIG_PREEMPT
+> >>enabled, while holding an rthal spinlock ? Do not I risk a rescheduling
+> >>with the spinlock locked ?
+> > 
+> > 
+> > Mmh, doesn't stalling the primary domain (what rthal_spin_lock_irqsave
+> > surely does) also make the root domain think it is running in interrupt
+> > context, thus will prevent any Linux reschedule?
+> 
+> Is not it sufficient to add a call to preempt_disable/preempt_enable
+> around the spinlock functions ?
+> 
 
-This is the same issue as we were on about earlier. Only now i have
-brought the baud rate down and there is no logging of errors. dmesg
-stays clean.
+Yes, you could do that, and actually, you should do that, since rthal_*
+macros manipulate raw spinlocks, not preempt-aware ones. This said, as
+Jan pointed out, it would be pretty dangerous to hold such spinlock
+right before going to sleep Linux-wise, due to priority inversion
+issues.
 
-The application is still working in the sense that it reads the Can
-messages it recieves etc. Only the problem of the rocking period times
-as soon as I move the sensor and messages are read is as bad as ever.
+The bottom-line is to never ever hold the nklock and anything that could
+stall the high pipeline stage before being switched out by the Linux
+scheduler.
 
-This can only mean that either I am calling some non-real-time
-function (which i am certainly not, no printf or that kind of thing)
-or rtcan is not as real-time as it is supposed to be. There are no
-error masks set so I don't know whether there are any errors.
+> 
+> > However, there is one big fat issue with this approach:
+> > wake_up_interruptible takes some Linux spin lock. So you must never call
+> > it from primary context on UP to avoid corruption. And an SMP, you
+> > create a nice source for priority inversion: CPU2 holds wait_queue lock,
+> > gets preempted by Xenomai and runs some longer low-prio RT job.
+> > Meanwhile CPU1 tries to acquire wait_queue as well with IRQs disabled,
+> > blocking any RT task on that CPU.
+> > 
+> > Better defer the Linux wake-up via a rtdm_nrtsig. Alternatively, make
+> > the Linux waiter also a Xenomai task and use a rtdm_event e.g. (mmh,
+> > maybe we should discuss the auto-shadow-any-Linux-task-on-demand feature
+> > for Xenomai once again...).
+> 
+> I have other cases where the function that does the wakeup do it from
+> real-time context, so I will probably have to use the nrtsig approach
+> anyway, thanks.
+> 
+-- 
+Philippe.
 
-The only thing worth noting is that since I brought the baudrate down,
-the state is "passive" and I cannot get it into "active" with start.
 
-Might this be the cause? Why would it be passive and not active like
-it used to be?
-
-Regards,
-
-Roland
 
