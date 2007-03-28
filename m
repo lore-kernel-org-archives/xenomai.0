@@ -1,92 +1,69 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Subject: Re: [Xenomai-help] CAN problem continued
-Date: Tue, 6 Mar 2007 16:05:03 +0100
-References: <bc4264770703060003t2f7a9555o27a0f26df5a43205@domain.hid>
-	<E1HOaJT-0001zs-SA@mailer.emlix.com>
-	<bc4264770703060637k51d0ad99qa96b14656c2001c0@domain.hid>
-In-Reply-To: <bc4264770703060637k51d0ad99qa96b14656c2001c0@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <E1HObDh-00060e-TM@mailer.emlix.com>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 28 Mar 2007 15:45:51 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB023@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: [Xenomai-core] [PATCH] check for shm_open/shm_unlink
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
 Hi,
 
-now the picture becomes clearer. :)
+I have bumped on a compilation failure of Xenomai 2.3.1 with uClibc.
+The shm_open/shm_unlink may not be available, at all.
+So here's a basic patch against 2.3.1, FWIW.
 
-roland Tollenaar wrote:
-> Hi
->
-> > > > If this is the can_id field what do the data fields say?
-> > >
-> > > 00 00 80 19 00 00 00 00
-> > >
-> > > But once again, the node is sending.
-> >
-> > It really, really seems that you are sending a message via your CAN
-> > interface.
->
-> you mean from my application?  Certainly not.
+diff -u -r1.1.1.5 configure.in
+--- configure.in	26 Dec 2006 18:39:27 -0000	1.1.1.5
++++ configure.in	28 Mar 2007 13:33:30 -0000
+@@ -567,6 +567,11 @@
+ 	AC_DEFINE(CONFIG_XENO_POSIX_AUTO_MLOCKALL,1,[config])
+ fi
+=20
++save_LIBS=3D"$LIBS"
++LIBS=3D"$LIBS -lrt"
++AC_CHECK_FUNCS([shm_open shm_unlink])
++LIBS=3D"$save_LIBS"
++
+ dnl
+ dnl Build the Makefiles
+ dnl
+--- src/skins/posix/shm.c	26 Dec 2006 18:39:00 -0000	1.1.1.1
++++ src/skins/posix/shm.c	28 Mar 2007 13:33:30 -0000
+@@ -39,8 +39,10 @@
+ 	if (!err)
+ 		return fd;
+=20
++#ifdef HAVE_SHM_OPEN
+ 	if (err =3D=3D ENOSYS)
+ 		return __real_shm_open(name, oflag, mode);
++#endif
+=20
+ 	close(fd);
+ 	errno =3D err;
+@@ -55,8 +57,10 @@
+ 	if (!err)
+ 		return 0;
+=20
++#ifdef HAVE_SHM_UNLINK
+ 	if (err =3D=3D ENOSYS)
+ 		return __real_shm_unlink(name);
++#endif
+ =09
+ 	errno =3D err;
+ 	return -1;
 
-Yes, you do, and luckily you admit it later. ;)
-
-> If this were the case I 
-> presume it would appear on rtcanrecv (when I run that it shows also
-> whatever my application is sending and if I run it at the same time as
-> my application then it only displays what is coming in from the node).
->
-> > The 0x80 states that you got an error during transmission(!),
->
-> Do these errors stay resident? I have to send in the beginning to get
-> the node into a mode where it will transmit PDO's it does not do so
-> otherwise.
-
-Ok, that was an important missing piece of information.
-
-> > What are the contents of /proc/rtcan?
->
-> rtcan0 rtcan1 and rtcan2 The first 2 are from the virtual can device.
-
-Only to be absolutely sure: Please don't load the virtual device for now.
-
-> > > May I me having problems with the BEI because of this error?
-> >
-> > You should not get this error when you don't send anything.
->
-> Well that mystery is solved. Sorry for the confusion. I do have errors
-> when I send messages (but the messages are arriving at the node
-> because it responds PERFECTLY) no amount of playing with the
-> termination improves matters during startup I always get the buserror
-> when I am sending. Maybe it taks a whle for the bus to come up and in
-> that little period there is an error. i do know that one write cycle
-> is always run twice before the node responds. But this is very
-> consistent behaviour.
-
-OK, this could be an explanation for the error frames. Good news that they 
-appear only during setting up the node.
-
->
->
-> But the real-time behaviour continues to e disruppted when the node is
-> rotated.
-
-Could you do the following: Fire up rtcanrecv and send out the setup message 
-to the node with rtcansend. Don't start your application during the whole 
-time and watch what happens.
-
--- 
-Sebastian
+--=20
+Stephane
 
