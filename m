@@ -1,13 +1,15 @@
-Message-ID: <460B7CE0.60107@domain.hid>
-Date: Thu, 29 Mar 2007 10:46:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <460B7FDF.8030100@domain.hid>
+Date: Thu, 29 Mar 2007 10:59:11 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Preemptive scheduling
-References: <20070328203115.190280@domain.hid>
-	<17930.56329.893396.220621@domain.hid>
-	<20070329031758.125210@domain.hid>
-In-Reply-To: <20070329031758.125210@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] Re: Latencies due to RT-Socket-CAN register
+	accesses
+References: <45F68258.5040603@domain.hid> <45F6A44A.2030000@domain.hid>	
+	<45F6A73C.8030301@domain.hid> <45F6AA11.40707@domain.hid>
+	<bc4264770703281005v17fc4802v53728cda11cb6b17@domain.hid>
+	<460AB8FF.5060904@domain.hid> <460B21C0.7090200@domain.hid>
+In-Reply-To: <460B21C0.7090200@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,37 +20,168 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jack Whorn <jackwhorn@domain.hid>
-Cc: xenomai@xenomai.org
+To: rolandtollenaar@domain.hid
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Jack Whorn wrote:
-> Hi Gilles,
+Roland Tollenaar wrote:
+> Hi Wolfgang,
 > 
+> I think that this kind of latency should be fine for controller 
+> intervals of 1ms.
 > 
->>Once your program enters this infinte loop, it never gets out, so :
->>- your assumption that "t_task_set_mode periodically clears T_LOCK and
->>  T_SHIELD and sets T_RRB" is false;
-> 
-> 
-> Yeah, I just realized that it does this only once. According to http://snail.fsffrance.org/www.xenomai.org/documentation/branches/v2.0.x/html/api/group__task.html#ga44But I think that the arguments used in the rt_task_set_mode() -call are correct. Isn't that sufficient for the Linux OS to catch e.g. keyboard interrupts?
-> 
-> 
->>- even if higher priority task runs, Linux, which is Xenomai idle task
->>  never runs, so the system locks up.
-> 
-> 
-> Gotcha, that sounds sensible to me.
-> 
-> Actually, the higher-priority task uses some linux-system calls to store data to hard disk. This does no longer take place as soon as the infinite loop is entered. I expected priority coupling to solve that. Where is my error in reasoning?
+> Another question:
+> The PC has a 3Ghz processor and an 800Mhz FSB. That should not class as 
+> "slow" in the conventional sense. What hardware is responsible for the 
+> latency i.e. makes the PC "slow" from the RT perspective? In other words 
+> what must one look at when purchasing a machine that should give minimal 
+> latency?
 
-Maybe storing data to the disk requires a kernel thread to flush them.
-If this thread never has a chance to run, then your data are written in
-the cache but never flushed to the disk. I may be wrong, but I am almost
-sure that if you let Linux run, everything will go as expected.
+I ment "slow" in the sense of little CPU power, but that's obviously not 
+the case. How have you measured these figures? With the "latency" 
+program from the test suite? What is the min latency _without_ load? And 
+also check Xenomai's TROUBLESHOOTING file. Already changing the kernel 
+configuration to avoid latency "killers" might help.
 
-If I am wrong, please, send us a self-contained example program which
-demonstrates the behaviour you observed.
+Wolfgang.
 
--- 
-                                                 Gilles Chanteperdrix
+> Regards,
+> 
+> Roland.
+> 
+> 
+> Wolfgang Grandegger wrote:
+>> roland Tollenaar wrote:
+>>> Hi Wolfgang,
+>>>
+>>> Just to answer an open question still
+>>>
+>>>> > BTW, what are the latencies you measure on your system under load
+>>>> > (without RT-Socket-CAN).
+>>>
+>>> lat min 20.952
+>>> lat ave 31.009
+>>> lat max 60.504
+>>> lat best 19.276
+>>>
+>>> this was with the loading as you described in this thread and running
+>>> for 12 hours.
+>>>
+>>> Anything special about the above figures? Not very good I presume but
+>>> I am not running with tsc enabled.
+>>
+>> The latencies depend a lot on the hardware. The minimal latency of 20 
+>> us indicates, that you have a rather slow system. Then a maximum of 60 
+>> us is reasonable. Note that worst case latencies of better than 20us 
+>> are difficult to achieve, even with high end PCs.
+>>
+>> Wolfgang.
+>>
+>>> Kind regards,
+>>>
+>>> Roland
+>>>
+>>>
+>>>
+>>>>
+>>>> Roland
+>>>>
+>>>>
+>>>> >
+>>>> > Wolfgang.
+>>>> >
+>>>> >> Thanks,
+>>>> >>
+>>>> >> Roland
+>>>> >>
+>>>> >>
+>>>> >>
+>>>> >> Wolfgang Grandegger wrote:
+>>>> >>> Hallo,
+>>>> >>>
+>>>> >>> in the meantime I have measured the latencies introduced through
+>>>> >>> messages sent and received by RT-Socket-CAN. The SJA1000 register
+>>>> >>> access times on my rather old PC with an Athlon 1100 Mhz are:
+>>>> >>>
+>>>> >>> PEAK-Dongle: read  access: 11807 ns
+>>>> >>> PEAK-Dongle: write access: 11677 ns
+>>>> >>>
+>>>> >>> IXXAT-PCI  : read  access:   729 ns
+>>>> >>> IXXAT-PCI  : write access:   305 ns
+>>>> >>>
+>>>> >>> I measured an increase of the latency of approx. 170us with the
+>>>> >>> PEAK-Dongle and approx 13us with the IXXAT-PCI card for the 
+>>>> reception
+>>>> >>> of a full CAN message (with 8 bytes payload). Sending messages is a
+>>>> >>> bit less disturbing. I have attached a small patch to measure the
+>>>> >>> SJA1000 register access times when the driver is initialized. 
+>>>> You are
+>>>> >>> welcome to apply it on your setup and report the results. I'm
+>>>> >>> especially interested in numbers for the ISA bus (or PC-104).
+>>>> >>>
+>>>> >>> Wolfgang.
+>>>> >>>
+>>>> >>>
+>>>> >>>
+>>>> >>> 
+>>>> ------------------------------------------------------------------------ 
+>>>>
+>>>> >>>
+>>>> >>> + diff -u xenomai/ksrc/drivers/can/rtcan_dev.c.IOTEST
+>>>> >>> xenomai/ksrc/drivers/can/rtcan_dev.c
+>>>> >>> + diff -u xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c.IOTEST
+>>>> >>> xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c
+>>>> >>> --- xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c.IOTEST
+>>>> >>> 2007-02-26 09:17:27.000000000 +0100
+>>>> >>> +++ xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c    2007-03-13
+>>>> >>> 10:01:47.000000000 +0100
+>>>> >>> @@ -728,6 +728,30 @@
+>>>> >>>      if (chip == NULL)
+>>>> >>>      return -EINVAL;
+>>>> >>>
+>>>> >>> +#if 1
+>>>> >>> +    {
+>>>> >>> +    nanosecs_abs_t begin, diff;
+>>>> >>> +    volatile u8 reg;
+>>>> >>> +    int i, count = 100000;
+>>>> >>> +    begin = rtdm_clock_read();
+>>>> >>> +    for (i = 0; i < count; i++) {
+>>>> >>> +        reg = chip->read_reg(dev, 0);
+>>>> >>> +    }
+>>>> >>> +    diff = rtdm_clock_read() - begin;
+>>>> >>> +    printk("%s: register read time for %d accessed: %ld (%ld per
+>>>> >>> access)\n",
+>>>> >>> +           dev->board_name, count,
+>>>> >>> +           (unsigned long)diff, (unsigned long)diff / count);
+>>>> >>> +    begin = rtdm_clock_read();
+>>>> >>> +    for (i = 0; i < count; i++) {
+>>>> >>> +        chip->write_reg(dev, 0, reg);
+>>>> >>> +    }
+>>>> >>> +    diff = rtdm_clock_read() - begin;
+>>>> >>> +    printk("%s: register write time for %d accessed: %ld (%ld per
+>>>> >>> access)\n",
+>>>> >>> +           dev->board_name, count,
+>>>> >>> +           (unsigned long)diff, (unsigned long)diff / count);
+>>>> >>> +    }
+>>>> >>> +#endif
+>>>> >>> +
+>>>> >>>      /* Set dummy state for following call */
+>>>> >>>      dev->state = CAN_STATE_ACTIVE;
+>>>> >>>      /* Enter reset mode */
+>>>> >>
+>>>> >>
+>>>> >
+>>>> >
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai-help mailing list
+>>>> Xenomai-help@domain.hid
+>>>> https://mail.gna.org/listinfo/xenomai-help
+>>>>
+>>>
+>>>
+>>
+>>
+> 
+> 
+
 
