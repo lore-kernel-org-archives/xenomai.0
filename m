@@ -1,17 +1,13 @@
-Message-ID: <460C0C7D.7000001@domain.hid>
-Date: Thu, 29 Mar 2007 20:59:09 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Re: Latencies due to RT-Socket-CAN register
-	accesses
-References: <45F68258.5040603@domain.hid> <45F6A44A.2030000@domain.hid>	
-	<45F6A73C.8030301@domain.hid> <45F6AA11.40707@domain.hid>
-	<bc4264770703281005v17fc4802v53728cda11cb6b17@domain.hid>
-	<460AB8FF.5060904@domain.hid> <460B21C0.7090200@domain.hid>
-	<460B7FDF.8030100@domain.hid> <460BECFD.2030003@domain.hid>
-In-Reply-To: <460BECFD.2030003@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <17932.11512.447406.720008@domain.hid>
+Date: Thu, 29 Mar 2007 23:17:44 +0200
+Subject: Re: [Xenomai-help] Newbie problem : xenomai 2.3.1 and kernel 2.6.20.4
+	installation problem
+In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C603221032@domain.hid>
+References: <5C40CD1E4697424ABDE3AC57CF1B22C603221032@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,200 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid
+To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
+Cc: xenomai@xenomai.org
 
-Roland Tollenaar wrote:
-> Hi Wolfgang,
-> 
-> Typically without load the average latecny is 30 us and 20 us min 
-> latency. Yes I am using the latency program of the test suit.
-> 
-> Where do I check to find the latency "killer" settings? The 
-> powermanagement and all that s switched of. As is the PC speaker. What 
-> else can I look at?
+RAKOTOSALAMA, Nirilanto wrote:
+ > Hello everybody !
+ > 
+ > I installed xenomai 2.3.0 on a FC6 linux distribution with vanilla kernel 2.6.19.7 following the
+ > http://www.captain.at/xenomai-2.1-installation.php installation guide. 
+ > It worked well until I install a new xenomai version (2.3.1) and linux kernel (2.6.20.4)
+ > with the same kernel configuration than the first install.
+ > The compilation and installation passed but when I run the xeno-test program, sometimes, it blocks
+ > at the begining and I have to reboot the PC. Also, the cyclic testsuite program always blocks when I stop it pressing ctl-c.  
+ > I have no problem with the latency test or others simple programs I made using rt_arlarm objects (I only use native skin).
+ > 
+ > When I launch the ancient kernel (which worked before) I have the same behaviour when I launch cyclic test and xeno-test.
 
-Here is what I get on a much slower PC (Athlon 1.1 GHz):
-[root@domain.hid bin]# ./latency -p500
-    RTT|  00:00:01  (periodic user-mode task, 500 us period, priority 99)
-    RTH|-----lat min|-----lat avg|-----lat max|-overrun|
-    ---|------------|------------|------------|--------|
-    RTS|       1.309|       1.988|      10.723|       0|
+This means that the problem lies in user-space. Could you launch
+xeno-test with bash -x to see what command of xeno-test blocks ? And
+attach gdb to the bloccked cyclictest to see where it is blocked ?
 
-Could you show us your .config file as Stephane ask for and the output 
-of /proc/cpuinfo. Unfortunately, I have little experience with PC 
-hardware and it's bad impact on the latency.
+ > 
+ > Note : When I installed 2.3.1 xenomai version over the ancien 2.3.0 version I only removed the 
+ > old /usr/xenomai directory and launch the 2.3.1 xenomai installation. (Is there a better manner to unsinstall an older xenomai version?)
 
-Wolfgang.
+No, this method should work.
+
+ > (...)
+ > [niry@domain.hid ~]$ xeno-info
+ > If some fields are empty or look unusual you may have an old version.
+ > Compare to the current minimal requirements in Documentation/Changes.
+ > 
+ > Linux localhost.localdomain 2.6.20.4-xenomai.2.3.1_29-03-2007 #1 Thu Mar 29 16:27:42 CEST 2007 i686 i686 i386 GNU/Linux
+ > 
+ > Gnu C                  4.1.1
+
+To rule out any compiler bug, could you try recompiling with a less
+recent version ? Say gcc 3.3.x ?
 
 
-> Wolfgang Grandegger wrote:
->> Roland Tollenaar wrote:
->>> Hi Wolfgang,
->>>
->>> I think that this kind of latency should be fine for controller 
->>> intervals of 1ms.
->>>
->>> Another question:
->>> The PC has a 3Ghz processor and an 800Mhz FSB. That should not class 
->>> as "slow" in the conventional sense. What hardware is responsible for 
->>> the latency i.e. makes the PC "slow" from the RT perspective? In 
->>> other words what must one look at when purchasing a machine that 
->>> should give minimal latency?
->>
->> I ment "slow" in the sense of little CPU power, but that's obviously 
->> not the case. How have you measured these figures? With the "latency" 
->> program from the test suite? What is the min latency _without_ load? 
->> And also check Xenomai's TROUBLESHOOTING file. Already changing the 
->> kernel configuration to avoid latency "killers" might help.
->>
->> Wolfgang.
->>
->>> Regards,
->>>
->>> Roland.
->>>
->>>
->>> Wolfgang Grandegger wrote:
->>>> roland Tollenaar wrote:
->>>>> Hi Wolfgang,
->>>>>
->>>>> Just to answer an open question still
->>>>>
->>>>>> > BTW, what are the latencies you measure on your system under load
->>>>>> > (without RT-Socket-CAN).
->>>>>
->>>>> lat min 20.952
->>>>> lat ave 31.009
->>>>> lat max 60.504
->>>>> lat best 19.276
->>>>>
->>>>> this was with the loading as you described in this thread and running
->>>>> for 12 hours.
->>>>>
->>>>> Anything special about the above figures? Not very good I presume but
->>>>> I am not running with tsc enabled.
->>>>
->>>> The latencies depend a lot on the hardware. The minimal latency of 
->>>> 20 us indicates, that you have a rather slow system. Then a maximum 
->>>> of 60 us is reasonable. Note that worst case latencies of better 
->>>> than 20us are difficult to achieve, even with high end PCs.
->>>>
->>>> Wolfgang.
->>>>
->>>>> Kind regards,
->>>>>
->>>>> Roland
->>>>>
->>>>>
->>>>>
->>>>>>
->>>>>> Roland
->>>>>>
->>>>>>
->>>>>> >
->>>>>> > Wolfgang.
->>>>>> >
->>>>>> >> Thanks,
->>>>>> >>
->>>>>> >> Roland
->>>>>> >>
->>>>>> >>
->>>>>> >>
->>>>>> >> Wolfgang Grandegger wrote:
->>>>>> >>> Hallo,
->>>>>> >>>
->>>>>> >>> in the meantime I have measured the latencies introduced through
->>>>>> >>> messages sent and received by RT-Socket-CAN. The SJA1000 register
->>>>>> >>> access times on my rather old PC with an Athlon 1100 Mhz are:
->>>>>> >>>
->>>>>> >>> PEAK-Dongle: read  access: 11807 ns
->>>>>> >>> PEAK-Dongle: write access: 11677 ns
->>>>>> >>>
->>>>>> >>> IXXAT-PCI  : read  access:   729 ns
->>>>>> >>> IXXAT-PCI  : write access:   305 ns
->>>>>> >>>
->>>>>> >>> I measured an increase of the latency of approx. 170us with the
->>>>>> >>> PEAK-Dongle and approx 13us with the IXXAT-PCI card for the 
->>>>>> reception
->>>>>> >>> of a full CAN message (with 8 bytes payload). Sending messages 
->>>>>> is a
->>>>>> >>> bit less disturbing. I have attached a small patch to measure the
->>>>>> >>> SJA1000 register access times when the driver is initialized. 
->>>>>> You are
->>>>>> >>> welcome to apply it on your setup and report the results. I'm
->>>>>> >>> especially interested in numbers for the ISA bus (or PC-104).
->>>>>> >>>
->>>>>> >>> Wolfgang.
->>>>>> >>>
->>>>>> >>>
->>>>>> >>>
->>>>>> >>> 
->>>>>> ------------------------------------------------------------------------ 
->>>>>>
->>>>>> >>>
->>>>>> >>> + diff -u xenomai/ksrc/drivers/can/rtcan_dev.c.IOTEST
->>>>>> >>> xenomai/ksrc/drivers/can/rtcan_dev.c
->>>>>> >>> + diff -u xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c.IOTEST
->>>>>> >>> xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c
->>>>>> >>> --- xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c.IOTEST
->>>>>> >>> 2007-02-26 09:17:27.000000000 +0100
->>>>>> >>> +++ xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c    
->>>>>> 2007-03-13
->>>>>> >>> 10:01:47.000000000 +0100
->>>>>> >>> @@ -728,6 +728,30 @@
->>>>>> >>>      if (chip == NULL)
->>>>>> >>>      return -EINVAL;
->>>>>> >>>
->>>>>> >>> +#if 1
->>>>>> >>> +    {
->>>>>> >>> +    nanosecs_abs_t begin, diff;
->>>>>> >>> +    volatile u8 reg;
->>>>>> >>> +    int i, count = 100000;
->>>>>> >>> +    begin = rtdm_clock_read();
->>>>>> >>> +    for (i = 0; i < count; i++) {
->>>>>> >>> +        reg = chip->read_reg(dev, 0);
->>>>>> >>> +    }
->>>>>> >>> +    diff = rtdm_clock_read() - begin;
->>>>>> >>> +    printk("%s: register read time for %d accessed: %ld (%ld per
->>>>>> >>> access)\n",
->>>>>> >>> +           dev->board_name, count,
->>>>>> >>> +           (unsigned long)diff, (unsigned long)diff / count);
->>>>>> >>> +    begin = rtdm_clock_read();
->>>>>> >>> +    for (i = 0; i < count; i++) {
->>>>>> >>> +        chip->write_reg(dev, 0, reg);
->>>>>> >>> +    }
->>>>>> >>> +    diff = rtdm_clock_read() - begin;
->>>>>> >>> +    printk("%s: register write time for %d accessed: %ld (%ld 
->>>>>> per
->>>>>> >>> access)\n",
->>>>>> >>> +           dev->board_name, count,
->>>>>> >>> +           (unsigned long)diff, (unsigned long)diff / count);
->>>>>> >>> +    }
->>>>>> >>> +#endif
->>>>>> >>> +
->>>>>> >>>      /* Set dummy state for following call */
->>>>>> >>>      dev->state = CAN_STATE_ACTIVE;
->>>>>> >>>      /* Enter reset mode */
->>>>>> >>
->>>>>> >>
->>>>>> >
->>>>>> >
->>>>>>
->>>>>> _______________________________________________
->>>>>> Xenomai-help mailing list
->>>>>> Xenomai-help@domain.hid
->>>>>> https://mail.gna.org/listinfo/xenomai-help
->>>>>>
->>>>>
->>>>>
->>>>
->>>>
->>>
->>>
->>
->>
-> 
-> 
 
+-- 
+
+
+					    Gilles Chanteperdrix.
 
