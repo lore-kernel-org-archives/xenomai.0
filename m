@@ -1,14 +1,13 @@
-Subject: Re: [Xenomai-help] v2.2.6 prepare-kernel.sh broken for 2.4 kernels
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200704031134.33726.peter.soetens@domain.hid>
-References: <200704031134.33726.peter.soetens@domain.hid>
-Content-Type: text/plain
-Date: Tue, 03 Apr 2007 16:18:52 +0200
-Message-Id: <1175609933.22950.36.camel@domain.hid>
+Date: Tue, 3 Apr 2007 16:27:52 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
+Message-ID: <20070403162752.2d4a1ae6@domain.hid>
+In-Reply-To: <46124C61.3070107@domain.hid>
+References: <20070403143122.4ac4ffaf@domain.hid>
+	<46124C61.3070107@domain.hid>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,20 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Soetens <peter.soetens@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, 2007-04-03 at 11:34 +0200, Peter Soetens wrote:
-> Hi,
-> 
-> It seems some files are missing in this (not announced ?) release, which make 
-> the prepare-kernel.sh script fail in the following fcn:
-> 
+On Tue, 03 Apr 2007 14:45:21 +0200
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 
-Fix in progress. Thanks,
+> Maybe you could compile Xenomai support as modules,   
+already done
+>and disable CONFIG_XENO_HW_SMI_APMC ?   
+does not boot in this case
+>If this does not work, I am afraid you
+>are in  the "out of luck" case of Xenomai TROUBLESHOOTING file.  
+me too...
+ Thanks,
+    Daniel
 
 -- 
-Philippe.
+      Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://necs.inrialpes.fr/people/simon/
 
 
 
