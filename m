@@ -1,7 +1,7 @@
-Date: Tue, 3 Apr 2007 17:28:15 +0200
+Date: Tue, 3 Apr 2007 17:55:35 +0200
 From: Daniel Simon <Daniel.Simon@domain.hid>
 Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
-Message-ID: <20070403172815.04672bb2@domain.hid>
+Message-ID: <20070403175535.7340cc06@domain.hid>
 In-Reply-To: <46127166.9040503@domain.hid>
 References: <20070403143122.4ac4ffaf@domain.hid>
 	<46124C61.3070107@domain.hid>
@@ -29,19 +29,15 @@ Cc: xenomai@xenomai.org
 On Tue, 03 Apr 2007 17:23:18 +0200
 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
 
-> If Xenomai module is not loaded at boot time, the option
-> CONFIG_XENO_HW_SMI_APMC has no effect.
+> If Xenomai module is not loaded at boot time
 
-Right, but something loads it...
-
-just after booting I got that
-
-dsimon@domain.hid:~$ lsmod | grep xeno
-xeno_irqbench           6536  0 
-xeno_rtdm              30764  1 xeno_irqbench
-xeno_nucleus          201148  2 xeno_irqbench,xeno_rtdm
-
-What can do that?
+I removed the xeno_irqbench module from the config file, now no xeno modules
+are loaded at boot time and the system boots with SMI globally disabled
+(in fact xeno_irqbench was inserted at boot time  in
+the /etc/sysconfig/hwconfig file)
+ ... 
+and as soon as I modprobe xeno_native (before launching any test) the system
+hangs ...
 
 -- 
       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
