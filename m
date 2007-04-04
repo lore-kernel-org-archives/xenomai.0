@@ -1,10 +1,11 @@
 Subject: Re: [Xenomai-core] Xenomai website problem?
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <E1HYGSp-0003z1-Bf@domain.hid>
+In-Reply-To: <1175614589.22950.48.camel@domain.hid>
 References: <E1HYGSp-0003z1-Bf@domain.hid>
+	<1175614589.22950.48.camel@domain.hid>
 Content-Type: text/plain
-Date: Tue, 03 Apr 2007 17:36:29 +0200
-Message-Id: <1175614589.22950.48.camel@domain.hid>
+Date: Wed, 04 Apr 2007 10:03:33 +0200
+Message-Id: <1175673813.4666.6.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -21,16 +22,21 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Sebastian Smolorz <ssm@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Mon, 2007-04-02 at 08:56 +0200, Sebastian Smolorz wrote:
-> Hi,
+On Tue, 2007-04-03 at 17:36 +0200, Philippe Gerum wrote:
+> On Mon, 2007-04-02 at 08:56 +0200, Sebastian Smolorz wrote:
+> > Hi,
+> > 
+> > is there a problem with the Xenomai website or did I try to access it in the 
+> > middle of an update cycle of mediawiki?
+> > 
 > 
-> is there a problem with the Xenomai website or did I try to access it in the 
-> middle of an update cycle of mediawiki?
+> We have a recurring problem since yesterday likely due to an Apache
+> configuration change. This issue is under investigation at our web host.
+> Sorry for the inconvenience.
 > 
 
-We have a recurring problem since yesterday likely due to an Apache
-configuration change. This issue is under investigation at our web host.
-Sorry for the inconvenience.
+Should be back to normal now. Purging your browser's cache may be
+necessary though (at least it was in my case).
 
 -- 
 Philippe.
