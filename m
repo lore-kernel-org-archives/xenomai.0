@@ -1,14 +1,9 @@
-Subject: Re: [Xenomai-core] missing native/ppd.h header
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200704042334.13738.paul_c@domain.hid>
-References: <200704042334.13738.paul_c@domain.hid>
-Content-Type: text/plain
-Date: Thu, 05 Apr 2007 00:42:31 +0200
-Message-Id: <1175726551.26385.7.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
+Date: Thu, 5 Apr 2007 17:18:17 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Message-ID: <Pine.LNX.4.64.0704051650360.3108@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Xenomai-core] [ANNOUNCE] EtherCAT master on top of Xenomai/RTNet
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,30 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org, rtnet-users@domain.hid
 
-On Wed, 2007-04-04 at 23:34 +0100, Paul wrote:
-> Hi Philippe
-> 
->  Just tried to compile from r2361 in trunk, but `make dist` is failing due to 
-> include/native/ppd.h not present - Perusing the change logs, I see ppd.h was 
-> included in several native sources in r2361.. Should the reference be to 
-> nucleus/ppd.h or was the header missed out during a commit ?
+Hi all,
 
-Gasp. Forgotting to commit new files is one of my favourite jokes. Ok,
-fixed now...
+At <http://ethercatmaster.berlios.de/>, you can now get an _alpha_
+version of a port of the EtherCAT Master Library (EML) to
+Xenomai/RTNet through SVN
+<https://developer.berlios.de/svn/?group_id=6087>.
 
-> 
-> 
-> Regards, Paul.
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+The port allows you to create an <http://www.ethercat.org>EtherCAT
+master running on top of Xenomai/RTNet.  It uses the raw socket
+API from RTNet and the Xenomai POSIX skin.
 
+ATM, it has only been tested on i386 with a realtek 8139 board [+].
 
+The RTNet tree contains some example programs talking to an EtherCAT
+evaluation board and some Beckhoff IO modules.
+
+Special kudos to Jan Kiszka for keeping me under pressure into writing
+this email ;-)
+Feedback welcome (preferably on one of the EML mailinglists).
+
+regards,
+
+Klaas
+
+[+] Contrary to the eCos port, endianness issues are not yet dealt
+with properly.
 
