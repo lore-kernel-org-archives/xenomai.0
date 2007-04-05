@@ -1,6 +1,8 @@
+Date: Thu, 5 Apr 2007 18:35:05 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
 Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20070405162558.23084607@domain.hid>
+Message-ID: <20070405183505.4062120f@domain.hid>
+In-Reply-To: <1175786178.7594.15.camel@domain.hid>
 References: <20070403143122.4ac4ffaf@domain.hid>
 	<46124C61.3070107@domain.hid>
 	<20070403162752.2d4a1ae6@domain.hid>
@@ -19,13 +21,10 @@ References: <20070403143122.4ac4ffaf@domain.hid>
 	<20070405113420.0d2cc0ae@domain.hid>
 	<1175766682.7594.9.camel@domain.hid>
 	<20070405162558.23084607@domain.hid>
-Content-Type: text/plain
-Date: Thu, 05 Apr 2007 17:16:18 +0200
-Message-Id: <1175786178.7594.15.camel@domain.hid>
+	<1175786178.7594.15.camel@domain.hid>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -35,26 +34,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Simon <Daniel.Simon@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-04-05 at 16:25 +0200, Daniel Simon wrote:
-> On Thu, 05 Apr 2007 11:51:22 +0200
-> Philippe Gerum <rpm@xenomai.org> wrote:
-> 
-> >try preventing the yenta module
-> no change, frozen a few seconds after modprobe xeno_native
-> 
-> > Try downgrading from SMP to UP, without IO-APIC support but still
-> > keeping ACPI enabled, for the purpose of testing:
-> > 1) Does this work?
-> yes, and the PC is still alive...
+On Thu, 05 Apr 2007 17:16:18 +0200
+Philippe Gerum <rpm@xenomai.org> wrote:
 
-Only enable CONFIG_X86_IO_APIC now (without upgrading to SMP). Does this
-still work?
+> Only enable CONFIG_X86_IO_APIC now (without upgrading to SMP). Does this
+> still work?
+yes, several tests succesfully performed
+/proc/interrupts says (X enabled)
+           CPU0       
+  0:     227870   IO-APIC-edge      timer, rthal_broadcast_timer
+  1:        475   IO-APIC-edge      i8042
+  8:          1   IO-APIC-edge      rtc
+  9:          3   IO-APIC-fasteoi   acpi
+ 12:        127   IO-APIC-edge      i8042
+ 14:      13814   IO-APIC-edge      libata
+ 15:       2013   IO-APIC-edge      libata
+ 16:      10047   IO-APIC-fasteoi   i915@domain.hid
+ 18:        635   IO-APIC-fasteoi   eth0
+ 19:        140   IO-APIC-fasteoi   uhci_hcd:usb1, ehci_hcd:usb5
+ 20:       2612   IO-APIC-fasteoi   uhci_hcd:usb2, HDA Intel
+ 21:          0   IO-APIC-fasteoi   uhci_hcd:usb3
+ 22:          0   IO-APIC-fasteoi   uhci_hcd:usb4
+NMI:          0 
+LOC:     227783 
+ERR:          0
+MIS:          0
+
 
 -- 
-Philippe.
+      Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://necs.inrialpes.fr/people/simon/
 
 
 
