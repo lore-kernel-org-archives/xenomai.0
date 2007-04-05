@@ -1,12 +1,23 @@
-Message-ID: <4613D7CC.2040703@domain.hid>
-Date: Wed, 04 Apr 2007 18:52:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Thu, 5 Apr 2007 10:12:00 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
 Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
-References: <20070403143122.4ac4ffaf@domain.hid>	<46124C61.3070107@domain.hid>	<20070403162752.2d4a1ae6@domain.hid>	<46126603.1050007@domain.hid>	<20070403170416.6c3f7ded@domain.hid>	<46126DC3.8070905@domain.hid>	<20070403171828.2da9c6fa@domain.hid>	<46127166.9040503@domain.hid>	<20070403175535.7340cc06@domain.hid>	<46127DD8.8060502@domain.hid>
+Message-ID: <20070405101200.10084177@domain.hid>
+In-Reply-To: <20070405092815.15bd1af1@domain.hid>
+References: <20070403143122.4ac4ffaf@domain.hid>
+	<46124C61.3070107@domain.hid>
+	<20070403162752.2d4a1ae6@domain.hid>
+	<46126603.1050007@domain.hid>
+	<20070403170416.6c3f7ded@domain.hid>
+	<46126DC3.8070905@domain.hid>
+	<20070403171828.2da9c6fa@domain.hid>
+	<46127166.9040503@domain.hid>
+	<20070403175535.7340cc06@domain.hid>
+	<46127DD8.8060502@domain.hid>
 	<20070404181558.0ba333da@domain.hid>
-In-Reply-To: <20070404181558.0ba333da@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+	<4613D7CC.2040703@domain.hid>
+	<20070405092815.15bd1af1@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,37 +28,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Simon <Daniel.Simon@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Daniel Simon wrote:
-> On Tue, 03 Apr 2007 18:16:24 +0200
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> 
-> 
->>Maybe there is a way to disable legacy power management at BIOS level ?
-> 
-> 
-> there was a remaining potential source of PM interrupts in the bios (from the
-> serial ata), which is now disabled. I did testing with various configurations:
-> 
-> -in runlevel 1 the tests in /usr/xenomai/bin are generally succesfully
-> performed, with max latencies in the range of 5-10 us (output of xeno-test
-> attached)
-> 
-> -in runlevel 3 the laptop freezes after a while, e.g. when rmmoding xeno_native
-> after a succesful latency test, or when modprobing xeno_posix
+On Thu, 5 Apr 2007 09:28:15 +0200
+Daniel Simon <Daniel.Simon@domain.hid> wrote:
 
-What is the difference between runlevel 1 and runlevel 3 ?
+> > What is the difference between runlevel 1 and runlevel 3 ?  
+1 - Basic Single-user mode 
+2 - Multi-user mode (without NFS but the network interface is up) 
+the basic xeno-tests seem to work normally also in level 2
 
-> 
-> -under X control is mostly lost immediatly after modprobing xeno_native...  may
-> be I am too greedy?
+3 - Multi-user mode with NFS
+5 - full Multi-user mode with X and NFS
+>Usually, X should only induce high latencies.  
+Inded the behaviour is now very similar in these two runlevels.:
+I loose most of the control: the mouse pointer and
+windows move, I can still switch back and forth between already logged-in
+consoles and X, bust most shell commands do not respond ,e,.g. ls, ps,
+lsmod, rmmod, do not respond (and hence as I cannot rmmod the loaded
+xeno_modules the system does not totally hang :) , CtrlC gives control back.
+Stangely I still can cd to my remotely nfs mounted homedir, but cannot list its
+content;
+reboot still starts, properly unmount nfs and finally fails to stop eth0.
 
-Usually, X should only induce high latencies. You can avoid such
-latencies by adding the "NoAccel" option to /etc/X11/XF86Config-4, maybe
-you can try the NoAccel trick to solve your issues as well ?
+However, it seems that problems begin when NFS is up, whatever there are
+remote mounts or not (also happens after a standalone boot)
 
+	Daniel
 -- 
-                                                 Gilles Chanteperdrix
+      Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://necs.inrialpes.fr/people/simon/
+
+
 
