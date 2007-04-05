@@ -1,29 +1,15 @@
-Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
+Subject: Re: [Xenomai-help] Preemptive scheduling
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20070405183505.4062120f@domain.hid>
-References: <20070403143122.4ac4ffaf@domain.hid>
-	<46124C61.3070107@domain.hid>
-	<20070403162752.2d4a1ae6@domain.hid>
-	<46126603.1050007@domain.hid>
-	<20070403170416.6c3f7ded@domain.hid>
-	<46126DC3.8070905@domain.hid>
-	<20070403171828.2da9c6fa@domain.hid>
-	<46127166.9040503@domain.hid>
-	<20070403175535.7340cc06@domain.hid>
-	<46127DD8.8060502@domain.hid>
-	<20070404181558.0ba333da@domain.hid>
-	<4613D7CC.2040703@domain.hid>
-	<20070405092815.15bd1af1@domain.hid>
-	<20070405101200.10084177@domain.hid>
-	<4614BA29.3010609@domain.hid>
-	<20070405113420.0d2cc0ae@domain.hid>
-	<1175766682.7594.9.camel@domain.hid>
-	<20070405162558.23084607@domain.hid>
-	<1175786178.7594.15.camel@domain.hid>
-	<20070405183505.4062120f@domain.hid>
+In-Reply-To: <20070404151057.177770@domain.hid>
+References: <20070328203115.190280@domain.hid>
+	<17930.56329.893396.220621@domain.hid>
+	<20070329031758.125210@domain.hid> <460B7CE0.60107@domain.hid>
+	<20070403200539.126240@domain.hid> <1175631875.22950.72.camel@domain.hid>
+	<20070403205554.107880@domain.hid> <1175674653.4666.9.camel@domain.hid>
+	<20070404151057.177770@domain.hid>
 Content-Type: text/plain
-Date: Thu, 05 Apr 2007 19:13:09 +0200
-Message-Id: <1175793189.7594.19.camel@domain.hid>
+Date: Thu, 05 Apr 2007 20:38:57 +0200
+Message-Id: <1175798337.7594.56.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -37,39 +23,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Simon <Daniel.Simon@domain.hid>
+To: Jack Whorn <jackwhorn@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-04-05 at 18:35 +0200, Daniel Simon wrote:
-> On Thu, 05 Apr 2007 17:16:18 +0200
-> Philippe Gerum <rpm@xenomai.org> wrote:
+On Wed, 2007-04-04 at 17:10 +0200, Jack Whorn wrote:
+> > Changeset r2092 introduced the sleeping scheduler lock for v2.3.x.
 > 
-> > Only enable CONFIG_X86_IO_APIC now (without upgrading to SMP). Does this
-> > still work?
-> yes, several tests succesfully performed
-
-Ok. Does enabling CONFIG_SMP and disabling CONFIG_IRQBALANCE still work?
-
-> /proc/interrupts says (X enabled)
->            CPU0       
->   0:     227870   IO-APIC-edge      timer, rthal_broadcast_timer
->   1:        475   IO-APIC-edge      i8042
->   8:          1   IO-APIC-edge      rtc
->   9:          3   IO-APIC-fasteoi   acpi
->  12:        127   IO-APIC-edge      i8042
->  14:      13814   IO-APIC-edge      libata
->  15:       2013   IO-APIC-edge      libata
->  16:      10047   IO-APIC-fasteoi   i915@domain.hid
->  18:        635   IO-APIC-fasteoi   eth0
->  19:        140   IO-APIC-fasteoi   uhci_hcd:usb1, ehci_hcd:usb5
->  20:       2612   IO-APIC-fasteoi   uhci_hcd:usb2, HDA Intel
->  21:          0   IO-APIC-fasteoi   uhci_hcd:usb3
->  22:          0   IO-APIC-fasteoi   uhci_hcd:usb4
-> NMI:          0 
-> LOC:     227783 
-> ERR:          0
-> MIS:          0
+> Hi Philippe,
 > 
+> I appreciate your help very much! I found and applied the diffs of changeset r2092.
+>  It seems to work much better now: The system is able to access the hard disk, as I
+>  see the LED blinking periodically. That`s great!
+> 
+> Still, I can`t use the keyboard to stop the application by pressing Strg-C.
+> Also, the text cursor doesn`t blink, so the Linux system seems to be overloaded
+>  (probably, it`s no longer scheduled).
+> 
+> So, the Linux-Kernel now seems to be able to run on behalf of a high-priority task.
+>  Though, it is no longer scheduled as an idle task, which is ok as there is the highe
+> r priority-task with the infinite loop. This way, everything acts as expected.
+> 
+
+What you see is your real-time task called "thread" running, nothing
+else.
+
+> Nevertheless, it would be interesting to run a linux shell concurrently. Can I adjust
+>  linux priority during runtime (or: where do I have to adjust it in the sources)?
+> 
+> And btw, where can I look up the keyboard interrupt`s priority (is it kernel`s priority)?
+> 
+
+You may want to read these articles, explaining the basic concept of
+primary and secondary domains as seen by the native API and all other
+interfaces, and how this is implementing by the Adeos layer:
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
+
+In short, the infinite loop inside your application runs in primary
+mode, which starves the regular Linux kernel from CPU and interrupts, so
+that primary mode remains highly predictable time-wise. For that reason,
+hitting ^C has no effect when running this loop (no kbd IRQ and no input
+core polling for kbd event => no driver interaction => no termio
+handling => no SIGINT ever emitted therefore received by your process).
+All the CPU is eaten by your thread, and only real-time interrupts are
+allowed to preempt it from time to time.
+(Activating CONFIG_XENO_OPT_WATCHDOG would pull the break and stop this
+loop after 4s btw).
+
+You cannot adjust the kernel priority in the Xenomai scale yourself,
+this would introduce unpredictable latencies. Xenomai does a similar
+adjustment automatically when a real-time switches to secondary mode (an
+explanation can be found in the cited docs), but this could be applied
+to any random Linux task without wrecking the real-time behaviour, so
+this has not been made possible.
+
+To sum up, if you want regular I/O such as keyboard input to be
+processed by Linux, you need to leave a bit of CPU time to the regular
+kernel. This is why the infinite loop seems to lock up the box.
+
+Rule of thumb: this is not a pure RTOS, but a combo merging a GPOS and a
+RTOS sub-system to get the best of both worlds, so you need to make sure
+that both can co-exist together - which does not prevent to one a higher
+priority over the other - and leaving CPU time to the regular kernel to
+process regular I/O through normal drivers is part of the requirements.
+It is possible to develop real-time I/O drivers (RTDM is there for this
+task), in this case, most of their code is controlled in primary mode by
+Xenomai, and not by the vanilla Linux kernel.
+
+> Thanks a lot,
+> 
+> Jack
 > 
 -- 
 Philippe.
