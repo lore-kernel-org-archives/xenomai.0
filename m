@@ -1,14 +1,14 @@
-Message-ID: <46167701.7060004@domain.hid>
-Date: Fri, 06 Apr 2007 18:36:17 +0200
+Message-ID: <46167B46.6010902@domain.hid>
+Date: Fri, 06 Apr 2007 18:54:30 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Subject: Re: [Xenomai-core] Getting the clock model right
 References: <46163817.3060007@domain.hid> <46164F5D.4080301@domain.hid>
-	<46165943.3050706@domain.hid> <46166396.9080400@domain.hid>
-In-Reply-To: <46166396.9080400@domain.hid>
+	<46165943.3050706@domain.hid> <461677BB.1090301@domain.hid>
+In-Reply-To: <461677BB.1090301@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigAEE7A4E2B8BB8F290B7F4347"
+	boundary="------------enigA1E61F0D681835060BC2BC20"
 Sender: jan.kiszka@domain.hid
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -20,10 +20,10 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAEE7A4E2B8BB8F290B7F4347
+--------------enigA1E61F0D681835060BC2BC20
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
@@ -62,29 +62,48 @@ ily
 >> As I said: fixable based on thorough review - but only a minor part of=
 
 >> the problem.
+>>
+>>
+>>>> (...)
+>>>> for smoothly adjusting clocks during runtime would be great. I'm
+>>>> thinking about a generic infrastructure to synchronise the Xenomai t=
+ime
+>>>> on external sources (=3D>distributed clocks).
+>>> What do you want, NTP ? Or calling xnpod_settime periodically ?
+>>>
+>>
+>> More like NTP: monotonic clocks that can be derived from custom
+>> synchronisation signals, maybe optimised/simplified with fact in mind
+>> that those signals should have bounded worst-case jitters (on a hard
+>> real-time system like Xenomai).
+>>
+>> We just implemented such synchronisation based on CAN and serial
+>> null-modem signals. RTnet comes with a high-quality distributed clock =
+as
+>> well. We have not yet implemented a smart clock adjustment (specifical=
+ly
+>> because our application only needs about 1 millisecond accuracy).
 >=20
-> I fail to see the remaining part of the problem.
+> What about emitting Adeos events when receiving NTP corrections ? This
+> way, we would avoid reinventing NTP ?
 >=20
 
-Consider a simple scenario consisting of a shared communication device
-over which packets arrive and get time-stamped. Now, if applications
-that receive those packets sit on different, unsynchronised CPUs, they
-have to know on which CPU the time stamps were taken in order to relate
-them to other events correctly. Basically the same issue you have on
-distributed systems as well.
+IIRC, NTP was designed to synchronise clocks over unreliable and slow
+media. The math behind it /may/ be useful (though it may also turn out
+to be too heavy), but beyond that... Already seen a NTP-over-CAN
+realisation, e.g.?
 
-If we leave the user with broken local clocks, we _must_ provide the
-information about the clock source. There are always scenarios where you
-_cannot_ separate your applications in a way that they run totally
-independent on different CPUs. And then we should provide means to
-synchronise the clocks, or the user has to re-invent the wheel over and
-over again. Given the latter, doing this inside the core in a
-transparent manner is far smarter.
-
-Jan
+And what would NTP over standard network buy us on a Xenomai system when
+the accuracy of NTP time stamps taken under Linux gets additionally
+degraded by Xenomai activity? I thought about NTP for our problem for a
+short while, but then quickly dropped the idea due to lacking guarantees.=
 
 
---------------enigAEE7A4E2B8BB8F290B7F4347
+Likely, we rather need something like IEEE 1588, but there are
+unfortunate patents around that protocol.
+
+
+--------------enigA1E61F0D681835060BC2BC20
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -93,10 +112,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGFncBniDOoMHTA+kRArZSAJ9jC6cs3+VDZeKwG7aAuV8UbGTCLACaAt7p
-Hh1ZivlUmi5XiLkPBpfZzyc=
-=q5SE
+iD8DBQFGFntGniDOoMHTA+kRAn3NAJ9QkVYPl4qSXUpZdFyR0dfsm2f5ZgCeKfty
+uAfxUN+UN2IjInzfjSBdZOg=
+=z1z0
 -----END PGP SIGNATURE-----
 
---------------enigAEE7A4E2B8BB8F290B7F4347--
+--------------enigA1E61F0D681835060BC2BC20--
 
