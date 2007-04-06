@@ -1,15 +1,12 @@
-Message-ID: <4615323A.9020108@domain.hid>
-Date: Thu, 05 Apr 2007 19:30:34 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <460C60E9.6010307@domain.hid> <E1HXGoZ-000163-Vn@domain.hid>
-	<460D1BF8.3010904@domain.hid> <E1HYHba-0000MO-IC@mailer.emlix.com>
-In-Reply-To: <E1HYHba-0000MO-IC@mailer.emlix.com>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0A34D256A16C76C19721CF94"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Re: iovec overwriting by CAN stack
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 6 Apr 2007 11:09:12 +0200
+Message-ID: <899865CA54E4444DAF2E3639C04C5F4805EC69@domain.hid>
+From: "Richard Cochran" <richard.cochran@domain.hid>
+Subject: [Xenomai-core] RTDM cannot open device
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,180 +16,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Sebastian Smolorz <ssm@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0A34D256A16C76C19721CF94
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I am trying to write a simple driver using the RTDM. I have based my
+driver on the examples at http://www.captain.at and at
+http://stud3.tuwien.ac.at/~e0226686/xenomai/source_code.
 
-Sebastian Smolorz wrote:
-> Jan Kiszka wrote:
->> Sebastian Smolorz wrote:
->>> Jan Kiszka wrote:
->>>> Sebastian Smolorz wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Wolfgang Grandegger wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Hi Wolfgang,
->>>>>>>>
->>>>>>>> it's late, so I may have misread somecode, but don't you "update=
-"
->>>>>>>> the iovec descriptors a user passes on send/recvmsg on return
->>>>>>>> (namely iovec_len)? I received some complaints about this /wrt t=
-o
->>>>>>>> in-kernel CAN stack usage.
->>>>>>> It's done here:
->>>>>>>
->>>>>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/ca=
-n/rt
->>>>>>> ca n_ raw.c?v=3DSVN-trunk#881
->>>>>>>
->>>>>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/ca=
-n/rt
->>>>>>> ca n_ raw.c?v=3DSVN-trunk#734
->>>>>>>
->>>>>>>
->>>>>>> I may have missed something. What are the real complaints? Is the=
-re a
->>>>>>> test program?
->>>>>> Not yet (will commit the related patch to our RACK likely later
->>>>>> today). It's simply sending frames while re-using the msg+iovec
->>>>>> structs in a loop.
->>>>>>
->>>>>>>> I always considered the same well-know behaviour of RTnet a bug,=
- but
->>>>>>>> now I found your code is doing this systematically, also for use=
-r
->>>>>>>> space callers. Is this behaviour undefined or even required
->>>>>>>> according POSIX or whatever?
->>>>>>> I don't know, it's Sebastian's Kode.
->>>>>> Hmm, hope he will not say that he imitated RTnet...
->>>>> Rather an imitation of the Linux kernel's behaviour. The
->>>>> memcpy_toiovec() and memcpy_fromiovec() functions [1] also modify t=
-he
->>>>> original iovec.
->>>>>
->>>>>
->>>>> [1] http://lxr.free-electrons.com/source/net/core/iovec.c
->>>> But that's the kernel's private (and user-safe) copy. I failed to fi=
-nd
->>>> it writing that back to user space.
->>> Hm. Ad hoc, I don't recall why the userspace's iovec is also updated.=
+The call to rt_dev_open() returns -1 (Operation not permitted).
 
->>> Perhaps my intention was to make the use of rtcan_raw_sendmsg consist=
-ent
->>> for kernel and userspace RT-Tasks so that both can rely on finding
->>> modified iovecs after calling sendmsg/recvmsg. But I'm not absolutely=
+The program is running as root, and I am able to run the 'latency'
+test program.
 
->>> sure if there isn't a better explanation for this. I will try to find=
- the
->>> reason in my backup memory. ;-)
->> So, unless we find some reason why we _must_ modify user's iovec, eith=
-er
->> for send or receive, I would say: kill the user copy-back and work in
->> both case (kernel / user space caller) on the local copy of iovec (if =
-we
->> still need to modify it all then).
->=20
-> Attached is a patch which leaves the caller's iovec unmodified. It comp=
-iles=20
-> successfully (not tested further).
->=20
->=20
->=20
-> -----------------------------------------------------------------------=
--
->=20
-> Index: ChangeLog
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ChangeLog	(Revision 2348)
-> +++ ChangeLog	(Arbeitskopie)
-> @@ -1,3 +1,8 @@
-> +2007-04-02  Sebastian Smolorz <ssm@domain.hid>
-> +
-> +	* ksrc/drivers/can/rtcan_raw.c (rtcan_raw_recvmsg, rtcan_raw_sendmsg)=
-:
-> +	Remove modification of caller's original iovec.
-> +
->  2007-03-31  Philippe Gerum  <rpm@xenomai.org>
-> =20
->  	* include/nucleus/queue.h (moveq): Fix source tail pointer.
-> Index: ksrc/drivers/can/rtcan_raw.c
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- ksrc/drivers/can/rtcan_raw.c	(Revision 2348)
-> +++ ksrc/drivers/can/rtcan_raw.c	(Arbeitskopie)
-> @@ -731,13 +731,6 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_de
->          if (rtdm_copy_to_user(user_info, iov->iov_base, &frame,
->  			      sizeof(can_frame_t)))
->              return -EFAULT;
-> -        /* Adjust iovec in the common way */
-> -        iov->iov_base +=3D sizeof(can_frame_t);
-> -        iov->iov_len -=3D sizeof(can_frame_t);
-> -        /* ... and copy it, too. */
-> -        if (rtdm_copy_to_user(user_info, msg->msg_iov, iov,
-> -			      sizeof(struct iovec)))
-> -            return -EFAULT;
-> =20
->          /* Copy timestamp if existent and wanted */
->          if (msg->msg_controllen) {
-> @@ -762,9 +755,6 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_de
-> =20
->          /* Copy CAN frame */
->          memcpy(iov->iov_base, &frame, sizeof(can_frame_t));
-> -        /* Adjust iovec in the common way */
-> -        iov->iov_base +=3D sizeof(can_frame_t);
-> -        iov->iov_len -=3D sizeof(can_frame_t);
-> =20
->          /* Copy timestamp if existent and wanted */
->          if (msg->msg_controllen) {
-> @@ -878,16 +868,6 @@ ssize_t rtcan_raw_sendmsg(struct rtdm_de
->          frame =3D &frame_buf;
->      }
-> =20
-> -    /* Adjust iovec in the common way */
-> -    iov->iov_base +=3D sizeof(can_frame_t);
-> -    iov->iov_len -=3D sizeof(can_frame_t);
-> -    /* ... and copy it back to userspace if necessary */
-> -    if (user_info) {
-> -        if (rtdm_copy_to_user(user_info, msg->msg_iov, iov,
-> -			      sizeof(struct iovec)))
-> -            return -EFAULT;
-> -    }
-> -
->      /* At last, we've got the frame ... */
-> =20
->      /* Check if DLC between 0 and 15 */
+What am I doing wrong?
 
+I include some diagnostics, below...
 
-Basic ACK (as still no one came up remarking we actually need the update
-of iovec).
+Thanks,
+Richard
 
-I would just always use struct iovec iov_buf for the internal handling,
-means always copy the original (also from in-kernel users) and simply
-kill the struct iovec *iov indirection.
+--------------------------------------------------------------------
+Richard Cochran (Mr), Software Development
+OMICRON electronics GmbH, Oberes Ried 1, A-6833 Klaus / Austria
+http://www.omicron.at/
+--------------------------------------------------------------------
 
-Jan
+root@domain.hid:~# /usr/xenomai/bin/xeno-info
+If some fields are empty or look unusual you may have an old version.
+Compare to the current minimal requirements in Documentation/Changes.
+=20
+BusyBox v1.01 (2007.01.31-09:53+0000) multi-call binary
+Linux nslu2 2.6.19omicron-g103dbcb5 #27 Fri Apr 6 09:57:25 CEST 2007
+armv5teb un
+=20
+module-init-tools      3.2.2
+Modules Loaded         rt_miccpt
 
+***
 
---------------enig0A34D256A16C76C19721CF94
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+root@domain.hid:~# find /proc/xenomai -type f -print -exec cat {} \; -exec
+echo \;
+/proc/xenomai/rtdm/rt_miccpt/information
+driver:         rt_miccpt
+version:        0.0.0
+peripheral:     micdev
+provider:       -
+class:          224
+sub-class:      0
+flags:          NAMED_DEVICE =20
+lock count:     0
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+/proc/xenomai/rtdm/fildes
+total=3D128:open=3D0:free=3D128
 
-iD8DBQFGFTI6niDOoMHTA+kRAvmfAJ97kkrHx21U6RZZIAIkJIaakfNC4ACff/tU
-M6FlUjYXokPPFpFqj2qESEw=
-=cBU3
------END PGP SIGNATURE-----
+/proc/xenomai/rtdm/open_fildes
+Index   Locked  Device
 
---------------enig0A34D256A16C76C19721CF94--
+/proc/xenomai/rtdm/protocol_devices
+Hash    ProtocolFamily:SocketType       Driver          /proc
+
+/proc/xenomai/rtdm/named_devices
+Hash    Name                            Driver          /proc
+A8      micdev0                         rt_miccpt       rt_miccpt
+
+/proc/xenomai/interfaces/rtdm
+0
+
+/proc/xenomai/interfaces/posix
+0
+
+/proc/xenomai/interfaces/native
+0
+
+/proc/xenomai/interfaces/sys
+0
+
+/proc/xenomai/heap
+size=3D130560:used=3D64:pagesz=3D512
+
+/proc/xenomai/irq
+IRQ         CPU0
+  5:        9611         [timer]
+ 34:           0         [virtual]
+
+/proc/xenomai/timer
+status=3Doneshot:setup=3D15:tickval=3D1:jiffies=3D100286782221
+
+/proc/xenomai/version
+2.3.1
+
+/proc/xenomai/latency
+9495
+
+/proc/xenomai/stat
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          0          0     00400080   99.9  ROOT
+  0  0      0          9619       0     00000000    0.0  IRQ5: [timer]
+
+/proc/xenomai/sched
+CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
+  0  0       -1      0        0          R          ROOT
+
+/proc/xenomai/apc
+APC          CPU0
+  0:            0    (pipe_wakeup)
+  1:            0    (lostage_handler)
+  2:            0    (registry_export)
+  3:            0    (posix_signals_handler)
+
+/proc/xenomai/faults
+TRAP         CPU0
+  0:            0    (Data or instruction access)
+  1:            0    (Section fault)
+  2:            0    (Generic data abort)
+  3:            0    (Unknown exception)
+  4:            0    (Instruction breakpoint)
+  5:            0    (Floating point exception)
+  6:            0    (VFP Floating point exception)
+  7:            0    (Undefined instruction)
+
+/proc/xenomai/hal
+1.6-04
 
