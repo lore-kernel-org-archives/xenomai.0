@@ -1,11 +1,31 @@
-Subject: Re: [Xenomai-help] Error at compilation of examples
-From: =?ISO-8859-1?Q?Beno=EEt?= CAMUS <benoit.camus@domain.hid>
-In-Reply-To: <1175778504.26947.19.camel@domain.hid>
-References: <1175778504.26947.19.camel@domain.hid>
-Content-Type: text/plain
-Date: Fri, 06 Apr 2007 09:08:50 +0200
-Message-Id: <1175843330.4495.8.camel@domain.hid>
+Date: Fri, 6 Apr 2007 10:24:45 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
+Message-ID: <20070406102445.27c1edd2@domain.hid>
+In-Reply-To: <1175793189.7594.19.camel@domain.hid>
+References: <20070403143122.4ac4ffaf@domain.hid>
+	<46124C61.3070107@domain.hid>
+	<20070403162752.2d4a1ae6@domain.hid>
+	<46126603.1050007@domain.hid>
+	<20070403170416.6c3f7ded@domain.hid>
+	<46126DC3.8070905@domain.hid>
+	<20070403171828.2da9c6fa@domain.hid>
+	<46127166.9040503@domain.hid>
+	<20070403175535.7340cc06@domain.hid>
+	<46127DD8.8060502@domain.hid>
+	<20070404181558.0ba333da@domain.hid>
+	<4613D7CC.2040703@domain.hid>
+	<20070405092815.15bd1af1@domain.hid>
+	<20070405101200.10084177@domain.hid>
+	<4614BA29.3010609@domain.hid>
+	<20070405113420.0d2cc0ae@domain.hid>
+	<1175766682.7594.9.camel@domain.hid>
+	<20070405162558.23084607@domain.hid>
+	<1175786178.7594.15.camel@domain.hid>
+	<20070405183505.4062120f@domain.hid>
+	<1175793189.7594.19.camel@domain.hid>
 Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,20 +36,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
->The most simple way to compile an example for Xenomai posix skin is to
->use the xeno-config script as installed by Xenomai. If you have run
->Xenomai installation with DESTDIR set, pass the same DESTDIR in
->xeno-config environment. Examples usually come with Makefiles that do so.
+On Thu, 05 Apr 2007 19:13:09 +0200
+Philippe Gerum <rpm@xenomai.org> wrote:
 
->What version of Xenomai are you using ?
+> Ok. Does enabling CONFIG_SMP and disabling CONFIG_IRQBALANCE still work?
 
-I'm using xenomai last version (2.3.1), 
-and have the same error using makefile with XENO parameter
+No.
 
-Benoit
+more precisely, in console mode I was able to run a latency test, then it hanged
+when rmmod-ing xeno_native.
 
+on a second trial modprobe xeno_posix immediatly freezed...
+
+-- 
+      Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://necs.inrialpes.fr/people/simon/
 
 
 
