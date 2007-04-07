@@ -1,12 +1,10 @@
-Message-ID: <46160D3D.8010703@domain.hid>
-Date: Fri, 06 Apr 2007 11:05:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <46180AB8.3000905@domain.hid>
+Date: Sat, 07 Apr 2007 23:18:48 +0200
+From: Theo Veenker <Theo.Veenker@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Error at compilation of examples
-References: <17941.63222.407172.361683@domain.hid>
-In-Reply-To: <17941.63222.407172.361683@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: Quoted-Printable
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Xenomai Live CD
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,88 +14,153 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?Beno=EEt_CAMUS?= <benoit.camus@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Beno=EEt CAMUS wrote:
->>The most simple way to compile an example for Xenomai posix skin is to
->>use the xeno-config script as installed by Xenomai. If you have run
->>Xenomai installation with DESTDIR set, pass the same DESTDIR in
->>xeno-config environment. Examples usually come with Makefiles that do s=
-o.
->=20
->=20
->>What version of Xenomai are you using ?
->=20
->=20
-> I'm using xenomai last version (2.3.1),=20
-> and have the same error using makefile with XENO parameter
+Hi all,
 
-I just tried compiling the examples and found two reasons why it might
-not compile:
-- the patched Linux kernel sources must have been compiled (so that the
-include/asm symlink is created)
-- if you are cross-compiling, you must pass the proper ARCH variable at
-make invocation for compiling the kernel modules.
+I've managed to create a Xenomai Live CD based on the Ubuntu Dapper
+desktop install CD. Many webpages tell you how to do it (for instance
+https://help.ubuntu.com/community/LiveCDCustomization/6.06) but the
+important thing is to have squashfs and unionfs support in the kernel.
+The following is what I did.
 
-The last problem I have is the link order, but to solve this, I guess
-the Makefiles should be changed.
+I hope someone can pick it up from here as I have very little time to
+do it.
 
-Here is what I get:
+TODO:
+   - Remove Ubuntu Installer stuff from CD
+   - Remove unnecessary packages from the squashfs file system.
+   - Change isolinux/isolinux.cfg etc.
 
-make[1]: Entering directory
-`/home/gcx/build/xenomai-examples/rtdm/profiles/serial'
-gcc -m32 -I/usr/xenomai-2.3.1/include -D_GNU_SOURCE -D_REENTRANT
--L/usr/xenomai-2.3.1/lib -lpthread  -lnative -lrtdm -Xlinker -rpath
--Xlinker /usr/xenomai-2.3.1/lib  cross-link.c   -o cross-link
-/tmp/ccQMPxBI.o(.text+0x19): In function `close_file':
-cross-link.c: undefined reference to `rt_dev_close'
-/tmp/ccQMPxBI.o(.text+0x5e):cross-link.c: undefined reference to
-`rt_task_sleep'
-/tmp/ccQMPxBI.o(.text+0x136): In function `cleanup_all':
-cross-link.c: undefined reference to `rt_task_delete'
-/tmp/ccQMPxBI.o(.text+0x169):cross-link.c: undefined reference to
-`rt_task_delete'
-/tmp/ccQMPxBI.o(.text+0x1bc): In function `write_task_proc':
-cross-link.c: undefined reference to `rt_timer_ns2ticks'
-/tmp/ccQMPxBI.o(.text+0x1e0):cross-link.c: undefined reference to
-`rt_task_set_periodic'
-/tmp/ccQMPxBI.o(.text+0x217):cross-link.c: undefined reference to
-`rt_task_wait_period'
-/tmp/ccQMPxBI.o(.text+0x244):cross-link.c: undefined reference to
-`rt_timer_read'
-/tmp/ccQMPxBI.o(.text+0x266):cross-link.c: undefined reference to
-`rt_dev_write'
-/tmp/ccQMPxBI.o(.text+0x372): In function `read_task_proc':
-cross-link.c: undefined reference to `rt_dev_ioctl'
-/tmp/ccQMPxBI.o(.text+0x3cb):cross-link.c: undefined reference to
-`rt_dev_read'
-/tmp/ccQMPxBI.o(.text+0x3df):cross-link.c: undefined reference to
-`rt_timer_read'
-/tmp/ccQMPxBI.o(.text+0x54e): In function `main':
-cross-link.c: undefined reference to `rt_dev_open'
-/tmp/ccQMPxBI.o(.text+0x5be):cross-link.c: undefined reference to
-`rt_dev_ioctl'
-/tmp/ccQMPxBI.o(.text+0x609):cross-link.c: undefined reference to
-`rt_dev_open'
-/tmp/ccQMPxBI.o(.text+0x679):cross-link.c: undefined reference to
-`rt_dev_ioctl'
-/tmp/ccQMPxBI.o(.text+0x6dc):cross-link.c: undefined reference to
-`rt_task_create'
-/tmp/ccQMPxBI.o(.text+0x74c):cross-link.c: undefined reference to
-`rt_task_create'
-/tmp/ccQMPxBI.o(.text+0x7b8):cross-link.c: undefined reference to
-`rt_task_start'
-/tmp/ccQMPxBI.o(.text+0x808):cross-link.c: undefined reference to
-`rt_task_start'
-collect2: ld returned 1 exit status
-make[1]: *** [cross-link] Error 1
 
-IMHO, the command line should be:
-gcc -m32 -I/usr/xenomai-2.3.1/include -D_GNU_SOURCE -D_REENTRANT
-cross-link.c  -L/usr/xenomai-2.3.1/lib -lpthread  -lnative -lrtdm
--Xlinker -rpath -Xlinker /usr/xenomai-2.3.1/lib  -o cross-link
+Here it goes (I think/hope I haven't forgotten any steps):
 
---=20
-                                                 Gilles Chanteperdrix
+
+Retrieve kernel 2.6.17[.14] sources and unpack into $KERNEL_DIR.
+Retrieve xenomai 2.3.0 sources and unpack into $XENOMAI_DIR.
+Retrieve squashfs3.2-r2 (http://squashfs.sourceforge.net/) into $SQUASHFS_DIR.
+Also compile and installl the mksquashfs tool.
+Retrieve unionfs-1.3 (http://www.filesystems.org/project-unionfs.html)
+into $UNIONFS_DIR.
+
+Apply xenomai patches:
+   cd $XENOMAI_DIR
+   ./scripts/prepare-kernel.sh --linux=$KERNEL_DIR --arch=i386
+	--adeos=ksrc/arch/i386/patches/adeos-ipipe-2.6.17-i386-1.5-02.patch
+
+Apply squashfs patches:
+   cd $KERNEL_DIR
+   patch -p1 < $SQUASHFS_DIR/kernel-patches/linux-2.6.17/squashfs3.2-patch
+
+Apply unionfs patches:
+   cd $UNIONFS_DIR
+   ./patch-kernel.sh $KERNEL_DIR
+
+
+Configure kernel:
+   CONFIG_BLK_DEV_LOOP=m
+   CONFIG_BLK_DEV_RAM=y
+   CONFIG_BLK_DEV_RAM_COUNT=16
+   CONFIG_BLK_DEV_RAM_SIZE=4096
+   CONFIG_BLK_DEV_INITRD=y
+   CONFIG_SQUASHFS=m
+   CONFIG_UNION_FS=m
+
+Compile and install kernel. On my particular system this yields (v20 being
+my local version number):
+   /boot/vmlinuz-2.6.17.14-xenomai-v20
+   /lib/modules/2.6.17.14-xenomai-v20/
+
+Compile and install xenomai. On my system this yields:
+   /usr/xenomai-2.3.0-v20/
+   /usr/rt (symlink to xenomai-2.3.0-v20)
+
+Make sure this kernel boots OK. Also check realtime behaviour.
+
+
+
+Retrieve ubuntu-6.06.1-desktop-i386.iso (http://www.ubuntu.com/) and
+let $ISOIMG refer to it.
+
+Set some convenience symbols:
+   XENOMAI_VER=xenomai-2.3.0-v20
+   export KERNEL_VER=2.6.17.14-xenomai-v20
+
+Loop-mount the ISO image and the squashfs file system contained in it.
+   mkdir -p mnt/iso mnt/squashfs
+   mount -o loop $ISOIMG mnt/iso
+   mount -t squashfs -o loop mnt/iso/casper/filesystem.squashfs mnt/squashfs
+
+Copy contents of the ISO image and the squashfs file system.
+   mkdir iso squashfs
+   rsync --exclude=/casper/filesystem.squashfs -a mnt/iso/ iso
+   cp -a mnt/squashfs/* squashfs
+
+Remove unwanted stuff from ISO image.
+   rm -rf iso/programs
+
+Unmount the squashfs file system and the ISO image.
+   umount mnt/squashfs mnt/iso
+   rm -rf mnt
+
+Modify squashfs contents; install custom kernel and modules.
+   cd squashfs
+   rm -f boot/vmlinuz* boot/initrd* boot/System* boot/config* boot/abi*
+   rm -f initrd.img vmlinuz
+   rm -rf lib/modules/*
+   rm -rf usr/$XENOMAI_VER
+   rm -f usr/rt
+   cp /boot/*$KERNEL_VER boot
+   cp -a /lib/modules/$KERNEL_VER lib/modules
+   cp -a /usr/$XENOMAI_VER usr
+   ln -s $XENOMAI_VER usr/rt
+   ln -s boot/vmlinuz-$KERNEL_VER vmlinuz
+   ln -s boot/initrd.img-$KERNEL_VER initrd.img
+   cd ..
+
+Build initrd.gz
+   chroot squashfs
+   mkinitramfs -o /initrd.gz $KERNEL_VER
+   exit
+
+Put custom kernel and initrd in iso/casper/.
+   mv squashfs/initrd.gz squashfs/boot/initrd.img-$KERNEL_VER
+   cp squashfs/boot/vmlinuz-$KERNEL_VER iso/casper/vmlinuz
+   cp squashfs/boot/initrd.img-$KERNEL_VER iso/casper/initrd.gz
+
+Create new iso/casper/filesystem.manifest* files.
+   rm iso/casper/filesystem.*
+   chroot squashfs dpkg-query -W --showformat='${Package} ${Version}\n' > 
+iso/casper/filesystem.manifest
+   cp iso/casper/filesystem.manifest iso/casper/filesystem.manifest-desktop
+   sed -i -e '/ubiquity/d' iso/casper/filesystem.manifest-desktop
+
+Create squashfs file system file in iso/casper/.
+   mksquashfs squashfs iso/casper/filesystem.squashfs
+   chmod 444 iso/casper/filesystem.squashfs
+
+Recreate md5sum.txt.
+   cd iso
+   rm -f md5sum.txt
+   find . -type f -exec md5sum {} \; > ../md5sum.txt
+   cd ..
+   mv md5sum.txt iso
+
+Create ISO image.
+   cd iso
+   mkisofs -V "Xenomai Ubuntu 6.06 CD" \
+         -o xenomai-ubuntu-6.06.1-desktop-i386.iso \
+         -b isolinux/isolinux.bin -c isolinux/boot.cat \
+         -no-emul-boot -boot-load-size 4 -boot-info-table \
+         -l -R -r .
+   cd ..
+
+Burn the ISO image onto a CD and boot from it (choose first option from menu).
+Once everything is up, open a terminal and in /usr/rt/bin run sudo ./latency
+
+Good luck!
+
+Theo
+
+
 
