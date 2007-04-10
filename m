@@ -1,13 +1,17 @@
-Message-ID: <461B5F47.9090001@domain.hid>
-Date: Tue, 10 Apr 2007 11:56:23 +0200
-From: Theo Veenker <Theo.Veenker@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+Date: Wed, 11 Apr 2007 00:47:15 +0200
+From: "Jack Whorn" <jackwhorn@domain.hid>
+In-Reply-To: <1175798337.7594.56.camel@domain.hid>
+Message-ID: <20070410224715.132860@domain.hid>
 MIME-Version: 1.0
-References: <46180AB8.3000905@domain.hid> <200704072306.46154.paul_c@domain.hid>
-	<4618A2BF.1030104@domain.hid> <200704081056.06867.paul_c@domain.hid>
-In-Reply-To: <200704081056.06867.paul_c@domain.hid>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <20070328203115.190280@domain.hid>	
+	<17930.56329.893396.220621@domain.hid>	
+	<20070329031758.125210@domain.hid> <460B7CE0.60107@domain.hid>	
+	<20070403200539.126240@domain.hid> <1175631875.22950.72.camel@domain.hid>	
+	<20070403205554.107880@domain.hid> <1175674653.4666.9.camel@domain.hid>	
+	<20070404151057.177770@domain.hid> <1175798337.7594.56.camel@domain.hid>
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Live CD
+Subject: Re: [Xenomai-help] Preemptive scheduling
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,61 +21,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org, xenomai@xenomai.org
 
-Paul wrote:
-> Hi Theo
-> 
-> On Sunday 08 April 2007 09:07, Theo Veenker wrote:
-> 
->>So you are saying I went through all this ff-ing trouble for nothing?
-> 
-> 
-> Not at all... And my apologies if my comments came across as being negative.
-> 
-> 
->>You have all the knowledge and experience but did't bother putting it
->>to use for a Xenomai live CD? If it is not too much work maybe you could
->>put something together. I'm sure many people, including me, would be
->>interested.
-> 
-> 
-> The bulk of the work (for Morphix builds) is in the patching & packaging of 
-> the kernel - Once that is done, it boils down to deciding what applications 
-> to put on a CD.. As to the question of "why I didn't do it" - To be honest, 
-> didn't think about it or realise there was a need for one.
-> 
-> 
->>>[Side note: I already do nightly Sarge based Morphix modules,
->>>so slipping in a Xenomai version once in a while is possible].
->>
->>Would be nice. I'm very interested in having a (small) live cd which I can
->>customize and give to my clients.
-> 
-> 
-> I've posted an RFC to the Morphix list suggesting the next kernel uses the 
-> Xenomai patches, it won't be a major problem if the answer is no - I can 
-> always add the unionfs & squashfs patches to the kernel debs currently found 
-> on http://zathras.tuxcnc.org/xenomai
->  You have shown that there is interest in a LiveCD, so perhaps we could work 
-> together on one - I have the build system set up and running, you know what 
-> packages you need on a CD..
+Hi Philippe,
 
-I don't know what you have in mind but I think there a two types of use.
+Thanks a lot for this information!
 
-1) A CD that can be used to quicly check the real-time capabilities of a PC.
-    Preferably with multiple images to select in boot menu: with/without SMI
-    work-around, UP/SMP, etc. if possible.
+This watchdog is great. I just tried and it successfully stopped my application. Nice to see!
 
-2) A CD with a live system (with gnome or kde) on it. Of course it should
-    be possible to recreate the CD and add desired (real-time) apps to it.
-    In my case I like to be able to give our non-technical students/researchers
-    a CD which allows them to play with the same (real-time) linux apps as
-    they see in the lab.
+At this point, I have a short question:
 
-Regards,
-Theo
+As far as I have seen, Xenomai`s watchdog kills the currently running task when wd_count (which is increased every second) has reached 4. But when is wd_count reset? I have only seen wd_count being reset to zero whenever Linux is scheduled. I don`t understand how this can be sufficient (which obviously is!), as I had expected it being reset whenever *any* task is rescheduled. How can the system know that it is the currently running task that has prevented Linux from being scheduled?
 
+Thanks for giving me a hint on this,
 
+Jack
+
+-------- Original-Nachricht --------
+Datum: Thu, 05 Apr 2007 20:38:57 +0200
+Von: Philippe Gerum <rpm@xenomai.org>
+An: Jack Whorn <jackwhorn@domain.hid>
+CC: xenomai@xenomai.org
+Betreff: Re: [Xenomai-help] Preemptive scheduling
+
+> On Wed, 2007-04-04 at 17:10 +0200, Jack Whorn wrote:
+> > > Changeset r2092 introduced the sleeping scheduler lock for v2.3.x.
+> > 
+> > Hi Philippe,
+> > 
+> > I appreciate your help very much! I found and applied the diffs of
+> changeset r2092.
+> >  It seems to work much better now: The system is able to access the hard
+> disk, as I
+> >  see the LED blinking periodically. That`s great!
+> > 
+> > Still, I can`t use the keyboard to stop the application by pressing
+> Strg-C.
+> > Also, the text cursor doesn`t blink, so the Linux system seems to be
+> overloaded
+> >  (probably, it`s no longer scheduled).
+> > 
+> > So, the Linux-Kernel now seems to be able to run on behalf of a
+> high-priority task.
+> >  Though, it is no longer scheduled as an idle task, which is ok as there
+> is the highe
+> > r priority-task with the infinite loop. This way, everything acts as
+> expected.
+> > 
+> 
+> What you see is your real-time task called "thread" running, nothing
+> else.
+> 
+> > Nevertheless, it would be interesting to run a linux shell concurrently.
+> Can I adjust
+> >  linux priority during runtime (or: where do I have to adjust it in the
+> sources)?
+> > 
+> > And btw, where can I look up the keyboard interrupt`s priority (is it
+> kernel`s priority)?
+> > 
+> 
+> You may want to read these articles, explaining the basic concept of
+> primary and secondary domains as seen by the native API and all other
+> interfaces, and how this is implementing by the Adeos layer:
+> http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-rev-C.pdf
+> http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
+> 
+> In short, the infinite loop inside your application runs in primary
+> mode, which starves the regular Linux kernel from CPU and interrupts, so
+> that primary mode remains highly predictable time-wise. For that reason,
+> hitting ^C has no effect when running this loop (no kbd IRQ and no input
+> core polling for kbd event => no driver interaction => no termio
+> handling => no SIGINT ever emitted therefore received by your process).
+> All the CPU is eaten by your thread, and only real-time interrupts are
+> allowed to preempt it from time to time.
+> (Activating CONFIG_XENO_OPT_WATCHDOG would pull the break and stop this
+> loop after 4s btw).
+> 
+> You cannot adjust the kernel priority in the Xenomai scale yourself,
+> this would introduce unpredictable latencies. Xenomai does a similar
+> adjustment automatically when a real-time switches to secondary mode (an
+> explanation can be found in the cited docs), but this could be applied
+> to any random Linux task without wrecking the real-time behaviour, so
+> this has not been made possible.
+> 
+> To sum up, if you want regular I/O such as keyboard input to be
+> processed by Linux, you need to leave a bit of CPU time to the regular
+> kernel. This is why the infinite loop seems to lock up the box.
+> 
+> Rule of thumb: this is not a pure RTOS, but a combo merging a GPOS and a
+> RTOS sub-system to get the best of both worlds, so you need to make sure
+> that both can co-exist together - which does not prevent to one a higher
+> priority over the other - and leaving CPU time to the regular kernel to
+> process regular I/O through normal drivers is part of the requirements.
+> It is possible to develop real-time I/O drivers (RTDM is there for this
+> task), in this case, most of their code is controlled in primary mode by
+> Xenomai, and not by the vanilla Linux kernel.
+> 
+> > Thanks a lot,
+> > 
+> > Jack
+> > 
+> -- 
+> Philippe.
+> 
+
+-- 
+"Feel free" - 10 GB Mailbox, 100 FreeSMS/Monat ...
+Jetzt GMX TopMail testen: http://www.gmx.net/de/go/topmail
 
