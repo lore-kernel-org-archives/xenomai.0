@@ -1,15 +1,34 @@
-Message-ID: <461E4D9E.6090107@domain.hid>
-Date: Thu, 12 Apr 2007 17:17:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <200704111656.18894.jweber@domain.hid>
-	<200704120818.00897.jweber@domain.hid>
-	<461E4101.1030200@domain.hid>
-	<200704120957.52109.jweber@domain.hid>
-In-Reply-To: <200704120957.52109.jweber@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Date: Thu, 12 Apr 2007 17:48:09 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Message-ID: <20070412174809.41f13bd1@domain.hid>
+In-Reply-To: <1176390159.5022.65.camel@domain.hid>
+References: <20070403143122.4ac4ffaf@domain.hid>
+	<46124C61.3070107@domain.hid>
+	<20070403162752.2d4a1ae6@domain.hid>
+	<46126603.1050007@domain.hid>
+	<20070403170416.6c3f7ded@domain.hid>
+	<46126DC3.8070905@domain.hid>
+	<20070403171828.2da9c6fa@domain.hid>
+	<46127166.9040503@domain.hid>
+	<20070403175535.7340cc06@domain.hid>
+	<46127DD8.8060502@domain.hid>
+	<20070404181558.0ba333da@domain.hid>
+	<4613D7CC.2040703@domain.hid>
+	<20070405092815.15bd1af1@domain.hid>
+	<20070405101200.10084177@domain.hid>
+	<4614BA29.3010609@domain.hid>
+	<20070405113420.0d2cc0ae@domain.hid>
+	<1175766682.7594.9.camel@domain.hid>
+	<20070405162558.23084607@domain.hid>
+	<1175786178.7594.15.camel@domain.hid>
+	<20070405183505.4062120f@domain.hid>
+	<1175793189.7594.19.camel@domain.hid>
+	<20070412161422.098f06f9@domain.hid>
+	<1176390159.5022.65.camel@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Linux system calls from RT kernel task
+Subject: Re: [Xenomai-help] large latencies on a Dell D620 dual core laptop
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,23 +38,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Jeff Weber wrote:
-> On Thursday 12 April 2007 09:24, Gilles Chanteperdrix wrote:
-> 
->>instance, the Xenomai service for getting the current date is
->>rt_timer_read or clock_gettime(CLOCK_REALTIME)).
-> 
-> I would like to use the Xenomai clock routines.  However, these are not [yet] 
-> able to stay synchronized to an external time reference, like an ntp server. 
-> For my application, the ensuing drift is a problem. The Linux kernel clock is 
-> able to synchronize to an external time reference.
+On Thu, 12 Apr 2007 17:02:38 +0200
+Philippe Gerum <rpm@xenomai.org> wrote:
 
-You could call xnpod_settime "often enough". But agreed, this is not the
-way these things should work.
+> Does the following sequence break the box too?
+> # modprobe xeno_native
+> # rmmod xeno_native
+> without running any test (latency, whatever).
+
+yes, this may happen, but not systematically
+
+>The problem seems to be caused by an
+l>ow-level interrupt management issue, which may trigger most of the time
+>with network interrupts.
+
+this happens even if eth0 is stopped and the pc booted out of connection with
+the network...  
+btw, several daemons are started when switching from
+runlevel2 to runlevel3, including portmap, nfs, rpc, autofs, acpi, hal..., many
+potential sources of interrupt, isn'it?
+
+   Daniel
 
 -- 
-                                                 Gilles Chanteperdrix
+      Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+ZIRST, 655 avenue de l'Europe, 38330 MONTBONNOT SAINT MARTIN, FRANCE 
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+	 http://necs.inrialpes.fr/people/simon/
+
+
 
