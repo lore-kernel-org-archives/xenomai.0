@@ -1,12 +1,15 @@
-Message-ID: <461E4101.1030200@domain.hid>
-Date: Thu, 12 Apr 2007 16:24:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <200704111656.18894.jweber@domain.hid>	<b647ffbd0704111535l4e756c77he276a57f0f5f32cb@domain.hid>
+From: Jeff Weber <jweber@domain.hid>
+Date: Thu, 12 Apr 2007 09:57:51 -0500
+References: <200704111656.18894.jweber@domain.hid>
 	<200704120818.00897.jweber@domain.hid>
-In-Reply-To: <200704120818.00897.jweber@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+	<461E4101.1030200@domain.hid>
+In-Reply-To: <461E4101.1030200@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <200704120957.52109.jweber@domain.hid>
 Subject: Re: [Xenomai-help] Linux system calls from RT kernel task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,44 +20,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jweber@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-Jeff Weber wrote:
-> On Wednesday 11 April 2007 17:35, Dmitry Adamushko wrote:
-> 
->>On 11/04/07, Jeff Weber <jweber@domain.hid> wrote:
->>
->>>Are there any restrictions against calling the Linux kernel, namely
->>>do_gettimeofday(), from a Xenomai kernel task?
->>>
->>>Does the kernel space task switch from primary to secondary mode, just as
->>>a user space task would?
->>
->>No.
-> 
-> Ok, so is a Xenomai kernel-based thread essentially locked into primary mode?  
-> And if so, would calls to rt_task_set_mode(T_PRIMARY,0,0) then be illegal?
-> 
->>Regarding the use of Linux kernel functions, consider it from the
->>point that your rt task (in general, any activity from the primary
->>domain) could have interrupted the Linux kernel at any (well, almost)
->>point.. i.e. some spin_locks can be held by the kernel and if you
->>happen to call a function from the primary domain that does use these
->>locks - well, nothing good is going to happen. In general, it's a no
->>go.
-> 
-> What's the best general way to describe the list of functions that can use 
-> these locks, so I can avoid this scenario in the future?
+On Thursday 12 April 2007 09:24, Gilles Chanteperdrix wrote:
+> instance, the Xenomai service for getting the current date is
+> rt_timer_read or clock_gettime(CLOCK_REALTIME)).
+I would like to use the Xenomai clock routines.  However, these are not [yet] 
+able to stay synchronized to an external time reference, like an ntp server. 
+For my application, the ensuing drift is a problem. The Linux kernel clock is 
+able to synchronize to an external time reference.
 
-The problem does not come only from locks. Real-time tasks can preempt
-Linux at any time, and particularily at times when Linux data is not
-consistent. So, if you want to play safe, do not use Linux kernel
-functions from real-time kernel threads, only use Xenomai services (for
-instance, the Xenomai service for getting the current date is
-rt_timer_read or clock_gettime(CLOCK_REALTIME)). The exception to this
-rule is printk.
-
--- 
-                                                 Gilles Chanteperdrix
+	Jeff
 
