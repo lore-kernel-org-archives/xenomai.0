@@ -1,14 +1,10 @@
-Message-ID: <461F466A.9050808@domain.hid>
-Date: Fri, 13 Apr 2007 10:59:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <461F4B89.5090407@domain.hid>
+Date: Fri, 13 Apr 2007 11:21:13 +0200
+From: K-pa <kpa_info@domain.hid>
 MIME-Version: 1.0
-References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>	<078801c77d27$5e7cc420$1b764c60$@com>
-	<461E6CFE.7000004@domain.hid>
-	<009401c77da1$7e516a60$7af43f20$@com>
-In-Reply-To: <009401c77da1$7e516a60$7af43f20$@com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
+Subject: [Adeos-main] ADEOS for ARM
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,18 +13,27 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jose Pascual <josepascual@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Jose Pascual wrote:
-> Hi again Gilles,
-> 
-> Have you thought to make a only patch for at91rm9200 and at91sam9xxx (theses
-> chips are really quite similar)?
-
->From a maintenance point of view, having one patch with all platforms
-supported gives much less work.
-
--- 
-                                                 Gilles Chanteperdrix
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title></title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<font face="Verdana" size="-1">Hy,</font><font face="Verdana"><br>
+</font><font face="Verdana" size="-1">I search a version of ADEOS patch
+for </font><font face="Verdana" size="-1">2.6.17 kernel version </font><font
+ face="Verdana" size="-1">for a PXA processor </font><font
+ face="Verdana" size="-1">(ARM arch).</font><font face="Verdana"
+ size="-1"> </font><font face="Verdana"><br>
+</font><font face="Verdana" size="-1">I try to find them on the ADEOS
+site but I dont found them. So if you have this patch thanks to send me.<br>
+<br>
+</font><font face="Verdana" size="-1">Thanks a lot.<br>
+<br>
+</font><font face="Verdana" size="-1">K-pa</font>
+</body>
+</html>
 
