@@ -1,34 +1,62 @@
-Message-ID: <462CADFB.40008@domain.hid>
-Date: Mon, 23 Apr 2007 15:00:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <461FE560.8070100@domain.hid>
+Date: Fri, 13 Apr 2007 22:17:36 +0200
+From: Jean-Luc Pamart <jlpamart@domain.hid>
 MIME-Version: 1.0
-References: <46265FC8.1070207@domain.hid>	<1176926837.5010.90.camel@domain.hid>	<46268879.30507@domain.hid>	<462C7DF4.9060002@domain.hid>	<1177324208.30217.98.camel@domain.hid>	<17964.35957.487976.245056@domain.hid>
-	<17964.36864.695360.167360@domain.hid>
-	<462CAB3B.9080408@domain.hid>
-In-Reply-To: <462CAB3B.9080408@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [BUG] target width of shifts on 64 bits
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] Execution error with rtdm heartbeat example
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Who the hell is using the ffnz implementation in system.h? The
-> simulator? I kicked it out for a x64-build here, and I got no noticeable
-> effects.
+Hello
 
-No, the simulator uses the one in asm-sim/system.h. The one in
-nucleus/system.h is, for instance, for xnmlqueue_t in user-space.
+I  try to execute the heartbeat example (xenomai 2.3 with kernel 2.6.19)
+With the unmodified sources when the heartbeat module
+is being unloaded (rmmod)  I obtain :
 
--- 
-                                                 Gilles Chanteperdrix
+atkbd.c: Spurious ACK on isa0060/serio0. Some program might be trying 
+access hardware directly.  
+
+and the unloading can't be finished.
+
+I try to slightly change the sources. It works with no bad kernel 
+message and
+complete unloaded with this modification :
+
+void heartbeat(void *cookie)
+{
+       
+        while (!end) {
+              ...
+        }
+    set_leds(0);
+    
+}
+void cleanup_module(void)
+{
+    //  set_leds(0);
+}  
+
+My interpretation :
+In the non modified example, We try to access directly to the keyboard
+after the end of the rt-driver(after  
+rtdm_task_join_nrt(&heartbeat_task, 100);)
+So it is a problem for the kernel.
+
+Is it a good interpretation ?
+ 
+what is the difference between rtdm_task_join_nrt(&heartbeat_task, 100) and
+ rtdm_task_destroy(&heartbeat_task) ?
+What is the role of the polling argument (value 100) ?
+
+
+best regards
 
