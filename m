@@ -2,8 +2,8 @@ From: "Jose Pascual" <josepascual@domain.hid>
 References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>	<078801c77d27$5e7cc420$1b764c60$@com>
 	<461E6CFE.7000004@domain.hid>
 In-Reply-To: <461E6CFE.7000004@domain.hid>
-Date: Fri, 13 Apr 2007 09:55:12 +0200
-Message-ID: <009301c77da1$124fba10$36ef2e30$@com>
+Date: Fri, 13 Apr 2007 09:58:16 +0200
+Message-ID: <009401c77da1$7e516a60$7af43f20$@com>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
@@ -21,13 +21,10 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org
 
-Hi Gilles,
+Hi again Gilles,
 
-thank you for your answer,
-
-Could you send your benchmark results? (what mherz are your PLLA working?
-and your Master Clock?)?
-
+Have you thought to make a only patch for at91rm9200 and at91sam9xxx (theses
+chips are really quite similar)?
 
 regards
 
