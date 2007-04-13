@@ -1,13 +1,11 @@
-Message-ID: <461E6CFE.7000004@domain.hid>
-Date: Thu, 12 Apr 2007 19:31:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <25dd9bf10704122225l19d2db87i466f8715c482514@domain.hid>
+Date: Fri, 13 Apr 2007 10:55:27 +0530
+From: "Subramani Venkatesh" <subbu31mani@domain.hid>
 MIME-Version: 1.0
-References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>
-	<078801c77d27$5e7cc420$1b764c60$@com>
-In-Reply-To: <078801c77d27$5e7cc420$1b764c60$@com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_569_14925888.1176441927833"
+Subject: [Adeos-main] ADEOS IPIPE Porting on MIPS,
+	Xenomai is able to Register istel with Native API's
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,28 +14,97 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jose Pascual <josepascual@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
 
-Jose Pascual wrote:
-> HI,
-> 
-> I'm working in a at91rm9200 custom board. Can I use this patch for
-> at91rm9200?
-> what should I change for at91rm9200?
-> 
-> Could you send your benchmark results? (what mherz are your PLLA working?
-> and your Master Clock?)?
+------=_Part_569_14925888.1176441927833
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-My bad, I posted this only on Xenomai mailing list and not Adeos list,
-but the at91rm9200 is already supported by the latest I-pipe patch for
-ARM. It is available as a separate patch for Linux 2.6.15 and already
-included in the patch for Linux 2.6.19.
+Hello Phillipe and Jan,
+I thank both of you for helping me in porting ADEOS on MIPS Malta.
+Current status of Adeos is
+1. Able to Regiser Xenomai Domain, with periodic timer interrupts.
+2. Xenomai able to create user task and switch between kernel successfully.
+3. Xenomai is able to catch system events and interrupts.
 
-You can download them there:
-http://svn.gna.org/svn/xenomai/trunk/ksrc/arch/arm/patches/at91/ipipe-2.6.15-at91-1.5-08.patch
-http://download.gna.org/adeos/patches/v2.6/arm/adeos-ipipe-2.6.19-arm-1.6-05.patch
 
--- 
-                                                 Gilles Chanteperdrix
+I hope I am not late in sharing this information. I did not want tell before
+the Xenomai being successfully registering and running. Since I ported ADEOS
+on customer kernel 2.6.10, I cannot release this patch now, but very soon I
+am goanna start working on MIPS MALTA open source kernel 2.6.12 as this is
+the kernel which I have now that is running on mips malta, later I wanted to
+ADEOS ipipe-1.6 on Linux 2.6.18.
+
+
+I request your feed back and you standards of code to clean up and release
+to open source.
+
+
+
+
+Regards
+Subbu
+
+------=_Part_569_14925888.1176441927833
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hello Phillipe and Jan,<br>I thank both of you for helping me in porting AD=
+EOS on MIPS Malta.<br>Current status of Adeos is<br>1. Able to Regiser Xeno=
+mai Domain, with periodic timer interrupts.<br>2. Xenomai able to create us=
+er task and switch between kernel successfully.
+<br>3. Xenomai is able to catch system events and interrupts.<br>&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br>I hope I am=
+ not late in sharing this information. I did not want tell before the Xenom=
+ai being successfully registering and running. Since I ported ADEOS on cust=
+omer kernel=20
+2.6.10, I cannot release this patch now, but very soon I am goanna start wo=
+rking on MIPS MALTA open source kernel 2.6.12 as this is the kernel which I=
+ have now that is running on mips malta, later I wanted to ADEOS ipipe-1.6
+ on Linux 2.6.18.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; &nbsp;<br>I request your feed back and you standards of code to c=
+lean up and release to open source.
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<=
+br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+<br>Regards<br>Subbu<br><br>
+
+------=_Part_569_14925888.1176441927833--
 
