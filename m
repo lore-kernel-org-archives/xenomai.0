@@ -1,15 +1,15 @@
-Message-ID: <461F19B3.9090600@domain.hid>
-Date: Fri, 13 Apr 2007 07:48:35 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Jose Pascual" <josepascual@domain.hid>
+References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>	<078801c77d27$5e7cc420$1b764c60$@com>
+	<461E6CFE.7000004@domain.hid>
+In-Reply-To: <461E6CFE.7000004@domain.hid>
+Date: Fri, 13 Apr 2007 09:55:12 +0200
+Message-ID: <009301c77da1$124fba10$36ef2e30$@com>
 MIME-Version: 1.0
-References: <25dd9bf10704122225l19d2db87i466f8715c482514@domain.hid>
-In-Reply-To: <25dd9bf10704122225l19d2db87i466f8715c482514@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig03B184A6DD12D2A46D064C7B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] ADEOS IPIPE Porting on MIPS,
- Xenomai is able to Register istel with Native API's
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Language: es
+Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,61 +18,61 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Subramani Venkatesh <subbu31mani@domain.hid>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig03B184A6DD12D2A46D064C7B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Gilles,
 
-Subramani Venkatesh wrote:
-> Hello Phillipe and Jan,
-> I thank both of you for helping me in porting ADEOS on MIPS Malta.
-> Current status of Adeos is
-> 1. Able to Regiser Xenomai Domain, with periodic timer interrupts.
-> 2. Xenomai able to create user task and switch between kernel successfu=
-lly.
-> 3. Xenomai is able to catch system events and interrupts.
->=20
->=20
-> I hope I am not late in sharing this information. I did not want tell
-> before
-> the Xenomai being successfully registering and running. Since I ported
-> ADEOS
-> on customer kernel 2.6.10, I cannot release this patch now, but very so=
-on I
-> am goanna start working on MIPS MALTA open source kernel 2.6.12 as this=
- is
-> the kernel which I have now that is running on mips malta, later I
-> wanted to
-> ADEOS ipipe-1.6 on Linux 2.6.18.
->=20
->=20
-> I request your feed back and you standards of code to clean up and rele=
-ase
-> to open source.
+thank you for your answer,
 
-You can already make sure that all your code follows kernel coding
-style. The rest will be discussed once you are able to release it to the
-community.
-
-Jan
+Could you send your benchmark results? (what mherz are your PLLA working?
+and your Master Clock?)?
 
 
---------------enig03B184A6DD12D2A46D064C7B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+regards
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+> -----Mensaje original-----
+> De: adeos-main-bounces@domain.hid [mailto:adeos-main-bounces@domain.hid] En
+> nombre de Gilles Chanteperdrix
+> Enviado el: jueves, 12 de abril de 2007 19:32
+> Para: Jose Pascual
+> CC: adeos-main@gna.org
+> Asunto: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
+> 
+> Jose Pascual wrote:
+> > HI,
+> >
+> > I'm working in a at91rm9200 custom board. Can I use this patch for
+> > at91rm9200?
+> > what should I change for at91rm9200?
+> >
+> > Could you send your benchmark results? (what mherz are your PLLA
+> working?
+> > and your Master Clock?)?
+> 
+> My bad, I posted this only on Xenomai mailing list and not Adeos list,
+> but the at91rm9200 is already supported by the latest I-pipe patch for
+> ARM. It is available as a separate patch for Linux 2.6.15 and already
+> included in the patch for Linux 2.6.19.
+> 
+> You can download them there:
+> http://svn.gna.org/svn/xenomai/trunk/ksrc/arch/arm/patches/at91/ipipe-
+> 2.6.15-at91-1.5-08.patch
+> http://download.gna.org/adeos/patches/v2.6/arm/adeos-ipipe-2.6.19-arm-
+> 1.6-05.patch
+> 
+> --
+>                                                  Gilles Chanteperdrix
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+> 
+> __________ Informacisn de NOD32, revisisn 2184 (20070412) __________
+> 
+> Este mensaje ha sido analizado con  NOD32 antivirus system
+> http://www.nod32.com
 
-iD8DBQFGHxmzniDOoMHTA+kRAvhQAJ9J8twu/u/mrVO2s6z4/myvseNubQCfbURS
-Dv5WK0ioKEHOSTKvjX/sJkY=
-=/olU
------END PGP SIGNATURE-----
 
---------------enig03B184A6DD12D2A46D064C7B--
 
