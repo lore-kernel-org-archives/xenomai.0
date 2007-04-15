@@ -1,14 +1,14 @@
-Message-ID: <462220DF.7050107@domain.hid>
-Date: Sun, 15 Apr 2007 14:55:59 +0200
+Message-ID: <462220E5.4070204@domain.hid>
+Date: Sun, 15 Apr 2007 14:56:05 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20070411170158.89634.qmail@domain.hid>
-In-Reply-To: <20070411170158.89634.qmail@domain.hid>
+References: <46219B08.8060507@domain.hid>
+In-Reply-To: <46219B08.8060507@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE84FC5930BAAAB3D3BD05044"
+	boundary="------------enigA52130ACAC03E5BF24C7547D"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] First version for PCI framegrabber skeleton
+Subject: Re: [Xenomai-core] RTDM SPI Driver for Blackfin 537
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,69 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Rodrigo Rosenfeld Rosas <lbocseg@domain.hid>
-Cc: xenomai@xenomai.org, jlpamart@domain.hid
+To: Terry Laurenzo <tlaurenzo@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE84FC5930BAAAB3D3BD05044
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enigA52130ACAC03E5BF24C7547D
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Rodrigo Rosenfeld Rosas wrote:
-> First of all I would like to state I'm glad to write to this list once =
-more :)
+Terry Laurenzo wrote:
+> I know its not the best form to reference a blog on a mailing list, but=
+=20
+> I'm tired and don't want to repeat myself.  I have published informatio=
+n=20
+> on an RTDM SPI Driver that I have implemented for the Blackfin 537:=20
+> http://www.rcode.net/blog/tlaurenzo/category/linux/
 >=20
-> Secondly, I would like to apologize for the late that I'm sending you t=
-his first version of the
-> old promised skeleton for the real-time PCI framegrabber I've developed=
- last year...
+> I needed this for my own project but felt that it could be useful for a=
+=20
+> larger audience.  This was my first attempt at a "real" RTDM driver, so=
+=20
+> I by no means claim perfection!  Feedback or pointers are appreciated.
 >=20
-> Thirdly, I would like to apologize for it being not organized nor docum=
-ented, but I'll explain the
-> reasons for that.
->=20
-> Since I've finished my Master Thesis, I have been in a hurry and at thi=
-s moment I'm working from
-> 8h to 22h from monday to thursday and from 8h to 18h at friday in three=
- different jobs... So, it
-> is true... I do not have time at the moment for writing the skeleton th=
-e way I want. But since I
-> received the message below yesterday (actually it was sent a week befor=
-e but I didn't have time to
-> check my other mail), I tried to help him.
->=20
-> I tried to get some free time at my job today for organizing a bit and =
-mainly for removing the
-> specific DataTranslation code from the skeleton because I do not have p=
-ermission yet to send the
-> full code. I cannot assure the attached code will even compile, since I=
- work on a Windows box at
-> work... Since I'm going to S=E3o Paulo tomorrow morning (6 am), in a bu=
-siness trip, I hope some of
-> you could assist him for any doubts due to code desorganization and lac=
-k of documentation...
->=20
-> Hope I can help with this code. Sorry, but I cannot do more than that u=
-ntil monday, when I come
-> back.
+> This driver has been used extensively on the 06R2 uClinux release.  As =
 
-Your effort toward an RT framegrabbing driver interface is very welcome,
-and I hope it can lay the ground for further work in this domain, also
-via different media like FireWire or USB.
+> of today, I have just verified it with the 07R1 release candidate and=20
+> the newly published Adeos patch for it.
 
-Just one issue remains as you already apologised for: this code needs a
-/little/ bit cleanup. I tried to get an impression by browsing through
-it, but it's fairly hard to read even for someone who thinks to know
-what to look for. Too much experimental or dead code.
+Nice work, specifically as it already considers a separation between
+hw-specific and generic part. I guess we just need one further SPI
+application/hardware driver to get a kick-off for an RTDM profile (I
+personally don't feel like I could judge on an SPI API design ATM).
+Meanwhile I would suggest to link your work also via the wiki
+(=3D>weblinks) so that others can find it that way.
 
-Maybe, once time permits, you can start the cleanup by reducing the
-driver to a level that only leaves the removed HW access as markers,
-killing everything that is not used right now in your real driver.
+>=20
+> I also have a Blackfin port of the RT 16550 Serial driver in the works =
 
+> (targeting Blackfin builtin UARTs instead of 16550) if anyone is intere=
+sted.
+
+Yes, that sounds fairly interesting as well. Given that we already have
+a profile here and a fair amount of users, integrating some Blackfin
+UART RTDM driver into Xenomai mainline wouldn't likely be a big deal.
+
+Once finished, you are welcome to post it, review will be provided ASAP.
+Please choose kernel coding style right from the beginning to accelerate
+the review.
+
+Thanks for contributing!
 Jan
 
 
---------------enigE84FC5930BAAAB3D3BD05044
+--------------enigA52130ACAC03E5BF24C7547D
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -89,10 +79,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGIiDfniDOoMHTA+kRApgvAJwNvKyawOChIHwl8UqC73Kg2epSFgCfTUw6
-xpeYh3mHQuhECax/f0Zh+Co=
-=c8Zq
+iD8DBQFGIiDlniDOoMHTA+kRAg5oAKCFOTg5lPQasMxZmm37f/gFID1JRACfdbE/
+KSZl4jhw+MDBd1AVTUR1IFI=
+=kaRY
 -----END PGP SIGNATURE-----
 
---------------enigE84FC5930BAAAB3D3BD05044--
+--------------enigA52130ACAC03E5BF24C7547D--
 
