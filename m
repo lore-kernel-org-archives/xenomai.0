@@ -1,11 +1,12 @@
-Message-ID: <46226E16.9080004@domain.hid>
-Date: Sun, 15 Apr 2007 20:25:26 +0200
+Message-ID: <4622729C.4080806@domain.hid>
+Date: Sun, 15 Apr 2007 20:44:44 +0200
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <461D65BC.2090406@domain.hid> <46220DC4.9040306@domain.hid>
-	<46222105.90900@domain.hid>
-In-Reply-To: <46222105.90900@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <461D65BC.2090406@domain.hid>
+	<46220DC4.9040306@domain.hid>	<46222105.90900@domain.hid>
+	<46226E16.9080004@domain.hid>
+In-Reply-To: <46226E16.9080004@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] CAN_RAW, CAN_PROTO_RAW, and Socket-CAN
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -17,35 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Jan Kiszka wrote:
->>> Hi Wolfgang,
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Wolfgang Grandegger wrote:
+>>> Jan Kiszka wrote:
+>>>> Hi Wolfgang,
+>>>>
+>>>> something is inconsistent about CAN_RAW in RT-Socket-CAN compared to
+>>>> plain Socket-CAN. Also, the latter doesn't know any CAN_PROTO_xxx unless
+>>>> I oversee something. Please have a look.
+>>> There is CAN_PROTO_RAW defined and I have added some time ago CAN_RAW to
+>>> rtcan.h to be compatible with Socket-CAN:
 >>>
->>> something is inconsistent about CAN_RAW in RT-Socket-CAN compared to
->>> plain Socket-CAN. Also, the latter doesn't know any CAN_PROTO_xxx unless
->>> I oversee something. Please have a look.
->> There is CAN_PROTO_RAW defined and I have added some time ago CAN_RAW to
->> rtcan.h to be compatible with Socket-CAN:
->>
->>   /** Particular CAN protocols
->>    *
->>    *  Currently only the RAW protocol is supported.
->>    */
->>   #define CAN_RAW  0
+>>>   /** Particular CAN protocols
+>>>    *
+>>>    *  Currently only the RAW protocol is supported.
+>>>    */
+>>>   #define CAN_RAW  0
+>> Yes, I know. But the question remains which way to go for rtcan:
+>> Socket-CAN doesn't know CAN_PROTO_*, RT-Socket-CAN comes with CAN_RAW as
+>> well now, but having a different value. That should be resolved, on
+>> whatever side, IMHO.
 > 
-> Yes, I know. But the question remains which way to go for rtcan:
-> Socket-CAN doesn't know CAN_PROTO_*, RT-Socket-CAN comes with CAN_RAW as
-> well now, but having a different value. That should be resolved, on
-> whatever side, IMHO.
+> Ah, now I understand your concern. CAN_PROTO_RAW actually serves the 
+> same purpose then CAN_RAW defining the particular CAN protocol. I'm 
+> going to clean it up soon removing CAN_PROTO_RAW and updating the doc. 
+> CAN_PROTO_RAW was not used by any application, IIRC.
 
-Ah, now I understand your concern. CAN_PROTO_RAW actually serves the 
-same purpose then CAN_RAW defining the particular CAN protocol. I'm 
-going to clean it up soon removing CAN_PROTO_RAW and updating the doc. 
-CAN_PROTO_RAW was not used by any application, IIRC.
+The man page for "socket" describes the protocol argument as shown below:
+
+        The  protocol specifies a particular protocol to be used with the
+        socket. Normally only a single protocol exists to support a
+        particular socket  type within a given protocol family, in which
+        case protocol can be specified as 0. However, it is possible that
+        many  protocols  may exist, in which case a particular protocol
+        must be specified in this manner.
+
+A value of 0 is valid for RT-Socket-CAN but not for Socket-CAN. 
+Therefore we need to define CAN_RAW=1 for compatibility reasons.
 
 Wolfgang.
 
