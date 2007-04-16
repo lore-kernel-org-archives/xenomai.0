@@ -1,74 +1,47 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <462CAB3B.9080408@domain.hid>
-References: <46265FC8.1070207@domain.hid>	<1176926837.5010.90.camel@domain.hid>
-	<46268879.30507@domain.hid>	<462C7DF4.9060002@domain.hid>
-	<1177324208.30217.98.camel@domain.hid>
-	<17964.35957.487976.245056@domain.hid>
-	<17964.36864.695360.167360@domain.hid>
-	<462CAB3B.9080408@domain.hid>
-Content-Type: text/plain
-Date: Mon, 23 Apr 2007 15:08:54 +0200
-Message-Id: <1177333734.30217.137.camel@domain.hid>
-Mime-Version: 1.0
+From: Jeff Weber <jweber@domain.hid>
+Date: Mon, 16 Apr 2007 16:27:01 -0500
+References: <200704161449.27506.jweber@domain.hid>
+	<200704161520.53584.jweber@domain.hid>
+	<17955.57309.169970.14672@domain.hid>
+In-Reply-To: <17955.57309.169970.14672@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [BUG] target width of shifts on 64 bits
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+Message-Id: <200704161627.01925.jweber@domain.hid>
+Subject: Re: [Xenomai-help] page faults
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai Help <xenomai@xenomai.org>
 
-On Mon, 2007-04-23 at 14:48 +0200, Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> > Gilles Chanteperdrix wrote:
-> >  > Philippe Gerum wrote:
-> >  >  > On Mon, 2007-04-23 at 11:35 +0200, Jan Kiszka wrote:
-> >  >  > > BTW, with latest SVN trunk and scalable sched, the oopses are gone but
-> >  >  > > latency still doesn't start up:
-> >  >  > > 
-> >  >  > > root@domain.hid :/root# cat /proc/xenomai/sched 
-> >  >  > > CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
-> >  >  > >   0  0       -1      0          0          master    R          ROOT
-> >  >  > >   0  930      0      0          0          master    R          display-928
-> >  >  > >   0  931     99      0          0          master    R          sampling-928
-> >  >  > > root@domain.hid :/root# cat /proc/xenomai/stat  
-> >  >  > > CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
-> >  >  > >   0  0      0          0          0     00500080  100.0  ROOT
-> >  >  > >   0  930    0          0          0     00300188    0.0  display-928
-> >  >  > >   0  931    0          0          0     00300188    0.0  sampling-928
-> >  >  > 
-> >  >  > Two threads in ready state with higher priority than the root one: this
-> >  >  > means that a rescheduling opportunity has been missed, or more
-> >  >  > precisely, someone may be lying to xnpod_schedule() wrt to priority
-> >  >  > ordering when the scalable sched is enabled.
-> >  > 
-> >  > ffsmlq uses ffnz, and there are two implementations of ffnz, one in
-> >  > asm/hal.h which is correct on x86_64, the other in nucleus/system.h
-> >  > which uses ffs hence only operates on ints.
-> > 
-> > Never mind, nucleus/system.h is only included when using Xenomai headers
-> > in user-space. Nevertheless, it should probably use ffsl instead of ffs.
-> > 
-> 
-> Who the hell is using the ffnz implementation in system.h? The
-> simulator? I kicked it out for a x64-build here, and I got no noticeable
-> effects.
-> 
+On Monday 16 April 2007 15:43, Gilles Chanteperdrix wrote:
+> If the fault you observe is due to an access to some memory after a call
+> to fork or one of its derivative (such as system, popen, etc...), the
+> patch would have copied the whole real-time process address space at
+> fork time instead of setting up COW mappings.
+No process forks are involved.  Though mlockall() was called from Linux 
+main(), and the page fault was encountered by a separate Xenomai task.  
+Here's the task history:
 
-No, the simulator uses its own (bugous over 64bit) ffs-based
-implementation of ffnz. What's in nucleus/system.h is likely a left over
-from the removed UVM support.
+static constructor allocates buffer from heap
+enter main()
+call mlockall(), verify return status == 0
+buffer is forcibly cleared using memset(buffer, 0, sizeof(buffer))
+main calls rt_task_shadow() to create Xenomai startup task
+startup task spawns Xenomai communications task via rt_task_start()
+communications task encounters page fault
 
--- 
-Philippe.
+Let me know if you are able to spot the source of the page faults.
 
-
+	thanks,
+	Jeff
 
