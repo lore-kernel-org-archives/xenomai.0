@@ -1,13 +1,12 @@
-From: Stelian Pop <stelian@domain.hid>
-In-Reply-To: <17955.64120.90606.670609@domain.hid>
-References: <1176585372.15994.14.camel@domain.hid>
-	<17955.64120.90606.670609@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Date: Tue, 17 Apr 2007 10:01:40 +0200
-Message-Id: <1176796900.4485.2.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [PATCH] Support EABI enabled kernels on ARM
+Message-ID: <46249C61.6060501@domain.hid>
+Date: Tue, 17 Apr 2007 10:07:29 +0000
+From: =?ISO-8859-15?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+MIME-Version: 1.0
+References: <461D0C64.4090702@domain.hid>
+In-Reply-To: <461D0C64.4090702@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Xenomai @ Hannover Messe 2007
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,33 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, xenomai-core <xenomai@xenomai.org>
 
-Le mardi 17 avril 2007 =E0 00:36 +0200, Gilles Chanteperdrix a =E9crit :
-> Stelian Pop wrote:
->  > Hi,
->  >=20
->  > The attached patch adds an option to make Xenomai userspace issue EA=
-BI
->  > syscalls. This is needed to make Xenomai work with kernels compiled =
-with
->  > CONFIG_EABI.
->  >
-> Applied, thanks.
+Hi,
+I will go there on Friday, it would be glad if we could meet us.
 
-Thanks.
+Talking about our works with xenomai and our work about possible 
+integration of xenomai with realtime industrial ethernet 
+(ethercat/powerlink/profinet...)
 
->  And by the way, I am running Debian Etch, and its
-> version of autotools seems to complain that we do not use datarootdir i=
-n
-> xeno-config.in...=20
+I would be interested in meeting Sebastien Smorloz if possible and 
+discuss some can driver issues.
 
-Hmm, things are going well on an Ubuntu Egdy here, but I suppose the
-next Ubuntu version (7.04 or Feisty Fawn, due in 3 days) will have
-almost the same package versions as Debian Etch...
+Best Regards
+S.Ancelot
 
---=20
-Stelian Pop <stelian@domain.hid>
+
+
+Jan Kiszka wrote:
+> Hi all,
+> 
+> if you happen to be in Hannover for the industry fair next week, don't
+> miss to watch Xenomai at work at our booth (hall 2 / A10). There will be
+> live demos of an autonomous service robot and a real-time 3D laser
+> scanner, all powered by Xenomai (*). You are welcome for a chat, either
+> with my colleagues or myself (going to be there on Wednesday and Friday).
+> 
+> Jan
+> 
+> (*) therefore the new logo variant, soon to appear on xenomai.org too
+> for broader usage (no, for now I'm not accepting comments on that
+> version anymore...)
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
