@@ -1,12 +1,12 @@
-Message-ID: <46265FC8.1070207@domain.hid>
-Date: Wed, 18 Apr 2007 20:13:28 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC1E36D2B4F7F07552C120D45"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] target width of shifts on 64 bits
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17958.30888.78683.498915@domain.hid>
+Date: Wed, 18 Apr 2007 21:59:36 +0200
+In-Reply-To: <899865CA54E4444DAF2E3639C04C5F4805EC7B@trillian.at.omicron.at>
+References: <899865CA54E4444DAF2E3639C04C5F4805EC7B@trillian.at.omicron.at>
+Subject: Re: [Xenomai-core] [PATCH] Adeos support for IXP4xx - CORRECTED
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,65 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Richard Cochran <richard.cochran@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC1E36D2B4F7F07552C120D45
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Richard Cochran wrote:
+ > Here is the corrected patch, based on Gilles' comments.
+ > 
+ > I hope sending this as an attachment is ok. I am a former Mutt user,
+ > now forced to use **tl**k, and I can never tell when this program
+ > wraps the lines...
 
-Hi Philippe,
+This patch is Ok for me. Philippe, could you merge it into the I-pipe
+repository ?
 
-here is an explanation of the scalable scheduler issue I face on x86_64
-under different gcc compilers:
-
-        unsigned long x =3D 0;
-        int n =3D 32;
-
-        x |=3D 1 << n;
-
-The last instruction translates to:
-
-	mov    0xfffffffffffffffc(%rbp),%ecx
-	mov    $0x1,%eax
-	shl    %cl,%eax
-	cltq
-	or     %rax,0xfffffffffffffff0(%rbp)
-
-That means we only shift with 32-bit precision although the target type
-is 64 bit. We find such code for setting the queue usage bits in
-addmlq(), but probably elsewhere too. This variant lets gcc generate the
-desired code:
-
-	x |=3D (unsigned long)1 << n;
-
-Compiler issue, x86_64-specific oddity, or generic 64-bit problem we may
-have across the ipipe and Xenomai code (ppc64, ia64?)?
-
-After patching nucleus/queue.h appropriately, my oopses disappear, but
-RT threads still do not run (no CSW to the threads latency creates).
-
-Jan
+-- 
 
 
-PS: If you are interested, I could post a modified qemu patch that
-enables gdb kernel debugging under x86_64.
-
-
---------------enigC1E36D2B4F7F07552C120D45
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGJl/IniDOoMHTA+kRAm/VAJ9Jysm1HjEurvyn8HzGKhzC5PotIgCfcG5e
-V1EwjG7a5ghVH9igiPM9xAk=
-=XVvF
------END PGP SIGNATURE-----
-
---------------enigC1E36D2B4F7F07552C120D45--
+					    Gilles Chanteperdrix.
 
