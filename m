@@ -1,13 +1,10 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 18 Apr 2007 11:19:52 +0200
-Message-ID: <899865CA54E4444DAF2E3639C04C5F4805EC7A@trillian.at.omicron.at>
-In-Reply-To: <17957.52859.203341.949031@domain.hid>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C781C9.C829CF47"
+Date: Wed, 18 Apr 2007 16:56:44 +0200
+Message-ID: <899865CA54E4444DAF2E3639C04C5F4805EC7B@trillian.at.omicron.at>
 From: "Richard Cochran" <richard.cochran@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] Adeos support for IXP4xx
+Subject: [Xenomai-core] [PATCH] Adeos support for IXP4xx - CORRECTED
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,33 +14,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org, xenomai@xenomai.org
+To: adeos-main@gna.org
+Cc: xenomai@xenomai.org
 
-> -----Original Message----- From: Gilles Chanteperdrix
->=20
-> The reason for not looping is that Adeos never looses interrupts. If
-> we leave the loop and Linux gets delayed, then the lost ticks will
-> be accounted for twice: one time because Xenomai will have posted
-> the missed timer interrupts, one time because of the loop. So, we
-> remove the loop.
+This is a multi-part message in MIME format.
 
-Got it.
+------_=_NextPart_001_01C781C9.C829CF47
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-I'll post a new patch today with your corrections.
+Here is the corrected patch, based on Gilles' comments.
 
-> It's explained in the wiki. The PXA timer does not tick if
-> programmed with too short delays. To see if IXP4XX has the same
-> problem, remove the "if" and run latency with a tight period, so
-> that the timer is reprogrammed with short delays. If latency
-> misteriously hangs, then you have the same problem as PXA, and you
-> should look for the minimum delay by trial and errors.
+I hope sending this as an attachment is ok. I am a former Mutt user,
+now forced to use **tl**k, and I can never tell when this program
+wraps the lines...
 
-AFAICT, the only hardware minimum would be 4 ticks (60 nanoseconds at
-66.66 MHz), because you cannot set the two low order bits in the
-reload register. However, since the ISR requires at least a few
-microseconds, perhaps we should set some sanity value, like 5 usec.
-
-Thanks,
 Richard
+
+********************************************************************
+Richard Cochran, Software Development
+OMICRON electronics GmbH, Oberes Ried 1, A-6833 Klaus, Austria
+Tel: +43 5523 507 425   Fax: +43 5523 507 7425
+http://www.omicron.at/
+********************************************************************
+
+------_=_NextPart_001_01C781C9.C829CF47
+Content-Type: application/octet-stream;
+	name="adeos-ixp4xx.diff"
+Content-Transfer-Encoding: base64
+Content-Description: adeos-ixp4xx.diff
+Content-Disposition: attachment;
+	filename="adeos-ixp4xx.diff"
+
+ZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtaXhwNHh4L2NvbW1vbi5jIGIvYXJjaC9hcm0vbWFj
+aC1peHA0eHgvY29tbW9uLmMKaW5kZXggZmJlMjg4YS4uMTQ3Zjc0MiAxMDA2NDQKLS0tIGEvYXJj
+aC9hcm0vbWFjaC1peHA0eHgvY29tbW9uLmMKKysrIGIvYXJjaC9hcm0vbWFjaC1peHA0eHgvY29t
+bW9uLmMKQEAgLTM5LDYgKzM5LDMwIEBACiAjaW5jbHVkZSA8YXNtL21hY2gvaXJxLmg+CiAjaW5j
+bHVkZSA8YXNtL21hY2gvdGltZS5oPgogCisjaWZkZWYgQ09ORklHX0lQSVBFCisjaW5jbHVkZSA8
+bGludXgvaXBpcGUuaD4KKworLyogV2UgaGF2ZSBubyBjYXNjYWRlZCBpbnRlcnJ1cHRzLiAqLwor
+dm9pZCBfX2lwaXBlX21hY2hfZGVtdXhfaXJxKHVuc2lnbmVkIGlycSwgc3RydWN0IHB0X3JlZ3Mg
+KnJlZ3MpIHt9CisKKyNpZmRlZiBDT05GSUdfTk9fSURMRV9IWgorI2Vycm9yICJkeW5hbWljIHRp
+Y2sgdGltZXIgbm90IHlldCBzdXBwb3J0ZWQgd2l0aCBJUElQRSIKKyNlbmRpZgorCitpbnQgX19p
+cGlwZV9tYWNoX3RpbWVyaW50ID0gSVJRX0lYUDRYWF9USU1FUjE7CitpbnQgX19pcGlwZV9tYWNo
+X3RpbWVyc3RvbGVuID0gMDsKK3Vuc2lnbmVkIGludCBfX2lwaXBlX21hY2hfdGlja3NfcGVyX2pp
+ZmZ5ID0gTEFUQ0g7CisKK0VYUE9SVF9TWU1CT0woX19pcGlwZV9tYWNoX3RpbWVyaW50KTsKK0VY
+UE9SVF9TWU1CT0woX19pcGlwZV9tYWNoX3RpbWVyc3RvbGVuKTsKK0VYUE9SVF9TWU1CT0woX19p
+cGlwZV9tYWNoX3RpY2tzX3Blcl9qaWZmeSk7CisKK3N0YXRpYyBpbnQgaXhwNHh4X3RpbWVyX2lu
+aXRpYWxpemVkOworCisjZGVmaW5lIE9ORV9TSE9UX0VOQUJMRSAoSVhQNFhYX09TVF9FTkFCTEV8
+SVhQNFhYX09TVF9PTkVfU0hPVCkKKworI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLworCiAvKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKioqKgogICogSVhQNHh4IGNoaXBzZXQgSS9PIG1hcHBpbmcKICAqKioqKioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqLwpAQCAtMjQwLDYgKzI2NCwzNyBAQCBzdGF0aWMgdW5zaWduZWQgdm9sYXRpbGUgbGFz
+dF9qaWZmeV90aW1lOwogCiAjZGVmaW5lIENMT0NLX1RJQ0tTX1BFUl9VU0VDCSgoQ0xPQ0tfVElD
+S19SQVRFICsgVVNFQ19QRVJfU0VDLzIpIC8gVVNFQ19QRVJfU0VDKQogCisjaWZkZWYgQ09ORklH
+X0lQSVBFCisKK3N0YXRpYyBpcnFyZXR1cm5fdCBpeHA0eHhfdGltZXJfaW50ZXJydXB0KGludCBp
+cnEsIHZvaWQgKmRldl9pZCkKK3sKKwl3cml0ZV9zZXFsb2NrKCZ4dGltZV9sb2NrKTsKKwlpZiAo
+X19pcGlwZV9tYWNoX3RpbWVyc3RvbGVuKSB7CisJCS8qIElmIHNvbWUgb3RoZXIgZG9tYWluIGhh
+cyB0YWtlbiBvdmVyIHRoZSB0aW1lciwgdGhlbgorCQkgKiBkbyBub3RoaW5nIChpcGlwZSBoYXMg
+YWNrZWQgaXQsIGFuZCB0aGUgb3RoZXIKKwkJICogZG9tYWluIGhhcyByZXByb2dyYW1lZCBpdCkK
+KwkJICovCisJCXRpbWVyX3RpY2soKTsKKwkJbGFzdF9qaWZmeV90aW1lICs9IExBVENIOworCX0g
+ZWxzZSB7CisJCS8qIElmIExpbnV4IGlzIHJ1bm5pbmcgdW5kZXIgaXBpcGUsIGJ1dCBpdCBzdGls
+bCBoYXMKKwkJICogdGhlIGNvbnRyb2wgb3ZlciB0aGUgdGltZXIgKG5vIFhlbm9tYWkgZm9yCisJ
+CSAqIGV4YW1wbGUpLCB0aGVuIHJlcHJvZ3JhbSB0aGUgdGltZXIgKGlwaXBlIGhhcworCQkgKiBh
+bHJlYWR5IGFja2VkIGl0KQorCQkgKi8KKwkJd2hpbGUgKChzaWduZWQgbG9uZykoKklYUDRYWF9P
+U1RTIC0gbGFzdF9qaWZmeV90aW1lKSA+PSBMQVRDSCkgeworCQkJLyogQ2F0Y2ggdXAgd2l0aCB0
+aGUgcmVhbCBpZGVhIG9mIHRpbWUgKi8KKwkJCXRpbWVyX3RpY2soKTsKKwkJCWxhc3RfamlmZnlf
+dGltZSArPSBMQVRDSDsKKwkJfQorCQkqSVhQNFhYX09TUlQxID0gKGxhc3RfamlmZnlfdGltZSAr
+IExBVENIIC0gKklYUDRYWF9PU1RTKSB8IE9ORV9TSE9UX0VOQUJMRTsKKwl9CisJd3JpdGVfc2Vx
+dW5sb2NrKCZ4dGltZV9sb2NrKTsKKwlyZXR1cm4gSVJRX0hBTkRMRUQ7Cit9CisKKyNlbHNlIC8q
+ICFDT05GSUdfSVBJUEUgKi8KKwogc3RhdGljIGlycXJldHVybl90IGl4cDR4eF90aW1lcl9pbnRl
+cnJ1cHQoaW50IGlycSwgdm9pZCAqZGV2X2lkKQogewogCXdyaXRlX3NlcWxvY2soJnh0aW1lX2xv
+Y2spOwpAQCAtMjYwLDYgKzMxNSw4IEBAIHN0YXRpYyBpcnFyZXR1cm5fdCBpeHA0eHhfdGltZXJf
+aW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRldl9pZCkKIAlyZXR1cm4gSVJRX0hBTkRMRUQ7CiB9
+CiAKKyNlbmRpZiAvKiAhQ09ORklHX0lQSVBFICovCisKIHN0YXRpYyBzdHJ1Y3QgaXJxYWN0aW9u
+IGl4cDR4eF90aW1lcl9pcnEgPSB7CiAJLm5hbWUJCT0gIklYUDR4eCBUaW1lciBUaWNrIiwKIAku
+ZmxhZ3MJCT0gSVJRRl9ESVNBQkxFRCB8IElSUUZfVElNRVIsCkBAIC0yNzIsNyArMzI5LDEyIEBA
+IHN0YXRpYyB2b2lkIF9faW5pdCBpeHA0eHhfdGltZXJfaW5pdCh2b2lkKQogCSpJWFA0WFhfT1NT
+VCA9IElYUDRYWF9PU1NUX1RJTUVSXzFfUEVORDsKIAogCS8qIFNldHVwIHRoZSBUaW1lciBjb3Vu
+dGVyIHZhbHVlICovCisjaWZkZWYgQ09ORklHX0lQSVBFCisJaXhwNHh4X3RpbWVyX2luaXRpYWxp
+emVkID0gMTsKKwkqSVhQNFhYX09TUlQxID0gTEFUQ0ggfCBPTkVfU0hPVF9FTkFCTEU7CisjZWxz
+ZQogCSpJWFA0WFhfT1NSVDEgPSAoTEFUQ0ggJiB+SVhQNFhYX09TVF9SRUxPQURfTUFTSykgfCBJ
+WFA0WFhfT1NUX0VOQUJMRTsKKyNlbmRpZgogCiAJLyogUmVzZXQgdGltZS1zdGFtcCBjb3VudGVy
+ICovCiAJKklYUDRYWF9PU1RTID0gMDsKQEAgLTM2NSwzICs0MjcsOTQgQEAgc3RhdGljIGludCBf
+X2luaXQgaXhwNHh4X2Nsb2Nrc291cmNlX2luaXQodm9pZCkKIH0KIAogZGV2aWNlX2luaXRjYWxs
+KGl4cDR4eF9jbG9ja3NvdXJjZV9pbml0KTsKKworI2lmZGVmIENPTkZJR19JUElQRQorCit2b2lk
+IF9faXBpcGVfbWFjaF9hY2t0aW1lcih2b2lkKQoreworCS8qIENsZWFyIFBlbmRpbmcgSW50ZXJy
+dXB0IGJ5IHdyaXRpbmcgJzEnIHRvIGl0ICovCisJKklYUDRYWF9PU1NUID0gSVhQNFhYX09TU1Rf
+VElNRVJfMV9QRU5EOworfQorCitFWFBPUlRfU1lNQk9MKF9faXBpcGVfbWFjaF9hY2t0aW1lcik7
+CisKK3Vuc2lnbmVkIGxvbmcgbG9uZyBfX2lwaXBlX21hY2hfZ2V0X3RzYyh2b2lkKQoreworCWlm
+IChsaWtlbHkoaXhwNHh4X3RpbWVyX2luaXRpYWxpemVkKSkgeworCQlzdGF0aWMgdW5pb24gewor
+I2lmZGVmIF9fQklHX0VORElBTgorCQkJc3RydWN0IHsKKwkJCQl1bnNpZ25lZCBsb25nIGhpZ2g7
+CisJCQkJdW5zaWduZWQgbG9uZyBsb3c7CisJCQl9OworI2Vsc2UgLyogX19MSVRUTEVfRU5ESUFO
+ICovCisJCQlzdHJ1Y3QgeworCQkJCXVuc2lnbmVkIGxvbmcgbG93OworCQkJCXVuc2lnbmVkIGxv
+bmcgaGlnaDsKKwkJCX07CisjZW5kaWYgLyogX19MSVRUTEVfRU5ESUFOICovCisJCQl1bnNpZ25l
+ZCBsb25nIGxvbmcgZnVsbDsKKwkJfSB0c2NbTlJfQ1BVU10sICpsb2NhbF90c2M7CisJCXVuc2ln
+bmVkIGxvbmcgc3RhbXAsIGZsYWdzOworCQl1bnNpZ25lZCBsb25nIGxvbmcgcmVzdWx0OworCisJ
+CWxvY2FsX2lycV9zYXZlX2h3KGZsYWdzKTsKKwkJbG9jYWxfdHNjID0gJnRzY1tpcGlwZV9wcm9j
+ZXNzb3JfaWQoKV07CisJCXN0YW1wID0gKklYUDRYWF9PU1RTOworCQlpZiAodW5saWtlbHkoc3Rh
+bXAgPCBsb2NhbF90c2MtPmxvdykpCisJCQkvKiAzMiBiaXQgY291bnRlciB3cmFwcGVkLCBpbmNy
+ZW1lbnQgaGlnaCB3b3JkLiAqLworCQkJbG9jYWxfdHNjLT5oaWdoKys7CisJCWxvY2FsX3RzYy0+
+bG93ID0gc3RhbXA7CisJCXJlc3VsdCA9IGxvY2FsX3RzYy0+ZnVsbDsKKwkJbG9jYWxfaXJxX3Jl
+c3RvcmVfaHcoZmxhZ3MpOworCisJCXJldHVybiByZXN1bHQ7CisJfQorCQorICAgICAgICByZXR1
+cm4gMDsKK30KKworRVhQT1JUX1NZTUJPTChfX2lwaXBlX21hY2hfZ2V0X3RzYyk7CisKKy8qCisg
+KiBSZXByb2dyYW0gdGhlIHRpbWVyCisgKgorICogVGhlIHRpbWVyIGlzIGFwZXJpb2RpYyAobW9z
+dCBvZiB0aGUgdGltZSkgd2hlbiBydW5uaW5nIFhlbm9tYWksIHNvCisgKiBfX2lwaXBlX21hY2hf
+c2V0X2RlYyBpcyBjYWxsZWQgZm9yIGVhY2ggdGltZXIgdGljayBhbmQgcHJvZ3JhbXMgdGhlCisg
+KiB0aW1lciBoYXJkd2FyZSBmb3IgdGhlIG5leHQgdGljay4KKyAqCisgKi8KKyNkZWZpbmUgTUlO
+X0RFTEFZIDMzMyAvKiA1IHVzZWMgd2l0aCB0aGUgNjYuNjYgTUh6IHN5c3RlbSBjbG9jayAqLwor
+Cit2b2lkIF9faXBpcGVfbWFjaF9zZXRfZGVjKHVuc2lnbmVkIGxvbmcgZGVsYXkpCit7CisJdW5z
+aWduZWQgbG9uZyBmbGFnczsKKwlpZiAoZGVsYXkgPiBNSU5fREVMQVkpIHsKKwkJbG9jYWxfaXJx
+X3NhdmVfaHcoZmxhZ3MpOworCQkqSVhQNFhYX09TUlQxID0gZGVsYXkgfCBPTkVfU0hPVF9FTkFC
+TEU7CisJCWxvY2FsX2lycV9yZXN0b3JlX2h3KGZsYWdzKTsKKwl9IGVsc2UgeworCQlpcGlwZV90
+cmlnZ2VyX2lycShJUlFfSVhQNFhYX1RJTUVSMSk7CisJfQorfQorCitFWFBPUlRfU1lNQk9MKF9f
+aXBpcGVfbWFjaF9zZXRfZGVjKTsKKworLyoKKyAqIFRoaXMgcmV0dXJucyB0aGUgbnVtYmVyIG9m
+IGNsb2NrIHRpY2tzIHJlbWFpbmluZy4KKyAqLwordW5zaWduZWQgbG9uZyBfX2lwaXBlX21hY2hf
+Z2V0X2RlYyh2b2lkKQoreworCXJldHVybigqSVhQNFhYX09TVDEpOyAvKiByZW1haW5pbmcgKi8K
+K30KKworRVhQT1JUX1NZTUJPTChfX2lwaXBlX21hY2hfZ2V0X2RlYyk7CisKK3ZvaWQgX19pcGlw
+ZV9tYWNoX3JlbGVhc2VfdGltZXIodm9pZCkKK3sKKyAgICAgICBfX2lwaXBlX21hY2hfc2V0X2Rl
+YyhfX2lwaXBlX21hY2hfdGlja3NfcGVyX2ppZmZ5KTsKK30KKworRVhQT1JUX1NZTUJPTChfX2lw
+aXBlX21hY2hfcmVsZWFzZV90aW1lcik7CisKKyNlbmRpZiAvKiBDT05GSUdfSVBJUEUgKi8KZGlm
+ZiAtLWdpdCBhL2luY2x1ZGUvYXNtLWFybS9hcmNoLWl4cDR4eC9pcnFzLmggYi9pbmNsdWRlL2Fz
+bS1hcm0vYXJjaC1peHA0eHgvaXJxcy5oCmluZGV4IGYyNGI3NjMuLjA0NjA5YmQgMTAwNjQ0Ci0t
+LSBhL2luY2x1ZGUvYXNtLWFybS9hcmNoLWl4cDR4eC9pcnFzLmgKKysrIGIvaW5jbHVkZS9hc20t
+YXJtL2FyY2gtaXhwNHh4L2lycXMuaApAQCAtNzAsNiArNzAsMTAgQEAKIAogI2RlZmluZQlYU0NB
+TEVfUE1VX0lSUQkJKElSUV9JWFA0WFhfWFNDQUxFX1BNVSkKIAorI2lmZGVmIENPTkZJR19JUElQ
+RQorI2RlZmluZSBfX2lwaXBlX21hY2hfaXJxX211eF9wKGlycSkgMCAvKiBXZSBoYXZlIG5vIGNh
+c2NhZGVkIGludGVycnVwdHMuICovCisjZW5kaWYKKwogLyoKICAqIElYRFA0MjUgYm9hcmQgSVJR
+cwogICovCg==
+
+------_=_NextPart_001_01C781C9.C829CF47--
 
