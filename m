@@ -1,14 +1,12 @@
-Message-ID: <46265B29.1050100@domain.hid>
-Date: Wed, 18 Apr 2007 19:53:45 +0200
+Message-ID: <46265FC8.1070207@domain.hid>
+Date: Wed, 18 Apr 2007 20:13:28 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <88AEA5AC18A141439A0D954EB037B0D30439F5B4@domain.hid>
-In-Reply-To: <88AEA5AC18A141439A0D954EB037B0D30439F5B4@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig98F667A4AA13593219BEB54D"
+	boundary="------------enigC1E36D2B4F7F07552C120D45"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Ipipe and Siemens A&D Realtime
+Subject: [Xenomai-core] [BUG] target width of shifts on 64 bits
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,69 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Krause, Karl-Heinz" <karl-heinz.krause@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig98F667A4AA13593219BEB54D
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigC1E36D2B4F7F07552C120D45
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Krause, Karl-Heinz wrote:
-> Hi Philippe
->=20
-> =20
->=20
-> as promised some time ago, I'd like to let you know the result of our w=
-ork.
->=20
-> Attached are=20
->=20
-> -          a few recycled slides from a presentation describing motivat=
-ion, features and results
->=20
-> -          the patch file for a  adeos-ipipe-2.6.15-i386-1.3-04.patch  =
-patched kernel2.6.15.4=20
+Hi Philippe,
 
-You attached the glibc patches, but your ipipe variant is missing. Could
-you also explain a bit what kind of optimisations your ipipe version
-contains, maybe they are of generic interest and we can discuss a
-potential integration? And a description of the features/hooks it adds
-would be good as well. That might help to restart a discussion if there
-is more common ground and a chance to merge.
+here is an explanation of the scalable scheduler issue I face on x86_64
+under different gcc compilers:
 
->=20
-> Since some parts of the kernel functionality (clock registration, realt=
-ime capable message queues) and=20
->=20
-> most parts of the glibc changes are also of  interest for the  RT_PREEM=
-PT solution we are in contact with=20
->=20
-> Thomas Gleixner trying to leverage the work.
->=20
-> An update to newer versions of  kernel and glibc (basically  because of=
- the PI mutexes) is planned for later,
->=20
-> presumably when RT_PREEMPT  has become mainline status.
->=20
+        unsigned long x =3D 0;
+        int n =3D 32;
 
-Hmm, so your approach is locked to 2.6.15 for now? What is blocking
-kernel / ipipe updates?
+        x |=3D 1 << n;
 
-> =20
->=20
-> If you need any further information just let me know.
->=20
+The last instruction translates to:
 
-According to your slides, you did a lot of concrete testing. Do you
-happen to have comparative numbers of recent Xenomai's POSIX skin as
-well (forgetting about the ABI issue for the moment)? Or do you have a
-releasable test suite?
+	mov    0xfffffffffffffffc(%rbp),%ecx
+	mov    $0x1,%eax
+	shl    %cl,%eax
+	cltq
+	or     %rax,0xfffffffffffffff0(%rbp)
+
+That means we only shift with 32-bit precision although the target type
+is 64 bit. We find such code for setting the queue usage bits in
+addmlq(), but probably elsewhere too. This variant lets gcc generate the
+desired code:
+
+	x |=3D (unsigned long)1 << n;
+
+Compiler issue, x86_64-specific oddity, or generic 64-bit problem we may
+have across the ipipe and Xenomai code (ppc64, ia64?)?
+
+After patching nucleus/queue.h appropriately, my oopses disappear, but
+RT threads still do not run (no CSW to the threads latency creates).
 
 Jan
 
 
---------------enig98F667A4AA13593219BEB54D
+PS: If you are interested, I could post a modified qemu patch that
+enables gdb kernel debugging under x86_64.
+
+
+--------------enigC1E36D2B4F7F07552C120D45
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -89,10 +71,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGJlsxniDOoMHTA+kRAqN7AJ46NmSzmTEQ3gtlVqGGGAAXtXPr2wCeJQ9D
-H/quIrx+rVnFIsbIaswcfMg=
-=japF
+iD8DBQFGJl/IniDOoMHTA+kRAm/VAJ9Jysm1HjEurvyn8HzGKhzC5PotIgCfcG5e
+V1EwjG7a5ghVH9igiPM9xAk=
+=XVvF
 -----END PGP SIGNATURE-----
 
---------------enig98F667A4AA13593219BEB54D--
+--------------enigC1E36D2B4F7F07552C120D45--
 
