@@ -1,61 +1,54 @@
-Message-ID: <462CAEE7.8030509@domain.hid>
-Date: Mon, 23 Apr 2007 15:04:39 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <46261AC8.5080803@domain.hid>
+Date: Wed, 18 Apr 2007 15:19:04 +0200
+From: Jean-Luc Pamart <jlpamart@domain.hid>
 MIME-Version: 1.0
-References: <46265FC8.1070207@domain.hid>	<1176926837.5010.90.camel@domain.hid>	<46268879.30507@domain.hid>	<462C7DF4.9060002@domain.hid>	<1177324208.30217.98.camel@domain.hid>	<17964.35957.487976.245056@domain.hid>
-	<17964.36864.695360.167360@domain.hid>
-	<462CAB3B.9080408@domain.hid> <462CADFB.40008@domain.hid>
-In-Reply-To: <462CADFB.40008@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4D6C17F1064D9455821C9D18"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [BUG] target width of shifts on 64 bits
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] version of __ipipe_restore_pipeline_head
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4D6C17F1064D9455821C9D18
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hello
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Who the hell is using the ffnz implementation in system.h? The
->> simulator? I kicked it out for a x64-build here, and I got no noticeab=
-le
->> effects.
->=20
-> No, the simulator uses the one in asm-sim/system.h. The one in
-> nucleus/system.h is, for instance, for xnmlqueue_t in user-space.
->=20
+The rtdm heartbeat example is working fine.
+I try now to run a more complete example :
+"Hard Real Time Driver Example Tutorial with MMAP using the RTDM (Real 
+Time Driver Model)"
+(http://www.captain.at/xenomai-real-time-driver-example.php)
 
-Thus a removable UVM remainder? At least this ffs/ffsl issue doesn't
-explain my scheduling problem.
+After building, it give a dmesg when loading :
+realtimedriver: disagrees about version of symbol 
+__ipipe_restore_pipeline_head
+realtimedriver: Unknown symbol __ipipe_restore_pipeline_head
+
+My configuration :
+xeno 2.3
+hal 1.6-03
+My linux version is 2.6.19
 
 
---------------enig4D6C17F1064D9455821C9D18
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+We have __ipipe_restore_pipeline_head symbol in
+the kernel :
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+c013f7b0 T __ipipe_restore_pipeline_head
+c013f7b0 U __ipipe_restore_pipeline_head    [xeno_native]
+c013f7b0 U __ipipe_restore_pipeline_head    [xeno_nucleus]
+c013f7b0 U __ipipe_restore_pipeline_head    [xeno_rtdm]
+c013f7b0 U __ipipe_restore_pipeline_head    [xeno_posix]
 
-iD8DBQFGLK7nniDOoMHTA+kRApThAJoDHQDtjPmTImwKUcnkYoanaGaFrACfemCY
-Eik0V9aYbKoMq9M4P29SDHE=
-=FkQ7
------END PGP SIGNATURE-----
+but the module realtimedriver I want to insmod has
+been builded with the same sources.
 
---------------enig4D6C17F1064D9455821C9D18--
+
+So what may I do ?
+
+
 
