@@ -1,16 +1,15 @@
-Message-ID: <4631CEAE.6060603@domain.hid>
-Date: Fri, 27 Apr 2007 12:21:34 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4630F284.6040103@domain.hid>
-	<b647ffbd0704270306h21a41eadr850567f6c8d58c22@domain.hid>
-In-Reply-To: <b647ffbd0704270306h21a41eadr850567f6c8d58c22@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE95E804A4B5C625365A9DDF4"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [PATCH 7/7] Detect illicit cross-domain calls
-	(i386/x86_64)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17960.30503.154972.409174@domain.hid>
+Date: Fri, 20 Apr 2007 10:17:43 +0200
+In-Reply-To: <009301c77da1$124fba10$36ef2e30$@com>
+References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>
+	<078801c77d27$5e7cc420$1b764c60$@com>
+	<461E6CFE.7000004@domain.hid>
+	<009301c77da1$124fba10$36ef2e30$@com>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,297 +18,216 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jose Pascual <josepascual@domain.hid>
+Cc: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE95E804A4B5C625365A9DDF4
-Content-Type: multipart/mixed;
- boundary="------------080205060601010201000402"
+Jose Pascual wrote:
+ > Hi Gilles,
+ > 
+ > thank you for your answer,
+ > 
+ > Could you send your benchmark results? (what mherz are your PLLA working?
+ > and your Master Clock?)?
 
-This is a multi-part message in MIME format.
---------------080205060601010201000402
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+The clock settings of the CSB637 board I am using, displayed by the
+kernel are:
+Clocks: CPU 184 MHz, master 46 MHz, main 3.686 MHz
 
-Dmitry Adamushko wrote:
-> On 26/04/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> [This patch is a remake of
->> https://mail.gna.org/public/adeos-main/2006-09/msg00037.html]
->=20
-> one minor issue below..
->=20
->>
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->> --- linux-2.6.20.orig/include/linux/preempt.h
->> +++ linux-2.6.20/include/linux/preempt.h
->> @@ -8,6 +8,7 @@
->>
->>  #include <linux/thread_info.h>
->>  #include <linux/linkage.h>
->> +#include <linux/preempt.h>
->=20
-> includes itself.. is it kindof a new useful trick? if so please educate=
+Running a 2.6.20 I-pipe kernel, setting the nucleus latency
+(/proc/xenomai/latency) to 70us, I get a worst case latency of 175 us
+over 8 hours, under dd if=/dev/zero of=/dev/null load.
 
-> me :o)
+Here are the latency histogram results.
+---|--param|----range-|--samples
+HSD|    min|  10 - 11 |       22
+HSD|    min|  11 - 12 |      746
+HSD|    min|  12 - 13 |      397
+HSD|    min|  13 - 14 |      206
+HSD|    min|  15 - 16 |        1
+HSD|    min|  20 - 21 |       31
+HSD|    min|  21 - 22 |     3524
+HSD|    min|  22 - 23 |    18810
+HSD|    min|  23 - 24 |     3496
+HSD|    min|  24 - 25 |     1135
+HSD|    min|  25 - 26 |      429
+HSD|    min|  26 - 27 |        1
+HSD|    min|  74 - 75 |        1
+---|--param|----range-|--samples
+HSD|    avg|  10 - 11 |       22
+HSD|    avg|  11 - 12 |      746
+HSD|    avg|  12 - 13 |      397
+HSD|    avg|  13 - 14 |      206
+HSD|    avg|  15 - 16 |        1
+HSD|    avg|  17 - 18 |        2
+HSD|    avg|  18 - 19 |      137
+HSD|    avg|  19 - 20 |      116
+HSD|    avg|  20 - 21 |       74
+HSD|    avg|  21 - 22 |     3525
+HSD|    avg|  22 - 23 |    18907
+HSD|    avg|  23 - 24 |     4070
+HSD|    avg|  24 - 25 |     1686
+HSD|    avg|  25 - 26 |     1195
+HSD|    avg|  26 - 27 |      326
+HSD|    avg|  27 - 28 |      971
+HSD|    avg|  28 - 29 |     7377
+HSD|    avg|  29 - 30 |    17482
+HSD|    avg|  30 - 31 |     1602
+HSD|    avg|  31 - 32 |      561
+HSD|    avg|  32 - 33 |      261
+HSD|    avg|  33 - 34 |      263
+HSD|    avg|  34 - 35 |      271
+HSD|    avg|  35 - 36 |      115
+HSD|    avg|  36 - 37 |       29
+HSD|    avg|  55 - 56 |       64
+HSD|    avg|  56 - 57 |     1047
+HSD|    avg|  57 - 58 |      222
+HSD|    avg|  58 - 59 |       37
+HSD|    avg|  59 - 60 |        1
+HSD|    avg|  63 - 64 |        1
+HSD|    avg|  70 - 71 |       10
+HSD|    avg|  71 - 72 |      584
+HSD|    avg|  72 - 73 |     9495
+HSD|    avg|  73 - 74 |    18874
+HSD|    avg|  74 - 75 |   122506
+HSD|    avg|  75 - 76 |   687030
+HSD|    avg|  76 - 77 |   685654
+HSD|    avg|  77 - 78 |  1235930
+HSD|    avg|  78 - 79 |    97036
+HSD|    avg|  79 - 80 |    33766
+HSD|    avg|  80 - 81 |     2983
+HSD|    avg|  81 - 82 |      496
+HSD|    avg|  88 - 89 |        3
+HSD|    avg|  89 - 90 |        2
+HSD|    avg|  90 - 91 |        9
+HSD|    avg|  91 - 92 |       16
+HSD|    avg|  92 - 93 |       29
+HSD|    avg|  93 - 94 |      144
+HSD|    avg|  94 - 95 |      167
+HSD|    avg|  95 - 96 |      681
+HSD|    avg|  96 - 97 |      906
+HSD|    avg|  97 - 98 |    11302
+HSD|    avg|  98 - 99 |    13198
+HSD|    avg|  99 -100 |    14670
+HSD|    avg| 100 -101 |    26229
+HSD|    avg| 101 -102 |     7286
+HSD|    avg| 102 -103 |    27906
+HSD|    avg| 103 -104 |   173187
+HSD|    avg| 104 -105 |  1694570
+HSD|    avg| 105 -106 |   830944
+HSD|    avg| 106 -107 |   613763
+HSD|    avg| 107 -108 |    81959
+HSD|    avg| 108 -109 |    41967
+HSD|    avg| 109 -110 |    45206
+HSD|    avg| 110 -111 |    45041
+HSD|    avg| 111 -112 |  3748510
+HSD|    avg| 112 -113 | 10275799
+HSD|    avg| 113 -114 | 21326133
+HSD|    avg| 114 -115 |  5278953
+HSD|    avg| 115 -116 |  6019472
+HSD|    avg| 116 -117 |  1740063
+HSD|    avg| 117 -118 |  1281249
+HSD|    avg| 118 -119 |   829744
+HSD|    avg| 119 -120 |    30357
+HSD|    avg| 120 -121 |     3123
+HSD|    avg| 121 -122 |      465
+HSD|    avg| 122 -123 |     1906
+HSD|    avg| 123 -124 |     2173
+HSD|    avg| 124 -125 |     3728
+HSD|    avg| 125 -126 |     8888
+HSD|    avg| 126 -127 |    25723
+HSD|    avg| 127 -128 |   120826
+HSD|    avg| 128 -129 |    49583
+HSD|    avg| 129 -130 |    86632
+HSD|    avg| 130 -131 |    33987
+HSD|    avg| 131 -132 |    95449
+HSD|    avg| 132 -133 |    16782
+HSD|    avg| 133 -134 |     5143
+HSD|    avg| 134 -135 |     1717
+HSD|    avg| 135 -136 |      109
+HSD|    avg| 136 -137 |      181
+HSD|    avg| 137 -138 |       54
+HSD|    avg| 138 -139 |       26
+HSD|    avg| 139 -140 |        1
+HSD|    avg| 140 -141 |        2
+HSD|    avg| 142 -143 |        1
+HSD|    avg| 143 -144 |        7
+HSD|    avg| 144 -145 |       36
+HSD|    avg| 145 -146 |       79
+HSD|    avg| 146 -147 |       33
+HSD|    avg| 147 -148 |       84
+HSD|    avg| 148 -149 |        9
+HSD|    avg| 149 -150 |        3
+HSD|    avg| 150 -151 |        2
+HSD|    avg| 152 -153 |        8
+HSD|    avg| 153 -154 |        5
+HSD|    avg| 154 -155 |       60
+HSD|    avg| 155 -156 |       86
+HSD|    avg| 156 -157 |      469
+HSD|    avg| 157 -158 |      339
+HSD|    avg| 158 -159 |      566
+HSD|    avg| 159 -160 |     1962
+HSD|    avg| 160 -161 |     1441
+HSD|    avg| 161 -162 |     4948
+HSD|    avg| 162 -163 |     2681
+HSD|    avg| 163 -164 |     3713
+HSD|    avg| 164 -165 |     1345
+HSD|    avg| 165 -166 |     3059
+HSD|    avg| 166 -167 |     1758
+HSD|    avg| 167 -168 |     2036
+HSD|    avg| 168 -169 |     2543
+HSD|    avg| 169 -170 |      286
+HSD|    avg| 170 -171 |      112
+HSD|    avg| 171 -172 |        6
+HSD|    avg| 172 -173 |        1
+HSD|    avg| 174 -175 |        1
+---|--param|----range-|--samples
+HSD|    max| 122 -123 |        1
+HSD|    max| 131 -132 |      243
+HSD|    max| 132 -133 |      423
+HSD|    max| 133 -134 |      320
+HSD|    max| 134 -135 |      118
+HSD|    max| 135 -136 |        4
+HSD|    max| 136 -137 |       10
+HSD|    max| 137 -138 |        3
+HSD|    max| 138 -139 |        2
+HSD|    max| 143 -144 |        6
+HSD|    max| 144 -145 |       36
+HSD|    max| 145 -146 |       78
+HSD|    max| 146 -147 |       33
+HSD|    max| 147 -148 |       84
+HSD|    max| 148 -149 |        9
+HSD|    max| 149 -150 |        3
+HSD|    max| 150 -151 |        2
+HSD|    max| 152 -153 |        8
+HSD|    max| 153 -154 |        5
+HSD|    max| 154 -155 |       60
+HSD|    max| 155 -156 |       86
+HSD|    max| 156 -157 |      469
+HSD|    max| 157 -158 |      339
+HSD|    max| 158 -159 |      566
+HSD|    max| 159 -160 |     1962
+HSD|    max| 160 -161 |     1441
+HSD|    max| 161 -162 |     4948
+HSD|    max| 162 -163 |     2681
+HSD|    max| 163 -164 |     3713
+HSD|    max| 164 -165 |     1345
+HSD|    max| 165 -166 |     3059
+HSD|    max| 166 -167 |     1758
+HSD|    max| 167 -168 |     2035
+HSD|    max| 168 -169 |     2543
+HSD|    max| 169 -170 |      286
+HSD|    max| 170 -171 |      112
+HSD|    max| 171 -172 |        6
+HSD|    max| 172 -173 |        1
+HSD|    max| 174 -175 |        1
+HSH|--param|--samples-|--average--|---stddev--
+HSS|    min|     28799|     21.626|      2.387
+HSS|    avg|  57599720|     36.359|     75.112
+HSS|    max|     28799|    161.719|      6.860
+---|------------|------------|------------|--------|-------------------------
+RTS|      10.416|     111.111|     174.305|       0|    08:00:02/08:00:00         
+-- 
 
-Interesting... I guess someone was trying to type "ipipe_base" while
-thinking of "preempt". The former seems to be included implicitly, the
-latter caused no harm. Anyway, corrected patch attached.
 
-Thanks for review.
-
-Jan
-
---------------080205060601010201000402
-Content-Type: text/plain;
- name="debug-dom-violation-v4.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="debug-dom-violation-v4.patch"
-
----
- include/linux/ipipe_base.h |    6 ++++
- include/linux/kernel.h     |    8 ++++--
- include/linux/preempt.h    |   59 ++++++++++++++++++--------------------=
--------
- kernel/ipipe/Kconfig.debug |    9 ++++++
- kernel/ipipe/core.c        |   31 +++++++++++++++++++++++
- 5 files changed, 76 insertions(+), 37 deletions(-)
-
-Index: linux-2.6.20/include/linux/ipipe_base.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/include/linux/ipipe_base.h
-+++ linux-2.6.20/include/linux/ipipe_base.h
-@@ -75,6 +75,12 @@ void __ipipe_unstall_root(void);
-=20
- void __ipipe_restore_root(unsigned long x);
-=20
-+#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
-+void ipipe_check_context(struct ipipe_domain *border_ipd);
-+#else /* !CONFIG_IPIPE_DEBUG_CONTEXT */
-+static inline void ipipe_check_context(struct ipipe_domain *border_ipd) =
-{ }
-+#endif /* !CONFIG_IPIPE_DEBUG_CONTEXT */
-+
- #endif	/* CONFIG_IPIPE */
-=20
- #endif	/* !__LINUX_IPIPE_BASE_H */
-Index: linux-2.6.20/include/linux/kernel.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/include/linux/kernel.h
-+++ linux-2.6.20/include/linux/kernel.h
-@@ -14,6 +14,7 @@
- #include <linux/compiler.h>
- #include <linux/bitops.h>
- #include <linux/log2.h>
-+#include <linux/ipipe_base.h>
- #include <asm/byteorder.h>
- #include <asm/bug.h>
-=20
-@@ -72,9 +73,12 @@ struct user;
-  */
- #ifdef CONFIG_PREEMPT_VOLUNTARY
- extern int cond_resched(void);
--# define might_resched() cond_resched()
-+# define might_resched() do { \
-+		ipipe_check_context(ipipe_root_domain); \
-+		cond_resched(); \
-+	} while (0)
- #else
--# define might_resched() do { } while (0)
-+# define might_resched() ipipe_check_context(ipipe_root_domain)
- #endif
-=20
- #ifdef CONFIG_DEBUG_SPINLOCK_SLEEP
-Index: linux-2.6.20/include/linux/preempt.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/include/linux/preempt.h
-+++ linux-2.6.20/include/linux/preempt.h
-@@ -8,6 +8,7 @@
-=20
- #include <linux/thread_info.h>
- #include <linux/linkage.h>
-+#include <linux/ipipe_base.h>
-=20
- #ifdef CONFIG_DEBUG_PREEMPT
-   extern void fastcall add_preempt_count(int val);
-@@ -26,52 +27,40 @@
-=20
- asmlinkage void preempt_schedule(void);
-=20
--#ifdef CONFIG_IPIPE
--#include <asm/ipipe.h>
--DECLARE_PER_CPU(struct ipipe_domain *, ipipe_percpu_domain);
--extern struct ipipe_domain ipipe_root;
--#define ipipe_preempt_guard() (per_cpu(ipipe_percpu_domain, ipipe_proces=
-sor_id()) =3D=3D &ipipe_root)
--#else  /* !CONFIG_IPIPE */
--#define ipipe_preempt_guard()	1
--#endif /* CONFIG_IPIPE */
--
--#define preempt_disable()						\
--do {									\
--	if (ipipe_preempt_guard()) {					\
--		inc_preempt_count();					\
--		barrier();						\
--	}								\
-+#define preempt_disable() \
-+do { \
-+	ipipe_check_context(ipipe_root_domain); \
-+	inc_preempt_count(); \
-+	barrier(); \
- } while (0)
-=20
--#define preempt_enable_no_resched()					\
--do {									\
--	if (ipipe_preempt_guard()) {					\
--		barrier();						\
--		dec_preempt_count();					\
--	}								\
-+#define preempt_enable_no_resched() \
-+do { \
-+	ipipe_check_context(ipipe_root_domain); \
-+	barrier(); \
-+	dec_preempt_count(); \
- } while (0)
-=20
--#define preempt_check_resched()						\
--do {									\
--	if (ipipe_preempt_guard()) {					\
--		if (unlikely(test_thread_flag(TIF_NEED_RESCHED)))	\
--			preempt_schedule();				\
--	}								\
-+#define preempt_check_resched() \
-+do { \
-+	ipipe_check_context(ipipe_root_domain); \
-+	if (unlikely(test_thread_flag(TIF_NEED_RESCHED))) \
-+		preempt_schedule(); \
- } while (0)
-=20
--#define preempt_enable()						\
--do {									\
--	preempt_enable_no_resched();					\
-+#define preempt_enable() \
-+do { \
-+	preempt_enable_no_resched(); \
- 	barrier(); \
--	preempt_check_resched();					\
-+	preempt_check_resched(); \
- } while (0)
-=20
- #else
-=20
--#define preempt_disable()		do { } while (0)
--#define preempt_enable_no_resched()	do { } while (0)
--#define preempt_enable()		do { } while (0)
--#define preempt_check_resched()		do { } while (0)
-+#define preempt_disable()		ipipe_check_context(ipipe_root_domain)
-+#define preempt_enable_no_resched()	ipipe_check_context(ipipe_root_domai=
-n)
-+#define preempt_enable()		ipipe_check_context(ipipe_root_domain)
-+#define preempt_check_resched()		ipipe_check_context(ipipe_root_domain)
-=20
- #endif
-=20
-Index: linux-2.6.20/kernel/ipipe/Kconfig.debug
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/kernel/ipipe/Kconfig.debug
-+++ linux-2.6.20/kernel/ipipe/Kconfig.debug
-@@ -2,6 +2,15 @@ config IPIPE_DEBUG
- 	bool "I-pipe debugging"
- 	depends on IPIPE
-=20
-+config IPIPE_DEBUG_CONTEXT
-+	bool "Check for illicit cross-domain calls"
-+	depends on IPIPE_DEBUG
-+	---help---
-+	  Enable this feature to arm checkpoints in the kernel that
-+	  verify the correct invocation context. On entry of critical
-+	  Linux services a warning is issued if the caller is not
-+	  running over the root domain.
-+
- config IPIPE_TRACE
- 	bool "Latency tracing"
- 	depends on IPIPE_DEBUG
-Index: linux-2.6.20/kernel/ipipe/core.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/kernel/ipipe/core.c
-+++ linux-2.6.20/kernel/ipipe/core.c
-@@ -33,6 +33,9 @@
- #include <linux/proc_fs.h>
- #include <linux/seq_file.h>
- #endif	/* CONFIG_PROC_FS */
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+#include <linux/ipipe_trace.h>
-+#endif	/* CONFIG_IPIPE_TRACE_MCOUNT */
-=20
- static int __ipipe_ptd_key_count;
-=20
-@@ -1383,6 +1386,34 @@ void __init ipipe_init_proc(void)
-=20
- #endif	/* CONFIG_PROC_FS */
-=20
-+#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
-+void ipipe_check_context(struct ipipe_domain *border_ipd)
-+{
-+	static int check_hit;
-+
-+	if (likely(ipipe_current_domain->priority <=3D border_ipd->priority) ||=
-
-+	    check_hit)
-+		return;
-+
-+	check_hit =3D 1;
-+
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+	ipipe_trace_panic_freeze();
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-+	ipipe_set_printk_sync(ipipe_current_domain);
-+	printk(KERN_ERR "I-pipe: Detected illicit call from domain '%s'\n"
-+	       KERN_ERR "        into a service reserved for domain '%s' and "
-+			"below.\n",
-+	       ipipe_current_domain->name, border_ipd->name);
-+	show_stack(NULL, NULL);
-+#ifdef CONFIG_IPIPE_TRACE_MCOUNT
-+	ipipe_trace_panic_dump();
-+#endif /* CONFIG_IPIPE_TRACE_MCOUNT */
-+}
-+
-+EXPORT_SYMBOL(ipipe_check_context);
-+#endif /* CONFIG_IPIPE_DEBUG_CONTEXT */
-+
- EXPORT_SYMBOL(ipipe_virtualize_irq);
- EXPORT_SYMBOL(ipipe_control_irq);
- EXPORT_SYMBOL(ipipe_suspend_domain);
-
---------------080205060601010201000402--
-
---------------enigE95E804A4B5C625365A9DDF4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGMc6uniDOoMHTA+kRAsceAJ9qeQcc7wE4znmUrLWpB9nOrVtwawCeOpiG
-hiy2F5aqjgEiWcB5J0OKdgI=
-=CMHS
------END PGP SIGNATURE-----
-
---------------enigE95E804A4B5C625365A9DDF4--
+					    Gilles Chanteperdrix.
 
