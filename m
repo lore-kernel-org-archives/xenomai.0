@@ -1,88 +1,76 @@
-Message-ID: <462DE13C.7030305@domain.hid>
-Date: Tue, 24 Apr 2007 12:51:40 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <45F68258.5040603@domain.hid>
-	<460AB8FF.5060904@domain.hid>	 <460B21C0.7090200@domain.hid>
-	<460B7FDF.8030100@domain.hid>	 <460BECFD.2030003@domain.hid>
-	<460C0C7D.7000001@domain.hid>	
-	<bc4264770704230809i9f9c554k14d67007b828971d@domain.hid>	
-	<17964.64208.463335.611234@domain.hid>	
-	<bc4264770704240144n74d4cfa0lafcbc84b76e06822@domain.hid>	
-	<462DC874.20303@domain.hid>
-	<bc4264770704240331v31f81487l32e27634e77804b4@domain.hid>
-In-Reply-To: <bc4264770704240331v31f81487l32e27634e77804b4@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0A49CA7CF45294A90D687002"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Latencies due to RT-Socket-CAN register accesses
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Message-ID: <17961.10754.445787.669761@domain.hid>
+Date: Fri, 20 Apr 2007 23:00:50 +0200
+In-Reply-To: <1176998001.8782.30.camel@domain.hid>
+References: <1176585372.15994.14.camel@domain.hid>
+	<17958.43866.983944.630780@domain.hid>
+	<1176964723.2508.9.camel@domain.hid>
+	<1176998001.8782.30.camel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH] Support EABI enabled kernels on ARM
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: Xenomai-help@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stelian Pop <stelian@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0A49CA7CF45294A90D687002
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Stelian Pop wrote:
+ > Le jeudi 19 avril 2007 ~ 08:38 +0200, Stelian Pop a ~crit :
+ > > Le jeudi 19 avril 2007 ~ 01:35 +0200, Gilles Chanteperdrix a ~crit :
+ > > > Stelian Pop wrote:
+ > > >  > Hi,
+ > > >  > 
+ > > >  > The attached patch adds an option to make Xenomai userspace issue EABI
+ > > >  > syscalls. This is needed to make Xenomai work with kernels compiled with
+ > > >  > CONFIG_EABI.
+ > > >  > 
+ > > > I get a problem with this patch: I am in the no EABI case in user-space
+ > > > and kernel-space, and when starting latency, I get an "Illegal
+ > > > instruction" message. If I revert this patch, latency starts
+ > > > correctly. Any idea ?
+ > > 
+ > > Hmm, I might have screwed up here. A quick looking points me to this
+ > > change:
+ > > 
+ > > +#define __SYS_REG
+ > > +#define __SYS_REG_LIST
+ > > +#define __syscall "swi\t" __sys1(XENO_ARM_SYSCALL) ""
+ > > 
+ > > Does replacing XENO_ARM_SYSCALL with (0x00900000 + XENO_ARM_SYSCALL)
+ > > fixes it ?
+ > > 
+ > > I may be able to mount a test platform later today if this needs further
+ > > debugging...
+ > 
+ > I have finally managed to get my old-ABI toolchain to work and can
+ > confirm that the modification above fixes the problem.
+ > 
+ > The whole section of include/asm-arm/syscall.h must read:
+ > 
+ > #ifdef CONFIG_XENO_ARM_EABI
+ > #define __SYS_REG register unsigned long __r7 __asm__ ("r7") = XENO_ARM_SYSCALL;#define __SYS_REG_LIST ,"r" (__r7)
+ > #define __syscall "swi\t0"
+ > #else
+ > #define __SYS_REG
+ > #define __SYS_REG_LIST
+ > #define __NR_OABI_SYSCALL_BASE	0x900000
+ > #define __syscall "swi\t" __sys1(__NR_OABI_SYSCALL_BASE + XENO_ARM_SYSCALL) ""
+ > #endif
+ > 
+ > Sorry for the annoyance.
 
-roland Tollenaar wrote:
-> Hi
->=20
->> Two conclusions:
->>
->>  - You are running your kernel as i586 without TSC support - suboptima=
-l,
->>    costs you a few micros.
-> I am aware of this. For the current machine I will stick to this.
->=20
+Yep, that was it, thanks.
 
-Then don't complain. :)
-
->=20
->>  - The reported latency perfectly matches the trace, nothing
->>    pathological there. The trace looks like this: Timer fired,
->>    measurement task woken up, two interrupts squeeze themselves betwee=
-n
->>    wakeup and time stamp acquisition. All sane.
-> Is it not a bit strange that a machine as fast as this one is supposed
-> to be give worse latencies than much slower machines. Are the 2
-> interrupts causing the latency?
-
-Those two increase the latency of code in timed tasks, for sure. The
-question is if your measurement on the slower machine also included this
-scenario (timer event + 2 IRQs in a row). This definitely doesn't happen
-often, and maybe timing on the slower box makes it less likely. Or there
-is one potential IRQ source more on your fast box (e.g. due to IRQ
-sharing on the slower one).
-
-You see, RT system design on the edge (ie. when hunting a few 10 us) is
-tricky and not easily portable from box X to box Y.
-
-Jan
+-- 
 
 
---------------enig0A49CA7CF45294A90D687002
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGLeE8niDOoMHTA+kRAmjVAJ9m0DRiVG1UsXl86TrTijUkgUa5jACbBy1w
-XVy63TwA3oTA5HxKNyRCGC4=
-=+mct
------END PGP SIGNATURE-----
-
---------------enig0A49CA7CF45294A90D687002--
+					    Gilles Chanteperdrix.
 
