@@ -1,10 +1,10 @@
-Message-ID: <462790B6.6090701@domain.hid>
-Date: Thu, 19 Apr 2007 17:54:30 +0200
-From: Claudio Scordino <cloud.of.andor@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+Date: Fri, 20 Apr 2007 02:36:55 +0200
+From: karre@domain.hid
+Message-ID: <20070420003655.216340@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Atmel AT91SAM support ?
+Subject: [Xenomai-help] Timer frequency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,15 +16,14 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+Hi folks,
 
-   I saw that Xenomai supports the Atmel AT91RM9200 processor. Does it support 
-the AT91SAM9260 as well ?
+does Xenomai adjust the system timer frequency? I probably does, so how can I find out the frequency on my system?
 
-Otherwise, will we have your support if we start the porting to this processor ? 
-Is the porting much complicated ?
+Thanks,
 
-Many thanks.
-
-
+Richard
+-- 
+"Feel free" - 10 GB Mailbox, 100 FreeSMS/Monat ...
+Jetzt GMX TopMail testen: http://www.gmx.net/de/go/topmail
 
