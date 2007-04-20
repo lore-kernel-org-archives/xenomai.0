@@ -1,106 +1,46 @@
-From: trem <tremyfr@domain.hid>
-Date: Tue, 01 May 2007 22:43:46 +0200
-Message-ID: <f188q2$bsr$1@domain.hid>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000001050004030506070402"
-Sender: news <news@domain.hid>
-Subject: [Xenomai-core] [PATCH] add tut01_skeleton
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-This is a multi-part message in MIME format.
---------------000001050004030506070402
+Message-ID: <462882BD.6000203@domain.hid>
+Date: Fri, 20 Apr 2007 11:07:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>	<078801c77d27$5e7cc420$1b764c60$@com>	<461E6CFE.7000004@domain.hid>	<009301c77da1$124fba10$36ef2e30$@com>
+	<17960.30503.154972.409174@domain.hid>
+	<00e801c78328$d2569a90$7703cfb0$@com>
+In-Reply-To: <00e801c78328$d2569a90$7703cfb0$@com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Jose Pascual <josepascual@domain.hid>
+Cc: adeos-main@gna.org
 
-Hi
+Jose Pascual wrote:
+> Hi Gilles,
+> 
+> Thank you so much for your answer,
+> 
+> Do you have a ipipe patch for 2.6.20? is only for at91sam9261 or I can use
+> it for at91rm9200?
 
-As we have already talked on xenomai-help, I've done a first example
-with rtdm. It's very simple and the goal is just to show how to register
-and use a rtdm device. This is the first release, so it isn't perfect
-(comments and feedback welcome).
+The patch for 2.6.20 only exists on my disk and is only tested on
+at91rm9200. I need to test the compilation on other ARMs, but I should
+publish it soon after.
 
-If this example is good enough, I have to plane next one. I think about
-shawdow_task (to use device in rt mode) and synchronization. If people
-have idea for others example, I would be pleased to read them.
+> I'm having in ethernet driver some ROVR errors because dma became full for
+> load in linux, do 
+> you think adeos-ipipe can help me in it? shoud it be necessary to change
+> ethernet irq (portng to adeos)?
 
-regards,
-trem
+You could port it to RTnet, you will get low latency IP/UDP, but beware,
+RTnet is incompatible with plain ipv4, so, if you want to run a network
+with RTnet, all machines on the network need to run RTnet.
 
---------------000001050004030506070402
-Content-Type: application/x-bzip;
- name="tut01_skeleton_01.patch.bz2"
-Content-Transfer-Encoding: base64
-Content-Disposition: inline;
- filename="tut01_skeleton_01.patch.bz2"
-
-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
---------------000001050004030506070402--
-
+-- 
+                                                 Gilles Chanteperdrix
 
