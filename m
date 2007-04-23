@@ -1,68 +1,75 @@
+Message-ID: <462CC82D.4010900@domain.hid>
+Date: Mon, 23 Apr 2007 16:52:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17963.28109.848250.288610@domain.hid>
-Date: Sun, 22 Apr 2007 16:14:37 +0200
-In-Reply-To: <20070421215306.54260@domain.hid>
-References: <20070420003655.216340@domain.hid>
-	<17961.8740.319909.281709@domain.hid>
-	<20070421215306.54260@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Timer frequency
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigEE49432440238B0E7FAB5BA0"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] Fix typo in x86_64 ffnz
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: karre@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-karre@domain.hid wrote:
- > Hi Gilles,
- > 
- > Thank you for your answer!
- > 
- > -------- Original-Nachricht --------
- > Datum: Fri, 20 Apr 2007 22:27:16 +0200
- > Von: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
- > An: karre@domain.hid
- > CC: xenomai@xenomai.org
- > Betreff: Re: [Xenomai-help] Timer frequency
- > 
- > > karre@domain.hid wrote:
- > >  > Hi folks,
- > >  > 
- > >  > does Xenomai adjust the system timer frequency? I probably does, so how
- > > can I find out the frequency on my system?
- > > 
- > > See:
- > > http://www.xenomai.org/documentation/branches/v2.3.x/html/api/group__native__timer.html#g66f026b0ac68ef3acde0e6d1bdb6baaf
- > > 
- > > In short, by default, the system timer is handled in aperiodic mode,
- > > which means that there is no timer frequency: the system timer is
- > > programmed at each software timer event to tick at next event. 
- >
- > Does the Linux-Kernel need to be triggered every now and then to
- > adjust system clock? I know that in times of DOS, the system timer
- > had to occur every 18.3 seconds, and I have heard that Linux adjusted
- > this for better scheduling. Do you know how often Xenomai issues a
- > timer irq during idle phases?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigEE49432440238B0E7FAB5BA0
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-On most architectures, one of the tasks of Xenomai nucleus is to handle
-a periodic software timer which emulates the system timer used by
-Linux. The frequency of this timer is the same as the one expected by
-Linux, it depends on CONFIG_HZ.
+Grrr...
 
-There is at least on exception to this scheme: the x86 with local
-APIC. In this case, Xenomai uses the local APIC as system timer, and
-Linux continues to use the PIT.
-
--- 
+Index: include/asm-x86_64/hal.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- include/asm-x86_64/hal.h	(Revision 2402)
++++ include/asm-x86_64/hal.h	(Arbeitskopie)
+@@ -30,7 +30,7 @@ typedef unsigned long rthal_time_t;
+=20
+ static inline __attribute_const__ unsigned long ffnz(unsigned long ul)
+ {
+-	__asm__("bsrq %1, %0":"=3Dr"(ul):"rm"(ul));
++	__asm__("bsfq %1, %0":"=3Dr"(ul):"rm"(ul));
+ 	return ul;
+ }
+=20
+Index: ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- ChangeLog	(Revision 2402)
++++ ChangeLog	(Arbeitskopie)
+@@ -1,3 +1,8 @@
++2007-04-23  Jan Kiszka  <jan.kiszka@domain.hid>
++
++	* include/asm-x86_64/hal.h (ffnz): Fix typo that inverted the search
++	direction.
++
+ 2007-04-19  Philippe Gerum  <rpm@xenomai.org>
+=20
+ 	* ksrc/skins/vrtx/module.c, ksrc/nucleus/pipe.c,
 
 
-					    Gilles Chanteperdrix.
+--------------enigEE49432440238B0E7FAB5BA0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGLMgtniDOoMHTA+kRAhidAJ9pk/wBrm7wV2RdCWDaYXxrpZq/ngCfcz5i
+XC6nIfrdB1DZSbbABDFsnwQ=
+=bmlj
+-----END PGP SIGNATURE-----
+
+--------------enigEE49432440238B0E7FAB5BA0--
 
