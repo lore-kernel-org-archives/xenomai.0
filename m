@@ -1,44 +1,61 @@
-From: Jeff Weber <jweber@domain.hid>
-Date: Tue, 17 Apr 2007 15:59:52 -0500
-References: <200704161449.27506.jweber@domain.hid>
-	<200704170821.10282.jweber@domain.hid>
-	<17957.7492.656703.120363@domain.hid>
-In-Reply-To: <17957.7492.656703.120363@domain.hid>
+Message-ID: <462CAEE7.8030509@domain.hid>
+Date: Mon, 23 Apr 2007 15:04:39 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200704171559.52298.jweber@domain.hid>
-Subject: Re: [Xenomai-help] page faults
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <46265FC8.1070207@domain.hid>	<1176926837.5010.90.camel@domain.hid>	<46268879.30507@domain.hid>	<462C7DF4.9060002@domain.hid>	<1177324208.30217.98.camel@domain.hid>	<17964.35957.487976.245056@domain.hid>
+	<17964.36864.695360.167360@domain.hid>
+	<462CAB3B.9080408@domain.hid> <462CADFB.40008@domain.hid>
+In-Reply-To: <462CADFB.40008@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4D6C17F1064D9455821C9D18"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [BUG] target width of shifts on 64 bits
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai Help <xenomai@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Tuesday 17 April 2007 14:17, Gilles Chanteperdrix wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4D6C17F1064D9455821C9D18
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> Ok. I am afraid you will have to help us a bit. Could you try Xenomai
-> 2.3.1 in case the nocow patch magically solves your issue ?
-Will do.  That may take a little while due to other considerations on this 
-end.  I'll get back to you.
->
-> If it does not, could you try sizing down your program to a small
-> example that we could run to reproduce the issue ?
-I've already been working on this, with no luck so far.
->
-> If reducing your program is not possible, the only option left is to
-> start debugging this issue. A good starting point would be to put some
-> printks in arch/i386/mm/fault.c to see what kind of page fault is
-> causing the mode switch.
-Let's hope it doesn't come to this.  :-)
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Who the hell is using the ffnz implementation in system.h? The
+>> simulator? I kicked it out for a x64-build here, and I got no noticeab=
+le
+>> effects.
+>=20
+> No, the simulator uses the one in asm-sim/system.h. The one in
+> nucleus/system.h is, for instance, for xnmlqueue_t in user-space.
+>=20
 
-	Jeff
+Thus a removable UVM remainder? At least this ffs/ffsl issue doesn't
+explain my scheduling problem.
+
+
+--------------enig4D6C17F1064D9455821C9D18
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGLK7nniDOoMHTA+kRApThAJoDHQDtjPmTImwKUcnkYoanaGaFrACfemCY
+Eik0V9aYbKoMq9M4P29SDHE=
+=FkQ7
+-----END PGP SIGNATURE-----
+
+--------------enig4D6C17F1064D9455821C9D18--
 
