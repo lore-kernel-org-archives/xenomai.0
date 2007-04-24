@@ -1,72 +1,66 @@
-Message-ID: <23595872.1177680700618.JavaMail.ngmail@domain.hid>
-Date: Fri, 27 Apr 2007 15:31:40 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <4631F925.2090100@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <4631F925.2090100@domain.hid>
-	<4850965.1177589052502.JavaMail.ngmail@domain.hid>	
-	<4631E30B.6060701@domain.hid> <1177679680.5010.78.camel@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <462CCB4C.8040900@domain.hid>
+References: <462CCB4C.8040900@domain.hid>
+Content-Type: text/plain
+Date: Tue, 24 Apr 2007 10:17:13 +0200
+Message-Id: <1177402633.20763.29.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] cleanup ffnz from nucleus/system.h
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi all,
+On Mon, 2007-04-23 at 17:05 +0200, Jan Kiszka wrote:
+> Index: xenomai/ChangeLog
+> ===================================================================
+> --- xenomai.orig/ChangeLog
+> +++ xenomai/ChangeLog
+> @@ -3,6 +3,8 @@
+>  	* include/asm-x86_64/hal.h (ffnz): Fix typo that inverted the search
+>  	direction.
+>  
+> +	* include/nucleus/system.h: Remove unused (and bogus) ffnz wrapper.
+> +
 
-sure, I can provide support in testing (as this is reproducable at my PC).
+Merged, thanks.
 
-Mathias
-
-> Philippe Gerum wrote:
-> > On Fri, 2007-04-27 at 13:48 +0200, Jan Kiszka wrote:
-> >=20
-> >>> I have attached my kernel config to this mail.
-> >>> Any idea on this? Is there anybody out there that has MSI running
-> succesfully with the Xenomai adeos patch?
-> >> Hmm, from a glance at the 2.6.20 ipipe patch I would say that MSI is
-> >> currently unsupported. No related patch hunk makes it look suspicious =
-to
-> >> me -- or is this supposed to work automagically, Philippe?
-> >=20
-> > Since genirq, MSI interrupts have their irq_chip descriptor managed by
-> > the IO-APIC support. What remains to be tested is the masking/unmasking
-> > code, which is still implemented by the msi driver; unfortunately I hav=
-e
-> > no PCI-Express hw at hand anymore, so I can't test CONFIG_PCI_MSI
-> > properly.
-> >=20
-> > At first sight, the issue Mathias raised looks like an out-of-bound
-> > array reference indexed on an unexpectedly large IRQ value; this would
-> > be quite a dumb bug, but the only way to check that is with proper hw.
-> >=20
->=20
-> ... or instrumentation patches for Mathias' target, in case he has the
-> time to do some short-cycle tests.
->=20
-> Jan
->=20
->=20
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+>  2007-04-19  Philippe Gerum  <rpm@xenomai.org>
+>  
+>  	* ksrc/skins/vrtx/module.c, ksrc/nucleus/pipe.c,
+> Index: xenomai/include/nucleus/system.h
+> ===================================================================
+> --- xenomai.orig/include/nucleus/system.h
+> +++ xenomai/include/nucleus/system.h
+> @@ -24,11 +24,6 @@
+>  #include <string.h>
+>  #include <asm/param.h>
+>  
+> -static inline unsigned long ffnz (unsigned long ul)
+> -{
+> -    return ffs((int)ul) - 1;
+> -}
+> -
+>  #include <asm/xenomai/atomic.h>
+>  #include <nucleus/core.h>
+>  #include <nucleus/trace.h>
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
 
-50=80 AMAZON-Einkaufsgutschein bei Bestellung von Arcor-DSL:
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
 
