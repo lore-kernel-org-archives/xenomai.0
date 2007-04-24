@@ -1,76 +1,59 @@
+Message-ID: <462DE28F.5010400@domain.hid>
+Date: Tue, 24 Apr 2007 12:57:19 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <45F68258.5040603@domain.hid>
+	<460AB8FF.5060904@domain.hid>	<460B21C0.7090200@domain.hid>
+	<460B7FDF.8030100@domain.hid>	<460BECFD.2030003@domain.hid>
+	<460C0C7D.7000001@domain.hid>	<bc4264770704230809i9f9c554k14d67007b828971d@domain.hid>	<17964.64208.463335.611234@domain.hid>	<bc4264770704240144n74d4cfa0lafcbc84b76e06822@domain.hid>	<462DC874.20303@domain.hid>
+	<bc4264770704240331v31f81487l32e27634e77804b4@domain.hid>
+In-Reply-To: <bc4264770704240331v31f81487l32e27634e77804b4@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <17961.10754.445787.669761@domain.hid>
-Date: Fri, 20 Apr 2007 23:00:50 +0200
-In-Reply-To: <1176998001.8782.30.camel@domain.hid>
-References: <1176585372.15994.14.camel@domain.hid>
-	<17958.43866.983944.630780@domain.hid>
-	<1176964723.2508.9.camel@domain.hid>
-	<1176998001.8782.30.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH] Support EABI enabled kernels on ARM
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Latencies due to RT-Socket-CAN register accesses
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stelian Pop <stelian@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: roland Tollenaar <rolandtollenaar@domain.hid>
+Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
 
-Stelian Pop wrote:
- > Le jeudi 19 avril 2007 ~ 08:38 +0200, Stelian Pop a ~crit :
- > > Le jeudi 19 avril 2007 ~ 01:35 +0200, Gilles Chanteperdrix a ~crit :
- > > > Stelian Pop wrote:
- > > >  > Hi,
- > > >  > 
- > > >  > The attached patch adds an option to make Xenomai userspace issue EABI
- > > >  > syscalls. This is needed to make Xenomai work with kernels compiled with
- > > >  > CONFIG_EABI.
- > > >  > 
- > > > I get a problem with this patch: I am in the no EABI case in user-space
- > > > and kernel-space, and when starting latency, I get an "Illegal
- > > > instruction" message. If I revert this patch, latency starts
- > > > correctly. Any idea ?
- > > 
- > > Hmm, I might have screwed up here. A quick looking points me to this
- > > change:
- > > 
- > > +#define __SYS_REG
- > > +#define __SYS_REG_LIST
- > > +#define __syscall "swi\t" __sys1(XENO_ARM_SYSCALL) ""
- > > 
- > > Does replacing XENO_ARM_SYSCALL with (0x00900000 + XENO_ARM_SYSCALL)
- > > fixes it ?
- > > 
- > > I may be able to mount a test platform later today if this needs further
- > > debugging...
- > 
- > I have finally managed to get my old-ABI toolchain to work and can
- > confirm that the modification above fixes the problem.
- > 
- > The whole section of include/asm-arm/syscall.h must read:
- > 
- > #ifdef CONFIG_XENO_ARM_EABI
- > #define __SYS_REG register unsigned long __r7 __asm__ ("r7") = XENO_ARM_SYSCALL;#define __SYS_REG_LIST ,"r" (__r7)
- > #define __syscall "swi\t0"
- > #else
- > #define __SYS_REG
- > #define __SYS_REG_LIST
- > #define __NR_OABI_SYSCALL_BASE	0x900000
- > #define __syscall "swi\t" __sys1(__NR_OABI_SYSCALL_BASE + XENO_ARM_SYSCALL) ""
- > #endif
- > 
- > Sorry for the annoyance.
+roland Tollenaar wrote:
+> Hi
+> 
+>> Two conclusions:
+>>
+>>  - You are running your kernel as i586 without TSC support - suboptimal,
+>>    costs you a few micros.
+> I am aware of this. For the current machine I will stick to this.
+> 
+> 
+>>  - The reported latency perfectly matches the trace, nothing
+>>    pathological there. The trace looks like this: Timer fired,
+>>    measurement task woken up, two interrupts squeeze themselves between
+>>    wakeup and time stamp acquisition. All sane.
+> Is it not a bit strange that a machine as fast as this one is supposed
+> to be give worse latencies than much slower machines. Are the 2
+> interrupts causing the latency?
 
-Yep, that was it, thanks.
+Yes, what puzzels me is actually the high min latency of more than 24us:
 
--- 
+  == Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|--lat min|---lat avg|-----lat max|-overrun|----lat best|---lat worst
+RTD|   24.304|    35.199|      65.371|       0|      24.304|      65.371
 
+Can the TSC cause such high delays?
 
-					    Gilles Chanteperdrix.
+And what is the output of "/proc/xenomai/latency"?
+
+Wolfgang.
 
