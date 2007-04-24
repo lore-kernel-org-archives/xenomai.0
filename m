@@ -1,36 +1,61 @@
-Content-Type: text/plain; charset="us-ascii"
-Date: Thu, 26 Apr 2007 18:29:41 +0200
-From: "Karl Reichert" <Karl-Trampe@domain.hid>
-Message-ID: <20070426162941.103500@domain.hid>
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <462CC82D.4010900@domain.hid>
+References: <462CC82D.4010900@domain.hid>
+Content-Type: text/plain
+Date: Tue, 24 Apr 2007 10:16:51 +0200
+Message-Id: <1177402611.20763.27.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Errors compiling kernel 2.6.20 with xenomai 2.3.1
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Fix typo in x86_64 ffnz
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hello,
+On Mon, 2007-04-23 at 16:52 +0200, Jan Kiszka wrote:
+> Grrr...
+> 
 
-I'm trying to compile my kernel with xenomai 2.3.1 and I get lots of errors.
-I'm using standard kernel (from kernel.org), version 2.6.20 and ubuntu 7.04 and gcc 5.97
-I used the guide from http://www.captain.at/xenomai-2.1-installation.php and patching kernel sources works fine, but when I do a "make menuconfig", I get a lot of errors (see below).
+Fixed. Mglmgmmm...
 
-Does anybody has an idea what's the problem here?
-Maybe I'm using wrong kernel or gcc version? I saw that xenomai 2.3.1 supports kernel 2.6.20 so maybe gcc is in wrong version? Which one do I have to use?
-Which system do you use out there running xenomai 2.3.1?
-
-Thanks a lot in advance.
-Karl
+> Index: include/asm-x86_64/hal.h
+> ===================================================================
+> --- include/asm-x86_64/hal.h	(Revision 2402)
+> +++ include/asm-x86_64/hal.h	(Arbeitskopie)
+> @@ -30,7 +30,7 @@ typedef unsigned long rthal_time_t;
+>  
+>  static inline __attribute_const__ unsigned long ffnz(unsigned long ul)
+>  {
+> -	__asm__("bsrq %1, %0":"=r"(ul):"rm"(ul));
+> +	__asm__("bsfq %1, %0":"=r"(ul):"rm"(ul));
+>  	return ul;
+>  }
+>  
+> Index: ChangeLog
+> ===================================================================
+> --- ChangeLog	(Revision 2402)
+> +++ ChangeLog	(Arbeitskopie)
+> @@ -1,3 +1,8 @@
+> +2007-04-23  Jan Kiszka  <jan.kiszka@domain.hid>
+> +
+> +	* include/asm-x86_64/hal.h (ffnz): Fix typo that inverted the search
+> +	direction.
+> +
+>  2007-04-19  Philippe Gerum  <rpm@xenomai.org>
+>  
+>  	* ksrc/skins/vrtx/module.c, ksrc/nucleus/pipe.c,
+> 
 -- 
-von Karl Reichert
+Philippe.
 
-"Feel free" - 10 GB Mailbox, 100 FreeSMS/Monat ...
-Jetzt GMX TopMail testen: http://www.gmx.net/de/go/topmail
+
 
