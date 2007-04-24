@@ -1,43 +1,77 @@
-Message-ID: <7289437c0704270747g122b5c84p1c4decbd31e2e4fe@domain.hid>
-Date: Fri, 27 Apr 2007 16:47:55 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_57868_10131842.1177685275404"
-Subject: [Xenomai-help] Benchmark for Xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <462CCC9E.1040500@domain.hid>
+References: <462CCC9E.1040500@domain.hid>
+Content-Type: text/plain
+Date: Tue, 24 Apr 2007 10:18:10 +0200
+Message-Id: <1177402690.20763.31.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] fix ffnz for 64-bit hosts
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_57868_10131842.1177685275404
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+On Mon, 2007-04-23 at 17:11 +0200, Jan Kiszka wrote:
+> I'm just not sure if "#define _GNU_SOURCE" is the preferred way to go.
+> 
 
-Hello,
+It's already there when compiling the skins in simulation mode.
 
-I would like to know if you have a list of benchmark for the board CSB637 or
-a board with an ARM9.
-I want to test performances of Xenomai with API Posix and I don't know how
-to begin.
+> 
+> Index: xenomai/include/asm-sim/system.h
+> ===================================================================
+> --- xenomai.orig/include/asm-sim/system.h
+> +++ xenomai/include/asm-sim/system.h
+> @@ -24,6 +24,7 @@
+>  
+>  #include <asm/param.h>
+>  #include <errno.h>
+> +#define _GNU_SOURCE
+>  #include <string.h>
+>  #include <malloc.h>
+>  #include <stdlib.h>
+> @@ -172,7 +173,7 @@ static inline unsigned long long xnarch_
+>  
+>  static inline unsigned long ffnz (unsigned long word)
+>  {
+> -    return ffs((int)word) - 1;
+> +    return ffsl(word) - 1;
+>  }
+>  
 
-Thanks
+Merged, thanks.
 
-------=_Part_57868_10131842.1177685275404
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+>  #define xnarch_stack_size(tcb)    0
+> Index: xenomai/ChangeLog
+> ===================================================================
+> --- xenomai.orig/ChangeLog
+> +++ xenomai/ChangeLog
+> @@ -5,6 +5,8 @@
+>  
+>  	* include/nucleus/system.h: Remove unused (and bogus) ffnz wrapper.
+>  
+> +	* include/asm-sim/system.h: Fix ffnz for 64-bit hosts.
+> +
+>  2007-04-19  Philippe Gerum  <rpm@xenomai.org>
+>  
+>  	* ksrc/skins/vrtx/module.c, ksrc/nucleus/pipe.c,
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
-<div>Hello,</div>
-<div><br>I would like to know if you have a list of benchmark for the board CSB637 or a board with an ARM9.<br>I want to test performances of Xenomai with API Posix and I don&#39;t know how to begin.</div>
-<p>Thanks</p>
 
-------=_Part_57868_10131842.1177685275404--
 
