@@ -1,52 +1,58 @@
-Message-ID: <46325095.4020108@domain.hid>
-Date: Fri, 27 Apr 2007 21:35:49 +0200
+Message-ID: <4630655A.50204@domain.hid>
+Date: Thu, 26 Apr 2007 10:39:54 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <cbe23c50704270912i1cdb1272hd700a8b83775a34a@domain.hid>	<46322259.5080409@domain.hid>	<cbe23c50704270932t7475e16dt77e54ab1eebe0883@domain.hid>
-	<200704271756.29874.paul_c@domain.hid>
-In-Reply-To: <200704271756.29874.paul_c@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig58B0215359E226AD53250F1D"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Core Dump on possibly buggy signal
-	handler	installation
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [PATCH] fix smp build error of native skin
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Paul wrote:
-> Hi Eric
-> 
-> On Friday 27 April 2007 17:32, Eric Noulard wrote:
->> 2007/4/27, Jan Kiszka <jan.kiszka@domain.hid>:
->>>> I mean I know that uninitialized memory have unpredictable consequence
->>>> but here the bug is persistent after rerun, reboot, power cycle etc...
->>> What is a.sa_flags initialised when it is not initialised? 0? Maybe you
->>> can nail it down to defined state that causes the core dump reliably.
->>> Then we can also track down what happens to your sigaction call and
->>> if/why Xenomai/I-pipe changes the picture in some regard.
->> I did rerun as you suggest, find the code attached which
->> consistentely core dump with xenomai kernel and (seems to) do nothing
->> special with the other kernel.
->>
->> a.sa_flags = 0xbff81578;
-> 
-> Try:
-> 
->     a.sa_flags = 0x04000000;
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig58B0215359E226AD53250F1D
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Yep, red herring regarding Xenomai. I get the same sigsegv over plain
-linux here, and looking at that bit above (SA_RESTORER), it also makes
-sense: this declares sigaction::sa_restorer valid, an internal field
-that you don't touch/initialise as well.
+We need nucleus/pod.h because xeno_flush_rq() refers to nklock.
 
 Jan
+
+
+--- include/native/ppd.h        (Revision 2410)
++++ include/native/ppd.h        (Arbeitskopie)
+@@ -22,6 +22,7 @@
+ #ifndef _XENO_PPD_H
+ #define _XENO_PPD_H
+
++#include <nucleus/pod.h>
+ #include <nucleus/ppd.h>
+ #include <nucleus/heap.h>
+
+
+
+--------------enig58B0215359E226AD53250F1D
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGMGVaniDOoMHTA+kRArcvAJ49rq4Yj2ITUBTbATTT0KwcjRsIOACfQ4ED
+DxNDjKvc4BcUcIkOozqMxzo=
+=7g4V
+-----END PGP SIGNATURE-----
+
+--------------enig58B0215359E226AD53250F1D--
 
