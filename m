@@ -1,12 +1,12 @@
-Message-ID: <4630F20D.4000903@domain.hid>
-Date: Thu, 26 Apr 2007 20:40:13 +0200
+Message-ID: <4630F21B.8050803@domain.hid>
+Date: Thu, 26 Apr 2007 20:40:27 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig0FBA8670B8FA51A58E5006A4"
+	boundary="------------enig90EAA0E3DBE07A5E88BB7FD1"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH 2/7] Fix initial Linux IRQ state for x86_64
+Subject: [Adeos-main] [JANITOR][PATCH 3/7] Fix whitespaces in tracer
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,57 +19,71 @@ To: adeos-main <adeos-main@gna.org>
 Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0FBA8670B8FA51A58E5006A4
+--------------enig90EAA0E3DBE07A5E88BB7FD1
 Content-Type: multipart/mixed;
- boundary="------------060901030301000808030008"
+ boundary="------------020601050306060307080208"
 
 This is a multi-part message in MIME format.
---------------060901030301000808030008
+--------------020601050306060307080208
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Philippe, this is the solution for the BUG I posted privately. Not sure
-if we need the first hunk, but the second is mandatory for SMP.
+Philippe, I bet you mailer played some role here again, so I'm better
+sending attachments ;). Anyway, this also gives the chance to do it even
+more cleanly.
 
 Jan
 
---------------060901030301000808030008
+--------------020601050306060307080208
 Content-Type: text/plain;
- name="fix-x86_64-init-irq-enable.patch"
+ name="fix-whitespace.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="fix-x86_64-init-irq-enable.patch"
+ filename="fix-whitespace.patch"
 
 ---
- arch/x86_64/kernel/apic.c |    2 ++
- 1 file changed, 2 insertions(+)
+ kernel/ipipe/tracer.c |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-Index: linux-2.6.20-x64/arch/x86_64/kernel/apic.c
+Index: linux-2.6.20-x64/kernel/ipipe/tracer.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20-x64.orig/arch/x86_64/kernel/apic.c
-+++ linux-2.6.20-x64/arch/x86_64/kernel/apic.c
-@@ -875,6 +875,7 @@ void __init setup_boot_APIC_clock (void)
- 	setup_APIC_timer(calibration_result);
+--- linux-2.6.20-x64.orig/kernel/ipipe/tracer.c
++++ linux-2.6.20-x64/kernel/ipipe/tracer.c
+@@ -624,18 +624,18 @@ void ipipe_trace_panic_dump(void)
+ 		struct ipipe_trace_point *point =3D &panic_path->point[pos];
+ 		long time;
+ 		char buf[16];
+-	       int i;
++		int i;
 =20
- 	local_irq_enable_hw();
-+	local_irq_enable();
- }
+-	       printk(" %c", (point->flags & IPIPE_TFLG_HWIRQ_OFF) ?
+-			      '|' : ' ');
++		printk(" %c",
++		       (point->flags & IPIPE_TFLG_HWIRQ_OFF) ? '|' : ' ');
 =20
- void __cpuinit setup_secondary_APIC_clock(void)
-@@ -882,6 +883,7 @@ void __cpuinit setup_secondary_APIC_cloc
- 	local_irq_disable_hw(); /* FIXME: Do we need this? --RR */
- 	setup_APIC_timer(calibration_result);
- 	local_irq_enable_hw();
-+	local_irq_enable();
- }
+-	       for (i =3D IPIPE_TFLG_DOMSTATE_BITS; i >=3D 0; i--)
+-		       printk("%c",
+-			      (IPIPE_TFLG_CURRENT_DOMAIN(point) =3D=3D i) ?
+-			      (IPIPE_TFLG_DOMAIN_STALLED(point, i) ?
+-				       '#' : '+') :
+-			       (IPIPE_TFLG_DOMAIN_STALLED(point, i) ?
+-				       '*' : ' '));
++		for (i =3D IPIPE_TFLG_DOMSTATE_BITS; i >=3D 0; i--)
++			printk("%c",
++			       (IPIPE_TFLG_CURRENT_DOMAIN(point) =3D=3D i) ?
++				(IPIPE_TFLG_DOMAIN_STALLED(point, i) ?
++					'#' : '+') :
++				(IPIPE_TFLG_DOMAIN_STALLED(point, i) ?
++					'*' : ' '));
 =20
- void disable_APIC_timer(void)
+ 		if (!point->eip)
+ 			printk("-<invalid>-\n");
 
---------------060901030301000808030008--
+--------------020601050306060307080208--
 
---------------enig0FBA8670B8FA51A58E5006A4
+--------------enig90EAA0E3DBE07A5E88BB7FD1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -78,10 +92,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGMPINniDOoMHTA+kRAhySAJ9YGUNe4ldxq42PQu2V8boK9AUowgCePU2S
-AVX4u5A829gVZs4F0XkSJ3E=
-=RC7Y
+iD8DBQFGMPIbniDOoMHTA+kRAmImAJ9NecQOwblJYSXKc0avr87aQylXdACfcba0
+O1lRMx94LYwKc5CMumCWV8k=
+=PpHR
 -----END PGP SIGNATURE-----
 
---------------enig0FBA8670B8FA51A58E5006A4--
+--------------enig90EAA0E3DBE07A5E88BB7FD1--
 
