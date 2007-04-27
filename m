@@ -1,16 +1,14 @@
-Message-ID: <4631FF09.2000601@domain.hid>
-Date: Fri, 27 Apr 2007 15:47:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <784082.1177682909759.JavaMail.ngmail@domain.hid>
+Date: Fri, 27 Apr 2007 16:08:29 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <4631FF09.2000601@domain.hid>
 MIME-Version: 1.0
-References: <4631F925.2090100@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <4631FF09.2000601@domain.hid> <4631F925.2090100@domain.hid>
 	<4850965.1177589052502.JavaMail.ngmail@domain.hid>	
 	<4631E30B.6060701@domain.hid> <1177679680.5010.78.camel@domain.hid>
 	<23595872.1177680700618.JavaMail.ngmail@domain.hid>
-In-Reply-To: <23595872.1177680700618.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC92B18C93D786F42946DEC00"
-Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,54 +19,738 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC92B18C93D786F42946DEC00
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Jan,=20
 
-M. Koehrer wrote:
-> Hi all,
+here is the result - I have logged with a serial console (as my kernel free=
+zes).
+There are many printk messages...
+
+I hope that helps a little bit
+
+Regards
+
+Mathias
+++++++++++++++++++++++++++ START ++++++++++++++++++++++++
+INIT: version 2.86 booting
+Setting parameters of disc: (none).
+Setting the system clock..
+Mounting proc filesystem
+mount: proc already mounted
+Cleaning up ifupdown....
+Loading kernel modules...done.
+Loading device-mapper support.
+Checking file systems...fsck 1.40-WIP (14-Nov-2006)
+done.
+Setting kernel variables...done.
+Checking /etc/fstab.
+Mounting local filesystems...done.
+Activating swapfile swap...done.
+Setting up networking....
+Configuring network interfaces...BUG: unable to handle kernel NULL pointer =
+dereference-208 207 256
+ printing eip:
+*pde =3D 00000000
+Oops: 0000 [#1]
+-208 207 256
+-208 207 256
+-1 0 256
+SMP -208 207 256
+-208 207 256
+-1 0 256
+
+Modules linked in:-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+ e1000-208 207 256
+-208 207 256
+-1 0 256
+
+CPU:    0
+EIP:    0060:[<00000000>]    Not tainted VLI
+EFLAGS: 00010286   (2.6.20.4 #15)
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+EIP is at _stext+0x3feffc70/0x14
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+eax: c0112268   ebx: 00000006   ecx: c0114371   edx: df042000
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+esi: c0118e36   edi: c03847cd   ebp: ffffffff   esp: df043e10
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+ds: 007b   es: 007b   ss: 0068
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+Process ifconfig (pid: 1241, ti=3Ddf042000 task=3Dc1693a90 task.ti=3Ddf0420=
+00)-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+
+Stack: -1 0 256
+-208 207 256
+-208 207 256
+c03e5680 -1 0 256
+-208 207 256
+-208 207 256
+000000db -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+00000000 -1 0 256
+-208 207 256
+-208 207 256
+c03d9100 -1 0 256
+-208 207 256
+-208 207 256
+c010efa5 -1 0 256
+-208 207 256
+-208 207 256
+c03847cd -1 0 256
+-208 207 256
+-208 207 256
+ffffff24 -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+000000db -1 0 256
+-208 207 256
+-208 207 256
+
+       -1 0 256
+-208 207 256
+-208 207 256
+00000100 -1 0 256
+-208 207 256
+-208 207 256
+00006d80 -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+00000001 -1 0 256
+-208 207 256
+-208 207 256
+00000060 -1 0 256
+-208 207 256
+-208 207 256
+e099a210 -1 0 256
+-208 207 256
+-208 207 256
+00000286 -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ffffff24 -1 0 256
+-208 207 256
+-208 207 256
+df70b5c8 -1 0 256
+-208 207 256
+-208 207 256
+
+       -1 0 256
+-208 207 256
+-208 207 256
+00000000 -1 0 256
+-208 207 256
+-208 207 256
+0000000f -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+00000001 -1 0 256
+-208 207 256
+-208 207 256
+c0103439 -1 0 256
+-208 207 256
+-208 207 256
+df70b5c8 -1 0 256
+-208 207 256
+-208 207 256
+e099a0ff -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+e09c0000 -1 0 256
+-208 207 256
+-208 207 256
+00000000 -1 0 256
+-208 207 256
+-208 207 256
+
+Call Trace:
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c010efa5>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+__ipipe_handle_irq+0x1db/0x22d
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<e099a210>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+e1000_set_multi+0x111/0x189 [e1000]
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c0103439>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+common_interrupt+0x21/0x38
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<e099a0ff>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+e1000_set_multi+0x0/0x189 [e1000]
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<e099a210>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+e1000_set_multi+0x111/0x189 [e1000]
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02dcfa1>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+__dev_mc_upload+0x1d/0x1e
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02dd0c1>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+dev_mc_upload+0x24/0x37
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02db5cc>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+dev_open+0x44/0x62
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02da099>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+dev_change_flags+0x47/0xe4
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c030d1b2>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+devinet_ioctl+0x252/0x56f
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02db1aa>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+dev_ifsioc+0x113/0x38d
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02d15c4>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+sock_ioctl+0x0/0x1ad
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02d1752>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+sock_ioctl+0x18e/0x1ad
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c02d15c4>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+sock_ioctl+0x0/0x1ad
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c015e1b3>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+do_ioctl+0x1f/0x62
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c015e43a>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+vfs_ioctl+0x244/0x256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c015e47f>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+sys_ioctl+0x33/0x4c
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ [<c01029f3>] -1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+sysenter_past_esp+0x6c/0x70
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+Code: -1 0 256
+-208 207 256
+-208 207 256
+ Bad EIP value.-208 207 256
+
+EIP: [<00000000>] _stext+0x3feffc70/0x14-208 207 256
+ SS:ESP 0068:df043e10
+-208 207 256
+ -208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-1 0 256
+-208 207 256
+-208 207 256
+Kernel panic - not syncing: Fatal exception in interrupt
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+-1 0 256
+-208 207 256
+-208 207 256
+ -1 0 256
+-208 207 256
+-208 207 256
+-220 219 256
+-1 0 256
+-208 207 256
+-208 207 256
+
+++++++++++++++++++++++++++++++++ END +++++++++++++++++++++++++++++
+
+
+----- Original Nachricht ----
+Von:     Jan Kiszka <jan.kiszka@domain.hid>
+An:      "M. Koehrer" <mathias_koehrer@domain.hid>
+Datum:   27.04.2007 15:47
+Betreff: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
+
+> M. Koehrer wrote:
+> > Hi all,
+> >=20
+> > sure, I can provide support in testing (as this is reproducable at my
+> PC).
 >=20
-> sure, I can provide support in testing (as this is reproducable at my P=
-C).
+> Then please start like this:
+>=20
+> --- linux-2.6.20.orig/arch/i386/kernel/ipipe.c
+> +++ linux-2.6.20/arch/i386/kernel/ipipe.c
+> @@ -777,6 +777,7 @@ int __ipipe_handle_irq(struct pt_regs re
+>      m_ack =3D 0;
+>     } else
+>      m_ack =3D 1;
+> +printk("%d %d %d\n", regs.orig_eax, irq, IPIPE_NR_IRQS);
+>=20
+>     ipipe_load_cpuid();
+>=20
+>=20
+> TIA,
+> Jan
+>=20
+>=20
+> PS: Thanks for the vmlinux. The oops must be somewhere in
+> __ipipe_walk_pipeline - likely due to a inconsistent irq number.
+>=20
+>=20
 
-Then please start like this:
-
---- linux-2.6.20.orig/arch/i386/kernel/ipipe.c
-+++ linux-2.6.20/arch/i386/kernel/ipipe.c
-@@ -777,6 +777,7 @@ int __ipipe_handle_irq(struct pt_regs re
-     m_ack =3D 0;
-    } else
-     m_ack =3D 1;
-+printk("%d %d %d\n", regs.orig_eax, irq, IPIPE_NR_IRQS);
-
-    ipipe_load_cpuid();
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
-TIA,
-Jan
-
-
-PS: Thanks for the vmlinux. The oops must be somewhere in
-__ipipe_walk_pipeline - likely due to a inconsistent irq number.
-
-
---------------enigC92B18C93D786F42946DEC00
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGMf8JniDOoMHTA+kRAvFCAJ40todtC3g4ysupdhCcTMBi1w6MVQCfUnji
-BBZ3fzmIKp8c7wtyln7llNM=
-=u8Wi
------END PGP SIGNATURE-----
-
---------------enigC92B18C93D786F42946DEC00--
+50=80 AMAZON-Einkaufsgutschein bei Bestellung von Arcor-DSL:
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
