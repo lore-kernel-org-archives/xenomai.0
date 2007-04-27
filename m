@@ -1,66 +1,74 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <462CCB4C.8040900@domain.hid>
-References: <462CCB4C.8040900@domain.hid>
-Content-Type: text/plain
-Date: Tue, 24 Apr 2007 10:17:13 +0200
-Message-Id: <1177402633.20763.29.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] cleanup ffnz from nucleus/system.h
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <4631FF09.2000601@domain.hid>
+Date: Fri, 27 Apr 2007 15:47:53 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4631F925.2090100@domain.hid>
+	<4850965.1177589052502.JavaMail.ngmail@domain.hid>	
+	<4631E30B.6060701@domain.hid> <1177679680.5010.78.camel@domain.hid>
+	<23595872.1177680700618.JavaMail.ngmail@domain.hid>
+In-Reply-To: <23595872.1177680700618.JavaMail.ngmail@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC92B18C93D786F42946DEC00"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2007-04-23 at 17:05 +0200, Jan Kiszka wrote:
-> Index: xenomai/ChangeLog
-> ===================================================================
-> --- xenomai.orig/ChangeLog
-> +++ xenomai/ChangeLog
-> @@ -3,6 +3,8 @@
->  	* include/asm-x86_64/hal.h (ffnz): Fix typo that inverted the search
->  	direction.
->  
-> +	* include/nucleus/system.h: Remove unused (and bogus) ffnz wrapper.
-> +
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC92B18C93D786F42946DEC00
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Merged, thanks.
+M. Koehrer wrote:
+> Hi all,
+>=20
+> sure, I can provide support in testing (as this is reproducable at my P=
+C).
 
->  2007-04-19  Philippe Gerum  <rpm@xenomai.org>
->  
->  	* ksrc/skins/vrtx/module.c, ksrc/nucleus/pipe.c,
-> Index: xenomai/include/nucleus/system.h
-> ===================================================================
-> --- xenomai.orig/include/nucleus/system.h
-> +++ xenomai/include/nucleus/system.h
-> @@ -24,11 +24,6 @@
->  #include <string.h>
->  #include <asm/param.h>
->  
-> -static inline unsigned long ffnz (unsigned long ul)
-> -{
-> -    return ffs((int)ul) - 1;
-> -}
-> -
->  #include <asm/xenomai/atomic.h>
->  #include <nucleus/core.h>
->  #include <nucleus/trace.h>
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+Then please start like this:
+
+--- linux-2.6.20.orig/arch/i386/kernel/ipipe.c
++++ linux-2.6.20/arch/i386/kernel/ipipe.c
+@@ -777,6 +777,7 @@ int __ipipe_handle_irq(struct pt_regs re
+     m_ack =3D 0;
+    } else
+     m_ack =3D 1;
++printk("%d %d %d\n", regs.orig_eax, irq, IPIPE_NR_IRQS);
+
+    ipipe_load_cpuid();
 
 
+TIA,
+Jan
+
+
+PS: Thanks for the vmlinux. The oops must be somewhere in
+__ipipe_walk_pipeline - likely due to a inconsistent irq number.
+
+
+--------------enigC92B18C93D786F42946DEC00
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGMf8JniDOoMHTA+kRAvFCAJ40todtC3g4ysupdhCcTMBi1w6MVQCfUnji
+BBZ3fzmIKp8c7wtyln7llNM=
+=u8Wi
+-----END PGP SIGNATURE-----
+
+--------------enigC92B18C93D786F42946DEC00--
 
