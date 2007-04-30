@@ -1,13 +1,15 @@
-Message-ID: <305035a40704200138g17071f9ew9b0a392021bcf79f@domain.hid>
-Date: Fri, 20 Apr 2007 10:38:23 +0200
-From: "Gregory CLEMENT" <gclement00@domain.hid>
-In-Reply-To: <46287830.4030003@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4630F1EA.8020206@domain.hid>
+References: <4630F1EA.8020206@domain.hid>
+Content-Type: text/plain
+Date: Mon, 30 Apr 2007 17:55:56 +0200
+Message-Id: <1177948557.32698.49.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <46287830.4030003@domain.hid>
-Subject: Re: [Xenomai-core] Atmel AT91SAM support ?
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH 0/7] I-pipe fixes, cleanups,
+	and enhancements
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,28 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Claudio Scordino <cloud.of.andor@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
 
-2007/4/20, Claudio Scordino <cloud.of.andor@domain.hid>:
+On Thu, 2007-04-26 at 20:39 +0200, Jan Kiszka wrote:
 > Hi,
-Hi Claudio,
+> 
+> before ipipe-git gets busy again with work on 2.6.21, I'd like to flush
+> my patch queue. Here is an overview:
+> 
+>  1. Build fix for the tracer over x86_64
+> 
+>  2. Fix for Linux IRQ state during x86_64 boot
+> 
+>  3. [JANITOR] Fix whitespace damages in the tracer
+> 
+>  4. [JANITOR] Minor cleanups in ipipe/core.c
 
->
->    I saw that Xenomai supports the Atmel AT91RM9200 processor. Does it support
-> the AT91SAM9260 as well ?
-
-We are also working on it, and we have already sent a patch for it (in
-fact for AT91SAM9261 but there as the same for real time).
-There were some mistakes pointed by Gilles Chanteperdrix, but I think
-there will be a new patch sooner, ever made by Gille or by us.
-
+Merged, thanks.
 
 -- 
-Gregory CLEMENT
-Adeneo
-2, chemin du Ruisseau - BP21
-69136 Ecully Cedex
-France
-Tel : +33-4 72 18 08 40
+Philippe.
+
+
 
