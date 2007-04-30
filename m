@@ -1,12 +1,15 @@
-Message-ID: <463248EE.5000606@domain.hid>
-Date: Fri, 27 Apr 2007 21:03:10 +0200
+Message-ID: <4635F801.7060000@domain.hid>
+Date: Mon, 30 Apr 2007 16:06:57 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <4630F284.6040103@domain.hid>
+In-Reply-To: <4630F284.6040103@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig17C00B43818CC9E83BA2FD27"
+	boundary="------------enigDA83AD743CB9378D0949DDD7"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH 8/7] Optimise cpuid passing (i386)
+Subject: Re: [Adeos-main] [PATCH 7/7] Detect illicit cross-domain
+	calls	(i386/x86_64)
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,302 +22,516 @@ To: adeos-main <adeos-main@gna.org>
 Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig17C00B43818CC9E83BA2FD27
+--------------enigDA83AD743CB9378D0949DDD7
 Content-Type: multipart/mixed;
- boundary="------------000209090802040500000008"
+ boundary="------------020802080409070800050407"
 
 This is a multi-part message in MIME format.
---------------000209090802040500000008
+--------------020802080409070800050407
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Looking at a disassembled kernel (Mathias' MSI issue...), I got some
-idea how to optimise the I-pipe-internal cpuid passing, and I applied it
-on further functions.
+Jan Kiszka wrote:
+> ...
+> There are already three major instrumentation points for Linux included=
+:
+>  - preempt_xxx()
+>  - might_resched()
+>  - raw_local_irq_save/disable()
 
-With the help of the preprocessor, we now eliminate any cpuid parameters
-on UP completely, save a few bytes around __ipipe_walk_pipeline. And on
-SMP, we don't have to reload it in internal functions that are called by
-others who already did so. I think this is faster than consulting the
-hardware (via the __ipipe_logical_cpuid indirection).
+ - smp_processor_id()
 
-Only prototyped on i386, just build-tested, so it should be no problem
-to apply...
+The last spot used to cause quite some headache in earlier patches, and
+running on it over non-root domain for whatever reason should be
+detected as well.
+
+Moreover, this patch revision sanitises some #ifdefs and copes the with
+an internal usage of local_irq_disable over non-root domains in
+__ipipe_handle_exception().
 
 Jan
 
---------------000209090802040500000008
+
+PS: The hunk around i386's __unlazy_fpu is already on its way into mainli=
+ne.
+
+--------------020802080409070800050407
 Content-Type: text/plain;
- name="optimise-cpuid.patch"
+ name="debug-dom-violation-v5.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="optimise-cpuid.patch"
+ filename="debug-dom-violation-v5.patch"
 
 ---
- include/linux/ipipe.h |   21 ++++++++++++++++-----
- kernel/ipipe/core.c   |   29 ++++++++++++++---------------
- 2 files changed, 30 insertions(+), 20 deletions(-)
+ include/linux/ipipe_base.h  |    6 ++++
+ include/linux/ipipe_trace.h |    7 ++++-
+ include/linux/kernel.h      |    8 ++++-
+ include/linux/preempt.h     |   59 +++++++++++++++++--------------------=
+-------
+ include/linux/smp.h         |   14 ++++++++--
+ kernel/ipipe/Kconfig.debug  |    9 ++++++
+ kernel/ipipe/core.c         |   25 ++++++++++++++++++
+ 7 files changed, 88 insertions(+), 40 deletions(-)
 
-Index: linux-2.6.20/include/linux/ipipe.h
+Index: linux-2.6.20/include/linux/ipipe_base.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/include/linux/ipipe.h
-+++ linux-2.6.20/include/linux/ipipe.h
-@@ -95,6 +95,7 @@
+--- linux-2.6.20.orig/include/linux/ipipe_base.h
++++ linux-2.6.20/include/linux/ipipe_base.h
+@@ -75,6 +75,12 @@ void __ipipe_unstall_root(void);
 =20
- #define IPIPE_NR_CPUS		NR_CPUS
- #define ipipe_declare_cpuid	int cpuid
-+#define ipipe_define_up_cpuid	do { } while (0)
- #define ipipe_load_cpuid()	do { \
- 					cpuid =3D ipipe_processor_id();	\
- 				} while(0)
-@@ -111,6 +112,7 @@
+ void __ipipe_restore_root(unsigned long x);
 =20
- #define IPIPE_NR_CPUS		1
- #define ipipe_declare_cpuid	const int cpuid =3D 0
-+#define ipipe_define_up_cpuid	ipipe_declare_cpuid
- #define ipipe_load_cpuid()	do { } while(0)
- #define ipipe_lock_cpu(flags)	local_irq_save_hw(flags)
- #define ipipe_unlock_cpu(flags)	local_irq_restore_hw(flags)
-@@ -304,15 +306,24 @@ void __ipipe_remove_domain_proc(struct i
-=20
- void __ipipe_flush_printk(unsigned irq, void *cookie);
-=20
--void fastcall __ipipe_walk_pipeline(struct list_head *pos, int cpuid);
--
- int fastcall __ipipe_schedule_irq(unsigned irq, struct list_head *head);=
-
-=20
- int fastcall __ipipe_dispatch_event(unsigned event, void *data);
-=20
--int fastcall __ipipe_dispatch_wired(struct ipipe_domain *head, unsigned =
-irq);
-+#ifndef CONFIG_SMP
-+/* Eliminate cpuid parameter */
-+#define __ipipe_dispatch_wired(head, irq, cpuid) \
-+	__ipipe_dispatch_wired(head, irq)
-+#define __ipipe_sync_stage(syncmask, cpuid)	__ipipe_sync_stage(syncmask)=
-
-+#define __ipipe_walk_pipeline(pos, cpuid)	__ipipe_walk_pipeline(pos)
-+#endif /* !CONFIG_SMP */
++#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
++void ipipe_check_context(struct ipipe_domain *border_ipd);
++#else /* !CONFIG_IPIPE_DEBUG_CONTEXT */
++static inline void ipipe_check_context(struct ipipe_domain *border_ipd) =
+{ }
++#endif /* !CONFIG_IPIPE_DEBUG_CONTEXT */
 +
-+int __ipipe_dispatch_wired(struct ipipe_domain *head, unsigned irq,
-+			   int cpuid);
-+
-+void __ipipe_sync_stage(unsigned long syncmask, int cpuid);
+ #endif	/* CONFIG_IPIPE */
 =20
--void fastcall __ipipe_sync_stage(unsigned long syncmask);
-+void __ipipe_walk_pipeline(struct list_head *pos, int cpuid);
+ #endif	/* !__LINUX_IPIPE_BASE_H */
+Index: linux-2.6.20/include/linux/kernel.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/linux/kernel.h
++++ linux-2.6.20/include/linux/kernel.h
+@@ -14,6 +14,7 @@
+ #include <linux/compiler.h>
+ #include <linux/bitops.h>
+ #include <linux/log2.h>
++#include <linux/ipipe_base.h>
+ #include <asm/byteorder.h>
+ #include <asm/bug.h>
 =20
- void __ipipe_pin_range_globally(unsigned long start, unsigned long end);=
-
-=20
-@@ -322,7 +333,7 @@ int __ipipe_pin_range_mapping(struct mm_
- 			      unsigned long start, unsigned long end);
-=20
- #ifndef __ipipe_sync_pipeline
--#define __ipipe_sync_pipeline(syncmask) __ipipe_sync_stage(syncmask)
-+#define __ipipe_sync_pipeline(syncmask, cpuid) __ipipe_sync_stage(syncma=
-sk, cpuid)
+@@ -72,9 +73,12 @@ struct user;
+  */
+ #ifdef CONFIG_PREEMPT_VOLUNTARY
+ extern int cond_resched(void);
+-# define might_resched() cond_resched()
++# define might_resched() do { \
++		ipipe_check_context(ipipe_root_domain); \
++		cond_resched(); \
++	} while (0)
+ #else
+-# define might_resched() do { } while (0)
++# define might_resched() ipipe_check_context(ipipe_root_domain)
  #endif
 =20
- #ifndef __ipipe_run_irqtail
+ #ifdef CONFIG_DEBUG_SPINLOCK_SLEEP
+Index: linux-2.6.20/include/linux/preempt.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/linux/preempt.h
++++ linux-2.6.20/include/linux/preempt.h
+@@ -8,6 +8,7 @@
+=20
+ #include <linux/thread_info.h>
+ #include <linux/linkage.h>
++#include <linux/ipipe_base.h>
+=20
+ #ifdef CONFIG_DEBUG_PREEMPT
+   extern void fastcall add_preempt_count(int val);
+@@ -26,52 +27,40 @@
+=20
+ asmlinkage void preempt_schedule(void);
+=20
+-#ifdef CONFIG_IPIPE
+-#include <asm/ipipe.h>
+-DECLARE_PER_CPU(struct ipipe_domain *, ipipe_percpu_domain);
+-extern struct ipipe_domain ipipe_root;
+-#define ipipe_preempt_guard() (per_cpu(ipipe_percpu_domain, ipipe_proces=
+sor_id()) =3D=3D &ipipe_root)
+-#else  /* !CONFIG_IPIPE */
+-#define ipipe_preempt_guard()	1
+-#endif /* CONFIG_IPIPE */
+-
+-#define preempt_disable()						\
+-do {									\
+-	if (ipipe_preempt_guard()) {					\
+-		inc_preempt_count();					\
+-		barrier();						\
+-	}								\
++#define preempt_disable() \
++do { \
++	ipipe_check_context(ipipe_root_domain); \
++	inc_preempt_count(); \
++	barrier(); \
+ } while (0)
+=20
+-#define preempt_enable_no_resched()					\
+-do {									\
+-	if (ipipe_preempt_guard()) {					\
+-		barrier();						\
+-		dec_preempt_count();					\
+-	}								\
++#define preempt_enable_no_resched() \
++do { \
++	ipipe_check_context(ipipe_root_domain); \
++	barrier(); \
++	dec_preempt_count(); \
+ } while (0)
+=20
+-#define preempt_check_resched()						\
+-do {									\
+-	if (ipipe_preempt_guard()) {					\
+-		if (unlikely(test_thread_flag(TIF_NEED_RESCHED)))	\
+-			preempt_schedule();				\
+-	}								\
++#define preempt_check_resched() \
++do { \
++	ipipe_check_context(ipipe_root_domain); \
++	if (unlikely(test_thread_flag(TIF_NEED_RESCHED))) \
++		preempt_schedule(); \
+ } while (0)
+=20
+-#define preempt_enable()						\
+-do {									\
+-	preempt_enable_no_resched();					\
++#define preempt_enable() \
++do { \
++	preempt_enable_no_resched(); \
+ 	barrier(); \
+-	preempt_check_resched();					\
++	preempt_check_resched(); \
+ } while (0)
+=20
+ #else
+=20
+-#define preempt_disable()		do { } while (0)
+-#define preempt_enable_no_resched()	do { } while (0)
+-#define preempt_enable()		do { } while (0)
+-#define preempt_check_resched()		do { } while (0)
++#define preempt_disable()		ipipe_check_context(ipipe_root_domain)
++#define preempt_enable_no_resched()	ipipe_check_context(ipipe_root_domai=
+n)
++#define preempt_enable()		ipipe_check_context(ipipe_root_domain)
++#define preempt_check_resched()		ipipe_check_context(ipipe_root_domain)
+=20
+ #endif
+=20
+Index: linux-2.6.20/kernel/ipipe/Kconfig.debug
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/kernel/ipipe/Kconfig.debug
++++ linux-2.6.20/kernel/ipipe/Kconfig.debug
+@@ -2,6 +2,15 @@ config IPIPE_DEBUG
+ 	bool "I-pipe debugging"
+ 	depends on IPIPE
+=20
++config IPIPE_DEBUG_CONTEXT
++	bool "Check for illicit cross-domain calls"
++	depends on IPIPE_DEBUG
++	---help---
++	  Enable this feature to arm checkpoints in the kernel that
++	  verify the correct invocation context. On entry of critical
++	  Linux services a warning is issued if the caller is not
++	  running over the root domain.
++
+ config IPIPE_TRACE
+ 	bool "Latency tracing"
+ 	depends on IPIPE_DEBUG
 Index: linux-2.6.20/kernel/ipipe/core.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 --- linux-2.6.20.orig/kernel/ipipe/core.c
 +++ linux-2.6.20/kernel/ipipe/core.c
-@@ -198,7 +198,7 @@ void __ipipe_unstall_root(void)
-         __clear_bit(IPIPE_STALL_FLAG, &ipipe_root_domain->cpudata[cpuid]=
-=2Estatus);
+@@ -33,6 +33,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ #endif	/* CONFIG_PROC_FS */
++#include <linux/ipipe_trace.h>
 =20
-         if (unlikely(ipipe_root_domain->cpudata[cpuid].irq_pending_hi !=3D=
- 0))
--                __ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+                __ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
+ static int __ipipe_ptd_key_count;
 =20
-         local_irq_enable_hw();
- }
-@@ -316,7 +316,7 @@ void ipipe_unstall_pipeline_head(void)
+@@ -1383,6 +1384,30 @@ void __init ipipe_init_proc(void)
 =20
- 	if (unlikely(head->cpudata[cpuid].irq_pending_hi !=3D 0)) {
- 		if (likely(head =3D=3D per_cpu(ipipe_percpu_domain, cpuid)))
--			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
- 		else
- 			__ipipe_walk_pipeline(&head->p_link, cpuid);
-         }
-@@ -352,7 +352,7 @@ void fastcall __ipipe_restore_pipeline_h
- 		__clear_bit(IPIPE_STALL_FLAG, &head->cpudata[cpuid].status);
- 		if (unlikely(head->cpudata[cpuid].irq_pending_hi !=3D 0)) {
- 			if (likely(head =3D=3D per_cpu(ipipe_percpu_domain, cpuid)))
--				__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+				__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
- 			else
- 				__ipipe_walk_pipeline(&head->p_link, cpuid);
- 		}
-@@ -363,8 +363,9 @@ void fastcall __ipipe_restore_pipeline_h
- /* __ipipe_walk_pipeline(): Plays interrupts pending in the log. Must
-    be called with local hw interrupts disabled. */
+ #endif	/* CONFIG_PROC_FS */
 =20
--void fastcall __ipipe_walk_pipeline(struct list_head *pos, int cpuid)
-+void __ipipe_walk_pipeline(struct list_head *pos, int cpuid)
- {
-+	ipipe_define_up_cpuid;
- 	struct ipipe_domain *this_domain =3D per_cpu(ipipe_percpu_domain, cpuid=
-);
-=20
- 	while (pos !=3D &__ipipe_pipeline) {
-@@ -378,7 +379,7 @@ void fastcall __ipipe_walk_pipeline(stru
- 		if (next_domain->cpudata[cpuid].irq_pending_hi !=3D 0) {
-=20
- 			if (next_domain =3D=3D this_domain)
--				__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+				__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
- 			else {
- 				__ipipe_switch_to(this_domain, next_domain,
- 						  cpuid);
-@@ -389,7 +390,7 @@ void fastcall __ipipe_walk_pipeline(stru
- 				    irq_pending_hi !=3D 0
- 				    && !test_bit(IPIPE_STALL_FLAG,
- 						 &this_domain->cpudata[cpuid].status))
--					__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+					__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
- 			}
-=20
- 			break;
-@@ -438,7 +439,7 @@ void ipipe_suspend_domain(void)
- 		per_cpu(ipipe_percpu_domain, cpuid) =3D next_domain;
-=20
- sync_stage:
--		__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+		__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
-=20
- 		ipipe_load_cpuid();	/* Processor might have changed. */
-=20
-@@ -663,7 +664,7 @@ int fastcall __ipipe_dispatch_event (uns
- 		    next_domain->cpudata[cpuid].irq_pending_hi !=3D 0 &&
- 		    !test_bit(IPIPE_STALL_FLAG,&next_domain->cpudata[cpuid].status)) {=
++#ifdef CONFIG_IPIPE_DEBUG_CONTEXT
++void ipipe_check_context(struct ipipe_domain *border_ipd)
++{
++	static int check_hit;
++
++	if (likely(ipipe_current_domain->priority <=3D border_ipd->priority) ||=
 
- 			per_cpu(ipipe_percpu_domain, cpuid) =3D next_domain;
--			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
- 			ipipe_load_cpuid();
- 			if (per_cpu(ipipe_percpu_domain, cpuid) !=3D next_domain)
- 				this_domain =3D per_cpu(ipipe_percpu_domain, cpuid);
-@@ -706,13 +707,12 @@ int fastcall __ipipe_dispatch_event (uns
-  * Called with hw interrupts off.
-  */
++	    check_hit)
++		return;
++
++	check_hit =3D 1;
++
++	ipipe_trace_panic_freeze();
++	ipipe_set_printk_sync(ipipe_current_domain);
++	printk(KERN_ERR "I-pipe: Detected illicit call from domain '%s'\n"
++	       KERN_ERR "        into a service reserved for domain '%s' and "
++			"below.\n",
++	       ipipe_current_domain->name, border_ipd->name);
++	show_stack(NULL, NULL);
++	ipipe_trace_panic_dump();
++}
++
++EXPORT_SYMBOL(ipipe_check_context);
++#endif /* CONFIG_IPIPE_DEBUG_CONTEXT */
++
+ EXPORT_SYMBOL(ipipe_virtualize_irq);
+ EXPORT_SYMBOL(ipipe_control_irq);
+ EXPORT_SYMBOL(ipipe_suspend_domain);
+Index: linux-2.6.20/include/linux/smp.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/linux/smp.h
++++ linux-2.6.20/include/linux/smp.h
+@@ -109,6 +109,8 @@ static inline int smp_call_function_sing
 =20
--int fastcall __ipipe_dispatch_wired(struct ipipe_domain *head, unsigned =
-irq)
-+int __ipipe_dispatch_wired(struct ipipe_domain *head, unsigned irq, int =
-cpuid)
- {
- 	struct ipcpudata *cpudata;
- 	struct ipipe_domain *old;
--	ipipe_declare_cpuid;
-+	ipipe_define_up_cpuid;
+ #endif /* !SMP */
 =20
--	ipipe_load_cpuid();
- 	cpudata =3D &head->cpudata[cpuid];
- 	cpudata->irq_counters[irq].total_hits++;
-=20
-@@ -762,16 +762,15 @@ int fastcall __ipipe_dispatch_wired(stru
++#include <linux/ipipe_base.h>
++
+ /*
+  * smp_processor_id(): get the current CPU ID.
   *
-  * This routine must be called with hw interrupts off.
+@@ -126,9 +128,17 @@ static inline int smp_call_function_sing
   */
--void fastcall __ipipe_sync_stage(unsigned long syncmask)
-+void __ipipe_sync_stage(unsigned long syncmask, int cpuid)
- {
- 	unsigned long mask, submask;
- 	struct ipcpudata *cpudata;
- 	struct ipipe_domain *ipd;
--	ipipe_declare_cpuid;
- 	int level, rank;
- 	unsigned irq;
-+	ipipe_define_up_cpuid;
+ #ifdef CONFIG_DEBUG_PREEMPT
+   extern unsigned int debug_smp_processor_id(void);
+-# define smp_processor_id() debug_smp_processor_id()
++# define smp_processor_id()				\
++	({						\
++		ipipe_check_context(ipipe_root_domain);	\
++		debug_smp_processor_id();		\
++	})
+ #else
+-# define smp_processor_id() raw_smp_processor_id()
++# define smp_processor_id()				\
++	({						\
++		ipipe_check_context(ipipe_root_domain);	\
++		raw_smp_processor_id();			\
++	})
+ #endif
 =20
--	ipipe_load_cpuid();
- 	ipd =3D per_cpu(ipipe_percpu_domain, cpuid);
- 	cpudata =3D &ipd->cpudata[cpuid];
+ #define get_cpu()		({ preempt_disable(); smp_processor_id(); })
+Index: linux-2.6.20/include/linux/ipipe_trace.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/linux/ipipe_trace.h
++++ linux-2.6.20/include/linux/ipipe_trace.h
+@@ -39,6 +39,11 @@ int ipipe_trace_frozen_reset(void);
+ void ipipe_trace_panic_freeze(void);
+ void ipipe_trace_panic_dump(void);
 =20
-@@ -931,7 +930,7 @@ int ipipe_register_domain(struct ipipe_d
- 		if (ipipe_root_domain->cpudata[cpuid].irq_pending_hi !=3D 0 &&
- 		    !test_bit(IPIPE_STALL_FLAG,
- 			      &ipipe_root_domain->cpudata[cpuid].status))
--			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY);
-+			__ipipe_sync_pipeline(IPIPE_IRQMASK_ANY, cpuid);
+-#endif /* CONFIG_IPIPE_TRACE */
++#else /* !CONFIG_IPIPE_TRACE */
++
++static inline void ipipe_trace_panic_freeze(void) { }
++static inline void ipipe_trace_panic_dump(void) { }
++
++#endif /* !CONFIG_IPIPE_TRACE */
 =20
- 		ipipe_unlock_cpu(flags);
- 	}
+ #endif	/* !__LINUX_IPIPE_H */
 
-
---------------000209090802040500000008
+--------------020802080409070800050407
 Content-Type: text/plain;
- name="optimise-cpuid-i386.patch"
+ name="debug-dom-violation-i386-v2.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="optimise-cpuid-i386.patch"
+ filename="debug-dom-violation-i386-v2.patch"
 
 ---
- arch/i386/kernel/ipipe.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/i386/kernel/ipipe.c    |    9 +++++++--
+ arch/i386/kernel/process.c  |    2 +-
+ include/asm-i386/i387.h     |    9 +++++----
+ include/asm-i386/irqflags.h |    7 +++++--
+ 4 files changed, 18 insertions(+), 9 deletions(-)
 
+Index: linux-2.6.20/include/asm-i386/irqflags.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/asm-i386/irqflags.h
++++ linux-2.6.20/include/asm-i386/irqflags.h
+@@ -54,6 +54,7 @@ static inline void raw_local_irq_restore
+ static inline void raw_local_irq_disable(void)
+ {
+ #ifdef CONFIG_IPIPE
++	ipipe_check_context(ipipe_root_domain);
+ 	__ipipe_stall_root();
+ 	barrier();
+ #else
+@@ -144,8 +145,10 @@ static inline unsigned long __raw_local_
+ #define raw_local_save_flags(flags) \
+ 		do { (flags) =3D __raw_local_save_flags(); } while (0)
+=20
+-#define raw_local_irq_save(flags) \
+-		do { (flags) =3D __raw_local_irq_save(); } while (0)
++#define raw_local_irq_save(flags) do {			\
++		ipipe_check_context(ipipe_root_domain);	\
++		(flags) =3D __raw_local_irq_save();	\
++	} while (0)
+=20
+ static inline int raw_irqs_disabled_flags(unsigned long flags)
+ {
+Index: linux-2.6.20/include/asm-i386/i387.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/include/asm-i386/i387.h
++++ linux-2.6.20/include/asm-i386/i387.h
+@@ -75,10 +75,11 @@ static inline void __save_init_fpu( stru
+ }
+=20
+ #define __unlazy_fpu( tsk ) do { \
+-	if (task_thread_info(tsk)->status & TS_USEDFPU) \
+-		save_init_fpu( tsk ); 			\
+-	else						\
+-		tsk->fpu_counter =3D 0;			\
++	if (task_thread_info(tsk)->status & TS_USEDFPU) {	\
++		__save_init_fpu(tsk); 				\
++		stts();						\
++	} else							\
++		tsk->fpu_counter =3D 0;				\
+ } while (0)
+=20
+ #define __clear_fpu( tsk )					\
+Index: linux-2.6.20/arch/i386/kernel/process.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20.orig/arch/i386/kernel/process.c
++++ linux-2.6.20/arch/i386/kernel/process.c
+@@ -636,7 +636,7 @@ struct task_struct fastcall * __switch_t
+ {
+ 	struct thread_struct *prev =3D &prev_p->thread,
+ 				 *next =3D &next_p->thread;
+-	int cpu =3D smp_processor_id();
++	int cpu =3D raw_smp_processor_id();
+ 	struct tss_struct *tss =3D &per_cpu(init_tss, cpu);
+=20
+ 	/* never put a printk in __switch_to... printk() calls wake_up*() indir=
+ectly */
 Index: linux-2.6.20/arch/i386/kernel/ipipe.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 --- linux-2.6.20.orig/arch/i386/kernel/ipipe.c
 +++ linux-2.6.20/arch/i386/kernel/ipipe.c
-@@ -574,7 +574,7 @@ asmlinkage void __ipipe_unstall_iret_roo
+@@ -711,8 +711,13 @@ fastcall int __ipipe_handle_exception(st
+ 	/* Track the hw interrupt state before calling the Linux
+ 	 * exception handler, replicating it into the virtual mask. */
 =20
- 		if ((ipipe_root_domain->cpudata[cpuid].
- 		     irq_pending_hi & IPIPE_IRQMASK_VIRT) !=3D 0)
--			__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT);
-+			__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT, cpuid);
- 	}
- #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
- 	ipipe_trace_end(0x8000000D);
-@@ -612,7 +612,7 @@ asmlinkage int __ipipe_syscall_root(stru
- 			 * is tested. */
- 			ipipe_lock_cpu(flags);
- 			if ((ipipe_root_domain->cpudata[cpuid].irq_pending_hi & IPIPE_IRQMASK=
-_VIRT) !=3D 0)
--				__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT);
-+				__ipipe_sync_pipeline(IPIPE_IRQMASK_VIRT, cpuid);
- 			ipipe_unlock_cpu(flags);
- 			return -1;
- 		}
-@@ -785,7 +785,7 @@ int __ipipe_handle_irq(struct pt_regs re
- 	if (likely(test_bit(IPIPE_WIRED_FLAG, &next_domain->irqs[irq].control))=
-) {
- 		if (!m_ack && next_domain->irqs[irq].acknowledge !=3D NULL)
- 			next_domain->irqs[irq].acknowledge(irq);
--		if (likely(__ipipe_dispatch_wired(next_domain, irq))) {
-+		if (likely(__ipipe_dispatch_wired(next_domain, irq, cpuid))) {
- 			ipipe_load_cpuid();
- 			goto finalize;
- 		} else
+-	if (irqs_disabled_hw())
+-		local_irq_disable();
++	if (irqs_disabled_hw()) {
++		/* Do not trigger the alarm in ipipe_check_context() by using
++		 * plain local_irq_disable(). */
++		__ipipe_stall_root();
++		trace_hardirqs_off();
++		barrier();
++	}
+=20
+ #ifdef CONFIG_KGDB
+ 	/* catch exception KGDB is interested in over non-root domains */
 
+--------------020802080409070800050407
+Content-Type: text/plain;
+ name="debug-dom-violation-x86_64-v2.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="debug-dom-violation-x86_64-v2.patch"
 
---------------000209090802040500000008--
+---
+ arch/x86_64/kernel/ipipe.c    |    9 +++++++--
+ arch/x86_64/kernel/process.c  |    2 +-
+ include/asm-x86_64/irqflags.h |    7 +++++--
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
---------------enig17C00B43818CC9E83BA2FD27
+Index: linux-2.6.20-x64/include/asm-x86_64/irqflags.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20-x64.orig/include/asm-x86_64/irqflags.h
++++ linux-2.6.20-x64/include/asm-x86_64/irqflags.h
+@@ -86,6 +86,7 @@ static inline int raw_irqs_disabled_flag
+ static inline void raw_local_irq_disable(void)
+ {
+ #ifdef CONFIG_IPIPE
++	ipipe_check_context(ipipe_root_domain);
+ 	__ipipe_stall_root();
+ 	barrier();
+ #else
+@@ -128,8 +129,10 @@ static inline unsigned long __raw_local_
+ 	return flags;
+ }
+=20
+-#define raw_local_irq_save(flags) \
+-		do { (flags) =3D __raw_local_irq_save(); } while (0)
++#define raw_local_irq_save(flags) do {			\
++		ipipe_check_context(ipipe_root_domain);	\
++		(flags) =3D __raw_local_irq_save();	\
++	} while (0)
+=20
+ static inline int raw_irqs_disabled(void)
+ {
+Index: linux-2.6.20-x64/arch/x86_64/kernel/ipipe.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20-x64.orig/arch/x86_64/kernel/ipipe.c
++++ linux-2.6.20-x64/arch/x86_64/kernel/ipipe.c
+@@ -611,8 +611,13 @@ asmlinkage int __ipipe_handle_exception(
+ 	/* Track the hw interrupt state before calling the Linux
+ 	 * exception handler, replicating it into the virtual mask. */
+=20
+-	if (irqs_disabled_hw())
+-		local_irq_disable();
++	if (irqs_disabled_hw()) {
++		/* Do not trigger the alarm in ipipe_check_context() by using
++		 * plain local_irq_disable(). */
++		__ipipe_stall_root();
++		trace_hardirqs_off();
++		barrier();
++	}
+=20
+ #ifdef CONFIG_KGDB
+ 	/* catch exception KGDB is interested in over non-root domains */
+Index: linux-2.6.20-x64/arch/x86_64/kernel/process.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.20-x64.orig/arch/x86_64/kernel/process.c
++++ linux-2.6.20-x64/arch/x86_64/kernel/process.c
+@@ -572,7 +572,7 @@ __switch_to(struct task_struct *prev_p,=20
+ {
+ 	struct thread_struct *prev =3D &prev_p->thread,
+ 				 *next =3D &next_p->thread;
+-	int cpu =3D smp_processor_id(); =20
++	int cpu =3D raw_smp_processor_id(); =20
+ 	struct tss_struct *tss =3D &per_cpu(init_tss, cpu);
+=20
+ 	/* we're going to use this soon, after a few expensive things */
+
+--------------020802080409070800050407--
+
+--------------enigDA83AD743CB9378D0949DDD7
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
+Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGMkjvniDOoMHTA+kRAmR8AJ4zfba4CptmxNP9rXbKxaonzzFfGACfXF9F
-lBe1nQf/B3aiLLEfZeWyUkk=
-=wPHP
+iD8DBQFGNfgBniDOoMHTA+kRAoieAJ0UNPOYYZV8lAeMxxj8JCfKSXP0VQCeLTN/
+Q4hKNEyokVzSSsb4fD/VnOg=
+=Fjst
 -----END PGP SIGNATURE-----
 
---------------enig17C00B43818CC9E83BA2FD27--
+--------------enigDA83AD743CB9378D0949DDD7--
 
