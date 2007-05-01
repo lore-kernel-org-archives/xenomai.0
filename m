@@ -1,43 +1,32 @@
-Message-ID: <465D6E3A.90904@domain.hid>
-Date: Wed, 30 May 2007 14:29:46 +0200
+Message-ID: <4637A8AA.1080506@domain.hid>
+Date: Tue, 01 May 2007 22:52:58 +0200
+From: trem <trem@domain.hid>
 MIME-Version: 1.0
-References: <465D2BE1.1080302@domain.hid>
-	<465D3053.2040002@domain.hid>	<465D383C.5040203@domain.hid>
-	<465D3B37.9000900@domain.hid> <465D435F.8080304@domain.hid>
-	<465D6652.4070305@domain.hid>
-In-Reply-To: <465D6652.4070305@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-From: Rodolfo Bamberg <rolfetas@domain.hid>
-Subject: Re: [Xenomai-help] [Newbie question]Segmentation fault with
- user-space binary
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+Subject: [Adeos-main] port to kernel 2.6.21 ?
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
 
-I use buildroot, but cross-compiled apps with shared libs work fine,
-like busybox
+Hi
 
-Jan Kiszka wrote:
-> Rodolfo Bamberg wrote:
->   
->> I just can't figure out: If latency works, and it uses the native skin,
->> why does including libnative throw a segmantation fault?
->>     
->
-> Have you tried to attach gdb?
->
-> What toolchain do you use precisely? How to regenerate it?
->
-> Jan
->
->   
+I've seen that kernel 2.6.21 has been inserted in the git repository.
+I'm interested to help porting adeos from 2.6.20 to 2.6.21. But I think
+that it's not very nice if two people work on the same thing. So I'm
+asking who works on what ?
+
+I suppose that someone works on noarch and i386 port. Someone
+handle x86_64 port ?
+
+regards,
+trem
+
 
 
