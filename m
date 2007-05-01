@@ -1,91 +1,106 @@
-Message-ID: <46287CBF.1000001@domain.hid>
-Date: Fri, 20 Apr 2007 10:41:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>	
-	<461BC626.3070403@domain.hid>	
-	<305035a40704110201i1ea65f11j162eecc46858f5ca@domain.hid>	
-	<461CA604.4050809@domain.hid>	
-	<305035a40704110221u348611ebs8fb73b7ddb0f8bd3@domain.hid>	
-	<461CD163.1020500@domain.hid>	
-	<17957.16218.913465.449254@domain.hid>	
-	<305035a40704180251p41c58941l278e20d06af1991d@domain.hid>	
-	<17958.30354.523869.820563@domain.hid>	
-	<17958.34248.814351.793771@domain.hid>
-	<305035a40704200132l3d2aac9ftc7238b71eeb940dd@domain.hid>
-In-Reply-To: <305035a40704200132l3d2aac9ftc7238b71eeb940dd@domain.hid>
+From: trem <tremyfr@domain.hid>
+Date: Tue, 01 May 2007 22:43:46 +0200
+Message-ID: <f188q2$bsr$1@domain.hid>
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------000001050004030506070402"
+Sender: news <news@domain.hid>
+Subject: [Xenomai-core] [PATCH] add tut01_skeleton
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+
+This is a multi-part message in MIME format.
+--------------000001050004030506070402
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: gclement@domain.hid
-Cc: adeos-main <adeos-main@gna.org>
 
-Gregory CLEMENT wrote:
-> 2007/4/18, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> 
->>Gilles Chanteperdrix wrote:
->> > Gregory CLEMENT wrote:
->> >  > > >  #ifdef CONFIG_IPIPE
->> >  > > > -#define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
->> >  > > > +#if defined(CONFIG_ARCH_AT91RM9200)
->> >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
->> >  > > > +#elif defined(CONFIG_ARCH_AT91SAM9260)
->> >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91SAM9260_BASE_TCB0)
->> >  > > > +#elif defined(CONFIG_ARCH_AT91SAM9261)
->> >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91SAM9261_BASE_TCB0)
->> >  > > > +#else
->> >  > > > +#error "Unsupported AT91 processor"
->> >  > > > +#endif
->> >  > > >  #endif /* CONFIG_IPIPE */
->> >  > >
->> >  > > To reduce the ifdef hell, can not we define a unique AT91_BASE_TCB0 ?
->> >  >
->> >  > Sure it would be better, but unfortunately the mainteners of AT91
->> >  > choose to produce a define per architecture even if the register are
->> >  > the same.
->> >
->> > As far as I know, the AT91RM9200_BASE_TCB0 define is provided by the
->> > I-pipe patch, so we may name it how we want.
->>
->>No, it is not provided by the I-pipe patch.
->>
->> >
->> >
->> >  > We keep this line :
->> >  > #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
->> >  > and it will work I don't like having an AT91RM9200 define for chip
->> >  > which are not AT91RM9200. It adds confusion.
->> >  >
->> >  > We also could define AT91_BASE_TCB0 as you suggest, but it mean we add
->> >  > a new register definition just for ipipe and it adds a little
->> >  > confusion also.
->> >  >
->> >  > Choose the solution you prefer, or an other if you have a better idea.
->> >
->> > I do not have a better idea, but I understood why the defines are
->> > different: the CONFIG_ARCH_AT91RM9200, CONFIG_ARCH_AT91SAM9260 and
->> > CONFIG_ARCH_AT91SAM9261 are not mutually exclusive, it is possible to
->> > build a kernel that works for the three machines. So, this code can not
->> > remain as is. Please, at least, forbid in Kconfig selecting several
->> > machines when IPIPE is enabled.
->>
->>On 2.6.20, the options ARE mutually exclusive.
-> 
-> 
-> 
-> Ok so do you want we produce a new patch taking in account your comments ?
-> Or have you already done it?
+Hi
 
-If possible I would prefer you to produce a new patch.
+As we have already talked on xenomai-help, I've done a first example
+with rtdm. It's very simple and the goal is just to show how to register
+and use a rtdm device. This is the first release, so it isn't perfect
+(comments and feedback welcome).
 
--- 
-                                                 Gilles Chanteperdrix
+If this example is good enough, I have to plane next one. I think about
+shawdow_task (to use device in rt mode) and synchronization. If people
+have idea for others example, I would be pleased to read them.
+
+regards,
+trem
+
+--------------000001050004030506070402
+Content-Type: application/x-bzip;
+ name="tut01_skeleton_01.patch.bz2"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="tut01_skeleton_01.patch.bz2"
+
+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
+--------------000001050004030506070402--
+
 
