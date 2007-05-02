@@ -1,29 +1,11 @@
-Message-ID: <463896E1.1010404@domain.hid>
-Date: Wed, 02 May 2007 15:49:21 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+In-Reply-To: <46388DCC.5070303@domain.hid>
 MIME-Version: 1.0
-References: <1178109768.5111.102.camel@domain.hid> <46384E4B.2050200@domain.hid>
-	<1177947596.32698.47.camel@domain.hid>	
-	<1177686318.5010.106.camel@domain.hid>	
-	<1177683592.5010.84.camel@domain.hid>	 <4631FF09.2000601@domain.hid>	
-	<4631F925.2090100@domain.hid>	
-	<4850965.1177589052502.JavaMail.ngmail@domain.hid>
-	<4631E30B.6060701@domain.hid>	 <1177679680.5010.78.camel@domain.hid>	
-	<23595872.1177680700618.JavaMail.ngmail@domain.hid>	
-	<784082.1177682909759.JavaMail.ngmail@domain.hid>	
-	<1646519.1177684097169.JavaMail.ngmail@domain.hid>	
-	<1177685762.5010.104.camel@domain.hid>	
-	<12104543.1177686610343.JavaMail.ngmail@domain.hid>	
-	<1177706363.5010.158.camel@domain.hid>	
-	<33288775.1178089500362.JavaMail.ngmail@domain.hid>	
-	<33481027.1178097243064.JavaMail.ngmail@domain.hid>
-	<5375222.1178113469458.JavaMail.ngmail@domain.hid>
-In-Reply-To: <5375222.1178113469458.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA36C266D258153DE2CA57DDC"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
+Message-ID: <OFC2180F21.68900DD6-ONC12572CF.004C5CAC-C12572CF.004CFE20@domain.hid>
+From: Andreas Erler <Andreas.Erler@domain.hid>
+Date: Wed, 2 May 2007 16:00:57 +0200
+Content-Type: multipart/alternative;
+	boundary="=_alternative 004CFE1BC12572CF_="
+Subject: [Xenomai-help] Antwort:  HELP!!
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -33,50 +15,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: rolandtollenaar@domain.hid
+Cc: Xenomai-help@domain.hid, xenomai-help-bounces@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA36C266D258153DE2CA57DDC
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Dies ist eine mehrteilige Nachricht im MIME-Format.
+--=_alternative 004CFE1BC12572CF_=
+Content-Type: text/plain; charset="US-ASCII"
 
-M. Koehrer wrote:
-> Hi Philippe,
->=20
-> I enabled the two kernel configuration parameters.
-> However, this changes the error behaviour.
-> Now, the e1000 driver will  be loaded, however it will not work...
-> A unload and reload of the e1000 driver leads now to a kernel oops. How=
-ever this looks
-> completely different than the original one I am chasing...
-> =20
-> I will try to instrument the e1000 driver to ensure that it tries to re=
-trieve the correct interrupt...
+Hi Roland,
 
-Let's don't change the test setup permanently unless it results in a
-"better" oops. We need ONE base where we try to narrow the issue down,
-not n of them.
+I do not want to make big advertisment here in this forum, but have a look 
+at our webpage, we have a lot of buscouplers for external io. (CAN, 
+Ethernet Powerlink, ...)
+Also maybe interesting for you is, that we are working on a xenomai driver 
+for ethernet powerlink (http://www.ethernet-powerlink.org/) which will be 
+finished in a few days...
 
-OK, then please post the new oops, maybe it is in fact more comprehensibl=
-e.
+Andy
 
-Jan
+Tel: +43 (0)7716/20136 - 11
+Email: andreas.erler@domain.hid
+http://www.br-automation.com
+
+_________________________________________
+Firmenbuchnummer: Landesgericht Ried im Innkreis / FN 111651 v
 
 
---------------enigA36C266D258153DE2CA57DDC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Roland Tollenaar <rwatollenaar@domain.hid> 
+Gesendet von: xenomai-help-bounces@domain.hid
+02.05.2007 15:12
+Bitte antworten an
+rolandtollenaar@domain.hid
 
-iD8DBQFGOJbhniDOoMHTA+kRAhCRAJ0Z73u3si58wJl87NrDVXaFZ6na+wCfYe1M
-ql1J8a954wxRqmhLw1W0zls=
-=eQ8U
------END PGP SIGNATURE-----
 
---------------enigA36C266D258153DE2CA57DDC--
+An
+Xenomai-help@domain.hid
+Kopie
+
+Thema
+[Xenomai-help] HELP!!
+
+
+
+
+
+
+Hi,
+
+Sorry about the subject but I badly need some advice.
+
+I have tried 2 different makes of remote IO over CAN to achieve my 1ms
+control loop. The makes are WAGO and Schleicher. These are industrial
+modules that link to buscouplers (in my case CAN) and make the IO
+available to andy device that can talk CAN. In this case my xenomai'd PC
+platform.
+
+However both makes (and all others I have contacted) have bus couplers
+which are too slow to achieve this. 5ms is about the best they can do.
+The engineering departments (who were not aware of this restriction)
+agree that it is not a fundamental CAN problem but a matter of their
+hardware not being able to respond fast enough.
+
+I have given up hope of finding suppliers who can supply industrial (the
+latter is important) equipment that will give me what I am looking for
+based on CAN. So I am willing to settle on another bus protocol (I will
+still be using CAN for other sensors which are responding fast enough on
+CAN) for the remote IO.
+
+Can anyone tell me what companies can supply remote IO that is fast 
+enough.
+
+Can anyone comment on the use of RTNET (real time ethernet I believe)
+with xenomai. I ahve not seen any evidence of it being alove on this
+mailing list.
+
+
+Thanks,
+
+Roland
+
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
+
+
+--=_alternative 004CFE1BC12572CF_=
+Content-Type: text/html; charset="US-ASCII"
+
+
+<br><font size=2 face="sans-serif">Hi Roland,</font>
+<br>
+<br><font size=2 face="sans-serif">I do not want to make big advertisment
+here in this forum, but have a look at our webpage, we have a lot of buscouplers
+for external io. (CAN, Ethernet Powerlink, ...)</font>
+<br><font size=2 face="sans-serif">Also maybe interesting for you is, that
+we are working on a xenomai driver for ethernet powerlink (http://www.ethernet-powerlink.org/)
+which will be finished in a few days...</font>
+<br><font size=2 face="sans-serif"><br>
+Andy</font>
+<br><font size=2 face="Arial"><br>
+Tel: +43 (0)7716/20136 - 11<br>
+Email: andreas.erler@domain.hid</font><font size=2 color=blue face="Arial"><u><br>
+</u></font><a href="http://www.br-automation.com/"><font size=2 color=blue face="Arial"><u>http://www.br-automation.com</u></font></a><font size=2 face="Arial"><br>
+</font><font size=2 face="Courier"><br>
+_________________________________________</font><font size=1 face="Arial"><br>
+Firmenbuchnummer: Landesgericht Ried im Innkreis / FN 111651 v</font>
+<br>
+<br>
+<br>
+<table width=100%>
+<tr valign=top>
+<td width=40%><font size=1 face="sans-serif"><b>Roland Tollenaar &lt;rwatollenaar@domain.hid&gt;</b>
+</font>
+<br><font size=1 face="sans-serif">Gesendet von: xenomai-help-bounces@domain.hid</font>
+<p><font size=1 face="sans-serif">02.05.2007 15:12</font>
+<table border>
+<tr valign=top>
+<td bgcolor=white>
+<div align=center><font size=1 face="sans-serif">Bitte antworten an<br>
+rolandtollenaar@domain.hid</font></div></table>
+<br>
+<td width=59%>
+<table width=100%>
+<tr valign=top>
+<td>
+<div align=right><font size=1 face="sans-serif">An</font></div>
+<td><font size=1 face="sans-serif">Xenomai-help@domain.hid</font>
+<tr valign=top>
+<td>
+<div align=right><font size=1 face="sans-serif">Kopie</font></div>
+<td>
+<tr valign=top>
+<td>
+<div align=right><font size=1 face="sans-serif">Thema</font></div>
+<td><font size=1 face="sans-serif">[Xenomai-help] HELP!!</font></table>
+<br>
+<table>
+<tr valign=top>
+<td>
+<td></table>
+<br></table>
+<br>
+<br>
+<br><font size=2><tt>Hi,<br>
+<br>
+Sorry about the subject but I badly need some advice.<br>
+<br>
+I have tried 2 different makes of remote IO over CAN to achieve my 1ms<br>
+control loop. The makes are WAGO and Schleicher. These are industrial<br>
+modules that link to buscouplers (in my case CAN) and make the IO<br>
+available to andy device that can talk CAN. In this case my xenomai'd PC<br>
+platform.<br>
+<br>
+However both makes (and all others I have contacted) have bus couplers<br>
+which are too slow to achieve this. 5ms is about the best they can do.<br>
+The engineering departments (who were not aware of this restriction)<br>
+agree that it is not a fundamental CAN problem but a matter of their<br>
+hardware not being able to respond fast enough.<br>
+<br>
+I have given up hope of finding suppliers who can supply industrial (the<br>
+latter is important) equipment that will give me what I am looking for<br>
+based on CAN. So I am willing to settle on another bus protocol (I will<br>
+still be using CAN for other sensors which are responding fast enough on<br>
+CAN) for the remote IO.<br>
+<br>
+Can anyone tell me what companies can supply remote IO that is fast enough.<br>
+<br>
+Can anyone comment on the use of RTNET (real time ethernet I believe)<br>
+with xenomai. I ahve not seen any evidence of it being alove on this<br>
+mailing list.<br>
+<br>
+<br>
+Thanks,<br>
+<br>
+Roland<br>
+<br>
+<br>
+_______________________________________________<br>
+Xenomai-help mailing list<br>
+Xenomai-help@domain.hid<br>
+https://mail.gna.org/listinfo/xenomai-help<br>
+</tt></font>
+<br>
+--=_alternative 004CFE1BC12572CF_=--
 
