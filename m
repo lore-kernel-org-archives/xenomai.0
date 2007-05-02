@@ -2,8 +2,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <4630F1EA.8020206@domain.hid>
 References: <4630F1EA.8020206@domain.hid>
 Content-Type: text/plain
-Date: Wed, 02 May 2007 11:15:53 +0200
-Message-Id: <1178097353.5111.80.camel@domain.hid>
+Date: Wed, 02 May 2007 11:16:28 +0200
+Message-Id: <1178097388.5111.82.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -38,6 +38,9 @@ On Thu, 2007-04-26 at 20:39 +0200, Jan Kiszka wrote:
 >     interest for RTDM hackers as recent user postings demonstrated...
 
 Merged, thanks.
+
+-- 
+Philippe.
 
 -- 
 Philippe.
