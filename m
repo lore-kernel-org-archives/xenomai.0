@@ -1,9 +1,9 @@
-Message-ID: <4639ECA7.50208@domain.hid>
-Date: Thu, 03 May 2007 16:07:35 +0200
+Message-ID: <4639F400.8050401@domain.hid>
+Date: Thu, 03 May 2007 16:38:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4639D724.5010702@domain.hid> <1178198991.29605.54.camel@domain.hid>
-In-Reply-To: <1178198991.29605.54.camel@domain.hid>
+References: <4639D724.5010702@domain.hid>
+In-Reply-To: <4639D724.5010702@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Latency calculation and test
@@ -16,19 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Johan Borkhuis <j.borkhuis@domain.hid>
 Cc: Xenomai-help@domain.hid
 
-Philippe Gerum wrote:
-> Hard RT signals are not yet supported by Xenomai. It's on the 2.4
-> roadmap though. So you are right, POSIX signals are presently only
-> available from the regular glibc/kernel support, therefore Xenomai
-> threads automatically move to secondary mode to process them. Precise
-> timing can be achieved with the POSIX skin using the non-portable
-> pthread_set_periodic_np/pthread_wait_np interface.
+Johan Borkhuis wrote:
+> When running multiple threads within this program (without load) the 
+> values range from -5 usec to +5 usec, with an average of around 0 usec. 
+> But with more RT tasks I see a very high latency once in a while (over 
+> 400 usec).
+> 
+> Below is the example of such a test run with 10 threads/tasks:
+>  T: 0 ( 1305) P:80 I:1000 O: 0 Min:   -2.404 Avg: -0.001 Max:   1.873
+>  T: 1 ( 1306) P:79 I:1000 O: 0 Min:   -3.052 Avg: -0.001 Max:   1.584
+>  T: 2 ( 1307) P:78 I:1000 O: 0 Min:   -5.694 Avg:  0.000 Max:  18.282
+>  T: 3 ( 1308) P:77 I:1000 O: 0 Min:   -5.166 Avg:  0.046 Max: 479.782
+>  T: 4 ( 1309) P:76 I:1000 O: 0 Min:   -2.595 Avg:  0.036 Max: 368.310
+>  T: 5 ( 1310) P:75 I:1000 O: 0 Min:   -1.731 Avg: -0.001 Max:   1.633
+>  T: 6 ( 1311) P:74 I:1000 O: 0 Min: -481.273 Avg: -0.001 Max: 490.352
+>  T: 7 ( 1312) P:73 I:1000 O: 0 Min: -273.947 Avg: -0.001 Max: 277.717
+>  T: 8 ( 1313) P:72 I:1000 O: 0 Min:  -47.016 Avg: -0.001 Max:  45.789
+>  T: 9 ( 1314) P:71 I:1000 O: 0 Min:  -22.968 Avg: -0.001 Max:  29.572
+> (P=Priority, I=interval, O=overruns)
+> 
+> When looking at the detailed information, I see that the latencies occur 
+> when a higher priority task is ending. Is there some specific reason for 
+> this, or is there some kind of configuration problem with my setup?
 
-It is also possible to use clock_nanosleep or nanosleep. IIRC cyclictest
-allows to use them.
+Let us suppose that the timers of task 0 and task 2 occur at the same
+time. task 2 will have to wait for task 0 to finish its printing job or
+for task 0 to reach a suspension point before being able to run. If this
+is the reason of the latencies you are observing, disabling root thread
+priority coupling should improve the situation.
 
 -- 
                                                  Gilles Chanteperdrix
