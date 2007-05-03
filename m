@@ -1,14 +1,12 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 2 May 2007 11:04:09 +0200
-Message-ID: <403B28AE6257B548B66BB88414AC78330174BBE4@domain.hid>
-In-Reply-To: <305035a40704240527y455c74aemb0b8e80148b008db@domain.hid>
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C78D78.9595205E"
+Date: Thu, 3 May 2007 13:45:44 +0200
+Message-ID: <403B28AE6257B548B66BB88414AC78330174BBEB@STEGOSAURE.adetel.com>
+In-Reply-To: <403B28AE6257B548B66BB88414AC78330174BBEA@STEGOSAURE.adetel.com>
 From: "BOUIN Alexandre" <abouin@domain.hid>
-Subject: Re: [Adeos-main] [PATCH] Adeos support for AT91SAM92x ( AT91SAM9260
-	and AT91SAM9261)
+Subject: Re: [Adeos-main] New patch for AT91SAM9261 adeos support for 2.6.19
+	kernel
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,826 +15,380 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: gilles.chanteperdrix@xenomai.org, adeos-main@gna.org
 
-According to all tips Gilles has given us, we finally post our last =
-results with AT91SAM9260-EK Board.
+This is a multi-part message in MIME format.
 
-As announced previously, we use this patched kernel.
-Nucleus latency was set to 40=B5s (40000ns).
-The uclibc Buildroot envirronnement was hosted by our host system via =
-nfs.
-We performed 2 tests : one under dd load and another one under an =
-heavier load using Bonnie++, Calibrator and a ping to our host system.
-
-Comments are welcome.
-
-So here are our histogram and statistics :=20
-
- - DD load results :=20
-
----|--param|----range-|--samples
-HSD|    min|   7 -  8 |       23
-HSD|    min|   8 -  9 |      470
-HSD|    min|   9 - 10 |     5524
-HSD|    min|  10 - 11 |    10921
-HSD|    min|  11 - 12 |     9897
-HSD|    min|  12 - 13 |     2311
-HSD|    min|  13 - 14 |       35
-HSD|    min|  32 - 33 |        1
----|--param|----range-|--samples
-HSD|    avg|   7 -  8 |       23
-HSD|    avg|   8 -  9 |      471
-HSD|    avg|   9 - 10 |     5910
-HSD|    avg|  10 - 11 |    15789
-HSD|    avg|  11 - 12 |    36278
-HSD|    avg|  12 - 13 |    90018
-HSD|    avg|  13 - 14 |   204887
-HSD|    avg|  14 - 15 |   298100
-HSD|    avg|  15 - 16 |   258292
-HSD|    avg|  16 - 17 |   161504
-HSD|    avg|  17 - 18 |    90341
-HSD|    avg|  18 - 19 |    48553
-HSD|    avg|  19 - 20 |    31356
-HSD|    avg|  20 - 21 |    19468
-HSD|    avg|  21 - 22 |    24162
-HSD|    avg|  22 - 23 |    26104
-HSD|    avg|  23 - 24 |    24633
-HSD|    avg|  24 - 25 |    21022
-HSD|    avg|  25 - 26 |    15905
-HSD|    avg|  26 - 27 |    13305
-HSD|    avg|  27 - 28 |    16697
-HSD|    avg|  28 - 29 |    17545
-HSD|    avg|  29 - 30 |     4363
-HSD|    avg|  30 - 31 |     3432
-HSD|    avg|  31 - 32 |     7512
-HSD|    avg|  32 - 33 |     5992
-HSD|    avg|  33 - 34 |     3659
-HSD|    avg|  34 - 35 |     3240
-HSD|    avg|  35 - 36 |     3783
-HSD|    avg|  36 - 37 |   547627
-HSD|    avg|  37 - 38 | 12729599
-HSD|    avg|  38 - 39 | 77089778
-HSD|    avg|  39 - 40 | 22621843
-HSD|    avg|  40 - 41 |  1916567
-HSD|    avg|  41 - 42 |   147142
-HSD|    avg|  42 - 43 |    85184
-HSD|    avg|  43 - 44 |    33597
-HSD|    avg|  44 - 45 |    12214
-HSD|    avg|  45 - 46 |     7891
-HSD|    avg|  46 - 47 |     6819
-HSD|    avg|  47 - 48 |     6777
-HSD|    avg|  48 - 49 |     9836
-HSD|    avg|  49 - 50 |     8094
-HSD|    avg|  50 - 51 |    10521
-HSD|    avg|  51 - 52 |    10963
-HSD|    avg|  52 - 53 |     8708
-HSD|    avg|  53 - 54 |     9251
-HSD|    avg|  54 - 55 |     6819
-HSD|    avg|  55 - 56 |     2458
-HSD|    avg|  56 - 57 |     1430
-HSD|    avg|  57 - 58 |      967
-HSD|    avg|  58 - 59 |      496
-HSD|    avg|  59 - 60 |      469
-HSD|    avg|  60 - 61 |      170
-HSD|    avg|  61 - 62 |       31
-HSD|    avg|  62 - 63 |       14
-HSD|    avg|  63 - 64 |       23
-HSD|    avg|  64 - 65 |       24
-HSD|    avg|  65 - 66 |       14
-HSD|    avg|  66 - 67 |       13
-HSD|    avg|  67 - 68 |       12
-HSD|    avg|  68 - 69 |        5
-HSD|    avg|  69 - 70 |        5
-HSD|    avg|  70 - 71 |       11
-HSD|    avg|  71 - 72 |       17
-HSD|    avg|  72 - 73 |       27
-HSD|    avg|  73 - 74 |       35
-HSD|    avg|  74 - 75 |       83
-HSD|    avg|  75 - 76 |       93
-HSD|    avg|  76 - 77 |       45
-HSD|    avg|  77 - 78 |       23
-HSD|    avg|  78 - 79 |       30
-HSD|    avg|  79 - 80 |        6
-HSD|    avg|  80 - 81 |        2
-HSD|    avg|  81 - 82 |        2
-HSD|    avg|  84 - 85 |        1
----|--param|----range-|--samples
-HSD|    max|  43 - 44 |        3
-HSD|    max|  44 - 45 |       19
-HSD|    max|  45 - 46 |      102
-HSD|    max|  46 - 47 |      248
-HSD|    max|  47 - 48 |      562
-HSD|    max|  48 - 49 |     1267
-HSD|    max|  49 - 50 |     1271
-HSD|    max|  50 - 51 |     1953
-HSD|    max|  51 - 52 |     2863
-HSD|    max|  52 - 53 |     3791
-HSD|    max|  53 - 54 |     5953
-HSD|    max|  54 - 55 |     5271
-HSD|    max|  55 - 56 |     2084
-HSD|    max|  56 - 57 |     1284
-HSD|    max|  57 - 58 |      904
-HSD|    max|  58 - 59 |      490
-HSD|    max|  59 - 60 |      463
-HSD|    max|  60 - 61 |      167
-HSD|    max|  61 - 62 |       31
-HSD|    max|  62 - 63 |       14
-HSD|    max|  63 - 64 |       21
-HSD|    max|  64 - 65 |       22
-HSD|    max|  65 - 66 |       14
-HSD|    max|  66 - 67 |       11
-HSD|    max|  67 - 68 |       12
-HSD|    max|  68 - 69 |        5
-HSD|    max|  69 - 70 |        5
-HSD|    max|  70 - 71 |       10
-HSD|    max|  71 - 72 |       16
-HSD|    max|  72 - 73 |       25
-HSD|    max|  73 - 74 |       30
-HSD|    max|  74 - 75 |       76
-HSD|    max|  75 - 76 |       87
-HSD|    max|  76 - 77 |       45
-HSD|    max|  77 - 78 |       23
-HSD|    max|  78 - 79 |       29
-HSD|    max|  79 - 80 |        6
-HSD|    max|  80 - 81 |        2
-HSD|    max|  81 - 82 |        2
-HSD|    max|  84 - 85 |        1
-HSH|--param|--samples-|--average--|---stddev--
-HSS|    min|     29182|     10.278|      0.931
-HSS|    avg| 116728080|      1.058|     36.887
-HSS|    max|     29182|     52.983|      3.641
----|------------|------------|------------|--------|---------------------=
-----
-RTS|       7.087|      38.015|      84.407|       0|    =
-08:06:23/08:06:23
-
- - Bonnie++, Calibrator, ping load results :=20
-
----|--param|----range-|--samples
-HSD|    min|   0 -  1 |        1
-HSD|    min|  13 - 14 |       17
-HSD|    min|  14 - 15 |      271
-HSD|    min|  15 - 16 |     1989
-HSD|    min|  16 - 17 |     7223
-HSD|    min|  17 - 18 |    18812
-HSD|    min|  18 - 19 |    56597
-HSD|    min|  19 - 20 |   118591
-HSD|    min|  20 - 21 |    27122
-HSD|    min|  21
- - 22 |     1526
-HSD|    min|  22 - 23 |       10
-HSD|    min|  45 - 46 |        1
----|--param|----range-|--samples
-HSD|    avg|   0 -  1 |        1
-HSD|    avg|   1 -  2 |        1
-HSD|    avg|   2 -  3 |        5
-HSD|    avg|   3 -  4 |        1
-HSD|    avg|   6 -  7 |        1
-HSD|    avg|  13 - 14 |       17
-HSD|    avg|  14 - 15 |      271
-HSD|    avg|  15 - 16 |     1989
-HSD|    avg|  16 - 17 |     7235
-HSD|    avg|  17 - 18 |    19631
-HSD|    avg|  18 - 19 |    71130
-HSD|    avg|  19 - 20 |   312498
-HSD|    avg|  20 - 21 |   451474
-HSD|    avg|  21 - 22 |   532035
-HSD|    avg|  22 - 23 |   448286
-HSD|    avg|  23 - 24 |   281441
-HSD|    avg|  24 - 25 |   165942
-HSD|    avg|  25 - 26 |   141774
-HSD|    avg|  26 - 27 |   171955
-HSD|    avg|  27 - 28 |   250416
-HSD|    avg|  28 - 29 |   349206
-HSD|    avg|  29 - 30 |   179498
-HSD|    avg|  30 - 31 |   110430
-HSD|    avg|  31 - 32 |   357107
-HSD|    avg|  32 - 33 |  4200212
-HSD|    avg|  33 - 34 | 10181440
-HSD|    avg|  34 - 35 | 15326062
-HSD|    avg|  35 - 36 |  5124584
-HSD|    avg|  36 - 37 |  1510427
-HSD|    avg|  37 - 38 |   880396
-HSD|    avg|  38 - 39 |   616192
-HSD|    avg|  39 - 40 |   319152
-HSD|    avg|  40 - 41 |   123574
-HSD|    avg|  41 - 42 |    50572
-HSD|    avg|  42 - 43 |    40890
-HSD|    avg|  43 - 44 |    36724
-HSD|    avg|  44 - 45 |    38847
-HSD|    avg|  45 - 46 |    50219
-HSD|    avg|  46 - 47 |   165299
-HSD|    avg|  47 - 48 |   224580
-HSD|    avg|  48 - 49 |   124768
-HSD|    avg|  49 - 50 |    55880
-HSD|    avg|  50 - 51 |    31203
-HSD|    avg|  51 - 52 |    15184
-HSD|    avg|  52 - 53 |     9597
-HSD|    avg|  53 - 54 |    10163
-HSD|    avg|  54 - 55 |    12932
-HSD|    avg|  55 - 56 |    15829
-HSD|    avg|  56 - 57 |    13791
-HSD|    avg|  57 - 58 |    11168
-HSD|    avg|  58 - 59 |     7219
-HSD|    avg|  59 - 60 |     6947
-HSD|    avg|  60 - 61 |     6870
-HSD|    avg|  61 - 62 |     5761
-HSD|    avg|  62 - 63 |     4258
-HSD|    avg|  63 - 64 |     3366
-HSD|    avg|  64 - 65 |     2872
-HSD|    avg|  65 - 66 |     2770
-HSD|    avg|  66 - 67 |     2762
-HSD|    avg|  67 - 68 |     3583
-HSD|    avg|  68 - 69 |     2530
-HSD|    avg|  69 - 70 |     2251
-HSD|    avg|  70 - 71 |     2055
-HSD|    avg|  71 - 72 |     3800
-HSD|    avg|  72 - 73 |     5342
-HSD|    avg|  73 - 74 |    15041
-HSD|    avg|  74 - 75 |  1234004
-HSD|    avg|  75 - 76 | 12292873
-HSD|    avg|  76 - 77 |  3584889
-HSD|    avg|  77 - 78 |  1184810
-HSD|    avg|  78 - 79 | 36627942
-HSD|    avg|  79 - 80 | 195365854
-HSD|    avg|  80 - 81 | 159618422
-HSD|    avg|  81 - 82 |  5753873
-HSD|    avg|  82 - 83 |    73089
-HSD|    avg|  83 - 84 |    86209
-HSD|    avg|  84 - 85 |    69779
-HSD|    avg|  85 - 86 |   100487
-HSD|    avg|  86 - 87 |   114727
-HSD|    avg|  87 - 88 |   150208
-HSD|    avg|  88 - 89 |    96264
-HSD|    avg|  89 - 90 |    60396
-HSD|    avg|  90 - 91 |    39298
-HSD|    avg|  91 - 92 |    21519
-HSD|    avg|  92 - 93 |     9462
-HSD|    avg|  93 - 94 |     4513
-HSD|    avg|  94 - 95 |    10297
-HSD|    avg|  95 - 96 |    10793
-HSD|    avg|  96 - 97 |     1317
-HSD|    avg|  97 - 98 |      447
-HSD|    avg|  98 - 99 |      360
-HSD|    avg|  99 -100 |      485
-HSD|    avg| 100 -101 |      694
-HSD|    avg| 101 -102 |      826
-HSD|    avg| 102 -103 |      820
-HSD|    avg| 103 -104 |      628
-HSD|    avg| 104 -105 |      482
-HSD|    avg| 105 -106 |      472
-HSD|    avg| 106 -107 |    20981
-HSD|    avg| 107 -108 |  2593259
-HSD|    avg| 108 -109 |  2057151
-HSD|    avg| 109 -110 |     2990
-HSD|    avg| 110 -111 |      469
-HSD|    avg| 111 -112 |     1067
-HSD|    avg| 112 -113 |     2048
-HSD|    avg| 113 -114 |     2318
-HSD|    avg| 114 -115 |     1190
-HSD|    avg| 115 -116 |      740
-HSD|    avg| 116 -117 |      259
-HSD|    avg| 117 -118 |      137
-HSD|    avg| 118 -119 |      163
-HSD|    avg| 119 -120 |      180
-HSD|    avg| 120 -121 |      176
-HSD|    avg| 121 -122 |      158
-HSD|    avg| 122 -123 |      104
-HSD|    avg| 123 -124 |       91
-HSD|    avg| 124 -125 |      112
-HSD|    avg| 125 -126 |      145
-HSD|    avg| 126 -127 |       91
-HSD|    avg| 127 -128 |       69
-HSD|    avg| 128 -129 |       78
-HSD|    avg| 129 -130 |      104
-HSD|    avg| 130 -131 |      131
-HSD|    avg| 131 -132 |      112
-HSD|    avg| 132 -133 |      500
-HSD|    avg| 133 -134 |      541
-HSD|    avg| 134 -135 |      259
-HSD|    avg| 135 -136 |      112
-HSD|    avg| 136 -137 |       49
-HSD|    avg| 137 -138 |       11
-HSD|    avg| 138 -139 |        2
-HSD|    avg| 139 -140 |        3
-HSD|    avg| 140 -141 |        1
-HSD|    avg| 141 -142 |        3
-HSD|    avg| 142 -143 |        6
-HSD|    avg| 143 -144 |       13
-HSD|    avg| 144 -145 |       47
-HSD|    avg| 145 -146 |       21
-HSD|    avg| 146 -147 |       67
-HSD|    avg| 147 -148 |       45
-HSD|    avg| 148 -149 |       43
-HSD|    avg| 149 -150 |       47
-HSD|    avg| 150 -151 |       48
-HSD|    avg| 151 -152 |       38
-HSD|    avg| 152 -153 |       20
-HSD|    avg| 153 -154 |       35
-HSD|    avg| 154 -155 |        9
-HSD|    avg| 155 -156 |        2
-HSD|    avg| 156 -157 |        7
-HSD|    avg| 158 -159 |        2
-HSD|    avg| 159 -160 |        1
-HSD|    avg| 160 -161 |        1
-HSD|    avg| 162 -163 |        1
-HSD|    avg| 163 -164 |        1
----|--param|----range-|--samples
-HSD|    max|  47 - 48 |        1
-HSD|    max|  54 - 55 |        1
-HSD|    max|  59 - 60 |        2
-HSD|    max|  60 - 61 |        2
-HSD|    max|  70 - 71 |        1
-HSD|    max|  71 - 72 |        2
-HSD|    max|  72 - 73 |        1
-HSD|    max|  73 - 74 |        1
-HSD|    max|  74 - 75 |        1
-HSD|    max|  75 - 76 |        1
-HSD|    max|  76 - 77 |        4
-HSD|    max|  77 - 78 |        2
-HSD|    max|  79 - 80 |        2
-HSD|    max|  80 - 81 |        3
-HSD|    max|  81 - 82 |        4
-HSD|    max|  82 - 83 |        1
-HSD|    max|  84 - 85 |        1
-HSD|    max|  96 - 97 |        1
-HSD|    max|  97 - 98 |        1
-HSD|    max|  99 -100 |        1
-HSD|    max| 100 -101 |        2
-HSD|    max| 102 -103 |        1
-HSD|    max| 107 -108 |       31
-HSD|    max| 108 -109 |   220562
-HSD|    max| 109 -110 |     2714
-HSD|    max| 110 -111 |      301
-HSD|    max| 111 -112 |      922
-HSD|    max| 112 -113 |     1851
-HSD|    max| 113 -114 |     2145
-HSD|    max| 114 -115 |     1075
-HSD|    max| 115 -116 |      593
-HSD|    max| 116 -117 |      148
-HSD|    max| 117 -118 |       31
-HSD|    max| 118 -119 |       75
-HSD|    max| 119 -120 |       80
-HSD|    max| 120 -121 |       74
-HSD|    max| 121 -122 |       55
-HSD|    max| 122 -123 |       14
-HSD|    max| 123 -124 |        2
-HSD|    max| 131 -132 |       11
-HSD|    max| 132 -133 |      415
-HSD|    max| 133 -134 |      444
-HSD|    max| 134 -135 |      105
-HSD|    max| 135 -136 |       10
-HSD|    max| 136 -137 |        1
-HSD|    max| 137 -138 |        2
-HSD|    max| 138 -139 |        2
-HSD|    max| 139 -140 |        3
-HSD|    max| 140 -141 |        1
-HSD|    max| 141 -142 |        3
-HSD|    max| 142 -143 |        6
-HSD|    max| 143 -144 |       13
-HSD|    max| 144 -145 |       47
-HSD|    max| 145 -146 |       21
-HSD|    max| 146 -147 |       67
-HSD|    max| 147 -148 |       45
-HSD|    max| 148 -149 |       43
-HSD|    max| 149 -150 |       47
-HSD|    max| 150 -151 |       48
-HSD|    max| 151 -152 |       38
-HSD|    max| 152 -153 |       20
-HSD|    max| 153 -154 |       35
-HSD|    max| 154 -155 |        9
-HSD|    max| 155 -156 |        2
-HSD|    max| 156 -157 |        7
-HSD|    max| 158 -159 |        2
-HSD|    max| 159 -160 |        1
-HSD|    max| 160 -161 |        1
-HSD|    max| 162 -163 |        1
-HSD|    max| 163 -164 |        1
-HSH|--param|--samples-|--average--|---stddev--
-HSS|    min|    232160|     18.590|      0.999
-HSS|    avg| 464321953|      1.205|     75.272
-HSS|    max|    232160|    108.352|      2.613
----|------------|------------|------------|--------|---------------------=
-----
-RTS|       0.966|      75.386|     163.981|       0|    =
-64:29:22/64:29:22
-
-- Xeno-Test results :=20
-
-xeno-test: started -p 200
-withBusybox is 1
-xeno-test: running tests
-
-Wed Dec 31 17:24:48 MST 1969
-running: /usr/xenomai/bin/xeno-config --verbose
-xeno-config --verbose
-    --version=3D"2.3.1"
-    =
---cc=3D"/home/abouin/RTAI/rootfs.arm.ext2/buildroot/build_arm/staging_dir=
-/bin/arm-linux-uclibc-gcc"
-    --arch=3D"arm"
-    --prefix=3D"/usr/xenomai"
-    --xeno-cflags=3D"-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT"
-    --xeno-ldflags=3D"-L/usr/xenomai/lib -lpthread "
-    --posix-cflags=3D"-I/usr/xenomai/include =
--I/usr/xenomai/include/posix -D_GNU_SOURCE -D_REENTRANT -D__XENO__"
-    --posix-ldflags=3D"-L/usr/xenomai/lib -lpthread_rt -lpthread -lrt "
-    --library-dir=3D"/usr/xenomai/lib"
-
-Wed Dec 31 17:24:48 MST 1969
-running: /usr/xenomai/bin/xeno-info
-If some fields are empty or look unusual you may have an old version.
-Compare to the current minimal requirements in Documentation/Changes.
-
-BusyBox v1.5.0 (2007-04-24 18:18:59 CEST) multi-call binary
-Linux uclibc 2.6.19 #16 Mon Apr 30 17:00:43 CEST 2007 armv5tejl unknown
-
-module-init-tools      found
-/bin/sh: is setuid
-Linux C Library        0.9.29
-Linux C Library        0.9.29
-Linux C Library        0.9.29
--v: No such file or directory
-Modules Loaded
-
-Wed Dec 31 17:24:49 MST 1969
-running: cat /proc/cpuinfo
-Processor       : ARM926EJ-S rev 5 (v5l)
-BogoMIPS        : 98.91
-Features        : swp half fastmult edsp java
-CPU implementer : 0x41
-CPU architecture: 5TEJ
-CPU variant     : 0x0
-CPU part        : 0x926
-CPU revision    : 5
-Cache type      : write-back
-Cache clean     : cp15 c7 ops
-Cache lockdown  : format C
-Cache format    : Harvard
-I size          : 8192
-I assoc         : 4
-I line length   : 32
-I sets          : 64
-D size          : 8192
-D assoc         : 4
-D line length   : 32
-D sets          : 64
-
-Hardware        : Atmel AT91SAM9260-EK
-Revision        : 0000
-Serial          : 0000000000000000
-
-Wed Dec 31 17:24:49 MST 1969
-running: md5sum /proc/cpuinfo # cpuinfo fingerprint
-36ded2a3d6ea6737b81fe246e04b70b2  /proc/cpuinfo
-
-Wed Dec 31 17:24:49 MST 1969
-running: cat /proc/ipipe/Linux
-       +----- Handling ([A]ccepted, [G]rabbed, [W]ired, [D]iscarded)
-       |+---- Sticky
-       ||+--- Locked
-       |||+-- Exclusive
-       ||||+- Virtual
-[IRQ]  |||||
-   0:  A....
-   1:  A....
-   2:  A....
-   3:  A....
-   4:  A....
-   5:  A....
-   6:  A....
-   7:  A....
-   8:  A....
-   9:  A....
-  10:  A....
-  11:  A....
-  12:  A....
-  13:  A....
-  14:  A....
-  15:  A....
-  16:  A....
-  17:  A....
-  18:  A....
-  19:  A....
-  20:  A....
-  21:  A....
-  22:  A....
-  23:  A....
-  24:  A....
-  25:  A....
-  26:  A....
-  27:  A....
-  28:  A....
-  29:  A....
-  30:  A....
-  31:  A....
-  32:  A....
-  33:  A....
-  34:  A....
-  35:  A....
-  36:  A....
-  37:  A....
-  38:  A....
-  39:  A....
-  40:  A....
-  41:  A....
-  42:  A....
-  43:  A....
-  44:  A....
-  45:  A....
-  46:  A....
-  47:  A....
-  48:  A....
-  49:  A....
-  50:  A....
-  51:  A....
-  52:  A....
-  53:  A....
-  54:  A....
-  55:  A....
-  56:  A....
-  57:  A....
-  58:  A....
-  59:  A....
-  60:  A....
-  61:  A....
-  62:  A....
-  63:  A....
-  64:  A....
-  65:  A....
-  66:  A....
-  67:  A....
-  68:  A....
-  69:  A....
-  70:  A....
-  71:  A....
-  72:  A....
-  73:  A....
-  74:  A....
-  75:  A....
-  76:  A....
-  77:  A....
-  78:  A....
-  79:  A....
-  80:  A....
-  81:  A....
-  82:  A....
-  83:  A....
-  84:  A....
-  85:  A....
-  86:  A....
-  87:  A....
-  88:  A....
-  89:  A....
-  90:  A....
-  91:  A....
-  92:  A....
-  93:  A....
-  94:  A....
-  95:  A....
-  96:  A....
-  97:  A....
-  98:  A....
-  99:  A....
- 100:  A....
- 101:  A....
- 102:  A....
- 103:  A....
- 104:  A....
- 105:  A....
- 106:  A....
- 107:  A....
- 108:  A....
- 109:  A....
- 110:  A....
- 111:  A....
- 112:  A....
- 113:  A....
- 114:  A....
- 115:  A....
- 116:  A....
- 117:  A....
- 118:  A....
- 119:  A....
- 120:  A....
- 121:  A....
- 122:  A....
- 123:  A....
- 124:  A....
- 125:  A....
- 126:  A....
- 127:  A....
- 128:  A....
- 129:  A....
- 130:  A....
- 131:  A....
- 132:  A....
- 133:  A....
- 134:  A....
- 135:  A....
- 136:  A....
- 137:  A....
- 138:  A....
- 139:  A....
- 140:  A....
- 141:  A....
- 142:  A....
- 143:  A....
- 144:  A....
- 145:  A....
- 146:  A....
- 147:  A....
- 148:  A....
- 149:  A....
- 150:  A....
- 151:  A....
- 152:  A....
- 153:  A....
- 154:  A....
- 155:  A....
- 156:  A....
- 157:  A....
- 158:  A....
- 159:  A....
- 160:  G...V
- 161:  G...V
-[Domain info]
-id=3D0x00000000
-priority=3D100
-
-Wed Dec 31 17:24:49 MST 1969
-running: cat /proc/ipipe/Xenomai
-       +----- Handling ([A]ccepted, [G]rabbed, [W]ired, [D]iscarded)
-       |+---- Sticky
-       ||+--- Locked
-       |||+-- Exclusive
-       ||||+- Virtual
-[IRQ]  |||||
-  17:  W..X.
- 162:  W...V
-[Domain info]
-id=3D0x58454e4f
-priority=3Dtopmost
-
-Wed Dec 31 17:24:49 MST 1969
-running: cat /proc/ipipe/version
-1.6-05
-
-Wed Dec 31 17:24:50 MST 1969
-running: generate_loads 1
-dd workload started, pids 1106 stored in /var/lock/xeno-test.997.pids
-
-Wed Dec 31 17:24:50 MST 1969
-running: cat /proc/interrupts
-           CPU0
-  1:     142930         AIC  atmel_serial
- 17:     149025         AIC  at91_tick
- 21:          2         AIC  eth0
-Err:          0
-
-Wed Dec 31 17:24:50 MST 1969
-running: cat /proc/loadavg
-2.41 2.24 1.63 4/25 1112
-
-Wed Dec 31 17:24:50 MST 1969
-running: cat /proc/meminfo
-MemTotal:        62560 kB
-MemFree:         57616 kB
-Buffers:             0 kB
-Cached:           1620 kB
-SwapCached:          0 kB
-Active:           1980 kB
-Inactive:          440 kB
-SwapTotal:           0 kB
-SwapFree:            0 kB
-Dirty:               0 kB
-Writeback:           0 kB
-AnonPages:         820 kB
-Mapped:            512 kB
-Slab:             1580 kB
-SReclaimable:      312 kB
-SUnreclaim:       1268 kB
-PageTables:        144 kB
-NFS_Unstable:        0 kB
-Bounce:              0 kB
-CommitLimit:     31280 kB
-Committed_AS:     2832 kB
-VmallocTotal:   956416 kB
-VmallocUsed:      8576 kB
-VmallocChunk:   940028 kB
-
-Wed Dec 31 17:24:50 MST 1969
-running: cat /proc/xenomai/apc
-APC          CPU0
-  0:            0    (pipe_wakeup)
-  1:         1271    (lostage_handler)
-  2:            4    (registry_export)
-  3:            0    (posix_signals_handler)
-
-Wed Dec 31 17:24:50 MST 1969
-running: cat /proc/xenomai/faults
-TRAP         CPU0
-  0:            0    (Data or instruction access)
-  1:            0    (Section fault)
-  2:            0    (Generic data abort)
-  3:            0    (Unknown exception)
-  4:            0    (Instruction breakpoint)
-  5:         1201    (Floating point exception)
-  6:            0    (VFP Floating point exception)
-  7:            0    (Undefined instruction)
-
-Wed Dec 31 17:24:51 MST 1969
-running: cat /proc/xenomai/hal
-1.6-05
-
-Wed Dec 31 17:24:51 MST 1969
-running: cat /proc/xenomai/heap
-size=3D130560:used=3D64:pagesz=3D512
-
-Wed Dec 31 17:24:51 MST 1969
-running: cat /proc/xenomai/irq
-IRQ         CPU0
- 17:     6433203         [timer]
-162:        2543         [virtual]
-
-Wed Dec 31 17:24:51 MST 1969
-running: cat /proc/xenomai/latency
-39948
-
-Wed Dec 31 17:24:52 MST 1969
-running: cat /proc/xenomai/sched
-CPU  PID    PRI      PERIOD   TIMEOUT    STAT       NAME
-  0  0       -1      0        0          R          ROOT
-
-Wed Dec 31 17:24:52 MST 1969
-running: cat /proc/xenomai/timer
-status=3Doneshot:setup=3D322:tickval=3D1:jiffies=3D1492095772873
-
-Wed Dec 31 17:24:52 MST 1969
-running: cat /proc/xenomai/version
-2.3.1
-
-Wed Dec 31 17:24:52 MST 1969
-running: cat /proc/xenomai/interfaces/native
-0
-
-Wed Dec 31 17:24:53 MST 1969
-running: cat /proc/xenomai/interfaces/posix
-Mem: 5120K used, 57440K free, 0K shrd, 0K buff, 1620K cached
-Load average: 2.29 2.22 1.63
-  PID USER     STATUS   VSZ  PPID %CPU %MEM COMMAND
- 1106 root     R       1392     1 98.0  2.2 dd
- 1171 root     R       1396  1170  1.9  2.2 top
- 1023 root     S       1420   997  0.0  2.2 xeno-test
- 1167 root     S       1420  1023  0.0  2.2 xeno-test
- 1170 root     S       1420  1167  0.0  2.2 xeno-test
-  200 root     S       1416     1  0.0  2.2 sh
-  997 root     S       1416   200  0.0  2.2 xeno-test
-
---=20
-Alexandre BOUIN
-Adeneo
-2, chemin du Ruisseau - BP21
-69136 Ecully Cedex
-France
-Tel : +33-4 72 18 08 40
-
------Message d'origine-----
-De : Gregory CLEMENT [mailto:gclement00@domain.hid]
-Envoy=E9 : mardi 24 avril 2007 14:27
-=C0 : adeos-main
-Cc : BOUIN Alexandre; Preetam Joshi; Claudio Scordino
-Objet : [PATCH] Adeos support for AT91SAM92x ( AT91SAM9260 and
-AT91SAM9261)
+------_=_NextPart_001_01C78D78.9595205E
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
 
-Hi,
-this is the last version of patch support for  AT91SAM926x, it now
-support  AT91SAM9260 and  AT91SAM9261
-To use it:
-- take a vanilla linux
-- apply the I-pipe patch
-- apply the AT91 patch, then solve the three rejects by hand
-- finally apply this patch
+First we added a little correction to our patch. No consequence for TC0 =
+users but the ones who are thinking about using TC1 or TC2 should have =
+the problems.=20
+In our adeos-at91 patch, at line 179, this=20
++#if (CONFIG_IPIPE_AT91_TC=3D=3D0)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC0
++#elif (CONFIG_IPIPE_AT91_TC=3D=3D1)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC0
++#elif (CONFIG_IPIPE_AT91_TC=3D=3D2)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC0
++#else
++#error IPIPE_AT91_TC must be 0, 1 or 2.
++#endif
 
-(as we also use NFS root on AT91SAM9260-EK, we needed to had support
-for Ethernet MAC B, see
-http://www.spinics.net/lists/arm/msg12707.html and
-http://www.spinics.net/lists/arm/msg12961.html )
+has been corrected by :
++#if (CONFIG_IPIPE_AT91_TC=3D=3D0)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC0
++#elif (CONFIG_IPIPE_AT91_TC=3D=3D1)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC1
++#elif (CONFIG_IPIPE_AT91_TC=3D=3D2)
++#   define KERNEL_TIMER_IRQ_NUM AT91_ID_TC2
++#else
++#error IPIPE_AT91_TC must be 0, 1 or 2.
++#endif
 
-As there is no support for AT91SAM9263  in at91 patch in 2.6.19
-kernel, we prefer wait for 2.6.20 (or higher) ipipe version for
-integrate this chip.
+Sorry for inconveniance.
 
-performance with Xenomai on AT91SAM9260-EK and AT91SAM9261-EK coming =
-soon.
+Thus, we are thinking about moving this common part to hardware.h cause =
+these defines are duplicated in at91rm9200_time.c and in =
+at91sam926x_time.c. The interest is to make this part easier to =
+maintain.
 
---=20
-Gregory CLEMENT
-Adeneo
-2, chemin du Ruisseau - BP21
-69136 Ecully Cedex
-France
-Tel : +33-4 72 18 08 40
+------_=_NextPart_001_01C78D78.9595205E
+Content-Type: application/octet-stream;
+	name="adeos-ipipe-2.6.19-arm-AT91.patch"
+Content-Transfer-Encoding: base64
+Content-Description: adeos-ipipe-2.6.19-arm-AT91.patch
+Content-Disposition: attachment;
+	filename="adeos-ipipe-2.6.19-arm-AT91.patch"
+
+ZGlmZiAtYXVyZHBiQiAtWCBub2RpZmYgbGludXgtMi42LjE5LmF0OTEvYXJjaC9hcm0vbWFjaC1h
+dDkxcm05MjAwL2F0OTFzYW05MjYwLmMgbGludXgtMi42LjE5LnBhdGNoZWQvYXJjaC9hcm0vbWFj
+aC1hdDkxcm05MjAwL2F0OTFzYW05MjYwLmMKLS0tIGxpbnV4LTIuNi4xOS5hdDkxL2FyY2gvYXJt
+L21hY2gtYXQ5MXJtOTIwMC9hdDkxc2FtOTI2MC5jCTIwMDctMDQtMTAgMDg6MDQ6MDAuMDAwMDAw
+MDAwICswMjAwCisrKyBsaW51eC0yLjYuMTkucGF0Y2hlZC9hcmNoL2FybS9tYWNoLWF0OTFybTky
+MDAvYXQ5MXNhbTkyNjAuYwkyMDA3LTA0LTIzIDE4OjA4OjE5LjAwMDAwMDAwMCArMDIwMApAQCAt
+MjcsNiArMjcsMTMgQEAgc3RhdGljIHN0cnVjdCBtYXBfZGVzYyBhdDkxc2FtOTI2MF9pb19kZQog
+CQkubGVuZ3RoCQk9IFNaXzE2SywKIAkJLnR5cGUJCT0gTVRfREVWSUNFLAogCX0sIHsKKyNpZmRl
+ZiBDT05GSUdfSVBJUEUKKwkJLnZpcnR1YWwJPSBBVDkxX1ZBX0JBU0VfVENCMCwKKwkJLnBmbgkJ
+PSBfX3BoeXNfdG9fcGZuKEFUOTFTQU05MjYwX0JBU0VfVENCMCksCisJCS5sZW5ndGgJCT0gU1pf
+MTZLLAorCQkudHlwZQkJPSBNVF9ERVZJQ0UsCisgICAgICAgIH0sIHsKKyNlbmRpZiAvKiBDT05G
+SUdfSVBJUEUgKi8KIAkJLnZpcnR1YWwJPSBBVDkxX0lPX1ZJUlRfQkFTRSAtIEFUOTFTQU05MjYw
+X1NSQU0wX1NJWkUsCiAJCS5wZm4JCT0gX19waHlzX3RvX3BmbihBVDkxU0FNOTI2MF9TUkFNMF9C
+QVNFKSwKIAkJLmxlbmd0aAkJPSBBVDkxU0FNOTI2MF9TUkFNMF9TSVpFLApAQCAtMjQ3LDYgKzI1
+NCw3IEBAIHZvaWQgX19pbml0IGF0OTFzYW05MjYwX2luaXRpYWxpemUodW5zaWcKICAqIFRoZSBk
+ZWZhdWx0IGludGVycnVwdCBwcmlvcml0eSBsZXZlbHMgKDAgPSBsb3dlc3QsIDcgPSBoaWdoZXN0
+KS4KICAqLwogc3RhdGljIHVuc2lnbmVkIGludCBhdDkxc2FtOTI2MF9kZWZhdWx0X2lycV9wcmlv
+cml0eVtOUl9BSUNfSVJRU10gX19pbml0ZGF0YSA9IHsKKyNpZm5kZWYgQ09ORklHX0lQSVBFCiAJ
+NywJLyogQWR2YW5jZWQgSW50ZXJydXB0IENvbnRyb2xsZXIgKi8KIAk3LAkvKiBTeXN0ZW0gUGVy
+aXBoZXJhbHMgKi8KIAkwLAkvKiBQYXJhbGxlbCBJTyBDb250cm9sbGVyIEEgKi8KQEAgLTI3OSw2
+ICsyODcsNDIgQEAgc3RhdGljIHVuc2lnbmVkIGludCBhdDkxc2FtOTI2MF9kZWZhdWx0XwogCTAs
+CS8qIEFkdmFuY2VkIEludGVycnVwdCBDb250cm9sbGVyICovCiAJMCwJLyogQWR2YW5jZWQgSW50
+ZXJydXB0IENvbnRyb2xsZXIgKi8KIAkwLAkvKiBBZHZhbmNlZCBJbnRlcnJ1cHQgQ29udHJvbGxl
+ciAqLworI2Vsc2UgLyogQ09ORklHX0lQSVBFICovCisvKiBHaXZlIHRoZSBoaWdoZXN0IHByaW9y
+aXR5IHRvIFRDLCBzaW5jZSB0aGV5IGFyZSB1c2VkIGFzIHRpbWVyIGludGVycnVwdCBieQorICAg
+SS1waXBlLiAqLworCTcsCS8qIEFkdmFuY2VkIEludGVycnVwdCBDb250cm9sbGVyICovCisJNywJ
+LyogU3lzdGVtIFBlcmlwaGVyYWxzICovCisJMCwJLyogUGFyYWxsZWwgSU8gQ29udHJvbGxlciBB
+ICovCisJMCwJLyogUGFyYWxsZWwgSU8gQ29udHJvbGxlciBCICovCisJMCwJLyogUGFyYWxsZWwg
+SU8gQ29udHJvbGxlciBDICovCisJMCwJLyogQW5hbG9nLXRvLURpZ2l0YWwgQ29udmVydGVyICov
+CisJNiwJLyogVVNBUlQgMCAqLworCTYsCS8qIFVTQVJUIDEgKi8KKwk2LAkvKiBVU0FSVCAyICov
+CisJMCwJLyogTXVsdGltZWRpYSBDYXJkIEludGVyZmFjZSAqLworCTQsCS8qIFVTQiBEZXZpY2Ug
+UG9ydCAqLworCTAsCS8qIFR3by1XaXJlIEludGVyZmFjZSAqLworCTYsCS8qIFNlcmlhbCBQZXJp
+cGhlcmFsIEludGVyZmFjZSAwICovCisJNiwJLyogU2VyaWFsIFBlcmlwaGVyYWwgSW50ZXJmYWNl
+IDEgKi8KKwk1LAkvKiBTZXJpYWwgU3luY2hyb25vdXMgQ29udHJvbGxlciAqLworCTAsCisJMCwK
+Kwk3LAkvKiBUaW1lciBDb3VudGVyIDAgKi8KKwk3LAkvKiBUaW1lciBDb3VudGVyIDEgKi8KKwk3
+LAkvKiBUaW1lciBDb3VudGVyIDIgKi8KKwkzLAkvKiBVU0IgSG9zdCBwb3J0ICovCisJMywJLyog
+RXRoZXJuZXQgKi8KKwkwLAkvKiBJbWFnZSBTZW5zb3IgSW50ZXJmYWNlICovCisJNiwJLyogVVNB
+UlQgMyAqLworCTYsCS8qIFVTQVJUIDQgKi8KKwk2LAkvKiBVU0FSVCA1ICovCisJNywJLyogVGlt
+ZXIgQ291bnRlciAzICovCisJNywJLyogVGltZXIgQ291bnRlciA0ICovCisJNywJLyogVGltZXIg
+Q291bnRlciA1ICovCisJMCwJLyogQWR2YW5jZWQgSW50ZXJydXB0IENvbnRyb2xsZXIgKi8KKwkw
+LAkvKiBBZHZhbmNlZCBJbnRlcnJ1cHQgQ29udHJvbGxlciAqLworCTAsCS8qIEFkdmFuY2VkIElu
+dGVycnVwdCBDb250cm9sbGVyICovCisjZW5kaWYgLypDT05GSUdfSVBJUEUgKi8KIH07CiAKIHZv
+aWQgX19pbml0IGF0OTFzYW05MjYwX2luaXRfaW50ZXJydXB0cyh1bnNpZ25lZCBpbnQgcHJpb3Jp
+dHlbTlJfQUlDX0lSUVNdKQpkaWZmIC1hdXJkcGJCIC1YIG5vZGlmZiBsaW51eC0yLjYuMTkuYXQ5
+MS9hcmNoL2FybS9tYWNoLWF0OTFybTkyMDAvYXQ5MXNhbTkyNjEuYyBsaW51eC0yLjYuMTkucGF0
+Y2hlZC9hcmNoL2FybS9tYWNoLWF0OTFybTkyMDAvYXQ5MXNhbTkyNjEuYwotLS0gbGludXgtMi42
+LjE5LmF0OTEvYXJjaC9hcm0vbWFjaC1hdDkxcm05MjAwL2F0OTFzYW05MjYxLmMJMjAwNy0wNC0x
+MCAwODowNDowMC4wMDAwMDAwMDAgKzAyMDAKKysrIGxpbnV4LTIuNi4xOS5wYXRjaGVkL2FyY2gv
+YXJtL21hY2gtYXQ5MXJtOTIwMC9hdDkxc2FtOTI2MS5jCTIwMDctMDQtMTggMTM6NTE6MTYuMDAw
+MDAwMDAwICswMjAwCkBAIC0yNyw2ICsyNywxMyBAQCBzdGF0aWMgc3RydWN0IG1hcF9kZXNjIGF0
+OTFzYW05MjYxX2lvX2RlCiAJCS5sZW5ndGgJCT0gU1pfMTZLLAogCQkudHlwZQkJPSBNVF9ERVZJ
+Q0UsCiAJfSwgeworI2lmZGVmIENPTkZJR19JUElQRQorCQkudmlydHVhbAk9IEFUOTFfVkFfQkFT
+RV9UQ0IwLAorCQkucGZuCQk9IF9fcGh5c190b19wZm4oQVQ5MVNBTTkyNjFfQkFTRV9UQ0IwKSwK
+KwkJLmxlbmd0aAkJPSBTWl8xNkssCisJCS50eXBlCQk9IE1UX0RFVklDRSwKKyAgICAgICAgfSwg
+eworI2VuZGlmIC8qIENPTkZJR19JUElQRSAqLwogCQkudmlydHVhbAk9IEFUOTFfSU9fVklSVF9C
+QVNFIC0gQVQ5MVNBTTkyNjFfU1JBTV9TSVpFLAogCQkucGZuCQk9IF9fcGh5c190b19wZm4oQVQ5
+MVNBTTkyNjFfU1JBTV9CQVNFKSwKIAkJLmxlbmd0aAkJPSBBVDkxU0FNOTI2MV9TUkFNX1NJWkUs
+CkBAIC0yNDIsNiArMjQ5LDcgQEAgdm9pZCBfX2luaXQgYXQ5MXNhbTkyNjFfaW5pdGlhbGl6ZSh1
+bnNpZwogICogVGhlIGRlZmF1bHQgaW50ZXJydXB0IHByaW9yaXR5IGxldmVscyAoMCA9IGxvd2Vz
+dCwgNyA9IGhpZ2hlc3QpLgogICovCiBzdGF0aWMgdW5zaWduZWQgaW50IGF0OTFzYW05MjYxX2Rl
+ZmF1bHRfaXJxX3ByaW9yaXR5W05SX0FJQ19JUlFTXSBfX2luaXRkYXRhID0geworI2lmbmRlZiBD
+T05GSUdfSVBJUEUKIAk3LAkvKiBBZHZhbmNlZCBJbnRlcnJ1cHQgQ29udHJvbGxlciAqLwogCTcs
+CS8qIFN5c3RlbSBQZXJpcGhlcmFscyAqLwogCTAsCS8qIFBhcmFsbGVsIElPIENvbnRyb2xsZXIg
+QSAqLwpAQCAtMjc0LDYgKzI4Miw0MiBAQCBzdGF0aWMgdW5zaWduZWQgaW50IGF0OTFzYW05MjYx
+X2RlZmF1bHRfCiAJMCwJLyogQWR2YW5jZWQgSW50ZXJydXB0IENvbnRyb2xsZXIgKi8KIAkwLAkv
+KiBBZHZhbmNlZCBJbnRlcnJ1cHQgQ29udHJvbGxlciAqLwogCTAsCS8qIEFkdmFuY2VkIEludGVy
+cnVwdCBDb250cm9sbGVyICovCisjZWxzZSAvKiBDT05GSUdfSVBJUEUgKi8KKy8qIEdpdmUgdGhl
+IGhpZ2hlc3QgcHJpb3JpdHkgdG8gVEMsIHNpbmNlIHRoZXkgYXJlIHVzZWQgYXMgdGltZXIgaW50
+ZXJydXB0IGJ5CisgICBJLXBpcGUuICovCisJNywJLyogQWR2YW5jZWQgSW50ZXJydXB0IENvbnRy
+b2xsZXIgKi8KKwk3LAkvKiBTeXN0ZW0gUGVyaXBoZXJhbHMgKi8KKwkwLAkvKiBQYXJhbGxlbCBJ
+TyBDb250cm9sbGVyIEEgKi8KKwkwLAkvKiBQYXJhbGxlbCBJTyBDb250cm9sbGVyIEIgKi8KKwkw
+LAkvKiBQYXJhbGxlbCBJTyBDb250cm9sbGVyIEMgKi8KKwkwLAorCTYsCS8qIFVTQVJUIDAgKi8K
+Kwk2LAkvKiBVU0FSVCAxICovCisJNiwJLyogVVNBUlQgMiAqLworCTAsCS8qIE11bHRpbWVkaWEg
+Q2FyZCBJbnRlcmZhY2UgKi8KKwk0LAkvKiBVU0IgRGV2aWNlIFBvcnQgKi8KKwkwLAkvKiBUd28t
+V2lyZSBJbnRlcmZhY2UgKi8KKwk2LAkvKiBTZXJpYWwgUGVyaXBoZXJhbCBJbnRlcmZhY2UgMCAq
+LworCTYsCS8qIFNlcmlhbCBQZXJpcGhlcmFsIEludGVyZmFjZSAxICovCisJNSwJLyogU2VyaWFs
+IFN5bmNocm9ub3VzIENvbnRyb2xsZXIgMCAqLworCTUsCS8qIFNlcmlhbCBTeW5jaHJvbm91cyBD
+b250cm9sbGVyIDEgKi8KKwk1LAkvKiBTZXJpYWwgU3luY2hyb25vdXMgQ29udHJvbGxlciAyICov
+CisJNywJLyogVGltZXIgQ291bnRlciAwICovCisJNywJLyogVGltZXIgQ291bnRlciAxICovCisJ
+NywJLyogVGltZXIgQ291bnRlciAyICovCisJMywJLyogVVNCIEhvc3QgcG9ydCAqLworCTMsCS8q
+IExDRCBDb250cm9sbGVyICovCisJMCwKKwkwLAorCTAsCisJMCwKKwkwLAorCTAsCisJMCwKKwkw
+LAkvKiBBZHZhbmNlZCBJbnRlcnJ1cHQgQ29udHJvbGxlciAqLworCTAsCS8qIEFkdmFuY2VkIElu
+dGVycnVwdCBDb250cm9sbGVyICovCisJMCwJLyogQWR2YW5jZWQgSW50ZXJydXB0IENvbnRyb2xs
+ZXIgKi8KKyNlbmRpZiAvKkNPTkZJR19JUElQRSAqLwogfTsKIAogdm9pZCBfX2luaXQgYXQ5MXNh
+bTkyNjFfaW5pdF9pbnRlcnJ1cHRzKHVuc2lnbmVkIGludCBwcmlvcml0eVtOUl9BSUNfSVJRU10p
+CmRpZmYgLWF1cmRwYkIgLVggbm9kaWZmIGxpbnV4LTIuNi4xOS5hdDkxL2FyY2gvYXJtL21hY2gt
+YXQ5MXJtOTIwMC9hdDkxc2FtOTI2eF90aW1lLmMgbGludXgtMi42LjE5LnBhdGNoZWQvYXJjaC9h
+cm0vbWFjaC1hdDkxcm05MjAwL2F0OTFzYW05MjZ4X3RpbWUuYwotLS0gbGludXgtMi42LjE5LmF0
+OTEvYXJjaC9hcm0vbWFjaC1hdDkxcm05MjAwL2F0OTFzYW05MjZ4X3RpbWUuYwkyMDA3LTA0LTEw
+IDA4OjA0OjAwLjAwMDAwMDAwMCArMDIwMAorKysgbGludXgtMi42LjE5LnBhdGNoZWQvYXJjaC9h
+cm0vbWFjaC1hdDkxcm05MjAwL2F0OTFzYW05MjZ4X3RpbWUuYwkyMDA3LTA0LTIzIDE0OjI5OjI1
+LjAwMDAwMDAwMCArMDIwMApAQCAtMjIsMTAgKzIyLDg3IEBACiAKICNpbmNsdWRlIDxhc20vYXJj
+aC9hdDkxX3BpdC5oPgogCitzdGF0aWMgdW5zaWduZWQgbG9uZyBsYXN0X2NydHI7CisKKyNpZmRl
+ZiBDT05GSUdfSVBJUEUKKyNpbmNsdWRlIDxsaW51eC9jbGsuaD4KKyNpbmNsdWRlIDxsaW51eC9j
+b25zb2xlLmg+CisjaW5jbHVkZSA8bGludXgvbW9kdWxlLmg+CisjaW5jbHVkZSA8YXNtL2FyY2gv
+YXQ5MV90Yy5oPgorI2luY2x1ZGUgImNsb2NrLmgiCisKKyNpZiBkZWZpbmVkKENPTkZJR19BUkNI
+X0FUOTFSTTkyMDApCisjaW5jbHVkZSA8YXNtL2FyY2gvYXQ5MXJtOTIwMC5oPgorI2RlZmluZSBB
+VDkxX0lEX1RDMCBBVDkxUk05MjAwX0lEX1RDMAorI2RlZmluZSBBVDkxX0lEX1RDMSBBVDkxUk05
+MjAwX0lEX1RDMQorI2RlZmluZSBBVDkxX0lEX1RDMiBBVDkxUk05MjAwX0lEX1RDMgorI2VsaWYg
+ZGVmaW5lZChDT05GSUdfQVJDSF9BVDkxU0FNOTI2MCkKKyNpbmNsdWRlIDxhc20vYXJjaC9hdDkx
+c2FtOTI2MC5oPgorI2RlZmluZSBBVDkxX0lEX1RDMCBBVDkxU0FNOTI2MF9JRF9UQzAKKyNkZWZp
+bmUgQVQ5MV9JRF9UQzEgQVQ5MVNBTTkyNjBfSURfVEMxCisjZGVmaW5lIEFUOTFfSURfVEMyIEFU
+OTFTQU05MjYwX0lEX1RDMgorI2VsaWYgZGVmaW5lZChDT05GSUdfQVJDSF9BVDkxU0FNOTI2MSkK
+KyNpbmNsdWRlIDxhc20vYXJjaC9hdDkxc2FtOTI2MS5oPgorI2RlZmluZSBBVDkxX0lEX1RDMCBB
+VDkxU0FNOTI2MV9JRF9UQzAKKyNkZWZpbmUgQVQ5MV9JRF9UQzEgQVQ5MVNBTTkyNjFfSURfVEMx
+CisjZGVmaW5lIEFUOTFfSURfVEMyIEFUOTFTQU05MjYxX0lEX1RDMgorI2Vsc2UKKyNlcnJvciAi
+VW5zdXBwb3J0ZWQgQVQ5MSBwcm9jZXNzb3IiCisjZW5kaWYKKworI2lmZGVmIENPTkZJR19OT19J
+RExFX0haCisjZXJyb3IgImR5bmFtaWMgdGljayB0aW1lciBub3QgeWV0IHN1cHBvcnRlZCB3aXRo
+IElQSVBFIgorI2VuZGlmIC8qIENPTkZJR19OT19JRExFX0haICovCisKKyNkZWZpbmUgVENOWENO
+Uyh0aW1lcix2KSAoKHYpIDw8ICgodGltZXIpPDwxKSkKKyNkZWZpbmUgQVQ5MV9UQ19SRUdfTUFT
+SyAoMHhmZmZmKQorCisjaWYgKENPTkZJR19JUElQRV9BVDkxX1RDPT0wKQorIyAgIGRlZmluZSBL
+RVJORUxfVElNRVJfSVJRX05VTSBBVDkxX0lEX1RDMAorI2VsaWYgKENPTkZJR19JUElQRV9BVDkx
+X1RDPT0xKQorIyAgIGRlZmluZSBLRVJORUxfVElNRVJfSVJRX05VTSBBVDkxX0lEX1RDMQorI2Vs
+aWYgKENPTkZJR19JUElQRV9BVDkxX1RDPT0yKQorIyAgIGRlZmluZSBLRVJORUxfVElNRVJfSVJR
+X05VTSBBVDkxX0lEX1RDMgorI2Vsc2UKKyNlcnJvciBJUElQRV9BVDkxX1RDIG11c3QgYmUgMCwg
+MSBvciAyLgorI2VuZGlmCisKK3N0YXRpYyBpbmxpbmUgdW5zaWduZWQgaW50IGF0OTFfdGNfcmVh
+ZCh1bnNpZ25lZCBpbnQgcmVnX29mZnNldCkKK3sKKwl1bnNpZ25lZCBsb25nIGFkZHIgPQorCQko
+QVQ5MV9WQV9CQVNFX1RDQjAgKyAweDQwICogQ09ORklHX0lQSVBFX0FUOTFfVEMpOworCisJcmV0
+dXJuIHJlYWRsKCh2b2lkIF9faW9tZW0gKikoYWRkciArIHJlZ19vZmZzZXQpKTsKK30KKworc3Rh
+dGljIGlubGluZSB2b2lkIGF0OTFfdGNfd3JpdGUodW5zaWduZWQgaW50IHJlZ19vZmZzZXQsIHVu
+c2lnbmVkIGxvbmcgdmFsdWUpCit7CisJdW5zaWduZWQgbG9uZyBhZGRyID0KKwkJKEFUOTFfVkFf
+QkFTRV9UQ0IwICsgMHg0MCAqIENPTkZJR19JUElQRV9BVDkxX1RDKTsKKworCXdyaXRlbCh2YWx1
+ZSwgKHZvaWQgX19pb21lbSAqKShhZGRyICsgcmVnX29mZnNldCkpOworfQorCisjZGVmaW5lIHJl
+YWRfQ1YoKSBhdDkxX3RjX3JlYWQoQVQ5MV9UQ19DVikKKyNkZWZpbmUgcmVhZF9SQygpIGF0OTFf
+dGNfcmVhZChBVDkxX1RDX1JDKQorI2RlZmluZSB3cml0ZV9SQyh2YWx1ZSkgYXQ5MV90Y193cml0
+ZShBVDkxX1RDX1JDLCB2YWx1ZSkKKworaW50IF9faXBpcGVfbWFjaF90aW1lcmludCA9IEtFUk5F
+TF9USU1FUl9JUlFfTlVNOworRVhQT1JUX1NZTUJPTChfX2lwaXBlX21hY2hfdGltZXJpbnQpOwor
+CitpbnQgX19pcGlwZV9tYWNoX3RpbWVyc3RvbGVuID0gMDsKK0VYUE9SVF9TWU1CT0woX19pcGlw
+ZV9tYWNoX3RpbWVyc3RvbGVuKTsKKwordW5zaWduZWQgaW50IF9faXBpcGVfbWFjaF90aWNrc19w
+ZXJfamlmZnkgPSBMQVRDSDsKK0VYUE9SVF9TWU1CT0woX19pcGlwZV9tYWNoX3RpY2tzX3Blcl9q
+aWZmeSk7CisKK3N0YXRpYyBpbnQgYXQ5MV90aW1lcl9pbml0aWFsaXplZDsKKyNlbmRpZiAvKiBD
+T05GSUdfSVBJUEUgKi8KIAogI2RlZmluZSBQSVRfQ1BJVih4KQkoKHgpICYgQVQ5MV9QSVRfQ1BJ
+VikKICNkZWZpbmUgUElUX1BJQ05UKHgpCSgoKHgpICYgQVQ5MV9QSVRfUElDTlQpID4+IDIwKQog
+CisjaWZuZGVmIENPTkZJR19JUElQRQogLyoKICAqIFJldHVybnMgbnVtYmVyIG9mIG1pY3Jvc2Vj
+b25kcyBzaW5jZSBsYXN0IHRpbWVyIGludGVycnVwdC4gIE5vdGUgdGhhdCBpbnRlcnJ1cHRzCiAg
+KiB3aWxsIGhhdmUgYmVlbiBkaXNhYmxlZCBieSBkb19nZXR0aW1lb2ZkYXkoKQpAQCAtMTEyLDMg
+KzE4OSwyMDkgQEAgc3RydWN0IHN5c190aW1lciBhdDkxc2FtOTI2eF90aW1lciA9IHsKIAkucmVz
+dW1lCQk9IGF0OTFzYW05MjZ4X3RpbWVyX3Jlc2V0LAogfTsKIAorI2Vsc2UgLyogQ09ORklHX0lQ
+SVBFICovCisKKy8qCisgKiBSZXR1cm5zIG51bWJlciBvZiBtaWNyb3NlY29uZHMgc2luY2UgbGFz
+dCB0aW1lciBpbnRlcnJ1cHQuICBOb3RlIHRoYXQgaW50ZXJydXB0cworICogd2lsbCBoYXZlIGJl
+ZW4gZGlzYWJsZWQgYnkgZG9fZ2V0dGltZW9mZGF5KCkKKyAqICAnTEFUQ0gnIGlzIGh3Y2xvY2sg
+dGlja3MgKHNlZSBDTE9DS19USUNLX1JBVEUgaW4gdGltZXguaCkgcGVyIGppZmZ5LgorKiAgJ3Rp
+Y2snIGlzIHVzZWNzIHBlciBqaWZmeSAobGludXgvdGltZXguaCkuCisgKi8KK3N0YXRpYyB1bnNp
+Z25lZCBsb25nIGF0OTFzYW05MjZ4X2dldHRpbWVvZmZzZXQodm9pZCkKK3sKKwl1bnNpZ25lZCBs
+b25nIGVsYXBzZWQ7CisKKwllbGFwc2VkID0gKHJlYWRfQ1YoKSAtIGxhc3RfY3J0cikgJiBBVDkx
+X1RDX1JFR19NQVNLOworCisJcmV0dXJuICh1bnNpZ25lZCBsb25nKSAoZWxhcHNlZCAqICh0aWNr
+X25zZWMgLyAxMDAwKSkgLyBMQVRDSDsKK30KKwordm9pZCBfX2lwaXBlX21hY2hfYWNrdGltZXIo
+dm9pZCkKK3sKKwlhdDkxX3RjX3JlYWQoQVQ5MV9UQ19TUik7Cit9CisKKy8qCisgKiBJUlEgaGFu
+ZGxlciBmb3IgdGhlIHRpbWVyLgorICovCitzdGF0aWMgaXJxcmV0dXJuX3QgYXQ5MXNhbTkyNnhf
+dGltZXJfaW50ZXJydXB0KGludCBpcnEsIHZvaWQgKmRldl9pZCkKK3sKKwkvKgorCSAqIC0gaWYg
+TGludXggaXMgcnVubmluZyB1bmRlciBpcGlwZSwgYnV0IGl0IHN0aWxsIGhhcyB0aGUgY29udHJv
+bCBvdmVyCisJICogICB0aGUgdGltZXIgKG5vIFhlbm9tYWkgZm9yIGV4YW1wbGUpLCB0aGVuIHJl
+cHJvZ3JhbSB0aGUgdGltZXIgKGlwaXBlCisJICogICBoYXMgYWxyZWFkeSBhY2tlZCBpdCkKKwkg
+KiAtIGlmIHNvbWUgb3RoZXIgZG9tYWluIGhhcyB0YWtlbiBvdmVyIHRoZSB0aW1lciwgdGhlbiBk
+byBub3RoaW5nCisJICogICAoaXBpcGUgaGFzIGFja2VkIGl0LCBhbmQgdGhlIG90aGVyIGRvbWFp
+biBoYXMgcmVwcm9ncmFtZWQgaXQpCisJICovCisKKwl3cml0ZV9zZXFsb2NrKCZ4dGltZV9sb2Nr
+KTsKKworCWlmIChfX2lwaXBlX21hY2hfdGltZXJzdG9sZW4pIHsKKwkJdGltZXJfdGljaygpOwor
+CQlsYXN0X2NydHIgPSAobGFzdF9jcnRyICsgTEFUQ0gpICYgQVQ5MV9UQ19SRUdfTUFTSzsKKwl9
+IGVsc2UgeworCQl3aGlsZSAoKChyZWFkX0NWKCkgLSBsYXN0X2NydHIpICYgQVQ5MV9UQ19SRUdf
+TUFTSykgPj0gTEFUQ0gpIHsKKwkJCXRpbWVyX3RpY2soKTsKKwkJCWxhc3RfY3J0ciA9IChsYXN0
+X2NydHIgKyBMQVRDSCkgJiBBVDkxX1RDX1JFR19NQVNLOworCQl9CisJCXdyaXRlX1JDKChsYXN0
+X2NydHIgKyBMQVRDSCkgJiBBVDkxX1RDX1JFR19NQVNLKTsKKwl9CisKKwl3cml0ZV9zZXF1bmxv
+Y2soJnh0aW1lX2xvY2spOworCisJcmV0dXJuIElSUV9IQU5ETEVEOworfQorCitzdGF0aWMgaXJx
+cmV0dXJuX3QgYXQ5MXNhbTkyNnhfYmFkX2ZyZXEoaW50IGlycSwgdm9pZCAqZGV2X2lkKQorewor
+CXN0YXRpYyBpbnQgdGlja3MgPSAwOworCisJaWYgKCsrdGlja3MgIT0gSFogKiAxMjApIHsKKwkJ
+aWYgKCFjb25zb2xlX2RyaXZlcnMgfHwgdHJ5X2FjcXVpcmVfY29uc29sZV9zZW0oKSkKKwkJCXJl
+dHVybiBhdDkxc2FtOTI2eF90aW1lcl9pbnRlcnJ1cHQoaXJxLCBkZXZfaWQpOworCQorCQlyZWxl
+YXNlX2NvbnNvbGVfc2VtKCk7CisJfQorCisJcGFuaWMoIkFUOTEgY2xvY2sgcmF0ZSBpbmNvcnJl
+Y3RseSBzZXQuXG4iCisJICAgICAgIlBsZWFzZSByZWNvbXBpbGUgd2l0aCBJUElQRV9BVDkxX01D
+SyBzZXQgdG8gJWx1IEh6LiIsCisJICAgICAgY2xrX2dldF9yYXRlKGNsa19nZXQoTlVMTCwgIm1j
+ayIpKSk7Cit9CisKK25vdHJhY2UgdW5zaWduZWQgbG9uZyBsb25nIF9faXBpcGVfbWFjaF9nZXRf
+dHNjKHZvaWQpCit7CisJaWYgKGxpa2VseShhdDkxX3RpbWVyX2luaXRpYWxpemVkKSkgeworCQlz
+dGF0aWMgdW5pb24geworI2lmZGVmIF9fQklHX0VORElBTgorCQkJc3RydWN0IHsKKwkJCQl1bnNp
+Z25lZCBsb25nIGhpZ2g7CisJCQkJdW5zaWduZWQgc2hvcnQgbWlkOworCQkJCXVuc2lnbmVkIHNo
+b3J0IGxvdzsKKwkJCX07CisjZWxzZSAvKiBfX0xJVFRMRV9FTkRJQU4gKi8KKwkJCXN0cnVjdCB7
+CisJCQkJdW5zaWduZWQgc2hvcnQgbG93OworCQkJCXVuc2lnbmVkIHNob3J0IG1pZDsKKwkJCQl1
+bnNpZ25lZCBsb25nIGhpZ2g7CisJCQl9OworI2VuZGlmIC8qIF9fTElUVExFX0VORElBTiAqLwor
+CQkJdW5zaWduZWQgbG9uZyBsb25nIGZ1bGw7CisJCX0gdHNjW05SX0NQVVNdLCAqbG9jYWxfdHNj
+OworCQl1bnNpZ25lZCBsb25nIGxvbmcgcmVzdWx0OworCQl1bnNpZ25lZCBzaG9ydCBzdGFtcDsK
+KwkJdW5zaWduZWQgbG9uZyBmbGFnczsKKworCQlsb2NhbF9pcnFfc2F2ZV9odyhmbGFncyk7CisJ
+CWxvY2FsX3RzYyA9ICZ0c2NbaXBpcGVfcHJvY2Vzc29yX2lkKCldOworCQlzdGFtcCA9IHJlYWRf
+Q1YoKTsKKwkJaWYgKHVubGlrZWx5KHN0YW1wIDwgbG9jYWxfdHNjLT5sb3cpKSB7CisJCQlpZiAo
+dW5saWtlbHkoISsrbG9jYWxfdHNjLT5taWQpKQorCQkJCS8qIDMyIGJpdCBjb3VudGVyIHdyYXBw
+ZWQsIGluY3JlbWVudCBoaWdoIHdvcmQuICovCisJCQkJbG9jYWxfdHNjLT5oaWdoKys7CisJCX0K
+KwkJbG9jYWxfdHNjLT5sb3cgPSBzdGFtcDsKKwkJcmVzdWx0ID0gbG9jYWxfdHNjLT5mdWxsOwor
+CQlsb2NhbF9pcnFfcmVzdG9yZV9odyhmbGFncyk7CisKKwkJcmV0dXJuIHJlc3VsdDsKKwl9CisJ
+CisgICAgICAgIHJldHVybiAwOworfQorRVhQT1JUX1NZTUJPTChfX2lwaXBlX21hY2hfZ2V0X3Rz
+Yyk7CisKKy8qCisgKiBSZXByb2dyYW0gdGhlIHRpbWVyCisgKi8KKwordm9pZCBfX2lwaXBlX21h
+Y2hfc2V0X2RlYyh1bnNpZ25lZCBsb25nIGRlbGF5KQoreworCXVuc2lnbmVkIGxvbmcgZmxhZ3M7
+CisKKwlpZiAoZGVsYXkgPiAyKSB7CisJCWxvY2FsX2lycV9zYXZlX2h3KGZsYWdzKTsKKwkJd3Jp
+dGVfUkMoKHJlYWRfQ1YoKSArIGRlbGF5KSAmIEFUOTFfVENfUkVHX01BU0spOworCQlsb2NhbF9p
+cnFfcmVzdG9yZV9odyhmbGFncyk7CisJfSBlbHNlCisJCWlwaXBlX3RyaWdnZXJfaXJxKEtFUk5F
+TF9USU1FUl9JUlFfTlVNKTsKK30KK0VYUE9SVF9TWU1CT0woX19pcGlwZV9tYWNoX3NldF9kZWMp
+OworCit2b2lkIF9faXBpcGVfbWFjaF9yZWxlYXNlX3RpbWVyKHZvaWQpCit7CisgICAgICAgX19p
+cGlwZV9tYWNoX3NldF9kZWMoX19pcGlwZV9tYWNoX3RpY2tzX3Blcl9qaWZmeSk7Cit9CitFWFBP
+UlRfU1lNQk9MKF9faXBpcGVfbWFjaF9yZWxlYXNlX3RpbWVyKTsKKwordW5zaWduZWQgbG9uZyBf
+X2lwaXBlX21hY2hfZ2V0X2RlYyh2b2lkKQoreworCXJldHVybiAocmVhZF9SQygpIC0gcmVhZF9D
+VigpKSAmIEFUOTFfVENfUkVHX01BU0s7Cit9CisKK3N0YXRpYyBzdHJ1Y3QgaXJxYWN0aW9uIGF0
+OTFzYW05MjZ4X3RpbWVyX2lycSA9IHsKKwkubmFtZQkJPSAiYXQ5MV90aWNrIiwKKwkuZmxhZ3MJ
+CT0gSVJRRl9ESVNBQkxFRCB8IElSUUZfVElNRVIsCisJLmhhbmRsZXIJPSAmYXQ5MXNhbTkyNnhf
+dGltZXJfaW50ZXJydXB0Cit9OworCitzdGF0aWMgY2hhciBjbGtfbmFtZSBbXSA9ICJ0YyUiOwor
+CitzdGF0aWMgc3RydWN0IGNsayB0YyA9IHsKKwkubmFtZQkJPSAoY29uc3QgY2hhciAqKSBjbGtf
+bmFtZSwKKwkudXNlcnMgICAgICAgICAgPSAwLAorCS50eXBlCQk9IENMS19UWVBFX1BFUklQSEVS
+QUwsCisJLnBtY19tYXNrICAgICAgID0gMSA8PCAoS0VSTkVMX1RJTUVSX0lSUV9OVU0pLAorfTsK
+Kwordm9pZCBfX2luaXQgYXQ5MXNhbTkyNnhfdGltZXJfaW5pdCh2b2lkKQoreworCXVuc2lnbmVk
+IGxvbmcgdjsKKwkKKwlpZiAoY2xrX2dldF9yYXRlKGNsa19nZXQoTlVMTCwgIm1jayIpKSAhPSBD
+T05GSUdfSVBJUEVfQVQ5MV9NQ0spCisJCWF0OTFzYW05MjZ4X3RpbWVyX2lycS5oYW5kbGVyID0g
+JmF0OTFzYW05MjZ4X2JhZF9mcmVxOworCisJc25wcmludGYoY2xrX25hbWUsIHNpemVvZihjbGtf
+bmFtZSksICJ0YyVkIiwgQ09ORklHX0lQSVBFX0FUOTFfVEMpOworCWNsa19yZWdpc3RlcigmdGMp
+OworCWNsa19lbmFibGUoJnRjKTsKKwkKKwkvKiBObyBTeW5jLiAqLworCWF0OTFfdGNfd3JpdGUo
+QVQ5MV9UQ19CQ1IsIDApOworCisJLyogcHJvZ3JhbSBOTyBzaWduYWwgb24gWENOICovCisJdiA9
+IHJlYWRsKCh2b2lkIF9faW9tZW0gKikgKEFUOTFfVkFfQkFTRV9UQ0IwICsgQVQ5MV9UQ19CTVIp
+KTsKKwl2ICY9IH5UQ05YQ05TKENPTkZJR19JUElQRV9BVDkxX1RDLCAzKTsKKwl2IHw9IFRDTlhD
+TlMoQ09ORklHX0lQSVBFX0FUOTFfVEMsIDEpOyAvKiBBVDkxX1RDX1RDTlhDTlNfTk9ORSAqLwor
+CXdyaXRlbCh2LCAodm9pZCBfX2lvbWVtICopIChBVDkxX1ZBX0JBU0VfVENCMCArIEFUOTFfVENf
+Qk1SKSk7CisKKwkvKiBEaXNhYmxlIHRoZSBjaGFubmVsICovCisJYXQ5MV90Y193cml0ZShBVDkx
+X1RDX0NDUiwgQVQ5MV9UQ19DTEtESVMpOworCisJLyogU2VsZWN0IFRJTUVSX0NMT0NLMyAoTUNM
+Sy8zMikgYXMgaW5wdXQgZnJlcXVlbmN5IGZvciBUQy4gKi8KKwlhdDkxX3RjX3dyaXRlKEFUOTFf
+VENfQ01SLCBBVDkxX1RDX1RJTUVSX0NMT0NLMyk7CisKKwkvKiBEaXNhYmxlIGFsbCBpbnRlcnJ1
+cHRzLiAqLworCWF0OTFfdGNfd3JpdGUoQVQ5MV9UQ19JRFIsIH4wdWwpOworCisJLyogTG9hZCB0
+aGUgVEMgcmVnaXN0ZXIgQy4gKi8KKwlsYXN0X2NydHIgPSAwOworCXdyaXRlX1JDKExBVENIKTsK
+KworCS8qIEVuYWJsZSBDUENTIGludGVycnVwdC4gKi8KKwlhdDkxX3RjX3dyaXRlKEFUOTFfVENf
+SUVSLCBBVDkxX1RDX0NQQ1MpOworCisJLyogU2V0IHVwIHRoZSBpbnRlcnJ1cHQuICovCisJc2V0
+dXBfaXJxKEtFUk5FTF9USU1FUl9JUlFfTlVNLCAmYXQ5MXNhbTkyNnhfdGltZXJfaXJxKTsKKwor
+CS8qIEVuYWJsZSB0aGUgY2hhbm5lbC4gKi8KKwlhdDkxX3RjX3dyaXRlKEFUOTFfVENfQ0NSLCBB
+VDkxX1RDX0NMS0VOIHwgQVQ5MV9UQ19TV1RSRyk7CisKKwlhdDkxX3RpbWVyX2luaXRpYWxpemVk
+ID0gMTsKK30KKworc3RydWN0IHN5c190aW1lciBhdDkxc2FtOTI2eF90aW1lciA9IHsKKwkuaW5p
+dAkJPSBhdDkxc2FtOTI2eF90aW1lcl9pbml0LAorCS5vZmZzZXQJCT0gYXQ5MXNhbTkyNnhfZ2V0
+dGltZW9mZnNldCwKKwkuc3VzcGVuZAk9IE5VTEwsCisJLnJlc3VtZQkJPSBOVUxMLAorfTsKKyNl
+bmRpZiAvKiBDT05GSUdfSVBJUEUgKi8KZGlmZiAtYXVyZHBiQiAtWCBub2RpZmYgbGludXgtMi42
+LjE5LmF0OTEvYXJjaC9hcm0vbWFjaC1hdDkxcm05MjAwL0tjb25maWcgbGludXgtMi42LjE5LnBh
+dGNoZWQvYXJjaC9hcm0vbWFjaC1hdDkxcm05MjAwL0tjb25maWcKLS0tIGxpbnV4LTIuNi4xOS5h
+dDkxL2FyY2gvYXJtL21hY2gtYXQ5MXJtOTIwMC9LY29uZmlnCTIwMDctMDQtMjAgMTQ6Mzk6MjAu
+MDAwMDAwMDAwICswMjAwCisrKyBsaW51eC0yLjYuMTkucGF0Y2hlZC9hcmNoL2FybS9tYWNoLWF0
+OTFybTkyMDAvS2NvbmZpZwkyMDA3LTA0LTE4IDEzOjUzOjQyLjAwMDAwMDAwMCArMDIwMApAQCAt
+ODQsMjQgKzg0LDYgQEAgY29uZmlnIE1BQ0hfS0FGQQogCWhlbHAKIAkgIFNlbGVjdCB0aGlzIGlm
+IHlvdSBhcmUgdXNpbmcgU3BlcnJ5LVN1bidzIEtBRkEgYm9hcmQuCiAKLWNvbmZpZyBJUElQRV9B
+VDkxX1RDCi0JZGVwZW5kcyBvbiBJUElQRQotCWludCAiQVQ5MSBUQyB1c2VkIGFzIHRpbWUgYmFz
+ZSIKLQlkZWZhdWx0IDAKLQloZWxwCi0JV2hlbiBBZGVvcyBpbnRlcnJ1cHQgcGlwZWxpbmUgaXMg
+ZW5hYmxlZCwgVEMwIGlzIHVzZWQgYnkgZGVmYXVsdAotCWFzIHRpbWUgYmFzZSwgYnV0IHlvdSBj
+YW4gdXNlIFRDMSBvciBUQzIgYnkgc2V0dGluZyB0aGlzIHZhcmlhYmxlIHRvIDEKLQlvciAyLiBU
+aGlzIHNob3VsZCBvbmx5IGJlIG5lZWRlZCB0byBhdm9pZCBjb25mbGljdHMgd2l0aCBvdGhlciBk
+cml2ZXJzLgotCi1jb25maWcgSVBJUEVfQVQ5MV9NQ0sKLQlkZXBlbmRzIG9uIElQSVBFCi0JaW50
+ICJBVDkxIE1hc3RlciBjbG9jayBGcmVxdWVuY3kiCi0JZGVmYXVsdCA0NjA4MDAwMAotCWhlbHAK
+LQlXaGVuIEFkZW9zIGludGVycnVwdCBwaXBlbGluZSBpcyBlbmFibGVkLCBBVDkxIHRpbWVyIGlz
+IGJhc2VkIG9uCi0JdGhlIEFUOTEgbWFzdGVyIGNsb2NrLCB3aG9zZSBmcmVxdWVuY3kgbmVlZCBo
+ZW5jZSB0byBiZSBrbm93biBhdAotCWNvbXBpbGF0aW9uIHRpbWUuCi0KIGVuZGlmCiAKICMgLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpA
+QCAtMTM2LDYgKzExOCwzOCBAQCBlbmRpZgogCiAjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIAoraWYgQVJDSF9BVDkxCisKK2NvbW1l
+bnQgIklwaXBlIGRlcGVuZGVudCIKKworY29uZmlnIElQSVBFX0FUOTFfVEMKKwlkZXBlbmRzIG9u
+IElQSVBFCisJaW50ICJBVDkxIFRDIHVzZWQgYXMgdGltZSBiYXNlIgorCWRlZmF1bHQgMAorCWhl
+bHAKKwlXaGVuIEFkZW9zIGludGVycnVwdCBwaXBlbGluZSBpcyBlbmFibGVkLCBUQzAgaXMgdXNl
+ZCBieSBkZWZhdWx0CisJYXMgdGltZSBiYXNlLCBidXQgeW91IGNhbiB1c2UgVEMxIG9yIFRDMiBi
+eSBzZXR0aW5nIHRoaXMgdmFyaWFibGUgdG8gMQorCW9yIDIuIFRoaXMgc2hvdWxkIG9ubHkgYmUg
+bmVlZGVkIHRvIGF2b2lkIGNvbmZsaWN0cyB3aXRoIG90aGVyIGRyaXZlcnMuCisJQXQgdGhlIG1v
+bWVudCwgQWRlb3MvSS1QaXBlIGhhcyBvbmx5IGJlZW4gaW1wbGVtZW50ZWQgZm9yIEFUOTFSTTky
+MDAsCisJQVQ5MVNBTTkyNjEgYW5kIEFUOTFTQU05MjYwIHByb2Nlc3NvcnMuCisKK2NvbmZpZyBJ
+UElQRV9BVDkxX01DSworCWRlcGVuZHMgb24gSVBJUEUKKwlpbnQgIkFUOTEgTWFzdGVyIGNsb2Nr
+IEZyZXF1ZW5jeSIKKwlkZWZhdWx0IDU5OTA0MDAwIGlmIE1BQ0hfQVQ5MVJNOTIwMEVLCisJZGVm
+YXVsdCA5OTMyODAwMCBpZiBNQUNIX0FUOTFTQU05MjYwRUsgfHwgTUFDSF9BVDkxU0FNOTI2MUVL
+CisJZGVmYXVsdCA1MzAwMDAwMAorCWhlbHAKKwlXaGVuIEFkZW9zIGludGVycnVwdCBwaXBlbGlu
+ZSBpcyBlbmFibGVkLCBBVDkxIHRpbWVyIGlzIGJhc2VkIG9uCisJdGhlIEFUOTEgbWFzdGVyIGNs
+b2NrLCB3aG9zZSBmcmVxdWVuY3kgbmVlZCBoZW5jZSB0byBiZSBrbm93biBhdAorCWNvbXBpbGF0
+aW9uIHRpbWUuCisJQXQgdGhlIG1vbWVudCwgQWRlb3MvSS1QaXBlIGhhcyBvbmx5IGJlZW4gaW1w
+bGVtZW50ZWQgZm9yIEFUOTFSTTkyMDAsCisJQVQ5MVNBTTkyNjEgYW5kIEFUOTFTQU05MjYwIHBy
+b2Nlc3NvcnMuCisKK2VuZGlmCisKKyMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQorCiBjb21tZW50ICJBVDkxIEJvYXJkIE9wdGlvbnMi
+CiAKIGNvbmZpZyBNVERfQVQ5MV9EQVRBRkxBU0hfQ0FSRApTZXVsZW1lbnQgZGFucyBsaW51eC0y
+LjYuMTkucGF0Y2hlZC9pbmNsdWRlL2FzbS1hcm06IGFyY2gKZGlmZiAtYXVyZHBiQiAtWCBub2Rp
+ZmYgbGludXgtMi42LjE5LmF0OTEvaW5jbHVkZS9hc20tYXJtL2FyY2gtYXQ5MXJtOTIwMC9oYXJk
+d2FyZS5oIGxpbnV4LTIuNi4xOS5wYXRjaGVkL2luY2x1ZGUvYXNtLWFybS9hcmNoLWF0OTFybTky
+MDAvaGFyZHdhcmUuaAotLS0gbGludXgtMi42LjE5LmF0OTEvaW5jbHVkZS9hc20tYXJtL2FyY2gt
+YXQ5MXJtOTIwMC9oYXJkd2FyZS5oCTIwMDctMDQtMjAgMTQ6NDQ6MDEuMDAwMDAwMDAwICswMjAw
+CisrKyBsaW51eC0yLjYuMTkucGF0Y2hlZC9pbmNsdWRlL2FzbS1hcm0vYXJjaC1hdDkxcm05MjAw
+L2hhcmR3YXJlLmgJMjAwNy0wNC0xOCAxMzo1NDo0OC4wMDAwMDAwMDAgKzAyMDAKQEAgLTQzLDgg
+KzQzLDE3IEBACiAgKi8KICNkZWZpbmUgQVQ5MV9WQV9CQVNFX1NZUwlBVDkxX0lPX1AyVihBVDkx
+X0JBU0VfU1lTKQogI2RlZmluZSBBVDkxX1ZBX0JBU0VfRU1BQwlBVDkxX0lPX1AyVihBVDkxUk05
+MjAwX0JBU0VfRU1BQykKKwogI2lmZGVmIENPTkZJR19JUElQRQotI2RlZmluZSBBVDkxX1ZBX0JB
+U0VfVENCMCAgICAgICBBVDkxX0lPX1AyVihBVDkxUk05MjAwX0JBU0VfVENCMCkKKyNpZiBkZWZp
+bmVkKENPTkZJR19BUkNIX0FUOTFSTTkyMDApCisJI2RlZmluZSBBVDkxX1ZBX0JBU0VfVENCMCAg
+ICAgICBBVDkxX0lPX1AyVihBVDkxUk05MjAwX0JBU0VfVENCMCkKKyNlbGlmIGRlZmluZWQoQ09O
+RklHX0FSQ0hfQVQ5MVNBTTkyNjApCisJI2RlZmluZSBBVDkxX1ZBX0JBU0VfVENCMCAgICAgICBB
+VDkxX0lPX1AyVihBVDkxU0FNOTI2MF9CQVNFX1RDQjApCisjZWxpZiBkZWZpbmVkKENPTkZJR19B
+UkNIX0FUOTFTQU05MjYxKQorCSNkZWZpbmUgQVQ5MV9WQV9CQVNFX1RDQjAgICAgICAgQVQ5MV9J
+T19QMlYoQVQ5MVNBTTkyNjFfQkFTRV9UQ0IwKQorI2Vsc2UKKyNlcnJvciAiVW5zdXBwb3J0ZWQg
+QVQ5MSBwcm9jZXNzb3IiCisjZW5kaWYKICNlbmRpZiAvKiBDT05GSUdfSVBJUEUgKi8KIAogIC8q
+IEludGVybmFsIFNSQU0gaXMgbWFwcGVkIGJlbG93IHRoZSBJTyBkZXZpY2VzICovCmRpZmYgLWF1
+cmRwYkIgLVggbm9kaWZmIGxpbnV4LTIuNi4xOS5hdDkxL2luY2x1ZGUvYXNtLWFybS9hcmNoLWF0
+OTFybTkyMDAvaXJxcy5oIGxpbnV4LTIuNi4xOS5wYXRjaGVkL2luY2x1ZGUvYXNtLWFybS9hcmNo
+LWF0OTFybTkyMDAvaXJxcy5oCi0tLSBsaW51eC0yLjYuMTkuYXQ5MS9pbmNsdWRlL2FzbS1hcm0v
+YXJjaC1hdDkxcm05MjAwL2lycXMuaAkyMDA3LTA0LTIwIDE0OjM5OjIwLjAwMDAwMDAwMCArMDIw
+MAorKysgbGludXgtMi42LjE5LnBhdGNoZWQvaW5jbHVkZS9hc20tYXJtL2FyY2gtYXQ5MXJtOTIw
+MC9pcnFzLmgJMjAwNy0wNC0xOCAxMzo1MToxNi4wMDAwMDAwMDAgKzAyMDAKQEAgLTQ0LDggKzQ0
+LDE5IEBACiAjaWYgZGVmaW5lZChDT05GSUdfSVBJUEUpICYmICFkZWZpbmVkKF9fQVNTRU1CTFlf
+XykKIGV4dGVybiB1bnNpZ25lZCBfX2lwaXBlX2F0OTFfZ3Bpb19iYW5rczsKIAotI2RlZmluZSBf
+X2lwaXBlX21hY2hfaXJxX211eF9wKGlycSkgXAorI2lmIGRlZmluZWQoQ09ORklHX0FSQ0hfQVQ5
+MVJNOTIwMCkKKwkjZGVmaW5lIF9faXBpcGVfbWFjaF9pcnFfbXV4X3AoaXJxKSBcCiAJKCh1bnNp
+Z25lZCkgKGlycSAtIEFUOTFSTTkyMDBfSURfUElPQSkgPCBfX2lwaXBlX2F0OTFfZ3Bpb19iYW5r
+cykKKyNlbGlmIGRlZmluZWQoQ09ORklHX0FSQ0hfQVQ5MVNBTTkyNjApCisJI2RlZmluZSBfX2lw
+aXBlX21hY2hfaXJxX211eF9wKGlycSkgXAorCQkoKHVuc2lnbmVkKSAoaXJxIC0gQVQ5MVNBTTky
+NjBfSURfUElPQSkgPCBfX2lwaXBlX2F0OTFfZ3Bpb19iYW5rcykKKyNlbGlmIGRlZmluZWQoQ09O
+RklHX0FSQ0hfQVQ5MVNBTTkyNjEpCisJI2RlZmluZSBfX2lwaXBlX21hY2hfaXJxX211eF9wKGly
+cSkgXAorCQkoKHVuc2lnbmVkKSAoaXJxIC0gQVQ5MVNBTTkyNjFfSURfUElPQSkgPCBfX2lwaXBl
+X2F0OTFfZ3Bpb19iYW5rcykKKyNlbHNlCisjZXJyb3IgIlVuc3VwcG9ydGVkIEFUOTEgcHJvY2Vz
+c29yIgorI2VuZGlmCisKIAogI2VuZGlmIC8qIENPTkZJR19JUElQRSAmJiAhX19BU1NFTUJMWV9f
+ICovCiAKZGlmZiAtYXVyZHBiQiAtWCBub2RpZmYgbGludXgtMi42LjE5LmF0OTEvaW5jbHVkZS9h
+c20tYXJtL2FyY2gtYXQ5MXJtOTIwMC90aW1leC5oIGxpbnV4LTIuNi4xOS5wYXRjaGVkL2luY2x1
+ZGUvYXNtLWFybS9hcmNoLWF0OTFybTkyMDAvdGltZXguaAotLS0gbGludXgtMi42LjE5LmF0OTEv
+aW5jbHVkZS9hc20tYXJtL2FyY2gtYXQ5MXJtOTIwMC90aW1leC5oCTIwMDctMDQtMjAgMTQ6Mzk6
+MjAuMDAwMDAwMDAwICswMjAwCisrKyBsaW51eC0yLjYuMTkucGF0Y2hlZC9pbmNsdWRlL2FzbS1h
+cm0vYXJjaC1hdDkxcm05MjAwL3RpbWV4LmgJMjAwNy0wNC0xOCAxNDo1NToxNi4wMDAwMDAwMDAg
+KzAyMDAKQEAgLTIzLDE5ICsyMywyMyBAQAogCiAjaW5jbHVkZSA8YXNtL2hhcmR3YXJlLmg+CiAK
+KyNpZm5kZWYgQ09ORklHX0lQSVBFCisKICNpZiBkZWZpbmVkKENPTkZJR19BUkNIX0FUOTFSTTky
+MDApCiAKLSNpZm5kZWYgQ09ORklHX0lQSVBFCiAjZGVmaW5lIENMT0NLX1RJQ0tfUkFURQkJKEFU
+OTFfU0xPV19DTE9DSykKLSNlbHNlIC8qICFDT05GSUdfSVBJUEUgKi8KLSNkZWZpbmUgQ0xPQ0tf
+VElDS19SQVRFICAgICAgICAgKENPTkZJR19JUElQRV9BVDkxX01DSyAvIDMyKQotI2VuZGlmIC8q
+ICFDT05GSUdfSVBJUEUgKi8KIAogI2VsaWYgZGVmaW5lZChDT05GSUdfQVJDSF9BVDkxU0FNOTI2
+MCkgfHwgZGVmaW5lZChDT05GSUdfQVJDSF9BVDkxU0FNOTI2MSkKIAogI2RlZmluZSBBVDkxU0FN
+OV9NQVNURVJfQ0xPQ0sJOTkzMDAwMDAKICNkZWZpbmUgQ0xPQ0tfVElDS19SQVRFCQkoQVQ5MVNB
+TTlfTUFTVEVSX0NMT0NLLzE2KQogCi0jZW5kaWYKKyNlbmRpZiAvKiBhcmNoIHNwZWNpZmljICov
+CisKKyNlbHNlIC8qICFDT05GSUdfSVBJUEUgKi8KKworI2RlZmluZSBDTE9DS19USUNLX1JBVEUg
+ICAgICAgICAoQ09ORklHX0lQSVBFX0FUOTFfTUNLIC8gMzIpCisKKyNlbmRpZiAvKiAhQ09ORklH
+X0lQSVBFICovCiAKICNlbmRpZgo=
+
+------_=_NextPart_001_01C78D78.9595205E--
 
