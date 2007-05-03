@@ -1,80 +1,44 @@
+Message-ID: <4639FAC7.9060207@domain.hid>
+Date: Thu, 03 May 2007 17:07:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <4639D724.5010702@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01E43D41@domain.hid>
+	<1178204088.29605.85.camel@domain.hid>
+In-Reply-To: <1178204088.29605.85.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <17958.34248.814351.793771@domain.hid>
-Date: Wed, 18 Apr 2007 22:55:36 +0200
-In-Reply-To: <17958.30354.523869.820563@domain.hid>
-References: <305035a40704100947n5d426f9ahf8608957a2264f2f@domain.hid>
-	<461BC626.3070403@domain.hid>
-	<305035a40704110201i1ea65f11j162eecc46858f5ca@domain.hid>
-	<461CA604.4050809@domain.hid>
-	<305035a40704110221u348611ebs8fb73b7ddb0f8bd3@domain.hid>
-	<461CD163.1020500@domain.hid>
-	<17957.16218.913465.449254@domain.hid>
-	<305035a40704180251p41c58941l278e20d06af1991d@domain.hid>
-	<17958.30354.523869.820563@domain.hid>
-Subject: Re: [Adeos-main] AT91SAM9261 adeos support for 2.6.19 kernel
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: gclement@domain.hid, adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] Latency calculation and test
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: rpm@xenomai.org
+Cc: Xenomai-help@domain.hid
 
-Gilles Chanteperdrix wrote:
- > Gregory CLEMENT wrote:
- >  > > >  #ifdef CONFIG_IPIPE
- >  > > > -#define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
- >  > > > +#if defined(CONFIG_ARCH_AT91RM9200)
- >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
- >  > > > +#elif defined(CONFIG_ARCH_AT91SAM9260)
- >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91SAM9260_BASE_TCB0)
- >  > > > +#elif defined(CONFIG_ARCH_AT91SAM9261)
- >  > > > +     #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91SAM9261_BASE_TCB0)
- >  > > > +#else
- >  > > > +#error "Unsupported AT91 processor"
- >  > > > +#endif
- >  > > >  #endif /* CONFIG_IPIPE */
- >  > >
- >  > > To reduce the ifdef hell, can not we define a unique AT91_BASE_TCB0 ?
- >  > 
- >  > Sure it would be better, but unfortunately the mainteners of AT91
- >  > choose to produce a define per architecture even if the register are
- >  > the same.
- > 
- > As far as I know, the AT91RM9200_BASE_TCB0 define is provided by the
- > I-pipe patch, so we may name it how we want.
+Philippe Gerum wrote:
+> Sidenote: It obviously makes no sense to stuff gigantic values
+> into /proc/xenomai/latency; large core latencies are likely the sign of
+> 1) a bug in the arch-dep section (probably Adeos), 2) inadequation of
+> the hw for real-time usage (e.g. some ARM platforms with MMU, mmm...
+> issues).
 
-No, it is not provided by the I-pipe patch.
+Here I disagree: if a platform run ten times slower than another, why
+not having a latency ten times bigger ?
 
- > 
- > 
- >  > We keep this line :
- >  > #define AT91_VA_BASE_TCB0       AT91_IO_P2V(AT91RM9200_BASE_TCB0)
- >  > and it will work I don't like having an AT91RM9200 define for chip
- >  > which are not AT91RM9200. It adds confusion.
- >  > 
- >  > We also could define AT91_BASE_TCB0 as you suggest, but it mean we add
- >  > a new register definition just for ipipe and it adds a little
- >  > confusion also.
- >  > 
- >  > Choose the solution you prefer, or an other if you have a better idea.
- > 
- > I do not have a better idea, but I understood why the defines are
- > different: the CONFIG_ARCH_AT91RM9200, CONFIG_ARCH_AT91SAM9260 and
- > CONFIG_ARCH_AT91SAM9261 are not mutually exclusive, it is possible to
- > build a kernel that works for the three machines. So, this code can not
- > remain as is. Please, at least, forbid in Kconfig selecting several
- > machines when IPIPE is enabled.
 
-On 2.6.20, the options ARE mutually exclusive.
+> Said differently, I had no clue, so I'm expecting users to have some.
+
+Additionnaly, the latency depends on the kind of load put on the system
+during the test. A user is expected to calibrate the nucleus latency of
+his system under the particular load which is expected on his system.
+
+We should add a page on the wiki about the latency calibration.
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+                                                 Gilles Chanteperdrix
 
