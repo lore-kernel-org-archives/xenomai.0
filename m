@@ -1,15 +1,12 @@
-Message-ID: <463A2E31.4010302@domain.hid>
-Date: Thu, 03 May 2007 20:47:13 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4639D724.5010702@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01E43D41@domain.hid>	<1178204088.29605.85.camel@domain.hid>
-	<4639FAC7.9060207@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01E43DC9@domain.hid>
-	<17978.11531.902028.392269@domain.hid>
-In-Reply-To: <17978.11531.902028.392269@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2B913B5E839452F75D5F2B01"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17978.13988.907236.43534@domain.hid>
+Date: Thu, 3 May 2007 21:23:16 +0200
+In-Reply-To: <4639F400.8050401@domain.hid>
+References: <4639D724.5010702@domain.hid>
+	<4639F400.8050401@domain.hid>
 Subject: Re: [Xenomai-help] Latency calculation and test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -20,58 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-help@domain.hid
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2B913B5E839452F75D5F2B01
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+To: Johan Borkhuis <j.borkhuis@domain.hid>, Xenomai-help@domain.hid
 
 Gilles Chanteperdrix wrote:
-> Daniel Schnell wrote:
->  >=20
->  > If, say, I would use latencies calibrated with user space POSIX
->  > timers for a typical work load, what would happen to timers that are=
+ > Johan Borkhuis wrote:
+ > > When running multiple threads within this program (without load) the 
+ > > values range from -5 usec to +5 usec, with an average of around 0 usec. 
+ > > But with more RT tasks I see a very high latency once in a while (over 
+ > > 400 usec).
+ > > 
+ > > Below is the example of such a test run with 10 threads/tasks:
+ > >  T: 0 ( 1305) P:80 I:1000 O: 0 Min:   -2.404 Avg: -0.001 Max:   1.873
+ > >  T: 1 ( 1306) P:79 I:1000 O: 0 Min:   -3.052 Avg: -0.001 Max:   1.584
+ > >  T: 2 ( 1307) P:78 I:1000 O: 0 Min:   -5.694 Avg:  0.000 Max:  18.282
+ > >  T: 3 ( 1308) P:77 I:1000 O: 0 Min:   -5.166 Avg:  0.046 Max: 479.782
+ > >  T: 4 ( 1309) P:76 I:1000 O: 0 Min:   -2.595 Avg:  0.036 Max: 368.310
+ > >  T: 5 ( 1310) P:75 I:1000 O: 0 Min:   -1.731 Avg: -0.001 Max:   1.633
+ > >  T: 6 ( 1311) P:74 I:1000 O: 0 Min: -481.273 Avg: -0.001 Max: 490.352
+ > >  T: 7 ( 1312) P:73 I:1000 O: 0 Min: -273.947 Avg: -0.001 Max: 277.717
+ > >  T: 8 ( 1313) P:72 I:1000 O: 0 Min:  -47.016 Avg: -0.001 Max:  45.789
+ > >  T: 9 ( 1314) P:71 I:1000 O: 0 Min:  -22.968 Avg: -0.001 Max:  29.572
+ > > (P=Priority, I=interval, O=overruns)
+ > > 
+ > > When looking at the detailed information, I see that the latencies occur 
+ > > when a higher priority task is ending. Is there some specific reason for 
+ > > this, or is there some kind of configuration problem with my setup?
+ > 
+ > Let us suppose that the timers of task 0 and task 2 occur at the same
+ > time. task 2 will have to wait for task 0 to finish its printing job or
+ > for task 0 to reach a suspension point before being able to run. If this
+ > is the reason of the latencies you are observing, disabling root thread
+ > priority coupling should improve the situation.
 
->  > running in kernel or interrupt space ? Would they then be too early =
-?=20
->  > Have negative values any negative effect besides running too early ?=
+No, the display is done by cyclictest main thread, not by the
+measurement threads.
 
->  >=20
->  > In other words: when one uses timers inside Kernel, ISR's and User
->  > space at the same time, which value should be used for
->  > /proc/xenomai/latency ? Wouldn't it make sense then to have 3
->  > different latency values for the 3 possible environments ?
->=20
-> Yes the current situation is that there is only one constant, so, if yo=
-u
-> calibrate it for ISRs, user-space programs will be systematically
-> late. Having three different constants would mean that we track, at
-> nucleus level where each timer is used, and that we order timers in the=
-
-> timer queue according to their anticipated expiration date. This is
-> quite a modification.
-
-Quick shot: Maybe the caller of xntimer_start could already account for
-the usage scenario and subtract some magic offset from the timeout date.
-
-Jan
+-- 
 
 
---------------enig2B913B5E839452F75D5F2B01
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGOi4xniDOoMHTA+kRAnfmAJ9SP/2Pkb3VTXhYUN65sRV+jYDhbgCeJ3Wm
-A1AHhWjcheOKEwD4Vc4YEFQ=
-=wnBd
------END PGP SIGNATURE-----
-
---------------enig2B913B5E839452F75D5F2B01--
+					    Gilles Chanteperdrix.
 
