@@ -1,13 +1,12 @@
-Message-ID: <463AFA1C.9050609@domain.hid>
-Date: Fri, 04 May 2007 11:17:16 +0200
+Message-ID: <463B086B.6060402@domain.hid>
+Date: Fri, 04 May 2007 12:18:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4639D724.5010702@domain.hid> <1178198991.29605.54.camel@domain.hid>
-	<463AE79E.2090901@domain.hid>
-In-Reply-To: <463AE79E.2090901@domain.hid>
+References: <1178268043.5391.47.camel@domain.hid>
+In-Reply-To: <1178268043.5391.47.camel@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Latency calculation and test
+Subject: Re: [Xenomai-help] Latencies while ethernet access
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,40 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: CAMUS Benoit <benoit.camus@domain.hid>
+Cc: xenomai@xenomai.org
 
-Johan Borkhuis wrote:
-> When running latency at a higher priority than the cyclictest program 
-> the max increases from around 4 to 8 usec when the cyclictest stops. But 
-> when running the latency program at a lower priority (60, while 
-> cylictest is running at 80 - 71) the maximum increases dramatically:
+CAMUS Benoit wrote:
+> Hi,
 > 
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 60)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat 
-> worst
-> RTD|      -0.096|       0.168|       3.843|       0|      -0.096|       
-> 6.510
-> RTD|      -0.072|       0.216|      23.135|       0|      -0.096|      
-> 23.135
-> RTD|       0.048|       0.480|      14.270|       0|      -0.096|      
-> 23.135
-> RTD|       0.048|       0.480|      14.030|       0|      -0.096|      
-> 23.135
-> RTD|      -0.096|       0.552|     613.741|       7|      -0.096|     
-> 613.741
-> RTD|      -0.096|       0.168|       7.975|       7|      -0.096|     
-> 613.741
-> RTD|      -0.072|       0.168|       3.843|       7|      -0.096|     
-> 613.741
+> I'm using Xenomai 2.3.1 with a 2.6.19.2 kernel (from ELDK) on a custom
+> board based on Xscale PXA processor and with smc91c111 ethernet chip. 
+> I did modifications on Linux kernel to port it on board and then just
+> applied Adeos's patch following Xenomai's proceedings.
+> Http and telnet servers are running on and i notice that latencies get
+> really worse while i access any of them (see traces below).
 > 
-> If you want I can send you my version of the cyclictest program.
+> I understood that Adeos might avoid that kind of behavior due to its
+> architecture. So i infer that the ethernet driver might access the
+> hardware by-passing Adeos ?
 
-What you can do is enabling the I-pipe tracer, see:
-http://www.xenomai.org/index.php/I-pipe:Tracer
+Despite Adeos architecture, latency with Xenomai is known to depend on
+the non real-time workload, because there are some low-level ressources
+such as busses and processor cache that the real-time and non real-time
+processes need to share.
 
-and run latency with the -f flag, to get a recording of the worst case
-scenario.
+Nevertheless, the latencies you show us are a bit high, this may have
+several reasons:
+- maybe you enabled some debugging/statistics options, they have an
+impact on performance;
+- the latency of your system may not be properly calibrated, try:
+echo 25000 > /proc/xenomai/latency
+- 10ms is a period a bit high, this makes plenty of time for Linux to
+refill the cache, with a lower period you should observe a lower latency.
+
+> In this way and before modificate the driver, i decided to try RT driver
+> thanks to Rtnet project and get an oops error at device probing due to
+> memory mapping wich i still don't resolve.
+> I don't have experience with Xenomai and would apreciate any advice on
+> that phenomenum.
+
+Note that using a real-time driver should rather increase the latency
+than decrease it, since there will be more unpreemptible critical sections.
+
+> I'm a bit surprised too about gap between best and worst latencies so
+> i'm asking question to myself about my porting, does this gap seam
+> strange for you  too?
+
 
 -- 
                                                  Gilles Chanteperdrix
