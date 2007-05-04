@@ -1,10 +1,12 @@
-Message-ID: <46407EC1.6070809@domain.hid>
-Date: Tue, 08 May 2007 15:44:33 +0200
-From: Bernhard Michael <michael.bernhard@domain.hid>
+Message-ID: <463B33BC.5020408@domain.hid>
+Date: Fri, 04 May 2007 15:23:08 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <7289437c0705040615n2272cf83oeec8db0a7dda910c@domain.hid>
+In-Reply-To: <7289437c0705040615n2272cf83oeec8db0a7dda910c@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] rt_task_create killed in user space
+Subject: Re: [Xenomai-help] Problem to compile for ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,20 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello
+Perrine Martignoni wrote:
+> Hello,
+>  
+> I have some problems to compile my code Posix for ARM. I have installed
+> xenomai in /usr/xenomai_arm-2.3.1 for ARM.
+>  
+> Here is my compilation :
+> (...)
+> -L/usr/xenomai_arm-2.3.1/lib -lpthread_rt -lpthread -lrt  
+> essai_mutex_rt.o   -o essai_mutex_rt
 
-I've build a xenomai test application which consists of a kernel module
-and a user space application. My target platform is a ARM XScale processor.
+The order of arguments on the linker command line is important, this
+should be:
 
-The kernel module is running fine but the user space application gets
-always killed when calling rt_task_create. The use of the same
-functionality in the kernel module is no problem.
+essai_mutex_rt.o -lpthread_rt -lpthread -lrt
 
-Running the latency test is no problem however.
-
-Did somebody experience the same problem? Help is much appreciated.
-
-Michael
+-- 
+                                                 Gilles Chanteperdrix
 
