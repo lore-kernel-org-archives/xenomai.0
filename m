@@ -1,18 +1,13 @@
-Message-ID: <463F2F14.1000205@domain.hid>
-Date: Mon, 07 May 2007 15:52:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <463B2B0B.1030006@domain.hid>
+Date: Fri, 04 May 2007 07:46:03 -0500
+From: Bill Gatliff <bgat@domain.hid>
 MIME-Version: 1.0
-References: <4639D724.5010702@domain.hid>	<1178198991.29605.54.camel@domain.hid>
-	<463AE79E.2090901@domain.hid>
-	<1178281926.29093.93.camel@domain.hid> <463B2A69.7080704@domain.hid>
-	<463EE376.9030702@domain.hid> <463EEA4A.1070405@domain.hid>
-	<463F1468.8010403@domain.hid> <463F178D.4020805@domain.hid>
-	<463F1D99.5090208@domain.hid>
-In-Reply-To: <463F1D99.5090208@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig491DA500EEEE61A3CA327BE1"
-Sender: jan.kiszka@domain.hid
+References: <4639D724.5010702@domain.hid>		<DD39B5C3F4963040ADC9768BE7E430CB01E43D41@domain.hid>		<1178204088.29605.85.camel@domain.hid>
+	<4639FAC7.9060207@domain.hid>	<1178208712.29605.109.camel@domain.hid>
+	<463A1174.60105@domain.hid>
+In-Reply-To: <463A1174.60105@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="------------000005080408010202020406"
 Subject: Re: [Xenomai-help] Latency calculation and test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -23,98 +18,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig491DA500EEEE61A3CA327BE1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------000005080408010202020406
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Johan Borkhuis wrote:
--snip-
-> :|  # func               -1916    0.512  xntimer_do_tick_aperiodic+0x14=
- [xeno_nucleus] (xnpod_announce_tick+0x48 [xeno_nucleus])
-> :|  # func               -1916    0.463  xnthread_periodic_handler+0x14=
- [xeno_nucleus] (xntimer_do_tick_aperiodic+0x2c0 [xeno_nucleus])
-> :|  # func               -1915    0.609  xnpod_resume_thread+0x14 [xeno=
-_nucleus] (xnthread_periodic_handler+0x5c [xeno_nucleus])
-> :|  # [ 1160] -<?>-   79 -1915    0.878  xnpod_resume_thread+0x78 [xeno=
-_nucleus] (xnthread_periodic_handler+0x5c [xeno_nucleus])
-> :|  # func               -1914    0.365  xnpod_schedule+0x14 [xeno_nucl=
-eus] (xnintr_irq_handler+0x1fc [xeno_nucleus])
-> :|  # [    0] swapper -1 -1913+   1.829  xnpod_schedule+0xb8 [xeno_nucl=
-eus] (xnintr_irq_handler+0x1fc [xeno_nucleus])
-> :|  # [ 1160] -<?>-   79 -1912    0.829  xnpod_schedule+0x420 [xeno_nuc=
-leus] (xnpod_suspend_thread+0x20c [xeno_nucleus])
-> :|  # func               -1911    0.390  xntimer_get_raw_clock_aperiodi=
-c+0x14 [xeno_nucleus] (xnpod_wait_thread_period+0xd0 [xeno_nucleus])
-> :|  # func               -1910    0.317  __ipipe_restore_pipeline_head+=
-0x14 (xnpod_wait_thread_period+0x130 [xeno_nucleus])
-> :|  + end     0x80000000 -1910+   1.878  __ipipe_restore_pipeline_head+=
-0xd4 (xnpod_wait_thread_period+0x130 [xeno_nucleus])
-> :|  + begin   0x80000001 -1908    0.414  __ipipe_dispatch_event+0x1e4 (=
-__ipipe_syscall_root+0x64)
-> :|  + end     0x80000001 -1908!  52.121  __ipipe_dispatch_event+0x204 (=
-__ipipe_syscall_root+0x64)
-> :   + func               -1857+   1.170  do_page_fault+0x14 (handle_pag=
-e_fault+0xc)
+Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+>   
+>> On Thu, 2007-05-03 at 17:07 +0200, Gilles Chanteperdrix wrote:
+>>
+>> That was not my point. My point was: don't stuff huge semi-random values
+>> into /proc/xenomai/latency to work around terrible jittery especially
+>> when porting Xenomai over new platforms, because this is _likely_ the
+>> sign of something going wrong elsewhere.
+>>
+>> E.g. An oldish 90Mhz classic pentium exhibits ~25 us core latency
+>> figures with Xenomai; some ARM hw may require more because of
+>> unfortunate memory sub-systems, but in any case, you have to
+>> _understand_ (e.g. using the tracer) why it is so, first.
+>>     
+>
+> I agree. I still have to see for myself why these damned ARMs have such
+> high latencies.
+>   
 
-This one is interesting: page fault over the RT-thread that belongs to
-PID 1160 (prio 79).
+Big LDM/STMs with slow memory will do the trick every time.  The CSB637 
+has a 100 MHz memory bus, even though the CPU can run at almost 200 MHz.
 
-> :   + func               -1856    0.487  __ipipe_dispatch_event+0x14 (d=
-o_page_fault+0x188)
-> :|  + begin   0x80000001 -1855    0.926  __ipipe_dispatch_event+0x27c (=
-do_page_fault+0x188)
-> :|  + end     0x80000001 -1854    0.585  __ipipe_dispatch_event+0x1a4 (=
-do_page_fault+0x188)
-> :   + func               -1854    0.975  exception_event+0x14 (__ipipe_=
-dispatch_event+0x1bc)
-> :   + func               -1853    0.609  xnarch_trap_fault+0x14 [xeno_n=
-ucleus] (exception_event+0x88)
-> :   + func               -1852    0.902  xnpod_trap_fault+0x14 [xeno_nu=
-cleus] (xnarch_trap_fault+0x38 [xeno_nucleus])
-> :   + func               -1851    0.878  xnpod_fault_handler+0x14 [xeno=
-_nucleus] (xnpod_trap_fault+0x68 [xeno_nucleus])
-> :   + func               -1851    0.536  xnshadow_relax+0x14 [xeno_nucl=
-eus] (xnpod_fault_handler+0x98 [xeno_nucleus])
-> :|  + begin   0x80000001 -1850+   1.073  xnshadow_relax+0x15c [xeno_nuc=
-leus] (xnpod_fault_handler+0x98 [xeno_nucleus])
-> :|  # func               -1849+   1.292  schedule_linux_call+0x14 [xeno=
-_nucleus] (xnshadow_relax+0x7c [xeno_nucleus])
-> :|  # func               -1848    1.000  rthal_apc_schedule+0x14 (sched=
-ule_linux_call+0xc8 [xeno_nucleus])
-> :|  # func               -1847+   1.609  __ipipe_schedule_irq+0x14 (rth=
-al_apc_schedule+0x10c)
-> :|  # func               -1845+   1.585  rpi_push+0x14 [xeno_nucleus] (=
-xnshadow_relax+0x84 [xeno_nucleus])
-> :|  # func               -1844    0.463  xnpod_schedule_runnable+0x14 [=
-xeno_nucleus] (rpi_push+0x84 [xeno_nucleus])
-> :|  # [    0] swapper 79 -1843+   1.658  xnpod_schedule_runnable+0x54 [=
-xeno_nucleus] (rpi_push+0x84 [xeno_nucleus])
+I think the cache and MMU arrangements have implications, too.  And 
+anything tied to NWAIT on that chip (AT91RM9200) drags the system down 
+quite easily.
 
-And now we are running the Linux kernel at xeno-prio 79 (due to
-prio-coupling).
-
-/me has to leave, other may jump in.
-
-Jan
+Don't accept those explanations at face value, though.  I'd love to see 
+the root cause clearly identified.
 
 
---------------enig491DA500EEEE61A3CA327BE1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+b.g.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+-- 
+Bill Gatliff
+bgat@domain.hid
 
-iD8DBQFGPy8UniDOoMHTA+kRAt3AAJ9XmEeO0dNMBMPVBgM9hC16KlmNQQCeMyVZ
-CEyHaEnHVE8aKtt3iKT+AVg=
-=FOFZ
------END PGP SIGNATURE-----
 
---------------enig491DA500EEEE61A3CA327BE1--
+--------------000005080408010202020406
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html;charset=ISO-8859-1" http-equiv="Content-Type">
+  <title></title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+Gilles Chanteperdrix wrote:
+<blockquote cite="mid463A1174.60105@domain.hid" type="cite">
+  <pre wrap="">Philippe Gerum wrote:
+  </pre>
+  <blockquote type="cite">
+    <pre wrap="">On Thu, 2007-05-03 at 17:07 +0200, Gilles Chanteperdrix wrote:
+
+That was not my point. My point was: don't stuff huge semi-random values
+into /proc/xenomai/latency to work around terrible jittery especially
+when porting Xenomai over new platforms, because this is _likely_ the
+sign of something going wrong elsewhere.
+
+E.g. An oldish 90Mhz classic pentium exhibits ~25 us core latency
+figures with Xenomai; some ARM hw may require more because of
+unfortunate memory sub-systems, but in any case, you have to
+_understand_ (e.g. using the tracer) why it is so, first.
+    </pre>
+  </blockquote>
+  <pre wrap=""><!---->
+I agree. I still have to see for myself why these damned ARMs have such
+high latencies.
+  </pre>
+</blockquote>
+<br>
+Big LDM/STMs with slow memory will do the trick every time.&nbsp; The CSB637
+has a 100 MHz memory bus, even though the CPU can run at almost 200 MHz.<br>
+<br>
+I think the cache and MMU arrangements have implications, too.&nbsp; And
+anything tied to NWAIT on that chip (AT91RM9200) drags the system down
+quite easily.<br>
+<br>
+Don't accept those explanations at face value, though.&nbsp; I'd love to see
+the root cause clearly identified.<br>
+<br>
+<br>
+b.g.<br>
+<pre class="moz-signature" cols="72">-- 
+Bill Gatliff
+<a class="moz-txt-link-abbreviated" href="mailto:bgat@domain.hid">bgat@domain.hid</a>
+</pre>
+</body>
+</html>
+
+--------------000005080408010202020406--
 
