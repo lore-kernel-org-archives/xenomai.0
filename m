@@ -1,12 +1,15 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17984.32675.944851.70015@domain.hid>
-Date: Tue, 8 May 2007 15:48:19 +0200
-In-Reply-To: <46407EC1.6070809@domain.hid>
-References: <46407EC1.6070809@domain.hid>
-Subject: Re: [Xenomai-help] rt_task_create killed in user space
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 4 May 2007 13:34:41 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01E44028@domain.hid>
+In-Reply-To: <463B33BC.5020408@domain.hid>
+References: <7289437c0705040615n2272cf83oeec8db0a7dda910c@domain.hid>
+	<463B33BC.5020408@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] Problem to compile for ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,28 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bernhard Michael <michael.bernhard@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Perrine Martignoni <perrmart@domain.hid>
 Cc: xenomai@xenomai.org
 
-Bernhard Michael wrote:
- > Hello
- > 
- > I've build a xenomai test application which consists of a kernel module
- > and a user space application. My target platform is a ARM XScale processor.
- > 
- > The kernel module is running fine but the user space application gets
- > always killed when calling rt_task_create. The use of the same
- > functionality in the kernel module is no problem.
- > 
- > Running the latency test is no problem however.
- > 
- > Did somebody experience the same problem? Help is much appreciated.
+Or you place somewhere before the linker option
 
-Maybe you forgot to call mlockall, don't you get an error message saying
-so ?
+-Wl,--start-group
 
--- 
+to tell the linker to iterate several times over the library =
+interdependencies.
+
+Even if gcc doc says different, you actually do not need a =
+-Wl,--end-group option.
 
 
-					    Gilles Chanteperdrix.
+
+Best regards,
+
+Daniel Schnell.
+=20
+
+
+-----Original Message-----
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
+On Behalf Of Gilles Chanteperdrix
+Sent: 4. ma=ED 2007 13:23
+To: Perrine Martignoni
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Problem to compile for ARM
+
+Perrine Martignoni wrote:
+> Hello,
+> =20
+> I have some problems to compile my code Posix for ARM. I have=20
+> installed xenomai in /usr/xenomai_arm-2.3.1 for ARM.
+> =20
+> Here is my compilation :
+> (...)
+> -L/usr/xenomai_arm-2.3.1/lib -lpthread_rt -lpthread -lrt =20
+> essai_mutex_rt.o   -o essai_mutex_rt
+
+The order of arguments on the linker command line is important, this =
+should be:
+
+essai_mutex_rt.o -lpthread_rt -lpthread -lrt
+
+--=20
+                                                 Gilles Chanteperdrix
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
