@@ -1,14 +1,15 @@
-Message-ID: <b647ffbd0705030306i38b9abfdlb6740fdbf6b39b28@domain.hid>
-Date: Thu, 3 May 2007 12:06:26 +0200
-From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
-In-Reply-To: <164351.60035.qm@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200705011227.10534.ngustavson@domain.hid>
+References: <200705011227.10534.ngustavson@domain.hid>
+Content-Type: text/plain
+Date: Fri, 04 May 2007 06:28:11 +0200
+Message-Id: <1178252891.29093.19.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <461F1A14.9090609@domain.hid>
-	<164351.60035.qm@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai module poblem
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [Uclinux-dist-devel] passing memory pointers
+	through sysfs
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,46 +19,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: somshekar kadam <som_kadam@domain.hid>
-Cc: xenomai@xenomai.org
+To: NZG <ngustavson@domain.hid>
+Cc: uclinux-dist-devel@domain.hid, xenomai@xenomai.org
 
-Hi,
+On Tue, 2007-05-01 at 12:27 -0500, NZG wrote:
+> Our Blackfin boards use memory mapped PLD's to create expandable io 
+> interfaces.
+> I've created a driver which detects the version of PLD core and creates 
+> appropriate sysfs classes for it, providing a simple interface.
+> 
+> I want Xenomai to have access to the devices in the PLD, which mean that 
+> ideally, I want the kernel to hand the real time user space applications a 
+> memory map of the PLD.
+> 
+> Ideally, I'd like create device node(s) through sysfs, which Xenomai could 
+> then access on initialization to get a memory map for it's devices.
+> 
+> Is this possible?
 
-> I came across Dmitry Adamushko doing the same work,
-> may if any pointers you have will help us.
-
-That was my intention and I started to implement some bits.. but
-shortly after that you announced an "alsmost-completed" port (as I
-recall it was estimated to be released somewhere in April) so I
-decided not to duplicate efforts (as it was just for fun, not any
-need-for-work necessity) but rather help with reviewing and
-straightening of the code once it gets released.
-
-
->  May 12 is the date to where we think of giving the
-> final release.
-
-> [...] now we are left with only one problem the xenomai
-> module doesnt work for us, it fails in start_thread
-> for module. same context switch will be used for
-> xenomai module also [...]
-
-sorry, but this looks like a mess and one should guess really hard to
-extract some relevant bits (if any).
-
-start_thread() == xnpod_start_thread? for module? what kind of
-"context switch" term can used for module (== kernel module)? and you
-claim that "all User RT Applications are working fine" and "the
-xenomai module doesnt work for us".
-
-I think noone is able to help you unless (1) you do release code
-publicly or (2) you are really very specific (technically-wise)
-describing your problem. (2) is not that easy as it would require
-looking at other parts of the code and we are, well, kind of "blind"
-here.
-
+Is your question about accessing the device node from a user-space
+Xenomai thread (which is ok), or about making use of the retrieved
+memory map information to map the device memory?
 
 -- 
-Best regards,
-Dmitry Adamushko
+Philippe.
+
+
 
