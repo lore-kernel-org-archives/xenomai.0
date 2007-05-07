@@ -1,14 +1,16 @@
-Message-ID: <20127779.1178282801939.JavaMail.ngmail@domain.hid>
-Date: Fri, 4 May 2007 14:46:41 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <1178281223.29093.83.camel@domain.hid>
+Message-ID: <463F27F3.9010101@domain.hid>
+Date: Mon, 07 May 2007 15:21:55 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <1178281223.29093.83.camel@domain.hid> <463AE7D3.6030401@domain.hid>
-	<24394502.1178264721982.JavaMail.ngmail@domain.hid>
-	<13626574.1178266851510.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
+References: <4639D724.5010702@domain.hid>	<1178198991.29605.54.camel@domain.hid>	<463AE79E.2090901@domain.hid>	<1178281926.29093.93.camel@domain.hid>
+	<463B2A69.7080704@domain.hid> <463EE376.9030702@domain.hid>
+	<463F1BFF.1010303@domain.hid>
+In-Reply-To: <463F1BFF.1010303@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF668B5DFA4923F52ACF5DE48"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Latency calculation and test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,43 +20,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-help@domain.hid
 
-Hi Philippe,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF668B5DFA4923F52ACF5DE48
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I patched the create_irq() function to start the search for unused interrup=
-ts not at
-NR_IRQS -1 but from 127.
-And this seems actually to work.
-It looks like the right track!
-That means, that actually the large IRQ numbers are conflicting with the sy=
-stem
-interrupts.
-However, I wonder why this works with a non-adeos-patched kernel...
-
-Regards
-
-Mathias
-
-
+Gilles Chanteperdrix wrote:
+> Johan Borkhuis wrote:
+>> void timeStampGet(clockid_t which_clock, struct timespec *curtime)
+>> {
+>>     unsigned long lo, hi, hi2;
+>>     unsigned long long tr;
+>>     long double tmpVal;
+>>
+>>     if(hwtimer =3D=3D 0)
+>>     {
+>>         clock_gettime(which_clock, curtime);
 >=20
-> No, the trampoline code in entry.S passes us an irq actually. But there
-> is indeed a vector:irq mapping issue with IRQ numbers greater than 206,
-> which still badly conflict with system IRQs (MSI causes high numbered
-> IRQs to be allocated). I'm working on a patch. More later.
+> If you do not compile for Xenomai posix skin (i.e. passing
+> -Wl,--wrap,clock_gettime -lpthread_rt to gcc), this causes a switch to
+> secondary mode.
 >=20
 
-
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+As far as I understood, the test runs with -h, ie. without running into
+that case.
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+--------------enigF668B5DFA4923F52ACF5DE48
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFGPyfzniDOoMHTA+kRAi/EAJ9mLxHygjaZcOechKabxsjwbQguLwCeJls7
+DvFkSixMeYj7NQdeTAFjGBI=
+=Mg1K
+-----END PGP SIGNATURE-----
+
+--------------enigF668B5DFA4923F52ACF5DE48--
 
