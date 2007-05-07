@@ -1,15 +1,10 @@
-Message-ID: <4641B5CF.80303@domain.hid>
-Date: Wed, 09 May 2007 13:51:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <30007102.1178521900590.JavaMail.ngmail@domain.hid>
+Date: Mon, 7 May 2007 09:11:40 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-References: <22908039.1178707932628.JavaMail.ngmail@domain.hid>
-In-Reply-To: <22908039.1178707932628.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA4EDD87282ED47140D34FC99"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized for
- user space only applications
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,90 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: rpm@xenomai.org, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA4EDD87282ED47140D34FC99
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi Philippe,
 
-M. Koehrer wrote:
-> Hi everybody,
->=20
-> I am using Xenomai for a high performance real time simulation system. =
+thanks for the new adeos patch.
+I have now done the following steps:
+I used a vanilla 2.6.20.4 kernel and a non-patched Xenomai 2.3.1.
+Then I applied the script scripts/prepare-kernel.sh with the=20
+adeos-ipipe-2.6.20-i386-1.8-00.patch to patch the kernel.
 
-> All of the simulation code is executed within user space. One applicati=
-on is running that consists
-> of several Xenomai real time threads.
-> For performance reasons I am always using the latest PC technology avai=
-lable (which is currently
-> Pentium D or Core2Duo PCs, we are thinking even of using quad-core CPUs=
-).
-> There has to be a kind of thread synchronisation e.g. when accessing sh=
-ared data.
-> Hardware I/O is done via rtnet or via PCI I/O boards that work in user =
-space aswell (PCI memory
-> mapped into the user space).
-> This is done e.g. by using semaphores, mutexes et.c
-> I like the Xenomai-native skin as it provides a very clear API that is =
-easy to use.
-> However, for a user space only application it is a performance killer, =
-that all API calls
-> lead to a mode switch from user to kernel space. Each API call takes ab=
-out 1-2 microseconds (us)
-> on my PC which is really expensive.
-> Especially when inter process communication is used to protect the acce=
-ss to shared data
-> it is mostly the case that the calling thread does not have to wait. In=
- this situation there is no
-> need for a context switch. The API call did not lead to a rescheduling =
-of the available tasks.
-> And for this the required 1-2 us do really hurt.
->=20
-> Thus my question/proposal is if there is a plan to use a "variant" of t=
-he native API that is optimized for
-> user space only applications. In this case e.g. futexes can be used. If=
- there is a need to
-> reschedule to another task it is fine to "invest" the 2us but it can be=
- avoided mostly which should
-> increase the overall performance dramatically.
+I am now able to boot my PC with this kernel and my e1000 actually=20
+works on IRQ223!=20
+That's perfect.
+This is one big step into the right direction!
 
-Your analysis is not wrong. But before going into any detail may I ask
-you for on clarification: What do you want to optimise *primarily*, the
-average execution time of your RT threads in order to gain more CPU time
-for non-RT Linux jobs *or* the worst case execution time of your RT threa=
-ds?
+Now, I want to test the real time stuff.
+I can modprobe xeno_native, this seems to work fine.
+However, when I want to rmmod xeno_native, rmmod does not return.
+dmesg shows the error
+APIC error on CPU0 : 00(20)
+APIC error on CPU1 : 00(40)
 
-> This would lead to a library where a big part of the functionality is h=
-andled directly in the library=20
-> (in user space). Currently the skin passes the (user space) API call vi=
-a a Xenomai System call=20
-> to the kernel space to execute there the actual functionality.
+This error comes with out without the e1000 (MSI based) loaded at this time=
+.
+
+I am able to load and unload xeno_nucleus, thus this seems to be a
+xeno_native issue.
+
+Regards
+
+Mathias
 >=20
-> Thanks for any feedback on this proposal.
+> Does this patch improve things?
 >=20
-> Regards
+> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.20-i386-1=
+.8-
+> 00.patch
 >=20
-> Mathias
+> --=20
+> Philippe.
 >=20
 
-Jan
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
---------------enigA4EDD87282ED47140D34FC99
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGQbXPniDOoMHTA+kRAiu+AJ9fan66IPJD7BMxTyXzH61tEHM2ywCeLE4a
-QrGDq4QZCo/+0WKZjOEBanM=
-=HPXe
------END PGP SIGNATURE-----
-
---------------enigA4EDD87282ED47140D34FC99--
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
