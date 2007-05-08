@@ -8,8 +8,8 @@ References: <1178627340.5045.3.camel@domain.hid>
 	<23990358.1178625225906.JavaMail.ngmail@domain.hid>
 	<15573283.1178627888504.JavaMail.ngmail@domain.hid>
 Content-Type: text/plain
-Date: Tue, 08 May 2007 15:28:53 +0200
-Message-Id: <1178630933.5045.4.camel@domain.hid>
+Date: Tue, 08 May 2007 15:37:40 +0200
+Message-Id: <1178631460.5045.6.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -33,31 +33,20 @@ On Tue, 2007-05-08 at 14:38 +0200, M. Koehrer wrote:
 > perhaps one more information regarding that issue: 
 > When I disable SMP, it seems to work fine (APIC and local APIC are enabled).
 
-This sounds reasonable, since IPIs are SMP specific.
+This should improve things:
 
-> 
-> Regards
-> 
-> Mathias
-> 
-> > > as mentioned in my previous mail, the new patch works fine. However, I get
-> > the error
-> > > APIC error on CPU0: 00(20)
-> > > APIC error on CPU1: 00(40)
-> > > when unloading (rmmod) xeno_native.
-> > > I have looked closed to that issue and I have found out that this happens
-> > > within the inline function xnarch_notify_halt() (file pod.h)
-> > > 
-> > >     for(cpu=0; cpu < nr_cpus-1; ++cpu)
-> > >         down(&xnarch_finalize_sync);
-> > > 
-> > 
-> > It's likely happening a few lines earlier, when sending IPI2 to
-> > synchronize all CPUs during Xenomai shutdown. Ok, I will have a look
-> > asap.
-> > 
-> 
-> 
+--- a/arch/i386/kernel/ipipe.c
++++ b/arch/i386/kernel/ipipe.c
+@@ -373,7 +373,7 @@ int fastcall __ipipe_send_ipi (unsigned ipi, cpumask_t cpumask)
+        cpu_clear(cpuid,cpumask);
+
+        if (!cpus_empty(cpumask))
+-               send_IPI_mask(cpumask,ipi + FIRST_EXTERNAL_VECTOR);
++               send_IPI_mask(cpumask,ipipe_apic_irq_vector(ipi));
+
+        if (self)
+                ipipe_trigger_irq(ipi);
+
 -- 
 Philippe.
 
