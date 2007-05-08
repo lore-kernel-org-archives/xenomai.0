@@ -1,15 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <46408558.9040604@domain.hid>
+Date: Tue, 08 May 2007 16:12:40 +0200
+From: Bernhard Michael <michael.bernhard@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 4 May 2007 13:34:41 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01E44028@domain.hid>
-In-Reply-To: <463B33BC.5020408@domain.hid>
-References: <7289437c0705040615n2272cf83oeec8db0a7dda910c@domain.hid>
-	<463B33BC.5020408@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: Re: [Xenomai-help] Problem to compile for ARM
+References: <46407EC1.6070809@domain.hid>
+	<17984.32675.944851.70015@domain.hid>
+In-Reply-To: <17984.32675.944851.70015@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_task_create killed in user space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,56 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Perrine Martignoni <perrmart@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Or you place somewhere before the linker option
+Gilles Chanteperdrix wrote:
+> 
+> Maybe you forgot to call mlockall, don't you get an error message saying
+> so ?
+> 
 
--Wl,--start-group
+Calling mlockall before rt_task_create solved the problem! Thank you Gilles.
 
-to tell the linker to iterate several times over the library =
-interdependencies.
+I didn't get an error message saying something like that. Just 'killed'.
+Because I have no swap memory and I disabled this kernel feature, I
+thought that the call of mlockall is not necessary.
 
-Even if gcc doc says different, you actually do not need a =
--Wl,--end-group option.
+Thanks again
 
-
-
-Best regards,
-
-Daniel Schnell.
-=20
-
-
------Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
-On Behalf Of Gilles Chanteperdrix
-Sent: 4. ma=ED 2007 13:23
-To: Perrine Martignoni
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Problem to compile for ARM
-
-Perrine Martignoni wrote:
-> Hello,
-> =20
-> I have some problems to compile my code Posix for ARM. I have=20
-> installed xenomai in /usr/xenomai_arm-2.3.1 for ARM.
-> =20
-> Here is my compilation :
-> (...)
-> -L/usr/xenomai_arm-2.3.1/lib -lpthread_rt -lpthread -lrt =20
-> essai_mutex_rt.o   -o essai_mutex_rt
-
-The order of arguments on the linker command line is important, this =
-should be:
-
-essai_mutex_rt.o -lpthread_rt -lpthread -lrt
-
---=20
-                                                 Gilles Chanteperdrix
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
+Michael
 
