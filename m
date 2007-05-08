@@ -1,13 +1,13 @@
-Message-ID: <463B5A11.8080406@domain.hid>
-Date: Fri, 04 May 2007 18:06:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1178268043.5391.47.camel@domain.hid>	
-	<463B0A58.4070206@domain.hid> <1178287470.22169.9.camel@domain.hid>
-In-Reply-To: <1178287470.22169.9.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Brandt Erickson <berickso@domain.hid>
+In-Reply-To: <17984.50298.842145.884348@domain.hid>
+References: <1178645689.7883.9.camel@domain.hid>
+	<17984.50298.842145.884348@domain.hid>
+Content-Type: text/plain
+Date: Tue, 08 May 2007 15:23:59 -0600
+Message-Id: <1178659440.5074.9.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Latencies while ethernet access
+Subject: Re: [Xenomai-help] rtser not showing up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,29 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: CAMUS Benoit <benoit.camus@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-CAMUS Benoit wrote:
-> / # rtnet -v start
-> Turning on verbose mode
-> 
-> *** RTnet 0.9.9 - built on May  4 2007 13:20:37 ***
-> 
-> RTnet: initialising real-time networking
-> LAN91C111: You shouldn't use auto-probing with insmod!
->  Adresse recue: 0
->  entraine une detection ? --> 0 
->  Detection brutale des adresses
->  Demande de region avec l'adresse: 512
->  Demande acceptee, selection du banc de registre sur 512 + 14
-> Unable to handle kernel NULL pointer dereference at virtual address
-> 0000020e
 
-Jan will probably be of more help here. However, 0x20e is the
-hexadecimal value of 512 + 14. What about passing the correct I/O
-address of your card at insmod time using its "io" parameter ?
+> No node will turn up in /dev, you will find the list of available RTDM
+> devices in /proc/xenomai/rtdm/named_devices.
 
--- 
-                                                 Gilles Chanteperdrix
+Okay,
+there is a /proc/xenomai/rtdm/rtser0.  The example opens the file
+"rtser0", does this default to the full path name when I use
+rt_dev_open?
+
+Right now, it appears I can open the file (rt_dev_open returns 0) and
+configure the serial port (using rt_dev_ioctl), however, every call to
+rt_dev_write returns -1.  I'm using the configuration from the example
+code which basically has everything set to defaults.  Is there an
+equivalent of errno I can get to find out what's going wrong?  Thanks.
+-Brandt
+
 
