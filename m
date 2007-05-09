@@ -1,16 +1,13 @@
-Message-ID: <4641C3E9.4050105@domain.hid>
-Date: Wed, 09 May 2007 14:51:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4641B5CF.80303@domain.hid>
-	<22908039.1178707932628.JavaMail.ngmail@domain.hid>
-	<13086080.1178713660670.JavaMail.ngmail@domain.hid>
-In-Reply-To: <13086080.1178713660670.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig428B9576C5305C4530ABF888"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized for
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 9 May 2007 13:49:38 +0100
+Message-ID: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>
+In-Reply-To: <mailman.51.1178704831.10156.xenomai@xenomai.org>
+From: "Noren, Andrew" <Andrew.Noren@domain.hid>
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,63 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig428B9576C5305C4530ABF888
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-M. Koehrer wrote:
-> Hi Jan,
-> =20
-> primarily I want to execute my simulation models as fast as possible. T=
-his is, I want=20
-> to optimize the average execution time. As there are a series of critic=
-al sections to
-> be passed this should also have an impact on the worst execution time.
->=20
-> The critical region in the simulation are at locations when a lower pri=
-o thread and a higher
-> prio thread access the same data. This happens at a couple of times wit=
-hin a simulation step=20
-> (within that critical region there are typically some copy operations).=
-
-> However, once the higher prio thread has entered one critical region it=
- is sure (at least if
-> both threads run on the same CPU core) that it will be able to enter th=
-e next critical region without
-> waiting.
-> That means, that improving the average runtime should also help to impr=
-ove the worst case
-> runtime of the highest prio thread.
-
-Not saying that the futex idea itself is not worth pursuing, but I would
-first of all think about if there aren't other, far simpler
-optimisations available at application level: lock-less algorithms e.g.
-that flip some current-buffer pointers instead of locking the access to
-a single shared buffer. Or a locking scheme that reduces the number of
-locks the highest prio thread has to take in a row. Specifically when
-you say that taking lock A implies to succeed in taking B as well, I
-wonder if there is a need for A!=3DB.
-
-Jan
+To: xenomai@xenomai.org
 
 
---------------enig428B9576C5305C4530ABF888
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Hi Gilles,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I too have encountered this issue with the POSIX skin.
+I think it may have to do with the order in which the posix skin hooks
+are run on thread deletion.
 
-iD8DBQFGQcPpniDOoMHTA+kRAusuAJ4+mduqyH9BiUc7vnMgcMcd03STIACeOlo2
-7hFv7WZQ8J9ThDIzMU2eEKc=
-=Yuyc
------END PGP SIGNATURE-----
+In ksrc/skins/posix/syscall.c
+xnpod_remove_hook(XNHOOK_THREAD_DELETE, &__shadow_delete_hook);
 
---------------enig428B9576C5305C4530ABF888--
+and ksrc/skins/posix/thread.c
+xnpod_add_hook(XNHOOK_THREAD_DELETE, thread_delete_hook);
+
+The thread_delete_hook seems to run first causing the thread data to be
+destroyed before __shadow_delete_hook has a chance to run.
+
+This results in __shadow_delete_hook failing in various cases.
+
+An example of an error case linked with this would be the failure to
+remove the thread key from the hash bucket after application exit.  The
+next run of an application can then result in pthread_setschedparam
+failing to create a shadow since it likely finds an id in the hash
+bucket already.
+
+Regards,
+Andy
+
+=20
 
