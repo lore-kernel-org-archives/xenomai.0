@@ -1,14 +1,10 @@
-Message-ID: <463B5E27.7050408@domain.hid>
-Date: Fri, 04 May 2007 18:24:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <7289437c0705090155ma97b0et930b53336849a56f@domain.hid>
+Date: Wed, 9 May 2007 10:55:48 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
 MIME-Version: 1.0
-References: <1178268043.5391.47.camel@domain.hid> <463B086B.6060402@domain.hid>
-In-Reply-To: <463B086B.6060402@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig350FEEBFF4889E98E872D651"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Latencies while ethernet access
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_53187_20307367.1178700948417"
+Subject: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,64 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, CAMUS Benoit <benoit.camus@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig350FEEBFF4889E98E872D651
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_53187_20307367.1178700948417
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gilles Chanteperdrix wrote:
-> CAMUS Benoit wrote:
->> Hi,
->>
->> I'm using Xenomai 2.3.1 with a 2.6.19.2 kernel (from ELDK) on a custom=
+Hello,
 
->> board based on Xscale PXA processor and with smc91c111 ethernet chip. =
-
->> I did modifications on Linux kernel to port it on board and then just
->> applied Adeos's patch following Xenomai's proceedings.
->> Http and telnet servers are running on and i notice that latencies get=
-
->> really worse while i access any of them (see traces below).
->>
->> I understood that Adeos might avoid that kind of behavior due to its
->> architecture. So i infer that the ethernet driver might access the
->> hardware by-passing Adeos ?
->=20
-> Despite Adeos architecture, latency with Xenomai is known to depend on
-> the non real-time workload, because there are some low-level ressources=
-
-> such as busses and processor cache that the real-time and non real-time=
-
-> processes need to share.
-
-Such effects can often be analysed with... the latency tracer [1]!
-
-When some hardware interaction shows up right before the delayed timer
-(or whatever RT-)IRQ, Xenomai cannot help. But if there is something
-else, more fishy going on, you will see long interrupts-off sections,
-weird scheduling decisions, etc. Then our job starts again.
-
-Jan
-
-[1] http://www.xenomai.org/index.php/I-pipe:Tracer
+I've build a xenomai test application with Posix skin wich run on an ARM9.
+The application works well one time, and when I want to launch again my
+application, I have this error message :
 
 
---------------enig350FEEBFF4889E98E872D651
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Xenomai Posix skin init: pthread_setschedparam: Resource temporarily
+unavailable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGO14nniDOoMHTA+kRAk+YAJ0XuPs/ed3FMMpctluI8m1rE0McFgCghJ6v
-LI8BMOC2psHG3Xb5eIYGq1c=
-=sVja
------END PGP SIGNATURE-----
 
---------------enig350FEEBFF4889E98E872D651--
+I think something was bad cancelled but I don't see.
+
+Thanks
+
+------=_Part_53187_20307367.1178700948417
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div>Hello, </div>
+<div>&nbsp;</div>
+<div>I&#39;ve build a xenomai test application with Posix skin wich run on an ARM9. The application works well one time, and when I want to launch again my application, I have this error message : </div>
+<div>&nbsp;</div>
+<div>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="Times New Roman">Xenomai Posix skin init: pthread_setschedparam: Resource temporarily unavailable</font></p>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="Times New Roman"></font>&nbsp;</p>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="">I think something was bad cancelled but I don&#39;t see.</font></p>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt">Thanks</p></div>
+
+------=_Part_53187_20307367.1178700948417--
 
