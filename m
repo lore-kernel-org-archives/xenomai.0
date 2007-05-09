@@ -1,10 +1,13 @@
-Message-ID: <30007102.1178521900590.JavaMail.ngmail@domain.hid>
-Date: Mon, 7 May 2007 09:11:40 +0200 (CEST)
+Message-ID: <13086080.1178713660670.JavaMail.ngmail@domain.hid>
+Date: Wed, 9 May 2007 14:27:40 +0200 (CEST)
 From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <4641B5CF.80303@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai and MSI enabled crashes kernel
+References: <4641B5CF.80303@domain.hid>
+	<22908039.1178707932628.JavaMail.ngmail@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized for
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,47 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi Philippe,
+Hi Jan,
+=20
+primarily I want to execute my simulation models as fast as possible. This =
+is, I want=20
+to optimize the average execution time. As there are a series of critical s=
+ections to
+be passed this should also have an impact on the worst execution time.
 
-thanks for the new adeos patch.
-I have now done the following steps:
-I used a vanilla 2.6.20.4 kernel and a non-patched Xenomai 2.3.1.
-Then I applied the script scripts/prepare-kernel.sh with the=20
-adeos-ipipe-2.6.20-i386-1.8-00.patch to patch the kernel.
-
-I am now able to boot my PC with this kernel and my e1000 actually=20
-works on IRQ223!=20
-That's perfect.
-This is one big step into the right direction!
-
-Now, I want to test the real time stuff.
-I can modprobe xeno_native, this seems to work fine.
-However, when I want to rmmod xeno_native, rmmod does not return.
-dmesg shows the error
-APIC error on CPU0 : 00(20)
-APIC error on CPU1 : 00(40)
-
-This error comes with out without the e1000 (MSI based) loaded at this time=
-.
-
-I am able to load and unload xeno_nucleus, thus this seems to be a
-xeno_native issue.
+The critical region in the simulation are at locations when a lower prio th=
+read and a higher
+prio thread access the same data. This happens at a couple of times within =
+a simulation step=20
+(within that critical region there are typically some copy operations).
+However, once the higher prio thread has entered one critical region it is =
+sure (at least if
+both threads run on the same CPU core) that it will be able to enter the ne=
+xt critical region without
+waiting.
+That means, that improving the average runtime should also help to improve =
+the worst case
+runtime of the highest prio thread.
 
 Regards
 
 Mathias
 >=20
-> Does this patch improve things?
->=20
-> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.20-i386-1=
-.8-
-> 00.patch
->=20
-> --=20
-> Philippe.
+> Your analysis is not wrong. But before going into any detail may I ask
+> you for on clarification: What do you want to optimise *primarily*, the
+> average execution time of your RT threads in order to gain more CPU time
+> for non-RT Linux jobs *or* the worst case execution time of your RT
+> threads?
 >=20
 
 
