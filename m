@@ -1,14 +1,14 @@
-Message-ID: <20669310.1178719111471.JavaMail.ngmail@domain.hid>
-Date: Wed, 9 May 2007 15:58:31 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <Pine.LNX.4.64.0705091531560.22958@domain.hid>
+Message-ID: <7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>
+Date: Wed, 9 May 2007 16:35:05 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+In-Reply-To: <7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <Pine.LNX.4.64.0705091531560.22958@domain.hid> <4641B5CF.80303@domain.hid>
-	<22908039.1178707932628.JavaMail.ngmail@domain.hid>
-	<13086080.1178713660670.JavaMail.ngmail@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized for
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_55323_25915098.1178721305571"
+References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>
+	<4641CD8B.8050309@domain.hid>
+	<7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,74 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: herman.bruyninckx@domain.hid, mathias_koehrer@domain.hid
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: xenomai@xenomai.org
 
-Hi Herman and Jan,
+------=_Part_55323_25915098.1178721305571
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-thanks for your replies.
-I agree that is the best to do an approach that avoids critical sections.
-However, we have here the typical "historical heritage". Parts of this code=
- have
-been ported from another system (where they worked with cli/sti).
-Other parts are generated from a third party code generator.
-This code generator (which is not in my hand) is designed primarily
-for offline simulation within a single task.
-Thus, the guys that programmed that, did not care about multi thread progra=
-mming.
-The programs write the results into output variables.
-To avoid critical section I have now to do either
-an additional copy (also quite expensive) of the output data to a location=
-=20
-where I can work without any risk of being interrupted or I lock the access
- to the data.
-That means either I do lots of additional copy actions (also quite expensiv=
-e) or I work
-with the critical region.
-
-Thus for me it is not an either - or - option.
-I can not optimize the code to be 100% free of critical sections (however i=
-t can be done in
-some parts..). That means I still have to count on the IPC provided by the =
-OS.
-
-Regards
-
-Mathias
-
-> > The critical region in the simulation are at locations when a lower pri=
-o
-> > thread and a higher prio thread access the same data. This happens at a
-> > couple of times within a simulation step (within that critical region
-> > there are typically some copy operations).
->=20
-> I agree with Jan Kiszka (in another reply in this thread) that it's
-> probably better to improve the design of your application than to shift t=
-he
-> problem to asking for "yet another feature" of the RTOS!
->=20
-> In our robot control framework (orocos.org) that works as a user space
-> application on top of Xenomai we have implemented lock-free data exchange=
-,
-> which does'nt require involvement of the scheduler at all, and which
-> improves the timing performance of the highest priority thread. It might =
-be
-> useful for you to discuss this implementation aspect on the orocos
-> developers mailinglist...
->=20
-> Herman Bruyninckx
->=20
+I have applied the patch.
+It doesn't solve the problem but I have more information :
 
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+pthread_create returned 11
+
+__pthread_shadow: -11
+
+Xenomai Posix skin init: pthread_setschedparam: Resource temporarily
+unavailable
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+On 5/9/07, Perrine Martignoni <perrmart@domain.hid> wrote:
+>
+> I'll do that as soon as I can.
+> Thanks
+>
+>  On 5/9/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> >
+> > Noren, Andrew wrote:
+> > > Hi Gilles,
+> > >
+> > > I too have encountered this issue with the POSIX skin.
+> > > I think it may have to do with the order in which the posix skin hooks
+> > > are run on thread deletion.
+> > >
+> > > In ksrc/skins/posix/syscall.c
+> > > xnpod_remove_hook(XNHOOK_THREAD_DELETE, &__shadow_delete_hook);
+> > >
+> > > and ksrc/skins/posix/thread.c
+> > > xnpod_add_hook(XNHOOK_THREAD_DELETE, thread_delete_hook);
+> > >
+> > > The thread_delete_hook seems to run first causing the thread data to
+> > be
+> > > destroyed before __shadow_delete_hook has a chance to run.
+> > >
+> > > This results in __shadow_delete_hook failing in various cases.
+> > >
+> > > An example of an error case linked with this would be the failure to
+> > > remove the thread key from the hash bucket after application
+> > exit.  The
+> > > next run of an application can then result in pthread_setschedparam
+> > > failing to create a shadow since it likely finds an id in the hash
+> > > bucket already.
+> >
+> > Hi,
+> >
+> > thanks for pointing this out, I see other skins use xnfreesafe in their
+> > thread deletion hook instead of xnfree. The attached patch fixes this.
+> >
+> > Perrine, could you apply this patch and check that it solves your issue
+> > ?
+> >
+> > --
+> >                                                 Gilles Chanteperdrix
+> >
+> >
+>
+
+------=_Part_55323_25915098.1178721305571
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div>I have applied the patch.</div>
+<div>It doesn&#39;t solve the problem but I have more information : <br>&nbsp;</div>
+<div>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="Times New Roman">pthread_create returned 11</font></p>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="Times New Roman">__pthread_shadow: -11</font></p>
+<p class="MsoNormal" style="MARGIN: 0cm 0cm 0pt"><font face="Times New Roman">Xenomai Posix skin init: pthread_setschedparam: Resource temporarily unavailable</font></p><br>&nbsp;</div>
+<div><span class="gmail_quote">On 5/9/07, <b class="gmail_sendername">Perrine Martignoni</b> &lt;<a href="mailto:perrmart@domain.hid">perrmart@domain.hid</a>&gt; wrote:</span>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>I&#39;ll do that as soon as I can.</div>
+<div>Thanks<br>&nbsp;</div>
+<div><span class="e" id="q_11271143705c7336_1">
+<div><span class="gmail_quote">On 5/9/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a onclick="return top.js.OpenExtLink(window,event,this)" href="mailto:gilles.chanteperdrix@xenomai.org" target="_blank">
+gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span> 
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Noren, Andrew wrote:<br>&gt; Hi Gilles,<br>&gt;<br>&gt; I too have encountered this issue with the POSIX skin. 
+<br>&gt; I think it may have to do with the order in which the posix skin hooks<br>&gt; are run on thread deletion.<br>&gt;<br>&gt; In ksrc/skins/posix/syscall.c<br>&gt; xnpod_remove_hook(XNHOOK_THREAD_DELETE, &amp;__shadow_delete_hook); 
+<br>&gt;<br>&gt; and ksrc/skins/posix/thread.c<br>&gt; xnpod_add_hook(XNHOOK_THREAD_DELETE, thread_delete_hook);<br>&gt;<br>&gt; The thread_delete_hook seems to run first causing the thread data to be<br>&gt; destroyed before __shadow_delete_hook has a chance to run. 
+<br>&gt;<br>&gt; This results in __shadow_delete_hook failing in various cases.<br>&gt;<br>&gt; An example of an error case linked with this would be the failure to<br>&gt; remove the thread key from the hash bucket after application exit.&nbsp;&nbsp;The 
+<br>&gt; next run of an application can then result in pthread_setschedparam<br>&gt; failing to create a shadow since it likely finds an id in the hash<br>&gt; bucket already.<br><br>Hi,<br><br>thanks for pointing this out, I see other skins use xnfreesafe in their 
+<br>thread deletion hook instead of xnfree. The attached patch fixes this.<br><br>Perrine, could you apply this patch and check that it solves your issue ?<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix 
+<br><br></blockquote></div><br></span></div></blockquote></div><br>
+
+------=_Part_55323_25915098.1178721305571--
 
