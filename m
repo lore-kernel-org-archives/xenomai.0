@@ -1,16 +1,23 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01EB160E@is-hdq-exchange.marel.net>
-References: <1178727256.11688.35.camel@domain.hid>
-	<22908039.1178707932628.JavaMail.ngmail@domain.hid>
-	<12120203.1178785866207.JavaMail.ngmail@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB160E@is-hdq-exchange.marel.net>
+In-Reply-To: <464331CF.3090505@domain.hid>
+References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>
+	<4641CD8B.8050309@domain.hid>
+	<7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>
+	<7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>
+	<17986.12574.488256.997900@domain.hid>
+	<17986.15326.243315.427529@domain.hid>
+	<1178748178.11688.45.camel@domain.hid>
+	<17986.20728.617772.991566@domain.hid>
+	<1178784303.11688.108.camel@domain.hid>  <4642D901.9050304@domain.hid>
+	<1178789171.11688.142.camel@domain.hid>  <4642E706.7000500@domain.hid>
+	<1178808027.11688.150.camel@domain.hid>  <464331CF.3090505@domain.hid>
 Content-Type: text/plain
-Date: Thu, 10 May 2007 17:16:35 +0200
-Message-Id: <1178810195.11688.185.camel@domain.hid>
+Date: Thu, 10 May 2007 17:21:34 +0200
+Message-Id: <1178810494.11688.188.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,53 +28,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
-Cc: xenomai@xenomai.org, "M. Koehrer" <mathias_koehrer@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Thu, 2007-05-10 at 09:46 +0000, Daniel Schnell wrote:
-> If so, this is really something one should try to improve, because one has to "pay" a lot
->  for the relatively unlikely event of a reschedule. And mutexes are and will/should be used a lot.
+On Thu, 2007-05-10 at 16:53 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Thu, 2007-05-10 at 11:33 +0200, Gilles Chanteperdrix wrote:
+> > 
+> >>Philippe Gerum wrote:
+> >>>xnfreesafe was meant to prevent the caller from releasing some memory it
+> >>>could still rely on, e.g. stack space, by postponing the actual release
+> >>>until the idle thread is resumed. In your case, the problem is that it
+> >>>does not account for the primary/secondary mode of a shadow thread.
+> >>
+> >>I am not so sure. I mean, even if the thread was deleted from the
+> >>context of another thread, the two hooks would be invoked and we would
+> >>need the free operation to be deferred until after the execution of the
+> >>second hook.
+> >>
+> > 
+> > 
+> > The point is that deletion hooks are always called on behalf of the
+> > exiting thread in secondary mode, so if xnfreesafe properly identifies
+> > the caller as the current thread - regardless of its exec mode - then
+> > the deferral should always take place. But I agree on the fact that we
+> > should always end up running the deferred call in this context anyway,
+> > so we would be better off calling xnheap_schedule_free() directly.
 > 
-> I have to support Mathias here: it is not so easy as blaming bad design of the application or the used tooling.
-> One often has dependencies on legacy code / tools / external libraries.
+> That is why, since xnfreesafe was only called in this precise context, I
+> redefined it to call xnheap_schedule_free directly.
+> 
 
-Ack. Xenomai is very much about helping people to migrate from legacy RT
-environments to Linux-based systems; this is why Xenomai has a skin
-layer instead of a single wired-in interface in the first place. In that
-sense, we _must_ accept the fact that such code needs to be ported with
-the fewest changes that make the transition possible, basically because
-even as mis-designed or sloppy as it could be, such code often has one
-single very desirable property: it _works in the field_ (damnit! (c)),
-and an awful lot of effort has likely been put to fix the real-world
-issues which have popped during the application lifetime no one wants to
-start again, and any knowledge about those bugs and how they have been
-fixed has often vanished many moons ago.
-
-To sum up, I have no problem trying hard to make some ugly legacy code
-shine by mean of a smart implementation on our side, that's usual
-business after all.
-
-This is not to say that we should plumb any number of evil core
-interfaces into Xenomai, or tweak the existing ones, just for making new
-things as silly or ugly as they might have been in the legacy context.
-But, improving the performance of mutual exclusion would _not_ impact
-any Xenomai interface, but only the innards of some skins, for the best
-in terms of performance. So, FWIW, I agree, we must improve this when
-time allows, and yes, it should probably be high enough priority-wise in
-the TODO list, especially if measurements confirm the problem.
-
-I see two distinct improvements we could achieve:
-
-- optimize our syscall path, between user-space and the nucleus. This
-would have a positive impact on every syscall from every skin. My
-feeling is that I-cache penalty is way too high presently when
-dispatching syscall events within the Adeos layer. We must do so while
-keeping the pipeline scheme so we could still downgrade syscalls from
-the Xenomai domain to the Linux one when needed.
-
-- implement the fast acquisition path for core Xenomai mutexes (to be
-defined) in the non-contended case, using a piece of pinned memory
-shared between kernel and user spaces.
+Well, ok. But we may need the xnfreesafe() interface in the future, the
+way it was designed initially, I mean. So let's call
+xnheap_schedule_free directly when needed.
 
 -- 
 Philippe.
