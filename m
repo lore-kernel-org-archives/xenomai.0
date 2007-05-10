@@ -1,13 +1,15 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Date: Sat, 12 May 2007 19:15:38 -0400
-Message-ID: <D412DC851FDFAB4D8976895AC5C1F8AD30A925@domain.hid>
-In-Reply-To: <4644982B.5040708@domain.hid>
-From: "Zhang, Haobo" <haobo.zhang@domain.hid>
-Subject: Re: [Xenomai-help] rtdm_iomap_to_user question
+Date: Thu, 10 May 2007 08:58:02 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01EB15D1@domain.hid>
+In-Reply-To: <4642D901.9050304@domain.hid>
+References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>	<4641CD8B.8050309@domain.hid>	<7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>	<7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>	<17986.12574.488256.997900@domain.hid>	<17986.15326.243315.427529@domain.hid>	<1178748178.11688.45.camel@domain.hid>	<17986.20728.617772.991566@domain.hid><1178784303.11688.108.camel@domain.hid>
+	<4642D901.9050304@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,116 +19,131 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org, stelian@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-Thanks, Jan. It is fixed after I modified my code as you suggested.
+Hi,
 
-Best Regards,
-Haobo Zhang=20
+Can this be related to the still unuanswered problem I was posting here:
+
+https://mail.gna.org/public/xenomai-help/2007-05/msg00039.html
+
+?
+
+Best regards,=20
+
+--=20
+Daniel Schnell                   | daniel.schnell@domain.hid
+Hugb=FAna=F0arger=F0                   | www.marel.com
+
 
 -----Original Message-----
-From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-Sent: May 11, 2007 12:22 PM
-To: Zhang, Haobo
-Cc: xenomai@xenomai.org; stelian@domain.hid
-Subject: Re: [Xenomai-help] rtdm_iomap_to_user question
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
+On Behalf Of Gilles Chanteperdrix
+Sent: 10. ma=ED 2007 08:34
+To: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 
-Zhang, Haobo wrote:
-> Hi Jan,
->=20
-> Thank you so much for your reply!
->=20
-> In my driver, I wrote:
->=20
-> int map_io( struct gpiodrv_context *dev_context, rtdm_user_info_t=20
-> *user_info, struct MAPPED_IO *io ) {
-> 	int ret;
->=20
-> 	if ((dev_context =3D=3D 0) || (user_info =3D=3D 0) || (io =3D=3D 0))
-> 		return -EFAULT;
->=20
-> 	if (dev_context->mapped_user_info !=3D 0)
-> 	{
-> 		if ((ret =3D gpio_unmap_io( dev_context )) !=3D 0)
-> 			return ret;
-> 	}
->=20
-> 	dev_context->mapped_user_info =3D user_info;
->=20
-> 	ret =3D rtdm_iomap_to_user( user_info, MPC52xx_PA(=20
-> MPC52xx_GPIO_WKUP_OFFSET + 0x0C ),
-> 		1, PROT_READ | PROT_WRITE, (void
-> **)&(io->gpio_heart_beat), NULL, NULL );
+Philippe Gerum wrote:
+> On Wed, 2007-05-09 at 23:23 +0200, Gilles Chanteperdrix wrote:
+> > Gilles Chanteperdrix wrote:
+> >  > Perrine Martignoni wrote:
+> >  >  > On 5/9/07, Perrine Martignoni <perrmart@domain.hid> wrote:
+> >  >  > >  On 5/9/07, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> wrote:
+> >  >  > > >
+> >  >  > > > Noren, Andrew wrote:
+> >  >  > > > > Hi Gilles,
+> >  >  > > > >
+> >  >  > > > > I too have encountered this issue with the POSIX skin.
+> >  >  > > > > I think it may have to do with the order in which the=20
+> > posix skin hooks  >  > > > > are run on thread deletion.
+> >  >  > > > >
+> >  >  > > > > In ksrc/skins/posix/syscall.c  >  > > > >=20
+> > xnpod_remove_hook(XNHOOK_THREAD_DELETE, &__shadow_delete_hook);  > =20
+> > > > > >  >  > > > > and ksrc/skins/posix/thread.c  >  > > > >=20
+> > xnpod_add_hook(XNHOOK_THREAD_DELETE, thread_delete_hook);  >  > > >=20
+> > >  >  > > > > The thread_delete_hook seems to run first causing the=20
+> > thread data to  >  > > > be  >  > > > > destroyed before=20
+> > __shadow_delete_hook has a chance to run.
+> >  >  > > > >
+> >  >  > > > > This results in __shadow_delete_hook failing in various =
+cases.
+> >  >  > > > >
+> >  >  > > > > An example of an error case linked with this would be=20
+> > the failure to  >  > > > > remove the thread key from the hash=20
+> > bucket after application  >  > > > exit.  The  >  > > > > next run=20
+> > of an application can then result in pthread_setschedparam  >  > > > =
 
-Hmm, hmm. Looking at our code and the kernel again I would say we should
-catch non-page-aligned requests like this and document this pitfall
-better.
+> > > failing to create a shadow since it likely finds an id in the hash =
+=20
+> > >  > > > > bucket already.
+> >  >  > > >
+> >  >  > > > Hi,
+> >  >  > > >
+> >  >  > > > thanks for pointing this out, I see other skins use=20
+> > xnfreesafe in their  >  > > > thread deletion hook instead of =
+xnfree. The attached patch fixes this.
+> >  >  > > >
+> >  >  > > > Perrine, could you apply this patch and check that it=20
+> > solves your issue  >  > > > ?
+> >  >  > >
+> >  >  > > I'll do that as soon as I can.
+> >  >  > > Thanks
+> >  >  > >
+> >  >  >
+> >  >  > I have applied the patch.
+> >  >  > It doesn't solve the problem but I have more information :
+> >  >  >
+> >  >  >
+> >  >  > pthread_create returned 11
+> >  >  >
+> >  >  > __pthread_shadow: -11
+> >  >  >
+> >  >  > Xenomai Posix skin init: pthread_setschedparam: Resource=20
+> > temporarily  >  > unavailable  >  > Ok, I could reproduce the=20
+> > problem. The issue is most likely an access to  > the thread memory=20
+> > after it has been freed which breaks the allocator  > linked list of =
 
-The mapping code always assumes page-alignment and rounds your physical
-address down. So what likely happened here is that you got a mapping,
-but with unexpected offset (gpio_heart_beat should point to MPC52xx_PA).
+> > free pages by replacing a link to a next free page by a  > NULL=20
+> > pointer. xnheap_alloc interprets this NULL pointer as the end of the =
+=20
+> > > linked list and hence considers that it is out of memory.
+> >=20
+> > And the winner is... RPI! The offset of the thread structure member=20
+> > that is set to NULL is the one of the rpi pointer. Disabling RPI=20
+> > makes the problem vanish.
+> >=20
+> > Philippe, when is this pointer set to NULL ?
+> >=20
+>=20
+> When the thread leaves secondary mode or exits, which in turn removes=20
+> it from the queue the nucleus considers for priority boosting the root =
 
-> =09
-> 	if (ret !=3D 0)
-> 		goto __ERROR;
-> 	else
-> 		dev_context->mapped_heart_beat =3D (void
-*)io->gpio_heart_beat;
->=20
-> 	return 0;
->=20
-> __ERROR:
->=20
-> 	gpio_unmap_io( dev_context );
-> 	return ret;
-> }
->=20
-> In the application, I wrote:
->=20
-> int main(int argc, char *argv[])
-> {
-> 	int dev_gpio;
-> 	struct MAPPED_IO gpio;
->=20
-> 	signal(SIGTERM, clean_exit);=09
-> 	signal(SIGINT, clean_exit);=09
-> =09
-> 	mlockall( MCL_CURRENT | MCL_FUTURE );
->=20
-> 	rt_task_shadow( &mainapp, "mainapp", 1, 0 );
->=20
-> 	dev_gpio =3D rt_dev_open( "gpio", 0 );
-> 	if (dev_gpio < 0)
-> 	{
-> 		return -1;
-> 	}
-> =09
-> 	gpio.gpio_heart_beat =3D NULL;
->=20
-> 	if (rt_dev_ioctl( dev_gpio, 1, &gpio ) !=3D 0)
-> 	{
-> 		return -1;
-> 	}
->=20
-> 	gpio.gpio_heart_beat[0] =3D 0x01;
->=20
-> 	...
-> }
->=20
-> I also tried another way by opening "/dev/mem" and then using "mmap"=20
-> to map the I/O memory addresses in the application. It worked!
-> I am very curious about why "rtdm_iomap_to_user" did not work for me.=20
+> thread. Check rpi_none().
 
-When you do precisely the same odd-numbered mapping via mmap on
-/dev/mem, you do get the right address at gpio_heart_beat (check if the
-start address ends with 0x0b0c)?
+Conclusion: the problem is the one Andrew spotted, there are two hooks =
+and the shadow hook (which calls xnshadow_unmap, which in turn calls =
+rpi_pop, which sets the rpi pointer to null) gets called after the other =
+thread deletion hook which initially called xnfree, and now calls =
+xnfreesafe.
 
-We either have to improve rtdm_iomap/mmap_to_user in this regard or
-catch unaligned requests. Probably it's easier to catch it so that the
-driver writer also realises that this is always about mapping full
-pages...
+But it seems that even xnfreesafe is not safe enough, and it frees the =
+thread pointer immediately whereas we would like the operation to be =
+deferred.
 
-Jan
+This problem is a problem for all skins, the freed memory is accessed =
+after it has been freed, it is only visible with the posix skin on ARM, =
+because the offset of the rpi pointer is the same as the place where the =
+xnheap allocator stores the pointer to the next free page.
 
+So, I propose the following patch which makes xnfreesafe safer.
+
+Other solutions are:
+- call directly xnheap_schedule_free in thread deletion hooks
+- change the execution order of the deletion hooks
+- merge the two deletion hooks, enclosing the shadow deletion hook in an =
+ #ifdef CONFIG_XENO_OPT_PERVASIVE, to get sure of the execution order.
+
+--=20
+                                                 Gilles Chanteperdrix
 
