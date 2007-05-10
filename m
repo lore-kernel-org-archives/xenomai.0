@@ -1,12 +1,13 @@
-Message-ID: <46434837.9080605@domain.hid>
-Date: Thu, 10 May 2007 18:28:39 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Jonas Witt" <Jonas@domain.hid>
+Date: Thu, 10 May 2007 16:56:33 +0200
+Message-ID: <004601c79313$66ab9110$c67ba8c0@domain.hid>
 MIME-Version: 1.0
-References: <20070510120938.307800@domain.hid> <46434561.2090309@domain.hid>
-In-Reply-To: <46434561.2090309@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] high latency with Intel Core 2 Duo
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4643442B.8080600@domain.hid>
+Subject: Re: [Xenomai-help] Serial Port Driver (rtser):
+	NoRTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,31 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: 'Jan Kiszka' <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Karl Reichert wrote:
-> 
->>Hello,
->>
->> I'm using an Intel Core 2 Duo at work and an AMD XP3000+ at home. I installed Xenomai 2.3.1 with nearly same configuration at both and run the xeno-test. I get 10 times higher latency with Core 2 Duo. How is it possible? May the SMP be the reason?
-> 
-> 
-> SMP surely increases latencies (more synchronisation overhead), but the
-> tests you ran were also far to short for a thorough comparison. 2 us
-> worst-case is far too good, even on high end. Also 20 us on loaded SMP
-> boxes may not hold. Leave the test running for a longer period ("-T"
-> parameter, I think).
 
-You should configure the user-space libraries with the --enable-smp
-option when configuring for SMP.
+Jonas Witt wrote:
+> > Hi everybody,
+> >=20
+> > =20
+> >=20
+> > i am having a problem with the serial port driver in xenomai for a =
+while
+> > now..
+> >=20
+> > =20
+> >=20
+> > I have tried different programs like
+> > http://www.captain.at/xenomai-serial-port-example.php
+> >=20
+> > =20
+> >=20
+> > I have also changed the code of cross-link.c to use the same port =
+for
+> > writing and reading (as i only have one serial port in my computer).
+Opening
+> > a port and writing the configuration seems to work form e.. also
+writing.
+> > The Problem stems from the call to:
+> >=20
+> > =20
+> >=20
+> > rt_dev_ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+> >=20
+> > =20
+> >=20
+> > which keeps waiting forever and never receives an interrupt. I tried =
+a
+> > self-made loopback-adapter and a sensor with a serial interface (so =
+at >
+least
+> > _something_ should come back). Nothing worked. The serial port is
+working
+> > fine with the linux-driver, though. I already figured that the calls =
+to
+> > rt_dev_write do not work from non-xenomai-tasks (which should really =
+be
+> > emphasized in the documentation..)
+> >=20
+>
+> Some suggestions:
+>
+>  o check the hardware configuration (ie. the module parameters of
+>    xeno_16550A) twice, you can easily get them wrong
+>
+>  o check /proc/xenomai/irq for any progress on transmission as well as
+>    on reception. If there is nothing happen on tx, the IRQ number may =
+be
+>    wrong, if there is nothing on rx, your port configuration might be
+>    broken.
+>
+>  o try the driver from trunk, it can handle PnP-related issues =
+(hardware
+>    gets powered off when Linux driver is removed)
+>
+> Jan
 
-Also, did you compile a 32 bits or 64 bits kernel for the core 2 duo ?
+Thanks for the fast reply!
 
-If you think that you observe high latencies, check the TROUBLESHOOTING
-file.
+I am using the following kernel parameters:
 
--- 
-                                                 Gilles Chanteperdrix
+kernel		/boot/vmlinuz-2.6.19-ipipe root=3D/dev/sda1 ro 8250.nr_uarts=3D0
+xeno_16550A.ioaddr=3D0x3f8 xeno_16550A.irq=3D4
+
+I got these settings from setserial prior to disabling the =
+kernel-driver. To
+be honest i don't know how to 'check' /proc/xenomai/irq for progress. I =
+took
+a look at the folder prior to and while running my modified =
+cross-link-code
+but irq is an empty file in both cases. Is there some special =
+trick/function
+to handle the files in the proc-folder?
+
+To the last point.. so there is an updated version of the driver =
+available?
+I think i will try that one.. is it just a question of executing 'make' =
+and
+modprobing or are there more actions involved?
+
+Best regards,
+Jonas
+
+
+
 
