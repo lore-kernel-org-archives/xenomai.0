@@ -1,15 +1,14 @@
-Message-ID: <4643442B.8080600@domain.hid>
-Date: Thu, 10 May 2007 18:11:23 +0200
+Message-ID: <46434561.2090309@domain.hid>
+Date: Thu, 10 May 2007 18:16:33 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <000b01c79302$3cf11a40$c67ba8c0@domain.hid>
-In-Reply-To: <000b01c79302$3cf11a40$c67ba8c0@domain.hid>
+References: <20070510120938.307800@domain.hid>
+In-Reply-To: <20070510120938.307800@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigFB619E0B0549155C3494EDDF"
+	boundary="------------enigF4B2F23906A8D38C61D0EBD5"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Serial Port Driver (rtser): No
-	RTSER_RTIOC_WAIT_EVENT
+Subject: Re: [Xenomai-help] high latency with Intel Core 2 Duo
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,72 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jonas Witt <Jonas@domain.hid>
+To: Karl Reichert <Karl-Trampe@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigFB619E0B0549155C3494EDDF
+--------------enigF4B2F23906A8D38C61D0EBD5
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jonas Witt wrote:
-> Hi everybody,
+Karl Reichert wrote:
+> Hello,
 >=20
-> =20
->=20
-> i am having a problem with the serial port driver in xenomai for a whil=
-e
-> now..
->=20
-> =20
->=20
-> I have tried different programs like
-> http://www.captain.at/xenomai-serial-port-example.php
->=20
-> =20
->=20
-> I have also changed the code of cross-link.c to use the same port for
-> writing and reading (as i only have one serial port in my computer). Op=
-ening
-> a port and writing the configuration seems to work form e.. also writin=
-g.
-> The Problem stems from the call to:
->=20
-> =20
->=20
-> rt_dev_ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
->=20
-> =20
->=20
-> which keeps waiting forever and never receives an interrupt. I tried a
-> self-made loopback-adapter and a sensor with a serial interface (so at =
-least
-> _something_ should come back). Nothing worked. The serial port is worki=
-ng
-> fine with the linux-driver, though. I already figured that the calls to=
+>  I'm using an Intel Core 2 Duo at work and an AMD XP3000+ at home. I in=
+stalled Xenomai 2.3.1 with nearly same configuration at both and run the =
+xeno-test. I get 10 times higher latency with Core 2 Duo. How is it possi=
+ble? May the SMP be the reason?
 
-> rt_dev_write do not work from non-xenomai-tasks (which should really be=
-
-> emphasized in the documentation..)
->=20
-
-Some suggestions:
-
- o check the hardware configuration (ie. the module parameters of
-   xeno_16550A) twice, you can easily get them wrong
-
- o check /proc/xenomai/irq for any progress on transmission as well as
-   on reception. If there is nothing happen on tx, the IRQ number may be
-   wrong, if there is nothing on rx, your port configuration might be
-   broken.
-
- o try the driver from trunk, it can handle PnP-related issues (hardware
-   gets powered off when Linux driver is removed)
+SMP surely increases latencies (more synchronisation overhead), but the
+tests you ran were also far to short for a thorough comparison. 2 us
+worst-case is far too good, even on high end. Also 20 us on loaded SMP
+boxes may not hold. Leave the test running for a longer period ("-T"
+parameter, I think).
 
 Jan
 
 
---------------enigFB619E0B0549155C3494EDDF
+--------------enigF4B2F23906A8D38C61D0EBD5
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -93,10 +52,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGQ0QrniDOoMHTA+kRArNCAJ9drp0XAzYJHl57qvQMZvh4r8AGCACcDdh/
-GcDfFJI+TTc6fZgZCV54/og=
-=d/FO
+iD8DBQFGQ0VhniDOoMHTA+kRAvuZAJ0d7Ad4bN+N/OF46aQbh2xpmKqAKgCfSqAb
+h6+hnn9Ik0UTfX9CJ8wycac=
+=9XW3
 -----END PGP SIGNATURE-----
 
---------------enigFB619E0B0549155C3494EDDF--
+--------------enigF4B2F23906A8D38C61D0EBD5--
 
