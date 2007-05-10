@@ -1,10 +1,15 @@
-Message-ID: <7289437c0705100445j228b59c0h950f366dd2e12b18@domain.hid>
-Date: Thu, 10 May 2007 13:45:32 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
+Message-ID: <46430ADC.2050706@domain.hid>
+Date: Thu, 10 May 2007 14:06:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_61985_33090546.1178797532415"
-Subject: [Xenomai-help] Threads Posix real time and not real time
+References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>	<7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>	<17986.12574.488256.997900@domain.hid>	<17986.15326.243315.427529@domain.hid>	<1178748178.11688.45.camel@domain.hid>	<17986.20728.617772.991566@domain.hid>	<1178784303.11688.108.camel@domain.hid>
+	<4642D901.9050304@domain.hid>	<1178789171.11688.142.camel@domain.hid>
+	<4642E706.7000500@domain.hid>
+	<7289437c0705100441l4f9e8cd9l7e7c447cedd1e5c2@domain.hid>
+In-Reply-To: <7289437c0705100441l4f9e8cd9l7e7c447cedd1e5c2@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,24 +19,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_61985_33090546.1178797532415
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Perrine Martignoni wrote:
+> It works fine when I disable RPI.
+> Thanks.
 
-Is it possible to do communicate a thread posix real time and a thread posix
-non real time?
-Can we create a thread posix non real time with some options?
+It appears to be working, but the memory is accessed after it was freed,
+so it may have other unwanted effects.
 
-------=_Part_61985_33090546.1178797532415
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+>  
+> The patch xeno-safer-xnfreesafe allows to enable RPI?
 
-<div>Is it possible to do communicate a thread posix real time and a thread posix non real time?</div>
-<div>Can we create a thread posix non real time with some options?</div>
+Yes.
 
-------=_Part_61985_33090546.1178797532415--
+-- 
+                                                 Gilles Chanteperdrix
 
