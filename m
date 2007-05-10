@@ -1,22 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4642D901.9050304@domain.hid>
-References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>
-	<4641CD8B.8050309@domain.hid>
-	<7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>
-	<7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>
-	<17986.12574.488256.997900@domain.hid>
-	<17986.15326.243315.427529@domain.hid>
-	<1178748178.11688.45.camel@domain.hid>
-	<17986.20728.617772.991566@domain.hid>
-	<1178784303.11688.108.camel@domain.hid>  <4642D901.9050304@domain.hid>
-Content-Type: text/plain
-Date: Thu, 10 May 2007 11:26:11 +0200
-Message-Id: <1178789171.11688.142.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
-Reply-To: rpm@xenomai.org
+Message-ID: <25556725.1178802170156.JavaMail.ngmail@domain.hid>
+Date: Thu, 10 May 2007 15:02:50 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <4642E54B.3060600@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <4642E54B.3060600@domain.hid>
+	<1178727256.11688.35.camel@domain.hid>	<22908039.1178707932628.JavaMail.ngmail@domain.hid>
+	<12120203.1178785866207.JavaMail.ngmail@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,106 +18,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-05-10 at 10:34 +0200, Gilles Chanteperdrix wrote:
-> > >  > 
-> > >  > Ok, I could reproduce the problem. The issue is most likely an access to
-> > >  > the thread memory after it has been freed which breaks the allocator
-> > >  > linked list of free pages by replacing a link to a next free page by a
-> > >  > NULL pointer. xnheap_alloc interprets this NULL pointer as the end of the
-> > >  > linked list and hence considers that it is out of memory.
-> > > 
-> > > And the winner is... RPI! The offset of the thread structure member that
-> > > is set to NULL is the one of the rpi pointer. Disabling RPI makes the
-> > > problem vanish.
-> > > 
-> > > Philippe, when is this pointer set to NULL ?
-> > > 
-> > 
-> > When the thread leaves secondary mode or exits, which in turn removes it
-> > from the queue the nucleus considers for priority boosting the root
-> > thread. Check rpi_none().
-> 
-> Conclusion: the problem is the one Andrew spotted, there are two
-> hooks and the shadow hook (which calls xnshadow_unmap, which in turn
-> calls rpi_pop, which sets the rpi pointer to null) gets called after the
-> other thread deletion hook which initially called xnfree, and now calls
-> xnfreesafe.
-> 
-> But it seems that even xnfreesafe is not safe enough, and it frees the
-> thread pointer immediately whereas we would like the operation to be
-> deferred.
-> 
+Hi Jan,
 
-xnfreesafe was meant to prevent the caller from releasing some memory it
-could still rely on, e.g. stack space, by postponing the actual release
-until the idle thread is resumed. In your case, the problem is that it
-does not account for the primary/secondary mode of a shadow thread.
-
-> This problem is a problem for all skins, the freed memory is accessed
-> after it has been freed, it is only visible with the posix
-> skin on ARM, because the offset of the rpi pointer is the same as the
-> place where the xnheap allocator stores the pointer to the next free
-> page.
-> 
-> So, I propose the following patch which makes xnfreesafe safer.
-> 
-> Other solutions are:
-> - call directly xnheap_schedule_free in thread deletion hooks
-
-Yes, or make sure that xnfreesafe() behaves as expected. What about
-this?
-
---- include/nucleus/heap.h	(revision 2427)
-+++ include/nucleus/heap.h	(working copy)
-@@ -118,7 +118,7 @@
- #define xnfreesync()       xnheap_finalize_free(&kheap)
- #define xnfreesafe(thread,ptr,ln) \
- do { \
--    if (xnpod_current_thread() == thread) \
-+    if (xnpod_current_p(thread))	     \
- 	xnheap_schedule_free(&kheap,ptr,ln); \
-     else \
- 	xnheap_free(&kheap,ptr); \
-Index: include/nucleus/pod.h
-===================================================================
---- include/nucleus/pod.h	(revision 2427)
-+++ include/nucleus/pod.h	(working copy)
-@@ -276,8 +276,16 @@
- #define xnpod_current_root() \
-     (&xnpod_current_sched()->rootcb)
- 
-+#ifdef CONFIG_XENO_OPT_PERVASIVE
-+#define xnpod_current_p(thread)					\
-+    ({ int __shadow_p = xnthread_test_state(thread, XNSHADOW);		\
-+       int __curr_p = __shadow_p ? xnshadow_thread(current) == thread	\
-+	   : thread == xnpod_current_thread();				\
-+       __curr_p;})
-+#else
- #define xnpod_current_p(thread) \
-     (xnpod_current_thread() == (thread))
-+#endif
- 
- #define xnpod_locked_p() \
-     (!!xnthread_test_state(xnpod_current_thread(),XNLOCK))
-
-> - change the execution order of the deletion hooks
-> - merge the two deletion hooks, enclosing the shadow deletion hook in an
->  #ifdef CONFIG_XENO_OPT_PERVASIVE, to get sure of the execution order.
-> 
-
-I'm reluctant to make this depend on some exact execution order of
-asynchronous hooks. You never know what's going on in other parts of the
-client code.
-
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+it is the first time I use oprofile, I hope I have here results that are si=
+gnificant...
+I wrote a bash script  to start everything:
+--------------------
+#!/bin/bash
+opcontrol --start
+./performance
+opcontrol --stop
+opreport
+--------------------
+My real time test application is called "performance".
+Here is the output:
+------------------------------------------------------------
+Profiler running.
+delta is 2023521331 per step: 5058
+Stopping profiling.
+CPU: P4 / Xeon, speed 3192.18 MHz (estimated)
+Counted GLOBAL_POWER_EVENTS events (time during which processor is not stop=
+ped) with a unit mask of 0x01 (mandatory) count 100000
+GLOBAL_POWER_E...|
+  samples|      %|
+------------------
+    38103 76.4368 vmlinux
+     2659  5.3341 xeno_nucleus
+     2327  4.6681 libnative.so.0.0.0
+     2078  4.1686 bash
+        GLOBAL_POWER_E...|
+          samples|      %|
+        ------------------
+             2069 99.5669 bash
+                3  0.1444 anon (tgid:4769 range:0xb7fea000-0xb7feb000)
+                2  0.0962 anon (tgid:22703 range:0xb7fea000-0xb7feb000)
+                2  0.0962 anon (tgid:4883 range:0xb7fea000-0xb7feb000)
+                1  0.0481 anon (tgid:1883 range:0xb7fea000-0xb7feb000)
+                1  0.0481 anon (tgid:4942 range:0xb7fea000-0xb7feb000)
+     1587  3.1836 xeno_native
+     1514  3.0372 libc-2.3.6.so
+      907  1.8195 ld-2.3.6.so
+      317  0.6359 oprofiled
+        GLOBAL_POWER_E...|
+          samples|      %|
+        ------------------
+              315 99.3691 oprofiled
+                2  0.6309 anon (tgid:1855 range:0xb7fea000-0xb7feb000)
+      142  0.2849 performance
+        GLOBAL_POWER_E...|
+          samples|      %|
+        ------------------
+              130 91.5493 anon (tgid:22701 range:0xb7fea000-0xb7feb000)
+               12  8.4507 performance
+       91  0.1826 oprofile
+       33  0.0662 gawk
+       25  0.0502 e1000
+       24  0.0481 grep
+        7  0.0140 ls
+        4  0.0080 cat
+        4  0.0080 libncurses.so.5.5
+        3  0.0060 libpopt.so.0.0.0
+        3  0.0060 libselinux.so.1
+        3  0.0060 libsepol.so.1
+        3  0.0060 libdl-2.3.6.so
+        3  0.0060 libpthread-2.3.6.so
+        2  0.0040 mkdir
+        2  0.0040 ophelp
+        1  0.0020 lsmod
+        1  0.0020 mktemp
+        1  0.0020 libnss_compat-2.3.6.so
+        1  0.0020 libnss_files-2.3.6.so
+        1  0.0020 dirname
+        1  0.0020 id
+        1  0.0020 tr
+        1  0.0020 in.telnetd
+------------------------------------------
 
 
+>=20
+> Mind to run oprofile on this setup to see where costs primarily come from=
+?
+>=20
+
+Does this help??
+
+Regards
+
+Mathias
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
