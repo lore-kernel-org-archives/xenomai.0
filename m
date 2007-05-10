@@ -1,14 +1,16 @@
-Message-ID: <46434561.2090309@domain.hid>
-Date: Thu, 10 May 2007 18:16:33 +0200
+Message-ID: <4643469A.4020005@domain.hid>
+Date: Thu, 10 May 2007 18:21:46 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20070510120938.307800@domain.hid>
-In-Reply-To: <20070510120938.307800@domain.hid>
+References: <25556725.1178802170156.JavaMail.ngmail@domain.hid>
+	<4642E54B.3060600@domain.hid>	<1178727256.11688.35.camel@domain.hid>	<22908039.1178707932628.JavaMail.ngmail@domain.hid>	<12120203.1178785866207.JavaMail.ngmail@domain.hid>
+	<30635766.1178804493587.JavaMail.ngmail@domain.hid>
+In-Reply-To: <30635766.1178804493587.JavaMail.ngmail@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF4B2F23906A8D38C61D0EBD5"
+	boundary="------------enig82562066582114C6C3815712"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] high latency with Intel Core 2 Duo
+Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,32 +20,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Karl Reichert <Karl-Trampe@domain.hid>
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF4B2F23906A8D38C61D0EBD5
+--------------enig82562066582114C6C3815712
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Karl Reichert wrote:
-> Hello,
+M. Koehrer wrote:
+> Hi Jan,
 >=20
->  I'm using an Intel Core 2 Duo at work and an AMD XP3000+ at home. I in=
-stalled Xenomai 2.3.1 with nearly same configuration at both and run the =
-xeno-test. I get 10 times higher latency with Core 2 Duo. How is it possi=
-ble? May the SMP be the reason?
+> here is the (truncated) output of opreport -l (which seems to be more u=
+seful...).
 
-SMP surely increases latencies (more synchronisation overhead), but the
-tests you ran were also far to short for a thorough comparison. 2 us
-worst-case is far too good, even on high end. Also 20 us on loaded SMP
-boxes may not hold. Leave the test running for a longer period ("-T"
-parameter, I think).
+Are you sure you predominately measured the semaphore scenario, not also
+some things that happens before and after (or during) that test? Make
+sure the test loop runs longer than setup/cleanup.
+
+>=20
+> Regards
+>=20
+> Mathias
+> ------------------
+> Profiler running.
+> delta is 2030247695 per step: 5075
+> Stopping profiling.
+> CPU: P4 / Xeon, speed 3192.18 MHz (estimated)
+> Counted GLOBAL_POWER_EVENTS events (time during which processor is not =
+stopped) with a unit mask of 0x01 (mandatory) count 100000
+> samples  %        image name               app name                 sym=
+bol name
+> 27423    64.2074  vmlinux                  vmlinux                  __i=
+pipe_hard_cpuid
+
+Mmpf, that's heavy. Can someone comment on this? Is the related hardware
+access that costly or are we calling it too often?
+
+> 2309      5.4062  xeno_nucleus             xeno_nucleus             (no=
+ symbols)
+
+We are lacking module symbols here. Dunno if one can teach them to
+oprofile (likely somehow), but the easiest approach would be to compile
+xeno_native and nucleus into the kernel.
 
 Jan
 
 
---------------enigF4B2F23906A8D38C61D0EBD5
+--------------enig82562066582114C6C3815712
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -52,10 +76,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGQ0VhniDOoMHTA+kRAvuZAJ0d7Ad4bN+N/OF46aQbh2xpmKqAKgCfSqAb
-h6+hnn9Ik0UTfX9CJ8wycac=
-=9XW3
+iD8DBQFGQ0abniDOoMHTA+kRAk0lAJ42jVLAQ1sE1gkf/iZlls5xHOor8wCdFLwv
+P/ScvHIQGt7y6cPfbsW3qRE=
+=8vBA
 -----END PGP SIGNATURE-----
 
---------------enigF4B2F23906A8D38C61D0EBD5--
+--------------enig82562066582114C6C3815712--
 
