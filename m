@@ -1,10 +1,10 @@
-Message-ID: <46447698.2040106@domain.hid>
-Date: Fri, 11 May 2007 16:58:48 +0300
-From: Maksym Veremeyenko <verem@domain.hid>
-MIME-Version: 1.0
-References: <8bdn5x94.1178893992.8746080.dchabal@domain.hid>
-In-Reply-To: <8bdn5x94.1178893992.8746080.dchabal@domain.hid>
-Content-Type: text/plain; charset=KOI8-U; format=flowed
+Date: Fri, 11 May 2007 15:33:07 +0000
+Message-ID: <0zlCROa9.1178897587.7688310.dchabal@domain.hid>
+In-Reply-To: <46447698.2040106@domain.hid>
+From: "CHABAL David" <david.chabal@domain.hid>
+Errors-To: "CHABAL David" <david.chabal@domain.hid>
+MIME-Version: 1.0 
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] 16550A driver and Moxa card / solved
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -16,22 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: CHABAL David <david.chabal@domain.hid>
+To: Maksym Veremeyenko <verem@domain.hid>
 Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-CHABAL David =D0=C9=DB=C5=D4:
-> Oupsss, I'm beaten :-(
->=20
-> The only case  with a different value that I found is for 1200:
+Le 11/5/2007, "Maksym Veremeyenko" <verem@domain.hid> a =E9crit:
 
-> (230400+1200)/1200 =3D 193
-> 230400/1200 =3D 192
+>CHABAL David =D0=C9=DB=C5=D4:
+>> Oupsss, I'm beaten :-(
+>>=20
+>> The only case  with a different value that I found is for 1200:
+>
+>> (230400+1200)/1200 =3D 193
+>> 230400/1200 =3D 192
+>
+>(230400+600)/1200 =3D [192,5] =3D 192
+>230400/1200 =3D 192
+>
+>
+>--=20
+>________________________________________
+>Maksym Veremeyenko
+>
 
-(230400+600)/1200 =3D [192,5] =3D 192
-230400/1200 =3D 192
+argh, beaten ... again
 
+Sorry for this useless thread.
 
---=20
-________________________________________
-Maksym Veremeyenko
+David
 
