@@ -1,16 +1,18 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <27223852.1178871002720.JavaMail.ngmail@domain.hid>
-References: <46441EC7.4000603@domain.hid>
-	<15183185.1178867312688.JavaMail.ngmail@domain.hid>
-	<27223852.1178871002720.JavaMail.ngmail@domain.hid>
-Content-Type: text/plain
-Date: Fri, 11 May 2007 10:21:46 +0200
-Message-Id: <1178871707.5451.17.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized
-Reply-To: rpm@xenomai.org
+Message-ID: <7289437c0705110124k60f56384uc0d286023f8b9f0@domain.hid>
+Date: Fri, 11 May 2007 10:24:33 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+In-Reply-To: <464426A7.308@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_68644_10845423.1178871873724"
+References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>
+	<4642D901.9050304@domain.hid> <1178789171.11688.142.camel@domain.hid>
+	<4642E706.7000500@domain.hid> <1178808027.11688.150.camel@domain.hid>
+	<464331CF.3090505@domain.hid> <1178810494.11688.188.camel@domain.hid>
+	<46433E26.8040307@domain.hid>
+	<7289437c0705110056o130c4fd4t419e37f573110d5d@domain.hid>
+	<464426A7.308@domain.hid>
+Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,61 +22,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: xenomai@xenomai.org
 
-On Fri, 2007-05-11 at 10:10 +0200, M. Koehrer wrote:
-> Hi Jan,
-> 
-> > As an experiment, you could try implementing the cpuid lookup via
-> > raw_smp_processor_id(), given you use 2.6.20. Hmm, maybe/likely some
-> > Xenomai tuning is required as well to make sure that the PDA is set
-> > correctly when a Xenomai task is created/migrated. Results welcome!
-> 
-> I have applied a patch (below) to my SMP kernel 2.6.20.4.
-> And actually the results are now much better.
-> I have been back on my "original" kernel version without the oprofile support.
-> The "original" ipipe.c delivered times of 4.5 us per step with my test project.
-> The patched ipipe.c (using raw_smp_processor_id()) delivers 1.25 us per step!
-> This is really an excellent improvement!
-> I do not know if there are any side effects - if not: why not using this method instead
-> of the previous one...
+------=_Part_68644_10845423.1178871873724
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-We are going to use it. PDAs have been recently introduced and the
-I-pipe patch for x86_64 already uses them, but I simply overlooked the
-fact that they have been made available for x86 too. Will fix, thanks.
+I solved my issue. It's because I kept a previous patch.
 
-> 
-> Regards
-> 
-> Mathias
-> 
-> ------------------------- patch start ------------------
-> --- ipipe.c.orig        2007-05-09 16:16:32.000000000 +0200
-> +++ ipipe.c     2007-05-11 10:00:44.000000000 +0200
-> @@ -74,6 +74,7 @@
-> 
->  static notrace int __ipipe_hard_cpuid(void)
->  {
-> +#if 0
->         unsigned long flags;
->         int cpu;
-> 
-> @@ -81,6 +82,9 @@
->         cpu = __ipipe_apicid_2_cpu[GET_APIC_ID(apic_read(APIC_ID))];
->         local_irq_restore_hw_notrace(flags);
->         return cpu;
-> +#endif
-> +        return raw_smp_processor_id();
-> +
->  }
-> 
->  #endif /* CONFIG_SMP */
-> ------------------------- patch end ------------------
-> 
-> 
--- 
-Philippe.
+On 5/11/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>
+> Perrine Martignoni wrote:
+> > I tested the final patch and it doesn't work on the file heap.h.
+> > It seems I haven't the same code in the file at start. I use
+> xenomai-2.3.1.
+> > For which version is the patch?
+> > Thanks
+>
+> The patch applies cleanly on v2.3.x branch. Are you sure you have not
+> kept the changes made by a previous patch I sent ?
+>
+> --
+>                                                 Gilles Chanteperdrix
+>
 
+------=_Part_68644_10845423.1178871873724
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+I solved my issue. It&#39;s because I kept a previous patch.<br><br>
+<div><span class="gmail_quote">On 5/11/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Perrine Martignoni wrote:<br>&gt; I tested the final patch and it doesn&#39;t work on the file heap.h.<br>
+&gt; It seems I haven&#39;t the same code in the file at start. I use xenomai-2.3.1.<br>&gt; For which version is the patch?<br>&gt; Thanks<br><br>The patch applies cleanly on v2.3.x branch. Are you sure you have not<br>kept the changes made by a previous patch I sent ?
+<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix<br></blockquote></div><br>
+
+------=_Part_68644_10845423.1178871873724--
 
