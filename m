@@ -1,9 +1,10 @@
-Message-ID: <46446FD3.2030202@domain.hid>
-Date: Fri, 11 May 2007 16:29:55 +0300
+Message-ID: <46447106.2080800@domain.hid>
+Date: Fri, 11 May 2007 16:35:02 +0300
 From: Maksym Veremeyenko <verem@domain.hid>
 MIME-Version: 1.0
 References: <RYexwPRg.1178892718.6286610.dchabal@domain.hid>
-In-Reply-To: <RYexwPRg.1178892718.6286610.dchabal@domain.hid>
+	<46446EC2.3080005@domain.hid>
+In-Reply-To: <46446EC2.3080005@domain.hid>
 Content-Type: text/plain; charset=KOI8-U; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] 16550A driver and Moxa card / solved
@@ -16,20 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: CHABAL David <david.chabal@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-CHABAL David =D0=C9=DB=C5=D4:
+Jan Kiszka =D0=C9=DB=C5=D4:
 
-> moxa:  921600/115200 =3D 8 (not 7, I apologize for this mistake but we
-> guess here that the baud base is always 921600 and according to the
-> mxser file it can be 230400 for some cards)
-Then for 'some cards' it's possible to specify 'baud_base' parameter.
+ > (230400+57600)/115200=3D2,5 =3D> 2
+ >
+ > 230400/115200=3D2
 
-What can i suggest/recommend is add to Xenomai wiki some information=20
-about using xeno_16550A with some boards (also may be reasonable to add=20
-information for proper 'ioaddr' findings for multiports board).
+IMHO - even if result was '3' - i would suggest to use formula that=20
+gives '3' because it's more correct.
 
+ > So we have the same results for both formulas and I don't see the need
+ > for a patch anymore. Do you? Otherwise I would just commit the
+ > div-by-zero fix to trunk now and keep the rest as is.
+i think 'div-by-zero fix' is enough.
 
 --=20
 ________________________________________
