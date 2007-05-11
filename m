@@ -1,15 +1,11 @@
-Message-ID: <464434AD.2000705@domain.hid>
-Date: Fri, 11 May 2007 11:17:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 11 May 2007 10:32:38 +0100 (BST)
+From: somshekar kadam <som_kadam@domain.hid>
+In-Reply-To: <1178726712.11688.26.camel@domain.hid>
 MIME-Version: 1.0
-References: <XqI9Fhxa.1178875870.3777430.dchabal@domain.hid>
-	<4644338D.5020405@domain.hid>
-In-Reply-To: <4644338D.5020405@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6D7137E3983D37FA4B7FA16E"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] 16550A driver and Moxa card / solved
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <707424.14519.qm@domain.hid>
+Subject: [Xenomai-core] PPC context switch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,71 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Maksym Veremeyenko <verem@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6D7137E3983D37FA4B7FA16E
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hi, 
 
-Maksym Veremeyenko wrote:
-> CHABAL David =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
->=20
->> I met some trouble with the 16550A driver provided in Xenomai 2.3.1
->> and my Moxa cards (PCI / 8 * RS232 / 168U ).
->>
->> It was a problem of baudrate computation before setting the LCR_DLAB
->> register.
->>
->> The formula implemented by the Xenomai driver is different from the on=
-e
->> provided by Moxa. So I copy/paste the formula from the mxser.c file
->> (present in the
->> kernel distro), and it seems to work fine.
->>
->> I think it's Moxa card dependant, may be caused by the high default ba=
-ud
->> rate of this card.
->=20
-> I have two Moxa boards with no problem, possible you need to specify=20
-> 'baud_base' param.
->=20
-> I my case :
->=20
-> # 8 ports board:
-> /sbin/modprobe xeno_16550A \
-> ioaddr=3D0x1000,0x1008,0x1010,0x1018,0x1020,0x1028,0x1030,0x1038 \
-> irq=3D9,9,9,9,9,9,9,9 \
-> baud_base=3D921600,921600,921600,921600,921600,921600,921600,921600
->=20
-> # 2 ports board + onboards:
-> /sbin/modprobe xeno_16550A ioaddr=3D0x3f8,0x2f8,0xdf00,0xdf08=20
-> irq=3D4,3,11,11 baud_base=3D115200,115200,921600,921600
->=20
+I was understanding the context switch code of
+Xenomai-2.3.0 for PPC, I got the point that once it
+enters rthal_thread_switch , xnarch_thread_trampoline
+function is executed, register 15 holds this address
+of this function and register 2 holds the
+rthal_thread_trampoline function, 
+what I am not able to understand is how does
+rthal_thread_switch function is called, 
 
-Interesting. That would leave us just with the generic fix to catch
-baud_rate=3D=3D0. Far more attractive. :)
+I understand from rthal_thread_trampoline
+xnarch_thread_trampoline is called by jumping to
+function using mtlr and in link register has the
+address of xnarch_thread_trampoline stored in reg 15
+and uses blr to jump to it and executes new thread. 
 
-David, can you confirm this? Weren't you just aware of the baud_base
-parameter?
+what I dont understand is how it excutes
+rthal_thread_trampoline, may be some pointers on this,
+as I am designing the MIPS context switch code for
+threads port for xenomai. 
 
-Jan
+Thanks In advance 
+Neelu
 
 
---------------enig6D7137E3983D37FA4B7FA16E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGRDStniDOoMHTA+kRAuBPAJsFl6+SHrdTIfcsiUGXWQRcczSbnQCdFCvq
-Xt6zJNZxEHyurw09J3wi2dI=
-=PCLa
------END PGP SIGNATURE-----
-
---------------enig6D7137E3983D37FA4B7FA16E--
+      Office firewalls, cyber cafes, college labs, don't allow you to download CHAT? Click here: http://in.messenger.yahoo.com/webmessengerpromo.php
 
