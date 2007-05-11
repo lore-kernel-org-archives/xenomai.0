@@ -1,13 +1,13 @@
 From: "Jonas Witt" <Jonas@domain.hid>
-Date: Fri, 11 May 2007 19:57:47 +0200
-Message-ID: <000f01c793f5$e2792810$c67ba8c0@domain.hid>
+Date: Fri, 11 May 2007 20:16:18 +0200
+Message-ID: <000601c793f8$78ac03a0$c67ba8c0@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4644C144.1020004@domain.hid>
-Subject: Re: [Xenomai-help] Serial Port Driver(rtser):
-	NoRTSER_RTIOC_WAIT_EVENT
+In-Reply-To: <000f01c793f5$e2792810$c67ba8c0@domain.hid>
+Subject: Re: [Xenomai-help] Serial Port
+	Driver(rtser):NoRTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -203,5 +203,19 @@ Anyway.. i am going to try the latest driver-version now. With the new
 infos, is there another thing i can check?
 
 Jonas
+
+Update:
+With the Xenomai-trunk version it's the exact same picture. By the way.. =
+i
+don't know if this is of importance, but during the systemstart i get =
+this
+message:
+MP-BIOS bug: 8254 timer not connected to IO-APIC
+
+Jonas
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
 
