@@ -1,14 +1,13 @@
-Message-ID: <4644982B.5040708@domain.hid>
-Date: Fri, 11 May 2007 18:22:03 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "Jonas Witt" <Jonas@domain.hid>
+Date: Fri, 11 May 2007 19:05:05 +0200
+Message-ID: <001701c793ee$85d24d00$c67ba8c0@domain.hid>
 MIME-Version: 1.0
-References: <D412DC851FDFAB4D8976895AC5C1F8AD30A781@domain.hid>
-In-Reply-To: <D412DC851FDFAB4D8976895AC5C1F8AD30A781@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig53AAD14BC1A264614DD0A193"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] rtdm_iomap_to_user question
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <464357D4.9090804@domain.hid>
+Subject: Re: [Xenomai-help] Serial Port Driver(rtser): No
+	RTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,127 +17,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Zhang, Haobo" <haobo.zhang@domain.hid>
-Cc: xenomai@xenomai.org, stelian@domain.hid
+To: 'Jan Kiszka' <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig53AAD14BC1A264614DD0A193
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Jonas Witt wrote:
+> Jonas Witt wrote:
+>> Jonas Witt wrote:
+>>>> Hi everybody,
+>>>>
+>>>> =20
+>>>>
+>>>> i am having a problem with the serial port driver in xenomai for a
+while
+>>>> now..
+>>>>
+>>>> =20
+>>>>
+>>>> I have tried different programs like
+>>>> http://www.captain.at/xenomai-serial-port-example.php
+>>>>
+>>>> =20
+>>>>
+>>>> I have also changed the code of cross-link.c to use the same port =
+for
+>>>> writing and reading (as i only have one serial port in my =
+computer).
+>> Opening
+>>>> a port and writing the configuration seems to work form e.. also
+>> writing.
+>>>> The Problem stems from the call to:
+>>>>
+>>>> =20
+>>>>
+>>>> rt_dev_ioctl(read_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+>>>>
+>>>> =20
+>>>>
+>>>> which keeps waiting forever and never receives an interrupt. I =
+tried a
+>>>> self-made loopback-adapter and a sensor with a serial interface (so =
+at
+>
+>> least
+>>>> _something_ should come back). Nothing worked. The serial port is
+>> working
+>>>> fine with the linux-driver, though. I already figured that the =
+calls to
+>>>> rt_dev_write do not work from non-xenomai-tasks (which should =
+really be
+>>>> emphasized in the documentation..)
+>>>>
+>>> Some suggestions:
+>>>
+>>>  o check the hardware configuration (ie. the module parameters of
+>>>    xeno_16550A) twice, you can easily get them wrong
+>>>
+>>>  o check /proc/xenomai/irq for any progress on transmission as well =
+as
+>>>    on reception. If there is nothing happen on tx, the IRQ number =
+may be
+>>>    wrong, if there is nothing on rx, your port configuration might =
+be
+>>>    broken.
+>>>
+>>>  o try the driver from trunk, it can handle PnP-related issues =
+(hardware
+>>>    gets powered off when Linux driver is removed)
+>>>
+>>> Jan
+>>>
+>>> Thanks for the fast reply!
+>>>
+>>> I am using the following kernel parameters:
+>>>
+>>> kernel		/boot/vmlinuz-2.6.19-ipipe root=3D/dev/sda1 ro
+> 8250.nr_uarts=3D0
+>>> xeno_16550A.ioaddr=3D0x3f8 xeno_16550A.irq=3D4
+>>>
+>> OK, that leads to another suggestion: try going the modular path for
+>> xeno_16550A first, it's the more common one. Above /should/ be no
+>> problem /wrt the the RT driver, but kicking 8250 out of the game =
+could
+>> cause that PnP power issue I sketched.
+>>
+>>> I got these settings from setserial prior to disabling the
+kernel-driver.
+> To
+>>> be honest i don't know how to 'check' /proc/xenomai/irq for =
+progress. I
+> took
+>>> a look at the folder prior to and while running my modified
+> cross-link-code
+>>> but irq is an empty file in both cases. Is there some special
+> trick/function
+>>> to handle the files in the proc-folder?
+>> You mean the file is existing but empty??? That would be fairly =
+uncommon.
+>>
+>> (without any driver loaded)
+>> # cat /proc/xenomai/irq
+>> IRQ         CPU0
+>> 217:           0
+>> 226:           0         [virtual]
+>>
+>> The serial driver pops up here once the port is opened. The per-cpu =
+irq
+>> hit counter should then increase as interrupts come in.
+>>
+>>> To the last point.. so there is an updated version of the driver
+>> available?
+>>> I think i will try that one.. is it just a question of executing =
+'make'
+>> and
+>>> modprobing or are there more actions involved?
+>> No, it's not that easy (more files, changed Makefiles and RTDM API).
+>> First try the modular driver path, ie. keep 8250, switch off the =
+Linux
+>> port with setserial, and load the RT driver as a module. Then, if =
+this
+>> doesn't help, you could consider upgrading your Xenomai installation =
+(at
+>> least for a test) to SVN trunk.
+>>
+>> Jan
+>>=20
+>> Ah, ok.. ehem... i tried to look at the file with gedit.. and it =
+displays
+>> nothing.. ;)
+>> Now i get:
+>>=20
+>> IRQ         CPU0
+>>   4:           0         rtser0
+>> 216:         521         [timer]
+>> 226:         620         [virtual]
+>>=20
+>> This is how it looks like after the program starts.. after that it
+increases
+>> just the [virtual] and the [timer] counter . Rtser0 stays at 0 all =
+the
+time
+>> (although information is successfully written to the port, judging =
+from
+the
+>> return value of rt_dev_write).
+>>=20
+>> So i guess that is where the problem lies.. what can I do about that?
+>
+> Apply the other suggestion I made. You may try to talk to a dead =
+device
+> if 8250 is not loaded and takes over the PnP work.
+>
+> Jan
 
-Zhang, Haobo wrote:
-> Hi Jan,
->=20
-> Thank you so much for your reply!
->=20
-> In my driver, I wrote:
->=20
-> int map_io( struct gpiodrv_context *dev_context, rtdm_user_info_t
-> *user_info, struct MAPPED_IO *io )
-> {
-> 	int ret;
->=20
-> 	if ((dev_context =3D=3D 0) || (user_info =3D=3D 0) || (io =3D=3D 0))
-> 		return -EFAULT;
->=20
-> 	if (dev_context->mapped_user_info !=3D 0)
-> 	{
-> 		if ((ret =3D gpio_unmap_io( dev_context )) !=3D 0)
-> 			return ret;
-> 	}
->=20
-> 	dev_context->mapped_user_info =3D user_info;
->=20
-> 	ret =3D rtdm_iomap_to_user( user_info, MPC52xx_PA(
-> MPC52xx_GPIO_WKUP_OFFSET + 0x0C ),
-> 		1, PROT_READ | PROT_WRITE, (void
-> **)&(io->gpio_heart_beat), NULL, NULL );
+I already tried my luck with a modular driver.. does not work either..
 
-Hmm, hmm. Looking at our code and the kernel again I would say we should
-catch non-page-aligned requests like this and document this pitfall bette=
-r.
+Now i compiled a new 2.6.20-kernel with xenomai-trunk. I tried to =
+modprobe
+as usual:
+modprobe xeno_16550A ioaddr=3D0x3f8 irq=3D4
+but somehow the 'ioaddr'-parameter is not accepted by the module.. did
+something change there?
 
-The mapping code always assumes page-alignment and rounds your physical
-address down. So what likely happened here is that you got a mapping,
-but with unexpected offset (gpio_heart_beat should point to MPC52xx_PA).
+Jonas
 
-> =09
-> 	if (ret !=3D 0)
-> 		goto __ERROR;
-> 	else
-> 		dev_context->mapped_heart_beat =3D (void
-> *)io->gpio_heart_beat;
->=20
-> 	return 0;
->=20
-> __ERROR:
->=20
-> 	gpio_unmap_io( dev_context );
-> 	return ret;
-> }=20
->=20
-> In the application, I wrote:
->=20
-> int main(int argc, char *argv[])=20
-> {
-> 	int dev_gpio;
-> 	struct MAPPED_IO gpio;
->=20
-> 	signal(SIGTERM, clean_exit);=09
-> 	signal(SIGINT, clean_exit);=09
-> =09
-> 	mlockall( MCL_CURRENT | MCL_FUTURE );
->=20
-> 	rt_task_shadow( &mainapp, "mainapp", 1, 0 );
->=20
-> 	dev_gpio =3D rt_dev_open( "gpio", 0 );
-> 	if (dev_gpio < 0)
-> 	{
-> 		return -1;
-> 	}
-> =09
-> 	gpio.gpio_heart_beat =3D NULL;
->=20
-> 	if (rt_dev_ioctl( dev_gpio, 1, &gpio ) !=3D 0)
-> 	{
-> 		return -1;
-> 	}
->=20
-> 	gpio.gpio_heart_beat[0] =3D 0x01;
->=20
-> 	...
-> }
->=20
-> I also tried another way by opening "/dev/mem" and then using "mmap" to=
-
-> map the I/O memory addresses in the application. It worked!=20
-> I am very curious about why "rtdm_iomap_to_user" did not work for me.=20
-
-When you do precisely the same odd-numbered mapping via mmap on
-/dev/mem, you do get the right address at gpio_heart_beat (check if the
-start address ends with 0x0b0c)?
-
-We either have to improve rtdm_iomap/mmap_to_user in this regard or
-catch unaligned requests. Probably it's easier to catch it so that the
-driver writer also realises that this is always about mapping full pages.=
-=2E.
-
-Jan
-
-
---------------enig53AAD14BC1A264614DD0A193
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGRJgrniDOoMHTA+kRAk44AJ9bzmVt0pt9Hs2V4+64c3tYgXFcpgCff42v
-r93SeTVAt/R5zMOebL9LLBM=
-=QA5E
------END PGP SIGNATURE-----
-
---------------enig53AAD14BC1A264614DD0A193--
 
