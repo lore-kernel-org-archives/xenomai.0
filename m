@@ -1,14 +1,13 @@
-Message-ID: <46448FA7.8070602@domain.hid>
-Date: Fri, 11 May 2007 17:45:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <0zlCROa9.1178897587.7688310.dchabal@domain.hid>
-In-Reply-To: <0zlCROa9.1178897587.7688310.dchabal@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9644DBA44948B4A7DDFD8A8A"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] 16550A driver and Moxa card / solved
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17989.60118.643971.157109@domain.hid>
+Date: Sat, 12 May 2007 18:27:02 +0200
+In-Reply-To: <707424.14519.qm@domain.hid>
+References: <1178726712.11688.26.camel@domain.hid>
+	<707424.14519.qm@domain.hid>
+Subject: Re: [Xenomai-core] PPC context switch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,61 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: CHABAL David <david.chabal@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: somshekar kadam <som_kadam@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9644DBA44948B4A7DDFD8A8A
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+somshekar kadam wrote:
+ > Hi, 
+ > 
+ > I was understanding the context switch code of
+ > Xenomai-2.3.0 for PPC, I got the point that once it
+ > enters rthal_thread_switch , xnarch_thread_trampoline
+ > function is executed, register 15 holds this address
+ > of this function and register 2 holds the
+ > rthal_thread_trampoline function, 
+ > what I am not able to understand is how does
+ > rthal_thread_switch function is called, 
 
-CHABAL David wrote:
-> Le 11/5/2007, "Maksym Veremeyenko" <verem@domain.hid> a =E9crit:
->=20
->> CHABAL David =D0=C9=DB=C5=D4:
->>> Oupsss, I'm beaten :-(
->>>
->>> The only case  with a different value that I found is for 1200:
->>> (230400+1200)/1200 =3D 193
->>> 230400/1200 =3D 192
->> (230400+600)/1200 =3D [192,5] =3D 192
->> 230400/1200 =3D 192
->>
->>
->> --=20
->> ________________________________________
->> Maksym Veremeyenko
->>
->=20
-> argh, beaten ... again
->=20
-> Sorry for this useless thread.
+rthal_thread_switch is called by xnarch_switch_to, which, in turn is
+called when the scheduler decides that the task (the newly created one,
+in this case) shoudl run.
 
-I wouldn't call it useless: Try to ask $your_favourite_search_engine for
-"xenomai 16550 moxa" in a few days, and you'll find some more hints on
-how to configure that hardware and that it works (once worked) for Xenoma=
-i.
+ > 
+ > I understand from rthal_thread_trampoline
+ > xnarch_thread_trampoline is called by jumping to
+ > function using mtlr and in link register has the
+ > address of xnarch_thread_trampoline stored in reg 15
+ > and uses blr to jump to it and executes new thread. 
+ > 
+ > what I dont understand is how it excutes
+ > rthal_thread_trampoline, may be some pointers on this,
 
-However, the Maksym's suggestion to enhance the wiki is welcome. Anyone,
-please check the existing page http://www.xenomai.org/index.php/16550A
-and add what you think is missing or fix what is unclear.
-
-Jan
+xnarch_init_thread prepares the stack and registers of the newly created
+task so that rthal_thread_switch does the right thing. Perhaps Philippe
+or Wolfgang will be able to give more details.
 
 
---------------enig9644DBA44948B4A7DDFD8A8A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+-- 
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGRI+nniDOoMHTA+kRApOQAJ4pXXHXL5jU0fovlVMTH3RsjYheTgCfWCVu
-dSHcqypia/RRXGwkRbBPs94=
-=dKs2
------END PGP SIGNATURE-----
-
---------------enig9644DBA44948B4A7DDFD8A8A--
+					    Gilles Chanteperdrix.
 
