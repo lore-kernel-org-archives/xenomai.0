@@ -1,15 +1,11 @@
-Content-class: urn:content-classes:message
+From: <Jonas@domain.hid>
+Sender: "S.Arnemann" <s.arnemann@domain.hid>
+Date: Sun, 13 May 2007 18:57:33 +0200
+Message-ID: <000301c7957f$d414d9f0$fe78a8c0@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Thu, 10 May 2007 09:46:44 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01EB160E@is-hdq-exchange.marel.net>
-In-Reply-To: <12120203.1178785866207.JavaMail.ngmail@domain.hid>
-References: <1178727256.11688.35.camel@domain.hid><22908039.1178707932628.JavaMail.ngmail@domain.hid>
-	<12120203.1178785866207.JavaMail.ngmail@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and futexes - Native API optimized
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0004_01C79590.979DA9F0"
+Subject: [Xenomai-help] Serial Port Driver (rtser): No RTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,91 +15,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>, rpm@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-SGksDQoNCkkgZmluZCB0aGUgcmVzdWx0cyBpbnRlcmVzdGluZy4NCg0KcnVubmluZyB5b3VyIHBy
-b2dyYW0gdW5kZXIgYSBNUEM1MjAwQiwgMzk2IE1IeiB5aWVsZHMgc2xpZ2h0bHkgYmV0dGVyIHJl
-c3VsdHM6IDM4NDcgbnMgfiAzLDggdXMuDQpGb3IgdGhlIHJ0X3NlbV92KCkgb3BlcmF0aW9uIGFs
-b25lIHRoYXQgaXMgMTc3OCBucyB+MSw3IHVzID09PiBydF9zZW1fcCgpOiAyMDY5IG5zIH4yLDEg
-dXMuDQoNCkluZGVlZCBmb3IgYSBjdHggc3dpdGNoIGxlc3Mgb3BlcmF0aW9uIHRoaXMgaXMgYSBf
-dmVyeV8gbG9uZyB0aW1lLiBJdCB3b3VsZCBiZSBpbnRlcmVzdGluZyB0byBrbm93IGhvdyB0aGUg
-ZmlndXJlcyBhcmUgZm9yIGtlcm5lbCBiYXNlZCBvcGVyYXRpb25zLg0KDQpJIGhhdmUgbm90IG1l
-YXN1cmVkIG11dGV4ZXMgc28gZmFyLCBidXQgaXQgaXMgcHJvYmFibGUgdGhhdCB0aGUgZmlndXJl
-cyBhcmUgc2ltaWxhci4gSWYgc28sIHRoaXMgaXMgcmVhbGx5IHNvbWV0aGluZyBvbmUgc2hvdWxk
-IHRyeSB0byBpbXByb3ZlLCBiZWNhdXNlIG9uZSBoYXMgdG8gInBheSIgYSBsb3QgZm9yIHRoZSBy
-ZWxhdGl2ZWx5IHVubGlrZWx5IGV2ZW50IG9mIGEgcmVzY2hlZHVsZS4gQW5kIG11dGV4ZXMgYXJl
-IGFuZCB3aWxsL3Nob3VsZCBiZSB1c2VkIGEgbG90Lg0KDQpJIGhhdmUgdG8gc3VwcG9ydCBNYXRo
-aWFzIGhlcmU6IGl0IGlzIG5vdCBzbyBlYXN5IGFzIGJsYW1pbmcgYmFkIGRlc2lnbiBvZiB0aGUg
-YXBwbGljYXRpb24gb3IgdGhlIHVzZWQgdG9vbGluZy4gT25lIG9mdGVuIGhhcyBkZXBlbmRlbmNp
-ZXMgb24gbGVnYWN5IGNvZGUgLyB0b29scyAvIGV4dGVybmFsIGxpYnJhcmllcy4gRXNwZWNpYWxs
-eSBzbyBpbiBpbmR1c3RyaWFsIGVudmlyb25tZW50LCB3aGVyZSBzdGFuZGFyZCBwcm90b2NvbHMg
-YW5kIGludGVyZmFjZXMgYXJlIHVzZWQsIGp1c3QgdGhpbmsgYWJvdXQgYSBmdWxsIGZlYXR1cmVk
-IENhbk9wZW4gcHJvdG9jb2wgc3RhY2sgZm9yIHR5cGljYWxseSBhIGNvdXBsZSBvZiAxMDAwIOKC
-rC4gT25lIHNpbXBseSBjYW5ub3QgY3JlYXRlIGEgc29mdHdhcmUgIm1hc3RlciBwbGFuIiBhbmQg
-Zml4IGFsbCBwb3NzaWJsZSBkZXNpZ24gZmxhd3MgaW4gdGhvc2UgZXh0ZXJuYWwgZGVwZW5kZW50
-IGNvbXBvbmVudHMuIEVzcGVjaWFsbHkgbm90IHNvIGluIGV4dGVybmFsIGJpbmFyeSBvbmx5IGxp
-YnJhcmllcy4NCg0KV2UgYXJlIGF0IHRoZSBtb21lbnQgdW5kZXJ3YXkgdG8gZmluZCBvdXQgdGhl
-IHNwZWNpZmljYXRpb25zIG9mIG91ciBYZW5vbWFpIHBsYXRmb3JtLCBpLmUuIG1heC4gY3R4IHN3
-aXRjaCB0aW1lcywgcGVyZm9ybWFuY2Ugb2YgdGhlIFBPU0lYIHNraW4sIGV0Yy4NCg0KSSB3aWxs
-IHBvc3QgdGhlIHJlc3VsdHMgYW5kIHRoZSBzb3VyY2UgY29kZSBpZiB3ZSBhcmUgZmluaXNoZWQu
-DQoNCkJlc3QgcmVnYXJkcywNCg0KLS0gDQpEYW5pZWwgU2NobmVsbCAgICAgICAgICAgICAgICAg
-ICB8IGRhbmllbC5zY2huZWxsQG1hcmVsLmNvbQ0KSHVnYsO6bmHDsGFyZ2Vyw7AgICAgICAgICAg
-ICAgICAgICAgfCB3d3cubWFyZWwuY29tDQogDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQpGcm9tOiB4ZW5vbWFpLWhlbHAtYm91bmNlc0BnbmEub3JnIFttYWlsdG86eGVub21haS1oZWxw
-LWJvdW5jZXNAZ25hLm9yZ10gT24gQmVoYWxmIE9mIE0uIEtvZWhyZXINClNlbnQ6IDEwLiBtYcOt
-IDIwMDcgMDg6MzENClRvOiBycG1AeGVub21haS5vcmc7IG1hdGhpYXNfa29laHJlckBhcmNvci5k
-ZQ0KQ2M6IHhlbm9tYWktaGVscEBnbmEub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWktaGVscF0g
-WGVub21haSBhbmQgZnV0ZXhlcyAtIE5hdGl2ZSBBUEkgb3B0aW1pemVkDQoNCkhpIFBoaWxpcHBl
-LA0KPiANCj4gSSdtIG5vdCBzdXJlIHRoZSBjb3N0IGlzIGFzIG11Y2ggYXMgMiB1cywgdW5sZXNz
-IHlvdSBkb24ndCB1c2UgdGhlIA0KPiBzeXNlbnRlci9zeXNleGl0IHByb3RvY29sIGZvciBzeXNj
-YWxscyBYZW5vbWFpIG1hbmFnZXMgcHJvcGVybHkgDQo+ICgtLWVuYWJsZS14ODYtc2VwKS4gSXQg
-c2VlbXMgeW91IGFyZSBnb2luZyB0aHJvdWdoIHRoZSBhbmNpZW50IDB4ODAgDQo+IGV4Y2VwdGlv
-biB2ZWN0b3IsIGJ1dCBzdGlsbCwgSSBhZ3JlZSB0aGF0IHRoZSBwb2ludCByZW1haW5zOiBubyAN
-Cj4gY29udGVudGlvbiBzaG91bGQgbWVhbiBubyB0cmFuc2l0aW9uIHRvIGtlcm5lbC4NCj4gDQpJ
-IGRpZCBzb21lIG1lYXN1cmVtZW50cyB0byBnZXQgcHJlY2lzZSB2YWx1ZXMgaGVyZS4NCkZvciB0
-aGlzIEkgdXNlZCB0aGUgZm9sbG93aW5nIFhlbm9tYWkgcHJvZ3JhbSB0aGF0IGFjY2Vzc2VzIGEg
-c2VtYXBob3JlIHR3aWNlIHdpdGhpbiBhIGxvb3AgKHAgZm9sbG93ZWQgYnkgdikuDQotLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KI2lu
-Y2x1ZGUgPG5hdGl2ZS9zZW0uaD4NCg0KUlRfVEFTSyB0YXNrYV9kZXNjOw0KUlRfU0VNIHNlbTsN
-Cg0Kdm9pZCBteXRhc2thKHZvaWQgKmNvb2tpZSkNCnsNCiAgICBpbnQgaTsNCiAgICBSVElNRSB0
-aW0xLCB0aW0yOw0KICAgICNkZWZpbmUgTE9PUFMgMTAwMDAwDQoNCiAgICB0aW0xID0gcnRfdGlt
-ZXJfcmVhZCgpOw0KICAgIGZvciAoaT0wOyBpIDwgTE9PUFM7IGkrKykNCiAgICB7DQogICAgICAg
-IHJ0X3NlbV9wKCZzZW0sIFRNX0lORklOSVRFKTsNCiAgICAgICAgcnRfc2VtX3YoJnNlbSk7DQog
-ICAgfQ0KICAgIHRpbTIgPSBydF90aW1lcl9yZWFkKCk7DQogICAgcHJpbnRmKCJkZWx0YSBpcyAl
-bGx1IHBlciBzdGVwOiAlbGx1XG4iLA0KICAgICAgICAgICAgdGltMi10aW0xLA0KICAgICAgICAg
-ICAgKHRpbTItdGltMSkvIExPT1BTKTsNCn0NCg0KaW50IG1haW4odm9pZCkNCnsNCiAgICBtbG9j
-a2FsbChNQ0xfQ1VSUkVOVHxNQ0xfRlVUVVJFKTsNCiAgICBydF9zZW1fY3JlYXRlKCZzZW0sICJt
-eXNlbSIsIDEgLDApOw0KICAgIHJ0X3Rhc2tfY3JlYXRlKCZ0YXNrYV9kZXNjLCAibXl0YXNrYSIs
-IDAsIDgxLCBUX0pPSU5BQkxFKTsNCiAgICBydF90YXNrX3N0YXJ0KCZ0YXNrYV9kZXNjLCAmbXl0
-YXNrYSwgTlVMTCk7DQogICAgcnRfdGFza19qb2luKCZ0YXNrYV9kZXNjKTsNCiAgICBydF9zZW1f
-ZGVsZXRlKCZzZW0pOw0KICAgIHJldHVybiAwOw0KfQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0NCkkgbWVhc3VyZWQgdGhlIGZvbGxvd2luZyBydW50aW1lOg0KRm9yIGNvbmZpZ3VyaW5n
-IFhlbm9tYWkgd2l0aG91dCBhbnkgb3B0aW9uOiAgNC44dXMgcGVyIHN0ZXAgQ29uZmlndXJpbmcg
-WGVub21haSB3aXRoIC0tZW5hYmxlLXg4Ni1zZXA6IDQuNXVzIHBlciBzdGVwLg0KDQpJIHJhbiB0
-aGlzIGV4cGVyaW1lbnQgb24gYSAzLjIgR0h6IFBlbnRpdW0gRCBvbiBhIHNlcnZlciBtYWluIGJv
-YXJkIHdpdGggRTcyMzAgY2hpcHNldC4NClhlbm9tYWkgMi4zLjEsIGtlcm5lbCAyLjYuMjAuNCwg
-U01QDQpUaHVzIHRoZSBwZXJmb3JtYW5jZSBoZXJlIGlzIG5vdCByZWFsbHkgZXhjZWxsZW50IChh
-cyB0aGVyZSBpcyBubyBuZWVkIHRvIGRvIGEgdGFzayBzd2l0Y2guDQoNCkkgYWdyZWUgd2l0aCBh
-bGwgdGhlIGNvbW1lbnRzIHRoYXQgcmVjb21tZW5kZWQgdG8gaW1wcm92ZSB0aGUgZGVzaWduIGZp
-cnN0IGJlZm9yZSB0cnlpbmcgdG8gaW1wcm92ZSB0aGUgT1MgcGVyZm9ybWFuY2UuIA0KSG93ZXZl
-ciwgaWYgdGhlcmUgaXMgKFJUKU9TLCBJIGV4cGVjdCBpdCB0byBiZSBhcyBmYXN0IGFzIHBvc3Np
-YmxlLg0KQmVjYXVzZSwgZXZlbiBpZiBJIGhhdmUgYSAicGVyZmVjdCIgZGVzaWduLCBJIG5lZWQg
-dGhlIE9TIC0gb3RoZXJ3aXNlIEkgd291bGQganVzdCBsaXZlIHdpdGhvdXQgdGhlIE9TLiANCkEg
-YmV0dGVyIGRlc2lnbiBjb3VsZCBoZWxwIHRvIHJlZHVjZSBPUyBjYWxscyBidXQgaXQgY2FuIG5v
-dCBhdm9pZCBpdCBjb21wbGV0ZWx5Lg0KQWxzbywgYSBsb2NrIGxlc3MgZGVzaWducyBtaWdodCBs
-ZWFkIHRvIGFkZGl0aW9uYWwgZGF0YSBjb3BpZXMgd2hpY2ggaXMgYWxzbyBhIGtub3duIHBlcmZv
-cm1hbmNlIGtpbGxlci4gU28gSSB0aGluayB0aGlzIGlzIGEgZGVjaXNpb24gdGhhdCBoYXMgdG8g
-YmUgbWFkZSBvbiBiYXNlIG9mIHRoZSBjb25jcmV0ZSBwcm9qZWN0LiBHZW5lcmFsIHJ1bGVzIGRv
-IG5vdCBoZWxwIGhlcmUuDQoNClRoYW5rcyBmb3IgYWxsIGNvbW1lbnRzIQ0KDQpSZWdhcmRzDQoN
-Ck1hdGhpYXMNCg0KDQoNCg0KDQotLQ0KTWF0aGlhcyBLb2VocmVyDQptYXRoaWFzX2tvZWhyZXJA
-YXJjb3IuZGUNCg0KDQpWaWVsIG9kZXIgd2VuaWc/IFNjaG5lbGwgb2RlciBsYW5nc2FtPyBVbmJl
-Z3Jlbnp0IHN1cmZlbiArIHRlbGVmb25pZXJlbg0Kb2huZSBaZWl0LSB1bmQgVm9sdW1lbmJlZ3Jl
-bnp1bmc/IERBUyBUT1AgQU5HRUJPVCBKRVRaVCBiZWkgQXJjb3I6IGfDvG5zdGlnDQp1bmQgc2No
-bmVsbCBtaXQgRFNMIC0gZGFzIEFsbC1JbmNsdXNpdmUtUGFrZXQgZsO8ciBjbGV2ZXJlIERvcHBl
-bC1TcGFyZXIsDQpudXIgIDM5LDg1IOKCrCAgaW5rbC4gRFNMLSB1bmQgSVNETi1HcnVuZGdlYsO8
-aHIhDQpodHRwOi8vd3d3LmFyY29yLmRlL3JkL2VtZi1kc2wtMg0KDQpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KWGVub21haS1oZWxwIG1haWxpbmcgbGlz
-dA0KWGVub21haS1oZWxwQGduYS5vcmcNCmh0dHBzOi8vbWFpbC5nbmEub3JnL2xpc3RpbmZvL3hl
-bm9tYWktaGVscA0K
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0004_01C79590.979DA9F0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+No other ideas for me to try out? So the driver seems to get interrupts..
+where could it possibly fail?
+
+ 
+
+Another question concerning xenomai's booting process.. are any files other
+than from the /boot, /lib/modules and /usr/xenomai needed for the boot
+process (because on another platform I am having some issues with booting
+when the files from the build-folder are not available while booting).
+
+ 
+
+Best regards,
+
+Jonas
+
+
+------=_NextPart_000_0004_01C79590.979DA9F0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.E-MailFormatvorlage17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DDE link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>No other ideas for me to try out? So the =
+driver seems
+to get interrupts.. where could it possibly =
+fail?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Another question concerning xenomai&#8217;s =
+booting
+process.. are any files other than from the /boot, /lib/modules and
+/usr/xenomai needed for the boot process (because on another platform I =
+am
+having some issues with booting when the files from the build-folder are =
+not
+available while booting).<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Best regards,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Jonas<o:p></o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0004_01C79590.979DA9F0--
+
 
