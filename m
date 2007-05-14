@@ -1,12 +1,11 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <17992.20159.337584.769619@domain.hid>
-Date: Mon, 14 May 2007 13:57:51 +0200
-In-Reply-To: <17992.16937.797697.933278@domain.hid>
-References: <7289437c0705140221tb124a04mcbf9910e47d3ac2e@domain.hid>
-	<17992.16937.797697.933278@domain.hid>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 14 May 2007 14:11:02 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB0C9@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
 Subject: Re: [Xenomai-help] Problem with Message queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,21 +18,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Perrine Martignoni <perrmart@domain.hid>, xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
- > However, I do not understand what your program is supposed to do, here
- > it dies without printing anything.
+Perrine Martignoni wrote:
+[..]
+>int DESTRUCT=3D0;
+=A0
+I'm always nervous to see global variables shared among threads without
+a volatile keyword. An explicit memory barrier would be better, as it
+has been re-explained in a LWN article lately (wait Thursday for free =
+access)
+http://lwn.net/Articles/233479/
 
-There is definitely something wrong on ARM. The program works as
-expected on x86, it dies on ARM at exactly the second printf of
-routine2. Replacing printf with fprintf(stderr works. Supposing that it
-could be a stack size issue, I increased it, and it does not change
-anything. 
+But the problem in routine2 is somewhere else:
 
-More on this tonight, in the meantime, please replace printf with
-fprintf(stderr,.
+void routine2 (void * cookie){
+	int ret;=20
+	struct sched_param param =3D {.sched_priority =3D 10 };
+	pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+	for(;;){
+		affich(2);
+		ret =3D mq_send(mq2, buf2, MSG_SIZE, 0);
+		printf("send mq2 returned %d, errno %s\n", ret, errno );
+ouch!                                           ^^          ^^^^^
+		ret =3D mq_receive(mq1, buf1, MSG_SIZE, NULL );
+		printf("receive mq1 returned %d, errno %s\n", ret, errno);=20
+ouch!                                              ^^          ^^^^^
+=A0
 
--- 
+This should be either
+		printf("receive mq1 returned %d, errno %d\n", ret, errno);
+or
+		printf("receive mq1 returned %d, errno %s\n", ret, strerror(errno));
 
-
-					    Gilles Chanteperdrix.
+--=20
+Stephane
 
