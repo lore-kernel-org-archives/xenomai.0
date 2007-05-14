@@ -1,18 +1,14 @@
-Message-ID: <464D78B1.3030709@domain.hid>
-Date: Fri, 18 May 2007 11:58:09 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <46488A61.6090709@domain.hid>
+Date: Mon, 14 May 2007 18:12:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1072004B0EE21141A9DEBA9785A77F14658A70@domain.hid>	<4641CD8B.8050309@domain.hid>	<7289437c0705090643gc9f0ddax6fa6cff44895c9ed@domain.hid>	<7289437c0705090735n58b4a0fbm7e31c8571efb7514@domain.hid>	<17986.12574.488256.997900@domain.hid>	<17986.15326.243315.427529@domain.hid>	<1178748178.11688.45.camel@domain.hid>	<17986.20728.617772.991566@domain.hid><1178784303.11688.108.camel@domain.hid>
-	<4642D901.9050304@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB15D1@domain.hid>
-	<4642E1FC.6050805@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB1B43@domain.hid>
-	<464830C3.10504@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB1B7F@is-hdq-exchange.marel.net>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01EB1B7F@is-hdq-exchange.marel.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <1178268043.5391.47.camel@domain.hid>		<463B086B.6060402@domain.hid>
+	<463B5E27.7050408@domain.hid>	<1179137384.4820.31.camel@domain.hid>
+	<464839C8.8060304@domain.hid> <46488839.4060801@domain.hid>
+In-Reply-To: <46488839.4060801@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with pthread_setschedparam
+Subject: Re: [Xenomai-help] Latencies while ethernet access
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,24 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Daniel Schnell wrote:
-> Hi Wolfgang,
+Jan Kiszka wrote:
+> Jan Kiszka wrote:
 > 
-> Here the link:
+>>Let us get the tracer right.
+>>...
 > 
-> https://mail.gna.org/public/xenomai-help/2007-05/msg00039.html 
+> 
+> And here is the issue already when having a second look:
 > 
 > 
-> Just try the cyclictest program and end it with Ctrl-C. I would like to know if this works for you.
+>>/ # cat /proc/ipipe/trace/frozen 
+>>I-pipe frozen back-tracing service on 2.6.19.2/ipipe-1.6-04
+>>------------------------------------------------------------
+>>Freeze: 9187269471 cycles, Trace Points: 30 (+10)
+>>Calibrated minimum trace-point overhead: 3.000 us
+>>
+>> +----- Hard IRQs ('|': locked)
+>> |+---- <unused>
+>> ||+--- Xenomai
+>> |||+-- IShield
+>> ||||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+>> |||||                        +---------- Delay flag ('+': > 1 us, '!': > 10 us)
+>> |||||                        |        +- NMI noise ('N')
+>> |||||                        |        |
+>>      Type    User Val.   Time    Delay  Function (Parent)
+>>:| #  begin   0x80000001  -190+   4.250N __ipipe_mach_get_tsc+0x48 (xntimer_do_tick_aperiodic+0x40)
 > 
-> My configuration:
-> Linux 2.4.25, ELDK 3.1.1, Xenomai 2.3.1
+> 
+> __ipipe_mach_get_tsc() must never pop up in trace, it has to be marked
+> "notrace". I guess you ported that service for your board? Please fix
+> and retry the test.
 
-That works on my setup, Linux 2.4.25, ELDK 3.1.1 and Xenomai trunk, head 
-of SVN.
+This has only be fixed very recently, version 1.6-04 of the I-pipe patch
+for ARM makes use of plain local_irq_save_hw/local_irq_restore_hw, which
+causes the NMI noise.
 
-Wolfgang.
+-- 
+                                                 Gilles Chanteperdrix
 
