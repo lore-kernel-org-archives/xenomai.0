@@ -1,12 +1,13 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 14 May 2007 13:20:27 +0200
+From: "Karl Reichert" <Karl-Trampe@domain.hid>
+In-Reply-To: <20070511112422.282090@domain.hid>
+Message-ID: <20070514112027.167950@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <20070510120938.307800@domain.hid> <46434561.2090309@domain.hid>
+	<46434837.9080605@domain.hid> <20070511112422.282090@domain.hid>
 Content-Transfer-Encoding: 7bit
-Message-ID: <17992.16937.797697.933278@domain.hid>
-Date: Mon, 14 May 2007 13:04:09 +0200
-In-Reply-To: <7289437c0705140221tb124a04mcbf9910e47d3ac2e@domain.hid>
-References: <7289437c0705140221tb124a04mcbf9910e47d3ac2e@domain.hid>
-Subject: Re: [Xenomai-help] Problem with Message queue
+Subject: Re: [Xenomai-help] high latency with Intel Core 2 Duo
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,41 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Perrine Martignoni wrote:
- > Hello,
- > 
- > I'm writing an application using Message queue and mq_send returns the errno
- > value EBADF.
- > I don't understand what I'm doing wrong, I need some help.
- > 
- > Here's my code :
-
-Next time, please do not omit the #includes, I need them to compile your
-program.
-
- > (...)
- >             if (mq1=mq_open("/mq1", O_CREAT|O_RDWR, 0, &qattr1) ==
- > (mqd_t)(-1)) {
-
-Here gcc gives the following message:
-test_mq.c:186: warning: suggest parentheses around assignment used as truth value
-
-Which should be the sign that something is not correct, 
-
-a=b == c is interpreted by the compiler as a=(b == c), whereas you would
-like
-(a = b) == c.
-
-So, add the parentheses, and everything should work fine.
-
-However, I do not understand what your program is supposed to do, here
-it dies without printing anything.
-
+> > Jan Kiszka wrote:
+> > > Karl Reichert wrote:
+> > > 
+> > >>Hello,
+> > >>
+> > >> I'm using an Intel Core 2 Duo at work and an AMD XP3000+ at home. I
+> > installed Xenomai 2.3.1 with nearly same configuration at both and run
+> the
+> > xeno-test. I get 10 times higher latency with Core 2 Duo. How is it
+> possible?
+> > May the SMP be the reason?
+> > > 
+> > > 
+> > > SMP surely increases latencies (more synchronisation overhead), but
+> the
+> > > tests you ran were also far to short for a thorough comparison. 2 us
+> > > worst-case is far too good, even on high end. Also 20 us on loaded SMP
+> > > boxes may not hold. Leave the test running for a longer period ("-T"
+> > > parameter, I think).
+> Will do that and report the results later.
+> 
+> > 
+> > You should configure the user-space libraries with the --enable-smp
+> > option when configuring for SMP.
+> > 
+> I did that, but nothing changes, still the same latencys (see attached
+> file).
+> 
+> > Also, did you compile a 32 bits or 64 bits kernel for the core 2 duo ?
+> > 
+> It's a 32 bit one.
+> > If you think that you observe high latencies, check the TROUBLESHOOTING
+> > file.
+> > 
+> > -- 
+> >                                                  Gilles Chanteperdrix
+> Karl
+> -- 
+> von Karl Reichert
+> 
+> GMX FreeMail: 1 GB Postfach, 5 E-Mail-Adressen, 10 Free SMS.
+> Alle Infos und kostenlose Anmeldung: http://www.gmx.net/de/go/freemail
+Is there any possibility to tell Xenomai to use one core for (NonRT-)Linux and one for RTApps?
 -- 
+von Karl Reichert
 
-
-					    Gilles Chanteperdrix.
+Ist Ihr Browser Vista-kompatibel? Jetzt die neuesten 
+Browser-Versionen downloaden: http://www.gmx.net/de/go/browser
 
