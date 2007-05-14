@@ -1,12 +1,12 @@
-Message-ID: <465ECDCF.3090801@domain.hid>
-Date: Thu, 31 May 2007 15:29:51 +0200
+Message-ID: <464865D7.3000005@domain.hid>
+Date: Mon, 14 May 2007 15:36:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
-In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0C9@domain.hid>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB0C9@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
+Subject: Re: [Xenomai-help] Problem with Message queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,50 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: Fillod Stephane <stephane.fillod@domain.hid>
+Cc: xenomai@xenomai.org
 
-RAKOTOSALAMA, Nirilanto wrote:
-> Hi,
+Fillod Stephane wrote:
+> Perrine Martignoni wrote:
+> [..]
 > 
-> I'm still blocked on a CPU affinity problem.
-> In order to adapt a set affinity function which is based on
-> posix linux lib :
-> - CPU_AssignPID(uint32 PID, uint32 CPU_id)
-> - the cpu affinity of the caller and all its child threads must be set to CPU_id.
+>>int DESTRUCT=0;
 > 
-> Problems are:
-> Child PIDs must be listed, the only means I found is listing pids using `ls /proc/"Parent pid"/ > temp_file`
-> And each listed pid is sched_setaffinity'ed.
-> I don't know if setting affinity of RT threads from an other thread (parent) using pid works with xenomai.
+>  
+> I'm always nervous to see global variables shared among threads without
+> a volatile keyword. An explicit memory barrier would be better, as it
+> has been re-explained in a LWN article lately (wait Thursday for free access)
+> http://lwn.net/Articles/233479/
 > 
-> So, my question is :
-> With xenomai, is recursively cpu affinity setting from a parent thread, a good way of doing ?
-> I read switchtest program, and I conclude that in a xenomai and RT perspective, it seems "nicer"
-> to set affinity each threads separately during their init phase before the RT infinite loop.
-> Otherwise, setting affinity after child threads creation from its parent, may switch them into 
-> secondary mode during their RT loop, and at an unknown moment.
-> Argumentation is important for my internship because I have to port on xenomai a very big RT 
-> posix based application. And I should justify any modifications and prevent potential problems.
+> But the problem in routine2 is somewhere else:
 > 
-> Sorry, I don't know if it is clear.
+> void routine2 (void * cookie){
+> 	int ret; 
+> 	struct sched_param param = {.sched_priority = 10 };
+> 	pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
+> 	for(;;){
+> 		affich(2);
+> 		ret = mq_send(mq2, buf2, MSG_SIZE, 0);
+> 		printf("send mq2 returned %d, errno %s\n", ret, errno );
+> ouch!                                           ^^          ^^^^^
+> 		ret = mq_receive(mq1, buf1, MSG_SIZE, NULL );
+> 		printf("receive mq1 returned %d, errno %s\n", ret, errno); 
+> ouch!                                              ^^          ^^^^^
+>  
+> 
+> This should be either
+> 		printf("receive mq1 returned %d, errno %d\n", ret, errno);
+> or
+> 		printf("receive mq1 returned %d, errno %s\n", ret, strerror(errno));
 
-I think that it is safe to assume that if the affinity of a thread is
-inherited from the thread that created it with Linux posix library, the
-same will happen with Xenomai.
+Yes, I did not look at gcc warnings long enough. Yet another error (but
+this one is arguably a bug in Xenomai posix skin) is to pass a null
+pointer as last argument of mq_receive.
 
-Now, if you want to set the affinity of a group of threads after their
-creation, I do not see how to do this without walking through the list
-of threads. If your library has an abstraction for threads, you can keep
-them in a list. It will be useful at process exit time to cleanly cancel
-all threads (this may be useful if you want to detect leaks for instance).
-
-Note that when talking about scheduling affinity function, we are
-swimming in the undefined, since these functions are not standardized by
-posix.
-
-But since you are porting a library to Xenomai maybe you can have a look
-at the current implementation of CPU_AssignPID ?
 
 -- 
                                                  Gilles Chanteperdrix
