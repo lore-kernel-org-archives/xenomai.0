@@ -1,15 +1,11 @@
-Message-ID: <4649D4A3.6070400@domain.hid>
-Date: Tue, 15 May 2007 17:41:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <DD39B5C3F4963040ADC9768BE7E430CB01EB2004@domain.hid>
-	<4649A485.5010102@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB20E6@domain.hid>
-	<4649C8B6.2050304@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01EB2122@domain.hid>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01EB2122@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 15 May 2007 17:59:19 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB0D1@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
 Subject: Re: [Xenomai-help] memcpy performance on Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,16 +20,23 @@ To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
 Daniel Schnell wrote:
-> 2.) rt_timer_tsc
-> If I use clock_gettime() this needs 3100 ns,
-> If I use rt_timer_tsc() this needs 74 (!) ns.
-> 
-> 
-> Oooh, we are using clock_gettime() a lot, so this makes a big difference for us.
+>1.) The culprit is mlockall(MCL_FUTURE|MCL_CURRENT);
+>
+>As soon I leave this away, I get much better results:
 
-Again, this issue should be adressed real soon.
+That's puzzling. Can it be explained?
+Have you tried a memset of buf1&buf2 before the first osa_now_timespec?
 
+>2.) rt_timer_tsc
+>If I use clock_gettime() this needs 3100 ns,
+>If I use rt_timer_tsc() this needs 74 (!) ns.
 
--- 
-                                                 Gilles Chanteperdrix
+Have you tried clock_gettime with *_HR clock like CLOCK_MONOTONIC_HR ?
+You have to have a recent glibc to get benefit from that.
+One of those clock rely on timebase tsc instead of issuing=20
+an expensive syscall.
+
+Regards,
+--=20
+Stephane
 
