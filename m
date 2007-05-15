@@ -1,16 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4648AC33.6090902@domain.hid>
-References: <46478F98.1040101@domain.hid> <4648A597.70600@domain.hid>
-	<4648AC33.6090902@domain.hid>
-Content-Type: text/plain
-Date: Tue, 15 May 2007 09:57:41 +0200
-Message-Id: <1179215861.11297.0.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] [BUG] pit clocksource broken
-	under	Xenomai
-Reply-To: rpm@xenomai.org
+Date: Tue, 15 May 2007 12:39:15 +0100 (BST)
+From: somshekar kadam <som_kadam@domain.hid>
+In-Reply-To: <461F1A14.9090609@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <527512.75196.qm@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai on MIPS MALTA
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,63 +15,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 2007-05-14 at 20:36 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > Jan Kiszka wrote:
-> >> Hi,
-> >>
-> >> just checked on real hardware (found in qemu originally):
-> >>
-> >> When Linux uses the pit clocksource AND Xenomai is attached, the system
-> >> time no longer makes progress. Observed under 2.6.20 with 1.7-03 and
-> >> newer patches, Xenomai trunk.
-> >>
-> >> I guess not many people will be affected by this and I'm lacking time to
-> >> debug, so I'm just dumping the report and running away...
-> > 
-> > Somehow I hate open issues...
-> > 
-> > I recalled some private thread with you, Philippe, about this particular
-> > line in pid_read(). A look at it again revealed the reason for this bug.
-> > 
-> > Jan
-> > 
-> > PS: pending_patches++ ;)
-> > 
-> > 
-> > ---
-> >  arch/i386/kernel/i8253.c |    3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > Index: linux-2.6.20/arch/i386/kernel/i8253.c
-> > ===================================================================
-> > --- linux-2.6.20.orig/arch/i386/kernel/i8253.c
-> > +++ linux-2.6.20/arch/i386/kernel/i8253.c
-> > @@ -47,7 +47,8 @@ static cycle_t pit_read(void)
-> >  
-> >  #ifdef CONFIG_IPIPE
-> >  	if (!__ipipe_pipeline_head_p(ipipe_root_domain))
-> > -		return 0;	/* We don't really own the PIT. */
-> > +		/* We don't own the PIT, fall back to jiffies. */
-> > +		return (cycle_t)(jiffies * LATCH);
-> 
-> I think even more correct would be
-> 
-> 	return (cycle_t)(jiffies * LATCH) + (LATCH - 1) - old_count;
-> 
-> Should avoid the theoretical chance of a clock backward jump when
-> Xenomai attaches. I leave it up to the maintainer to decide. :)
-> 
+Hi All, 
 
-Merged this one, thanks.
 
+Good News , now we are able to run User Space
+Applications as well as Kernel Module, Implemented the
+the thread related part xnarch_thread_init, basically
+intialize the stack frame for thread to do context
+switch, now able to go to rthal_thread_trampoline and
+next to xnarch_thread_trampoline and able to switch to
+new thread and able to execute, once the xenomai we
+check for proper stability and performance for client
+, we will release ADEOS and XENOMAI for MIPS core for
+OPEN SOURCE. We thank Open community for all the help
+especially Philip, Jan ,Dimitry and Gallies, once
+again thanks a lot for all the help without your
+contirbiution it would be successful. 
+
+may be next we have discussion with client and once
+client accepts it we release the code. 
+
+Thanks And Regards
+Neelu
+
+
+
+
+--- Jan Kiszka <jan.kiszka@domain.hid> wrote:
+
+> somshekar kadam wrote:
+> > Hi Phillep,
+> > 
+> >  good news xenomai porting for mips is done, user
+> > space application are working fine. once the
+> formality
+> > with our client gets over we will submit the code
+> to
+> > open source. People contirbuted for this project
+> are
+> > Subramani,Manoj,Sanjeev,Nishit,Poornima and Neelu.
+> 
+> > 
+> > Right now debugging an issue for kernel space
+> module
+> > where rt task start goes for toss, will be fixed
+> next
+> > week probably, subramni will be working on it. 
+> > 
+> > we hope to deliver it for MIPS MALTA BOARD, as we
+> need
+> > to get it working for Malta borad, after we
+> release to
+> > our customer. 
+> > we will need help in fixing performance issues
+> from
+> > open source community. 
+> 
+> The sooner you are able to release, the sooner the
+> community can help...
+> 
 > Jan
 > 
--- 
-Philippe.
+> 
 
 
+
+      Office firewalls, cyber cafes, college labs, don't allow you to download CHAT? Click here: http://in.messenger.yahoo.com/webmessengerpromo.php
 
