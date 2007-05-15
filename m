@@ -1,12 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <464988B2.80407@domain.hid>
+Date: Tue, 15 May 2007 12:17:22 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 14 May 2007 14:11:02 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB0C9@domain.hid>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] Problem with Message queue
+References: <002701c79675$ac700130$c67ba8c0@domain.hid>
+In-Reply-To: <002701c79675$ac700130$c67ba8c0@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCFFB2CDBBDC24C9EBFF13A18"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Booting fails: Kernel panic
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,39 +18,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>, xenomai@xenomai.org
+To: Jonas Witt <Jonas@domain.hid>
+Cc: xenomai@xenomai.org
 
-Perrine Martignoni wrote:
-[..]
->int DESTRUCT=3D0;
-=A0
-I'm always nervous to see global variables shared among threads without
-a volatile keyword. An explicit memory barrier would be better, as it
-has been re-explained in a LWN article lately (wait Thursday for free =
-access)
-http://lwn.net/Articles/233479/
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCFFB2CDBBDC24C9EBFF13A18
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-But the problem in routine2 is somewhere else:
+Jonas Witt wrote:
+> Hello everyone,
+>=20
+> =20
+>=20
+> i thought that it would be better if i started a new thread for this:
+>=20
+> =20
+>=20
+> I have some trouble with getting xenomai to run on a PC/104 device with=
+ AMD
+> Geode GX processor (Debian 4.0 is installed). My development platform w=
+hich
+> is running a Athlon64 (with Kubuntu 6.06) is already doing fine. For te=
+sting
+> purposes i tried using the same kernel-bulid (2.6.20.11 kernel with 2.3=
+=2E1
+> xenomai) for both by selecting a 486-processor in the menuconfig. It wo=
+rks
+> on my Athlon64 but on the PC/104 after copying the files i cannot boot.=
+ On
+> the first boot it said directly that xenomai failed to load (and all th=
+e
+> RT-interfaces after that).. all with errorcode -19. I am not able to
+> reproduce that output, though. After that i turned off APIC to see if i=
+t
+> changes something and then i got further in the boot process but now
+> stopping with:
+>=20
+> =20
+>=20
+> /bin/dash: error while loading shared libraries: libc.so.6: cannot open=
 
-void routine2 (void * cookie){
-	int ret;=20
-	struct sched_param param =3D {.sched_priority =3D 10 };
-	pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
-	for(;;){
-		affich(2);
-		ret =3D mq_send(mq2, buf2, MSG_SIZE, 0);
-		printf("send mq2 returned %d, errno %s\n", ret, errno );
-ouch!                                           ^^          ^^^^^
-		ret =3D mq_receive(mq1, buf1, MSG_SIZE, NULL );
-		printf("receive mq1 returned %d, errno %s\n", ret, errno);=20
-ouch!                                              ^^          ^^^^^
-=A0
+> shared object file: No such file or directory
+>=20
 
-This should be either
-		printf("receive mq1 returned %d, errno %d\n", ret, errno);
-or
-		printf("receive mq1 returned %d, errno %s\n", ret, strerror(errno));
+Do you happen to use i686 libs on your Geode, instead of i586? Check
+what your distro installed.
 
---=20
-Stephane
+> =20
+>=20
+> Now it does not seem to change anything whether the ,noapic' parameter =
+is
+> passed to the kernel or not, though. This is all kind of strange, becau=
+se i
+> already had xenomai running successfully on that platform, but i am not=
+ able
+> to get it running again.. (in other kernel building attempts the system=
+
+> booted but xenomai was not loaded (in /proc was no xenomai folder) and =
+yes..
+> i did boot the right kernel).=20
+>=20
+> =20
+>=20
+> The PC/104 has a 500Mhz AMD Geode GX processor and 512MB Ram. It uses a=
+ 1GB
+> Flashdisk that is plugged in via the IDE port (shows up as hda). To bui=
+ld
+> the xenomai-kernel i modified the config from the running Debian 4.0 sy=
+stem.
+>=20
+> =20
+>=20
+> Could a problem stem from the fact that i copied the files to that mach=
+ine
+> and did not build them on the same machine?
+>=20
+> =20
+>=20
+> I really hope someone can help me with this..=20
+>=20
+> Thanks in advance!
+>=20
+> =20
+>=20
+> Jonas
+>=20
+>=20
+
+Jan
+
+
+--------------enigCFFB2CDBBDC24C9EBFF13A18
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFGSYiyniDOoMHTA+kRAtDuAJ9iPKtIF1/swAM8B4Iccb1x0ngi+wCeLkv1
+kCYU2p5Wcr6oNPehlXOKpqI=
+=scYh
+-----END PGP SIGNATURE-----
+
+--------------enigCFFB2CDBBDC24C9EBFF13A18--
 
