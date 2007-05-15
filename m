@@ -1,17 +1,13 @@
-Message-ID: <465D6652.4070305@domain.hid>
-Date: Wed, 30 May 2007 13:56:02 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <7289437c0705150100m47ed71f5nb19f5f5f9468b794@domain.hid>
+Date: Tue, 15 May 2007 10:00:48 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+In-Reply-To: <17992.46476.24771.264671@domain.hid>
 MIME-Version: 1.0
-References: <465D2BE1.1080302@domain.hid>
-	<465D3053.2040002@domain.hid>	<465D383C.5040203@domain.hid>
-	<465D3B37.9000900@domain.hid> <465D435F.8080304@domain.hid>
-In-Reply-To: <465D435F.8080304@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig2C0BD7E944AD77B617CAA1FA"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [Newbie question]Segmentation fault with
- user-space binary
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_96421_18120557.1179216048495"
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0C9@domain.hid>
+	<17992.46476.24771.264671@domain.hid>
+Subject: Re: [Xenomai-help] Problem with Message queue
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,39 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodolfo Bamberg <rolfetas@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig2C0BD7E944AD77B617CAA1FA
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_96421_18120557.1179216048495
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Rodolfo Bamberg wrote:
-> I just can't figure out: If latency works, and it uses the native skin,=
+Thanks for all of your ideas.
+I solve my issue.
 
-> why does including libnative throw a segmantation fault?
+On 5/14/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>
+> Fillod Stephane wrote:
+> > Perrine Martignoni wrote:
+> > [..]
+> > >int DESTRUCT=0;
+> >
+> > I'm always nervous to see global variables shared among threads without
+> > a volatile keyword. An explicit memory barrier would be better, as it
+> > has been re-explained in a LWN article lately (wait Thursday for free
+> access)
+> > http://lwn.net/Articles/233479/
+>
+> Besides, this termination mechanism results on a deadlock on SMP. Please
+> kill this DESTRUCT variable and replace cleanup_upon_sig with:
+>
+> void cleanup_upon_sig(int sig __attribute__((unused)))
+>
+> {
+>        pthread_cancel(task1);
+>        pthread_cancel(task2);
+> }
+>
+>
+> --
+>
+>
+>                                            Gilles Chanteperdrix.
+>
 
-Have you tried to attach gdb?
+------=_Part_96421_18120557.1179216048495
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-What toolchain do you use precisely? How to regenerate it?
+<div>Thanks for all of your ideas.</div>
+<div>I solve my issue.<br>&nbsp;</div>
+<div><span class="gmail_quote">On 5/14/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Fillod Stephane wrote:<br>&gt; Perrine Martignoni wrote:<br>&gt; [..]<br>&gt; &gt;int DESTRUCT=0;<br>&gt; 
+<br>&gt; I&#39;m always nervous to see global variables shared among threads without<br>&gt; a volatile keyword. An explicit memory barrier would be better, as it<br>&gt; has been re-explained in a LWN article lately (wait Thursday for free access)
+<br>&gt; <a href="http://lwn.net/Articles/233479/">http://lwn.net/Articles/233479/</a><br><br>Besides, this termination mechanism results on a deadlock on SMP. Please<br>kill this DESTRUCT variable and replace cleanup_upon_sig with:
+<br><br>void cleanup_upon_sig(int sig __attribute__((unused)))<br><br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_cancel(task1);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_cancel(task2);<br>}<br><br><br>--<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gilles Chanteperdrix.
+<br></blockquote></div><br>
 
-Jan
-
-
---------------enig2C0BD7E944AD77B617CAA1FA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGXWZSniDOoMHTA+kRApSYAJ4+jQY3Ap7gLEmhzol00QoOPAdvoACePW8f
-JBLGCjR1YLdBMU2oT5rjhYY=
-=hLsN
------END PGP SIGNATURE-----
-
---------------enig2C0BD7E944AD77B617CAA1FA--
+------=_Part_96421_18120557.1179216048495--
 
