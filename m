@@ -1,14 +1,15 @@
-Message-ID: <464B3BC6.1030807@domain.hid>
-Date: Wed, 16 May 2007 19:13:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <e2ceda030705160953h27bc4033q4c2ccdba6b65bc7@domain.hid>
-In-Reply-To: <e2ceda030705160953h27bc4033q4c2ccdba6b65bc7@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBB8198A3C70F26C1F1024094"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Getting mutex state/rt <-> non-rt communication
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <17995.26328.303873.229987@domain.hid>
+Date: Wed, 16 May 2007 22:17:28 +0200
+In-Reply-To: <cbe23c50705151326v5ce31bcbie877828121059de9@domain.hid>
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0D1@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01EB2198@domain.hid>
+	<17993.62961.195987.37407@domain.hid>
+	<cbe23c50705151326v5ce31bcbie877828121059de9@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] memcpy performance on Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,82 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Maciek Godek <pstrychuj@domain.hid>
+To: Eric Noulard <eric.noulard@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBB8198A3C70F26C1F1024094
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Eric Noulard wrote:
+ > 2007/5/15, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+ > > Daniel Schnell wrote:
+ > >  > The reason I was looking at the memcpy native performance was because I found Xenomai Posix message queues somewhat slow:
+ > >  > In two tasks where one is receiving a 32 kBytes msg and the other sending to this task 32 kbytes of data, I have an average cycle time of more than 1 ms.
+ > >  > Looking at the memcpy performance of my system tells me something:
+ > >  > Memcpy(32 KB) ->  400 us
+ > >  > Two msg_send(32KB) cannot be less than 2x400 us + 2 ctx switch away, probably even more because we have to write first to Kernel memory, then the ctx switch, then copying from Kernel memory to user buffer, than ctx switch. This simply means I cannot use msg queues for anything bigger than 1K, which means I have to use shared memory for that.
+ > 
+ > Are your 2 tasks in user-space or 1 in user 1 in kernel?
+ > 
+ > > so it is probably better to use message queues to pass pointers to a
+ > > shared memory region, allowing zero copies.
+ > 
+ > I was about to say just the same but before developing my idea
+ > I have xenomai question:
+ > Are the share memory region obtained by shm_open
+ > shareable between kernel task and user task just like
+ > rt_heap_create/rt_heap_alloc does (read from the doc).
 
-Maciek Godek wrote:
-> Hi,
-> is it obligatory to use the rt_mutex_inquire in order to get the mutex
-> state, or could I possibly use the field lockcnt from struct RT_MUTEX
-> directly? (the test should be, as I believe, atomic - so should I
-> worry?)
+Well, if you found rt_heaps doc, it would have been easy to have a look
+at posix shared memory doc as well... Anyway, yes, on platforms where
+sharing a memory area between kernel space and user-space is not a
+problem, posix shared memory are shareable. On ARM, it is a no go
+because of the cache architecture.
 
-UAAAH!!! Don't do this, never!
-
-Locking a mutex means more, e.g. assigning a _schedulable_ Xenomai
-thread as owner so that one can raise its priority if a higher thread
-contents for the same lock. It also means blocking if the mutex is
-currently locked, also requiring Xenomai thread context.
-
->=20
-> The thing is that I'm using mutices for IPC between an rt-task and a
-> regular linux process. The rt code is critical, but in the
-> non-realtime code I can pay the cost of low latency polling to find
-> out if the realtime code has finished. (Perhaps there is a better way
-> to do it? The code now looks like this:
->=20
-> RT_MUTEX busy;
-> RT_COND data_ready;
-> // both are initialized (elsewhere)
->=20
-> void realtime_thread(void *) {
->   rt_mutex_acquire(&busy, 0);
->   for(;;) {
->     rt_cond_wait(&data_ready, &busy, TM_INFINITE);
->     // here it does something critical - it actually communicates
->     // with an external device over serial port using the famous rtdm
->     // serial driver developed and maintained by Jan Kiszka.
->   }
-> }
->  ...
-> // there is only one thread that communicates with the realtime
-> // thread above - and this code is invoked within it.
-> rt_cond_signal(&data_ready);
-> // now the rt-thread does something. I can estimate the upper time limi=
-t
-> // of the one iteration of that task.
-> usleep(predicted_time);
-> if(busy.lockcnt) {
->   // timeout - this is possible as it depends on the external devices. =
-Of course
->   // sooner or later the mutex will be released by the rt thread.
-> }
->=20
-> is there any wiser way to communicate these threads?)
-
-Kernel or user space?
-
-Jan
+-- 
 
 
---------------enigBB8198A3C70F26C1F1024094
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFGSzvGniDOoMHTA+kRAvboAJsEM2UBdw5Zk+E+sdJlT69pwDtz7QCeMUfO
-JQuKZvKFH23Aod2i9Oaeg8A=
-=9zsb
------END PGP SIGNATURE-----
-
---------------enigBB8198A3C70F26C1F1024094--
+					    Gilles Chanteperdrix.
 
