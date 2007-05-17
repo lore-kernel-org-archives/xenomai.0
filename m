@@ -1,18 +1,19 @@
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="1lloD6ssOD"
+Content-Type: multipart/mixed; boundary="QgYMQDD+cJ"
 Content-Transfer-Encoding: 7bit
-Message-ID: <17996.29459.426609.506833@domain.hid>
-Date: Thu, 17 May 2007 17:21:55 +0200
-In-Reply-To: <464C5940.2040406@domain.hid>
+Message-ID: <17996.31523.958476.460662@domain.hid>
+Date: Thu, 17 May 2007 17:56:19 +0200
+In-Reply-To: <17996.29459.426609.506833@domain.hid>
 References: <17996.15540.824415.263562@domain.hid>
 	<464C4DE4.1040402@domain.hid>
 	<17996.20586.564091.503622@domain.hid>
 	<464C51F7.3000407@domain.hid>
 	<17996.21557.378577.691298@domain.hid>
 	<464C5940.2040406@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [PATCH] Use tsc for implementation
-	of	clock_gettime.
+	<17996.29459.426609.506833@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH] Use tsc for
+	implementation	of	clock_gettime.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,71 +23,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
 
---1lloD6ssOD
+--QgYMQDD+cJ
 Content-Type: text/plain; charset=us-ascii
 Content-Description: message body and .signature
 Content-Transfer-Encoding: 7bit
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Jan Kiszka wrote:
- > >  > Gilles Chanteperdrix wrote:
- > >  > > Jan Kiszka wrote:
- > >  > >  > Gilles Chanteperdrix wrote:
- > >  > >  > > Hi,
- > >  > >  > > 
- > >  > >  > > here comes, for review, a patch which reduces the overhead of
- > >  > >  > > clock_gettime by directly reading the tsc in user-space for
- > >  > >  > > architectures that support it.
- > >  > >  > 
- > >  > >  > Highly welcome. But I have one concern: How and when do you propagate
- > >  > >  > wallclock_offset changes to user space?
- > >  > > 
- > >  > > Since clock_settime is not implemented, never, but if clock_settime was
- > >  > > implemented, clock_settime would re-issue the __xn_sys_info syscall.
- > >  > 
- > >  > This excludes automatic clock adjustment, something I'm convinced we
- > >  > will have to provide in the future.
- > > 
- > > When we provide automatic clock adjustment, we will have to devise
- > > something more subtle than just an offset, so we will have to redesign
+Gilles Chanteperdrix wrote:
+ > Jan Kiszka wrote:
+ >  > Gilles Chanteperdrix wrote:
+ >  > > Jan Kiszka wrote:
+ >  > >  > Gilles Chanteperdrix wrote:
+ >  > >  > > Jan Kiszka wrote:
+ >  > >  > >  > Gilles Chanteperdrix wrote:
+ >  > >  > >  > > Hi,
+ >  > >  > >  > > 
+ >  > >  > >  > > here comes, for review, a patch which reduces the overhead of
+ >  > >  > >  > > clock_gettime by directly reading the tsc in user-space for
+ >  > >  > >  > > architectures that support it.
+ >  > >  > >  > 
+ >  > >  > >  > Highly welcome. But I have one concern: How and when do you propagate
+ >  > >  > >  > wallclock_offset changes to user space?
+ >  > >  > > 
+ >  > >  > > Since clock_settime is not implemented, never, but if clock_settime was
+ >  > >  > > implemented, clock_settime would re-issue the __xn_sys_info syscall.
+ >  > >  > 
+ >  > >  > This excludes automatic clock adjustment, something I'm convinced we
+ >  > >  > will have to provide in the future.
+ >  > > 
+ >  > > When we provide automatic clock adjustment, we will have to devise
+ >  > > something more subtle than just an offset, so we will have to redesign
+ >  > 
+ >  > I think offset + scaling factor.
+ >  > 
+ >  > > posix clocks support anyway. Maybe clock_gettime(CLOCK_REALTIME) will
+ >  > > then always be a syscall. After all, rt_timer_read is a syscall. If you
+ >  > > want the fast clock, use CLOCK_MONOTONIC or rt_timer_tsc.
+ >  > 
+ >  > Actually, the issue of the intermediate approach starts earlier: as soon
+ >  > as you have clock_settime. Then you need to sync the offset across
+ >  > applications in different processes.
+ >  > 
+ >  > Having clock_monotonic (and maybe also rt_timer_tsc2ns) as a fast
+ >  > variant already now is not bad. But beyond that, before introducing a
+ >  > new interface between kernel and user space, I would like to consider
+ >  > the effort to get it future-proof immediately. That doesn't mean that we
+ >  > already have to implement clock adjustment, but we may already prepare
+ >  > the prerequisites.
  > 
- > I think offset + scaling factor.
+ > Ok. Here is a new version that does not break the ABI, and where
+ > clock_gettime(CLOCK_REALTIME) remains a syscall.
  > 
- > > posix clocks support anyway. Maybe clock_gettime(CLOCK_REALTIME) will
- > > then always be a syscall. After all, rt_timer_read is a syscall. If you
- > > want the fast clock, use CLOCK_MONOTONIC or rt_timer_tsc.
- > 
- > Actually, the issue of the intermediate approach starts earlier: as soon
- > as you have clock_settime. Then you need to sync the offset across
- > applications in different processes.
- > 
- > Having clock_monotonic (and maybe also rt_timer_tsc2ns) as a fast
- > variant already now is not bad. But beyond that, before introducing a
- > new interface between kernel and user space, I would like to consider
- > the effort to get it future-proof immediately. That doesn't mean that we
- > already have to implement clock adjustment, but we may already prepare
- > the prerequisites.
+ > Note that it also adds user-space conversions between tsc and ns to the
+ > native skin.
 
-Ok. Here is a new version that does not break the ABI, and where
-clock_gettime(CLOCK_REALTIME) remains a syscall.
-
-Note that it also adds user-space conversions between tsc and ns to the
-native skin.
+This one is actually tested.
 
 -- 
 
 
 					    Gilles Chanteperdrix.
 
---1lloD6ssOD
+--QgYMQDD+cJ
 Content-Type: text/plain
 Content-Disposition: inline;
-	filename="xeno-clock_gettime-direct-tsc.2.diff"
+	filename="xeno-clock_gettime-direct-tsc.3.diff"
 Content-Transfer-Encoding: 7bit
 
 Index: include/asm-ia64/Makefile.in
@@ -387,7 +390,7 @@ Index: include/asm-generic/arith.h
 ===================================================================
 --- include/asm-generic/arith.h	(revision 0)
 +++ include/asm-generic/arith.h	(revision 0)
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,172 @@
 +/**
 + *   @ingroup hal
 + *   @file
@@ -460,7 +463,7 @@ Index: include/asm-generic/arith.h
 +#endif /* !__rthal_u64fromu32 */
 +
 +#ifndef rthal_ullmul
-+static inline __attribute_const__ unsigned long long
++static inline __attribute__((__const__)) unsigned long long
 +__rthal_generic_ullmul(const unsigned m0, const unsigned m1)
 +{
 +    return (unsigned long long) m0 * m1;
@@ -488,9 +491,9 @@ Index: include/asm-generic/arith.h
 +#endif /* !rthal_uldivrem */
 +
 +#ifndef rthal_imuldiv
-+static inline __attribute_const__ int __rthal_generic_imuldiv (int i,
-+                                                               int mult,
-+                                                               int div)
++static inline __attribute__((__const__)) int __rthal_generic_imuldiv (int i,
++								  int mult,
++								  int div)
 +{
 +    /* Returns (int)i = (unsigned long long)i*(unsigned)(mult)/(unsigned)div. */
 +    const unsigned long long ull = rthal_ullmul(i, mult);
@@ -517,7 +520,7 @@ Index: include/asm-generic/arith.h
 +    return __rthal_u64fromu32(qh, ql);
 +}
 +
-+static inline __attribute_const__
++static inline __attribute__((__const__))
 +unsigned long long __rthal_generic_ullimd (const unsigned long long op,
 +                                           const unsigned m,
 +                                           const unsigned d)
@@ -534,9 +537,8 @@ Index: include/asm-generic/arith.h
 +    return __rthal_generic_div96by32(th, tll, d, NULL);
 +}
 +
-+static inline __attribute_const__ long long __rthal_generic_llimd (long long op,
-+                                                                   unsigned m,
-+                                                                   unsigned d)
++static inline __attribute__((__const__)) long long
++__rthal_generic_llimd (long long op, unsigned m, unsigned d)
 +{
 +
 +    if(op < 0LL)
@@ -817,7 +819,7 @@ Index: include/asm-i386/arith.h
 +
 +/* const helper for rthal_uldivrem, so that the compiler will eliminate
 +   multiple calls with same arguments, at no additionnal cost. */
-+static inline __attribute_const__ unsigned long long
++static inline __attribute__((__const__)) unsigned long long
 +__rthal_uldivrem(const unsigned long long ull, const unsigned long d)
 +{
 +    unsigned long long ret;
@@ -978,7 +980,7 @@ Index: src/skins/posix/clock.c
 +
 +void pse51_clock_init(int muxid)
 +{
-+	int err = -XENOMAI_SYSCALL3(__xn_sys_info, muxid, &sysinfo);
++	int err = -XENOMAI_SYSCALL2(__xn_sys_info, muxid, &sysinfo);
 +	if (err) {
 +		fprintf(stderr, "Xenomai Posix skin init: "
 +			"sys_info: %s\n", strerror(err));
@@ -1073,7 +1075,11 @@ Index: src/skins/native/timer.c
 ===================================================================
 --- src/skins/native/timer.c	(revision 2454)
 +++ src/skins/native/timer.c	(working copy)
-@@ -21,6 +21,20 @@
+@@ -18,9 +18,24 @@
+ 
+ #include <native/syscall.h>
+ #include <native/timer.h>
++#include <asm/xenomai/arith.h>
  
  extern int __native_muxid;
  
@@ -1082,7 +1088,7 @@ Index: src/skins/native/timer.c
 +
 +void native_timer_init(int muxid)
 +{
-+	int err = XENOMAI_SYSCALL3(__xn_sys_info, muxid, &sysinfo);
++	int err = XENOMAI_SYSCALL2(__xn_sys_info, muxid, &sysinfo);
 +	if (err) {
 +		fprintf(stderr, "Native skin init: "
 +			"sys_info: %s\n", strerror(-err));
@@ -1094,7 +1100,7 @@ Index: src/skins/native/timer.c
  int rt_timer_set_mode(RTIME tickval)
  {
  	return XENOMAI_SKINCALL1(__native_muxid, __native_timer_set_mode,
-@@ -68,7 +82,11 @@
+@@ -68,7 +83,11 @@
  {
  	RTIME ticks;
  
@@ -1106,12 +1112,12 @@ Index: src/skins/native/timer.c
  	return ticks;
  }
  
-@@ -76,7 +94,11 @@
+@@ -76,7 +95,11 @@
  {
  	SRTIME ns;
  
 +#ifdef CONFIG_XENO_HW_DIRECT_TSC
-+	ticks = xnarch_llimd(ticks, 1000000000, sysinfo.cpufreq);
++	ns = xnarch_llimd(ticks, 1000000000, sysinfo.cpufreq);
 +#else /* !CONFIG_XENO_HW_DIRECT_TSC */
  	XENOMAI_SKINCALL2(__native_muxid, __native_timer_tsc2ns, &ns, &ticks);
 +#endif /* !CONFIG_XENO_HW_DIRECT_TSC */
@@ -1143,5 +1149,5 @@ Index: ksrc/skins/posix/syscall.c
  }
  
 
---1lloD6ssOD--
+--QgYMQDD+cJ--
 
