@@ -1,14 +1,9 @@
-Message-ID: <464AA637.7070803@domain.hid>
-Date: Wed, 16 May 2007 08:35:35 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 18 May 2007 05:49:34 +0200 (CEST)
+From: Nicholas Mc Guire <der.herr@domain.hid>
+Message-ID: <Pine.LNX.4.60.0705180539110.511@domain.hid>
 MIME-Version: 1.0
-References: <46476686.8020407@domain.hid>
-In-Reply-To: <46476686.8020407@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig02B988631748B0DCF8DA7C2F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [RFC][PATCH 2/2] Dump ipipe trace on kernel oopses
+Content-Type: MULTIPART/MIXED; BOUNDARY="-1463803391-823653673-1179460174=:511"
+Subject: [Adeos-main] 9th Real Time Linux Workshop
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,364 +12,177 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig02B988631748B0DCF8DA7C2F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Jan Kiszka wrote:
-> This is not a must-have, and it is not for all archs so far anyway:
->=20
-> Dump an I-pipe panic trace on ordinary kernel oopses. For me this turne=
-d
-> out to be useful already, but not everyone may love to see his/her
-> console flooded with call-history traces on oops, though this only
-> happens if the tracer is enabled.
->=20
-> Comments welcome.
->=20
+---1463803391-823653673-1179460174=:511
+Content-Type: TEXT/PLAIN; charset=X-UNKNOWN; format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Following your suggestion, this version makes the panic freezing a
-configurable option. Also, it adds support for x86_64 (note that all
-arch bits are in the same patch here!) and should now cover any arch
-I-pipe runs on.
-
-I would say: No longer an RFC, now a request to apply.
-
-Jan
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
----
- arch/i386/mm/fault.c        |    5 +++
- arch/x86_64/mm/fault.c      |    3 ++
- include/linux/ipipe_trace.h |   10 +++----
- kernel/ipipe/Kconfig.debug  |   18 +++++++++---
- kernel/ipipe/tracer.c       |   62 ++++++++++++++++++++++++-------------=
--------
- lib/bust_spinlocks.c        |    5 +++
- 6 files changed, 65 insertions(+), 38 deletions(-)
+HI !
 
-Index: linux-2.6.20/arch/i386/mm/fault.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/arch/i386/mm/fault.c
-+++ linux-2.6.20/arch/i386/mm/fault.c
-@@ -23,6 +23,7 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- #include <linux/uaccess.h>
-+#include <linux/ipipe_trace.h>
+  9th real-time Linux Workshop is getting ready - hope for some intersting
+papers on ADEOS, its current status and where its going, and of course the=
 =20
- #include <asm/system.h>
- #include <asm/desc.h>
-@@ -68,9 +69,13 @@ void bust_spinlocks(int yes)
- 	int loglevel_save =3D console_loglevel;
-=20
- 	if (yes) {
-+		ipipe_trace_panic_freeze();
- 		oops_in_progress =3D 1;
- 		return;
- 	}
-+
-+	ipipe_trace_panic_dump();
-+
- #ifdef CONFIG_VT
- 	unblank_screen();
- #endif
-Index: linux-2.6.20/lib/bust_spinlocks.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/lib/bust_spinlocks.c
-+++ linux-2.6.20/lib/bust_spinlocks.c
-@@ -12,14 +12,19 @@
- #include <linux/tty.h>
- #include <linux/wait.h>
- #include <linux/vt_kern.h>
-+#include <linux/ipipe_trace.h>
-=20
-=20
- void bust_spinlocks(int yes)
- {
- 	if (yes) {
-+		ipipe_trace_panic_freeze();
- 		oops_in_progress =3D 1;
- 	} else {
- 		int loglevel_save =3D console_loglevel;
-+
-+		ipipe_trace_panic_dump();
-+
- #ifdef CONFIG_VT
- 		unblank_screen();
- #endif
-Index: linux-2.6.20/include/linux/ipipe_trace.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/include/linux/ipipe_trace.h
-+++ linux-2.6.20/include/linux/ipipe_trace.h
-@@ -2,7 +2,7 @@
-  * include/linux/ipipe_trace.h
-  *
-  * Copyright (C) 2005 Luotao Fu.
-- *               2005, 2006 Jan Kiszka.
-+ *               2005-2007 Jan Kiszka.
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-@@ -23,8 +23,6 @@
- #ifndef _LINUX_IPIPE_TRACE_H
- #define _LINUX_IPIPE_TRACE_H
-=20
--#ifdef CONFIG_IPIPE_TRACE
--
- #include <linux/types.h>
-=20
- void ipipe_trace_begin(unsigned long v);
-@@ -36,14 +34,16 @@ void ipipe_trace_pid(pid_t pid, short pr
- int ipipe_trace_max_reset(void);
- int ipipe_trace_frozen_reset(void);
-=20
-+#ifdef CONFIG_IPIPE_TRACE_PANIC
-+
- void ipipe_trace_panic_freeze(void);
- void ipipe_trace_panic_dump(void);
-=20
--#else /* !CONFIG_IPIPE_TRACE */
-+#else /* !CONFIG_IPIPE_TRACE_PANIC */
-=20
- static inline void ipipe_trace_panic_freeze(void) { }
- static inline void ipipe_trace_panic_dump(void) { }
-=20
--#endif /* !CONFIG_IPIPE_TRACE */
-+#endif /* !CONFIG_IPIPE_TRACE_PANIC */
-=20
- #endif	/* !__LINUX_IPIPE_H */
-Index: linux-2.6.20/kernel/ipipe/Kconfig.debug
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/kernel/ipipe/Kconfig.debug
-+++ linux-2.6.20/kernel/ipipe/Kconfig.debug
-@@ -31,9 +31,10 @@ config IPIPE_TRACE
- 	  in-kernel tracing API. The collected data and runtime control
- 	  is available via /proc/ipipe/trace/*.
-=20
-+if IPIPE_TRACE
-+
- config IPIPE_TRACE_ENABLE
- 	bool "Enable tracing on boot"
--	depends on IPIPE_TRACE
- 	default y
- 	---help---
- 	  Disable this option if you want to arm the tracer after booting
-@@ -42,7 +43,6 @@ config IPIPE_TRACE_ENABLE
-=20
- config IPIPE_TRACE_MCOUNT
- 	bool "Instrument function entries"
--	depends on IPIPE_TRACE
- 	default y
- 	---help---
- 	  When enabled, records every kernel function entry in the tracer
-@@ -53,7 +53,6 @@ config IPIPE_TRACE_MCOUNT
-=20
- config IPIPE_TRACE_IRQSOFF
- 	bool "Trace IRQs-off times"
--	depends on IPIPE_TRACE
- 	default y
- 	---help---
- 	  Activate this option if I-pipe shall trace the longest path
-@@ -63,14 +62,12 @@ config IPIPE_TRACE_SHIFT
- 	int "Depth of trace log (14 =3D> 16Kpoints, 15 =3D> 32Kpoints)"
- 	range 10 18
- 	default 14
--	depends on IPIPE_TRACE
- 	---help---
- 	  The number of trace points to hold tracing data for each
- 	  trace path, as a power of 2.
-=20
- config IPIPE_TRACE_VMALLOC
- 	bool "Use vmalloc'ed trace buffer"
--	depends on IPIPE_TRACE
- 	default y if EMBEDDED
- 	---help---
- 	  Instead of reserving static kernel data, the required buffer
-@@ -79,9 +76,20 @@ config IPIPE_TRACE_VMALLOC
- 	  but it slightly degrades overall performance. Try this option
- 	  when a traced kernel hangs unexpectedly at boot time.
-=20
-+config IPIPE_TRACE_PANIC
-+	bool "Enable panic back traces"
-+	default y
-+	---help---
-+	  Provides services to freeze and dump a back trace on panic
-+	  situations. This is used on IPIPE_DEBUG_CONTEXT exceptions
-+	  as well as ordinary kernel oopses. You can control the number
-+	  of printed back trace points via /proc/ipipe/trace.
-+
- config IPIPE_TRACE_ENABLE_VALUE
- 	int
- 	default 0 if !IPIPE_TRACE_ENABLE
- 	default 1 if IPIPE_TRACE_ENABLE
-=20
- endif
-+
-+endif
-Index: linux-2.6.20/kernel/ipipe/tracer.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/kernel/ipipe/tracer.c
-+++ linux-2.6.20/kernel/ipipe/tracer.c
-@@ -132,7 +132,9 @@ static unsigned long trace_overhead;
-=20
- static DEFINE_MUTEX(out_mutex);
- static struct ipipe_trace_path *print_path;
-+#ifdef CONFIG_IPIPE_TRACE_PANIC
- static struct ipipe_trace_path *panic_path;
-+#endif /* CONFIG_IPIPE_TRACE_PANIC */
- static int print_pre_trace;
- static int print_post_trace;
-=20
-@@ -564,25 +566,6 @@ int ipipe_trace_frozen_reset(void)
- }
- EXPORT_SYMBOL(ipipe_trace_frozen_reset);
-=20
--void ipipe_trace_panic_freeze(void)
--{
--	unsigned long flags;
--	int cpuid;
--
--	if (!ipipe_trace_enable)
--		return;
--
--	ipipe_trace_enable =3D 0;
--	local_irq_save_hw_notrace(flags);
--
--	cpuid =3D raw_smp_processor_id();
--
--	panic_path =3D &trace_paths[cpuid][active_path[cpuid]];
--
--	local_irq_restore_hw(flags);
--}
--EXPORT_SYMBOL(ipipe_trace_panic_freeze);
--
- static void
- __ipipe_get_task_info(char *task_info, struct ipipe_trace_point *point,
-                       int trylock)
-@@ -615,6 +598,26 @@ __ipipe_get_task_info(char *task_info, s
- 	strcpy(task_info + (11 - strlen(buf)), buf);
- }
-=20
-+#ifdef CONFIG_IPIPE_TRACE_PANIC
-+void ipipe_trace_panic_freeze(void)
-+{
-+	unsigned long flags;
-+	int cpuid;
-+
-+	if (!ipipe_trace_enable)
-+		return;
-+
-+	ipipe_trace_enable =3D 0;
-+	local_irq_save_hw_notrace(flags);
-+
-+	cpuid =3D raw_smp_processor_id();
-+
-+	panic_path =3D &trace_paths[cpuid][active_path[cpuid]];
-+
-+	local_irq_restore_hw(flags);
-+}
-+EXPORT_SYMBOL(ipipe_trace_panic_freeze);
-+
- void ipipe_trace_panic_dump(void)
- {
- 	int cnt =3D back_trace;
-@@ -681,6 +684,7 @@ void ipipe_trace_panic_dump(void)
- 	panic_path =3D NULL;
- }
- EXPORT_SYMBOL(ipipe_trace_panic_dump);
-+#endif /* CONFIG_IPIPE_TRACE_PANIC */
-=20
-=20
- /* --- /proc output --- */
-@@ -803,8 +807,17 @@ static void __ipipe_print_symname(struct
-=20
- 	sym_name =3D kallsyms_lookup(eip, &size, &offset, &modname, namebuf);
-=20
--	/* printing to /proc? */
--	if (m) {
-+#ifdef CONFIG_IPIPE_TRACE_PANIC
-+	if (!m) {
-+		/* panic dump */
-+		if (sym_name) {
-+			printk("%s+0x%lx", sym_name, offset);
-+			if (modname)
-+				printk(" [%s]", modname);
-+		}
-+	} else
-+#endif /* CONFIG_IPIPE_TRACE_PANIC */
-+	{
- 		if (sym_name) {
- 			if (verbose_trace) {
- 				seq_printf(m, "%s+0x%lx", sym_name, offset);
-@@ -814,13 +827,6 @@ static void __ipipe_print_symname(struct
- 				seq_puts(m, sym_name);
- 		} else
- 			seq_printf(m, "<%08lx>", eip);
--	} else {
--		/* panic dump */
--		if (sym_name) {
--			printk("%s+0x%lx", sym_name, offset);
--			if (modname)
--				printk(" [%s]", modname);
--		}
- 	}
- }
-=20
-Index: linux-2.6.20/arch/x86_64/mm/fault.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.20.orig/arch/x86_64/mm/fault.c
-+++ linux-2.6.20/arch/x86_64/mm/fault.c
-@@ -24,6 +24,7 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- #include <linux/uaccess.h>
-+#include <linux/ipipe_trace.h>
-=20
- #include <asm/system.h>
- #include <asm/pgalloc.h>
-@@ -73,8 +74,10 @@ void bust_spinlocks(int yes)
- {
- 	int loglevel_save =3D console_loglevel;
- 	if (yes) {
-+		ipipe_trace_panic_freeze();
- 		oops_in_progress =3D 1;
- 	} else {
-+		ipipe_trace_panic_dump();
- #ifdef CONFIG_VT
- 		unblank_screen();
- #endif
+applications built on top of it!
+
+thx!
+hofrat
 
 
---------------enig02B988631748B0DCF8DA7C2F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+
+                        9th Real-Time Linux Workshop
+
+                              November 2-4, 2007
+                    Institute for Measurement Technology
+                     Johannes Kepler University of Linz
+
+
+                               CALL FOR PAPERS
+
+   General
+
+    Following the meetings of developers and users at the previous 8
+    successful real-time Linux workshops held in Vienna, Orlando, Milano,
+    Boston, and Valencia, Singapur, Lille, and Lanzhou the Real-Time Linux
+    Workshop for 2007 will come back to Europa, to be held at the Institute
+    for Measurement Technology, Johannes Kepler University of Linz, Austira=
+=2E
+
+    Embedded and real-time Linux is continuously growing player in the
+    embedded appliance market world wide. Embedded systems in automation
+    control, measurement and multimedia have been continuously moving towar=
+ds
+    32bit systems, opening the door for the use of full featured OS like
+    GNU/Linux on COTS based systems. With real-time capabilities being a
+    common demand for embedded systems the soft and hard real-time variants
+    are an important extension to the versatile GNU/Linux GPOS.
+
+    Authors are invited to submit original work dealing with general topics
+    related to real-time Linux research, experiments and case studies, as w=
+ell
+    as issues of integration of real-time and embedded Linux. A special foc=
+us
+    will be on industrial case studies. Topics of interest include, but are
+    not limited to:
+
+      * Modifications and variants of the GNU/Linux operating system extend=
+ing
+        it's real-time capabilities
+      * Contributions to real-time Linux variants, drivers and extensions.
+      * User-mode real-time concepts, implementation and experienc
+      * Real-time Linux applications, in academia, research and industry
+      * Real-time Linux in measurement and data-aquisition systems
+      * Signal processing with Linux/real-time Linux.
+      * Work in progress reports, covering recent developments
+      * Educational material on real-time Linux.
+      * Tools for embedding Linux or real-time Linux and embedded real-time
+        Linux applications
+      * RTOS core concepts, RT-safe synchronization mechanisms
+      * Analysis and Benchmarking methods and results of real-time GNU/Linu=
+x
+        variants.
+      * Debugging techniques and tools, both for code and temporal debuggin=
+g of
+        core RTOS components, drivers and real-time applications
+      * Real-time realted extensions to development environments
+      * RT-Linux in safety-critical systems
+
+
+   Registration
+
+    In order to participate to the workshop, please register on the
+    Registration Page at:
+
+    http://www.realtimelinuxfoundation.org/events/events.html
+
+   Venue:
+
+    Johannes Kepler University, Linz, Austria
+
+    http://www.realtimelinuxfoundation.org/events/ws-2007/venue.html
+
+   Accommodation:
+
+    http://www.realtimelinuxfoundation.org/events/ws-2007/hotels.html
+
+   Important dates
+
+    August 11, 2007 Abstract submission
+    September 15, 2007 Notification of acceptance
+    October 13, 2007 Final paper
+    Nov 2-3 Workshop
+
+   Organization committee:
+
+      * Prof. Bernhard ZAGAR, (JKU, AUSTRIA)
+      * Prof. Li LIAN , (LZU, CHINA)
+      * Dr. Peter WURMSDOBLER , (RTLF, USA)
+      * Prof. Nicholas MCGUIRE , (LZU, CHINA)
+
+   Program committee:
+
+
+    Prof. Dr. Bernhard Zagar (Johannes Kepler Universit=E4t Linz, AUSTRIA)
+    Prof. Li Lian (SISE, Lanzhou University, CHINA)
+    Prof. Dr. Paolo Mantegazza (Dipartimento di Ingegneria Aerospaziale, IT=
+ALY)
+    Prof. Dr. Alfons Crespo (Universidad Polit=E9cnica de Valencia,SPAIN)
+    Prof. Dr. Ismael Ripoll (Universidad Polit=E9cnica de Valencia,SPAIN)
+    Ing. Pavel Pisa (Czech Technical University, CZECH REPUBLIC)
+    Dr. Miguel Masmano Tello (Universidad Polit=E9cnica de Valencia,SPAIN)
+    Dr. Zhang Feng, Director of Mobile OS Lab (LCR Lenovo, CHINA)
+    Prof. Hanzalek Zdenek (Czech Technical University, CZECH REPUBLIC)
+    Ing. Michael Rumpler (Thales Group, AUSTRIA)
+    Ing. Philippe Gerum (ADEOS Maintainer, Xenomai, FRANCE)
+    Prof. Xing Li (Tsinghua University, CERNET Center,CHINA)
+    Prof. Hongan Wang (Institute of Software, Intelligence Engineering Lab,=
+ Chinese Academy of Sciences, CHINA)
+    Dr. Chen Maoke, (Tsinghua University, CHINA)
+    Dr. Chen Yu, (Tsinghua University, CHINA)
+    Dr. Bin Hu, (Computing Department of Computing, Business School, Univer=
+sity of Central England,UNITED KINGDOM)
+    Dr. Lei Wang, (School of Computer Science,Beijing University of Aeronau=
+tics and Astronautics,CHINA)
+    Prof. Roberto Bucher (University of Applied Sciences of Southern Switze=
+rland Dept. Innovative Technologies, SWITZERLAND)
+    Ing. Klaus Reichl (Thales Group, AUSTRIA)
+    Dr. Don W. Carr (Universidad de Guadalajara, Guadalajara, MEXICO)
+    Thomas Gleixner (Linutronix, RT-Preempt, GERMANY)
+    Tim Bird (Sony, USA)
+    Ing. Christoph Stueckjuergen (Siemens CT SE 2, GERMANY)
+    Prof. Marting Terbuc (University of Maribor, SLOVENIA)
+    Prof. Matthias Sturm (University of Leibzig, GERMANY)
+    Prof. Ahmet Onat (Sabanci University, TURKEY)
+    Dr. Qingguo ZHOU (DSLab, Lanzhou University, CHINA)
+    Dr. Peter Wurmsdobler (Real Time Linux Foundation, USA)
+    Prof. Nicholas Mc Guire (DSLAb, Lanzhou University, CHINA)
+
+   Workshop organizers:
+
+      * Institute for Measurement Technology ,Johannes Kepler University of=
+ Linz
+        Austria http://www.emt.uni-linz.ac.at/
+      * Real-Time Linux Foundation Inc.
+        USA http://www.realtimelinuxfoundation.org
+      * School for Information Science and Engineering (SISE), University o=
+f
+        Lanzhou China http://www.lzu.edu.cn
+      * Distributed and Embedded Systems Lab, University of Lanzhou, China
+        http://dslab.lzu.edu.cn
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Version: GnuPG v1.2.4 (GNU/Linux)
 
-iD8DBQFGSqY3niDOoMHTA+kRAlLrAJ0UBIkiM5hMTRm6HLoc4AZQQ7O13ACfdm02
-TO5zg93GVo9ZZVQlZYxwKRY=
-=GR3P
+iD8DBQFGTSJTnU7rXZKfY2oRAn0mAJ9QulM0cHlOJ0gOTCWZoTDdPXonKQCdFM6r
+ITLzLhnHm4ufPsVzKzp8pUU=3D
+=3DYEUS
 -----END PGP SIGNATURE-----
-
---------------enig02B988631748B0DCF8DA7C2F--
+---1463803391-823653673-1179460174=:511--
 
