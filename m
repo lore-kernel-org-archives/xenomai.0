@@ -1,9 +1,14 @@
-Message-ID: <464D7993.6010008@domain.hid>
-Date: Fri, 18 May 2007 12:01:55 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <464D864C.3020708@domain.hid>
+Date: Fri, 18 May 2007 12:56:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------020605070900010909060009"
-Subject: [Xenomai-core] [PATCH] fix some src compile problems
+References: <464D7993.6010008@domain.hid>
+In-Reply-To: <464D7993.6010008@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB3083E6E1B484F024458BF13"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH] fix some src compile problems
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,66 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------020605070900010909060009
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB3083E6E1B484F024458BF13
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Wolfgang Grandegger wrote:
+> Hello,
+>=20
+> I needed the attached patch to get the user space stuff of Xenomai
+> trunk, head of SVN cross compiled for PPC. Please apply. Thanks.
 
-I needed the attached patch to get the user space stuff of Xenomai 
-trunk, head of SVN cross compiled for PPC. Please apply. Thanks.
+I would say, just go ahead. The fixes are obvious and correct.
 
-Wolfgang.
+Thanks!
+Jan
 
---------------020605070900010909060009
-Content-Type: text/x-patch;
- name="xenomai-src.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-src.patch"
 
-Index: src/skins/posix/clock.c
-===================================================================
---- src/skins/posix/clock.c	(revision 2455)
-+++ src/skins/posix/clock.c	(working copy)
-@@ -16,6 +16,8 @@
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
-+#include <stdio.h>
-+#include <stdlib.h>
- #include <errno.h>
- #include <pthread.h>		/* For pthread_setcanceltype. */
- #include <posix/syscall.h>
-Index: src/skins/native/timer.c
-===================================================================
---- src/skins/native/timer.c	(revision 2455)
-+++ src/skins/native/timer.c	(working copy)
-@@ -16,6 +16,8 @@
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
-+#include <stdio.h>
-+#include <stdlib.h>
- #include <native/syscall.h>
- #include <native/timer.h>
- #include <asm/xenomai/arith.h>
-Index: src/testsuite/clocktest/clocktest.c
-===================================================================
---- src/testsuite/clocktest/clocktest.c	(revision 2455)
-+++ src/testsuite/clocktest/clocktest.c	(working copy)
-@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
- {
-     int cpus = sysconf(_SC_NPROCESSORS_ONLN);
-     int i;
--    char c;
-+    int c;
- 
-     while ((c = getopt(argc,argv,"C:T:")) != EOF)
-         switch (c) {
+--------------enigB3083E6E1B484F024458BF13
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---------------020605070900010909060009--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGTYZMniDOoMHTA+kRAsWqAJ44TFi3udPfjCJV943qcs1fVy3rsgCfT6mn
+S2iZQPCakUjfuJfgsApUD/Y=
+=A0mq
+-----END PGP SIGNATURE-----
+
+--------------enigB3083E6E1B484F024458BF13--
 
