@@ -1,14 +1,15 @@
-Message-ID: <46488A61.6090709@domain.hid>
-Date: Mon, 14 May 2007 18:12:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@domain.hid>
+Date: Sun, 20 May 2007 11:18:30 +0100
+References: <46180AB8.3000905@domain.hid> <200704072306.46154.paul_c@domain.hid>
+	<4618A2BF.1030104@domain.hid>
+In-Reply-To: <4618A2BF.1030104@domain.hid>
 MIME-Version: 1.0
-References: <1178268043.5391.47.camel@domain.hid>		<463B086B.6060402@domain.hid>
-	<463B5E27.7050408@domain.hid>	<1179137384.4820.31.camel@domain.hid>
-	<464839C8.8060304@domain.hid> <46488839.4060801@domain.hid>
-In-Reply-To: <46488839.4060801@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Latencies while ethernet access
+Content-Disposition: inline
+Message-Id: <200705201118.30019.paul_c@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Live CD
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,45 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Theo Veenker <Theo.Veenker@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> 
->>Let us get the tracer right.
->>...
-> 
-> 
-> And here is the issue already when having a second look:
-> 
-> 
->>/ # cat /proc/ipipe/trace/frozen 
->>I-pipe frozen back-tracing service on 2.6.19.2/ipipe-1.6-04
->>------------------------------------------------------------
->>Freeze: 9187269471 cycles, Trace Points: 30 (+10)
->>Calibrated minimum trace-point overhead: 3.000 us
->>
->> +----- Hard IRQs ('|': locked)
->> |+---- <unused>
->> ||+--- Xenomai
->> |||+-- IShield
->> ||||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
->> |||||                        +---------- Delay flag ('+': > 1 us, '!': > 10 us)
->> |||||                        |        +- NMI noise ('N')
->> |||||                        |        |
->>      Type    User Val.   Time    Delay  Function (Parent)
->>:| #  begin   0x80000001  -190+   4.250N __ipipe_mach_get_tsc+0x48 (xntimer_do_tick_aperiodic+0x40)
-> 
-> 
-> __ipipe_mach_get_tsc() must never pop up in trace, it has to be marked
-> "notrace". I guess you ported that service for your board? Please fix
-> and retry the test.
 
-This has only be fixed very recently, version 1.6-04 of the I-pipe patch
-for ARM makes use of plain local_irq_save_hw/local_irq_restore_hw, which
-causes the NMI noise.
+Hi Theo
 
--- 
-                                                 Gilles Chanteperdrix
+On Sunday 08 April 2007 09:07, Theo Veenker wrote:
+> > [Side note: I already do nightly Sarge based Morphix modules, so slipping
+> > in a Xenomai version once in a while is possible].
+
+> Would be nice. I'm very interested in having a (small) live cd which I can
+> customize and give to my clients.
+
+Finally got round to setting up an Etch based build system for the Morphix 
+project[1] so am now in a position to look again at a minimal live CD. An 
+assortment of kernel packages were compiled overnight for various CPU 
+flavours (586, 686, k7, & k8) and the initial base ISO boots without any 
+problem under qemu.
+
+ Aside from the core Xenomai tools and libraries, what are the main packages 
+you require - We have a blank canvas here, so just about anything can be 
+added.
+
+
+Regards, Paul.
+
+
+[1] http://www.morphix.org
 
