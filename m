@@ -1,15 +1,12 @@
-From: Paul <paul_c@domain.hid>
-Date: Mon, 21 May 2007 14:56:12 +0100
-References: <46180AB8.3000905@domain.hid> <200705201118.30019.paul_c@domain.hid>
-	<46516A6A.9030007@domain.hid>
-In-Reply-To: <46516A6A.9030007@domain.hid>
+Message-ID: <4651AC93.5010500@domain.hid>
+Date: Mon, 21 May 2007 16:28:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <46519AD0.80804@domain.hid>
+In-Reply-To: <46519AD0.80804@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200705211456.12330.paul_c@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai Live CD
+Subject: Re: [Xenomai-help] 10us periodical task (Xenomai vs. RTAI)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,49 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <Theo.Veenker@domain.hid>
+To: plyatov@domain.hid
 Cc: xenomai@xenomai.org
 
-On Monday 21 May 2007 10:46, Theo Veenker wrote:
-> Paul wrote:
-> > Hi Theo
-> >
-> > On Sunday 08 April 2007 09:07, Theo Veenker wrote:
-> >>> [Side note: I already do nightly Sarge based Morphix modules, so
-> >>> slipping in a Xenomai version once in a while is possible].
-> >>
-> >> Would be nice. I'm very interested in having a (small) live cd which I
-> >> can customize and give to my clients.
-> >
-> > Finally got round to setting up an Etch based build system for the
-> > Morphix project[1] so am now in a position to look again at a minimal
-> > live CD. An assortment of kernel packages were compiled overnight for
-> > various CPU flavours (586, 686, k7, & k8) and the initial base ISO boots
-> > without any problem under qemu.
-> >
-> >  Aside from the core Xenomai tools and libraries, what are the main
-> > packages you require - We have a blank canvas here, so just about
-> > anything can be added.
->
-> In my case I would need X-Windows (gnome wm) + ALSA, my user application +
-> kernel module (which of course needs to be recompiled for the particular
-> kernel). My preference would be to have something I can change and build
-> myself. Even if it is just an ISO image that I have unpack, add my own
-> stuff to it and turn it into an ISO again. As long as it's clear where
-> to put what I'm happy with anything that works.
+Igor Plyatov wrote:
+> Is it possible to get 10us results in Xenomai or not?
 
-This is where Morphix is well suited - A main module with the window manager, 
-sound support, and general purpose utilities. A secondary mini module (or 
-just a tarball) would hold just the custom application & kernel module.. Once 
-the main components have been built, should you need to change your custom 
-application, only the mini-module/tarball needs to be remastered before 
-running mkisofs.
+Running a task with a period of 10us is usually considered a bit out of
+the scope of Xenomai. Nevertheles, there were some recent improvements
+on Xenomai trunk that might make this possible. It would be interesting
+if you tested this with trunk and tell us whether it works.
 
-A bare Gnome module (complete with Xorg) weighs in at around 272M, and the 
-base module containing a Xenomai patched kernel & libraries adds another 47M. 
-After I've had a chance to run further tests, I'll put them on a server along 
-with the XML templates and kernel packages.
+Also note that in order to get ultra-low latencies, you have to properly
+calibrate the nucleus latency (/proc/xenomai/latency).
 
+> May be better to use only ADEOS functions for my task, is it faster then
+> RTDM?
 
-Regards, Paul.
+Adeos has no notion of a "task", so, you would have to implement your
+task in an interrupt handler, and yes, you would get better performance
+(see for example the difference between latency -t 2 and latency -t 1).
+
+> What is the state of RTAI nowadays, is it still a live?
+
+Well, you are not asking on the right mailing list. Try RTAI mailing list.
+
+-- 
+                                                 Gilles Chanteperdrix
 
