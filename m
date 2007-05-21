@@ -1,11 +1,15 @@
-Message-ID: <46519AD0.80804@domain.hid>
-Date: Mon, 21 May 2007 17:12:48 +0400
-From: Igor Plyatov <plyatov@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Mon, 21 May 2007 14:56:12 +0100
+References: <46180AB8.3000905@domain.hid> <200705201118.30019.paul_c@domain.hid>
+	<46516A6A.9030007@domain.hid>
+In-Reply-To: <46516A6A.9030007@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] 10us periodical task (Xenomai vs. RTAI)
-Reply-To: plyatov@domain.hid
+Content-Disposition: inline
+Message-Id: <200705211456.12330.paul_c@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Live CD
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,38 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Theo Veenker <Theo.Veenker@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello!
+On Monday 21 May 2007 10:46, Theo Veenker wrote:
+> Paul wrote:
+> > Hi Theo
+> >
+> > On Sunday 08 April 2007 09:07, Theo Veenker wrote:
+> >>> [Side note: I already do nightly Sarge based Morphix modules, so
+> >>> slipping in a Xenomai version once in a while is possible].
+> >>
+> >> Would be nice. I'm very interested in having a (small) live cd which I
+> >> can customize and give to my clients.
+> >
+> > Finally got round to setting up an Etch based build system for the
+> > Morphix project[1] so am now in a position to look again at a minimal
+> > live CD. An assortment of kernel packages were compiled overnight for
+> > various CPU flavours (586, 686, k7, & k8) and the initial base ISO boots
+> > without any problem under qemu.
+> >
+> >  Aside from the core Xenomai tools and libraries, what are the main
+> > packages you require - We have a blank canvas here, so just about
+> > anything can be added.
+>
+> In my case I would need X-Windows (gnome wm) + ALSA, my user application +
+> kernel module (which of course needs to be recompiled for the particular
+> kernel). My preference would be to have something I can change and build
+> myself. Even if it is just an ISO image that I have unpack, add my own
+> stuff to it and turn it into an ISO again. As long as it's clear where
+> to put what I'm happy with anything that works.
 
-Thank to all excellent guys who make Xenomai (great work)!
+This is where Morphix is well suited - A main module with the window manager, 
+sound support, and general purpose utilities. A secondary mini module (or 
+just a tarball) would hold just the custom application & kernel module.. Once 
+the main components have been built, should you need to change your custom 
+application, only the mini-module/tarball needs to be remastered before 
+running mkisofs.
 
-I'm novice in Xenomai.
-One day I read the article at "Linux Devices" about software radio on
-Linux with RTAI:
-http://www.linuxdevices.com/articles/AT3239582376.html
-
-"Coupard's demo generate a carrier frequency of 153 KHz, based on
-running the real-time task on every system timer interrupt, or 306,000
-times per second. Since at that rate it required a 500 MHz Pentium or
-faster."
-
-I try to make something like this with Xenomai's RTDM, but do not get
-good results.
-I need a kernel task, with period 10us, which do little calculations and
-output data to the LPT port.
-What I can get with acceptable jitter (and without any calculations in
-task):
-  20us on 2.4GHz Pentium4
-  100us on 150MHz Pentium
-
-Is it possible to get 10us results in Xenomai or not?
-May be better to use only ADEOS functions for my task, is it faster then
-RTDM?
-What is the state of RTAI nowadays, is it still a live?
-
--- 
-Igor Plyatov
+A bare Gnome module (complete with Xorg) weighs in at around 272M, and the 
+base module containing a Xenomai patched kernel & libraries adds another 47M. 
+After I've had a chance to run further tests, I'll put them on a server along 
+with the XML templates and kernel packages.
 
 
+Regards, Paul.
 
