@@ -1,11 +1,10 @@
-Message-ID: <46529EF3.8060005@domain.hid>
-Date: Tue, 22 May 2007 11:42:43 +0400
-From: Igor Plyatov <plyatov@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Peter Feuerer <peter.feuerer@domain.hid>
+Content-Type: text/plain
+Date: Tue, 22 May 2007 14:48:26 +0200
+Message-Id: <1179838106.6050.46.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] 10us periodical task (Xenomai vs. RTAI)
-Reply-To: plyatov@domain.hid
+Subject: [Xenomai-help] ppc crosscompilation, missing headers
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,35 +16,51 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello!
+Hi all,
 
->> > Is it possible to get 10us period for task in Xenomai or not?
-> 
-> Running a task with a period of 10us is usually considered a bit out of
-> the scope of Xenomai. Nevertheles, there were some recent improvements
-> on Xenomai trunk that might make this possible. It would be interesting
-> if you tested this with trunk and tell us whether it works.
-Can somebody recommend applicable opensource RTOS extension for Linux
-(with support for x86 and ARM)?
+I'm trying to crosscompile xenomai 2.3.1 for the ppc-architecture. 
+My commands are like this:  (using latest denx ELDK)
 
-> Also note that in order to get ultra-low latencies, you have to properly
-> calibrate the nucleus latency (/proc/xenomai/latency).
-How to do this? (Please, navigate me to the rigth documentation or 
-answer in this list).
+export ARCH=ppc
+export CROSS_COMPILE=ppc_8xx-
 
->> > May be better to use only ADEOS functions for my task, is it faster then
->> > RTDM?
-> 
-> Adeos has no notion of a "task", so, you would have to implement your
-> task in an interrupt handler, and yes, you would get better performance
-> (see for example the difference between latency -t 2 and latency -t 1).
-Can somebody give me a simple example of fast periodical "task" with 
-usage of only ADEOS functions.
+scripts/prepare-kernel.sh --arch=ppc
+--linux=/home/piie/toolchains/ppc-4.1/ppc_8xx/usr/src/linux/
+--adeos=ksrc/arch/powerpc/patches/adeos-ipipe-2.6.18-ppc-1.5-01.patch
 
--- 
-Igor Plyatov
+cd bla/usr/src/linux/
+make TQM8260_defconfig
+make menuconfig
+make uImage
 
+Everything is working so far and the kernel with built in xenomai boots
+flawless. (dmesg reports xenomai is working)
 
+When trying to crosscompile the xenomai libs and so on, the configure
+step is working correctly.
 
+./configure -host=ppc-linux
+
+But the make fails because of missing headers:
+[..]
+ error: asm/errno.h: No such file or directory
+[..]
+ error: asm/param.h: No such file or directory
+[..]
+
+I took a look at the kernel/include/asm-ppc/ folder and actually these
+headers are missing. But they do exist for the "powerpc" architecture.
+So I just copied all missing headers from asm-powerpc/ to asm-ppc/ to
+try if the xenomai userspace things can be compiled. It worked. But I
+think that is not the way it has to be done.
+Does anybody know why these headers are missing in asm-ppc? Do I have to
+install some kind of BSP-kernel-patch for my specific board? Why are
+these headers available for powerpc?
+
+And btw, maybe someone of you knows, why are there 2 architectures for
+the powerpc architecture in the kernel tree?
+
+thanks for your help,
+--peter
 
 
