@@ -1,10 +1,12 @@
-Message-ID: <46543598.8030909@domain.hid>
-Date: Wed, 23 May 2007 14:37:44 +0200
-From: Johan Borkhuis <j.borkhuis@domain.hid>
+Message-ID: <4654386C.6060309@domain.hid>
+Date: Wed, 23 May 2007 14:49:48 +0200
+From: Rodolfo <rolfetas@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <46543091.3040308@domain.hid> <465434B9.6010805@domain.hid>
+In-Reply-To: <465434B9.6010805@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Porting driver to RTDM
+Subject: Re: [Xenomai-help] loading module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,46 +16,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-Hello,
+here's the source of the testing module.
 
-I am working on porting a Linux VME driver to Xenomai. I am having some 
-ideas on how to do this, but I would like to have some feedback on this.
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/proc_fs.h>
+#include <native/task.h>
+#include <native/types.h>
+#include <native/timer.h>
+#include <rtdm/rtdm_driver.h>
+#include <nucleus/pod.h>
 
-There are 2 ways to communicate to devices on the VME bus: memory mapped 
-and using interrupts. At this moment I setup the memory mapping when the 
-system starts, and then use these mapped areas to read and write from 
-the devices. The interrupts are processed using a standard interrupt 
-handler, and a "Wait for interrupt" IOCTL-call is available to wait for 
-a specific interrupt. The driver defines several VME devices: some 
-control devices and some data devices.
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Hello World Xenomai Application");
 
-My plans for the new driver are to have an RTDM driver next to the 
-standard Linux driver. I will be using the standard driver for the setup 
-of the system, like setting up the memory mapping. The RTDM driver will 
-define a RT-control device to perform the interrupt handling and an RTDM 
-IOCTL will be used to wait for the interrupts. This way I can have a 
-RT-thread to process the interrupts.
+/************************* Global Variables ******************************/
 
-The reason for this setup are:
+RT_TASK thread;
+RTIME timer_period_ns;
+RTIME task_period_ns;
+RTIME expected;
+int timer_period_counts;
+unsigned long overrun; // rt_task_wait_period() writes here overrun
+count.0 if everything OK
 
-    * I do not want to rewrite the current driver, as this driver
-      already has all the functionality needed, except for the
-      RT-performance.
-    * The interface to VME devices is done using memory access and no
-      other SW is needed for this. This means that during operational
-      use no driver functions will be accessed.
-    * The memory mapping is not as straight forward in RTDM as it is in
-      standard Linux: for example there is no mmap function in the
-      device structure.
-    * I can still use drivers for VME devices that depend on the current
-      driver.
+/************************* Periodic realtime thread **********************/
+
+void fun(int dummy) {
+    int count = 0;
+    while(1) {
+        ++count;
+        rt_task_wait_period(&overrun);
+        if ((count%100)==0) {
+            rtdm_printk("Periode %d ist abgelaufen\n",count);
+        }
+    }
+}
+
+/************************* Initialisation *******************************/
+
+static int hello_init(void)
+{
+    //testing rt_task_create(...);
+    int count = 0;
+    printk("task create");
+    rt_task_create(&thread,"fun_task",3000,1,0);
+    printk("created..");
+    printk("task start");
+    rt_task_start(&thread,fun,0);
+    printk("started........");
 
 
-Is this the right way to do this, or are there other ways to implement a 
-driver like this one?
 
-Kind regards,
-    Johan Borkhuis
+    //timer_period_ns = 10000000;/*10ms*/
+    /*timer_period_counts = start_rt_timer(nano2count(timer_period_ns));*/
+
+//timer_period_counts=rt_timer_set_mode(rt_timer_ns2tsc(timer_period_ns));
+    /* Calculate the start time for the task. */
+    /* We set this to "now plus 10 periods"   */
+    //expected = xnpod_get_time()  + 10 * timer_period_counts;
+
+    /* Task period initialization */
+    //task_period_ns =50000000;/*5ms*/
+    /*rt_task_make_periodic(&thread, expected,
+nano2count(task_period_ns));*/
+    //rt_task_set_periodic(&thread, expected,
+rt_timer_ns2tsc(task_period_ns));
+    return 0;
+}
+
+/************************* Cleanup *********************************/
+
+static void hello_exit(void)
+{
+  /*stop_rt_timer();*/
+
+  /* Now delete our task */
+ // rt_task_delete(&thread);
+}
+
+module_init(hello_init);
+module_exit(hello_exit);
+
+
+Gilles Chanteperdrix wrote:
+> Rodolfo wrote:
+>   
+>> Hi,
+>> I am totally new to Xenomai and have no experience with RTAI. I'm trying
+>> to load a kernel module that uses the native API for testing, but I get
+>> the following segmentation fault. Can anyone help me out??
+>>     
+>
+> Please post here the sources of your module.
+>
+>   
+
+
 
