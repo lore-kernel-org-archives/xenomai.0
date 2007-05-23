@@ -1,17 +1,10 @@
-Message-ID: <46540F47.9060907@domain.hid>
-Date: Wed, 23 May 2007 11:54:15 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <46543091.3040308@domain.hid>
+Date: Wed, 23 May 2007 14:16:17 +0200
+From: Rodolfo <rolfetas@domain.hid>
 MIME-Version: 1.0
-References: <20070522145243.94232353428@domain.hid>	
-	<1179907535.6119.14.camel@domain.hid>	
-	<4653FAE0.90707@domain.hid>	
-	<1179908851.6119.21.camel@domain.hid>	
-	<465404D4.5010309@domain.hid>
-	<1179912486.6119.32.camel@domain.hid>
-In-Reply-To: <1179912486.6119.32.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ppc crosscompilation, missing headers
+Subject: [Xenomai-help] loading module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,49 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Feuerer <peter.feuerer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Peter Feuerer wrote:
-> On Wed, 2007-05-23 at 11:09 +0200, Wolfgang Grandegger wrote:
->> Peter Feuerer wrote:
->>> On Wed, 2007-05-23 at 10:27 +0200, Wolfgang Grandegger wrote:
->>>> Peter Feuerer wrote:
->>>>> Hi,
->>>>>
->>>>> History:
->>>>> https://mail.gna.org/public/xenomai-help/2007-05/msg00260.html
->>>>>
->>>>>> Please see FAQ 14.1.4. ELDK Include Files Missing
->>>>>> http://www.denx.de/wiki/view/DULG/ELDKIncludeFilesMissing
->>>>> After doing this workaround, I'm able to compile the userspace part of
->>>>> Xenomai, but now I can't compile any little kernelmodule using the
->>>>> xenomai api. I attached the Makefile and the sourcecode of my little
->>>>> example.
->>>>>
->>>>> When trying to compile it cannot find headers like asm/param.h or
->>>>> asm/types.h (because they are not in krnsrc/include/asm-ppc/ and the
->>>>> workaround just added the userspace/libc headers). I guess there must be
->>>>> something wrong with the Makefile, but I cannot find the problem.
->>>> Just add ARCH=ppc to you make command.
->>> ARCH=ppc is already set as environment variable, nevertheless I tried to
->>> compile it using "make ARCH=ppc" and to add it to Makefile's make line.
->>> Still the same Problem.
->> Hm, it works for me. You moved around header files in your kernel 
->> include path. Have you already cleaned up? And add V=1 to the make 
->> command to check the compile command.
-> 
-> This is a complete new installation of denx ELDK 4.1 and a complete
-> fresh kernel, just patched with the adeos patch and compiled, no hacks,
-> or workarounds here. I sent the log how I installed everything some
-> emails ago.
-> 
-> Got it, the V=1 told me to make a "make oldconfig && make prepare" in
-> the kernel src then I was able to compile it. What ever that made, it
-> made it working.
+Hi,
+I am totally new to Xenomai and have no experience with RTAI. I'm trying
+to load a kernel module that uses the native API for testing, but I get
+the following segmentation fault. Can anyone help me out??
+Thanks
 
-Good, it makes some required header files.
 
-Wolfgang.
+Running 2.6.20 Kernel and Xenomai is statically built into the Kernel,
+on a VIA Eden
+
+----------------------------------------------------------------------------------------------------------------------------
+Jun 13 03:58:04 login[345]: root login on 'ttyS0'
+
+
+BusyBox v1.5.0 (2007-05-16 14:24:12 CEST) Built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+# cd usr
+# insmod hallo.ko
+task start<1>BUG: unable to handle kernel NULL pointer dereference at
+virtual address 00000068
+ printing eip:
+c0157cd9
+*pde = 00000000
+Oops: 0000 [#1]
+SMP
+Modules linked in: hallo
+CPU:    0
+EIP:    0060:[<c0157cd9>]    Not tainted VLI
+EFLAGS: 00010286   (2.6.20-default #4)
+EIP is at rt_task_start+0x25/0x13e
+eax: 00000060   ebx: 00000000   ecx: 00000000   edx: 00000286
+esi: c8010780   edi: c118716c   ebp: 00000000   esp: c119de88
+ds: 007b   es: 007b   ss: 0068
+Process insmod (pid: 346, ti=c119c000 task=c77ccb10 task.ti=c119c000)
+Stack: c011d8ea c800f088 c119deb0 c800f031 c118714c c1187000 c118716c
+c800f580
+       c800f021 c800f088 c0136cc4 c800f5c8 c033bda6 c800f58c 00000000
+00001524
+       00000230 c77fbba0 00000260 c0190271 00000000 00000000 00000000
+00000000
+Call Trace:
+ [<c011d8ea>] printk+0x62/0xd6
+ [<c800f031>] fun+0x0/0x57 [hallo]
+ [<c800f021>] hello_init+0x20/0x30 [hallo]
+ [<c0136cc4>] sys_init_module+0x1771/0x18b8
+ [<c0190271>] do_sync_read+0xc7/0x10a
+ [<c019f0bb>] dput+0x49/0x11f
+ [<c0102dbf>] syscall_call+0x7/0xb
+ =======================
+Code: d8 5b 5e 5f 5d c3 55 57 56 53 83 ec 10 89 c6 8b 1d bc bc 46 c0 89
+cd 89 54 24 0c ff 15 44 aa 37 c0 69 c0 c0 03 00 00 8d 44 18 60 <8b> 40
+08 85
+EIP: [<c0157cd9>] rt_task_start+0x25/0x13e SS:ESP 0068:c119de88
+ Segmentation fault
+
 
 
