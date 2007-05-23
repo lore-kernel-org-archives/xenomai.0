@@ -2,11 +2,12 @@ From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18004.38776.953334.848002@domain.hid>
-Date: Wed, 23 May 2007 21:35:20 +0200
-In-Reply-To: <bc4264770705231046u264c760el6bf50339d5aca43@domain.hid>
-References: <bc4264770705231046u264c760el6bf50339d5aca43@domain.hid>
-Subject: Re: [Xenomai-help] loading a task
+Message-ID: <18004.38979.30479.570875@domain.hid>
+Date: Wed, 23 May 2007 21:38:43 +0200
+In-Reply-To: <18004.38669.551814.469582@domain.hid>
+References: <FDBBB5CC70676540B3EF7CFE83FD94E09993F7@domain.hid>
+	<18004.38669.551814.469582@domain.hid>
+Subject: Re: [Xenomai-help] Artificial task load
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,20 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: roland Tollenaar <rolandtollenaar@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>, xenomai@xenomai.org
 
-roland Tollenaar wrote:
- > Hi,
+Gilles Chanteperdrix wrote:
+ > ROSSIER Daniel wrote:
+ >  > Hello,
+ >  > 
+ >  >  
+ >  > 
+ >  > Maybe this issue has already been raised up, anyway...
+ >  > 
+ >  > What would be the best way to simulate a task load in Xenomai RT tasks,
+ >  > avoiding the rt_timer_spin() which is not appropriate
+ >  > 
+ >  > when multiple task context switching occur?
+ >  > 
+ >  > (I've already experimented a simple loop with rt_timer_spin(1), but it
+ >  > is not reasonable since the loop instructions consumes some CPU time as
+ >  > well).
+ >  > 
+ >  >  
+ >  > 
+ >  > Thanks for any advice.
  > 
- > I have noticed that the latency on  a 1ms task seems to improve if
- > there is work in the task. In other words the more I process in the
- > task (within limits of course) the more stable the 1ms period time I
- > measure becomes.
- > 
- > Is this a known phenomenon or am I doing something strange somewhere?
+ > Sorry, but I do not understand what is wrong with rt_timer_spin(). If
+ > you do not want to use this service, maybe you can use
+ > xnarch_get_cpu_tsc() (or __xn_rdtsc() in user-space) ?
 
-Maybe a cache effect ?
+Got it, you want a service that really burns a given quantity of
+CPU. What about linux udelay ?
 
 -- 
 
