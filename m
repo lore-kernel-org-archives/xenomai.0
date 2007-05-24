@@ -1,12 +1,14 @@
-Message-ID: <4648CA4E.70904@domain.hid>
-Date: Mon, 14 May 2007 13:45:02 -0700
-From: Jeff Koftinoff <jeffk@domain.hid>
+Message-ID: <46554468.70307@domain.hid>
+Date: Thu, 24 May 2007 09:53:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4648C077.2050003@domain.hid> <4648C26F.1020002@domain.hid>
-In-Reply-To: <4648C26F.1020002@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_set_periodic and different time base
+References: <5C40CD1E4697424ABDE3AC57CF1B22C6032202C6@domain.hid>
+In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C6032202C6@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigB9624BCDC6D46A53C655A0C8"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,62 +18,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
->
-> There exists some vague ideas to provide an infrastructure with Xenomai
-> that allows to smoothly synchronise its local clock on whatever external
-> (jittery) source, but note that "vague" above.
->
-> Moreover, I don't think you actually want this for your scenario. You
-> may rather look for a hard sync on each audio tick, no?
->
->   
-correct, a hard sync on each audio tick is what I want. 166 +- 20 
-Microseconds.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigB9624BCDC6D46A53C655A0C8
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
->> My original thought was to use rt_intr_wait() in my user mode program 
->> and do the scheduling of sub-tasks myself.
->>     
->
-> Sounds what you need (or directly derive an RTDM device with appropriate
-> interface for your audio-hw :)).
->
->   
-90% of my CPU time needs to be spent processing audio and the control 
-for this audio, at the highest priority above linux, and running in C++ 
-in userspace (really!)... There is no 'audio driver' involved, really, 
-as the whole point of the hardware is to process live audio in real time 
-from audio in to audio out with very low latency in usermode.
->> But it would be ideal if rt_task_set_periodic() could just use the 
->> appropriate time source itself.
->>     
->
-> Why?
->
->   
-Because I have many layers of audio processing procedures that need to 
-be scheduled at different periodic intervals, with different priorities. 
-lower level audio processing procedures run every 166 microseconds and 
-have highest priority, and interrupt higher level lower rate (5.3 
-ms,10.66 ms and 32 ms) control processing procedures. 
+RAKOTOSALAMA, Nirilanto wrote:
+>>> Hello,
+>>>
+>>> I have some question about CPU affinity with Xenomai 2.3.1.
+>>> (it is to see if  xenomai support developing for a cpu=20
+>> manager library is feasible)
+>>
+>> What will this library do? (/me just nosy)
+>=20
+> In fact, there's simulation programs that run on many different systems=
+ (hard + soft),
+> and to make this applications as portable as possible, they use librari=
+es developed for every
+> systems (dec alpha, pc, specific cards, linux, unix). And, I search if =
+xenomai could be used
+> with less re-implementation effort, so the more posix function are deve=
+loped by xenomai,=20
+> the better it is, and easier it is (for me :p).
+> So first step is developing this libraries xenomai support (e.g. timer,=
+ cpu).
+> This cpu library should provides "simple" functions like : getting the =
+number of cpu,
+> setting/getting the cpu affinity for a process passing its pid, protect=
+/un-protect cpu from running
+> unwanted process.
 
-I have non-xenomai usermode code right now that can use a recursive 
-signal handler to manually schedule these 'layers' of processing tasks.  
-But then I'm just duplicating the rt_task_set_periodic() capability that 
-is already there in xenomai.
+OK, I see.
 
-I just want the Xenomai task scheduler to be controlled directly by the 
-audio tick interrupt.... Is that a problem to enable?
+>=20
+>>> When using rt_task_create, CPU mask can be specified.=20
+>> However, when sched_setaffinity is called=20
+>>> to modify main program affinity, and after, rt_task_create=20
+>> is called without specifying CPU mask,
+>>> did the child task inherits from the main program affinity ?
+>> If you don't provide a target CPU (either on creation or via
+>> /proc/xenomai/affinity), better consider the affinity as unspecified
+>> (any possible CPU). The target CPU derives from Linux=20
+>> decision where to
+>> put the thread non-RT boot code on, Xenomai just nails that decision
+>> down until someone explicitly migrates.
+>>
+>>> Same question for Posix skin threads ?
+>>>
+>>> Can native task affinity be set other than when creating ?=20
+>> using sdhed_setaffinity ?
+>>
+>> /proc/xenomai/affinity (has global scope) or=20
+>> sched_setaffinity. Xenomai
+>> shadow threads follow the migration that may took place while in
+>> secondary mode, and sched_setaffinity comes with such a mode switch.
+>=20
+> Thanks, If I have well understood, tasks or threads affinity can be set=
+ using /proc/xenomai/affinity
+> but, I have read that /proc/xenomai/affinity does not exist in xenomai =
+2.3.1 and xenomai must be patched
 
-Regards,
-Jeff koftinoff.
+Yes, it's an upcoming feature of 2.4.
 
-www.jdkoftinoff.com
+> (I don't know how because I don't have nor SVN neither internet connect=
+ion on my xenomai boxes).
+
+There is a daily snapshot on gna.org: https://gna.org/svn/?group=3Dxenoma=
+i
+
+> So I can use sched_setaffinity, but it make switch to secondary mode.=20
+> Does'nt matter if only threads must be RT and sched_setaffinity is call=
+ed during a non-rt init phase, does it ?
+
+Yep.
+
+> That means that affinity does'nt depend on running on xenomai or second=
+ary mode ?
+
+Sorry, doesn't parse for me right now.
+
+>=20
+> BTW, is protecting a CPU with xenomai possible ?=20
+> Does xenomai use /dev/cpuset or an other device ?
+
+Xenomai doesn't directly interact with cpuset -- but... if you force
+some RT process into a certain CPU and you don't override this decision
+on RT thread creation, Xenomai will follow as explained.
+
+Jan
 
 
+--------------enigB9624BCDC6D46A53C655A0C8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFGVURpniDOoMHTA+kRAsuDAJ9Pd5nPjo7yO0eEJnK+9mlnLZ1fHwCfbaug
+CyJ1WWfQ1VMi/A3kBsRduSQ=
+=rxz5
+-----END PGP SIGNATURE-----
+
+--------------enigB9624BCDC6D46A53C655A0C8--
 
