@@ -1,14 +1,14 @@
-Message-ID: <46554468.70307@domain.hid>
-Date: Thu, 24 May 2007 09:53:12 +0200
+Message-ID: <46554645.90806@domain.hid>
+Date: Thu, 24 May 2007 10:01:09 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <5C40CD1E4697424ABDE3AC57CF1B22C6032202C6@domain.hid>
-In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C6032202C6@domain.hid>
+References: <46543598.8030909@domain.hid>
+In-Reply-To: <46543598.8030909@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigB9624BCDC6D46A53C655A0C8"
+	boundary="------------enig9CD2AAA65BB4ED65C6B94A46"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
+Subject: Re: [Xenomai-help] Porting driver to RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,101 +18,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
-Cc: xenomai@xenomai.org
+To: Johan Borkhuis <j.borkhuis@domain.hid>
+Cc: Xenomai-help@domain.hid
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB9624BCDC6D46A53C655A0C8
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig9CD2AAA65BB4ED65C6B94A46
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-RAKOTOSALAMA, Nirilanto wrote:
->>> Hello,
->>>
->>> I have some question about CPU affinity with Xenomai 2.3.1.
->>> (it is to see if  xenomai support developing for a cpu=20
->> manager library is feasible)
->>
->> What will this library do? (/me just nosy)
+Johan Borkhuis wrote:
+> Hello,
 >=20
-> In fact, there's simulation programs that run on many different systems=
- (hard + soft),
-> and to make this applications as portable as possible, they use librari=
-es developed for every
-> systems (dec alpha, pc, specific cards, linux, unix). And, I search if =
-xenomai could be used
-> with less re-implementation effort, so the more posix function are deve=
-loped by xenomai,=20
-> the better it is, and easier it is (for me :p).
-> So first step is developing this libraries xenomai support (e.g. timer,=
- cpu).
-> This cpu library should provides "simple" functions like : getting the =
-number of cpu,
-> setting/getting the cpu affinity for a process passing its pid, protect=
-/un-protect cpu from running
-> unwanted process.
-
-OK, I see.
-
+> I am working on porting a Linux VME driver to Xenomai. I am having some=
+=20
+> ideas on how to do this, but I would like to have some feedback on this=
+=2E
 >=20
->>> When using rt_task_create, CPU mask can be specified.=20
->> However, when sched_setaffinity is called=20
->>> to modify main program affinity, and after, rt_task_create=20
->> is called without specifying CPU mask,
->>> did the child task inherits from the main program affinity ?
->> If you don't provide a target CPU (either on creation or via
->> /proc/xenomai/affinity), better consider the affinity as unspecified
->> (any possible CPU). The target CPU derives from Linux=20
->> decision where to
->> put the thread non-RT boot code on, Xenomai just nails that decision
->> down until someone explicitly migrates.
->>
->>> Same question for Posix skin threads ?
->>>
->>> Can native task affinity be set other than when creating ?=20
->> using sdhed_setaffinity ?
->>
->> /proc/xenomai/affinity (has global scope) or=20
->> sched_setaffinity. Xenomai
->> shadow threads follow the migration that may took place while in
->> secondary mode, and sched_setaffinity comes with such a mode switch.
+> There are 2 ways to communicate to devices on the VME bus: memory mappe=
+d=20
+> and using interrupts. At this moment I setup the memory mapping when th=
+e=20
+> system starts, and then use these mapped areas to read and write from=20
+> the devices. The interrupts are processed using a standard interrupt=20
+> handler, and a "Wait for interrupt" IOCTL-call is available to wait for=
+=20
+> a specific interrupt. The driver defines several VME devices: some=20
+> control devices and some data devices.
 >=20
-> Thanks, If I have well understood, tasks or threads affinity can be set=
- using /proc/xenomai/affinity
-> but, I have read that /proc/xenomai/affinity does not exist in xenomai =
-2.3.1 and xenomai must be patched
-
-Yes, it's an upcoming feature of 2.4.
-
-> (I don't know how because I don't have nor SVN neither internet connect=
-ion on my xenomai boxes).
-
-There is a daily snapshot on gna.org: https://gna.org/svn/?group=3Dxenoma=
-i
-
-> So I can use sched_setaffinity, but it make switch to secondary mode.=20
-> Does'nt matter if only threads must be RT and sched_setaffinity is call=
-ed during a non-rt init phase, does it ?
-
-Yep.
-
-> That means that affinity does'nt depend on running on xenomai or second=
-ary mode ?
-
-Sorry, doesn't parse for me right now.
-
+> My plans for the new driver are to have an RTDM driver next to the=20
+> standard Linux driver. I will be using the standard driver for the setu=
+p=20
+> of the system, like setting up the memory mapping. The RTDM driver will=
+=20
+> define a RT-control device to perform the interrupt handling and an RTD=
+M=20
+> IOCTL will be used to wait for the interrupts. This way I can have a=20
+> RT-thread to process the interrupts.
 >=20
-> BTW, is protecting a CPU with xenomai possible ?=20
-> Does xenomai use /dev/cpuset or an other device ?
+> The reason for this setup are:
+>=20
+>     * I do not want to rewrite the current driver, as this driver
+>       already has all the functionality needed, except for the
+>       RT-performance.
+>     * The interface to VME devices is done using memory access and no
+>       other SW is needed for this. This means that during operational
+>       use no driver functions will be accessed.
+>     * The memory mapping is not as straight forward in RTDM as it is in=
 
-Xenomai doesn't directly interact with cpuset -- but... if you force
-some RT process into a certain CPU and you don't override this decision
-on RT thread creation, Xenomai will follow as explained.
+>       standard Linux: for example there is no mmap function in the
+>       device structure.
+
+OK, noted. I will check again if we can do something about this on next
+major RTDM rework. I'm considering to refactor typical non-RT entry
+points of RTDM drivers anyway.
+
+>     * I can still use drivers for VME devices that depend on the curren=
+t
+>       driver.
+>=20
+>=20
+> Is this the right way to do this, or are there other ways to implement =
+a=20
+> driver like this one?
+
+RTDM is not about forcing you do make abstractions if you don't want to.
+You say that you already have a (basic) driver model, and so it is fine
+to apply it on top of RTDM as well. When RTDM is not optimally providing
+services for this, we need to recheck it.
+
+But if you wanted to make your device interface generic, maybe portable
+to other hardware of that class, then things need to be looked at from a
+different angle.
 
 Jan
 
 
---------------enigB9624BCDC6D46A53C655A0C8
+--------------enig9CD2AAA65BB4ED65C6B94A46
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -121,10 +102,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGVURpniDOoMHTA+kRAsuDAJ9Pd5nPjo7yO0eEJnK+9mlnLZ1fHwCfbaug
-CyJ1WWfQ1VMi/A3kBsRduSQ=
-=rxz5
+iD8DBQFGVUZFniDOoMHTA+kRAqRvAJ4oSu246uY+eD+/UiWTdSbaBcTZLwCfRna3
+pgyyhoPs4KPEHjY9/0d9+00=
+=5vB3
 -----END PGP SIGNATURE-----
 
---------------enigB9624BCDC6D46A53C655A0C8--
+--------------enig9CD2AAA65BB4ED65C6B94A46--
 
