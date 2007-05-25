@@ -1,10 +1,10 @@
-Message-ID: <4656AA07.20506@domain.hid>
-Date: Fri, 25 May 2007 11:19:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4656AA8D.9070607@domain.hid>
+Date: Fri, 25 May 2007 11:21:17 +0200
+From: Rodolfo Bamberg <rolfetas@domain.hid>
 MIME-Version: 1.0
 References: <4656A529.5000405@domain.hid> <4656A71C.2010801@domain.hid>
-	<4656A7FA.9000408@domain.hid>
-In-Reply-To: <4656A7FA.9000408@domain.hid>
+	<4656A7FA.9000408@domain.hid> <4656A938.9000501@domain.hid>
+In-Reply-To: <4656A938.9000501@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] problem compiling for user space
@@ -19,14 +19,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Xenomai help <xenomai@xenomai.org>
 
-Rodolfo Bamberg wrote:
-> I thought I did compile xenomai for the same target by passing the
-> --build=i386-linux-uclibc option to .configure.
+Gilles Chanteperdrix wrote:
+> Rodolfo Bamberg wrote:
+>   
+>> I thought I did compile xenomai for the same target by passing the
+>> --build=i386-linux-uclibc option to .configure.
+>>     
+>
+> No, to cross compile, you should pass --host=i386-linux-uclibc not
+> --build. For informations on cross-compiling Xenomai, see README.INSTALL.
+>
+>   
+I runned now configure with the correct --host option, and when I run
+make install i get
+this error:
 
-No, to cross compile, you should pass --host=i386-linux-uclibc not
---build. For informations on cross-compiling Xenomai, see README.INSTALL.
+Making install in cyclic
+make[3]: Entering directory
+`/home/rodolfo/xenomai/xenomai-2.3.1/src/testsuite/cyclic'
+if i386-linux-uclibc-gcc -DHAVE_CONFIG_H -I. -I. -I../../../src/include 
+-I../../../include/posix -O2 -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
+-fstrict-aliasing -Wno-strict-aliasing -D__XENO__ -D__IN_XENO__
+-Wstrict-prototypes -DIPIPE_TRACE=1 -I../../../include    -MT
+cyclictest-cyclictest.o -MD -MP -MF ".deps/cyclictest-cyclictest.Tpo" -c
+-o cyclictest-cyclictest.o `test -f 'cyclictest.c' || echo
+'./'`cyclictest.c; \
+        then mv -f ".deps/cyclictest-cyclictest.Tpo"
+".deps/cyclictest-cyclictest.Po"; else rm -f
+".deps/cyclictest-cyclictest.Tpo"; exit 1; fi
+/bin/sh ../../../libtool --tag=CC --mode=link i386-linux-uclibc-gcc    
+-o cyclictest
+-Wl,@/home/rodolfo/xenomai/xenomai-2.3.1/src/skins/posix/posix.wrappers 
+cyclictest-cyclictest.o ../../skins/posix/libpthread_rt.la -lpthread -lrt
+i386-linux-uclibc-gcc -o .libs/cyclictest
+-Wl,@/home/rodolfo/xenomai/xenomai-2.3.1/src/skins/posix/posix.wrappers
+cyclictest-cyclictest.o  ../../skins/posix/.libs/libpthread_rt.so
+-lpthread -lrt -Wl,--rpath -Wl,/tftpboot/192.168.0.2//lib
+collect2: ld terminated with signal 11 [Segmentation fault]
 
--- 
-                                                 Gilles Chanteperdrix
-
+Is this a bug in my toolchain?? Tanks Gilles.
 
