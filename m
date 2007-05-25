@@ -1,5 +1,5 @@
-Message-ID: <4656F400.1030803@domain.hid>
-Date: Fri, 25 May 2007 16:34:40 +0200
+Message-ID: <46570185.3030406@domain.hid>
+Date: Fri, 25 May 2007 17:32:21 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4656E62F.3090603@domain.hid>
@@ -9,7 +9,7 @@ References: <4656E62F.3090603@domain.hid>
 In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01F547BA@is-hdq-exchange.marel.net>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF7DF01BC1D72760C558B2557"
+	boundary="------------enig5686BF666C9CB03B3B872B54"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] [BUG] recursive fault on cyclictest termination
  --	scalable sched?
@@ -26,21 +26,43 @@ To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF7DF01BC1D72760C558B2557
+--------------enig5686BF666C9CB03B3B872B54
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
 Daniel Schnell wrote:
 > Well, that may be related to the bug I am seeing when I am ending cycli=
 ctest with Ctrl-C, Recursive kernel Ooops and this is on plain 2.3.1
+>=20
 
-My tests all ran over trunk, but you may easily verify the relation by
-enabling XENO_OPT_DEBUG_QUEUES.
+2.3.1 is definitely affected by this bug as well, as it also gained the
+prio-coupling rework. But you have to have SCALABLE_SCHED enabled.
+
+I got it. It is - as usual - a trivial one-liner:
+
+--- xenomai.orig/ksrc/nucleus/shadow.c
++++ xenomai/ksrc/nucleus/shadow.c
+@@ -186,7 +186,7 @@ static inline void rpi_init(void)
+=20
+ static inline void rpi_init_gk(struct __gatekeeper *gk)
+ {
+-	sched_initpq(&gk->rpislot.threadq, xnqueue_down, XNCORE_NR_PRIO);
++	sched_initpq(&gk->rpislot.threadq, xnqueue_down, XNCORE_MAX_PRIO);
+ }
+=20
+ static inline void rpi_none(xnthread_t *thread)
+
+
+Happy weekend, =3D8)
 
 Jan
 
 
---------------enigF7DF01BC1D72760C558B2557
+PS: The maximum priority level has initialised to a wrong value, causing
+threads with prio 0 to be placed out of the queue array.
+
+
+--------------enig5686BF666C9CB03B3B872B54
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -49,10 +71,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGVvQAniDOoMHTA+kRAsuFAJ9pBSc7VmFUrtQJHTikhtLe1NmluwCfbJ2s
-bdnwTCXC1585Hu0+ScHYdi4=
-=Y1MD
+iD8DBQFGVwGFniDOoMHTA+kRAjNiAJ9z1fmMK/MN9GVDX5OZGTQWPE7FcwCgg8Fv
+ov/TEfvwav52pqmNg2CXXjk=
+=hQUh
 -----END PGP SIGNATURE-----
 
---------------enigF7DF01BC1D72760C558B2557--
+--------------enig5686BF666C9CB03B3B872B54--
 
