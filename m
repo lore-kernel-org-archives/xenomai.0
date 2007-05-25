@@ -1,12 +1,10 @@
-Message-ID: <46559E9D.7090106@domain.hid>
-Date: Thu, 24 May 2007 16:18:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4656A529.5000405@domain.hid>
+Date: Fri, 25 May 2007 10:58:17 +0200
+From: Rodolfo Bamberg <rolfetas@domain.hid>
 MIME-Version: 1.0
-References: <46559AC7.40302@domain.hid>
-In-Reply-To: <46559AC7.40302@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Newbie question| timer modes
+Subject: [Xenomai-help] problem compiling for user space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,24 +14,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rodolfo Bamberg <rolfetas@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-Rodolfo Bamberg wrote:
-> I am trying to compare latencies between one-shot mode and periodic
-> mode. Is there a way to get the system's time expressed in nanoseconds
-> if I set the timer to periodic?
+I am trying to cross-compile for i386 a user-space xenomai RT binary, I
+installed xenomai in the root file system of the target with the
+--build=i386-linux-uclibc option to cross compile for the target. 
 
-With the native API, use rt_timer_tsc and rt_timer_tsc2ns to convert to
-nanoseconds. With the posix API, use clock_gettime(CLOCK_MONOTONIC).
-Note that what you get is not exactly the system time, but rather the
-TSC time, its origin is around the time of the boot, but it is
-sufficient for measuring time differences.
+Here's the relevant makefile part of the program I'm trying to compile:
 
-Also note that measuring the latency in periodic mode makes little
-sense, you will get a variable offset due to the fact that the periodic
-task wake up times are aligned on the system timer ticks.
+XENOMAI_INCLUDE_DIR_USP    :=/tftpboot/192.168.0.2/include
+XENOMAI_INCLUDE_LIB_USP :=/tftpboot/192.168.0.2/lib
 
--- 
-                                                 Gilles Chanteperdrix
+user:
+    i386-linux-uclibc-gcc -I$(XENOMAI_INCLUDE_DIR_USP)
+-L$(XENOMAI_INCLUDE_LIB_USP) -lnative -o rt_process_user rt_process_user.c
+    chmod a+x rt_process_user
+
+and here the error:
+
+ # make user
+i386-linux-uclibc-gcc -I/tftpboot/192.168.0.2/include
+-L/tftpboot/192.168.0.2/lib -lnative -o rt_process_user rt_process_user.c
+rt_process_user.c: In function 'latency_init':
+rt_process_user.c:115: warning: passing argument 2 of 'rt_task_start'
+from incompatible pointer type
+/home/rodolfo/buildroot-2/build_i386/staging_dir/lib/gcc/i386-linux-uclibc/4.1.2/../../../../i386-linux-uclibc/bin/ld:
+warning: libc.so.6, needed by /tftpboot/192.168.0.2/lib/libnative.so,
+not found (try using -rpath or -rpath-link)
+/tftpboot/192.168.0.2/lib/libnative.so: undefined reference to
+`free@domain.hid'........
+
+does anyone know why it needs libc.so.6? thanks!
+
 
