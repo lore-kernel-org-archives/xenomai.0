@@ -1,12 +1,10 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <7289437c0705280043o7b8eaf85hbbfad33b95c243fb@domain.hid>
+Date: Mon, 28 May 2007 09:43:14 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18009.31376.575649.430423@domain.hid>
-Date: Sun, 27 May 2007 14:33:20 +0200
-In-Reply-To: <528bc2040705261025j34f0fbe1na0e89962ec45c6f@domain.hid>
-References: <528bc2040705261025j34f0fbe1na0e89962ec45c6f@domain.hid>
-Subject: Re: [Xenomai-help] Creating real time thread using posix skins
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_121753_463199.1180338194424"
+Subject: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,29 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: manoj kumar <manojkpanghal@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-manoj kumar wrote:
- > Hi,
- > 
- > Can we create real time thread using posix skins ony (i.e. no other
- > skins call should be used for that )in xenomai.
- > 
- > if yes, then how?
+------=_Part_121753_463199.1180338194424
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Use pthread_create with scheduling policy set to SCHED_FIFO and a
-priority between 1 and 99.
+Hello,
 
-If you want to create non real-time thread, use __real_pthread_create.
+I just want to know if we can build Xenomai with the =B5Clibc ?
+And if API Posix run with =B5Clibc too?
 
-For low priority real-time thread that will need to interact with
-real-time threads but will spend most of their time in secondary mode,
-use pthread_create with the SCHED_OTHER scheduling policy and priority
-of 0.
+I have tried with the cross compiler EDLK with =B5Clibc and it doesn't work=
+.
+When I build Xenomai, there is some errors. And after when I want to compil=
+e
+a code with API Posix, the error is :
+API Posix not available
 
--- 
+Is there someone who succeeded ?
+Thanks
 
+------=_Part_121753_463199.1180338194424
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-					    Gilles Chanteperdrix.
+<div>Hello, </div>
+<div>&nbsp;</div>
+<div>I just want to know if we can build Xenomai with the =B5Clibc ?</div>
+<div>And if API Posix run with =B5Clibc too?</div>
+<div>&nbsp;</div>
+<div>I have tried with the cross compiler EDLK with =B5Clibc and it doesn&#=
+39;t work.</div>
+<div>When I build Xenomai, there is some errors. And after when I want to c=
+ompile a code with API Posix, the error is : </div>
+<div>API Posix not available</div>
+<div>&nbsp;</div>
+<div>Is there someone who succeeded ?</div>
+<div>Thanks</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+------=_Part_121753_463199.1180338194424--
 
