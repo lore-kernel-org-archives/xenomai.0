@@ -1,14 +1,16 @@
-Message-ID: <464963FA.5050705@domain.hid>
-Date: Tue, 15 May 2007 09:40:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <465C5BA0.70200@domain.hid>
+Date: Tue, 29 May 2007 18:58:08 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5C40CD1E4697424ABDE3AC57CF1B22C60322105D@FR0-MAILMB20.res.airbus.corp>
-In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C60322105D@FR0-MAILMB20.res.airbus.corp>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1FC61131CB2900838C85D49F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [RTnet-users] Time scale problem.
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	
+	<465ADB44.2070705@domain.hid> <1180360288.4727.50.camel@domain.hid>	
+	<7289437c0705290130k627df2f9j2940c509311c75c5@domain.hid>	
+	<465BE777.7010204@domain.hid>
+	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>
+In-Reply-To: <7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,83 +20,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
-Cc: xenomai@xenomai.org, rtnet-users@domain.hid
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1FC61131CB2900838C85D49F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Perrine Martignoni wrote:
+> It seems that cyclictest and switchtest compile fine.
 
-RAKOTOSALAMA, Nirilanto wrote:
-> Hi Everyone
->=20
-> I'm programming a little client-server application to test network perf=
-ormances with xenomai 2.3.1 and rtnet 0.9.9.
-> The 2 programs are based on the rtnet frag-ip example.
-> The perdiodic scenario is :
-> - RSG program sends a datagram to the REMOTE program which was waiting.=
+Could you show us the compilation command used to compile cyclictest or
+switchtest ?
 
-> - REMOTE sends a response to RSG.
-> - RSG simulates a CPU performing period using rt_timer_spin.
-> This cycle should take less than 2.5ms.
->=20
-> I observe strange time measurement :
->=20
-> For example when I want to run during 10 secs : 1000 cycles of 10 ms
-> The program calculates a time between 16 and 17 secs (using rt_timer_ts=
-c)
-> But the effective elapsed time (i kept time with a chrono :-s ) is arou=
-nd 10secs
-
-Before I start looking at details, please check the consistency of your
-local Xenomai clock with this brand new tool:
-
-http://svn.gna.org/viewcvs/xenomai/trunk/src/testsuite/clocktest/clocktes=
-t.c?view=3Dmarkup
-(you don't have to switch to trunk, just grab the source and compile
-manually)
-
-In case the Linux clock is not screwed up as well, you can check for
-potential drifts and cross-cpu wraps that way.
-
->=20
-> When a cycle is supposed to be 5ms it is calculated to be 8.4ms
->=20
-> When I want a rt_timer_spin of 0.750ms, result is a 1.27ms burning peri=
-od.
->=20
-> So a constant difference between effective and calculated time around +=
-60%.
->=20
-> Maybe there something wrong in my program but I don't know what.
-> Also, I have read some threads that mentionned time problem and /proc/x=
-enomai/latency value.
-> I didn't understand everything.=20
-> Any suggestion ?
->=20
->=20
-> Thanks in advance.
->=20
-> Niry
->=20
-
-Jan
-
-
---------------enig1FC61131CB2900838C85D49F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFGSWP6niDOoMHTA+kRArL0AJ93CtBBkWW3kL6axX/9xqNBgddFpwCfawAw
-+nR6ObVc3wNxQsjWu5jqtpM=
-=0xzi
------END PGP SIGNATURE-----
-
---------------enig1FC61131CB2900838C85D49F--
+-- 
+                                                 Gilles Chanteperdrix
 
