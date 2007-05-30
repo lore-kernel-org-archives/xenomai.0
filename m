@@ -1,15 +1,17 @@
-Message-ID: <465D472D.7070308@domain.hid>
-Date: Wed, 30 May 2007 11:43:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <465D6652.4070305@domain.hid>
+Date: Wed, 30 May 2007 13:56:02 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid><1180360288.4727.50.camel@domain.hid><7289437c0705290130k627df2f9j2940c509311c75c5@domain.hid><465BE777.7010204@domain.hid><7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid><465C6268.1090704@domain.hid><18012.28254.882249.144005@domain.hid><7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid><7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid><465D304D.6020606@domain.hid>	<7289437c0705300210n6c54b750sab11a005107e21b0@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01F54D06@domain.hid>
-	<465D43B4.6040901@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01F54D1B@is-hdq-exchange.marel.net>
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01F54D1B@is-hdq-exchange.marel.net>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: Quoted-Printable
-Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
+References: <465D2BE1.1080302@domain.hid>
+	<465D3053.2040002@domain.hid>	<465D383C.5040203@domain.hid>
+	<465D3B37.9000900@domain.hid> <465D435F.8080304@domain.hid>
+In-Reply-To: <465D435F.8080304@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2C0BD7E944AD77B617CAA1FA"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] [Newbie question]Segmentation fault with
+ user-space binary
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,38 +21,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Daniel Schnell <daniel.schnell@domain.hid>
+To: Rodolfo Bamberg <rolfetas@domain.hid>
 Cc: xenomai@xenomai.org
 
-Daniel Schnell wrote:
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-> Sent: 30. ma=ED 2007 09:28
-> To: Daniel Schnell
-> Cc: Perrine Martignoni; xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Xenomai with =B5Clibc
->=20
-> Daniel Schnell wrote:
->=20
->>Hi,
->>
->>We had similar problems once. Try putting
->>
->>-Wl,--start-group
->>
->>before the first occurrence of any external library.
->=20
->=20
-> No, this is the wrong thing to do, since it makes Linux libraries use X=
-enomai symbols.
->=20
-> Well right,
->
-> But it gives you a hint how to look further if it solves the linking
-error.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2C0BD7E944AD77B617CAA1FA
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-No doubt it will solve the linking error, but the wrong way.
+Rodolfo Bamberg wrote:
+> I just can't figure out: If latency works, and it uses the native skin,=
 
---=20
-                                                 Gilles Chanteperdrix
+> why does including libnative throw a segmantation fault?
+
+Have you tried to attach gdb?
+
+What toolchain do you use precisely? How to regenerate it?
+
+Jan
+
+
+--------------enig2C0BD7E944AD77B617CAA1FA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGXWZSniDOoMHTA+kRApSYAJ4+jQY3Ap7gLEmhzol00QoOPAdvoACePW8f
+JBLGCjR1YLdBMU2oT5rjhYY=
+=hLsN
+-----END PGP SIGNATURE-----
+
+--------------enig2C0BD7E944AD77B617CAA1FA--
 
