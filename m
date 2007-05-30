@@ -1,14 +1,13 @@
-Message-ID: <465D435F.8080304@domain.hid>
-Date: Wed, 30 May 2007 11:26:55 +0200
+Message-ID: <465D43B4.6040901@domain.hid>
+Date: Wed, 30 May 2007 11:28:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <465D2BE1.1080302@domain.hid> <465D3053.2040002@domain.hid>
-	<465D383C.5040203@domain.hid> <465D3B37.9000900@domain.hid>
-In-Reply-To: <465D3B37.9000900@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid><1180360288.4727.50.camel@domain.hid><7289437c0705290130k627df2f9j2940c509311c75c5@domain.hid><465BE777.7010204@domain.hid><7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid><465C6268.1090704@domain.hid><18012.28254.882249.144005@domain.hid><7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid><7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid><465D304D.6020606@domain.hid>	<7289437c0705300210n6c54b750sab11a005107e21b0@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01F54D06@domain.hid>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01F54D06@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-From: Rodolfo Bamberg <rolfetas@domain.hid>
-Subject: Re: [Xenomai-help] [Newbie question]Segmentation fault with
- user-space binary
+Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,29 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai@xenomai.org
 
-I just can't figure out: If latency works, and it uses the native skin,
-why does including libnative throw a segmantation fault?
+Daniel Schnell wrote:
+> Hi,
+> 
+> We had similar problems once. Try putting
+> 
+> -Wl,--start-group
+> 
+> before the first occurrence of any external library.
 
-Jan Kiszka wrote:
-> Rodolfo Bamberg wrote:
->   
->> I tried to use latency and got this. Am I missing something within the
->> Kernel? I didn't find an option for TSC. I use the 2.6.20.4 kernel
->>
->> /usr/bin $ latency
->> Xenomai: incompatible feature set
->> (required="sep tsc", present="sep", missing="tsc").
->>
->>     
->
-> Make sure your kernel config contains CONFIG_M586TSC or better - or
-> build the user space part with --disable-x86-tsc (but only if your
-> hardware is really predating any Pentium class CPU).
->
-> Jan
->
->   
+No, this is the wrong thing to do, since it makes Linux libraries use
+Xenomai symbols.
 
+-- 
+                                                 Gilles Chanteperdrix
 
