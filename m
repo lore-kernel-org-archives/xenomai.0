@@ -1,16 +1,12 @@
-Message-ID: <465EC7C1.5080300@domain.hid>
-Date: Thu, 31 May 2007 15:04:01 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>
-	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>
-	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>
-In-Reply-To: <7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC33F1370BCDED19D3D85A50E"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] =?iso-8859-15?q?Xenomai_with_=B5Clibc?=
+Content-Type: text/plain;
+	charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 31 May 2007 15:08:35 +0200
+Message-ID: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
+From: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
+Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,46 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC33F1370BCDED19D3D85A50E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Perrine Martignoni wrote:
->> Perrine, did you happen to configure Xenomai with "configure --host=3D=
-arm
->> ..."? If yes (see config.log), please use "--host=3Darm-linux". This
->> solved all issues for me.
->>
->> Awaiting your feedback!
->=20
-> I configure Xenomai with --host=3Darm.
-> I tried to configure like this but it doesn't work :
->=20
-> ./configure --build=3Darm-linux --host=3Darm-linux CC=3Darm-linux-gcc
-                      ^^^^^^^^^
-I guess you are not compiling Xenomai _on_ an ARM box, are you? :)
-Try --build=3Di686-linux here.
+I'm still blocked on a CPU affinity problem.
+In order to adapt a set affinity function which is based on
+posix linux lib :
+- CPU_AssignPID(uint32 PID, uint32 CPU_id)
+- the cpu affinity of the caller and all its child threads must be set to C=
+PU_id.
 
-Jan
+Problems are:
+Child PIDs must be listed, the only means I found is listing pids using `ls=
+ /proc/"Parent pid"/ > temp_file`
+And each listed pid is sched_setaffinity'ed.
+I don't know if setting affinity of RT threads from an other thread (parent=
+) using pid works with xenomai.
+
+So, my question is :
+With xenomai, is recursively cpu affinity setting from a parent thread, a g=
+ood way of doing ?
+I read switchtest program, and I conclude that in a xenomai and RT perspect=
+ive, it seems "nicer"
+to set affinity each threads separately during their init phase before the =
+RT infinite loop.
+Otherwise, setting affinity after child threads creation from its parent, m=
+ay switch them into=20
+secondary mode during their RT loop, and at an unknown moment.
+Argumentation is important for my internship because I have to port on xeno=
+mai a very big RT=20
+posix based application. And I should justify any modifications and prevent=
+ potential problems.
+
+Sorry, I don't know if it is clear.
+
+Thanks in advance, Niry.
+
+This e-mail is intended only for the above addressee. It may contain privil=
+eged information.
+If you are not the addressee you must not copy, distribute, disclose or use=
+ any of the information in it.=20
+If you have received it in error please delete it and immediately notify th=
+e sender.
+Security Notice: all e-mail, sent to or from this address, may be accessed =
+by someone other than the recipient, for system management and security rea=
+sons. This access is controlled under Regulation of security reasons.
+This access is controlled under Regulation of Investigatory Powers Act 2000=
+, Lawful Business Practises.
 
 
---------------enigC33F1370BCDED19D3D85A50E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGXsfBniDOoMHTA+kRAia2AKCDl3CoMvNNYsaNtrNL9+5SL9hoEACeIQCL
-wN2aBhHhJZb63MWOjjJ4gsQ=
-=gMqr
------END PGP SIGNATURE-----
-
---------------enigC33F1370BCDED19D3D85A50E--
 
