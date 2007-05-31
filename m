@@ -3,13 +3,13 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 31 May 2007 10:40:13 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>
-In-Reply-To: <465E8FA8.4030507@domain.hid>
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465ADB44.2070705@domain.hid><1180360288.4727.50.camel@domain.hid>	<7289437c0705290130k627df2f9j2940c509311c75c5@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid><7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid><465D664E.3040700@domain.hid>
-	<465E8FA8.4030507@domain.hid>
+Date: Thu, 31 May 2007 11:41:42 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01F55047@domain.hid>
+In-Reply-To: <465E93D6.2010309@domain.hid>
+References: <DD39B5C3F4963040ADC9768BE7E430CB01E43DFF@is-hdq-exchange.marel.net>
+	<465E93D6.2010309@domain.hid>
 From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
+Subject: Re: [Xenomai-help] Kernel-oops, cyclictest, ctrl-c, MPC5200B
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,53 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, Perrine Martignoni <perrmart@domain.hid>
+To: jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-I checked README.INSTALL for the ppc part and there the documentation is =
-also wrong.
+Hi,
 
-I think I have to reinstall Xenomai now and take out the =
-Wl,--start-group in our make files ...
-
-Very interesting thread.
+I tried cyclictest and svn trunk (rev. 2506), different parameters.
 
 
-Best regards,
+Problem is gone.
 
-Daniel.
+
+Thanks,
+
+Daniel
 
 -----Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
-On Behalf Of Jan Kiszka
-Sent: 31. ma=ED 2007 09:05
-To: Perrine Martignoni
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Xenomai with =B5Clibc
+From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
+Sent: 31. ma=ED 2007 09:23
+To: Daniel Schnell
+Subject: Re: [Xenomai-help] Kernel-oops, cyclictest, ctrl-c, MPC5200B
 
-Jan Kiszka wrote:
-> I noticed that linking like this
+Daniel,
+
+Daniel Schnell wrote:
+> Hi,
 >=20
-> arm-linux-gcc ...<flags> <object>.o -lpthread -lrt -lpthread_rt ...
+> When experimenting with the cyclictest program for trying out=20
+> /proc/xenomai/latency I found out that ending this program with=20
+> <STRG>-c causes a Kernel oops of my 2.4.25 Kernel. There seems to be=20
+> an infinite recursion. /proc/xenomai/latency was left at its standard =
+value.
+> Cyclictest is started without any parameters.
 >=20
-> doesn't raise the error. But linking like this
->=20
-> arm-linux-gcc `xeno-config --posix-ldflags` <object>.o -o <target>
->=20
-> ie. the standard way for external Xenomai POSIX apps, causes even more =
+> I use the Xenomai 2.3.1 release.=20
 
-> problems with this toolchain (it's fine here for native builds).=20
-> Anyone any comments? Maybe Wolfgang?
+Could you re-test with trunk or 2.3.x SVN? I would really like to know =
+if we got this issue as well. Note that the fixed problem depended on =
+XENO_OPT_SCALABLE_SCHED. So if this option was off for your tests, then =
+there is still some other issue.
 
-Reason found, I think. No ELDK issue, rather a bug in Xenomai's
-README.INSTALL:
-
-Perrine, did you happen to configure Xenomai with "configure =
---host=3Darm ..."? If yes (see config.log), please use =
-"--host=3Darm-linux". This solved all issues for me.
-
-Awaiting your feedback!
-
+Thanks,
 Jan
 
 
