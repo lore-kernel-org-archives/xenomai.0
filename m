@@ -1,13 +1,14 @@
-Message-ID: <465ECDEC.1030109@domain.hid>
-Date: Thu, 31 May 2007 15:30:20 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <465ECE5A.8080809@domain.hid>
+Date: Thu, 31 May 2007 15:32:10 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>
-	<465EC7C1.5080300@domain.hid>
-In-Reply-To: <465EC7C1.5080300@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] =?iso-8859-15?q?Xenomai_with_=B5Clibc?=
+References: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
+In-Reply-To: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9BD4FEAD09E8E3DB2BC0E576"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +18,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Perrine Martignoni wrote:
->>> Perrine, did you happen to configure Xenomai with "configure --host=arm
->>> ..."? If yes (see config.log), please use "--host=arm-linux". This
->>> solved all issues for me.
->>>
->>> Awaiting your feedback!
->> I configure Xenomai with --host=arm.
->> I tried to configure like this but it doesn't work :
->>
->> ./configure --build=arm-linux --host=arm-linux CC=arm-linux-gcc
->                       ^^^^^^^^^
-> I guess you are not compiling Xenomai _on_ an ARM box, are you? :)
-> Try --build=i686-linux here.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9BD4FEAD09E8E3DB2BC0E576
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Or just omit it. Also CC=, CXX=, LD= ist not necessary. For PowerPC with 
-the ELDK, I just use
+RAKOTOSALAMA, Nirilanto wrote:
+> Hi,
+>=20
+> I'm still blocked on a CPU affinity problem.
+> In order to adapt a set affinity function which is based on
+> posix linux lib :
+> - CPU_AssignPID(uint32 PID, uint32 CPU_id)
+> - the cpu affinity of the caller and all its child threads must be set =
+to CPU_id.
+>=20
+> Problems are:
+> Child PIDs must be listed, the only means I found is listing pids using=
+ `ls /proc/"Parent pid"/ > temp_file`
+> And each listed pid is sched_setaffinity'ed.
+> I don't know if setting affinity of RT threads from an other thread (pa=
+rent) using pid works with xenomai.
 
-  ./configure --host=ppc-linux
+It works in so far as the Xenomai thread will not change its CPU until
+it enters secondary mode. Moreover, there is no explicit "hey, RT thread
+x, go to CPU #n!" under the POSIX skin. Migration always go through
+secondary mode.
 
-to configure Xenomai.
+>=20
+> So, my question is :
+> With xenomai, is recursively cpu affinity setting from a parent thread,=
+ a good way of doing ?
+> I read switchtest program, and I conclude that in a xenomai and RT pers=
+pective, it seems "nicer"
+> to set affinity each threads separately during their init phase before =
+the RT infinite loop.
+> Otherwise, setting affinity after child threads creation from its paren=
+t, may switch them into=20
+> secondary mode during their RT loop, and at an unknown moment.
 
-Wolfgang.
+Actually, this issue has nothing to do with Xenomai's internals. It's
+rather a generic question for RT apps: Shall some thread be forced to
+migrate on a different CPU while it is running? Note that this can cause
+unexpected latency hickups.
 
+I wouldn't allow such a scheme via your middleware. Either you have
+clear pre-operational states of your threads in which you can change
+affinity safely (also across process boundaries - if this is required),
+or try to establish a different CPU assignment scheme.
+
+> Argumentation is important for my internship because I have to port on =
+xenomai a very big RT=20
+> posix based application. And I should justify any modifications and pre=
+vent potential problems.
+>=20
+> Sorry, I don't know if it is clear.
+>=20
+> Thanks in advance, Niry.
+>=20
+
+HTH,
+Jan
+
+
+--------------enig9BD4FEAD09E8E3DB2BC0E576
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGXs5aniDOoMHTA+kRAqZxAJ9DLl9qwM8WOLbG9PrNdP1srpSX1wCdHHPw
+hMtYqXwvmuDQm1V5veJ2S7g=
+=apZ/
+-----END PGP SIGNATURE-----
+
+--------------enig9BD4FEAD09E8E3DB2BC0E576--
 
