@@ -1,13 +1,13 @@
-Message-ID: <465ED806.2060608@domain.hid>
-Date: Thu, 31 May 2007 16:13:26 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <465ED94F.2010300@domain.hid>
+Date: Thu, 31 May 2007 16:18:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>	<465EC7C1.5080300@domain.hid>
-	<465ECDEC.1030109@domain.hid> <465ECFCA.1070801@domain.hid>
-In-Reply-To: <465ECFCA.1070801@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CB@FR0-MAILMB20.res.airbus.corp>
+	<465ECE5A.8080809@domain.hid>
+In-Reply-To: <465ECE5A.8080809@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] =?iso-8859-15?q?Xenomai_with_=B5Clibc?=
+Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,47 +18,34 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org, "RAKOTOSALAMA,
+	Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
 
 Jan Kiszka wrote:
-> Wolfgang Grandegger wrote:
->> Jan Kiszka wrote:
->>> Perrine Martignoni wrote:
->>>>> Perrine, did you happen to configure Xenomai with "configure --host=arm
->>>>> ..."? If yes (see config.log), please use "--host=arm-linux". This
->>>>> solved all issues for me.
->>>>>
->>>>> Awaiting your feedback!
->>>> I configure Xenomai with --host=arm.
->>>> I tried to configure like this but it doesn't work :
->>>>
->>>> ./configure --build=arm-linux --host=arm-linux CC=arm-linux-gcc
->>>                       ^^^^^^^^^
->>> I guess you are not compiling Xenomai _on_ an ARM box, are you? :)
->>> Try --build=i686-linux here.
->> Or just omit it. Also CC=, CXX=, LD= ist not necessary. For PowerPC with 
->> the ELDK, I just use
->>
->>   ./configure --host=ppc-linux
->>
->> to configure Xenomai.
+> RAKOTOSALAMA, Nirilanto wrote:
 > 
-> Can we define a common ground for this in README.INSTALL, for all archs?
-> The simpler, the better.
+>>Hi,
+>>
+>>I'm still blocked on a CPU affinity problem.
+>>In order to adapt a set affinity function which is based on
+>>posix linux lib :
+>>- CPU_AssignPID(uint32 PID, uint32 CPU_id)
+>>- the cpu affinity of the caller and all its child threads must be set to CPU_id.
+>>
+>>Problems are:
+>>Child PIDs must be listed, the only means I found is listing pids using `ls /proc/"Parent pid"/ > temp_file`
+>>And each listed pid is sched_setaffinity'ed.
+>>I don't know if setting affinity of RT threads from an other thread (parent) using pid works with xenomai.
+> 
+> 
+> It works in so far as the Xenomai thread will not change its CPU until
+> it enters secondary mode. Moreover, there is no explicit "hey, RT thread
+> x, go to CPU #n!" under the POSIX skin. Migration always go through
+> secondary mode.
 
-The above works for the ELDK, because the tools ppc-linux-xxx are 
-available in the binary path (via PATH), but this might not be true for 
-other tool-chains. And this method also does not work with RTnet, IIRC. 
-So far, I didn't realize any difference between the configuration 
-methods ...
+Let's repeat it, rephrased, once again: what works with Linux regarding
+CPU affinity also works with Xenomai.
 
-> I was heavily misled by the PPC section, because I do not cross-compile
-> everyday, thus had to look up the procedure again and managed to pick
-> the bad example...
-
-... but there might be some quirk with ARM and uClibc tool chains of the 
-ELDK.
-
-Wolfgang.
-
+-- 
+                                                 Gilles Chanteperdrix
 
