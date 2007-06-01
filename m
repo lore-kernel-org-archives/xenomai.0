@@ -1,15 +1,15 @@
-Message-ID: <4683F0E4.2060801@domain.hid>
-Date: Thu, 28 Jun 2007 19:33:24 +0200
+Message-ID: <46607BF5.2@domain.hid>
+Date: Fri, 01 Jun 2007 22:05:09 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB14C@rennsmail04.eu.thmulti.com>	<4680DA9B.5020501@domain.hid>	<46838C9C.7030303@domain.hid>
-	<18051.37616.432109.725998@domain.hid>
-In-Reply-To: <18051.37616.432109.725998@domain.hid>
+References: <18016.24172.608531.418407@domain.hid>
+In-Reply-To: <18016.24172.608531.418407@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig71256CA4491E3E37B3B82E6E"
+	boundary="------------enig39C48DE71D9EB9FDE6FBE071"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Group-based RT caps
+Subject: Re: [Xenomai-core] Problem with RTDM descriptors with only rt close
+ handler.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,110 +20,56 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig71256CA4491E3E37B3B82E6E
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig39C48DE71D9EB9FDE6FBE071
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Jan Kiszka wrote:
->  > > Fillod Stephane wrote:
->  > >> ...
->  > >> I think Johan was not asking to disable the mlockall, but to allo=
-w some.
->  > >> non-root user to be able to do it. He found his solution anyway, =
-which
->  > >> is worth an entry in the FAQ.
->  > >>
->  > >> Since it is going to be a FAQ for those people in embedded busine=
-ss,
->  > >> some
->  > >> tricks to allow non-root operation of mlockall, SCHED_FIFO, etc.,=
- would
->  > >> be=20
->  > >> useful. For example, you may hack the commoncap in linux/security=
-/,=20
->  > >> or a better solution would be to rely on realtime-lsm[1][2], than=
-ks to=20
->  > >> the audio folks.
->  > >>
->  > >> [1] http://sourceforge.net/projects/realtime-lsm/
->  > >> [2] http://lwn.net/Articles/110346/
->  > >>
->  > >=20
->  > > I think we could and should incorporate such a feature into the nu=
-cleus.
->  > >=20
->  > > There is already code in xnshadow_map playing with cap_effective, =
-but
->  > > that happens too late. Instead, we should establish a group-based =
-access
->  > > control just like rt-lsm (the other knobs of that module are eithe=
-r
->  > > irrelevant for Xenomai (mlock=3D0) or broken security-wise (any=3D=
-1)) and
->  > > raise the required caps for a process that belongs to the specifie=
-d
->  > > group, likely when an Xenomai interface gets attached by that proc=
-ess.
->  > >=20
->  > > Comments? Volunteer coders...?
->  >=20
->  > I couldn't resist, the approach looked too simple and appealing:
->  >=20
->  > http://www.rts.uni-hannover.de/rtaddon/patches/xenomai/rt-caps-group=
-=2Epatch
->  >=20
->  > Actually, it's even more advanced than realtime-lsm in so far as it =
-also
->  > checks for secondary group membership. You can use the nucleus modul=
-e
->  > parameter "xenomai_gid" to control the Xenomai group, also during
->  > runtime using /sys.
->  >=20
->  > Works nicely for me. I'm able to run testsuite programs under my use=
-r
->  > account that now additionally belongs to the "xenomai" group. :)
->  >=20
->  > One issue popped up and costed some nerves: linuxthreads-based
->  > pthread_create() (non-NPTL glibc, uClibc) with SCHED_FIFO/RR attribu=
-te
->  > fails already in userland because that library overeagerly checks fo=
-r
->  > root permissions. This is now worked around, but maybe not in the
->  > cleanest way as it changes the initial thread scheduling order (more=
-
->  > problematic for the POSIX skin than for Native).
+> Hi,
 >=20
-> no problem with the posix skin: the scheduling order is enforced by the=
+> I had a problem with an RTDM driver: /proc/xenomai/rtdm/open_fildes
+> could not close its descriptors. So, I tried with trunk which has
+> auto-cleanup of RTDM descriptors, to see if descriptors would be closed=
+,
+> the descriptors were not auto-closed when killing my application
+> either. After a little investigation, it appears that the problem is
+> that my drivers had a real-time close handler but no non-realtime
+> handler, so when close was invoked from a non real-time context (either=
 
-> use of a semaphore.
+> /proc/xenomai/rtdm/open_fildes, or the auto-cleanup routine), the
+> default close handler installed by RTDM simply returned -38 and close
+> aborted.
+>=20
+> The way to fix this issue was rather simple: implement a non real-time
+> close handler, but I find this behaviour a bit disturbing, maybe
+> implementing a non real-time close handler could be mandatory ?
 >=20
 
-OK, that's good.
-
-So if this patch might be worth merging, can we push the Linux scheduler
-adjustments for all skins into the trampoline epilogue? Philippe?
+It is, read the fine manual :). Moreover, if you had validated your
+driver via CONFIG_XENO_OPT_DEBUG_RTDM, you would have got an error on
+registration. But given the now even more required close_nrt handler, I
+think decoupling this particular check from the debug switch is
+appropriate. Will fix.
 
 Jan
 
 
---------------enig71256CA4491E3E37B3B82E6E
+--------------enig39C48DE71D9EB9FDE6FBE071
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFGg/DkniDOoMHTA+kRAqygAJsFaQaENlWTz7kpBUkD7sk3yuk2EwCghKrs
-u4aaKoFSTQzE4M+az/ojHV8=
-=azwQ
+iD8DBQFGYHv1niDOoMHTA+kRAvJpAJ0U1R7GXvPQuhwz4gJcdtJgp35GnQCeLYJo
+823cKyAMRDKiPmiUMjV6oz0=
+=1NY+
 -----END PGP SIGNATURE-----
 
---------------enig71256CA4491E3E37B3B82E6E--
+--------------enig39C48DE71D9EB9FDE6FBE071--
 
