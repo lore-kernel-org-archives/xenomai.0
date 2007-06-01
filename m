@@ -1,12 +1,16 @@
-content-class: urn:content-classes:message
+Message-ID: <465FDD44.1050404@domain.hid>
+Date: Fri, 01 Jun 2007 10:48:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 1 Jun 2007 10:36:58 +0200
-Message-ID: <5C40CD1E4697424ABDE3AC57CF1B22C6032202CE@FR0-MAILMB20.res.airbus.corp>
-From: "RAKOTOSALAMA, Nirilanto" <NIRILANTO.RAKOTOSALAMA@airbus.com>
-Subject: Re: [Xenomai-help] [Newbie question] threads and task CPU affinity
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>	<465EC7C1.5080300@domain.hid>
+	<465ECDEC.1030109@domain.hid> <465ECFCA.1070801@domain.hid>
+	<465FD824.6010902@domain.hid>
+In-Reply-To: <465FD824.6010902@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC147AF3B3F6E9F7F78EDDEC8"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] =?iso-8859-15?q?Xenomai_with_=B5Clibc?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,119 +20,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-> > > Hi,
-> > >=20
-> > > I'm still blocked on a CPU affinity problem.
-> > > In order to adapt a set affinity function which is based on
-> > > posix linux lib :
-> > > - CPU_AssignPID(uint32 PID, uint32 CPU_id)
-> > > - the cpu affinity of the caller and all its child threads=20
-> > must be set to CPU_id.
-> > >=20
-> > > Problems are:
-> > > Child PIDs must be listed, the only means I found is=20
-> > listing pids using `ls /proc/"Parent pid"/ > temp_file`
-> > > And each listed pid is sched_setaffinity'ed.
-> > > I don't know if setting affinity of RT threads from an=20
-> > other thread (parent) using pid works with xenomai.
-> > >=20
-> > > So, my question is :
-> > > With xenomai, is recursively cpu affinity setting from a=20
-> > parent thread, a good way of doing ?
-> > > I read switchtest program, and I conclude that in a xenomai=20
-> > and RT perspective, it seems "nicer"
-> > > to set affinity each threads separately during their init=20
-> > phase before the RT infinite loop.
-> > > Otherwise, setting affinity after child threads creation=20
-> > from its parent, may switch them into=20
-> > > secondary mode during their RT loop, and at an unknown moment.
-> > > Argumentation is important for my internship because I have=20
-> > to port on xenomai a very big RT=20
-> > > posix based application. And I should justify any=20
-> > modifications and prevent potential problems.
-> > >=20
-> > > Sorry, I don't know if it is clear.
-> >=20
-> > I think that it is safe to assume that if the affinity of a=20
-> thread is
-> > inherited from the thread that created it with Linux posix=20
-> > library, the
-> > same will happen with Xenomai.
-> >=20
-> > Now, if you want to set the affinity of a group of threads=20
-> after their
-> > creation, I do not see how to do this without walking=20
-> through the list
-> > of threads. If your library has an abstraction for threads,=20
-> > you can keep
-> > them in a list. It will be useful at process exit time to=20
-> > cleanly cancel
-> > all threads (this may be useful if you want to detect leaks=20
-> > for instance).
-> >=20
-> > Note that when talking about scheduling affinity function, we are
-> > swimming in the undefined, since these functions are not=20
-> > standardized by
-> > posix.
-> >=20
-> > But since you are porting a library to Xenomai maybe you can=20
-> > have a look
-> > at the current implementation of CPU_AssignPID ?
-> >=20
-> > --=20
-> >                                                  Gilles Chanteperdrix
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC147AF3B3F6E9F7F78EDDEC8
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Wolfgang Grandegger wrote:
+> Jan Kiszka wrote:
+>> Wolfgang Grandegger wrote:
+>>> Jan Kiszka wrote:
+>>>> Perrine Martignoni wrote:
+>>>>>> Perrine, did you happen to configure Xenomai with "configure
+>>>>>> --host=3Darm
+>>>>>> ..."? If yes (see config.log), please use "--host=3Darm-linux". Th=
+is
+>>>>>> solved all issues for me.
+>>>>>>
+>>>>>> Awaiting your feedback!
+>>>>> I configure Xenomai with --host=3Darm.
+>>>>> I tried to configure like this but it doesn't work :
+>>>>>
+>>>>> ./configure --build=3Darm-linux --host=3Darm-linux CC=3Darm-linux-g=
+cc
+>>>>                       ^^^^^^^^^
+>>>> I guess you are not compiling Xenomai _on_ an ARM box, are you? :)
+>>>> Try --build=3Di686-linux here.
+>>> Or just omit it. Also CC=3D, CXX=3D, LD=3D ist not necessary. For Pow=
+erPC
+>>> with the ELDK, I just use
+>>>
+>>>   ./configure --host=3Dppc-linux
+>>>
+>>> to configure Xenomai.
+>>
+>> Can we define a common ground for this in README.INSTALL, for all arch=
+s?
+>> The simpler, the better.
+>>
+>> I was heavily misled by the PPC section, because I do not cross-compil=
+e
+>> everyday, thus had to look up the procedure again and managed to pick
+>> the bad example...
 >=20
-> Thanks,
-> Precisly, the current implementation has nothing curious and=20
-> there is no reason it does not work on xenomai but,
-> in a simple program that just switches the cpu :
-> Before CPU_assignpid call, 'ps -ax -0 SCHED | grep <pid>'
-> and '/proc/xenomai/sched' returns the same result (i.e. the=20
-> current thread runs on the same cpu)
-> After CPU_assignpid call, 'ps -ax -0 SCHED | grep <pid>'=20
-> shows that threads cpu has switched
-> whereas '/proc/xenomai/sched' shows no changes.
+> I had a closer look and realized, that passing just CC, CXX and LD to
+> the configure script is not enough. There should at least also AR and
+> RANLIB, otherwise the corresponding host tools are used. Then I think,
+> it should be equivalent to automatic tool assignment via --host.
 >=20
-> Does '/proc/xenomai/sched' not change during running, if yes
-> I continue debugging my program ?
+> Also note, that "--host=3Darm" will also work with the ELDK, because th=
+ere
+> are links arm-* to the tools arm-linux-*. I Perrine's configure example=
+s
+> above, arm-ar and arm-ranlib will then be used.
 
-Hi,
+But the issue is that in this case configure is unable to find the
+target OS and fails to detect that shared libs are supported for the
+target. Non-shared build fails with ELDK for unknown reasons.
 
-I run with gdb a test program that only create a 1 sec periodic thread that=
-=20
-rt_timer_spin's during 10ms and waits.=20
-As above-written, when cpu is assigned _after_ child thread creation,
-'ps -ax -0 SCHED | grep <pid>' shows a cpu switch on main thread whereas,
-'/proc/xenomai/sched' doesn't.
-When cpu is assigned _before_ child thread creation,
-'ps -ax -0 SCHED | grep <pid>' shows a cpu switch on main thread,
-and '/proc/xenomai/sched' shows no changes for main thread but
-the child thread cpu is the assigned one.
-
-Is it right to supposed that, cpu switching is effective according to
-'ps -ax -0 SCHED | grep <pid>' even in xenomai context ?
-Does '/proc/xenomai/sched' not change during running ?
-In this case, how can children threads cpu status be read dynamically like
-'ps -ax -0 SCHED | grep <pid>' command for main thread ?
-
-Thanks.
-Niry
+Jan
 
 
-This e-mail is intended only for the above addressee. It may contain privil=
-eged information.
-If you are not the addressee you must not copy, distribute, disclose or use=
- any of the information in it.=20
-If you have received it in error please delete it and immediately notify th=
-e sender.
-Security Notice: all e-mail, sent to or from this address, may be accessed =
-by someone other than the recipient, for system management and security rea=
-sons. This access is controlled under Regulation of security reasons.
-This access is controlled under Regulation of Investigatory Powers Act 2000=
-, Lawful Business Practises.
+--------------enigC147AF3B3F6E9F7F78EDDEC8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
+iD8DBQFGX91IniDOoMHTA+kRAgmJAJ9gXE35vYy75eJhtvGT/9ZF4/5RgwCfW93z
+kBm2I29WXxc1qM1kiFeiNwM=
+=04I2
+-----END PGP SIGNATURE-----
+
+--------------enigC147AF3B3F6E9F7F78EDDEC8--
 
