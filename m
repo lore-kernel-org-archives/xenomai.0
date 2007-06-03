@@ -1,47 +1,94 @@
-Message-ID: <465EE3BC.7020905@domain.hid>
-Date: Thu, 31 May 2007 17:03:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <466288C9.7030907@domain.hid>
+Date: Sun, 03 Jun 2007 11:24:25 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>
-	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>	<465EC7C1.5080300@domain.hid>
-	<465ECDEC.1030109@domain.hid>	<465ECFCA.1070801@domain.hid>
-	<465ED806.2060608@domain.hid>
-	<7289437c0705310758o3512e5e5x4c1a6d1df444be63@domain.hid>
-In-Reply-To: <7289437c0705310758o3512e5e5x4c1a6d1df444be63@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2C2501E4A5429A0B7E2FE2BA"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH 2/2] Fix abs. timeout restart in
+	xnsynch_sleep_on
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Perrine Martignoni wrote:
->>Same program as you posted earlier?
-> Yes. it's the same.
->  
->>Can you confirm the issue with this procedure? Also make sure that your
->>rebuild and re-installed the Xenomai user space part cleanly ("make
->>clean; make install").
->  
-> I installed cleanly Xenomai.
->  
-> I compiled too with :
-> arm-linux-gcc `.../xeno-config --posix-cflags --posix-ldflags` -o
-> essai_mutex_rt essai_mutex.c
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2C2501E4A5429A0B7E2FE2BA
+Content-Type: multipart/mixed;
+ boundary="------------060104000104000504030901"
 
-try putting essai_mutex.c before the flags, as in:
+This is a multi-part message in MIME format.
+--------------060104000104000504030901
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-arm-linux-gcc -o essai_mutex_rt essai_mutex.c `xeno-config
---posix-cflags --posix-ldflags`
 
--- 
-                                                 Gilles Chanteperdrix
+--------------060104000104000504030901
+Content-Type: text/x-patch;
+ name="fix-sleep-on-timeout.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-sleep-on-timeout.patch"
+
+---
+ ChangeLog            |    3 +++
+ ksrc/nucleus/synch.c |    2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+Index: xenomai/ksrc/nucleus/synch.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ksrc/nucleus/synch.c
++++ xenomai/ksrc/nucleus/synch.c
+@@ -228,7 +228,7 @@ redo:
+ 		/* Somebody stole us the ownership while we were ready
+ 		   to run, waiting for the CPU: we need to wait again
+ 		   for the resource. */
+-		if (timeout =3D=3D XN_INFINITE)
++		if (mode =3D=3D XN_ABSOLUTE || timeout =3D=3D XN_INFINITE)
+ 			goto redo;
+ 		timeout =3D xnthread_timeout(thread);
+ 		if (timeout > 1) /* Otherwise, it's too late. */
+Index: xenomai/ChangeLog
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/ChangeLog
++++ xenomai/ChangeLog
+@@ -6,6 +6,9 @@
+ 	* ksrc/nucleus/{module.c, shadow.c}: Move remove_proc_entry out of
+ 	nklock.
+=20
++	* ksrc/nucleus/synch.c (xnsynch_sleep_on): Fix timeout restart
++	if resource was robbed.
++
+ 2007-06-02  Philippe Gerum  <rpm@xenomai.org>
+=20
+ 	* ksrc/skins/psos+, src/skins/psos+, include/psos+/psos.h: Add
+
+--------------060104000104000504030901--
+
+--------------enig2C2501E4A5429A0B7E2FE2BA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFGYojJniDOoMHTA+kRAs52AJ9Pkmeg8z6Qr2pBnknrDIH7Ny1RUQCeLNAA
+4sqDZ7i64yhWUavnkckU73Q=
+=T6ku
+-----END PGP SIGNATURE-----
+
+--------------enig2C2501E4A5429A0B7E2FE2BA--
 
