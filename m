@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18018.59607.152227.603371@domain.hid>
-Date: Sun, 3 Jun 2007 18:14:15 +0200
-In-Reply-To: <46607BF5.2@domain.hid>
-References: <18016.24172.608531.418407@domain.hid> <46607BF5.2@domain.hid>
+Message-ID: <46641F17.9070900@domain.hid>
+Date: Mon, 04 Jun 2007 16:17:59 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] Problem with RTDM descriptors with only rt close
- handler.
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------050301020702030306050104"
+Subject: [Xenomai-core] New I-pipe patch for ARM needs testing.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,42 +13,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
 
-Jan Kiszka wrote:
- > Gilles Chanteperdrix wrote:
- > > Hi,
- > > 
- > > I had a problem with an RTDM driver: /proc/xenomai/rtdm/open_fildes
- > > could not close its descriptors. So, I tried with trunk which has
- > > auto-cleanup of RTDM descriptors, to see if descriptors would be closed,
- > > the descriptors were not auto-closed when killing my application
- > > either. After a little investigation, it appears that the problem is
- > > that my drivers had a real-time close handler but no non-realtime
- > > handler, so when close was invoked from a non real-time context (either
- > > /proc/xenomai/rtdm/open_fildes, or the auto-cleanup routine), the
- > > default close handler installed by RTDM simply returned -38 and close
- > > aborted.
- > > 
- > > The way to fix this issue was rather simple: implement a non real-time
- > > close handler, but I find this behaviour a bit disturbing, maybe
- > > implementing a non real-time close handler could be mandatory ?
- > > 
- > 
- > It is, read the fine manual :). Moreover, if you had validated your
- > driver via CONFIG_XENO_OPT_DEBUG_RTDM, you would have got an error on
- > registration. But given the now even more required close_nrt handler, I
- > think decoupling this particular check from the debug switch is
- > appropriate. Will fix.
+This is a multi-part message in MIME format.
+--------------050301020702030306050104
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 
-I have to say that I did not really test trunk, I backported the
-auto-cleanup stuff to the version of the v2.3.x branch that I am
-using. So, if the debug check was added after this commit, I missed it
-completely.
+
+Hi,
+
+in Xenomai repository (trunk and v2.3.x branch), you will find
+adeos-ipipe-2.6.20-arm-1.7-03.patch, the latest version of the I-pipe
+patch for ARM. In addition to merging support for two new boards (ixp4xx
+and at91sam926x), this patch adds a few important features:
+- the at91 patch now applies after the I-pipe patch with no reject ;
+- it is now possible for Xenomai to preempt Linux during the mm switch,
+which should improve Xenomai scheduling latency significantly;
+- Xenomai is now able to access directly I-pipe tsc emulation in
+user-space, providing a low overhead timing facility to user-space
+applications.
+
+Before including this patch in a new release, and because I could only
+test the patch on at91rm9200, we would like people to test the patch on
+their hardware and give us feedback about the stability and performance.
+In order to adequately stress-test Linux mm context switch, please use
+something along the lines of the attached test_switch.c.
+
+As for tsc emulation in user-space, I only implemented it for machines
+with a free-running counter, hoping that someone (maybe Sebastian or
+Stelian ?) with hardware whose tsc is based on a decrementer could do
+the work. This tsc emulation in user-space also required to rework a bit
+Xenomai configure script: it is now necessary to pass a
+--enable-arm-mach option to configure, and to pass the option
+--enable-arm-tsc to enable the tsc.
+
+Thanks in advance.
 
 -- 
+                                                 Gilles Chanteperdrix
+
+--------------050301020702030306050104
+Content-Type: text/x-csrc;
+ name="test_switch.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="test_switch.c"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <sched.h>
 
 
-					    Gilles Chanteperdrix.
+int main(void)
+{
+	pid_t child = fork();
+
+	if (child < 0) {
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+
+	for (;;)
+		sched_yield();
+}
+
+--------------050301020702030306050104--
 
