@@ -1,12 +1,17 @@
-Message-ID: <46649F7E.3060104@domain.hid>
-Date: Tue, 05 Jun 2007 01:25:50 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig47B608E1A4CEEE75A7EA90A4"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH-STACK] Updates, timerstats, rtdm-timers
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <465FC2FC.1010902@domain.hid>
+References: <465ABD99.1090301@domain.hid> <1180630376.5020.131.camel@domain.hid>
+	<465F3277.1080400@domain.hid> <1180651652.5020.197.camel@domain.hid>
+	<465FC2FC.1010902@domain.hid>
+Content-Type: text/plain
+Date: Tue, 05 Jun 2007 10:27:21 +0200
+Message-Id: <1181032041.32137.68.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [ANNOUNCE] Xenomai and I-pipe	patch	series,
+	LTTng bits
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,175 +21,222 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig47B608E1A4CEEE75A7EA90A4
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2007-06-01 at 08:55 +0200, Jan Kiszka wrote:
+> > 
+> > panic. See the code flow from xntimer_start_*periodic for instance, up
+> > to the point where the timer is enqueued.
+> 
+> With wrong I meant valid sched, but for an incorrect CPU.
+> 
 
-An undated and extended version of my patch stack for I-pipe and Xenomai =
+As explained earlier, nothing really bad would happen, except a
+sub-optimal setup.
 
-is now available at
+> > 
+> >>  Anyway, if you say it does matter, my instrumentation would
+> >> have caught the first bug in Xenomai! That xnpod_raw_current_sched() is
+> >> there because xntimer_init is used in non-atomic contexts (I got
+> >> warnings from DEBUG_PREEMPT).
+> > 
+> > Thread migration in Xenomai only happens upon request from the migrating
+> > thread itself, so it becomes an issue if the caller belongs to the Linux
+> > domain (i.e. preemption in init_module, the rest is not much
+> 
+> ...or preemption during shadow thread creation. But this requires the
+> that Linux thread to be shadowed has no clearly defined single-CPU
+> affinity and might happen to be pushed around by a loadbalancer during
+> init. This sounds like a fatal user error /wrt RT.
+> 
 
-	http://www.rts.uni-hannover.de/rtaddon/patches
+The point is that in any case, this would make no difference with a
+shadow with a lose affinity being moved to another CPU while running, by
+a call to sched_setscheduler(), or as a result of load balancing.
+xnshadow_map per-se brings nothing more to the picture with respect to
+this issue, except that at some point, it really pins the current task
+on the current CPU. Per Xenomai-thread timers have been initialized
+before xnshadow_map is entered anyway.
 
-There is once again some new stuff from my would-be-nice-in-2.4 list
-contained, namely the timerstat /proc output and a preview on my current
-rtdm_timer draft. Here is the overview of the content:
+> > 
+> >>>> librtutils.patch
+> >>>>
+> >>>>     My original librtprint patch. I now renamed the library to
+> >>>>     librtutils to express that more stuff beyond rt_print may find its
+> >>>>     home here in the future. Hopefully acceptable now.
+> >>>>
+> >>> Will merge, but... since I'm something of a pain, I'm still pondering
+> >>> whether rtutils is our best shot for picking up a name here. We already
+> >>> have src/utils, so we would add src/librtutils as yet another set of
+> >>> utilities; I'm not sure both belong to the same class of helpers.
+> >> /me hesitated as well and put the "lib" prefix into the directory name.
+> >> So I'm all ears for a better name!
+> >>
+> > 
+> > TssTssTss... _You_ got the brain, _I_ am the cumbersome one.
+> 
+> But my brain needs some pointers what _you_ would be happy with. Is your
+> current problem only related to the clash librtutils vs. utils, or don't
+> you like the term "rtutils" at all? If it's the former, would moving
+> "utils" to "tools" raise or lower your pain?
+> 
 
-/ipipe-kernel
--------------
+I don't like utils and beyond that it clashes with other "utils". I will
+try to suggest something a bit less generic than utils/tools.
 
-ipipe-janitorial.patch
+> > 
+> >>>> rtsystrace-v2.patch
+> >>>>
+> >>>>     Updated proposal to add rt_print-based Xenomai syscall tracing.
+> >>>>     Still in early stage, and I'm lacking feedback on this approach, if
+> >>>>     it makes sense to pursue it.
+> >>>>
+> >>> Gasp. I really don't like the idea of having tons of explicit trace
+> >>> points spread all over the code, this just makes the task of reading it
+> >>> a total nightmare. There are some user-space tracing infrastructure
+> >>> already, starting with LTTng, or maybe older ones like Ctrace, with or
+> >>> without automatic instrumentation of the source files.
+> >>> We may want to get some facts about those before reinventing a square
+> >>> wheel.
+> >> Let me elaborate about the motivation a bit more: My idea is to have an
+> >> rt-safe replacement for strace. The latter is based on ptrace, requires
+> >> evil signals, and is far to invasive for tracing high-speed RT
+> >> applications IMHO (even if we had that RT-safe). But with low-impact,
+> >> per-process rt_printf, we have a pure user space mechanism at hand that
+> >> you can quickly set up for a single RT application (using your private
+> >> libs e.g.). No need to have an LTTng-prepared kernel, no need to trace
+> >> the whole system if you only want to know where your damn applications
+> >> now hangs again, no need to disturb other RT users with your debugging
+> >> stuff.
+> >>
+> >> But I agree, the source code impact on the skin libs is far from being
+> >> negligible. Maybe we can find a smarter solution, something that just
+> >> hooks into the library calls (reminds me of --wrap...) to capture entry
+> >> parameters and then the returned values. This will still require some
+> >> work (for each instrumented library function), but we might be able to
+> >> do this out-of-line.
+> > 
+> > At some point, I think we should really put some brain cycles into
+> > looking into Valgrind, and evaluate the actual cost of adapting it to
+> > our needs (for both the existing memory tracker skin, and maybe a trace
+> > skin too).
+> 
+> Valgrind is not a replacement for strace, even if it would work for
+> multi-threaded strickly timed RT apps (which I doubt, I _did_ look at it
+> already, understood that it requires a complex and temporal invasive VM,
 
-    [unchanged]
-    Removes useless hunks from the I-pipe patch, specifically over i386.
+I basically don't care of temporal invasiveness when talking about
+detailed tracing features, really. From a strictly personal POV, the
+best way to get to temporal non-invasiveness and efficient debugging for
+that matter is to strongly decorrelate hardware and software issues.
+IOW, I would rather go for simulating the environment by software
+models, not trying to be "as non-invasive as possible" with the real
+world hardware. Tracing is most often too invasive when it comes to
+time-sensitive issues anyway. But that's not the gist of the matter,
+anyway, so let's move on.
 
-disable-context-check-v3.patch
-disable-context-check-v2-i386.patch
+> and also read their warnings regarding standard pthread support).
 
-    [Fixed broken !CONFIG_IPIPE_DEBUG_CONTEXT build]
-    Infrastructure for temporarily or permanently disabling the context
-    checker. Applies this on ipipe_trace_panic_freeze() and NMI.
+The only real problem is that atomic sequences on shared memory between
+_processes_ won't work because Valgrind cannot emulate them properly.
+Fact is that the vast majority of Xenomai apps are multi-threaded in a
+single process space, so this is not even a limitation for most of us.
+Being a regular Valgrind user, I never personally hit this problem, even
+on significantly large POSIX applications. [Actually, the usual problem
+one may run into when tracking, say, memory corruption with Valgrind, is
+that large applications often reinvent the wheel, and manage to
+reimplement yet-another-my-own-crappy-malloc support which Valgrind does
+not know about, and as such cannot monitor].
 
-refactor-ipipe_walk_pipeline.patch
+On the other hand, bringing something like Helgrind which helps
+pinpointing thread synchronization issues, would offset the shared
+memory issue, by far. The same goes for detecting memory overwrites, use
+of uninitialized memory and so on with the default Valgrind skin.
 
-    [broken-out ipipe_processor_id removal]
-    Remove cpuid from __ipipe_walk_pipeline parameters, remove fastcall.
+>  This
+> is a widely orthogonal issue, so please let us come back to my original
+> point.
+> 
 
-cleanup-processor_id-i386.patch
+The original proposal suggests an ad hoc solution for a specific class
+of tracing needs (code flow analysis with low temporal invasiveness)
+(*).
 
-    [broken-out ipipe_processor_id removal]
-    Drop legacy code related to i386 ipipe_processor_id.
+I suggest that we _also_ take the time to think ahead, about a common
+infrastructure which would host the basic, well-supported tools people
+need to debug Xenomai applications. It is always possible to work around
+temporal invasiveness by simulating external input, there are a few
+techniques that work pretty well for that purpose, people working with a
+co-design approach are doing that all the time. But before this, it
+would be great that the code one relies on does not include silly or
+less silly basic coding issues. Valgrind is such a framework defining a
+possible infrastructure.
 
-instrument-smp_processor_id.patch
-instrument-smp_processor_id-i386.patch
+To sum up, I'm going to follow your work on usystrace to see where it
+leads us, even if I'm not happy with its potential impact on the code.
+Whether it gets eventually merged or not really depends on that aspect.
+At the same time, or at least in a reasonable future, we should REALLY
+think about making Xenomai Valgrind-compatible, so that we could cover
+the rest of the needs for debug tools. This is something I might pick
+when my TODO list shortens, if nobody did it before.
 
-    [broken-out ipipe_processor_id removal]
-    Catch smp_processor_id invocations over non-root domains on archs
-    that retrieve the CPU number from the kernel stack. Archs without
-    this problem need to define IPIPE_STACK_INVARIANT_CPUID (only
-    support for i386 so far).
+(*) You could avoid passing the function name in the systrace calls, by
+relying on the value of __FUNCTION__, with a small hack to trimm the
+__wrap_ prefix when needed. Making tracepoints less hairy would ease my
+pain reading this stuff.
 
-hard-irq-disable-on-suspend-resume.patch
+> > 
+> >>>> lttng.patch
+> >>>>
+> >>>>     Very rough patch to make LTTng work with Xenomai again. This patch
+> >>>>     tries to follow Jean-Olivier Villemure's original work very closely
+> >>>>     to get something working first. Needs more cleanups and enhancements
+> >>>>     as I explained earlier in the LTTng announcement.
+> >>>>
+> >>> Will merge to ease further work on this feature. xenoltt.xml might be
+> >>> left in another directory than src/utils, or at least in a separate
+> >>> subdir, like can/.
+> >> Note that the patch is a big fat construction site (see the earlier
+> >> announcement). I'm happy to see your interest, and we should already
+> >> discuss details like the location of xenoltt.xml. But I think it's not
+> >> yet ready for merge.
+> >>
+> >> I would like to get the structure right first (multiple probe modules),
+> >> and I'm lacking the understanding about what the Xenomai plugin for LTTV
+> >> is actually able to do, what kind of trace point formats it needs to
+> >> work correctly. Well, this situation can quickly improve once we play a
+> >> bit more with it, but resources remain limited.
+> >>
+> > 
+> > The decision is rather simple here: whether our current LTT
+> > instrumentation works and is usable with decent LTT releases, and we
+> > should keep it, waiting for the new LTTng support to mature out of tree.
+> 
+> Current LTT support is useless for a fairly long time as we had no LTT
+> patches for I-pipe - also for a long time. From this POV, we can happily
+> change the code without causing regressions (as long as it builds, of
+> course).
+> 
+> > Or, this is not the case, and we would be better off putting this patch
+> > where it has a better chance to be seen and evaluated, i.e. into the
+> > development tree. So the basic issue here is that we might have to make
+> > the patch you sent working well enough to trigger interest in improving
+> > it, unless it does already. What's the situation regarding this?
+> > 
+> 
+> Daniel indicated interest in looking at this, but he is fairly busy for
+> the near future. No further feedback so far.
+> 
+> My suggestion is to keep the patch out-of-tree for now. Everyone
+> interested in trying LTTng needs patching anyway (LTTV, ipipe, Xenomai).
+> I will keep this patch in my stack and take care that it remains applicable.
+> 
 
-    [unchanged]
-    Old patch of mine to enable software-suspend over I-pipe.
+Ok, no merge for now.
 
-add-ipipe_preempt_disable.patch
-
-    [unchanged]
-    Introduces ipipe_preempt_disable as an I-pipe-safe alternative to
-    preempt_disable. Required for kernel markers that come with LTTng.
-
-prepare-lttng.patch
-ltt-ipipe-v2.patch
-
-    [updated to use of ipipe_processor_id() where now required]
-    LTTng preparation and I-pipe adoption patches. See README.lttng for
-    more details.
-
-
-/xenomai
---------
-
-refactor-queue-init.patch
-
-    Refactor DECLARE_XNQUEUE to DEFINE_XNQUEUE. Break out
-    XNQUEUE_INITIALIZER.
-
-cleanup-proc-stuff.patch
-
-    Remove xnskentry::proc, track proc registration via xnskentry::name.
-    Clean up redundant typecasts. Remove unneeded code in *_seq_next().
-
-destroy-thread-timers.patch
-
-    Unconditionally destroy xnthread timers on thread deletion. Besides
-    the consistency aspect, timerstats.patch will require clean
-    destruction.
-
-fast-tsc-to-ns-v2.patch
-
-    [Rebased, improved rounding of least significant digit]
-    Integration of my scaled-math-based xnarch_tsc_to_ns service for
-    i386 at least.
-
-[RFC] timerstat.patch
-
-    Dump currently or previously active timers per timebase under
-    /proc/xenomai/timerstat. Output looks like this:
-
-# cat /proc/xenomai/timerstat/master
-CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-0    5959        5958        1          4000000    NULL         [host tic=
-k]
-0    25          24          659464312  1000000000  xnpod_watch  [watchdo=
-g]
-0    368         367         5042333    10000000   xnthread_pe  sampling-=
-831
-
-    The idea is to have an overview of timer activity *on the target*,
-    just like we already have for threads. This can help to quickly get
-    an overview about
-     - how many timers there are on a system
-     - how they are programmed
-     - how often they are the scheduled -- and actually fired
-     - who may have installed them
-
-[RFC] xntimer-monotonic.patch
-
-    Use a new flag, XNTIMER_MONOTONIC, to control if absolute timeouts
-    shall skip wallclock_offset correction on start, making them
-    independent of clock adjustment. So far only used by RTDM timers,
-    the POSIX /might/ be able to exploit it as well.
-
-[PREVIEW] rtdm-timers.patch
-
-    Add rtdm_timer_* services, turn timerbench into the first user. This
-    patch also introduces monotonic timers to rtdm_task_* and adds the
-    new clock service rtdm_clock_read_monotonic. The whole thing about
-    monotonic clocks for drivers is due to my concerns that once we
-    start tuning the master timebase according to external sources, we
-    /might/ be happy to provide non-adjustable clock and timers for
-    device drivers that need strictly continuous timing.
-
-librtutils.patch
-
-    [refreshed]
-    Contains rt_print services so far. Still open naming question.
-
-[RFC] rtsystrace-v2.patch
-
-    [refreshed]
-    Proposal to add rt_print-based Xenomai syscall tracing. Looking for
-    a less code-invasive approach.
-
-[PREVIEW] lttng.patch
-
-    [rebased]
-    Very rough patch to make LTTng work with Xenomai.
+-- 
+Philippe.
 
 
-As usual: Testers and reviews are welcome, feedback is appreciated.
-
-Jan
-
-
---------------enig47B608E1A4CEEE75A7EA90A4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD4DBQFGZJ+DniDOoMHTA+kRAnkrAJ9M1/kwkG8VL8em1nLlPmxhD8FKmgCTBfw5
-mn9kOA2m8q/RIqTo1Y+evQ==
-=+q0f
------END PGP SIGNATURE-----
-
---------------enig47B608E1A4CEEE75A7EA90A4--
 
