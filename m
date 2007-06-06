@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200706071049.32906.ngustavson@domain.hid>
-References: <200706071049.32906.ngustavson@domain.hid>
-Content-Type: text/plain
-Date: Thu, 07 Jun 2007 19:03:06 +0200
-Message-Id: <1181235786.4998.108.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Fwd: can't use message pipe - Cannot
-	allocate	memory
-Reply-To: rpm@xenomai.org
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 6 Jun 2007 15:04:53 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>
+In-Reply-To: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>
+References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] Cyclictest
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,175 +18,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: NZG <ngustavson@domain.hid>
-Cc: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>, xenomai-help <xenomai@xenomai.org>
 
-On Thu, 2007-06-07 at 10:49 -0500, NZG wrote:
-> I'm trying to pass a message from user space to Xenomai and it doesn't seem
->  to be working. I keep getting an error when attempting to write to the pipe
->  in user space.
-> 
-> rt_pipe_write error
-> 
-> : Cannot allocate memory
-> 
+Try adding -p99 to use realtime.
+=20
+=20
+________________________________
 
-Issue confirmed here when passing a non-zero poolsize. Passing 0 does
-not seem to exhibit the problem. Could you re-check that both cases
-actually fail on your side?
-
-I have crafted a quick and dirty demo showing the problem. Until a
-non-zero value is passed to rt_pipe_create() to specify a local pool,
-everything is ok. (note: we could have used rt_pipe_write/rt_pipe_read
-indifferently, they both end up calling rt_pipe_send/receive).
-
-I'll have a look at this asap.
-
---- /dev/null	2006-05-31 03:15:07.000000000 +0200
-+++ pipe/module/module.c	2007-06-07 18:48:00.000000000 +0200
-@@ -0,0 +1,90 @@
-+#include <native/task.h>
-+#include <native/pipe.h>
-+
-+static RT_TASK task;
-+
-+static RT_PIPE pipe;
-+
-+#define ACK_STR "OK"
-+
-+static void test_task(void *cookie)
-+{
-+	RT_PIPE_MSG *msg, *ack;
-+	ssize_t sz;
-+	int s;
-+
-+	printk("Pipe open: waiting...\n");
-+
-+	for (;;) {
-+		sz = rt_pipe_receive(&pipe, &msg, TM_INFINITE);
-+
-+		if (sz < 0)
-+			break;
-+
-+		printk("Read %d bytes => %.*s\n", sz, sz, P_MSGPTR(msg));
-+
-+		s = rt_pipe_free(&pipe, msg);
-+
-+		if (s) {
-+			printk("pipe free: failed %d\n", s);
-+			goto fail;
-+		}
-+
-+		ack = rt_pipe_alloc(&pipe, 3);
-+
-+		if (!ack) {
-+			printk("pipe alloc: failed\n");
-+			goto fail;
-+		}
-+
-+		strcpy(P_MSGPTR(ack), ACK_STR);
-+
-+		sz = rt_pipe_send(&pipe, ack, 3, 0);	/* with \0 */
-+
-+		if (sz != sizeof(ACK_STR)) {
-+			printk("pipe write: failed %d\n", sz);
-+			goto fail;
-+		}
-+	}
-+
-+      fail:
-+
-+	return;
-+}
-+
-+int test_init_module(void)
-+{
-+	int s;
-+
-+	s = rt_pipe_create(&pipe, "test", P_MINOR_AUTO, 0);
-+
-+	if (s) {
-+		printk("pipe open: failed %d\n", s);
-+		goto fail;
-+	}
-+
-+	s = rt_task_create(&task, "pipe_task", 0, 1, 0);
-+
-+	if (s)
-+		printk("task create: failed %d\n", s);
-+	else {
-+		s = rt_task_start(&task, &test_task, NULL);
-+
-+		if (s)
-+			printk("task start: failed %d\n", s);
-+	}
-+
-+ fail:
-+	return s;
-+}
-+
-+void test_cleanup_module(void)
-+{
-+	rt_pipe_delete(&pipe);
-+	rt_task_delete(&task);
-+}
-+
-+module_init(test_init_module);
-+module_exit(test_cleanup_module);
-+
-+MODULE_LICENSE("GPL");
---- /dev/null	2006-05-31 03:15:07.000000000 +0200
-+++ pipe/module/Makefile	2007-06-07 18:08:57.000000000 +0200
-@@ -0,0 +1,5 @@
-+EXTRA_CFLAGS += -Iinclude/xenomai
-+
-+obj-m += module_rt.o
-+
-+module_rt-objs := module.o
---- /dev/null	2006-05-31 03:15:07.000000000 +0200
-+++ pipe/pipe.c	2007-06-07 18:49:25.000000000 +0200
-@@ -0,0 +1,37 @@
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <fcntl.h>
-+
-+main()
-+{
-+	char buf[16];
-+	int fd, n;
-+    
-+	fd = open("/proc/xenomai/registry/native/pipes/test", O_RDWR);
-+
-+	if (fd < 0) {
-+		fprintf(stderr, "open(): %m\n");
-+		exit(1);
-+	}
-+    
-+	printf("open(): %m, fd: %d\n", fd);
-+
-+	n = write(fd, "Hello World", 11);
-+
-+	if (n != 11) {
-+		perror("write");
-+		exit(1);
-+	}
-+
-+	n = read(fd, buf, sizeof(buf));
-+
-+	if (n < 0) {
-+		perror("write");
-+		exit(1);
-+	}
-+
-+	printf("Received %.*s, n=%d\n", n, buf, n);
-+
-+	exit(0);
-+}
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] =
+On Behalf Of Perrine Martignoni
+Sent: 6. j=FAn=ED 2007 15:02
+To: xenomai-help
+Subject: [Xenomai-help] Cyclictest
 
 
--- 
-Philippe.
+Hello,=20
+=20
+I launched the same application Cyclictest on a kernel Linux without =
+Xenomai and a kernel Linux with Xenomai and I noticed that the result is =
+different.
+=20
+Here is the result with a kernel Linux without xenomai :=20
+=20
+> cyclictest -t 10 -c 1 -i 10500
+ =20
 
+T: 0 (  732) P:99 I:   10500 C:    2291 Min:      41 Act:    2281 Avg:   =
+ 5075 Max:   10224=20
 
+T: 1 (  733) P:98 I:   11000 C:    2187 Min:      66 Act:    1312 Avg:   =
+ 5085 Max:   10236=20
+
+T: 2 (  734) P:97 I:   11500 C:    2092 Min:      91 Act:     842 Avg:   =
+ 5113 Max:   10311=20
+
+T: 3 (  735) P:96 I:   12000 C:    2004 Min:     106 Act:    1384 Avg:   =
+ 5134 Max:   10140=20
+
+T: 4 (  736) P:95 I:   12500 C:    1924 Min:     116 Act:    9873 Avg:   =
+ 5152 Max:   10306=20
+
+T: 5 (  737) P:94 I:   13000 C:    1850 Min:     136 Act:     415 Avg:   =
+ 5172 Max:   10376=20
+
+T: 6 (  738) P:93 I:   13500 C:    1782 Min:     136 Act:    3873 Avg:   =
+ 5180 Max:   10411=20
+
+T: 7 (  751) P:92 I:   14000 C:    1722 Min:     156 Act:    3559 Avg:   =
+ 5184 Max:   10190=20
+
+T: 8 (  752) P:91 I:   14500 C:    1663 Min:     140 Act:    8454 Avg:   =
+ 5216 Max:   10310=20
+
+T: 9 (  753) P:90 I:   15000 C:    1608 Min:     184 Act:    2485 Avg:   =
+ 5214 Max:   10490=20
+
+=20
+
+And here is the result with a kernel Linux with xenomai :=20
+> cyclictest -t 10 -c 1 -i 10000
+=20
+
+T: 0 (  893) P:99 I:   10000 C:     1756 Min:   13407 Act:   13536 Avg:  =
+ 13452 Max:   13693=20
+
+T: 1 (  894) P:98 I:   10500 C:     1673 Min:    4955 Act:    7595 Avg:  =
+  9767 Max:   14727=20
+
+T: 2 (  895) P:97 I:   11000 C:     1597 Min:    5461 Act:    7628 Avg:  =
+ 10047 Max:   14793=20
+
+T: 3 (  908) P:96 I:   11500 C:     1333 Min:    4987 Act:    5641 Avg:  =
+  9808 Max:   14779=20
+
+T: 4 (  909) P:95 I:   12000 C:     1277 Min:    5478 Act:   11665 Avg:  =
+  9588 Max:   13864=20
+
+T: 5 (  910) P:94 I:   12500 C:     1226 Min:    6016 Act:   11191 Avg:  =
+  9859 Max:   14135=20
+
+T: 6 (  911) P:93 I:   13000 C:     1179 Min:    5526 Act:    9711 Avg:  =
+ 10130 Max:   14901=20
+
+T: 7 (  912) P:92 I:   13500 C:     1135 Min:    5061 Act:   14740 Avg:  =
+  9896 Max:   14852=20
+
+T: 8 (  913) P:91 I:   14000 C:     1095 Min:    5549 Act:    7766 Avg:  =
+  9669 Max:   14198=20
+
+T: 9 (  914) P:90 I:   14500 C:     1057 Min:    5107 Act:   11820 Avg:  =
+  9940 Max:   14984=20
+
+=20
+=20
+We can see that with Xenomai, the results are less good.=20
+Is there an explication to this?
+=20
+Thanks
 
