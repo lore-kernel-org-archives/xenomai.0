@@ -1,18 +1,10 @@
-Message-ID: <466030FF.3070503@domain.hid>
-Date: Fri, 01 Jun 2007 16:45:19 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: "DESVAGES Arnaud" <desvages@domain.hid>
+Date: Wed, 6 Jun 2007 13:59:49 +0200
+Message-ID: <000001c7a832$2f5b9230$0419dcc3@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>	<465BE777.7010204@domain.hid>	<7289437c0705290347y20eeff5bq3e86cd0cd4984ddb@domain.hid>	<465C6268.1090704@domain.hid>	<18012.28254.882249.144005@domain.hid>	<7289437c0705292257u57e991a1l270d478fdf7f757d@domain.hid>	<7289437c0705300051i2634264avc5f2db1fcdb91da8@domain.hid>	<465D664E.3040700@domain.hid>	<465E8FA8.4030507@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>	<465EC7C1.5080300@domain.hid>
-	<465ECDEC.1030109@domain.hid> <465ECFCA.1070801@domain.hid>
-	<465FD824.6010902@domain.hid> <465FDD44.1050404@domain.hid>
-	<465FE255.90801@domain.hid> <465FE2A6.6040609@domain.hid>
-	<46603129.5050502@domain.hid>
-In-Reply-To: <46603129.5050502@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7F86CC9E2BA543F81D117D10"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] =?iso-8859-15?q?Xenomai_with_=B5Clibc?=
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0001_01C7A842.F2E46230"
+Subject: [Xenomai-help] real time task disapears... memory problem ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,132 +14,283 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7F86CC9E2BA543F81D117D10
-Content-Type: text/plain; charset=ISO-8859-15
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0001_01C7A842.F2E46230
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Wolfgang Grandegger wrote:
-> Jan Kiszka wrote:
->> Wolfgang Grandegger wrote:
->>> Jan Kiszka wrote:
->>>> Wolfgang Grandegger wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Wolfgang Grandegger wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Perrine Martignoni wrote:
->>>>>>>>>> Perrine, did you happen to configure Xenomai with "configure
->>>>>>>>>> --host=3Darm
->>>>>>>>>> ..."? If yes (see config.log), please use "--host=3Darm-linux"=
-=2E
->>>>>>>>>> This
->>>>>>>>>> solved all issues for me.
->>>>>>>>>>
->>>>>>>>>> Awaiting your feedback!
->>>>>>>>> I configure Xenomai with --host=3Darm.
->>>>>>>>> I tried to configure like this but it doesn't work :
->>>>>>>>>
->>>>>>>>> ./configure --build=3Darm-linux --host=3Darm-linux CC=3Darm-lin=
-ux-gcc
->>>>>>>>                       ^^^^^^^^^
->>>>>>>> I guess you are not compiling Xenomai _on_ an ARM box, are you? =
-:)
->>>>>>>> Try --build=3Di686-linux here.
->>>>>>> Or just omit it. Also CC=3D, CXX=3D, LD=3D ist not necessary. For=
- PowerPC
->>>>>>> with the ELDK, I just use
->>>>>>>
->>>>>>>   ./configure --host=3Dppc-linux
->>>>>>>
->>>>>>> to configure Xenomai.
->>>>>> Can we define a common ground for this in README.INSTALL, for all
->>>>>> archs?
->>>>>> The simpler, the better.
->>>>>>
->>>>>> I was heavily misled by the PPC section, because I do not
->>>>>> cross-compile
->>>>>> everyday, thus had to look up the procedure again and managed to p=
-ick
->>>>>> the bad example...
->>>>> I had a closer look and realized, that passing just CC, CXX and LD =
-to
->>>>> the configure script is not enough. There should at least also AR a=
-nd
->>>>> RANLIB, otherwise the corresponding host tools are used. Then I thi=
-nk,
->>>>> it should be equivalent to automatic tool assignment via --host.
->>>>>
->>>>> Also note, that "--host=3Darm" will also work with the ELDK, becaus=
-e
->>>>> there
->>>>> are links arm-* to the tools arm-linux-*. I Perrine's configure
->>>>> examples
->>>>> above, arm-ar and arm-ranlib will then be used.
->>>> But the issue is that in this case configure is unable to find the
->>>> target OS and fails to detect that shared libs are supported for the=
+Hello,
 
->>>> target. Non-shared build fails with ELDK for unknown reasons.
->>> Why it is unable to find the target OS. Can you provide an example? A=
-nd
->>
->> Look at the configure script. :o) [This is how I found the reason for
->> the non-shared build.]
->=20
-> I'm still unable to reproduce that case, sorry. Could you be please sho=
-w
-> me the failing configure command. So far, I always got
->=20
->   checking for target architecture... ARM arm-unknown-none
->   arm
->=20
-> Have I missed something?
+=20
 
-No look below if your configure run is able to detect shared-libs
-support. It shouldn't (how is OS "unknown" supposed to handle dynamic
-linking?). Thus we fall back to static linking.
+I'm currently working on feedback scheduling. I have a set of tasks : an =
+MPC
+controller, a feedback scheduler, and some disturbance tasks.
 
->=20
->>> non-shared builds only fail with the ARM uClibc toolchain from the EL=
-DK.
->>> It builds fine with the normal ARM tool-chain.
->>
->> OK, good to know that the issue is confined.
->=20
-> Comparing the output of configure, I see, that probing the following
-> functions fails with arm-uclibc:
->=20
->   ac_cv_func_shm_open=3Dno
->   ac_cv_func_shm_unlink=3Dno
->   ac_cv_sched_setaffinity=3Dno
+=20
 
-Are those services supported by uClibc? I think they aren't, and Xenomai
-should already be able to deal with this.
+To do feedback scheduling, I need to measure the execution time quite
+accurately, and xenomai can not measure the execution time spend in the
+secondary mode. So I'm trying to stay in the primary mode. I had some =
+calloc
+and free in one function that made me leave primary mode (for the MPC =
+task).
 
->=20
-> Still investigating...
->=20
-> Wolfgang.
->=20
+=20
 
-Jan
+I tried to replace this by a rt_heap, and doing rt_heap_alloc in place =
+of
+calloc, and I also tried to have static allocation.
+
+=20
+
+=20
+
+In both cases, my MPC task disappears when executing it! (nothing in
+/proc/xenomai/stat after the first try to execute it, but present during
+initialisation. and the other tasks are still here).
+
+=20
+
+I'm working on it for a few days now, and I can't find out what is =
+wrong. I
+have tested to increase the maximum locked-in-memory size (in
+/etc/security/limits.conf). If I debug it with ddd, all is ok, array are
+well allocated...
+
+=20
+
+The strangest thing is that if I put a printf (this make a switch to
+secondary mode) saying that heap allocation was successful, everything =
+works
+fine. So there is a function call that kills my task if I am in primary
+mode, and executes well if I am in secondary mode?
+
+=20
+
+=20
+
+Do you have any idea on where may be the mistake? Do you need some more
+information?
+
+=20
+
+=20
+
+My config: Linux 2.6.17-x320 preempt
+
+=20
+
+=20
+
+Thanks in advance,
+
+=20
+
+=20
+
+Arnaud DESVAGES
+
+=20
 
 
---------------enig7F86CC9E2BA543F81D117D10
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+------=_NextPart_000_0001_01C7A842.F2E46230
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+<html>
 
-iD8DBQFGYDD/niDOoMHTA+kRAlmGAJ9JR1q0nL7yMOgjv2VK7AjIh08RzgCbBASq
-R926nqTs2d5k1MV0htkE5wo=
-=MJSS
------END PGP SIGNATURE-----
+<head>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
 
---------------enig7F86CC9E2BA543F81D117D10--
+
+<meta name=3DGenerator content=3D"Microsoft Word 10 (filtered)">
+
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.StyleCourrierlectronique17
+	{font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Hello,</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I&#8217;m currently working on feedback =
+scheduling. I
+have a set of tasks : an MPC controller, a feedback scheduler, and some
+disturbance tasks.</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>To do feedback scheduling, I need to measure =
+the
+execution time quite accurately, and xenomai can not measure the =
+execution time
+spend in the secondary mode. So I&#8217;m trying to stay in the primary =
+mode. I
+had some calloc and free in one function that made me leave primary mode =
+(for
+the MPC task).</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I tried to replace this by a rt_heap, and =
+doing rt_heap_alloc
+in place of calloc, and I also tried to have static =
+allocation.</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>In both cases, my MPC task disappears when =
+executing it!
+(nothing in /proc/xenomai/stat after the first try to execute it, but =
+present
+during initialisation&#8230; and the other tasks are still =
+here).</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I&#8217;m working on it for a few days now, =
+and I can&#8217;t
+find out what is wrong. I have tested to increase the maximum =
+locked-in-memory
+size (in /etc/security/limits.conf). If I debug it with ddd, all is ok, =
+array
+are well allocated...</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>The strangest thing is that if I put a printf =
+(this
+make a switch to secondary mode) saying that heap allocation was =
+successful, everything
+works fine. So there is a function call that kills my task if I am in =
+primary
+mode, and executes well if I am in secondary mode?</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Do you have any idea on where may be the =
+mistake? Do
+you need some more information?</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>My config: Linux 2.6.17-x320 =
+preempt</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Thanks in advance,</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>&nbsp;</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-US =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Arnaud DESVAGES</span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span =
+style=3D'font-size:10.0pt;
+font-family:Arial'>&nbsp;</span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_0001_01C7A842.F2E46230--
+
 
