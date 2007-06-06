@@ -1,11 +1,15 @@
-Message-ID: <OF815057E3.6D5C9810-ONC12572FF.00287AFE-C12572FF.0028A289@domain.hid>
-From: apittaluga@domain.hid
-Date: Tue, 19 Jun 2007 09:23:50 +0200
-MIME-Version: 1.0
-Content-type: multipart/alternative;
-	Boundary="0__=4EBBF86CDFBBFC6E8f9e8a93df938690918c4EBBF86CDFBBFC6E"
-Content-Disposition: inline
-Subject: [Xenomai-help] xeno-2.3.1 shared interrups BUG?
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>
+References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>
+	<DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Date: Wed, 06 Jun 2007 17:18:29 +0200
+Message-Id: <1181143109.17978.101.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] Cyclictest
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,349 +19,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Daniel Schnell <daniel.schnell@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
---0__=4EBBF86CDFBBFC6E8f9e8a93df938690918c4EBBF86CDFBBFC6E
-Content-type: text/plain; charset=US-ASCII
+On Wed, 2007-06-06 at 15:04 +0000, Daniel Schnell wrote:
+> Try adding -p99 to use realtime.
+> =20
+>=20
+> ________________________________
+>=20
+> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain=
+.hid] On Behalf Of Perrine Martignoni
+> Sent: 6. j=FAn=ED 2007 15:02
+> To: xenomai-help
+> Subject: [Xenomai-help] Cyclictest
+>=20
+>=20
+> Hello,=20
+> =20
+> I launched the same application Cyclictest on a kernel Linux without Xeno=
+mai and a kernel Linux with Xenomai and I noticed that the result is differ=
+ent.
+> =20
+> Here is the result with a kernel Linux without xenomai :=20
+> =20
+> > cyclictest -t 10 -c 1 -i 10500
+>  =20
+>=20
+> T: 0 (  732) P:99 I:   10500 C:    2291 Min:      41 Act:    2281 Avg:   =
+ 5075 Max:   10224=20
+>=20
+> T: 1 (  733) P:98 I:   11000 C:    2187 Min:      66 Act:    1312 Avg:   =
+ 5085 Max:   10236=20
+>=20
+> T: 2 (  734) P:97 I:   11500 C:    2092 Min:      91 Act:     842 Avg:   =
+ 5113 Max:   10311=20
+>=20
+> T: 3 (  735) P:96 I:   12000 C:    2004 Min:     106 Act:    1384 Avg:   =
+ 5134 Max:   10140=20
+>=20
+> T: 4 (  736) P:95 I:   12500 C:    1924 Min:     116 Act:    9873 Avg:   =
+ 5152 Max:   10306=20
+>=20
+> T: 5 (  737) P:94 I:   13000 C:    1850 Min:     136 Act:     415 Avg:   =
+ 5172 Max:   10376=20
+>=20
+> T: 6 (  738) P:93 I:   13500 C:    1782 Min:     136 Act:    3873 Avg:   =
+ 5180 Max:   10411=20
+>=20
+> T: 7 (  751) P:92 I:   14000 C:    1722 Min:     156 Act:    3559 Avg:   =
+ 5184 Max:   10190=20
+>=20
+> T: 8 (  752) P:91 I:   14500 C:    1663 Min:     140 Act:    8454 Avg:   =
+ 5216 Max:   10310=20
+>=20
+> T: 9 (  753) P:90 I:   15000 C:    1608 Min:     184 Act:    2485 Avg:   =
+ 5214 Max:   10490=20
+>=20
+> =20
+>=20
+> And here is the result with a kernel Linux with xenomai :=20
+> > cyclictest -t 10 -c 1 -i 10000
+> =20
+>=20
+> T: 0 (  893) P:99 I:   10000 C:     1756 Min:   13407 Act:   13536 Avg:  =
+ 13452 Max:   13693=20
+>=20
+> T: 1 (  894) P:98 I:   10500 C:     1673 Min:    4955 Act:    7595 Avg:  =
+  9767 Max:   14727=20
+>=20
+> T: 2 (  895) P:97 I:   11000 C:     1597 Min:    5461 Act:    7628 Avg:  =
+ 10047 Max:   14793=20
+>=20
+> T: 3 (  908) P:96 I:   11500 C:     1333 Min:    4987 Act:    5641 Avg:  =
+  9808 Max:   14779=20
+>=20
+> T: 4 (  909) P:95 I:   12000 C:     1277 Min:    5478 Act:   11665 Avg:  =
+  9588 Max:   13864=20
+>=20
+> T: 5 (  910) P:94 I:   12500 C:     1226 Min:    6016 Act:   11191 Avg:  =
+  9859 Max:   14135=20
+>=20
+> T: 6 (  911) P:93 I:   13000 C:     1179 Min:    5526 Act:    9711 Avg:  =
+ 10130 Max:   14901=20
+>=20
+> T: 7 (  912) P:92 I:   13500 C:     1135 Min:    5061 Act:   14740 Avg:  =
+  9896 Max:   14852=20
+>=20
+> T: 8 (  913) P:91 I:   14000 C:     1095 Min:    5549 Act:    7766 Avg:  =
+  9669 Max:   14198=20
+>=20
+> T: 9 (  914) P:90 I:   14500 C:     1057 Min:    5107 Act:   11820 Avg:  =
+  9940 Max:   14984=20
+>=20
+> =20
+>=20
+> We can see that with Xenomai, the results are less good.=20
+> Is there an explication to this?
 
-Hi,
-running a simple test application which spawns a periodic task writing on a
-serial interface
-the system hangs performing the rt_dev_close.
-The test program ran fine with xeno 2.2.6 with "Shared Interrupts" enabled,
-so as with
-xeno 2.3.1 with "Shared Interrupts" disabled. It fails with xeno 2.3.1 with
-"Shared Interrupts" enabled, so the problem seems to be in the shared
-interrupts handling area.
-kernel is 2.6.20 adeos patched
+Actually, you don't have any information from this test output unless
+you did put some load on your box. Real-time is about predictability,
+what Xenomai brings is exactly that. Raw performances have no meaning in
+a real-time context unless they can be sustained regardless of the
+runtime conditions.
 
-Any suggestion?
+If your box is not some flashy big iron, try putting some load with this
+command while the test is running, on both boxen:
 
-Many Thanks
+while :; do dd if=3D/dev/zero of=3Dhog.out count=3D500 bs=3D1M; rm -f hog.o=
+ut &&
+sync; done
 
-here follows the kernel dumps:
+If you do have a recent, multi-core and multi-Ghz box, try compiling a
+kernel over all the CPUs when testing. E.g. for a 2 CPU box, try
+running:
 
-BUG: unable to handle kernel NULL pointer dereference at virtual address
-00000008
-printing eip:
-*pde = 00000000
-Oops: 0000 [#1]
-SMP
-Modules linked in: xeno_16550A ipv6 nfs lockd sunrpc ide_scsi i2c_i801
-i2c_core sg shpchp rng_core evdev ehci_hcd uhci_hcd intel
-_agp agpgart e1000 serio_raw pcspkr
-CPU: 0
-EIP: 0060: Not tainted VLI
-EFLAGS: 00010046 (2.6.20.1-xeno-2.3.1 #16)
-EIP is at xnintr_edge_shirq_handler+0xda/0x2f0
-eax: 00000000 ebx: 00000000 ecx: f2d58074 edx: c0529080
-esi: c05290c0 edi: 69bfb728 ebp: 000000c9 esp: c04b9f08
-ds: 007b es: 007b ss: 0068
-I-pipe domain Xenomai
-Process modprobe (pid: 1876, ti=f7a44000 task=f7d7d030 task.ti=f7a44000)
-Stack: c047d100 c0487400 00000001 00000001 00000001 f2d58050 c0527a10
-c05293f8
-00000004 c04fbc38 c051d100 00000004 00000000 c0143fa8 00000000 c047d100
-c051d100 c04fbc38 00000000 00000004 c0527400 c0112de2 c03bc88a 00000000
-Call Trace:
-__ipipe_dispatch_wired+0xdB/0x120
-__ipipe_handle_irq+0x72/0x2b0
-schedule+0x41a/0x880
-common_interrupt+0x21/0x38
-mwait_idle_with_hints+0x3f/0x50
-mwait_idle+0x0/0x10
-cpu_idle+0x6f/0x90
-start_kernel+0x1d0/0x240
-unknown_bootoption+0x0/0x190
-=======================
-Code: 03 00 00 89 f0 89 96 b4 03 00 00 8b 15 80 87 52 c0 29 d0 83 e8 40 c1
-f8 04 69 c0 ab aa aa aa 8d 44 18 24 87 86 b8 03 00 00
-89 d9 <ff> 53 08 09 44 24 10 0f b6 d0 83 fa 02 0f 84 04 01 00 00 4a 0f
-EIP: xnintr_edge_shirq_handler+0xda/0x2f0 SS:ESP 0068:c04b9f08
-Kernel panic - not syncing: Attempted to kill the idle task!
+while :; do make clean && make -j3; done
 
-hardware:
-Intel Core DUO Processor Single Board Computer
-
-here follows the test application:
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-#include <signal.h>
-#include <sys/mman.h>
-
-#include <native/task.h>
-#include <native/timer.h>
-#include <rtdm/rtserial.h>
-
-#define FALSE 0
-#define TRUE 1
-#define BAUDRATE B115200
-
-#define WRITE_FILE "rtser0"
-
-RT_TASK rt_writer_tid;
-int fd;
-
-static const struct rtser_config write_config = {
-0xFFDF, /* config_mask */
-115200, /* baud_rate */
-RTSER_DEF_PARITY, /* parity */
-RTSER_DEF_BITS, /* data_bits */
-RTSER_DEF_STOPB, /* stop_bits */
-RTSER_DEF_HAND, /* handshake */
-RTSER_DEF_FIFO_DEPTH, /* fifo_depth*/
-RTSER_DEF_TIMEOUT, /* rx_timeout */
-RTSER_DEF_TIMEOUT, /* tx_timeout */
-RTSER_DEF_TIMEOUT, /* event_timeout */
-RTSER_DEF_TIMESTAMP_HISTORY /* timestamp_history */
-};
-
-void rt_writer (void *cookie)
-{
-int error;
-int res;
-char* msg = "abrac";
-error = rt_task_set_periodic(NULL,
-TM_NOW,
-rt_timer_ns2ticks(32000000));
-
-for (;;) {
-error = rt_task_wait_period(NULL);
-res = rt_dev_write(fd, msg, strlen(msg));
-
-}
-}
-
-
-void cleanup_upon_sig(int sig __attribute__((unused)))
-{
-
-
-rt_dev_close(fd);
-
-exit(0);
-}
-
-int main(int argc, char** argv)
-{
-int error;
-
-
-mlockall(MCL_CURRENT|MCL_FUTURE);
-
-signal(SIGINT, cleanup_upon_sig);
-signal(SIGTERM, cleanup_upon_sig);
-signal(SIGHUP, cleanup_upon_sig);
-signal(SIGALRM, cleanup_upon_sig);
-
-fd = rt_dev_open(WRITE_FILE, 0);
-if (fd < 0) {
-perror(WRITE_FILE);
-cleanup_upon_sig(0);
-}
-error = rt_dev_ioctl(fd, RTSER_RTIOC_SET_CONFIG, &write_config);
-if (error) {
-printf("error while RTSER_RTIOC_SET_CONFIG, code %d\n",error);
-cleanup_upon_sig(0);
-}
-
-error = rt_task_spawn(&rt_writer_tid,"rt_writer",0,99,T_FPU,
-rt_writer, NULL);
-if (error) {
-printf("rt_task_spawn: code %d\n",error);
-return 2;
-}
-pause();
-exit(0);
-
-}
-
-
-Alessandro Pittaluga
-
-Alenia Aeronautica
-Avionic System Qualification
-Test Systems
-Corso Marche, 41
-10146 Torino (Italy)
-Phone +39-011-756.2915
-+39-011-996.0714
-Fax +39-011-756.2517
---0__=4EBBF86CDFBBFC6E8f9e8a93df938690918c4EBBF86CDFBBFC6E
-Content-type: text/html; charset=US-ASCII
-Content-Disposition: inline
-
-<html><body>
-<p><font size="4">Hi,<br>
-running a simple test application which spawns a periodic task writing on a serial interface<br>
-the system hangs performing the rt_dev_close.<br>
-The test program ran fine with xeno 2.2.6 with &quot;Shared Interrupts&quot; enabled, so as with<br>
-xeno 2.3.1 with &quot;Shared Interrupts&quot; disabled. It fails with xeno 2.3.1 with &quot;Shared Interrupts&quot; enabled, so the problem seems to be in the shared interrupts handling area.<br>
-kernel is 2.6.20 adeos patched<br>
-<br>
-Any suggestion?<br>
-<br>
-Many Thanks<br>
-<br>
-here follows the kernel dumps:<br>
-<br>
-BUG: unable to handle kernel NULL pointer dereference at virtual address 00000008<br>
-printing eip:<br>
-*pde = 00000000<br>
-Oops: 0000 [#1]<br>
-SMP <br>
-Modules linked in: xeno_16550A ipv6 nfs lockd sunrpc ide_scsi i2c_i801 i2c_core sg shpchp rng_core evdev ehci_hcd uhci_hcd intel<br>
-_agp agpgart e1000 serio_raw pcspkr <br>
-CPU: 0<br>
-EIP: 0060: Not tainted VLI<br>
-EFLAGS: 00010046 (2.6.20.1-xeno-2.3.1 #16)<br>
-EIP is at xnintr_edge_shirq_handler+0xda/0x2f0<br>
-eax: 00000000 ebx: 00000000 ecx: f2d58074 edx: c0529080<br>
-esi: c05290c0 edi: 69bfb728 ebp: 000000c9 esp: c04b9f08<br>
-ds: 007b es: 007b ss: 0068<br>
-I-pipe domain Xenomai<br>
-Process modprobe (pid: 1876, ti=f7a44000 task=f7d7d030 task.ti=f7a44000)<br>
-Stack: c047d100 c0487400 00000001 00000001 00000001 f2d58050 c0527a10 c05293f8 <br>
-00000004 c04fbc38 c051d100 00000004 00000000 c0143fa8 00000000 c047d100 <br>
-c051d100 c04fbc38 00000000 00000004 c0527400 c0112de2 c03bc88a 00000000 <br>
-Call Trace:<br>
-__ipipe_dispatch_wired+0xdB/0x120<br>
-__ipipe_handle_irq+0x72/0x2b0<br>
-schedule+0x41a/0x880<br>
-common_interrupt+0x21/0x38<br>
-mwait_idle_with_hints+0x3f/0x50<br>
-mwait_idle+0x0/0x10<br>
-cpu_idle+0x6f/0x90<br>
-start_kernel+0x1d0/0x240<br>
-unknown_bootoption+0x0/0x190 <br>
-=======================<br>
-Code: 03 00 00 89 f0 89 96 b4 03 00 00 8b 15 80 87 52 c0 29 d0 83 e8 40 c1 f8 04 69 c0 ab aa aa aa 8d 44 18 24 87 86 b8 03 00 00<br>
-89 d9 &lt;ff&gt; 53 08 09 44 24 10 0f b6 d0 83 fa 02 0f 84 04 01 00 00 4a 0f <br>
-EIP: xnintr_edge_shirq_handler+0xda/0x2f0 SS:ESP 0068:c04b9f08<br>
-Kernel panic - not syncing: Attempted to kill the idle task!<br>
-<br>
-hardware:<br>
-Intel Core DUO Processor Single Board Computer<br>
-<br>
-here follows the test application:<br>
-<br>
-#include &lt;sys/types.h&gt;<br>
-#include &lt;sys/stat.h&gt;<br>
-#include &lt;fcntl.h&gt;<br>
-#include &lt;stdio.h&gt;<br>
-#include &lt;string.h&gt;<br>
-#include &lt;unistd.h&gt;<br>
-#include &lt;stdlib.h&gt;<br>
-<br>
-#include &lt;signal.h&gt;<br>
-#include &lt;sys/mman.h&gt;<br>
-<br>
-#include &lt;native/task.h&gt;<br>
-#include &lt;native/timer.h&gt;<br>
-#include &lt;rtdm/rtserial.h&gt;<br>
-<br>
-#define FALSE 0<br>
-#define TRUE 1<br>
-#define BAUDRATE B115200<br>
-<br>
-#define WRITE_FILE &quot;rtser0&quot;<br>
-<br>
-RT_TASK rt_writer_tid;<br>
-int fd;<br>
-<br>
-static const struct rtser_config write_config = {<br>
-0xFFDF, /* config_mask */<br>
-115200, /* baud_rate */<br>
-RTSER_DEF_PARITY, /* parity */<br>
-RTSER_DEF_BITS, /* data_bits */<br>
-RTSER_DEF_STOPB, /* stop_bits */<br>
-RTSER_DEF_HAND, /* handshake */<br>
-RTSER_DEF_FIFO_DEPTH, /* fifo_depth*/<br>
-RTSER_DEF_TIMEOUT, /* rx_timeout */<br>
-RTSER_DEF_TIMEOUT, /* tx_timeout */<br>
-RTSER_DEF_TIMEOUT, /* event_timeout */<br>
-RTSER_DEF_TIMESTAMP_HISTORY /* timestamp_history */<br>
-};<br>
-<br>
-void rt_writer (void *cookie)<br>
-{<br>
-int error;<br>
-int res;<br>
-char* msg = &quot;abrac&quot;; <br>
-error = rt_task_set_periodic(NULL,<br>
-TM_NOW,<br>
-rt_timer_ns2ticks(32000000));<br>
-<br>
-for (;;) {<br>
-error = rt_task_wait_period(NULL);<br>
-res = rt_dev_write(fd, msg, strlen(msg));<br>
-<br>
-}<br>
-}<br>
-<br>
-<br>
-void cleanup_upon_sig(int sig __attribute__((unused)))<br>
-{<br>
-<br>
-<br>
-rt_dev_close(fd);<br>
-<br>
-exit(0);<br>
-}<br>
-<br>
-int main(int argc, char** argv)<br>
-{<br>
-int error;<br>
-<br>
-<br>
-mlockall(MCL_CURRENT|MCL_FUTURE);<br>
-<br>
-signal(SIGINT, cleanup_upon_sig);<br>
-signal(SIGTERM, cleanup_upon_sig);<br>
-signal(SIGHUP, cleanup_upon_sig);<br>
-signal(SIGALRM, cleanup_upon_sig); <br>
-<br>
-fd = rt_dev_open(WRITE_FILE, 0);<br>
-if (fd &lt; 0) {<br>
-perror(WRITE_FILE);<br>
-cleanup_upon_sig(0);<br>
-}<br>
-error = rt_dev_ioctl(fd, RTSER_RTIOC_SET_CONFIG, &amp;write_config);<br>
-if (error) {<br>
-printf(&quot;error while RTSER_RTIOC_SET_CONFIG, code %d\n&quot;,error);<br>
-cleanup_upon_sig(0);<br>
-}<br>
-<br>
-error = rt_task_spawn(&amp;rt_writer_tid,&quot;rt_writer&quot;,0,99,T_FPU,<br>
-rt_writer, NULL);<br>
-if (error) {<br>
-printf(&quot;rt_task_spawn: code %d\n&quot;,error);<br>
-return 2;<br>
-} <br>
-pause();<br>
-exit(0);<br>
-<br>
-}<br>
-<br>
-<br>
-Alessandro Pittaluga<br>
-<br>
-Alenia Aeronautica<br>
-Avionic System Qualification<br>
-Test Systems<br>
-Corso Marche, 41<br>
-10146 Torino (Italy)<br>
-Phone +39-011-756.2915<br>
-+39-011-996.0714<br>
-Fax +39-011-756.2517</font></body></html>
---0__=4EBBF86CDFBBFC6E8f9e8a93df938690918c4EBBF86CDFBBFC6E--
+> =20
+> Thanks
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+--=20
+Philippe.
 
 
 
