@@ -1,88 +1,105 @@
-Message-ID: <7289437c0705310833m40dcef0bt188a4b3e33f4c014@domain.hid>
-Date: Thu, 31 May 2007 17:33:38 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <465EE3BC.7020905@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_16818_31829769.1180625618971"
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB0F3@domain.hid>
-	<465E8FA8.4030507@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01F54FE7@domain.hid>
-	<7289437c0705310558y6e1b4f8fue26c640d863ae041@domain.hid>
-	<465EC7C1.5080300@domain.hid> <465ECDEC.1030109@domain.hid>
-	<465ECFCA.1070801@domain.hid> <465ED806.2060608@domain.hid>
-	<7289437c0705310758o3512e5e5x4c1a6d1df444be63@domain.hid>
-	<465EE3BC.7020905@domain.hid>
-Subject: Re: [Xenomai-help] =?iso-8859-1?q?Xenomai_with_=B5Clibc?=
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18022.64424.836736.431121@domain.hid>
+Date: Wed, 6 Jun 2007 20:23:36 +0200
+In-Reply-To: <4666B716.6010909@domain.hid>
+References: <46649F7E.3060104@domain.hid> <46651F7D.9090702@domain.hid>
+	<18021.58231.177931.286548@domain.hid>
+	<46668CC3.8050002@domain.hid> <4666ACE5.7030200@domain.hid>
+	<4666AFB3.6040602@domain.hid> <4666B4C7.6020308@domain.hid>
+	<4666B716.6010909@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [PATCH-STACK] Updates, timerstats, rtdm-timers
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_16818_31829769.1180625618971
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Not when the macro and inline bear names that are easy to understand. If
+ > > you do not find the names easy to understand, then change them (I do not
+ > > like rthal_llmul either, but I could not find a name). To make the
+ > > assembly fully understandable, you would need to comment every
+ > > statement. And now, run the assembly code in gdb, and try and print the
+ > > value of a 64 bits intermediate result: you can't.
+ > 
+ > No question, this is a matter of taste.
 
-I tried to put essai_mutex.c before the flags but it's the same thing.
+No, really, being able to debug the code inside gdb appears to me as
+something more than a "matter of taste", I thought that as the person
+who made Xenomai run with kgdb you would have agreed with me.
 
-It compiles with no problem, and after when I want to launch it on my board
-I have the error about __real_sem_init.
+Now, about the way I wrote arithmetic code, their are reasons behind my
+choices. There are some repetitive patterns in this arithmetic code and
+I wanted to facter them out. The first pattern is the conversion between
+32 bits and 64 bits, we have to do this in a way that is understood by
+the compiler on a particular platform, hence the definition of
+rthal_u64from/tou32 which is different for each platform. x86
+understands shifts and mask (or cast), but gcc for power pc or arm
+prefers the union trick.
+There is also only one way to cause gcc to use the 32x32->64 fast
+multiplication it is exactly what does rthal_ullmul. If you want to do
+the same thing, but write it differently, you invariably cause gcc to
+use a full 64 bits multiplication.
 
-I noticed that with cyclictest it's the same. When I want to launch the
-application, I have the same error :
- can't resolve symbol '__real_sem_init'
+So, when in rthal_generic_llmulshft, I read:
+
+    long long hi = (ll >> BITS_PER_LONG) * m;
+    unsigned long long lo = ((long)ll) * m;
+
+I think this is all wrong:
+- on a 64 bits machine, BITS_PER_LONG is 64 and ll is 64 bits, so ll >>
+  BITS_PER_LONG is 0
+
+- for the first multiplication, the compiler will not detect the
+  "fastmult" condition, and will use a full 64 bits multiplication. In
+  order to get it to generate the minimal multiplication, you should
+  have used:
+
+  long long hi = (long long)(int)(ll >> 32) * (int) m
+
+ I find:
+static inline long long rthal_llmi(const int i, const int j)
+{
+        /* Fast 32x32->64 multiplication */
+	return (long long) i * j;
+}
+
+/* (...) */
+	__rthal_u64tou32(op, oph, opl);
+	hi = rthal_llmi(oph, m);
+
+easier to write and maintain, understand once you know what
+rthal_llmi does, and generates better code with regard to the
+32bits/64bits conversion.
+
+- for the second multiplication, since the two arguments are 32 bits, the
+  compiler will use a 32 bits multiplication, and since you (wrongly)
+  cast the first argument to long, it will use a signed multiplication,
+  whereas we would want it to use an unsigned multiplication, as the
+  assembly routine correctly does.
+
+Here again, using:
+
+      lo = rthal_ullmul(opl, m);
+would have been less error-prone.
+   
+So, Ok, I will try to do something for x86 (either reduce the numbers of
+registers used by the C code, or reduce the assembly to the bare
+minimum). But, please, pick my generic implementation of llmulshft, it
+was carefully written.
+
+-- 
 
 
-On 5/31/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
-> Perrine Martignoni wrote:
-> >>Same program as you posted earlier?
-> > Yes. it's the same.
-> >
-> >>Can you confirm the issue with this procedure? Also make sure that your
-> >>rebuild and re-installed the Xenomai user space part cleanly ("make
-> >>clean; make install").
-> >
-> > I installed cleanly Xenomai.
-> >
-> > I compiled too with :
-> > arm-linux-gcc `.../xeno-config --posix-cflags --posix-ldflags` -o
-> > essai_mutex_rt essai_mutex.c
->
-> try putting essai_mutex.c before the flags, as in:
->
-> arm-linux-gcc -o essai_mutex_rt essai_mutex.c `xeno-config
-> --posix-cflags --posix-ldflags`
->
-> --
->                                                 Gilles Chanteperdrix
->
-
-------=_Part_16818_31829769.1180625618971
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-<div>I tried to put essai_mutex.c before the flags but it&#39;s the same thing.</div>
-<div>&nbsp;</div>
-<div>It compiles with no problem, and after when I want to launch it on my board I have the error about __real_sem_init.</div>
-<div>&nbsp;</div>
-<div>I noticed that with cyclictest it&#39;s the same. When&nbsp;I want to launch the application, I have the same error :&nbsp;</div>
-<div>
-<div><font face="courier new,monospace">can&#39;t resolve symbol &#39;__real_sem_init&#39;<br></font></div></div>
-<div><br>&nbsp;</div>
-<div><span class="gmail_quote">On 5/31/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span>
-<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Perrine Martignoni wrote:<br>&gt;&gt;Same program as you posted earlier?<br>&gt; Yes. it&#39;s the same.<br>
-&gt;<br>&gt;&gt;Can you confirm the issue with this procedure? Also make sure that your<br>&gt;&gt;rebuild and re-installed the Xenomai user space part cleanly (&quot;make<br>&gt;&gt;clean; make install&quot;).<br>&gt;<br>
-&gt; I installed cleanly Xenomai.<br>&gt;<br>&gt; I compiled too with :<br>&gt; arm-linux-gcc `.../xeno-config --posix-cflags --posix-ldflags` -o<br>&gt; essai_mutex_rt essai_mutex.c<br><br>try putting essai_mutex.c before the flags, as in:
-<br><br>arm-linux-gcc -o essai_mutex_rt essai_mutex.c `xeno-config<br>--posix-cflags --posix-ldflags`<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix<br></blockquote></div><br>
-
-------=_Part_16818_31829769.1180625618971--
+					    Gilles Chanteperdrix.
 
