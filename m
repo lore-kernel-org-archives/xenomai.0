@@ -1,113 +1,97 @@
-Message-ID: <468A60C8.4050203@domain.hid>
-Date: Tue, 03 Jul 2007 16:44:24 +0200
+Message-ID: <4667D2CC.2060006@domain.hid>
+Date: Thu, 07 Jun 2007 11:41:32 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4687F466.2020901@domain.hid>	
-	<b647ffbd0707020435oc733ee2m2facf281ee0c5cbb@domain.hid>	
-	<4688E373.5020205@domain.hid>
-	<b647ffbd0707030713x7eec10d2j5355e6257445f970@domain.hid>
-In-Reply-To: <b647ffbd0707030713x7eec10d2j5355e6257445f970@domain.hid>
+References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>	<1181143109.17978.101.camel@domain.hid>	<7289437c0706062254v2a386894oeb498459877d5086@domain.hid>	<4667AA4D.6070505@domain.hid>	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>
+	<4667BBBE.1040405@domain.hid> <4667CEF2.2050509@domain.hid>
+	<4667D008.80109@domain.hid> <4667D167.9030001@domain.hid>
+In-Reply-To: <4667D167.9030001@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF9A4301340E95126EF6E51B6"
+	boundary="------------enig390DEBB0F84618DE8D721C82"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [PATCH-STACK] Missing bits for -rc1
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Cyclictest
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF9A4301340E95126EF6E51B6
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig390DEBB0F84618DE8D721C82
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Dmitry Adamushko wrote:
-> On 02/07/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Dmitry Adamushko wrote:
->> > On 01/07/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> >> Hi all,
->> >>
->> >> I've just uploaded my rebased patch stack, including specifically t=
-he
->> >> last bits that should go in before -rc1,
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Gilles Chanteperdrix wrote:
+>>
+>>> Jan Kiszka wrote:
+>>>
+>>>> Perrine Martignoni wrote:
+>>>>
+>>>>
+>>>>> Ok. I'll do this.
+>>>>>
+>>>>> But I don't understand why the same application compiled without an=
+y links
+>>>>> with Xenomai give different results if there is Xenomai in the kern=
+el.
+>>>> [Looking at your numbers again] Hmm, maybe some rounding issue of ti=
+cks
+>>>> due to whatever side-effect of I-pipe. We would first of all need th=
+e
+>>>> usual set of information (.config, involved versions) and also
+>>>> /sys/devices/system/clocksource/clocksource0/current_clocksource.
+>>> Maybe what Perrine is observing is simply the overhead of the I-pipe =
+?
+>>> I mean, Linux is Xenomai idle task, so it is acceptable for Linux
+>>> numbers to be a bit worse than when Xenomai is not running.
+>>
+>> I bit worse is expected. But I think we are seeing 1 or 2 ticks wake-u=
+p
+>> delays here. As far as I understood, they are not due to Xenomai
+>> consuming significant cycles in the background, are they, Perrine?
 >=20
-> a few comments:
+> What I see is latencies 5us longer. 5us on ARM is almost nothing, keep
+> in mind that a simple syscall on ARM already takes 10 us.
 >=20
-> (1) in xnintr_irq_handler()
->=20
-> +    xnlock_get(&xnirqs[irq].lock);
-> +
-> +#ifdef CONFIG_SMP
-> +    /* In SMP case, we have to reload the cookie under the per-IRQ loc=
-k
-> +       to avoid racing with xnintr_detach. */
-> +    intr =3D rthal_irq_cookie(&rthal_domain, irq);
-> +    if (unlikely(!intr)) {
-> +        s =3D 0;
-> +        goto unlock_and_exit;
-> +    }
-> +#else
-> +    intr =3D cookie;
-> +#endif
->=20
-> I think, it would be better to check 'intr' for NULL at this point so
-> to cover 'cookie =3D=3D NULL' (who knows.. and it's better not to rely =
-on
-> the lower layer here), I guess.
 
-The lower layer just passes what we hand over - and when we do so. Keep
-in mind: this is the non-SMP case, thus we can rely on the atomicity of
-this handler like the one of registering a handler + its cookie (like we
-always did -- unfortunately also for SMP...). For me, checking for NULL
-on UP is redundant code in a hotpath. Should I spread some comment
-regarding this assumption?
+T: 0 (  732) P:99 I:   10500 C:    2291 Min:      41 Act:    2281 Avg:   =
+ 5075 Max:   10224=20
 
->=20
-> (2) use cases of xnintr_sync_stat_references() in xnintr_irq_detach()
->=20
-> +
-> +    xnlock_get(&xnirqs[irq].lock);
-> +
-> +    err =3D xnarch_release_irq(intr->irq);
-> +    xnintr_sync_stat_references(intr);
-> +    xnlock_put(&xnirqs[irq].lock);
->=20
-> Why do you call xnintr_sync_stat_references() inside the locked section=
+vs.
 
-> here?
-> Does xnintr_sync_stat_references() really need to be protected by
-> 'intr->lock' (it's been already detached) ?
+T: 0 (  893) P:99 I:   10000 C:    1756 Min:   13407 Act:   13536 Avg:   =
+13452 Max:   13693=20
 
-That's now my own overcautiousness :). I think we can move it out.
-Someone must sync on some xnintr object while someone else tries to
-re-register an object with very same address -- classical user error,
-nothing we need to catch here.
+Thus the _minimum_ and the _average_ wakeup time of a Linux task
+increase fairly significant here. That's the point. Given a reasonable
+runtime of both test, this /could/ be considered as a regression of a
+Xenomai-enabled Linux kernel.
 
-Thanks,
 Jan
 
 
---------------enigF9A4301340E95126EF6E51B6
+--------------enig390DEBB0F84618DE8D721C82
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
+Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGimDMniDOoMHTA+kRAhVYAJ9vDfQbBaOaYPunPrt3mf+Q/UKbqgCfaGou
-Za9pi4/DZJA0yUmLf2ptBgg=
-=XLHa
+iD8DBQFGZ9LMniDOoMHTA+kRAjDIAJ9F+NEPWZAG7z0SsjLhUmxWNdMPJwCfcV1M
+2XWpKMSVkdZTGaajvscvlRE=
+=jjut
 -----END PGP SIGNATURE-----
 
---------------enigF9A4301340E95126EF6E51B6--
+--------------enig390DEBB0F84618DE8D721C82--
 
