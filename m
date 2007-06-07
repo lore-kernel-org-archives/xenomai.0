@@ -1,13 +1,19 @@
-Message-ID: <4668219C.30908@domain.hid>
-Date: Thu, 07 Jun 2007 15:17:48 +0000
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
+Message-ID: <7289437c0706070649r76c6926cv4dd572ec7a10f1d1@domain.hid>
+Date: Thu, 7 Jun 2007 15:49:30 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+In-Reply-To: <4667FAE1.3000200@domain.hid>
 MIME-Version: 1.0
-References: <466813BD.9030608@domain.hid> <4667FBD9.6050107@domain.hid>
-In-Reply-To: <4667FBD9.6050107@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] CAN driver for adlink pci 7841 and ADVANTECH
-	1680U
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_28861_22449985.1181224170079"
+References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>
+	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>
+	<4667BBBE.1040405@domain.hid> <4667CEF2.2050509@domain.hid>
+	<1181210822.4998.54.camel@domain.hid> <1181211452.4998.57.camel@domain.hid>
+	<7289437c0706070509h26132566l3ee75ff72e826a1f@domain.hid>
+	<4667F80F.6000909@domain.hid>
+	<7289437c0706070528w61d388ecw4b7530c53460e228@domain.hid>
+	<4667FAE1.3000200@domain.hid>
+Subject: Re: [Xenomai-help] Cyclictest
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,55 +23,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
+
+------=_Part_28861_22449985.1181224170079
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+With adeos 1.7, I have the same result.
+I have Xenomai 2.3.1, is there a more recent version?
 
 
+On 6/7/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+>
+> Perrine Martignoni wrote:
+> > Ok, I took it.
+>
+> Beware, you also need to pick the latest version of Xenomai from the
+> repository (trunk or v2.3.x branch).
+>
+> --
+>                                                 Gilles Chanteperdrix
+>
 
-Wolfgang Grandegger a =E9crit :
-> St=E9phane ANCELOT wrote:
->> Hi,
->>
->> Enclosed, you will find xenomai rtdm drivers for  ADLINK PCI 7841   and
->> ADVANTECH PCI 1680U pci boards.
->>
->>
->> It can be easily ported to clones PCI boards that use 2 sja1000 and a
->> PLX controler as pci interface.
->>
->> known to be running well against xeno 2.1.2
->>
->>
->> To Jan Kiszka and Sebastian Smolorz : the support for advantech pci
->> 1680u has been  completely rewritten in this version.
->=20
-> Nice, unfortunately this driver is obsolete. Are you aware that there is
-> RT-Socket-CAN integrated in Xenomai since a while (starting with version
-> 2.3.0)?
+------=_Part_28861_22449985.1181224170079
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Yes, I agree, but it was not available at  the moment of writing /
-testing our driver (March 2006)
+<div>With adeos 1.7, I have the same result.</div>
+<div>I have Xenomai 2.3.1, is there a more recent version?</div>
+<div><br>&nbsp;</div>
+<div><span class="gmail_quote">On 6/7/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:</span>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">Perrine Martignoni wrote:<br>&gt; Ok, I took it.<br><br>Beware, you also need to pick the latest version of Xenomai from the
+<br>repository (trunk or v2.3.x branch).<br><br>--<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix<br></blockquote></div><br>
 
-This work is based on the release 0.9.8 of rt socket can driver  that
-you can find here :
-http://www.rts.uni-hannover.de/rtaddon/
-Since it served as a basis for the actual CAN socket driver, integration
-of adlink and advantech boards in the xenomai trunk should be trivial.
-
-
-Best Regards
-S.Ancelot
-
-
->=20
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/README
-> http://www.xenomai.org/documentation/trunk/html/api/group__rtcan.html
->=20
-> It would make much more sense to add drivers for the ADLINK PCI 7841 and
-> ADVANTECH PCI 1680U to "ksrc/drivers/can/sja1000".
->=20
-> Wolfgang.
->=20
->=20
-
+------=_Part_28861_22449985.1181224170079--
 
