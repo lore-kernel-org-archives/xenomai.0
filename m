@@ -1,12 +1,10 @@
-Message-ID: <46680EE8.6010909@domain.hid>
-Date: Thu, 07 Jun 2007 15:58:00 +0200
+Message-ID: <466817D3.5090102@domain.hid>
+Date: Thu, 07 Jun 2007 16:36:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>	<4667BBBE.1040405@domain.hid>
-	<4667CEF2.2050509@domain.hid>	<1181210822.4998.54.camel@domain.hid>
-	<1181211452.4998.57.camel@domain.hid>	<7289437c0706070509h26132566l3ee75ff72e826a1f@domain.hid>	<4667F80F.6000909@domain.hid>	<7289437c0706070528w61d388ecw4b7530c53460e228@domain.hid>	<4667FAE1.3000200@domain.hid>
-	<7289437c0706070649r76c6926cv4dd572ec7a10f1d1@domain.hid>
-In-Reply-To: <7289437c0706070649r76c6926cv4dd572ec7a10f1d1@domain.hid>
+References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>	<4667BBBE.1040405@domain.hid>	<4667CEF2.2050509@domain.hid>	<1181210822.4998.54.camel@domain.hid>	<1181211452.4998.57.camel@domain.hid>	<7289437c0706070509h26132566l3ee75ff72e826a1f@domain.hid>	<4667F80F.6000909@domain.hid>	<7289437c0706070528w61d388ecw4b7530c53460e228@domain.hid>	<4667FAE1.3000200@domain.hid>	<7289437c0706070649r76c6926cv4dd572ec7a10f1d1@domain.hid>
+	<46680EE8.6010909@domain.hid>
+In-Reply-To: <46680EE8.6010909@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Cyclictest
@@ -19,15 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Perrine Martignoni wrote:
-> With adeos 1.7, I have the same result.
-> I have Xenomai 2.3.1, is there a more recent version?
+Gilles Chanteperdrix wrote:
+> Perrine Martignoni wrote:
+> 
+>>With adeos 1.7, I have the same result.
+>>I have Xenomai 2.3.1, is there a more recent version?
+> 
+> 
+> Do not do that ! You should not use Xenomai 2.3.1 with Adeos 1.7. Pick
+> Xenomai from the svn repository or stop using adeos 1.7.
 
-Do not do that ! You should not use Xenomai 2.3.1 with Adeos 1.7. Pick
-Xenomai from the svn repository or stop using adeos 1.7.
+I mean adeos 1.7 for ARM. Do not use Adeos 1.7 *for ARM* with Xenomai 2.3.1.
 
 -- 
                                                  Gilles Chanteperdrix
