@@ -1,16 +1,16 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200706071446.10731.ngustavson@domain.hid>
-References: <200706071357.12212.ngustavson@domain.hid>
-	<200706071413.10635.ngustavson@domain.hid>
-	<1181244856.4998.133.camel@domain.hid>
-	<200706071446.10731.ngustavson@domain.hid>
+In-Reply-To: <46685C21.5020709@domain.hid>
+References: <200706071049.32906.ngustavson@domain.hid>
+	<200706071311.09891.ngustavson@domain.hid> <46684CCB.8010806@domain.hid>
+	<200706071337.07691.ngustavson@domain.hid> <46685C21.5020709@domain.hid>
 Content-Type: text/plain
-Date: Thu, 07 Jun 2007 22:14:23 +0200
-Message-Id: <1181247263.4998.149.camel@domain.hid>
+Date: Thu, 07 Jun 2007 22:15:39 +0200
+Message-Id: <1181247339.4998.150.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] writing from NRT to a rt_pipe
+Subject: Re: [Xenomai-help] Fwd: can't use message pipe - Cannot
+	allocate	memory
 Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,51 +21,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: NZG <ngustavson@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-06-07 at 14:46 -0500, NZG wrote:
-> > Yes, clearly.
-> Ah, that in conjunction with the
-> "can't use message pipe - Cannot allocate memory"
-> thread resolves my issues then.
+On Thu, 2007-06-07 at 21:27 +0200, Jan Kiszka wrote:
+> NZG wrote:
+> >>> Write does stop throwing errors with a pool of 16384.
+> >> Just repeating for confirmation: rt_pipe_create with smaller, but
+> >> non-zero pool sizes doesn't report some error? 
+> > Incorrect, if it's created with smaller it does report an error. If it's 
+> > created with 0 however, it seems ok. (at least it doesn't throw an error)
 > 
-> My assumption was that data would exist in the pipe after the write until the 
-> pipe was destroyed, irrespective of the "openness" of the NRT side.
+> You mean the write fails, but rt_pipe_create is fine. At least here, and
+> Philippe noticed the same. Looks like the margin for minimal-sized heaps
+> is broken. 2*PAGE_SIZE should be 3*PAGE_SIZE net space, Philippe?
+
+Please leave me a few yea^H^H^Hmoments, I'm trying to understand my
+code... Mpf.
+
 > 
-
-Nope, as a general rule, the read-side of an endpoint is flushed when
-the other end closes. Then, you have also to take into account the
-priority of the thread waiting on the endpoint wrt the priority of the
-one which closes the other side.
-
-For instance, if a RT thread is waiting for data (e.g. currently
-sleeping on rt_pipe_read()) while the NRT side closes, then the RT
-thread will be awaken, and a rescheduling will occur in the pipe release
-routine before the input queue is eventually flushed, leaving the
-opportunity for the RT side to consume the pending messages (since the
-read-side has priority over the closing side in this situation).
-
-What happened in your code is likely that the RT side was not actually
-waiting for data, but maybe handling other duties while the NRT side
-closed its endpoint. Yeah, that's a bit tricky, I agree, but in a
-strictly prioritized system, this makes some sense.
-
-> It's possible that this assumption is due to a lack of experience with pipes 
-> in general, I don't know.
+> > 
+> >> Pipes are asymmetric: RT<->NRT only.
+> > RT<->NRT is my goal.
+> > essentially I 
+> > 1. spawn off a real time task which creates a  pipe to receive commands
+> > 2. throw commands at it from the user space thread which spawned the real time 
+> > process (which is still NRT correct? I'm fuzzy on this).
 > 
-
-Not really, fact is that we do have to deal with an asymmetric view of
-the communication, i.e. RT / NRT, so there is room for specific
-implementations. OTOH, regular Linux pipes won't give you more guarantee
-on the read-side, you could just get a 0-bytes return from a read() to
-notify the broken pipe condition.
-
-Btw, do you happen to have CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ set to some
-value in your .config?
-
-> thank you for all you help,
-> NZG
+> It is NRT.
+> 
+> Jan
 > 
 -- 
 Philippe.
