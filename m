@@ -1,12 +1,12 @@
 From: NZG <ngustavson@domain.hid>
-Date: Thu, 7 Jun 2007 14:46:10 -0500
+Date: Thu, 7 Jun 2007 14:51:50 -0500
 References: <200706071357.12212.ngustavson@domain.hid>
-	<200706071413.10635.ngustavson@domain.hid>
 	<1181244856.4998.133.camel@domain.hid>
-In-Reply-To: <1181244856.4998.133.camel@domain.hid>
+	<200706071446.10731.ngustavson@domain.hid>
+In-Reply-To: <200706071446.10731.ngustavson@domain.hid>
 MIME-Version: 1.0
 Content-Disposition: inline
-Message-Id: <200706071446.10731.ngustavson@domain.hid>
+Message-Id: <200706071451.50393.ngustavson@domain.hid>
 Content-Type: text/plain;
   charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
@@ -23,18 +23,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-> Yes, clearly.
-Ah, that in conjunction with the
-"can't use message pipe - Cannot allocate memory"
-thread resolves my issues then.
+from: man:pipe(7)
+If all file descriptors referring to the write end of a pipe have been closed, 
+then an attempt to read(2) from the pipe will see end-of-file 
 
-My assumption was that data would exist in the pipe after the write until the 
-pipe was destroyed, irrespective of the "openness" of the NRT side.
+well there ya go, when all else fails read the manual
 
-It's possible that this assumption is due to a lack of experience with pipes 
-in general, I don't know.
-
-thank you for all you help,
+thx again,
 NZG
 
 
