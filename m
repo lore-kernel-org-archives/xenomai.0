@@ -1,10 +1,10 @@
-Message-ID: <7289437c0706060600n22effdc6l872cb6ba0df2e818@domain.hid>
-Date: Wed, 6 Jun 2007 15:00:46 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
+Date: Thu, 07 Jun 2007 13:19:21 +0200
+From: "Axel Beierlein" <belatronix@domain.hid>
+Content-Type: text/plain; format=flowed; delsp=yes; charset=iso-8859-15
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_20302_6740240.1181134846142"
-Subject: [Xenomai-help] Compatibility "Preemptible kernel" and Xenomai
+Content-Transfer-Encoding: 7bit
+Message-ID: <op.ttjtqjpgt06gyn@domain.hid>
+Subject: [Xenomai-help] Xenomai and Busybox
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,32 +14,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-------=_Part_20302_6740240.1181134846142
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 Hello,
 
-I would like to know if Xenomai is compatible with the option "Preemptible
-Kernel" (CONFIG_PREEMPT) of Linux 2.6.19.
-And if CONFIG_PREEMPT  is the patch PREEMP_RT.
+which minimal requirements are needed when i want to use Xenomai with  
+Busybox?
 
-Thanks
+In my present configuration i have Xenomai 2.3.1 and Busybox 0.60.5  
+workin. But when I try to call xeno-info or xeno-config i get informations  
+like this:
 
-------=_Part_20302_6740240.1181134846142
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+  --If some fields are empty or look unusual you may have an old version.
+    Compare to the current minimal requirements in Documentation/Changes.
 
-<div>Hello, </div>
-<div>&nbsp;</div>
-<div>I would like to know if Xenomai is compatible with the option &quot;Preemptible Kernel&quot; (CONFIG_PREEMPT) of Linux 2.6.19.</div>
-<div>And if CONFIG_PREEMPT&nbsp; is&nbsp;the patch PREEMP_RT.</div>
-<div>&nbsp;</div>
-<div>Thanks</div>
+or i get a message like that:
 
-------=_Part_20302_6740240.1181134846142--
+unset: not found
+
+
+Regards
+
+Axel
 
