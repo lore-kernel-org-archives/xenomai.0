@@ -1,17 +1,12 @@
-Message-ID: <46681F69.90802@domain.hid>
-Date: Thu, 07 Jun 2007 17:08:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-Disposition: inline
+From: NZG <ngustavson@domain.hid>
+Date: Thu, 7 Jun 2007 10:49:32 -0500
 MIME-Version: 1.0
-References: <466813BD.9030608@domain.hid>
-	<4667FBD9.6050107@domain.hid>	<4668219C.30908@domain.hid>
-	<46681CE8.7070206@domain.hid>
-In-Reply-To: <46681CE8.7070206@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7EA3E7B95867E22E04846B2F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] CAN driver for adlink pci 7841 and
-	ADVANTECH	1680U
+Message-Id: <200706071049.32906.ngustavson@domain.hid>
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Fwd: can't use message pipe - Cannot allocate memory
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,74 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-15?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7EA3E7B95867E22E04846B2F
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I'm trying to pass a message from user space to Xenomai and it doesn't seem
+ to be working. I keep getting an error when attempting to write to the pipe
+ in user space.
 
-Wolfgang Grandegger wrote:
-> St=E9phane ANCELOT wrote:
->> Wolfgang Grandegger a =E9crit :
->>> St=E9phane ANCELOT wrote:
->>>> Hi,
->>>>
->>>> Enclosed, you will find xenomai rtdm drivers for  ADLINK PCI 7841   =
-and
->>>> ADVANTECH PCI 1680U pci boards.
->>>>
->>>>
->>>> It can be easily ported to clones PCI boards that use 2 sja1000 and =
-a
->>>> PLX controler as pci interface.
->>>>
->>>> known to be running well against xeno 2.1.2
->>>>
->>>>
->>>> To Jan Kiszka and Sebastian Smolorz : the support for advantech pci
->>>> 1680u has been  completely rewritten in this version.
->>> Nice, unfortunately this driver is obsolete. Are you aware that there=
- is
->>> RT-Socket-CAN integrated in Xenomai since a while (starting with vers=
-ion
->>> 2.3.0)?
->> Yes, I agree, but it was not available at  the moment of writing /
->> testing our driver (March 2006)
->=20
-> Fair enough!
->=20
->> This work is based on the release 0.9.8 of rt socket can driver  that
->> you can find here :
->> http://www.rts.uni-hannover.de/rtaddon/
->> Since it served as a basis for the actual CAN socket driver, integrati=
-on
->> of adlink and advantech boards in the xenomai trunk should be trivial.=
+rt_pipe_write error
 
->=20
-> It should not be a big deal, indeed. Patches are welcome ;-).
+: Cannot allocate memory
 
-Please remember, St=E9phane: For now, only _you_ have the hardware. We ca=
-n
-only look at code. :->
+This happens whether I use posix calls or real time calls.
 
-Jan
+If I change the poolsize to 0 for allocation from the heap, writes no longer
+error out but the data is not received in real time space.
+
+Does this work for anyone else? Anyone have any ideas I could try?
+
+thx,
+NZG
+
+code specifics follow...................................................
+
+3 differen POOLSIZE attempts
+**************************************************
+#define KOMMANDBUFFER 100
+//#define POOLSIZE_CONTROL (sizeof(kommand_t)*KOMMANDBUFFER)
+//#define POOLSIZE_CONTROL 0
+#define POOLSIZE_CONTROL	1024
 
 
---------------enig7EA3E7B95867E22E04846B2F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGaB9qniDOoMHTA+kRAqSKAJ9G/Kz3BNOUnskgwI5RYGBenqvN3gCfQ/pk
-cEEI/4Re3i1pWiQbt1vWJhM=
-=YML7
------END PGP SIGNATURE-----
+real-time thread
+***********************************
+if((err=rt_pipe_create (p, name, P_MINOR_AUTO, POOLSIZE_CONTROL))!=0){
+	error(0,-err, "could not create rt pipe");
+	return err;
+}
 
---------------enig7EA3E7B95867E22E04846B2F--
+/**
+ * retrieve a message from the message buffer
+ * and updates the kommand structure passed to it.
+ * @returns the type of command retrieved.
+ *
+ */
+static inline int getkommand(kommand_t *k){
+int err;
+  err = rt_pipe_read(&command_pipe,k,sizeof(kommand_t),TM_NONBLOCK);
+  if(err<0)error(0,-err, "rt_pipe_read error\n");
+  return k->type;//return the type of message
+}
+
+while(getkommand(&kommand)!=KILLCYCLE);
+
+user space using real time calls
+***********************************
+ err=rt_pipe_write(&command_pipe, &k,sizeof(kommand_t),P_NORMAL);
+	if(err<0)error(0,-err, "rt_pipe_write error\n");
+
+alternateuser space using posix calls
+***********************************
+	    int cfd = open(COMMANDPIPE, O_RDWR);
+
+	   if(cfd<0){
+	   	printf("can't open %s (%s)\n",COMMANDPIPE, strerror(-cfd));
+	   	fflush(stdout);
+	   	return;
+	   }
+
+       err=write(cfd,&k,sizeof(kommand_t));
+
+       if(err==0)printf("couldn't write to %s\n",COMMANDPIPE);
+
+       if(err<0)printf("err writing to %s (%s)\n",COMMANDPIPE,
+strerror(errno));
+
+       if(close(cfd)<0)printf("couldn't close %s\n",COMMANDPIPE
+
+-------------------------------------------------------
 
