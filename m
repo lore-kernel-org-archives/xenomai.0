@@ -1,18 +1,14 @@
-Message-ID: <46685C21.5020709@domain.hid>
-Date: Thu, 07 Jun 2007 21:27:29 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <200706071049.32906.ngustavson@domain.hid>
-	<200706071311.09891.ngustavson@domain.hid>
-	<46684CCB.8010806@domain.hid>
-	<200706071337.07691.ngustavson@domain.hid>
-In-Reply-To: <200706071337.07691.ngustavson@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9E978FAB3D0799BFAEEE7AA3"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Fwd: can't use message pipe - Cannot allocate
- memory
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200706071357.12212.ngustavson@domain.hid>
+References: <200706071357.12212.ngustavson@domain.hid>
+Content-Type: text/plain
+Date: Thu, 07 Jun 2007 21:33:24 +0200
+Message-Id: <1181244804.4998.131.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] writing from NRT to a rt_pipe
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,52 +21,73 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: NZG <ngustavson@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9E978FAB3D0799BFAEEE7AA3
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Thu, 2007-06-07 at 13:57 -0500, NZG wrote:
+> When writing from NRT to a real time pile (open, write, close).
+> Are message boundaries preserved based upon the length of the write call?
+> 
 
-NZG wrote:
->>> Write does stop throwing errors with a pool of 16384.
->> Just repeating for confirmation: rt_pipe_create with smaller, but
->> non-zero pool sizes doesn't report some error?=20
-> Incorrect, if it's created with smaller it does report an error. If it'=
-s=20
-> created with 0 however, it seems ok. (at least it doesn't throw an erro=
-r)
+It should yes, that's the main difference between this interface and
+other RT fifo implementations. rt_pipe_stream() works the other way,
+though (i.e. bytestream mode).
 
-You mean the write fails, but rt_pipe_create is fine. At least here, and
-Philippe noticed the same. Looks like the margin for minimal-sized heaps
-is broken. 2*PAGE_SIZE should be 3*PAGE_SIZE net space, Philippe?
+> It's not working for me. The code below returns success, but calling 
+> 
+> err = rt_pipe_read(comp,k,sizeof(kommand_t),TM_NONBLOCK);
+> or
+> err = rt_pipe_read(comp,k,sizeof(kommand_t),100);
+> 
+> from RT space on the same pipe never returns any data
+> 
+> err = rt_pipe_read(comp,k,sizeof(kommand_t),TM_NONBLOCK); 
+> always returns err 
+> 0x0b,  Resource temporarily unavailable
+> 
+>  err = rt_pipe_read(comp,k,sizeof(kommand_t),100);
+> always returns err:
+> 0x6e, Connection timed out
+> 
 
->=20
->> Pipes are asymmetric: RT<->NRT only.
-> RT<->NRT is my goal.
-> essentially I=20
-> 1. spawn off a real time task which creates a  pipe to receive commands=
+Please send a compilable standalone test, so that we get a clear view of
+what fails, and of the current runtime conditions when that fails.
 
-> 2. throw commands at it from the user space thread which spawned the re=
-al time=20
-> process (which is still NRT correct? I'm fuzzy on this).
+> NZG
+> 
+> code specifics follow...............
+> 
+> 		int err;
+> 		kommand_t k = {
+> 		.type = KILLCYCLE,	
+> 		};
+> 	   
+> 	    int cfd = open(COMMANDPIPE, O_WRONLY|O_SYNC);
+> 	   
+> 	   if(cfd<0){
+> 	   	printf("can't open %s (%s)\n",COMMANDPIPE, strerror(-cfd));
+> 	   	fflush(stdout);
+> 	   	return;
+> 	   }
+> 	   	
+> 	   printf("sizeof kommand_t = %u\n",sizeof(kommand_t));
+> 	   
+>        err=write(cfd,&k,sizeof(kommand_t));
+>        	
+>        if(err>=0)printf("wrote %u bytes to %s\n",err,COMMANDPIPE); 
+>        	
+>        if(err<0)printf("err writing to %s (%s)\n",COMMANDPIPE, 
+> strerror(errno));
+>        
+>        
+>        if(close(cfd)<0)printf("couldn't close %s\n",COMMANDPIPE);
+> 
+> 
+>  
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
-It is NRT.
 
-Jan
-
-
---------------enig9E978FAB3D0799BFAEEE7AA3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGaFwhniDOoMHTA+kRApv9AJ4ydH1rOUwMeuFs0K2WVdwsfJFbmACfYcq/
-xtSTuFoVehYG9A46bryu1QA=
-=PPLp
------END PGP SIGNATURE-----
-
---------------enig9E978FAB3D0799BFAEEE7AA3--
 
