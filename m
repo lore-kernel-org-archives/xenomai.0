@@ -1,15 +1,13 @@
-Message-ID: <46697DFD.9010702@domain.hid>
-Date: Fri, 08 Jun 2007 18:04:13 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>	<4668440F.7020706@domain.hid>	<20070608124927.1b789a9e@domain.hid>	<46693B6B.1010201@domain.hid>	<20070608150953.3095d7bd@domain.hid>
-	<46697496.9040307@domain.hid>
-In-Reply-To: <46697496.9040307@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig1FDE6FBB89FE382F082EDAED"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-help] measuring tasks execution time
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18025.36632.58092.902029@domain.hid>
+Date: Fri, 8 Jun 2007 19:17:12 +0200
+In-Reply-To: <403B28AE6257B548B66BB88414AC78330174BC39@domain.hid>
+References: <403B28AE6257B548B66BB88414AC78330174BC39@domain.hid>
+Subject: Re: [Xenomai-core] [Adeos-main] periodic mode in adeos-ipipe for
+	arm at91 ...
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,36 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniel Simon <Daniel.Simon@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: BOUIN Alexandre <abouin@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig1FDE6FBB89FE382F082EDAED
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+BOUIN Alexandre wrote:
+ > 		We (Adeneo) are working on a ARM AT91 RTAI. We encountered some difficulties such tsc one : in periodic mode, we reload our timer automatically in order to avoid reprogramming it. TC timer increments a 16 byte register, which is not enough for a tsc (64 bytes). tsc need to be emulated on ARM.
+ > 		With oneshot mode, tsc is updating the 4 least significant bytes and then increments other bytes each time counter go back to zero value.
+ > 
+ > 		With our periodic mode, timer reloads himself so we need to change tsc emulation by incrementing tsc like this : tsc += period.
+ > 		We made some evolutions on ipipe which will be applied to a hal patch.
 
-Jan Kiszka wrote:
-> ...
-> - Note that migrating life-time stats between CPUs requires rebasing th=
-e
->   thread start time properly.
+I intend to rework I-pipe tsc emulation for arms with a free-running
+counter. In order to reduce the tsc read operations:
+- it should use the (uninterruptible) ldm instruction to load the 64
+  bits counter without masking interrupts;
+- the 64 bits counter should not be updated at each read, but only from
+  time to time, the best place to do this is Linux timer interrupt.
 
-Nonsense. CPU-local clocks are considered offset-free for Xenomai use.
+So, if you are ready to do these modifications, I will be glad to merge
+your patch.
+
+-- 
 
 
---------------enig1FDE6FBB89FE382F082EDAED
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGaX39niDOoMHTA+kRAu1zAJ4ugvz9AUJLYdrF5S4oDE/DKFC/mgCcCR5h
-Bk57w9a0QFpcH/3EfuXeRjo=
-=BqOd
------END PGP SIGNATURE-----
-
---------------enig1FDE6FBB89FE382F082EDAED--
+					    Gilles Chanteperdrix.
 
