@@ -1,19 +1,18 @@
-Message-ID: <46681C38.2070504@domain.hid>
-Date: Thu, 07 Jun 2007 16:54:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <46649F7E.3060104@domain.hid>
-	<46651F7D.9090702@domain.hid>	<18021.58231.177931.286548@domain.hid>	<46668CC3.8050002@domain.hid>
-	<4666ACE5.7030200@domain.hid>	<4666AFB3.6040602@domain.hid>
-	<4666B4C7.6020308@domain.hid>	<4666B716.6010909@domain.hid>
-	<18022.64424.836736.431121@domain.hid>
-	<46670109.7070408@domain.hid> <4667FF8E.2000207@domain.hid>
-	<466801CD.8010909@domain.hid> <466810EC.3030707@domain.hid>
-	<46681512.7060102@domain.hid> <466818F2.3010908@domain.hid>
-In-Reply-To: <466818F2.3010908@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46688B0A.8010909@domain.hid>
+References: <200706071049.32906.ngustavson@domain.hid>
+	<200706071311.09891.ngustavson@domain.hid> <46684CCB.8010806@domain.hid>
+	<200706071337.07691.ngustavson@domain.hid> <46685C21.5020709@domain.hid>
+	<1181255358.4998.202.camel@domain.hid>  <46688B0A.8010909@domain.hid>
+Content-Type: text/plain
+Date: Fri, 08 Jun 2007 08:55:48 +0200
+Message-Id: <1181285748.4982.24.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH-STACK] Updates, timerstats, rtdm-timers
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [Xenomai-help] Fwd: can't use message pipe -
+	Cannot allocate	memory
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,72 +23,104 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org, xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
+On Fri, 2007-06-08 at 00:47 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Thu, 2007-06-07 at 21:27 +0200, Jan Kiszka wrote:
+> >> NZG wrote:
+> >>>>> Write does stop throwing errors with a pool of 16384.
+> >>>> Just repeating for confirmation: rt_pipe_create with smaller, but
+> >>>> non-zero pool sizes doesn't report some error? 
+> >>> Incorrect, if it's created with smaller it does report an error. If it's 
+> >>> created with 0 however, it seems ok. (at least it doesn't throw an error)
+> >> You mean the write fails, but rt_pipe_create is fine. At least here, and
+> >> Philippe noticed the same. Looks like the margin for minimal-sized heaps
+> >> is broken. 2*PAGE_SIZE should be 3*PAGE_SIZE net space, Philippe?
+> > 
+> > Actually, rt_pipe_create() already rounds this value to 3*PAGE_SIZE,
+> > right before calling the sysalloc service.
+> > 
+> > Here is the sequence of events that leads to the situation Nathan is
+> > seeing:
+> > 
+> > - Passing poolsize = 1024 to rt_pipe_create() creates a local heap of
+> > 12288 bytes (3 * PAGE_SZ), with 32 bytes of overhead taken from one of
+> > these pages to hold the meta-data.
+> > 
+> > - 4112 bytes (4096 + sizeof(message header)) are then requested to this
+> > local pool to hold the internal streaming buffer
+> > (XENO_OPT_NATIVE_PIPE_BUFSZ), which ends up consuming two pages, i.e.
+> > 8192 bytes, from this pool. The reason for this is due to the way the
+> > McKusick allocation scheme we use works; basically, block sizes greater
+> > than the page size are always rounded to a multiple of the page size.
+> > Requested block sizes are always rounded up to the nearest power of two,
+> > which the allocator groups in pages holding blocks of the same size.
+> > This is not pretty wrt internal fragmentation, but quite efficient
+> > CPU-wise, when the page size is properly chosen wrt the most common
+> > allocation pattern, that is. Most importantly, blocks greater than a
+> > page will never lay on partially consumed pages (by other blocks). So,
+> > in our case, we started with three free pages, one already holds some
+> > meta-data, and we need two pages to fullfil the current allocation
+> > request. Therefore, after this request has suceeded, we have no page
+> > left in the pool.
+> > 
+> > - When the write() call is issued, the pipe driver requests a 32 bytes
+> > block to hold the data moving from user-space to kernel space. Too bad,
+> > we have no other page left to dedicate to blocks holding that size, so
+> > no block is available, which in turn causes write() to return -ENOMEM.
 > 
->>Jan Kiszka wrote:
->>
->>>Gilles Chanteperdrix wrote:
->>>
->>>
->>>>Jan Kiszka wrote:
->>>>
->>>>
->>>>>Jan Kiszka wrote:
->>>>>
->>>>>
->>>>>
->>>>>>Gilles Chanteperdrix wrote:
->>>>>>
->>>>>>
->>>>>>
->>>>>>>So, Ok, I will try to do something for x86 (either reduce the numbers of
->>>>>>>registers used by the C code, or reduce the assembly to the bare
->>>>>>>minimum). But, please, pick my generic implementation of llmulshft, it
->>>>>>>was carefully written.
->>>>>>
->>>>>>Yes, it is the better choice for 32 bit archs (my previous tests didn't
->>>>>>reflect the usage in Xenomai truely, redoing them made my generic
->>>>>>version fall behind yours). Will include it.
->>>>>
->>>>>Done, see -v6. Then I added that two-liner for x86_64 rthal_llmulshft,
->>>>>fixed the BITS_PER_LONG bug, and enabled generic-based support for ARM
->>>>>(testing welcome!).
->>>>>
->>>>>At this chance: My series now also includes rthal_llimd for x86_64,
->>>>>another two-liner.
->>>>
->>>>v6 is not in the download area.
->>>>
->>>
->>>Mpf, forgot to press "update". Done.
->>
->>Ok, I agree with the fast-tsc-to-ns patch: I could not get gcc to
->>generate code with less moves on x86 (which is, for me, if it was still
->>needed, yet another proof that these register moves are harmless).
+> Ah, I see.
 > 
+> > 
+> > This situation illustrates the conflict which is raised when small heaps
+> > (1k) are mapped on large page sizes (4k). Even when rounding them to a
+> > (small) multiple of the page size, the pool might rapidly run short of
+> > free pages, depending on the allocation pattern.
 > 
-> No question -- from the average performance POV.
-> 
-> 
->>However, I do not agree with the x86_64 llimd: it will not work if m is
->>greater than 2G, that is why we implement llimd in terms of ullimd on
->>other architectures.
->>
-> 
-> 
-> Please help me, I don't see it yet:
-> 
-> m is 32 bit and gets extended to 64 bit without considering any sign (as
-> it should be). Then we multiply 64x64 bit signed, but we know for sure
-> that the second multiplier is always positive. Same for division. Basic
-> tests ((-1*1000000000)/2 vs. (-1*3000000000)/2) confirmed this on the
-> target.
+> Reminds me of the TLSF allocator claiming to perform smartly also on
+> smaller hunks. But that code is still 32-bit-focused, and would still
+> need someone to define and run comparative tests on representative
+> Xenomai setups. :-/
 
-No, you are right. It works.
+Yep, I see this patch series pending into my patch fridge right now.
 
+> 
+> > 
+> > IOW, when configuring a heap, it is better to know which kind of block
+> > sizes are going to be requested from it, and reserve the appropriate
+> > number of pages for each different size when evaluating the total size
+> > of the heap.
+> > 
+> > Yes, it's not that simple. No, I'm not that sorry.
+> > 
+> 
+> For now, can we take XENO_OPT_NATIVE_PIPE_BUFSZ into account when
+> picking a reasonable minimum size in rt_pipe_create on behalf of a
+> close-fisted user?
+> 
+
+Yes, the size of the streaming buffer has to be taken into account, it's
+clearly missing right now. I'm also going to use another page size than
+PAGE_SIZE, and this change may likely be applicable to almost all
+callers of xnheap_init() actually. The initial intent was to pick a
+value which would be consistent with the natural block size for the
+Linux VM, but thinking about it once more, it's mostly irrelevant, since
+the way the heap manager works is orthogonal with how kmalloc/vmalloc
+organizes the core memory anyway (i.e. heap memory is obtained from a
+single sysalloc call, so the worst-case incurred here is only having
+some external fragmentation due to the last VM page not being fully
+occupied by heap memory).
+
+512 would be likely a better page size for most usage patterns; this
+would increase the overhead brought by the meta-data, but we are talking
+about 1 byte per addressable page within the heap, so this should not be
+that penalizing anyway.
+
+> Jan
+> 
 -- 
-                                                 Gilles Chanteperdrix
+Philippe.
+
+
 
