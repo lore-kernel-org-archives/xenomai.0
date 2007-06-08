@@ -1,15 +1,11 @@
-Date: Fri, 8 Jun 2007 15:09:53 +0200
-From: Daniel Simon <Daniel.Simon@domain.hid>
-Message-ID: <20070608150953.3095d7bd@domain.hid>
-In-Reply-To: <46693B6B.1010201@domain.hid>
-References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>
-	<4668440F.7020706@domain.hid>
-	<20070608124927.1b789a9e@domain.hid>
-	<46693B6B.1010201@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] measuring tasks execution time
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C7A9D6.48853A4E"
+Date: Fri, 8 Jun 2007 16:07:00 +0200
+Message-ID: <403B28AE6257B548B66BB88414AC78330174BC39@domain.hid>
+From: "BOUIN Alexandre" <abouin@domain.hid>
+Subject: [Xenomai-core] periodic mode in adeos-ipipe for arm at91 ...
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,76 +15,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org, adeos-main@gna.org
 
-On Fri, 08 Jun 2007 13:20:11 +0200
-Jan Kiszka <jan.kiszka@domain.hid> wrote:
+This is a multi-part message in MIME format.
 
-> Daniel Simon wrote:
-> > On Thu, 07 Jun 2007 19:44:47 +0200
-> > Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> > 
-> > Hello, opening a new thead forking from the one opened yesterday by Arnaud
-> > Desvages
-> 
-> I moved the thread to xenomai-core, hope you don't mind.
+------_=_NextPart_001_01C7A9D6.48853A4E
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-OK,  I guess it is the right place
-> > 
-[...]
-> > Our goal is computing the accumulated cost of some selected real-time tasks
-> > to get an image of the  cpu load.
-> > 
-> > What we need is a record of  the accumulated execution time of the
-> > rt_tasks (not the response time, hence the instants when the task is
-> > preempted or suspended must not be counted).
-> > This record must be accessible at any time, either from the calling
-> > task or by another one.  
-> > 
-> > Our current patch only does that for tasks running in primary mode (and
-> > moreover the measure seems not correctly updated for the calling
-> > task record).  
-> > 
-> > Thus we would be very happy to get an improved instrumentation api.
-> > I understand that  xnstat_runtime_update() handles the measure we need? 
-> 
-> It was designed to collect precise runtime statistics to be displayed in
-> /proc/xenomai/stat. We would just have to keep a total counter for each
-> task as dumping /proc resets the statistics ATM.
-> 
-> > Making it available, e.g.  via a rt_task_inquire call, would be great! 
-> 
-> Well, the best (==most comfortable :o) ) way from my POV would be if you
-> could try rebasing your work on your own first. Questions, even on minor
-> details, are always welcome, review on patches will be provided. Should
-> be no problem to get this into Xenomai 2.4.
-> 
-> The rough to-do list would be:
-> 
->  o add some persistent runtimer counter to xnthread::stat and maintain
->    it
->  o introduce an xnpod service (inline function) to obtain it (let that
->    thing return [0..LONGLONG_MAX] when stats are available, -1
->    otherwise)
->  o export the runtime via struct rt_task_info, maybe also the task start
->    time
-> 
-> Jan
-> 
-I am afraid that it is far beyond my own programming capabilities, and I have no
-longer skilled enough students at hand...
-Anyway there are some highly skilled (and overloaded) engineers around, i'll try
-to hire one of them!
-	Daniel
+		We (Adeneo) are working on a ARM AT91 RTAI. We encountered some =
+difficulties such tsc one : in periodic mode, we reload our timer =
+automatically in order to avoid reprogramming it. TC timer increments a =
+16 byte register, which is not enough for a tsc (64 bytes). tsc need to =
+be emulated on ARM.
+		With oneshot mode, tsc is updating the 4 least significant bytes and =
+then increments other bytes each time counter go back to zero value.
+
+		With our periodic mode, timer reloads himself so we need to change tsc =
+emulation by incrementing tsc like this : tsc +=3D period.
+		We made some evolutions on ipipe which will be applied to a hal patch.
+
+		Are you interrested in a such patch for a periodic mode on ARM ?
 
 
--- 
-       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
-        Inovallee, 655 avenue de l'Europe, Montbonnot
-             38 334 Saint Ismier Cedex France
- Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
-          http://necs.inrialpes.fr/people/simon/
+------_=_NextPart_001_01C7A9D6.48853A4E
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7650.28">
+<TITLE>periodic mode in adeos-ipipe for arm at91 ...</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+<UL><UL>
+<P><FONT SIZE=3D2 FACE=3D"Arial">We (Adeneo) are working on a ARM AT91 =
+RTAI. We encountered some difficulties such tsc one : in periodic mode, =
+we reload our timer automatically in order to avoid reprogramming it. TC =
+timer increments a 16 byte register, which is not enough for a tsc (64 =
+bytes). tsc need to be emulated on ARM.</FONT></P>
 
+<P><FONT SIZE=3D2 FACE=3D"Arial">With oneshot mode, tsc is updating the =
+4 least significant bytes and then increments other bytes each time =
+counter go back to zero value.</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">With our periodic mode, timer reloads =
+himself so we need to change tsc emulation by incrementing tsc like this =
+: tsc +=3D period.</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">We made some evolutions on ipipe which =
+will be applied to a hal patch.</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Are you interrested in a such patch for =
+a periodic mode on ARM ?</FONT>
+</P>
+</UL></UL>
+</BODY>
+</HTML>
+------_=_NextPart_001_01C7A9D6.48853A4E--
 
