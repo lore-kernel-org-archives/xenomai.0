@@ -1,18 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46688B0A.8010909@domain.hid>
-References: <200706071049.32906.ngustavson@domain.hid>
-	<200706071311.09891.ngustavson@domain.hid> <46684CCB.8010806@domain.hid>
-	<200706071337.07691.ngustavson@domain.hid> <46685C21.5020709@domain.hid>
-	<1181255358.4998.202.camel@domain.hid>  <46688B0A.8010909@domain.hid>
-Content-Type: text/plain
-Date: Fri, 08 Jun 2007 08:55:48 +0200
-Message-Id: <1181285748.4982.24.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] Fwd: can't use message pipe -
-	Cannot allocate	memory
-Reply-To: rpm@xenomai.org
+Message-ID: <46693B6B.1010201@domain.hid>
+Date: Fri, 08 Jun 2007 13:20:11 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>	<4668440F.7020706@domain.hid>
+	<20070608124927.1b789a9e@domain.hid>
+In-Reply-To: <20070608124927.1b789a9e@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3DF5D19EC59682150915658E"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-help] measuring tasks execution time
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,105 +19,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: Daniel Simon <Daniel.Simon@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Fri, 2007-06-08 at 00:47 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Thu, 2007-06-07 at 21:27 +0200, Jan Kiszka wrote:
-> >> NZG wrote:
-> >>>>> Write does stop throwing errors with a pool of 16384.
-> >>>> Just repeating for confirmation: rt_pipe_create with smaller, but
-> >>>> non-zero pool sizes doesn't report some error? 
-> >>> Incorrect, if it's created with smaller it does report an error. If it's 
-> >>> created with 0 however, it seems ok. (at least it doesn't throw an error)
-> >> You mean the write fails, but rt_pipe_create is fine. At least here, and
-> >> Philippe noticed the same. Looks like the margin for minimal-sized heaps
-> >> is broken. 2*PAGE_SIZE should be 3*PAGE_SIZE net space, Philippe?
-> > 
-> > Actually, rt_pipe_create() already rounds this value to 3*PAGE_SIZE,
-> > right before calling the sysalloc service.
-> > 
-> > Here is the sequence of events that leads to the situation Nathan is
-> > seeing:
-> > 
-> > - Passing poolsize = 1024 to rt_pipe_create() creates a local heap of
-> > 12288 bytes (3 * PAGE_SZ), with 32 bytes of overhead taken from one of
-> > these pages to hold the meta-data.
-> > 
-> > - 4112 bytes (4096 + sizeof(message header)) are then requested to this
-> > local pool to hold the internal streaming buffer
-> > (XENO_OPT_NATIVE_PIPE_BUFSZ), which ends up consuming two pages, i.e.
-> > 8192 bytes, from this pool. The reason for this is due to the way the
-> > McKusick allocation scheme we use works; basically, block sizes greater
-> > than the page size are always rounded to a multiple of the page size.
-> > Requested block sizes are always rounded up to the nearest power of two,
-> > which the allocator groups in pages holding blocks of the same size.
-> > This is not pretty wrt internal fragmentation, but quite efficient
-> > CPU-wise, when the page size is properly chosen wrt the most common
-> > allocation pattern, that is. Most importantly, blocks greater than a
-> > page will never lay on partially consumed pages (by other blocks). So,
-> > in our case, we started with three free pages, one already holds some
-> > meta-data, and we need two pages to fullfil the current allocation
-> > request. Therefore, after this request has suceeded, we have no page
-> > left in the pool.
-> > 
-> > - When the write() call is issued, the pipe driver requests a 32 bytes
-> > block to hold the data moving from user-space to kernel space. Too bad,
-> > we have no other page left to dedicate to blocks holding that size, so
-> > no block is available, which in turn causes write() to return -ENOMEM.
-> 
-> Ah, I see.
-> 
-> > 
-> > This situation illustrates the conflict which is raised when small heaps
-> > (1k) are mapped on large page sizes (4k). Even when rounding them to a
-> > (small) multiple of the page size, the pool might rapidly run short of
-> > free pages, depending on the allocation pattern.
-> 
-> Reminds me of the TLSF allocator claiming to perform smartly also on
-> smaller hunks. But that code is still 32-bit-focused, and would still
-> need someone to define and run comparative tests on representative
-> Xenomai setups. :-/
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3DF5D19EC59682150915658E
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Yep, I see this patch series pending into my patch fridge right now.
+Daniel Simon wrote:
+> On Thu, 07 Jun 2007 19:44:47 +0200
+> Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>=20
+> Hello, opening a new thead forking from the one opened yesterday by Arn=
+aud
+> Desvages
 
-> 
-> > 
-> > IOW, when configuring a heap, it is better to know which kind of block
-> > sizes are going to be requested from it, and reserve the appropriate
-> > number of pages for each different size when evaluating the total size
-> > of the heap.
-> > 
-> > Yes, it's not that simple. No, I'm not that sorry.
-> > 
-> 
-> For now, can we take XENO_OPT_NATIVE_PIPE_BUFSZ into account when
-> picking a reasonable minimum size in rt_pipe_create on behalf of a
-> close-fisted user?
-> 
+I moved the thread to xenomai-core, hope you don't mind.
 
-Yes, the size of the streaming buffer has to be taken into account, it's
-clearly missing right now. I'm also going to use another page size than
-PAGE_SIZE, and this change may likely be applicable to almost all
-callers of xnheap_init() actually. The initial intent was to pick a
-value which would be consistent with the natural block size for the
-Linux VM, but thinking about it once more, it's mostly irrelevant, since
-the way the heap manager works is orthogonal with how kmalloc/vmalloc
-organizes the core memory anyway (i.e. heap memory is obtained from a
-single sysalloc call, so the worst-case incurred here is only having
-some external fragmentation due to the last VM page not being fully
-occupied by heap memory).
+>=20
+>> Hmm, the patch looks like it consequently reimplements existing runtim=
+e
+>> statistics instead of reusing them as a foundation...
+>>
+> Yes, might be simpler now. This patch has been done in urgency upon
+> xenomai 2.1 and was more or less sleeping since one year. It has been w=
+eakly
 
-512 would be likely a better page size for most usage patterns; this
-would increase the overhead brought by the meta-data, but we are talking
-about 1 byte per addressable page within the heap, so this should not be
-that penalizing anyway.
+This explains why your changes are right below the xnstat infrastructure
+code...
 
-> Jan
-> 
--- 
-Philippe.
+> tested, only on Pentium 3 cpus.
+>=20
+>> Anyway, I think we could discuss some API extension of Xenomai (for
+>> native, probably via  ). Likely we would keep this report
+>> optional, ie. make it return -1 or so if CONFIG_XENO_OPT_STATS is off.=
+
+>> Tracking stats is not as costly as other instrumentations, but it's al=
+so
+>> not free. If you are interested, let us know. It won't be a one-liner,=
+
+>> but it doesn't look like it has to be as invasive as your approach.
+>=20
+> Our goal is computing the accumulated cost of some selected real-time t=
+asks
+> to get an image of the  cpu load.
+>=20
+> What we need is a record of  the accumulated execution time of the
+> rt_tasks (not the response time, hence the instants when the task is
+> preempted or suspended must not be counted).
+> This record must be accessible at any time, either from the calling
+> task or by another one. =20
+>=20
+> Our current patch only does that for tasks running in primary mode (and=
+
+> moreover the measure seems not correctly updated for the calling
+> task record). =20
+>=20
+> Thus we would be very happy to get an improved instrumentation api.
+> I understand that  xnstat_runtime_update() handles the measure we need?=
+=20
+
+It was designed to collect precise runtime statistics to be displayed in
+/proc/xenomai/stat. We would just have to keep a total counter for each
+task as dumping /proc resets the statistics ATM.
+
+> Making it available, e.g.  via a rt_task_inquire call, would be great! =
 
 
+Well, the best (=3D=3Dmost comfortable :o) ) way from my POV would be if =
+you
+could try rebasing your work on your own first. Questions, even on minor
+details, are always welcome, review on patches will be provided. Should
+be no problem to get this into Xenomai 2.4.
+
+The rough to-do list would be:
+
+ o add some persistent runtimer counter to xnthread::stat and maintain
+   it
+ o introduce an xnpod service (inline function) to obtain it (let that
+   thing return [0..LONGLONG_MAX] when stats are available, -1
+   otherwise)
+ o export the runtime via struct rt_task_info, maybe also the task start
+   time
+
+Jan
+
+
+--------------enig3DF5D19EC59682150915658E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGaTtrniDOoMHTA+kRAtXSAJ4rrQypcoMc4zLrJVqVHEqJ6eF7AgCfXaKN
+yI/BFlEYDLuj+mmu1urebks=
+=E8Wq
+-----END PGP SIGNATURE-----
+
+--------------enig3DF5D19EC59682150915658E--
 
