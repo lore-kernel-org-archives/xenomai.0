@@ -1,14 +1,12 @@
+Message-ID: <466A9D60.3010304@domain.hid>
+Date: Sat, 09 Jun 2007 14:30:24 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18026.38832.965291.874125@domain.hid>
-Date: Sat, 9 Jun 2007 14:06:08 +0200
-In-Reply-To: <305035a40706081335v5d49fde2i96dd8b2b0a22fb50@domain.hid>
-References: <403B28AE6257B548B66BB88414AC78330174BC34@domain.hid>
-	<18025.37833.610273.790254@domain.hid>
-	<305035a40706081335v5d49fde2i96dd8b2b0a22fb50@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Adeos-main]  AT91 patch duplicated code ...
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3E633957CBF5144D90F27E32"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH-STACK] LTTng update
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,41 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gregory CLEMENT <gclement00@domain.hid>
-Cc: adeos-main@gna.org, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Gregory CLEMENT wrote:
- > 2007/6/8, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
- > > BOUIN Alexandre wrote:
- > >  >
- > >  > > When we released our last version of adeos-ipipe-2.6.19-arm-AT91.patch, we suggested to merge code for at91rm9200 and at91sam926x.
- > >  > > These 2 code are split but quite similar, so we think it could be a good idea. Are you OK for removing duplicated code ?
- > >
- > > If I have to choose between duplicating some Linux code in I-pipe code
- > > and have some duplication in the I-pipe patch, I choose duplication in
- > > the I-pipe patch. If you duplicate Linux code, you will have to avoid
- > > forgetting to update this duplicate code when Linux code evolves.
- > >
- > 
- > Well the first mail wasn't very clear. I am going to explain what we
- > have in mind.
- > 
- > In Linux code for AT91 timer there are two files: at91sam926x_time.c
- > and at91rm9200_time.c because AT91RM9200 and AT91SAM926x have
- > different system timer: AT91RM9200 use AT91_ST peripheral and
- > AT91SAM926x use AT91_PIT peripheral.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3E633957CBF5144D90F27E32
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I was somehow thinking that there was something else in at91xx_time.c
-than what is enclosed in #ifdef CONFIG_IPIPE. I was wrong.
+Before I forget it: I uploaded a rebased version of my patch stack this
+morning, see
 
-Now, I have another question: is there no way to use the AT91_PIT
-peripheral in one shot mode ? What is the resolution of this PIT ?
+	http://www.rts.uni-hannover.de/rtaddon/patches
 
-In any case, please send a patch, this will make a real base for
-discussion.
+This series also includes a new version of the LTTng patch for Xenomai.
+The patch moves the probe arming into a separate module,
+ltt-probe-xeno.ko, allowing the nucleus to be built into kernel again
+when LTTng is enabled. For now it is only one module, i.e. facility, so
+that it still matches with the lttv patch.
 
--- 
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enig3E633957CBF5144D90F27E32
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGap1kniDOoMHTA+kRAmFrAJ0fGu5njIoo0lb3GbkXWNmS00S/1QCdE5pS
+fn2OWz3gYRG4U2tWuGlzacs=
+=nlIn
+-----END PGP SIGNATURE-----
+
+--------------enig3E633957CBF5144D90F27E32--
 
