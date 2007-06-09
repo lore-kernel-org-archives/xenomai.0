@@ -1,16 +1,16 @@
-Message-ID: <305035a40706090634l5566a16dg208eff300c3c04b3@domain.hid>
-Date: Sat, 9 Jun 2007 15:34:19 +0200
+Message-ID: <305035a40706090703nec5b027v30cacf6f05490774@domain.hid>
+Date: Sat, 9 Jun 2007 16:03:45 +0200
 From: "Gregory CLEMENT" <gclement00@domain.hid>
-In-Reply-To: <18026.38832.965291.874125@domain.hid>
+In-Reply-To: <18026.40413.897633.663619@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <403B28AE6257B548B66BB88414AC78330174BC34@domain.hid>
-	<18025.37833.610273.790254@domain.hid>
-	<305035a40706081335v5d49fde2i96dd8b2b0a22fb50@domain.hid>
-	<18026.38832.965291.874125@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main]  AT91 patch duplicated code ...
+References: <403B28AE6257B548B66BB88414AC78330174BC39@domain.hid>
+	<18025.36632.58092.902029@domain.hid>
+	<18026.40413.897633.663619@domain.hid>
+Subject: Re: [Xenomai-core] [Adeos-main] periodic mode in adeos-ipipe for
+	arm at91 ...
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,47 +24,38 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org, xenomai@xenomai.org
 
 2007/6/9, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> Gregory CLEMENT wrote:
->  > 2007/6/8, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->  > > BOUIN Alexandre wrote:
->  > >  >
->  > >  > > When we released our last version of adeos-ipipe-2.6.19-arm-AT91.patch, we suggested to merge code for at91rm9200 and at91sam926x.
->  > >  > > These 2 code are split but quite similar, so we think it could be a good idea. Are you OK for removing duplicated code ?
->  > >
->  > > If I have to choose between duplicating some Linux code in I-pipe code
->  > > and have some duplication in the I-pipe patch, I choose duplication in
->  > > the I-pipe patch. If you duplicate Linux code, you will have to avoid
->  > > forgetting to update this duplicate code when Linux code evolves.
->  > >
+> Gilles Chanteperdrix wrote:
+>  > BOUIN Alexandre wrote:
+>  >  >           We (Adeneo) are working on a ARM AT91 RTAI. We encountered some difficulties such tsc one : in periodic mode, we reload our timer automatically in order to avoid reprogramming it. TC timer increments a 16 byte register, which is not enough for a tsc (64 bytes). tsc need to be emulated on ARM.
+>  >  >           With oneshot mode, tsc is updating the 4 least significant bytes and then increments other bytes each time counter go back to zero value.
+>  >  >
+>  >  >           With our periodic mode, timer reloads himself so we need to change tsc emulation by incrementing tsc like this : tsc += period.
+>  >  >           We made some evolutions on ipipe which will be applied to a hal patch.
 >  >
->  > Well the first mail wasn't very clear. I am going to explain what we
->  > have in mind.
->  >
->  > In Linux code for AT91 timer there are two files: at91sam926x_time.c
->  > and at91rm9200_time.c because AT91RM9200 and AT91SAM926x have
->  > different system timer: AT91RM9200 use AT91_ST peripheral and
->  > AT91SAM926x use AT91_PIT peripheral.
+>  > I intend to rework I-pipe tsc emulation for arms with a free-running
+>  > counter. In order to reduce the tsc read operations:
+>  > - it should use the (uninterruptible) ldm instruction to load the 64
+>  >   bits counter without masking interrupts;
+>  > - the 64 bits counter should not be updated at each read, but only from
+>  >   time to time, the best place to do this is Linux timer interrupt.
 >
-> I was somehow thinking that there was something else in at91xx_time.c
-> than what is enclosed in #ifdef CONFIG_IPIPE. I was wrong.
->
-> Now, I have another question: is there no way to use the AT91_PIT
-> peripheral in one shot mode ?
+> I never did the calculation before, but the TC free-running counter
+> wraps every 40 milliseconds, so Linux timer interrupt is not often
 
-PIT is for Peridodic Interval Timer, and after reading the datasheet
-it seems that this peripheral is not made for one shot timer.
-All we can do is force PIT to stop after a reset but in all case when
-PIT reach the programmable overflow it reset. We can't use it a free
-running counter.
+How do you get this 40 ms ?
+For me TC free-running counter wraps every (2^16)/(MCK/32)
+For AT91RM9200-EK  MCK=59904000 so we get 35ms
+For AT91SMA926x-EK MCK=99328000 so we get 21ms
+I am wrong?
 
->  What is the resolution of this PIT ?
+> enough to update the 64 bits counter. The only safe place to update the
+> 64 bits counter seems to be __ipipe_mach_acktimer.
 
-The resolution of PIT is MCK/16
+As Linux timer period is 10ms why do you think is not often enough ?
 
-> In any case, please send a patch, this will make a real base for
-> discussion.
+For AT91SAM926x what do you think of using PIT for emulating tsc,
+(with PIT we can have a 32 bit counter) ?
 
-Ok I will try to do that.
 
 -- 
 Gregory CLEMENT
