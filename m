@@ -1,12 +1,16 @@
-Message-ID: <466EDD82.7030407@domain.hid>
-Date: Tue, 12 Jun 2007 19:53:06 +0200
+Message-ID: <466EDF1F.5050103@domain.hid>
+Date: Tue, 12 Jun 2007 19:59:59 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <30228710.1181630552942.JavaMail.ngmail@domain.hid>
+	<1181630207.7354.20.camel@domain.hid> <466ED96E.4050806@domain.hid>
+	<466EDC2C.3020200@domain.hid>
+In-Reply-To: <466EDC2C.3020200@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig98601D1B35978FC091E1D4C7"
+	boundary="------------enig66552645E1168E4D49A1E5A2"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [BUG] too lax asm constraints of __xn_rdtsc on bfin
+Subject: Re: [Xenomai-core] CONFIG_SMP in switchtest
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,73 +20,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig98601D1B35978FC091E1D4C7
-Content-Type: multipart/mixed;
- boundary="------------050503070207070704050400"
-
-This is a multi-part message in MIME format.
---------------050503070207070704050400
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig66552645E1168E4D49A1E5A2
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Sigh. Actually, I only wanted to give that shiny new BF537-STAMP board,
-kindly provided by ADI, a short try. Now I'm right in the middle of all
-this...
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Philippe Gerum wrote:
+>>
+>>> On Tue, 2007-06-12 at 08:42 +0200, M. Koehrer wrote:
+>>>
+>>>> Hi everybody,
+>>>>
+>>>> I want to know why the --enable-smp option for "configure" of Xenoma=
+i is used when there
+>>>> is already the corresponding option selected with the kernel configu=
+ration?
+>>> --enable-smp is only used when you want the user-space side to _requi=
+re_
+>>> SMP support to be present into the running kernel; i.e. for some (wei=
+rd)
+>>> reason, your application really needs this. Xenomai libraries don't c=
+are
+>>> whether SMP support is enabled or not, they are not sensitive to that=
 
-Changelog says it all. Problem appears with trunk and 2.3.x user space
-build (=3D>direct TSC).
+>>> issue (see the "weak" status of this option in README.INSTALL)
+>>
+>> Switchtest bases some compile-time decisions on CONFIG_SMP. Nitpicking=
+,
+>> OK, but I wonder if this is required. Gilles?
+>=20
+> If you do not enable the smp option, switchtest will only use one cpu.
+> The reason why I made this is that, on some UP machine, (probably arm,
+> but I do no longer remember) sysconf(_SC_NPROCESSORS_ONLN) did not work=
+=2E
+
+Welcome to embedded hell :-/. What was the effect precisely? Can we
+detect this during runtime? The point is I see people trying this test
+on SMP without providing the right switch to configure. Would be a pity
+IMHO.
+
+At this chance: I also noticed problems with our sched_setscheduler
+detection and bfin's uClibc. Compilations works, linking fails - they
+provide headers, but lack implementations. Patch suggestion will follow.
+
+And my pthread_spin_lock detection got nicely vaporised on bfin once
+again. I'm considering to switch back to the original configure-based
+detection.
+
+Enough of the moaning.
 
 Jan
 
---------------050503070207070704050400
-Content-Type: text/plain;
- name="fix-__xn_rdtsc-constraints.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="fix-__xn_rdtsc-constraints.patch"
 
-Index: ChangeLog
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- ChangeLog	(Revision 2571)
-+++ ChangeLog	(Arbeitskopie)
-@@ -1,3 +1,9 @@
-+2007-06-12  Jan Kiszka  <jan.kiszka@domain.hid>
-+
-+	* include/asm-blackfin/syscall.h (__xn_rdtsc): Assure that CC only
-+	works on data registers. Otherwise, bfin's as may pick a pointer reg
-+	and crash during user land build (toolchain bug #3332).
-+
- 2007-06-09  Philippe Gerum  <rpm@xenomai.org>
-=20
- 	* ksrc/skins/native/pipe.c (rt_pipe_create): Keep the
-Index: include/asm-blackfin/syscall.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- include/asm-blackfin/syscall.h	(Revision 2571)
-+++ include/asm-blackfin/syscall.h	(Arbeitskopie)
-@@ -249,9 +249,9 @@
- 				"%2 =3D CYCLES2\n"
- 				"CC =3D %2 =3D=3D %0\n"
- 				"if !cc jump 1b\n"
--				:"=3Dr" (u.s.h),
--				"=3Dr" (u.s.l),
--				"=3Dr" (cy2)
-+				:"=3Dd" (u.s.h),
-+				"=3Dd" (u.s.l),
-+				"=3Dd" (cy2)
- 				: /*no input*/ : "cc");
-     return u.t;
- }
-
---------------050503070207070704050400--
-
---------------enig98601D1B35978FC091E1D4C7
+--------------enig66552645E1168E4D49A1E5A2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -91,10 +86,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGbt2CniDOoMHTA+kRAhCHAJ9Y1LB4bRG6zG+QI+1mvvnGt8I4JgCfTggp
-0VRWd3TaoUJSzerOYSM5Xfk=
-=JInK
+iD8DBQFGbt8fniDOoMHTA+kRAsCoAJ9Rr+F9rDCspRNwQZzZPpoVtbnbWQCeOTpn
+Um5KEeVm9gKSriflh0e5AyA=
+=ezrC
 -----END PGP SIGNATURE-----
 
---------------enig98601D1B35978FC091E1D4C7--
+--------------enig66552645E1168E4D49A1E5A2--
 
