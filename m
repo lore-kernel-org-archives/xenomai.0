@@ -4,8 +4,8 @@ References: <30228710.1181630552942.JavaMail.ngmail@domain.hid>
 	<1181630207.7354.20.camel@domain.hid> <466ED96E.4050806@domain.hid>
 	<466EDC2C.3020200@domain.hid>  <466EDF1F.5050103@domain.hid>
 Content-Type: text/plain
-Date: Tue, 12 Jun 2007 20:08:28 +0200
-Message-Id: <1181671708.6792.9.camel@domain.hid>
+Date: Tue, 12 Jun 2007 20:12:41 +0200
+Message-Id: <1181671961.6792.13.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -56,25 +56,18 @@ On Tue, 2007-06-12 at 19:59 +0200, Jan Kiszka wrote:
 > detection and bfin's uClibc. Compilations works, linking fails - they
 > provide headers, but lack implementations. Patch suggestion will follow.
 > 
+
+The main point with the Blackfin port is: which uclinux-dist release are
+you using? We are currently based on 2007R1-RC3. The uclinux-dist effort
+is still largely in flux right now, so this makes a significant
+difference.
+
 > And my pthread_spin_lock detection got nicely vaporised on bfin once
 > again. I'm considering to switch back to the original configure-based
 > detection.
-
-Notice that you have no atomic ops available on Blackfin CPUs, and to
-emulate them, you would have to mask interrupts, which you can't do in
-user-space (privileged instruction). So you will always end up issuing a
-syscall under the hood (bfin_spinlock), that does some kind of spinlock
-emulation from kernel space. Next kernel releases might improve things
-by allowing to jump to atomic emulation routines directly from
-user-space, but this is not yet available AFAIK. IOW, don't expect
-performance improvements from user-space locking, yet.
-
 > 
 > Enough of the moaning.
 > 
-
-Still, this is quite a fun architecture to work with.
-
 > Jan
 > 
 -- 
