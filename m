@@ -1,12 +1,16 @@
-Message-ID: <466EE437.40905@domain.hid>
-Date: Tue, 12 Jun 2007 20:21:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig21555103AA730DCF895147EA"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [RFC][PATCH] link-check sched_setaffinity
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <466EDF1F.5050103@domain.hid>
+References: <30228710.1181630552942.JavaMail.ngmail@domain.hid>
+	<1181630207.7354.20.camel@domain.hid> <466ED96E.4050806@domain.hid>
+	<466EDC2C.3020200@domain.hid>  <466EDF1F.5050103@domain.hid>
+Content-Type: text/plain
+Date: Tue, 12 Jun 2007 20:08:28 +0200
+Message-Id: <1181671708.6792.9.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] CONFIG_SMP in switchtest
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,115 +20,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig21555103AA730DCF895147EA
-Content-Type: multipart/mixed;
- boundary="------------060401050405080107070205"
+On Tue, 2007-06-12 at 19:59 +0200, Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+> > Jan Kiszka wrote:
+> >> Philippe Gerum wrote:
+> >>
+> >>> On Tue, 2007-06-12 at 08:42 +0200, M. Koehrer wrote:
+> >>>
+> >>>> Hi everybody,
+> >>>>
+> >>>> I want to know why the --enable-smp option for "configure" of Xenomai is used when there
+> >>>> is already the corresponding option selected with the kernel configuration?
+> >>> --enable-smp is only used when you want the user-space side to _require_
+> >>> SMP support to be present into the running kernel; i.e. for some (weird)
+> >>> reason, your application really needs this. Xenomai libraries don't care
+> >>> whether SMP support is enabled or not, they are not sensitive to that
+> >>> issue (see the "weak" status of this option in README.INSTALL)
+> >>
+> >> Switchtest bases some compile-time decisions on CONFIG_SMP. Nitpicking,
+> >> OK, but I wonder if this is required. Gilles?
+> > 
+> > If you do not enable the smp option, switchtest will only use one cpu.
+> > The reason why I made this is that, on some UP machine, (probably arm,
+> > but I do no longer remember) sysconf(_SC_NPROCESSORS_ONLN) did not work.
+> 
+> Welcome to embedded hell :-/. What was the effect precisely? Can we
+> detect this during runtime? The point is I see people trying this test
+> on SMP without providing the right switch to configure. Would be a pity
+> IMHO.
+> 
+> At this chance: I also noticed problems with our sched_setscheduler
+> detection and bfin's uClibc. Compilations works, linking fails - they
+> provide headers, but lack implementations. Patch suggestion will follow.
+> 
+> And my pthread_spin_lock detection got nicely vaporised on bfin once
+> again. I'm considering to switch back to the original configure-based
+> detection.
 
-This is a multi-part message in MIME format.
---------------060401050405080107070205
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Notice that you have no atomic ops available on Blackfin CPUs, and to
+emulate them, you would have to mask interrupts, which you can't do in
+user-space (privileged instruction). So you will always end up issuing a
+syscall under the hood (bfin_spinlock), that does some kind of spinlock
+emulation from kernel space. Next kernel releases might improve things
+by allowing to jump to atomic emulation routines directly from
+user-space, but this is not yet available AFAIK. IOW, don't expect
+performance improvements from user-space locking, yet.
 
-Hi,
+> 
+> Enough of the moaning.
+> 
 
-as indicated earlier, there is an issue with uClibc from the blackfin
-distribution: AC_TRY_COMPILE succeeds, but linking later on fails.
+Still, this is quite a fun architecture to work with.
 
-So my suggestion is to try to link already during configure (and test
-for missing defines differently).
+> Jan
+> 
+-- 
+Philippe.
 
-Jan
 
---------------060401050405080107070205
-Content-Type: text/plain;
- name="link-check-sched_setaffinity.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="link-check-sched_setaffinity.patch"
-
-Index: configure.in
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- configure.in	(Revision 2571)
-+++ configure.in	(Arbeitskopie)
-@@ -516,12 +516,12 @@
- AC_CACHE_VAL(ac_cv_sched_setaffinity,
-  save_CFLAGS=3D"$CFLAGS"
-  CFLAGS=3D"-Wimplicit-function-declaration -Werror -D_GNU_SOURCE"
-- [AC_TRY_COMPILE([#include <sched.h>],
-+ [AC_TRY_LINK([#include <sched.h>],
-  [cpu_set_t cpu_set; sched_setaffinity(0, sizeof(cpu_set), &cpu_set);],
-  [ac_cv_sched_setaffinity=3Dnew],
-  [ac_cv_sched_setaffinity=3Dbad])]
-  if test $ac_cv_sched_setaffinity =3D bad ; then
--   [AC_TRY_COMPILE([#include <sched.h>],
-+   [AC_TRY_LINK([#include <sched.h>],
-    [cpu_set_t cpu_set; sched_setaffinity(0, &cpu_set);],
-    [ac_cv_sched_setaffinity=3Dold],
-    [ac_cv_sched_setaffinity=3Dno])]
-Index: src/testsuite/switchtest/switchtest.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- src/testsuite/switchtest/switchtest.c	(Revision 2571)
-+++ src/testsuite/switchtest/switchtest.c	(Arbeitskopie)
-@@ -27,8 +27,10 @@
- typedef unsigned long cpu_set_t;
- #endif
- #define do_sched_setaffinity(pid,len,mask) 0
-+#ifndef CPU_ZERO
- #define	 CPU_ZERO(set)		do { *(set) =3D 0; } while(0)
- #define	 CPU_SET(n,set) 	do { *(set) |=3D (1 << n); } while(0)
-+#endif
- #endif /* HAVE_OLD_SETAFFINITY */
- #endif /* HAVE_RECENT_SETAFFINITY */
-=20
-Index: src/testsuite/clocktest/clocktest.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- src/testsuite/clocktest/clocktest.c	(Revision 2571)
-+++ src/testsuite/clocktest/clocktest.c	(Arbeitskopie)
-@@ -18,6 +18,7 @@
-=20
- #include <errno.h>
- #include <pthread.h>
-+#include <sched.h>
- #include <signal.h>
- #include <stdio.h>
- #include <stdlib.h>
-@@ -35,8 +36,10 @@
- typedef unsigned long cpu_set_t;
- #endif
- #define sched_setaffinity(pid, len, mask)	do { } while (0)
-+#ifndef CPU_ZERO
- #define CPU_ZERO(set)				memset(set, 0, sizeof(*set))
- #define CPU_SET(n, set)				do { } while (0)
-+#endif
- #endif /* !HAVE_OLD_SETAFFINITY */
- #endif /* !HAVE_RECENT_SETAFFINITY */
-=20
-
---------------060401050405080107070205--
-
---------------enig21555103AA730DCF895147EA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGbuQ3niDOoMHTA+kRAshTAJ0WMtiFtWHa/0ApPPkyKiemw5ZezwCfXA7A
-/c3vhMLP+8EPPEu1K4jFHJg=
-=7CAG
------END PGP SIGNATURE-----
-
---------------enig21555103AA730DCF895147EA--
 
