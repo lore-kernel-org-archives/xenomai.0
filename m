@@ -1,12 +1,12 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <467639BE.30504@domain.hid>
+Date: Mon, 18 Jun 2007 09:52:30 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18036.9180.75226.863768@domain.hid>
-Date: Sat, 16 Jun 2007 19:54:36 +0200
-In-Reply-To: <DB21A0DD952.000005E0ejr@domain.hid>
-References: <DB21A0DD952.000005E0ejr@domain.hid>
-Subject: Re: [Xenomai-core] HZ, tick timer and scheduler relation
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8E56E439309BD94F4A731B63"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH-STACK] Synchronised timebases and more
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,34 +16,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Junior <ejr@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Junior wrote:
- > Hi all,
- > It was suggested that I ask this question on this list.
- > If I have the wrong list please let me know.
- > 
- > I'm using ARM linux kernel 2.6.18 on a custom board and on my
- > development board the scheduler timeslice was 10ms and
- > on my custom board it's 100ms. I had HZ up'ed to 400 instead of
- > the 200 ARM default.
- > I've tried repeatedly to reduce this to 10ms but for some reason
- > changing HZ has no effect as the scheduler timeslice hovers around
- > 100ms +/- 10ms. My clock tick timer is set the same @ ~3.6MHz.
- > On the 2.6.18 kernel, Changing HZ does have the expected effect but
- > perhaps something changed in 2.6.18.
- > 
- > I'm trying to understand what the relation is between HZ, the clock tick timer
- > and the scheduler timeslice.
- > Could anyone help me understand this? or suggest some good reading materials?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8E56E439309BD94F4A731B63
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Looking at linux 2.6.19 code, it seems that the scheduler timeslice (as
-returned by sched_get_rr_interval) depends on the nice value of a
-process. Higher priority processes have a longer timeslice.
+Hi,
 
--- 
+after Philippe tried hard to shrink my queue, I was at least able to add
+one new major patch:
+
+Trying to write down the docs for rtdm_timer I realised that we really
+need to do something about this scenario: multiple skins on different
+time bases are exchanging time stamps directly or indirectly (e.g. via
+RTDM devices). So far, those time stamps would be hopelessly out of sync
+and could easily break things.
+
+The answer I found is to synchronise all time bases as good as possible.
+That means if one base changes its wall clock offset, all others need to
+be adjusted as well. At this chance, we would also implement
+synchronisation of the time bases on the system clock when they get
+started. Because skins may work with different type width to represent
+time, relative changes have to be applied, i.e. the core API changes
+from xntbase_set_time(new_time) to xntbase_adjust_time(relative_change).
+The patch (global-wallclock.patch) finally touches more parts than I was
+first hoping. Here is the full list:
+
+ - synchronise slave time bases on the master on xntbase_start
+ - xntbase_set_time -> xntbase_adjust_time, fixing all time bases
+   currently registered
+ - make xnarch_start_timer return the nanos since the last host tick
+   (only ia64 affected, all others return 0 anyway, causing one tick
+   off when synchronising on system time -- but this fiddling becomes
+   pointless on the long term due to better clocksourses on all archs)
+ - adapt vrtx, vxworks, and psos+ skin to new scheme, fixing sc_sclock
+   at this chance
+ - make xnarch_get_sys_time internal, no skin should (need to) touch
+   this anymore
+
+The patch is lightly tested and appears to meet its goals. However, the
+changes are fundamental and need careful review.
+
+Other changes in the current stack:
+ - configure link test for sched_setaffinity (see earlier posting)
+ - kill svctable from the pod structure
+ - updated ltt patch
+
+Please check
+
+	http://www.rts.uni-hannover.de/rtaddon/patches/xenomai
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enig8E56E439309BD94F4A731B63
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGdjm+niDOoMHTA+kRAq5tAJ9vvHrQASS7nAvJyY3A/YuskoeUnACfRTtG
+k3MUF4Wf4r5E8bSwDcoNG+E=
+=/3ZZ
+-----END PGP SIGNATURE-----
+
+--------------enig8E56E439309BD94F4A731B63--
 
