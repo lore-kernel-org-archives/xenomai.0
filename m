@@ -1,14 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <5D63919D95F87E4D9D34FF7748CE2C2AAA6EFD@ARVMAIL1.mra.roland-man.biz>
-References: <5D63919D95F87E4D9D34FF7748CE2C2AAA6EFD@ARVMAIL1.mra.roland-man.biz>
-Content-Type: text/plain
-Date: Tue, 19 Jun 2007 10:50:55 +0200
-Message-Id: <1182243055.6569.9.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and Busybox
-Reply-To: rpm@xenomai.org
+Message-ID: <b647ffbd0706190452g16e98684p13873b09f48eb185@domain.hid>
+Date: Tue, 19 Jun 2007 13:52:20 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <46778964.3070608@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_101078_6791672.1182253940766"
+References: <OF815057E3.6D5C9810-ONC12572FF.00287AFE-C12572FF.0028A289@domain.hid>
+	<46778964.3070608@domain.hid>
+Subject: Re: [Xenomai-help] xeno-2.3.1 shared interrups BUG?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,58 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roderik_Wildenburg@domain.hid
-Cc: xenomai@xenomai.org
+To: apittaluga@domain.hid
+Cc: Xenomai help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Tue, 2007-06-19 at 08:23 +0200, Roderik_Wildenburg@domain.hid wrote:
-> Does anyone use Busybox(www.busybox.net) on a xenomai-linux ?
-> Or does anyone experience one of these problems with busybox on xenomai
-> :
-> - yes > /dev/null stalls system completely (yes is a little program
-> returning 'y' continously; this does not happen using a normal bash
-> shell)
-> - "netstat -a" seems to delay realtime execution (periodic task produces
-> overruns).
+------=_Part_101078_6791672.1182253940766
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-You mean the standard latency test?
+On 19/06/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> apittaluga@domain.hid wrote:
+> > Hi,
+> > running a simple test application which spawns a periodic task writing on a
+> > serial interface
+> > the system hangs performing the rt_dev_close.
+> > The test program ran fine with xeno 2.2.6 with "Shared Interrupts" enabled,
+> > so as with
+> > xeno 2.3.1 with "Shared Interrupts" disabled. It fails with xeno 2.3.1 with
+> > "Shared Interrupts" enabled, so the problem seems to be in the shared
+> > interrupts handling area.
+> > kernel is 2.6.20 adeos patched
+> >
+> > Any suggestion?
 
->  I have no idea how this could happen, as I thought xenomai
-> has highest priority and, as far as I have seen, netstat does not
-> anything else than reading /proc/net/netstat.
-> 
-> We experienced these problems on a PPC 2.4 xenomai-linux.
-> 
+Does the fix below eliminate the problem?
 
-I-pipe 2.4.25/ppc 1.2-01? 
-Which kind of board?
-Which Xenomai version?
+The problem (allegedly) is cause by the following reinitialization at
+the end of the loop:
 
-> Any suggestions/ideas/explanations ?
-> 
+...
+                if (!(intr = intr->next))
+                        intr = shirq->handlers;
+...
 
-Let's try a simple setup with your environment if it is not already the
-case: Xenomai 2.3.1 stock + 2.4.25-ppc 1.2-01, standard latency test in
-user-space. If you could also boot and run your current kernel on a
-vanilla glibc-based ELDK setup (likely 3.1.1 with 2.4/ppc kernels), we
-could check whether busybox raises new issues or not. The latest setup
-works perfectly fine here on an Icecube for instance, "yes" and
-"netstat" tests included.
+'end' may point to some of the elements ... and shirq->handlers may
+become NULL (all elements have been deleted)..
 
-> Many thanks in advance
-> Roderik 
-> 
-> MAN Roland Druckmaschinen AG
-> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle    
-> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592    
-> USt-Ident-Nr. DE 250200933
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+(white-space damaged version.. enclosed a normal one)
+
+--- ksrc/nucleus/intr.c-orig    2007-06-19 13:44:55.090623404 +0200
++++ ksrc/nucleus/intr.c 2007-06-19 13:45:53.867440067 +0200
+@@ -273,7 +273,7 @@ static void xnintr_edge_shirq_handler(un
+        xnintr_shirq_lock(shirq);
+        intr = shirq->handlers;
+
+-       while (intr != end) {
++       while (intr && intr != end) {
+                int ret, code;
+
+                xnstat_runtime_switch(sched,
+
+
 -- 
-Philippe.
+Best regards,
+Dmitry Adamushko
 
+------=_Part_101078_6791672.1182253940766
+Content-Type: text/x-patch; name=fix-edge_shared_intr.patch; 
+	charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_f34bd7yf
+Content-Disposition: attachment; filename="fix-edge_shared_intr.patch"
 
+LS0tIGtzcmMvbnVjbGV1cy9pbnRyLmMtb3JpZwkyMDA3LTA2LTE5IDEzOjQ0OjU1LjA5MDYyMzQw
+NCArMDIwMAorKysga3NyYy9udWNsZXVzL2ludHIuYwkyMDA3LTA2LTE5IDEzOjQ1OjUzLjg2NzQ0
+MDA2NyArMDIwMApAQCAtMjczLDcgKzI3Myw3IEBAIHN0YXRpYyB2b2lkIHhuaW50cl9lZGdlX3No
+aXJxX2hhbmRsZXIodW4KIAl4bmludHJfc2hpcnFfbG9jayhzaGlycSk7CiAJaW50ciA9IHNoaXJx
+LT5oYW5kbGVyczsKIAotCXdoaWxlIChpbnRyICE9IGVuZCkgeworCXdoaWxlIChpbnRyICYmIGlu
+dHIgIT0gZW5kKSB7CiAJCWludCByZXQsIGNvZGU7CiAKIAkJeG5zdGF0X3J1bnRpbWVfc3dpdGNo
+KHNjaGVkLAo=
+------=_Part_101078_6791672.1182253940766--
 
