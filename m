@@ -1,14 +1,12 @@
-Message-ID: <7289437c0706062254v2a386894oeb498459877d5086@domain.hid>
-Date: Thu, 7 Jun 2007 07:54:07 +0200
-From: "Perrine Martignoni" <perrmart@domain.hid>
-In-Reply-To: <1181143109.17978.101.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_26040_3518735.1181195647687"
-References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>
-	<1181143109.17978.101.camel@domain.hid>
-Subject: Re: [Xenomai-help] Cyclictest
+From: apittaluga@domain.hid
+Date: Tue, 19 Jun 2007 18:03:15 +0200
+Message-ID: <OFCFFACC29.48BC9796-ONC12572FF.0058305F-C12572FF.00583073@domain.hid>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/html;
+	charset=ISO-8859-1
+Subject: [Xenomai-help] xeno-2.3.1 shared interrups BUG
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,265 +16,336 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-------=_Part_26040_3518735.1181195647687
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
->Did you double-check that you were not testing Xenomai with the
->"vanilla" cyclictest, ie. the one without libpthread_rt dependencies...?
->See "ldd cyclictest" when in doubt.
-
-Yes, I did. I wanted to know performances of cyclictest without Xenomai to
-compare.
-And I thought that even with Xenomai in the kernel, I would have the same
-result.
-
-On 6/6/07, Philippe Gerum <rpm@xenomai.org> wrote:
->
-> On Wed, 2007-06-06 at 15:04 +0000, Daniel Schnell wrote:
-> > Try adding -p99 to use realtime.
-> >
-> >
-> > ________________________________
-> >
-> > From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid=
-]
-> On Behalf Of Perrine Martignoni
-> > Sent: 6. j=FAn=ED 2007 15:02
-> > To: xenomai-help
-> > Subject: [Xenomai-help] Cyclictest
-> >
-> >
-> > Hello,
-> >
-> > I launched the same application Cyclictest on a kernel Linux without
-> Xenomai and a kernel Linux with Xenomai and I noticed that the result is
-> different.
-> >
-> > Here is the result with a kernel Linux without xenomai :
-> >
-> > > cyclictest -t 10 -c 1 -i 10500
-> >
-> >
-> > T: 0 (  732) P:99 I:   10500 C:    2291 Min:      41 Act:    2281
-> Avg:    5075 Max:   10224
-> >
-> > T: 1 (  733) P:98 I:   11000 C:    2187 Min:      66 Act:    1312
-> Avg:    5085 Max:   10236
-> >
-> > T: 2 (  734) P:97 I:   11500 C:    2092 Min:      91 Act:     842
-> Avg:    5113 Max:   10311
-> >
-> > T: 3 (  735) P:96 I:   12000 C:    2004 Min:     106 Act:    1384
-> Avg:    5134 Max:   10140
-> >
-> > T: 4 (  736) P:95 I:   12500 C:    1924 Min:     116 Act:    9873
-> Avg:    5152 Max:   10306
-> >
-> > T: 5 (  737) P:94 I:   13000 C:    1850 Min:     136 Act:     415
-> Avg:    5172 Max:   10376
-> >
-> > T: 6 (  738) P:93 I:   13500 C:    1782 Min:     136 Act:    3873
-> Avg:    5180 Max:   10411
-> >
-> > T: 7 (  751) P:92 I:   14000 C:    1722 Min:     156 Act:    3559
-> Avg:    5184 Max:   10190
-> >
-> > T: 8 (  752) P:91 I:   14500 C:    1663 Min:     140 Act:    8454
-> Avg:    5216 Max:   10310
-> >
-> > T: 9 (  753) P:90 I:   15000 C:    1608 Min:     184 Act:    2485
-> Avg:    5214 Max:   10490
-> >
-> >
-> >
-> > And here is the result with a kernel Linux with xenomai :
-> > > cyclictest -t 10 -c 1 -i 10000
-> >
-> >
-> > T: 0 (  893) P:99 I:   10000 C:     1756 Min:   13407 Act:   13536
-> Avg:   13452 Max:   13693
-> >
-> > T: 1 (  894) P:98 I:   10500 C:     1673 Min:    4955 Act:    7595
-> Avg:    9767 Max:   14727
-> >
-> > T: 2 (  895) P:97 I:   11000 C:     1597 Min:    5461 Act:    7628
-> Avg:   10047 Max:   14793
-> >
-> > T: 3 (  908) P:96 I:   11500 C:     1333 Min:    4987 Act:    5641
-> Avg:    9808 Max:   14779
-> >
-> > T: 4 (  909) P:95 I:   12000 C:     1277 Min:    5478 Act:   11665
-> Avg:    9588 Max:   13864
-> >
-> > T: 5 (  910) P:94 I:   12500 C:     1226 Min:    6016 Act:   11191
-> Avg:    9859 Max:   14135
-> >
-> > T: 6 (  911) P:93 I:   13000 C:     1179 Min:    5526 Act:    9711
-> Avg:   10130 Max:   14901
-> >
-> > T: 7 (  912) P:92 I:   13500 C:     1135 Min:    5061 Act:   14740
-> Avg:    9896 Max:   14852
-> >
-> > T: 8 (  913) P:91 I:   14000 C:     1095 Min:    5549 Act:    7766
-> Avg:    9669 Max:   14198
-> >
-> > T: 9 (  914) P:90 I:   14500 C:     1057 Min:    5107 Act:   11820
-> Avg:    9940 Max:   14984
-> >
-> >
-> >
-> > We can see that with Xenomai, the results are less good.
-> > Is there an explication to this?
->
-> Actually, you don't have any information from this test output unless
-> you did put some load on your box. Real-time is about predictability,
-> what Xenomai brings is exactly that. Raw performances have no meaning in
-> a real-time context unless they can be sustained regardless of the
-> runtime conditions.
->
-> If your box is not some flashy big iron, try putting some load with this
-> command while the test is running, on both boxen:
->
-> while :; do dd if=3D/dev/zero of=3Dhog.out count=3D500 bs=3D1M; rm -f hog=
-.out &&
-> sync; done
->
-> If you do have a recent, multi-core and multi-Ghz box, try compiling a
-> kernel over all the CPUs when testing. E.g. for a 2 CPU box, try
-> running:
->
-> while :; do make clean && make -j3; done
->
-> >
-> > Thanks
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> --
-> Philippe.
->
->
->
-
-------=_Part_26040_3518735.1181195647687
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-&gt;Did you double-check that you were not testing Xenomai with the<br>&gt;=
-&quot;vanilla&quot; cyclictest, ie. the one without libpthread_rt dependenc=
-ies...?<br>&gt;See &quot;ldd cyclictest&quot; when in doubt.<br><br>Yes, I =
-did. I wanted to know performances of cyclictest without Xenomai to compare=
-.
-<br>And I thought that even with Xenomai in the kernel, I would have the sa=
-me result.<br><br><div><span class=3D"gmail_quote">On 6/6/07, <b class=3D"g=
-mail_sendername">Philippe Gerum</b> &lt;<a href=3D"mailto:rpm@xenomai.org">=
-rpm@xenomai.org
-</a>&gt; wrote:</span><blockquote class=3D"gmail_quote" style=3D"border-lef=
-t: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1=
-ex;">On Wed, 2007-06-06 at 15:04 +0000, Daniel Schnell wrote:<br>&gt; Try a=
-dding -p99 to use realtime.
-<br>&gt;<br>&gt;<br>&gt; ________________________________<br>&gt;<br>&gt; F=
-rom: <a href=3D"mailto:xenomai-help-bounces@domain.hid">xenomai-help-bounces@domain.hid=
-na.org</a> [mailto:<a href=3D"mailto:xenomai-help-bounces@domain.hid">xenomai-=
-help-bounces@domain.hid
-</a>] On Behalf Of Perrine Martignoni<br>&gt; Sent: 6. j=FAn=ED 2007 15:02<=
-br>&gt; To: xenomai-help<br>&gt; Subject: [Xenomai-help] Cyclictest<br>&gt;=
-<br>&gt;<br>&gt; Hello,<br>&gt;<br>&gt; I launched the same application Cyc=
-lictest on a kernel Linux without Xenomai and a kernel Linux with Xenomai a=
-nd I noticed that the result is different.
-<br>&gt;<br>&gt; Here is the result with a kernel Linux without xenomai :<b=
-r>&gt;<br>&gt; &gt; cyclictest -t 10 -c 1 -i 10500<br>&gt;<br>&gt;<br>&gt; =
-T: 0 (&nbsp;&nbsp;732) P:99 I:&nbsp;&nbsp; 10500 C:&nbsp;&nbsp;&nbsp;&nbsp;=
-2291 Min:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;41 Act:&nbsp;&nbsp;&nbsp;&nbsp=
-;2281 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5075 Max:&nbsp;&nbsp; 10224
-<br>&gt;<br>&gt; T: 1 (&nbsp;&nbsp;733) P:98 I:&nbsp;&nbsp; 11000 C:&nbsp;&=
-nbsp;&nbsp;&nbsp;2187 Min:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;66 Act:&nbsp;=
-&nbsp;&nbsp;&nbsp;1312 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5085 Max:&nbsp;&nbsp; 10=
-236<br>&gt;<br>&gt; T: 2 (&nbsp;&nbsp;734) P:97 I:&nbsp;&nbsp; 11500 C:&nbs=
-p;&nbsp;&nbsp;&nbsp;2092 Min:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;91 Act:&nb=
-sp;&nbsp;&nbsp;&nbsp; 842 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5113 Max:&nbsp;&nbsp;=
- 10311<br>&gt;
-<br>&gt; T: 3 (&nbsp;&nbsp;735) P:96 I:&nbsp;&nbsp; 12000 C:&nbsp;&nbsp;&nb=
-sp;&nbsp;2004 Min:&nbsp;&nbsp;&nbsp;&nbsp; 106 Act:&nbsp;&nbsp;&nbsp;&nbsp;=
-1384 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5134 Max:&nbsp;&nbsp; 10140<br>&gt;<br>&gt=
-; T: 4 (&nbsp;&nbsp;736) P:95 I:&nbsp;&nbsp; 12500 C:&nbsp;&nbsp;&nbsp;&nbs=
-p;1924 Min:&nbsp;&nbsp;&nbsp;&nbsp; 116 Act:&nbsp;&nbsp;&nbsp;&nbsp;9873 Av=
-g:&nbsp;&nbsp;&nbsp;&nbsp;5152 Max:&nbsp;&nbsp; 10306<br>&gt;<br>&gt; T: 5 =
-(&nbsp;&nbsp;737) P:94 I:&nbsp;&nbsp; 13000 C:&nbsp;&nbsp;&nbsp;&nbsp;1850 =
-Min:&nbsp;&nbsp;&nbsp;&nbsp; 136 Act:&nbsp;&nbsp;&nbsp;&nbsp; 415 Avg:&nbsp=
-;&nbsp;&nbsp;&nbsp;5172 Max:&nbsp;&nbsp; 10376
-<br>&gt;<br>&gt; T: 6 (&nbsp;&nbsp;738) P:93 I:&nbsp;&nbsp; 13500 C:&nbsp;&=
-nbsp;&nbsp;&nbsp;1782 Min:&nbsp;&nbsp;&nbsp;&nbsp; 136 Act:&nbsp;&nbsp;&nbs=
-p;&nbsp;3873 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5180 Max:&nbsp;&nbsp; 10411<br>&gt=
-;<br>&gt; T: 7 (&nbsp;&nbsp;751) P:92 I:&nbsp;&nbsp; 14000 C:&nbsp;&nbsp;&n=
-bsp;&nbsp;1722 Min:&nbsp;&nbsp;&nbsp;&nbsp; 156 Act:&nbsp;&nbsp;&nbsp;&nbsp=
-;3559 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5184 Max:&nbsp;&nbsp; 10190<br>&gt;
-<br>&gt; T: 8 (&nbsp;&nbsp;752) P:91 I:&nbsp;&nbsp; 14500 C:&nbsp;&nbsp;&nb=
-sp;&nbsp;1663 Min:&nbsp;&nbsp;&nbsp;&nbsp; 140 Act:&nbsp;&nbsp;&nbsp;&nbsp;=
-8454 Avg:&nbsp;&nbsp;&nbsp;&nbsp;5216 Max:&nbsp;&nbsp; 10310<br>&gt;<br>&gt=
-; T: 9 (&nbsp;&nbsp;753) P:90 I:&nbsp;&nbsp; 15000 C:&nbsp;&nbsp;&nbsp;&nbs=
-p;1608 Min:&nbsp;&nbsp;&nbsp;&nbsp; 184 Act:&nbsp;&nbsp;&nbsp;&nbsp;2485 Av=
-g:&nbsp;&nbsp;&nbsp;&nbsp;5214 Max:&nbsp;&nbsp; 10490<br>&gt;<br>&gt;
-<br>&gt;<br>&gt; And here is the result with a kernel Linux with xenomai :<=
-br>&gt; &gt; cyclictest -t 10 -c 1 -i 10000<br>&gt;<br>&gt;<br>&gt; T: 0 (&=
-nbsp;&nbsp;893) P:99 I:&nbsp;&nbsp; 10000 C:&nbsp;&nbsp;&nbsp;&nbsp; 1756 M=
-in:&nbsp;&nbsp; 13407 Act:&nbsp;&nbsp; 13536 Avg:&nbsp;&nbsp; 13452 Max:&nb=
-sp;&nbsp; 13693
-<br>&gt;<br>&gt; T: 1 (&nbsp;&nbsp;894) P:98 I:&nbsp;&nbsp; 10500 C:&nbsp;&=
-nbsp;&nbsp;&nbsp; 1673 Min:&nbsp;&nbsp;&nbsp;&nbsp;4955 Act:&nbsp;&nbsp;&nb=
-sp;&nbsp;7595 Avg:&nbsp;&nbsp;&nbsp;&nbsp;9767 Max:&nbsp;&nbsp; 14727<br>&g=
-t;<br>&gt; T: 2 (&nbsp;&nbsp;895) P:97 I:&nbsp;&nbsp; 11000 C:&nbsp;&nbsp;&=
-nbsp;&nbsp; 1597 Min:&nbsp;&nbsp;&nbsp;&nbsp;5461 Act:&nbsp;&nbsp;&nbsp;&nb=
-sp;7628 Avg:&nbsp;&nbsp; 10047 Max:&nbsp;&nbsp; 14793<br>
-&gt;<br>&gt; T: 3 (&nbsp;&nbsp;908) P:96 I:&nbsp;&nbsp; 11500 C:&nbsp;&nbsp=
-;&nbsp;&nbsp; 1333 Min:&nbsp;&nbsp;&nbsp;&nbsp;4987 Act:&nbsp;&nbsp;&nbsp;&=
-nbsp;5641 Avg:&nbsp;&nbsp;&nbsp;&nbsp;9808 Max:&nbsp;&nbsp; 14779<br>&gt;<b=
-r>&gt; T: 4 (&nbsp;&nbsp;909) P:95 I:&nbsp;&nbsp; 12000 C:&nbsp;&nbsp;&nbsp=
-;&nbsp; 1277 Min:&nbsp;&nbsp;&nbsp;&nbsp;5478 Act:&nbsp;&nbsp; 11665 Avg:&n=
-bsp;&nbsp;&nbsp;&nbsp;9588 Max:&nbsp;&nbsp; 13864<br>&gt;
-<br>&gt; T: 5 (&nbsp;&nbsp;910) P:94 I:&nbsp;&nbsp; 12500 C:&nbsp;&nbsp;&nb=
-sp;&nbsp; 1226 Min:&nbsp;&nbsp;&nbsp;&nbsp;6016 Act:&nbsp;&nbsp; 11191 Avg:=
-&nbsp;&nbsp;&nbsp;&nbsp;9859 Max:&nbsp;&nbsp; 14135<br>&gt;<br>&gt; T: 6 (&=
-nbsp;&nbsp;911) P:93 I:&nbsp;&nbsp; 13000 C:&nbsp;&nbsp;&nbsp;&nbsp; 1179 M=
-in:&nbsp;&nbsp;&nbsp;&nbsp;5526 Act:&nbsp;&nbsp;&nbsp;&nbsp;9711 Avg:&nbsp;=
-&nbsp; 10130 Max:&nbsp;&nbsp; 14901<br>&gt;<br>
-&gt; T: 7 (&nbsp;&nbsp;912) P:92 I:&nbsp;&nbsp; 13500 C:&nbsp;&nbsp;&nbsp;&=
-nbsp; 1135 Min:&nbsp;&nbsp;&nbsp;&nbsp;5061 Act:&nbsp;&nbsp; 14740 Avg:&nbs=
-p;&nbsp;&nbsp;&nbsp;9896 Max:&nbsp;&nbsp; 14852<br>&gt;<br>&gt; T: 8 (&nbsp=
-;&nbsp;913) P:91 I:&nbsp;&nbsp; 14000 C:&nbsp;&nbsp;&nbsp;&nbsp; 1095 Min:&=
-nbsp;&nbsp;&nbsp;&nbsp;5549 Act:&nbsp;&nbsp;&nbsp;&nbsp;7766 Avg:&nbsp;&nbs=
-p;&nbsp;&nbsp;9669 Max:&nbsp;&nbsp; 14198<br>&gt;<br>&gt; T: 9 (&nbsp;&nbsp=
-;914) P:90 I:&nbsp;&nbsp; 14500 C:&nbsp;&nbsp;&nbsp;&nbsp; 1057 Min:&nbsp;&=
-nbsp;&nbsp;&nbsp;5107 Act:&nbsp;&nbsp; 11820 Avg:&nbsp;&nbsp;&nbsp;&nbsp;99=
-40 Max:&nbsp;&nbsp; 14984
-<br>&gt;<br>&gt;<br>&gt;<br>&gt; We can see that with Xenomai, the results =
-are less good.<br>&gt; Is there an explication to this?<br><br>Actually, yo=
-u don&#39;t have any information from this test output unless<br>you did pu=
-t some load on your box. Real-time is about predictability,
-<br>what Xenomai brings is exactly that. Raw performances have no meaning i=
-n<br>a real-time context unless they can be sustained regardless of the<br>=
-runtime conditions.<br><br>If your box is not some flashy big iron, try put=
-ting some load with this
-<br>command while the test is running, on both boxen:<br><br>while :; do dd=
- if=3D/dev/zero of=3Dhog.out count=3D500 bs=3D1M; rm -f hog.out &amp;&amp;<=
-br>sync; done<br><br>If you do have a recent, multi-core and multi-Ghz box,=
- try compiling a
-<br>kernel over all the CPUs when testing. E.g. for a 2 CPU box, try<br>run=
-ning:<br><br>while :; do make clean &amp;&amp; make -j3; done<br><br>&gt;<b=
-r>&gt; Thanks<br>&gt;<br>&gt; _____________________________________________=
-__
-<br>&gt; Xenomai-help mailing list<br>&gt; <a href=3D"mailto:Xenomai-help@domain.hid=
-na.org">Xenomai-help@domain.hid</a><br>&gt; <a href=3D"https://mail.gna.org/li=
-stinfo/xenomai-help">https://mail.gna.org/listinfo/xenomai-help</a><br>--<b=
-r>
-Philippe.<br><br><br></blockquote></div><br>
-
-------=_Part_26040_3518735.1181195647687--
+<FONT face=3D"Default Sans Serif,Verdana,Arial,Helvetica,sans-serif" size=
+=3D2><DIV>Jan, here follows the disassemble of xnintr=5Fedge=5Fshirq=5Fhand=
+ler, also if I think that it is not more useful, at this point of your anal=
+isys.</DIV><DIV>&nbsp;</DIV><DIV>Core was generated by `BOOT=5FIMAGE=3DXeno=
+-2.3.1 ro root=3D807'.<BR>#0&nbsp; 0x00000000 in ?? ()<BR>(gdb) disassemble=
+ xnintr=5Fedge=5Fshirq=5Fhandler<BR>Dump of assembler code for function xni=
+ntr=5Fedge=5Fshirq=5Fhandler:<BR>0xc0148b10 &lt;xnintr=5Fedge=5Fshirq=5Fhan=
+dler+0&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rolb&nbsp;&nbsp; $0x74,0x43=
+1c8df6(%ebp)<BR>0xc0148b17 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+7&gt;:&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or&nbsp;&nbsp;&nbsp;&nbsp; %ecx,0xe82c2444(%=
+ebx)<BR>0xc0148b1d &lt;xnintr=5Fedge=5Fshirq=5Fhandler+13&gt;:&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp; aas<BR>0xc0148b1e &lt;xnintr=5Fedge=5Fshirq=5Fhandler+14&=
+gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and&nbsp;&nbsp;&nbsp; 0xdb048d00,%al<BR>=
+0xc0148b24 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+20&gt;:&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; mov&nbsp;&nbsp;&nbsp; $0xd0,%edx<BR>0xc0148b29 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+25&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nb=
+sp; 0x4(,%eax,8),%eax<BR>0xc0148b30 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+32&=
+gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call&nbsp;&nbsp; 0xc019ac30 &lt;pse51=5F=
+tsd=5Fpkg=5Fcleanup&gt;<BR>0xc0148b35 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+3=
+7&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x1c(%esp)<=
+BR>0xc0148b39 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+41&gt;:&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp; test&nbsp;&nbsp; %eax,%eax<BR>0xc0148b3b &lt;xnintr=5Fedge=5Fs=
+hirq=5Fhandler+43&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; =
+%eax,0x2c(%esp)<BR>0xc0148b3f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+47&gt;:&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; je&nbsp;&nbsp;&nbsp;&nbsp; 0xc0148e93 &lt;xnin=
+tr=5Fattach+3&gt;<BR>0xc0148b45 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+53&gt;:=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x30(%esp),%eax<BR>0xc=
+0148b49 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+57&gt;:&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; mov&nbsp;&nbsp;&nbsp; $0xc048776c,%edx<BR>0xc0148b4e &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+62&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; call&nbsp;&nbsp;=
+ 0xc01b8010 &lt;calculate=5Ftotalreserve=5Fpages+64&gt;<BR>0xc0148b53 &lt;x=
+nintr=5Fedge=5Fshirq=5Fhandler+67&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; test&n=
+bsp;&nbsp; %eax,%eax<BR>0xc0148b55 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+69&g=
+t;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,%ebx<BR>0xc014=
+8b57 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+71&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp; jne&nbsp;&nbsp;&nbsp; 0xc0148e9d &lt;xnintr=5Fattach+13&gt;<BR>0xc0148b=
+5d &lt;xnintr=5Fedge=5Fshirq=5Fhandler+77&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+; mov&nbsp;&nbsp;&nbsp; 0x1c(%esp),%edx<BR>0xc0148b61 &lt;xnintr=5Fedge=5Fs=
+hirq=5Fhandler+81&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; movl&nbsp;&nbsp; $0x0,=
+(%edx)<BR>0xc0148b67 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+87&gt;:&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp; cmpl&nbsp;&nbsp; $0x0,0x28(%esp)<BR>0xc0148b6c &lt;xnin=
+tr=5Fedge=5Fshirq=5Fhandler+92&gt;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; je&nbsp;&=
+nbsp;&nbsp;&nbsp; 0xc0148d4f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+575&gt;<BR=
+>0xc0148b72 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+98&gt;:&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp; cli<BR>0xc0148b73 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+99&gt;:&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0xc0487504,%eax<BR>0xc014=
+8b78 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+104&gt;:&nbsp;&nbsp;&nbsp;&nbsp; m=
+ov&nbsp;&nbsp;&nbsp; %gs:0x4,%ecx<BR>0xc0148b7f &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+111&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; (%ecx,%ec=
+x,8),%edx<BR>0xc0148b82 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+114&gt;:&nbsp;&=
+nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; (%ecx,%edx,2),%edx<BR>0xc0148b85 &l=
+t;xnintr=5Fedge=5Fshirq=5Fhandler+117&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp=
+;&nbsp;&nbsp; $0xa300,%eax<BR>0xc0148b8a &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+122&gt;:&nbsp;&nbsp;&nbsp;&nbsp; shl&nbsp;&nbsp;&nbsp; $0x7,%edx<BR>0xc01=
+48b8d &lt;xnintr=5Fedge=5Fshirq=5Fhandler+125&gt;:&nbsp;&nbsp;&nbsp;&nbsp; =
+mov&nbsp;&nbsp;&nbsp; $0xffffffff,%ecx<BR>0xc0148b92 &lt;xnintr=5Fedge=5Fsh=
+irq=5Fhandler+130&gt;:&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nbsp;&nbsp; %edx,%=
+eax<BR>0xc0148b94 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+132&gt;:&nbsp;&nbsp;&=
+nbsp;&nbsp; btsl&nbsp;&nbsp; $0x0,(%eax)<BR>0xc0148b98 &lt;xnintr=5Fedge=5F=
+shirq=5Fhandler+136&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sbb&nbsp;&nbsp;&nbsp; %edx=
+,%edx<BR>0xc0148b9a &lt;xnintr=5Fedge=5Fshirq=5Fhandler+138&gt;:&nbsp;&nbsp=
+;&nbsp;&nbsp; and&nbsp;&nbsp;&nbsp; $0x1,%edx<BR>0xc0148b9d &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+141&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;=
+ %edx,0x14(%esp)<BR>0xc0148ba1 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+145&gt;:=
+&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %gs:0x4,%edx<BR>0xc0148ba8 &=
+lt;xnintr=5Fedge=5Fshirq=5Fhandler+152&gt;:&nbsp;&nbsp;&nbsp;&nbsp; cmp&nbs=
+p;&nbsp;&nbsp; %edx,0xc04877ec<BR>0xc0148bae &lt;xnintr=5Fedge=5Fshirq=5Fha=
+ndler+158&gt;:&nbsp;&nbsp;&nbsp;&nbsp; jne&nbsp;&nbsp;&nbsp; 0xc0148e00 &lt=
+;xnintr=5Fmount&gt;<BR>0xc0148bb4 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+164&g=
+t;:&nbsp;&nbsp;&nbsp;&nbsp; orl&nbsp;&nbsp;&nbsp; $0x2,0x14(%esp)<BR>0xc014=
+8bb9 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+169&gt;:&nbsp;&nbsp;&nbsp;&nbsp; m=
+ov&nbsp;&nbsp;&nbsp; 0xc0528780,%eax<BR>0xc0148bbe &lt;xnintr=5Fedge=5Fshir=
+q=5Fhandler+174&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x24(%es=
+p),%ecx<BR>0xc0148bc2 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+178&gt;:&nbsp;&nb=
+sp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; %ecx,0x7cc(%eax)<BR>0xc0148bc8 &lt;xn=
+intr=5Fedge=5Fshirq=5Fhandler+184&gt;:&nbsp;&nbsp;&nbsp;&nbsp; jne&nbsp;&nb=
+sp;&nbsp; 0xc0148a34 &lt;xnintr=5Fshirq=5Fhandler+292&gt;<BR>0xc0148bce &lt=
+;xnintr=5Fedge=5Fshirq=5Fhandler+190&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;=
+&nbsp;&nbsp; 0x1c(%esp),%edx<BR>0xc0148bd2 &lt;xnintr=5Fedge=5Fshirq=5Fhand=
+ler+194&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x1c(%esp),%ecx<=
+BR>0xc0148bd6 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+198&gt;:&nbsp;&nbsp;&nbsp=
+;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x28(%esp),%ebp<BR>0xc0148bda &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+202&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;=
+ (%edx),%eax<BR>0xc0148bdc &lt;xnintr=5Fedge=5Fshirq=5Fhandler+204&gt;:&nbs=
+p;&nbsp;&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp; $0x274,%ebp<BR>0xc0148be2 &lt;xn=
+intr=5Fedge=5Fshirq=5Fhandler+210&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nb=
+sp;&nbsp; (%eax,%eax,8),%edx<BR>0xc0148be5 &lt;xnintr=5Fedge=5Fshirq=5Fhand=
+ler+213&gt;:&nbsp;&nbsp;&nbsp;&nbsp; inc&nbsp;&nbsp;&nbsp; %eax<BR>0xc0148b=
+e6 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+214&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea=
+&nbsp;&nbsp;&nbsp; (%ecx,%edx,8),%edx<BR>0xc0148be9 &lt;xnintr=5Fedge=5Fshi=
+rq=5Fhandler+217&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x4(%ed=
+x),%ebx<BR>0xc0148bec &lt;xnintr=5Fedge=5Fshirq=5Fhandler+220&gt;:&nbsp;&nb=
+sp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,(%ecx)<BR>0xc0148bee &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+222&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&=
+nbsp; 0x238(%ebp),%eax<BR>0xc0148bf4 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+22=
+8&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0xc0528780,%ecx<BR>0xc=
+0148bfa &lt;xnintr=5Fedge=5Fshirq=5Fhandler+234&gt;:&nbsp;&nbsp;&nbsp;&nbsp=
+; mov&nbsp;&nbsp;&nbsp; %eax,0x18(%esp)<BR>0xc0148bfe &lt;xnintr=5Fedge=5Fs=
+hirq=5Fhandler+238&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp; %ecx,=
+%eax<BR>0xc0148c00 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+240&gt;:&nbsp;&nbsp;=
+&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp; $0x40,%eax<BR>0xc0148c03 &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+243&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sar&nbsp;&nbsp;&nbsp;=
+ $0x6,%eax<BR>0xc0148c06 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+246&gt;:&nbsp;=
+&nbsp;&nbsp;&nbsp; imul&nbsp;&nbsp; $0xeeeeeeef,%eax,%eax<BR>0xc0148c0c &lt=
+;xnintr=5Fedge=5Fshirq=5Fhandler+252&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;=
+&nbsp;&nbsp; %eax,0x4(%edx)<BR>0xc0148c0f &lt;xnintr=5Fedge=5Fshirq=5Fhandl=
+er+255&gt;:&nbsp;&nbsp;&nbsp;&nbsp; testb&nbsp; $0x40,0x232(%ebp)<BR>0xc014=
+8c16 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+262&gt;:&nbsp;&nbsp;&nbsp;&nbsp; j=
+ne&nbsp;&nbsp;&nbsp; 0xc0148e4d &lt;xnintr=5Finit+29&gt;<BR>0xc0148c1c &lt;=
+xnintr=5Fedge=5Fshirq=5Fhandler+268&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&=
+nbsp;&nbsp; 0x210(%ebp),%eax<BR>0xc0148c22 &lt;xnintr=5Fedge=5Fshirq=5Fhand=
+ler+274&gt;:&nbsp;&nbsp;&nbsp;&nbsp; test&nbsp;&nbsp; %eax,%eax<BR>0xc0148c=
+24 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+276&gt;:&nbsp;&nbsp;&nbsp;&nbsp; je&=
+nbsp;&nbsp;&nbsp;&nbsp; 0xc0148e4d &lt;xnintr=5Finit+29&gt;<BR>0xc0148c2a &=
+lt;xnintr=5Fedge=5Fshirq=5Fhandler+282&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbs=
+p;&nbsp;&nbsp; 0xa4(%eax),%eax<BR>0xc0148c30 &lt;xnintr=5Fedge=5Fshirq=5Fha=
+ndler+288&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x4(%ebx)=
+<BR>0xc0148c33 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+291&gt;:&nbsp;&nbsp;&nbs=
+p;&nbsp; lea&nbsp;&nbsp;&nbsp; 0xc(%ebx),%edi<BR>0xc0148c36 &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+294&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;=
+ $0x8,%ecx<BR>0xc0148c3b &lt;xnintr=5Fedge=5Fshirq=5Fhandler+299&gt;:&nbsp;=
+&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x344(%ebp),%esi<BR>0xc0148c41 &lt=
+;xnintr=5Fedge=5Fshirq=5Fhandler+305&gt;:&nbsp;&nbsp;&nbsp;&nbsp; rep movsl=
+ %ds:(%esi),%es:(%edi)<BR>---Type &lt;return&gt; to continue, or q &lt;retu=
+rn&gt; to quit---<BR>0xc0148c43 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+307&gt;=
+:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x230(%ebp),%eax<BR>0xc0148=
+c49 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+313&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mo=
+v&nbsp;&nbsp;&nbsp; %eax,0x8(%ebx)<BR>0xc0148c4c &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+316&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x2fc(%eb=
+p),%eax<BR>0xc0148c52 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+322&gt;:&nbsp;&nb=
+sp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x2c(%ebx)<BR>0xc0148c55 &lt;xni=
+ntr=5Fedge=5Fshirq=5Fhandler+325&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbs=
+p;&nbsp; 0x300(%ebp),%eax<BR>0xc0148c5b &lt;xnintr=5Fedge=5Fshirq=5Fhandler=
++331&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x30(%ebx)<BR>=
+0xc0148c5e &lt;xnintr=5Fedge=5Fshirq=5Fhandler+334&gt;:&nbsp;&nbsp;&nbsp;&n=
+bsp; mov&nbsp;&nbsp;&nbsp; 0x304(%ebp),%eax<BR>0xc0148c64 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+340&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %=
+eax,0x34(%ebx)<BR>0xc0148c67 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+343&gt;:&n=
+bsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x18(%esp),%edx<BR>0xc0148c6b =
+&lt;xnintr=5Fedge=5Fshirq=5Fhandler+347&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nb=
+sp;&nbsp;&nbsp; 0x3b0(%edx),%esi<BR>0xc0148c71 &lt;xnintr=5Fedge=5Fshirq=5F=
+handler+353&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp;&nbsp;&nbsp; 0x308(%ebp),=
+%esi<BR>0xc0148c77 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+359&gt;:&nbsp;&nbsp;=
+&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x3b4(%edx),%edi<BR>0xc0148c7d &lt;xnint=
+r=5Fedge=5Fshirq=5Fhandler+365&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sbb&nbsp;&nbsp;=
+&nbsp; 0x30c(%ebp),%edi<BR>0xc0148c83 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+3=
+71&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %edi,%ecx<BR>0xc0148c=
+85 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+373&gt;:&nbsp;&nbsp;&nbsp;&nbsp; or&=
+nbsp;&nbsp;&nbsp;&nbsp; %esi,%ecx<BR>0xc0148c87 &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+375&gt;:&nbsp;&nbsp;&nbsp;&nbsp; jne&nbsp;&nbsp;&nbsp; 0xc0148c9=
+2 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+386&gt;<BR>0xc0148c89 &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+377&gt;:&nbsp;&nbsp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp;=
+ %ebp,0x4(%edx)<BR>0xc0148c8c &lt;xnintr=5Fedge=5Fshirq=5Fhandler+380&gt;:&=
+nbsp;&nbsp;&nbsp;&nbsp; je&nbsp;&nbsp;&nbsp;&nbsp; 0xc0148e64 &lt;xnintr=5F=
+init+52&gt;<BR>0xc0148c92 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+386&gt;:&nbsp=
+;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x310(%ebp),%eax<BR>0xc0148c98 &l=
+t;xnintr=5Fedge=5Fshirq=5Fhandler+392&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp=
+;&nbsp;&nbsp; 0x314(%ebp),%edx<BR>0xc0148c9e &lt;xnintr=5Fedge=5Fshirq=5Fha=
+ndler+398&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %esi,0x40(%ebx=
+)<BR>0xc0148ca1 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+401&gt;:&nbsp;&nbsp;&nb=
+sp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x38(%ebx)<BR>0xc0148ca4 &lt;xnintr=5F=
+edge=5Fshirq=5Fhandler+404&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbs=
+p; %edx,0x3c(%ebx)<BR>0xc0148ca7 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+407&gt=
+;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %edi,0x44(%ebx)<BR>0xc0148=
+caa &lt;xnintr=5Fedge=5Fshirq=5Fhandler+410&gt;:&nbsp;&nbsp;&nbsp;&nbsp; xo=
+r&nbsp;&nbsp;&nbsp; %eax,%eax<BR>0xc0148cac &lt;xnintr=5Fedge=5Fshirq=5Fhan=
+dler+412&gt;:&nbsp;&nbsp;&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; %esi,%esi<BR>0x=
+c0148cae &lt;xnintr=5Fedge=5Fshirq=5Fhandler+414&gt;:&nbsp;&nbsp;&nbsp;&nbs=
+p; mov&nbsp;&nbsp;&nbsp; %eax,0x310(%ebp)<BR>0xc0148cb4 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+420&gt;:&nbsp;&nbsp;&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; %=
+eax,%eax<BR>0xc0148cb6 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+422&gt;:&nbsp;&n=
+bsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x314(%ebp)<BR>0xc0148cbc &lt;x=
+nintr=5Fedge=5Fshirq=5Fhandler+428&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&n=
+bsp;&nbsp; 0x18(%esp),%ecx<BR>0xc0148cc0 &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+432&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x3b0(%ecx),%eax<B=
+R>0xc0148cc6 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+438&gt;:&nbsp;&nbsp;&nbsp;=
+&nbsp; mov&nbsp;&nbsp;&nbsp; 0x3b4(%ecx),%edx<BR>0xc0148ccc &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+444&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;=
+ %eax,0x308(%ebp)<BR>0xc0148cd2 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+450&gt;=
+:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %edx,0x30c(%ebp)<BR>0xc0148=
+cd8 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+456&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mo=
+v&nbsp;&nbsp;&nbsp; 0x28(%esp),%ecx<BR>0xc0148cdc &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+460&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0xc052878=
+0,%edx<BR>0xc0148ce2 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+466&gt;:&nbsp;&nbs=
+p;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; (%ecx),%eax<BR>0xc0148ce4 &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+468&gt;:&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nbsp;&=
+nbsp; $0x7c0,%edx<BR>0xc0148cea &lt;xnintr=5Fedge=5Fshirq=5Fhandler+474&gt;=
+:&nbsp;&nbsp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; %edx,%eax<BR>0xc0148cec &lt=
+;xnintr=5Fedge=5Fshirq=5Fhandler+476&gt;:&nbsp;&nbsp;&nbsp;&nbsp; cmovne %e=
+ax,%esi<BR>0xc0148cef &lt;xnintr=5Fedge=5Fshirq=5Fhandler+479&gt;:&nbsp;&nb=
+sp;&nbsp;&nbsp; testb&nbsp; $0x2,0x14(%esp)<BR>0xc0148cf4 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+484&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %=
+esi,0x28(%esp)<BR>0xc0148cf8 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+488&gt;:&n=
+bsp;&nbsp;&nbsp;&nbsp; jne&nbsp;&nbsp;&nbsp; 0xc0148d16 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+518&gt;<BR>0xc0148cfa &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+490&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0xc04877ec,%edx<BR=
+>0xc0148d00 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+496&gt;:&nbsp;&nbsp;&nbsp;&=
+nbsp; mov&nbsp;&nbsp;&nbsp; %gs:0x4,%ecx<BR>0xc0148d07 &lt;xnintr=5Fedge=5F=
+shirq=5Fhandler+503&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; $0xf=
+fffffff,%eax<BR>0xc0148d0c &lt;xnintr=5Fedge=5Fshirq=5Fhandler+508&gt;:&nbs=
+p;&nbsp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; %ecx,%edx<BR>0xc0148d0e &lt;xnin=
+tr=5Fedge=5Fshirq=5Fhandler+510&gt;:&nbsp;&nbsp;&nbsp;&nbsp; cmovne %edx,%e=
+ax<BR>0xc0148d11 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+513&gt;:&nbsp;&nbsp;&n=
+bsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0xc04877ec<BR>0xc0148d16 &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+518&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&=
+nbsp; 0xc0487504,%ebx<BR>0xc0148d1c &lt;xnintr=5Fedge=5Fshirq=5Fhandler+524=
+&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %gs:0x4,%eax<BR>0xc0148=
+d22 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+530&gt;:&nbsp;&nbsp;&nbsp;&nbsp; le=
+a&nbsp;&nbsp;&nbsp; (%eax,%eax,8),%edx<BR>0xc0148d25 &lt;xnintr=5Fedge=5Fsh=
+irq=5Fhandler+533&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x14(%=
+esp),%ecx<BR>0xc0148d29 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+537&gt;:&nbsp;&=
+nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; (%eax,%edx,2),%edx<BR>0xc0148d2c &l=
+t;xnintr=5Fedge=5Fshirq=5Fhandler+540&gt;:&nbsp;&nbsp;&nbsp;&nbsp; sub&nbsp=
+;&nbsp;&nbsp; $0xa300,%ebx<BR>0xc0148d32 &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+546&gt;:&nbsp;&nbsp;&nbsp;&nbsp; shl&nbsp;&nbsp;&nbsp; $0x7,%edx<BR>0xc01=
+48d35 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+549&gt;:&nbsp;&nbsp;&nbsp;&nbsp; =
+add&nbsp;&nbsp;&nbsp; %ebx,%edx<BR>0xc0148d37 &lt;xnintr=5Fedge=5Fshirq=5Fh=
+andler+551&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; (%edx),%eax<B=
+R>0xc0148d39 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+553&gt;:&nbsp;&nbsp;&nbsp;=
+&nbsp; and&nbsp;&nbsp;&nbsp; $0x1,%ecx<BR>0xc0148d3c &lt;xnintr=5Fedge=5Fsh=
+irq=5Fhandler+556&gt;:&nbsp;&nbsp;&nbsp;&nbsp; and&nbsp;&nbsp;&nbsp; $0x1,%=
+eax<BR>0xc0148d3f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+559&gt;:&nbsp;&nbsp;&=
+nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; %ecx,%eax<BR>0xc0148d41 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+561&gt;:&nbsp;&nbsp;&nbsp;&nbsp; jne&nbsp;&nbsp;&nbsp; 0=
+xc0148e54 &lt;xnintr=5Finit+36&gt;<BR>0xc0148d47 &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+567&gt;:&nbsp;&nbsp;&nbsp;&nbsp; test&nbsp;&nbsp; %esi,%esi<BR>0=
+xc0148d49 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+569&gt;:&nbsp;&nbsp;&nbsp;&nb=
+sp; jne&nbsp;&nbsp;&nbsp; 0xc0148b72 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+98=
+&gt;<BR>0xc0148d4f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+575&gt;:&nbsp;&nbsp;=
+&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; %esi,%esi<BR>0xc0148d51 &lt;xnintr=5Fedg=
+e=5Fshirq=5Fhandler+577&gt;:&nbsp;&nbsp;&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; =
+%ebp,%ebp<BR>0xc0148d53 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+579&gt;:&nbsp;&=
+nbsp;&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; %edi,%edi<BR>0xc0148d55 &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+581&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&=
+nbsp; %ebp,0x38(%esp)<BR>0xc0148d59 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+585=
+&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %edi,0x34(%esp)<BR>0xc0=
+148d5d &lt;xnintr=5Fedge=5Fshirq=5Fhandler+589&gt;:&nbsp;&nbsp;&nbsp;&nbsp;=
+ jmp&nbsp;&nbsp;&nbsp; 0xc0148d81 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+625&g=
+t;<BR>0xc0148d5f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+591&gt;:&nbsp;&nbsp;&n=
+bsp;&nbsp; movl&nbsp;&nbsp; $0x0,0x4(%ebx)<BR>0xc0148d66 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+598&gt;:&nbsp;&nbsp;&nbsp;&nbsp; movl&nbsp;&nbsp; $0x0,0=
+x8(%ebx)<BR>0xc0148d6d &lt;xnintr=5Fedge=5Fshirq=5Fhandler+605&gt;:&nbsp;&n=
+bsp;&nbsp;&nbsp; movl&nbsp;&nbsp; $0x0,0x2c(%ebx)<BR>0xc0148d74 &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+612&gt;:&nbsp;&nbsp;&nbsp;&nbsp; movl&nbsp;&nbsp;=
+ $0x0,0x34(%ebx)<BR>0xc0148d7b &lt;xnintr=5Fedge=5Fshirq=5Fhandler+619&gt;:=
+&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x1c(%esp),%eax<BR>0xc0148d7=
+f &lt;xnintr=5Fedge=5Fshirq=5Fhandler+623&gt;:&nbsp;&nbsp;&nbsp;&nbsp; incl=
+&nbsp;&nbsp; (%eax)<BR>0xc0148d81 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+625&g=
+t;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x1c(%esp),%edx<BR>0xc014=
+8d85 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+629&gt;:&nbsp;&nbsp;&nbsp;&nbsp; m=
+ov&nbsp;&nbsp;&nbsp; (%edx),%eax<BR>0xc0148d87 &lt;xnintr=5Fedge=5Fshirq=5F=
+handler+631&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; (%eax,%eax,8=
+),%eax<BR>0xc0148d8a &lt;xnintr=5Fedge=5Fshirq=5Fhandler+634&gt;:&nbsp;&nbs=
+p;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; (%edx,%eax,8),%eax<BR>0xc0148d8d &lt;x=
+nintr=5Fedge=5Fshirq=5Fhandler+637&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&n=
+bsp;&nbsp; 0x34(%esp),%edx<BR>0xc0148d91 &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+641&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x4(%eax),%ebx<BR>=
+0xc0148d94 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+644&gt;:&nbsp;&nbsp;&nbsp;&n=
+bsp; mov&nbsp;&nbsp;&nbsp; %edx,0x4(%eax)<BR>0xc0148d97 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+647&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0=
+x20(%esp),%ecx<BR>0xc0148d9b &lt;xnintr=5Fedge=5Fshirq=5Fhandler+651&gt;:&n=
+bsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x44(%eax),%edx<BR>0xc0148d9e =
+&lt;xnintr=5Fedge=5Fshirq=5Fhandler+654&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nb=
+sp;&nbsp;&nbsp; %edx,0x10(%esp)<BR>0xc0148da2 &lt;xnintr=5Fedge=5Fshirq=5Fh=
+andler+658&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x3c(%eax),%e=
+dx<BR>0xc0148da5 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+661&gt;:&nbsp;&nbsp;&n=
+bsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %edx,0xc(%esp)<BR>0xc0148da9 &lt;xnintr=5F=
+edge=5Fshirq=5Fhandler+665&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbs=
+p; 0x34(%eax),%edx<BR>0xc0148dac &lt;xnintr=5Fedge=5Fshirq=5Fhandler+668&gt=
+;:&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nbsp;&nbsp; $0x10,%eax<BR>0xc0148daf &=
+lt;xnintr=5Fedge=5Fshirq=5Fhandler+671&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbs=
+p;&nbsp;&nbsp; %edx,0x8(%esp)<BR>0xc0148db3 &lt;xnintr=5Fedge=5Fshirq=5Fhan=
+dler+675&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x34(%esp),%edx=
+<BR>0xc0148db7 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+679&gt;:&nbsp;&nbsp;&nbs=
+p;&nbsp; mov&nbsp;&nbsp;&nbsp; %eax,0x4(%esp)<BR>0xc0148dbb &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+683&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp;=
+ %esi,%eax<BR>0xc0148dbd &lt;xnintr=5Fedge=5Fshirq=5Fhandler+685&gt;:&nbsp;=
+&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %ecx,(%esp)<BR>0xc0148dc0 &lt;xnin=
+tr=5Fedge=5Fshirq=5Fhandler+688&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp=
+;&nbsp; 0x38(%esp),%ecx<BR>0xc0148dc4 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+6=
+92&gt;:&nbsp;&nbsp;&nbsp;&nbsp; call&nbsp;&nbsp; 0xc0147b70 &lt;xnheap=5Fio=
+ctl+736&gt;<BR>0xc0148dc9 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+697&gt;:&nbsp=
+;&nbsp;&nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; $0xfffffff5,%eax<BR>0xc0148dcc &l=
+t;xnintr=5Fedge=5Fshirq=5Fhandler+700&gt;:&nbsp;&nbsp;&nbsp;&nbsp; je&nbsp;=
+&nbsp;&nbsp;&nbsp; 0xc0148a34 &lt;xnintr=5Fshirq=5Fhandler+292&gt;<BR>0xc01=
+48dd2 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+706&gt;:&nbsp;&nbsp;&nbsp;&nbsp; =
+test&nbsp;&nbsp; %eax,%eax<BR>0xc0148dd4 &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+708&gt;:&nbsp;&nbsp;&nbsp;&nbsp; je&nbsp;&nbsp;&nbsp;&nbsp; 0xc0148d5f &l=
+t;xnintr=5Fedge=5Fshirq=5Fhandler+591&gt;<BR>0xc0148dd6 &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+710&gt;:&nbsp;&nbsp;&nbsp;&nbsp; inc&nbsp;&nbsp;&nbsp; %=
+esi<BR>0xc0148dd7 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+711&gt;:&nbsp;&nbsp;&=
+nbsp;&nbsp; cmp&nbsp;&nbsp;&nbsp; $0x11f,%esi<BR>0xc0148ddd &lt;xnintr=5Fed=
+ge=5Fshirq=5Fhandler+717&gt;:&nbsp;&nbsp;&nbsp;&nbsp; jle&nbsp;&nbsp;&nbsp;=
+ 0xc0148d51 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+577&gt;<BR>0xc0148de3 &lt;x=
+nintr=5Fedge=5Fshirq=5Fhandler+723&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&n=
+bsp;&nbsp; 0x30(%esp),%edx<BR>0xc0148de7 &lt;xnintr=5Fedge=5Fshirq=5Fhandle=
+r+727&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; 0x1c(%esp),%ecx<BR=
+>0xc0148deb &lt;xnintr=5Fedge=5Fshirq=5Fhandler+731&gt;:&nbsp;&nbsp;&nbsp;&=
+nbsp; mov&nbsp;&nbsp;&nbsp; 0x78(%edx),%eax<BR>0xc0148dee &lt;xnintr=5Fedge=
+=5Fshirq=5Fhandler+734&gt;:&nbsp;&nbsp;&nbsp;&nbsp; mov&nbsp;&nbsp;&nbsp; %=
+ecx,0x34(%eax)<BR>0xc0148df1 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+737&gt;:&n=
+bsp;&nbsp;&nbsp;&nbsp; xor&nbsp;&nbsp;&nbsp; %eax,%eax<BR>0xc0148df3 &lt;xn=
+intr=5Fedge=5Fshirq=5Fhandler+739&gt;:&nbsp;&nbsp;&nbsp;&nbsp; add&nbsp;&nb=
+sp;&nbsp; $0x3c,%esp<BR>0xc0148df6 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+742&=
+gt;:&nbsp;&nbsp;&nbsp;&nbsp; pop&nbsp;&nbsp;&nbsp; %ebx<BR>0xc0148df7 &lt;x=
+nintr=5Fedge=5Fshirq=5Fhandler+743&gt;:&nbsp;&nbsp;&nbsp;&nbsp; pop&nbsp;&n=
+bsp;&nbsp; %esi<BR>0xc0148df8 &lt;xnintr=5Fedge=5Fshirq=5Fhandler+744&gt;:&=
+nbsp;&nbsp;&nbsp;&nbsp; pop&nbsp;&nbsp;&nbsp; %edi<BR>0xc0148df9 &lt;xnintr=
+=5Fedge=5Fshirq=5Fhandler+745&gt;:&nbsp;&nbsp;&nbsp;&nbsp; pop&nbsp;&nbsp;&=
+nbsp; %ebp<BR>0xc0148dfa &lt;xnintr=5Fedge=5Fshirq=5Fhandler+746&gt;:&nbsp;=
+&nbsp;&nbsp;&nbsp; ret<BR>0xc0148dfb &lt;xnintr=5Fedge=5Fshirq=5Fhandler+74=
+7&gt;:&nbsp;&nbsp;&nbsp;&nbsp; nop<BR>0xc0148dfc &lt;xnintr=5Fedge=5Fshirq=
+=5Fhandler+748&gt;:&nbsp;&nbsp;&nbsp;&nbsp; lea&nbsp;&nbsp;&nbsp; 0x0(%esi)=
+,%esi<BR>End of assembler dump.<BR></DIV><DIV><BR>Regards</DIV><DIV>&nbsp;<=
+/DIV><DIV>Alessandro Pittaluga<BR><BR>Alenia Aeronautica<BR>Avionic System =
+Qualification<BR>Test Systems<BR>Corso Marche, 41<BR>10146 Torino (Italy)<B=
+R>Phone +39-011-756.2915<BR>             +39-011-996.0714<BR>Fax      +39-0=
+11-756.2517<BR></DIV></FONT>-----------------------------------------------=
+---------------------------------------------------------------------------=
+---------------------------------------<br />Questa comunicazione contiene =
+informazioni confidenziali ed =E8 riservata esclusivamente ai destinatari. =
+<br />Se ritenete di averla ricevuta per errore o di non essere il corretto=
+ destinatario&#44; siete pregati di eliminare <br />il messaggio senza stam=
+parlo&#44; copiarlo&#44; distribuirlo o usare questa informazione in alcun =
+modo&#44; e di <br />notificare l'errore al mittente.<br />     <br />   <b=
+r />This communication contains confidential information and is intended fo=
+r the named recipient(s) only. <br />If you believe that you have received =
+it in error or that you are not the intended recipient&#44; do not print&#4=
+4;<br />copy&#44; disseminate or use this information in any way&#44; and n=
+otify this error to the sender.<br />=
 
