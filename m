@@ -1,15 +1,15 @@
-Message-ID: <4679A302.2060403@domain.hid>
-Date: Wed, 20 Jun 2007 23:58:26 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <46782305.4080501@domain.hid>
-	<b647ffbd0706201404r256038b7sbb9318cdc1746b7c@domain.hid>
-In-Reply-To: <b647ffbd0706201404r256038b7sbb9318cdc1746b7c@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig408CA125402A2C98EC5076C0"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [RFC][PATCH] shirq locking rework
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46795F21.8040007@domain.hid>
+References: <467639BE.30504@domain.hid>  <467641F3.3010308@domain.hid>
+	<1182357772.6137.39.camel@domain.hid>  <46795F21.8040007@domain.hid>
+Content-Type: text/plain
+Date: Thu, 21 Jun 2007 00:29:11 +0200
+Message-Id: <1182378551.6079.45.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [PATCH-STACK] Synchronised timebases and more
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,72 +19,192 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig408CA125402A2C98EC5076C0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Wed, 2007-06-20 at 19:08 +0200, Jan Kiszka wrote: 
+> Philippe Gerum wrote:
+> > On Mon, 2007-06-18 at 10:27 +0200, Jan Kiszka wrote: 
+> >> Jan Kiszka wrote:
+> >>> ...
+> >>> The answer I found is to synchronise all time bases as good as possible.
+> >>> That means if one base changes its wall clock offset, all others need to
+> >>> be adjusted as well. At this chance, we would also implement
+> >>> synchronisation of the time bases on the system clock when they get
+> >>> started. Because skins may work with different type width to represent
+> >>> time, relative changes have to be applied, i.e. the core API changes
+> >>> from xntbase_set_time(new_time) to xntbase_adjust_time(relative_change).
+> >>> The patch (global-wallclock.patch) finally touches more parts than I was
+> >>> first hoping. Here is the full list:
+> >>>
+> >>>  - synchronise slave time bases on the master on xntbase_start
+> >>>  - xntbase_set_time -> xntbase_adjust_time, fixing all time bases
+> >>>    currently registered
+> >>>  - make xnarch_start_timer return the nanos since the last host tick
+> >>>    (only ia64 affected, all others return 0 anyway, causing one tick
+> >>>    off when synchronising on system time -- but this fiddling becomes
+> >>>    pointless on the long term due to better clocksourses on all archs)
+> > 
+> > Support for 2.4 kernels will be still around for the Xenomai 2.x series
+> > though, and those will likely never support clocksources. Support for
+> > Linux 2.4 will be discontinued starting from x3.
+> 
+> Again: As the code looks right now, only ia64 made use of this feature.
+> We have i386 and PPC for 2.4, and both did not bother to synchronise
+> that precisely so far (here, this interface is pointless).
+> 
+> And on x86 with recent 2.6 kernels, simply returning 0 on success of the
+> timer setup made the master clock deviate from the real timeofday by one
+> tick.
+> 
 
-Dmitry Adamushko wrote:
-> Hello Jan,
->=20
->> Well, I hate nested locks when it comes to real-time, but in this case=
- I
->> really found no simpler approach. There is the risk of deadlocks via
->>
->> IRQ:            xnintr_shirq::lock -> handler -> nklock vs.
->> Application:    nklock -> xnintr_attach/detach -> xnintr_shirq::lock,
->=20
-> it's also relevant for the current code - xnintr_attach/detach() must
-> not be called while holding the 'nklock'.
+My remark was actually a general one: what happens within Linux 2.6
+right now cannot be used to generalize anything for Xenomai 2, so we
+cannot use anything related as an argument for what should happen in
+this series. For the same reason, we do need wrappers for 2.4, even when
+the latest incarnations might backport some 2.6 features, because the
+whole point for people about remaining with some oldish Linux 2.4
+release is precisely that most of them will _never_ want to upgrade
+their current setup, 2.4.25 to 2.4.34, 2.4.x to 2.6, whatever, just
+because it works as it is, and they don't want to take the upgrade hit
+once again for their product in the field.
 
-That's good, no new restriction (the existing one will be documented now)=
-=2E
+> > 
+> >>>  - adapt vrtx, vxworks, and psos+ skin to new scheme, fixing sc_sclock
+> >>>    at this chance
+> >>>  - make xnarch_get_sys_time internal, no skin should (need to) touch
+> >>>    this anymore
+> > 
+> > This interface has not been meant to be part of the skin building
+> > interface, but for internal support code that needs to get the host
+> > time. For instance, one may want this information for obscure data
+> > logging from within a module, independently of any wallclock offset
+> > fiddling Xenomai may do on its timebases (so nktbase is not an option
+> > here if timebases start being tighly coupled). And this should work in
+> > real execution mode, or in virtual simulation mode. IOW,
+> > xnarch_get_sys_time() has to remain part of the exported internal
+> > interface (even if as some inline routine, that's not the main issue
+> > here).
+> 
+> As I still haven't been able to see real code using it like this, I
+> can't comment on it.
+> 
 
->=20
-> I think, your approach should work as well.. provided we have only a
-> single reader vs. a single writter contention case, which seems to be
-> the case here ('intrlock' is responsible for synchronization between
+It's pretty simple to sketch some of it: you want to add some debugging
+facility that needs timestamps, but you don't want to depend on any
+timebase, because the timebase is part of what is being observed. What
+you want is raw, silly, purely host-based timestamping. A bunch of
+software models attached to Xenomai systems used for real-time
+simulation I've seen do rely on that kind of facility.
 
-Single writer is ensured by intrlock, single reader comes from the
-per-IRQ scope of the inner lock.
+> > 
+> >> Forgot to mention two further aspects:
+> >>
+> >>  - The semantic of XNTBSET was kept time base-local. But I wonder if
+> >>    this flag is still required. Unless it was introduced to emulated
+> >>    some special RTOS behaviour, we now have the time bases automatically
+> >>    set on startup. Comments welcome.
+> >>
+> > 
+> > That might be a problem wrt pSOS for instance. In theory, tm_set() has
+> > to be issued to set the initial time, so there is indeed the notion of
+> > unset/invalid state for the pSOS wallclock time when the system starts.
+> > This said, in the real world, such initialization better belongs to the
+> > BSP rather than to the application itself, and in our case, the BSP is
+> > Linux/Xenomai's business, so this would still make sense to assume that
+> > a timebase has no unset state from the application POV, and XNTBSET
+> > could therefore go away.
+> 
+> That was my first impression as well, but I cannot asses the impact as I
+> don't know real pSOS porting scenarios.
+> 
 
-> xnintr_attach/detach()).. your approach does increase a worst case
-> length of the lock(&intrlock) --> unlock(&intrlock) section... but
-> that's unlikely to be critical.
->=20
-> I think, the patch I sent before addresses a reported earlier case
-> with xnintr_edge_shirq_handler().. but your approach does make code
-> shorter (and likely simpler), right? I don't see any problems it would
-> possibly cause (maybe I'm missing smth yet :)
+The impact is basically that you won't be able to emulate some error
+condition, because the error situation would have vanished in the first
+place. As I said, it's not a big issue actually.
 
-I must confess I didn't get your idea immediately. Later on (cough,
-after hacking my own patch, cough) I had a closer look, and it first
-appeared fairly nice, despite the additional "ifs". But then I realised
-that "end =3D=3D old_end" may produce false positives in case we have
-several times the same (and only the same) IRQ in a row. So, I'm afraid
-we have to live with only one candidate. :->
+> > 
+> > The main concern I have right now regarding this patch is that it
+> > changes a key aspect of Xenomai's current time management scheme:
+> > timebases would be tighly coupled, whilst they aren't right now. For
+> 
+> Which already caused troubles when dealing with RTDM, you remember?
+> 
 
-OK, will point our bug reporter to that patch now and ask for testing.
+No, I've decided to stop remembering about troubles of any kind. It's called
+selective memory, and makes life a lot easier. But yeah, the RTDM issue did
+actually escaped my filter...
 
-Jan
+> > instance, two timebases could have a very different idea of the Epoch in
+> > the current implementation, and this patch is precisely made to kill
+> > that aspect. This is a key issue if one considers how Xenomai should
+> > deal with concurrent skins: either 1) as isolated virtual RTOS machines
+> > with only a few bridges allowing very simple interfaces, or 2) as
+> > possibly cooperating interfaces. It's all a matter of design; actually,
+> > user/customer experience I know of clearly proves that #2 makes a lot of
+> > sense, but still, this point needs to be discussed if needed.
+> > 
+> > So, two questions arise:
+> > 
+> > - what's the short term impact on the common - or not that common - use
+> > case involving multiple concurrent skins? I tend to think that not that
+> > many people are actually leveraging the current decoupling between
+> > timebases. But, would some do, well, then they should definitely speak
+> > up NOW.
+> > 
+> > - regarding the initial RTDM-related motivation now, why requiring all
+> > timebases to be in sync Epoch-wise, instead of asking the software
+> > wanting to exchange timestamps to always use the master timebase for
+> > that purpose? By definition, nktbase is the most accurate, always valid
+> > and running, and passing the timebase id along with the jiffy value when
+> > exchanging timestamps would be no more needed.
+> 
+> No existing API (native, posix, driver profiles, not to speak of legacy
+> RTOSes) is prepare for this. Basically, this is the same reason why we
+> cannot simply declare we would be able to deal with unsynchronised TSC
+> time sources on SMP/multicore boxes. See my consideration in "Getting
+> the clock model right".
+> 
+
+This does not answer my question: why, in the RTDM case, would you
+require the interfaces to be part of the solution, instead of leaving
+the issue to the peers exchanging data, using the common master
+timebase, leaving aside the unsync TSC issue which is platform-specific,
+and will maybe require to abstract a meta-timebase on top of some
+per-cpu master anyway.
+
+The reason I think your patch should be merged is because we will need
+the adequate tools for building skins which are semantically distributed
+beasts, and for that, we do absolutly need another level of abstraction
+to represent a consistent binding between timesources. But, merging it
+has some impact, and I want to be as sure as possible that this won't
+bite us later down the road.
+
+> Well, what I can imaging as a compromise is to offer the user the option
+> to explicitly decouple some skin from the system time. "Do this if you
+> like to, but don't interact with others then!" This warning should be
+> included in that case. But before I suggested this, I first wanted to
+> wait for someone seriously screaming "I need this!"
+> 
+> 
+
+If you think of it, decoupling only requires to keep a constant epoch
+(at least one the nucleus does not update) somewhere within the timebase struct,
+the user code could wire to some value when it sees fit (e.g. pSOSish tm_set(),
+or VRTX's sc_stime() and so on). Obtaining a so-called constant-based time would have
+then to be available through an additional method, returning constant_epoch + delta,
+whatever delta means wrt aperiodic/periodic behaviour. The point here is that we
+would just shift the constant epoch - decorrelated from system time - from default
+xntbase_get_time() behaviour to something which should be explicitly requested
+through a new specialized timebase method if needed.
+
+IOW, introducing synchronized timebases is not the issue, making timebase
+synchronization the default behaviour is what has some importance here.
+
+> Jan
+> 
+-- 
+Philippe.
 
 
---------------enig408CA125402A2C98EC5076C0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGeaMCniDOoMHTA+kRAui/AJ9MqpUSTSk50UWEiXdWJgXGShEJSgCeOpMt
-Pje+/Cj6WaAjwIADLyUglgo=
-=3SqZ
------END PGP SIGNATURE-----
-
---------------enig408CA125402A2C98EC5076C0--
 
