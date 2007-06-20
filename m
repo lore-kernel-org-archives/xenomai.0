@@ -1,14 +1,13 @@
-Message-ID: <4679A5D1.7030501@domain.hid>
-Date: Thu, 21 Jun 2007 00:10:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <f48df4840706201516t46de8c46ga048f576be5550ca@domain.hid>
+Date: Thu, 21 Jun 2007 00:16:38 +0200
+From: "Bruno Rouchouse" <brouchouse@domain.hid>
+In-Reply-To: <46793E22.7070107@domain.hid>
 MIME-Version: 1.0
-References: <OF815057E3.6D5C9810-ONC12572FF.00287AFE-C12572FF.0028A289@domain.hid>
-In-Reply-To: <OF815057E3.6D5C9810-ONC12572FF.00287AFE-C12572FF.0028A289@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig56503BA0EFB9AB98732D8E6B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] xeno-2.3.1 shared interrups BUG?
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_116846_32833319.1182377798664"
+References: <op.tt74pfqvt06gyn@domain.hid> <1182349939.6137.2.camel@domain.hid>
+	<46793E22.7070107@domain.hid>
+Subject: Re: [Xenomai-help] Status Codes in /proc/xenomai/sched
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,242 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: apittaluga@domain.hid
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig56503BA0EFB9AB98732D8E6B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+------=_Part_116846_32833319.1182377798664
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-apittaluga@domain.hid wrote:
-> Hi,
-> running a simple test application which spawns a periodic task writing =
-on a
-> serial interface
-> the system hangs performing the rt_dev_close.
-> The test program ran fine with xeno 2.2.6 with "Shared Interrupts" enab=
-led,
-> so as with
-> xeno 2.3.1 with "Shared Interrupts" disabled. It fails with xeno 2.3.1 =
-with
-> "Shared Interrupts" enabled, so the problem seems to be in the shared
-> interrupts handling area.
-> kernel is 2.6.20 adeos patched
->=20
-> Any suggestion?
+2007/6/20, Jan Kiszka <jan.kiszka@domain.hid>:
+>
+> Philippe Gerum wrote:
+> > On Wed, 2007-06-20 at 16:18 +0200, Axel Beierlein wrote:
+> >> Hello,
+> >>
+> >> Where can i find the meaning of the status code at the column STAT
+> >> in /proc/xenomai/sched ? I am a little bit confused of the Status UX.
+> >>
+> >
+> > include/nucleus/thread.h for now, until this eventually gets more
+> > formally documented:
+> >
+> >   'S' -> Forcibly suspended.
+> >   'w'/'W' -> Waiting for a resource, with or without timeout.
+> >   'D' -> Delayed (without any other wait condition).
+> >   'R' -> Runnable.
+> >   'U' -> Unstarted or dormant.
+> >   'X' -> Relaxed shadow.
+> >   'H' -> Held thread.
+> >   'b' -> Priority boost undergoing.
+> >   'T' -> Ptraced and stopped.
+> >   'l' -> Locks scheduler.
+> >   'r' -> Undergoes round-robin.
+> >   's' -> Interrupt shield enabled.
+> >   't' -> Mode switches trapped.
+> >   'o' -> Priority coupling off.
+> >   'f' -> FPU enabled (for kernel threads).
+> >
+>
+> Well, I thought to remember some related stuff in the wiki. What I find
+> is /proc/xenomai/stat, and that is broken here:
+>
+> http://www.xenomai.org/index.php/FAQs ->
+> http://www.xenomai.org/index.php//proc/xenomai/stat
 
-OK, the commission came to the conclusion that we may have a solution:
 
-Could you please test this patch
+This page looks like it's never been created/edited...
 
-    https://mail.gna.org/public/xenomai-core/2007-06/msg00091.html
+Bruno, could you have a look if you can recover the content -- and
+> likely rename it then? Slashes don't appear to be a smart choice in wiki
+> page names...
 
-and report the result to us? Oh... wait... you are on 2.3.1. Then use the=
 
-patch below. Applies against 2.3.x-SVN, but should work with the release
-as well.
+I don't find any content in the database although the entry
+/proc/xenomai/stat exist.
 
-Thanks,
+I never to do some more research. I keep you informed...
+
 Jan
+>
+>
+>
+--Bruno
 
+------=_Part_116846_32833319.1182377798664
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
----
- ksrc/nucleus/intr.c |   68 ++++++++++++++++-----------------------------=
--------
- 1 file changed, 21 insertions(+), 47 deletions(-)
+<br><br><div><span class="gmail_quote">2007/6/20, Jan Kiszka &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Philippe Gerum wrote:<br>&gt; On Wed, 2007-06-20 at 16:18 +0200, Axel Beierlein wrote:<br>&gt;&gt; Hello,<br>&gt;&gt;<br>&gt;&gt; Where can i find the meaning of the status code at the column STAT<br>&gt;&gt; in /proc/xenomai/sched ? I am a little bit confused of the Status UX.
+<br>&gt;&gt;<br>&gt;<br>&gt; include/nucleus/thread.h for now, until this eventually gets more<br>&gt; formally documented:<br>&gt;<br>&gt;&nbsp;&nbsp; &#39;S&#39; -&gt; Forcibly suspended.<br>&gt;&nbsp;&nbsp; &#39;w&#39;/&#39;W&#39; -&gt; Waiting for a resource, with or without timeout.
+<br>&gt;&nbsp;&nbsp; &#39;D&#39; -&gt; Delayed (without any other wait condition).<br>&gt;&nbsp;&nbsp; &#39;R&#39; -&gt; Runnable.<br>&gt;&nbsp;&nbsp; &#39;U&#39; -&gt; Unstarted or dormant.<br>&gt;&nbsp;&nbsp; &#39;X&#39; -&gt; Relaxed shadow.<br>&gt;&nbsp;&nbsp; &#39;H&#39; -&gt; Held thread.
+<br>&gt;&nbsp;&nbsp; &#39;b&#39; -&gt; Priority boost undergoing.<br>&gt;&nbsp;&nbsp; &#39;T&#39; -&gt; Ptraced and stopped.<br>&gt;&nbsp;&nbsp; &#39;l&#39; -&gt; Locks scheduler.<br>&gt;&nbsp;&nbsp; &#39;r&#39; -&gt; Undergoes round-robin.<br>&gt;&nbsp;&nbsp; &#39;s&#39; -&gt; Interrupt shield enabled.
+<br>&gt;&nbsp;&nbsp; &#39;t&#39; -&gt; Mode switches trapped.<br>&gt;&nbsp;&nbsp; &#39;o&#39; -&gt; Priority coupling off.<br>&gt;&nbsp;&nbsp; &#39;f&#39; -&gt; FPU enabled (for kernel threads).<br>&gt;<br><br>Well, I thought to remember some related stuff in the wiki. What I find
+<br>is /proc/xenomai/stat, and that is broken here:<br><br><a href="http://www.xenomai.org/index.php/FAQs">http://www.xenomai.org/index.php/FAQs</a> -&gt;<br><a href="http://www.xenomai.org/index.php//proc/xenomai/stat">http://www.xenomai.org/index.php//proc/xenomai/stat
+</a></blockquote><div><br>This page looks like it&#39;s never been created/edited... <br></div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Bruno, could you have a look if you can recover the content -- and<br>likely rename it then? Slashes don&#39;t appear to be a smart choice in wiki<br>page names...</blockquote><div><br>I don&#39;t find any content in the database although the entry /proc/xenomai/stat exist.
+<br><br>I never to do some more research. I keep you informed...<br></div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Jan<br><br><br>
+</blockquote></div><br>--Bruno
 
-Index: xenomai-2.3.x/ksrc/nucleus/intr.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai-2.3.x.orig/ksrc/nucleus/intr.c
-+++ xenomai-2.3.x/ksrc/nucleus/intr.c
-@@ -145,39 +145,13 @@ typedef struct xnintr_shirq {
- 	xnintr_t *handlers;
- 	int unhandled;
- #ifdef CONFIG_SMP
--	atomic_counter_t active;
-+	xnlock_t lock;
- #endif
-=20
- } xnintr_shirq_t;
-=20
- static xnintr_shirq_t xnshirqs[RTHAL_NR_IRQS];
-=20
--static inline void xnintr_shirq_lock(xnintr_shirq_t *shirq)
--{
--#ifdef CONFIG_SMP
--	xnarch_atomic_inc(&shirq->active);
--	xnarch_memory_barrier();
--#endif
--}
--
--static inline void xnintr_shirq_unlock(xnintr_shirq_t *shirq)
--{
--#ifdef CONFIG_SMP
--	xnarch_memory_barrier();
--	xnarch_atomic_dec(&shirq->active);
--#endif
--}
--
--void xnintr_synchronize(xnintr_t *intr)
--{
--#ifdef CONFIG_SMP
--	xnintr_shirq_t *shirq =3D &xnshirqs[intr->irq];
--
--	while (xnarch_atomic_get(&shirq->active))
--		cpu_relax();
--#endif
--}
--
- #if defined(CONFIG_XENO_OPT_SHIRQ_LEVEL)
- /*
-  * Low-level interrupt handler dispatching the user-defined ISRs for
-@@ -201,7 +175,7 @@ static void xnintr_shirq_handler(unsigne
-=20
- 	++sched->inesting;
-=20
--	xnintr_shirq_lock(shirq);
-+	xnlock_get(&shirq->lock);
- 	intr =3D shirq->handlers;
-=20
- 	while (intr) {
-@@ -222,7 +196,7 @@ static void xnintr_shirq_handler(unsigne
- 		intr =3D intr->next;
- 	}
-=20
--	xnintr_shirq_unlock(shirq);
-+	xnlock_put(&shirq->lock);
-=20
- 	if (unlikely(s =3D=3D XN_ISR_NONE)) {
- 		if (++shirq->unhandled =3D=3D XNINTR_MAX_UNHANDLED) {
-@@ -272,7 +246,7 @@ static void xnintr_edge_shirq_handler(un
-=20
- 	++sched->inesting;
-=20
--	xnintr_shirq_lock(shirq);
-+	xnlock_get(&shirq->lock);
- 	intr =3D shirq->handlers;
-=20
- 	while (intr !=3D end) {
-@@ -303,7 +277,7 @@ static void xnintr_edge_shirq_handler(un
- 			intr =3D shirq->handlers;
- 	}
-=20
--	xnintr_shirq_unlock(shirq);
-+	xnlock_put(&shirq->lock);
-=20
- 	if (counter > MAX_EDGEIRQ_COUNTER)
- 		xnlogerr
-@@ -386,9 +360,12 @@ static inline int xnintr_irq_attach(xnin
-=20
- 	__setbits(intr->flags, XN_ISR_ATTACHED);
-=20
--	/* Add a given interrupt object. */
- 	intr->next =3D NULL;
-+
-+	/* Add a given interrupt object. */
-+	xnlock_get(&shirq->lock);
- 	*p =3D intr;
-+	xnlock_put(&shirq->lock);
-=20
- 	return 0;
- }
-@@ -409,8 +386,10 @@ static inline int xnintr_irq_detach(xnin
-=20
- 	while ((e =3D *p) !=3D NULL) {
- 		if (e =3D=3D intr) {
--			/* Remove a given interrupt object from the list. */
-+			/* Remove the given interrupt object from the list. */
-+			xnlock_get(&shirq->lock);
- 			*p =3D e->next;
-+			xnlock_put(&shirq->lock);
-=20
- 			/* Release the IRQ line if this was the last user */
- 			if (shirq->handlers =3D=3D NULL)
-@@ -429,12 +408,8 @@ static inline int xnintr_irq_detach(xnin
- int xnintr_mount(void)
- {
- 	int i;
--	for (i =3D 0; i < RTHAL_NR_IRQS; ++i) {
--		xnshirqs[i].handlers =3D NULL;
--#ifdef CONFIG_SMP
--		xnarch_atomic_set(&xnshirqs[i].active, 0);
--#endif
--	}
-+	for (i =3D 0; i < RTHAL_NR_IRQS; ++i)
-+		xnlock_init(&xnshirqs[i].lock);
- 	return 0;
- }
-=20
-@@ -450,7 +425,6 @@ static inline int xnintr_irq_detach(xnin
- 	return xnarch_release_irq(intr->irq);
- }
-=20
--void xnintr_synchronize(xnintr_t *intr) {}
- int xnintr_mount(void) { return 0; }
-=20
- #endif /* CONFIG_XENO_OPT_SHIRQ_LEVEL || CONFIG_XENO_OPT_SHIRQ_EDGE */
-@@ -626,6 +600,9 @@ int xnintr_destroy(xnintr_t *intr)
-  * a low-level error occurred while attaching the interrupt. -EBUSY is
-  * specifically returned if the interrupt object was already attached.
-  *
-+ * @note The caller <b>must not</b> hold nklock when invoking this servi=
-ce,
-+ * this would cause deadlocks.
-+ *
-  * Environments:
-  *
-  * This service can be called from:
-@@ -654,7 +631,7 @@ int xnintr_attach(xnintr_t *intr, void *
-=20
- 	if (!err)
- 		xnintr_stat_counter_inc();
--=09
-+
- 	xnlock_put_irqrestore(&intrlock, s);
-=20
- 	return err;
-@@ -678,6 +655,9 @@ int xnintr_attach(xnintr_t *intr, void *
-  * a non-attached interrupt object leads to a null-effect and returns
-  * 0.
-  *
-+ * @note The caller <b>must not</b> hold nklock when invoking this servi=
-ce,
-+ * this would cause deadlocks.
-+ *
-  * Environments:
-  *
-  * This service can be called from:
-@@ -703,12 +683,6 @@ int xnintr_detach(xnintr_t *intr)
-=20
- 	xnlock_put_irqrestore(&intrlock, s);
-=20
--	/* The idea here is to keep a detached interrupt object valid as long
--	   as the corresponding irq handler is running. This is one of the
--	   requirements to iterate over the xnintr_shirq_t::handlers list in
--	   xnintr_irq_handler() in a lockless way. */
--	xnintr_synchronize(intr);
--
- 	return err;
- }
-=20
-
-
---------------enig56503BA0EFB9AB98732D8E6B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGeaXRniDOoMHTA+kRArZiAJ9fl9+KckikJjQzeXtr4iyyxPt3vQCeK/8q
-X4gITLDWx193EeQie+ZxkAI=
-=KUYd
------END PGP SIGNATURE-----
-
---------------enig56503BA0EFB9AB98732D8E6B--
+------=_Part_116846_32833319.1182377798664--
 
