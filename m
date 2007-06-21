@@ -1,13 +1,17 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <467A5EEA.1020608@domain.hid>
-References: <4677B095.3070903@domain.hid>  <467A5EEA.1020608@domain.hid>
+In-Reply-To: <467A5B85.9010103@domain.hid>
+References: <46782305.4080501@domain.hid>
+	<b647ffbd0706201404r256038b7sbb9318cdc1746b7c@domain.hid>
+	<4679A302.2060403@domain.hid>
+	<b647ffbd0706210103q186c00d7wdb861759ff5c0d78@domain.hid>
+	<467A42F6.8080706@domain.hid>  <467A5B85.9010103@domain.hid>
 Content-Type: text/plain
-Date: Thu, 21 Jun 2007 15:48:57 +0200
-Message-Id: <1182433737.9709.53.camel@domain.hid>
+Date: Thu, 21 Jun 2007 19:24:15 +0200
+Message-Id: <1182446655.9709.83.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Switch to pci_register_driver
+Subject: Re: [Xenomai-core] [RFC][PATCH] shirq locking rework
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,64 +22,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2007-06-21 at 13:20 +0200, Wolfgang Grandegger wrote:
-> Hi Jan,
-> 
+On Thu, 2007-06-21 at 13:05 +0200, Jan Kiszka wrote:
 > Jan Kiszka wrote:
-> > Hi Wolfgang,
-> > 
-> > can we just switch over to pci_register_driver in order to avoid
-> > deprecated (and soon removed) pci_module_init? Or do we also need some
-> > wrapper for older 2.4 kernels (latest 2.4 is already aligned with 2.6)?
-> 
-> It works with 2.4.25, at least and from my point of view it can be applied.
-> 
+> > Well, and I wonder what this xnarch_memory_barrier() at each handler
+> > entry is for. Seems to be there for ages, don't see why right now.
 
-Ok, so that's fine with me too. Please apply.
+AFAICT, this probably dates back to Xenomai 1.x, when we used to have a
+threaded interrupt model. The actual code looked like as follows, and
+the barrier was likely here to make sure that any change to the
+interrupt hit counter was visible from any other CPU which would run the
+interrupt service thread. The funny thing is that we did not have SMP
+support at that time, anyway...
 
-> Thanks.
-> 
-> Wolfgang.
-> 
-> > Jan
-> > 
-> > 
-> > Index: ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-> > ===================================================================
-> > --- ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	(Revision 2609)
-> > +++ ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	(Arbeitskopie)
-> > @@ -307,7 +307,7 @@ static struct pci_driver rtcan_ixxat_pci
-> > 
-> >  static int __init rtcan_ixxat_pci_init(void)
-> >  {
-> > -    return pci_module_init(&rtcan_ixxat_pci_driver);
-> > +    return pci_register_driver(&rtcan_ixxat_pci_driver);
-> >  }
-> > 
-> > 
-> > Index: ksrc/drivers/can/sja1000/rtcan_peak_pci.c
-> > ===================================================================
-> > --- ksrc/drivers/can/sja1000/rtcan_peak_pci.c	(Revision 2609)
-> > +++ ksrc/drivers/can/sja1000/rtcan_peak_pci.c	(Arbeitskopie)
-> > @@ -346,7 +346,7 @@ static struct pci_driver rtcan_peak_pci_
-> > 
-> >  static int __init rtcan_peak_pci_init(void)
-> >  {
-> > -    return pci_module_init(&rtcan_peak_pci_driver);
-> > +    return pci_register_driver(&rtcan_peak_pci_driver);
-> >  }
-> > 
-> > 
-> > 
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+static void xnintr_irq_handler (unsigned irq, void *cookie)
+
+{
+    xnintr_t *intr = (xnintr_t *)cookie;
+    int s = XN_ISR_SCHED_T;
+
+    intr->hits++;
+
+    xnarch_memory_barrier();
+
+
+In short, I don't see any reason to keep this membar.
+
+>  (The
+> > kernel has a golden rule for this: no barrier without comments!)
+
+Yeah, right. It looks like the kernel has a slew of very official golden
+rules it basically does not care one dime to enforce in practice.
+Looking at the code, commenting membars is surely one of them...
+
 -- 
 Philippe.
 
