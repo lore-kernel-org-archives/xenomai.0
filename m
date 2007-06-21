@@ -1,12 +1,13 @@
-Message-ID: <467A5EEA.1020608@domain.hid>
-Date: Thu, 21 Jun 2007 13:20:10 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <467A5D49.5050800@domain.hid>
+Date: Thu, 21 Jun 2007 13:13:13 +0200
+From: Claudio Scordino <cloud.of.andor@domain.hid>
 MIME-Version: 1.0
-References: <4677B095.3070903@domain.hid>
-In-Reply-To: <4677B095.3070903@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <46287830.4030003@domain.hid>
+	<305035a40704200138g17071f9ew9b0a392021bcf79f@domain.hid>
+In-Reply-To: <305035a40704200138g17071f9ew9b0a392021bcf79f@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Switch to pci_register_driver
+Subject: [Xenomai-core] Atmel AT91SAM support in Xenomai
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,53 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gregory CLEMENT <gclement00@domain.hid>
+Cc: adeos-main@gna.org, xenomai@xenomai.org, j.preetam@domain.hid
 
-Hi Jan,
+Dear Gregory,
 
-Jan Kiszka wrote:
-> Hi Wolfgang,
-> 
-> can we just switch over to pci_register_driver in order to avoid
-> deprecated (and soon removed) pci_module_init? Or do we also need some
-> wrapper for older 2.4 kernels (latest 2.4 is already aligned with 2.6)?
+    we haven't started working on Xenomai on the AT91SAM platform, yet.
 
-It works with 2.4.25, at least and from my point of view it can be applied.
+Actually, we don't even know if we will...
 
-Thanks.
+Can you tell me what is the current status of the AT91SAM support in Xenomai ?
+I remember that you already sent me a preliminary patch some weeks ago...
 
-Wolfgang.
+Did you make any change ? Is the current support working ? If so, when the patch 
+will be merged with the standard mainstream of Xenomai ?
 
-> Jan
+Many thanks,
+
+            Claudio
+
+
+Gregory CLEMENT wrote:
+> 2007/4/20, Claudio Scordino <cloud.of.andor@domain.hid>:
+>> Hi,
+> Hi Claudio,
+> 
+>>
+>>    I saw that Xenomai supports the Atmel AT91RM9200 processor. Does it 
+>> support
+>> the AT91SAM9260 as well ?
+> 
+> We are also working on it, and we have already sent a patch for it (in
+> fact for AT91SAM9261 but there as the same for real time).
+> There were some mistakes pointed by Gilles Chanteperdrix, but I think
+> there will be a new patch sooner, ever made by Gille or by us.
 > 
 > 
-> Index: ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c
-> ===================================================================
-> --- ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	(Revision 2609)
-> +++ ksrc/drivers/can/sja1000/rtcan_ixxat_pci.c	(Arbeitskopie)
-> @@ -307,7 +307,7 @@ static struct pci_driver rtcan_ixxat_pci
-> 
->  static int __init rtcan_ixxat_pci_init(void)
->  {
-> -    return pci_module_init(&rtcan_ixxat_pci_driver);
-> +    return pci_register_driver(&rtcan_ixxat_pci_driver);
->  }
-> 
-> 
-> Index: ksrc/drivers/can/sja1000/rtcan_peak_pci.c
-> ===================================================================
-> --- ksrc/drivers/can/sja1000/rtcan_peak_pci.c	(Revision 2609)
-> +++ ksrc/drivers/can/sja1000/rtcan_peak_pci.c	(Arbeitskopie)
-> @@ -346,7 +346,7 @@ static struct pci_driver rtcan_peak_pci_
-> 
->  static int __init rtcan_peak_pci_init(void)
->  {
-> -    return pci_module_init(&rtcan_peak_pci_driver);
-> +    return pci_register_driver(&rtcan_peak_pci_driver);
->  }
-> 
-> 
-> 
+
 
 
