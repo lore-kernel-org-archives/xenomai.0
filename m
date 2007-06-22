@@ -1,6 +1,6 @@
-Message-Id: <200706220700.l5M70YfN003960@domain.hid>
+Message-Id: <200706220709.l5M7907j004430@domain.hid>
 From: "Ritwick "<ritwick_ag@domain.hid>
-Date: Fri, 22 Jun 2007 12:06:20 +0530
+Date: Fri, 22 Jun 2007 12:14:46 +0530
 Content-Type: text/plain; charset=us-ascii
 Subject: [Adeos-main] ADEOS -domain as modules
 Reply-To: Ritwick  <ritwick_ag@domain.hid>
