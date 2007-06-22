@@ -1,10 +1,14 @@
-Message-ID: <3480a2190706220127y44fe3323s848dd28a223c9c59@domain.hid>
-Date: Fri, 22 Jun 2007 17:27:22 +0900
-From: "nishit sharma" <sharmafrequent@domain.hid>
+Message-ID: <467B898F.7050706@domain.hid>
+Date: Fri, 22 Jun 2007 10:34:23 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_100735_17460054.1182500842172"
-Subject: [Xenomai-help] xenomai crashes
+References: <3480a2190706220127y44fe3323s848dd28a223c9c59@domain.hid>
+In-Reply-To: <3480a2190706220127y44fe3323s848dd28a223c9c59@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigED0F7A78B38EC47F29CC6BA7"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] xenomai crashes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,44 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: nishit sharma <sharmafrequent@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_100735_17460054.1182500842172
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigED0F7A78B38EC47F29CC6BA7
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
- Hi,
-This time i am working on RTDM driver to toggle the GPIO pins. For this i
-have one user program which is having RT calls used in that and the driver
-code. Now the problem i am facing is that when i insert my module and i run
-my user program as background process after this when i do ls (for listing)
-or not do this i get error and the kernel crashes.
-The error is like
-kernel panic- not syncing: caught machine check exception- caused by
-multiple matching entries.
+nishit sharma wrote:
+> Hi,
+> This time i am working on RTDM driver to toggle the GPIO pins. For this=
+ i
 
-Can u suggest why this is coming.
+Is this report a repost of the earlier one by Sanjeev Sharma (or are you
+the same person)? If so, please avoid this, it just causes confusion.
 
-regards
-Nishit Sharma
+> have one user program which is having RT calls used in that and the dri=
+ver
+> code. Now the problem i am facing is that when i insert my module and i=
+ run
+> my user program as background process after this when i do ls (for list=
+ing)
+> or not do this i get error and the kernel crashes.
+> The error is like
+> kernel panic- not syncing: caught machine check exception- caused by
+> multiple matching entries.
+>=20
+> Can u suggest why this is coming.
 
-------=_Part_100735_17460054.1182500842172
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+We need more details like Xenomai/I-pipe/kernel version, architecture,
+=2Econfig, and - at best - demonstration code that is compilable and
+exposes the problem clearly.
 
-<span class="gmail_quote"></span>
-<div>Hi,</div>
-<div>This time i am working on RTDM driver to toggle the GPIO pins. For this i have one user program which is having RT calls used in that and the driver code. Now the problem i am facing is that when i insert my module and i run my user program as background process after this when i do ls (for listing) or not do this i get error and the kernel crashes. 
-</div>
-<div>The error is like </div>
-<div>kernel panic- not syncing: caught machine check exception- caused by multiple matching entries.</div>
-<div>&nbsp;</div>
-<div>Can u suggest why this is coming.</div>
-<div>&nbsp;</div>
-<div>regards</div><span>
-<div>Nishit Sharma</div></span>
+Jan
 
-------=_Part_100735_17460054.1182500842172--
+
+--------------enigED0F7A78B38EC47F29CC6BA7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGe4mPniDOoMHTA+kRAvE/AJ44qoPNuhexL1pIIRPzYyPhBwiBWgCfZPEz
+lUtXjVWQfD19C3PmBs8rtTs=
+=0o6j
+-----END PGP SIGNATURE-----
+
+--------------enigED0F7A78B38EC47F29CC6BA7--
 
