@@ -1,14 +1,14 @@
-Message-ID: <467B91D5.1000702@domain.hid>
-Date: Fri, 22 Jun 2007 11:09:41 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <3480a2190706220159l1cbca3d9tccc1ee441b732fe6@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <3480a2190706220159l1cbca3d9tccc1ee441b732fe6@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA99E04B0052FA51734B324B6"
-Sender: jan.kiszka@domain.hid
+References: <3480a2190706220159l1cbca3d9tccc1ee441b732fe6@domain.hid>
+Content-Type: text/plain
+Date: Fri, 22 Jun 2007 11:13:15 +0200
+Message-Id: <1182503595.13115.34.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-help] user application
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,42 +21,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: nishit sharma <sharmafrequent@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA99E04B0052FA51734B324B6
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2007-06-22 at 17:59 +0900, nishit sharma wrote:
+> here i have attached the user application. The architecture i am using
+> is mips.
 
-nishit sharma wrote:
-> here i have attached the user application. The architecture i am using =
-is
-> mips.
+Congrats'. Nobody did contribute any MIPS port to the Xenomai project
+yet, so it's going to be pretty difficult for anyone among us to run
+your test code and help you. Too bad, really.
 
-[Oh, I should have checked the archives first...]
-
-People, we can't help you until you manage to release your MIPS port of
-Xenomai to the community! No one here, including me, has metaphysical
-abilities to look into that private code (and I wouldn't be motivated
-even if I had them).
-
-If you think you found an arch-independent bug, please prove it by
-porting the demonstration code on a common architecture.
-
-Jan
+> also the .config of the compiled kernel that is 2.6.
+>  
+> waiting for reply
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
 
---------------enigA99E04B0052FA51734B324B6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGe5HVniDOoMHTA+kRAqxCAJ9CNshlqaJzTGtAz3i9rLB/rjW3JwCfX5Mb
-q0e/cgMxKk6VSXRLHtNQzhE=
-=eDOt
------END PGP SIGNATURE-----
-
---------------enigA99E04B0052FA51734B324B6--
 
