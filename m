@@ -1,13 +1,12 @@
+Message-ID: <467CD519.1060802@domain.hid>
+Date: Sat, 23 Jun 2007 10:08:57 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18044.10013.180616.301594@domain.hid>
-Date: Fri, 22 Jun 2007 21:46:37 +0200
-In-Reply-To: <403B28AE6257B548B66BB88414AC78330174BC72@domain.hid>
-References: <403B28AE6257B548B66BB88414AC78330174BC72@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [Adeos-main] New I-pipe patch for ARM
-	needs	testing.
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig679D133F0413AE118082993C"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Monotonic, realtime, and other timers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,41 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: BOUIN Alexandre <abouin@domain.hid>
-Cc: adeos-main@gna.org, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-BOUIN Alexandre wrote:
- > Same tests but for AT91SAM9263-EK board :=20
- >  - one under DD load, latency set to 45=B5s
- >  - another one under Calibrator load, latency set to 30=B5s
- >  - and the last under Test_switch load, latency set to 45=B5s
- > Xeno-test traces are available and the end of this mail.
- >=20
- > We used kernel 2.6.20.13, Xenomai snapshot from 08/06/2007, adeos-ipipe-=
-2.6.20-arm-1.7-03.patch included plus 2.6.20-at91.patch.
- >=20
- > A little correction on macb and ipipe patch was needed :=20
- >  - macb ethernet controler is not detected on startup
- >  - we added some corrections to make 9263 usable under ipipe
- >  - owing to changes in at91 patch (clk are now registered on startup) we=
- made a little correction for future adeos-ipipe-2.6.21-arm.patch.
- >=20
- > You will find all added patches attached to this mail.
- >  <<adeos-ipipe-2.6.20-arm-AT91.patch>>  <<2.6.20-at91-macb-9263.patch>> =
- <<adeos-ipipe-2.6.20-arm-AT91.patch>>=20
- > Latencies are a little worst than on other boards. We presume that it's =
-due to the large number of peripherals.
- >=20
- > Our latency tests on AT91 boards are done ;)
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig679D133F0413AE118082993C
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-That is great, thanks. Your patch will be merged into future patches
-(ipipe for 2.6.21 or 2.6.22), where support for 9263 was merged.
+Hi,
 
-About the latency issue, have you checked that it is not due to the
-prioritized interrupt controller ?
+[just to save this early-Saturday-morning insight]
 
---=20
+I think the xntimer interface is not yet ready to represent all required
+scenarios. What kind of timers are there? Let's start with POSIX:
+
+1. Realtime timers	- use realtime clock as base, re-tune
+			  absolute(!) expiry dates if the realtime clock
+			  changes
+2. Monotonic timers	- use monotonic clock as base, don't re-adjust
+			  during runtime
+
+Now what we have in current trunk:
+
+3a. Realtime xntimers	- use wallclock_offset to calculate absolute
+			  expiry dates, don't re-adjust during runtime
+4a. Monotonic xntimers	- use raw jiffies/TSC as base, don't re-adjust
+			  during runtime
+
+And this is what we planed to introduce soon:
+
+3b. Realtime xntimers	- use wallclock offset to calculate absolute
+			  expiry dates, re-adjust if the offset changes
+			  during runtime
+4b. Monotonic xntimers	- same as 4a
+
+3b and 4b almost perfectly match POSIX, one only has to pass relative
+realtime timers as monotonic ones (Linux does so too). But there are a
+lot of skins that potentially rely on 3a! At least the whole native
+skin, I would say. So we may actually need two knobs when starting an
+xntimer:
+
+ A) Take wallclock offset into account when calculating internal expiry
+    date?
+ B) Re-tune the expiry date during runtime if the offset changes?
+
+Reasonable combinations are none of both ("POSIX monotonic"), A
+("Xenomai realtime"), and A+B ("POSIX realtime"). Am I right? Please
+comment.
+
+Moreover, it looks to me like the monotonic API I introduced is not very
+handy (fortunately, there is no in-tree user yet). It has a sticky
+property, i.e. you set a persistent flag in the xntimer object if it
+ought to be monotonic. As xntimer structures are typically also
+persistent, you easily end up saving the current mode, setting your own,
+and restoring the old one once the timer fired -- to keep other users of
+the timer happy. E.g., think of RTDM doing some monotonic timing with a
+task while the owning skin may prefer realtime mode. I'm almost
+convinced now that passing a non-sticky mode on each xntimer_start
+(along with XN_ABSOLUTE/RELATIVE in the same parameter) will be more usef=
+ul.
+
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enig679D133F0413AE118082993C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFGfNUaniDOoMHTA+kRAttzAJ4kupgpppQZ0hEcqWCsZLWOQz+9YQCdHIQI
+qVCbbOkUYSPZamUpl5F1bTo=
+=9ubP
+-----END PGP SIGNATURE-----
+
+--------------enig679D133F0413AE118082993C--
 
