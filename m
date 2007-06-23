@@ -1,15 +1,14 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <465F3277.1080400@domain.hid>
-References: <465ABD99.1090301@domain.hid> <1180630376.5020.131.camel@domain.hid>
-	<465F3277.1080400@domain.hid>
+In-Reply-To: <467D0684.7030604@domain.hid>
+References: <467CD519.1060802@domain.hid> <1182594345.6000.9.camel@domain.hid>
+	<467D0684.7030604@domain.hid>
 Content-Type: text/plain
-Date: Fri, 01 Jun 2007 00:47:32 +0200
-Message-Id: <1180651652.5020.197.camel@domain.hid>
+Date: Sat, 23 Jun 2007 20:37:38 +0200
+Message-Id: <1182623858.6000.139.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [ANNOUNCE] Xenomai and I-pipe patch	series,
-	LTTng bits
+Subject: Re: [Xenomai-core] Monotonic, realtime, and other timers
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -23,220 +22,226 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Thu, 2007-05-31 at 22:39 +0200, Jan Kiszka wrote:
+On Sat, 2007-06-23 at 13:39 +0200, Jan Kiszka wrote:
 > Philippe Gerum wrote:
-> > On Mon, 2007-05-28 at 13:31 +0200, Jan Kiszka wrote:
-> >> Instead of posting yet another stream of individual patches from my
-> >> queue, I decided to put them all into a series and upload them. See
+> > On Sat, 2007-06-23 at 10:08 +0200, Jan Kiszka wrote:
+> >> Hi,
 > >>
-> >> 	http://www.rts.uni-hannover.de/rtaddon/patches
+> >> [just to save this early-Saturday-morning insight]
 > >>
-> >> for my latest I-pipe, Xenomai, and LTTng enhancements and fixes. Here is
-> >> a short overview of the content:
+> >> I think the xntimer interface is not yet ready to represent all required
+> >> scenarios. What kind of timers are there? Let's start with POSIX:
 > >>
+> >> 1. Realtime timers	- use realtime clock as base, re-tune
+> >> 			  absolute(!) expiry dates if the realtime clock
+> >> 			  changes
+> >> 2. Monotonic timers	- use monotonic clock as base, don't re-adjust
+> >> 			  during runtime
+> >>
+> >> Now what we have in current trunk:
+> >>
+> >> 3a. Realtime xntimers	- use wallclock_offset to calculate absolute
+> >> 			  expiry dates, don't re-adjust during runtime
+> >> 4a. Monotonic xntimers	- use raw jiffies/TSC as base, don't re-adjust
+> >> 			  during runtime
+> >>
+> >> And this is what we planed to introduce soon:
+> >>
+> >> 3b. Realtime xntimers	- use wallclock offset to calculate absolute
+> >> 			  expiry dates, re-adjust if the offset changes
+> >> 			  during runtime
 > > 
-> > Note to users: Those patches are all for trunk/v2.4, so don't search for
-> > them into the v2.3.x stable branch.
+> > I merged this patch already, so this issue becomes top-ranked on the fix
+> > list.
 > 
-> Of course, I wouldn't dare to shake the stable tree. :)
-> 
-> ...
-> >> fast-tsc-to-ns.patch
-> >>
-> >>     Integration of my scaled-math-based xnarch_tsc_to_ns service for
-> >>     i386 at least. xnarch_ns_to_tsc remains untouched in order to keep
-> >>     conversion errors small. clocktest reports no significant precision
-> >>     regression here, and both code size and execution speed improved.
-> >>
-> > 
-> > Postponed. I need some feedback from Gilles who wrote the generic
-> > support for the funky arithmetics we use.
-> 
-> Yeah, looking forward. I would also be interested to hear if/what this
-> approach may buy us on non-x86 architectures.
-> 
-> ...
-> >> xeno-kill-ipipe_processor_id.patch
-> >>     Refreshed cleanup patch to remove ipipe_processor_id completely.
-> >>
-> > 
-> > The logic of this patch is flawed. rthal_processor_id() already implies
-> > rawness wrt how we fetch the current CPU number, so
-> > rthal_raw_processor_id() is redundant, and xnarch_raw_current_cpu() too
-> 
-> It isn't when you take a look at the corresponding I-pipe patch as well:
-> This enables debug instrumentation of smp_processor_id to validate also
-> the atomicity of Xenomai core code /wrt cpuid handling!
+> Nope, you didn't. We only discussed 3b on Thursday, we still have 3a in
+> place (i.e. no running timer is re-adjusted on xntbase_adjust_time). But
+> we will need this for POSIX compliance.
 > 
 
-Nope, not for archs which do _not_ have a stack-insensitive
-smp_processor_id() and get_current() yet (if it's even possible for all
-of them, since the in-kernel ABI would likely have to be amended for
-reserving the PDA register). Some archs even have stack-insensitive
-get_current(), but stack-sensitive current_thread_info(), so we might be
-toast in a way or another.
-
-I'm not arguing that the I-pipe changes you suggest have no value in the
-2.6.20/x86* contexts for instance, but since they also affect the generic
-code area, they can't work for all our supported configurations right
-now. For instance, on an I-pipe setup with a non-heading Xenomai domain
-and DEBUG_PREEMPT enabled, a kernel-based Xenomai thread calling
-smp_processor_id() from a stalled context (which would be legal) would
-_require_ preemption control macros and get_current() to be
-stack-insensitive. At that point, we would have some problem propagating
-this assumptions to the generic Xenomai core, specifically for the
-Blackfin and ARM variants, which do not have stack-insensitive accessors
-here.
-
-Also, my point is that we don't want to change the usability of
-rthal_processor_id(). So either it does not change with this patch, and
-the raw* forms are useless, or it changes, and this is a no-go. Keep in
-mind that a number of external modules may rely on this aspect already;
-so either we kill rthal_processor_id() completely to force a proper
-update in depending code, or we keep the basic assumptions about the
-usability context unchanged, but we just cannot make the situation more
-fragile for the out of tree code by changing such a fundamental
-assumption (i.e. that rthal_processor_id() is context-agnostic).
-
-> > for the same reason. Additionally, xnpod_current_sched() also implies to
-> > use a raw accessor to the CPU number, so xnpod_current_raw_sched() is
-> > pointless. For this reason, we must be extra-careful about replacing
-> > rthal_processor_id() with smp_processor_id(), because 1) we may want to
-> > bypass DEBUG_PREEMPT checks sometimes, 2) not all supported archs do
-> > have a stack-insensitive smp_processor_id() implementation yet
-> > (blackfin, ARM, and Linux/x86 2.4).
-> 
-> For 1) see ipipe again, but 2), granted, is a problem. Likely the cut is
-> too radical and we must leave the infrastructure in place. Still, making
-> use of DEBUG_PREEMPT also for Xenomai is IMHO worth some changes that
-> will then at least have effect on a subset of archs.
-
-It becomes very useful precisely because ipipe_processor_id() gets
-killed.
-
-> 
-> > 
-> > To answer the inlined question about the need to initialize the ->sched
-> > field when setting up a timer, I would say yes, we have to set this up
-> > too. It might seem a bit silly, but nothing would prevent a migration
-> > call to occur for a just initialized timer, in which case, we would need
-> > the sched pointer to reflect the current situation (i.e. at init time).
-> 
-> But what would be the effect of a wrong sched until the timer is
-> started?
-
-panic. See the code flow from xntimer_start_*periodic for instance, up
-to the point where the timer is enqueued.
-
->  Anyway, if you say it does matter, my instrumentation would
-> have caught the first bug in Xenomai! That xnpod_raw_current_sched() is
-> there because xntimer_init is used in non-atomic contexts (I got
-> warnings from DEBUG_PREEMPT).
-
-Thread migration in Xenomai only happens upon request from the migrating
-thread itself, so it becomes an issue if the caller belongs to the Linux
-domain (i.e. preemption in init_module, the rest is not much
-preemptible), in which case the timer might be queued on a different CPU
-than the thread's. But since we don't migrate timers upon
-sched_setaffinity() requests already, but only upon
-xnpod_migrate_thread() calls, this seems a non-issue. We would have an
-extra cost for managing a remote timer, but this would work, and above
-all, this would be no different from enduring such migration caused by
-sched_setaffinity() outside of xntimer_init().
-
-> 
-> >> librtutils.patch
-> >>
-> >>     My original librtprint patch. I now renamed the library to
-> >>     librtutils to express that more stuff beyond rt_print may find its
-> >>     home here in the future. Hopefully acceptable now.
-> >>
-> > 
-> > Will merge, but... since I'm something of a pain, I'm still pondering
-> > whether rtutils is our best shot for picking up a name here. We already
-> > have src/utils, so we would add src/librtutils as yet another set of
-> > utilities; I'm not sure both belong to the same class of helpers.
-> 
-> /me hesitated as well and put the "lib" prefix into the directory name.
-> So I'm all ears for a better name!
-> 
-
-TssTssTss... _You_ got the brain, _I_ am the cumbersome one.
+Sorry, my mistake. I was thinking about "timebase readjustment", which
+patch I did merge, while you were talking about "timer readjustement",
+which code is not there yet anyway.
 
 > > 
-> >> rtsystrace-v2.patch
+> >> 4b. Monotonic xntimers	- same as 4a
 > >>
-> >>     Updated proposal to add rt_print-based Xenomai syscall tracing.
-> >>     Still in early stage, and I'm lacking feedback on this approach, if
-> >>     it makes sense to pursue it.
-> >>
+> >> 3b and 4b almost perfectly match POSIX, one only has to pass relative
+> >> realtime timers as monotonic ones (Linux does so too). But there are a
+> >> lot of skins that potentially rely on 3a!
 > > 
-> > Gasp. I really don't like the idea of having tons of explicit trace
-> > points spread all over the code, this just makes the task of reading it
-> > a total nightmare. There are some user-space tracing infrastructure
-> > already, starting with LTTng, or maybe older ones like Ctrace, with or
-> > without automatic instrumentation of the source files.
-> > We may want to get some facts about those before reinventing a square
-> > wheel.
+> > They do, but not only on the timer issue, but this also has an impact on
+> > the time unit used to return the current time. I must admit that this is
+> > becoming a mess.
 > 
-> Let me elaborate about the motivation a bit more: My idea is to have an
-> rt-safe replacement for strace. The latter is based on ptrace, requires
-> evil signals, and is far to invasive for tracing high-speed RT
-> applications IMHO (even if we had that RT-safe). But with low-impact,
-> per-process rt_printf, we have a pure user space mechanism at hand that
-> you can quickly set up for a single RT application (using your private
-> libs e.g.). No need to have an LTTng-prepared kernel, no need to trace
-> the whole system if you only want to know where your damn applications
-> now hangs again, no need to disturb other RT users with your debugging
-> stuff.
-> 
-> But I agree, the source code impact on the skin libs is far from being
-> negligible. Maybe we can find a smarter solution, something that just
-> hooks into the library calls (reminds me of --wrap...) to capture entry
-> parameters and then the returned values. This will still require some
-> work (for each instrumented library function), but we might be able to
-> do this out-of-line.
+> Leaving Native apart for a while (though this doesn't mean we should
+> break its API):
 
-At some point, I think we should really put some brain cycles into
-looking into Valgrind, and evaluate the actual cost of adapting it to
-our needs (for both the existing memory tracker skin, and maybe a trace
-skin too).
+No doubt about this. But the native skin is particular in the sense that
+it does not provide any service to change its own epoch, so one may
+assume that it directly depends on the global epoch defined by the
+nucleus, and as such, may be subject to immediate timer expiry in case
+the wallclock offset is globally updated. AFAICS, "only"
+rt_task_sleep_until() and rt_task_set_periodic() would be impacted.
+
+>  Are there also legacy RTOS skins around that rely on a
+> timer property "set timeout according to current wallclock, but don't
+> touch it anymore once it was started"?
+> 
+
+There are legacy RTOS which have both the notions of absolute timeouts
+and also define a mechanism to setup their own epoch: those would be
+impacted by the pending changes on the nucleus timer management. In that
+case, the virtual RTOS machine should be isolated from propagation of
+wallclock offset changes from other parts of the Xenomai system.
+
+E.g. VRTX's sc_adelay service which is currently emulated using a
+relative delay, but should in fact be using an absolute timeout since
+there is a service to change the epoch in this interface (sc_sclock).
+Actually, it looks like each and every skin should be inspected for
+conformance again wrt time management once the dust has settled on the
+timebase and timer related changes (pSOS would be next).
+
+> Actually, this wouldn't be a mess then, it would just derive from
+> Xenomai aiming at emulating all the available timer variants on the
+> market. And this may come at the price of slightly increase complexity
+> (but not necessarily worse than the current code, ie. acceptable IMO).
+> 
+
+As illustrated by the VRTX code, what makes the situation messy in my
+eyes is that some skins used to work around the nucleus limitations in
+terms of time management (lack of built-in absolute timing support, no
+timebases, no strictly monotonic absolute timing), but those hacks tend
+to bite us now that we do have / are in the process of having proper
+support at nucleus level.
+
+The other issue regarding legacy RTOS emulation, is that they should not
+be impacted by the wallclock offset at all, when they deal with jiffies.
+E.g. in the VRTX case, we should always have something behaving like
+this:
+
+sc_stime(8129)
+...
+...(work for 11 VRTX ticks)
+...
+ticks = sc_gtime(); /* ticks == 8140 */
+
+If sc_stime() is not called to set the epoch for the VRTX timebase, then
+0 would be assumed for the epoch, and 11 returned by the sc_gtime()
+call.
+In any case, starting the timebase, or having another skin propagate a
+wallclock offset change in parallel should never impact the VRTX machine
+time. The reason is that some application code might do some weird
+arithmetics on tick deltas, but also on the raw VRTX clock value for
+internal purpose, and touching the epoch under its feet would break such
+code.
+
+> > 
+> >>  At least the whole native
+> >> skin, I would say. So we may actually need two knobs when starting an
+> >> xntimer:
+> >>
+> >>  A) Take wallclock offset into account when calculating internal expiry
+> >>     date?
+> >>  B) Re-tune the expiry date during runtime if the offset changes?
+> >>
+> >> Reasonable combinations are none of both ("POSIX monotonic"), A
+> >> ("Xenomai realtime"), and A+B ("POSIX realtime"). Am I right? Please
+> >> comment.
+> > 
+> > Sorry, -ENOPARSE. Which is the alternative here?
+> 
+> Forgetting about variant "A only", ie. potentially breaking existing
+> stuff for the sake of POSIX and only POSIX. But I don't think this is
+> acceptable, we need xntimer to support all three as soon as some skin
+> cries for variant "A only".
+
+Ok, let me rephrase the options, so that I'm sure we are talking about
+the same issues. We obviously need:
+
+* real-time: absolute trigger dates based on a variable epoch depending
+on the global timeline (the Linux one actually), check for elapsed
+timers upon epoch changes, no resync of still outstanding ones. IOW, A
++B, aka POSIX real-time.
+* monotonic, absolute trigger dates based on a fixed epoch depending on
+a strictly monotonic timeline, neither immediate expiry check nor resync
+needed since the epoch cannot be changed (we are using some read-only
+free running CPU counter to get timestamps here). IOW, neither A nor B,
+aka POSIX monotonic.
+* relative, which is a simple variant of monotonic, in the sense that
+trigger dates are expressed as delays instead of absolute dates on the
+monotonic timeline.
+
+The A-only option would accept absolute timeouts based on the timebase's
+epoch, but would not do anything upon epoch change? This is where I fail
+to find any useful application for this option: since this is an
+absolute timeout, we may not resync the expiry value anyway  - not
+because POSIX does it this way, but first and foremost because it's just
+logically correct -, but for the same reason, we ought to fire all
+timers of this kind which would have "suddently" elapsed due to the
+epoch change.
+
+Now, instead of the A-only option, I would rather seek a way to isolate
+a given timebase from the propagation of wallclock offset changes, so
+that its epoch remains stable from its POV. We could then have legacy
+RTOS start absolute timers within their own "time space", while being
+able to apply the rules about absolute timing management common sense
+dictates.
+
+But then, the initial issue arises again: in which specific cases, do we
+need to keep the timebase tied by a common epoch through the wallclock
+offset, so that we could keep this option open for those skins, if need
+be, too?
 
 > 
 > > 
-> >> lttng.patch
-> >>
-> >>     Very rough patch to make LTTng work with Xenomai again. This patch
-> >>     tries to follow Jean-Olivier Villemure's original work very closely
-> >>     to get something working first. Needs more cleanups and enhancements
-> >>     as I explained earlier in the LTTng announcement.
+> >> Moreover, it looks to me like the monotonic API I introduced is not very
+> >> handy (fortunately, there is no in-tree user yet). It has a sticky
+> >> property, i.e. you set a persistent flag in the xntimer object if it
+> >> ought to be monotonic. As xntimer structures are typically also
+> >> persistent, you easily end up saving the current mode, setting your own,
+> >> and restoring the old one once the timer fired -- to keep other users of
+> >> the timer happy. E.g., think of RTDM doing some monotonic timing with a
+> >> task while the owning skin may prefer realtime mode. I'm almost
+> >> convinced now that passing a non-sticky mode on each xntimer_start
+> >> (along with XN_ABSOLUTE/RELATIVE in the same parameter) will be more useful.
 > >>
 > > 
-> > Will merge to ease further work on this feature. xenoltt.xml might be
-> > left in another directory than src/utils, or at least in a separate
-> > subdir, like can/.
+> > This issue seems orthogonal to the more fundamental one: in which case
+> > does RTDM need to recycle and _change_ the behaviour of timers owned by
+> > other layers? A simple (code) illustration would help understanding the
+> > issue, which is likely RTDM-specific, due to the transverse aspect of
+> > this interface.
 > 
-> Note that the patch is a big fat construction site (see the earlier
-> announcement). I'm happy to see your interest, and we should already
-> discuss details like the location of xenoltt.xml. But I think it's not
-> yet ready for merge.
-> 
-> I would like to get the structure right first (multiple probe modules),
-> and I'm lacking the understanding about what the Xenomai plugin for LTTV
-> is actually able to do, what kind of trace point formats it needs to
-> work correctly. Well, this situation can quickly improve once we play a
-> bit more with it, but resources remain limited.
+> I can't tell for sure yet if there are _real_ scenarios where RTDM may
+> want to switch the xnthread rtimer to monotonic while it is in some
+> realtime mode, I still need to meditate on this. It's just the strong
+> _feeling_ that it is cleaner to define the behaviour on start and not on
+> timer init or via a sticky flag.
 > 
 
-The decision is rather simple here: whether our current LTT
-instrumentation works and is usable with decent LTT releases, and we
-should keep it, waiting for the new LTTng support to mature out of tree.
-Or, this is not the case, and we would be better off putting this patch
-where it has a better chance to be seen and evaluated, i.e. into the
-development tree. So the basic issue here is that we might have to make
-the patch you sent working well enough to trigger interest in improving
-it, unless it does already. What's the situation regarding this?
+Actually, my own strong feeling would say that fiddling with other
+layers timers would be definitely wrong. The point looks pretty simple
+here: whether you defined the xntimer object and you may do whatever
+change you want on it, or you did not, and only the API exported by the
+owning layer should give you this opportunity, albeit indirectly.
 
+So this confirms your point that, would such change be needed, we would
+need to make the monotonic flag a dynamic property of the start call. 
+
+> Same goes for POSIX I think. You may call clock_nanosleep e.g. with
+> different clock IDs for the same thread. Currently, all timeouts are
+> converted before the timer is started. But if we put reasonable logic
+> into the generic code, those special treatment may be obsolete. Maybe
+> Gilles has some ideas on how the timer interface (which influences also
+> xnpod_suspend_thread etc.) might optimally look like for this.
+> 
+
+An orthogonal option would be to make the timer object to be used a
+parameter of the few timed nucleus calls.
+
+> Jan
+> 
 -- 
 Philippe.
 
