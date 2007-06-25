@@ -1,14 +1,17 @@
-Message-ID: <468025AA.7080908@domain.hid>
-Date: Mon, 25 Jun 2007 22:29:30 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <200706252111.40219.dmitry.adamushko@domain.hid>
-In-Reply-To: <200706252111.40219.dmitry.adamushko@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5A5E4B430FBEEC67D7161B73"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [RFC][PATCH] shirq locking rework
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <467F5CBF.9040108@domain.hid>
+References: <467CD519.1060802@domain.hid> <1182594345.6000.9.camel@domain.hid>
+	<467D0684.7030604@domain.hid> <1182623858.6000.139.camel@domain.hid>
+	<467E2E9C.90905@domain.hid> <1182708919.7044.201.camel@domain.hid>
+	<467F5CBF.9040108@domain.hid>
+Content-Type: text/plain
+Date: Tue, 26 Jun 2007 00:15:50 +0200
+Message-Id: <1182809750.1563.77.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Monotonic, realtime, and other timers
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,82 +21,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5A5E4B430FBEEC67D7161B73
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2007-06-25 at 08:12 +0200, Jan Kiszka wrote:
+> Ok, I think it's time to summarise some results of this thread:
+> 
+>  - xntimers will be of three kinds: real-time absolute, monotonic
+>    absolute, and monotonic relative ones (ie. all POSIX). I'm currently
+>    in favour of passing this property on timer start and not pushing
+>    parts or more of it into timer init.
 
-Hi Dmitry,
+I will probably experiment this change in the course of x3-devel anyway,
+we'll see what we get from it then.
 
-Dmitry Adamushko wrote:
-> Hello Jan,
->=20
-> well, take it with 2 huge grains of salt.. it's even not compile-tested=
- :-)
+> 
+>  - XNTBISOL will be introduced, a flag that, if set, declares a time
+>    base being isolated from the master base (and associates). In my
+>    understanding, this flag should be passed to xntbase_alloc and should
+>    also leave the wallclock offset initially untouched again.
+> 
+>  - On xntbase_adjust_time, first define the set of affected time bases:
+>    if XNTBISOL is set, only touch the passed base, if it is not set,
+>    change all bases in the system that have it cleared as well. For this
+>    set of time bases, modify the offset and adjust all running real-time
+>    timers.
+> 
+>  - Make all legacy RTOS skins isolated by default again, but offer a
+>    runtime or compile-time switch to add them individually to the gang
+>    of synchronised time bases (i.e. POSIX, native, RTDM).
+> 
+> Did I get it correctly?
+> 
 
-Yeah, that might explain while already trying to parse it manually
-failed: What is xnintr_sync_stat_references? :)
+Looks good. Regarding the monotonic support, I tend to agree with you:
+let's avoid conversions especially if doing so is cheap
+implementation-wise.
 
->=20
-> I don't think I've got it really nicer than your first patch.. the only=
- additional point is that
-> 'prev =3D xnstat_get_current()' reference is also tracked as reference =
-accounting becomes
-> a part of the xnstat interface (not sure we do need it though).
-
-Mind to elaborate on _why_ you think we need this, specifically if it
-adds new atomic counters? I'm too lazy looking for the probably valid
-reason on my own. Apropos atomic use counters: already considered all
-memory barrier issues for your locking scheme?
-
->=20
-> Well (#2), I have to say that the whole intr subsystem looks not that n=
-ice (maybe partly due
-> to being overloaded with xnstat details).. so I think, it'd require a c=
-loser look.
-
-Let's get it right first, then think about aesthetic or even concrete
-optimisations again.
-
->=20
-> Anyway, here is what I've got out of your patch so far.. the main issue=
- is whether we go this way
-> or it just makes things even more uglier.
-
-Again, correctness, race-avoidance worries me first right now.
-
->=20
-> (a side effect : I transformed xnstat_* macroses into 'static inline' f=
-unction.. I guess, this way it's a bit nicer)
-
-Uhh, be careful, I burned my fingers with similar things recently as
-well. You have to make sure that all types are resolvable for _all_
-includers of that header. Otherwise, I'm fine with cleanups like this.
-But I think there was once a reason for #define.
-
-Thanks,
-Jan
+> Jan
+> 
+-- 
+Philippe.
 
 
-PS: Please note my latest refactoring check-in to SVN, touching stat.h.
-
-
---------------enig5A5E4B430FBEEC67D7161B73
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGgCWrniDOoMHTA+kRAnpCAJ9fRKkiA1hj6oyEcm7yHKOEIgWVuQCeNNn5
-BrqSwdrZsWagGUhvkyOH7qE=
-=EFWN
------END PGP SIGNATURE-----
-
---------------enig5A5E4B430FBEEC67D7161B73--
 
