@@ -1,12 +1,10 @@
+Message-ID: <467FBC67.8030805@domain.hid>
+Date: Mon, 25 Jun 2007 15:00:23 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <18047.39887.117650.552218@domain.hid>
-Date: Mon, 25 Jun 2007 12:41:19 +0200
-In-Reply-To: <7289437c0706250217g7cab3109ic2d5079deded5069@domain.hid>
-References: <7289437c0706250217g7cab3109ic2d5079deded5069@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Problem to have load module support
+Subject: [Xenomai-help] Xenomai and mlockall
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,33 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-Perrine Martignoni wrote:
- > Hello,
- > 
- > I use xenomai 2.3.1 on an ARM9 board.
- > And I want to put the option "enable loadable module support" in my kernel.
- > 
- > When I put this option in the Linux kernel with xenomai, the kernel doesn't
- > run.
- > I have this error of Bad CRC :
- > Booting image at 10080000
- > .....
- > Verifying Checksum... Bad Data CRC
- > 
- > I noticed that when I remove xenomai and I put the option, the Linux kernel
- > run with no problem.
- > 
- > Is this behavior normal?
+I am trying to run my Xenomai application as non-root. I disabled 
+XENO_OPT_SECURITY_ACCESS to allow non-root users to run Xenomai 
+applications. However, this causes my application to exit with the error:
 
-No, your boot loader likely has a size limit which the kernel with
-loadable module support exceeds. Increase this limit and everything
-should be fine.
+Xenomai: process memory not locked (missing mlockall?)
 
--- 
+Is there a way to avoid this error? I am running on an embedded system 
+without swap and without disk, so there is no real need for mlock or 
+mlockall.
 
+Is there a way to "tweak" the CAP_IPC_LOCK capability of the system or 
+the task so that I can run mlockall call, or is there a way to disable 
+this check on Xenomai?
 
-					    Gilles Chanteperdrix.
+Kind regards,
+    Johan Borkhuis
 
