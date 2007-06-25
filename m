@@ -1,14 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <467F72C1.5050306@domain.hid>
-References: <467F72C1.5050306@domain.hid>
-Content-Type: text/plain
-Date: Mon, 25 Jun 2007 10:04:46 +0200
-Message-Id: <1182758686.25449.9.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Getting the current RT-state of a task
-Reply-To: rpm@xenomai.org
+Message-ID: <7289437c0706250217g7cab3109ic2d5079deded5069@domain.hid>
+Date: Mon, 25 Jun 2007 11:17:08 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_160336_22182526.1182763028847"
+Subject: [Xenomai-help] Problem to have load module support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: xenomai-help <xenomai@xenomai.org>
 
-On Mon, 2007-06-25 at 09:46 +0200, Johan Borkhuis wrote:
-> I am building an OS-abstraction layer for our application, and for this 
-> I would like to know the RT-status of a task.
-> Using the rt_task_set_mode function it is possible to switch between RT 
-> and non-RT (using T_PRIMARY). But I would like to know what the state is 
-> of the current task. I did not find a function to retrieve the RT-state 
-> of a task; is a function available that will return the status of a task?
-> 
+------=_Part_160336_22182526.1182763028847
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-rt_task_inquire(), check the status field for XNRELAX; if set, your task
-runs in secondary mode. Note: this method is currently an ugly hack,
-because you should be allowed to check for something like T_SECONDARY
-there instead, but unfortunately, you can't for obscure historical
-reasons. Cleanup of that mess is pending.
+Hello,
 
-> For the moment I am using the code shown below. Does this code work:
-> 
+I use xenomai 2.3.1 on an ARM9 board.
+And I want to put the option "enable loadable module support" in my kernel.
 
-Not as you would expect, because rt_task_set_mode() will send the caller
-to the primary domain, but a current glitch in the implementation even
-forgets to set the T_PRIMARY bit in the returned mask.
+When I put this option in the Linux kernel with xenomai, the kernel doesn't
+run.
+I have this error of Bad CRC :
+Booting image at 10080000
+.....
+Verifying Checksum... Bad Data CRC
 
->     rt_task_set_mode(0,0, &var);
->     if(var&T_PRIMARY)
->     {   /* Primary mode */
->         ....
->     }
->     else
->     {   /* Secondary mode */
->         ....
->     }
-> 
-> I would like to use this for a printf-implementation, where the text is 
-> printed if the task is non-RT or send to a logging task is the task is 
-> RT. I would like to call this code from Xenomai tasks, but also from 
-> plain Linux tasks. Is this possible?
-> 
+I noticed that when I remove xenomai and I put the option, the Linux kernel
+run with no problem.
 
-A library doing exactly this is pending, and due for merge before -rc1
-is out. If you want to use it on top of 2.3.x, you may want to adapt it
-locally:
-http://www.rts.uni-hannover.de/rtaddon/patches/xenomai/librtutils.patch
+Is this behavior normal?
 
-> Kind regards,
->     Johan Borkhuis
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Thanks
 
+------=_Part_160336_22182526.1182763028847
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+<div>Hello, </div>
+<div>&nbsp;</div>
+<div>I use xenomai 2.3.1 on an ARM9 board.</div>
+<div>And I want to put the option &quot;enable loadable module support&quot; in my kernel.</div>
+<div>&nbsp;</div>
+<div>When I put this option in the Linux kernel with xenomai, the kernel doesn&#39;t run.</div>
+<div>I have this error of Bad CRC :</div>
+<div><font face="courier new,monospace">Booting image at 10080000</font></div>
+<div><font face="courier new,monospace">.....</font></div>
+<div><font face="courier new,monospace">Verifying Checksum... Bad Data CRC</font></div>
+<div><font face="Courier New"></font>&nbsp;</div>
+<div><font face="">I noticed that when I remove xenomai and I put the option, the Linux kernel run with no problem.</font></div>
+<div>&nbsp;</div>
+<div>Is this behavior normal?</div>
+<div>&nbsp;</div>
+<div>Thanks</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+------=_Part_160336_22182526.1182763028847--
 
