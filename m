@@ -1,15 +1,10 @@
+Message-ID: <467F72C1.5050306@domain.hid>
+Date: Mon, 25 Jun 2007 09:46:09 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <18047.28709.499104.422795@domain.hid>
-Date: Mon, 25 Jun 2007 09:35:01 +0200
-In-Reply-To: <467F5CCE.8070806@domain.hid>
-References: <f48df4840706240643j2046afa0pd69452874264fb1f@domain.hid>
-	<18046.43281.454448.814965@domain.hid>
-	<3f027d060706241451g70504604o6f4cfb7e1997398e@domain.hid>
-	<467F5CCE.8070806@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] Problem building and running demos
+Subject: [Xenomai-help] Getting the current RT-state of a task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,18 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-Jan Kiszka wrote:
- > Why not move the demos over into the examples repository and integrate
- > them into the existing build system? Would be a good chance to start
- > populating the posix folder over there.
+I am building an OS-abstraction layer for our application, and for this 
+I would like to know the RT-status of a task.
+Using the rt_task_set_mode function it is possible to switch between RT 
+and non-RT (using T_PRIMARY). But I would like to know what the state is 
+of the current task. I did not find a function to retrieve the RT-state 
+of a task; is a function available that will return the status of a task?
 
-Yes, I will probably do that.
+For the moment I am using the code shown below. Does this code work:
 
--- 
+    rt_task_set_mode(0,0, &var);
+    if(var&T_PRIMARY)
+    {   /* Primary mode */
+        ....
+    }
+    else
+    {   /* Secondary mode */
+        ....
+    }
 
+I would like to use this for a printf-implementation, where the text is 
+printed if the task is non-RT or send to a logging task is the task is 
+RT. I would like to call this code from Xenomai tasks, but also from 
+plain Linux tasks. Is this possible?
 
-					    Gilles Chanteperdrix.
+Kind regards,
+    Johan Borkhuis
+
 
