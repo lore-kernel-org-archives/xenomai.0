@@ -1,12 +1,18 @@
-Message-ID: <46816E5A.6030101@domain.hid>
-Date: Tue, 26 Jun 2007 21:51:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig274FB8A74FA42E192975DEAC"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] run aclocal first
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18049.39084.214526.256889@domain.hid>
+Date: Wed, 27 Jun 2007 00:52:28 +0200
+In-Reply-To: <46816BF3.7040603@domain.hid>
+References: <467CD519.1060802@domain.hid> <1182594345.6000.9.camel@domain.hid>
+	<467D0684.7030604@domain.hid> <1182623858.6000.139.camel@domain.hid>
+	<467E2E9C.90905@domain.hid>
+	<18046.42783.829807.333066@domain.hid>
+	<468116FE.4090402@domain.hid>
+	<18049.25882.613508.970487@domain.hid>
+	<46816BF3.7040603@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] Monotonic, realtime, and other timers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,75 +22,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig274FB8A74FA42E192975DEAC
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+ > Gilles Chanteperdrix wrote:
+ > > Jan Kiszka wrote:
+ > >  > Gilles Chanteperdrix wrote:
+ > >  > > IMO, the only advantage of having absolute timers is to be able to apply
+ > >  > > the posix scheme. So, if I followed correctly your discussion, what we
+ > >  > > need is:
+ > >  > > - an XNTBISOL flag with a service xntbase_isol which set this flag and
+ > >  > >   unshare the target timebase if it is shared (IOW, if aperiodic)
+ > >  > > - the service xntbase_adjust_time to walk all the absolute timers of the
+ > >  > >   non isolated timebases and adjust their expiry date or play their
+ > >  > >   handler the posix way.
+ > >  > 
+ > >  > Two questions came up here regarding item #2:
+ > >  > 
+ > >  >  - Shouldn't we also adjust the non-monotonic timers of an isolated base
+ > >  >    if it asks for wallclock tuning? I think so.
+ > >  > 
+ > >  >  - We don't have a service to walk the list of all pending timers, do
+ > >  >    we? As that touches all of our timer queue variants and I'm not
+ > >  >    familiar with their details (except for plain lists...), I would
+ > >  >    welcome any support on this.
+ > > 
+ > > I am afraid for other things than lists, we will have to define an
+ > > xntimerq_iterator which holds a little bit more information than just a
+ > > pointer to a holder.
+ > > 
+ > 
+ > So we would have to increase the size of each xntimer_t object? Argh.
+ > 
+ > Sounds a bit like it's worth to have a closer look at some "two timer
+ > lists, one with adjustable offset"-approach...
 
-autoheader depends on aclocal output, so make the latter run first.
-(I was facing bootstrap failures due to different aclocal versions.)
+No, I was thinking about defining a new type xntimerq_iterator, whose
+sole purpose would be to hold the state of an iteration. In fact, we
+only need this in the hashed case, binary heap holders already contain
+enough information.
 
----
- scripts/bootstrap |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-Index: xenomai/scripts/bootstrap
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/scripts/bootstrap
-+++ xenomai/scripts/bootstrap
-@@ -14,16 +14,6 @@ rm -Rf autom4te.cache
- if [ "$?" !=3D "0" ]; then die "removing autom4te.cache"; fi
- echo "done"
-
--echo -n "running autoheader..."
--autoheader
--if [ "$?" !=3D "0" ]; then die "running autoheader"; fi
--echo "done"
--
--echo -n "running libtoolize..."
--libtoolize -c --automake
--if [ "$?" !=3D "0" ]; then die "running libtoolize"; fi
--echo "done"
--
- echo -n "running aclocal..."
- if test -r acinclude.m4; then
-    touch acinclude.m4
-@@ -34,6 +24,16 @@ fi
- if [ "$?" !=3D "0" ]; then die "running aclocal"; fi
- echo "done"
-
-+echo -n "running autoheader..."
-+autoheader
-+if [ "$?" !=3D "0" ]; then die "running autoheader"; fi
-+echo "done"
-+
-+echo -n "running libtoolize..."
-+libtoolize -c --automake
-+if [ "$?" !=3D "0" ]; then die "running libtoolize"; fi
-+echo "done"
-+
- echo -n "running autoconf..."
- autoconf
- if [ "$?" !=3D "0" ]; then die "running autoconf"; fi
+-- 
 
 
---------------enig274FB8A74FA42E192975DEAC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFGgW5aniDOoMHTA+kRAgtSAJ4517gum43PPsopiEkaOhLjrE367ACdHqUe
-YTjii/e5jq7nvk+u6aEFP18=
-=BKCA
------END PGP SIGNATURE-----
-
---------------enig274FB8A74FA42E192975DEAC--
+					    Gilles Chanteperdrix.
 
