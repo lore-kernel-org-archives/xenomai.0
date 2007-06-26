@@ -1,13 +1,11 @@
-Message-ID: <15cf230500002197@domain.hid>
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="US-ASCII"
+Message-Id: <4680F263020000010018F152@domain.hid>
+Date: Tue, 26 Jun 2007 11:02:59 -0400
+From: "Hubert Talbot" <Hubert.Talbot@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 26 Jun 2007 17:01:41 +0200
-Message-ID: <81B5F1E63FF64C458F503BD1839AD784145486@domain.hid>
-From: "Gsellmann Peter" <Peter.Gsellmann@domain.hid>
-Subject: [Xenomai-help]  accessing context switch counter from rttask
+Content-Disposition: inline
+Subject: [Xenomai-help] patch version
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,21 +17,13 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi!
+Hi,
 
-I searched for a while and found this snippet
+Is it safe to apply patch like adeos-ipipe-2.6.20-i386-1.8-04.patch =
+(27-May-2007 14:33)=20
+to a newer kernel like linux-2.6.20.14.tar.gz (11-Jun-2007 19:03) or =
+linux-2.6.21.5.tar.gz (11-Jun-2007 19:03)?
 
-RT_TASK *rt =3D rt_task_self();
-int x =3D rt->thread_base.stat.csw;
+Thanks
 
-should give the number of context switches, but:
-RT_TASK in non-kernel mode is only RT_TASK_PLACEHOLDER so i have no
-access to thread_base!
-
-Is there an official way to get this info (w/o opening
-"/proc/xenomai/...")?
-
-
-TIA,
-Peter
 
