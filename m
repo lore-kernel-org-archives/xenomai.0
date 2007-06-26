@@ -1,13 +1,14 @@
-Message-ID: <4680ADF3.9050102@domain.hid>
-Date: Tue, 26 Jun 2007 08:10:59 +0200
-From: Johan Borkhuis <j.borkhuis@domain.hid>
-MIME-Version: 1.0
-References: <467FBC67.8030805@domain.hid>	<cbe23c50706250904i57afbc0xfbce52fdb9dccc66@domain.hid>
-	<cbe23c50706250905r38f1471ak72d82bc58c31b259@domain.hid>
-In-Reply-To: <cbe23c50706250905r38f1471ak72d82bc58c31b259@domain.hid>
-Content-Type: text/plain; charset=us-ascii; format=flowed
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <467FBC67.8030805@domain.hid>
+References: <467FBC67.8030805@domain.hid>
+Content-Type: text/plain
+Date: Tue, 26 Jun 2007 09:26:39 +0200
+Message-Id: <1182842799.18525.9.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Fwd:  Xenomai and mlockall
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai and mlockall
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,67 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Noulard <eric.noulard@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Johan Borkhuis <j.borkhuis@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-Eric Noulard wrote:
-> 2007/6/25, Johan Borkhuis <j.borkhuis@domain.hid>:
->   
->> I am trying to run my Xenomai application as non-root. I disabled
->> XENO_OPT_SECURITY_ACCESS to allow non-root users to run Xenomai
->> applications. However, this causes my application to exit with the error:
->>
->> Xenomai: process memory not locked (missing mlockall?)
->>
->> Is there a way to avoid this error? I am running on an embedded system
->> without swap and without disk, so there is no real need for mlock or
->> mlockall.
->>     
->
-> I may be wrong but even on embedded system without
-> mlockall(MCL_FUTURE) how can you be sure the memory you get from from
-> a dynamically allocated memory (malloc/calloc etc...) is
-> currently allocated in PHYSICAL memory?
->   
-I disabled swap, and also I don't have a physical disc connected to the 
-system. The system boots from a TFTP server, and the root file system is 
-mounted using NFS. So I think I can be pretty sure that all allocated 
-memory is in physical memory :-)
+On Mon, 2007-06-25 at 15:00 +0200, Johan Borkhuis wrote:
+> I am trying to run my Xenomai application as non-root. I disabled 
+> XENO_OPT_SECURITY_ACCESS to allow non-root users to run Xenomai 
+> applications. However, this causes my application to exit with the error:
+> 
+> Xenomai: process memory not locked (missing mlockall?)
+> 
+> Is there a way to avoid this error? I am running on an embedded system 
+> without swap and without disk, so there is no real need for mlock or 
+> mlockall.
+> 
 
->> Is there a way to "tweak" the CAP_IPC_LOCK capability of the system or
->> the task so that I can run mlockall call,
->>     
->
-> May be you can use 'sudo' to run the task?
->   
+swap is not the only source of page faults, ondemand application/library
+loading is another one.
 
-That is a possibility, but I prefer application to run as a regular user 
-and not as root.
+> Is there a way to "tweak" the CAP_IPC_LOCK capability of the system or 
+> the task so that I can run mlockall call, or is there a way to disable 
+> this check on Xenomai?
 
-I did find another way/hack around this problem. After looking in the 
-kernel I found out that the maximum amount of locked memory is limited 
-to 32 kbyte (= 8 pages) for a regular user (see also "ulimit -a") and 
-this limit is hard-coded into the kernel. My application asked to lock 
-just over 600 pages, so this was not allowed
-After increasing this allowed amount to a much larger value the mlockall 
-succeeded and the application runs OK:
+No way to disable it, since doing so would basically make your system
+dysfunctional by risking page faults while not running over a regular
+Linux context (i.e. Xenomai's primary domain).
 
-==============
---- linux-2.6.14/include/linux/resource.h 2005-10-28 02:02:08.000000000 
-+0200
-+++ linux-2.6.14-mot/include/linux/resource.h 2007-06-25 
-15:46:16.622475000 +0200
-@@ -59,7 +59,7 @@
-* GPG wants 32kB of mlocked memory, to make sure pass phrases
-* and other sensitive information are never written to disk.
-*/
--#define MLOCK_LIMIT (8 * PAGE_SIZE)
-+#define MLOCK_LIMIT (4096 * PAGE_SIZE)
+IOW, you do want mlockall() to be in effect for Xenomai apps.
 
-/*
-* Due to binary compatibility, the actual resource numbers
-==============
+Hint: If you think some process is overconsuming locked memory, you may
+want to have a look at /proc/<pid>/maps for the process in question, and
+check the size of the various segments listed there, and especially the
+stack related one.
 
-Kind regards,
-Johan Borkhuis
+> 
+> Kind regards,
+>     Johan Borkhuis
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
+
+
 
