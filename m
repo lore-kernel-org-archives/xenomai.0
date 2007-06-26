@@ -1,15 +1,17 @@
-Message-ID: <4680DCC8.1000704@domain.hid>
-Date: Tue, 26 Jun 2007 11:30:48 +0200
+Message-ID: <468116FE.4090402@domain.hid>
+Date: Tue, 26 Jun 2007 15:39:10 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB14C@rennsmail04.eu.thmulti.com>
-	<4680DA9B.5020501@domain.hid>
-In-Reply-To: <4680DA9B.5020501@domain.hid>
+References: <467CD519.1060802@domain.hid>
+	<1182594345.6000.9.camel@domain.hid>	<467D0684.7030604@domain.hid>
+	<1182623858.6000.139.camel@domain.hid>	<467E2E9C.90905@domain.hid>
+	<18046.42783.829807.333066@domain.hid>
+In-Reply-To: <18046.42783.829807.333066@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigA83749417C526FB1D0B08710"
+	boundary="------------enig4662B91F5D43DBA930B605E4"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-help] Group-based RT caps
+Subject: Re: [Xenomai-core] Monotonic, realtime, and other timers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,62 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA83749417C526FB1D0B08710
+--------------enig4662B91F5D43DBA930B605E4
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Jan Kiszka wrote:
-> Hi,
->=20
-> I'm moving this thread to xenomai-core as I have some implementation id=
-ea...
->=20
-> Fillod Stephane wrote:
->> ...
->> I think Johan was not asking to disable the mlockall, but to allow som=
-e.
->> non-root user to be able to do it. He found his solution anyway, which=
+Gilles Chanteperdrix wrote:
+> IMO, the only advantage of having absolute timers is to be able to appl=
+y
+> the posix scheme. So, if I followed correctly your discussion, what we
+> need is:
+> - an XNTBISOL flag with a service xntbase_isol which set this flag and
+>   unshare the target timebase if it is shared (IOW, if aperiodic)
+> - the service xntbase_adjust_time to walk all the absolute timers of th=
+e
+>   non isolated timebases and adjust their expiry date or play their
+>   handler the posix way.
 
->> is worth an entry in the FAQ.
->>
->> Since it is going to be a FAQ for those people in embedded business,
->> some
->> tricks to allow non-root operation of mlockall, SCHED_FIFO, etc., woul=
-d
->> be=20
->> useful. For example, you may hack the commoncap in linux/security/,=20
->> or a better solution would be to rely on realtime-lsm[1][2], thanks to=
-=20
->> the audio folks.
->>
->> [1] http://sourceforge.net/projects/realtime-lsm/
->> [2] http://lwn.net/Articles/110346/
->>
->=20
-> I think we could and should incorporate such a feature into the nucleus=
-=2E
->=20
-> There is already code in xnshadow_map playing with cap_effective, but
-> that happens too late. Instead, we should establish a group-based acces=
-s
-> control just like rt-lsm (the other knobs of that module are either
-> irrelevant for Xenomai (mlock=3D0) or broken security-wise (any=3D1)) a=
-nd
-> raise the required caps for a process that belongs to the specified
-> group, likely when an Xenomai interface gets attached by that process.
+Two questions came up here regarding item #2:
 
-At this chance we should also remove CONFIG_XENO_OPT_SECURITY_ACCESS and
-make the check mandatory. Due to the mlockall test, we effectively
-demand raised privileges already. So there is no use in leaving other
-Xenomai services open for non-privileged users.
+ - Shouldn't we also adjust the non-monotonic timers of an isolated base
+   if it asks for wallclock tuning? I think so.
+
+ - We don't have a service to walk the list of all pending timers, do
+   we? As that touches all of our timer queue variants and I'm not
+   familiar with their details (except for plain lists...), I would
+   welcome any support on this.
 
 Jan
 
 
---------------enigA83749417C526FB1D0B08710
+--------------enig4662B91F5D43DBA930B605E4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -83,10 +63,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGgNzIniDOoMHTA+kRAq7tAJ98lh4Sxzunc4XXnKKKn2kCEr4M9wCeM0nt
-zwIhzwlUPhf9//f9FbBHez4=
-=YgFx
+iD8DBQFGgRb+niDOoMHTA+kRAnm5AJ0W3Ip1A3S55H/jB5yn8wtgAR/kpwCfb8D8
+ASY7SiyvtllGXCHYYW2ve4s=
+=jHvT
 -----END PGP SIGNATURE-----
 
---------------enigA83749417C526FB1D0B08710--
+--------------enig4662B91F5D43DBA930B605E4--
 
