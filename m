@@ -1,12 +1,13 @@
+Message-ID: <15cf230500002197@domain.hid>
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: text/plain;
-	charset="us-ascii"
+	charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
-Date: Tue, 26 Jun 2007 10:53:42 +0200
-Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB14C@rennsmail04.eu.thmulti.com>
-From: "Fillod Stephane" <stephane.fillod@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and mlockall
+Date: Tue, 26 Jun 2007 17:01:41 +0200
+Message-ID: <81B5F1E63FF64C458F503BD1839AD784145486@domain.hid>
+From: "Gsellmann Peter" <Peter.Gsellmann@domain.hid>
+Subject: [Xenomai-help]  accessing context switch counter from rttask
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,42 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Mon, 2007-06-25 at 15:00 +0200, Johan Borkhuis wrote:=20
->> I am trying to run my Xenomai application as non-root. I disabled=20
->> XENO_OPT_SECURITY_ACCESS to allow non-root users to run Xenomai=20
->> applications. However, this causes my application to exit with the
-error:
-[...]
->> Is there a way to "tweak" the CAP_IPC_LOCK capability of the system
-or=20
->> the task so that I can run mlockall call, or is there a way to
-disable=20
->> this check on Xenomai?
->
->No way to disable it, since doing so would basically make your system
->dysfunctional by risking page faults while not running over a regular
->Linux context (i.e. Xenomai's primary domain).
+Hi!
 
-I think Johan was not asking to disable the mlockall, but to allow some
-non-root user to be able to do it. He found his solution anyway, which
-is worth an entry in the FAQ.
+I searched for a while and found this snippet
 
-Since it is going to be a FAQ for those people in embedded business,
-some
-tricks to allow non-root operation of mlockall, SCHED_FIFO, etc., would
-be=20
-useful. For example, you may hack the commoncap in linux/security/,=20
-or a better solution would be to rely on realtime-lsm[1][2], thanks to=20
-the audio folks.
+RT_TASK *rt =3D rt_task_self();
+int x =3D rt->thread_base.stat.csw;
 
-[1] http://sourceforge.net/projects/realtime-lsm/
-[2] http://lwn.net/Articles/110346/
+should give the number of context switches, but:
+RT_TASK in non-kernel mode is only RT_TASK_PLACEHOLDER so i have no
+access to thread_base!
+
+Is there an official way to get this info (w/o opening
+"/proc/xenomai/...")?
 
 
-Best Regards,
---=20
-Stephane
+TIA,
+Peter
 
