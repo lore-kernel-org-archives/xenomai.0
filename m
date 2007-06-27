@@ -1,17 +1,15 @@
-Date: Wed, 27 Jun 2007 10:57:26 +0200
-From: Daniel Simon <Daniel.Simon@domain.hid>
-Message-ID: <20070627105726.7db7a459@domain.hid>
-In-Reply-To: <467FF391.8020401@domain.hid>
-References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>
-	<4668440F.7020706@domain.hid>
-	<20070608124927.1b789a9e@domain.hid>
-	<46693B6B.1010201@domain.hid>
-	<20070625175107.438849fa@domain.hid>
-	<467FF391.8020401@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] measuring tasks execution time
+Message-ID: <46824ED7.5080908@domain.hid>
+Date: Wed, 27 Jun 2007 13:49:43 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <467CD519.1060802@domain.hid>	<1182594345.6000.9.camel@domain.hid>	<467D0684.7030604@domain.hid>	<1182623858.6000.139.camel@domain.hid>	<467E2E9C.90905@domain.hid>	<18046.42783.829807.333066@domain.hid>	<468116FE.4090402@domain.hid>	<18049.25882.613508.970487@domain.hid>	<46816BF3.7040603@domain.hid>
+	<18049.39084.214526.256889@domain.hid>
+In-Reply-To: <18049.39084.214526.256889@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig82250672B34F93ED19DAF8EA"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] Monotonic, realtime, and other timers
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,59 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Mon, 25 Jun 2007 18:55:45 +0200
-Jan Kiszka <jan.kiszka@domain.hid> wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig82250672B34F93ED19DAF8EA
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
+
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>  > Gilles Chanteperdrix wrote:
+>  > > Jan Kiszka wrote:
+>  > >  > Gilles Chanteperdrix wrote:
+>  > >  > > IMO, the only advantage of having absolute timers is to be ab=
+le to apply
+>  > >  > > the posix scheme. So, if I followed correctly your discussion=
+, what we
+>  > >  > > need is:
+>  > >  > > - an XNTBISOL flag with a service xntbase_isol which set this=
+ flag and
+>  > >  > >   unshare the target timebase if it is shared (IOW, if aperio=
+dic)
+>  > >  > > - the service xntbase_adjust_time to walk all the absolute ti=
+mers of the
+>  > >  > >   non isolated timebases and adjust their expiry date or play=
+ their
+>  > >  > >   handler the posix way.
+>  > >  >=20
+>  > >  > Two questions came up here regarding item #2:
+>  > >  >=20
+>  > >  >  - Shouldn't we also adjust the non-monotonic timers of an isol=
+ated base
+>  > >  >    if it asks for wallclock tuning? I think so.
+>  > >  >=20
+>  > >  >  - We don't have a service to walk the list of all pending time=
+rs, do
+>  > >  >    we? As that touches all of our timer queue variants and I'm =
+not
+>  > >  >    familiar with their details (except for plain lists...), I w=
+ould
+>  > >  >    welcome any support on this.
+>  > >=20
+>  > > I am afraid for other things than lists, we will have to define an=
+
+>  > > xntimerq_iterator which holds a little bit more information than j=
+ust a
+>  > > pointer to a holder.
+>  > >=20
+>  >=20
+>  > So we would have to increase the size of each xntimer_t object? Argh=
+=2E
+>  >=20
+>  > Sounds a bit like it's worth to have a closer look at some "two time=
+r
+>  > lists, one with adjustable offset"-approach...
+>=20
+> No, I was thinking about defining a new type xntimerq_iterator, whose
+> sole purpose would be to hold the state of an iteration. In fact, we
+> only need this in the hashed case, binary heap holders already contain
+> enough information.
+>=20
+
+OK, if that will not have negative impact on existing code, so much the
+better.
+
+Meanwhile I uploaded my current patch stack to
+http://www.rts.uni-hannover.de/rtaddon/patches/xenomai. I'm going to
+comment on detail aspects later. Just so much: it /should/ be finished
+except for the yet empty placeholder re-adjust-timers.patch.
+
+Jan
 
 
+--------------enig82250672B34F93ED19DAF8EA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> My idea was to keep a persistent version the existing xnstat_runtime_t
-> instance in xnthread (and later on also xnintr). That one shall not be
-> reset on readout via /proc.
-Is it necessary to keep also the reset one?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-> Instead, you establish quite some new calculations that break
-> the existing API (the switch date is given via "start" - which was
-> misnamed so far, I just changed it to "date") 
+iD8DBQFGgk7cniDOoMHTA+kRAntdAJ4rHwQ4yC+jIUPY4zJWHCaOZPJ0fQCeLGBB
+fqcDiGOKoZ23GBIKbIB0obs=
+=1X4x
+-----END PGP SIGNATURE-----
 
-ok, better fit the behaviour.
-I should better work from the last svn version?
-
->and increase the runtime
-> overhead in the hotpath. Why? All the information you should need is
-> already there, it just has to be saved from being vaporised when the
-> user dumps /proc/xenomai/stat.
-> 
-> >  	(sched)->last_account_switch = start; \
-> >  } while (0)
-> >    
-> 
-> Let's try it like this: Change Xenomai so that it leaves the existing
-> xnthread_t::stat.account untouched when it reads /proc. Rather add
-> something like "xnstat_runtime_t last;" to xnthread_t::stat. On readout
-> for /proc output, 
-Where is this done? I've found one place in module::stat_seq_open where total is
-reset to 0, is it the only one? 
-In fact I don't have a clear picture of the stat
-process and what it is assumed to do (and thus did not want to break something!)
->do the stats now like "account-last" and then move
-> account into last. For your task exectime, you can then read
-> xnthread_t::stat.account directly, because it will always reflect the
-> full task history. Would't this work better?
-
-> Thanks for working on this!
-I'll try to find enough time by the end of this week to improve this...
-
-	Daniel
-
--- 
-       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
-        Inovallee, 655 avenue de l'Europe, Montbonnot
-             38 334 Saint Ismier Cedex France
- Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
-          http://necs.inrialpes.fr/people/simon/
-
-
+--------------enig82250672B34F93ED19DAF8EA--
 
