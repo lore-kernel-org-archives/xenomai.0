@@ -1,10 +1,14 @@
-Date: Fri, 29 Jun 2007 14:19:50 +0200
-From: "Axel Beierlein" <belatronix@domain.hid>
-Content-Type: text/plain; format="flowed"; delsp="yes"; charset="utf-8"
+Message-ID: <46850218.40909@domain.hid>
+Date: Fri, 29 Jun 2007 14:59:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Message-ID: <op.tuom7dvpt06gyn@domain.hid>
-Subject: [Xenomai-help] Kompiling an RT Kernel Module
+References: <op.tuom7dvpt06gyn@domain.hid>
+In-Reply-To: <op.tuom7dvpt06gyn@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDE21B223CD8A18506E714564"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Kompiling an RT Kernel Module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,71 +18,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: Axel Beierlein <belatronix@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDE21B223CD8A18506E714564
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Now a few hours i try to compile a simple file as an RT Kernel Module and  
-i get errors over errors.
-I have included the kernel sources and the xenomai sources in different  
-ways. I get many "in file includes" and other errors.
+Axel Beierlein wrote:
+> Hello,
+>=20
+> Now a few hours i try to compile a simple file as an RT Kernel Module a=
+nd =20
+> i get errors over errors.
+> I have included the kernel sources and the xenomai sources in different=
+ =20
+> ways. I get many "in file includes" and other errors.
+>=20
+> What are the minimal requirements to compile such a native rt module?  =
 
-What are the minimal requirements to compile such a native rt module?  
-(include path, lib path ....)
-I can´t use the output of xeno-config cause the rootfs on my target(ppc)  
-is mounted over NFS from my development host(i386). I have a look at the  
-makefile http://svn.gna.org/svn/xenomai/trunk/examples/common/Makefile but  
-that solved not my probs. On the contrary it confuses me more and more  
-cause i don´t understand why the Makro KSRC is defined as an pointer to  
-the librarys and this Makro was also used to point to the Kernelheaders.
+> (include path, lib path ....)
 
-Is there anywhere an example working with support for cross-developement?
+Just a standard kernel module makefile you'll find almost anywhere + a
+Xenomai include path, ie.
 
-I´ve compiled the running kernel with all xenomai stuff inside (no  
-modules) but with module load support on.
+EXTRA_CFLAGS :=3D -I$(KSRC)/include/xenomai
+(taken from your cited example)
 
-Axel
+> I can?t use the output of xeno-config cause the rootfs on my target(ppc=
+) =20
+> is mounted over NFS from my development host(i386). I have a look at th=
+e =20
 
-sorry for my terrible English ;-)
+You don't need to for a pure kernel module target. Just pick that
+example and follow its instructions: Clear APPLICATIONS, put your module
+into MODULES, then run make: "make KSRC=3D<kernel-src>". Must work, reall=
+y.
 
---------------------------------------------------------------------
+> makefile http://svn.gna.org/svn/xenomai/trunk/examples/common/Makefile =
+but =20
+> that solved not my probs. On the contrary it confuses me more and more =
+=20
+> cause i don?t understand why the Makro KSRC is defined as an pointer to=
+ =20
+> the librarys and this Makro was also used to point to the Kernelheaders=
+=2E
 
-The Example-Source of Kernel Module:
+Try to find out what is behind /lib/modules/`uname -r`/build on your
+box... :->
+(Note that "$(shell <command>)" in a makefile means `<command>` in your
+shell.)
 
-#include <native/task.h>
+>=20
+> Is there anywhere an example working with support for cross-developemen=
+t?
 
-#define TASK_PRIO  99              /* Highest RT priority */
-#define TASK_MODE  T_FPU|T_CPU(0)  /* Uses FPU, bound to CPU #0 */
-#define TASK_STKSZ 4096            /* Stack size (in bytes) */
+If you use a cross-compiler, additionally pass its prefix like this:
 
-RT_TASK task_desc;
+make KSRC=3D... CROSS_COMPILE=3D...
 
-void task_body (void *cookie)
-{
-    for (;;) {
-      /* ... "cookie" should be NULL ... */
-      }
-}
+If you compile for a different arch, add ARCH=3D... as well.
 
-int init_module (void)
-  {
-	int err;
+>=20
+> I?ve compiled the running kernel with all xenomai stuff inside (no =20
+> modules) but with module load support on.
+>=20
+> Axel
+>=20
+> sorry for my terrible English ;-)
 
-      /* ... */
+It's very well readable! I guess you haven't seen truly terrible English
+on mailing lists yet. ;)
 
-     err = rt_task_create(&task_desc,
-                           "MyTaskName",
-                          TASK_STKSZ,
-                          TASK_PRIO,
-                          TASK_MODE);
-      if (!err)
-          rt_task_start(&task_desc,&task_body,NULL);
+Jan
 
-     /* ... */
-  }
 
-  void cleanup_module (void)
-  {
-      rt_task_delete(&task_desc);
-  }
+PS: If someone feels like adding a few words / references about "how do
+I compile a kernel module for Xenomai?" to the wiki, please go ahead!
+
+
+--------------enigDE21B223CD8A18506E714564
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGhQIbniDOoMHTA+kRAvNAAJ90WSc/f7WloEGzTy8lQyfLJ+m2GgCfTm8W
+MQBrSii4Ork5LYa6SNHPZSk=
+=QSsx
+-----END PGP SIGNATURE-----
+
+--------------enigDE21B223CD8A18506E714564--
 
