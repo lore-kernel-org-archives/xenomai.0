@@ -1,15 +1,13 @@
-Message-ID: <46607BF5.2@domain.hid>
-Date: Fri, 01 Jun 2007 22:05:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4684BD02.1070002@domain.hid>
+Date: Fri, 29 Jun 2007 10:04:18 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-References: <18016.24172.608531.418407@domain.hid>
-In-Reply-To: <18016.24172.608531.418407@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig39C48DE71D9EB9FDE6FBE071"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Problem with RTDM descriptors with only rt close
- handler.
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB14C@rennsmail04.eu.thmulti.com>
+	<4680DA9B.5020501@domain.hid> <46838C9C.7030303@domain.hid>
+In-Reply-To: <46838C9C.7030303@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Group-based RT caps
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,57 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig39C48DE71D9EB9FDE6FBE071
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Jan Kiszka wrote:
+> I couldn't resist, the approach looked too simple and appealing:
+> http://www.rts.uni-hannover.de/rtaddon/patches/xenomai/rt-caps-group.patch
+>
+> Actually, it's even more advanced than realtime-lsm in so far as it also
+> checks for secondary group membership. You can use the nucleus module
+> parameter "xenomai_gid" to control the Xenomai group, also during
+> runtime using /sys.
+>
+> Works nicely for me. I'm able to run testsuite programs under my user
+> account that now additionally belongs to the "xenomai" group. :)
+>
+> Jan
+>   
 
-Gilles Chanteperdrix wrote:
-> Hi,
->=20
-> I had a problem with an RTDM driver: /proc/xenomai/rtdm/open_fildes
-> could not close its descriptors. So, I tried with trunk which has
-> auto-cleanup of RTDM descriptors, to see if descriptors would be closed=
-,
-> the descriptors were not auto-closed when killing my application
-> either. After a little investigation, it appears that the problem is
-> that my drivers had a real-time close handler but no non-realtime
-> handler, so when close was invoked from a non real-time context (either=
+I used the patch (and reversed my modification of MLOCK_LIMIT) and this 
+works OK now, on a plain 2.3.1 version. Thanks!
 
-> /proc/xenomai/rtdm/open_fildes, or the auto-cleanup routine), the
-> default close handler installed by RTDM simply returned -38 and close
-> aborted.
->=20
-> The way to fix this issue was rather simple: implement a non real-time
-> close handler, but I find this behaviour a bit disturbing, maybe
-> implementing a non real-time close handler could be mandatory ?
->=20
+One thing I would like to see is to have the xenomai_gid parameter as a 
+kernel config parameter, next to the module parameter. The default can 
+be -1, but I would like to have my configured xenomai-group as the 
+default value, so I don't have to pass an extra parameter or modify 
+/sys/module/xeno_nucleus/parameters/xenomai_gid.
 
-It is, read the fine manual :). Moreover, if you had validated your
-driver via CONFIG_XENO_OPT_DEBUG_RTDM, you would have got an error on
-registration. But given the now even more required close_nrt handler, I
-think decoupling this particular check from the debug switch is
-appropriate. Will fix.
+Kind regards,
+    Johan Borkhuis
 
-Jan
-
-
---------------enig39C48DE71D9EB9FDE6FBE071
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFGYHv1niDOoMHTA+kRAvJpAJ0U1R7GXvPQuhwz4gJcdtJgp35GnQCeLYJo
-823cKyAMRDKiPmiUMjV6oz0=
-=1NY+
------END PGP SIGNATURE-----
-
---------------enig39C48DE71D9EB9FDE6FBE071--
 
