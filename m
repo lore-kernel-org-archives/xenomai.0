@@ -1,14 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1183044956.19168.3.camel@domain.hid>
-References: <1183044956.19168.3.camel@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Date: Thu, 28 Jun 2007 18:41:57 +0200
-Message-Id: <1183048917.5277.17.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and uClinux
-Reply-To: rpm@xenomai.org
+Date: Fri, 29 Jun 2007 14:19:50 +0200
+From: "Axel Beierlein" <belatronix@domain.hid>
+Content-Type: text/plain; format="flowed"; delsp="yes"; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Message-ID: <op.tuom7dvpt06gyn@domain.hid>
+Subject: [Xenomai-help] Kompiling an RT Kernel Module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,35 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: CAMUS Benoit <benoit.camus@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-On Thu, 2007-06-28 at 17:35 +0200, CAMUS Benoit wrote:
-> hi all,
->=20
-> Did anyone port successfully Xenomai on =B5Clinux
+Hello,
 
-This one is becoming a FAQ it seems.
-We support the Blackfin architecture over uClinux since 2006-06. No
-particular issue have been raised by uClinux per se.
+Now a few hours i try to compile a simple file as an RT Kernel Module and  
+i get errors over errors.
+I have included the kernel sources and the xenomai sources in different  
+ways. I get many "in file includes" and other errors.
 
->  and more especially on
-> microblaze ?
+What are the minimal requirements to compile such a native rt module?  
+(include path, lib path ....)
+I can´t use the output of xeno-config cause the rootfs on my target(ppc)  
+is mounted over NFS from my development host(i386). I have a look at the  
+makefile http://svn.gna.org/svn/xenomai/trunk/examples/common/Makefile but  
+that solved not my probs. On the contrary it confuses me more and more  
+cause i don´t understand why the Makro KSRC is defined as an pointer to  
+the librarys and this Makro was also used to point to the Kernelheaders.
 
-I never heard of such port though.
+Is there anywhere an example working with support for cross-developement?
 
->=20
-> thanks
-> ben
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
+I´ve compiled the running kernel with all xenomai stuff inside (no  
+modules) but with module load support on.
 
+Axel
 
+sorry for my terrible English ;-)
+
+--------------------------------------------------------------------
+
+The Example-Source of Kernel Module:
+
+#include <native/task.h>
+
+#define TASK_PRIO  99              /* Highest RT priority */
+#define TASK_MODE  T_FPU|T_CPU(0)  /* Uses FPU, bound to CPU #0 */
+#define TASK_STKSZ 4096            /* Stack size (in bytes) */
+
+RT_TASK task_desc;
+
+void task_body (void *cookie)
+{
+    for (;;) {
+      /* ... "cookie" should be NULL ... */
+      }
+}
+
+int init_module (void)
+  {
+	int err;
+
+      /* ... */
+
+     err = rt_task_create(&task_desc,
+                           "MyTaskName",
+                          TASK_STKSZ,
+                          TASK_PRIO,
+                          TASK_MODE);
+      if (!err)
+          rt_task_start(&task_desc,&task_body,NULL);
+
+     /* ... */
+  }
+
+  void cleanup_module (void)
+  {
+      rt_task_delete(&task_desc);
+  }
 
