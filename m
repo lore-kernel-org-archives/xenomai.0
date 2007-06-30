@@ -1,15 +1,14 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4685F079.7090202@domain.hid>
-References: <4683EAAB.6080401@domain.hid> <1183151844.6574.157.camel@domain.hid>
-	<4685F079.7090202@domain.hid>
+In-Reply-To: <1183201347.14520.35.camel@domain.hid>
+References: <1183144465.6574.99.camel@domain.hid>  <46860AC9.8080907@domain.hid>
+	<1183201347.14520.35.camel@domain.hid>
 Content-Type: text/plain
-Date: Sat, 30 Jun 2007 16:13:08 +0200
-Message-Id: <1183212788.14520.54.camel@domain.hid>
+Date: Sat, 30 Jun 2007 16:25:58 +0200
+Message-Id: <1183213558.14520.55.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH-STACK] more timer rework,
-	group-based	access control
+Subject: Re: [Xenomai-core] Support for 2.6.22/x86
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,97 +20,60 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Sat, 2007-06-30 at 07:56 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> >> rt-caps-group.patch
+On Sat, 2007-06-30 at 13:02 +0200, Philippe Gerum wrote:
+> On Sat, 2007-06-30 at 09:48 +0200, Jan Kiszka wrote:
+> > Philippe Gerum wrote:
+> > > Our development trunk now contains the necessary support for running
+> > > Xenomai over 2.6.22/x86. This work boils down to enabling Xenomai to use
+> > > the generic clock event device abstraction that comes with newest
+> > > kernels. Other archs / kernel versions still work the older way, until
+> > > all archs eventually catch up with clockevents upstream.
+> > > 
+> > > This support won't be backported to 2.3.x, because it has some
+> > > significant impact on the nucleus. Tested as thoroughly as possible here
+> > > on low-end and mid-range x86 boxen, including SMP.
+> > > 
+> > > Please give this hell.
+> > > 
+> > > http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch
+> > > 
 > > 
-> > Good idea, but totally untested on my side (did I already mention my
-> > laziness?). Will merge and backport to 2.3.x, XENO_OPT_SECURITY_ACCESS
-> > was too cheap to be good anyway.
+> > Running some tests, the gate to hell just opened:
+> > 
+> > [  210.247006] BUG: sleeping function called from invalid context at
+> > kernel/sched.c:3941
+> > [  210.248171] in_atomic():1, irqs_disabled():1
+> > [  210.248828] no locks held by frag-ip/881.
+> > [  210.249494]  [<c01040e9>] show_trace_log_lvl+0x1f/0x34
+> > [  210.250523]  [<c0104d6c>] show_trace+0x17/0x19
+> > [  210.257778]  [<c0104e6a>] dump_stack+0x1b/0x1d
+> > [  210.258070]  [<c0112030>] __might_sleep+0xda/0xe1
+> > [  210.258365]  [<c028bacf>] wait_for_completion+0x1f/0xc3
+> > [  210.258688]  [<c01143d8>] set_cpus_allowed+0x77/0x95
+> > [  210.258992]  [<c89cc202>] lostage_handler+0x75/0x201 [xeno_nucleus]
+> > [  210.259551]  [<c0146fe2>] rthal_apc_handler+0x5c/0x89
+> > [  210.259869]  [<c0143ba9>] __ipipe_sync_stage+0x13a/0x147
+> > [  210.260204]  [<c010e6b6>] __ipipe_syscall_root+0x1a6/0x1c8
+> > [  210.260536]  [<c0102809>] system_call+0x29/0x41
+> > 
+> > Setup is latest SVN + a "few" patches (the well-known ones), CONFIG_SMP,
+> > qemu -smp 2, RTnet in loopback mode, just terminating the frag-ip example.
+> > 
+> > However, this gremlin looks like it is /far/ older than 2.6.22 support.
+> > Calling set_cpus_allowed() from atomic lostage_handler is simply bogus,
+> > I'm afraid. :-/
+> > 
 > 
-> What about moving that scheduling parameter settings into the
-> trampoline? Some legacy RTOS libs would still have to be adapted.
-> 
+> Confirmed, this is an old bug. Just adding a might_sleep() statement
+> even in UP config inside the lostage handler would trigger the warning.
 
-We could do that since the caller is always synchronized with the new
-thread and blocks on the completion flag until xnshadow_map() has run,
-so this would solve potential priority issues. This would also keep the
-existing work around for a silly bug from some Linuxthreads
-implementations which just did not consider the scheduling policy
-setting passed to pthread_create(), and would leave the spawned thread
-in SCHED_NORMAL mode in any case. However, this would still not work
-with pthread libs overeagerly checking for root permissions.
-
-> > 
-> >> -----------------------------------
-> >>
-> >> See dedicated posts earlier on this list.
-> >>
-> >>
-> >> refactor-timer-modes.patch
-> >> --------------------------
-> >>
-> >> xntimers are now of three kinds: XNTM_MONOREL, XNTM_MONOABS, or
-> >> XNTM_REALABS. This mode is passed on xntimer_start or on invocation of
-> >> higher services (xnpod_suspend_thread e.g.). Users were widely
-> >> automatically converted and may lack optimisation for the new scheme.
-> >> Please review carefully for regressions!
-> >>
-> > 
-> > The only reason for me to whine about this one so far concerns naming
-> > issues. Why do things need to be that picky?
-> > 
-> > I mean, we have only three modes, relative, absolute monotonic and
-> > absolute realtime and we discussed in great length why we won't have
-> > more than those. Given that "relative non-monotonic" would make no sense
-> > here, and that "realtime" carries a strong notion of absoluteness in
-> > relation to the wallclock, let's keep "relative", "absolute" and
-> > "realtime". In any case, "mono" is not widespread enough for people to
-> > immediately catch "monotonic" anyway, so in case of doubt: I'd say
-> > _RTFM_.
-> > 
-> > Additionally, having XN_INFINITE and XNTM_RELATIVE/ABSOLUTE/REALTIME is
-> > a clear sign of discrepancy. Please, keep my laziness intact, and let's
-> > keep XN_ for general macros. I know that this is somehow in
-> > contradiction with the current practice for the native skin, but I'm
-> > full of contradictions anyway, so...
-> 
-> Hmm, everything has it's pros and cons, but mostly you are right. Here
-> is a new proposal, please tell me if it's acceptable so that I can
-> rebase the rest:
-> 
-> --- xenomai.orig/include/nucleus/types.h
-> +++ xenomai/include/nucleus/types.h
-> @@ -62,8 +62,13 @@ typedef int (*xniack_t)(unsigned irq);
-> 
->  #define XN_INFINITE   (0)
->  #define XN_NONBLOCK   ((xnticks_t)-1)
-> -#define XN_RELATIVE   0
-> -#define XN_ABSOLUTE   1
-> +
-> +/* Timer modes */
-> +typedef enum xntmode {
-> +       XN_RELATIVE,
-> +       XN_ABSOLUTE,
-> +       XN_REALTIME
-> +} xntmode_t;
-> 
->  #define XN_APERIODIC_TICK  0
->  #define XN_NO_TICK         ((xnticks_t)-1)
-> 
-
-Looks ok, provided we can always represent the mode as a set of discrete
-values. This said, switching from a enum to a plain integer would be a
-no-brainer if needed.
+Ok, found it. It's an I-pipe issue. Working on a fix.
 
 > 
-> Last issue pending is the xintr locking thing. Will try to have a closer
-> look again and kick Dmitry for some more explanations of his patch.
-> 
-> Jan
-> 
+> > Jan
+> > 
 -- 
 Philippe.
 
