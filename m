@@ -2,8 +2,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <46860AC9.8080907@domain.hid>
 References: <1183144465.6574.99.camel@domain.hid>  <46860AC9.8080907@domain.hid>
 Content-Type: text/plain
-Date: Sat, 30 Jun 2007 12:42:56 +0200
-Message-Id: <1183200176.14520.32.camel@domain.hid>
+Date: Sat, 30 Jun 2007 13:02:27 +0200
+Message-Id: <1183201347.14520.35.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -62,45 +62,13 @@ On Sat, 2007-06-30 at 09:48 +0200, Jan Kiszka wrote:
 > However, this gremlin looks like it is /far/ older than 2.6.22 support.
 > Calling set_cpus_allowed() from atomic lostage_handler is simply bogus,
 > I'm afraid. :-/
+> 
 
-Btw, you should have a look at a critical change in the way raw I-pipe
-spinlocks are now manipulated (include/linux/spinlock.h wrappers).
-In short, to solve a deadly bug in all previous implementations, a set
-of dedicated helpers is now used to stall/unstall the current stage for
-the spin_lock_irq* forms, the way it has to be, i.e. touching both the
-real and virtual IRQ masks.
+Confirmed, this is an old bug. Just adding a might_sleep() statement
+even in UP config inside the lostage handler would trigger the warning.
 
-Such bug would accidentally clear the hardware IRQ mask, which would
-lead to a recursive lock attempt whenever an interrupt is caught at the
-wrong time on the same CPU, e.g.:
-
-mask_and_ack_8259A
-	local_irq_save_hw()+spinlock
-	printk("spurious IRQ #...")
-		printk() ->vprintk()
-		...
-		spin_lock_irqsave()
-		spin_unlock_irqrestore()
-			local_irq_enable_hw()
-				<IRQ> -> mask_and_ack_8259A
-
-The way to solve this is to make sure that the stall bit for the current
-domain always reflects the state of the hardware mask when operating raw
-I-pipe locks.
-
-As a consequence of this, you may not assume anymore that calling
-spin_unlock() + local_irq_restore_hw() in sequence would have the same
-effect than calling spin_unlock_irqrestore() on any ipipe_spinlock_t
-locks. This would have the very undesirable side-effect of leaving the
-virtual IRQ mask in stalled mode. I fixed an issue of this kind in the
-tracer code (__ipipe_global_path_unlock) already, precisely caught after
-getting a might_sleep() warning when reading /proc/ipe/trace/{max,
-frozen}.
-
-So you may want to double-check whether some constructs of this kind
-might exist in any of your local patches. I did not find any in the
-vanilla code, but another round of verifications may be useful.
-
+> Jan
+> 
 -- 
 Philippe.
 
