@@ -1,56 +1,62 @@
-Message-ID: <4667D167.9030001@domain.hid>
-Date: Thu, 07 Jun 2007 11:35:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4687F466.2020901@domain.hid>
+Date: Sun, 01 Jul 2007 20:37:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>	<1181143109.17978.101.camel@domain.hid>	<7289437c0706062254v2a386894oeb498459877d5086@domain.hid>	<4667AA4D.6070505@domain.hid>	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>
-	<4667BBBE.1040405@domain.hid> <4667CEF2.2050509@domain.hid>
-	<4667D008.80109@domain.hid>
-In-Reply-To: <4667D008.80109@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Cyclictest
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig98490978B90DFCC0637A2C70"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH-STACK] Missing bits for -rc1
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Perrine Martignoni wrote:
->>>
->>>
->>>>Ok. I'll do this.
->>>>
->>>>But I don't understand why the same application compiled without any links
->>>>with Xenomai give different results if there is Xenomai in the kernel.
->>>
->>>[Looking at your numbers again] Hmm, maybe some rounding issue of ticks
->>>due to whatever side-effect of I-pipe. We would first of all need the
->>>usual set of information (.config, involved versions) and also
->>>/sys/devices/system/clocksource/clocksource0/current_clocksource.
->>
->>Maybe what Perrine is observing is simply the overhead of the I-pipe ?
->>I mean, Linux is Xenomai idle task, so it is acceptable for Linux
->>numbers to be a bit worse than when Xenomai is not running.
-> 
-> 
-> I bit worse is expected. But I think we are seeing 1 or 2 ticks wake-up
-> delays here. As far as I understood, they are not due to Xenomai
-> consuming significant cycles in the background, are they, Perrine?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig98490978B90DFCC0637A2C70
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-What I see is latencies 5us longer. 5us on ARM is almost nothing, keep
-in mind that a simple syscall on ARM already takes 10 us.
+Hi all,
 
--- 
-                                                 Gilles Chanteperdrix
+I've just uploaded my rebased patch stack, including specifically the
+last bits that should go in before -rc1, namely
+
+- only-setsched-in-trampoline.patch: missing bits for rt-caps-groups
+- clean-nktbase-init.patch: nitpicking, but more consistent
+- fix-intr-locking-part-ii-v2.patch: basically my first version but
+  addressing the NULL issue Dmitry pointed out and adding one - as I
+  think - important barrier. Dmitry, please have another look if I
+  messed something up or if I missed something from your proposal.
+- refactor-timer-modes-v2.patch: the final(?) version
+- rtdm-timer-v3.patch: rebased over timer-modes-v2
+
+Compile-tested, at least booting under qemu/smp, another real box is
+about to boot in a few seconds.
+
+Jan
+
+
+--------------enig98490978B90DFCC0637A2C70
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFGh/RoniDOoMHTA+kRAojpAJ4vkrk3cmO8al1Gls21NboC1ZeDRwCfQazQ
+5U8FOK/+Russq5539O6cdhk=
+=J8ux
+-----END PGP SIGNATURE-----
+
+--------------enig98490978B90DFCC0637A2C70--
 
