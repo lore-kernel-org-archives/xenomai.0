@@ -1,62 +1,43 @@
-Message-ID: <46ADD7D7.8070901@domain.hid>
-Date: Mon, 30 Jul 2007 14:21:43 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4688E0BD.40709@domain.hid>
+Date: Mon, 02 Jul 2007 13:25:49 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-References: <1185718809.11350.110.camel@domain.hid>
-In-Reply-To: <1185718809.11350.110.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig81AC0941DDB2E62316AB4F2E"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Xenomai v2.4-rc1
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Switch to secondary mode
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig81AC0941DDB2E62316AB4F2E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Philippe Gerum wrote:
-> ...
-> 	[rtdm]
->=20
-> 	* Various fixes and updates.
+I am having some problems with an application switching to secondary 
+mode. One of my applications is switching to secondary mode when a 
+function is called in a library. This function itself is empty (only 
+returning 0).
+When I move this function out of the library into the main C-file the 
+program stays in primary mode. What could be happening here?
 
-A bit more details:
-	* Automatic file descriptor cleanup on process termination
-	* RTDM API revision 6:
-	  - Timer abstraction
-	  - Monotonic time base support
-	  - IOCTL prototype fix for 64-bit platforms
-	  - Enhancements/changes of rtdm_irq_request, rtdm_nrtsig
-	    handler, and more (see ksrc/skins/rtdm/API.CHANGES)
+This is the output of a backtrace:
+./dsAuxEvQueTest1[0x10001858]
+/lib/ld.so.1[0x3001eaf8]
+[0x0]
+./dsAuxEvQueTest1[0x100018f0]
+./dsAuxEvQueTest1[0x10005c9c]
+/lib/libpthread.so.0[0xffd32fc]
+/lib/libc.so.6(__clone+0x84)[0xfe751e8]
 
-Jan
+Do I need to use some specific compile or link commandline arguments?
 
+My architecture is ppc, Xenomai version 2.3.1 and kernel 2.6.14.
 
---------------enig81AC0941DDB2E62316AB4F2E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGrdfXniDOoMHTA+kRApy+AJ91tYu71/G+3lkj9AqIFMeTo5epOQCfejCc
-OwkHTjOWlCg6yQYYXnNrxwI=
-=KrAR
------END PGP SIGNATURE-----
-
---------------enig81AC0941DDB2E62316AB4F2E--
+Kind regards,
+    Johan Borkhuis
 
