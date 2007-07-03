@@ -1,62 +1,37 @@
-Message-ID: <46B70D23.2020404@domain.hid>
-Date: Mon, 06 Aug 2007 13:59:31 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <468A8599.60305@domain.hid>
+Date: Tue, 3 Jul 2007 13:21:29 -0400
+From: Will Wiles <wilesw@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig348E2F2DC0D6DAEB90869D5E"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] Feel bored? Run sparse.
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] kernel boot problem, possibly hanging on interrupts
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig348E2F2DC0D6DAEB90869D5E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I'm working with a PXA based embedded board attempting to get Adeos on 
+it's feet.  Right now at boot after the pipeline is enabled (a few 
+printk's for devices later) the process stalls without any information 
+as to why.
 
-Hi,
+I've checked arch/arm/mach-pxa/time.c & irq.c against the information here,
 
-if you ever feel bored and want to contribute something useful to the
-Xenomai project, you don't need to (though you still may :)) invent a
-new timer subsystem, write another fieldbus stack, or port Xenomai to
-your cell phone:
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
-Going through the countless sparse naggings ("make C=3D2" on your Xenomai=
+and everything seems to be in order.  I'm not too versed in interrupt 
+handling as it relates specifically to the linux implementation, but 
+Gilles was mentioning this as a likely culprit, and it seems fairly 
+plausible.
 
-kernel, don't forget to install sparse [1] first), analysing their
-reasons and, at best, providing some fix-up patches would be highly
-appreciated! At first glance, no serious bug hides behind them, but that
-was only a glance, and the noise ratio is fairly high. With less noise
-here, we may actually use sparse in the future to find potential bugs.
+If anyone has seen a similar problem (I'm hoping it's something simple 
+as an incorrect register name), or a good strategy for trying to track 
+down the offending routine, information would be appreciated.
 
-Thanks,
-Jan
-
-[1] http://www.kernel.org/pub/software/devel/sparse/
-
-
---------------enig348E2F2DC0D6DAEB90869D5E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGtw0jniDOoMHTA+kRAszTAJ4wOnWkomIIPtcuJ0sMmPnUCgOGUgCfVNgZ
-8qFl3JCZ+B8+qRL8t8AIk+U=
-=lYMH
------END PGP SIGNATURE-----
-
---------------enig348E2F2DC0D6DAEB90869D5E--
+Will Wiles
 
