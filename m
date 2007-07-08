@@ -1,81 +1,79 @@
-Message-ID: <4667DA1F.4010907@domain.hid>
-Date: Thu, 07 Jun 2007 12:12:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <7289437c0706060801i299d6881w31cc5ffee3444ace@domain.hid>	<DD39B5C3F4963040ADC9768BE7E430CB01FAF561@domain.hid>	<1181143109.17978.101.camel@domain.hid>	<7289437c0706062254v2a386894oeb498459877d5086@domain.hid>	<4667AA4D.6070505@domain.hid>	<7289437c0706070042gf4346ddj1c4ee3ac20a068d2@domain.hid>
-	<4667BBBE.1040405@domain.hid> <4667CEF2.2050509@domain.hid>
-	<4667D008.80109@domain.hid> <4667D167.9030001@domain.hid>
-	<4667D2CC.2060006@domain.hid>
-In-Reply-To: <4667D2CC.2060006@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46908B79.30908@domain.hid>
+References: <1183144465.6574.99.camel@domain.hid>  <46908B79.30908@domain.hid>
+Content-Type: text/plain
+Date: Sun, 08 Jul 2007 10:16:18 +0200
+Message-Id: <1183882578.6014.58.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Cyclictest
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Support for 2.6.22/x86
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jim Cromie <jim.cromie@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> 
->>Jan Kiszka wrote:
->>
->>>Gilles Chanteperdrix wrote:
->>>
->>>
->>>>Jan Kiszka wrote:
->>>>
->>>>
->>>>>Perrine Martignoni wrote:
->>>>>
->>>>>
->>>>>
->>>>>>Ok. I'll do this.
->>>>>>
->>>>>>But I don't understand why the same application compiled without any links
->>>>>>with Xenomai give different results if there is Xenomai in the kernel.
->>>>>
->>>>>[Looking at your numbers again] Hmm, maybe some rounding issue of ticks
->>>>>due to whatever side-effect of I-pipe. We would first of all need the
->>>>>usual set of information (.config, involved versions) and also
->>>>>/sys/devices/system/clocksource/clocksource0/current_clocksource.
->>>>
->>>>Maybe what Perrine is observing is simply the overhead of the I-pipe ?
->>>>I mean, Linux is Xenomai idle task, so it is acceptable for Linux
->>>>numbers to be a bit worse than when Xenomai is not running.
->>>
->>>I bit worse is expected. But I think we are seeing 1 or 2 ticks wake-up
->>>delays here. As far as I understood, they are not due to Xenomai
->>>consuming significant cycles in the background, are they, Perrine?
->>
->>What I see is latencies 5us longer. 5us on ARM is almost nothing, keep
->>in mind that a simple syscall on ARM already takes 10 us.
->>
-> 
-> 
-> T: 0 (  732) P:99 I:   10500 C:    2291 Min:      41 Act:    2281 Avg:    5075 Max:   10224 
-> 
-> vs.
-> 
-> T: 0 (  893) P:99 I:   10000 C:    1756 Min:   13407 Act:   13536 Avg:   13452 Max:   13693 
-> 
-> Thus the _minimum_ and the _average_ wakeup time of a Linux task
-> increase fairly significant here. That's the point. Given a reasonable
-> runtime of both test, this /could/ be considered as a regression of a
-> Xenomai-enabled Linux kernel.
 
-Ok, results are in milliseconds, not microseconds. I guess what we
-observe here is an effect of Xenomai timer interception.
+Hi Jim,
 
-Perrine, what version of the I-pipe patch are you using ?
+On Sun, 2007-07-08 at 01:00 -0600, Jim Cromie wrote:
+> Philippe Gerum wrote:
+> > Our development trunk now contains the necessary support for running
+> > Xenomai over 2.6.22/x86. This work boils down to enabling Xenomai to use
+> > the generic clock event device abstraction that comes with newest
+> > kernels. Other archs / kernel versions still work the older way, until
+> > all archs eventually catch up with clockevents upstream.
+> >
+> > This support won't be backported to 2.3.x, because it has some
+> > significant impact on the nucleus. Tested as thoroughly as possible here
+> > on low-end and mid-range x86 boxen, including SMP.
+> >
+> > Please give this hell.
+> >
+> > http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch
+> >
+> >   
+> 
+> Ive been running 22-rc7 on my Sony VAIO with this patch applied since 
+> July 3,
+> 
+> the only thing wrong Ive seen is that perl ( both bleed and maint )
+> is failing its time related regression tests.
+> ie
+>     rsync -avz rsync://public.activestate.com/perl-current/ .
+>     rsync -avz rsync://public.activestate.com/perl-5.8.x .
+> 
+> Failed 3 tests out of 1429, 99.79% okay.
+>         ../ext/Time/HiRes/t/HiRes.t
+>         ../lib/Benchmark.t
+>         op/time.t
+> 
+> the lib/Benchmark.t test is hanging, and must be killed manually
 
+Thanks for the feedback.
+
+Does this happen with the I-pipe switched off too?
+Also, is Xenomai patched in your kernel with any of the skins statically
+enabled, or just the I-pipe?
+
+> .
+> 
+> These tests pass on Fedora -
+> Linux harpo.jimc.earth 2.6.20-1.2962.fc6 #1 SMP Tue Jun 19 19:27:14 EDT 
+> 2007 i686 i686 i386 GNU/Linux
+> 
+> thanks
+> 
 -- 
-                                                 Gilles Chanteperdrix
+Philippe.
+
+
 
