@@ -1,15 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46924B1B.1010308@domain.hid>
+Message-ID: <4692501E.1060108@domain.hid>
+Date: Mon, 09 Jul 2007 17:11:26 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
 References: <46924A1A.4010909@domain.hid>
-	<1183992374.6014.84.camel@domain.hid>  <46924B1B.1010308@domain.hid>
-Content-Type: text/plain
-Date: Mon, 09 Jul 2007 16:59:54 +0200
-Message-Id: <1183993194.6014.87.camel@domain.hid>
-Mime-Version: 1.0
+	<1183992374.6014.84.camel@domain.hid> <46924B1B.1010308@domain.hid>
+In-Reply-To: <46924B1B.1010308@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-core] [PATCH] __deprecated not defined for Linux 2.4
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,29 +20,26 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Mon, 2007-07-09 at 16:50 +0200, Jan Kiszka wrote:
+Jan Kiszka wrote:
 > Philippe Gerum wrote:
-> > On Mon, 2007-07-09 at 16:45 +0200, Wolfgang Grandegger wrote:
-> >> Hello,
-> >>
-> >> the attached patch changes:
-> >>
-> >>    2007-07-09  Wolfgang Grandegger  <wg@domain.hid>
-> >>
-> >>   * include/asm-generic/wrappers.h: add  __deprecated for Linux 2.4.
-> >>
-> > 
-> > Merged, thanks.
+>> On Mon, 2007-07-09 at 16:45 +0200, Wolfgang Grandegger wrote:
+>>> Hello,
+>>>
+>>> the attached patch changes:
+>>>
+>>>    2007-07-09  Wolfgang Grandegger  <wg@domain.hid>
+>>>
+>>>   * include/asm-generic/wrappers.h: add  __deprecated for Linux 2.4.
+>>>
+>> Merged, thanks.
 > 
 > You are too fast for me - I was still test-building my approach!
-> 
+
+Too fast? My i-Pipe patched Linux 2.4 kernel did simply not built ;-).
+
 > Looks rather like I picked the wrong expression for marking
 > rtdm_task_sleep_until deprecated. I would prefer to go for this variant
 > and back Wolfgang's patch out again:
-
-__deprecated is going to be useful in backporting 2.6 stuff to 2.4. This
-is not only a RTDM issue.
-
 > 
 > --- include/rtdm/rtdm_driver.h  (Revision 2758)
 > +++ include/rtdm/rtdm_driver.h  (Arbeitskopie)
@@ -60,11 +55,9 @@ is not only a RTDM issue.
 > 
 > 
 > But note that I'm still test-building...
-> 
-> Jan
-> 
--- 
-Philippe.
 
+OK, __deprecated_call__ does not make trouble with 2.4.
+
+Wolfgang.
 
 
