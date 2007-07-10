@@ -1,13 +1,11 @@
-Message-ID: <46938A2D.3030009@domain.hid>
-Date: Tue, 10 Jul 2007 15:31:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+Message-ID: <49879.131.173.32.74.1184076657.squirrel@domain.hid>
+In-Reply-To: <46938A2D.3030009@domain.hid>
 References: <34174.131.173.32.74.1184072898.squirrel@domain.hid>
-In-Reply-To: <34174.131.173.32.74.1184072898.squirrel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDC8FF18DE021A669985A18FD"
-Sender: jan.kiszka@domain.hid
+	<46938A2D.3030009@domain.hid>
+Date: Tue, 10 Jul 2007 16:10:57 +0200 (CEST)
+From: bboese@domain.hid
+MIME-Version: 1.0
+Content-Type: text/plain;charset=iso-8859-1
 Subject: Re: [Xenomai-help] SMI workaround failed
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,109 +16,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: bboese@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDC8FF18DE021A669985A18FD
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+> As you already learned how to compile, here is the next chance to
+> practice: we have Xenomai 2.3.2 with I-pipe 1.8-05 now. :)
+Never change a running system ?  :)
+I'd like to solve my latency problem before spending more time on compiling.
 
-bboese@domain.hid wrote:
-> Hello.
->=20
-> I'm very new to Xenomai and Real Time Applications, so please be indulg=
-ent.
->=20
-> I'm using Ubuntu 7.4 on a Pentium IV 3,2 GHz system with 512mb ram. Aft=
-er
-> 2 days of learning about kernel compiling, I've managed to compile a
-> vanilla 2.6.20 kernel with the Xenomai nucleus.
->=20
-> At first, I've checked if Adeos is working:
-> dmesg | grep I-pipe
-> I-pipe 1.7-03: pipeline enabled.
+> That is _very_ high and, if true, can even be problematic for an
+> ordinary non-RT system. Did you disable frequency scaling in your kernel
+> config (if not, that would break the measurement under Xenomai)?
+Yes, I did.
 
-As you already learned how to compile, here is the next chance to
-practice: we have Xenomai 2.3.2 with I-pipe 1.8-05 now. :)
+> You could try switching off individual SMI features, either in your
+> kernel config or - easier for experimenting - with this userland tool:
+>
+> http://www.rts.uni-hannover.de/rtaddon/#smictrl
+> http://www.rts.uni-hannover.de/rtaddon/smictrl.tar.bz2
+>
+Ok, I'll try the tool.
 
-> I-pipe: Domain Xenomai registered.
->=20
-> Then I've checked if Xenomai works properly:
-> dmesg | grep Xenomai
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/x86 started.
-> Xenomai: real-time nucleus v2.3.1 (One Robot's Dream) loaded.
-> Xenomai: SMI-enabled chipset found, enabling SMI workaround.
-> Xenomai: SMI workaround failed!
-> Xenomai: starting native API services.
-> Xenomai: starting POSIX services.
-> Xenomai: starting RTDM services.
->=20
-> And here's a snippet of my .config file for the kernel:
-> #
-> # SMI workaround
-> #
-> # CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
-> CONFIG_XENO_HW_SMI_DETECT=3Dy
-> CONFIG_XENO_HW_SMI_WORKAROUND=3Dy
-> CONFIG_XENO_HW_SMI_ALL=3Dy
->=20
-> As you can see, I've enabled the workaround. But somehow, it fails.
->=20
-> I've tried /usr/xenomai/bin/xeno-test, and my latencies are very high.
-> Maximum latency circles around 10ms, and average latency is about 0.5 m=
-s.
+> Maybe just that "switch off everything" is blocked by your hardware.
+> Moreover, it would be interesting to know your PCI IDs (lspci; lspci -n)
+> for reference.
+lspci
+00:00.0 Host bridge: Intel Corporation 82945G/GZ/P/PL Memory Controller
+Hub (rev 02)
+00:01.0 PCI bridge: Intel Corporation 82945G/GZ/P/PL PCI Express Root Port
+(rev 02)
+00:1c.0 PCI bridge: Intel Corporation 82801G (ICH7 Family) PCI Express
+Port 1 (rev 01)
+00:1c.1 PCI bridge: Intel Corporation 82801G (ICH7 Family) PCI Express
+Port 2 (rev 01)
+00:1d.0 USB Controller: Intel Corporation 82801G (ICH7 Family) USB UHCI #1
+(rev 01)
+00:1d.1 USB Controller: Intel Corporation 82801G (ICH7 Family) USB UHCI #2
+(rev 01)
+00:1d.2 USB Controller: Intel Corporation 82801G (ICH7 Family) USB UHCI #3
+(rev 01)
+00:1d.3 USB Controller: Intel Corporation 82801G (ICH7 Family) USB UHCI #4
+(rev 01)
+00:1d.7 USB Controller: Intel Corporation 82801G (ICH7 Family) USB2 EHCI
+Controller (rev 01)
+00:1e.0 PCI bridge: Intel Corporation 82801 PCI Bridge (rev e1)
+00:1e.2 Multimedia audio controller: Intel Corporation 82801G (ICH7
+Family) AC'97 Audio Controller (rev 01)
+00:1f.0 ISA bridge: Intel Corporation 82801GB/GR (ICH7 Family) LPC
+Interface Bridge (rev 01)
+00:1f.1 IDE interface: Intel Corporation 82801G (ICH7 Family) IDE
+Controller (rev 01)
+00:1f.2 IDE interface: Intel Corporation 82801GB/GR/GH (ICH7 Family)
+Serial ATA Storage Controller IDE (rev 01)
+00:1f.3 SMBus: Intel Corporation 82801G (ICH7 Family) SMBus Controller
+(rev 01)
+01:00.0 VGA compatible controller: ATI Technologies Inc RV380 [Radeon X600
+(PCIE)]
+01:00.1 Display controller: ATI Technologies Inc RV380 [Radeon X600]
+02:00.0 Ethernet controller: Broadcom Corporation NetXtreme BCM5751
+Gigabit Ethernet PCI Express (rev 01)
+04:02.0 Signal processing controller: Meilhaus Electronic GmbH Unknown
+device 4660 (rev 02)
 
-That is _very_ high and, if true, can even be problematic for an
-ordinary non-RT system. Did you disable frequency scaling in your kernel
-config (if not, that would break the measurement under Xenomai)?
-
-> I don't think this is normal, I was hoping for much lower latencies for=
- my
-> realtime applications. I think SMI skyrockets the latency values, any i=
-dea
-> why the SMI workaround won't work or how to debug this problem properly=
- ?
-
-You could try switching off individual SMI features, either in your
-kernel config or - easier for experimenting - with this userland tool:
-
-http://www.rts.uni-hannover.de/rtaddon/#smictrl
-http://www.rts.uni-hannover.de/rtaddon/smictrl.tar.bz2
-
-Maybe just that "switch off everything" is blocked by your hardware.
-Moreover, it would be interesting to know your PCI IDs (lspci; lspci -n)
-for reference.
-
->=20
-> Which latency should I expect with a system like mine (PIV 3,2 GHz) ?
-
-What scenario are you looking for? There is no such thing as "the
-latency of box X".
-
-Anyway, the simple latency tests of Xenomai (single task under heavy
-cache and IRQ load) should give timed task wakeup latencies below 20 us
-or better - but that's fairly hardware setup dependent (a single stall
-on PCI activity can cost more than 30 us if you have the "right"
-hardware...).
-
-Jan
+lspci -v
+00:00.0 0600: 8086:2770 (rev 02)
+00:01.0 0604: 8086:2771 (rev 02)
+00:1c.0 0604: 8086:27d0 (rev 01)
+00:1c.1 0604: 8086:27d2 (rev 01)
+00:1d.0 0c03: 8086:27c8 (rev 01)
+00:1d.1 0c03: 8086:27c9 (rev 01)
+00:1d.2 0c03: 8086:27ca (rev 01)
+00:1d.3 0c03: 8086:27cb (rev 01)
+00:1d.7 0c03: 8086:27cc (rev 01)
+00:1e.0 0604: 8086:244e (rev e1)
+00:1e.2 0401: 8086:27de (rev 01)
+00:1f.0 0601: 8086:27b8 (rev 01)
+00:1f.1 0101: 8086:27df (rev 01)
+00:1f.2 0101: 8086:27c0 (rev 01)
+00:1f.3 0c05: 8086:27da (rev 01)
+01:00.0 0300: 1002:5b62
+01:00.1 0380: 1002:5b72
+02:00.0 0200: 14e4:1677 (rev 01)
+04:02.0 1180: 1402:4660 (rev 02)
 
 
---------------enigDC8FF18DE021A669985A18FD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGk4otniDOoMHTA+kRAjQ6AJ9YmhZj9083n1p27UQSagQdrrYzmACfTYjk
-LqBfZ2p/bxDPM1TdDEDDAok=
-=fEZj
------END PGP SIGNATURE-----
-
---------------enigDC8FF18DE021A669985A18FD--
+Kind regards,
+Bastian Boese
 
