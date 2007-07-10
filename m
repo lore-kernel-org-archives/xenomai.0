@@ -1,16 +1,9 @@
-Message-ID: <46937E70.10903@domain.hid>
-Date: Tue, 10 Jul 2007 14:41:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <34174.131.173.32.74.1184072898.squirrel@domain.hid>
+Date: Tue, 10 Jul 2007 15:08:18 +0200 (CEST)
+From: bboese@domain.hid
 MIME-Version: 1.0
-References: <469345EB.6060302@domain.hid>
-	<22554361.1184054457326.JavaMail.ngmail@domain.hid>
-	<2026261.1184070574283.JavaMail.ngmail@domain.hid>
-In-Reply-To: <2026261.1184070574283.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig9D50A974FE5462314B194F01"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Sporadic PC freeze after rt_task_start
+Content-Type: text/plain;charset=iso-8859-1
+Subject: [Xenomai-help] SMI workaround failed
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,208 +13,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig9D50A974FE5462314B194F01
-Content-Type: multipart/mixed;
- boundary="------------040802090000090208070706"
+Hello.
 
-This is a multi-part message in MIME format.
---------------040802090000090208070706
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+I'm very new to Xenomai and Real Time Applications, so please be indulgent.
 
-M. Koehrer wrote:
-> Hi Jan,
->=20
-> I have compiled and started your test.
-> It works fine - no error or warning...
-> The output is:
-> rt_task_spawn=3D0
-> sched_setaffinity=3D0
-> rt_task_delete=3D0
+I'm using Ubuntu 7.4 on a Pentium IV 3,2 GHz system with 512mb ram. After
+2 days of learning about kernel compiling, I've managed to compile a
+vanilla 2.6.20 kernel with the Xenomai nucleus.
 
-Means it simply terminates then? Interesting. Maybe some difference in
-the .config, maybe due to the timing I get under qemu (that's where I
-notices the lock-up). Let's go for a .config comparison first, mine is
-attached.
+At first, I've checked if Adeos is working:
+dmesg | grep I-pipe
+I-pipe 1.7-03: pipeline enabled.
+I-pipe: Domain Xenomai registered.
 
-Jan
+Then I've checked if Xenomai works properly:
+dmesg | grep Xenomai
+I-pipe: Domain Xenomai registered.
+Xenomai: hal/x86 started.
+Xenomai: real-time nucleus v2.3.1 (One Robot's Dream) loaded.
+Xenomai: SMI-enabled chipset found, enabling SMI workaround.
+Xenomai: SMI workaround failed!
+Xenomai: starting native API services.
+Xenomai: starting POSIX services.
+Xenomai: starting RTDM services.
 
---------------040802090000090208070706
-Content-Type: application/octet-stream;
- name="config.bz2"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="config.bz2"
+And here's a snippet of my .config file for the kernel:
+#
+# SMI workaround
+#
+# CONFIG_XENO_HW_SMI_DETECT_DISABLE is not set
+CONFIG_XENO_HW_SMI_DETECT=y
+CONFIG_XENO_HW_SMI_WORKAROUND=y
+CONFIG_XENO_HW_SMI_ALL=y
 
-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
-6ECn/4u5IpwoSBJBQeyA
---------------040802090000090208070706--
+As you can see, I've enabled the workaround. But somehow, it fails.
 
---------------enig9D50A974FE5462314B194F01
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I've tried /usr/xenomai/bin/xeno-test, and my latencies are very high.
+Maximum latency circles around 10ms, and average latency is about 0.5 ms.
+I don't think this is normal, I was hoping for much lower latencies for my
+realtime applications. I think SMI skyrockets the latency values, any idea
+why the SMI workaround won't work or how to debug this problem properly ?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Which latency should I expect with a system like mine (PIV 3,2 GHz) ?
 
-iD8DBQFGk35wniDOoMHTA+kRAm/GAJ9RBl9LM2omcQBk+44O1/UJeKRQ2wCeID/0
-sKvJkmI8kiF0Fvw9hvAiIMw=
-=33CC
------END PGP SIGNATURE-----
 
---------------enig9D50A974FE5462314B194F01--
+Kind regards,
+Bastian Boese
+
+
 
