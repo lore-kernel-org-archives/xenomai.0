@@ -1,12 +1,20 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Content-Type: text/plain
-Date: Mon, 09 Jul 2007 19:30:52 +0200
-Message-Id: <1184002252.6014.116.camel@domain.hid>
+Date: Wed, 11 Jul 2007 15:59:32 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Message-ID: <20070711155932.4b88699e@domain.hid>
+In-Reply-To: <4690B86C.1000907@domain.hid>
+References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>
+	<4668440F.7020706@domain.hid>
+	<20070608124927.1b789a9e@domain.hid>
+	<46693B6B.1010201@domain.hid>
+	<20070625175107.438849fa@domain.hid>
+	<467FF391.8020401@domain.hid>
+	<20070627105726.7db7a459@domain.hid>
+	<46825054.7030800@domain.hid>
+	<20070629164326.15579570@domain.hid>
+	<4690B86C.1000907@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Xenomai v2.3.2
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/mixed; boundary=MP_KBu5Yxmin6vy9dQ9FHV9yeX
+Subject: Re: [Xenomai-core] measuring tasks execution time
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,71 +24,280 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Here is the latest maintenance release for the v2.3.x branch.  Short
-log follows:
+--MP_KBu5Yxmin6vy9dQ9FHV9yeX
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-	[nucleus]
-	* Always defer release of TCB memory.
-	* Sanitize support for machine-dependent arithmetics.
-	* Fix root priority boosting with XENO_OPT_SCALABLE_SCHED.
-	* Fix /proc/xenomai/{sched, stat} locking in output loop.
-	* Fix lethal bug in SIGIO processing (SMP).
-	* Yet another interrupt locking fix.
-	* Handle RT capability group.
-	* Fix CPU affinity tracking (SMP).
-	* Fix 64bit portability issue.
+On Sun, 08 Jul 2007 12:11:56 +0200
+Jan Kiszka <jan.kiszka@domain.hid> wrote:
 
-	[psos]
-	* Fix potentially unsafe dereference of task args in
-	  t_create() (user-space).
-	* Conformance fix for ERR_TATRNDEL and ERR_TATSDEL error
-	  conditions.
+Hello,
+> You are welcome to test, fix, improve, or just use it. Looking forward
+> to your feedback!
 
-	[native]
-	* Reschedule upon alarm deletion.
-	* Force T_PRIMARY into the mask returned by rt_task_set_mode().
+here are attached some corrections against your previous patch (itself against
+#2758 files): from my tests I now get likely exectime values from both remote
+and self measurement (i.e. we get the accumulated exectime at the instant we
+call rt_task_inquire ), and the stats given in /proc still seem to behave
+normally...
 
-	[posix]
-	* mq: copy the priority of received messages back to
-	  user-space.
-	* clock: access TSC directly from user-space when support
-	  is available.
+the full patch against the original 2758 version is also given in attachement
 
-	[rtai]
-	* Add support for rt_heap_open() and rt_heap_close().
+	Looking forward to your feedback...
 
-	[vrtx]
-	* Fix 64bit portability issue.
-
-	[can]
-	* Assorted fixes (e.g. PEAK PCI).
-
-	[16550A]
-	* Catch spurious baud rate.
-
-	[arm]
-	* Upgrade to kernel 2.6.20.
-	* Various updates for at91.
-
-	[blackfin]
-	* Upgrade to bf53x-R0701RC3-1.6-01 (2.6.19).
-	* Work around toolchain bug while reading TSC from user-space.
-
-	[powerpc]
-	* Sync with DENX's CVS for 2.4.25-ppc.
-
-	[i386]
-	* Upgrade I-pipe support (2.6.20-1.8 series).
-
-
-See the ChangeLog for details.
-
-http://download.gna.org/xenomai/stable/xenomai-2.3.2.tar.bz2
-
+	Daniel
 -- 
-Philippe.
+       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+        Inovallee, 655 avenue de l'Europe, Montbonnot
+             38 334 Saint Ismier Cedex France
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+          http://necs.inrialpes.fr/people/simon/
 
 
+
+--MP_KBu5Yxmin6vy9dQ9FHV9yeX
+Content-Type: text/x-patch; name=enhance-thread-stats-corrections.patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename=enhance-thread-stats-corrections.patch
+
+diff -urN xenomai-2758/include/nucleus/stat.h xenomai-2758-V2/include/nucleus/stat.h
+--- xenomai-2758/include/nucleus/stat.h	2007-07-11 15:16:14.000000000 +0200
++++ xenomai-2758-V2/include/nucleus/stat.h	2007-07-11 15:09:38.000000000 +0200
+@@ -42,7 +42,7 @@
+ do { \
+ 	(sched)->current_account->total += \
+ 		date - (sched)->last_account_switch; \
+-	(sched)->last_account_switch = date; \
++	(sched)->last_account_switch = (sched)->current_account->start = date; \
+ 	/* All changes must be committed before changing the current_account \
+ 	   reference in sched (required for xnintr_sync_stat_references) */ \
+ 	xnarch_memory_barrier(); \
+@@ -71,6 +71,9 @@
+ #define xnstat_runtime_get_start(account)	((account)->start)
+ #define xnstat_runtime_get_total(account)	((account)->total)
+ 
++/* Obtain last time something has been switched */
++#define xnstat_runtime_get_last_switch(sched)	((sched)->last_account_switch)
++
+ /* Reset statistics from inside the accounted entity (e.g. after CPU
+    migration). */
+ #define xnstat_runtime_reset_stats(stat) \
+@@ -113,6 +116,7 @@
+ #define xnstat_runtime_finalize(sched, new_account)		do { } while (0)
+ #define xnstat_runtime_get_start(account)			({ 0; })
+ #define xnstat_runtime_get_total(account)			({ 0; })
++#define xnstat_runtime_get_last_switch(sched)			({ 0; })
+ #define xnstat_runtime_reset_stats(account)			do { } while (0)
+ 
+ typedef struct xnstat_counter {
+diff -urN xenomai-2758/include/nucleus/thread.h xenomai-2758-V2/include/nucleus/thread.h
+--- xenomai-2758/include/nucleus/thread.h	2007-07-11 15:16:14.000000000 +0200
++++ xenomai-2758-V2/include/nucleus/thread.h	2007-07-11 14:28:15.000000000 +0200
+@@ -294,7 +294,7 @@
+ #define xnthread_affinity(thread)          ((thread)->affinity)
+ #define xnthread_affine_p(thread, cpu)     xnarch_cpu_isset(cpu, (thread)->affinity)
+ #define xnthread_get_exectime(thread)      xnstat_runtime_get_total(&(thread)->stat.account)
+-#define xnthread_get_lastswitch(thread)    xnstat_runtime_get_start(&(thread)->stat.account)
++#define xnthread_get_lastswitch(thread)    xnstat_runtime_get_last_switch((thread)->sched)
+ 
+ /* Class-level operations for threads. */
+ static inline int xnthread_get_denormalized_prio(xnthread_t *t)
+diff -urN xenomai-2758/ksrc/skins/native/task.c xenomai-2758-V2/ksrc/skins/native/task.c
+--- xenomai-2758/ksrc/skins/native/task.c	2007-07-11 15:16:14.000000000 +0200
++++ xenomai-2758-V2/ksrc/skins/native/task.c	2007-07-11 15:22:10.000000000 +0200
+@@ -1144,10 +1144,13 @@
+ 	info->cprio = xnthread_current_priority(&task->thread_base);
+ 	info->status = xnthread_state_flags(&task->thread_base);
+ 	info->relpoint = xntimer_get_date(&task->thread_base.ptimer);
++	if(task == xeno_current_task())
+ 	info->exectime = xnarch_tsc_to_ns(
+ 		xnthread_get_exectime(&task->thread_base) +
+ 		xnstat_runtime_now() -
+ 		xnthread_get_lastswitch(&task->thread_base));
++	else 
++	  info->exectime = xnarch_tsc_to_ns(xnthread_get_exectime(&task->thread_base));
+ 	info->modeswitches = xnstat_counter_get(&task->thread_base.stat.ssw);
+ 	info->ctxswitches = xnstat_counter_get(&task->thread_base.stat.csw);
+ 	info->pagefaults = xnstat_counter_get(&task->thread_base.stat.pf);
+
+--MP_KBu5Yxmin6vy9dQ9FHV9yeX
+Content-Type: text/x-patch; name=2758-exectime.patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename=2758-exectime.patch
+
+diff -urN xenomai/include/native/task.h xenomai-2758-V2/include/native/task.h
+--- xenomai/include/native/task.h	2007-07-09 13:06:54.000000000 +0200
++++ xenomai-2758-V2/include/native/task.h	2007-07-11 09:55:02.000000000 +0200
+@@ -90,6 +90,14 @@
+     
+     char name[XNOBJECT_NAME_LEN];  /**< Symbolic name assigned at creation. */
+ 
++    RTIME exectime; /**< Execution time in primary mode in nanoseconds. */
++
++    int modeswitches; /**< Number of primary->secondary mode switches. */
++
++    int ctxswitches; /**< Number of context switches. */
++
++    int pagefaults; /**< Number of triggered page faults. */
++
+ } RT_TASK_INFO;
+ 
+ #define RT_MCB_FSTORE_LIMIT  64
+diff -urN xenomai/include/nucleus/stat.h xenomai-2758-V2/include/nucleus/stat.h
+--- xenomai/include/nucleus/stat.h	2007-07-09 13:07:01.000000000 +0200
++++ xenomai-2758-V2/include/nucleus/stat.h	2007-07-11 15:09:38.000000000 +0200
+@@ -42,7 +42,7 @@
+ do { \
+ 	(sched)->current_account->total += \
+ 		date - (sched)->last_account_switch; \
+-	(sched)->last_account_switch = date; \
++	(sched)->last_account_switch = (sched)->current_account->start = date; \
+ 	/* All changes must be committed before changing the current_account \
+ 	   reference in sched (required for xnintr_sync_stat_references) */ \
+ 	xnarch_memory_barrier(); \
+@@ -67,6 +67,13 @@
+ 	(sched)->current_account = (new_account); \
+ } while (0)
+ 
++/* Obtain content of xnstat_runtime_t */
++#define xnstat_runtime_get_start(account)	((account)->start)
++#define xnstat_runtime_get_total(account)	((account)->total)
++
++/* Obtain last time something has been switched */
++#define xnstat_runtime_get_last_switch(sched)	((sched)->last_account_switch)
++
+ /* Reset statistics from inside the accounted entity (e.g. after CPU
+    migration). */
+ #define xnstat_runtime_reset_stats(stat) \
+@@ -104,9 +111,12 @@
+ 
+ #define xnstat_runtime_now()					({ 0; })
+ #define xnstat_runtime_update(sched, date)			do { } while (0)
+-#define xnstat_runtime_set_current(sched, new_account)	({ (void)sched; NULL; })
++#define xnstat_runtime_set_current(sched, new_account)		({ (void)sched; NULL; })
+ #define xnstat_runtime_get_current(sched)			({ (void)sched; NULL; })
+ #define xnstat_runtime_finalize(sched, new_account)		do { } while (0)
++#define xnstat_runtime_get_start(account)			({ 0; })
++#define xnstat_runtime_get_total(account)			({ 0; })
++#define xnstat_runtime_get_last_switch(sched)			({ 0; })
+ #define xnstat_runtime_reset_stats(account)			do { } while (0)
+ 
+ typedef struct xnstat_counter {
+diff -urN xenomai/include/nucleus/thread.h xenomai-2758-V2/include/nucleus/thread.h
+--- xenomai/include/nucleus/thread.h	2007-07-09 13:07:01.000000000 +0200
++++ xenomai-2758-V2/include/nucleus/thread.h	2007-07-11 14:28:15.000000000 +0200
+@@ -205,7 +205,8 @@
+ 	xnstat_counter_t ssw;	/* Primary -> secondary mode switch count */
+ 	xnstat_counter_t csw;	/* Context switches (includes secondary -> primary switches) */
+ 	xnstat_counter_t pf;	/* Number of page faults */
+-	xnstat_runtime_t account; /* Runtime accounting entity */
++	xnstat_runtime_t account; /* Execution time accounting entity */
++	xnstat_runtime_t lastperiod; /* Interval marker for execution time reports */
+     } stat;
+ 
+     int errcode;		/* Local errno */
+@@ -235,8 +236,6 @@
+ 
+     char name[XNOBJECT_NAME_LEN]; /* Symbolic name of thread */
+ 
+-    xnticks_t stime;		/* Start time */
+-
+     void (*entry)(void *cookie); /* Thread entry routine */
+ 
+     void *cookie;		/* Cookie to pass to the entry routine */
+@@ -294,6 +293,8 @@
+     0 : xnarch_user_pid(xnthread_archtcb(thread)))
+ #define xnthread_affinity(thread)          ((thread)->affinity)
+ #define xnthread_affine_p(thread, cpu)     xnarch_cpu_isset(cpu, (thread)->affinity)
++#define xnthread_get_exectime(thread)      xnstat_runtime_get_total(&(thread)->stat.account)
++#define xnthread_get_lastswitch(thread)    xnstat_runtime_get_last_switch((thread)->sched)
+ 
+ /* Class-level operations for threads. */
+ static inline int xnthread_get_denormalized_prio(xnthread_t *t)
+diff -urN xenomai/ksrc/nucleus/module.c xenomai-2758-V2/ksrc/nucleus/module.c
+--- xenomai/ksrc/nucleus/module.c	2007-07-09 13:07:18.000000000 +0200
++++ xenomai-2758-V2/ksrc/nucleus/module.c	2007-07-11 09:55:02.000000000 +0200
+@@ -421,16 +421,17 @@
+ 		stat_info->csw = xnstat_counter_get(&thread->stat.csw);
+ 		stat_info->pf = xnstat_counter_get(&thread->stat.pf);
+ 
+-		period = sched->last_account_switch - thread->stat.account.start;
++		period = sched->last_account_switch - thread->stat.lastperiod.start;
+ 		if (!period && thread == sched->runthread) {
+ 			stat_info->runtime = 1;
+ 			stat_info->account_period = 1;
+ 		} else {
+-			stat_info->runtime = thread->stat.account.total;
++			stat_info->runtime = thread->stat.account.total -
++				thread->stat.lastperiod.total;
+ 			stat_info->account_period = period;
+ 		}
+-		thread->stat.account.total = 0;
+-		thread->stat.account.start = sched->last_account_switch;
++		thread->stat.lastperiod.total = thread->stat.account.total;
++		thread->stat.lastperiod.start = sched->last_account_switch;
+ 
+ 		holder = nextq(&nkpod->threadq, holder);
+ 
+diff -urN xenomai/ksrc/nucleus/pod.c xenomai-2758-V2/ksrc/nucleus/pod.c
+--- xenomai/ksrc/nucleus/pod.c	2007-07-09 13:07:18.000000000 +0200
++++ xenomai-2758-V2/ksrc/nucleus/pod.c	2007-07-11 09:55:02.000000000 +0200
+@@ -832,7 +832,6 @@
+ 	thread->imode = (mode & XNTHREAD_MODE_BITS);
+ 	thread->entry = entry;
+ 	thread->cookie = cookie;
+-	thread->stime = xnarch_get_cpu_time();
+ 
+ 	if (xnthread_test_state(thread, XNRRB))
+ 		thread->rrcredit = thread->rrperiod;
+@@ -1781,8 +1780,9 @@
+ 
+ 	xnpod_schedule();
+ 
+-	/* Reset execution time stats due to unsync'ed TSCs */
+-	xnstat_runtime_reset_stats(&thread->stat.account);
++	/* Reset execution time measurement period so that we don't mess up
++	   per-CPU statistics. */
++	xnstat_runtime_reset_stats(&thread->stat.lastperiod);
+ 
+       unlock_and_exit:
+ 
+diff -urN xenomai/ksrc/nucleus/thread.c xenomai-2758-V2/ksrc/nucleus/thread.c
+--- xenomai/ksrc/nucleus/thread.c	2007-07-09 13:07:18.000000000 +0200
++++ xenomai-2758-V2/ksrc/nucleus/thread.c	2007-07-11 09:55:02.000000000 +0200
+@@ -103,7 +103,6 @@
+ 	thread->imode = 0;
+ 	thread->entry = NULL;
+ 	thread->cookie = 0;
+-	thread->stime = 0;
+ 	thread->ops = ops;
+ 
+ 	inith(&thread->glink);
+diff -urN xenomai/ksrc/skins/native/task.c xenomai-2758-V2/ksrc/skins/native/task.c
+--- xenomai/ksrc/skins/native/task.c	2007-07-09 13:07:13.000000000 +0200
++++ xenomai-2758-V2/ksrc/skins/native/task.c	2007-07-11 15:22:10.000000000 +0200
+@@ -1144,6 +1144,16 @@
+ 	info->cprio = xnthread_current_priority(&task->thread_base);
+ 	info->status = xnthread_state_flags(&task->thread_base);
+ 	info->relpoint = xntimer_get_date(&task->thread_base.ptimer);
++	if(task == xeno_current_task())
++	info->exectime = xnarch_tsc_to_ns(
++		xnthread_get_exectime(&task->thread_base) +
++		xnstat_runtime_now() -
++		xnthread_get_lastswitch(&task->thread_base));
++	else 
++	  info->exectime = xnarch_tsc_to_ns(xnthread_get_exectime(&task->thread_base));
++	info->modeswitches = xnstat_counter_get(&task->thread_base.stat.ssw);
++	info->ctxswitches = xnstat_counter_get(&task->thread_base.stat.csw);
++	info->pagefaults = xnstat_counter_get(&task->thread_base.stat.pf);
+ 
+       unlock_and_exit:
+ 
+
+--MP_KBu5Yxmin6vy9dQ9FHV9yeX--
 
