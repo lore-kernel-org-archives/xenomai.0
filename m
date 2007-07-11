@@ -1,13 +1,14 @@
-Message-ID: <32472916.1184157954131.JavaMail.ngmail@domain.hid>
-Date: Wed, 11 Jul 2007 14:45:54 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <469487A7.8030204@domain.hid>
+Message-ID: <4694ED98.6000000@domain.hid>
+Date: Wed, 11 Jul 2007 16:47:52 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <469487A7.8030204@domain.hid> <4693A702.1010604@domain.hid>
-	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	<1982070.1184078400928.JavaMail.ngmail@domain.hid>
-	<12423528.1184136237522.JavaMail.ngmail@domain.hid>
+References: <46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	<1982070.1184078400928.JavaMail.ngmail@domain.hid>
+	<4693A702.1010604@domain.hid>
+In-Reply-To: <4693A702.1010604@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8497D7DCEE0BAB1278218B4F"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] Sporadic PC freeze after rt_task_start
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,60 +19,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi Jan,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8497D7DCEE0BAB1278218B4F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-I tried with Xenomai 2.3.2 and (still) the kernel 2.6.20.4 - same configura=
-tion as before.
-I used the adeos patch for 2.6.20 that is part of Xenomai 2.3.2
-Same effect.
-The system freezes...
-
-Regards
-
-Mathias
-
+Jan Kiszka wrote:
 > M. Koehrer wrote:
-> > Hi Jan,
-> >=20
-> > as I mentioned in my first mail on this topic, I have extracted this
-> example from a huge
-> > real time application where the system sporadically freezes.
-> > What I have found out there was, that the system freeze happened always
-> when trying
-> > to start a thread (in the original application, the tasks run fairly
-> long).
+>> Hi Jan,
+>>
+>> yes, it terminates nicely.
+>> I have attached my config.
 >=20
-> OK, so it's one of rt_task_create (unlikely), rt_task_start, usleep, or
-> some early code in the task function itself. Still, a lot of "or"...
+> Nothing obvious. Leaves us with probable timing differences or the
+> different versions of our setups (I found this over 2.3.2 and trunk).
+
+My posted issue is a classic race of self-terminating the native task on
+CPU1 vs. remote-terminating it from CPU0. When the latter wins, things
+fall apart. Some solution needs more thoughts.
+
+Anyway, this issues is most probably unrelated to your bug.
+
 >=20
-> Again, please consider my further debugging suggestions.
->=20
-> > I think it has to do with rt_task_start() followed by usleep() and the
-> non-realtime stuff running
-> > on CPU 0 and the realtime stuff running on CPU 1.
-> > I never saw that issue on a single core CPU (even if the same SMP kerne=
-l
-> was used).
->=20
-> Yeah, it must be a nice race that requires real parallelism.
->=20
-> Jan
->=20
+> OK, further analysis on your side would be appreciated. E.g. trying the=
+
+> latest release, switching on debug features in Xenomai like the NMI
+> watchdog or nucleus debugging. Also, nailing down what service call
+> precisely locks up (the join, the termination of the task, etc.) would
+> be good to reduce the search space.
 >=20
 
+As you posted in a different mail, recent versions make no difference.
+Could you now switch on the watchdog and nucleus debugging?
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+Thanks,
+Jan
 
 
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
-g
-und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
-nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+--------------enig8497D7DCEE0BAB1278218B4F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGlO2YniDOoMHTA+kRAkSsAJ0avparkkJITWn+EPB+K4V95KX1iQCfVDvf
+mOKVRLe6jx+Qnja2oJWfwYo=
+=qJER
+-----END PGP SIGNATURE-----
+
+--------------enig8497D7DCEE0BAB1278218B4F--
 
