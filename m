@@ -1,14 +1,14 @@
-Message-ID: <4696A9BE.4090008@domain.hid>
-Date: Fri, 13 Jul 2007 00:22:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <913919.1184311634860.JavaMail.ngmail@domain.hid>
+Date: Fri, 13 Jul 2007 09:27:14 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <4694ED98.6000000@domain.hid>
 MIME-Version: 1.0
-References: <4696082A.5090006@domain.hid> <1184261926.6014.157.camel@domain.hid>
-In-Reply-To: <1184261926.6014.157.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDF05FA3EC29442F866F092CC"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] xenomai release check
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <4694ED98.6000000@domain.hid>
+	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	<1982070.1184078400928.JavaMail.ngmail@domain.hid>
+	<4693A702.1010604@domain.hid>
+Subject: Re: [Xenomai-help] Sporadic PC freeze after rt_task_start
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,56 +18,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-help <xenomai@xenomai.org>
+To: jan.kiszka@domain.hid, mathias_koehrer@domain.hid
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDF05FA3EC29442F866F092CC
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi Jan,
 
-Philippe Gerum wrote:
-> On Thu, 2007-07-12 at 10:53 +0000, St=E9phane ANCELOT wrote:
->> Hi,
->>
->> Is it possible to setup a function that returns the xeno version strin=
-g ?
->>
+I did another test to identify the freeze. I have plugged in a POST-CODE 80=
+ PCI board into the PC
+and instrumented the code to write to port 80 to find out where the freeze =
+actually happens.
+It seems not to return for rt_task_start as the last written POST code (see=
+ source code below)  is 0x30.
+I hope to find a time slot to modify the kernel to do another test.
+The bad thing is that it takes really long to get the freeze (up to a coupl=
+e of hours).
+
+Regards
+
+Mathias
+
+---------------------------------- BEGIN SOURCE CODE ----------------------=
+-
+#include <stdio.h>
+#include <sys/mman.h>
+#include <sys/io.h>
+
+#include <native/task.h>
+#include <native/sem.h>
+
+
+RT_TASK taska_desc;
+
+void mytaska(void *cookie)
+{
+    int i;
+
+    outb(0x80,0x80);
+
+    for (i=3D0; i < 5; i++)
+    {
+        rt_task_sleep(5000000);
+        outb(0x90,0x80);
+        // printf("Task A\n");
+    }
+    outb(0xa0,0x80);
+
+    // printf("End of task A\n");
+}
+
+
+int main(void)
+{
+    int i;
+    int j;
+    ioperm(0x80, 1, 1);
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    for (j=3D0; j < 10000; j++)
+        for (i=3D10; i < 15000; i++)
+        {
+            outb(0x20, 0x80);
+            rt_task_create(&taska_desc, "mytaska", 0, 81, T_JOINABLE | T_FP=
+U | T_CPU(1));
+            outb(0x30, 0x80);
+            rt_task_start(&taska_desc, &mytaska, NULL);
+            outb(0x40, 0x80);
+            usleep(1500);
+            outb(0x50, 0x80);
+
+            rt_task_join(&taska_desc);
+            if ( i % 100 =3D=3D 0)
+                printf("Loop %i %i\n", j,  i);
+        }
+
+
+    return 0;
+}
+--------------------------- END  -----------------
+
+=20
+> > Nothing obvious. Leaves us with probable timing differences or the
+> > different versions of our setups (I found this over 2.3.2 and trunk).
 >=20
-> Have a look at XENO_VERSION_CODE and friends in nucleus/version.h
-
-I think Stephan has a different problem:
-
+> My posted issue is a classic race of self-terminating the native task on
+> CPU1 vs. remote-terminating it from CPU0. When the latter wins, things
+> fall apart. Some solution needs more thoughts.
 >=20
->> In cross compiled environment, this will permit to check at runtime th=
-at
->> you are running the program with the expected xeno libraries !!!
->>
->> We have had following problem on the target we setted up:
->> kernel modules were right, but usr/xenomai/libs  were coming from an
->> older xeno release !!
->> at runtime , our program had some bad issues !
+> Anyway, this issues is most probably unrelated to your bug.
+>=20
+> >=20
+> > OK, further analysis on your side would be appreciated. E.g. trying the
+> > latest release, switching on debug features in Xenomai like the NMI
+> > watchdog or nucleus debugging. Also, nailing down what service call
+> > precisely locks up (the join, the termination of the task, etc.) would
+> > be good to reduce the search space.
+> >=20
+>=20
+> As you posted in a different mail, recent versions make no difference.
+> Could you now switch on the watchdog and nucleus debugging?
+>=20
+> Thanks,
+> Jan
+>=20
+>=20
+>=20
 
-He dynamically linked against some old Xenomai lib over a new kernel,
-right? That should be caught by the ABI check on library init these
-days. Stephan, can you tell us which versions where involved here?
-
-Jan
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
---------------enigDF05FA3EC29442F866F092CC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFGlqm+niDOoMHTA+kRApp2AJ9ZpbO1qwiQKgpROrxXsGfkXV7QhQCdGJ/1
-gDDqxfIXAKnhWjBgb4g7kMY=
-=mmgU
------END PGP SIGNATURE-----
-
---------------enigDF05FA3EC29442F866F092CC--
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
