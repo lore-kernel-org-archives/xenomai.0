@@ -1,13 +1,11 @@
-Message-ID: <46975A02.3030704@domain.hid>
-Date: Fri, 13 Jul 2007 10:54:58 +0000
-From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
-MIME-Version: 1.0
-References: <4696082A.5090006@domain.hid> <1184261926.6014.157.camel@domain.hid>
-	<4696A9BE.4090008@domain.hid>
-In-Reply-To: <4696A9BE.4090008@domain.hid>
 Content-Type: text/plain; charset="iso-8859-1"
+Date: Fri, 13 Jul 2007 11:24:40 +0200
+From: "Karl Reichert" <Karl-Trampe@domain.hid>
+Message-ID: <20070713092440.281340@domain.hid>
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai release check
+Subject: [Xenomai-help] error compiling linux 2.6.22 or 2.6.22.1 with
+ adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,38 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-Jan Kiszka a =E9crit :
-> Philippe Gerum wrote:
->> On Thu, 2007-07-12 at 10:53 +0000, St=E9phane ANCELOT wrote:
->>> Hi,
->>>
->>> Is it possible to setup a function that returns the xeno version string=
- ?
->>>
->> Have a look at XENO_VERSION_CODE and friends in nucleus/version.h
->=20
-> I think Stephan has a different problem:
->=20
->>> In cross compiled environment, this will permit to check at runtime that
->>> you are running the program with the expected xeno libraries !!!
->>>
->>> We have had following problem on the target we setted up:
->>> kernel modules were right, but usr/xenomai/libs  were coming from an
->>> older xeno release !!
->>> at runtime , our program had some bad issues !
->=20
+Hello,
 
-YES, YOU ARE RIGHT , we linked 2.3.0 compiled programs against 2.1.2 libs
+tried the adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch, but it works neither wi=
+th linux 2.6.20 nor 2.6.20.1
+patch and prepare-kernel.sh worked, after make menuconfig I tried to compil=
+e with make and get the following (my gcc gives me german errors, so I trie=
+d to translate as good as possible):
+[...]
+In file included from include/asm/xenomai/hal.h:40,
+>from kernel/xenomai/arch/generic/hal.c:42:
+include/asm/xenomai/wrappers.h: in function wrap_switch_iobitmap:
+include/asm/xenomai/wrappers.h:86: error: struct tss_struct has no element =
+named io_bitmap_base
+include/asm/xenomai/wrappers.h:96: error: struct tss_struct has no element =
+named io_bitmap_base
+[...]
 
-> He dynamically linked against some old Xenomai lib over a new kernel,
-> right? That should be caught by the ABI check on library init these
-> days. Stephan, can you tell us which versions where involved here?
->=20
-> Jan
->=20
+Any hints? My gcc is 4.1.2
 
+Thanks in advance
+--=20
+von Karl Reichert
 
+Psssst! Schon vom neuen GMX MultiMessenger geh=F6rt?
+Der kanns mit allen: http://www.gmx.net/de/go/multimessenger
 
