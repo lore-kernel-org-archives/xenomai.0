@@ -6,8 +6,8 @@ References: <20070713092440.281340@domain.hid> <469746E9.6050503@domain.hid>
 	<20070713143914.212980@domain.hid> <1184338266.6014.276.camel@domain.hid>
 	<20070713145756.212990@domain.hid>
 Content-Type: text/plain
-Date: Fri, 13 Jul 2007 17:04:21 +0200
-Message-Id: <1184339061.6014.281.camel@domain.hid>
+Date: Fri, 13 Jul 2007 17:05:49 +0200
+Message-Id: <1184339149.6014.283.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -87,14 +87,11 @@ On Fri, 2007-07-13 at 16:57 +0200, Karl Reichert wrote:
 > > 
 > Thank you very much. Maybe this hint about paravirtualization should be added to Xenomai FAQ. Otherwise somebody else could get the same issues.
 
-This was a transient bug from the 1.7 series, fixed in later revisions,
-so documenting it into the FAQ would be meaningless; adding an entry
-into the Wiki, maybe. In any case, this is one more reason to use recent
-patches when available.
+Somebody did face this issue already. You may find the report and the
+resolution into the mail archive.
 
 -- 
 Philippe.
-
 
 
 
