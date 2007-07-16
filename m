@@ -1,20 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20070713153535.213000@domain.hid>
-References: <20070713092440.281340@domain.hid> <469746E9.6050503@domain.hid>
-	<20070713094331.281350@domain.hid> <1184323717.6014.248.camel@domain.hid>
-	<20070713133750.277260@domain.hid> <1184335303.6014.268.camel@domain.hid>
-	<20070713143914.212980@domain.hid> <1184338266.6014.276.camel@domain.hid>
-	<20070713145756.212990@domain.hid> <1184339061.6014.281.camel@domain.hid>
-	<20070713153535.213000@domain.hid>
-Content-Type: text/plain
-Date: Fri, 13 Jul 2007 18:08:08 +0200
-Message-Id: <1184342888.6014.286.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] error compiling linux 2.6.22 or 2.6.22.1
-	with	adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch
-Reply-To: rpm@xenomai.org
+Message-ID: <2862c2c80707152040v1cc27cb2kc33f1cbf21932cba@domain.hid>
+Date: Mon, 16 Jul 2007 11:40:28 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
+In-Reply-To: <2862c2c80707130245j3f9b09b3i2b461c4e1521c53d@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_39450_1325179.1184557228554"
+References: <2862c2c80707130245j3f9b09b3i2b461c4e1521c53d@domain.hid>
+Subject: [Xenomai-help] Enable I-PIPE - kernel boot hangs in the AT91RM9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,111 +16,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Karl Reichert <Karl-Trampe@domain.hid>
-Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
+To: xenomai@xenomai.org
 
-On Fri, 2007-07-13 at 17:35 +0200, Karl Reichert wrote:
-> Philippe Gerum wrote:
-> > On Fri, 2007-07-13 at 16:57 +0200, Karl Reichert wrote:
-> > > Philippe Gerum wrote:
-> > > > On Fri, 2007-07-13 at 16:39 +0200, Karl Reichert wrote:
-> > > > > Philippe Gerum wrote:
-> > > > > > On Fri, 2007-07-13 at 15:37 +0200, Karl Reichert wrote:
-> > > > > > > Philippe Gerum wrote:
-> > > > > > > > On Fri, 2007-07-13 at 11:43 +0200, Karl Reichert wrote:
-> > > > > > > > 
-> > > > > > > > > But I tried with adeos-ipipe-2.6.22-rc6-i386-1.9-00.patch.
-> > Where
-> > > > can
-> > > > > > I
-> > > > > > > > get ipipe-2.6.22-i386-1.8-05? It's not listed on the FTP! I
-> > can
-> > > > only
-> > > > > > find
-> > > > > > > > ipipe-2.6.20-i386-1.8-05 (which is for 2.6.20 kernels).
-> > > > > > > > 
-> > > > > > > > The final I-pipe patch for 2.6.22 is currently undergoing
-> > survival
-> > > > > > test
-> > > > > > > > under extremely unreasonable load on by boxen. Please wait.
-> > > > > > > > 
-> > > > > > > > -- 
-> > > > > > > > Philippe.
-> > > > > > > > 
-> > > > > > > So I took adeos-ipipe-2.6.20-i386-1.7-03.patch (xenomai 2.3.1)
-> > with
-> > > > > > linux2.6.20.11 and linux2.6.20.15 but with both the same problem.
-> > > > Patching and
-> > > > > > preparing works fine as make menuconfig does, but when compiling
-> > make
-> > > > says:
-> > > > > > > [...]
-> > > > > > > AS arch/i386/kernel/entry.o
-> > > > > > > arch/i386/kernel/entry.S: Assembler messages:
-> > > > > > > arch/i386/kernel/entry.S:270: invalid character '_' in mnemonic
-> > > > > > > arch/i386/kernel/entry.S:347: invalid character '_' in mnemonic
-> > > > > > > arch/i386/kernel/entry.S:477: invalid character '_' in mnemonic
-> > > > > > > arch/i386/kernel/entry.S:520: invalid character '_' in mnemonic
-> > > > > > > arch/i386/kernel/entry.S:534: invalid character '_' in mnemonic
-> > > > > > > [...]
-> > > > > > 
-> > > > > > Disable CONFIG_PARAVIRT, or upgrade to 2.6.20-1.8-05. The latest
-> > patch
-> > > > > > for 2.6.22 is now available.
-> > > > > > 
-> > > > > Thanks a lot, setting this to no solved the issue. Where do I get
-> > the
-> > > > patch? I can't find it in the online SVN (web access).
-> > > > > 
-> > > > 
-> > > >
-> > http://download.gna.org/adeos/patches/v2.6/i386/older/adeos-ipipe-2.6.20-i386-1.8-05.patch
-> > > >
-> > http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.22-i386-1.9-00.patch
-> 
-> Still get the same error while compiling 2.6.22.1 with 1.9 adeos patch:
-> [...]
+------=_Part_39450_1325179.1184557228554
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-You won't be able to use 2.6.22 with v2.3.x. It's either v2.3.x + 2.6.20
-or earlier, or the Xenomai development trunk with 2.6.22 and earlier.
+> Dear all,
+>
+> I have applied the adeos-ipipe-2.6.20-arm-1.7.03.patch for kernel 2.6.20(patches with
+> 2.6.20-at91.patch) on my AT91RM9200 board from kwikbyte.
+>
+> If I compile the kernel without IPIPE, mounting of nfs file system or
+> jffs2 filesystem are both alright.
+>
+> Whenever I enable the IPIPE feature, the booting sequence will hang and I
+> couldn't proceed to console login.
+>
+> -- mounting to jffs file system
+> mice: PS/2 mouse device common for all mice
+> AT91 MMC: 4 wire bus mode not supported by this driver - using 1 wire
+> TCP cubic registered
+> NET: Registered protocol family 1
+> NET: Registered protocol family 17
+> Empty flash at 0x00ee6080 ends at 0x00ee6200
+> Empty flash at 0x01d9d3f8 ends at 0x01d9d400
+> Empty flash at 0x01d9efdc ends at 0x01d9f000
+> VFS: Mounted root (jffs2 filesystem).
+> Freeing init memory: 112K
+> --> HANG
+>
+> -- mounting to NFS root file system
+> AT91 MMC: 4 wire bus mode not supported by this driver - using 1 wire
+> TCP cubic registered
+> NET: Registered protocol family 1
+> NET: Registered protocol family 17
+> --> HANG
+>
+> I have try to enble IPIPE Tracer for debugging, but couldn't see the debug
+> messages.
+>
+> Please help. Thanks
+>
+> regards,
+> chun yeow
+>
 
-> In file included from include/asm/xenomai/hal.h:40,
-> >>from kernel/xenomai/arch/generic/hal.c:42:
-> include/asm/xenomai/wrappers.h: in function wrap_switch_iobitmap:
-> include/asm/xenomai/wrappers.h:86: error: struct tss_struct has no element named io_bitmap_base
-> include/asm/xenomai/wrappers.h:96: error: struct tss_struct has no element named io_bitmap_base
-> [...]
-> (gcc is 4.1.2)
-> 
-> 
-> 
-> > > > 
-> > > > > > > 
-> > > > > > > What's the case here now? I installed all dependencies.
-> > > > > > > 
-> > > > > > > Karl
-> > > > > > -- 
-> > > > > > Philippe.
-> > > > > > 
-> > > > > Karl
-> > > > -- 
-> > > > Philippe.
-> > > > 
-> > > Thank you very much. Maybe this hint about paravirtualization should be
-> > added to Xenomai FAQ. Otherwise somebody else could get the same issues.
-> > 
-> > This was a transient bug from the 1.7 series, fixed in later revisions,
-> > so documenting it into the FAQ would be meaningless; adding an entry
-> > into the Wiki, maybe. In any case, this is one more reason to use recent
-> > patches when available.
-> > 
-> > -- 
-> > Philippe.
-> > 
-> > 
-> 
--- 
-Philippe.
+------=_Part_39450_1325179.1184557228554
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+<br><div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Dear all,<br><br>I have applied the adeos-ipipe-2.6.20-arm-1.7.03.patch
+ for kernel 2.6.20 (patches with 2.6.20-at91.patch) on my AT91RM9200 board from kwikbyte.<br><br>If I compile the kernel without IPIPE, mounting of nfs file system or jffs2 filesystem are both alright.
+<br><br>Whenever I enable the IPIPE feature, the booting sequence will hang and I couldn&#39;t proceed to console login. <br><br>-- mounting to jffs file system<br>mice: PS/2 mouse device common for all mice<br>AT91 MMC: 4 wire bus mode not supported by this driver - using 1 wire
+<br>TCP cubic registered<br>NET: Registered protocol family 1<br>NET: Registered protocol family 17<br>Empty flash at 0x00ee6080 ends at 0x00ee6200<br>Empty flash at 0x01d9d3f8 ends at 0x01d9d400<br>Empty flash at 0x01d9efdc ends at 0x01d9f000
+<br>VFS: Mounted root (jffs2 filesystem).<br>Freeing init memory: 112K<br><span style="color: rgb(255, 0, 0);">--&gt; HANG</span><br><br>-- mounting to NFS root file system<br>AT91 MMC: 4 wire bus mode not supported by this driver - using 1 wire
+<br>TCP cubic registered<br>NET: Registered protocol family 1<br>NET: Registered protocol family 17<br><span style="color: rgb(255, 0, 0);">--&gt; HANG</span><br><br>I have try to enble IPIPE Tracer for debugging, but couldn&#39;t see the debug messages.
+<br><br>Please help. Thanks<br><br>regards,<br><span class="sg">chun yeow<br>
+</span></blockquote></div><br>
 
+------=_Part_39450_1325179.1184557228554--
 
