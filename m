@@ -1,50 +1,62 @@
-Message-ID: <469FD346.4060402@domain.hid>
-Date: Thu, 19 Jul 2007 17:10:30 -0400
-From: Vincent Levesque <vleves@domain.hid>
-MIME-Version: 1.0
-References: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>	<1184746976.6562.62.camel@domain.hid>	<760425846A1BC44B8BD24361EF2E3451010D9A3F@square.bfh.ch>
-	<1184755654.13258.17.camel@domain.hid>
-In-Reply-To: <1184755654.13258.17.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Date: Mon, 16 Jul 2007 18:19:00 +0200
+From: Daniel Simon <Daniel.Simon@domain.hid>
+Message-ID: <20070716181900.3f075bc7@domain.hid>
+In-Reply-To: <46960A4B.5070206@domain.hid>
+References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>
+	<4668440F.7020706@domain.hid>
+	<20070608124927.1b789a9e@domain.hid>
+	<46693B6B.1010201@domain.hid>
+	<20070625175107.438849fa@domain.hid>
+	<467FF391.8020401@domain.hid>
+	<20070627105726.7db7a459@domain.hid>
+	<46825054.7030800@domain.hid>
+	<20070629164326.15579570@domain.hid>
+	<4690B86C.1000907@domain.hid>
+	<20070711155932.4b88699e@domain.hid>
+	<4694E96B.5020801@domain.hid>
+	<20070711173545.709225f1@domain.hid>
+	<4694FD99.3030405@domain.hid>
+	<20070711185529.62544380@domain.hid>
+	<469549AF.5090102@domain.hid>
+	<20070712113039.14050727@domain.hid>
+	<46960A4B.5070206@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Writing from user space direct to
- IO	Ports	without mode switches
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] measuring tasks execution time
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Hi Philippe,
-> Excepts from your code:
->   while(!end){
->     //switch to primary mode
->     ret = rt_task_set_mode(0, T_PRIMARY, NULL);
->
-> Damnit. I knew this particular interface was going to be misused most of
-> the time. In short: do ____NOT_____ switch modes manually, this is
-> useless because Xenomai syscalls do it for you, and even sub-optimal
-> because the kernel knows better when it needs it and saves you a syscall
-> when required. The T_PRIMARY bit has been solely provided for internal
-> Xenomai purposes (some Xenomai libs have very special requirements in
-> very rare cases). rt_task_wait_period() will switch to primary mode if
-> needed, and always leave you in primary upon return.
->   
-Indeed, I was also doing the same thing. From my understanding of the 
-docs, I assumed that manually setting a task to secondary mode was 
-allowed and could improve performance. Take for instance a task that 
-logs data coming from a RT_QUEUE to a file. Is there anything special 
-that should be done to minimize the impact of the frequent mode switches 
-in such a case?
+On Thu, 12 Jul 2007 13:02:35 +0200
+Jan Kiszka <jan.kiszka@domain.hid> wrote:
 
-Thanks,
+Hi Jan,
 
-Vincent Levesque
-vleves@domain.hid
+> > -I am thinking about more demanding tests, with intertasks preemption and
+> > overloads,
+
+I have shaked my examples in various ways, with
+preemptions, overruns and high load on the machine, and the exectime patch
+behaves well, providing data consistent with the expectations (and with
+the rt_timer_read() probe when usable).
+
+	Daniel
+
+-- 
+       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
+        Inovallee, 655 avenue de l'Europe, Montbonnot
+             38 334 Saint Ismier Cedex France
+ Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
+          http://necs.inrialpes.fr/people/simon/
+
+
 
