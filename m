@@ -1,5 +1,5 @@
-Message-ID: <2ff1a98a0707180514s12053432xf0b30d6e2d22ea53@domain.hid>
-Date: Wed, 18 Jul 2007 14:14:54 +0200
+Message-ID: <2ff1a98a0707180739y59f673c3tc7d8668877686212@domain.hid>
+Date: Wed, 18 Jul 2007 16:39:18 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 In-Reply-To: <2862c2c80707180255h7197a055i58b90228bc2c52df@domain.hid>
 MIME-Version: 1.0
@@ -70,18 +70,15 @@ On 7/18/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
 > My console ttyS0 uses the DBGU, and the port->irq is 1 (AT91_ID_SYS).
 > Although RTC uses the same interrupt, but it is disabled. We don't use
 > system timer which uses the same interrupt pin in xenomai. Any ideas?
->
 
-In atmel serial interrupt driver try to know from which source
-interrupts are coming: RTC, system timer, or other by reading their
-specific status registers.
+Try adding the following piece of code at the beginning of the I-pipe
+version of the at91rm9200_timer_init function in
+arch/arm/mach-at91rm9200/at91rm9200_timer.c:
 
-If the interrupt source is the system timer, we will have to take
-counter measures in time.c. We do not explicitely disable the system
-timer, so if the boot loader (I think you mentioned u-boot ?) enable
-it and does not disable it before starting kernel, the timer still
-tries to tick. That would explain why you see the bug and I do not see
-it: maybe the difference comes from the boot loader.
+	/* Disable all timer interrupts */
+	at91_sys_write(AT91_ST_IDR, AT91_ST_PITS | AT91_ST_WDOVF |
+AT91_ST_RTTINC | AT91_ST_ALMS);
+	(void) at91_sys_read(AT91_ST_SR);	/* Clear any pending interrupts */
 
 -- 
                                                Gilles Chanteperdrix
