@@ -1,15 +1,23 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>
-References: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>
-Content-Type: text/plain
-Date: Wed, 18 Jul 2007 10:22:56 +0200
-Message-Id: <1184746976.6562.62.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <2ff1a98a0707180135q24ab6515kf573215edf0aaafa@domain.hid>
+Date: Wed, 18 Jul 2007 10:35:34 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2862c2c80707180036t6e64ccban83924d445d80f9c0@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Writing from user space direct to IO
-	Ports	without mode switches
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+References: <2862c2c80707130245j3f9b09b3i2b461c4e1521c53d@domain.hid>
+	<2862c2c80707160301i786f94abn6ca72ac76b1b1631@domain.hid>
+	<2862c2c80707160352n26db7ac2sddee9a6e6e7dd9c8@domain.hid>
+	<2862c2c80707170210s437674f6ua7283d3e03e97a1b@domain.hid>
+	<2ff1a98a0707170300o5d36e9f9i96b5a11fb4c7a87e@domain.hid>
+	<2862c2c80707170336t45ad3266pc5b5f7769623a900@domain.hid>
+	<2ff1a98a0707170609u5da092a1nf32d4789b579717@domain.hid>
+	<2862c2c80707172257x5f41d8c4p5df5282be4ba98a2@domain.hid>
+	<18077.48173.286511.400122@domain.hid>
+	<2862c2c80707180036t6e64ccban83924d445d80f9c0@domain.hid>
+Subject: Re: [Xenomai-help] Enable I-PIPE - kernel boot hangs in the
+	AT91RM9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,61 +27,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Renner Johannes <rennj1@domain.hid>
-Cc: xenomai@xenomai.org
+To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-On Wed, 2007-07-18 at 00:23 +0200, Renner Johannes wrote:
-> Hello everyone,
-> 
-> The outb functions to control parallel ports in my user mode RT task
-> causing inacceptable jitter and make the task unstable(-110) at
-> higher(10khz) output frequencies. I believe this is due to mode
-> switches form Primary to the Secondary mode.
+On 7/18/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
+> Dear Gilles,
+>
+> I think that the interrupt is shared for supporting up to 4 UARTs (ttyS0 --
+> S3) available in the system.
 
-You can check this by dumping /proc/xenomai/stat periodically when your
-task runs. If the "MSW" value increases regularly, then there are indeed
-unwanted mode switches.
+No, from reading arch/arm/mach-at91rm9200/at92rm9200_devices.c
+uart DBGU uses irq AT91_ID_SYS i.e. 1
+uart 0 uses irq AT91RM9200_ID_US0 i.e. 6
+uart 1 uses irq AT91RM9200_ID_US1 i.e. 7
+uart 2 uses irq AT91RM9200_ID_US2 i.e. 8
+uart 3 uses irq AT91RM9200_ID_US3 i.e. 9
 
-If so, this looks like an issue with reinstating the iobitmap for the
-incoming RT thread; seems strange since we fixed it a while ago, but we
-may be impacted by vanilla kernel changes here, so checking this again
-is needed. Please send a simple code exhibiting the problem; we need to
-know how you get the IOPL, and if you can reproduce it with a simple
-periodic thread. Kernel version, Xenomai version and kernel config used
-would help too.
+>
+> Whenever the request_irq for ttyS0 is invoked, the system will go to
+> atmel_interrupt and loop. There is no change for other ports, such as ttyS1
+> ... to even register their interrupts.
+>
+> Who else generates the interrupt? Any idea?
 
-> I tried to access the ports via /dev/mem and mmap() (method from
-> xenomai/examples/common/hw_direct_io.c) but thus mapping is
-> successful, writing -whatever- to the mapped pointer does not set any
-> IO's on my x86.
+First, try to know which uart ttyS0 is using (for instance, by
+printing port->irq before the request_irq which causes the problem).
+Then read the AT91 datasheet to know who else generates the same
+interrupt. Look in the kernel source if there is a driver for this
+other peripheral, if yes, then enable it in kernel configuration, if
+no, then write a small interrupt handler which acknowledges this other
+interrupt. On the AT91, the way to acknowledge an interrupt is usually
+to read a status register somewhere.
 
-You can't r/w ioports using mmapped memory on x86; those are in a memory
-space following a different access logic than plain MMIO. The example
-you referred to was written for ppc, and uses an MMIO space.
+Note that if ttyS0 is using the DBGU uart, the interrupt is
+AT91_ID_SYS, which is probably used by a lot of drivers.
 
-> I have read that some Xenomai RT testing with the Parallel port at
-> frequencies above 200khz showed excellent results. Which functions are
-> used for such precise timings and are they only available in kernel
-> space?
+P.S: please do not forget to cc the mailing list.
 
-native skin: rt_timer_tsc(), posix skin: clock_gettime().
-Both are usable in kernel and user-space contexts. To have direct access
-to the x86 TSC from user-space, you need to make sure your kernel is
-compiled for a CPU type providing TSC support (i.e. anything beyond 486
-would do). User-space should be built with the --enable-x86-tsc option
-too, but this is the default setting if you don't pass any opposite
-option to the "configure" script.
-
-> Thanks in advance
-> 
-> Johannes
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
 -- 
-Philippe.
-
-
+                                               Gilles Chanteperdrix
 
