@@ -1,90 +1,312 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <2ff1a98a0708080140w4191c988je6e980ed4940e4ab@domain.hid>
-References: <46B86E53.1030803@domain.hid>
-	<2ff1a98a0708070724j5afecf20q22994d053553ed57@domain.hid>
-	<46B885E3.6060605@domain.hid>
-	<2ff1a98a0708070756q60794718wb1bc55675ea05ba4@domain.hid>
-	<46B888B4.2070301@domain.hid>
-	<2ff1a98a0708070809h2ac1a0b7q2178297d5a824bb9@domain.hid>
-	<1186505723.5408.8.camel@domain.hid> <46B8A57D.8010606@domain.hid>
-	<46B8ACBB.5030001@domain.hid>
-	<18105.28848.229659.110775@domain.hid>
-	<2ff1a98a0708080140w4191c988je6e980ed4940e4ab@domain.hid>
-Content-Type: text/plain
-Date: Wed, 08 Aug 2007 14:33:10 +0200
-Message-Id: <1186576391.5051.5.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] [COW-BUG] __alloc_pages called from
-	atomic context
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+From: Sebastian Smolorz <ssm@domain.hid>
+Date: Wed, 18 Jul 2007 16:24:58 +0200
+MIME-Version: 1.0
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_6KinGJoccKvT1zP"
+Message-Id: <E1IBASV-0003zW-Kv@domain.hid>
+Subject: [Adeos-main] [PATCH] [arm] Fixes for
+	adeos-ipipe-2.6.20-arm-1.7-03.patch
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>, Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Wed, 2007-08-08 at 10:40 +0200, Gilles Chanteperdrix wrote:
-> On 8/8/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> > Jan Kiszka wrote:
-> >  > Jan Kiszka wrote:
-> >  > > Philippe Gerum wrote:
-> >  > >> On Tue, 2007-08-07 at 17:09 +0200, Gilles Chanteperdrix wrote:
-> >  > >>> On 8/7/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >  > >>>> Gilles Chanteperdrix wrote:
-> >  > >>>>> The fact that you are in a hurry should not be an excuse to propose a
-> >  > >>>>> fix which is much worse than the bug itself.
-> >  > >>>> Please explain.
-> >  > >>> Using GFP_ATOMIC is not a good idea, because the kernel needs the
-> >  > >>> GFP_ATOMIC pools for allocation that take place from really atomic
-> >  > >>> contexts such as interruption handlers for instance. fork should not
-> >  > >>> be an atomic context.
-> >  > >>>
-> >  > >>> So the only reason I see why you propose this patch is because you are
-> >  > >>> in a hurry. Ok, before we fix this properly, you can use GFP_ATOMIC
-> >  > >>> locally, but please do not make
-> >  > >>> this an official patch.
-> >  > >>>
-> >  > >> I'm afraid you are both right. Draining pages from the atomic pool might
-> >  > >> starve truely atomic contexts, and releasing the lock guarding the
-> >  > >> pagetable pages for the source mm seems contradictory with what the
-> >  > >> current code tries to achieve in holding it.
-> >  > >>
-> >  > >> Here is a patch preallocating the page for the cow-breaking code, which
-> >  > >> relies on the lock breaking pattern already in place. Not exactly
-> >  > >> pretty, slightly tested here (UP, spinlock debug), but looks ok so far.
-> >  > >> Needs SMP testing before any attempt is made to merge it.
-> >  > >
-> >  > > Funny. I just finished my own patch of this kind and made it pass a
-> >  > > basic COW stress test here. Find it below, it is very similar. Will
-> >  > > now analyse yours to see which one looks nicer and/or is more correct.
-> >  >
-> >  > Yours is clearly nicer, but it required/allowed a few more cleanups.
-> >  > Find my variant attached (against our local 2.6.20 kernel).
-> >  >
-> >  > From my POV: problem solved. 8)
-> >
-> > It seems you solved this problem before I even had a chance to have
-> > a look at the code.
-> 
-> Finally looking at the I-pipe patch, I see something suspicious:
-> the patch replaces a "return err" with a "return 0" in zeromap_pud_range.
-> 
+--Boundary-00=_6KinGJoccKvT1zP
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Looks like a collision between mm/memory.c updates pertaining to
-different kernel versions. I've been incorporating generic changes from
-your ARM tree into my generic tree when they both were at different
-kernel release levels. Will fix, thanks.
+Hi Gilles,
+
+from my local ipipe git repository:
+
+commit 8d207e254161579bcd9dea70e6e9a615d42c5c1c
+Author: Sebastian Smolorz <ssm@domain.hid>
+Date:   Tue Jul 17 10:06:02 2007 +0200
+
+    Extend ipipe handling of cascaded IRQs.
+
+commit 26851a115304b7de2b4526868131b4b356aafb20
+Author: Sebastian Smolorz <ssm@domain.hid>
+Date:   Mon Jul 16 14:26:16 2007 +0200
+
+    Abort compilation when CONFIG_NO_IDLE_HZ is set.
+
+commit e3729c39007ca0c9757a5fdcf8cb2ccb19b54b77
+Author: Sebastian Smolorz <ssm@domain.hid>
+Date:   Mon Jul 16 13:51:59 2007 +0200
+
+    Remove double defined macro irqs_disabled().
+
+commit 9951735935d708f1ef4d9355cb94e3dce2def470
+Author: Sebastian Smolorz <ssm@domain.hid>
+Date:   Mon Jul 16 13:51:07 2007 +0200
+
+    Remove unused macro raw_irqs_disabled().
+
+commit e16a9f0deafa15a30e90e56fa96ada026d28adc1
+Author: Sebastian Smolorz <ssm@domain.hid>
+Date:   Mon Jul 16 13:49:56 2007 +0200
+
+    Negate condition in macros local_irq_save_hw(x) and 
+local_irq_restore_hw(x)
 
 -- 
-Philippe.
+Sebastian
 
+--Boundary-00=_6KinGJoccKvT1zP
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="ipipe-2.6.20-arm-1.7-03.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename="ipipe-2.6.20-arm-1.7-03.diff"
 
+diff --git a/arch/arm/mach-s3c2410/irq.c b/arch/arm/mach-s3c2410/irq.c
+index 77c79e1..a677f4c 100644
+--- a/arch/arm/mach-s3c2410/irq.c
++++ b/arch/arm/mach-s3c2410/irq.c
+@@ -3,7 +3,7 @@
+  * Copyright (c) 2003,2004 Simtec Electronics
+  *	Ben Dooks <ben@domain.hid>
+  *
+- * Copyright (C) 2006 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
++ * Copyright (C) 2006, 2007 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -701,6 +701,26 @@ static void __ipipe_s3c_irq_demux_adc(unsigned int subsrc,
+ 	}
+ }
+ 
++static void __ipipe_s3c_irq_demux_extint(unsigned long mask,
++						struct pt_regs *regs)
++{
++	unsigned int irq;
++	unsigned long eintpnd = __raw_readl(S3C24XX_EINTPEND);
++	unsigned long eintmsk = __raw_readl(S3C24XX_EINTMASK);
++
++	eintpnd &= ~eintmsk;
++	eintpnd &= mask;
++
++	while (eintpnd) {
++		irq = __ffs(eintpnd);
++		eintpnd &= ~(1<<irq);
++
++		irq += (IRQ_EINT4 - 4);
++
++		__ipipe_handle_irq(irq, regs);
++	}
++}
++
+ void __ipipe_mach_demux_irq(unsigned irq, struct pt_regs *regs)
+ {
+ 	unsigned int subsrc, submsk;
+@@ -726,14 +746,22 @@ void __ipipe_mach_demux_irq(unsigned irq, struct pt_regs *regs)
+ 	case IRQ_ADCPARENT:
+ 		__ipipe_s3c_irq_demux_adc(subsrc, regs);
+ 		break;
++	case IRQ_EINT4t7:
++		__ipipe_s3c_irq_demux_extint(0xff, regs);
++		break;
++	case IRQ_EINT8t23:
++		__ipipe_s3c_irq_demux_extint(0xffffff00, regs);
++		break;
+ #ifdef CONFIG_CPU_S3C2440
+ 	case IRQ_WDT:
+ 		__ipipe_s3c_irq_demux_wdtac97(subsrc, regs);
+ 		break;
++#endif /* CONFIG_CPU_S3C2440 */
++#ifdef CONFIG_CPU_S3C244X
+ 	case IRQ_CAM:
+ 		__ipipe_s3c_irq_demux_cam(subsrc, regs);
+ 		break;
+-#endif /* CONFIG_CPU_S3C2440 */
++#endif /* CONFIG_CPU_S3C244X */
+ 	}
+ 
+ 	desc_unused->chip->unmask(irq);
+diff --git a/arch/arm/mach-s3c2410/s3c2440-irq.c b/arch/arm/mach-s3c2410/s3c2440-irq.c
+index da74c73..87e96e1 100644
+--- a/arch/arm/mach-s3c2410/s3c2440-irq.c
++++ b/arch/arm/mach-s3c2410/s3c2440-irq.c
+@@ -3,7 +3,7 @@
+  * Copyright (c) 2003,2004 Simtec Electronics
+  *	Ben Dooks <ben@domain.hid>
+  *
+- * Copyright (C) 2006 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
++ * Copyright (C) 2006, 2007 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -112,19 +112,6 @@ void __ipipe_s3c_irq_demux_wdtac97(unsigned int subsrc, struct pt_regs *regs)
+ 			__ipipe_handle_irq(IRQ_S3C2440_AC97, regs);
+ 	}
+ }
+-
+-void __ipipe_s3c_irq_demux_cam(unsigned int subsrc, struct pt_regs *regs)
+-{
+-	subsrc >>= 11;
+-	subsrc &= 3;
+-
+-	if (subsrc != 0) {
+-		if (subsrc & 1)
+-			__ipipe_handle_irq(IRQ_S3C2440_CAM_C, regs);
+-		if (subsrc & 2)
+-			__ipipe_handle_irq(IRQ_S3C2440_CAM_P, regs);
+-	}
+-}
+ #endif /* CONFIG_IPIPE */
+ 
+ static int s3c2440_irq_add(struct sys_device *sysdev)
+diff --git a/arch/arm/mach-s3c2410/s3c244x-irq.c b/arch/arm/mach-s3c2410/s3c244x-irq.c
+index ede9463..73e6779 100644
+--- a/arch/arm/mach-s3c2410/s3c244x-irq.c
++++ b/arch/arm/mach-s3c2410/s3c244x-irq.c
+@@ -3,6 +3,8 @@
+  * Copyright (c) 2003,2004 Simtec Electronics
+  *	Ben Dooks <ben@domain.hid>
+  *
++ * Copyright (C) 2007 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
++ *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation; either version 2 of the License, or
+@@ -95,6 +97,21 @@ static struct irq_chip s3c_irq_cam = {
+ 	.ack	    = s3c_irq_cam_ack,
+ };
+ 
++#ifdef CONFIG_IPIPE
++void __ipipe_s3c_irq_demux_cam(unsigned int subsrc, struct pt_regs *regs)
++{
++	subsrc >>= 11;
++	subsrc &= 3;
++
++	if (subsrc != 0) {
++		if (subsrc & 1)
++			__ipipe_handle_irq(IRQ_S3C2440_CAM_C, regs);
++		if (subsrc & 2)
++			__ipipe_handle_irq(IRQ_S3C2440_CAM_P, regs);
++	}
++}
++#endif /* CONFIG_IPIPE */
++
+ static int s3c244x_irq_add(struct sys_device *sysdev)
+ {
+ 	unsigned int irqno;
+diff --git a/arch/arm/mach-s3c2410/time.c b/arch/arm/mach-s3c2410/time.c
+index e7b3d00..622ed34 100644
+--- a/arch/arm/mach-s3c2410/time.c
++++ b/arch/arm/mach-s3c2410/time.c
+@@ -3,7 +3,7 @@
+  * Copyright (C) 2003-2005 Simtec Electronics
+  *	Ben Dooks, <ben@domain.hid>
+  *
+- * Copyright (C) 2006 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
++ * Copyright (C) 2006, 2007 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -62,6 +62,11 @@ static unsigned long free_running_tcon = 0;
+ static unsigned long timer_lxlost = 0;
+ 
+ #ifdef CONFIG_IPIPE
++
++#ifdef CONFIG_NO_IDLE_HZ
++#error "dynamic tick timer not yet supported with IPIPE"
++#endif /* CONFIG_NO_IDLE_HZ */
++
+ unsigned int __ipipe_mach_ticks_per_jiffy;
+ EXPORT_SYMBOL(__ipipe_mach_ticks_per_jiffy);
+ 
+diff --git a/include/asm-arm/arch-s3c2410/irqs.h b/include/asm-arm/arch-s3c2410/irqs.h
+index 717be01..988406d 100644
+--- a/include/asm-arm/arch-s3c2410/irqs.h
++++ b/include/asm-arm/arch-s3c2410/irqs.h
+@@ -3,7 +3,7 @@
+  * Copyright (c) 2003-2005 Simtec Electronics
+  *   Ben Dooks <ben@domain.hid>
+  *
+- * Copyright (C) 2006 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
++ * Copyright (C) 2006, 2007 Sebastian Smolorz <ssmolorz@domain.hid>, emlix GmbH
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -130,13 +130,25 @@
+ 				 __ipipe_irqbit(IRQ_UART2)	|	\
+ 				 __ipipe_irqbit(IRQ_ADCPARENT)	|	\
+ 				 __ipipe_irqbit(IRQ_WDT)	|	\
+-				 __ipipe_irqbit(IRQ_CAM))
+-#else /* !CONFIG_CPU_S3C2440 */
++				 __ipipe_irqbit(IRQ_CAM)	|	\
++				 __ipipe_irqbit(IRQ_EINT4t7)	|	\
++				 __ipipe_irqbit(IRQ_EINT8t23))
++#elif defined CONFIG_CPU_S3C244X
+ #define __ipipe_muxed_irqmask	(__ipipe_irqbit(IRQ_UART0)	|	\
+ 				 __ipipe_irqbit(IRQ_UART1)	|	\
+ 				 __ipipe_irqbit(IRQ_UART2)	|	\
+-				 __ipipe_irqbit(IRQ_ADCPARENT))
+-#endif /* CONFIG_CPU_S3C2440 */
++				 __ipipe_irqbit(IRQ_ADCPARENT)	|	\
++				 __ipipe_irqbit(IRQ_CAM)	|	\
++				 __ipipe_irqbit(IRQ_EINT4t7)	|	\
++				 __ipipe_irqbit(IRQ_EINT8t23))
++#else
++#define __ipipe_muxed_irqmask	(__ipipe_irqbit(IRQ_UART0)	|	\
++				 __ipipe_irqbit(IRQ_UART1)	|	\
++				 __ipipe_irqbit(IRQ_UART2)	|	\
++				 __ipipe_irqbit(IRQ_ADCPARENT)	|	\
++				 __ipipe_irqbit(IRQ_EINT4t7)	|	\
++				 __ipipe_irqbit(IRQ_EINT8t23))
++#endif
+ 
+ #define __ipipe_mach_irq_mux_p(irq)	((irq) <= IRQ_ADCPARENT  &&	\
+ 					 (__ipipe_irqbit(irq) &		\
+diff --git a/include/asm-arm/irqflags.h b/include/asm-arm/irqflags.h
+index d0534b9..7e9e55f 100644
+--- a/include/asm-arm/irqflags.h
++++ b/include/asm-arm/irqflags.h
+@@ -150,8 +150,6 @@ void __ipipe_restore_root(unsigned long flags);
+ #define raw_local_save_flags(flags)	((flags) = __ipipe_test_root() << 7)
+ #define raw_local_irq_restore(flags)	__ipipe_restore_root(flags & (1 << 7))
+ 
+-#define raw_irqs_disabled()		__ipipe_test_root()
+-
+ #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+ 
+ #include <linux/ipipe_trace.h>
+@@ -170,13 +168,13 @@ void __ipipe_restore_root(unsigned long flags);
+ } while (0)
+ #define local_irq_save_hw(x) do { \
+ 	local_save_flags_hw(x); \
+-	if (raw_irqs_disabled_flags(x)) { \
++	if (!raw_irqs_disabled_flags(x)) { \
+ 		local_irq_disable_hw_notrace(); \
+ 		ipipe_trace_begin(0x80000001); \
+ 	} \
+ } while (0)
+ #define local_irq_restore_hw(x) do { \
+-	if (raw_irqs_disabled_flags(x)) \
++	if (!raw_irqs_disabled_flags(x)) \
+ 		ipipe_trace_end(0x80000001); \
+ 	local_irq_restore_hw_notrace(x); \
+ } while (0)
+@@ -209,8 +207,6 @@ void __ipipe_restore_root(unsigned long flags);
+ #define local_fiq_disable_hw()		local_fiq_disable_hw_notrace()
+ #define local_irq_restore_hw(flags)	local_irq_restore_hw_notrace(flags)
+ 
+-#define irqs_disabled()		irqs_disabled_hw()
+-
+ #endif /* CONFIG_IPIPE */
+ 
+ #endif
+
+--Boundary-00=_6KinGJoccKvT1zP--
 
