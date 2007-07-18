@@ -1,13 +1,23 @@
-Message-ID: <CA2340EB86378E43976ECBA4001310CA04415280@domain.hid>
-From: charles.biron@domain.hid
-Date: Wed, 18 Jul 2007 13:43:41 +0200
+Message-ID: <2ff1a98a0707180514s12053432xf0b30d6e2d22ea53@domain.hid>
+Date: Wed, 18 Jul 2007 14:14:54 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2862c2c80707180255h7197a055i58b90228bc2c52df@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] =?iso-8859-1?q?LINUX_and_XENOMAI_versions_compatib?=
-	=?iso-8859-1?q?ility_-_compatibilit=E9_des_versions_de_LINUX_et_de?=
-	=?iso-8859-1?q?_XENOMAI?=
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <2862c2c80707130245j3f9b09b3i2b461c4e1521c53d@domain.hid>
+	<2862c2c80707170210s437674f6ua7283d3e03e97a1b@domain.hid>
+	<2ff1a98a0707170300o5d36e9f9i96b5a11fb4c7a87e@domain.hid>
+	<2862c2c80707170336t45ad3266pc5b5f7769623a900@domain.hid>
+	<2ff1a98a0707170609u5da092a1nf32d4789b579717@domain.hid>
+	<2862c2c80707172257x5f41d8c4p5df5282be4ba98a2@domain.hid>
+	<18077.48173.286511.400122@domain.hid>
+	<2862c2c80707180036t6e64ccban83924d445d80f9c0@domain.hid>
+	<2ff1a98a0707180135q24ab6515kf573215edf0aaafa@domain.hid>
+	<2862c2c80707180255h7197a055i58b90228bc2c52df@domain.hid>
+Subject: Re: [Xenomai-help] Enable I-PIPE - kernel boot hangs in the
+	AT91RM9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +27,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-> I am working on a SBC8347 board produced by WinRiver on which is =
-running a LINUX 2.6.10 kernel patched specially for this board with a =
-WindRiver patch. I'd like to affix XENOMAI but I have difficulties to =
-choose XENOMAI and ADEOS patch versions.
->=20
-> In fact, I noticed two families of ADEOS patches : the adeos-linux =
-patches and the adeos-ipipe patches.The adeos-ipipe family seems to =
-works with 2.6.13 LINUX versions and newers.
->=20
-> However, I have difficulties to upgrade LINUX to those versions due =
-to the WindRiver patch only applicable on the 2.6.10 LINUX version.
->=20
-> - Could you confirm my analysis of XENOMAI versions and explain me =
-the mains diff=E9rences betwenn these two families ?
-> - Could you help me choose the XENOMAI and ADEOS patch versions ?
->=20
-> Best regards,
-> Charles BIRON
->=20
-> =
-------------------------------------------------------------------------=
------------------------------------------------------------------------
->=20
-> Je travaille sur une carte SBC8347 de WindRiver sur laquelle tourne =
-un noyau LINUX 2.6.10 patch=E9 pour cette carte avec un patch fourni =
-par WindRiver. Je voudrais lui adjoindre XENOMAI mais j'ai des =
-difficult=E9s =E0 choisir les versions de XENOMAI et de patch ADEOS.
->=20
-> En effet, j'ai remarqu=E9 deux familles de patch ADEOS, jusqu'a =
-XENOMAI 2.0 (adeos-linux) et apr=E8s XENOMAI 2.1 (adeos-ipipe). La =
-famille IPIPE ne semble supporter que les versions LINUX depuis 2.6.13.
->=20
-> Cependant, j'ai des difficult=E9s =E0 changer de version LINUX du =
-fait du patch WindRiver applicable uniquement en LINUX 2.6.10.
->=20
-> - Pourriez-vous me confirmer mon analyse des versions de XENOMAI et =
-m'informer sur les grandes diff=E9rences entre ces deux familles?
-> - Pourriez-vous me conseiller dans le choix de la version XENOMAI et =
-des patchs ADEOS ?
->=20
-> Cordialement,
-> Charles BIRON=20
+On 7/18/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
+> On 7/18/07, Gilles Chanteperdrix < gilles.chanteperdrix@xenomai.org > wrote:
+> > On 7/18/07, Yeoh Chun Yeow < yeohchunyeow@domain.hid> wrote:
+> > > Dear Gilles,
+> > >
+> > > I think that the interrupt is shared for supporting up to 4 UARTs (ttyS0
+> --
+> > > S3) available in the system.
+> >
+> > No, from reading
+> arch/arm/mach-at91rm9200/at92rm9200_devices.c
+> > uart DBGU uses irq AT91_ID_SYS i.e. 1
+> > uart 0 uses irq AT91RM9200_ID_US0 i.e. 6
+> > uart 1 uses irq AT91RM9200_ID_US1 i.e. 7
+> > uart 2 uses irq AT91RM9200_ID_US2 i.e. 8
+> > uart 3 uses irq AT91RM9200_ID_US3 i.e. 9
+> >
+> > >
+> > > Whenever the request_irq for ttyS0 is invoked, the system will go to
+> > > atmel_interrupt and loop. There is no change for other ports, such as
+> ttyS1
+> > > ... to even register their interrupts.
+> > >
+> > > Who else generates the interrupt? Any idea?
+> >
+> > First, try to know which uart ttyS0 is using (for instance, by
+> > printing port->irq before the request_irq which causes the problem).
+> > Then read the AT91 datasheet to know who else generates the same
+> > interrupt. Look in the kernel source if there is a driver for this
+> > other peripheral, if yes, then enable it in kernel configuration, if
+> > no, then write a small interrupt handler which acknowledges this other
+> > interrupt. On the AT91, the way to acknowledge an interrupt is usually
+> > to read a status register somewhere.
+> >
+> > Note that if ttyS0 is using the DBGU uart, the interrupt is
+> > AT91_ID_SYS, which is probably used by a lot of drivers.
+>
+> My console ttyS0 uses the DBGU, and the port->irq is 1 (AT91_ID_SYS).
+> Although RTC uses the same interrupt, but it is disabled. We don't use
+> system timer which uses the same interrupt pin in xenomai. Any ideas?
+>
+
+In atmel serial interrupt driver try to know from which source
+interrupts are coming: RTC, system timer, or other by reading their
+specific status registers.
+
+If the interrupt source is the system timer, we will have to take
+counter measures in time.c. We do not explicitely disable the system
+timer, so if the boot loader (I think you mentioned u-boot ?) enable
+it and does not disable it before starting kernel, the timer still
+tries to tick. That would explain why you see the bug and I do not see
+it: maybe the difference comes from the boot loader.
+
+-- 
+                                               Gilles Chanteperdrix
 
