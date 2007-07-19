@@ -1,21 +1,9 @@
-Message-ID: <469F5BA5.1030407@domain.hid>
-Date: Thu, 19 Jul 2007 14:40:05 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <24703926.1184851660664.JavaMail.ngmail@domain.hid>
+Date: Thu, 19 Jul 2007 15:27:40 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-References: <469BF43D.1040704@domain.hid> <46973753.6010206@domain.hid>	
-	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	
-	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	
-	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	
-	<1982070.1184078400928.JavaMail.ngmail@domain.hid>	<4693A702.1010604@domain.hid>	
-	<913919.1184311634860.JavaMail.ngmail@domain.hid>	
-	<21969019.1184569651818.JavaMail.ngmail@domain.hid>	
-	<29054475.1184842736562.JavaMail.ngmail@domain.hid>	
-	<469F4A98.3080307@domain.hid> <1184847549.28303.46.camel@domain.hid>
-In-Reply-To: <1184847549.28303.46.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4D6630C2ADB82755C82ABE08"
-Sender: jan.kiszka@domain.hid
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Sporadic PC freeze after rt_task_start
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -26,66 +14,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-help <xenomai@xenomai.org>, "M. Koehrer" <mathias_koehrer@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4D6630C2ADB82755C82ABE08
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
-
-Philippe Gerum wrote:
->> And when looking at the holders of rpilock, I think one issue could be=
-
->> that we hold that lock while calling into xnpod_renice_root [1], ie.
->> doing a potential context switch. Was this checked to be save?
->=20
-> xnpod_renice_root() does no reschedule immediately on purpose, we would=
-
-> never have been able to run any SMP config more than a couple of second=
-s
-> otherwise. (See the NOSWITCH bit).
-
-OK, then it's not the cause.
+To: rpm@xenomai.org, jan.kiszka@domain.hid
+Cc: xenomai@xenomai.org, mathias_koehrer@domain.hid
 
 >=20
->> Furthermore, that code path reveals that we take nklock nested into
->> rpilock [2]. I haven't found a spot for the other way around (and I ho=
-pe
->> there is none)
->=20
-> xnshadow_start().
+> Mathias, I guess this test has not been run with the nucleus debug
+> option enabled. Any chance to get a disassembly of the rpi_pop routine
+> as compiled into your kernel, so that we could check if we are really
+> stuck on this lock, or rather on some infinite walk into a corrupted RPI
+> list?
+I tried last week with debug on and I did not get the freeze...
+However, I will try again. I will enable all Xeno debug options (CONFIG_XEN=
+O_OPT_DEBUG,
+CONFIG_XENO_OPT_DEBUG_NUCLEUS, CONFIG_XENO_OPT_DEBUG_QUEUE,=20
+CONFIG_XENO_OPT_WATCHDOG) and run the test again...
 
-Nope, that one is not holding nklock. But I found an offender...
+For this test I leave CONFIG_XENO_OPT_RPIDISABLE unset (default).
 
->=20
->> , but such nesting is already evil per se...
->=20
-> Well, nesting spinlocks only falls into evilness when you get a circula=
-r
-> graph, but since the rpilock is a rookie in the locking team, I'm going=
+I hope to have more information on the results tomorrow morning...
 
-> to check this.
+Regards
 
-Take this one: gatekeeper_thread calls into rpi_pop with nklock
-acquired. So we have a classic ABAB locking bug. Bang!
+Mathias
 
-Jan
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
---------------enig4D6630C2ADB82755C82ABE08
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGn1ulniDOoMHTA+kRAr9SAJ97rl5hcTq23lk4rum9f0t03H8KNACeNs9O
-wt2FozR7xCAMwwX68GPz+Do=
-=r2Pk
------END PGP SIGNATURE-----
-
---------------enig4D6630C2ADB82755C82ABE08--
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT JETZT bei Arcor: g=FCnsti=
+g
+und schnell mit DSL - das All-Inclusive-Paket f=FCr clevere Doppel-Sparer,
+nur  39,85 =80  inkl. DSL- und ISDN-Grundgeb=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
