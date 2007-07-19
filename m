@@ -1,17 +1,22 @@
-Message-ID: <469F4A98.3080307@domain.hid>
-Date: Thu, 19 Jul 2007 13:27:20 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <469F4A98.3080307@domain.hid>
 References: <469BF43D.1040704@domain.hid> <46973753.6010206@domain.hid>
-	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	<1982070.1184078400928.JavaMail.ngmail@domain.hid>	<4693A702.1010604@domain.hid>	<913919.1184311634860.JavaMail.ngmail@domain.hid>
+	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>
+	<22554361.1184054457326.JavaMail.ngmail@domain.hid>
+	<2026261.1184070574283.JavaMail.ngmail@domain.hid>
+	<1982070.1184078400928.JavaMail.ngmail@domain.hid>	<4693A702.1010604@domain.hid>
+	<913919.1184311634860.JavaMail.ngmail@domain.hid>
 	<21969019.1184569651818.JavaMail.ngmail@domain.hid>
 	<29054475.1184842736562.JavaMail.ngmail@domain.hid>
-In-Reply-To: <29054475.1184842736562.JavaMail.ngmail@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig58E8BCE8DA51FB014EF644B7"
-Sender: jan.kiszka@domain.hid
+	<469F4A98.3080307@domain.hid>
+Content-Type: text/plain
+Date: Thu, 19 Jul 2007 14:19:09 +0200
+Message-Id: <1184847549.28303.46.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-help] Sporadic PC freeze after rt_task_start
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,64 +26,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>, "M. Koehrer" <mathias_koehrer@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig58E8BCE8DA51FB014EF644B7
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On Thu, 2007-07-19 at 13:27 +0200, Jan Kiszka wrote:
+> M. Koehrer wrote:
+> > Hi!
+> > 
+> > After a couple of over-night test runs, I finally got an NMI watchdog detected lockup with the sporadic freeze option.
+> > I started the system with the argument nmi_watchdog=1 (also isolcpus=1).
+> > See the code below. As I have not connected a serial console, I have attached a screen shot in a fairly
+> > bad quality as jpg file... However, it is good enough to be able to read everything... 
+> > The lockup is in function rpi_pop [xeno_nucleus].
+> > It is called from gatekeeper_thread and from default_wake_function.
+> > See the attached jpg for details.
+> 
+> Looks like we are stuck on rpilock, Philippe.
+> 
 
-M. Koehrer wrote:
-> Hi!
->=20
-> After a couple of over-night test runs, I finally got an NMI watchdog d=
-etected lockup with the sporadic freeze option.
-> I started the system with the argument nmi_watchdog=3D1 (also isolcpus=3D=
-1).
-> See the code below. As I have not connected a serial console, I have at=
-tached a screen shot in a fairly
-> bad quality as jpg file... However, it is good enough to be able to rea=
-d everything...=20
-> The lockup is in function rpi_pop [xeno_nucleus].
-> It is called from gatekeeper_thread and from default_wake_function.
-> See the attached jpg for details.
+Seems likely, yes. Switching the nucleus DEBUG option would engage the
+lockup detector, and pull the brake whenever the nucleus fails to grab
+the rpilock.
 
-Looks like we are stuck on rpilock, Philippe.
+Mathias, I guess this test has not been run with the nucleus debug
+option enabled. Any chance to get a disassembly of the rpi_pop routine
+as compiled into your kernel, so that we could check if we are really
+stuck on this lock, or rather on some infinite walk into a corrupted RPI
+list?
 
-And when looking at the holders of rpilock, I think one issue could be
-that we hold that lock while calling into xnpod_renice_root [1], ie.
-doing a potential context switch. Was this checked to be save?
-Furthermore, that code path reveals that we take nklock nested into
-rpilock [2]. I haven't found a spot for the other way around (and I hope
-there is none), but such nesting is already evil per se...
+> And when looking at the holders of rpilock, I think one issue could be
+> that we hold that lock while calling into xnpod_renice_root [1], ie.
+> doing a potential context switch. Was this checked to be save?
 
-Mathias, already tried your test case with our old friend "priority
-coupling" switched off? *If* this lock-up is actually due to rpilock
-brokenness, switching the feature off should make it disappear.
+xnpod_renice_root() does no reschedule immediately on purpose, we would
+never have been able to run any SMP config more than a couple of seconds
+otherwise. (See the NOSWITCH bit).
 
-Jan
+> Furthermore, that code path reveals that we take nklock nested into
+> rpilock [2]. I haven't found a spot for the other way around (and I hope
+> there is none)
+
+xnshadow_start().
+
+> , but such nesting is already evil per se...
+
+Well, nesting spinlocks only falls into evilness when you get a circular
+graph, but since the rpilock is a rookie in the locking team, I'm going
+to check this.
+
+Ok, I'm tackling this lockup issue now. I first need to reproduce it.
+More news later.
+
+> 
+> Mathias, already tried your test case with our old friend "priority
+> coupling" switched off? *If* this lock-up is actually due to rpilock
+> brokenness, switching the feature off should make it disappear.
+> 
+
+It would be nice to switch on the nucleus DEBUG feature, especially the
+queue debugging one. I understand this may hide the bug due to the
+alteration of timings, but still, it would be useful to know whether a
+configuration without NMI but with such debug knob on would trigger the
+alarm.
+
+> Jan
+> 
+> 
+> [1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.c?v=SVN-trunk#435
+> [2]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/nucleus/pod.h?v=SVN-trunk#308
+> 
+-- 
+Philippe.
 
 
-[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.=
-c?v=3DSVN-trunk#435
-[2]http://www.rts.uni-hannover.de/xenomai/lxr/source/include/nucleus/pod.=
-h?v=3DSVN-trunk#308
-
-
---------------enig58E8BCE8DA51FB014EF644B7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGn0qYniDOoMHTA+kRAn6BAJ4j6XhhGjhtH5x5y5+V7aWnVQw/lwCdFU6N
-mpBeRzTSHjRjNuCECTA4eFk=
-=2umg
------END PGP SIGNATURE-----
-
---------------enig58E8BCE8DA51FB014EF644B7--
 
