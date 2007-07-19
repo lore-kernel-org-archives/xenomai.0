@@ -13,8 +13,8 @@ References: <469BF43D.1040704@domain.hid> <46973753.6010206@domain.hid>
 	<469F4A98.3080307@domain.hid> <1184847549.28303.46.camel@domain.hid>
 	<469F5BA5.1030407@domain.hid>
 Content-Type: text/plain
-Date: Thu, 19 Jul 2007 15:55:18 +0200
-Message-Id: <1184853318.28303.79.camel@domain.hid>
+Date: Thu, 19 Jul 2007 17:14:53 +0200
+Message-Id: <1184858093.28303.85.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -52,34 +52,10 @@ On Thu, 2007-07-19 at 14:40 +0200, Jan Kiszka wrote:
 > > 
 > > xnshadow_start().
 > 
-> Nope, that one is not holding nklock.
+> Nope, that one is not holding nklock. But I found an offender...
 
-Indeed, but this only works because its callers who may hold this lock
-do not activate shadow threads so far. This looks so fragile... I'll add
-some comment about this in the doc.
+Gasp. xnshadow_renice() kills us too.
 
-> But I found an offender...
-> 
-> > 
-> >> , but such nesting is already evil per se...
-> > 
-> > Well, nesting spinlocks only falls into evilness when you get a circular
-> > graph, but since the rpilock is a rookie in the locking team, I'm going
-> > to check this.
-> 
-> Take this one: gatekeeper_thread calls into rpi_pop with nklock
-> acquired. So we have a classic ABAB locking bug. Bang!
-> 
-
-Damnit.
-
-The fix needs some thought and attention, we are running against the
-deletion path here.
-
-PS: Time to switch to -core.
-
-> Jan
-> 
 -- 
 Philippe.
 
