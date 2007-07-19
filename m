@@ -1,85 +1,59 @@
-Message-ID: <4696A8CC.6060505@domain.hid>
-Date: Fri, 13 Jul 2007 00:18:52 +0200
+Message-ID: <469F5904.3080108@domain.hid>
+Date: Thu, 19 Jul 2007 14:28:52 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <7289437c0707190519o2a03cadke3673fa6da1caffc@domain.hid>
+In-Reply-To: <7289437c0707190519o2a03cadke3673fa6da1caffc@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6454787AD465616D4BA91C42"
+	boundary="------------enig80192C8829DDEA7530998094"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 3/3] Report IPIs by name
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Drivers
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6454787AD465616D4BA91C42
-Content-Type: multipart/mixed;
- boundary="------------020801020704000608030602"
-
-This is a multi-part message in MIME format.
---------------020801020704000608030602
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enig80192C8829DDEA7530998094
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Trivial beautification of /proc/xenomai/irq: Starring at the output of
-some SMP box, I wondered what those two unnamed IRQs are for...
+Perrine Martignoni wrote:
+> Hello,
+>=20
+> I want to test on my CSB637 board the drivers who are in the directory
+> xenomai/ksrc/drivers/testing.
+> But I don't understand how to compile them for my board. When I try to
+> launch the Makefile I have some errors about Rules.make who doesn't exi=
+st.
 
---------------020801020704000608030602
-Content-Type: text/x-patch;
- name="name-ipis-in-proc-output.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="name-ipis-in-proc-output.patch"
+They are compiled and installed with your kernel tree, given you enabled
+them (under the Xenomai kernel-config menu).
 
----
- ksrc/nucleus/intr.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+Jan
 
-Index: xenomai/ksrc/nucleus/intr.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/intr.c
-+++ xenomai/ksrc/nucleus/intr.c
-@@ -860,6 +860,14 @@ int xnintr_irq_proc(unsigned int irq, ch
- 	} else if (irq =3D=3D XNARCH_TIMER_IRQ) {
- 		p +=3D sprintf(p, "         [timer]");
- 		return p - str;
-+#ifdef CONFIG_SMP
-+	} else if (irq =3D=3D RTHAL_SERVICE_IPI0) {
-+		p +=3D sprintf(p, "         [IPI]");
-+		return p - str;
-+	} else if (irq =3D=3D RTHAL_CRITICAL_IPI) {
-+		p +=3D sprintf(p, "         [critical sync]");
-+		return p - str;
-+#endif /* CONFIG_SMP */
- 	}
-=20
- 	xnlock_get_irqsave(&intrlock, s);
 
---------------020801020704000608030602--
-
---------------enig6454787AD465616D4BA91C42
+--------------enig80192C8829DDEA7530998094
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGlqjNniDOoMHTA+kRAoifAJ0TYN8iye8q0g/C9JOyP+DoDJGeNwCdGPpb
-E+4urcGkynpKVQX9w9DJiYo=
-=IYPE
+iD8DBQFGn1kFniDOoMHTA+kRAqmeAJ9gUn1SUd78zF1vjVoxjzDTJYe+WgCfcya4
+HG4upKopsKy3xALtODv4Ib0=
+=CxHc
 -----END PGP SIGNATURE-----
 
---------------enig6454787AD465616D4BA91C42--
+--------------enig80192C8829DDEA7530998094--
 
