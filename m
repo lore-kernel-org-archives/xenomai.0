@@ -1,12 +1,14 @@
+Message-ID: <469FD346.4060402@domain.hid>
+Date: Thu, 19 Jul 2007 17:10:30 -0400
+From: Vincent Levesque <vleves@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>	<1184746976.6562.62.camel@domain.hid>	<760425846A1BC44B8BD24361EF2E3451010D9A3F@square.bfh.ch>
+	<1184755654.13258.17.camel@domain.hid>
+In-Reply-To: <1184755654.13258.17.camel@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <18079.38963.120265.323306@domain.hid>
-Date: Thu, 19 Jul 2007 18:58:27 +0200
-In-Reply-To: <55920.194.114.62.34.1184861685.squirrel@domain.hid>
-References: <55920.194.114.62.34.1184861685.squirrel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] rtai skin ?
+Subject: Re: [Xenomai-help] Writing from user space direct to
+ IO	Ports	without mode switches
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,25 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nadym Salem <Kaiman@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Nadym Salem wrote:
- > Hello,
- > 
- > having to decide on which skin I want to develop my application I would
- > like to use the rtai skin for portability issues.
+Hi Philippe,
+> Excepts from your code:
+>   while(!end){
+>     //switch to primary mode
+>     ret = rt_task_set_mode(0, T_PRIMARY, NULL);
+>
+> Damnit. I knew this particular interface was going to be misused most of
+> the time. In short: do ____NOT_____ switch modes manually, this is
+> useless because Xenomai syscalls do it for you, and even sub-optimal
+> because the kernel knows better when it needs it and saves you a syscall
+> when required. The T_PRIMARY bit has been solely provided for internal
+> Xenomai purposes (some Xenomai libs have very special requirements in
+> very rare cases). rt_task_wait_period() will switch to primary mode if
+> needed, and always leave you in primary upon return.
+>   
+Indeed, I was also doing the same thing. From my understanding of the 
+docs, I assumed that manually setting a task to secondary mode was 
+allowed and could improve performance. Take for instance a task that 
+logs data coming from a RT_QUEUE to a file. Is there anything special 
+that should be done to minimize the impact of the frequent mode switches 
+in such a case?
 
-Choosing the rtai skin for the development of a new application does not
-seem like a good idea. For portability, people generally prefer posix.
+Thanks,
 
- > Does rtai and therefore the rtai skin still only support kernel threads ?
- > And is there any rtai functionality not support by the rtai skin ?
-
-This is FAQ question 3.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Vincent Levesque
+vleves@domain.hid
 
