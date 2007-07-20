@@ -1,62 +1,107 @@
-Date: Mon, 16 Jul 2007 18:19:00 +0200
-From: Daniel Simon <Daniel.Simon@domain.hid>
-Message-ID: <20070716181900.3f075bc7@domain.hid>
-In-Reply-To: <46960A4B.5070206@domain.hid>
-References: <2404.194.199.21.225.1181233422.squirrel@domain.hid>
-	<4668440F.7020706@domain.hid>
-	<20070608124927.1b789a9e@domain.hid>
-	<46693B6B.1010201@domain.hid>
-	<20070625175107.438849fa@domain.hid>
-	<467FF391.8020401@domain.hid>
-	<20070627105726.7db7a459@domain.hid>
-	<46825054.7030800@domain.hid>
-	<20070629164326.15579570@domain.hid>
-	<4690B86C.1000907@domain.hid>
-	<20070711155932.4b88699e@domain.hid>
-	<4694E96B.5020801@domain.hid>
-	<20070711173545.709225f1@domain.hid>
-	<4694FD99.3030405@domain.hid>
-	<20070711185529.62544380@domain.hid>
-	<469549AF.5090102@domain.hid>
-	<20070712113039.14050727@domain.hid>
-	<46960A4B.5070206@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] measuring tasks execution time
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Message-ID: <46A06886.5000703@domain.hid>
+Date: Fri, 20 Jul 2007 09:47:18 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>	<1184746976.6562.62.camel@domain.hid>	<760425846A1BC44B8BD24361EF2E3451010D9A3F@square.bfh.ch>	<1184755654.13258.17.camel@domain.hid>
+	<469FD346.4060402@domain.hid>
+In-Reply-To: <469FD346.4060402@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2DF10DB05373E83D933E29D4"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Writing from user space direct to
+ IO	Ports	without mode switches
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Vincent Levesque <vleves@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 12 Jul 2007 13:02:35 +0200
-Jan Kiszka <jan.kiszka@domain.hid> wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2DF10DB05373E83D933E29D4
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jan,
+Vincent Levesque wrote:
+> Hi Philippe,
+>> Excepts from your code:
+>>   while(!end){
+>>     //switch to primary mode
+>>     ret =3D rt_task_set_mode(0, T_PRIMARY, NULL);
+>>
+>> Damnit. I knew this particular interface was going to be misused most =
+of
+>> the time. In short: do ____NOT_____ switch modes manually, this is
+>> useless because Xenomai syscalls do it for you, and even sub-optimal
+>> because the kernel knows better when it needs it and saves you a sysca=
+ll
+>> when required. The T_PRIMARY bit has been solely provided for internal=
 
-> > -I am thinking about more demanding tests, with intertasks preemption and
-> > overloads,
+>> Xenomai purposes (some Xenomai libs have very special requirements in
+>> very rare cases). rt_task_wait_period() will switch to primary mode if=
 
-I have shaked my examples in various ways, with
-preemptions, overruns and high load on the machine, and the exectime patch
-behaves well, providing data consistent with the expectations (and with
-the rt_timer_read() probe when usable).
+>> needed, and always leave you in primary upon return.
+>>  =20
+> Indeed, I was also doing the same thing. From my understanding of the=20
+> docs, I assumed that manually setting a task to secondary mode was=20
+> allowed and could improve performance. Take for instance a task that=20
 
-	Daniel
+Yes, it is allowed, but no, it doesn't improve performance.
 
--- 
-       Daniel SIMON    Projet NeCS  INRIA Rhone-Alpes
-        Inovallee, 655 avenue de l'Europe, Montbonnot
-             38 334 Saint Ismier Cedex France
- Daniel.Simon@domain.hid Phone:(33)476615328 Fax:(33)476615252
-          http://necs.inrialpes.fr/people/simon/
+> logs data coming from a RT_QUEUE to a file. Is there anything special=20
+> that should be done to minimize the impact of the frequent mode switche=
+s=20
+> in such a case?
+
+As I once requested that mode switching feature, let my clarify its only
+intended use case: RTDM devices may provide different support for
+certain services (open/close/ioctl etc.) depending on the caller's
+context. In order to let the caller control his context cleanly (ie.
+without trickery to trigger automatic switches) in case there is support
+for both modes for some device service, we introduced the explicit
+switch interface. Really, this is the only scenario where switching
+manually makes sense with Xenomai, and it is a corner case even under RTD=
+M.
+
+In all other cases, as Philippe explained, the Xenomai core will switch
+for you transparently and efficiently. That even includes RTDM devices
+which only support some service in one mode. E.g., rt_dev_read will
+switch the caller to primary mode if the involved driver only provides a
+read_rt handler and the caller was in secondary mode.
+
+If you want to make your mode switches efficient, design your
+applications in a way that you don't interleave Linux services with
+blocking Xenomai services needlessly. Means, design the loop of your
+borderline thread such that it only switches once to secondary mode and
+back per cycle. But it sounds like your application (minus manual mode
+switches) is already designed that way.
+
+Hope that helped to clarify the situation. Now please let us know which
+sentence(s) from the doc may have misled your understanding of the mode
+switching feature. Maybe we have to rephrase them.
+
+Jan
 
 
+--------------enig2DF10DB05373E83D933E29D4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGoGiGniDOoMHTA+kRAsgwAJ9T+DgXz/RY8UaVgZaIYezOYRgJSACeIMJW
+ScWbICheXwEdnS+5r7kuu4I=
+=luCP
+-----END PGP SIGNATURE-----
+
+--------------enig2DF10DB05373E83D933E29D4--
 
