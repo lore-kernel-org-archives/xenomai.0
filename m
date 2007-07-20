@@ -1,14 +1,21 @@
-From: Sebastian Smolorz <ssm@domain.hid>
-Date: Fri, 20 Jul 2007 16:17:41 +0200
-References: <E1IBrs1-00081N-8b@domain.hid>
-	<2ff1a98a0707200558u1e118274nf74c77c528dc9d48@domain.hid>
-In-Reply-To: <2ff1a98a0707200558u1e118274nf74c77c528dc9d48@domain.hid>
+Message-ID: <46A0C4B6.5070706@domain.hid>
+Date: Fri, 20 Jul 2007 16:20:38 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: Multipart/Mixed;
-  boundary="Boundary-00=_FQMoGWSD6LmlmvN"
-Message-Id: <E1IBtIb-0005xb-KE@mailer.emlix.com>
-Subject: Re: [Xenomai-core] [PATCH] [arm] support for user space tsc
-	emulation for decrementing counters
+References: <469BF43D.1040704@domain.hid>
+	<46973753.6010206@domain.hid>	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>	<22554361.1184054457326.JavaMail.ngmail@domain.hid>	<2026261.1184070574283.JavaMail.ngmail@domain.hid>	<1982070.1184078400928.JavaMail.ngmail@domain.hid>	<4693A702.1010604@domain.hid>	<913919.1184311634860.JavaMail.ngmail@domain.hid>	<21969019.1184569651818.JavaMail.ngmail@domain.hid>	<29054475.1184842736562.JavaMail.ngmail@domain.hid>	<469F4A98.3080307@domain.hid>
+	<1184847549.28303.46.camel@domain.hid>	<469F5BA5.1030407@domain.hid>
+	<1184858093.28303.85.camel@domain.hid>	<469F84B3.6070104@domain.hid>
+	<1184861035.28303.108.camel@domain.hid>	<469F9CE2.9080603@domain.hid>
+	<1184869450.28303.155.camel@domain.hid>	<469FC65E.7070508@domain.hid>
+	<1184880955.28303.235.camel@domain.hid>
+In-Reply-To: <1184880955.28303.235.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig44245097D1A68CDD4F7C5DB3"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-help] Sporadic PC freeze
+	after	rt_task_start
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,171 +25,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: mathias_koehrer@domain.hid, xenomai@xenomai.org
 
---Boundary-00=_FQMoGWSD6LmlmvN
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig44245097D1A68CDD4F7C5DB3
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> On 7/20/07, Sebastian Smolorz <ssm@domain.hid> wrote:
-> > Hi,
-> >
-> > here comes my patch for user space tsc emulation for decrementing
-> > counters. I had to extend the __xn_tscinfo structure because the counter
-> > value from the last tsc update is needed to calculate the new tsc value.
->
-> The struct __xn_tscinfo is a union where "fr" stands for free-running,
-> the idea was that you could add your own structure for decrementer
-> based tsc.
+Philippe Gerum wrote:
+=2E..
+> Read my mail, without listening to your own grumble at the same time,
+> you should see that this is not a matter of being right or wrong, it is=
 
-Ok. Here is version 2 of the patch.
+> a matter of who needs what, and how one will use Xenomai. Your grumble
+> does not prove anything unfortunately, otherwise everything would be
+> fixed since many moons.
 
--- 
-Sebastian
+Why things are unfixed has something to do with their complexity. RPI is
+a complex thing AND it is a separate mechanism to the core (that's why I
+was suggesting to reuse PI code if possible - something that is already
+integrated for many moons).
 
---Boundary-00=_FQMoGWSD6LmlmvN
-Content-Type: text/x-diff;
-  charset="iso-8859-1";
-  name="xeno_arm_userspace_tsc_decrementer_v2.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="xeno_arm_userspace_tsc_decrementer_v2.patch"
+> What I'm suggesting now, so that you can't tell the rest of the world
+> that I'm such an old and deaf cranky meatball, is that we do place RPI
+> under strict observation until the latest 2.4-rc is out, and we would
+> decide at this point whether we should change the default value for the=
 
-Index: include/asm-arm/syscall.h
-===================================================================
---- include/asm-arm/syscall.h	(Revision 2768)
-+++ include/asm-arm/syscall.h	(Arbeitskopie)
-@@ -4,6 +4,9 @@
-  * ARM port
-  *   Copyright (C) 2005 Stelian Pop
-  *
-+ * Copyright (C) 2007 Sebastian Smolorz <ssm@domain.hid>
-+ *	Support for TSC emulation in user space for decrementing counters
-+ *
-  * Xenomai is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published
-  * by the Free Software Foundation; either version 2 of the License,
-@@ -205,6 +208,10 @@
-                         volatile unsigned long long *tsc;
-                 } fr;
-                 struct {
-+			volatile unsigned *counter;
-+			unsigned mask;
-+			volatile unsigned *last_cnt;
-+			volatile unsigned long long *tsc;
-                 } dec;
-         } u;
- };
-@@ -248,6 +255,28 @@
- 	if ((counter & mask) < (before & mask))
- 		before += mask + 1;
- 	return (before & ~mask) | (counter & mask);
-+
-+#elif CONFIG_XENO_ARM_HW_DIRECT_TSC == __XN_TSC_TYPE_DECREMENTER
-+	const unsigned mask = __xn_tscinfo.u.dec.mask;
-+	unsigned long long after, before;
-+	unsigned counter, last_cnt;
-+
-+	do {
-+		before = *__xn_tscinfo.u.dec.tsc;
-+		counter = *__xn_tscinfo.u.dec.counter;
-+		last_cnt = *__xn_tscinfo.u.dec.last_cnt;
-+		/* compiler barrier. */
-+		asm("" : /* */ : /* */ : "memory");
-+
-+		after = *__xn_tscinfo.u.dec.tsc;
-+	} while (after != before);
-+
-+	counter &= mask;
-+	last_cnt &= mask;
-+	if (counter > last_cnt)
-+		before += mask + 1;
-+	return (before + last_cnt - counter);
-+
- #endif /* CONFIG_XENO_HW_DIRECT_TSC == __XN_TSC_TYPE_FREERUNNING */
- }
- 
-@@ -280,7 +309,7 @@
- 
- 	switch(__xn_tscinfo.type) {
- #if CONFIG_XENO_ARM_HW_DIRECT_TSC == __XN_TSC_TYPE_FREERUNNING
--	case __XN_TSC_TYPE_FREERUNNING:{
-+	case __XN_TSC_TYPE_FREERUNNING: {
- 		unsigned long phys_addr;
- 
- 		phys_addr = (unsigned long) __xn_tscinfo.u.fr.counter;
-@@ -296,6 +325,23 @@
- 			 ((char *) addr + (phys_addr & (page_size - 1))));
- 		break;
- 	}
-+#elif CONFIG_XENO_ARM_HW_DIRECT_TSC == __XN_TSC_TYPE_DECREMENTER
-+	case __XN_TSC_TYPE_DECREMENTER: {
-+		unsigned long phys_addr;
-+
-+		phys_addr = (unsigned long) __xn_tscinfo.u.dec.counter;
-+		addr = mmap(NULL, page_size, PROT_READ, MAP_SHARED,
-+			    fd, phys_addr & ~(page_size - 1));
-+		if (addr == MAP_FAILED) {
-+			perror("Xenomai init: mmap(/dev/mem)");
-+			exit(EXIT_FAILURE);
-+		}
-+
-+		__xn_tscinfo.u.dec.counter = 
-+			((volatile unsigned *)
-+			 ((char *) addr + (phys_addr & (page_size - 1))));
-+		break;
-+	}
- #endif /* CONFIG_XENO_ARM_HW_DIRECT_TSC == __XN_TSC_TYPE_FREERUNNING */
- 	case __XN_TSC_TYPE_NONE:
- 		goto error;
-Index: include/asm-arm/bits/shadow.h
-===================================================================
---- include/asm-arm/bits/shadow.h	(Revision 2768)
-+++ include/asm-arm/bits/shadow.h	(Arbeitskopie)
-@@ -176,6 +176,12 @@
- 			info.u.fr.tsc = ipipe_info.archdep.tsc.u.fr.tsc;
- 			break;
- 		case IPIPE_TSC_TYPE_DECREMENTER:
-+			info.type = __XN_TSC_TYPE_DECREMENTER,
-+			info.u.dec.counter = ipipe_info.archdep.tsc.u.dec.counter;
-+			info.u.dec.mask = ipipe_info.archdep.tsc.u.dec.mask;
-+			info.u.dec.last_cnt = ipipe_info.archdep.tsc.u.dec.last_cnt;
-+			info.u.dec.tsc = ipipe_info.archdep.tsc.u.dec.tsc;
-+			break;
- 		case IPIPE_TSC_TYPE_NONE:
- 			return -ENOSYS;
- 			
-Index: configure.in
-===================================================================
---- configure.in	(Revision 2768)
-+++ configure.in	(Arbeitskopie)
-@@ -182,7 +182,8 @@
- 	ixp4xx|pxa) 	arch=5
- 	      		tsc_type=__XN_TSC_TYPE_FREERUNNING;;
- 
--	s3c2410) 	arch=4;;
-+	s3c2410) 	arch=4
-+			tsc_type=__XN_TSC_TYPE_DECREMENTER;;
- 
- 	sa1100) 	arch=4
- 			CONFIG_XENO_ARM_SA1100=y
-Index: ChangeLog
-===================================================================
---- ChangeLog	(Revision 2768)
-+++ ChangeLog	(Arbeitskopie)
-@@ -1,3 +1,8 @@
-+2007-07-19  Sebastian Smolorz  <ssm@domain.hid>
-+
-+	* include/asm-arm/syscall.h: Add user-space access to
-+	tsc emulation for decrementing counters.
-+
- 2007-07-19  Jan Kiszka  <jan.kiszka@domain.hid>
- 
- 	* ksrc/nucleus/timer.c (xntimer_tick_aperiodic): Keep processing
+> skins for which it makes sense (both for v2.3.x and 2.4). Obviously,
+> this would only make sense if key users actually give hell to the 2.4
+> testing releases (Mathias, the world is watching you).
 
---Boundary-00=_FQMoGWSD6LmlmvN--
+OK, let's go through this another time, this time under the motto "get
+the locking right". As a start (and a help for myself), here comes an
+overview of the scheme the final version may expose - as long as there
+are separate locks:
+
+gatekeeper_thread / xnshadow_relax:
+	rpilock, followed by nklock
+	(while xnshadow_relax puts both under irqsave...)
+
+xnshadow_unmap:
+	nklock, then rpilock nested
+
+xnshadow_start:
+	rpilock, followed by nklock
+
+xnshadow_renice:
+	nklock, then rpilock nested
+
+schedule_event:
+	only rpilock
+
+setsched_event:
+	nklock, followed by rpilock, followed by nklock again
+
+And then there is xnshadow_rpi_check which has to be fixed to:
+	nklock, followed by rpilock (here was our lock-up bug)
+
+That's a scheme which /should/ be safe. Unfortunately, I see no way to
+get rid of the remaining nestings.
+
+And I still doubt we are gaining much by the lock split-up on SMP (it's
+pointless for UP due to xnshadow_relax). In case there is heavy
+migration activity on multiple cores/CPUs, we now regularly content for
+two locks in the hot paths instead of just the one everyone has to go
+through anyway. And while we obviously don't win a dime for the worst
+case, the average reduction of spinning times trades off against more
+atomic (cache-line bouncing) operations. Were you able to measure some
+improvement?
+
+Jan
+
+
+--------------enig44245097D1A68CDD4F7C5DB3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGoMS2niDOoMHTA+kRAtpAAJ9Whkrh8TG7k8Vbb8zhbLLncKSznwCfUlY6
+Ex3fUSSUR7tMkwgrVvd1euQ=
+=rgon
+-----END PGP SIGNATURE-----
+
+--------------enig44245097D1A68CDD4F7C5DB3--
 
