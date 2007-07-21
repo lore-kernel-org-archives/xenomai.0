@@ -15,8 +15,8 @@ References: <469BF43D.1040704@domain.hid> <46973753.6010206@domain.hid>
 	<469FC65E.7070508@domain.hid> <1184880955.28303.235.camel@domain.hid>
 	<46A0C4B6.5070706@domain.hid>
 Content-Type: text/plain
-Date: Fri, 20 Jul 2007 20:33:31 +0200
-Message-Id: <1184956411.5998.76.camel@domain.hid>
+Date: Sat, 21 Jul 2007 10:49:52 +0200
+Message-Id: <1185007792.5998.100.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -36,52 +36,58 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: mathias_koehrer@domain.hid, xenomai@xenomai.org
 
 On Fri, 2007-07-20 at 16:20 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> ...
-> > Read my mail, without listening to your own grumble at the same time,
-> > you should see that this is not a matter of being right or wrong, it is
-> > a matter of who needs what, and how one will use Xenomai. Your grumble
-> > does not prove anything unfortunately, otherwise everything would be
-> > fixed since many moons.
+
+> OK, let's go through this another time, this time under the motto "get
+> the locking right". As a start (and a help for myself), here comes an
+> overview of the scheme the final version may expose - as long as there
+> are separate locks:
 > 
-> Why things are unfixed has something to do with their complexity. RPI is
-> a complex thing AND it is a separate mechanism to the core (that's why I
-> was suggesting to reuse PI code if possible - something that is already
-> integrated for many moons).
+> gatekeeper_thread / xnshadow_relax:
+> 	rpilock, followed by nklock
+> 	(while xnshadow_relax puts both under irqsave...)
 > 
 
-I'm afraid RPI and PI are very different beasts. The purpose of RPI is
-to track real-time priority for the _pseudo_ root thread, PI deals with
-Linux tasks. Moroever, RPI does no priority propagation beyond the first
-level (i.e. the root thread one), and only has to handle backtracking in
-a trivial way. For this reason, the PI implementation is way more
-complex, zillion times beyond RPI, so the effort would be absolutely
-counter-productive.
+The relaxing thread must not be preempted in primary mode before it
+schedules out but after it has been linked to the RPI list, otherwise
+the root thread would benefit from a spurious priority boost. This said,
+in the UP case, we have no lock to contend for anyway, so the point of
+discussing whether we should have the rpilock or not is moot here.
 
-I understand your POV, the whole RPI thing seems baroque to you, and I
-can only agree with you here, it is. However, we still need RPI for
-proper behaviour in a lot of cases, at least with a co-kernel technology
-under our feet. So, I'm going to submit fixes for this issue, and agree
-to change the default knob from enabled to disabled for the native and
-POSIX skins if need be, if the observation period tells us so.
+> xnshadow_unmap:
+> 	nklock, then rpilock nested
+> 
 
-Now, within the RPI issue, there is the double locking one: I'm going to
-be very pragmatic here. If this is logically possible to keep the double
-locking, I will keep it. The point being that people running real-time
-applications on SMP configs tend in fact to prefer asymmetry to symmetry
-when building their design. I mean that separate CPUs are usually
-dedicated to different application tasks; in such a common pattern, if
-one of the CPU is running a frequent (mode) switching task, it may put a
-serious pressure on the nklock for all others (imagine a fast periodic
-timeline on one CPU sending data to a secondary mode logger on a second
-CPU, both being synchronized on a Xenomai synch). This is what I don't
-want, if possible. If it is not possible to define a proper locking
-scheme without resorting to 1) hairy and overly complex constructs, or
-2) voodoo spells, then I will put everyone under the nklock, albeit I
-think this is a sub-optimal solution.
+This one is the hardest to solve.
 
-Ok, let's move on. The main focus is -rc1, and beyond that 2.4 final. We
-are damned late already.
+> xnshadow_start:
+> 	rpilock, followed by nklock
+> 
+> xnshadow_renice:
+> 	nklock, then rpilock nested
+> 
+> schedule_event:
+> 	only rpilock
+> 
+> setsched_event:
+> 	nklock, followed by rpilock, followed by nklock again
+> 
+> And then there is xnshadow_rpi_check which has to be fixed to:
+> 	nklock, followed by rpilock (here was our lock-up bug)
+> 
+
+rpilock -> nklock in fact. The last lockup was rather likely due to the
+gatekeeper's dangerous nesting of nklock -> rpilock -> nklock.
+
+> That's a scheme which /should/ be safe. Unfortunately, I see no way to
+> get rid of the remaining nestings.
+> 
+
+There is one, which consists of getting rid of the rpilock entirely. The
+purpose of such lock is to protect the RPI list when fixing the
+situation after a task migration in secondary mode triggered from the
+Linux side. Addressing the latter issue differently may solve the
+problem more elegantly than figuring out how to combine the two locks,
+or hammering the hot path with the nklock. Will look at this.
 
 -- 
 Philippe.
