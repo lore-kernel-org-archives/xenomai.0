@@ -1,27 +1,27 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46A0C4B6.5070706@domain.hid>
+In-Reply-To: <469FA616.9040900@domain.hid>
 References: <469BF43D.1040704@domain.hid> <46973753.6010206@domain.hid>
-	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>	<469345EB.6060302@domain.hid>
+	<4694ED98.6000000@domain.hid>	<46937E70.10903@domain.hid>
+	<469345EB.6060302@domain.hid>
 	<22554361.1184054457326.JavaMail.ngmail@domain.hid>
 	<2026261.1184070574283.JavaMail.ngmail@domain.hid>
-	<1982070.1184078400928.JavaMail.ngmail@domain.hid>	<4693A702.1010604@domain.hid>
+	<1982070.1184078400928.JavaMail.ngmail@domain.hid>
+	<4693A702.1010604@domain.hid>
 	<913919.1184311634860.JavaMail.ngmail@domain.hid>
 	<21969019.1184569651818.JavaMail.ngmail@domain.hid>
 	<29054475.1184842736562.JavaMail.ngmail@domain.hid>
 	<469F4A98.3080307@domain.hid> <1184847549.28303.46.camel@domain.hid>
 	<469F5BA5.1030407@domain.hid> <1184858093.28303.85.camel@domain.hid>
 	<469F84B3.6070104@domain.hid> <1184861035.28303.108.camel@domain.hid>
-	<469F9CE2.9080603@domain.hid> <1184869450.28303.155.camel@domain.hid>
-	<469FC65E.7070508@domain.hid> <1184880955.28303.235.camel@domain.hid>
-	<46A0C4B6.5070706@domain.hid>
+	<469FA616.9040900@domain.hid>
 Content-Type: text/plain
-Date: Sat, 21 Jul 2007 10:49:52 +0200
-Message-Id: <1185007792.5998.100.camel@domain.hid>
+Date: Sat, 21 Jul 2007 22:15:13 +0200
+Message-Id: <1185048913.5998.124.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-help] Sporadic PC
-	freeze	after	rt_task_start
+Subject: Re: [Xenomai-core] [Xenomai-help] Sporadic PC freeze after
+	rt_task_start
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -33,62 +33,58 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: mathias_koehrer@domain.hid, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-On Fri, 2007-07-20 at 16:20 +0200, Jan Kiszka wrote:
-
-> OK, let's go through this another time, this time under the motto "get
-> the locking right". As a start (and a help for myself), here comes an
-> overview of the scheme the final version may expose - as long as there
-> are separate locks:
-> 
-> gatekeeper_thread / xnshadow_relax:
-> 	rpilock, followed by nklock
-> 	(while xnshadow_relax puts both under irqsave...)
+On Thu, 2007-07-19 at 19:57 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > Ok, the rpilock is local, the nesting level is bearable, let's focus on
+> > putting this thingy straight.
 > 
 
-The relaxing thread must not be preempted in primary mode before it
-schedules out but after it has been linked to the RPI list, otherwise
-the root thread would benefit from a spurious priority boost. This said,
-in the UP case, we have no lock to contend for anyway, so the point of
-discussing whether we should have the rpilock or not is moot here.
+Sorry, I missed this one, which in fact explains that you were referring
+to Xenomai PI and not PREEMPT_RT PI (yeah, I thought for a while that
+you were nuts enough to ask me to model RPI after RT-PI... so I must be
+nuts myself)
 
-> xnshadow_unmap:
-> 	nklock, then rpilock nested
+> Well, redesigning things may not necessarily improve the situation, but
+> reducing the amount of special RPI code might be worth a thought:
+> 
+> What is so special about RPI compared to standard prio inheritance?
+
+Basically, boost propagation and priority backtracking as I previously
+answered in the wrong context. This said, I still think that PI (the
+Xenomai one) complexity is much higher than RPI in its current form.
+
+>  What
+> about [wild idea ahead!] modelling RPI as a virtual mutex that is
+> permanently held by the ROOT thread and which relaxed threads try to
+> acquire? They would never get it, rather drop the request (and thus the
+> inheritance) once they are to be hardened again or Linux starts to
+> schedule around.
+> 
+> *If* that is possible, we would
+>  A) reuse existing code heavily,
+>  B) lack any argument for separate locking,
+>  C) make things far easier to understand and review.
+> 
+> Sounds too beautiful to work, I'm afraid...
 > 
 
-This one is the hardest to solve.
+It would be more elegant than RPI currently is, not question. This is
+the way message passing works in the native API, in order to implement
+the inheritance by the server of the client priority, for instance.
 
-> xnshadow_start:
-> 	rpilock, followed by nklock
-> 
-> xnshadow_renice:
-> 	nklock, then rpilock nested
-> 
-> schedule_event:
-> 	only rpilock
-> 
-> setsched_event:
-> 	nklock, followed by rpilock, followed by nklock again
-> 
-> And then there is xnshadow_rpi_check which has to be fixed to:
-> 	nklock, followed by rpilock (here was our lock-up bug)
-> 
+The main problem with PI, is that all starts from xnsynch_sleep_on.
+Since we could not use this interface to activate PI, we would have to
+craft another one. Additionally, some Linux activities may change the
+RPI state (e.g. sched_setscheduler()), so we would have to create a
+parallel path to fix this state without resorting to the normal PI
+mechanism aimed at being used over a blockable context, Xenomai-wise.
+A lot of changes for the purpose of solely recycling the basics of a PI
+implementation.
 
-rpilock -> nklock in fact. The last lockup was rather likely due to the
-gatekeeper's dangerous nesting of nklock -> rpilock -> nklock.
-
-> That's a scheme which /should/ be safe. Unfortunately, I see no way to
-> get rid of the remaining nestings.
+> Jan
 > 
-
-There is one, which consists of getting rid of the rpilock entirely. The
-purpose of such lock is to protect the RPI list when fixing the
-situation after a task migration in secondary mode triggered from the
-Linux side. Addressing the latter issue differently may solve the
-problem more elegantly than figuring out how to combine the two locks,
-or hammering the hot path with the nklock. Will look at this.
-
 -- 
 Philippe.
 
