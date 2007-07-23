@@ -1,14 +1,10 @@
-Message-ID: <46A10CE9.7090603@domain.hid>
-Date: Fri, 20 Jul 2007 15:28:41 -0400
-From: Vincent Levesque <vleves@domain.hid>
+Message-ID: <2862c2c80707222152t2037a987mca3f70d1da9865dd@domain.hid>
+Date: Mon, 23 Jul 2007 12:52:52 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
 MIME-Version: 1.0
-References: <760425846A1BC44B8BD24361EF2E3451A69749@domain.hid>	<1184746976.6562.62.camel@domain.hid>	<760425846A1BC44B8BD24361EF2E3451010D9A3F@square.bfh.ch>	<1184755654.13258.17.camel@domain.hid>
-	<469FD346.4060402@domain.hid> <46A06886.5000703@domain.hid>
-In-Reply-To: <46A06886.5000703@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Writing from user space direct to
- IO	Ports	without mode switches
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_101871_7762172.1185166372171"
+Subject: [Xenomai-help] Xenomai Testsuite for AT91 - Illegal Instruction
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +14,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-Hi Jan,
-> Hope that helped to clarify the situation. Now please let us know which
-> sentence(s) from the doc may have misled your understanding of the mode
-> switching feature. Maybe we have to rephrase them.
->   
-I wasn't referring to any part of the docs in particular. If I remember 
-correctly, I came across rt_task_set_mode(...) in the API documentation 
-and naively assumed that a task could be set to secondary mode when it 
-is expected to frequently trigger mode switches (e.g. data logging, 
-graphical user interface). Perhaps a short note could be added to the 
-function's description to the affect that the T_PRIMARY bit should be 
-modified manually only in exceptional cases. Or maybe I'm the only one 
-who got confused!
+------=_Part_101871_7762172.1185166372171
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-In any case, thank you for these clarifications!
+Dear all,
 
-Vincent Levesque
-vleves@domain.hid
+Previous I had the problem with my ARM GNU toolchain with xenomai building
+process.
 
+I have donwloaded the ARM GNU toolchain from Code Sourcery. Both the Linux
+kernel and the xenomai have compiled sucessfully.
 
+However, whenever I run the testsuite in ./src directory. The test comes out
+with the following results:
+
+*
+*
+* Type ^C to stop this application.
+*
+*
+Illegal instruction
+
+What's go wrong? Is this something to do with generated executable not
+compatible to AT91 architecture?
+
+I have appended the CFLAGS=-march-armv4t for building the xenomai since the
+arm-none-linux-gnueabi is default to ARM5 architecture.
+
+Use the following for configure script:
+CFLAGS="-march=armv4t" ./configure --build=i686-pc-linux-gnu
+--host=arm-none-linux-gnueabi CC=arm-none-linux-gnueabi-gcc
+CXX=arm-none-linux-gnueabi-gcc AR=arm-none-linux-gnueabi-ar
+LD=arm-none-linux-gnueabi-ld --enable-arm-mach=at91
+
+Please advice. Thanks
+
+regards,
+chun yeow
+
+------=_Part_101871_7762172.1185166372171
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Dear all,<br><br>Previous I had the problem with my ARM GNU toolchain with xenomai building process. <br><br>I have donwloaded the ARM GNU toolchain from Code Sourcery. Both the Linux kernel and the xenomai have compiled sucessfully.
+<br><br>However, whenever I run the testsuite in ./src directory. The test comes out with the following results:<br><br><span style="color: rgb(255, 0, 0);">*</span><br style="color: rgb(255, 0, 0);"><span style="color: rgb(255, 0, 0);">
+*</span><br style="color: rgb(255, 0, 0);"><span style="color: rgb(255, 0, 0);">* Type ^C to stop this application.</span><br style="color: rgb(255, 0, 0);"><span style="color: rgb(255, 0, 0);">*</span><br style="color: rgb(255, 0, 0);">
+<span style="color: rgb(255, 0, 0);">*</span><br style="color: rgb(255, 0, 0);"><span style="color: rgb(255, 0, 0);">Illegal instruction</span><br><br>What&#39;s go wrong? Is this something to do with generated executable not compatible to AT91 architecture?
+<br><br>I have appended the CFLAGS=-march-armv4t for building the xenomai since the arm-none-linux-gnueabi is default to ARM5 architecture.<br><br>Use the following for configure script:<br>CFLAGS=&quot;-march=armv4t&quot; ./configure --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi CC=arm-none-linux-gnueabi-gcc CXX=arm-none-linux-gnueabi-gcc AR=arm-none-linux-gnueabi-ar LD=arm-none-linux-gnueabi-ld --enable-arm-mach=at91
+<br><br>Please advice. Thanks<br><br>
+regards,<br>chun yeow<br><br><br>
+
+------=_Part_101871_7762172.1185166372171--
 
