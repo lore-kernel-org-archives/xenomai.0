@@ -1,33 +1,79 @@
-Message-ID: <469C7D3E.7020009@domain.hid>
-Date: Tue, 17 Jul 2007 10:26:38 +0200
-From: Johan Borkhuis <j.borkhuis@domain.hid>
+Message-ID: <2ff1a98a0707230210md987ad0la2adaef2210c6f46@domain.hid>
+Date: Mon, 23 Jul 2007 11:10:30 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <2ff1a98a0707230150j216dd5bapbaf08d3df91b4e0e@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Minor issue: compiler warning on rtdm.h
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+References: <2862c2c80707222152t2037a987mca3f70d1da9865dd@domain.hid>
+	<18084.23878.661537.272573@domain.hid>
+	<2862c2c80707230104y5e5c9cc0v8038458e8bcc5f1c@domain.hid>
+	<2ff1a98a0707230117n6407f270o9f58f44eeb4f9d9d@domain.hid>
+	<2862c2c80707230129m143232d1n2dcfbec22c05962d@domain.hid>
+	<2ff1a98a0707230150j216dd5bapbaf08d3df91b4e0e@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai Testsuite for AT91 - Illegal Instruction
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-When compiling with an extended warnings I get the following warning:
+On 7/23/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 7/23/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
+> > On 7/23/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> > > On 7/23/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
+> > > > Dear Gilles,
+> > > >
+> > > > The same problem still occurs. Here is the /proc/xenomai/faults output:
+> > > >
+> > > >
+> > [root@domain.hid]
+> > > > cat /proc/xenomai/faults
+> > > > TRAP         CPU0
+> > > >   0:            0    (Data or instruction access)
+> > > >   1:            0    (Section fault)
+> > > >   2:            0    (Generic data abort)
+> > > >   3:            0    (Unknown exception)
+> > > >   4:            0    (Instruction breakpoint)
+> > > >   5:            0    (Floating point exception)
+> > > >   6:            0    (VFP Floating point exception)
+> > > >   7:            0    (Undefined instruction)
+> > > >
+> > > > Any ideas?
+> > >
+> > > Did you compile Xenomai as module or in the kernel ? If compiled as
+> > > module, are the module loaded ? If yes, then try running your test
+> > > inside gdb to know which instruction triggers this error message.
+> > >
+> > Dear Gilles,
+> >
+> > I compiled xenomai in the kernel.  Here , the kernel initial log messages;
+> >
+> > I-pipe: Domain Xenomai registered.
+> > Xenomai: hal/arm started.
+> > I-pipe: Domain IShield registered.
+> > Xenomai: real-time nucleus v2.3.2 (The Forgotten) loaded.
+> > Xenomai: starting native API services.
+> > Xenomai: starting POSIX services.
+> > Xenomai: starting RTDM services.
+> >
+> > Did I miss out any required modules?
+>
+> I do not think so. Last idea: check the EABI setting. If it is not the
+> culprit, try running your application in gdb. Really, this will tell
+> you what goes wrong right away instead of trying to guess.
 
-/nfsroot/common/usr/xenomai/include/rtdm/rtdm.h: In function 
-'rt_dev_sendto':
-/nfsroot/common/usr/xenomai/include/rtdm/rtdm.h:323: warning: missing 
-initializer
-/nfsroot/common/usr/xenomai/include/rtdm/rtdm.h:323: warning: (near 
-initialization for 'msg.msg_flags')
+I have just checked the v2.3 branch, it does not support EABI, only
+trunk does. So, if you are using Xenomai v2.3.2, pass whatever flag is
+necessary for gcc not to use EABI.
 
-The structure-type msghdr has 7 elements, but the initializer only has 6 
-elements.
-
-Kind regard,
-    Johan Borkhuis
+-- 
+                                               Gilles Chanteperdrix
 
