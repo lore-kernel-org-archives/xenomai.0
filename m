@@ -1,14 +1,13 @@
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Message-ID: <18083.30493.354420.623297@domain.hid>
-Date: Sun, 22 Jul 2007 17:26:21 +0200
-In-Reply-To: <1183011711.4683537f3ae9f@domain.hid>
-References: <1182504330.467b958af1b87@domain.hid>
-	<18044.7995.598709.244609@domain.hid>
-	<1183011711.4683537f3ae9f@domain.hid>
+Message-ID: <18087.53592.695989.892368@domain.hid>
+Date: Thu, 26 Jul 2007 00:40:24 +0200
+In-Reply-To: <E1IBASV-0003zW-Kv@domain.hid>
+References: <E1IBASV-0003zW-Kv@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Adeos-main] mach-imx support
+Subject: Re: [Adeos-main] [PATCH] [arm] Fixes
+	for	adeos-ipipe-2.6.20-arm-1.7-03.patch
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,26 +16,41 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: garryt <garryt@domain.hid>
-Cc: adeos-main@gna.org
+To: Sebastian Smolorz <ssm@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-garryt wrote:
- > Hello,
+Sebastian Smolorz wrote:
+ > Hi Gilles,
  > 
- > Thanks for the answer, changes will be made accordingly.
- > 
- > I agree, There were some modifications that were remaining from a previous quick
- > and dirty attempt and that have nothing to do here.
- > 
- > Thanks,
+ > (...)
+ >
+ >     Negate condition in macros local_irq_save_hw(x) and 
+ > local_irq_restore_hw(x)
+ > (...)
+ >  #define local_irq_save_hw(x) do { \
+ >  	local_save_flags_hw(x); \
+ > -	if (raw_irqs_disabled_flags(x)) { \
+ > +	if (!raw_irqs_disabled_flags(x)) { \
+ >  		local_irq_disable_hw_notrace(); \
+ >  		ipipe_trace_begin(0x80000001); \
+ >  	} \
+ >  } while (0)
+ >  #define local_irq_restore_hw(x) do { \
+ > -	if (raw_irqs_disabled_flags(x)) \
+ > +	if (!raw_irqs_disabled_flags(x)) \
+ >  		ipipe_trace_end(0x80000001); \
+ >  	local_irq_restore_hw_notrace(x); \
+ >  } while (0)
+ > @@ -209,8 +207,6 @@ void __ipipe_restore_root(unsigned long flags);
+ >  #define local_fiq_disable_hw()		local_fiq_disable_hw_notrace()
+ >  #define local_irq_restore_hw(flags)	local_irq_restore_hw_notrace(flags)
+ >  
+ > -#define irqs_disabled()		irqs_disabled_hw()
+ > -
+ >  #endif /* CONFIG_IPIPE */
 
-Hi Garry,
-
-I have resumed working on I-pipe patch for ARM, and would want to
-integrate your patch. However, I could not find your mail with a
-corrected patch. So, did you send it, if not, could you send it soon ?
-
-Thanks in advance.
+Ah, this one was a nasty bug. It explains the odd behaviour of my I-pipe
+patched kernel on AT91 when enabling the tracer. Thanks a lot.
 
 -- 
 
