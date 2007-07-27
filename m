@@ -1,65 +1,69 @@
-Message-ID: <469CDD47.6030608@domain.hid>
-Date: Tue, 17 Jul 2007 17:16:23 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2862c2c80707270211n37c56aen22655708661ccd17@domain.hid>
+Date: Fri, 27 Jul 2007 17:11:42 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
 MIME-Version: 1.0
-References: <469C7D3E.7020009@domain.hid>
-In-Reply-To: <469C7D3E.7020009@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig021DDB63B27BB3451197F6F5"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Minor issue: compiler warning on rtdm.h
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_2464_13185399.1185527502282"
+Subject: [Xenomai-help] clocktest - Segmentation Fault & Meaning of TOD
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig021DDB63B27BB3451197F6F5
+------=_Part_2464_13185399.1185527502282
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Johan Borkhuis wrote:
-> When compiling with an extended warnings I get the following warning:
->=20
-> /nfsroot/common/usr/xenomai/include/rtdm/rtdm.h: In function=20
-> 'rt_dev_sendto':
-> /nfsroot/common/usr/xenomai/include/rtdm/rtdm.h:323: warning: missing=20
-> initializer
-> /nfsroot/common/usr/xenomai/include/rtdm/rtdm.h:323: warning: (near=20
-> initialization for 'msg.msg_flags')
->=20
-> The structure-type msghdr has 7 elements, but the initializer only has =
-6=20
-> elements.
+Dear all,
 
-Yeah, known problem under pedantic compiler switches. But it's already
-fixed in upcoming 2.4, I was likely just to lazy to back-port it.
+I have grabbed the xenomai trunk and compiled the clocktest testsuite. I
+have "Segmentation Fault" during the clocktest execution, thus, making the
+following modification on the pthread_create by submitting the attrib:
 
-Thanks nevertheless,
-Jan
+        pthread_attr_t attr;
 
+        pthread_attr_init(&attr);
+        pthread_attr_setstacksize(&attr, PTHREAD_STACK_MIN);
 
---------------enig021DDB63B27BB3451197F6F5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+        per_cpu_data[i].first_round = 1;
+        pthread_create(&per_cpu_data[i].thread, &attr, cpu_thread,
+               (void *)(long)i);
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+I don't know wether I am doing correctly or this is a Bug.
 
-iD8DBQFGnN1HniDOoMHTA+kRAlVXAJwPiAjcrocViDrNZNm7CBOM5I6NiACfd5fI
-zTTyhaUGDd75VdoZOBfLlmc=
-=6y+n
------END PGP SIGNATURE-----
+By the way, I have no idea of the meaning of this testing, such as ToD
+offset. Can anyone explain this? Is this for testing the clock percision by
+checking the drifting? what's the different between real time clock and
+monotonic clock?
 
---------------enig021DDB63B27BB3451197F6F5--
+== Tested clock: 0 (CLOCK_REALTIME)
+CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+--- -------------------- ---------------- ---------- --------------
+  0              54141.9           -0.141          0            0.0
+Xenomai: POSIX: destroyed thread c0540320
+
+Thanks
+
+regards,
+chun yeow
+
+------=_Part_2464_13185399.1185527502282
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+Dear all,<br><br>I have grabbed the xenomai trunk and compiled the clocktest testsuite. I have &quot;Segmentation Fault&quot; during the clocktest execution, thus, making the following modification on the pthread_create by submitting the attrib:
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_attr_t attr;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_attr_init(&amp;attr);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_attr_setstacksize(&amp;attr, PTHREAD_STACK_MIN);<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; per_cpu_data[i].first_round = 1;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pthread_create(&amp;per_cpu_data[i].thread,
+<span style="color: rgb(204, 0, 0);"> &amp;attr,</span> cpu_thread,<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (void *)(long)i);<br><br>I don&#39;t know wether I am doing correctly or this is a Bug.<br><br>By the way, I have no idea of the meaning of this testing, such as ToD offset. Can anyone explain this? Is this for testing the clock percision by checking the drifting? what&#39;s the different between real time clock and monotonic clock?
+<br><br>== Tested clock: 0 (CLOCK_REALTIME)<br>CPU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ToD offset [us] ToD drift [us/s]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; warps max delta [us]<br>--- -------------------- ---------------- ---------- --------------<br>&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 54141.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -
+0.141&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0<br>Xenomai: POSIX: destroyed thread c0540320<br><br>Thanks<br><br>regards,<br>chun yeow<br>
+
+------=_Part_2464_13185399.1185527502282--
 
