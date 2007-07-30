@@ -1,11 +1,10 @@
-Message-ID: <e39c9190707291316l237d572btd75f570d39ab75e@domain.hid>
-Date: Sun, 29 Jul 2007 22:16:10 +0200
-From: "juanba romance" <juanba.romance@domain.hid>
+Message-ID: <1078462.1185791528606.JavaMail.ngmail@domain.hid>
+Date: Mon, 30 Jul 2007 12:32:08 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] RTDM driver hints
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] V2.3.3 and kernel 2.6.22?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,38 +16,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello all, i am re-writing a old linux driver which i did myself some
-time ago, cause i am in charge to provide a RT system framework. This
-is one of the first steps so i have followed the RTDM model to do the
-stuff.
-Now i also have enough time to change its ugly capabilities/defects
-but i am a little stuck right now..
+Hi everybody,
 
-I would like to improve my previous design fully buffering the
-incoming user data flow on write method so a input FIFO it's planned.
-The FIFO will be emptied using a rt-task created from the "open"
-procedure and signalled from the "write" method before the user flow
-exit. The point is:
-where the FIFO handler references should be defined ?
+I want to know if it is possible to use Xenomai 2.3.3 with the Adeos patch
+adeos-ipipe-2.6.22-i386-1.9-01.patch (e.g. from the Xenomai svn trunk)?
+Or is the 2.3.3 limited to those Adeos patches that are part of the 2.3.3 r=
+elease?
 
-I have take a look to the serial driver 16550 and my code is really
-biased by its data device definition strategy ( obviously this is my
-first RTDM monster ;-) and i need some guide ), instead of my
-proposal, its design empty the TX FIFO from the IRQ service stuff
-where the user context was passed as argument at the "open" call, so
-all the parts are softly linked..
+If it is possible to use the adeos-ipipe-2.6.22 patch, what risks could be =
+caused by this
+"not official" patch?
 
-I would prefer to add the above program capability to avoid rewrite as
-much as possible the current ISR symbol.
-but i don't know the beast strategy to be applied to overcome the .
+Or more general: What is the relation between Xenomai and Adeos patches?
+Are the Adeos patches used (and tested) somewhere outside of Xenomai?=20
+Or is it always the bundle Adeos + Xenomai?
 
-I have pass the "context" field dev_private area pointer to the
-rt_task "by hand" but its value is really weird. Should this kind of
-information be defined globally trough the "static" stuff and pass
-this argument to the rt_task_init symbol
+Thanks for a clarification.
 
-Any hints, advices.. ?
-Thanks in advance
+Regards
 
-PD: Sorry about the brick..
+Mathias
+
+
+
+
+
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
+
+
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
+Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
+f=FCr clevere Doppel-Sparer, nur  34,95 =80  inkl. DSL- und ISDN-Grundgeb=
+=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
