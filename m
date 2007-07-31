@@ -1,14 +1,23 @@
-Message-ID: <46AF1C06.1020404@domain.hid>
-Date: Tue, 31 Jul 2007 13:24:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <2862c2c80707310340t18d8baf8l8b82d2ddeeb731bf@domain.hid>
-In-Reply-To: <2862c2c80707310340t18d8baf8l8b82d2ddeeb731bf@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA26D14FAEB9EA12EF7BDBAC1"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RTnet on AT91
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18095.41752.74240.393339@domain.hid>
+Date: Tue, 31 Jul 2007 23:01:12 +0200
+In-Reply-To: <2862c2c80707182309r2d49f8b6xeb85601230a4be43@domain.hid>
+References: <2862c2c80707130245j3f9b09b3i2b461c4e1521c53d@domain.hid>
+	<2ff1a98a0707170300o5d36e9f9i96b5a11fb4c7a87e@domain.hid>
+	<2862c2c80707170336t45ad3266pc5b5f7769623a900@domain.hid>
+	<2ff1a98a0707170609u5da092a1nf32d4789b579717@domain.hid>
+	<2862c2c80707172257x5f41d8c4p5df5282be4ba98a2@domain.hid>
+	<18077.48173.286511.400122@domain.hid>
+	<2862c2c80707180036t6e64ccban83924d445d80f9c0@domain.hid>
+	<2ff1a98a0707180135q24ab6515kf573215edf0aaafa@domain.hid>
+	<2862c2c80707180255h7197a055i58b90228bc2c52df@domain.hid>
+	<2ff1a98a0707180739y59f673c3tc7d8668877686212@domain.hid>
+	<2862c2c80707182309r2d49f8b6xeb85601230a4be43@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Enable I-PIPE - kernel boot hangs in the
+	AT91RM9200
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,48 +28,44 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
-Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>, rtnet-users <rtnet-users@domain.hid>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA26D14FAEB9EA12EF7BDBAC1
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
 Yeoh Chun Yeow wrote:
-> Dear all,
+ > Dear Gilles,
+ > 
+ > Thanks. After disabling the system timer interrupt at the starting of timer
+ > init function, the problem is solved. Thanks again!
+ > 
+ > By the way, I would like know if you ever try the 2.6.20-at91-patch in your
+ > testing and find out the problem. Whenever I patch my kernel with this
+ > 2.6.20-at91-patch, the system is stalled in a very early stage, not even
+ > reaching the request_irq in atmel serial driver.
+ > 
+ > Please advice. Thanks
 
-I added RTnet-users to CC, the main forum for RTnet-related discussions.
-Please drop Xenomai-help on reply if the topic remains as is.
+I tried applying this patch, the kernel boots fine until the point where
+it tries to configure the network interface for mounting its root
+filesystem through nfs. The usual messages:
+eth0: Link now 100-FullDuplex
+Sending DHCP requests ., OK
+IP-Config: Got DHCP answer from 192.168.1.1, my address is 192.168.1.20
+IP-Config: Complete:
+      device=eth0, addr=192.168.1.20, mask=255.255.255.0, gw=192.168.1.1,
+     host=192.168.1.20, domain=, nis-domain=(none),
+     bootserver=192.168.1.1, rootserver=192.168.1.3, rootpath=
+Looking up port of RPC 100003/2 on 192.168.1.3
+Looking up port of RPC 100005/1 on 192.168.1.3
 
->=20
-> I would like to know is there any peoples working on the support RTnet =
-on
-> AT91RM9200?
->=20
-> RTnet web-site doesn't contain the real time driver for AT91 ethernet.
+never gets displayed.
 
-I'm currently not aware of (ongoing) ports of any AT91 Ethernet driver.
-Maybe someone else has more information.
+However, I observe no lockup at a very early stage, it would be
+interesting if you could investigate this on your side.
 
-But even if not, the required effort is generally bearable. Just make
-sure you keep the list busy with questions/code to answer/review.
+Now, anybody with more knowledge on the Atmel patch for AT91, could you
+tell me what I am doing wrong ?
 
-Jan
+-- 
 
 
---------------enigA26D14FAEB9EA12EF7BDBAC1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGrxwHniDOoMHTA+kRApv4AJ9xATjWqzeZlXrmKbuMWMNzNWTlggCeJDDS
-Qvtg5oQKPDtL/vSwCNTu4Tk=
-=6Np1
------END PGP SIGNATURE-----
-
---------------enigA26D14FAEB9EA12EF7BDBAC1--
+					    Gilles Chanteperdrix.
 
