@@ -1,14 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46AF7CB0.1040205@domain.hid>
-References: <46AF79F7.7080908@domain.hid>  <46AF7CB0.1040205@domain.hid>
-Content-Type: text/plain
-Date: Tue, 31 Jul 2007 20:29:39 +0200
-Message-Id: <1185906579.6611.257.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Revert broken edge_shirq optimisation
-Reply-To: rpm@xenomai.org
+Message-ID: <46AF84B6.50306@domain.hid>
+Date: Tue, 31 Jul 2007 20:51:34 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <46AF5F1E.7030009@domain.hid> <1185899217.6611.246.camel@domain.hid>
+In-Reply-To: <1185899217.6611.246.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBE25CB351682C26A6FD8E2E3"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [BUG] 2.4-rc1: modular nucleus cannot be	unloaded
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,70 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2007-07-31 at 20:17 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > Oh my dear. The ground may open and swallow me. This crappy piece of
-> > optimisation in xnintr_edge_shirq_handler() I introduced both to 2.4 and
-> > (sadly) the 2.3.x stable series cannot work. It must stay as it used to:
-> > 
-> > --- ksrc/nucleus/intr.c	(revision 2871)
-> > +++ ksrc/nucleus/intr.c	(working copy)
-> > @@ -296,15 +296,15 @@ static void xnintr_edge_shirq_handler(un
-> >  		s |= ret;
-> > 
-> >  		if (code == XN_ISR_HANDLED) {
-> > -			if (!(end = (intr->next)))
-> > -				end = shirq->handlers;
-> > +			end = NULL;
-> >  			xnstat_counter_inc(
-> >  				&intr->stat[xnsched_cpu(sched)].hits);
-> >  			xnstat_runtime_lazy_switch(sched,
-> >  				&intr->stat[xnsched_cpu(sched)].account,
-> >  				start);
-> >  			start = xnstat_runtime_now();
-> > -		}
-> > +		} else if (code == XN_ISR_NONE && end == NULL)
-> > +			end = intr;
-> > 
-> >  		if (counter++ > MAX_EDGEIRQ_COUNTER)
-> >  			break;
-> > (that's for 2.3.x)
-> 
-> For 2.4, one may consider to assume now that "code != XN_ISR_HANDLE =>
-> code == XN_ISR_NONE":
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBE25CB351682C26A6FD8E2E3
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Merged, thanks.
+Philippe Gerum wrote:
+> On Tue, 2007-07-31 at 18:11 +0200, Jan Kiszka wrote:
+>> Already a plain command sequence causes this problem:
+>>
+>> # modprobe xeno_nucleus
+>> # rmmod xeno_nucleus
+>> rmmod: xeno_nucleus: Resource temporarily unavailable
+>>
+>> Can anyone confirm?
+>=20
+> Cannot reproduce it here. However, I got another report saying that
+> /proc/xenomai/stat would return -ENOMEM. Cannot reproduce it here
+> either, though, but it does happen on the other site.
 
-> --- ksrc/nucleus/intr.c	(revision 2871)
-> +++ ksrc/nucleus/intr.c	(working copy)
-> @@ -251,15 +251,15 @@ static void xnintr_edge_shirq_handler(un
->  		s |= ret;
-> 
->  		if (code == XN_ISR_HANDLED) {
-> -			if (!(end = (intr->next)))
-> -				end = shirq->handlers;
-> +			end = NULL;
->  			xnstat_counter_inc(
->  				&intr->stat[xnsched_cpu(sched)].hits);
->  			xnstat_exectime_lazy_switch(sched,
->  				&intr->stat[xnsched_cpu(sched)].account,
->  				start);
->  			start = xnstat_exectime_now();
-> -		}
-> +		} else if (end == NULL)
-> +			end = intr;
-> 
->  		if (counter++ > MAX_EDGEIRQ_COUNTER)
->  			break;
-> 
-> Jan
-> 
--- 
-Philippe.
+False alarm: Some forgotten Linux program was waiting on /dev/rtp
+devices. Everything's unloading fine again after killing it.
+
+Jan
 
 
+--------------enigBE25CB351682C26A6FD8E2E3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGr4S3niDOoMHTA+kRAkA4AJ9oun+/IpUkCq1VNlypnrts5LhjNgCfYGZ7
+QUcNrsgrFssHBI0WsXhobD8=
+=hNh7
+-----END PGP SIGNATURE-----
+
+--------------enigBE25CB351682C26A6FD8E2E3--
 
