@@ -1,64 +1,45 @@
-Message-ID: <46AF84B6.50306@domain.hid>
-Date: Tue, 31 Jul 2007 20:51:34 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2862c2c80707310340t18d8baf8l8b82d2ddeeb731bf@domain.hid>
+Date: Tue, 31 Jul 2007 18:40:00 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
 MIME-Version: 1.0
-References: <46AF5F1E.7030009@domain.hid> <1185899217.6611.246.camel@domain.hid>
-In-Reply-To: <1185899217.6611.246.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBE25CB351682C26A6FD8E2E3"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [BUG] 2.4-rc1: modular nucleus cannot be	unloaded
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_44841_23793792.1185878400562"
+Subject: [Xenomai-help] RTnet on AT91
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBE25CB351682C26A6FD8E2E3
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_44841_23793792.1185878400562
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Philippe Gerum wrote:
-> On Tue, 2007-07-31 at 18:11 +0200, Jan Kiszka wrote:
->> Already a plain command sequence causes this problem:
->>
->> # modprobe xeno_nucleus
->> # rmmod xeno_nucleus
->> rmmod: xeno_nucleus: Resource temporarily unavailable
->>
->> Can anyone confirm?
->=20
-> Cannot reproduce it here. However, I got another report saying that
-> /proc/xenomai/stat would return -ENOMEM. Cannot reproduce it here
-> either, though, but it does happen on the other site.
+Dear all,
 
-False alarm: Some forgotten Linux program was waiting on /dev/rtp
-devices. Everything's unloading fine again after killing it.
+I would like to know is there any peoples working on the support RTnet on
+AT91RM9200?
 
-Jan
+RTnet web-site doesn't contain the real time driver for AT91 ethernet.
 
+Please advice. Thanks
 
---------------enigBE25CB351682C26A6FD8E2E3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+regards,
+chun yeow
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+------=_Part_44841_23793792.1185878400562
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-iD8DBQFGr4S3niDOoMHTA+kRAkA4AJ9oun+/IpUkCq1VNlypnrts5LhjNgCfYGZ7
-QUcNrsgrFssHBI0WsXhobD8=
-=hNh7
------END PGP SIGNATURE-----
+Dear all,<br><br>I would like to know is there any peoples working on the support RTnet on AT91RM9200?<br><br>RTnet web-site doesn&#39;t contain the real time driver for AT91 ethernet.<br><br>Please advice. Thanks<br><br>regards,
+<br>chun yeow<br>
 
---------------enigBE25CB351682C26A6FD8E2E3--
+------=_Part_44841_23793792.1185878400562--
 
