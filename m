@@ -1,16 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46AF69BC.6030109@domain.hid>
-References: <46AF5F1E.7030009@domain.hid> <1185899217.6611.246.camel@domain.hid>
-	<46AF63F8.70207@domain.hid>  <1185900471.6611.249.camel@domain.hid>
-	<1185900717.6611.251.camel@domain.hid>  <46AF69BC.6030109@domain.hid>
-Content-Type: text/plain
-Date: Tue, 31 Jul 2007 19:16:17 +0200
-Message-Id: <1185902177.6611.253.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [BUG] 2.4-rc1: modular nucleus	cannot	be	unloaded
-Reply-To: rpm@xenomai.org
+Message-ID: <46AF79F7.7080908@domain.hid>
+Date: Tue, 31 Jul 2007 20:05:43 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF9C6F497578951D2F5071123"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH] Revert broken edge_shirq optimisation
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,49 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On Tue, 2007-07-31 at 18:56 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Tue, 2007-07-31 at 18:47 +0200, Philippe Gerum wrote:
-> >> On Tue, 2007-07-31 at 18:31 +0200, Jan Kiszka wrote:
-> >>> Philippe Gerum wrote:
-> >>>> On Tue, 2007-07-31 at 18:11 +0200, Jan Kiszka wrote:
-> >>>>> Already a plain command sequence causes this problem:
-> >>>>>
-> >>>>> # modprobe xeno_nucleus
-> >>>>> # rmmod xeno_nucleus
-> >>>>> rmmod: xeno_nucleus: Resource temporarily unavailable
-> >>>>>
-> >>>>> Can anyone confirm?
-> >>>> Cannot reproduce it here. However, I got another report saying that
-> >>>> /proc/xenomai/stat would return -ENOMEM. Cannot reproduce it here
-> >> Correction: it would return -EAGAIN, so maybe the status leaks when a
-> >> restart condition has been encountered in the stat loop. Seems minor,
-> >> compared to ENOMEM.
-> >>
-> > 
-> > Btw, you will likely need a large number of threads to make this happen
-> > (~40), at least this is the case for the reporting site.
-> >  
-> 
-> I think you need a large number of _fluctuating_ threads, as EAGAIN
-> should only be returned if something (thread count, IRQ assignments)
-> changes while dumping the list.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF9C6F497578951D2F5071123
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-This was implied.
+Oh my dear. The ground may open and swallow me. This crappy piece of
+optimisation in xnintr_edge_shirq_handler() I introduced both to 2.4 and
+(sadly) the 2.3.x stable series cannot work. It must stay as it used to:
 
->  But I would have to re-check this thing
-> as well. I assume there is no hope for a test case then?
-> 
+--- ksrc/nucleus/intr.c	(revision 2871)
++++ ksrc/nucleus/intr.c	(working copy)
+@@ -296,15 +296,15 @@ static void xnintr_edge_shirq_handler(un
+ 		s |=3D ret;
 
-Nope.
+ 		if (code =3D=3D XN_ISR_HANDLED) {
+-			if (!(end =3D (intr->next)))
+-				end =3D shirq->handlers;
++			end =3D NULL;
+ 			xnstat_counter_inc(
+ 				&intr->stat[xnsched_cpu(sched)].hits);
+ 			xnstat_runtime_lazy_switch(sched,
+ 				&intr->stat[xnsched_cpu(sched)].account,
+ 				start);
+ 			start =3D xnstat_runtime_now();
+-		}
++		} else if (code =3D=3D XN_ISR_NONE && end =3D=3D NULL)
++			end =3D intr;
 
-> Jan
-> 
--- 
-Philippe.
+ 		if (counter++ > MAX_EDGEIRQ_COUNTER)
+ 			break;
+(that's for 2.3.x)
+
+Once "end" is moved forward to the next handler in the chain, the loop
+termination condition "intr=3D=3Dend" will trigger on the immediately
+following round, even if there are still events pending. Utterly broken.
+
+Philippe, please quickly apply -- and don't tell anyone who did this.
+
+Jan
 
 
+--------------enigF9C6F497578951D2F5071123
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGr3n3niDOoMHTA+kRAmIPAJwPG3iKJHnmjA1RBVg4AQf0xV2wvwCeK4Pi
++wIgvsptch0Y7UKQPerZzG4=
+=0PCU
+-----END PGP SIGNATURE-----
+
+--------------enigF9C6F497578951D2F5071123--
 
