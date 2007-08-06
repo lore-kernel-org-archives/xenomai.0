@@ -1,18 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46B051AF.6000808@domain.hid>
-References: <46AF5F1E.7030009@domain.hid> <1185899217.6611.246.camel@domain.hid>
-	<46AF63F8.70207@domain.hid>  <1185900471.6611.249.camel@domain.hid>
-	<1185900717.6611.251.camel@domain.hid>  <46AF69BC.6030109@domain.hid>
-	<1185902177.6611.253.camel@domain.hid>  <46B04DEA.6040000@domain.hid>
-	<1185960095.6611.263.camel@domain.hid>  <46B051AF.6000808@domain.hid>
-Content-Type: text/plain
-Date: Wed, 01 Aug 2007 11:48:21 +0200
-Message-Id: <1185961701.6611.268.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [BUG] 2.4-rc1:	modular	nucleus	cannot	be	unloaded
-Reply-To: rpm@xenomai.org
+Message-ID: <46B70D23.2020404@domain.hid>
+Date: Mon, 06 Aug 2007 13:59:31 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig348E2F2DC0D6DAEB90869D5E"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] Feel bored? Run sparse.
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,62 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2007-08-01 at 11:26 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Wed, 2007-08-01 at 11:10 +0200, Jan Kiszka wrote:
-> >> Philippe Gerum wrote:
-> >>> On Tue, 2007-07-31 at 18:56 +0200, Jan Kiszka wrote:
-> >>>> Philippe Gerum wrote:
-> >>>>> On Tue, 2007-07-31 at 18:47 +0200, Philippe Gerum wrote:
-> >>>>>> On Tue, 2007-07-31 at 18:31 +0200, Jan Kiszka wrote:
-> >>>>>>> Philippe Gerum wrote:
-> >>>>>>>> On Tue, 2007-07-31 at 18:11 +0200, Jan Kiszka wrote:
-> >>>>>>>>> Already a plain command sequence causes this problem:
-> >>>>>>>>>
-> >>>>>>>>> # modprobe xeno_nucleus
-> >>>>>>>>> # rmmod xeno_nucleus
-> >>>>>>>>> rmmod: xeno_nucleus: Resource temporarily unavailable
-> >>>>>>>>>
-> >>>>>>>>> Can anyone confirm?
-> >>>>>>>> Cannot reproduce it here. However, I got another report saying that
-> >>>>>>>> /proc/xenomai/stat would return -ENOMEM. Cannot reproduce it here
-> >>>>>> Correction: it would return -EAGAIN, so maybe the status leaks when a
-> >>>>>> restart condition has been encountered in the stat loop. Seems minor,
-> >>>>>> compared to ENOMEM.
-> >>>>>>
-> >>>>> Btw, you will likely need a large number of threads to make this happen
-> >>>>> (~40), at least this is the case for the reporting site.
-> >>>>>  
-> >>>> I think you need a large number of _fluctuating_ threads, as EAGAIN
-> >>>> should only be returned if something (thread count, IRQ assignments)
-> >>>> changes while dumping the list.
-> >>> This was implied.
-> >>>
-> >>>>  But I would have to re-check this thing
-> >>>> as well. I assume there is no hope for a test case then?
-> >>>>
-> >>> Nope.
-> >> The whole issue remains mysterious: None of the Xenomai handlers
-> >> involved in the output of "sched" should be able to return EAGAIN. Only
-> >> if seq_open returned such error (which it shouldn't according to the
-> >> kernel code), this code would be imaginable.
-> > 
-> > /proc/xenomai/stat is involved, not /sched.
-> 
-> That doesn't matter, the code pattern is the same.
-> 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig348E2F2DC0D6DAEB90869D5E
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Bad news, at some point, it does return ENOMEM too. Maybe it's actually
-a transient condition on the target. I'll handle this one, since it does
-not seem to be reproducible elsewhere.
+Hi,
 
-> Jan
-> 
--- 
-Philippe.
+if you ever feel bored and want to contribute something useful to the
+Xenomai project, you don't need to (though you still may :)) invent a
+new timer subsystem, write another fieldbus stack, or port Xenomai to
+your cell phone:
+
+Going through the countless sparse naggings ("make C=3D2" on your Xenomai=
+
+kernel, don't forget to install sparse [1] first), analysing their
+reasons and, at best, providing some fix-up patches would be highly
+appreciated! At first glance, no serious bug hides behind them, but that
+was only a glance, and the noise ratio is fairly high. With less noise
+here, we may actually use sparse in the future to find potential bugs.
+
+Thanks,
+Jan
+
+[1] http://www.kernel.org/pub/software/devel/sparse/
 
 
+--------------enig348E2F2DC0D6DAEB90869D5E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGtw0jniDOoMHTA+kRAszTAJ4wOnWkomIIPtcuJ0sMmPnUCgOGUgCfVNgZ
+8qFl3JCZ+B8+qRL8t8AIk+U=
+=lYMH
+-----END PGP SIGNATURE-----
+
+--------------enig348E2F2DC0D6DAEB90869D5E--
 
