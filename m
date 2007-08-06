@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <18103.24835.247952.219162@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18103.30359.620591.697739@domain.hid>
+Date: Mon, 6 Aug 2007 21:29:27 +0200
+In-Reply-To: <e39c9190708061123k18f7e6afw260cc3ec5f3d18bb@domain.hid>
 References: <a18a592b0708060815s4a1d30c0w906ff61d9acb0fab@domain.hid>
 	<18103.24835.247952.219162@domain.hid>
-Content-Type: text/plain
-Date: Mon, 06 Aug 2007 21:27:13 +0200
-Message-Id: <1186428434.5963.12.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
+	<e39c9190708061123k18f7e6afw260cc3ec5f3d18bb@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Xenomai-help] newbie question
-Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,42 +18,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: juanba romance <juanba.romance@domain.hid>
 Cc: Xenomai-help@domain.hid
 
-On Mon, 2007-08-06 at 19:57 +0200, Gilles Chanteperdrix wrote:
-> rolfetas bambolas wrote:
->  > Hi to all,
->  > I'm trying to understand how Xenomai handles priorities, and found a paper
->  > called "Life with Adeos" from 2005 which explains that tasks in secondary
->  > mode force the linux kernel to inherit the RT-Tasks priority.
->  > I also read that User-Space RT Tasks migrate to secondary mode when they
->  > make a system call to the linux-kernel, and migrate back when they use some
->  > Xenomai API.
->  > 
->  > Does this mean, that the Linux-Kernel will keep the inherited priority until
->  > the RT-Task calls again Xenomai?? what happens is a RT-Task doesn't call
->  > Xenomai for a while??
->  > I hope you understand what I mean,
->  > Thank you,
-> 
-> What you are referring to is the priority coupling between Xenomai and
-> Linux schedulers, and can be disabled in Xenomai configuration.
-> 
-> The linux kernel will keep the inherited priority until the RT-task
-> calls xenomai again, or until it is suspended by Linux scheduler. If the
-> RT-task does not call xenomai for a while (and is not suspended by Linux
-> scheduler), then, well, it is an RT-task after all and should be able to
-> run until it reaches a suspension point or wakes up another RT-task.
-> 
-> Note however that during this time, Linux interruptions will be allowed
-> to preempt the RT-task.
-> 
+juanba romance wrote:
+ > On 8/6/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+ > >
+ > >
+ > > What you are referring to is the priority coupling between Xenomai and
+ > > Linux schedulers, and can be disabled in Xenomai configuration.
+ > >
+ > > The linux kernel will keep the inherited priority until the RT-task
+ > > calls xenomai again, or until it is suspended by Linux scheduler. If the
+ > > RT-task does not call xenomai for a while (and is not suspended by Linux
+ > > scheduler), then, well, it is an RT-task after all and should be able to
+ > > run until it reaches a suspension point or wakes up another RT-task.
+ > 
+ > Hello both, i have a newbie doubt
+ > 
+ > What should i understand by a "xenomai" call ?
+ > Does it simple means to call a symbol owned by the xenomai libs ?
 
-(unless the interrupt shield is in effect).
+To summarize, we could say yes. But the situation is a little bit more
+complicated. Not all symbol owned by the Xenomai libs cause user-space
+applications to switch to primary mode. So, an RT-task will remain in
+secondary mode until it calls one of the Xenomai services which cause
+their caller to switch to primary mode.
+
+ > 
+ > Note however that during this time, Linux interruptions will be allowed
+ > > to preempt the RT-task.
+ > >
+ > I think  that if one design a source thread/rt-task whatever which is
+ > focused on rt constrains,
+ > one would like to acquire ASAP the same rt-context free of such preempt
+ > policy.
+
+There is an option of Xenomai which prevents Linux interruptions from
+preempting an RT-task in secondary mode, it is called "interrupt shield"
+but is disabled by default.
+
+But you should understand that when you design a system "focused on rt
+constraints", your rt task should remain in primary mode. When going to
+secondary mode, you are loosing some determinism, because Xenomai may
+have to wait an unbounded time before the migrating task is allowed to
+run. Secondary mode is convenient for initializations (your system is
+not yet real-time), and for tasks which live near the frontier between
+real-time and non real-time world.
+
+ > Right now i can hold a exhaustive monitoring related on my performed systems
+ > calls
+ > but i also suppose that at same place/time i will need some linux
+ > service, and therefore a good practice could be quite useful, any hint
+ > about?
+
+The only advice I can give you is not to call directly a Linux service
+from a task which is doing some real-time job. If you want to call some
+linux service call it from a task which will communicate with the
+real-time job using one of the IPCs proposed by Xenomai. Of course your
+real-time job should not depend on timely execution of the Linux
+service, otherwise you would loose determinism again.
 
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
