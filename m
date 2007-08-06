@@ -1,14 +1,10 @@
-Message-ID: <46B72685.30104@domain.hid>
-Date: Mon, 06 Aug 2007 15:47:49 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <a18a592b0708060815s4a1d30c0w906ff61d9acb0fab@domain.hid>
+Date: Mon, 6 Aug 2007 17:15:21 +0200
+From: "rolfetas bambolas" <rolfetas@domain.hid>
 MIME-Version: 1.0
-References: <BCC5E4E7C20D3C4780433ADBFF20273C07C97B@GBPLESL203AMSX.gb001.siemens.net>
-In-Reply-To: <BCC5E4E7C20D3C4780433ADBFF20273C07C97B@GBPLESL203AMSX.gb001.siemens.net>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig39DB32693DCAB52E47DF1C47"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Random crash in Xenomai
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_139519_19092849.1186413321333"
+Subject: [Xenomai-help] newbie question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,56 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Richardson, Andy" <andy.richardson@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig39DB32693DCAB52E47DF1C47
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+------=_Part_139519_19092849.1186413321333
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Richardson, Andy wrote:
-> Hi,=20
->  I get an AIEE, but no oops! I have disabled the xenomai RTDM device
-> open in my software and the problem goes away. The standard aiee
-> complains and "disables interrupt handler". The system then reboots. I
-> am using a custom PPC board with version 2.6.14 of Linux and 2.2.4 of
-> Xenomai. I don't seem to be able to activate Adeos debugging: I can
-> compile the kernel with that option enabled, but the board won't boot
-> when using it! Is there an option I can use to output more printk's fro=
-m
-> Linux when booting?
+Hi to all,
+I'm trying to understand how Xenomai handles priorities, and found a paper
+called "Life with Adeos" from 2005 which explains that tasks in secondary
+mode force the linux kernel to inherit the RT-Tasks priority.
+I also read that User-Space RT Tasks migrate to secondary mode when they
+make a system call to the linux-kernel, and migrate back when they use some
+Xenomai API.
 
-I guess you mean the I-pipe tracer (CONFIG_IPIPE_DEBUG_CONTEXT was
-introduced much later): The tracer may make your board stumble in case
-of low memory. Try CONFIG_IPIPE_TRACE_VMALLOC. Still, this alone will
-not help to point at the bug.
+Does this mean, that the Linux-Kernel will keep the inherited priority until
+the RT-Task calls again Xenomai?? what happens is a RT-Task doesn't call
+Xenomai for a while??
+I hope you understand what I mean,
+Thank you,
 
-Let us start with clarifying the scenario a bit more: You have Xenomai
-loaded (including RTDM) and working flawlessly (e.g. tested with the
-included testsuite)? Then you insert your custom RTDM driver and open it
-from some user space application, right? And next you get those crashes.
+Rodolfo
 
-You may try using Xenomai debugging options, specifically
-CONFIG_XENO_OPT_DEBUG_RTDM. /Maybe/ there is some issue hidden in your
-RTDM driver (not claiming that RTDM must be bugfree).
+------=_Part_139519_19092849.1186413321333
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Jan
+Hi to all, <br>I&#39;m trying to understand how Xenomai handles priorities, and found a paper called &quot;Life with Adeos&quot; from 2005 which explains that tasks in secondary mode force the linux kernel to inherit the RT-Tasks priority. 
+<br>I also read that User-Space RT Tasks migrate to secondary mode when they make a system call to the linux-kernel, and migrate back when they use some Xenomai API.<br><br>Does this mean, that the Linux-Kernel will keep the inherited priority until the RT-Task calls again Xenomai?? what happens is a RT-Task doesn&#39;t call Xenomai for a while??
+<br>I hope you understand what I mean,<br>Thank you,<br><br>Rodolfo<br>
 
-
---------------enig39DB32693DCAB52E47DF1C47
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGtyaFniDOoMHTA+kRAgCUAJ0Sd8ey3Yk2OC4nqOoAH/+CljZUuACfQSxk
-BfI6yKXirG1fI1zx/13Y3Wk=
-=UXfj
------END PGP SIGNATURE-----
-
---------------enig39DB32693DCAB52E47DF1C47--
+------=_Part_139519_19092849.1186413321333--
 
