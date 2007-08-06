@@ -1,12 +1,13 @@
-Content-class: urn:content-classes:message
+Message-ID: <46B72685.30104@domain.hid>
+Date: Mon, 06 Aug 2007 15:47:49 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 6 Aug 2007 14:25:00 +0100
-Message-ID: <BCC5E4E7C20D3C4780433ADBFF20273C07C97B@GBPLESL203AMSX.gb001.siemens.net>
-In-Reply-To: <46B71EC3.9010101@domain.hid>
-From: "Richardson, Andy" <andy.richardson@domain.hid>
+References: <BCC5E4E7C20D3C4780433ADBFF20273C07C97B@GBPLESL203AMSX.gb001.siemens.net>
+In-Reply-To: <BCC5E4E7C20D3C4780433ADBFF20273C07C97B@GBPLESL203AMSX.gb001.siemens.net>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig39DB32693DCAB52E47DF1C47"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] Random crash in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,57 +18,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
+To: "Richardson, Andy" <andy.richardson@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,=20
- I get an AIEE, but no oops! I have disabled the xenomai RTDM device
-open in my software and the problem goes away. The standard aiee
-complains and "disables interrupt handler". The system then reboots. I
-am using a custom PPC board with version 2.6.14 of Linux and 2.2.4 of
-Xenomai. I don't seem to be able to activate Adeos debugging: I can
-compile the kernel with that option enabled, but the board won't boot
-when using it! Is there an option I can use to output more printk's from
-Linux when booting?
-
-Thanks in advance,
-
-
-Andy
-
-Andy Richardson
-Senior Engineer - Embedded Control
-Siemens Traffic Controls
-Sopers Lane, Poole, Dorset. BH17 7ER. UK.
-Tel: 01202 782857
-Fax: 01202 782545
-www.siemenstraffic.com
-
-
------Original Message-----
-From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-Sent: 06 August 2007 14:15
-To: Richardson, Andy
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Random crash in Xenomai
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig39DB32693DCAB52E47DF1C47
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
 Richardson, Andy wrote:
-> Dear all,
->   I keep on getting random crashes when the RTDM system is used for
-the
-> first time. Looking at previous posts it may be something todo with
-the
-> /proc file system interface, is there any way to disable  /proc
-> interaction all together in the kernel compilation?
+> Hi,=20
+>  I get an AIEE, but no oops! I have disabled the xenomai RTDM device
+> open in my software and the problem goes away. The standard aiee
+> complains and "disables interrupt handler". The system then reboots. I
+> am using a custom PPC board with version 2.6.14 of Linux and 2.2.4 of
+> Xenomai. I don't seem to be able to activate Adeos debugging: I can
+> compile the kernel with that option enabled, but the board won't boot
+> when using it! Is there an option I can use to output more printk's fro=
+m
+> Linux when booting?
 
-Normally, yes (unless some other subsystem or userland depends on it):
-CONFIG_PROC.
+I guess you mean the I-pipe tracer (CONFIG_IPIPE_DEBUG_CONTEXT was
+introduced much later): The tracer may make your board stumble in case
+of low memory. Try CONFIG_IPIPE_TRACE_VMALLOC. Still, this alone will
+not help to point at the bug.
 
-However, I would be very interested in seeing the oops dump you get (try
-to capture with a serial console if the system hangs) + some information
-about the versions you use. We should try to kill that gremlin first
-before considering workarounds (which may only postpone the crash, BTW).
+Let us start with clarifying the scenario a bit more: You have Xenomai
+loaded (including RTDM) and working flawlessly (e.g. tested with the
+included testsuite)? Then you insert your custom RTDM driver and open it
+from some user space application, right? And next you get those crashes.
+
+You may try using Xenomai debugging options, specifically
+CONFIG_XENO_OPT_DEBUG_RTDM. /Maybe/ there is some issue hidden in your
+RTDM driver (not claiming that RTDM must be bugfree).
 
 Jan
 
+
+--------------enig39DB32693DCAB52E47DF1C47
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGtyaFniDOoMHTA+kRAgCUAJ0Sd8ey3Yk2OC4nqOoAH/+CljZUuACfQSxk
+BfI6yKXirG1fI1zx/13Y3Wk=
+=UXfj
+-----END PGP SIGNATURE-----
+
+--------------enig39DB32693DCAB52E47DF1C47--
 
