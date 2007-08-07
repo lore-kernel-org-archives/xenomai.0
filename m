@@ -1,16 +1,13 @@
+Message-ID: <46B85236.9010107@domain.hid>
+Date: Tue, 07 Aug 2007 13:06:30 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <46B1A842.1090708@domain.hid>	<1186049556.6611.319.camel@domain.hid>	<46B1B7DE.3080404@domain.hid>	<1186053839.6611.326.camel@domain.hid>	<46B2E1B3.2020102@domain.hid>	<2ff1a98a0708060208k1d217ae6ge20389074d9bf1bd@domain.hid>
+	<18103.2297.602539.889750@domain.hid>
+In-Reply-To: <18103.2297.602539.889750@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <18103.38036.843037.110386@domain.hid>
-Date: Mon, 6 Aug 2007 23:37:24 +0200
-In-Reply-To: <e39c9190708061427y2d5ceed2td804b0990b88f282@domain.hid>
-References: <a18a592b0708060815s4a1d30c0w906ff61d9acb0fab@domain.hid>
-	<18103.24835.247952.219162@domain.hid>
-	<e39c9190708061123k18f7e6afw260cc3ec5f3d18bb@domain.hid>
-	<18103.30359.620591.697739@domain.hid>
-	<e39c9190708061427y2d5ceed2td804b0990b88f282@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] newbie question
+Subject: Re: [Xenomai-help] Unexpected switch to secondary mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,96 +17,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: juanba romance <juanba.romance@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai-help@domain.hid
 
-juanba romance wrote:
- > On 8/6/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
- > >
- > > juanba romance wrote:
- > > > On 8/6/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
- > > > >
- > > > >
- > > > > What you are referring to is the priority coupling between Xenomai and
- > > > > Linux schedulers, and can be disabled in Xenomai configuration.
- > > > >
- > > > > The linux kernel will keep the inherited priority until the RT-task
- > > > > calls xenomai again, or until it is suspended by Linux scheduler. If
- > > the
- > > > > RT-task does not call xenomai for a while (and is not suspended by
- > > Linux
- > > > > scheduler), then, well, it is an RT-task after all and should be able
- > > to
- > > > > run until it reaches a suspension point or wakes up another RT-task.
- > > >
- > > > Hello both, i have a newbie doubt
- > > >
- > > > What should i understand by a "xenomai" call ?
- > > > Does it simple means to call a symbol owned by the xenomai libs ?
- > >
- > > To summarize, we could say yes. But the situation is a little bit more
- > > complicated. Not all symbol owned by the Xenomai libs cause user-space
- > > applications to switch to primary mode. So, an RT-task will remain in
- > > secondary mode until it calls one of the Xenomai services which cause
- > > their caller to switch to primary mode.
- > >
- > > >
- > > > Note however that during this time, Linux interruptions will be allowed
- > > > > to preempt the RT-task.
- > > > >
- > > > I think  that if one design a source thread/rt-task whatever which is
- > > > focused on rt constrains,
- > > > one would like to acquire ASAP the same rt-context free of such preempt
- > > > policy.
- > >
- > > There is an option of Xenomai which prevents Linux interruptions from
- > > preempting an RT-task in secondary mode, it is called "interrupt shield"
- > > but is disabled by default.
- > >
- > > But you should understand that when you design a system "focused on rt
- > > constraints", your rt task should remain in primary mode. When going to
- > > secondary mode, you are loosing some determinism, because Xenomai may
- > > have to wait an unbounded time before the migrating task is allowed to
- > > run. Secondary mode is convenient for initializations (your system is
- > > not yet real-time), and for tasks which live near the frontier between
- > > real-time and non real-time world.
- > >
- > > > Right now i can hold a exhaustive monitoring related on my performed
- > > systems
- > > > calls
- > > > but i also suppose that at same place/time i will need some linux
- > > > service, and therefore a good practice could be quite useful, any hint
- > > > about?
- > >
- > > The only advice I can give you is not to call directly a Linux service
- > > from a task which is doing some real-time job. If you want to call some
- > > linux service call it from a task which will communicate with the
- > > real-time job using one of the IPCs proposed by Xenomai. Of course your
- > > real-time job should not depend on timely execution of the Linux
- > > service, otherwise you would loose determinism again.
- > 
- > 
- > OK, I got it,
- > 
- > As i said before, right now the sources are fully controlled but the stuff
- > will grow( as always ;-) ) a lot by myself and others, therefore i need to
- > transfer this stuff ASAP to the crew in order to hold the application
- > rt-coherency.
- > Any application will read at sometime the file system and therefore we would
- > like to be in advance. Our specifications do this kind of io/ operation when
- > the system changes to the service mode, right there we need a clear
- > description about the linux and xenomai domains exchange. Now, we're not too
- > much confidence about the design capabilities to decouple both stuffs on
- > such mode, we must deeply think about...
- > 
- > Thanks a lot about your hints.
+Gilles,
 
-Xenomai allows you to be notified (by a signal) when a thread switches
-from primary to secondary mode. For an example, see
-ksrc/skins/native/snippets/sigxcpu.c
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>  > On 8/3/07, Johan Borkhuis <j.borkhuis@domain.hid> wrote:
+>  > > Philippe,
+>  > >
+>  > > (BTW: is this something that should be discussed in the Xenomai group,
+>  > > or would it be better to move this discussion to the Adeos mailing list?)
+>  > >
+>  > > I do have question on this. We already discussed this problem earlier,
+>  > > and I managed to find a very dirty work around for my application: I
+>  > > added a lot of "dummy" functions to my application, which are spread
+>  > > over the whole application. By calling these after the mlockall, but
+>  > > before I switch to RT-mode I manage to eliminate most of the switches.
+>  > 
+>  > Before implementing the nocow patch, I opened /proc/self/maps and
+>  > caused a fault on every writable page, even if ugly, this looks
+>  > simpler than spreading dummy functions over the whole application.
+>
+> I posted the piece of code here:
+> https://mail.gna.org/public/xenomai-help/2006-12/msg00168.html
+>   
+Thank you for this. However, it does not seem to work: when I execute 
+this code it does not make any difference, when executed before I start 
+a RT-task or even within a RT-task. The results are identical to the 
+results as if no dummy functions were used. Only the pages that can be 
+written are touched, but the code pages that cause the problem (afaik) 
+are marked readonly, so they are not touched. I modified the linking, to 
+mark the text-section as writable, but that also did not make any 
+difference.
+The fact that this does not work could be caused by the fact that you 
+are accessing the pages as data instead of code.
 
--- 
+Next I tried something different, more like a combination between my 
+original approach and your approach: I tried to find a "return from 
+subroutine" in each text-page, and if found call this location. It is 
+extremely dirty, but it does seem to work quite well. Below is the code 
+that I used:
 
+==========
 
-					    Gilles Chanteperdrix.
+#define RET_CODE        0x4e800020        /* blr */
+
+typedef int (*TestFunc)(void);
+
+static void fault_vm(void)
+{
+    FILE           *maps = fopen("/proc/self/maps", "r");
+    unsigned        begin, end, pagesize=getpagesize();
+    char            buffer[128];
+    int             rc, i;
+    volatile int    tmp;
+    TestFunc        testFunc;
+
+    if (!maps) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    while ((rc = fscanf(maps, "%x-%x",&begin, &end) == 2)) {
+        fgets(buffer, 128, maps);
+        for (; begin != end; begin += pagesize) {
+            if(buffer[2] == 'w') {          /* Data section */
+                *(volatile int *) begin = *(volatile int *) begin;
+            }
+            else if(buffer[1] == 'r') {     /* Text section */
+                for(i = 0; i < pagesize; i += 4) {
+                    testFunc = (void *)(begin + i);
+                    tmp = *(volatile int *) (begin + i);
+                    if(tmp == RET_CODE) {
+                        testFunc();
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    fclose(maps);
+}
+
+==========
+
+Kind regards,
+    Johan Borkhuis
 
