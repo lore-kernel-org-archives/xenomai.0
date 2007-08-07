@@ -1,72 +1,71 @@
-Message-ID: <46ADC332.5040909@domain.hid>
-Date: Mon, 30 Jul 2007 12:53:38 +0200
+Message-ID: <46B86E53.1030803@domain.hid>
+Date: Tue, 07 Aug 2007 15:06:27 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1078462.1185791528606.JavaMail.ngmail@domain.hid>
-In-Reply-To: <1078462.1185791528606.JavaMail.ngmail@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigD91F3D076875700BC46DA264"
+	boundary="------------enig600B7ACB2E7211E19969BC6C"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] V2.3.3 and kernel 2.6.22?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [COW-BUG] __alloc_pages called from atomic context
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "M. Koehrer" <mathias_koehrer@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>, xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD91F3D076875700BC46DA264
+--------------enig600B7ACB2E7211E19969BC6C
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-M. Koehrer wrote:
-> Hi everybody,
->=20
-> I want to know if it is possible to use Xenomai 2.3.3 with the Adeos pa=
-tch
-> adeos-ipipe-2.6.22-i386-1.9-01.patch (e.g. from the Xenomai svn trunk)?=
+Hi all,
 
-> Or is the 2.3.3 limited to those Adeos patches that are part of the 2.3=
-=2E3 release?
->=20
-> If it is possible to use the adeos-ipipe-2.6.22 patch, what risks could=
- be caused by this
-> "not official" patch?
+we are getting a lot of
 
-As Philippe explained earlier, this won't work because Xenomai 2.4
-required some deeper modifications to adopt the new clockevent subsystem
-that came with 2.6.21 for i386. Those changes will not be backported to
-the official stable 2.3 series in order to avoid regressions. But you
-are free to do such a backport on your own - though I would rather
-suggest to _first_ test 2.4-rc1 if it doesn't work as well (given that
-it also includes the global affinity patch...).
+BUG: sleeping function called from invalid context at mm/page_alloc.c:122=
+5
+in_atomic():1, irqs_disabled():0
+ [<c010305d>] show_trace_log_lvl+0x1a/0x2f
+ [<c0103156>] show_trace+0x12/0x14
+ [<c0103915>] dump_stack+0x16/0x18
+ [<c010c4ab>] __might_sleep+0xcd/0xd3
+ [<c0149488>] __alloc_pages+0x32/0x281
+ [<c014fdd2>] copy_page_range+0x221/0x41e
+ [<c010ec18>] copy_process+0x9e1/0xfe2
+ [<c010f415>] do_fork+0x99/0x176
+ [<c0100e75>] sys_clone+0x33/0x39
+ [<c0102aaf>] syscall_call+0x7/0xb
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
->=20
-> Or more general: What is the relation between Xenomai and Adeos patches=
-?
-> Are the Adeos patches used (and tested) somewhere outside of Xenomai?=20
-> Or is it always the bundle Adeos + Xenomai?
+here due to a Xenomai program issuing system() calls.
 
-Xenomai is the only true official user of Adeos/I-pipe. Still, there are
-furthers as you may know: RTAI adapts the patches for its own use
-regularly (but fails to cooperate on the development, even doesn't
-report any glitches of the patches). And there is at least one user
-group at Siemens A&D (N=FCrnberg) as you can grab from the archives. But
-they changed the patches significantly and are probably yet on some
-older kernel (2.6.15).
+After once again dissecting the "nice" mm code (sigh...), the reason
+turned out to be plain simple:
 
-HTH,
+copy_pte_range(...);
+  spin_lock_nested(src_ptl, SINGLE_DEPTH_NESTING);
+  copy_one_pte(...);
+    if (is_cow_mapping(vm_flags))
+      alloc_page_vma(GFP_HIGHUSER, ...);
+        __alloc_pages(...)
+	  might_sleep_if(gfp_mask & __GFP_WAIT);
+
+And this is true due to #define GFP_HIGHUSER (__GFP_WAIT | ...
+
+So the bad news is that the COW code in likely all i-pipe versions is
+broken. But the good new is that this might be easily fixable by
+providing the right gfp_mask. GFP_ATOMIC?
+
 Jan
 
 
---------------enigD91F3D076875700BC46DA264
+--------------enig600B7ACB2E7211E19969BC6C
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -75,10 +74,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.7 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGrcMyniDOoMHTA+kRAqFqAJ4ubgiyqkMhQF2nuzwPWvJA5mjC5gCaAzM0
-mBlERXTyS8tMEW7Juya4MJQ=
-=s5sm
+iD8DBQFGuG5TniDOoMHTA+kRAmxXAJ0Tl1J5yFtvek89a8A9LhmEXjCBLQCcCaxi
+XHvDhJo8PLVRYLRo9xwpt1E=
+=04z+
 -----END PGP SIGNATURE-----
 
---------------enigD91F3D076875700BC46DA264--
+--------------enig600B7ACB2E7211E19969BC6C--
 
