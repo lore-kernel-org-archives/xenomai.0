@@ -1,22 +1,20 @@
-Message-ID: <6898.194.114.62.68.1187282338.squirrel@domain.hid>
-In-Reply-To: <2ff1a98a0708160921j78663b2fj7563af5c579b65cd@domain.hid>
-References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
-	<21067.194.114.62.68.1187272557.squirrel@domain.hid>
-	<2ff1a98a0708160701w17dcf324jb9cb31843d69ca60@domain.hid>
-	<4760.194.114.62.68.1187274071.squirrel@domain.hid>
-	<2ff1a98a0708160731k5eefd6b2i417b05b6d329e481@domain.hid>
-	<51845.194.114.62.68.1187277636.squirrel@domain.hid>
-	<2ff1a98a0708160827v6475e569v5a3982eceb93a1ab@domain.hid>
-	<14127.194.114.62.68.1187278264.squirrel@domain.hid>
-	<2ff1a98a0708160837l697d34c8xa2ad0e87b4f996f8@domain.hid>
-	<35505.194.114.62.68.1187280844.squirrel@domain.hid>
-	<2ff1a98a0708160921j78663b2fj7563af5c579b65cd@domain.hid>
-Date: Thu, 16 Aug 2007 18:38:58 +0200 (CEST)
-From: "Nadym Salem" <Kaiman@domain.hid>
+Message-ID: <b647ffbd0708080212y68853e6dw85210e9d038b2322@domain.hid>
+Date: Wed, 8 Aug 2007 11:12:28 +0200
+From: "Dmitry Adamushko" <dmitry.adamushko@domain.hid>
+In-Reply-To: <46B97B82.8010401@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] latency problems
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <46B1A842.1090708@domain.hid>
+	<1186049556.6611.319.camel@domain.hid> <46B1B7DE.3080404@domain.hid>
+	<1186053839.6611.326.camel@domain.hid> <46B2E1B3.2020102@domain.hid>
+	<2ff1a98a0708060208k1d217ae6ge20389074d9bf1bd@domain.hid>
+	<1186401270.5963.2.camel@domain.hid>
+	<b647ffbd0708070758t22f01577wd3a5397a53249459@domain.hid>
+	<b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
+	<46B97B82.8010401@domain.hid>
+Subject: Re: [Xenomai-help] Unexpected switch to secondary mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,40 +24,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Thu, August 16, 2007 18:21, Gilles Chanteperdrix wrote:
+Heikki and Wolfgang, thanks for the links.
 
->> >> >> >> > Aha, this probably means that your chipset is not supporte,
->> >> could
->> >> >> you
->> >> >> >> > run lspci and send us the output ?
->> >> >> >> it is attached.
->> >> >> > Could you try to apply the attached patch to xenomai sources ?
->> You
->> >> >> > will then have to recompile your xenomai-patched kernel.
->> >> >> Done, and it changes something, it got even worse.
->> >> >> Before there was a latency of something around 6 ms...not it's 1=
-0.
->> >> > Do you get the message in the kernel logs saying that SMI
->> workaround
->> >> > is enabled ?
->> >> > Could you send us your kernel .config ?
->> >> it found the SMI enabled chipset, but SMI workaround failed.
->> >> Kernel config attached.
->> > I am afraid you are out of luck. The only place where the SMI
->> > workaround could be authorized is in the BIOS settings.
->> > There is one last thing you can try, in your kernel configuration
->> > ENABLE ACPI, except the ACPI processor module, and be sure to load t=
-he
->> > usb hci modules. Because when enabling these, the legacy stuff
->> > emulation gets disabled.
+> > Now, Xenomai is not able (at the moment) to do [*] on its own.. thus,
+> > there is a switch to the secondary mode so that Linux is able to take
+> > care of it.
+>
+> But normal TLB misses happen frequently and do not force a switch to
+> secondary mode. I think the problem is with the do_page_fault trap.
 
-Just a last question, whats the BIOS setting which could authorise the SM=
-I
-workaround ?
+This would make sense indeed. I presume, there must be some sort of
+inter-domain synchronization in place to safely access the 'page
+tables' for the fast-path of a TLB-miss handler to run in the primary
+mode (chores: so go and read the code.. ah well  :-)
 
-Greets, Nadym
+Then a remaining part is do_page_fault() and one of the reasons can be
+'cow' indeed.
 
+As a side note (not PPC related so one may skip this part),
+
+on MIPS do_page_fault() may be caused by accessing a valid address
+allocated by a kernel module (say, vmalloc()). Say,
+
+- task_1 calls ioctl() of some driver which does obj = vmalloc() . As a result,
+task_1 :: page_tables are updated accordingly + so called
+'master_table' gets updated;
+
+- task_2 calls ioctl() to the same driver which, in turn, accesses 'obj' .
+Now, if there is no TLB record in place at the moment  --> TLB miss
+--> TLB-miss handler looks at task_2 :: page_tables but there is no
+record! --> do_page_fault() --> verifies a 'fault address' against the
+'master_table' and if it's ok, copies a record from 'master_table' to
+task_2 :: page_tables --> update TLB, etc.
+
+although, it's kind of a 'cow' mech. Provided, do_page_fault() is not
+handled in the primary mode.. so to avoid it, I guess, one would need
+to immediately sync. RT_task :: page_tables upon any vmalloc() in the
+system. Sure, in theory, 'master_table' could have been always used
+for translation of the kernel space vmalloc()'ed areas.. but that
+somewhat complicates a TLB-miss handler : maybe size, speed,
+sychronization, I guess (humm.. interesting why it's not actually like
+that.. maybe smth else).
+
+> > e.g. on MIPS, the area used for kernel modules also requires
+> > virtual->physical translation.. so even a kernel-mode task (and
+> > actually, interrupt handlers inside the kernel modules) cause TLB-miss
+> > exceptions. Sure, it's not a case if it's linked against the kernel
+> > itself.
+>
+> Even kernel code may cause a TLB miss. TLB pinning has been abandoned on
+> some PowerPC archs because it does reduce overall system performance.
+
+Humm.. interesting. AFAIK, on MIPS [ 0x80000000, 0xa0000000 ] and [
+0xa0000000, 0xc0000000 ] are just directly mapped onto the physical
+memory, cached and non-cached mode respectively. This avoids a need
+for TLB.
+
+>
+> See above. Unfortunately, I do only a limited, global view of the MMU
+> implementation for PowerPC.
+
+Thanks indeed!
+
+>
+> Wolfgang.
+>
+
+-- 
+Best regards,
+Dmitry Adamushko
 
