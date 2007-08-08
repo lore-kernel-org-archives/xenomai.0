@@ -1,15 +1,15 @@
-Message-ID: <46C33764.5090905@domain.hid>
-Date: Wed, 15 Aug 2007 19:27:00 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <46B97B82.8010401@domain.hid>
+Date: Wed, 08 Aug 2007 10:14:58 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <000001c7deba$7c6fbf10$c124a986@domain.hid>
-In-Reply-To: <000001c7deba$7c6fbf10$c124a986@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig82E3246505AD0A27A270348B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
- threads in other processes
+References: <46B1A842.1090708@domain.hid>	<1186049556.6611.319.camel@domain.hid>
+	<46B1B7DE.3080404@domain.hid>	<1186053839.6611.326.camel@domain.hid>
+	<46B2E1B3.2020102@domain.hid>	<2ff1a98a0708060208k1d217ae6ge20389074d9bf1bd@domain.hid>	<1186401270.5963.2.camel@domain.hid>	<b647ffbd0708070758t22f01577wd3a5397a53249459@domain.hid>
+	<b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
+In-Reply-To: <b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Unexpected switch to secondary mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,82 +19,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig82E3246505AD0A27A270348B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Dmitry Adamushko wrote:
+> [ forgot to add the list : ]
+> 
+> ---------- Forwarded message ----------
+> 
+> On 06/08/07, Philippe Gerum <rpm@xenomai.org> wrote:
+>>> [ ... ]
+>>> But I have another question: since the nocow patch is platform
+>>> independent, why not integrating it in the I-pipe patch for power pc ?
+>>>
+>> It is merged into the latest patches against the powerpc/ tree.
+> 
+> [ Mainly, just out of curiosity ]
+> 
+> I've actually tried 'google'ing for an overview of the MMU on ppc but
+> it doesn't seem to be easily
+> available on the net.
 
-Hi Torsten,
+Unfortunately, there is no common MMU implementation for the PowerPC 
+processors. It is usually described in the User Manual for the IBM, 
+Freescale or AMCC processor, e.g.:
 
-<snippin a lot, sorry>
+http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MPC5200&fpsp=1&tab=Documentation_Tab
 
-Torsten Kr=F6ger wrote:
->> Jan Kiszka wrote:
->> If you are seriously interested in prio-inheritance for the native
->> message passing API, the best you can do is to work actively on a patc=
-h
->> proposal. This would
->>
->> - demonstrate how unintrusive this addition could be (preferably, PI
->>   will be optional and use existing low-level services), while being
->>   so useful for certain scenarios
->>
->> - accelerate the testing cycle (_you_ have the scenario at hand)
->>
->> - raise the chances that Xenomai gains this feature soon (core
->>   developers are generally busy with many things)
->>
->> Posting patches early will allow you gain concrete feedback on the
->> design. And we will not sit there and watch you pulling hairs while
->> you're stuck. But hacking some Xenomai skin is also no black magic,
->> given the well defined nucleus API. Give it a try!
->=20
-> I am seriously interested in priority inheritance for the message
-> passing API, but I don't consider myself as an expert in this field and=
+> 
+> Do I understand it right that in the PPC arch. a CPU doesn't have full
+> access to task's page tables.. that said, if a TLB miss takes place
+> (or some analogue lookup mechanism), the CPU needs assistance from the
+> OS and e.g. rises an exception.
 
-> nor as an operating system developer. My employer/my client does not
-> give me time for such kind of system engineering, hence I will remain a=
-s
-> a user - all I can do is to tell about my desires and experiences.
+Yes.
 
-As I said, it doesn't take experts here, just someone to start and
-collect the pieces (which might include asking for expert knowledge here
-and there).
+> [*] A corresponding OS handler gets a 'fault address' and looks for it
+> in the task's 'page tables' .. and if found, updates TLB accordingly.
 
-And someone being able to write such long and detailed essays - for me
-even too long to read completely yet - should as well be able to play a
-bit with code. Or motivate some talented student of yours (I know they
-can be rare). ;)
+Yes. High-end PowerPC processors have better hw support for virtual to 
+physical address translation than low-end processors. They usually just 
+have 64 TLB entries or even less (like the MPC 8xx).
 
->=20
-> Ok, now I'm coming to the end. I hope this posting was a bit interestin=
-g
-> for any reader and that someone goes for further words on this...
->=20
-> ...any comment and further discussion is highly appreciated again! :-)
->=20
+> This would be similar to what happens in MIPS :
+> TLB miss --> TLB-miss exception --> OS-dependent TLB-miss handler.
 
-Better let some code speak now...
+Yes.
 
-Jan
+> Now, Xenomai is not able (at the moment) to do [*] on its own.. thus,
+> there is a switch to the secondary mode so that Linux is able to take
+> care of it.
+
+But normal TLB misses happen frequently and do not force a switch to 
+secondary mode. I think the problem is with the do_page_fault trap. Can 
+somebody confirm that?
+
+> Unless there is a way to reserve a set of TLB entries for a real-time
+> task (or other mechanism to have 'virtual -> physical' conversion
+> entirely in the CPU -- I mean, not involving the OS) + the working set
+> of the rt task fits into this 'reserved' set --- 'TLB-miss' exception
+> gonna happen.. e.g. every time after the RT relinquish a CPU and
+> something else trashes the TLB tables.
+> 
+> e.g. on MIPS, the area used for kernel modules also requires
+> virtual->physical translation.. so even a kernel-mode task (and
+> actually, interrupt handlers inside the kernel modules) cause TLB-miss
+> exceptions. Sure, it's not a case if it's linked against the kernel
+> itself.
+
+Even kernel code may cause a TLB miss. TLB pinning has been abandoned on 
+some PowerPC archs because it does reduce overall system performance.
+
+> errr.. ok, to many words :-) does it sound like smth taking place
+> here? A link to the MMU overview for ppc would be highly appreciated
+> as well.
 
 
---------------enig82E3246505AD0A27A270348B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+See above. Unfortunately, I do only a limited, global view of the MMU 
+implementation for PowerPC.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGwzdkniDOoMHTA+kRAuSHAJ4wTknAolzTU1oyCTIMeydLg8qr9gCeMIaQ
-3ggEPwLvR1GUxXlNKpQBSEU=
-=RJk8
------END PGP SIGNATURE-----
-
---------------enig82E3246505AD0A27A270348B--
+Wolfgang.
 
