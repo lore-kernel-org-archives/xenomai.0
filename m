@@ -1,10 +1,14 @@
-Date: Wed, 29 Aug 2007 16:34:39 +0200
-From: "Axel Beierlein" <belatronix@domain.hid>
-Content-Type: text/plain; format=flowed; delsp=yes; charset=iso-8859-15
 MIME-Version: 1.0
-Content-Transfer-Encoding: Quoted-Printable
-Message-ID: <op.txtr31btt06gyn@domain.hid>
-Subject: [Xenomai-help] System hangs in/after rtdm_lock_put_irqrestore
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <18106.60807.692746.230882@domain.hid>
+Date: Thu, 9 Aug 2007 12:33:43 +0200
+In-Reply-To: <000501c7da69$767922e0$c124a986@domain.hid>
+References: <mailman.2979.1186650741.22887.xenomai@xenomai.org>
+	<000501c7da69$767922e0$c124a986@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters
+	of	threads in other processes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,45 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: =?iso-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-what could it be that an simple rt_dev_open locks up my system when it  =
+Torsten Kr=F6ger wrote:
+ > Hello everybody,
+ >=20
+ > this is my first email to this list, and I would like to start with a
+ > question. I use the posix skin of Xenomai 2.3.1, and I have several
+ > processes running, each consisting of several threads. Is there a
+ > possibility for a thread A1 running in process A to change the
+ > scheduling parameters, in particular the priority, of a thread B1
+ > running in process B?
+ >=20
+ > Regarding the posix specification I cannot find this functionality there
+ > and so I guess there is no way doing it with "pthread_setschedparam()".
+ > But is there another possibility? =20
 
-calls rtdm_lock_put_irqrestore?
+No, the only way you could do that is by using an IPC to pass the
+request from a process to another. You could use message queues for
+that.
 
-[...]
-if (rtdm_irq_request(&ctx->irq_handle,
-		        MPC5xxx_PSC2_IRQ,
-			rt_psc_interrupt,
-			RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,
-				context->device->proc_name,
-				ctx))
-	{
-		printk ("psc5200B.c: request_irq() failed\n");
-		return -1;
-	}
-
-     rtdm_irq_enable(&ctx->irq_handle);
-
-     rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
-
-     ctx->imr_status =3D MPC5xxx_PSC_IMR_RXRDY;
-	out_be16(&psc->mpc5xxx_psc_imr, ctx->imr_status);
-
-	rtdm_lock_put_irqrestore(&ctx->lock, lock_ctx);
-	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	Here i get the crash
+--=20
 
 
-The test prog is a simple  =
-
-fd=3Drt_dev_open("nameofdevice",0)......rt_dev_close(fd).
-
-
-Axel
-
-
-
-
-
+					    Gilles Chanteperdrix.
 
