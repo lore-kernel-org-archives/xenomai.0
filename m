@@ -1,11 +1,13 @@
-Mime-Version: 1.0 (Apple Message framework v752.3)
-In-Reply-To: <3DF4E126-156D-4C0D-89A0-240509FD50BA@comcast.net>
-References: <3DF4E126-156D-4C0D-89A0-240509FD50BA@comcast.net>
-Content-Type: multipart/alternative; boundary=Apple-Mail-118-64887373
-Message-Id: <C73405B6-C7F3-49BD-9239-9CD90C7E1031@domain.hid>
-From: ckreider <ckreider@domain.hid>
-Date: Thu, 9 Aug 2007 12:46:41 -0400
-Subject: Re: [Xenomai-help] WTF???
+From: =?iso-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
+Date: Thu, 9 Aug 2007 20:37:09 +0200
+Message-ID: <000c01c7dab4$4be648a0$c124a986@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <1186669123.17314.53.camel@domain.hid>
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
+	threads in other processes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,146 +19,92 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-
---Apple-Mail-118-64887373
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=US-ASCII;
-	delsp=yes;
-	format=flowed
-
-
-Post and then figure it out ....
-
-There is a non obvious (at least to me) option,
-
-general setup -> configure standard kernel features (for small  
-systems) -> use full shmem filesystem
-
-that substitutes ramfs for tmpfs, which seemed like a good idea since  
-I am using ramdisks for all the writable directories, but it does  
-break Posix shared memory.
-
-Thanks for your indulgence.
-
-
-
-On Aug 9, 2007, at 12:09 PM, ckreider wrote:
-
+>>
+>> Regarding send/receive/reply messaging with the native API, I am not
+>> sure if I detected a mistake in the implementation (file
+>> ksrc/skins/native/task.c). When a sender RT_TASK sends a message to a
+>> receiver RT_TASK, then the priority is only inherited, if the
+receiver's
+>> priority is lower than the one of the sender. For my understanding,
+the
+>> priority should be inherited in any case.
+>>
+>> >From the reception of a message till the call of rt_task_reply() the
+>> receiver RT_TASK works for the sender and should get its priority.
+>> Otherwise we would have a priority inversion at this point, because
+any
+>> RT_TASK with a priority between the sender and receiver priority
+would
+>> now be blocked by the receiver (which works for the lower prioritized
+>> sender at its old priority).
+>>
 >
-> I realize that is seems off topic, but it results from changing  
-> from RTLinux to Xenomai.  I need to change a dozen uses of mbuff to  
-> user space shared memory (yes, they are all user space processes  
-> using kernel memory) and want to use Posix stuff because all the  
-> code assumes names like "ANALOG" or "DIAG".  My test code works on  
-> an unpatched 2.4.32 kernel, an rtlinux patched 2.4.29 kernel, but  
-> not on an ipipe patched 2.6.20 kernel.  Both have tmpfs enabled. In  
-> both cases, tmpfs is mounted.  The only change from one to the  
-> other is the kernel selected with grub at boot time.  Does anyone  
-> know what is different with the 2.6.xx kernels that causes this  
-> behavior?  Two hours of googling has not yielded any clues.
->
-> ---
-> Carl Kreider
-> ckreider@domain.hid
->
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+>You are supposed to pick the right base priority for the server in the
+>first place so this case never arises. Any other behaviour than the
+>strict priority inheritance protocol would be broken by design because
+a
+>server might sleep while processing a request and requests might pile
+up
 
----
-Carl Kreider
-ckreider@domain.hid
+I totally agree at first glance. When regarding the concepts based on
+the work of Sha, Rajkumar, and Lehoczky ("Priority Inheritance
+Protocols: An Approach to Real-Time Synchronization", IEEE Transactions
+on Computers, Vol. 39, No. 9, 1990) you are generally right (I guess,
+because I'm no expert). But in the particular case of "Synchronous
+Message Passing" (send/receive/reply-messaging), I think the "QNX-way"
+would make much more sense regarding real-time capabilities: Receivers
+(servers) always inherit the priority of the senders (client), no matter
+if the receiver's priority is lower or higher than the sender one's. A
+description can be found here:
+
+http://www.qnx.com/developers/docs/momentics621_docs/neutrino/sys_arch/k
+ernel.html#NTOIPC
+
+The major advantage is that priority inversion problems are completely
+avoided here. As also described in the text above, are two rules, which
+have to be observed:
+
+1. You are not allowed to have two threads sending each other.
+2. Threads must be arranged in a hierarchy, where send calls only go up.
+
+When using the Xenomai native send/receive/reply calls, the system is
+not real-time capable in general. The user always has to care for the
+whole system, which really gets sophisticated in systems with a huge
+number of threads/processes.
+
+>(try with two senders having different priorities, highest priority
+>first, and server entering a blocked state in the middle of its
+>processing for the first request).
+
+Regarding this example, I cannot see the problem. We won't have a
+deadlock in both cases. Xenomai send/receive/reply messaging would work,
+but here priority inversion might happen, if there is any other with a
+priority between the sender with the low priority and the basis priority
+of the receiver. 'Common' Synchronous Message Passing would work exactly
+the same way. If the receiver thread blocks during the processing of the
+first message from the high-priority sender thread, the second
+low-priority thread might be scheduled and could send the second
+message. But in this second case, the receiver remains in the high
+priority until it calls the reply-function. When it then receives the
+second message, the receiver inherits the low priority of the second
+sender thread. But in this case, priority inversion problems cannot
+arise.
+
+Please let me know, if I'm mistaking. I'm not really a specialist in
+this field. All I have experienced is that the basic flow chart of
+send/receive/reply-messaging looks really simple - but its robust
+real-time capable implementation is quite sophisticated.
+
+Actually my aim is to develop 'common' real-time capable Synchronous
+Message Passing for the posix skin of Xenomai, but right know my
+conclusion is the following: its realization is not possible, except
+_all_ threads are part of one and only one process. But this seems
+really not to be practical and hence I'm looking for other solutions.
+ 
+Any comments on this are really appreciated again.
 
 
+Best regards from Braunschweig,
+Torsten 
 
-
---Apple-Mail-118-64887373
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html;
-	charset=ISO-8859-1
-
-<HTML><BODY style=3D"word-wrap: break-word; -khtml-nbsp-mode: space; =
--khtml-line-break: after-white-space; "><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV>Post and then figure it out =
-....<DIV><BR class=3D"khtml-block-placeholder"></DIV><DIV>There is a non =
-obvious (at least to me) option,=A0</DIV><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV><DIV>general setup -&gt; =
-configure standard kernel features (for small systems) -&gt; use full =
-shmem filesystem</DIV><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV><DIV>that substitutes ramfs for =
-tmpfs, which seemed like a good idea since I am using ramdisks for all =
-the writable directories, but it does break Posix shared =
-memory.</DIV><DIV><BR class=3D"khtml-block-placeholder"></DIV><DIV>Thanks =
-for your indulgence.</DIV><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV><DIV><BR><DIV><DIV>On Aug 9, =
-2007, at 12:09 PM, ckreider wrote:</DIV><BR =
-class=3D"Apple-interchange-newline"><BLOCKQUOTE type=3D"cite"><DIV><BR =
-class=3D"khtml-block-placeholder"></DIV>I realize that is seems off =
-topic, but it results from changing from RTLinux to Xenomai.=A0 I need =
-to change a dozen uses of mbuff to user space shared memory (yes, they =
-are all user space processes using kernel memory) and want to use Posix =
-stuff because all the code assumes names like "ANALOG" or "DIAG".=A0 My =
-test code works on an unpatched 2.4.32 kernel, an rtlinux patched 2.4.29 =
-kernel, but not on an ipipe patched 2.6.20 kernel.=A0 Both have tmpfs =
-enabled. In both cases, tmpfs is mounted.=A0 The only change from one to =
-the other is the kernel selected with grub at boot time.=A0 Does anyone =
-know what is different with the 2.6.xx kernels that causes this =
-behavior?=A0 Two hours of googling has not yielded any =
-clues.<DIV><BR><DIV> <SPAN class=3D"Apple-style-span" =
-style=3D"border-collapse: separate; border-spacing: 0px 0px; color: =
-rgb(0, 0, 0); font-family: Palatino; font-size: 14px; font-style: =
-normal; font-variant: normal; font-weight: normal; letter-spacing: =
-normal; line-height: normal; text-align: auto; =
--khtml-text-decorations-in-effect: none; text-indent: 0px; =
--apple-text-size-adjust: auto; text-transform: none; orphans: 2; =
-white-space: normal; widows: 2; word-spacing: 0px; "><SPAN =
-class=3D"Apple-style-span" style=3D"border-collapse: separate; =
-border-spacing: 0px 0px; color: rgb(0, 0, 0); font-family: Palatino; =
-font-size: 14px; font-style: normal; font-variant: normal; font-weight: =
-normal; letter-spacing: normal; line-height: normal; text-align: auto; =
--khtml-text-decorations-in-effect: none; text-indent: 0px; =
--apple-text-size-adjust: auto; text-transform: none; orphans: 2; =
-white-space: normal; widows: 2; word-spacing: 0px; =
-"><DIV>---</DIV><DIV>Carl Kreider</DIV><DIV><A =
-href=3D"mailto:ckreider@domain.hid">ckreider@domain.hid</A></DIV><DIV><B=
-R class=3D"khtml-block-placeholder"></DIV><BR =
-class=3D"Apple-interchange-newline"></SPAN></SPAN> </DIV><BR></DIV><DIV =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; =
-">_______________________________________________</DIV><DIV =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; ">Xenomai-help mailing list</DIV><DIV =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; "><A =
-href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</A></DIV><DIV =
-style=3D"margin-top: 0px; margin-right: 0px; margin-bottom: 0px; =
-margin-left: 0px; "><A =
-href=3D"https://mail.gna.org/listinfo/xenomai-help">https://mail.gna.org/l=
-istinfo/xenomai-help</A></DIV> </BLOCKQUOTE></DIV><BR><DIV> <SPAN =
-class=3D"Apple-style-span" style=3D"border-collapse: separate; =
-border-spacing: 0px 0px; color: rgb(0, 0, 0); font-family: Palatino; =
-font-size: 14px; font-style: normal; font-variant: normal; font-weight: =
-normal; letter-spacing: normal; line-height: normal; text-align: auto; =
--khtml-text-decorations-in-effect: none; text-indent: 0px; =
--apple-text-size-adjust: auto; text-transform: none; orphans: 2; =
-white-space: normal; widows: 2; word-spacing: 0px; "><SPAN =
-class=3D"Apple-style-span" style=3D"border-collapse: separate; =
-border-spacing: 0px 0px; color: rgb(0, 0, 0); font-family: Palatino; =
-font-size: 14px; font-style: normal; font-variant: normal; font-weight: =
-normal; letter-spacing: normal; line-height: normal; text-align: auto; =
--khtml-text-decorations-in-effect: none; text-indent: 0px; =
--apple-text-size-adjust: auto; text-transform: none; orphans: 2; =
-white-space: normal; widows: 2; word-spacing: 0px; =
-"><DIV>---</DIV><DIV>Carl Kreider</DIV><DIV><A =
-href=3D"mailto:ckreider@domain.hid">ckreider@domain.hid</A></DIV><DIV><B=
-R class=3D"khtml-block-placeholder"></DIV><BR =
-class=3D"Apple-interchange-newline"></SPAN></SPAN> =
-</DIV><BR></DIV></BODY></HTML>=
-
---Apple-Mail-118-64887373--
 
