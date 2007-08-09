@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0708290144i6e25c48dv90c77504874b4d20@domain.hid>
-Date: Wed, 29 Aug 2007 10:44:36 +0200
+Message-ID: <2ff1a98a0708090242k70178437y716b502ce338e0a6@domain.hid>
+Date: Thu, 9 Aug 2007 11:42:45 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <715959.48066.qm@domain.hid>
+In-Reply-To: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-References: <715959.48066.qm@domain.hid>
-Subject: Re: [Xenomai-help] sqrt() function in xenomai kernel module
+References: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid>
+Subject: Re: [Xenomai-help] hard lock-up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,27 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mathieu JOINIE-MAURIN <mjoiniem@domain.hid>
+To: andy motten <andy.motten@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 8/29/07, Mathieu JOINIE-MAURIN <mjoiniem@domain.hid> wrote:
->
-> Hi,
->
-> I need to use a sqrt() function in a kernel module code. I am a beginner
-> with Xenomai. Is there any math_module which already exists ?
->
-> Thanks in advance,
+On 8/9/07, andy motten <andy.motten@domain.hid> wrote:
+> There seems to be a difference between the 2 versions (Xenomai: POSIX:
+> destroyed thread), Is this normal or part of the problem ?
 
-There is no math module, if you really want to, you can port the
-libmath from a c library such as the glibc or uclibc, or newlib and
-make it a kernel module. If you do so, we willl be pleased to add this
-module to Xenomai.
+No, this is normal, this message is harmless, it only appears if you
+select posix skin debugging.
 
-Now, regarding the sqrt function, if what you want is the integer
-square root of an integer argument, you can use the int_sqrt function,
-declared in linux/kernel.h.
+> Is there a possibility that this is a bug in Xenomai or in the ipipe patch?
+> Using the Xenomai 2.2.x branch is not an option since we need the RT can
+> drivers provided in the Xenomai 2.3.x branch.
 
+There is certainly a bug somewhere. Could you enable Linux debugs, its
+NMI watchdog (by adding nmi_watchdog=1 on the kernel command line), as
+well as Xenomai debugs ? In order to find where the lock-up occurs.
 
 -- 
                                                Gilles Chanteperdrix
