@@ -1,15 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <000901c7da86$2171afc0$c124a986@domain.hid>
-References: <000901c7da86$2171afc0$c124a986@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Date: Thu, 09 Aug 2007 16:18:43 +0200
-Message-Id: <1186669123.17314.53.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <10262.194.114.62.34.1186669406.squirrel@domain.hid>
+In-Reply-To: <46BB14C7.5030903@domain.hid>
+References: <54803.194.114.62.34.1186665301.squirrel@domain.hid>
+	<46BB14C7.5030903@domain.hid>
+Date: Thu, 9 Aug 2007 16:23:26 +0200 (CEST)
+From: "Nadym Salem" <Kaiman@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling
-	parameters	ofthreads in other processes
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-help] Xenomai kernel panic
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,72 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Torsten =?ISO-8859-1?Q?Kr=F6ger?= <t.kroeger@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-08-09 at 15:06 +0200, Torsten Kr=F6ger wrote:
-> >> this is my first email to this list, and I would like to start with a
-> >> question. I use the posix skin of Xenomai 2.3.1, and I have several
-> >> processes running, each consisting of several threads. Is there a
-> >> possibility for a thread A1 running in process A to change the
-> >> scheduling parameters, in particular the priority, of a thread B1
-> >> running in process B?
-> >>
-> >> Regarding the posix specification I cannot find this functionality
-> there
-> >> and so I guess there is no way doing it with
-> "pthread_setschedparam()".
-> >> But is there another possibility?
-> >
-> >No, the only way you could do that is by using an IPC to pass the
-> >request from a process to another. You could use message queues for
-> >that.
-> >
->=20
-> Thanks for this immediate answer. I just read some parts of the posix
-> specification, and if I'm not mistaking posix message queues do not
-> inherit thread priorities. They only sort messages in (message-)priority
-> order. I guess you mean synchronous message passing provided by
-> rt_task_send(), rt_task_receive(), and rt_task_reply() in the native
-> API. This would of course be an alternative. But therefore I would have
-> to port many code to the native API. Would then be possible to let one
-> RT_TASK change the prioriy of any other RT_TASK by simply calling
-> rt_task_set_priority()?=20
->=20
-> Regarding send/receive/reply messaging with the native API, I am not
-> sure if I detected a mistake in the implementation (file
-> ksrc/skins/native/task.c). When a sender RT_TASK sends a message to a
-> receiver RT_TASK, then the priority is only inherited, if the receiver's
-> priority is lower than the one of the sender. For my understanding, the
-> priority should be inherited in any case.
->=20
-> >From the reception of a message till the call of rt_task_reply() the
-> receiver RT_TASK works for the sender and should get its priority.
-> Otherwise we would have a priority inversion at this point, because any
-> RT_TASK with a priority between the sender and receiver priority would
-> now be blocked by the receiver (which works for the lower prioritized
-> sender at its old priority).
->=20
+On Thu, August 9, 2007 15:21, Jan Kiszka wrote:
 
-You are supposed to pick the right base priority for the server in the
-first place so this case never arises. Any other behaviour than the
-strict priority inheritance protocol would be broken by design because a
-server might sleep while processing a request and requests might pile up
-(try with two senders having different priorities, highest priority
-first, and server entering a blocked state in the middle of its
-processing for the first request).
+>> as I wanted to get the new patch for Xenomai (as discussed in rtnet
+>> mailing list for the rt_dev_close() issue) I had to install Xenomai 2.=
+4.
+>> Xenomai 2.3.2 with Rtnet 0.9.9 didn't make any trouble.
+>> Since I installed 2.4 with Kernel 2.6.20 the Kernel doesn't start
+>> anymore.
+>> We used the same config and the same kernel but now the kernel doesn't
+>> find the hard-disc anymore (waiting f=FCr /sys/block/sda/dev: no such =
+file
+>> or directory).
+>> Any idea  ?
+> Rebuild issue? Try "make clean" before building the new kernel, or buil=
+d
+> from a virgin kernel tree.
 
->=20
-> Many many thanks in advance for your help,
-> Torsten
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
+It is already built from a virgin tree...
 
+> Otherwise, try to run the new kernel first without Xenomai being
+> activated to check if it is a plain I-pipe issue.
+
+Just as you said, so much to do, so little time :-)
+But I will try
+
+Greets, Nadym
 
 
