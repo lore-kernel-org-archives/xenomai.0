@@ -1,14 +1,15 @@
-Message-ID: <46BB128C.4030608@domain.hid>
-Date: Thu, 09 Aug 2007 15:11:40 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0708090614u3b223ff4n196f0d5ed2a5db41@domain.hid>
+Date: Thu, 9 Aug 2007 15:14:54 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <000901c7da86$2171afc0$c124a986@domain.hid>
 MIME-Version: 1.0
-References: <op.twsifzeqt06gyn@domain.hid> <46BB0777.7010907@domain.hid>
-In-Reply-To: <46BB0777.7010907@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE2BB8900258996B4B802D72E"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Sourcecode 16550A.c
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+References: <18106.60807.692746.230882@domain.hid>
+	<000901c7da86$2171afc0$c124a986@domain.hid>
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters
+	ofthreads in other processes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,98 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Axel Beierlein <belatronix@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: =?ISO-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE2BB8900258996B4B802D72E
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+On 8/9/07, Torsten Kr=F6ger <t.kroeger@domain.hid> wrote:
+> >> this is my first email to this list, and I would like to start with a
+> >> question. I use the posix skin of Xenomai 2.3.1, and I have several
+> >> processes running, each consisting of several threads. Is there a
+> >> possibility for a thread A1 running in process A to change the
+> >> scheduling parameters, in particular the priority, of a thread B1
+> >> running in process B?
+> >>
+> >> Regarding the posix specification I cannot find this functionality
+> there
+> >> and so I guess there is no way doing it with
+> "pthread_setschedparam()".
+> >> But is there another possibility?
+> >
+> >No, the only way you could do that is by using an IPC to pass the
+> >request from a process to another. You could use message queues for
+> >that.
+> >
+>
+> Thanks for this immediate answer. I just read some parts of the posix
+> specification, and if I'm not mistaking posix message queues do not
+> inherit thread priorities.
 
-Jan Kiszka wrote:
-> Axel Beierlein wrote:
->> Hello Jan,
->>
->> could you explain me the meaning of the variable in_nwait, in_tail and=
- =20
->> in_npend of the rt_16550_context structure?
->> Especially i?ll try to find out the functionality of the if statements=
- =20
->> behind the while in rt_16650_interrupt(...).
->>
->> Or, do you have a more commented Version?
->=20
-> struct rt_16550_context {
-> 	struct rtser_config config;	/* current device configuration */
->=20
-> 	rtdm_irq_t irq_handle;		/* device IRQ handle */
-> 	rtdm_lock_t lock;		/* lock to protect context struct */
->=20
-> 	unsigned long base_addr;	/* hardware IO base address */
-> #ifdef CONFIG_XENO_DRIVERS_16550A_ANY
-> 	int io_mode;			/* hardware IO-access mode */
-> #endif
-> 	int tx_fifo;			/* cached global tx_fifo[<device>] */
->=20
-> 	int in_head;			/* RX ring buffer, head pointer */
-> 	int in_tail;			/* RX ring buffer, tail pointer */
-> 	size_t in_npend;		/* pending bytes in RX ring */
-> 	int in_nwait;			/* bytes the user waits for */
-> 	rtdm_event_t in_event;		/* raised to unblock reader */
-> 	char in_buf[IN_BUFFER_SIZE];	/* RX ring buffer */
-> 	volatile unsigned long in_lock;	/* single-reader lock */
-> 	uint64_t *in_history;		/* RX timestamp buffer */
->=20
-> 	int out_head;			/* TX ring buffer, head pointer */
-> 	int out_tail;			/* TX ring buffer, tail pointer */
-> 	size_t out_npend;		/* pending bytes in TX ring */
-> 	rtdm_event_t out_event;		/* raised to unblock writer */
-> 	char out_buf[OUT_BUFFER_SIZE];	/* TX ring buffer */
-> 	rtdm_mutex_t out_lock;		/* single-writer mutex */
->=20
-> 	uint64_t last_timestamp;	/* timestamp of last event */
-> 	int ioc_events;			/* recorded events */
-> 	rtdm_event_t ioc_event;		/* raised to unblock event waiter */
-> 	volatile unsigned long ioc_event_lock;	/* single-waiter lock */
->=20
-> 	int ier_status;			/* IER cache */
-> 	int mcr_status;			/* MCR cache */
-> 	int status;			/* cache for LSR + soft-states */
-> 	int saved_errors;		/* error cache for RTIOC_GET_STATUS */
-> };
->=20
-> There are a few "volatiles" less in the above version. For in_nwait
-> becoming truely non-volatile, some code changes to rt_16550_read() are
-> pending (need more review). Will commit later.
->=20
-> [Sometimes it's good to be forced to look at old code again and rethink=
+My idea was that you could encode the request in a message that you
+would handle in the receiving process by receiving messages and
+calling pthread_setschedparam.
+But then another problem arises: a pthread_t identifier is only valid
+in one process, so how could you designate in one process the threads
+of another process ?
 
-> if everything is already/still perfect...]
-
-The new version is online:
-
-http://svn.gna.org/viewcvs/xenomai?rev=3D2902&view=3Drev
-
-As you are currently deep into the code as well, please keep me informed
-about potential quirks you spot and/or continue to ask about how things
-are supposed to work. This driver is clearly "under-commented"...
-
-Jan
-
-
---------------enigE2BB8900258996B4B802D72E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGuxKMniDOoMHTA+kRAsq/AJsH3wUqJwfNCWAEOquJW2+YVObE2wCaA8A3
-v9Z0lZLWZbhfOR+MexOXZ38=
-=gYXI
------END PGP SIGNATURE-----
-
---------------enigE2BB8900258996B4B802D72E--
+--=20
+                                               Gilles Chanteperdrix
 
