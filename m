@@ -1,20 +1,13 @@
-Message-ID: <46BC8074.3090104@domain.hid>
-Date: Fri, 10 Aug 2007 17:12:52 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 10 Aug 2007 17:12:55 +0200 (CEST)
+From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
+In-Reply-To: <000c01c7db59$181f8680$c124a986@domain.hid>
+Message-ID: <Pine.LNX.4.64.0708101703480.29815@domain.hid>
+References: <000c01c7db59$181f8680$c124a986@domain.hid>
 MIME-Version: 1.0
-References: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid>	
-	<2ff1a98a0708090242k70178437y716b502ce338e0a6@domain.hid>	
-	<46BAF956.5090401@domain.hid>	
-	<3535aae80708090909m57f10233rd317cc862f534702@domain.hid>	
-	<1186676576.4978.12.camel@domain.hid> <46BC1494.2010303@domain.hid>	
-	<Pine.LNX.4.64.0708100951160.23969@domain.hid>
-	<3535aae80708100805l526475ebt5e4ff54c92f7daab@domain.hid>
-In-Reply-To: <3535aae80708100805l526475ebt5e4ff54c92f7daab@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4B194B150DD3623E86CB91AA"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] hard lock-up
+Content-Type: MULTIPART/MIXED; BOUNDARY="8323329-230091106-1186758775=:29815"
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
+ threads in other processes
+Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,92 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: andy motten <andy.motten@domain.hid>
+To: =?iso-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4B194B150DD3623E86CB91AA
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-andy motten wrote:
-> 2007/8/10, Klaas Gadeyne <klaas.gadeyne@domain.hid>:
->> On Fri, 10 Aug 2007, Jan Kiszka wrote:
->>> Philippe Gerum wrote:
->>>>> The linux kernel used now is 2.6.20.9 with ipipe patch 1.8-08.
->>>>> We use branch 2.3.x of Xenomai (Last changed Revision 2898)
->>>>>
->>>>> While running xeno-test, the system locks-up just after the latency=
+--8323329-230091106-1186758775=:29815
+Content-Type: TEXT/PLAIN; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
->>>>> test.
->>>> Confirmed here. Houston, we do have a problem with the switchtest, o=
-r
->>>> soimething this test triggers (and not necessarily the FPU mgmt)...
->>> Any news on this? Does it already happen by just running switchtest
->>> stand-alone (it doesn't do so here at least)? Is this a pure 2.3.x
->>> issue, or is it also visible for 2.4? /me currently rebuilds some tre=
-es
->>> to assess the local situation.
->> Andy will probably continue testing today, so more info will follow, b=
-ut
->> (see
->> <https://mail.gna.org/public/xenomai-help/2007-08/msg00044.html>) at
->> first sight we encountered similar issues on trunk (2.2.x seems
->> unaffected).
->>
->> Klaas
->=20
->=20
-> We have disabled NMI watchdog like Gilles Chanteperdrix suggested in hi=
-s
-> previous message.
->=20
-> For the moment We have no hard locks anymore. The linux kernel used is =
-still
-> 2.6.20.9 with ipipe patch 1.8-08.
-> We use branch 2.3.x of Xenomai (Last changed Revision 2898). The only t=
-hing
-> We have changed is turning off the "NMI watchdog".
->=20
-> There is no obvious reason why this happened (according to us), but it =
-may
-> have something to do with the AGP bus (we turned it OFF in this kernel,=
- it
-> was already turned OFF in the previous tests, but it was ON in the firs=
-t
-> tests).
+On Fri, 10 Aug 2007, Torsten Kr=F6ger wrote:
 
-Yet another broken x86 system...?
+> to summarize my discussion form yesterday:
+>
+> 1. I would like to implement 'real' synchronous message passing using
+> the posix skin. 'Real' synchronous message passing shall mean that a
+> receiver _always_ inherits the priority of the sender. Right now, I
+> think this is not possible. Please let me know, if anyone knows a
+> possibility.
+>
+> 2. 'Real' synchronous message passing could be realized with the native
+> skin, because here a sender RT_TASK is able to change the priority of a
+> blocked receiver RT_TASK before sending a message to it. Is this
+> correct? If yes, I might consider changing the skin.
+>
+> 3. Is there a possibility of using the native skin and the posix skin at
+> the same time?
+>
+> 4. I guess, it more a philosophical question: wouldn't another concept
+> of send/receive/reply-messaging lead to a general avoidance of priority
+> inversion? This is surely not an easy point regarding its
+> implementation, but when looking at long-term aims of the Xenomai
+> project, this might be a point, which worth to discuss about -
+> especially when heading for distributed systems, where
+> send/receive/reply-messaging is one of the key methodologies for
+> real-time systems.
+>
+>
+> Any reply posting is highly appreciated again :-)
 
->=20
-> For seeing if this system will not hard lock anymore, the system will s=
-tay
-> on this weekend (continuously running xeno-tests with high loads). We w=
-ill
-> inform you of the results after the weekend.
+One simple answer: if your distributed system relies on priority inversion
+"solutions" and "real" synchronous message passing the way you describe,
+it's a bad design!
 
-BTW, given that the SMI workaround is infunctional on your system: Do
-you get reasonable latencies ATM? It looked to me like the NMI watchdog
-might have triggered due to SMI-related delays.
+And don't expect your RTOS to solve that bad design by adding more and more
+"features", especially "priority inversion" features... Priority inversion
+efficiency and determinism simply don't scale with increased distribution.
 
-[/me still wonders what Philippe found...]
+As soon as you want to use message passing in a distributed environment,
+design your system such that it is _robust_ against priority inversions. if
+it is not, your system will not survive future extensions, ports to newer
+hardware etc.
 
-Jan
+What you want to achieve (I think) with "real" synchronous message passing
+is that the receiver handles a message as soon as the sender has sent it,
+right? Well, if your specification involves _really_ this form of coupling
+between sender and receiver, the _only_ good solution is to serialize them
+both in the same thread... Taking this discussion a bit further, this
+synchronous message passing issue is key to the longlasting discussion
+between micro-kerels and monolithic kernels: the former can be more
+_robust_ in a distributed way but in practice don't achieve the
+_efficiency_ of the monolithic kernel.
+
+Herman
+
+Disclaimer: http://www.kuleuven.be/cwis/email_disclaimer.htm
 
 
---------------enig4B194B150DD3623E86CB91AA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGvIB0niDOoMHTA+kRAsfxAJ4lrlx1YHS0rjy+CUa66vSyGq+FPwCfc1Y9
-/78r8sas2gBKnbW6ikMB0hY=
-=w5ZX
------END PGP SIGNATURE-----
-
---------------enig4B194B150DD3623E86CB91AA--
+--8323329-230091106-1186758775=:29815--
 
