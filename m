@@ -1,12 +1,14 @@
-Message-ID: <46D6633A.5010906@domain.hid>
-Date: Thu, 30 Aug 2007 08:27:06 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigEA18CED867274D9E8F7F1222"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] fix 2.4-kernel build warning
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46BC5033.5040602@domain.hid>
+References: <46BC4DCE.80003@domain.hid>  <46BC5033.5040602@domain.hid>
+Content-Type: text/plain
+Date: Fri, 10 Aug 2007 18:02:04 +0200
+Message-Id: <1186761724.6006.6.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [2.6.22-BUG] inconsistent Linux IRQ mask
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,176 +18,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigEA18CED867274D9E8F7F1222
-Content-Type: multipart/mixed;
- boundary="------------010307020309050508050303"
+On Fri, 2007-08-10 at 13:46 +0200, Jan Kiszka wrote:
+> Jan Kiszka wrote:
+> > Hi Philippe,
+> > 
+> > this appears to be related to 2.6.22+ only:
+> > 
+> >  ------------[ cut here ]------------
+> >  kernel BUG at fs/buffer.c:1230!
+> >  invalid opcode: 0000 [#1]
+> >  PREEMPT
+> >  Modules linked in: xeno_rtdm xeno_nucleus ip6t_LOG xt_TCPMSS nvram uinput snd_pcm_oss cifs snd_mixer_oss snd_seq snd_seq_device radeon drm wlan_tkip af_packet thinkpad_acpi button battery ac ip6t_REJECT xt_state iptable_nat nf_nat ip6table_mangle nf_conntrack_ipv4 nf_conntrack nfnetlink ip6table_filter ip6_tables ipv6 nls_iso8859_1 nls_cp437 vfat fat nls_utf8 ntfs dm_mod fuse wlan_scan_sta ath_rate_sample pcmcia snd_intel8x0 firmware_class snd_ac97_codec ac97_bus snd_pcm ath_pci nsc_ircc wlan ide_cd irda snd_timer e100 cdrom ath_hal(P) snd i2c_i801 uhci_hcd ehci_hcd mii yenta_socket rsrc_nonstatic soundcore usbcore snd_page_alloc i2c_core intel_agp crc_ccitt pcmcia_core agpgart parport_pc lp parport reiserfs edd fan piix ide_disk ide_core
+> >  CPU:    0
+> >  EIP:    0060:[<c0187fc3>]    Tainted: P       VLI
+> >  EFLAGS: 00210246   (2.6.22.2-adeos #7)
+> >  EIP is at __find_get_block+0x2c/0x1e8
+> >  eax: 00000000   ebx: e3635dac   ecx: 00000000   edx: 00002e4e
+> >  esi: 00001000   edi: eeeb3080   ebp: e3635b30   esp: e3635af8
+> >  ds: 007b   es: 007b   fs: 0000  gs: 0033  ss: 0068
+> >  Process kio_file (pid: 7433, ti=e3634000 task=e6d780b0 task.ti=e3634000)<0>
+> >  I-pipe domain Linux
+> >  Stack: 00002e4e 00000000 c16e0718 eff36a90 e3634000 e3635b1c c0308f1e c05dd700
+> >         00000000 e3635b2c c030bbfd e3635dac 00001000 e3635db4 e3635b98 c01881a4
+> >         00001000 c05dd700 511c5a51 00000022 c014aade 00002e4e 00000000 eeeb3080
+> >  Call Trace:
+> >   [<c0104fd0>] show_trace_log_lvl+0x1f/0x34
+> >   [<c0105085>] show_stack_log_lvl+0xa0/0xa8
+> >   [<c0105294>] show_registers+0x207/0x35c
+> >   [<c01054fd>] die+0x114/0x22a
+> >   [<c01056a1>] do_trap+0x8e/0xa7
+> >   [<c0105a2f>] do_invalid_op+0x8d/0x97
+> >   [<c0113b1a>] __ipipe_handle_exception+0xb1/0x11f
+> >   [<c030be53>] error_code+0x6f/0x7c
+> >   [<c01881a4>] __getblk+0x25/0x29a
+> >   [<f0bdc058>] search_by_key+0x97/0xe38 [reiserfs]
+> >   [<f0bc6c10>] search_by_entry_key+0x20/0x231 [reiserfs]
+> >   [<f0bc6e96>] reiserfs_find_entry+0x75/0x2d0 [reiserfs]
+> >   [<f0bc7643>] reiserfs_lookup+0x6d/0x122 [reiserfs]
+> > ...
+> > 
+> > I get this over 2.6.22.2 with latest trunk + ipipe-1.9-03, only
+> > modprobe'ing xeno_rtdm (so that the nucleus becomes active) and then
+> > logging into KDE. Same box, same Xenomai, but 2.6.20.15: no problem at
+> > all (also xeno-text runs fine here, BTW). When Xenomai is inactive,
+> > 2.6.22 makes no problems as well. Note that the tracer is compiled in,
+> > but is deactivated. Activating it (with the hope to get a panic
+> > backtrace) makes the issue disappear as well.
+> 
+> Ah, and then there was this warning once (same kernel that reliably BUGs):
+> 
+> WARNING: at kernel/softirq.c:138 local_bh_enable()
+>  [<c0104fd0>] show_trace_log_lvl+0x1f/0x34
+>  [<c0105c62>] show_trace+0x17/0x19
+>  [<c0105cfc>] dump_stack+0x1a/0x1c
+>  [<c011f38a>] local_bh_enable+0x53/0xb3
+>  [<c028b6d5>] lock_sock_nested+0xbe/0xc6
+>  [<c0288feb>] sock_fasync+0x68/0x125
+>  [<c028a0f3>] sock_close+0x2a/0x38
+>  [<c016bc1a>] __fput+0xb9/0x195
+>  [<c016bd11>] fput+0x1b/0x1d
+>  [<c0169572>] filp_close+0x59/0x61
+>  [<c016a5cd>] sys_close+0x73/0xab
+>  [<c0103f05>] sysenter_past_esp+0x6e/0x72
+> 
+> Probably a different symptom of the same bug.
+> 
 
-This is a multi-part message in MIME format.
---------------010307020309050508050303
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Does this disappear with PREEMPT off?
 
-I noticed some warning during a 2.4 build of trunk which may point out
-unexpected side effects:
+> Jan
+> 
+-- 
+Philippe.
 
-In file included from pod.c:45:
-/usr/src/linux-2.4.35.1/include/asm/xenomai/bits/pod.h:32:1: warning: "xn=
-arch_tsc_to_ns" redefined
-In file included from /usr/src/linux-2.4.35.1/include/linux/modversions.h=
-:275,
-                 from /usr/src/linux-2.4.35.1/include/linux/module.h:22,
-                 from /usr/src/linux-2.4.35.1/include/asm-generic/xenomai=
-/system.h:30,
-                 from /usr/src/linux-2.4.35.1/include/asm/xenomai/system.=
-h:28,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/typ=
-es.h:39,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/que=
-ue.h:24,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/tim=
-ebase.h:29,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/tim=
-er.h:26,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/thr=
-ead.h:25,
-                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/pod=
-=2Eh:34,
-                 from pod.c:36:
-/usr/src/linux-2.4.35.1/include/linux/modules/pod.ver:4:1: warning: this =
-is the location of the previous definition
 
-However, the attached patch fixes it.
-
-Jan
-
---------------010307020309050508050303
-Content-Type: text/plain;
- name="fix-2.4-redefine-warning.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="fix-2.4-redefine-warning.patch"
-
----
- include/asm-arm/bits/pod.h      |    2 +-
- include/asm-blackfin/bits/pod.h |    2 +-
- include/asm-generic/bits/pod.h  |   10 ++++------
- include/asm-i386/bits/pod.h     |    2 +-
- include/asm-x86_64/bits/pod.h   |    2 +-
- 5 files changed, 8 insertions(+), 10 deletions(-)
-
-Index: xenomai/include/asm-arm/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-arm/bits/pod.h
-+++ xenomai/include/asm-arm/bits/pod.h
-@@ -30,7 +30,7 @@ long long xnarch_tsc_to_ns(long long ts)
- {
- 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
- }
--#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
-+#define XNARCH_TSC_TO_NS
-=20
- #include <asm-generic/xenomai/bits/pod.h>
-=20
-Index: xenomai/include/asm-blackfin/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-blackfin/bits/pod.h
-+++ xenomai/include/asm-blackfin/bits/pod.h
-@@ -27,7 +27,7 @@ long long xnarch_tsc_to_ns(long long ts)
- {
- 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
- }
--#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
-+#define XNARCH_TSC_TO_NS
-=20
- #include <asm-generic/xenomai/bits/pod.h>
-=20
-Index: xenomai/include/asm-generic/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-generic/bits/pod.h
-+++ xenomai/include/asm-generic/bits/pod.h
-@@ -273,23 +273,21 @@ unsigned long long xnarch_get_host_time(
-=20
- EXPORT_SYMBOL(xnarch_get_host_time);
-=20
--#ifndef xnarch_tsc_to_ns
-+#ifndef XNARCH_TSC_TO_NS
- long long xnarch_tsc_to_ns(long long ts)
- {
-     return xnarch_llimd(ts,1000000000,RTHAL_CPU_FREQ);
- }
--#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
--#endif /* !xnarch_tsc_to_ns */
-+#endif /* !XNARCH_TSC_TO_NS */
-=20
- EXPORT_SYMBOL(xnarch_tsc_to_ns);
-=20
--#ifndef xnarch_ns_to_tsc
-+#ifndef XNARCH_NS_TO_TSC
- long long xnarch_ns_to_tsc(long long ns)
- {
-     return xnarch_llimd(ns,RTHAL_CPU_FREQ,1000000000);
- }
--#define xnarch_ns_to_tsc	xnarch_ns_to_tsc
--#endif /* !xnarch_ns_to_tsc */
-+#endif /* !XNARCH_NS_TO_TSC */
-=20
- EXPORT_SYMBOL(xnarch_ns_to_tsc);
-=20
-Index: xenomai/include/asm-i386/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-i386/bits/pod.h
-+++ xenomai/include/asm-i386/bits/pod.h
-@@ -29,7 +29,7 @@ long long xnarch_tsc_to_ns(long long ts)
- {
- 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
- }
--#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
-+#define XNARCH_TSC_TO_NS
-=20
- #include <asm-generic/xenomai/bits/pod.h>
- #include <asm/xenomai/switch.h>
-Index: xenomai/include/asm-x86_64/bits/pod.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86_64/bits/pod.h
-+++ xenomai/include/asm-x86_64/bits/pod.h
-@@ -28,7 +28,7 @@ long long xnarch_tsc_to_ns(long long ts)
- {
- 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
- }
--#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
-+#define XNARCH_TSC_TO_NS
-=20
- #include <asm-generic/xenomai/bits/pod.h>
- #include <asm/xenomai/switch.h>
-
---------------010307020309050508050303--
-
---------------enigEA18CED867274D9E8F7F1222
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFG1mM9niDOoMHTA+kRAmGbAJ9kAihwUgHi2rV2Cgm0rcFxZ9rAogCfZ6ph
-9m3G8roYm8LtHX2eBiexL6w=
-=1GrL
------END PGP SIGNATURE-----
-
---------------enigEA18CED867274D9E8F7F1222--
 
