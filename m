@@ -1,15 +1,17 @@
-Message-ID: <46BC7A0A.1060309@domain.hid>
-Date: Fri, 10 Aug 2007 16:45:30 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <3535aae80708100805l526475ebt5e4ff54c92f7daab@domain.hid>
+Date: Fri, 10 Aug 2007 17:05:30 +0200
+From: "andy motten" <andy.motten@domain.hid>
+In-Reply-To: <Pine.LNX.4.64.0708100951160.23969@domain.hid>
 MIME-Version: 1.0
-References: <000c01c7db59$181f8680$c124a986@domain.hid>
-In-Reply-To: <000c01c7db59$181f8680$c124a986@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig31210766813DD5D7DE5441BB"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
- threads in other processes
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_170776_21236327.1186758330861"
+References: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid>
+	<2ff1a98a0708090242k70178437y716b502ce338e0a6@domain.hid>
+	<46BAF956.5090401@domain.hid>
+	<3535aae80708090909m57f10233rd317cc862f534702@domain.hid>
+	<1186676576.4978.12.camel@domain.hid> <46BC1494.2010303@domain.hid>
+	<Pine.LNX.4.64.0708100951160.23969@domain.hid>
+Subject: Re: [Xenomai-help] hard lock-up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,49 +21,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
-Cc: xenomai@xenomai.org
+To: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig31210766813DD5D7DE5441BB
+------=_Part_170776_21236327.1186758330861
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Torsten Kr=F6ger wrote:
-> 3. Is there a possibility of using the native skin and the posix skin a=
-t
-> the same time?
+2007/8/10, Klaas Gadeyne <klaas.gadeyne@domain.hid>:
+>
+> On Fri, 10 Aug 2007, Jan Kiszka wrote:
+> > Philippe Gerum wrote:
+> >>> The linux kernel used now is 2.6.20.9 with ipipe patch 1.8-08.
+> >>> We use branch 2.3.x of Xenomai (Last changed Revision 2898)
+> >>>
+> >>> While running xeno-test, the system locks-up just after the latency
+> >>> test.
+> >>
+> >> Confirmed here. Houston, we do have a problem with the switchtest, or
+> >> soimething this test triggers (and not necessarily the FPU mgmt)...
+> >
+> > Any news on this? Does it already happen by just running switchtest
+> > stand-alone (it doesn't do so here at least)? Is this a pure 2.3.x
+> > issue, or is it also visible for 2.4? /me currently rebuilds some trees
+> > to assess the local situation.
+>
+> Andy will probably continue testing today, so more info will follow, but
+> (see
+> <https://mail.gna.org/public/xenomai-help/2007-08/msg00044.html>) at
+> first sight we encountered similar issues on trunk (2.2.x seems
+> unaffected).
+>
+> Klaas
 
-Yes: Write your message passing protocol as an RTDM protocol device.
-That way you would have the socket API as interface (for all skins!) and
-could even fiddle with priority as you like. We went this way for our
-TiMS (Tiny Message Passing Service) in the RACK framework [1]. It's
-fairly specialised due to its roots and its applications domain, but the
-general idea is surely transferable.
 
-Note that we do _not_ play with the receiver priorities, we rather
-prefer a stable _static_ system configuration. That's better for hard
-RT, and prio-inheriting MPI generally doesn't help about worst-case
-latencies anyway (given a non-broken static prio design).
+We have disabled NMI watchdog like Gilles Chanteperdrix suggested in his
+previous message.
 
-Jan
+For the moment We have no hard locks anymore. The linux kernel used is still
+2.6.20.9 with ipipe patch 1.8-08.
+We use branch 2.3.x of Xenomai (Last changed Revision 2898). The only thing
+We have changed is turning off the "NMI watchdog".
 
-[1] http://developer.berlios.de/projects/rack
+There is no obvious reason why this happened (according to us), but it may
+have something to do with the AGP bus (we turned it OFF in this kernel, it
+was already turned OFF in the previous tests, but it was ON in the first
+tests).
 
+For seeing if this system will not hard lock anymore, the system will stay
+on this weekend (continuously running xeno-tests with high loads). We will
+inform you of the results after the weekend.
 
---------------enig31210766813DD5D7DE5441BB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+thanks and greetings, andy
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+------=_Part_170776_21236327.1186758330861
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-iD8DBQFGvHoKniDOoMHTA+kRAl5JAJ9Unpm/jwBnbqErYNxUqifO0+/yGwCfdNDa
-7lwtYiyfBUDteiXzhpTe+l4=
-=9qSe
------END PGP SIGNATURE-----
+2007/8/10, Klaas Gadeyne &lt;<a href="mailto:klaas.gadeyne@domain.hid">klaas.gadeyne@domain.hid</a>&gt;:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+On Fri, 10 Aug 2007, Jan Kiszka wrote:<br>&gt; Philippe Gerum wrote:<br>&gt;&gt;&gt; The linux kernel used now is <a href="http://2.6.20.9">2.6.20.9</a> with ipipe patch 1.8-08.<br>&gt;&gt;&gt; We use branch 2.3.x of Xenomai (Last changed Revision 2898)
+<br>&gt;&gt;&gt;<br>&gt;&gt;&gt; While running xeno-test, the system locks-up just after the latency<br>&gt;&gt;&gt; test.<br>&gt;&gt;<br>&gt;&gt; Confirmed here. Houston, we do have a problem with the switchtest, or<br>&gt;&gt; soimething this test triggers (and not necessarily the FPU mgmt)...
+<br>&gt;<br>&gt; Any news on this? Does it already happen by just running switchtest<br>&gt; stand-alone (it doesn&#39;t do so here at least)? Is this a pure 2.3.x<br>&gt; issue, or is it also visible for 2.4? /me currently rebuilds some trees
+<br>&gt; to assess the local situation.<br><br>Andy will probably continue testing today, so more info will follow, but (see<br>&lt;<a href="https://mail.gna.org/public/xenomai-help/2007-08/msg00044.html">https://mail.gna.org/public/xenomai-help/2007-08/msg00044.html
+</a>&gt;) at<br>first sight we encountered similar issues on trunk (2.2.x seems unaffected).<br><br>Klaas</blockquote><div><br>We have disabled NMI watchdog like Gilles Chanteperdrix suggested in his previous message.<br>
+<br>For the moment We have no hard locks anymore. The linux kernel used is still <a href="http://2.6.20.9">2.6.20.9</a> with ipipe patch 1.8-08.<br>We use branch 2.3.x of Xenomai (Last changed Revision 2898). The only thing We have changed is turning off the &quot;NMI watchdog&quot;.
+<br><br>There is no obvious reason why this happened (according to us), but it may have something to do with the AGP bus (we turned it OFF in this kernel, it was already turned OFF in the previous tests, but it was ON in the first tests).
+<br><br>For seeing if this system will not hard lock anymore, the system will stay on this weekend (continuously running xeno-tests with high loads). We will inform you of the results after the weekend.<br><br>thanks and greetings, andy
+<br></div><br></div><br>
 
---------------enig31210766813DD5D7DE5441BB--
+------=_Part_170776_21236327.1186758330861--
 
