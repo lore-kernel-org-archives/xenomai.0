@@ -1,74 +1,100 @@
-Message-ID: <e39c9190708061123k18f7e6afw260cc3ec5f3d18bb@domain.hid>
-Date: Mon, 6 Aug 2007 20:23:14 +0200
-From: "juanba romance" <juanba.romance@domain.hid>
-In-Reply-To: <18103.24835.247952.219162@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Fri, 10 Aug 2007 22:35:28 +0100
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_136662_6560820.1186424594760"
-References: <a18a592b0708060815s4a1d30c0w906ff61d9acb0fab@domain.hid>
-	<18103.24835.247952.219162@domain.hid>
-Subject: Re: [Xenomai-help] newbie question
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: Multipart/Mixed;
+  boundary="Boundary-00=_hoNvGM0jPCR2IIb"
+Message-Id: <200708102235.29011.paul_c@domain.hid>
+Subject: [Xenomai-core] Patch for configure --includedir
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-help@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_136662_6560820.1186424594760
-Content-Type: text/plain; charset=UTF-8
+--Boundary-00=_hoNvGM0jPCR2IIb
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
-On 8/6/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
->
-> What you are referring to is the priority coupling between Xenomai and
-> Linux schedulers, and can be disabled in Xenomai configuration.
->
-> The linux kernel will keep the inherited priority until the RT-task
-> calls xenomai again, or until it is suspended by Linux scheduler. If the
-> RT-task does not call xenomai for a while (and is not suspended by Linux
-> scheduler), then, well, it is an RT-task after all and should be able to
-> run until it reaches a suspension point or wakes up another RT-task.
 
-Hello both, i have a newbie doubt
+There is a small problem when --includedir is passed to configure which bites 
+int the install-data-local rule in include/Makefile.am - The includedir 
+variable is overridden by $(prefix)/include which causes a fatal error when 
+attempting to generate symlinks.
 
-What should i understand by a "xenomai" call ?
-Does it simple means to call a symbol owned by the xenomai libs ?
+For example:
 
-Note however that during this time, Linux interruptions will be allowed
-> to preempt the RT-task.
->
-I think  that if one design a source thread/rt-task whatever which is
-focused on rt constrains,
-one would like to acquire ASAP the same rt-context free of such preempt
-policy.
-Right now i can hold a exhaustive monitoring related on my performed systems
-calls
-but i also suppose that at same place/time i will need some linux
-service, and therefore a good practice could be quite useful, any hint
-about?
+ ./configure --prefix=/tmp/foo --includedir=/usr/foo
 
-Cheers
+ make install DESTDIR=/tmp/testit
 
-------=_Part_136662_6560820.1186424594760
-Content-Type: text/html; charset=UTF-8
+<snip>
+rm -f /tmp/testit/tmp/foo/include/asm
+ln -s asm-x86_64 /tmp/testit/tmp/foo/include/asm
+ln: creating symbolic link `/tmp/testit/tmp/foo/include/asm' to `asm-x86_64': 
+No such file or directory
+make[3]: *** [install-data-local] Error 1
+make[3]: Leaving directory `/tmp/xenomai/include'
+
+
+Regards, Paul.
+
+
+
+
+--Boundary-00=_hoNvGM0jPCR2IIb
+Content-Type: text/x-diff;
+  charset="us-ascii";
+  name="includedir_fix.diff"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: attachment;
+	filename="includedir_fix.diff"
 
-On 8/6/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org</a>&gt; wrote:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br>What you are referring to is the priority coupling between Xenomai and<br>Linux schedulers, and can be disabled in Xenomai configuration.<br><br>The linux kernel will keep the inherited priority until the RT-task<br>calls xenomai again, or until it is suspended by Linux scheduler. If the
-<br>RT-task does not call xenomai for a while (and is not suspended by Linux<br>scheduler), then, well, it is an RT-task after all and should be able to<br>run until it reaches a suspension point or wakes up another RT-task.
-</blockquote><div>Hello both, i have a newbie doubt<br><span class="gmail_quote"></span><br>What should i understand by a &quot;xenomai&quot; call ? <br>Does it simple means to call a symbol owned by the xenomai libs ?&nbsp;  
-<br><br></div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Note however that during this time, Linux interruptions will be allowed<br>to preempt the RT-task.
-<br></blockquote><div>I think&nbsp; that if one design a source thread/rt-task whatever which is focused on rt constrains, <br>one would like to acquire ASAP the same rt-context free of such preempt policy. <br>Right now i can hold a exhaustive monitoring related on my performed systems calls
-<br>but i also suppose that at same place/time i will need some linux <br>service, and therefore a good practice could be quite useful, any hint about?<br></div><br>Cheers</div>
+--- include/Makefile.am	(revision 2902)
++++ include/Makefile.am	(working copy)
+@@ -1,4 +1,4 @@
+-includedir = $(prefix)/include
++#includedir = $(prefix)/include
+ 
+ include_HEADERS = \
+ 	rtdk.h
+Index: sim/include/Makefile.am
+===================================================================
+--- sim/include/Makefile.am	(revision 2902)
++++ sim/include/Makefile.am	(working copy)
+@@ -1,3 +1,3 @@
+-includedir = $(prefix)/include/asm-sim
++includesubdir = $(prefix)/include/asm-sim
+ 
+-nodist_include_HEADERS=$(CONFIG_HEADER)
++nodist_includesub_HEADERS=$(CONFIG_HEADER)
+Index: sim/skins/posix/Makefile.am
+===================================================================
+--- sim/skins/posix/Makefile.am	(revision 2902)
++++ sim/skins/posix/Makefile.am	(working copy)
+@@ -1,6 +1,6 @@
+ vpath %.c $(top_srcdir)/../ksrc/skins/posix
+ 
+-includedir = $(prefix)/include/asm-sim
++includesubdir = $(prefix)/include/asm-sim
+ 
+ CC = $(top_builddir)/gcic/gcic
+ 
+@@ -42,7 +42,7 @@ nodist_libposix_sim_a_SOURCES = \
+ 	shm.c \
+ 	module.c
+ 
+-include_HEADERS = \
++includesub_HEADERS = \
+ 	posix_overrides.h
+ 
+ SUBDIRS = . testsuite demos
 
-------=_Part_136662_6560820.1186424594760--
+--Boundary-00=_hoNvGM0jPCR2IIb--
 
