@@ -1,15 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46B85F91.7030105@domain.hid>
-References: <46ADAA32.1000407@domain.hid>
-	<46B03C83.60007@domain.hid> <46B85F91.7030105@domain.hid>
-Content-Type: text/plain
-Date: Fri, 17 Aug 2007 23:53:57 +0200
-Message-Id: <1187387637.5977.41.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Adeos PowerPC port over 2.6.21
-Reply-To: rpm@xenomai.org
+Message-ID: <46BC4ED9.6000909@domain.hid>
+Date: Fri, 10 Aug 2007 13:41:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <46BC1160.6040109@domain.hid>
+	<2ff1a98a0708100246q6f136ce3u99ed8378d47726aa@domain.hid>
+In-Reply-To: <2ff1a98a0708100246q6f136ce3u99ed8378d47726aa@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6D1D83214975F88EDC6D3D77"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH] fix doxygen complaints
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,48 +19,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Benjamin ZORES <benjamin.zores@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-core <xenomai@xenomai.org>
 
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6D1D83214975F88EDC6D3D77
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Benjamin,
+Gilles Chanteperdrix wrote:
+>> -/*!
+>> - * \fn int rthal_timer_request(void (*tick_handler) (void), void (*mo=
+de_emul)(int mode, void *tdev), int (*tick_emul)(unsigned long delay, voi=
+d *tdev), int cpu)
+>> +/**
+>> + * \fn int rthal_timer_request(void (*tick_handler)(void),
+>> + *             void (*mode_emul)(enum clock_event_mode mode, struct i=
+pipe_tick_device *tdev),
+>> + *             int (*tick_emul)(unsigned long delay, struct ipipe_tic=
+k_device *tdev), int cpu)
+>=20
+> Doxygen does not like when the function arguments are not on one line.
+> At least some version that was used in the past.
+>=20
 
-On Tue, 2007-08-07 at 14:03 +0200, Benjamin ZORES wrote:
-> Benjamin ZORES wrote:
-> > Benjamin ZORES wrote:
-> >> Hi,
-> >>
-> >> I've seen that Adeos has been officially ported to PowerPC architecture.
-> >> Please find an update of the adeos-ipipe-2.6.20-powerpc-1.6-02 to 
-> >> Linux 2.6.21 (.5) kernel, in case somebody's interested in it.
+Hmm, I was using Doxygen 1.5.0 here, and there were neither complaints
+during compile-time nor obvious quirks in the output. Maybe this issue
+got fixed in the meantime. What was the precise effect?
 
-Sorry for the delay in replying, I was caught on the dark 64bit side of
-the powerpc world. I won't do this again, I mean, delaying, not 64bit
-fiddling. Ok, maybe I'll do, but I will apologize again. Merged in both
-branches. Thanks a lot,
-
-> >>
-> >> Ben
-> >> ------------------------------------------------------------------------
-> >>
-> >> _______________________________________________
-> >> Xenomai-core mailing list
-> >> Xenomai-core@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-core
-> > Hi,
-> >
-> > Attached is updated patch to latest 1.6-03 version.
-> Attached is updated patch to latest Adeos PowerPC 1.6-04 version.
-> 
-> Regards,
-> 
-> Ben
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
+Jan
 
 
+--------------enig6D1D83214975F88EDC6D3D77
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGvE7ZniDOoMHTA+kRAgRgAJ4gAmELBE2sCmGgMJZc5fzlKx1UXQCeObaT
+NPgTyuTpQ1Zz+pehOAs09DI=
+=TV25
+-----END PGP SIGNATURE-----
+
+--------------enig6D1D83214975F88EDC6D3D77--
 
