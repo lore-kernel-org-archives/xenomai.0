@@ -1,12 +1,12 @@
-Message-ID: <46BC4DCE.80003@domain.hid>
-Date: Fri, 10 Aug 2007 13:36:46 +0200
+Message-ID: <46BC1160.6040109@domain.hid>
+Date: Fri, 10 Aug 2007 09:18:56 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig917438D1C942A73CA1B88EEB"
+	boundary="------------enig959838DA50709F7B8DB54015"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [2.6.22-BUG] inconsistent Linux IRQ mask
+Subject: [Xenomai-core] [PATCH] fix doxygen complaints
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,89 +16,214 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig917438D1C942A73CA1B88EEB
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig959838DA50709F7B8DB54015
+Content-Type: multipart/mixed;
+ boundary="------------030109090702000007090107"
+
+This is a multi-part message in MIME format.
+--------------030109090702000007090107
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hi Philippe,
 
-this appears to be related to 2.6.22+ only:
+--------------030109090702000007090107
+Content-Type: text/x-patch;
+ name="doxy-fixes.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="doxy-fixes.patch"
 
- ------------[ cut here ]------------
- kernel BUG at fs/buffer.c:1230!
- invalid opcode: 0000 [#1]
- PREEMPT
- Modules linked in: xeno_rtdm xeno_nucleus ip6t_LOG xt_TCPMSS nvram uinpu=
-t snd_pcm_oss cifs snd_mixer_oss snd_seq snd_seq_device radeon drm wlan_t=
-kip af_packet thinkpad_acpi button battery ac ip6t_REJECT xt_state iptabl=
-e_nat nf_nat ip6table_mangle nf_conntrack_ipv4 nf_conntrack nfnetlink ip6=
-table_filter ip6_tables ipv6 nls_iso8859_1 nls_cp437 vfat fat nls_utf8 nt=
-fs dm_mod fuse wlan_scan_sta ath_rate_sample pcmcia snd_intel8x0 firmware=
-_class snd_ac97_codec ac97_bus snd_pcm ath_pci nsc_ircc wlan ide_cd irda =
-snd_timer e100 cdrom ath_hal(P) snd i2c_i801 uhci_hcd ehci_hcd mii yenta_=
-socket rsrc_nonstatic soundcore usbcore snd_page_alloc i2c_core intel_agp=
- crc_ccitt pcmcia_core agpgart parport_pc lp parport reiserfs edd fan pii=
-x ide_disk ide_core
- CPU:    0
- EIP:    0060:[<c0187fc3>]    Tainted: P       VLI
- EFLAGS: 00210246   (2.6.22.2-adeos #7)
- EIP is at __find_get_block+0x2c/0x1e8
- eax: 00000000   ebx: e3635dac   ecx: 00000000   edx: 00002e4e
- esi: 00001000   edi: eeeb3080   ebp: e3635b30   esp: e3635af8
- ds: 007b   es: 007b   fs: 0000  gs: 0033  ss: 0068
- Process kio_file (pid: 7433, ti=3De3634000 task=3De6d780b0 task.ti=3De36=
-34000)<0>
- I-pipe domain Linux
- Stack: 00002e4e 00000000 c16e0718 eff36a90 e3634000 e3635b1c c0308f1e c0=
-5dd700
-        00000000 e3635b2c c030bbfd e3635dac 00001000 e3635db4 e3635b98 c0=
-1881a4
-        00001000 c05dd700 511c5a51 00000022 c014aade 00002e4e 00000000 ee=
-eb3080
- Call Trace:
-  [<c0104fd0>] show_trace_log_lvl+0x1f/0x34
-  [<c0105085>] show_stack_log_lvl+0xa0/0xa8
-  [<c0105294>] show_registers+0x207/0x35c
-  [<c01054fd>] die+0x114/0x22a
-  [<c01056a1>] do_trap+0x8e/0xa7
-  [<c0105a2f>] do_invalid_op+0x8d/0x97
-  [<c0113b1a>] __ipipe_handle_exception+0xb1/0x11f
-  [<c030be53>] error_code+0x6f/0x7c
-  [<c01881a4>] __getblk+0x25/0x29a
-  [<f0bdc058>] search_by_key+0x97/0xe38 [reiserfs]
-  [<f0bc6c10>] search_by_entry_key+0x20/0x231 [reiserfs]
-  [<f0bc6e96>] reiserfs_find_entry+0x75/0x2d0 [reiserfs]
-  [<f0bc7643>] reiserfs_lookup+0x6d/0x122 [reiserfs]
-=2E..
+Index: xenomai/ksrc/skins/posix/clock.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai/ksrc/skins/posix/clock.c	(Revision 2902)
++++ xenomai/ksrc/skins/posix/clock.c	(Arbeitskopie)
+@@ -139,10 +139,10 @@ int clock_gettime(clockid_t clock_id, st
+  *
+  * This allow setting the CLOCK_REALTIME clock.
+  *
+- * @param clock_id, the id of the clock to be set, only CLOCK_REALTIME i=
+s
++ * @param clock_id the id of the clock to be set, only CLOCK_REALTIME is=
 
-I get this over 2.6.22.2 with latest trunk + ipipe-1.9-03, only
-modprobe'ing xeno_rtdm (so that the nucleus becomes active) and then
-logging into KDE. Same box, same Xenomai, but 2.6.20.15: no problem at
-all (also xeno-text runs fine here, BTW). When Xenomai is inactive,
-2.6.22 makes no problems as well. Note that the tracer is compiled in,
-but is deactivated. Activating it (with the hope to get a panic
-backtrace) makes the issue disappear as well.
+  * supported.
+  *
+- * @param tp, the address of a struct timespec specifying the new date.
++ * @param tp the address of a struct timespec specifying the new date.
+  *
+  * @retval 0 on success;
+  * @retval -1 with @a errno set if:
+Index: xenomai/ksrc/arch/generic/hal.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai/ksrc/arch/generic/hal.c	(Revision 2902)
++++ xenomai/ksrc/arch/generic/hal.c	(Arbeitskopie)
+@@ -173,7 +173,7 @@ int rthal_irq_request(unsigned irq,
+=20
+ /**
+  * @fn int rthal_irq_release(unsigned irq)
+- *                          =20
++ *
+  * @brief Uninstall a real-time interrupt handler.
+  *
+  * Uninstalls an interrupt handler previously attached using the
+@@ -208,7 +208,7 @@ int rthal_irq_release(unsigned irq)
+=20
+ /**
+  * @fn int rthal_irq_host_request(unsigned irq,rthal_irq_host_handler_t =
+handler,char *name,void *dev_id)
+- *                          =20
++ *
+  * @brief Install a shared Linux interrupt handler.
+  *
+  * Installs a shared interrupt handler in the Linux domain for the
+@@ -244,7 +244,7 @@ int rthal_irq_release(unsigned irq)
+=20
+ /**
+  * @fn int rthal_irq_host_release (unsigned irq,void *dev_id)
+- *                          =20
++ *
+  * @brief Uninstall a shared Linux interrupt handler.
+  *
+  * Uninstalls a shared interrupt handler from the Linux domain for the
+@@ -274,7 +274,7 @@ int rthal_irq_release(unsigned irq)
+=20
+ /**
+  * @fn int rthal_irq_host_pend (unsigned irq)
+- *                          =20
++ *
+  * @brief Propagate an IRQ event to Linux.
+  *
+  * Causes the given IRQ to be propagated down to the Adeos pipeline to
+@@ -304,13 +304,13 @@ int rthal_irq_host_pend(unsigned irq)
+=20
+ /**
+  * @fn int rthal_irq_affinity (unsigned irq,cpumask_t cpumask,cpumask_t =
+*oldmask)
+- *                          =20
++ *
+  * @brief Set/Get processor affinity for external interrupt.
+  *
+  * On SMP systems, this service ensures that the given interrupt is
+  * preferably dispatched to the specified set of processors. The
+  * previous affinity mask is returned by this service.
+- *=20
++ *
+  * @param irq The interrupt source whose processor affinity is
+  * affected by the operation. Only external interrupts can have their
+  * affinity changed/queried, thus virtual interrupt numbers allocated
+@@ -320,7 +320,7 @@ int rthal_irq_host_pend(unsigned irq)
+  * representing the new affinity for this interrupt. A zero value
+  * cause this service to return the current affinity mask without
+  * changing it.
+- *=20
++ *
+  * @param oldmask If non-NULL, a pointer to a memory area which will
+  * bve overwritten by the previous affinity mask used for this
+  * interrupt source, or a zeroed mask if an error occurred.  This
+@@ -365,7 +365,7 @@ int rthal_irq_affinity(unsigned irq, cpu
+=20
+ /**
+  * @fn int rthal_trap_catch (rthal_trap_handler_t handler)
+- *                          =20
++ *
+  * @brief Installs a fault handler.
+  *
+  * The HAL attempts to invoke a fault handler whenever an uncontrolled
+@@ -930,7 +930,7 @@ unsigned long long __rthal_generic_full_
+=20
+ /**
+  * @fn int rthal_irq_enable(unsigned irq)
+- *                          =20
++ *
+  * @brief Enable an interrupt source.
+  *
+  * Enables an interrupt source at PIC level. Since Adeos masks and
+@@ -961,7 +961,7 @@ unsigned long long __rthal_generic_full_
+=20
+ /**
+  * @fn int rthal_irq_disable(unsigned irq)
+- *                          =20
++ *
+  * @brief Disable an interrupt source.
+  *
+  * Disables an interrupt source at PIC level. After this call has
+@@ -986,8 +986,10 @@ unsigned long long __rthal_generic_full_
+  * - Any domain context.
+  */
+=20
+-/*!=20
+- * \fn int rthal_timer_request(void (*tick_handler) (void), void (*mode_=
+emul)(int mode, void *tdev), int (*tick_emul)(unsigned long delay, void *=
+tdev), int cpu)
++/**
++ * \fn int rthal_timer_request(void (*tick_handler)(void),
++ *             void (*mode_emul)(enum clock_event_mode mode, struct ipip=
+e_tick_device *tdev),
++ *             int (*tick_emul)(unsigned long delay, struct ipipe_tick_d=
+evice *tdev), int cpu)
+  * \brief Grab the hardware timer.
+  *
+  * rthal_timer_request() grabs and tunes the hardware timer in oneshot
+@@ -1036,8 +1038,8 @@ unsigned long long __rthal_generic_full_
+  * - Linux domain context.
+  */
+=20
+-/*!=20
+- * \fn void rthal_timer_release(void)
++/**
++ * \fn void rthal_timer_release(int cpu)
+  * \brief Release the hardware timer.
+  *
+  * Releases the hardware timer, thus reverting the effect of a
+@@ -1045,6 +1047,8 @@ unsigned long long __rthal_generic_full_
+  * is shared with Linux, a periodic setup suitable for the Linux
+  * kernel will be reset.
+  *
++ * @param cpu The CPU number the timer was grabbed from.
++ *
+  * Environments:
+  *
+  * This service can be called from:
+Index: xenomai/doc/doxygen/Doxyfile-common.in
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai/doc/doxygen/Doxyfile-common.in	(Revision 2902)
++++ xenomai/doc/doxygen/Doxyfile-common.in	(Arbeitskopie)
+@@ -690,7 +690,8 @@ PREDEFINED             =3D DOXYGEN_CPP \
+         CONFIG_XENO_OPT_POSIX_INTR \
+         CONFIG_XENO_OPT_RTAI_FIFO \
+         CONFIG_XENO_OPT_RTAI_SEM \
+-        CONFIG_XENO_OPT_RTAI_SHM
++        CONFIG_XENO_OPT_RTAI_SHM \
++        CONFIG_GENERIC_CLOCKEVENTS
+=20
+ # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then=
+=20
+ # this tag can be used to specify a list of macro names that should be e=
+xpanded.=20
 
-Jan
+--------------030109090702000007090107--
 
-
---------------enig917438D1C942A73CA1B88EEB
+--------------enig959838DA50709F7B8DB54015
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.7 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFGvE3SniDOoMHTA+kRAnG+AJ9miiUdhKeT5CO928Khqo/oL/ghfgCeKEiu
-HQrIqBpEgqzjRTGEO55fMLo=
-=V4I0
+iD8DBQFGvBFlniDOoMHTA+kRAp4qAJ0YVn3L6KeVbktTs//dV2unh+SasgCeIDcu
+lICs8TcA+kJeQ7/Q0lpbbfo=
+=aeS8
 -----END PGP SIGNATURE-----
 
---------------enig917438D1C942A73CA1B88EEB--
+--------------enig959838DA50709F7B8DB54015--
 
