@@ -1,11 +1,18 @@
-Message-ID: <41f748550708122250yd388c4ehe9992464579d5924@domain.hid>
-Date: Mon, 13 Aug 2007 12:50:02 +0700
-From: "Iwan Budi Kusnanto" <iwanbk@domain.hid>
+Date: Mon, 13 Aug 2007 09:06:22 +0200 (CEST)
+From: Klaas Gadeyne <klaas.gadeyne@domain.hid>
+In-Reply-To: <46BC8074.3090104@domain.hid>
+Message-ID: <Pine.LNX.4.64.0708130903220.14311@domain.hid>
+References: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid> 
+	<2ff1a98a0708090242k70178437y716b502ce338e0a6@domain.hid> 
+	<46BAF956.5090401@domain.hid>
+	<3535aae80708090909m57f10233rd317cc862f534702@domain.hid>
+	<1186676576.4978.12.camel@domain.hid> <46BC1494.2010303@domain.hid> 
+	<Pine.LNX.4.64.0708100951160.23969@domain.hid>
+	<3535aae80708100805l526475ebt5e4ff54c92f7daab@domain.hid>
+	<46BC8074.3090104@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] Kernel Space support
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: Re: [Xenomai-help] hard lock-up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,27 +22,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello all,
-i'm new to xenomai. In the website xenomai.org , one of xenomai goal
-is "hard real-time support to user-space applications". What about
-hard realtime support to kernel space ?
-In paper "Life with adeos', the author wrote "Support for realtime
-threads exclusively running in kernel space is a reminiscence of the
-mere cokernel era, before the advent of true realtime support in
-userspace, when real-time applications would only run embodied into
-kernel modules; this feature has been kept in Xenomai mainly for the
-purpose of supporting legacy applications".
+On Fri, 10 Aug 2007, Jan Kiszka wrote:
+[..]
+> BTW, given that the SMI workaround is infunctional on your system: Do
+> you get reasonable latencies ATM? It looked to me like the NMI watchdog
+> might have triggered due to SMI-related delays.
 
-I browse xenomai API and found many API support to kernel space. But,
-RTAI have more. I consider using xenomai because of xenomai's cleannes
-design.
+We do get very reasonable latencies once the AGP functionality is
+turned off (otherwise, latencies are pathetic).  Note that we haven't
+sorted out whether the buggy behaviour and huge latencies are due to
+the AGP bus in general or too the specific intel_something_els_here
+driver.
 
-What about hard realtime support to kernel space ?
--- 
-Iwan Budi Kusnanto
-
-http://iwanbk.org
-http://blog.iwanbk.org
+Klaas
 
