@@ -1,12 +1,10 @@
-Message-ID: <46C02829.9020009@domain.hid>
-Date: Mon, 13 Aug 2007 11:45:13 +0200
+Message-ID: <2862c2c80708130403v62b21fd5va7b5919bd996dbaf@domain.hid>
+Date: Mon, 13 Aug 2007 19:03:54 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Subject: [Xenomai-help] EML conflict with RTCAN? low_level_input
-	framebuilding failed.
-Reply-To: rolandtollenaar@domain.hid
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_10973_9493039.1187003034432"
+Subject: [Xenomai-help] System Timer Interrupt Sharing?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,35 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: EML users <ethercatmaster-users@domain.hid>, Xenomai-help@domain.hid
+To: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-Hi,
+------=_Part_10973_9493039.1187003034432
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-in a 1 ms period task of my xenomai application things work perfectly 
-with my BeckHoff devices addressing them via Ethercat with EML until I 
-activate rtcan. Then sometimes (not always) I get incessant warnings 
-from EML which read:
+Dear all,
 
-EC_Telegram:: check_index(): Index field does not correspond with 
-received data.
-low_level_input(): framebuilding failed.
+Is that possible to share the system timer interrupt used for xenomai kernel
+scheduling for any other purposes?
 
-The cycle time of the task is not being violated AFAI can see.
+Please advice. Thanks
 
-In dmesg the following can be found when the conflict occurs
+regards,
+chun yeow
 
-RTnet:rtskb allocation from real-time cache failed.
-Assertion failed! drivers/xenomai/can/rtcan_raw.c: rtcan_tx_push:168 
-dev->tx_socket=0 (3) TX skb still in use.
+------=_Part_10973_9493039.1187003034432
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Dear all,<br><br>Is that possible to share the system timer interrupt used for xenomai kernel scheduling for any other purposes?<br><br>Please advice. Thanks<br><br>regards,<br>chun yeow<br>
 
-Can anyone make any suggestions as to what might be the problem here or 
-what I could try to look at to establish this?
-
-Regards.
-
-Roland.
-
-
-
+------=_Part_10973_9493039.1187003034432--
 
