@@ -1,18 +1,23 @@
-Message-ID: <46C08D64.4050903@domain.hid>
-Date: Mon, 13 Aug 2007 18:57:08 +0200
+Message-ID: <46C08E61.9060204@domain.hid>
+Date: Mon, 13 Aug 2007 19:01:21 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <46C02829.9020009@domain.hid>
-	<46C04384.4030805@domain.hid>	<46C05180.5090302@domain.hid>
-	<46C05690.2010108@domain.hid> <46C063E0.1010809@domain.hid>
-	<46C07005.8000504@domain.hid> <46C07EDC.4040305@domain.hid>
-In-Reply-To: <46C07EDC.4040305@domain.hid>
+References: <3535aae80708090211m198a1b87o9ae164fd94362838@domain.hid>	
+	<46BAF956.5090401@domain.hid>	
+	<3535aae80708090909m57f10233rd317cc862f534702@domain.hid>	
+	<1186676576.4978.12.camel@domain.hid> <46BC1494.2010303@domain.hid>	
+	<Pine.LNX.4.64.0708100951160.23969@domain.hid>	
+	<3535aae80708100805l526475ebt5e4ff54c92f7daab@domain.hid>	
+	<46BC8074.3090104@domain.hid>	
+	<Pine.LNX.4.64.0708130903220.14311@domain.hid>	
+	<18112.1512.506911.608273@domain.hid>
+	<3535aae80708130810s603edb7fo9f7be56342ddf921@domain.hid>
+In-Reply-To: <3535aae80708130810s603edb7fo9f7be56342ddf921@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig89DEF9CAA03367701AC10AE3"
+	boundary="------------enigEEA0DF93D1F42633D290B2AB"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [Ethercatmaster-users] EML conflict with RTCAN?
- low_level_input	framebuilding failed.
+Subject: Re: [Xenomai-help] hard lock-up
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,81 +27,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid, EML users <ethercatmaster-users@domain.hid>
+To: andy motten <andy.motten@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig89DEF9CAA03367701AC10AE3
+--------------enigEEA0DF93D1F42633D290B2AB
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Roland Tollenaar wrote:
-> Hi
->=20
->>> There is definitely something between the two that is not right.
->>>
+andy motten wrote:
+>> Klaas Gadeyne wrote:
+>>> On Fri, 10 Aug 2007, Jan Kiszka wrote:
+>>> [..]
+>>>> BTW, given that the SMI workaround is infunctional on your system: D=
+o
+>>>> you get reasonable latencies ATM? It looked to me like the NMI
+>> watchdog
+>>>> might have triggered due to SMI-related delays.
+>>> We do get very reasonable latencies once the AGP functionality is
+>>> turned off (otherwise, latencies are pathetic).  Note that we haven't=
+
+>>> sorted out whether the buggy behaviour and huge latencies are due to
+>>> the AGP bus in general or too the specific intel_something_els_here
+>>> driver.
+>> Did you try the "noaccel" option, as explained in the FAQ ?
 >>
->> In 9 of 10 cases (if not more): timing. Running both alone doesn't
->> expose some timing issue (race) or transient overload. I can't help wi=
-th
->> EML complaints, maybe the FMTC guys have an idea what can trigger this=
+>=20
+> Yes, but there was no change in performance.
 
->> and how to debug it.
-> Out of interest, what timing exactly? These two systems (rtcan and eml)=
-
-> run separately, they don;t need to access the same address space or
-> otherwise share resources that would require timing? What am I not
-> understanding?
-
-The share the same CPU? Varying the load can re-order the execution
-order in otherwise independent components.
+You mean latency?
 
 >=20
+> We have tried several configurations of the system, and we get no hard
+> lockups anymore.
+> Even the configurations that used to lockup are working now without a
+> problem.
 >=20
->>>>>>> RTnet:rtskb allocation from real-time cache failed.
->>> Could I get some tips as to what I can do about this? I seem to get
->>> it even when I do not have rtcan activity running in my application
->>> and (because I am clueless) I would like to prevent this message
->>> which may signify the root of the problem.
->>
->> You have created the socket for some/all EML activity from primary mod=
-e
->> of some Xenomai thread,=20
-> 100% correct.
->=20
->=20
-> thus network buffer allocation is ought to run
->> against the real-time rtskb pool - which is by default empty :p. See
->> README.pools from the RTnet documentation on this.
->=20
->=20
->> I don't have the EML design at hand, but you might be able to avoid th=
-is
->> by initialising before creating the shadow task or by explicitly
-> In fact this is what I tried initially. IT does not work at all. so I
-> ended up initializing in the thread. Problem?
+> Maybe we forget something, but to be honest, we have no idea what trigg=
+ered
+> this change in behavior.
+> Thanks for all the help.
+> As soon as we know something more about this 'random' behavior, We will=
+ post
+> it.
 
-Not necessarily. But it would have been nice to report the other issue
-as well, because maybe there is something to be fixed (either in the
-code or in the docs). Initialisation almost always happens in non-RT
-context, and you shouldn't be force to do this under RT constraints. If
-this is an RTnet and/or EML problem, please report it on the related list=
-s!
-
->=20
-> Is this allocation possibly the cause of the problem or is the rtnet
-> warning harmless? At least it is not related to rtcan in any manner
-> because it appears even if rtcan is not activated in the application.
-
-Did you set the rtskb_cache_size module parameter for the rtnet.ko? Did
-you choose it appropriately large so that buffer pool do not exhaust if
-RTnet is blocked by other system activity? Again, check the documentation=
-=2E
+And the pathetic latencies might be worth a look using the latency
+tracer. Just to be sure it's no software issue. Is there any known
+non-broken real-time Linux installation for your board, or did you just
+try it out for the first time?
 
 Jan
 
 
---------------enig89DEF9CAA03367701AC10AE3
+--------------enigEEA0DF93D1F42633D290B2AB
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -105,10 +88,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGwI1lniDOoMHTA+kRApQHAJ47VnDPxIqRV6xX34ObqpDPXecjvgCeKfN6
-2lCIVreGT5ktWYRYzwBI6aI=
-=spt4
+iD8DBQFGwI5hniDOoMHTA+kRAl8qAJwOrnF3Ess514CRKxu24eSBRteCTACeN9hF
+oCKe+9TQ9teiAFVgtzK0ztU=
+=HGlg
 -----END PGP SIGNATURE-----
 
---------------enig89DEF9CAA03367701AC10AE3--
+--------------enigEEA0DF93D1F42633D290B2AB--
 
