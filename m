@@ -1,17 +1,12 @@
-Message-ID: <2ff1a98a0708130214p432d52d8u780ecc8be1d0c2c6@domain.hid>
-Date: Mon, 13 Aug 2007 11:14:54 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <41f748550708130155u346115d4r646264a3183de148@domain.hid>
+Message-ID: <46C02829.9020009@domain.hid>
+Date: Mon, 13 Aug 2007 11:45:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <41f748550708122250yd388c4ehe9992464579d5924@domain.hid>
-	<2ff1a98a0708130059h29c8d5f1xc4f27133f5b06c6c@domain.hid>
-	<41f748550708130119o40345de2r9d5547f0a7d5fdbe@domain.hid>
-	<2ff1a98a0708130145h76d8ff4cka4c8cdd89a49c75d@domain.hid>
-	<41f748550708130155u346115d4r646264a3183de148@domain.hid>
-Subject: Re: [Xenomai-help] Kernel Space support
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: [Xenomai-help] EML conflict with RTCAN? low_level_input
+	framebuilding failed.
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,26 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Iwan Budi Kusnanto <iwanbk@domain.hid>
-Cc: xenomai@xenomai.org
+To: EML users <ethercatmaster-users@domain.hid>, Xenomai-help@domain.hid
 
-On 8/13/07, Iwan Budi Kusnanto <iwanbk@domain.hid> wrote:
-> On 8/13/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
-> > >
-> > > GPL is not problem.
-> > > We want to porting our data link layer (part of network driver) kernel
-> > > module to RTOS.
-> >
-> > What do you mean ? You do not care about GPL ? Or you do not care
-> > about giving your sources away ?
->
-> Hmm...we want to make it GPL :)
+Hi,
 
-Good ! Then as told by Jan, you should have a look at the RTDM API,
-and since the driver you want to port is a network driver, you may
-also have a look at  RTnet.
+in a 1 ms period task of my xenomai application things work perfectly 
+with my BeckHoff devices addressing them via Ethercat with EML until I 
+activate rtcan. Then sometimes (not always) I get incessant warnings 
+from EML which read:
 
--- 
-                                               Gilles Chanteperdrix
+EC_Telegram:: check_index(): Index field does not correspond with 
+received data.
+low_level_input(): framebuilding failed.
+
+The cycle time of the task is not being violated AFAI can see.
+
+In dmesg the following can be found when the conflict occurs
+
+RTnet:rtskb allocation from real-time cache failed.
+Assertion failed! drivers/xenomai/can/rtcan_raw.c: rtcan_tx_push:168 
+dev->tx_socket=0 (3) TX skb still in use.
+
+
+Can anyone make any suggestions as to what might be the problem here or 
+what I could try to look at to establish this?
+
+Regards.
+
+Roland.
+
+
+
 
