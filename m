@@ -1,14 +1,14 @@
-Message-ID: <e39c9190708130508u76c2a131rb5a661e1e034d35e@domain.hid>
-Date: Mon, 13 Aug 2007 14:08:36 +0200
+Message-ID: <e39c9190708130557k45492c82qb226a6b760567bc3@domain.hid>
+Date: Mon, 13 Aug 2007 14:57:55 +0200
 From: "juanba romance" <juanba.romance@domain.hid>
-In-Reply-To: <46C03F62.30009@domain.hid>
+In-Reply-To: <46C0368A.2080207@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_54735_4468676.1187006916369"
+	boundary="----=_Part_55347_17815002.1187009875333"
 References: <e39c9190708121709u765ab036w242c0c846c9c82f5@domain.hid>
 	<46C01909.5020308@domain.hid>
 	<e39c9190708130254x421a54b8le92acbf974a6fa58@domain.hid>
-	<46C03F62.30009@domain.hid>
+	<46C0368A.2080207@domain.hid>
 Subject: Re: [Xenomai-core] RTDM 82527 Xenomai driver
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,7 +22,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_54735_4468676.1187006916369
+------=_Part_55347_17815002.1187009875333
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
@@ -30,106 +30,93 @@ Content-Disposition: inline
 On 8/13/07, Wolfgang Grandegger <wg@domain.hid> wrote:
 >
 > juanba romance wrote:
+> > On 8/13/07, *Jan Kiszka* <jan.kiszka@domain.hid <mailto:jan.kiszka@domain.hid>>
+> > wrote:
+> >
+> >     juanba romance wrote:
 > [...]
-> > After review your current user interface i can not understand how a RF
-> > cycle flows through the user application
-> > holding as much as possible the latency at the receiver side. Maybe it's
-> > my own misunderstanding.
+>       That was discussed before in the context of Socket-CAN. My feeling
+> is
+> >     that it /could/ be useful in case you have to issue longer streams
+> of
+> >     CAN frames at high rates, and specifically if your CAN hardware can
+> >     handle these streams autonomously. Is the 82527 able to do so?
+> >
+> >     In any case, this would complicate the existing stack and driver and
+> >     would first require careful evaluation of the achievable improvement
+> >     (lower latency, lower system load?).
+> >
+> > The i82527 has 15 mailboxes with fixed priority, the lowest one is
+> > hardwared to the RX operation. So theoretically  you can pipeline up to
+> > 14 TX messages. When the stuff is full, we are labeled it as a
+> > "pileup"  because the hardware handler has to wait up to get some free
+> > one, this operation is performed in our case through the either the
+> > mailbox-alarm mechanism or the ISR transmission side . I have mention
 >
-> Your just send a "remote transmission request" message and receive the
-> response as a normal message.
+> To be more precise, you have to wait that the object with the lowest
+> priority, #14 has sent it's message, otherwise messages will be sent
+> out-of-order.
 
-I was pointing to the receiver node software. The requester node flow seems
-quite standard/clear.
+Obviously if the pipe is full and the last activated one was the #14; We
+have not take in care in a first approach the message identifier priority,
+so the bunch sucked from the user ring is downloaded sequentially on the
+free mailboxes starting from the #0 up to get the #14. A better approach to
+be implemented in the TX thread would be to sample the current
+free/available mailboxes, suck the ring and perform over there some ordering
+before be attached to the chipset.  In fact, the mailboxes pool is shared
+with the static message user map which is always allocated in the top area,
+so the it's ACK is guaranteed at least for the auto-replier ones.
+
+Another issue is the fact that to block a CANbus network transaction(so the
+full pipe) any node should provide the ACK bit which is OR-wired. This
+situation means that all the network devices have the RX line broken. This
+unusual cause means likely a fully broken system, anyway if it is sampled I
+think that the case must be traced without the hardware feedback; the i82527
+has a 96 try mechanism to provide a status interrupt to monitor the fault.
+This counter may be too later, using 1 Mbit bus rate, take the worst case in
+terms of message size which is ~100bits, 100usec/message *96 tries, then up
+to ~9.6ms be the pipe blocked, this is traced in our case through the alarm
+mechanism but we have decreased the timeout up to 2msec, without have to
+wait any IRQ flow. The ISR is also coded to have in care about this
+situation but theoretically the alarm should be triggered before.. Of course
+decreasing the bus speed the stuff get worse..
 
 
-> > The point is one node requests an information to another one issuing a
-> > RF, the CAN specification says that the RF receptor will handshake the
-> > cycle issuing the corresponding DF, and right here is when/where i am
-> > fuzzy. We use this capability using real time as much as possible only
-> > relying on the CANbus network load, i mean we perform the RF handshake
-> > using the RF receptor mailbox auto-reply capability, feedbacking the
-> > user software only when the DF handshake is decoded at the network, this
-> > event will trigger the user actions i.e. the message data update with
-> > the new local variables state. This feature is requested through  the
-> > configuration stage, this kind of information is labeled as "quick.ack"
-> > responses , cause are not related with software at all. The RF requester
-> > has the guarantee  that the information is sampled with any jitter
-> > software coupled. The typical approach found in other stacks is labelled
-> > as " slow.ack", it avoids to response the RF-request up to reach any
-> > software area (kernel/user spaces) that explicitly issue the data-frame
-> > as usual, this is how can-festival currently works.
+> > the "low latency" term, cause i have decoupled the loopback-tx feedback
+> > from the ISR to a kernel RT thread/task so the ISR only cleans/stops the
+> > mailbox software/hardware resources. The user call is only blocked the
+> > time required to push the message bunch into the transmission ring. The
+> > physical user transmission is performed in open-loop if no error/alarm
+> > is sampled..
 >
-> Can you point me to the code in CAN-Festival supporting directly that
-> feature of the i82527?
-
-It doesn't.  All the incoming RTR flow must be handshaked by the user space,
-i.e. take a look on lifegrd.c at the src directory entry and review the
-first filter based on the .rtr message struct field located on the symbol
-proceedNODE_GUARD(CO_Data* d, Message* m ), the symbol context drive me to
-think in a "soft" ack..
-But the point is:
-should one remove this powerful issue from the design/implementation cause
-one specific user library doesn't provide the feature ?
->From my point of view this restriction is too much.
-The consider the can-festival stuff is a facility to attach the CANopen
-specification nothing else, we already have applications that smoothly run
-using the raw CAN bus 2.0 specification. May be other CANopen stack be
-available sometime, maybe we write our own, maybe we remove the CANopen
-layer, i mean, nobody knows..
-In fact in a first approach, we plan that the can-festival related driver
-layer not use the high speed ACK. We will measure the latencies using the
-layer as it is and then will take a final decision..
-
-RTR message handling of the i82527 is very special and I do not know any
-> other (non-compatible) CAN controller doing it in a similar way. The
-> feature you like so much makes it actually a nightmare to support the
-> i82527 in a generic framework (like RT-Socket-CAN or Socket-CAN),
-> especially receiving RTR messages by justs using send and receive.
-
-Fully agree. We have thought a lot about this feature at our company before
-start this stuff long, long, long time ago. But the stuff was solved and
-fixed and it has been part of our functional specifications along this time,
-we still would like to hold it..
-
-
-> Anyhow, supporting the RTR auto-reply capability in (RT-)Socket-CAN is
-> feasible and would be a "nice to have". It could be supported by a
-> generic RTR update object. Would be nice, if you bring-up the idea on
-> the Socket-CAN mailing list to share it between other CAN experts with
-> the goal to define an CAN-API extension.
+> Note that in RT-Socket-CAN messages are not queued in software nor in
+> hardware for the sake of real-time. Just one message object will be used
+> for sending. I also doubt, that there is a notable performance benefit
+> from sophisticated TX queuing.
 >
-Fully agree. I think that the driver documentation will help a lot, uhmm let
-me do some pictures and write some formal document about and you will have
-a  a better point of view..
-
-
 > Wolfgang.
 >
+I will provide some measures related on
 
-------=_Part_54735_4468676.1187006916369
+Juanba
+
+------=_Part_55347_17815002.1187009875333
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 On 8/13/07, <b class="gmail_sendername">Wolfgang Grandegger</b> &lt;<a href="mailto:wg@domain.hid">wg@domain.hid</a>&gt; wrote:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-juanba romance wrote:<br>[...]<br>&gt; After review your current user interface i can not understand how a RF<br>&gt; cycle flows through the user application<br>&gt; holding as much as possible the latency at the receiver side. Maybe it&#39;s
-<br>&gt; my own misunderstanding.<br><br>Your just send a &quot;remote transmission request&quot; message and receive the<br>response as a normal message.</blockquote><div>I was pointing to the receiver node software. The requester node flow seems quite standard/clear.
-<br>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; The point is one node requests an information to another one issuing a<br>&gt; RF, the CAN specification says that the RF receptor will handshake the
-<br>&gt; cycle issuing the corresponding DF, and right here is when/where i am<br>&gt; fuzzy. We use this capability using real time as much as possible only<br>&gt; relying on the CANbus network load, i mean we perform the RF handshake
-<br>&gt; using the RF receptor mailbox auto-reply capability, feedbacking the<br>&gt; user software only when the DF handshake is decoded at the network, this<br>&gt; event will trigger the user actions i.e. the message data update with
-<br>&gt; the new local variables state. This feature is requested through&nbsp;&nbsp;the<br>&gt; configuration stage, this kind of information is labeled as &quot;quick.ack&quot;<br>&gt; responses , cause are not related with software at all. The RF requester
-<br>&gt; has the guarantee&nbsp;&nbsp;that the information is sampled with any jitter<br>&gt; software coupled. The typical approach found in other stacks is labelled<br>&gt; as &quot; slow.ack&quot;, it avoids to response the RF-request up to reach any
-<br>&gt; software area (kernel/user spaces) that explicitly issue the data-frame<br>&gt; as usual, this is how can-festival currently works.<br><br>Can you point me to the code in CAN-Festival supporting directly that<br>
-feature of the i82527?</blockquote><div>It doesn&#39;t.&nbsp; All the incoming RTR flow must be handshaked by the user space, i.e. take a look on lifegrd.c at the src directory entry and review the first filter based on the .rtr message struct field located on the symbol proceedNODE_GUARD(CO_Data* d, Message* m ), the symbol context drive me to  think in a &quot;soft&quot; ack..
-<br>But the point is: <br>should one remove this powerful issue from the design/implementation cause one specific user library doesn&#39;t provide the feature ?<br>From my point of view this restriction is too much. <br>The consider the can-festival stuff is a facility to attach the CANopen specification nothing else, we already have applications that smoothly run using the raw CAN bus 
-2.0 specification. May be other CANopen stack be available sometime, maybe we write our own, maybe we remove the CANopen layer, i mean, nobody knows..  <br>In fact in a first approach, we plan that the can-festival related driver layer not use the high speed ACK. We will measure the latencies using the layer as it is and then will take a final decision..
-<br></div><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">RTR message handling of the i82527 is very special and I do not know any<br>other (non-compatible) CAN controller doing it in a similar way. The
-<br>feature you like so much makes it actually a nightmare to support the<br>i82527 in a generic framework (like RT-Socket-CAN or Socket-CAN),<br>especially receiving RTR messages by justs using send and receive.</blockquote>
-<div>Fully agree. We have thought a lot about this feature at our company before start this stuff long, long, long time ago. But the stuff was solved and fixed and it has been part of our functional specifications along this time, we still would like to hold it..
-<br>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Anyhow, supporting the RTR auto-reply capability in (RT-)Socket-CAN is<br>feasible and would be a &quot;nice to have&quot;. It could be supported by a
-<br>generic RTR update object. Would be nice, if you bring-up the idea on<br>the Socket-CAN mailing list to share it between other CAN experts with<br>the goal to define an CAN-API extension.<br></blockquote><div>Fully agree. I think that the driver documentation will help a lot, uhmm let me do some pictures and write some formal document about and you will have a&nbsp; a better point of view.. 
-<br>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Wolfgang.<br></blockquote></div><br>
+juanba romance wrote:<br>&gt; On 8/13/07, *Jan Kiszka* &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a> &lt;mailto:<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt;&gt;<br>&gt; wrote:<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; juanba romance wrote:
+<br>[...]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;That was discussed before in the context of Socket-CAN. My feeling is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; that it /could/ be useful in case you have to issue longer streams of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; CAN frames at high rates, and specifically if your CAN hardware can
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; handle these streams autonomously. Is the 82527 able to do so?<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; In any case, this would complicate the existing stack and driver and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; would first require careful evaluation of the achievable improvement
+<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; (lower latency, lower system load?).<br>&gt;<br>&gt; The i82527 has 15 mailboxes with fixed priority, the lowest one is<br>&gt; hardwared to the RX operation. So theoretically&nbsp;&nbsp;you can pipeline up to<br>&gt; 14 TX messages. When the stuff is full, we are labeled it as a
+<br>&gt; &quot;pileup&quot;&nbsp;&nbsp;because the hardware handler has to wait up to get some free<br>&gt; one, this operation is performed in our case through the either the<br>&gt; mailbox-alarm mechanism or the ISR transmission side . I have mention
+<br><br>To be more precise, you have to wait that the object with the lowest<br>priority, #14 has sent it&#39;s message, otherwise messages will be sent<br>out-of-order.</blockquote><div>Obviously if the pipe is full and the last activated one was the #14; We have not take in care in a first approach the message identifier priority, so the bunch sucked from the user ring is downloaded sequentially on the free mailboxes starting from the #0 up to get the #14. A better approach to be implemented in the TX thread would be to sample the current free/available mailboxes, suck the ring and perform over there some ordering before be attached to the chipset.&nbsp;  In fact, the mailboxes pool is shared with the static message user map which is always allocated in the top area, so the it&#39;s ACK is guaranteed at least for the auto-replier ones.
+<br>&nbsp;<br>Another issue is the fact that to block a CANbus network transaction(so the full pipe) any node should provide the ACK bit which is OR-wired. This situation means that all the network devices have the RX line broken. This unusual cause means likely a fully broken system, anyway if it is sampled I think that the case must be traced without the hardware feedback; the i82527 has a 96 try mechanism to provide a status interrupt to monitor the fault. This counter may be too later, using 1 Mbit bus rate, take the worst case in terms of message size which is ~100bits, 100usec/message *96 tries, then up to ~9.6ms be the pipe blocked, this is traced in our case through the alarm mechanism but we have decreased the timeout up to 2msec, without have to wait any IRQ flow. The ISR is also coded to have in care about this situation but theoretically the alarm should be triggered before.. Of course decreasing the bus speed the stuff get worse..
+<br>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; the &quot;low latency&quot; term, cause i have decoupled the loopback-tx feedback
+<br>&gt; from the ISR to a kernel RT thread/task so the ISR only cleans/stops the<br>&gt; mailbox software/hardware resources. The user call is only blocked the<br>&gt; time required to push the message bunch into the transmission ring. The
+<br>&gt; physical user transmission is performed in open-loop if no error/alarm<br>&gt; is sampled..<br><br>Note that in RT-Socket-CAN messages are not queued in software nor in<br>hardware for the sake of real-time. Just one message object will be used
+<br>for sending. I also doubt, that there is a notable performance benefit<br>from sophisticated TX queuing.<br><br>Wolfgang.<br></blockquote></div>I will provide some measures related on<br><br>Juanba<br>
 
-------=_Part_54735_4468676.1187006916369--
+------=_Part_55347_17815002.1187009875333--
 
