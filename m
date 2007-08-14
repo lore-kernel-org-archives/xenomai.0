@@ -1,15 +1,18 @@
-Message-ID: <2ff1a98a0708140316xcd981b2hcc2e6e8a11199fff@domain.hid>
-Date: Tue, 14 Aug 2007 12:16:17 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2862c2c80708140310i22fabe68w5d8d6670c8cc0226@domain.hid>
+Message-ID: <46C1851B.8040800@domain.hid>
+Date: Tue, 14 Aug 2007 12:34:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <46C0719B.1010102@domain.hid>
+	<46C07AF2.60402@domain.hid>	<46C07D73.7070302@domain.hid>
+	<46C080C8.10906@domain.hid>	<46C0835E.8010105@domain.hid>
+	<46C0B036.3030306@domain.hid>	<46C0B1DF.6090509@domain.hid>
+	<46C0B9F7.9060103@domain.hid> <46C0D686.6000007@domain.hid>
+	<46C14FE2.8000507@domain.hid>
+In-Reply-To: <46C14FE2.8000507@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <2862c2c80708130403v62b21fd5va7b5919bd996dbaf@domain.hid>
-	<18112.16815.606280.878902@domain.hid>
-	<2862c2c80708140310i22fabe68w5d8d6670c8cc0226@domain.hid>
-Subject: Re: [Xenomai-help] System Timer Interrupt Sharing?
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: Re: [Xenomai-help] rtcan bufferoverflow but no evidence
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,43 +22,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
-Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
 
-On 8/14/07, Yeoh Chun Yeow <yeohchunyeow@domain.hid> wrote:
->  On 8/13/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org > wrote:
-> > Yeoh Chun Yeow wrote:
-> > > Dear all,
-> > >
-> > > Is that possible to share the system timer interrupt used for xenomai
-> kernel
-> > > scheduling for any other purposes?
-> > >
-> > > Please advice. Thanks
-> >
-> > I guess you are talking about Xenomai on AT91. Xenomai on AT91 does not
-> > use the system timer interrupt, it uses the timer counter interrupt
-> > instead. So, yes, you can use system timer interrupt for any other non
-> > real-time activity.
-> >
-> > Now, if your question is to know if it is possible to share an interrupt
-> > between real-time and not real-time activity, the answer is that it is
-> > not easy. If you want to do this, you will have to move the hardware
-> > acknowledgement part of the non real-time interrupt handler to a
-> > real-time interrupt handler, and, when an event is pending for the non
-> > real-time domain, propagate the irq.
-> >
-> Dear Gilles,
->
-> Thanks for your response. Yes, I know that AT91 uses the TC instead of
-> system timer interrupt.
->
-> FYI, I also doing development using Intel M Processor.
+Hi,
 
-Then, if you need a function to be called upon timer interrupt use a
-timer, either a Xenomai timer (posix timer, or native alarm), or a
-Linux timer
+> Roland, could you please check the return code of [rt_dev_]close. 
+> Nevertheless, I'm still puzzled why the socket shows up in 
+> /proc/rtcan/sockets because rtcan_raw_close() is called before returning 
+> -EAGAIN and the error mask shown there is weired as well.
+> Roland, do you perform the open and close in a serialized way (same 
+> task) and in nrt context?
 
--- 
-                                               Gilles Chanteperdrix
+I have now got the close loop with the printf in it. You are probably 
+right that I was closing in the rt context because syslog shows an error 
+from rtdm stating that one cannot close from rea time. I understand from 
+a thread elsewhere that printf brings the program to secondary mode 
+hence helps with the closing?
+
+Its working now infallibly, no more open sockets remain so I can work 
+like this. Also applied the suggestion to turn off the loopback with 
+setsockopt and that functions well too (no more buffer overflows)
+
+I only still have the problem with EML which does not seem happy in 
+combination with rtcan. Even if I increase the rtskbf_cache_size value 
+(now on 2048). It still occurs incidentally and even after the program 
+has been running for a while. Anyhow that seems to have nothing to do 
+with this topic....drifting a bit.
+
+
+Thanks.
+
+Roland
+
+
+> 
+> Wolfgang.
+> 
+> 
+> 
 
