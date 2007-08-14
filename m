@@ -1,17 +1,12 @@
-Message-ID: <46C13B91.6020801@domain.hid>
-Date: Tue, 14 Aug 2007 07:20:17 +0200
 MIME-Version: 1.0
-References: <46C0719B.1010102@domain.hid>
-	<46C07AF2.60402@domain.hid>	<46C07D73.7070302@domain.hid>
-	<46C080C8.10906@domain.hid>	<46C0835E.8010105@domain.hid>
-	<46C0B036.3030306@domain.hid>	<46C0B1DF.6090509@domain.hid>
-	<46C0B9F7.9060103@domain.hid> <46C0D686.6000007@domain.hid>
-In-Reply-To: <46C0D686.6000007@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
-Subject: Re: [Xenomai-help] rtcan bufferoverflow but no evidence
-Reply-To: rolandtollenaar@domain.hid
+Message-ID: <18113.19726.385060.468564@domain.hid>
+Date: Tue, 14 Aug 2007 08:34:54 +0200
+In-Reply-To: <46C0F888.5050405@domain.hid>
+References: <46C0F888.5050405@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] svn-buildpackage not working?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,24 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Bill Gatliff <bgat@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi,
+Bill Gatliff wrote:
+ > Guys:
+ > 
+ > 
+ > Trying to put together a Xenomai package for my Debian "testing" PC.  It 
+ > hangs here:
+ > 
+ > # svn co ...; cd xenomai
+ > # svn-buildpackage -us -uc -rfakeroot
+ > ...
+ > rm: cannot remove /root/xenomai/debian/tmp//usr/include/xenomai: Is a 
+ > directory
+ > make[4]: *** [install-data-local] Error 1
+ > 
+ > 
+ > Any ideas?
 
-> Recall that up to Xenomai 2.4 RTDM device/socket closing may fail (with
-> -EAGAIN) when some other thread is currently using it and doesn't
-> release it immediately when being "asked". That means for now you should
-> loop over [rt_dev_]close as long as EAGAIN is returned.
+Maybe you ran into the same problem as Paul ?
+https://mail.gna.org/public/xenomai-core/2007-08/msg00045.html
 
-Excellent thanks. I did not know this. Is xenomai 2.4 stable yet? Would 
-you advise it as the version of choice at the moment?
-
-
-Roland
+Could you try the patch attached to that mail and tell us ? Note that
+since this patch modifies Makefile.ams, you will have to run
+scripts/bootstrap
 
 
-> 
-> Jan
-> 
+-- 
+
+
+					    Gilles Chanteperdrix.
 
