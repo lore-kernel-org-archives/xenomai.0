@@ -1,15 +1,15 @@
-Message-ID: <46B97817.8000909@domain.hid>
-Date: Wed, 08 Aug 2007 11:00:23 +0300
-From: Heikki Lindholm <holindho@domain.hid>
+Message-ID: <46C2D5C4.2010407@domain.hid>
+Date: Wed, 15 Aug 2007 12:30:28 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <46B1A842.1090708@domain.hid>	<1186049556.6611.319.camel@domain.hid>
-	<46B1B7DE.3080404@domain.hid>	<1186053839.6611.326.camel@domain.hid>
-	<46B2E1B3.2020102@domain.hid>	<2ff1a98a0708060208k1d217ae6ge20389074d9bf1bd@domain.hid>	<1186401270.5963.2.camel@domain.hid>	<b647ffbd0708070758t22f01577wd3a5397a53249459@domain.hid>
-	<b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
-In-Reply-To: <b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
+References: <46C02829.9020009@domain.hid>	<46C04384.4030805@domain.hid>	<46C05180.5090302@domain.hid>	<46C05690.2010108@domain.hid>	<46C063E0.1010809@domain.hid>	<46C07005.8000504@domain.hid>	<46C1B498.8060600@domain.hid>	<Pine.LNX.4.64.0708141629570.18303@domain.hid>	<46C1EE69.3020301@domain.hid>
+	<46C1FFDA.4070709@domain.hid>	<46C298FD.8070300@domain.hid>
+	<46C2B842.1080501@domain.hid> <46C2CC73.9080807@domain.hid>
+In-Reply-To: <46C2CC73.9080807@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Unexpected switch to secondary mode
+Subject: Re: [Xenomai-help] [Ethercatmaster-users] EML conflict with RTCAN?
+ low_level_input framebuilding failed.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,69 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: rolandtollenaar@domain.hid
+Cc: Xenomai-help@domain.hid, EML users <ethercatmaster-users@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>, rtnet-users <rtnet-users@domain.hid>
 
-Dmitry Adamushko kirjoitti:
-> [ forgot to add the list : ]
+Roland Tollenaar wrote:
+> Hi,
 > 
-> ---------- Forwarded message ----------
+> Some more interesting findings (no i-pipe trace yet though).
 > 
-> On 06/08/07, Philippe Gerum <rpm@xenomai.org> wrote:
+>> Hmm, this doesn't convince me yet. Such skews during startup may as well
+>> be triggered by unusual load during runtime (non-RT activity or new RT
+>> components). Did you put your system under adequate non-RT load as well
+>> while measuring the outputs?
+> Running latencytest with my application shows an average latency of 
+> about 40 and a max of 200ns. This was rather shocking so I turned off 
+> rtcan in my application. Now the max latecy is 60ns. Turn off EML and 
+> turn on rtcan, max latecy is 230ns. How is that for strange? But since I 
+> can see the scope output bobbing with 200ns during the latency test, I 
+> can also see that if I run my application without the latency test the 
+> huge max latency disappears entirely. Maybe it is time for the trace but 
+> then again I am still using CAN over the parallel port so will see what 
+> it does on a machine with a PCI CAN adaptor first. Because I think I 
+> know what happens: Due to the external loading the CAN recv interrupt 
+> triggers the Rx ISR briefly before the 1ms task period ends. Due to the 
+> priority of the ISR (huge debate over this) and its atomicness (if I 
+> remember correctly) the reading out of the slow hardware delays the 
+> start of the new task period.
 > 
->>>[ ... ]
->>>But I have another question: since the nocow patch is platform
->>>independent, why not integrating it in the I-pipe patch for power pc ?
->>>
->>
->>It is merged into the latest patches against the powerpc/ tree.
+> Just thought it was interesting to mention. Btw when the latency appears 
+> there are no overflow messages or anything like that which support the 
+> theory I have about the cause.
 > 
-> 
-> [ Mainly, just out of curiosity ]
-> 
-> I've actually tried 'google'ing for an overview of the MMU on ppc but
-> it doesn't seem to be easily
-> available on the net.
-> 
-> Do I understand it right that in the PPC arch. a CPU doesn't have full
-> access to task's page tables.. that said, if a TLB miss takes place
-> (or some analogue lookup mechanism), the CPU needs assistance from the
-> OS and e.g. rises an exception.
-> 
-> [*] A corresponding OS handler gets a 'fault address' and looks for it
-> in the task's 'page tables' .. and if found, updates TLB accordingly.
-> 
-> This would be similar to what happens in MIPS :
-> TLB miss --> TLB-miss exception --> OS-dependent TLB-miss handler.
-> 
-> Now, Xenomai is not able (at the moment) to do [*] on its own.. thus,
-> there is a switch to the secondary mode so that Linux is able to take
-> care of it.
-> 
-> Unless there is a way to reserve a set of TLB entries for a real-time
-> task (or other mechanism to have 'virtual -> physical' conversion
-> entirely in the CPU -- I mean, not involving the OS) + the working set
-> of the rt task fits into this 'reserved' set --- 'TLB-miss' exception
-> gonna happen.. e.g. every time after the RT relinquish a CPU and
-> something else trashes the TLB tables.
-> 
-> e.g. on MIPS, the area used for kernel modules also requires
-> virtual->physical translation.. so even a kernel-mode task (and
-> actually, interrupt handlers inside the kernel modules) cause TLB-miss
-> exceptions. Sure, it's not a case if it's linked against the kernel
-> itself.
-> 
-> errr.. ok, to many words :-) does it sound like smth taking place
-> here? A link to the MMU overview for ppc would be highly appreciated
-> as well.
+> Btw2 the 200ns latency spikes do not cause the scope to loose lock on 
+> the saw-tooth so whatever causes that problem is of a different nature 
+> still.
 
-See the powerpc architecture book at:
-http://www.ibm.com/developerworks/eserver/articles/archguide.html
-It gives the generics. Also see the Book-E (~embedded cpus) 
-architecture; they have different MMUs:
-http://www-01.ibm.com/chips/techlib/techlib.nsf/techdocs/852569B20050FF778525699600682CC7
-And then the model specific manuals (405, 440, 5xx, etc.), which should 
-be available at the IBM/Freescale/AMCC sites.
+s/ns/us/ ?
 
--- Heikki Lindholm
+Wolfgang.
 
