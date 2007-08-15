@@ -1,15 +1,15 @@
-Message-ID: <46C33453.8060402@domain.hid>
-Date: Wed, 15 Aug 2007 19:13:55 +0200
+Message-ID: <46C33764.5090905@domain.hid>
+Date: Wed, 15 Aug 2007 19:27:00 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <2862c2c80708140315y6cb029e4j8b5f7e9d95ae2bf1@domain.hid>	<18113.34663.646158.524696@domain.hid>	<2862c2c80708150224s4dd154b1j2aad7333ac04d150@domain.hid>	<46C2EADF.4030505@domain.hid>
-	<18114.64293.110182.524820@domain.hid>
-In-Reply-To: <18114.64293.110182.524820@domain.hid>
+References: <000001c7deba$7c6fbf10$c124a986@domain.hid>
+In-Reply-To: <000001c7deba$7c6fbf10$c124a986@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig3C473C4DBE2D86BBCD312614"
+	boundary="------------enig82E3246505AD0A27A270348B"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Kernel Opps calling rtdm_irq_request
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
+ threads in other processes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,41 +19,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
+To: =?ISO-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3C473C4DBE2D86BBCD312614
+--------------enig82E3246505AD0A27A270348B
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > Yeoh Chun Yeow wrote:
->  > > By the way, do we need to invoke the rtdm_irq_enable after the
->  > > rtdm_irq_request? After excuting the ISR, is that the return of
->  > > RTDM_IRQ_HANDLED will reenble the interrupt?
->  >=20
->  > Depends on the version: With RTDM revision 6 (will be part of Xenoma=
-i
->  > 2.4), this is no longer required. Earlier revision needed it, though=
-=2E
->  > See documentation.
+Hi Torsten,
+
+<snippin a lot, sorry>
+
+Torsten Kr=F6ger wrote:
+>> Jan Kiszka wrote:
+>> If you are seriously interested in prio-inheritance for the native
+>> message passing API, the best you can do is to work actively on a patc=
+h
+>> proposal. This would
+>>
+>> - demonstrate how unintrusive this addition could be (preferably, PI
+>>   will be optional and use existing low-level services), while being
+>>   so useful for certain scenarios
+>>
+>> - accelerate the testing cycle (_you_ have the scenario at hand)
+>>
+>> - raise the chances that Xenomai gains this feature soon (core
+>>   developers are generally busy with many things)
+>>
+>> Posting patches early will allow you gain concrete feedback on the
+>> design. And we will not sit there and watch you pulling hairs while
+>> you're stuck. But hacking some Xenomai skin is also no black magic,
+>> given the well defined nucleus API. Give it a try!
 >=20
-> An if I am not wrong, RTDM revision 6 offers timers services as well,
+> I am seriously interested in priority inheritance for the message
+> passing API, but I don't consider myself as an expert in this field and=
 
-Yep.
+> nor as an operating system developer. My employer/my client does not
+> give me time for such kind of system engineering, hence I will remain a=
+s
+> a user - all I can do is to tell about my desires and experiences.
 
-> so, Yeoh, developing your own timer management system really looks like=
+As I said, it doesn't take experts here, just someone to start and
+collect the pieces (which might include asking for expert knowledge here
+and there).
 
-> going the wrong way.
+And someone being able to write such long and detailed essays - for me
+even too long to read completely yet - should as well be able to play a
+bit with code. Or motivate some talented student of yours (I know they
+can be rare). ;)
 
-It takes fairly unusual requirements to go some non-standard way here.
+>=20
+> Ok, now I'm coming to the end. I hope this posting was a bit interestin=
+g
+> for any reader and that someone goes for further words on this...
+>=20
+> ...any comment and further discussion is highly appreciated again! :-)
+>=20
+
+Better let some code speak now...
 
 Jan
 
 
---------------enig3C473C4DBE2D86BBCD312614
+--------------enig82E3246505AD0A27A270348B
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -62,10 +91,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFGwzRUniDOoMHTA+kRAuAMAJwKrjHPpWnSI+186TIHOHCklNRJrgCggRM6
-jtYF4GTmuKRJgVMBgP0E91I=
-=CU5Q
+iD8DBQFGwzdkniDOoMHTA+kRAuSHAJ4wTknAolzTU1oyCTIMeydLg8qr9gCeMIaQ
+3ggEPwLvR1GUxXlNKpQBSEU=
+=RJk8
 -----END PGP SIGNATURE-----
 
---------------enig3C473C4DBE2D86BBCD312614--
+--------------enig82E3246505AD0A27A270348B--
 
