@@ -1,15 +1,12 @@
-Message-ID: <e39c9190708130557k45492c82qb226a6b760567bc3@domain.hid>
-Date: Mon, 13 Aug 2007 14:57:55 +0200
-From: "juanba romance" <juanba.romance@domain.hid>
-In-Reply-To: <46C0368A.2080207@domain.hid>
+Message-ID: <46C3269F.8070408@domain.hid>
+Date: Wed, 15 Aug 2007 18:15:27 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_55347_17815002.1187009875333"
-References: <e39c9190708121709u765ab036w242c0c846c9c82f5@domain.hid>
-	<46C01909.5020308@domain.hid>
-	<e39c9190708130254x421a54b8le92acbf974a6fa58@domain.hid>
-	<46C0368A.2080207@domain.hid>
-Subject: Re: [Xenomai-core] RTDM 82527 Xenomai driver
+References: <469E10D5.8000602@domain.hid> <469E6349.5000209@domain.hid>
+In-Reply-To: <469E6349.5000209@domain.hid>
+Content-Type: multipart/mixed; boundary="------------020203030008050603030907"
+Subject: Re: [Xenomai-core] Problems with compat_module_param_array() with
+ Linux	2.4
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,104 +16,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_55347_17815002.1187009875333
-Content-Type: text/plain; charset=UTF-8
+This is a multi-part message in MIME format.
+--------------020203030008050603030907
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-On 8/13/07, Wolfgang Grandegger <wg@domain.hid> wrote:
->
-> juanba romance wrote:
-> > On 8/13/07, *Jan Kiszka* <jan.kiszka@domain.hid <mailto:jan.kiszka@domain.hid>>
-> > wrote:
-> >
-> >     juanba romance wrote:
-> [...]
->       That was discussed before in the context of Socket-CAN. My feeling
-> is
-> >     that it /could/ be useful in case you have to issue longer streams
-> of
-> >     CAN frames at high rates, and specifically if your CAN hardware can
-> >     handle these streams autonomously. Is the 82527 able to do so?
-> >
-> >     In any case, this would complicate the existing stack and driver and
-> >     would first require careful evaluation of the achievable improvement
-> >     (lower latency, lower system load?).
-> >
-> > The i82527 has 15 mailboxes with fixed priority, the lowest one is
-> > hardwared to the RX operation. So theoretically  you can pipeline up to
-> > 14 TX messages. When the stuff is full, we are labeled it as a
-> > "pileup"  because the hardware handler has to wait up to get some free
-> > one, this operation is performed in our case through the either the
-> > mailbox-alarm mechanism or the ISR transmission side . I have mention
->
-> To be more precise, you have to wait that the object with the lowest
-> priority, #14 has sent it's message, otherwise messages will be sent
-> out-of-order.
+Jan Kiszka wrote:
+> Wolfgang Grandegger wrote:
+>> Hello,
+>>
+>> yesterday I realized a problem with compat_module_param_array() with
+>> ksrc/drivers/can/sja1000/rtcan_mem.c under Linux 2.4. It uses
+>> CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM_MAX_DEV to define the number of mem
+>> devices, which is set to '(4)' by "make [menuc]onfig". Unfortunately, 
+>> the brackets '()' break compat_module_param_array() because it treats 
+>> the count as string:
+>>
+>> #define compat_module_param_array(name, type, count, perm) \
+>>          static inline void *__check_existence_##name(void) { return
+>> &name; } \
+>>          MODULE_PARM(name, "1-" __MODULE_STRING(count)
+>> _MODULE_PARM_STRING_##type)
+>>
+>> Any idea how to fix that? I actually tend to remove the configuration 
+>> option CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM_MAX_DEV and hardcode it to 
+>> "4" (without brackets) in the driver. It's kind of overkill, anyhow.
+> 
+> I would say that this problem is not "with compat_module_param_array",
+> but about the Kconfig-based constant. I don't see a way to make the
+> module parameter array size configurable even under vanilla 2.4. Simply
+> go for a patchable constant in the source code like other drivers do.
 
-Obviously if the pipe is full and the last activated one was the #14; We
-have not take in care in a first approach the message identifier priority,
-so the bunch sucked from the user ring is downloaded sequentially on the
-free mailboxes starting from the #0 up to get the #14. A better approach to
-be implemented in the TX thread would be to sample the current
-free/available mailboxes, suck the ring and perform over there some ordering
-before be attached to the chipset.  In fact, the mailboxes pool is shared
-with the static message user map which is always allocated in the top area,
-so the it's ACK is guaranteed at least for the auto-replier ones.
+The attached patch fixes the problem:
 
-Another issue is the fact that to block a CANbus network transaction(so the
-full pipe) any node should provide the ACK bit which is OR-wired. This
-situation means that all the network devices have the RX line broken. This
-unusual cause means likely a fully broken system, anyway if it is sampled I
-think that the case must be traced without the hardware feedback; the i82527
-has a 96 try mechanism to provide a status interrupt to monitor the fault.
-This counter may be too later, using 1 Mbit bus rate, take the worst case in
-terms of message size which is ~100bits, 100usec/message *96 tries, then up
-to ~9.6ms be the pipe blocked, this is traced in our case through the alarm
-mechanism but we have decreased the timeout up to 2msec, without have to
-wait any IRQ flow. The ISR is also coded to have in care about this
-situation but theoretically the alarm should be triggered before.. Of course
-decreasing the bus speed the stuff get worse..
+2007-08-15  Wolfgang Grandegger  <wg@domain.hid>
+
+         * ksrc/drivers/can/sja1000/Kconfig,
+         ksrc/drivers/can/sja1000/{rtcan_isa.c,rtcan_mem.c}: Remove config
+         options XENO_DRIVERS_CAN_SJA1000_*_MAX_DEV to avoid problems with
+         defining module parameters with Linux 2.4.
+
+If nobody complains, I'm going to apply it to the trunk and the v2.3.x 
+branch.
+
+Wolfgang.
 
 
-> > the "low latency" term, cause i have decoupled the loopback-tx feedback
-> > from the ISR to a kernel RT thread/task so the ISR only cleans/stops the
-> > mailbox software/hardware resources. The user call is only blocked the
-> > time required to push the message bunch into the transmission ring. The
-> > physical user transmission is performed in open-loop if no error/alarm
-> > is sampled..
->
-> Note that in RT-Socket-CAN messages are not queued in software nor in
-> hardware for the sake of real-time. Just one message object will be used
-> for sending. I also doubt, that there is a notable performance benefit
-> from sophisticated TX queuing.
->
-> Wolfgang.
->
-I will provide some measures related on
-
-Juanba
-
-------=_Part_55347_17815002.1187009875333
-Content-Type: text/html; charset=UTF-8
+--------------020203030008050603030907
+Content-Type: text/x-patch;
+ name="xenomai-rtcan-dev-max.patch"
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Disposition: inline;
+ filename="xenomai-rtcan-dev-max.patch"
 
-On 8/13/07, <b class="gmail_sendername">Wolfgang Grandegger</b> &lt;<a href="mailto:wg@domain.hid">wg@domain.hid</a>&gt; wrote:<div><span class="gmail_quote"></span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-juanba romance wrote:<br>&gt; On 8/13/07, *Jan Kiszka* &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a> &lt;mailto:<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt;&gt;<br>&gt; wrote:<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; juanba romance wrote:
-<br>[...]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;That was discussed before in the context of Socket-CAN. My feeling is<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; that it /could/ be useful in case you have to issue longer streams of<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; CAN frames at high rates, and specifically if your CAN hardware can
-<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; handle these streams autonomously. Is the 82527 able to do so?<br>&gt;<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; In any case, this would complicate the existing stack and driver and<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; would first require careful evaluation of the achievable improvement
-<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp; (lower latency, lower system load?).<br>&gt;<br>&gt; The i82527 has 15 mailboxes with fixed priority, the lowest one is<br>&gt; hardwared to the RX operation. So theoretically&nbsp;&nbsp;you can pipeline up to<br>&gt; 14 TX messages. When the stuff is full, we are labeled it as a
-<br>&gt; &quot;pileup&quot;&nbsp;&nbsp;because the hardware handler has to wait up to get some free<br>&gt; one, this operation is performed in our case through the either the<br>&gt; mailbox-alarm mechanism or the ISR transmission side . I have mention
-<br><br>To be more precise, you have to wait that the object with the lowest<br>priority, #14 has sent it&#39;s message, otherwise messages will be sent<br>out-of-order.</blockquote><div>Obviously if the pipe is full and the last activated one was the #14; We have not take in care in a first approach the message identifier priority, so the bunch sucked from the user ring is downloaded sequentially on the free mailboxes starting from the #0 up to get the #14. A better approach to be implemented in the TX thread would be to sample the current free/available mailboxes, suck the ring and perform over there some ordering before be attached to the chipset.&nbsp;  In fact, the mailboxes pool is shared with the static message user map which is always allocated in the top area, so the it&#39;s ACK is guaranteed at least for the auto-replier ones.
-<br>&nbsp;<br>Another issue is the fact that to block a CANbus network transaction(so the full pipe) any node should provide the ACK bit which is OR-wired. This situation means that all the network devices have the RX line broken. This unusual cause means likely a fully broken system, anyway if it is sampled I think that the case must be traced without the hardware feedback; the i82527 has a 96 try mechanism to provide a status interrupt to monitor the fault. This counter may be too later, using 1 Mbit bus rate, take the worst case in terms of message size which is ~100bits, 100usec/message *96 tries, then up to ~9.6ms be the pipe blocked, this is traced in our case through the alarm mechanism but we have decreased the timeout up to 2msec, without have to wait any IRQ flow. The ISR is also coded to have in care about this situation but theoretically the alarm should be triggered before.. Of course decreasing the bus speed the stuff get worse..
-<br>&nbsp;</div><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">&gt; the &quot;low latency&quot; term, cause i have decoupled the loopback-tx feedback
-<br>&gt; from the ISR to a kernel RT thread/task so the ISR only cleans/stops the<br>&gt; mailbox software/hardware resources. The user call is only blocked the<br>&gt; time required to push the message bunch into the transmission ring. The
-<br>&gt; physical user transmission is performed in open-loop if no error/alarm<br>&gt; is sampled..<br><br>Note that in RT-Socket-CAN messages are not queued in software nor in<br>hardware for the sake of real-time. Just one message object will be used
-<br>for sending. I also doubt, that there is a notable performance benefit<br>from sophisticated TX queuing.<br><br>Wolfgang.<br></blockquote></div>I will provide some measures related on<br><br>Juanba<br>
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(revision 2922)
++++ ChangeLog	(working copy)
+@@ -1,3 +1,10 @@
++2007-08-15  Wolfgang Grandegger  <wg@domain.hid>
++
++	* ksrc/drivers/can/sja1000/Kconfig,
++	ksrc/drivers/can/sja1000/{rtcan_isa.c,rtcan_mem.c}: Remove config
++	options XENO_DRIVERS_CAN_SJA1000_*_MAX_DEV to avoid problems with
++	defining module parameters with Linux 2.4.
++
+ 2007-08-14  Jan Kiszka  <jan.kiszka@domain.hid>
+ 
+ 	* ksrc/skins/rtdm/*, include/rtdm/*: Lindention and several sparse
+Index: ksrc/drivers/can/sja1000/Kconfig
+===================================================================
+--- ksrc/drivers/can/sja1000/Kconfig	(revision 2922)
++++ ksrc/drivers/can/sja1000/Kconfig	(working copy)
+@@ -12,11 +12,6 @@ config XENO_DRIVERS_CAN_SJA1000_ISA
+ 	or a PC/104 system. The I/O port, interrupt number and a few other
+ 	hardware specific parameters can be defined via module parameters.
+ 
+-config XENO_DRIVERS_CAN_SJA1000_ISA_MAX_DEV
+-	depends on XENO_DRIVERS_CAN_SJA1000_ISA
+-	int "Maximum number of controllers"
+-	default 4
+-
+ config XENO_DRIVERS_CAN_SJA1000_MEM
+ 	depends on XENO_DRIVERS_CAN_SJA1000
+ 	tristate "Memory mapped controllers"
+@@ -26,11 +21,6 @@ config XENO_DRIVERS_CAN_SJA1000_MEM
+ 	interrupt number and a few other hardware specific parameters can
+ 	be defined via module parameters.
+ 
+-config XENO_DRIVERS_CAN_SJA1000_MEM_MAX_DEV
+-	depends on XENO_DRIVERS_CAN_SJA1000_MEM
+-	int "Maximum number of controllers"
+-	default 4
+-
+ config XENO_DRIVERS_CAN_SJA1000_PEAK_PCI
+ 	depends on XENO_DRIVERS_CAN_SJA1000
+ 	tristate "PEAK PCI Card"
+Index: ksrc/drivers/can/sja1000/rtcan_isa.c
+===================================================================
+--- ksrc/drivers/can/sja1000/rtcan_isa.c	(revision 2922)
++++ ksrc/drivers/can/sja1000/rtcan_isa.c	(working copy)
+@@ -36,7 +36,7 @@
+ #define RTCAN_DEV_NAME    "rtcan%d"
+ #define RTCAN_DRV_NAME    "sja1000-isa"
+ 
+-#define RTCAN_ISA_MAX_DEV CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA_MAX_DEV
++#define RTCAN_ISA_MAX_DEV 4
+ 
+ static char *isa_board_name = "ISA-Board";
+ 
+Index: ksrc/drivers/can/sja1000/rtcan_mem.c
+===================================================================
+--- ksrc/drivers/can/sja1000/rtcan_mem.c	(revision 2922)
++++ ksrc/drivers/can/sja1000/rtcan_mem.c	(working copy)
+@@ -44,7 +44,7 @@
+ #define RTCAN_DEV_NAME    "rtcan%d"
+ #define RTCAN_DRV_NAME    "sja1000-mem"
+ 
+-#define RTCAN_MEM_MAX_DEV CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM_MAX_DEV
++#define RTCAN_MEM_MAX_DEV 4
+ 
+ static char *mem_board_name = "mem mapped";
+ 
+Index: ksrc/drivers/can/sja1000/Config.in
+===================================================================
+--- ksrc/drivers/can/sja1000/Config.in	(revision 2922)
++++ ksrc/drivers/can/sja1000/Config.in	(working copy)
+@@ -9,14 +9,8 @@ if [ "$CONFIG_XENO_DRIVERS_CAN_SJA1000" 
+ fi
+ 
+ dep_tristate '  Standard ISA controllers' CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA $CONFIG_XENO_DRIVERS_CAN_SJA1000
+-if [ "$CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA" != "n" ]; then
+-	int '    Maximum number of controllers' CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA_MAX_DEV 4
+-fi
+ 
+ dep_tristate '  Memory mapped controllers' CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM $CONFIG_XENO_DRIVERS_CAN_SJA1000
+-if [ "$CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM" != "n" ]; then
+-	int '    Maximum number of controllers' CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM_MAX_DEV 4
+-fi
+ 
+ if [ "$CONFIG_PCI" = "y" ]; then
+ 	dep_tristate '  PEAK PCI cards' CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI $CONFIG_XENO_DRIVERS_CAN_SJA1000
 
-------=_Part_55347_17815002.1187009875333--
+--------------020203030008050603030907--
 
