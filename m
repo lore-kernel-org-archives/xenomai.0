@@ -1,13 +1,19 @@
-Message-ID: <2862c2c80708150224s4dd154b1j2aad7333ac04d150@domain.hid>
-Date: Wed, 15 Aug 2007 17:24:24 +0800
-From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
-In-Reply-To: <18113.34663.646158.524696@domain.hid>
+Message-ID: <46C2CC73.9080807@domain.hid>
+Date: Wed, 15 Aug 2007 11:50:43 +0200
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_41454_32420032.1187169864271"
-References: <2862c2c80708140315y6cb029e4j8b5f7e9d95ae2bf1@domain.hid>
-	<18113.34663.646158.524696@domain.hid>
-Subject: Re: [Xenomai-help] Kernel Opps calling rtdm_irq_request
+References: <46C02829.9020009@domain.hid>
+	<46C04384.4030805@domain.hid>	<46C05180.5090302@domain.hid>
+	<46C05690.2010108@domain.hid>	<46C063E0.1010809@domain.hid>
+	<46C07005.8000504@domain.hid>	<46C1B498.8060600@domain.hid>	<Pine.LNX.4.64.0708141629570.18303@domain.hid>
+	<46C1EE69.3020301@domain.hid> <46C1FFDA.4070709@domain.hid>
+	<46C298FD.8070300@domain.hid> <46C2B842.1080501@domain.hid>
+In-Reply-To: <46C2B842.1080501@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: Re: [Xenomai-help] [Ethercatmaster-users] EML conflict with RTCAN?
+ low_level_input framebuilding failed.
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,72 +23,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: EML users <ethercatmaster-users@domain.hid>, rtnet-users <rtnet-users@domain.hid>, Xenomai-help@domain.hid
 
-------=_Part_41454_32420032.1187169864271
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Hi,
 
-Dear Gilles,
+Some more interesting findings (no i-pipe trace yet though).
 
-Sorry, it's my own mistake. I forgot to append the dev_private when openning
-the device. I am actually using the TC1 for testing and not TC0 (TC0 is
-selected for IPIPE usage).
+> Hmm, this doesn't convince me yet. Such skews during startup may as well
+> be triggered by unusual load during runtime (non-RT activity or new RT
+> components). Did you put your system under adequate non-RT load as well
+> while measuring the outputs?
+Running latencytest with my application shows an average latency of 
+about 40 and a max of 200ns. This was rather shocking so I turned off 
+rtcan in my application. Now the max latecy is 60ns. Turn off EML and 
+turn on rtcan, max latecy is 230ns. How is that for strange? But since I 
+can see the scope output bobbing with 200ns during the latency test, I 
+can also see that if I run my application without the latency test the 
+huge max latency disappears entirely. Maybe it is time for the trace but 
+then again I am still using CAN over the parallel port so will see what 
+it does on a machine with a PCI CAN adaptor first. Because I think I 
+know what happens: Due to the external loading the CAN recv interrupt 
+triggers the Rx ISR briefly before the 1ms task period ends. Due to the 
+priority of the ISR (huge debate over this) and its atomicness (if I 
+remember correctly) the reading out of the slow hardware delays the 
+start of the new task period.
 
-By the way, do we need to invoke the rtdm_irq_enable after the
-rtdm_irq_request? After excuting the ISR, is that the return of
-RTDM_IRQ_HANDLED will reenble the interrupt?
+Just thought it was interesting to mention. Btw when the latency appears 
+there are no overflow messages or anything like that which support the 
+theory I have about the cause.
 
-Please advice. Thanks
+Btw2 the 200ns latency spikes do not cause the scope to loose lock on 
+the saw-tooth so whatever causes that problem is of a different nature 
+still.
 
-regards,
-chun yeow
+Regards,
 
-On 8/14/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
-> Yeoh Chun Yeow wrote:
-> > Dear all,
-> >
-> > I have try to attach a AT91 TC hardware interrupt using
-> rtdm_irq_request.
->
-> Sorry, I misunderstood your question. No, you can not do that, the TC
-> hardware is driven by Xenomai in one shot mode, you can not expect it to
-> tick on a regular basis. Besides, timers (either posix timers or native
-> alarms) are really what you are looking for. Nevertheless, you should
-> not get a oops when trying to do that.
->
-> >
-> > Whenever the rtdm_irq_request is called, the kernel Oops occurs.
-> >
-> > Any ideas on the problem?
->
->
-> Either a programming error, or a bug in Xenomai. Could you show us the
-> code that triggers this behaviour ? Did you enable support for shared
-> IRQs in Xenomai ? The TC irq has to be shared in Xenomai domain, since
-> it is used by Xenomai and you also want to use it.
->
-> --
->
->
->                                             Gilles Chanteperdrix.
->
+Roland.
 
-------=_Part_41454_32420032.1187169864271
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
-Dear Gilles,<br><br>Sorry, it&#39;s my own mistake. I forgot to append the dev_private when openning the device. I am actually using the TC1 for testing and not TC0 (TC0 is selected for IPIPE usage).<br><br>By the way, do we need to invoke the rtdm_irq_enable after the rtdm_irq_request? After excuting the ISR, is that the return of RTDM_IRQ_HANDLED will reenble the interrupt?
-<br><br>Please advice. Thanks<br><br>regards,<br>chun yeow<br><br><div><span class="gmail_quote">On 8/14/07, <b class="gmail_sendername">Gilles Chanteperdrix</b> &lt;<a href="mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org
-</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Yeoh Chun Yeow wrote:<br> &gt; Dear all,<br> &gt;<br> &gt; I have try to attach a AT91 TC hardware interrupt using rtdm_irq_request.
-<br><br>Sorry, I misunderstood your question. No, you can not do that, the TC<br>hardware is driven by Xenomai in one shot mode, you can not expect it to<br>tick on a regular basis. Besides, timers (either posix timers or native
-<br>alarms) are really what you are looking for. Nevertheless, you should<br>not get a oops when trying to do that.<br><br> &gt;<br> &gt; Whenever the rtdm_irq_request is called, the kernel Oops occurs.<br> &gt;<br> &gt; Any ideas on the problem?
-<br><br><br>Either a programming error, or a bug in Xenomai. Could you show us the<br>code that triggers this behaviour ? Did you enable support for shared<br>IRQs in Xenomai ? The TC irq has to be shared in Xenomai domain, since
-<br>it is used by Xenomai and you also want to use it.<br><br>--<br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gilles Chanteperdrix.<br></blockquote></div><br>
 
-------=_Part_41454_32420032.1187169864271--
+> 
+>> I will keep the check disabled but for the EML chaps I do think this is
+>> a point of interest. I would be very interested how this index shift
+>> occurs and why it is persistent after occurring once.
+>>
+>> Sorry for the pragmatic qualifications here but in the end its the
+>> stability of the outputs that will determine the behaviour of the
+>> machine so its not a bad way to assess the software. :)
+> 
+> A problem isn't solved until it is also understood.
+> 
+>>> If the problem persists (or your _really_ want to understand what
+>>> happens), you could try to put an xntrace_user_freeze(0, 1) before the
+>>> line which emits that EML warning, turn on the I-pipe tracer, set a
+>>> large back_trace_points value (a few thousand), enable verbose mode, and
+>>> grab what /proc/ipipe/trace/frozen reports after the hick-up. See [1]
+>>> for more howtos.
+>> Done this before so it should not be a problem. Don't think it is
+> 
+> In that case, I would even more suggest to collect the data, maybe now
+> about the fragile startup case.
+> 
+>> necessary quite yet as the behaviour at the moment looks good.
+> 
+> Jan
+> 
 
