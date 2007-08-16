@@ -1,22 +1,14 @@
-Message-ID: <2ff1a98a0708160954k533ec73pe9051e4f250d5704@domain.hid>
-Date: Thu, 16 Aug 2007 18:54:38 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <6898.194.114.62.68.1187282338.squirrel@domain.hid>
+Message-ID: <46C49070.8070807@domain.hid>
+Date: Thu, 16 Aug 2007 19:59:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
-	<4760.194.114.62.68.1187274071.squirrel@domain.hid>
-	<2ff1a98a0708160731k5eefd6b2i417b05b6d329e481@domain.hid>
-	<51845.194.114.62.68.1187277636.squirrel@domain.hid>
-	<2ff1a98a0708160827v6475e569v5a3982eceb93a1ab@domain.hid>
-	<14127.194.114.62.68.1187278264.squirrel@domain.hid>
-	<2ff1a98a0708160837l697d34c8xa2ad0e87b4f996f8@domain.hid>
-	<35505.194.114.62.68.1187280844.squirrel@domain.hid>
-	<2ff1a98a0708160921j78663b2fj7563af5c579b65cd@domain.hid>
-	<6898.194.114.62.68.1187282338.squirrel@domain.hid>
-Subject: Re: [Xenomai-help] latency problems
+References: <ff1d78710708160504s3f44571fkf12f405c1e71b4f6@domain.hid>
+In-Reply-To: <ff1d78710708160504s3f44571fkf12f405c1e71b4f6@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig2194A3708C5E69EFDC4C47A4"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] RTDM context_size question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -26,40 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nadym Salem <Kaiman@domain.hid>
-Cc: xenomai@xenomai.org
+To: Steven Kauffmann <steven.kauffmann@domain.hid>
+Cc: xenomai@xenomai.org, trem <tremyfr@domain.hid>
 
-On 8/16/07, Nadym Salem <Kaiman@domain.hid> wrote:
-> On Thu, August 16, 2007 18:21, Gilles Chanteperdrix wrote:
->
-> >> >> >> >> > Aha, this probably means that your chipset is not supporte,
-> >> >> could
-> >> >> >> you
-> >> >> >> >> > run lspci and send us the output ?
-> >> >> >> >> it is attached.
-> >> >> >> > Could you try to apply the attached patch to xenomai sources ?
-> >> You
-> >> >> >> > will then have to recompile your xenomai-patched kernel.
-> >> >> >> Done, and it changes something, it got even worse.
-> >> >> >> Before there was a latency of something around 6 ms...not it's 10.
-> >> >> > Do you get the message in the kernel logs saying that SMI
-> >> workaround
-> >> >> > is enabled ?
-> >> >> > Could you send us your kernel .config ?
-> >> >> it found the SMI enabled chipset, but SMI workaround failed.
-> >> >> Kernel config attached.
-> >> > I am afraid you are out of luck. The only place where the SMI
-> >> > workaround could be authorized is in the BIOS settings.
-> >> > There is one last thing you can try, in your kernel configuration
-> >> > ENABLE ACPI, except the ACPI processor module, and be sure to load the
-> >> > usb hci modules. Because when enabling these, the legacy stuff
-> >> > emulation gets disabled.
->
-> Just a last question, whats the BIOS setting which could authorise the SMI
-> workaround ?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig2194A3708C5E69EFDC4C47A4
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I have no idea.
+Steven Kauffmann wrote:
+> Hi
+>=20
+> When looking at the rtdm examples tut01-skeleton en tut02-skeleton, I h=
+ave a
+> question about the context_size in the rtdm_device struct.
+>=20
+> In tut01-skeleton-drv.c, the context_size =3D sizeof(buffer_t), in the =
+other
+> example context_size =3D 0. Both drivers uses the
+> rtdm_safe_copy_to_user/rtdm_safe_copy_from_user functions to write/read=
+ data
+> from buffer_t(kernel space) to user_space. So I don't understand why th=
+e
+> context_size in tut02 is different than in tut01. Or is the context_siz=
+e
+> only important if we open the driver several times from one or more
+> user_space programs?
 
--- 
-                                               Gilles Chanteperdrix
+The context size is important in case you want to attach some data to
+each opened instance of a device. Hmm, but this is something neither
+tut01 nor tut02 deals with optimally. tut02 cannot use a context-based
+buffer, because it uses two device instances (opened by two instances of
+the user space program) to transfer the data. But tut01 could use some
+global buffer as well without loosing a feature.
+
+Philippe (trem), could you rework tut01 and make it use a global buffer
+instead? Then some tut03 would be nice to explain what per context, per
+device, and global data means. I've seen confusion about this fairly
+often, so a dedicated tutorial would be great.
+
+Thanks,
+Jan
+
+
+--------------enig2194A3708C5E69EFDC4C47A4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGxJBwniDOoMHTA+kRAjULAJ0XwHEsuNrZuVaQ/JCad2Jj8pVwJACePN7p
+grQPymdd/5vKUSSUOuNPurc=
+=VBen
+-----END PGP SIGNATURE-----
+
+--------------enig2194A3708C5E69EFDC4C47A4--
 
