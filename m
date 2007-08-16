@@ -1,15 +1,10 @@
-Message-ID: <56493.194.114.62.68.1187265227.squirrel@domain.hid>
-In-Reply-To: <18116.9932.592597.831501@domain.hid>
-References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
-	<2ff1a98a0708160300r79a717ebt7541c1d6e3da6687@domain.hid>
-	<11886.194.114.62.68.1187258877.squirrel@domain.hid>
-	<18116.9932.592597.831501@domain.hid>
-Date: Thu, 16 Aug 2007 13:53:47 +0200 (CEST)
-From: "Nadym Salem" <Kaiman@domain.hid>
+Message-ID: <ff1d78710708160504s3f44571fkf12f405c1e71b4f6@domain.hid>
+Date: Thu, 16 Aug 2007 14:04:37 +0200
+From: "Steven Kauffmann" <steven.kauffmann@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] latency problems
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_79003_31896644.1187265877219"
+Subject: [Xenomai-help] RTDM context_size question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,37 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, August 16, 2007 12:28, Gilles Chanteperdrix wrote:
+------=_Part_79003_31896644.1187265877219
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
->  > >> trying to use RTnet and having massive synchronisation problems, =
-a
->  > >> problem
->  > >> with xenomai latencies came up.
->  > >> Our xenomai latency test gives weird values. Attached a xeno-test
-> log.
->  > >> Does anyone have an idea ?
->  > > Yes, read the FAQ and try the proposed workarounds.
->  > Sorry not to mention it. Of course we used all the settings in the F=
-AQ
-> and
-> What does your kernel logs say about SMI workaround, is it working ?
+Hi
 
-It does not say anything about SMI, reading the Torubleshoothing file, it
-sound like there should be a warning if it is not working.
+When looking at the rtdm examples tut01-skeleton en tut02-skeleton, I have a
+question about the context_size in the rtdm_device struct.
 
->  > Or am I just too blind to find other workarounds there ?
-> There is also the X-server workaround, and the Legacy USB workaround.
+In tut01-skeleton-drv.c, the context_size = sizeof(buffer_t), in the other
+example context_size = 0. Both drivers uses the
+rtdm_safe_copy_to_user/rtdm_safe_copy_from_user functions to write/read data
+from buffer_t(kernel space) to user_space. So I don't understand why the
+context_size in tut02 is different than in tut01. Or is the context_size
+only important if we open the driver several times from one or more
+user_space programs?
 
-No HW Acceleration on.
-Legacy USB Option in Bios is missing (like a lot more... :-/ )
+Thanks in advance
 
-> What version of Xenomai are you using ?
+Steven
 
-Xenomai 2.3.2 with Linux Kernel 2.6.20
+------=_Part_79003_31896644.1187265877219
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-GReets, Nadym
+Hi<br><br>When looking at the rtdm examples tut01-skeleton en tut02-skeleton, I have a question about the context_size in the rtdm_device struct.<br><br>In tut01-skeleton-drv.c, the context_size = sizeof(buffer_t), in the other example context_size = 0. Both drivers uses the rtdm_safe_copy_to_user/rtdm_safe_copy_from_user functions to write/read data from buffer_t(kernel space) to user_space. So I don&#39;t understand why the context_size in tut02 is different than in tut01. Or is the context_size only important if we open the driver several times from one or more user_space programs?
+<br><br>Thanks in advance<br><br>Steven<br><br><br>
 
+------=_Part_79003_31896644.1187265877219--
 
