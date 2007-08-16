@@ -1,4 +1,4 @@
-Message-ID: <54302.194.114.62.68.1187281556.squirrel@domain.hid>
+Message-ID: <6898.194.114.62.68.1187282338.squirrel@domain.hid>
 In-Reply-To: <2ff1a98a0708160921j78663b2fj7563af5c579b65cd@domain.hid>
 References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
 	<21067.194.114.62.68.1187272557.squirrel@domain.hid>
@@ -11,7 +11,7 @@ References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
 	<2ff1a98a0708160837l697d34c8xa2ad0e87b4f996f8@domain.hid>
 	<35505.194.114.62.68.1187280844.squirrel@domain.hid>
 	<2ff1a98a0708160921j78663b2fj7563af5c579b65cd@domain.hid>
-Date: Thu, 16 Aug 2007 18:25:56 +0200 (CEST)
+Date: Thu, 16 Aug 2007 18:38:58 +0200 (CEST)
 From: "Nadym Salem" <Kaiman@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
@@ -55,17 +55,10 @@ On Thu, August 16, 2007 18:21, Gilles Chanteperdrix wrote:
 he
 >> > usb hci modules. Because when enabling these, the legacy stuff
 >> > emulation gets disabled.
->> I'm afraid I'm completely out of luck.
->> With ACPI the system doesn't boot up at all, it just hangs completely,
->> even the power switch is out of use (!)
-> Just to see if it is not an I-pipe bug, could you try installing the
-> 2.2.6.1 version ?
 
-Since I'm writing my diploma thesis at the moment and have to be finished
-until August, 31, I'm a little bit out of time ATM.
-Maybe I will manage to do it tomorrow on the second machine, if not I wil=
-l
-do it in September and report here.
+Just a last question, whats the BIOS setting which could authorise the SM=
+I
+workaround ?
 
 Greets, Nadym
 
