@@ -1,15 +1,17 @@
-Message-ID: <46B97B82.8010401@domain.hid>
-Date: Wed, 08 Aug 2007 10:14:58 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <2862c2c80708152016p293dc1c8t6f564a027ddb1e38@domain.hid>
+Date: Thu, 16 Aug 2007 11:16:37 +0800
+From: "Yeoh Chun Yeow" <yeohchunyeow@domain.hid>
+In-Reply-To: <46C33453.8060402@domain.hid>
 MIME-Version: 1.0
-References: <46B1A842.1090708@domain.hid>	<1186049556.6611.319.camel@domain.hid>
-	<46B1B7DE.3080404@domain.hid>	<1186053839.6611.326.camel@domain.hid>
-	<46B2E1B3.2020102@domain.hid>	<2ff1a98a0708060208k1d217ae6ge20389074d9bf1bd@domain.hid>	<1186401270.5963.2.camel@domain.hid>	<b647ffbd0708070758t22f01577wd3a5397a53249459@domain.hid>
-	<b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
-In-Reply-To: <b647ffbd0708080040g7d798f16oe9e03ff233099e33@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Unexpected switch to secondary mode
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_52682_24666841.1187234197226"
+References: <2862c2c80708140315y6cb029e4j8b5f7e9d95ae2bf1@domain.hid>
+	<18113.34663.646158.524696@domain.hid>
+	<2862c2c80708150224s4dd154b1j2aad7333ac04d150@domain.hid>
+	<46C2EADF.4030505@domain.hid>
+	<18114.64293.110182.524820@domain.hid>
+	<46C33453.8060402@domain.hid>
+Subject: Re: [Xenomai-help] Kernel Opps calling rtdm_irq_request
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,84 +21,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dmitry Adamushko <dmitry.adamushko@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>
 
-Dmitry Adamushko wrote:
-> [ forgot to add the list : ]
-> 
-> ---------- Forwarded message ----------
-> 
-> On 06/08/07, Philippe Gerum <rpm@xenomai.org> wrote:
->>> [ ... ]
->>> But I have another question: since the nocow patch is platform
->>> independent, why not integrating it in the I-pipe patch for power pc ?
->>>
->> It is merged into the latest patches against the powerpc/ tree.
-> 
-> [ Mainly, just out of curiosity ]
-> 
-> I've actually tried 'google'ing for an overview of the MMU on ppc but
-> it doesn't seem to be easily
-> available on the net.
+------=_Part_52682_24666841.1187234197226
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Unfortunately, there is no common MMU implementation for the PowerPC 
-processors. It is usually described in the User Manual for the IBM, 
-Freescale or AMCC processor, e.g.:
+Dear Jan and Gilles,
 
-http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=MPC5200&fpsp=1&tab=Documentation_Tab
+Thanks for your comment.
 
-> 
-> Do I understand it right that in the PPC arch. a CPU doesn't have full
-> access to task's page tables.. that said, if a TLB miss takes place
-> (or some analogue lookup mechanism), the CPU needs assistance from the
-> OS and e.g. rises an exception.
+Is that the RTDM timer created using rtdm_timer_init uses the IPIPE time
+base timer? In AT91, it will be the TCx which is configured as time base
+Adeos IPIPE.
 
-Yes.
+Regards,
+Chun Yeow
 
-> [*] A corresponding OS handler gets a 'fault address' and looks for it
-> in the task's 'page tables' .. and if found, updates TLB accordingly.
+On 8/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Gilles Chanteperdrix wrote:
+> > Jan Kiszka wrote:
+> >  > Yeoh Chun Yeow wrote:
+> >  > > By the way, do we need to invoke the rtdm_irq_enable after the
+> >  > > rtdm_irq_request? After excuting the ISR, is that the return of
+> >  > > RTDM_IRQ_HANDLED will reenble the interrupt?
+> >  >
+> >  > Depends on the version: With RTDM revision 6 (will be part of Xenomai
+> >  > 2.4), this is no longer required. Earlier revision needed it, though.
+> >  > See documentation.
+> >
+> > An if I am not wrong, RTDM revision 6 offers timers services as well,
+>
+> Yep.
+>
+> > so, Yeoh, developing your own timer management system really looks like
+> > going the wrong way.
+>
+> It takes fairly unusual requirements to go some non-standard way here.
+>
+> Jan
+>
+>
+>
 
-Yes. High-end PowerPC processors have better hw support for virtual to 
-physical address translation than low-end processors. They usually just 
-have 64 TLB entries or even less (like the MPC 8xx).
+------=_Part_52682_24666841.1187234197226
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-> This would be similar to what happens in MIPS :
-> TLB miss --> TLB-miss exception --> OS-dependent TLB-miss handler.
+Dear Jan and Gilles,<br><br>Thanks for your comment. <br><br>Is that the RTDM timer created using rtdm_timer_init uses the IPIPE time base timer? In AT91, it will be the TCx which is configured as time base Adeos IPIPE.<br>
+<br>Regards,<br>Chun Yeow<br><br><div><span class="gmail_quote">On 8/16/07, <b class="gmail_sendername">Jan Kiszka</b> &lt;<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
+Gilles Chanteperdrix wrote:<br>&gt; Jan Kiszka wrote:<br>&gt;&nbsp;&nbsp;&gt; Yeoh Chun Yeow wrote:<br>&gt;&nbsp;&nbsp;&gt; &gt; By the way, do we need to invoke the rtdm_irq_enable after the<br>&gt;&nbsp;&nbsp;&gt; &gt; rtdm_irq_request? After excuting the ISR, is that the return of
+<br>&gt;&nbsp;&nbsp;&gt; &gt; RTDM_IRQ_HANDLED will reenble the interrupt?<br>&gt;&nbsp;&nbsp;&gt;<br>&gt;&nbsp;&nbsp;&gt; Depends on the version: With RTDM revision 6 (will be part of Xenomai<br>&gt;&nbsp;&nbsp;&gt; 2.4), this is no longer required. Earlier revision needed it, though.
+<br>&gt;&nbsp;&nbsp;&gt; See documentation.<br>&gt;<br>&gt; An if I am not wrong, RTDM revision 6 offers timers services as well,<br><br>Yep.<br><br>&gt; so, Yeoh, developing your own timer management system really looks like<br>&gt; going the wrong way.
+<br><br>It takes fairly unusual requirements to go some non-standard way here.<br><br>Jan<br><br><br></blockquote></div><br>
 
-Yes.
-
-> Now, Xenomai is not able (at the moment) to do [*] on its own.. thus,
-> there is a switch to the secondary mode so that Linux is able to take
-> care of it.
-
-But normal TLB misses happen frequently and do not force a switch to 
-secondary mode. I think the problem is with the do_page_fault trap. Can 
-somebody confirm that?
-
-> Unless there is a way to reserve a set of TLB entries for a real-time
-> task (or other mechanism to have 'virtual -> physical' conversion
-> entirely in the CPU -- I mean, not involving the OS) + the working set
-> of the rt task fits into this 'reserved' set --- 'TLB-miss' exception
-> gonna happen.. e.g. every time after the RT relinquish a CPU and
-> something else trashes the TLB tables.
-> 
-> e.g. on MIPS, the area used for kernel modules also requires
-> virtual->physical translation.. so even a kernel-mode task (and
-> actually, interrupt handlers inside the kernel modules) cause TLB-miss
-> exceptions. Sure, it's not a case if it's linked against the kernel
-> itself.
-
-Even kernel code may cause a TLB miss. TLB pinning has been abandoned on 
-some PowerPC archs because it does reduce overall system performance.
-
-> errr.. ok, to many words :-) does it sound like smth taking place
-> here? A link to the MMU overview for ppc would be highly appreciated
-> as well.
-
-
-See above. Unfortunately, I do only a limited, global view of the MMU 
-implementation for PowerPC.
-
-Wolfgang.
+------=_Part_52682_24666841.1187234197226--
 
