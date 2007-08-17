@@ -1,14 +1,15 @@
-From: trem <tremyfr@domain.hid>
-Date: Thu, 16 Aug 2007 22:59:36 +0200
-Message-ID: <46C4BAB8.20103@domain.hid>
-References: <ff1d78710708160504s3f44571fkf12f405c1e71b4f6@domain.hid>
-	<46C49070.8070807@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <46C49070.8070807@domain.hid>
-Sender: news <news@domain.hid>
-Subject: Re: [Xenomai-help] RTDM context_size question
+Message-ID: <46C559F5.8040605@domain.hid>
+Date: Fri, 17 Aug 2007 10:19:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <001301c7dfe6$90a60520$c124a986@domain.hid>
+In-Reply-To: <001301c7dfe6$90a60520$c124a986@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigFA8F63635D2C789A952EB074"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] POSIX Skin: Changing scheduling parameters of
+ threads in other processes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,80 +19,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?ISO-8859-1?Q?Torsten_Kr=F6ger?= <t.kroeger@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Steven Kauffmann wrote:
->> Hi
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigFA8F63635D2C789A952EB074
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Torsten Kr=F6ger wrote:
+> Jan Kiszka wrote:
+>> As I said, it doesn't take experts here, just someone to start and
+>> collect the pieces (which might include asking for expert knowledge
+> here
+>> and there).
 >>
->> When looking at the rtdm examples tut01-skeleton en tut02-skeleton, I have a
->> question about the context_size in the rtdm_device struct.
+>> And someone being able to write such long and detailed essays - for me=
+
+>> even too long to read completely yet - should as well be able to play =
+a
+>> bit with code. Or motivate some talented student of yours (I know they=
+
+>> can be rare). ;)
 >>
->> In tut01-skeleton-drv.c, the context_size = sizeof(buffer_t), in the other
->> example context_size = 0. Both drivers uses the
->> rtdm_safe_copy_to_user/rtdm_safe_copy_from_user functions to write/read data
->> from buffer_t(kernel space) to user_space. So I don't understand why the
->> context_size in tut02 is different than in tut01. Or is the context_size
->> only important if we open the driver several times from one or more
->> user_space programs?
-> 
-> The context size is important in case you want to attach some data to
-> each opened instance of a device. Hmm, but this is something neither
-> tut01 nor tut02 deals with optimally. tut02 cannot use a context-based
-> buffer, because it uses two device instances (opened by two instances of
-> the user space program) to transfer the data. But tut01 could use some
-> global buffer as well without loosing a feature.
-> 
-> Philippe (trem), could you rework tut01 and make it use a global buffer
-> instead? Then some tut03 would be nice to explain what per context, per
-> device, and global data means. I've seen confusion about this fairly
-> often, so a dedicated tutorial would be great.
-> 
-> Thanks,
-> Jan
-> 
-Hi
+>=20
+> The reason for my long postings is that I just wanted the developers to=
 
-I've used per device buffer in tut01 and global buffer in tut02 to show
-the difference between them. But it seems that it's not very clear. And
-as the tut01 is just here as first rtdm example, it should be as simple
-as possible.
+> understand my concerns - and to see that it is a serious problem of the=
 
-So yes, using global buffer in tut01 and tut02 could be done, and I will
-add a tut03 to show the context.
+> Xenomai RTOS.
 
-tutorial index :
-- tut01 : first rtdm program
-you can read and write in this device (tut01-skeleton-drv01). All data
-are global, so I two program read it, they will read the same thing.
+As pointed out: How "serious" this is heavily depends on the application
+design.
 
-- tut02 : show synchronization
-you can only read in the device (tut02-skeleton-drv01) if a write has
-been done before (by this program or another program). data and
-semaphore are global.
+> I cannot imagine that adding new task context data structures and
+> changing algorithms for CPU time counting (important for RR scheduling)=
 
-- tut03 : show device context
-we can use tut01, and just put data to context. So a program can't read
-data written by another program. For example, P1 and P2 two programs.
+> is an easy or small thing.
 
-with tut01, the sequence is :
-P1 : write "I'm P1" to tut01-skeleton-drv01
-P2 : write "I'm P2" to tut01-skeleton-drv01
-P1 : read  "I'm P2" from tut01-skeleton-drv01
-P2 : read  "I'm P2" from tut01-skeleton-drv01
+Well, you picked an even more complicated approach to solve your
+problem. So far we were only talking about PI for message passing based
+on existing infrastructure, using clear semantics. Let's make smaller
+steps and see how far it takes us to solve your requirements.
 
-with tut03, the sequence is :
-P1 : write "I'm P1" to tut03-skeleton-drv01
-P2 : write "I'm P2" to tut03-skeleton-drv01
-P1 : read  "I'm P1" from tut03-skeleton-drv01
-P2 : read  "I'm P2" from tut03-skeleton-drv01
+Jan
 
 
-I'm on the right way ?
+--------------enigFA8F63635D2C789A952EB074
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-If yes, I'll do it ASAP.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-regards,
-Philippe
+iD8DBQFGxVn1niDOoMHTA+kRAkNAAJ9sEFwJWTkjLnghHFDlhnjkQz5vqACcCCnH
+gIYtK49TyORyv9CyPjLDh8Y=
+=SFkr
+-----END PGP SIGNATURE-----
 
+--------------enigFA8F63635D2C789A952EB074--
 
