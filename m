@@ -1,9 +1,17 @@
-Message-ID: <46CC1C34.9050205@domain.hid>
-Date: Wed, 22 Aug 2007 13:21:24 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <46CDEF34.2030003@domain.hid>
+Date: Thu, 23 Aug 2007 22:33:56 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090804020508050404050509"
-Subject: [Xenomai-core] [PATCH] RT-Socket-CAN:
+References: <ff1d78710708160504s3f44571fkf12f405c1e71b4f6@domain.hid>	<46C49070.8070807@domain.hid>
+	<46C4BAB8.20103@domain.hid>	<46C559A2.6090807@domain.hid>
+	<46C5E4AC.1090608@domain.hid> <46C692FD.4080302@domain.hid>
+	<46C9FFDA.8030200@domain.hid>
+In-Reply-To: <46C9FFDA.8030200@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig62FAE76F9CBE8EEA1F932BFA"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] RTDM context_size question
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -13,86 +21,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: trem <tremyfr@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
---------------090804020508050404050509
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig62FAE76F9CBE8EEA1F932BFA
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Hi Philippe,
 
-the following patch fixes:
+sorry for the delay - I was and still am short on time.
 
-2007-08-22  Wolfgang Grandegger  <wg@domain.hid>
+trem wrote:
+> Hi
+>=20
+> Oh, I understand your point of view, and I found it fine. We do an
+> example quite complete (and with some sense), and we split it into step=
+=2E
+>=20
+> The first complete example could contain :
+> - global buffer (one for all device)
+> - device buffer (one for each device)
+> - local buffer (one for each open)
+> - synchronization: semaphore used to block read when no data are ready
+> - ioctl: used to to select the active buffer (ie global, device, local)=
 
-         * ksrc/drivers/can/rtcan_socket.c: protect the list of sockets
-         per device properly when adding or deleting sockets.
+>=20
+> Now, how to split it ? I propose :
+>=20
+> tut01: global buffer + read/write
+> tut02: {global, device, local} buffer + ioctl + read/write
+> tut03: {global, device, local} buffer + ioctl + read/write + synchroniz=
+ation
+>=20
 
-It should be applied to Xenomai's trunk and v2.3.x branch.
+Let's write the full example first, look at the result, and then decide
+about the best split-up.
 
-Wolfgang.
+Jan
 
---------------090804020508050404050509
-Content-Type: text/x-patch;
- name="xenomai-rtcan-socket-list.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xenomai-rtcan-socket-list.patch"
 
-Index: ChangeLog
-===================================================================
---- ChangeLog	(revision 2945)
-+++ ChangeLog	(working copy)
-@@ -1,3 +1,8 @@
-+2007-08-22  Wolfgang Grandegger  <wg@domain.hid>
-+
-+	* ksrc/drivers/can/rtcan_socket.c: protect the list of sockets
-+	per device properly when adding or deleting sockets.
-+
- 2007-08-18  Philippe Gerum  <rpm@xenomai.org>
- 
- 	* RELEASE: Xenomai 2.4-rc2
-Index: ksrc/drivers/can/rtcan_socket.c
-===================================================================
---- ksrc/drivers/can/rtcan_socket.c	(revision 2945)
-+++ ksrc/drivers/can/rtcan_socket.c	(working copy)
-@@ -37,6 +37,7 @@ LIST_HEAD(rtcan_socket_list);
- void rtcan_socket_init(struct rtdm_dev_context *context)
- {
-     struct rtcan_socket *sock = (struct rtcan_socket *)&context->dev_private;
-+    rtdm_lockctx_t lock_ctx;
- 
- 
-     rtdm_sem_init(&sock->recv_sem, 0);
-@@ -56,7 +57,10 @@ void rtcan_socket_init(struct rtdm_dev_c
-     sock->rx_timeout = RTDM_TIMEOUT_INFINITE;
- 
-     INIT_LIST_HEAD(&sock->tx_wait_head);
-+
-+    rtdm_lock_get_irqsave(&rtcan_socket_lock, lock_ctx);
-     list_add(&sock->socket_list, &rtcan_socket_list);
-+    rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
- }
- 
- 
-@@ -64,6 +68,7 @@ void rtcan_socket_cleanup(struct rtdm_de
- {
-     struct rtcan_socket *sock = (struct rtcan_socket *)&context->dev_private;
-     struct tx_wait_queue *tx_waiting;
-+    rtdm_lockctx_t lock_ctx;
-     int tx_list_empty;
- 
- 
-@@ -91,5 +96,8 @@ void rtcan_socket_cleanup(struct rtdm_de
-     } while (!tx_list_empty);
- 
-     rtdm_sem_destroy(&sock->recv_sem);
-+
-+    rtdm_lock_get_irqsave(&rtcan_socket_lock, lock_ctx);
-     list_del(&sock->socket_list);
-+    rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
- }
+--------------enig62FAE76F9CBE8EEA1F932BFA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---------------090804020508050404050509--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFGze80niDOoMHTA+kRAgOFAJ9XAn+nFTrqMF3UjdLJ5Xdexq2MYwCfQSAr
+g3Fv/lbNl29jN+uHOrq2bzw=
+=+Zre
+-----END PGP SIGNATURE-----
+
+--------------enig62FAE76F9CBE8EEA1F932BFA--
 
