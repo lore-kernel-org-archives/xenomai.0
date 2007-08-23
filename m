@@ -1,18 +1,14 @@
-Message-ID: <46CDEF25.2090400@domain.hid>
-Date: Thu, 23 Aug 2007 22:33:41 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <2862c2c80708170409p7946b48fw4a18553d5e51da43@domain.hid>	
-	<2ff1a98a0708170507u6906399dxfa47c704a12080cf@domain.hid>	
-	<46C59858.7080309@domain.hid>
-	<2862c2c80708230100n72fd7079u6fca56392c8bf284@domain.hid>
-In-Reply-To: <2862c2c80708230100n72fd7079u6fca56392c8bf284@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA2A5A8EEDBC52327737BCB13"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] I-pipe: Detected illicit call from domain
-	'Xenomai'
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46C984DC.6090203@domain.hid>
+References: <46C984DC.6090203@domain.hid>
+Content-Type: text/plain
+Date: Thu, 23 Aug 2007 22:45:33 +0200
+Message-Id: <1187901933.6009.20.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai degrades syscall time on PPC405
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,81 +18,133 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Yeoh Chun Yeow <yeohchunyeow@domain.hid>
-Cc: "Xenomai-help@domain.hid" <xenomai@xenomai.org>, rtnet-users <rtnet-users@domain.hid>
+To: Dirk Eibach <eibach@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA2A5A8EEDBC52327737BCB13
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2007-08-20 at 14:11 +0200, Dirk Eibach wrote:
+> Hello,
+> 
+> I am trying to understand some performance problems I ran into on my 
+> xenomai system.
+> 
+> The testcode I attached performs a syscall(gettimeofday). Measuring time on 
+> a vanilla Kernel gives the following output:
+> 
+> ticks for ppc_getccounter: 116, for gettimeofday: 1479
+> 
+> The same kernel with xenomai patched in gives this:
+> 
+> ticks for ppc_getccounter: 116, for gettimeofday: 4278
+> 
+> Is this the expected behaviour? Why is the time for a system call nearly 3 
+> times as much?
+> 
 
-Yeoh Chun Yeow wrote:
-> Dear all,
->=20
-> I have ported the at91ether and it now works under RTnet. I would like =
-to
+When reporting figures, please report all of them. Here is your test ran
+on a 405GPr, linux-2.6.14, I-pipe 1.5-03, with full output:
 
-Do you plan to post your changes? Would be great.
+bash-3.00# ./ppc405_rt 
+ticks for ppc_getccounter: 122, for gettimeofday: 7337
+ticks for ppc_getccounter: 208, for gettimeofday: 2816
+ticks for ppc_getccounter: 210, for gettimeofday: 2512
+ticks for ppc_getccounter: 174, for gettimeofday: 2622
+ticks for ppc_getccounter: 174, for gettimeofday: 2320
+ticks for ppc_getccounter: 208, for gettimeofday: 2634
+ticks for ppc_getccounter: 174, for gettimeofday: 2344
+ticks for ppc_getccounter: 208, for gettimeofday: 2660
+ticks for ppc_getccounter: 174, for gettimeofday: 2320
+ticks for ppc_getccounter: 208, for gettimeofday: 2816
+ticks for ppc_getccounter: 208, for gettimeofday: 2734
+ticks for ppc_getccounter: 208, for gettimeofday: 2802
+...
 
-> use the networking stack in Linux, instead of RTnet stack. However, I h=
-ave
-> problem configure the VNIC with following errors:
->=20
-> [root@domain.hid] ./rtping 172.16.6.174
-> Real-time PING 172.16.6.174 56(84) bytes of data.
-> 64 bytes from 172.16.6.174: icmp_seq=3D1 time=3D1186.7 us
-> 64 bytes from 172.16.6.174: icmp_seq=3D2 time=3D1218.7 us
-> 64 bytes from 172.16.6.174: icmp_seq=3D3 time=3D1178.7 us
-> 64 bytes from 172.16.6.174: icmp_seq=3D4 time=3D1210.1 us
-> 64 bytes from 172.16.6.174: icmp_seq=3D5 time=3D1182.4 us
+Only the first shot exhibits a pathological latency, and switching on
+CONFIG_XENO_OPT_DEBUG_NUCLEUS explains why:
 
-Are these numbers over plain RTnet or with RTmac/TDMA active?
+# dmesg
 
->=20
-> --- 172.16.6.174 rtping statistics ---
-> 5 packets transmitted, 5 received, 0% packet loss
-> worst case rtt =3D 1218.7 us
-> [root@domain.hid] ./rtifconfig
-> rtlo      Medium: Local Loopback
->           IP address: 127.0.0.1
->           UP LOOPBACK RUNNING  MTU: 1500
->=20
-> rteth0    Medium: Ethernet  Hardware address: 14:09:07:05:05:02
->           IP address: 172.16.6.203  Broadcast address: 172.16.6.255
->           UP BROADCAST RUNNING  MTU: 1500
->=20
-> [root@domain.hid] ifconfig vnic0 up 172.16.6.203
-> SIOCGIFFLAGS: No such device
-> SIOCSIFADDR: No such device
+...
+Looking up port of RPC 100003/2 on 192.168.0.7
+Looking up port of RPC 100005/1 on 192.168.0.7
+VFS: Mounted root (nfs filesystem).
+Freeing unused kernel memory: 128k init
+Xenomai: Switching ppc405_rt to secondary mode after exception #1025 from user-space at 0xfe54f40 (pid 248)
 
-See question above. How did you configure RTnet, only manually?
+This is confirmed by the task stats:
 
->=20
-> Please help. Thanks.
->=20
-> Regards,
-> Chun Yeow
-> P.S: Sorry for posting the RTnet issue here.
+# cat /proc/xenomai/stat
 
-I added rtnet-users to CC. Please drop Xenomai on reply unless there is
-some Xenomai-specific topic covered.
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          2          0     00400080   99.9  ROOT
+  0  248    1          1          1*    00300380    0.0  ppc405_rt
+  0  0      0          48031      0     00000000    0.1  IRQ32: [timer]
 
-Jan
+(*) 1 page fault caught in primary mode, causing a Xenomai mode switch.
+
+The test program hits a minor fault, due to a virtual memory management
+artefact, which in turn forces a Xenomai switch for your task from
+primary to secondary mode, in order to process the fault gracefully
+(basically mapping a missing page table entry). 7 us is the time needed
+to yield the control of the task to the regular kernel, then handle the
+fault in Linux context, then eventually perform the syscall. This is a
+known issue, and a solution may be available at some point, but not yet.
+
+This mailing list contains other reports of the same issue, and detailed
+explanations.
+
+Regarding the other figures in the 2-3 us range, it is absolutely true
+that Xenomai adds some overhead to the system call path which may get
+noticeable on low-end boards. This is due to the pipelining of system
+calls to the Xenomai domain: there is more code to execute than the
+regular Linux has to run for the same task. This value may improve too
+over time, since we do have a few opportunities for optimization here.
+
+Last point: your measure do not take into account the possibility for
+the syscall path to be preempted by a real-time interrupt, or even by a
+plain Linux one after the task has switched to secondary mode, so you
+should always read such data with a grain of salt. In any case, you
+should never rely on a single sample.
+
+> #include <stdio.h>
+> #include <sys/time.h>
+> #include <time.h>
+> 
+> static void
+> ppc_getcounter(unsigned long long *v)
+> {
+> 	register unsigned long tbu, tb, tbu2;
+> 
+>      loop:
+> 	asm volatile ("mftbu %0" : "=r" (tbu) );
+> 	asm volatile ("mftb  %0" : "=r" (tb)  );
+> 	asm volatile ("mftbu %0" : "=r" (tbu2));
+> 	if (__builtin_expect(tbu != tbu2, 0)) goto loop;
+> 
+> 	/* The slightly peculiar way of writing the next lines is
+> 	compiled better by GCC than any other way I tried. */
+> 	((long*)(v))[0] = tbu;
+> 	((long*)(v))[1] = tb;
+> }
+> 
+> int main(int argc, char* argv[])
+> {
+> 	while(1) {
+> 		struct timeval tv;
+> 		unsigned long long count0, count1, count2;
+> 		ppc_getcounter(&count0);
+> 		ppc_getcounter(&count1);
+> 		gettimeofday(&tv, NULL);
+> 		ppc_getcounter(&count2);
+> 		printf("ticks for ppc_getccounter: %lld, for gettimeofday: %lld\n",
+> 			count1 - count0, count2- count1);
+> 		sleep(1);
+> 	}
+> }
+> 
+> 
+> Cheers
+-- 
+Philippe.
 
 
---------------enigA2A5A8EEDBC52327737BCB13
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFGze8lniDOoMHTA+kRAiZeAJ9TAdAuL7yWvkwWaRtfmQgI6SComQCfWcKE
-bsmjc5cYWY/lc7jQ4f/TUwg=
-=OJqp
------END PGP SIGNATURE-----
-
---------------enigA2A5A8EEDBC52327737BCB13--
 
