@@ -1,169 +1,81 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46D66DA7.6060800@domain.hid>
-References: <46D66DA7.6060800@domain.hid>
-Content-Type: text/plain
-Date: Fri, 07 Sep 2007 09:23:06 +0200
-Message-Id: <1189149786.26986.19.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH 2/2] Round up in RTDM converting ns
-	to	ticks
-Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>, xenomai-core <xenomai@xenomai.org>
+Message-ID: <10837d740708270654j3bf3849aq3eef304a7cf502a5@domain.hid>
+Date: Mon, 27 Aug 2007 21:54:02 +0800
+From: "=?GB2312?B?1cW+pw==?=" <2hang.j1ng.home@domain.hid>
+In-Reply-To: <46D2A840.8040301@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_32299_28060579.1188222842141"
+References: <10837d740708262338w2def2f9er8fd2ca589e681992@domain.hid>
+	<46D2A840.8040301@domain.hid>
+Subject: Re: [Adeos-main] RT ISR re-entrance
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>, adeos-main@gna.org
 
-On Thu, 2007-08-30 at 09:11 +0200, Jan Kiszka wrote:
-> As suggested by Markus, this patch lets RTDM round up when nanoseconds
-> are to be converted to ticks (only relevant if RTDM runs over a
-> periodic, tick-based timebase).
+------=_Part_32299_28060579.1188222842141
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-Merged, thanks.
+aGksCgpUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkhCgoyMDA3LzgvMjcsIEphbiBLaXN6a2EgPGph
+bi5raXN6a2FAd2ViLmRlPjoKPgo+ID8/IHdyb3RlOgo+ID4gaGkgYWxsLAo+ID4KPiA+IEluIFNN
+UCBzeXN0ZW0sIGFuIGVkZ2UgdHJpZ2dlcnJlZCBpbnRlcnJ1cHQgbWF5IGJlIGRpc3BhdGNoZWQg
+dG8KPiBtdWx0aXBsZQo+ID4gY3B1cywgc28gdGhlIFJUIElTUiBvZiB0aGlzIGludGVycnVwdCBt
+YXkgYmUgaW52b2x2ZWQgb24gbXVsdGlwbGUgY3B1cwo+IGF0Cj4gPiB0aGUgc2FtZSB0aW1lLiBU
+aGUgcXVlc3Rpb24gY29tZXM6IGlzIFJUIElTUiBuZWVkIHRvIGJlIHJlZW50cmFudCBhcwo+ID4g
+ZGVzaWduZWQgb3IgZG8gSSBtaXNzIHNvbWV0aGluZz8KPgo+IEdvb2QgcXVlc3Rpb24uIEkgd291
+bGQgc2F5OiB5ZXMsIGl0J3MgdGhlIEktcGlwZSB1c2VyJ3Mgam9iIHRvIHRha2UgY2FyZQo+IG9m
+IHJlLWVudHJhbmNlIHNhZmV0eS4KPgo+IFZhbmlsbGEgTGludXggcHJldmVudHMgdGhpcyB2aWEg
+dGhlIElSUV9JTlBST0dSRVNTIGZsYWcuIFhlbm9tYWkgMi40IGFuZAo+IHNpbmNlIDIuMy4yIGFj
+aGlldmVzIHJlLWVudHJhbmNlIHByb3RlY3Rpb24gZm9yIHRoZSByZWdpc3RlcmVkIGRyaXZlcgo+
+IGhhbmRsZXIgYnkgaG9sZGluZyB0aGUgSVJRLXJlbGF0ZWQgc3BpbmxvY2sgd2hpbGUgY2FsbGlu
+ZyBpbnRvIHRoYXQKPiBoYW5kbGVyLgoKCkFGQUlLLCBYZW5vbWFpIDIuMy4zIHNpbXBseSB1c2Vz
+IHRoZSBJUlEgZGlzcGF0Y2hlciBvZiBpLXBpcGUgYW5kIGRvIG5vdApzdXBwbHkgaXRzIG93biBk
+aXNwYXRjaGVyLgoKU3RpbGwsIHRoaXMgaXNuJ3Qgc29tZXRoaW5nIHRoZSB1c2VyIHNob3VsZCBi
+dWlsZCBoaXMgc3lzdGVtCj4gdXBvbi4gSXQgaXMgcmF0aGVyIHJlY29tbWVuZGVkIGZvciBkZXRl
+cm1pbmlzbSBhbmQgZWZmaWNpZW5jeSByZWFzb25zIHRvCj4gYXNzaWduIFJUIElSUXMgdG8gYSBz
+cGVjaWZpYyBDUFUuCgoKR29vZCBzdWdnZXN0aW9uo6FUaGFua3MgYWdhaW4hCgpIVEgsCj4gSmFu
+Cj4KPgo+Cg==
+------=_Part_32299_28060579.1188222842141
+Content-Type: text/html; charset=GB2312
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-> 
-> This is against trunk only, I haven't yet decided what to do with 2.3.x.
-> The rounding change may have unexpected side-effects, so I'm hesitating
-> to change the stable version as well.
-> 
-
-One reason more for people to test -rc releases.
-
-> Jan
-> plain text document attachment (round-up-in-rtdm.patch)
-> ---
->  include/rtdm/rtdm_driver.h |   11 +++++------
->  ksrc/skins/rtdm/drvlib.c   |   32 ++++++++++++++++----------------
->  2 files changed, 21 insertions(+), 22 deletions(-)
-> 
-> Index: xenomai/include/rtdm/rtdm_driver.h
-> ===================================================================
-> --- xenomai.orig/include/rtdm/rtdm_driver.h
-> +++ xenomai/include/rtdm/rtdm_driver.h
-> @@ -876,8 +876,8 @@ static inline int rtdm_timer_start_in_ha
->  					      nanosecs_rel_t interval,
->  					      enum rtdm_timer_mode mode)
->  {
-> -	return xntimer_start(timer, xntbase_ns2ticks(rtdm_tbase, expiry),
-> -			     xntbase_ns2ticks(rtdm_tbase, interval),
-> +	return xntimer_start(timer, xntbase_ns2ticks_ceil(rtdm_tbase, expiry),
-> +			     xntbase_ns2ticks_ceil(rtdm_tbase, interval),
->  			     (xntmode_t)mode);
->  }
->  
-> @@ -945,10 +945,9 @@ static inline int rtdm_task_set_period(r
->  {
->  	if (period < 0)
->  		period = 0;
-> -	return
-> -	    xnpod_set_thread_periodic(task, XN_INFINITE,
-> -				      xntbase_ns2ticks(xnthread_time_base(task),
-> -						       period));
-> +	return xnpod_set_thread_periodic(task, XN_INFINITE,
-> +					 xntbase_ns2ticks_ceil
-> +					 (xnthread_time_base(task), period));
->  }
->  
->  static inline int rtdm_task_unblock(rtdm_task_t *task)
-> Index: xenomai/ksrc/skins/rtdm/drvlib.c
-> ===================================================================
-> --- xenomai.orig/ksrc/skins/rtdm/drvlib.c
-> +++ xenomai/ksrc/skins/rtdm/drvlib.c
-> @@ -145,8 +145,8 @@ int rtdm_task_init(rtdm_task_t *task, co
->  
->  	if (period > 0) {
->  		res = xnpod_set_thread_periodic(task, XN_INFINITE,
-> -						xntbase_ns2ticks(rtdm_tbase,
-> -								 period));
-> +						xntbase_ns2ticks_ceil
-> +						(rtdm_tbase,  period));
->  		if (res)
->  			goto cleanup_out;
->  	}
-> @@ -370,8 +370,8 @@ int __rtdm_task_sleep(xnticks_t timeout,
->  	XENO_ASSERT(RTDM, !xnpod_unblockable_p(), return -EPERM;);
->  
->  	xnpod_suspend_thread(thread, XNDELAY,
-> -			     xntbase_ns2ticks(xnthread_time_base(thread),
-> -					      timeout), mode, NULL);
-> +			     xntbase_ns2ticks_ceil(xnthread_time_base(thread),
-> +						   timeout), mode, NULL);
->  
->  	return xnthread_test_info(thread, XNBREAK) ? -EINTR : 0;
->  }
-> @@ -544,8 +544,8 @@ int rtdm_timer_start(rtdm_timer_t *timer
->  	int err;
->  
->  	xnlock_get_irqsave(&nklock, s);
-> -	err = xntimer_start(timer, xntbase_ns2ticks(rtdm_tbase, expiry),
-> -			    xntbase_ns2ticks(rtdm_tbase, interval),
-> +	err = xntimer_start(timer, xntbase_ns2ticks_ceil(rtdm_tbase, expiry),
-> +			    xntbase_ns2ticks_ceil(rtdm_tbase, interval),
->  			    (xntmode_t)mode);
->  	xnlock_put_irqrestore(&nklock, s);
->  
-> @@ -714,7 +714,7 @@ void rtdm_toseq_init(rtdm_toseq_t *timeo
->  	XENO_ASSERT(RTDM, !xnpod_unblockable_p(), /* only warn here */;);
->  
->  	*timeout_seq =
-> -	    xntbase_get_jiffies(base) + xntbase_ns2ticks(base, timeout);
-> +	    xntbase_get_jiffies(base) + xntbase_ns2ticks_ceil(base, timeout);
->  }
->  
->  EXPORT_SYMBOL(rtdm_toseq_init);
-> @@ -934,9 +934,9 @@ int rtdm_event_timedwait(rtdm_event_t *e
->  		} else {
->  			/* infinite or relative timeout */
->  			xnsynch_sleep_on(&event->synch_base,
-> -				xntbase_ns2ticks(xnthread_time_base(thread),
-> -						 timeout),
-> -				XN_RELATIVE);
-> +					 xntbase_ns2ticks_ceil
-> +					 (xnthread_time_base(thread), timeout),
-> +					 XN_RELATIVE);
->  		}
->  
->  		if (likely
-> @@ -1143,9 +1143,9 @@ int rtdm_sem_timeddown(rtdm_sem_t *sem, 
->  		} else {
->  			/* infinite or relative timeout */
->  			xnsynch_sleep_on(&sem->synch_base,
-> -				xntbase_ns2ticks(xnthread_time_base(thread),
-> -						 timeout),
-> -				XN_RELATIVE);
-> +					 xntbase_ns2ticks_ceil
-> +					 (xnthread_time_base(thread), timeout),
-> +					 XN_RELATIVE);
->  		}
->  
->  		if (xnthread_test_info(thread, XNTIMEO | XNRMID | XNBREAK)) {
-> @@ -1377,9 +1377,9 @@ restart:
->  		} else {
->  			/* infinite or relative timeout */
->  			xnsynch_sleep_on(&mutex->synch_base,
-> -				xntbase_ns2ticks(xnthread_time_base(curr_thread),
-> -						 timeout),
-> -				XN_RELATIVE);
-> +					 xntbase_ns2ticks_ceil
-> +					 (xnthread_time_base(curr_thread),
-> +					  timeout), XN_RELATIVE);
->  		}
->  
->  		if (unlikely(xnthread_test_info(curr_thread,
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
--- 
-Philippe.
-
-
+aGksPGJyPjxicj5UaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkhPGJyPjxicj48ZGl2PjxzcGFuIGNs
+YXNzPSJnbWFpbF9xdW90ZSI+MjAwNy84LzI3LCBKYW4gS2lzemthICZsdDs8YSBocmVmPSJtYWls
+dG86amFuLmtpc3prYUB3ZWIuZGUiPmphbi5raXN6a2FAd2ViLmRlPC9hPiZndDs6PC9zcGFuPjxi
+bG9ja3F1b3RlIGNsYXNzPSJnbWFpbF9xdW90ZSIgc3R5bGU9ImJvcmRlci1sZWZ0OiAxcHggc29s
+aWQgcmdiKDIwNCwgMjA0LCAyMDQpOyBtYXJnaW46IDBwdCAwcHQgMHB0IDAuOGV4OyBwYWRkaW5n
+LWxlZnQ6IDFleDsiPgo/PyB3cm90ZTo8YnI+Jmd0OyBoaSBhbGwsPGJyPiZndDs8YnI+Jmd0OyBJ
+biBTTVAgc3lzdGVtLCBhbiBlZGdlIHRyaWdnZXJyZWQgaW50ZXJydXB0IG1heSBiZSBkaXNwYXRj
+aGVkIHRvIG11bHRpcGxlPGJyPiZndDsgY3B1cywgc28gdGhlIFJUIElTUiBvZiB0aGlzIGludGVy
+cnVwdCBtYXkgYmUgaW52b2x2ZWQgb24gbXVsdGlwbGUgY3B1cyBhdDxicj4mZ3Q7IHRoZSBzYW1l
+IHRpbWUuIFRoZSBxdWVzdGlvbiBjb21lczogaXMgUlQgSVNSIG5lZWQgdG8gYmUgcmVlbnRyYW50
+IGFzCjxicj4mZ3Q7IGRlc2lnbmVkIG9yIGRvIEkgbWlzcyBzb21ldGhpbmc/PGJyPjxicj5Hb29k
+IHF1ZXN0aW9uLiBJIHdvdWxkIHNheTogeWVzLCBpdCYjMzk7cyB0aGUgSS1waXBlIHVzZXImIzM5
+O3Mgam9iIHRvIHRha2UgY2FyZTxicj5vZiByZS1lbnRyYW5jZSBzYWZldHkuPGJyPjxicj5WYW5p
+bGxhIExpbnV4IHByZXZlbnRzIHRoaXMgdmlhIHRoZSBJUlFfSU5QUk9HUkVTUyBmbGFnLiBYZW5v
+bWFpIAoyLjQgYW5kPGJyPnNpbmNlIDIuMy4yIGFjaGlldmVzIHJlLWVudHJhbmNlIHByb3RlY3Rp
+b24gZm9yIHRoZSByZWdpc3RlcmVkIGRyaXZlcjxicj5oYW5kbGVyIGJ5IGhvbGRpbmcgdGhlIElS
+US1yZWxhdGVkIHNwaW5sb2NrIHdoaWxlIGNhbGxpbmcgaW50byB0aGF0PGJyPmhhbmRsZXIuIDwv
+YmxvY2txdW90ZT48ZGl2Pjxicj5BRkFJSywgWGVub21haSAyLjMuMyBzaW1wbHkgdXNlcyB0aGUg
+SVJRIGRpc3BhdGNoZXIgb2YgaS1waXBlIGFuZCBkbyBub3Qgc3VwcGx5IGl0cyBvd24gZGlzcGF0
+Y2hlci4KPGJyPjwvZGl2Pjxicj48YmxvY2txdW90ZSBjbGFzcz0iZ21haWxfcXVvdGUiIHN0eWxl
+PSJib3JkZXItbGVmdDogMXB4IHNvbGlkIHJnYigyMDQsIDIwNCwgMjA0KTsgbWFyZ2luOiAwcHQg
+MHB0IDBwdCAwLjhleDsgcGFkZGluZy1sZWZ0OiAxZXg7Ij5TdGlsbCwgdGhpcyBpc24mIzM5O3Qg
+c29tZXRoaW5nIHRoZSB1c2VyIHNob3VsZCBidWlsZCBoaXMgc3lzdGVtPGJyPnVwb24uIEl0IGlz
+IHJhdGhlciByZWNvbW1lbmRlZCBmb3IgZGV0ZXJtaW5pc20gYW5kIGVmZmljaWVuY3kgcmVhc29u
+cyB0bwo8YnI+YXNzaWduIFJUIElSUXMgdG8gYSBzcGVjaWZpYyBDUFUuPC9ibG9ja3F1b3RlPjxk
+aXY+PGJyPkdvb2QmbmJzcDs8c3BhbiBzdHlsZT0iZm9udC1mYW1pbHk6IG1vbm9zcGFjZTsiPjwv
+c3Bhbj5zdWdnZXN0aW9uo6FUaGFua3MgYWdhaW4hIDwvZGl2Pjxicj48YmxvY2txdW90ZSBjbGFz
+cz0iZ21haWxfcXVvdGUiIHN0eWxlPSJib3JkZXItbGVmdDogMXB4IHNvbGlkIHJnYigyMDQsIDIw
+NCwgMjA0KTsgbWFyZ2luOiAwcHQgMHB0IDBwdCAwLjhleDsgcGFkZGluZy1sZWZ0OiAxZXg7Ij4K
+SFRILDxicj5KYW48YnI+PGJyPjxicj48L2Jsb2NrcXVvdGU+PC9kaXY+PGJyPgo=
+------=_Part_32299_28060579.1188222842141--
 
