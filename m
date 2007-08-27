@@ -1,9 +1,10 @@
-Message-ID: <46D2B432.2010405@domain.hid>
-Date: Mon, 27 Aug 2007 13:23:30 +0200
+Message-ID: <46D2C5AF.6060308@domain.hid>
+Date: Mon, 27 Aug 2007 14:38:07 +0200
 From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <op.txptjeaot06gyn@domain.hid>
-In-Reply-To: <op.txptjeaot06gyn@domain.hid>
+References: <op.txptjeaot06gyn@domain.hid> <46D2B432.2010405@domain.hid>
+	<op.txpuqax7t06gyn@domain.hid>
+In-Reply-To: <op.txpuqax7t06gyn@domain.hid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] rtdm driver Problems
@@ -17,28 +18,36 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Axel Beierlein <belatronix@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
 Axel Beierlein wrote:
-> Hello,
+> Am 27.08.2007, 13:23 Uhr, schrieb Wolfgang Grandegger <wg@domain.hid=
+m>:
 >=20
-> i try to port a standard serial Driver into an RTDM one following Jan=C2=
-=B4s =20
-> example 16550A.c.
-> When i try to initialize the rx/tx timeouts in my set_config routine wi=
-th:
+>> Axel Beierlein wrote:
+>>> Hello,
+>>>  i try to port a standard serial Driver into an RTDM one following=20
+>>> Jan=C2=B4s  example 16550A.c.
+>>> When i try to initialize the rx/tx timeouts in my set_config routine=20
+>>> with:
+>>>      if (testbits(config->config_mask, RTSER_SET_TIMEOUT_RX))
+>>>             ctx->config.rx_timeout =3D config->rx_timeout;
+>>>  and call an rt_dev_open("sername",0) in my testapplikation i get an =
+=20
+>>> "floating point used in kernel ...." on my ppc.
+>>> I use all the structures that Jan have defined.
+>>> Could it bee that the uint64_t var=C2=B4s rx_timeout / tx_timeout are=
+ the =20
+>>> reasons (especially the <unsigned long long int> typedef for an ppc)?
+>>
+>> How do you compile the RTDM driver?
+>>
 >=20
-> 	if (testbits(config->config_mask, RTSER_SET_TIMEOUT_RX))
->             ctx->config.rx_timeout =3D config->rx_timeout;
->=20
-> and call an rt_dev_open("sername",0) in my testapplikation i get an =20
-> "floating point used in kernel ...." on my ppc.
-> I use all the structures that Jan have defined.
-> Could it bee that the uint64_t var=C2=B4s rx_timeout / tx_timeout are t=
-he =20
-> reasons (especially the <unsigned long long int> typedef for an ppc)?
+> ppc_6xx-gcc -Wall -O2 -c -DMODULE -D__KERNEL__ -D__IN_XENOMAI__ <the=20
+> includes> testdrv.c -o testdrv.o
 
-How do you compile the RTDM driver?
+Please compile it properly either by including it into the kernel tree=20
+or as shown in "examples/rtdm".
 
 Wolfgang.
 
