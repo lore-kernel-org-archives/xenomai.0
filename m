@@ -1,87 +1,53 @@
-Message-ID: <46DC76CE.8000905@domain.hid>
-Date: Tue, 04 Sep 2007 00:04:14 +0300
-From: Ravid Baruch Naali <ravidbn@domain.hid>
+Message-ID: <10837d740708262338w2def2f9er8fd2ca589e681992@domain.hid>
+Date: Mon, 27 Aug 2007 14:38:43 +0800
+From: "=?GB2312?B?1cW+pw==?=" <2hang.j1ng.home@domain.hid>
 MIME-Version: 1.0
-References: <46DC149F.80307@domain.hid> <1188844344.28092.46.camel@domain.hid>
-In-Reply-To: <1188844344.28092.46.camel@domain.hid>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_30914_12240970.1188196723637"
+Subject: [Adeos-main] RT ISR re-entrance
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
+
+------=_Part_30914_12240970.1188196723637
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] VxWorks skin is missing new VxWorks headers for
- RTP
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+Content-Disposition: inline
 
-I imagined thats the policy.
+hi all,
 
-But is it worth investing time in? or is there higher priority task I
-can be assigned to?
+In SMP system, an edge triggerred interrupt may be dispatched to multiple
+cpus, so the RT ISR of this interrupt may be involved on multiple cpus at
+the same time. The question comes: is RT ISR need to be reentrant as
+designed or do I miss something?
 
- 
+best regards,
 
+zhangjing
 
-Philippe Gerum wrote:
+------=_Part_30914_12240970.1188196723637
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-> On Mon, 2007-09-03 at 17:05 +0300, Ravid Baruch Naali wrote:
->   
->> Hello again,
->>
->>
->> Preface:
->>
->> As of VxWorks 6.x vxworks implement RTP which is an implementation of
->> user space processes with real time capabilities, which of course
->> include an extended API, which from my testings I discovered that we do
->> not support yet.
->>
->>
->> Currently extending the VxWorks API is not in Xenomai task list, does it
->> have any demand?
->>
->> If I'll take it as a my task, do we have any legal issues with using
->> Wind River's headers?
->>     
->
-> This matter is muddy; fair use, interoperability, and copyrights of
-> header files and/or their contents is a legal mess.
->
-> Our policy is simple: paste-copy of any portion of any proprietary
-> licensed header is unwanted and will be systematically rejected. You
-> need to implement your own header, defining what you need for satisfying
-> all the references within the emulator your are writing from scratch.
->
-> You should also explicitly mention in the copyright notice that the
-> resulting software is an emulator. We claim to mimick the original
-> software as correctly as possible, according to the API specs which have
-> been made publically available by the copyright holder of the original
-> work, with all the limitations inherent to such exercise. In any case,
-> we don't claim to produce a copy of the original software we only
-> emulate. In short, Xenomai is a Chameleon, not a clone.
->
->   
->> If any of my assumptions is false or if you have any comment/answers
->> please reply.
->>
->>
->> thanks
->>
->> Ravid
->>
->>     
+hi all,
+<br>
+<br>
+In SMP system, an edge triggerred interrupt may be dispatched to
+multiple cpus, so the RT ISR of this interrupt may be involved on
+multiple cpus at the same time. The question comes: is RT ISR need to
+be reentrant as designed or do I miss something? <br>
+<br>
+best regards,
+<br>
+<br>
+zhangjing
 
-
--- 
-Ravid Baruch Naali
-ravidbn@domain.hid
-+972 4 6732729
-+972 52 5830021
-
+------=_Part_30914_12240970.1188196723637--
 
