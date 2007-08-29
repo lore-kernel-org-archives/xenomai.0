@@ -1,12 +1,14 @@
-Date: Wed, 29 Aug 2007 11:25:44 +0200 (CEST)
-From: Herman Bruyninckx <Herman.Bruyninckx@domain.hid>
-In-Reply-To: <904710.33097.qm@domain.hid>
-Message-ID: <Pine.LNX.4.64.0708291123120.28485@domain.hid>
-References: <904710.33097.qm@domain.hid>
+Message-ID: <2ff1a98a0708290232p1fdbc479i878225139da6fc3c@domain.hid>
+Date: Wed, 29 Aug 2007 11:32:15 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <46D53974.3020207@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <904710.33097.qm@domain.hid>
+	<46D53974.3020207@domain.hid>
 Subject: Re: [Xenomai-help] Re : sqrt() function in xenomai kernel module
-Reply-To: Herman Bruyninckx <herman.bruyninckx@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mathieu JOINIE-MAURIN <mjoiniem@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 29 Aug 2007, Mathieu JOINIE-MAURIN wrote:
+On 8/29/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Mathieu JOINIE-MAURIN wrote:
+> > The application I used is a small controller for robot developped by people in the lab. Before it used to be in RTAI. But now they are trying to use Xenomai. The application is splitted in two parts:
+> > the user side which saves data, manages interfaces and the kernel module which realise all the real time tisk (sampling, writing to electronic card, controler).
+> > The communications between the two is made by 5 pipes (command, parameters, acknowledgment, save, status).
+> >
+> > This is why i need to make my sqrt() function (of double variables)  into my kernel modul part.
+>
+> Given that this is also a "small" application, I bet it will be far
+> easier for you to port it to user-space (POSIX or native skin) than
+> porting a math lib into kernel space.
 
-> The application I used is a small controller for robot developped by
-> people in the lab. Before it used to be in RTAI. But now they are trying
-> to use Xenomai. The application is splitted in two parts:
-> the user side which saves data, manages interfaces and the kernel module
-> which realise all the real time tisk (sampling, writing to electronic card,
-> controler). The communications between the two is made by 5 pipes (command,
-> parameters, acknowledgment, save, status).
+Compiling a libm in kernel-space is not hard at all, especially since
+a libm does not use any system call. But Mathieu could even do a
+simpler thing: if the only math function used is sqrt, he could simply
+add an implementation of this function into his kernel module.
 
-<shameless plug>
-These aspects are all covered in our Orocos project
-(<http://www.orocos.org>) in which everything runs in "user space" (if you
-use the Xenomai or RTAI versions.
-</shameless plug>
-
-> This is why i need to make my sqrt() function (of double variables)  into
-> my kernel modul part.
-
-I do agree very much with Jan that you should not be doing the application
-logic in kernel space. There is really no need for that in 99,99% of the
-applications.
-
-Herman
-
-Disclaimer: http://www.kuleuven.be/cwis/email_disclaimer.htm
-
+-- 
+                                               Gilles Chanteperdrix
 
