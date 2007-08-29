@@ -1,15 +1,11 @@
-Message-ID: <46D55350.7030104@domain.hid>
-Date: Wed, 29 Aug 2007 13:06:56 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <46D52231.9040309@domain.hid> <46D530AB.5080306@domain.hid>
-	<46D53C61.3060203@domain.hid>
-In-Reply-To: <46D53C61.3060203@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig00CFA0E2AD8871B69AC2FF9C"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Newbies developer instructions
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C7EA47.A7A38A90"
+Date: Wed, 29 Aug 2007 16:19:47 +0200
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F1@domain.hid>
+From: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>
+Subject: [Xenomai-core] RTDM timeout value
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,75 +15,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Ravid Baruch Naali <ravidbn@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig00CFA0E2AD8871B69AC2FF9C
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C7EA47.A7A38A90
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Ravid Baruch Naali wrote:
-> Thanks Jan,
->=20
->=20
-> I'm working on an academic course which I will teach next semester on
-> Real Time system, in which I will bring both VxWorks and Xenomai as Har=
-d
-> RT systems as an example.
->=20
-> Therefore it will be only natural for me to work on porting some
-> examples to VxWorks skin at first.
->=20
-> My plan is to implement the same operation in few methods:
->=20
-> - Using VxWorks skin
->=20
-> - Creating a driver (RTDM)
->=20
-> - Using POSIX API
->=20
-> Then document the Functions flow from the skin/RTDM calls down to the H=
-AL.
+Hi,
 
-You are welcome! Make sure you communicate your work early so that
-efforts can be coordinated and you also receive feedback.
-
->=20
->=20
-> Nevertheless,
->=20
-> _*Paul*_,  If I can assist you with the Xenomai LiveCD please contact m=
-e
-> and I will be happy to help.
->=20
->=20
-> As for the test suite I plan to give it as a project to one of my
-> students (What do you think?).
-
-That can work out nicely, specifically as the domain is well separated
-from heavy code changes and it is not overly complex to start with.
-
->=20
-> As soon as I'll fill
-[...?]
-
-Jan
+it seems that in the RTDM API, all the timeout functions which use
+nanosecs_rel_t have a strange behaviour.
+The timeout in nanoseconds is converted to ticks and the number of ticks
+is rounded down. So when we want to wait e.g. 500000 nanoseconds and the
+timertick is 1 ms, xnpod_ns2ticks() rounds down to 0. But 0 is the
+special value RTDM_TIMEOUT_INFINITE, so we wait forever. I use Xenomai
+2.3.1, but I think it's basically the same in trunk.
+Wouldn't it be better to round up the ticks instead of round it down?
 
 
---------------enig00CFA0E2AD8871B69AC2FF9C
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Thanks
+Markus
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG1VNRniDOoMHTA+kRAuEKAJ40yKLN6uSxfE7jXGjurK1P88IVqACfRVHk
-/zTtEwQnePyc/FPsG9MUWno=
-=8DLU
------END PGP SIGNATURE-----
+------_=_NextPart_001_01C7EA47.A7A38A90
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
---------------enig00CFA0E2AD8871B69AC2FF9C--
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7652.24">
+<TITLE>RTDM timeout value</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Hi,</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">it seems that in the RTDM API, all the =
+timeout functions which use nanosecs_rel_t have a strange =
+behaviour.</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">The timeout in nanoseconds is =
+converted to ticks and the number of ticks is rounded down. So when we =
+want to wait e.g. 500000 nanoseconds and the timertick is 1 ms, =
+xnpod_ns2ticks() rounds down to 0. But 0 is the special value =
+RTDM_TIMEOUT_INFINITE, so we wait forever. I use Xenomai 2.3.1, but I =
+think it's basically the same in trunk.</FONT></P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Wouldn't it be better to round up the =
+ticks instead of round it down?</FONT>
+</P>
+<BR>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Thanks</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Markus</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C7EA47.A7A38A90--
 
