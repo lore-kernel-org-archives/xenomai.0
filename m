@@ -1,14 +1,16 @@
-Message-ID: <46D585E2.70902@domain.hid>
-Date: Wed, 29 Aug 2007 16:42:42 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0708290753v45f17595webd06c7c2b3bed67@domain.hid>
+Date: Wed, 29 Aug 2007 16:53:35 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <46D57F2F.5030006@domain.hid>
 MIME-Version: 1.0
-References: <op.txtr31btt06gyn@domain.hid>
-In-Reply-To: <op.txtr31btt06gyn@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigD045686570C128D35D8B4F0B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] System hangs in/after rtdm_lock_put_irqrestore
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <904710.33097.qm@domain.hid>
+	<2ff1a98a0708290232p1fdbc479i878225139da6fc3c@domain.hid>
+	<2ff1a98a0708290620r38e7fad4q81405ee5f06fb615@domain.hid>
+	<200708291447.21741.paul_c@domain.hid> <46D57F2F.5030006@domain.hid>
+Subject: Re: [Xenomai-help] Re : sqrt() function in xenomai kernel module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,65 +20,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Axel Beierlein <belatronix@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigD045686570C128D35D8B4F0B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On 8/29/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> Paul wrote:
+> > On Wednesday 29 August 2007 14:20, Gilles Chanteperdrix wrote:
+> >> On 8/29/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> >>> On 8/29/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> >>>> Mathieu JOINIE-MAURIN wrote:
+> >>>>> The application I used is a small controller for robot developped by
+> >>>>> people in the lab. Before it used to be in RTAI. But now they are
+> >>>>> trying to use Xenomai. The application is splitted in two parts: the
+> >>>>> user side which saves data, manages interfaces and the kernel module
+> >>>>> which realise all the real time tisk (sampling, writing to electronic
+> >>>>> card, controler). The communications between the two is made by 5
+> >>>>> pipes (command, parameters, acknowledgment, save, status).
+> >>>>>
+> >>>>> This is why i need to make my sqrt() function (of double variables)
+> >>>>> into my kernel modul part.
+> >>>> Given that this is also a "small" application, I bet it will be far
+> >>>> easier for you to port it to user-space (POSIX or native skin) than
+> >>>> porting a math lib into kernel space.
+> >>> Compiling a libm in kernel-space is not hard at all, especially since
+> >>> a libm does not use any system call. But Mathieu could even do a
+> >>> simpler thing: if the only math function used is sqrt, he could simply
+> >>> add an implementation of this function into his kernel module.
+> >> Actually the rtai_math module seems to have no external dependency.
+> >> So, you can use it freely with Xenomai. If you want to port it a bit
+> >> more cleanly to xenomai, all you have to do is replacing libm_errno
+> >> with *xnthread_get_errno_location() (defined in nucleus/thread.h).
+> >
+> > Running the x86_64 build here, I found a GCC flag (-mno-sse IIRC) being used
+> > by the kernel make that prevents any floating point instructions from being
+> > used. So a port/cleanup of rtai_math would most likely only work for i386 &
+> > ppc architectures..
+> >
+>
+> And that rtai_math stuff is arch-independent, i.e. the slower your CPU
+> is, the less efficient that code gets. Back in the old days when we used
+> RTAI kernel space modules (LXRT was unstable), we had to hack our own
+> i386 math lib with inline assembly for accelerated hw support, thus
+> acceptable performance.
+>
+> Kernel-space math remains a dead end, just the point where it ends may
+> vary. We should really encourage people to port away from it whenever
+> possible.
 
-Axel Beierlein wrote:
-> what could it be that an simple rt_dev_open locks up my system when it =
-=20
-> calls rtdm_lock_put_irqrestore?
->=20
-> [...]
-> if (rtdm_irq_request(&ctx->irq_handle,
-> 		        MPC5xxx_PSC2_IRQ,
-> 			rt_psc_interrupt,
-> 			RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,
-> 				context->device->proc_name,
-> 				ctx))
-> 	{
-> 		printk ("psc5200B.c: request_irq() failed\n");
-> 		return -1;
-> 	}
->=20
->      rtdm_irq_enable(&ctx->irq_handle);
->=20
->      rtdm_lock_get_irqsave(&ctx->lock, lock_ctx);
->=20
->      ctx->imr_status =3D MPC5xxx_PSC_IMR_RXRDY;
-> 	out_be16(&psc->mpc5xxx_psc_imr, ctx->imr_status);
+Still, I think that having some libm support in kernel-space may help
+people when porting their applications to Xenomai.
 
-Let me guess: this line arms the related IRQ source at hw level, no?
+Of course, if the rtai_math module suffers from some quality issues,
+we should not start from it.
 
->=20
-> 	rtdm_lock_put_irqrestore(&ctx->lock, lock_ctx);
-> 	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> 	Here i get the crash
-
-Because it enabled local IRQ delivery again, and the system ends up in
-an IRQ storm, or some endless loop in the IRQ handler, or some crash
-related to IRQ handling. Still just guessing...
-
-Jan
-
-
---------------enigD045686570C128D35D8B4F0B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFG1YXjniDOoMHTA+kRAveAAJ4r5Tu5SCkjisE0rzCqyiM0FQZ5ewCcCvd2
-lz8hgOc52iIPtvAiJGmdZ3s=
-=ThSi
------END PGP SIGNATURE-----
-
---------------enigD045686570C128D35D8B4F0B--
+-- 
+                                               Gilles Chanteperdrix
 
