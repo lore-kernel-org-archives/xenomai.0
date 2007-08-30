@@ -1,13 +1,15 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46BC5033.5040602@domain.hid>
-References: <46BC4DCE.80003@domain.hid>  <46BC5033.5040602@domain.hid>
+In-Reply-To: <46D59084.20205@domain.hid>
+References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F1@domain.hid>
+	<46D58382.5020201@domain.hid> <1188400027.6009.147.camel@domain.hid>
+	<46D59084.20205@domain.hid>
 Content-Type: text/plain
-Date: Fri, 10 Aug 2007 18:02:04 +0200
-Message-Id: <1186761724.6006.6.camel@domain.hid>
+Date: Thu, 30 Aug 2007 08:34:21 +0200
+Message-Id: <1188455661.6009.184.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [2.6.22-BUG] inconsistent Linux IRQ mask
+Subject: Re: [Xenomai-core] RTDM timeout value
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -19,75 +21,57 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>, xenomai@xenomai.org
 
-On Fri, 2007-08-10 at 13:46 +0200, Jan Kiszka wrote:
-> Jan Kiszka wrote:
-> > Hi Philippe,
+On Wed, 2007-08-29 at 17:28 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Wed, 2007-08-29 at 16:32 +0200, Jan Kiszka wrote:
+> >> Markus Osterried (BA/EDD) wrote:
+> >>> Hi,
+> >>>
+> >>> it seems that in the RTDM API, all the timeout functions which use
+> >>> nanosecs_rel_t have a strange behaviour.
+> >>> The timeout in nanoseconds is converted to ticks and the number of ticks
+> >>> is rounded down. So when we want to wait e.g. 500000 nanoseconds and the
+> >>> timertick is 1 ms, xnpod_ns2ticks() rounds down to 0. But 0 is the
+> >>> special value RTDM_TIMEOUT_INFINITE, so we wait forever. I use Xenomai
+> >>> 2.3.1, but I think it's basically the same in trunk.
+> >> It should even impact other skins as well when in tick-based timing
+> >> mode. I would bet more users of xnpod_ns2ticks() may have overseen this
+> >> rounding issue - like RTDM did.
+> >>
 > > 
-> > this appears to be related to 2.6.22+ only:
+> > Other skins may only mean POSIX and native, since the other ones only
+> > deal with ticks.
+> 
+> Ah, yeah, of course.
+> 
+> POSIX is safe because it does well-defined rounding on its own. Native
+> itself has no problem, just the user may get informed about the rounding
+> behaviour of rt_timer_ns2ticks. Otherwise, things like rt_sem_p(sem,
+> rt_timer_ns2ticks(some_nanos)) may unexpectedly behave like RTDM does now.
+> 
 > > 
-> >  ------------[ cut here ]------------
-> >  kernel BUG at fs/buffer.c:1230!
-> >  invalid opcode: 0000 [#1]
-> >  PREEMPT
-> >  Modules linked in: xeno_rtdm xeno_nucleus ip6t_LOG xt_TCPMSS nvram uinput snd_pcm_oss cifs snd_mixer_oss snd_seq snd_seq_device radeon drm wlan_tkip af_packet thinkpad_acpi button battery ac ip6t_REJECT xt_state iptable_nat nf_nat ip6table_mangle nf_conntrack_ipv4 nf_conntrack nfnetlink ip6table_filter ip6_tables ipv6 nls_iso8859_1 nls_cp437 vfat fat nls_utf8 ntfs dm_mod fuse wlan_scan_sta ath_rate_sample pcmcia snd_intel8x0 firmware_class snd_ac97_codec ac97_bus snd_pcm ath_pci nsc_ircc wlan ide_cd irda snd_timer e100 cdrom ath_hal(P) snd i2c_i801 uhci_hcd ehci_hcd mii yenta_socket rsrc_nonstatic soundcore usbcore snd_page_alloc i2c_core intel_agp crc_ccitt pcmcia_core agpgart parport_pc lp parport reiserfs edd fan piix ide_disk ide_core
-> >  CPU:    0
-> >  EIP:    0060:[<c0187fc3>]    Tainted: P       VLI
-> >  EFLAGS: 00210246   (2.6.22.2-adeos #7)
-> >  EIP is at __find_get_block+0x2c/0x1e8
-> >  eax: 00000000   ebx: e3635dac   ecx: 00000000   edx: 00002e4e
-> >  esi: 00001000   edi: eeeb3080   ebp: e3635b30   esp: e3635af8
-> >  ds: 007b   es: 007b   fs: 0000  gs: 0033  ss: 0068
-> >  Process kio_file (pid: 7433, ti=e3634000 task=e6d780b0 task.ti=e3634000)<0>
-> >  I-pipe domain Linux
-> >  Stack: 00002e4e 00000000 c16e0718 eff36a90 e3634000 e3635b1c c0308f1e c05dd700
-> >         00000000 e3635b2c c030bbfd e3635dac 00001000 e3635db4 e3635b98 c01881a4
-> >         00001000 c05dd700 511c5a51 00000022 c014aade 00002e4e 00000000 eeeb3080
-> >  Call Trace:
-> >   [<c0104fd0>] show_trace_log_lvl+0x1f/0x34
-> >   [<c0105085>] show_stack_log_lvl+0xa0/0xa8
-> >   [<c0105294>] show_registers+0x207/0x35c
-> >   [<c01054fd>] die+0x114/0x22a
-> >   [<c01056a1>] do_trap+0x8e/0xa7
-> >   [<c0105a2f>] do_invalid_op+0x8d/0x97
-> >   [<c0113b1a>] __ipipe_handle_exception+0xb1/0x11f
-> >   [<c030be53>] error_code+0x6f/0x7c
-> >   [<c01881a4>] __getblk+0x25/0x29a
-> >   [<f0bdc058>] search_by_key+0x97/0xe38 [reiserfs]
-> >   [<f0bc6c10>] search_by_entry_key+0x20/0x231 [reiserfs]
-> >   [<f0bc6e96>] reiserfs_find_entry+0x75/0x2d0 [reiserfs]
-> >   [<f0bc7643>] reiserfs_lookup+0x6d/0x122 [reiserfs]
-> > ...
+> >>> Wouldn't it be better to round up the ticks instead of round it down?
+> >> Hmm, probably. Mind to work out a patch for xnpod_ticks2ns()?
+> >>
+> >> What do others think about this issue? Can/should we change the rounding
+> >> behaviour at nucleus level?
+> >>
 > > 
-> > I get this over 2.6.22.2 with latest trunk + ipipe-1.9-03, only
-> > modprobe'ing xeno_rtdm (so that the nucleus becomes active) and then
-> > logging into KDE. Same box, same Xenomai, but 2.6.20.15: no problem at
-> > all (also xeno-text runs fine here, BTW). When Xenomai is inactive,
-> > 2.6.22 makes no problems as well. Note that the tracer is compiled in,
-> > but is deactivated. Activating it (with the hope to get a panic
-> > backtrace) makes the issue disappear as well.
+> > Clearly not. You don't change the core rounding policy for fixing
+> > shortcomings in the higher levels, especially to fix invalid application
+> > requests. I do want to be able to round down at nucleus level, which I
+> > would not be able to do anymore with a rounding up policy at core level.
+> > This change belongs to the skin which wants this behaviour.
 > 
-> Ah, and then there was this warning once (same kernel that reliably BUGs):
+> Agreed, we primarily need to fix RTDM here.
 > 
-> WARNING: at kernel/softirq.c:138 local_bh_enable()
->  [<c0104fd0>] show_trace_log_lvl+0x1f/0x34
->  [<c0105c62>] show_trace+0x17/0x19
->  [<c0105cfc>] dump_stack+0x1a/0x1c
->  [<c011f38a>] local_bh_enable+0x53/0xb3
->  [<c028b6d5>] lock_sock_nested+0xbe/0xc6
->  [<c0288feb>] sock_fasync+0x68/0x125
->  [<c028a0f3>] sock_close+0x2a/0x38
->  [<c016bc1a>] __fput+0xb9/0x195
->  [<c016bd11>] fput+0x1b/0x1d
->  [<c0169572>] filp_close+0x59/0x61
->  [<c016a5cd>] sys_close+0x73/0xab
->  [<c0103f05>] sysenter_past_esp+0x6e/0x72
-> 
-> Probably a different symptom of the same bug.
+> But what about introducing generic xnpod/xntbase_ns2ticks_floor/ceil()
+> for this? Would avoid more re-inventions of this common service.
 > 
 
-Does this disappear with PREEMPT off?
+Agreed.
 
 > Jan
 > 
