@@ -1,12 +1,12 @@
-Message-ID: <46D66DA7.6060800@domain.hid>
-Date: Thu, 30 Aug 2007 09:11:35 +0200
+Message-ID: <46D66DA5.9030100@domain.hid>
+Date: Thu, 30 Aug 2007 09:11:33 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigADF44CAA933BCC6BC48A77E0"
+	boundary="------------enigC31CD54F205E40BA180BBFEB"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 2/2] Round up in RTDM converting ns to ticks
+Subject: [Xenomai-core] [PATCH 1/2] Introduce xntbase_ns2ticks_ceil
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,163 +17,97 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
-Cc: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>
+Cc: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigADF44CAA933BCC6BC48A77E0
+--------------enigC31CD54F205E40BA180BBFEB
 Content-Type: multipart/mixed;
- boundary="------------040300050503040109000106"
+ boundary="------------000308040308040502010008"
 
 This is a multi-part message in MIME format.
---------------040300050503040109000106
+--------------000308040308040502010008
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-As suggested by Markus, this patch lets RTDM round up when nanoseconds
-are to be converted to ticks (only relevant if RTDM runs over a
-periodic, tick-based timebase).
+This introduces a round-up-variant of xntbase_ns2ticks. It is uninlined
+for the non-trivial case due to its text size. Its only user will be
+RTDM for now, but maybe the POSIX skin can use it as well.
 
-This is against trunk only, I haven't yet decided what to do with 2.3.x.
-The rounding change may have unexpected side-effects, so I'm hesitating
-to change the stable version as well.
+Philippe, if you accept this one, I'll handle the RTDM side myself.
 
 Jan
 
---------------040300050503040109000106
+--------------000308040308040502010008
 Content-Type: text/plain;
- name="round-up-in-rtdm.patch"
+ name="xntbase_ns2ticks_ceil.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="round-up-in-rtdm.patch"
+ filename="xntbase_ns2ticks_ceil.patch"
 
 ---
- include/rtdm/rtdm_driver.h |   11 +++++------
- ksrc/skins/rtdm/drvlib.c   |   32 ++++++++++++++++----------------
- 2 files changed, 21 insertions(+), 22 deletions(-)
+ include/nucleus/timebase.h |    7 +++++++
+ ksrc/nucleus/timebase.c    |    7 +++++++
+ 2 files changed, 14 insertions(+)
 
-Index: xenomai/include/rtdm/rtdm_driver.h
+Index: xenomai/include/nucleus/timebase.h
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/rtdm/rtdm_driver.h
-+++ xenomai/include/rtdm/rtdm_driver.h
-@@ -876,8 +876,8 @@ static inline int rtdm_timer_start_in_ha
- 					      nanosecs_rel_t interval,
- 					      enum rtdm_timer_mode mode)
- {
--	return xntimer_start(timer, xntbase_ns2ticks(rtdm_tbase, expiry),
--			     xntbase_ns2ticks(rtdm_tbase, interval),
-+	return xntimer_start(timer, xntbase_ns2ticks_ceil(rtdm_tbase, expiry),
-+			     xntbase_ns2ticks_ceil(rtdm_tbase, interval),
- 			     (xntmode_t)mode);
+--- xenomai.orig/include/nucleus/timebase.h
++++ xenomai/include/nucleus/timebase.h
+@@ -148,6 +148,8 @@ static inline xnticks_t xntbase_ns2ticks
+ 	return xnarch_ulldiv(t, xntbase_get_tickval(base), NULL);
  }
 =20
-@@ -945,10 +945,9 @@ static inline int rtdm_task_set_period(r
++xnticks_t xntbase_ns2ticks_ceil(xntbase_t *base, xntime_t t);
++
+ static inline int xntbase_master_p(xntbase_t *base)
  {
- 	if (period < 0)
- 		period =3D 0;
--	return
--	    xnpod_set_thread_periodic(task, XN_INFINITE,
--				      xntbase_ns2ticks(xnthread_time_base(task),
--						       period));
-+	return xnpod_set_thread_periodic(task, XN_INFINITE,
-+					 xntbase_ns2ticks_ceil
-+					 (xnthread_time_base(task), period));
+ 	return base =3D=3D &nktbase;
+@@ -247,6 +249,11 @@ static inline xnticks_t xntbase_ns2ticks
+ 	return t;
  }
 =20
- static inline int rtdm_task_unblock(rtdm_task_t *task)
-Index: xenomai/ksrc/skins/rtdm/drvlib.c
++static inline xnticks_t xntbase_ns2ticks_ceil(xntbase_t *base, xntime_t =
+t)
++{
++	return t;
++}
++
+ static inline int xntbase_master_p(xntbase_t *base)
+ {
+ 	return 1;
+Index: xenomai/ksrc/nucleus/timebase.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/skins/rtdm/drvlib.c
-+++ xenomai/ksrc/skins/rtdm/drvlib.c
-@@ -145,8 +145,8 @@ int rtdm_task_init(rtdm_task_t *task, co
-=20
- 	if (period > 0) {
- 		res =3D xnpod_set_thread_periodic(task, XN_INFINITE,
--						xntbase_ns2ticks(rtdm_tbase,
--								 period));
-+						xntbase_ns2ticks_ceil
-+						(rtdm_tbase,  period));
- 		if (res)
- 			goto cleanup_out;
- 	}
-@@ -370,8 +370,8 @@ int __rtdm_task_sleep(xnticks_t timeout,
- 	XENO_ASSERT(RTDM, !xnpod_unblockable_p(), return -EPERM;);
-=20
- 	xnpod_suspend_thread(thread, XNDELAY,
--			     xntbase_ns2ticks(xnthread_time_base(thread),
--					      timeout), mode, NULL);
-+			     xntbase_ns2ticks_ceil(xnthread_time_base(thread),
-+						   timeout), mode, NULL);
-=20
- 	return xnthread_test_info(thread, XNBREAK) ? -EINTR : 0;
- }
-@@ -544,8 +544,8 @@ int rtdm_timer_start(rtdm_timer_t *timer
- 	int err;
-=20
- 	xnlock_get_irqsave(&nklock, s);
--	err =3D xntimer_start(timer, xntbase_ns2ticks(rtdm_tbase, expiry),
--			    xntbase_ns2ticks(rtdm_tbase, interval),
-+	err =3D xntimer_start(timer, xntbase_ns2ticks_ceil(rtdm_tbase, expiry),=
-
-+			    xntbase_ns2ticks_ceil(rtdm_tbase, interval),
- 			    (xntmode_t)mode);
+--- xenomai.orig/ksrc/nucleus/timebase.c
++++ xenomai/ksrc/nucleus/timebase.c
+@@ -483,6 +483,12 @@ void xntbase_tick(xntbase_t *base)
  	xnlock_put_irqrestore(&nklock, s);
-=20
-@@ -714,7 +714,7 @@ void rtdm_toseq_init(rtdm_toseq_t *timeo
- 	XENO_ASSERT(RTDM, !xnpod_unblockable_p(), /* only warn here */;);
-=20
- 	*timeout_seq =3D
--	    xntbase_get_jiffies(base) + xntbase_ns2ticks(base, timeout);
-+	    xntbase_get_jiffies(base) + xntbase_ns2ticks_ceil(base, timeout);
  }
 =20
- EXPORT_SYMBOL(rtdm_toseq_init);
-@@ -934,9 +934,9 @@ int rtdm_event_timedwait(rtdm_event_t *e
- 		} else {
- 			/* infinite or relative timeout */
- 			xnsynch_sleep_on(&event->synch_base,
--				xntbase_ns2ticks(xnthread_time_base(thread),
--						 timeout),
--				XN_RELATIVE);
-+					 xntbase_ns2ticks_ceil
-+					 (xnthread_time_base(thread), timeout),
-+					 XN_RELATIVE);
- 		}
++xnticks_t xntbase_ns2ticks_ceil(xntbase_t *base, xntime_t t)
++{
++	return xnarch_ulldiv(t + xntbase_get_tickval(base) - 1,
++			     xntbase_get_tickval(base), NULL);
++}
++
+ EXPORT_SYMBOL(xntbase_alloc);
+ EXPORT_SYMBOL(xntbase_free);
+ EXPORT_SYMBOL(xntbase_update);
+@@ -490,6 +496,7 @@ EXPORT_SYMBOL(xntbase_switch);
+ EXPORT_SYMBOL(xntbase_start);
+ EXPORT_SYMBOL(xntbase_stop);
+ EXPORT_SYMBOL(xntbase_tick);
++EXPORT_SYMBOL(xntbase_ns2ticks_ceil);
 =20
- 		if (likely
-@@ -1143,9 +1143,9 @@ int rtdm_sem_timeddown(rtdm_sem_t *sem,=20
- 		} else {
- 			/* infinite or relative timeout */
- 			xnsynch_sleep_on(&sem->synch_base,
--				xntbase_ns2ticks(xnthread_time_base(thread),
--						 timeout),
--				XN_RELATIVE);
-+					 xntbase_ns2ticks_ceil
-+					 (xnthread_time_base(thread), timeout),
-+					 XN_RELATIVE);
- 		}
+ #endif /* CONFIG_XENO_OPT_TIMING_PERIODIC */
 =20
- 		if (xnthread_test_info(thread, XNTIMEO | XNRMID | XNBREAK)) {
-@@ -1377,9 +1377,9 @@ restart:
- 		} else {
- 			/* infinite or relative timeout */
- 			xnsynch_sleep_on(&mutex->synch_base,
--				xntbase_ns2ticks(xnthread_time_base(curr_thread),
--						 timeout),
--				XN_RELATIVE);
-+					 xntbase_ns2ticks_ceil
-+					 (xnthread_time_base(curr_thread),
-+					  timeout), XN_RELATIVE);
- 		}
-=20
- 		if (unlikely(xnthread_test_info(curr_thread,
 
---------------040300050503040109000106--
+--------------000308040308040502010008--
 
---------------enigADF44CAA933BCC6BC48A77E0
+--------------enigC31CD54F205E40BA180BBFEB
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -182,10 +116,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG1m2nniDOoMHTA+kRAgNOAJ9dU/Q7KzOmV7j1OnZ/MNBqYWfOsQCghPIe
-x0T/+ZGU7MFXXl8W10Te/d8=
-=pVyr
+iD8DBQFG1m2lniDOoMHTA+kRAmKeAKCDYuh/ER8qhezx9cQpb+kQktuh4wCfVLql
+VKuC+wzNOKGqCkVMstaaD6k=
+=TCIo
 -----END PGP SIGNATURE-----
 
---------------enigADF44CAA933BCC6BC48A77E0--
+--------------enigC31CD54F205E40BA180BBFEB--
 
