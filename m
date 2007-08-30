@@ -1,15 +1,12 @@
-Message-ID: <46D59084.20205@domain.hid>
-Date: Wed, 29 Aug 2007 17:28:04 +0200
+Message-ID: <46D6633A.5010906@domain.hid>
+Date: Thu, 30 Aug 2007 08:27:06 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F1@domain.hid>	
-	<46D58382.5020201@domain.hid> <1188400027.6009.147.camel@domain.hid>
-In-Reply-To: <1188400027.6009.147.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig5CA15694F5F2494D586370AA"
+	boundary="------------enigEA18CED867274D9E8F7F1222"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] RTDM timeout value
+Subject: [Xenomai-core] [PATCH] fix 2.4-kernel build warning
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,73 +16,164 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5CA15694F5F2494D586370AA
+--------------enigEA18CED867274D9E8F7F1222
+Content-Type: multipart/mixed;
+ boundary="------------010307020309050508050303"
+
+This is a multi-part message in MIME format.
+--------------010307020309050508050303
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Philippe Gerum wrote:
-> On Wed, 2007-08-29 at 16:32 +0200, Jan Kiszka wrote:
->> Markus Osterried (BA/EDD) wrote:
->>> Hi,
->>>
->>> it seems that in the RTDM API, all the timeout functions which use
->>> nanosecs_rel_t have a strange behaviour.
->>> The timeout in nanoseconds is converted to ticks and the number of ti=
-cks
->>> is rounded down. So when we want to wait e.g. 500000 nanoseconds and =
-the
->>> timertick is 1 ms, xnpod_ns2ticks() rounds down to 0. But 0 is the
->>> special value RTDM_TIMEOUT_INFINITE, so we wait forever. I use Xenoma=
-i
->>> 2.3.1, but I think it's basically the same in trunk.
->> It should even impact other skins as well when in tick-based timing
->> mode. I would bet more users of xnpod_ns2ticks() may have overseen thi=
-s
->> rounding issue - like RTDM did.
->>
->=20
-> Other skins may only mean POSIX and native, since the other ones only
-> deal with ticks.
+I noticed some warning during a 2.4 build of trunk which may point out
+unexpected side effects:
 
-Ah, yeah, of course.
+In file included from pod.c:45:
+/usr/src/linux-2.4.35.1/include/asm/xenomai/bits/pod.h:32:1: warning: "xn=
+arch_tsc_to_ns" redefined
+In file included from /usr/src/linux-2.4.35.1/include/linux/modversions.h=
+:275,
+                 from /usr/src/linux-2.4.35.1/include/linux/module.h:22,
+                 from /usr/src/linux-2.4.35.1/include/asm-generic/xenomai=
+/system.h:30,
+                 from /usr/src/linux-2.4.35.1/include/asm/xenomai/system.=
+h:28,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/typ=
+es.h:39,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/que=
+ue.h:24,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/tim=
+ebase.h:29,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/tim=
+er.h:26,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/thr=
+ead.h:25,
+                 from /usr/src/linux-2.4.35.1/include/xenomai/nucleus/pod=
+=2Eh:34,
+                 from pod.c:36:
+/usr/src/linux-2.4.35.1/include/linux/modules/pod.ver:4:1: warning: this =
+is the location of the previous definition
 
-POSIX is safe because it does well-defined rounding on its own. Native
-itself has no problem, just the user may get informed about the rounding
-behaviour of rt_timer_ns2ticks. Otherwise, things like rt_sem_p(sem,
-rt_timer_ns2ticks(some_nanos)) may unexpectedly behave like RTDM does now=
-=2E
-
->=20
->>> Wouldn't it be better to round up the ticks instead of round it down?=
-
->> Hmm, probably. Mind to work out a patch for xnpod_ticks2ns()?
->>
->> What do others think about this issue? Can/should we change the roundi=
-ng
->> behaviour at nucleus level?
->>
->=20
-> Clearly not. You don't change the core rounding policy for fixing
-> shortcomings in the higher levels, especially to fix invalid applicatio=
-n
-> requests. I do want to be able to round down at nucleus level, which I
-> would not be able to do anymore with a rounding up policy at core level=
-=2E
-> This change belongs to the skin which wants this behaviour.
-
-Agreed, we primarily need to fix RTDM here.
-
-But what about introducing generic xnpod/xntbase_ns2ticks_floor/ceil()
-for this? Would avoid more re-inventions of this common service.
+However, the attached patch fixes it.
 
 Jan
 
+--------------010307020309050508050303
+Content-Type: text/plain;
+ name="fix-2.4-redefine-warning.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="fix-2.4-redefine-warning.patch"
 
---------------enig5CA15694F5F2494D586370AA
+---
+ include/asm-arm/bits/pod.h      |    2 +-
+ include/asm-blackfin/bits/pod.h |    2 +-
+ include/asm-generic/bits/pod.h  |   10 ++++------
+ include/asm-i386/bits/pod.h     |    2 +-
+ include/asm-x86_64/bits/pod.h   |    2 +-
+ 5 files changed, 8 insertions(+), 10 deletions(-)
+
+Index: xenomai/include/asm-arm/bits/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-arm/bits/pod.h
++++ xenomai/include/asm-arm/bits/pod.h
+@@ -30,7 +30,7 @@ long long xnarch_tsc_to_ns(long long ts)
+ {
+ 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
+ }
+-#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
++#define XNARCH_TSC_TO_NS
+=20
+ #include <asm-generic/xenomai/bits/pod.h>
+=20
+Index: xenomai/include/asm-blackfin/bits/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-blackfin/bits/pod.h
++++ xenomai/include/asm-blackfin/bits/pod.h
+@@ -27,7 +27,7 @@ long long xnarch_tsc_to_ns(long long ts)
+ {
+ 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
+ }
+-#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
++#define XNARCH_TSC_TO_NS
+=20
+ #include <asm-generic/xenomai/bits/pod.h>
+=20
+Index: xenomai/include/asm-generic/bits/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-generic/bits/pod.h
++++ xenomai/include/asm-generic/bits/pod.h
+@@ -273,23 +273,21 @@ unsigned long long xnarch_get_host_time(
+=20
+ EXPORT_SYMBOL(xnarch_get_host_time);
+=20
+-#ifndef xnarch_tsc_to_ns
++#ifndef XNARCH_TSC_TO_NS
+ long long xnarch_tsc_to_ns(long long ts)
+ {
+     return xnarch_llimd(ts,1000000000,RTHAL_CPU_FREQ);
+ }
+-#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
+-#endif /* !xnarch_tsc_to_ns */
++#endif /* !XNARCH_TSC_TO_NS */
+=20
+ EXPORT_SYMBOL(xnarch_tsc_to_ns);
+=20
+-#ifndef xnarch_ns_to_tsc
++#ifndef XNARCH_NS_TO_TSC
+ long long xnarch_ns_to_tsc(long long ns)
+ {
+     return xnarch_llimd(ns,RTHAL_CPU_FREQ,1000000000);
+ }
+-#define xnarch_ns_to_tsc	xnarch_ns_to_tsc
+-#endif /* !xnarch_ns_to_tsc */
++#endif /* !XNARCH_NS_TO_TSC */
+=20
+ EXPORT_SYMBOL(xnarch_ns_to_tsc);
+=20
+Index: xenomai/include/asm-i386/bits/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-i386/bits/pod.h
++++ xenomai/include/asm-i386/bits/pod.h
+@@ -29,7 +29,7 @@ long long xnarch_tsc_to_ns(long long ts)
+ {
+ 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
+ }
+-#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
++#define XNARCH_TSC_TO_NS
+=20
+ #include <asm-generic/xenomai/bits/pod.h>
+ #include <asm/xenomai/switch.h>
+Index: xenomai/include/asm-x86_64/bits/pod.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- xenomai.orig/include/asm-x86_64/bits/pod.h
++++ xenomai/include/asm-x86_64/bits/pod.h
+@@ -28,7 +28,7 @@ long long xnarch_tsc_to_ns(long long ts)
+ {
+ 	return xnarch_llmulshft(ts, xnarch_tsc_scale, xnarch_tsc_shift);
+ }
+-#define xnarch_tsc_to_ns	xnarch_tsc_to_ns
++#define XNARCH_TSC_TO_NS
+=20
+ #include <asm-generic/xenomai/bits/pod.h>
+ #include <asm/xenomai/switch.h>
+
+--------------010307020309050508050303--
+
+--------------enigEA18CED867274D9E8F7F1222
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -94,10 +182,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG1ZCEniDOoMHTA+kRAgKCAJ0dfeQnpmXYkmY2faqoipv/jUFnvgCfWGDO
-dPQGlWaY34M01Le3OFrMFzs=
-=MWPg
+iD8DBQFG1mM9niDOoMHTA+kRAmGbAJ9kAihwUgHi2rV2Cgm0rcFxZ9rAogCfZ6ph
+9m3G8roYm8LtHX2eBiexL6w=
+=1GrL
 -----END PGP SIGNATURE-----
 
---------------enig5CA15694F5F2494D586370AA--
+--------------enigEA18CED867274D9E8F7F1222--
 
