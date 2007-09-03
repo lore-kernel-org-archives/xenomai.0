@@ -1,53 +1,77 @@
-Message-ID: <10837d740708262338w2def2f9er8fd2ca589e681992@domain.hid>
-Date: Mon, 27 Aug 2007 14:38:43 +0800
-From: "=?GB2312?B?1cW+pw==?=" <2hang.j1ng.home@domain.hid>
+Message-ID: <46DC7E8F.4000503@domain.hid>
+Date: Mon, 03 Sep 2007 23:37:19 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_30914_12240970.1188196723637"
-Subject: [Adeos-main] RT ISR re-entrance
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+References: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>	<1188824753.6037.27.camel@domain.hid>
+	<FDBBB5CC70676540B3EF7CFE83FD94E0B475ED@EINT11.einet.ad.eivd.ch>
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0B475ED@EINT11.einet.ad.eivd.ch>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig30BFCED9C6C8942832AE9F10"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] RE : Activation of IRQ handler in the Linux
+	domain
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-------=_Part_30914_12240970.1188196723637
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig30BFCED9C6C8942832AE9F10
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-hi all,
+Hi Daniel,
 
-In SMP system, an edge triggerred interrupt may be dispatched to multiple
-cpus, so the RT ISR of this interrupt may be involved on multiple cpus at
-the same time. The question comes: is RT ISR need to be reentrant as
-designed or do I miss something?
+[Some add-ons to what Philippe already pointed out:]
 
-best regards,
+ROSSIER Daniel wrote:
+> ...
+> Ok, I totally agree. I've tried to use a rtdm_event object which I've
+> declared in the Linux driver side. Then, the write function is called f=
+rom a RT task,
 
-zhangjing
+That sounds error-prone: Is "write" only called from RT context? Does it
+have to synchronise with functions running in non-RT context, and is
+this synchronisation done in a RT-safe manner (rtdm_lock_...)? You may
+check this offline - or online with CONFIG_IPIPE_DEBUG_CONTEXT.
 
-------=_Part_30914_12240970.1188196723637
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> then it calls rtdm_event_wait() at a certain point, and the i2c ISR per=
+forms a rtdm_event_signal()
+> to wake up the RT task. However, I got a kernel crash when rtdm_event_w=
+ait() is called.
 
-hi all,
-<br>
-<br>
-In SMP system, an edge triggerred interrupt may be dispatched to
-multiple cpus, so the RT ISR of this interrupt may be involved on
-multiple cpus at the same time. The question comes: is RT ISR need to
-be reentrant as designed or do I miss something? <br>
-<br>
-best regards,
-<br>
-<br>
-zhangjing
+Sometimes it is helpful to analyse what the crash says precisely, e.g.
+at which line of code (during which memory access) the crash happens.
+Also, debugging options may help to catch some potential root bug earlier=
+=2E
 
-------=_Part_30914_12240970.1188196723637--
+In general, I also smell a bit too much hacking and too less designing
+here... ;)
+
+Jan
+
+
+--------------enig30BFCED9C6C8942832AE9F10
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFG3H6QniDOoMHTA+kRAusPAJ0eSixSfsg3lW3rJ58a5wAo5WqxpgCfags+
+q/J7A1Pvwrqbfz/WZyFRn4g=
+=gT7/
+-----END PGP SIGNATURE-----
+
+--------------enig30BFCED9C6C8942832AE9F10--
 
