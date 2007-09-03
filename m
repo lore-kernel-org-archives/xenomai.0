@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C7EE23.976B2164"
-Date: Mon, 3 Sep 2007 14:11:43 +0200
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: [Xenomai-core] Activation of IRQ handler in the Linux domain
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>
+References: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>
+Content-Type: text/plain
+Date: Mon, 03 Sep 2007 15:05:53 +0200
+Message-Id: <1188824753.6037.27.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Activation of IRQ handler in the Linux domain
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,193 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+On Mon, 2007-09-03 at 14:11 +0200, ROSSIER Daniel wrote:
+> Hello,
+> 
+>  
+> 
+> I'm doing a small RT application using the I2C driver from Linux. 
+> 
+> At a certain time, when the task is activated and data are written to
+> the I2C bus,
+> 
+> the driver waits for a IRQ that confirmed the data have been sent out.
+> The write function
+> 
+> actually polls a variable state until a timeout or a state change
+> occurring on reception of that IRQ (done by the handler).
+> 
+>  
+> 
+> However, since driver functions are called from the Xenomai domain,
+> the IRQ handler is not processed
+> 
+> at the reception since the hander belongs to the Linux domain. It ends
+> up with a timeout 
+> 
+> during the write.
+> 
+>  
+> 
+> I implemented a local ISR within the Xenomai application, but the
+> propagation of IRQ is not performed
+> 
+> while the task is running.
 
-------_=_NextPart_001_01C7EE23.976B2164
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Which is expected. All the pipeline abstraction relies on the very
+fundamental assumption that domains run by priority order, which in turn
+means that a high priority domain must run until all the pending work is
+processed, and a Xenomai task in a runnable state represents some
+pending work for the Xenomai domain. Make your Xenomai task sleep on
+some synchronization object (likely a RTDM one) for synchronizing with
+the code which signals the wakeup condition, and the pending IRQ will
+flow down to Linux as expected. Busy waiting for such condition is a
+dead end here.
 
-Hello,
+>  Is there a way to tell Adeos to forward the IRQ to the Linux domain
+> with no delay
+> 
+> so that the Linux handler can be called? or do I need to re-implement
+> the ISR in the Xenomai application?
+> 
 
-=20
+Your code cannot be on both side of the same fence. Either you want a
+real-time guarantee for interrupt delivery and task dispatching and you
+need a Xenomai ISR to process IRQs to wake-up some Xenomai task; or, you
+don't need any guarantee, but still want Linux to process the i2c IRQs
+just for the purpose of recycling some vanilla code, and in such a case,
+you need to make the Linux IRQ handler wake up the Xenomai task. In the
+latter case, the Xenomai task (in primary RT mode) must sleep at some
+point waiting for the wake up event, there is no sideways possible here.
+You may call rt_sem_v() or sem_post(), or a rtdm object signaling
+routines from a Linux context to wake up a real-time sleeper.
 
-I'm doing a small RT application using the I2C driver from Linux.=20
-
-At a certain time, when the task is activated and data are written to
-the I2C bus,
-
-the driver waits for a IRQ that confirmed the data have been sent out.
-The write function
-
-actually polls a variable state until a timeout or a state change
-occurring on reception of that IRQ (done by the handler).
-
-=20
-
-However, since driver functions are called from the Xenomai domain, the
-IRQ handler is not processed
-
-at the reception since the hander belongs to the Linux domain. It ends
-up with a timeout=20
-
-during the write.
-
-=20
-
-I implemented a local ISR within the Xenomai application, but the
-propagation of IRQ is not performed
-
-while the task is running. Is there a way to tell Adeos to forward the
-IRQ to the Linux domain with no delay
-
-so that the Linux handler can be called? or do I need to re-implement
-the ISR in the Xenomai application?
-
-=20
-
-Thanks for any hints.
-
-=20
-
-Daniel
-
-=20
+>  
+> 
+> Thanks for any hints.
+> 
+>  
+> 
+> Daniel
+> 
+>  
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
 
-------_=_NextPart_001_01C7EE23.976B2164
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
-<style>
-<!--
- /* Font Definitions */
- @font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page Section1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-<!--[if gte mso 9]><xml>
- <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
- <o:shapelayout v:ext=3D"edit">
-  <o:idmap v:ext=3D"edit" data=3D"1" />
- </o:shapelayout></xml><![endif]-->
-</head>
-
-<body lang=3DFR-CH link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal>Hello,<o:p></o:p></p>
-
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>I'm doing a small RT application =
-using the
-I2C driver from Linux. <o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>At a certain time, when the task =
-is
-activated and data are written to the I2C bus,<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>the driver waits for a IRQ that =
-confirmed
-the data have been sent out. The write function<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>actually polls a variable state =
-until a timeout
-or a state change occurring on reception of that IRQ (done by the =
-handler).<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>However, since driver functions =
-are called
-from the Xenomai domain, the IRQ handler is not =
-processed<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>at the reception since the =
-hander belongs
-to the Linux domain. It ends up with a timeout <o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>during the =
-write.<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>I implemented a local ISR within =
-the
-Xenomai application, but the propagation of IRQ is not =
-performed<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>while the task is running. Is =
-there a way
-to tell Adeos to forward the IRQ to the Linux domain with no =
-delay<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>so that the Linux handler can be =
-called? or
-do I need to re-implement the ISR in the Xenomai =
-application?<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>Thanks for any =
-hints.<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US>Daniel<o:p></o:p></span></p>
-
-<p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p>
-
-</div>
-
-</body>
-
-</html>
-
-------_=_NextPart_001_01C7EE23.976B2164--
 
