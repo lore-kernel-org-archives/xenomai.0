@@ -1,14 +1,14 @@
-Message-ID: <46DC4470.6030500@domain.hid>
-Date: Mon, 03 Sep 2007 20:29:20 +0300
-From: Ravid Baruch Naali <ravidbn@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <46DC2484.6040004@domain.hid>	
-	<2ff1a98a0709030832m77661616qfb36eff16b0115b@domain.hid>
-	<1188839861.28092.10.camel@domain.hid>
-In-Reply-To: <1188839861.28092.10.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] VxWorks semaphore usage demo
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 3 Sep 2007 19:58:37 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0B475ED@EINT11.einet.ad.eivd.ch>
+References: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>
+	<1188824753.6037.27.camel@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: [Xenomai-core] RE : Activation of IRQ handler in the Linux domain
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,51 +19,119 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: rpm@xenomai.org
-Cc: xenomai@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
 
-> On Mon, 2007-09-03 at 17:32 +0200, Gilles Chanteperdrix wrote:
->   
->> On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
->>     
->>> Hello again,
->>>       
->> Hi,
+>On Mon, 2007-09-03 at 14:11 +0200, ROSSIER Daniel wrote:
+>> Hello,
 >>
->>     
->>> I'm not sure what is the preferred way to commit my changes, so before I
->>> commit i'm Attaching my patch in order to get you remarks and further
->>> instructions
->>>       
->> The synchronization on tasks completion with the semID semaphore seems
->> broken. The main thread will get the semahore when the first task
->> completes, not when all the tasks complete.
 >>
->> I see too many comments, for instance:
->> // Checking for failures
->> if (error == ERROR)
 >>
->> is useless, it is pretty obvious from reading the code that you are
->> checking for failure. Comments should tell us things that are not
->> obvious.
+>> I'm doing a small RT application using the I2C driver from Linux.
 >>
->> Now, about the style, this is C code, so use C style comments. I would
->> also prefer that you use the kernel coding style, but this is not
->> kernel code, so I am not sure the rule is to use the kernel coding
->> style.
->>     
+>> At a certain time, when the task is activated and data are written to
+>> the I2C bus,
+>>
+>> the driver waits for a IRQ that confirmed the data have been sent =
+out.
+>> The write function
+>>
+>> actually polls a variable state until a timeout or a state change
+>> occurring on reception of that IRQ (done by the handler).
+>>
+>>
+>>
+>> However, since driver functions are called from the Xenomai domain,
+>> the IRQ handler is not processed
+>>
+>> at the reception since the hander belongs to the Linux domain. It =
+ends
+>> up with a timeout
+>>
+>> during the write.
+>>
+>>
+>>
+>> I implemented a local ISR within the Xenomai application, but the
+>> propagation of IRQ is not performed
+>>
+>> while the task is running.
 >
-> It is. We do want a common style regardless of the execution space. TIA,
+>Which is expected. All the pipeline abstraction relies on the very
+>fundamental assumption that domains run by priority order, which in =
+turn
+>means that a high priority domain must run until all the pending work =
+is
+>processed, and a Xenomai task in a runnable state represents some
+>pending work for the Xenomai domain. Make your Xenomai task sleep on
+>some synchronization object (likely a RTDM one) for synchronizing with
+>the code which signals the wakeup condition, and the pending IRQ will
+>flow down to Linux as expected. Busy waiting for such condition is a
+>dead end here.
+
+Ok, I totally agree. I've tried to use a rtdm_event object which I've
+declared in the Linux driver side. Then, the write function is called =
+from a RT task,
+then it calls rtdm_event_wait() at a certain point, and the i2c ISR =
+performs a rtdm_event_signal()
+to wake up the RT task. However, I got a kernel crash when =
+rtdm_event_wait() is called.
+
+
+The i2c driver is statically linked in the kernel (zImage), but I'm not =
+sure=20
+if I'm right declaring a rtdm object in the kernel directly. Can you =
+confirm?
+
+Another point where I'm not sure: does a call to rtdm_event_signal() =
+suspend the execution
+of the linux ISR, or will the ISR terminate properly before yielding to =
+the RT task?
+Because it might complicate the work between the (partially finished, =
+without unmasked IRQ) handler
+and the RT task...
+
+Thanks in advance for the clarification.
+
 >
->   
-Thanks for the comments I'll adapt and fix it before I'll send it again.
-
-
--- 
-Ravid Baruch Naali
-ravidbn@domain.hid
-+972 4 6732729
-+972 52 5830021
+>>  Is there a way to tell Adeos to forward the IRQ to the Linux domain
+>> with no delay
+>>
+>> so that the Linux handler can be called? or do I need to re-implement
+>> the ISR in the Xenomai application?
+>>
+>
+>Your code cannot be on both side of the same fence. Either you want a
+>real-time guarantee for interrupt delivery and task dispatching and you
+>need a Xenomai ISR to process IRQs to wake-up some Xenomai task; or, =
+you
+>don't need any guarantee, but still want Linux to process the i2c IRQs
+>just for the purpose of recycling some vanilla code, and in such a =
+case,
+>you need to make the Linux IRQ handler wake up the Xenomai task. In the
+>latter case, the Xenomai task (in primary RT mode) must sleep at some
+>point waiting for the wake up event, there is no sideways possible =
+here.
+>You may call rt_sem_v() or sem_post(), or a rtdm object signaling
+>routines from a Linux context to wake up a real-time sleeper.
+>
+>>
+>>
+>> Thanks for any hints.
+>>
+>>
+>>
+>> Daniel
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Xenomai-core mailing list
+>> Xenomai-core@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-core
+>--
+>Philippe.
+>
 
 
