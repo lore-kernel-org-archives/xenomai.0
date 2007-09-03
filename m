@@ -1,17 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0B475ED@EINT11.einet.ad.eivd.ch>
-References: <FDBBB5CC70676540B3EF7CFE83FD94E099942B@EINT11.einet.ad.eivd.ch>
-	<1188824753.6037.27.camel@domain.hid>
-	<FDBBB5CC70676540B3EF7CFE83FD94E0B475ED@EINT11.einet.ad.eivd.ch>
-Content-Type: text/plain
-Date: Mon, 03 Sep 2007 22:31:10 +0200
-Message-Id: <1188851470.28092.65.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] RE : Activation of IRQ handler in the
-	Linux	domain
-Reply-To: rpm@xenomai.org
+Message-ID: <46DC7553.8040602@domain.hid>
+Date: Mon, 03 Sep 2007 23:57:55 +0300
+From: Ravid Baruch Naali <ravidbn@domain.hid>
+MIME-Version: 1.0
+References: <46DC2484.6040004@domain.hid>
+	<2ff1a98a0709030832m77661616qfb36eff16b0115b@domain.hid>
+In-Reply-To: <2ff1a98a0709030832m77661616qfb36eff16b0115b@domain.hid>
+Content-Type: multipart/mixed; boundary="------------000503060109060008050502"
+Subject: Re: [Xenomai-core] [PATCH] VxWorks semaphore usage demo
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,135 +16,230 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On Mon, 2007-09-03 at 19:58 +0200, ROSSIER Daniel wrote:
-> >On Mon, 2007-09-03 at 14:11 +0200, ROSSIER Daniel wrote:
-> >> Hello,
-> >>
-> >>
-> >>
-> >> I'm doing a small RT application using the I2C driver from Linux.
-> >>
-> >> At a certain time, when the task is activated and data are written to
-> >> the I2C bus,
-> >>
-> >> the driver waits for a IRQ that confirmed the data have been sent out.
-> >> The write function
-> >>
-> >> actually polls a variable state until a timeout or a state change
-> >> occurring on reception of that IRQ (done by the handler).
-> >>
-> >>
-> >>
-> >> However, since driver functions are called from the Xenomai domain,
-> >> the IRQ handler is not processed
-> >>
-> >> at the reception since the hander belongs to the Linux domain. It ends
-> >> up with a timeout
-> >>
-> >> during the write.
-> >>
-> >>
-> >>
-> >> I implemented a local ISR within the Xenomai application, but the
-> >> propagation of IRQ is not performed
-> >>
-> >> while the task is running.
-> >
-> >Which is expected. All the pipeline abstraction relies on the very
-> >fundamental assumption that domains run by priority order, which in turn
-> >means that a high priority domain must run until all the pending work is
-> >processed, and a Xenomai task in a runnable state represents some
-> >pending work for the Xenomai domain. Make your Xenomai task sleep on
-> >some synchronization object (likely a RTDM one) for synchronizing with
-> >the code which signals the wakeup condition, and the pending IRQ will
-> >flow down to Linux as expected. Busy waiting for such condition is a
-> >dead end here.
-> 
-> Ok, I totally agree. I've tried to use a rtdm_event object which I've
-> declared in the Linux driver side. Then, the write function is called from a RT task,
-> then it calls rtdm_event_wait() at a certain point, and the i2c ISR performs a rtdm_event_signal()
-> to wake up the RT task. However, I got a kernel crash when rtdm_event_wait() is called.
-> 
+This is a multi-part message in MIME format.
+--------------000503060109060008050502
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Make sure to test the return of rtdm_event_wait() in your loop. Maybe
-its fails and returns with some error code you don't detect, causing an
-infinite tight loop.
+Re sending the patch following Gilles comments
 
-> 
-> The i2c driver is statically linked in the kernel (zImage), but I'm not sure 
-> if I'm right declaring a rtdm object in the kernel directly. Can you confirm?
-> 
 
-If you want to keep the i2c driver statically bound to the kernel, you
-don't have any other choice than defining the RTDM object the same way,
-except by using some hairy indirect reference to such object via a
-pointer, which would be uselessly complex in any case.
+Gilles Chanteperdrix wrote:
 
-> Another point where I'm not sure: does a call to rtdm_event_signal() suspend the execution
-> of the linux ISR,
+> On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
+>   
+>> Hello again,
+>>     
+>
+> Hi,
+>
+>   
+>> I'm not sure what is the preferred way to commit my changes, so before I
+>> commit i'm Attaching my patch in order to get you remarks and further
+>> instructions
+>>     
+>
+> The synchronization on tasks completion with the semID semaphore seems
+> broken. The main thread will get the semahore when the first task
+> completes, not when all the tasks complete.
+>
+> I see too many comments, for instance:
+> // Checking for failures
+> if (error == ERROR)
+>
+> is useless, it is pretty obvious from reading the code that you are
+> checking for failure. Comments should tell us things that are not
+> obvious.
+>
+> Now, about the style, this is C code, so use C style comments. I would
+> also prefer that you use the kernel coding style, but this is not
+> kernel code, so I am not sure the rule is to use the kernel coding
+> style.
+>   
 
-Yes, at least if the RT task is pending on the object at the time it is
-signaled. Your RT task has higher priority than the Linux kernel running
-one of its ISRs.
 
->  or will the ISR terminate properly before yielding to the RT task?
-
-No. The Linux ISR will be preempted immediately by posting the object.
-
-> Because it might complicate the work between the (partially finished, without unmasked IRQ) handler
-> and the RT task...
-> 
-
-It's complicated because the design you are trying to implement has a
-flaw: you want to make a high priority task synchronize on a low
-priority event. Maybe you should consider moving the i2c interrupt
-handler as a Xenomai ISR. What prevents you from doing that?
-
-> Thanks in advance for the clarification.
-> 
-> >
-> >>  Is there a way to tell Adeos to forward the IRQ to the Linux domain
-> >> with no delay
-> >>
-> >> so that the Linux handler can be called? or do I need to re-implement
-> >> the ISR in the Xenomai application?
-> >>
-> >
-> >Your code cannot be on both side of the same fence. Either you want a
-> >real-time guarantee for interrupt delivery and task dispatching and you
-> >need a Xenomai ISR to process IRQs to wake-up some Xenomai task; or, you
-> >don't need any guarantee, but still want Linux to process the i2c IRQs
-> >just for the purpose of recycling some vanilla code, and in such a case,
-> >you need to make the Linux IRQ handler wake up the Xenomai task. In the
-> >latter case, the Xenomai task (in primary RT mode) must sleep at some
-> >point waiting for the wake up event, there is no sideways possible here.
-> >You may call rt_sem_v() or sem_post(), or a rtdm object signaling
-> >routines from a Linux context to wake up a real-time sleeper.
-> >
-> >>
-> >>
-> >> Thanks for any hints.
-> >>
-> >>
-> >>
-> >> Daniel
-> >>
-> >>
-> >>
-> >>
-> >> _______________________________________________
-> >> Xenomai-core mailing list
-> >> Xenomai-core@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-core
-> >--
-> >Philippe.
-> >
-> 
 -- 
-Philippe.
+Ravid Baruch Naali
+ravidbn@domain.hid
++972 4 6732729
++972 52 5830021
 
 
+--------------000503060109060008050502
+Content-Type: text/x-patch;
+ name="vxworks_demo.2960.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="vxworks_demo.2960.patch"
+
+Index: ksrc/skins/vxworks/demos/sem.c
+===================================================================
+--- ksrc/skins/vxworks/demos/sem.c	(revision 0)
++++ ksrc/skins/vxworks/demos/sem.c	(revision 0)
+@@ -0,0 +1,138 @@
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++#include <sys/types.h>
++#include <sys/wait.h>
++#include <errno.h>
++#include <vxworks/vxworks.h>
++#include <sys/mman.h>
++
++
++#define TASK_NUM 10
++#define STACK_SIZE 1024
++#define LOOPS 10
++#define xnarch_printf printf
++#define TOP_PRIORITY 25
++
++SEM_ID task_counter_sem;
++SEM_ID task_sync_sem;
++
++static errno_to_messgae(char *failing_func);
++
++/*
++ * A shared main routine for all tasks other then the main
++ * each task waits for the signal from the main task
++ * then it notify it's existing 
++ *
++ * It then loops and prints out LOOPS times it's name and tid
++ * when done it notifies
++ * 
++ * None of the parameters are being used
++ */
++void task_main_routine(long arg1, long arg2, long arg3, long arg4, long arg5, long arg6,
++	long arg7, long arg8, long arg9, long arg10)
++{
++	int localerrno;
++	STATUS result;
++	int priority;
++	int i = LOOPS;
++	int ownID = taskIdSelf();
++
++	/*Waiting to start synchronized with all other spawned tasks*/
++	result = semTake(task_sync_sem, WAIT_FOREVER);
++	if (result == ERROR) {
++		errno_to_messgae("semTake counter");	
++		return;
++	}
++	/*Taking the counting semaphore to indicate task started running stall
++	 * main from exiting */
++	result = semTake(task_counter_sem, WAIT_FOREVER);
++	if (result == ERROR) {
++		errno_to_messgae("semTake counter");	
++		return;
++	}
++	result = taskPriorityGet(ownID, &priority);
++	
++	xnprintf( "Task priority is %d\n", priority);
++	while (i) {
++		xnprintf("Task name is %s tid=%d\n", taskName(ownID), ownID);
++		sleep(1);
++		i--;
++	}
++	/*Signaling this task is done*/
++	semGive(task_counter_sem);
++}
++
++/*
++ * Main task:
++ * spawns TASK_NUM tasks synchronize their operation 
++ * exit and clean up when all tasks are done
++ */
++int main(int argc, char **argv)
++{
++	/*array holding all tasks ids*/
++	int tids[TASK_NUM];
++	int i;
++	mlockall(MCL_CURRENT|MCL_FUTURE);
++	/* counting semaphore inital value set to the number of tasks*/
++	task_counter_sem = semCCreate(SEM_Q_PRIORITY, TASK_NUM);
++	if (!task_counter_sem) {
++		xnprintf( "Failed to create semaphore\n");
++		exit(1);
++	}
++	/* semaphore to synchronize all task operation */
++	task_sync_sem = semBCreate(SEM_Q_PRIORITY, SEM_EMPTY);
++	if (!task_sync_sem) {
++		xnprintf( "Failed to create binary semaphore\n");
++		exit(1);
++	}
++	for (i = 0; i < TASK_NUM; i++) {
++		tids[i] = taskSpawn(NULL, (TOP_PRIORITY - i), 0, STACK_SIZE , 
++				task_main_routine,0,0,0,0,0,0,0,0,0,0);
++		xnprintf( "Spawned task: %d\n", tids[i]);
++	}
++	/* Signaling all tasks to run */
++	semFlush(task_sync_sem);
++	/* Waiting for all task to complete their main routine */
++	for (i = 0; i < TASK_NUM; i++)
++		semTake(task_counter_sem, WAIT_FOREVER);
++	/* Cleanup */
++	for (i = 0; i < TASK_NUM; i++)
++		taskDelete(tids[i]);
++	semDelete(task_counter_sem);
++	semDelete(task_sync_sem);
++}
++
++
++/*
++ * Prints out the meaning of an error with relation to the failing function
++ *
++ * parameter:
++ * a prefix string to the failure reason 
++ */
++static errno_to_messgae(char *failing_func)
++{
++	int localerrno = errnoGet();
++	xnprintf("%s: ", failing_func);
++	switch(localerrno){
++	case S_objLib_OBJ_ID_ERROR:
++		xnprintf( "Semaphore ID is invalid\n");
++		break;
++	case S_objLib_OBJ_UNAVAILABLE:
++		xnprintf( "Semaphore unavailable (NO_WAIT)\n");
++		break;
++	case S_objLib_OBJ_TIMEOUT:
++		xnprintf( "Timeout occured before semaphore was"
++				" released\n");
++		break;
++	case S_semLib_INVALID_OPTION:
++		xnprintf( "Semaphore type is invalid\n");
++		break;
++	case EINTR:
++		xnprintf( "Received interup\n");
++		break;
++	default:
++		break;
++	}
++}
+Index: ksrc/skins/vxworks/demos/Makefile
+===================================================================
+--- ksrc/skins/vxworks/demos/Makefile	(revision 2960)
++++ ksrc/skins/vxworks/demos/Makefile	(working copy)
+@@ -7,7 +7,7 @@
+ 
+ STD_CFLAGS  := $(shell $(XENO_CONFIG) --xeno-cflags)
+ STD_LDFLAGS := $(shell $(XENO_CONFIG) --xeno-ldflags) -lvxworks
+-STD_TARGETS := satch
++STD_TARGETS := satch sem
+ 
+ GCIC := $(prefix)/bin/gcic
+ SIM_CFLAGS  := -g
+@@ -27,6 +27,9 @@
+ satch: satch.c
+ 	$(CC) -o $@ $< $(STD_CFLAGS) $(STD_LDFLAGS)
+ 
++sem: sem.c
++	$(CC) -o $@ $< $(STD_CFLAGS) $(STD_LDFLAGS)
++
+ satch_sim: satch_sim.o
+ 	$(GCIC) -o $@ $< $(SIM_LDFLAGS)
+ 
+
+--------------000503060109060008050502--
 
