@@ -1,16 +1,16 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <2ff1a98a0709040150o16cfc522tb38e18ae49380afd@domain.hid>
-References: <46DC2484.6040004@domain.hid>
-	<2ff1a98a0709030832m77661616qfb36eff16b0115b@domain.hid>
-	<46DC7553.8040602@domain.hid>
-	<2ff1a98a0709040150o16cfc522tb38e18ae49380afd@domain.hid>
+In-Reply-To: <46DD6181.90108@domain.hid>
+References: <46DC149F.80307@domain.hid> <1188844344.28092.46.camel@domain.hid>
+	<46DC76CE.8000905@domain.hid> <1188899438.28092.123.camel@domain.hid>
+	<46DD6181.90108@domain.hid>
 Content-Type: text/plain
-Date: Tue, 04 Sep 2007 16:12:01 +0200
-Message-Id: <1188915121.28092.148.camel@domain.hid>
+Date: Tue, 04 Sep 2007 18:02:30 +0200
+Message-Id: <1188921750.28092.183.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] VxWorks semaphore usage demo
+Subject: Re: [Xenomai-core] VxWorks skin is missing new VxWorks headers
+	for	RTP
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -21,52 +21,162 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Ravid Baruch Naali <ravidbn@domain.hid>, xenomai@xenomai.org
+To: Ravid Baruch Naali <ravidbn@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, 2007-09-04 at 10:50 +0200, Gilles Chanteperdrix wrote:
-> On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
-> > Gilles Chanteperdrix wrote:
+On Tue, 2007-09-04 at 16:45 +0300, Ravid Baruch Naali wrote:
+> The automated chart seems exactly the thing for me (I have some testing
+> tools development experience).
+> 
+> I'll look into it and will soon send a initial design.
+> 
+
+Great, really. Please also take into account that when testing, we will
+actually qualify a combo of the form [Xenomai commit x Adeos patch
+release] each time. This should not change the basic principles of this
+framework though.
+
+> 
+> Of course any pinters/advice/suggestions will be highly appreciated.
+> 
+> 
+> Philippe Gerum wrote:
+> 
+> > On Tue, 2007-09-04 at 00:04 +0300, Ravid Baruch Naali wrote:
+> >   
+> >> I imagined thats the policy.
+> >>
+> >> But is it worth investing time in? or is there higher priority task I
+> >> can be assigned to?
+> >>
+> >>     
 > >
-> > > On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
-> > >
-> > >> Hello again,
-> > >>
-> > >
-> > > Hi,
-> > >
-> > >
-> > >> I'm not sure what is the preferred way to commit my changes, so before I
-> > >> commit i'm Attaching my patch in order to get you remarks and further
-> > >> instructions
-> > >>
-> > >
-> > > The synchronization on tasks completion with the semID semaphore seems
-> > > broken. The main thread will get the semahore when the first task
-> > > completes, not when all the tasks complete.
-> > >
-> > > I see too many comments, for instance:
-> > > // Checking for failures
-> > > if (error == ERROR)
-> > >
-> > > is useless, it is pretty obvious from reading the code that you are
-> > > checking for failure. Comments should tell us things that are not
-> > > obvious.
-> > >
-> > > Now, about the style, this is C code, so use C style comments. I would
-> > > also prefer that you use the kernel coding style, but this is not
-> > > kernel code, so I am not sure the rule is to use the kernel coding
-> > > style.
-> > >
-> > Re sending the patch following Gilles comments
+> > I don't think RTP is high priority for now.
+> >
+> > Two other tasks would have a much more significant impact, both for
+> > Xenomai users and developers.
+> >
+> > 1) Make Valgrind usable with Xenomai apps; of course without any
+> > real-time guarantee anymore, but this would nevertheless plug a serious
+> > hole in the development toolset available to users.
+> >
+> > 2) We do, certainly, definitely, desperately miss an automated way to
+> > get performance charts for a few selected Xenomai tests, which would
+> > allows us to conduct comparative analysis between versions, and find out
+> > what's right or wrong with our changes.
+> >
+> > For instance, we are currently maintaining seven architecture ports;
+> > each time something changes in some part of Xenomai's generic code, we
+> > have no freaking idea whether all archs benefit from such change, or if
+> > at least no arch gets penalized by it. And the very same goes for the
+> > interrupt pipeline, for which any hazardous change may generate adverse
+> > effects on an even much larger scale. Let me put this bluntly: this
+> > won't fly much longer; we are losing precious time getting rid of any
+> > regression way after it has actually happened into the code, because we
+> > cannot easily and routinely COMPARE how different versions behave. Aside
+> > of this, we don't have any factual data regarding how Xenomai evolved
+> > over time in terms of latency, code footprints and so on.
+> >
+> > What we need is a simple automated way to a given test on any given
+> > Xenomai version (actually a SVN commit number would be much better)
+> > extracted from our repository, draw a few charts summing up the results,
+> > and move those results to our website periodically or even as soon as
+> > they are available. _This_ would help users to understand the current
+> > trend and why we did some changes (or why we should not have done them),
+> > and allow developers to pull the brake each time a serious regression is
+> > visible from those charts.
+> >
+> > Simple and easy:
+> >
+> > TEST/x86: interrupt latency to kernel handler [latency -t2]
+> >
+> > (latency in us)
+> > ^
+> > |                                        x (XX us) <= Houston, we have a problem.
+> > |      x (ZZ us)
+> > |                                          
+> > |                     x (YY us)
+> > |                           
+> > +--------------------------------------------------->
+> >     commit#72  ...    commit#2004      commit#<any>
+> >      (v2.0)              (v2.3)
+> >
+> > Another test could analyse the task dispatch latency, another one the
+> > code footprints in kernel space, and so on. Once this framework is
+> > available, we would find the various hardware to run the tests on and
+> > get the results from, that is not an issue anymore.
+> >
+> > Besides, tackling this issue is quite a good way to have his feet wet
+> > almost immediately with the Xenomai framework as a power user, and also
+> > to get immediate reward for such work, since we would push its results
+> > online routinely.
+> >
+> > Please, somebody implement this, damnit! Or I'm going to rewrite the
+> > entire Xenomai stack in Bourne shell with Java applets for speedups, so
+> > you could not complain about bad latencies and unwanted overhead
+> > anymore.
+> >
+> > Thank you,
+> >
+> >   
+> >>  
+> >>
+> >>
+> >> Philippe Gerum wrote:
+> >>
+> >>     
+> >>> On Mon, 2007-09-03 at 17:05 +0300, Ravid Baruch Naali wrote:
+> >>>   
+> >>>       
+> >>>> Hello again,
+> >>>>
+> >>>>
+> >>>> Preface:
+> >>>>
+> >>>> As of VxWorks 6.x vxworks implement RTP which is an implementation of
+> >>>> user space processes with real time capabilities, which of course
+> >>>> include an extended API, which from my testings I discovered that we do
+> >>>> not support yet.
+> >>>>
+> >>>>
+> >>>> Currently extending the VxWorks API is not in Xenomai task list, does it
+> >>>> have any demand?
+> >>>>
+> >>>> If I'll take it as a my task, do we have any legal issues with using
+> >>>> Wind River's headers?
+> >>>>     
+> >>>>         
+> >>> This matter is muddy; fair use, interoperability, and copyrights of
+> >>> header files and/or their contents is a legal mess.
+> >>>
+> >>> Our policy is simple: paste-copy of any portion of any proprietary
+> >>> licensed header is unwanted and will be systematically rejected. You
+> >>> need to implement your own header, defining what you need for satisfying
+> >>> all the references within the emulator your are writing from scratch.
+> >>>
+> >>> You should also explicitly mention in the copyright notice that the
+> >>> resulting software is an emulator. We claim to mimick the original
+> >>> software as correctly as possible, according to the API specs which have
+> >>> been made publically available by the copyright holder of the original
+> >>> work, with all the limitations inherent to such exercise. In any case,
+> >>> we don't claim to produce a copy of the original software we only
+> >>> emulate. In short, Xenomai is a Chameleon, not a clone.
+> >>>
+> >>>   
+> >>>       
+> >>>> If any of my assumptions is false or if you have any comment/answers
+> >>>> please reply.
+> >>>>
+> >>>>
+> >>>> thanks
+> >>>>
+> >>>> Ravid
+> >>>>
+> >>>>     
+> >>>>         
+> >>     
 > 
-> Looks good to me, except for the typo in the errno_to_message
-> function. Philippe, could you apply this patch ? I am changing ISP, so
-> I have not internet at home.
 > 
-
-Ok, will merge.
-
 -- 
 Philippe.
 
