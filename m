@@ -1,55 +1,57 @@
-Message-ID: <46D2A840.8040301@domain.hid>
-Date: Mon, 27 Aug 2007 12:32:32 +0200
+Message-ID: <46DDCB19.6080805@domain.hid>
+Date: Tue, 04 Sep 2007 23:16:09 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <10837d740708262338w2def2f9er8fd2ca589e681992@domain.hid>
-In-Reply-To: <10837d740708262338w2def2f9er8fd2ca589e681992@domain.hid>
+References: <46DC149F.80307@domain.hid>
+	<1188844344.28092.46.camel@domain.hid>		<46DC76CE.8000905@domain.hid>
+	<1188899438.28092.123.camel@domain.hid> <46DD6181.90108@domain.hid>
+In-Reply-To: <46DD6181.90108@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig20D548E61B7EBB86944EE28C"
+	boundary="------------enig45D8FE5B89250E8B1A4B4FF1"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] RT ISR re-entrance
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: =?ISO-8859-1?Q?=3F=3F?= <2hang.j1ng.home@domain.hid>
-Cc: adeos-main@gna.org
+Subject: Re: [Xenomai-core] VxWorks skin is missing new VxWorks headers for
+ RTP
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Ravid Baruch Naali <ravidbn@domain.hid>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig20D548E61B7EBB86944EE28C
+--------------enig45D8FE5B89250E8B1A4B4FF1
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-?? wrote:
-> hi all,
+Ravid Baruch Naali wrote:
+> The automated chart seems exactly the thing for me (I have some testing=
+
+> tools development experience).
 >=20
-> In SMP system, an edge triggerred interrupt may be dispatched to multip=
-le
-> cpus, so the RT ISR of this interrupt may be involved on multiple cpus =
-at
-> the same time. The question comes: is RT ISR need to be reentrant as
-> designed or do I miss something?
+> I'll look into it and will soon send a initial design.
 
-Good question. I would say: yes, it's the I-pipe user's job to take care
-of re-entrance safety.
+Hurray! You just deserved an option for a free beer! Now you just need
+to post the first related patch - and manage to meet me personally (the
+latter may be a bit trickier than the former ;)).
 
-Vanilla Linux prevents this via the IRQ_INPROGRESS flag. Xenomai 2.4 and
-since 2.3.2 achieves re-entrance protection for the registered driver
-handler by holding the IRQ-related spinlock while calling into that
-handler. Still, this isn't something the user should build his system
-upon. It is rather recommended for determinism and efficiency reasons to
-assign RT IRQs to a specific CPU.
+>=20
+> Of course any pinters/advice/suggestions will be highly appreciated.
 
-HTH,
+Let's start with creating the infrastructure for the targets firsts.
+Once we have more tests with unified output locally on the Xenomai
+targets, we can think about how to transfer this data to a central
+database and how to visualise that database on the web.
+
 Jan
 
 
---------------enig20D548E61B7EBB86944EE28C
+--------------enig45D8FE5B89250E8B1A4B4FF1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -58,10 +60,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG0qhFniDOoMHTA+kRAsNNAJ9tB/fVjS4GBz3F/DlbkMHxlbImyQCfbb2m
-xhY/8+LEfnAZa5GlsEwYKvg=
-=OsaE
+iD8DBQFG3csZniDOoMHTA+kRAqaaAJ4wQzZ8Cy3yLfpBlylWEyCgGDC1fQCdFoWh
+AIkLUz56rD9EOarbLingdgE=
+=R++9
 -----END PGP SIGNATURE-----
 
---------------enig20D548E61B7EBB86944EE28C--
+--------------enig45D8FE5B89250E8B1A4B4FF1--
 
