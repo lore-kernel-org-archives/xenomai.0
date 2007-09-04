@@ -1,13 +1,16 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46DD59D9.9010003@domain.hid>
-References: <46DD59D9.9010003@domain.hid>
+In-Reply-To: <2ff1a98a0709040150o16cfc522tb38e18ae49380afd@domain.hid>
+References: <46DC2484.6040004@domain.hid>
+	<2ff1a98a0709030832m77661616qfb36eff16b0115b@domain.hid>
+	<46DC7553.8040602@domain.hid>
+	<2ff1a98a0709040150o16cfc522tb38e18ae49380afd@domain.hid>
 Content-Type: text/plain
-Date: Tue, 04 Sep 2007 15:54:14 +0200
-Message-Id: <1188914054.28092.137.camel@domain.hid>
+Date: Tue, 04 Sep 2007 16:12:01 +0200
+Message-Id: <1188915121.28092.148.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Make watchdog-timer configurable
+Subject: Re: [Xenomai-core] [PATCH] VxWorks semaphore usage demo
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,87 +21,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Johan Borkhuis <j.borkhuis@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Ravid Baruch Naali <ravidbn@domain.hid>, xenomai@xenomai.org
 
-On Tue, 2007-09-04 at 15:12 +0200, Johan Borkhuis wrote:
-> I made the following change to Xenomai (version 2.3.2, but it could also 
-> be applied to 2.4 as the watchdog code has not been changed).
+On Tue, 2007-09-04 at 10:50 +0200, Gilles Chanteperdrix wrote:
+> On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
+> > Gilles Chanteperdrix wrote:
+> >
+> > > On 9/3/07, Ravid Baruch Naali <ravidbn@domain.hid> wrote:
+> > >
+> > >> Hello again,
+> > >>
+> > >
+> > > Hi,
+> > >
+> > >
+> > >> I'm not sure what is the preferred way to commit my changes, so before I
+> > >> commit i'm Attaching my patch in order to get you remarks and further
+> > >> instructions
+> > >>
+> > >
+> > > The synchronization on tasks completion with the semID semaphore seems
+> > > broken. The main thread will get the semahore when the first task
+> > > completes, not when all the tasks complete.
+> > >
+> > > I see too many comments, for instance:
+> > > // Checking for failures
+> > > if (error == ERROR)
+> > >
+> > > is useless, it is pretty obvious from reading the code that you are
+> > > checking for failure. Comments should tell us things that are not
+> > > obvious.
+> > >
+> > > Now, about the style, this is C code, so use C style comments. I would
+> > > also prefer that you use the kernel coding style, but this is not
+> > > kernel code, so I am not sure the rule is to use the kernel coding
+> > > style.
+> > >
+> > Re sending the patch following Gilles comments
 > 
-> The watchdog timeout is fixed at 4 seconds. For us this is a problem as 
-> there are some processes that take more time than this.
-> 
-> I made the following change to allow this to be changed through the 
-> Linux kernel configuration. The value is configurable between 1 and 60 
-> seconds.
-> 
-> Below is a patchfile that implements this change. Please let me know if 
-> you have comments on this, or if there are problems with this change.
+> Looks good to me, except for the typo in the errno_to_message
+> function. Philippe, could you apply this patch ? I am changing ISP, so
+> I have not internet at home.
 > 
 
-Looks good. Will merge, thanks.
+Ok, will merge.
 
-> ================
-> diff -u -r org/xenomai-2.3.2/ksrc/nucleus/Kconfig 
-> xenomai-2.3.2/ksrc/nucleus/Kconfig
-> --- org/xenomai-2.3.2/ksrc/nucleus/Kconfig      2007-07-06 
-> 18:42:14.000000000 +0200
-> +++ xenomai-2.3.2/ksrc/nucleus/Kconfig  2007-09-04 14:13:41.000000000 +0200
-> @@ -172,6 +172,17 @@
->         behalf of the timer tick handler, thus is only active after
->         the timer has been started.
->  
-> +config XENO_OPT_WATCHDOG_PERIOD
-> +       depends on XENO_OPT_WATCHDOG
-> +       int "Watchdog period (s)"
-> +       default 4
-> +    range 1 60
-> +       help
-> +
-> +    Nr of seconds of uninterrupted real-time activity after which
-> +    the watchdog triggers.
-> +
-> +
->  menu "Timing"
->  
->  config XENO_OPT_TIMING_PERIODIC
-> diff -u -r org/xenomai-2.3.2/ksrc/nucleus/pod.c 
-> xenomai-2.3.2/ksrc/nucleus/pod.c
-> --- org/xenomai-2.3.2/ksrc/nucleus/pod.c        2007-07-07 
-> 10:18:57.000000000 +0200
-> +++ xenomai-2.3.2/ksrc/nucleus/pod.c    2007-09-04 14:06:35.000000000 +0200
-> @@ -2925,7 +2925,7 @@
->         return nkpod->svctable.faulthandler(fltinfo);
->  }
->  
-> -#ifdef CONFIG_XENO_OPT_WATCHDOG
-> +#if (defined CONFIG_XENO_OPT_WATCHDOG) && 
-> (CONFIG_XENO_OPT_WATCHDOG_PERIOD > 0)
->  
->  /*!
->   * @internal
-> @@ -2948,7 +2948,7 @@
->                 return;
->         }
->  
-> -       if (unlikely(++sched->wd_count >= 4)) {
-> +       if (unlikely(++sched->wd_count >= 
-> CONFIG_XENO_OPT_WATCHDOG_PERIOD)) {
->                 xnltt_log_event(xeno_ev_watchdog, thread->name);
->                 xnprintf("watchdog triggered -- killing runaway thread 
-> '%s'\n",
->                          thread->name);
-> 
-> ================
-> 
-> Kind regards,
->     Johan Borkhuis
-> 
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
 Philippe.
 
