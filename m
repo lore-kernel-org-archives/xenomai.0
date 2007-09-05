@@ -1,12 +1,10 @@
+Message-ID: <46DE59D6.1040107@domain.hid>
+Date: Wed, 05 Sep 2007 09:25:10 +0200
+From: =?ISO-8859-1?Q?St=E9phane_ANCELOT?= <sancelot@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18148.5503.43798.880010@domain.hid>
-Date: Sun, 9 Sep 2007 17:47:11 +0200
-In-Reply-To: <46E3FCDE.8060203@domain.hid>
-References: <46E3FCDE.8060203@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] acpi and irq
+Subject: [Xenomai-help] pb sharing xeno heap data with std kernel module
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid
+To: xenomai-help <xenomai@xenomai.org>
 
-Roland Tollenaar wrote:
- > Hi,
- > 
- > I am having trouble with shared irq on two NIC's that I am trying to 
- > sort out.
- > 
- > Googling for solutions I notice that acpi has a lot to do with this. I 
- > recall somewhere that ACPI support can be disabled in the config when 
- > patching with xenomai. I was jsut wondering whether this can be related 
- > to the problem I have?
+Hi,
 
-I'd say you are confusion ACPI and APIC, and yes, enabling the APIC
-makes more IRQs available, so maybe this could help Linux avoiding IRQ
-sharing. Changing cards from slot usually also helps.
+I have setted up a shared heap between a kernel module and an user space
+app.
 
--- 
+However another "std" kernel model would need a ptr to some data in it .
 
+rt_heap are virtual adresses I suppose.
 
-					    Gilles Chanteperdrix.
+Is there a way to give a phys pointer to the other kernel module  ?
+
+Best Regards
+Steph
+
 
