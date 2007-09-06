@@ -1,11 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <46E071E6.8030807@domain.hid>
+Date: Thu, 06 Sep 2007 23:32:22 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C7F062.47AAAE0E"
-Date: Thu, 6 Sep 2007 10:45:30 +0200
-Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F9@domain.hid>
-From: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>
-Subject: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
+References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F9@domain.hid>
+In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F1F9@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig1BB9ACE3BF950358264873AF"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,100 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Markus Osterried (BA/EDD)" <markus.osterried@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------_=_NextPart_001_01C7F062.47AAAE0E
-Content-Type: text/plain;
-	charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig1BB9ACE3BF950358264873AF
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hello,
+Markus Osterried (BA/EDD) wrote:
+> Hello,
+>=20
+> I want to use rtdm_iomap_to_user() to map our device registers to user
+> space.
+> But this doesn't work, our application just crashes when I read from th=
+e
+> mapped registers.
+>=20
+> When I insert the line
+>=20
+> 	vma->vm_page_prot =3D phys_mem_access_prot(filp,
+> paddr>>PAGE_SHIFT, size, vma->vm_page_prot);
+>=20
+> in rtdm_mmap_buffer() just before calling xnarch_remap_io_page_range()
+> it works fine.
 
-I want to use rtdm_iomap_to_user() to map our device registers to user
-space.
-But this doesn't work, our application just crashes when I read from the
-mapped registers.
-
-When I insert the line
-
-	vma->vm_page_prot =3D phys_mem_access_prot(filp,
-paddr>>PAGE_SHIFT, size, vma->vm_page_prot);
-
-in rtdm_mmap_buffer() just before calling xnarch_remap_io_page_range()
-it works fine.
-This is just like it is done in /drivers/char/mem.c and in
-/drivers/video/fbmem.c.
-
-But I think this is architecture and kernel version dependent and I
-don't know whether rtdm_mmap_buffer() is the right place.
-I use Xenomai 2.3.1 and Linux 2.6.18 with PowerPC CPU.
-What is the best solution? Everyone else seen this problem?
-
-Thanks
-Markus
+[hint: using diff -up helps the reader to quickly localise your changes.]=
 
 
-------_=_NextPart_001_01C7F062.47AAAE0E
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+> This is just like it is done in /drivers/char/mem.c and in
+> /drivers/video/fbmem.c.
+>=20
+> But I think this is architecture and kernel version dependent and I
+> don't know whether rtdm_mmap_buffer() is the right place.
+> I use Xenomai 2.3.1 and Linux 2.6.18 with PowerPC CPU.
+> What is the best solution? Everyone else seen this problem?
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7652.24">
-<TITLE>rtdm_iomap_to_user() with PowerPC</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
+Providing phys_mem_access_prot() services for
+xnarch_remap_io_page_range() looks like it is actually required -
+practically at least for PPC, but I can't tell immediately if there
+aren't other yet unnoticed side effect of skipping it.
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hello,</FONT>
-</P>
+Hmm, can we extend xnarch_remap_io_page_range()/
+wrap_remap_io_page_range() to take care of this as well? Suggestions
+(ie. patches) welcome!
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">I want to use rtdm_iomap_to_user() to =
-map our device registers to user space.</FONT>
+Jan
 
-<BR><FONT SIZE=3D2 FACE=3D"Arial">But this doesn't work, our application =
-just crashes when I read from the mapped registers.</FONT>
-</P>
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">When I insert the line</FONT>
-</P>
+--------------enig1BB9ACE3BF950358264873AF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-<P>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <FONT SIZE=3D2 =
-FACE=3D"Arial">vma-&gt;vm_page_prot =3D phys_mem_access_prot(filp, =
-paddr&gt;&gt;PAGE_SHIFT, size, vma-&gt;vm_page_prot);</FONT>
-</P>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-<P><FONT SIZE=3D2 FACE=3D"Arial">in rtdm_mmap_buffer() just before =
-calling xnarch_remap_io_page_range() it works fine.</FONT>
+iD8DBQFG4HHmniDOoMHTA+kRAt2HAJ40xkX5s4xklz9GY7ouuRjZLZaQjwCfV/t7
+jO1GDVvvs4HbKGzhYhypVoQ=
+=99zq
+-----END PGP SIGNATURE-----
 
-<BR><FONT SIZE=3D2 FACE=3D"Arial">This is just like it is done in =
-/drivers/char/mem.c and in /drivers/video/fbmem.c.</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">But I think this is architecture and =
-kernel version dependent and I don't know whether rtdm_mmap_buffer() is =
-the right place.</FONT></P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">I use Xenomai 2.3.1 and Linux 2.6.18 =
-with PowerPC CPU.</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">What is the best solution? Everyone =
-else seen this problem?</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Thanks</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Markus</FONT>
-</P>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C7F062.47AAAE0E--
+--------------enig1BB9ACE3BF950358264873AF--
 
