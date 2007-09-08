@@ -1,14 +1,14 @@
-Message-ID: <46E30DE4.2060901@domain.hid>
-Date: Sat, 08 Sep 2007 23:02:28 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1ce16a2c0709081159y62fbb73bwb16d2cae7a931774@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <1ce16a2c0709081159y62fbb73bwb16d2cae7a931774@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig193186DF3C9D00779E31509A"
-Sender: jan.kiszka@domain.hid
+References: <1ce16a2c0709081159y62fbb73bwb16d2cae7a931774@domain.hid>
+Content-Type: text/plain
+Date: Sat, 08 Sep 2007 23:04:27 +0200
+Message-Id: <1189285467.6013.20.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-help] serial module problems
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,71 +21,81 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Bachman Kharazmi <bahkha@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig193186DF3C9D00779E31509A
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Bachman Kharazmi wrote:
+On Sat, 2007-09-08 at 20:59 +0200, Bachman Kharazmi wrote:
 > Hi
-> I'm a new xenomai user and would like to get the serial module working.=
+> I'm a new xenomai user and would like to get the serial module working.
+> 
 
->=20
+Which Xenomai version, which kernel release, which Adeos/I-pipe release?
+
 > I've 'builtin' serial support in my kernel, and tried to add a new
 > modified kernel line according to the docs which looks like:
->=20
-> kernel          /boot/maikern2 8250.nr_uarts=3D0
-> xeno_16550A.ioaddr=3D0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=3D4,3,=
-3,3
-> xeno_16550A.baud_base=3D115200,115200,115200,115200 root=3D/dev/hda3 ro=
+> 
 
->=20
+Make sure CONFIG_XENO_DRIVERS_16550A is enabled in your kernel
+configuration, and vanilla serial support disabled.
+
+> kernel          /boot/maikern2 8250.nr_uarts=0
+> xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=4,3,3,3
+> xeno_16550A.baud_base=115200,115200,115200,115200 root=/dev/hda3 ro
+> 
 > But when I boot my dmesg sais:
-> Kernel command line: 8250.nr_uarts=3D0
-> xeno_16550A.ioaddr=3D0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=3D4,3,=
-3,3
-> xeno_16550A.baud_base=3D115200,115200,115200,115200 root=3D/dev/hda3 ro=
-
-> Unknown boot option `xeno_16550A.ioaddr=3D0x03f8,0xbc00,0xbc08,0xb800':=
- ignoring
->=20
-
-The Wiki didn't reflect the upcoming version in Xenomai 2.4 yet. I
-updated it, please see http://www.xenomai.org/index.php/16550A (the
-essence: "ioaddr" is now called "io" for consistency reasons).
-
->=20
+> Kernel command line: 8250.nr_uarts=0
+> xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=4,3,3,3
+> xeno_16550A.baud_base=115200,115200,115200,115200 root=/dev/hda3 ro
+> Unknown boot option `xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800': ignoring
+> 
+> 
 > the serial example gives:
 > sandbox:/usr/src/xenomai/examples/rtdm/profiles/serial# ./cross-link
 > main : can't open rtser0 (write), No such device
->=20
->=20
-> I've tried to build the Serial support as a module instead, but it ends=
- up in:
+> 
+> 
+> I've tried to build the Serial support as a module instead, but it ends up in:
 > ERROR: "per_cpu__ipipe_percpu_daddr"
 > [drivers/xenomai/serial/xeno_16550A.ko] undefined!
 > when doing make bzImage modules.
+> 
 
-What I-pipe patch are you using? I saw that Philippe uploaded new
-revisions (see SVN) that may fix this issue. Please check independently
-of the other issue so that we know if that problem was fixed.
+I guess you might be using the latest Xenomai trunk/ with the latest
+Adeos/x86 patches from the 2.6.22/1.10 series then. Some new symbols
+have not been exported as they should in the latest Adeos release. The
+patch below fixes that.
 
-Jan
+index 4d5bf61..08f4c33 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1577,6 +1577,7 @@ EXPORT_SYMBOL(ipipe_control_irq);
+ EXPORT_SYMBOL(ipipe_suspend_domain);
+ EXPORT_SYMBOL(ipipe_alloc_virq);
+ EXPORT_PER_CPU_SYMBOL(ipipe_percpu_domain);
++EXPORT_PER_CPU_SYMBOL(ipipe_percpu_darray);
+ EXPORT_SYMBOL(ipipe_root);
+ EXPORT_SYMBOL(ipipe_stall_pipeline_from);
+ EXPORT_SYMBOL(ipipe_test_and_stall_pipeline_from);
+@@ -1597,6 +1598,7 @@ EXPORT_SYMBOL(__ipipe_lock_irq);
+ EXPORT_SYMBOL(__ipipe_unlock_irq);
+ #ifndef CONFIG_SMP
+ EXPORT_SYMBOL(__ipipe_root_status);
++EXPORT_PER_CPU_SYMBOL(ipipe_percpu_daddr);
+ #endif
+ EXPORT_SYMBOL(ipipe_register_domain);
+ EXPORT_SYMBOL(ipipe_unregister_domain);
+
+This fix is now part of the next Adeos/x86 release:
+
+http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.22-i386-1.10-03.patch
 
 
---------------enig193186DF3C9D00779E31509A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> Any help is welcome
+> /Bachman
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+-- 
+Philippe.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG4w3pniDOoMHTA+kRAvs6AJ91z0W0SR/3zzagyhDu9OGQHZzISwCfRyLW
-PWwv+M0gQWj3fazgooO1xMU=
-=nCUf
------END PGP SIGNATURE-----
-
---------------enig193186DF3C9D00779E31509A--
 
