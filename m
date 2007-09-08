@@ -1,15 +1,11 @@
-Message-ID: <46E25EBE.90700@domain.hid>
-Date: Sat, 08 Sep 2007 10:35:10 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <1ce16a2c0709081159y62fbb73bwb16d2cae7a931774@domain.hid>
+Date: Sat, 8 Sep 2007 20:59:25 +0200
+From: "Bachman Kharazmi" <bahkha@domain.hid>
 MIME-Version: 1.0
-References: <46DFD2EA.6000202@domain.hid> <46E07430.2060309@domain.hid>
-	<46E15E3B.50706@domain.hid>
-In-Reply-To: <46E15E3B.50706@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigE80B0B41AB3B5130DFDA0797"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RTDM
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] serial module problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,99 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE80B0B41AB3B5130DFDA0797
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi
+I'm a new xenomai user and would like to get the serial module working.
 
-Patrick wrote:
->=20
-> Jan Kiszka a =E9crit :
->> Patrick wrote:
->>  =20
->>> Hy,
->>>
->>> I don't understand the difference between rtdm function and standard =
-function.
->>> For exemple what is the diffrence between rtdm_printk and printk=20
->>>    =20
->>
->> Technically? None these days (printk is provided RT-safe by
->> Adeos/I-pipe), but it documents that the message may be printed from R=
-T
->> context. And who know if some future RTDM implementation may not have =
-to
->> differentiate internally again...
->>
->>  =20
->>> or rtdm_malloc=20
->>> and malloc ?
->>>    =20
->>
->> You mean kmalloc (malloc is user space only)? rtdm_malloc provides
->> memory from a dedicated pool (dedicated to Xenomai, excluding Linux) a=
-nd
->> uses a predictable allocator (as long as the memory usage pattern is
->> predictable). kmalloc is non-deterministic, and is shared with the who=
-le
->> Linux kernel.
->>  =20
-> Yes I use kmalloc... sorry
-> So kmalloc and rtdm_kmalloc is exactly the same ?
+I've 'builtin' serial support in my kernel, and tried to add a new
+modified kernel line according to the docs which looks like:
 
-They share the same purpose, but details differ, just look at the
-function arguments...
+kernel          /boot/maikern2 8250.nr_uarts=0
+xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=4,3,3,3
+xeno_16550A.baud_base=115200,115200,115200,115200 root=/dev/hda3 ro
 
->=20
->>  =20
->>> I am developping an RT driver so I must simply used only functions rt=
-dm ?
->>>    =20
->>
->> Regarding the two services above: Depends on the context. If they run =
-in
->> non-RT driver cleanup or device instantiation context, you should
->> continue to use standard Linux services. Just for usage from RT contex=
-ts
->> (tasks, IRQ handlers (please don't allocate memory in the latter
->> context, though...)) switch to those RTDM variants.
->>
->> Jan
->>
->>  =20
-> For IRQ handlers I use the rt_intr_ functions it's not right ? what is =
-the difference between this functions and th rtdm_irq ?
-
-Besides details, the main point is that you shall not mix APIs in your
-driver if you want to keep it portable to future RTDM environment.
-
->=20
-> Do you have an simple trivial exemple of rtdm driver with irq ?
-
-We still need to add such a tutorial to the RTDM series. In the
-meantime, you could have a look at irqbench from the testsuite for a
-more simple scenario. But, of course, you can also dig inside the other
-RTDM drivers in-tree or beyond, they are just not that simple.
-
-Jan
+But when I boot my dmesg sais:
+Kernel command line: 8250.nr_uarts=0
+xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800 xeno_16550A.irq=4,3,3,3
+xeno_16550A.baud_base=115200,115200,115200,115200 root=/dev/hda3 ro
+Unknown boot option `xeno_16550A.ioaddr=0x03f8,0xbc00,0xbc08,0xb800': ignoring
 
 
---------------enigE80B0B41AB3B5130DFDA0797
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+the serial example gives:
+sandbox:/usr/src/xenomai/examples/rtdm/profiles/serial# ./cross-link
+main : can't open rtser0 (write), No such device
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFG4l6+niDOoMHTA+kRAhfmAJwIZ2iyFuREsEIQvF4aLaAKJpAenQCeMVKP
-/qKfXtTlEJ74xmK1JKwW6tM=
-=vP+K
------END PGP SIGNATURE-----
+I've tried to build the Serial support as a module instead, but it ends up in:
+ERROR: "per_cpu__ipipe_percpu_daddr"
+[drivers/xenomai/serial/xeno_16550A.ko] undefined!
+when doing make bzImage modules.
 
---------------enigE80B0B41AB3B5130DFDA0797--
+Any help is welcome
+/Bachman
 
