@@ -1,16 +1,12 @@
-Message-ID: <2ff1a98a0709071207j77d4c39fudd79606d6f78bb99@domain.hid>
-Date: Fri, 7 Sep 2007 21:07:43 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <18145.40512.345477.578858@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Sun, 09 Sep 2007 23:22:17 +0200
+Message-Id: <1189372937.6013.48.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <200709071127.17913.peter.soetens@domain.hid>
-	<1189169200.26986.52.camel@domain.hid>
-	<18145.40512.345477.578858@domain.hid>
-Subject: Re: [Xenomai-core] Summary: Xenomai 2.3.2 and 2.4 lock-ups and
-	OOPSes
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.4-rc3
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,68 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 9/7/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> Philippe Gerum wrote:
->  > On Fri, 2007-09-07 at 11:27 +0200, Peter Soetens wrote:
->  > > Just in case you hooked off the long discussion about the issues we
-> found from
->  > > Xenomai 2.3.2 on:
->  > >
->  > >   o We are using the xeno_native skin, create Xeno tasks and
-> semaphores, but
->  > > have strong indications that the crashes are caused by the memory
-> allocation
->  > > scheme of Xenomai in combination with task creation/deletion
->  > >   o We found two ways to break Xenomai, causing a 'Killed'
-> (rt_task_delete)
->  > > and causing an OOPS (rt_task_join).
->  > >   o They happen on 2.6.20 and 2.6.22 kernels
->  > >   o On the 2.3 branch, r2429 works, r2433 causes the faults. The patch
-> is
->  > > small, and in the ChangLog:
->  > >
->  > > 2007-05-11  Philippe Gerum  <rpm@xenomai.org>
->  > >
->  > >     * include/nucleus/heap.h (xnfreesafe): Use xnpod_current_p() when
->  > >     checking for deferral.
->  > >
->  > >     * include/nucleus/pod.h (xnpod_current_p): Give exec mode
->  > >     awareness to this predicate, checking for primary/secondary mode
->  > >     of shadows.
->  > >
->  > > 2007-05-11  Gilles Chanteperdrix  <gilles.chanteperdrix@xenomai.org>
->  > >
->  > >     * ksrc/skins: Always defer thread memory release in deletion hook
->  > >     by calling xnheap_schedule_free() instead of xnfreesafe().
->  > >
->  > >   o We reverted this patch on HEAD of the 2.3 branch, but got -ENOMEM
-> errors
->  > > during Xenomai resource allocations, indicating that later changes
-> depend on
->  > > this patch. So we use clean HEAD again further on to find the causes:
->  > >  o A first test (in Orocos) creates one thread, two semaphores, lets it
-> wait
->  > > on them and cleans up the thread.
->  >
->  > Please point me at the actual Orocos test code that breaks, with the
->  > hope to get a fairly standalone test case from it; if you do have a
->  > standalone test case already, this would be even better. I intend to
->  > address this issue asap.
->
-> Before you have a piece of code that causes the crash, I gave a look at
-> the code involved. The only suspicious thing I see is that the correct
-> working of native skins thread termination depends on the execution
-> order of the two deletion hooks, the one in task.c and the one in
-> syscall.c. As a matter of fact, if the one in task.c is executed before
-> the one in syscall.c, the task magic is changed and xnshadow_unmap will
-> never be called. I suspect this is true for all skins, but I do not know
-> if this could cause a crash.
 
-There are two magics involved, this supposition is wrong.
+Here is the third candidate release for the v2.4.x branch. Most of the
+work since -rc2 was aimed at optimizing the interrupt pipeline, and
+first and foremost at reducing its cache footprints, initially for the
+powerpc and x86 ports. Other archs will be upgraded next. The powerpc
+arch also gains a combined 32/64bit support starting with 2.6.22. Short
+log follows:
+
+	[nucleus]
+
+	* Make the watchdog timeout value configurable.
+	* Remove preprocessor warnings from 2.4 builds.
+	* Always get references to per-cpu sched struct within
+	  migration-free sections.
+
+	[rtdm]
+
+	* Round up timeouts and delays when nanoseconds are to be
+	  converted to ticks (periodic timebase only).
+
+	[can]
+
+	* Fix race upon socket list update.
+	* RT-Socket-CAN SJA1000 driver for the EMS CPC PCI card
+	  (http://www.ems-wuensche.de).
+
+	[powerpc]
+
+	* Merge 32/64bit arch support into a single Adeos patch for 2.6.22
+	  (I-pipe 2.0 series, DENX tree: DENX-2007-08-30-1748).
+	* Upgrade combined Adeos support to 2.6.23-rc5 (DENX tree, git
+	  HEAD).
+	* PA-Semi (powerpc64) updates.
+	* Update Adeos/powerpc32 support for 2.6.20; forward port to
+	  2.6.21.
+
+	[i386]
+
+	* Release tick device in the non-LAPIC case (kernel >= 2.6.22).
+	* Upgrade Adeos support for 2.6.22 (I-pipe 1.10 series).
+
+We still have a few reported bugs pending and some I-pipe updates for
+the Blackfin, ARM and x86_64 ports to come too, so we will need -rc4.
+
+http://download.gna.org/xenomai/testing/xenomai-2.4-rc3.tar.bz2
 
 -- 
-                                               Gilles Chanteperdrix
+Philippe.
+
+
 
