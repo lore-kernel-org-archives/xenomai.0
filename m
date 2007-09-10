@@ -1,11 +1,14 @@
-Message-ID: <1ce16a2c0709100614j7b2b1d49g1552c654a7a4df5@domain.hid>
-Date: Mon, 10 Sep 2007 15:14:04 +0200
-From: "Bachman Kharazmi" <bahkha@domain.hid>
+Message-ID: <46E58BE4.9090109@domain.hid>
+Date: Mon, 10 Sep 2007 20:24:36 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Subject: [Xenomai-help] adding PCI support to 16550A.c
+References: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>
+In-Reply-To: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig57BAA791F6CDE7A8688BABA3"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] adding PCI support to 16550A.c
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,80 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Bachman Kharazmi <bahkha@domain.hid>
+Cc: xenomai@xenomai.org
 
-I've tried to make the pci serial controller visable to the 16550
-driver by adding:
-## FROM 16550A.c
-static int rt_16550_interrupt(rtdm_irq_t * irq_context)
-{
-	struct rt_16550_context *ctx;
-	unsigned long base;
-	int mode;
-	int iir;
-	uint64_t timestamp = rtdm_clock_read();
-	int rbytes = 0;
-	int events = 0;
-	int modem;
-	int ret = RTDM_IRQ_NONE;
-// TEST
-struct pci_dev *pdev = NULL;  // from
-http://bachman.tor.lindesign.se/tmp/driver/sunix/snx_golden.c
-pdev = pci_get_device(0, 0, pdev); // from
-http://bachman.tor.lindesign.se/tmp/driver/sunix/snx_golden.c
-//
-	ctx = rtdm_irq_get_arg(irq_context, struct rt_16550_context);
-	base = ctx->base_addr;
-	mode = rt_16550_io_mode_from_ctx(ctx);
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig57BAA791F6CDE7A8688BABA3
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-	rtdm_lock_get(&ctx->lock);
+Bachman Kharazmi wrote:
+> I've tried to make the pci serial controller visable to the 16550
+> driver by adding:
+> ## FROM 16550A.c
+> static int rt_16550_interrupt(rtdm_irq_t * irq_context)
+> {
+> 	struct rt_16550_context *ctx;
+> 	unsigned long base;
+> 	int mode;
+> 	int iir;
+> 	uint64_t timestamp =3D rtdm_clock_read();
+> 	int rbytes =3D 0;
+> 	int events =3D 0;
+> 	int modem;
+> 	int ret =3D RTDM_IRQ_NONE;
+> // TEST
+> struct pci_dev *pdev =3D NULL;  // from
+> http://bachman.tor.lindesign.se/tmp/driver/sunix/snx_golden.c
+> pdev =3D pci_get_device(0, 0, pdev); // from
+                       ^^^^^^
+You need to provide the fitting vendor and device ID here. Then you have
+to call pci_device_enable on that pdev - if it's not NULL (ie. not
+found). That should tell us if it's already enough to enable the device.
 
-	while (1) {
-		iir = rt_16550_reg_in(mode, base, IIR) & IIR_MASK;
-		if (testbits(iir, IIR_PIRQ))
-			break;
+Jan
 
 
-Loading module:
-insmod ./xeno_16550A.ko io=0x3f8,0xbc00 irq=4,3 tx_fifo=10,20 start_index=0
+--------------enig57BAA791F6CDE7A8688BABA3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-running crosslink test:
-sandbox:/usr/src/xenomai/examples/rtdm/profiles/serial# ./cross-link
-main : write-file opened
-main : write-config written
-main : read-file opened
-main : read-config written
-main : write-task created
-main : read-task created
-main : starting write-task
-main : starting read-task
- Nr |   write->irq    |    irq->read    |   write->read   |
------------------------------------------------------------
-read_task: error on RTSER_RTIOC_WAIT_EVENT, Connection timed out
-read_task: error on RTSER_RTIOC_WAIT_EVENT, Connection timed out
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-any ideas?
-regards /Bachman
+iD8DBQFG5YvkniDOoMHTA+kRAiK8AJwKNt1gRR5bOyISME0YZhfoTbTzMQCeM4is
+bc+XGhnH6CjrSlgY0eTw64Y=
+=GXxp
+-----END PGP SIGNATURE-----
 
-On 09/09/2007, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> > Are there any chance that modifications in the source will get it going?
->
-> Maybe we are just lacking some pci_enable_device() on the right pci_dev.
-> That would mean extending xeno_16550A to deal with PCI devices. Surely
-> feasible, but it takes time and hardware to test - I'm lacking both.
->
-> Are you willing to play a bit with it? Then, as a prototype, you could
-> pick up the lookup and enabling code from the snx driver and hack it
-> into xeno_16550A. If that works, we could discuss how to establish
-> something generic for PCI-based adapters.
->
-> Note that I haven't read through that driver in details. There is a
-> slight risk that some more bits are different. On the other hand, the
-> 16650 UART that seems to be on that card is advertised as
-> 16550-compatible, thus it /should/ work...
->
-> Jan
->
->
->
+--------------enig57BAA791F6CDE7A8688BABA3--
 
