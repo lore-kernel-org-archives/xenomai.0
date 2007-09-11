@@ -1,14 +1,17 @@
-Message-ID: <1ce16a2c0709110837r52eedac7vcc970d5c3b4e2d53@domain.hid>
-Date: Tue, 11 Sep 2007 17:37:26 +0200
-From: "Bachman Kharazmi" <bahkha@domain.hid>
-In-Reply-To: <46E59235.2060506@domain.hid>
+Message-ID: <46E6F290.9090901@domain.hid>
+Date: Tue, 11 Sep 2007 21:54:56 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_20669_772258.1189525046675"
-References: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>
-	<46E58BE4.9090109@domain.hid>
-	<1ce16a2c0709101142r6cf2d624oe443807575eadcfa@domain.hid>
+References: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>	
+	<46E58BE4.9090109@domain.hid>	
+	<1ce16a2c0709101142r6cf2d624oe443807575eadcfa@domain.hid>	
 	<46E59235.2060506@domain.hid>
+	<1ce16a2c0709110837r52eedac7vcc970d5c3b4e2d53@domain.hid>
+In-Reply-To: <1ce16a2c0709110837r52eedac7vcc970d5c3b4e2d53@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigE432646EA472675C2C23BA70"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] adding PCI support to 16550A.c
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,187 +22,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Bachman Kharazmi <bahkha@domain.hid>
 Cc: xenomai@xenomai.org
 
-------=_Part_20669_772258.1189525046675
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigE432646EA472675C2C23BA70
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-Now I've a modified crosslink (attached) which take argument and write
-to rtser0.
-I know it's ugly. But it's working and that's always good ;)
+Bachman Kharazmi wrote:
+> Now I've a modified crosslink (attached) which take argument and write
+> to rtser0.
+> I know it's ugly. But it's working and that's always good ;)
+>=20
+> Anyhow. From what I've heard it will be inefficient if my java code
+> would call "/usr/src/xenomai/example/crosslink string" even time a
+> string should be written to serial.
 
-Anyhow. From what I've heard it will be inefficient if my java code
-would call "/usr/src/xenomai/example/crosslink string" even time a
-string should be written to serial.
+Yes, it is better to avoid continuous process generations/destructions
+for such kind of work, rather write a native Java binding to Xenomai in
+order to talk to the serial port.
 
-And as it looks now I can't even run the binary as user else than root
-(since it starts a xenmai thread?).
+Hmm... Java... that makes me wonder again if your control loop is ought
+to be closed over Java and where you got/will get the RT-capable Java
+engine from. Could you tell us more about the architecture?
 
-How can I as a 'user' open a device, write to it and close it without
-keeping starting processes or threads every time?
+>=20
+> And as it looks now I can't even run the binary as user else than root
+> (since it starts a xenmai thread?).
 
-I would like to be able to do something like:
-file =  open("/dev/myTestSerialDevice");
-while (...)
-file.write(...)
-and finally close
-file.close() when there's no more to write.
+There is a module parameter of the nucleus called xenomai_gid. Provide a
+group ID, and all users of that group will gain "Xenomai-power" (means
+also the power to toast the box by spawning a CPU hog etc.). That allows
+you to do at least /some/ kind of privilege separation between RT users
+and root, though not a strictly secure one.
 
-/Bachman
+Did we already document this feature outside the code? Can't remember
+right now though I hacked it... :-/
 
-On 10/09/2007, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Bachman Kharazmi wrote:
-> > A guy recommended me to try to get things going with the working
-> > mobo-serialport first before playing with linux drivers and serial
-> > controllers.. probabily a good point to start at.
->
-> For sure. You may also test against a different PC running Linux or a
-> Windoz box with terminal programs installed, BTW.
->
-> >
-> > Anyhow I tried to used your cross-link.c to write ASCII to serialport
-> > rtser0. I connected the cable to the dc motor drive which accepts
-> > ASCII commands with CR(\r\n) at the end of every command line.
-> > The light version of your code that I was testing with looks like:
-> > http://pastebin.ca/690561
->
-> <Quick glance mode> You write strings of different length in lines 152
-> and 153, but you pass the same size (sz = sizeof(RTIME), ie. 8).
->
-> >
-> > I'm trying to write two simple commands in the example, but I couldn't
-> > get it working. Don't know why :/
-> >
-> > First when I got that working it would be even nicer to be able to
-> > give a argument to the binary which is a ASCII command(string) written
-> > to rtser0.
->
-> Go wild and write such a trivial, command line driver tool to test
-> serial ports! Would be highly appreciated, and quickly accepted into the
-> tree (if it's clean).
->
-> Jan
->
->
->
+>=20
+> How can I as a 'user' open a device, write to it and close it without
+> keeping starting processes or threads every time?
+>=20
+> I would like to be able to do something like:
+> file =3D  open("/dev/myTestSerialDevice");
+> while (...)
+> file.write(...)
+> and finally close
+> file.close() when there's no more to write.
 
-------=_Part_20669_772258.1189525046675
-Content-Type: text/x-csrc; name="cross-link.c"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="cross-link.c"
-X-Attachment-Id: f_f6gk8pbs
+You can copy this code almost unmodified into an application and compile
+it against the Xenomai POSIX skin. The serial port configuration apart
+(same under Linux, though), it will open "rtser<whatever>", even if
+given like "/dev/rtser...", and work on that port as if it where a Linux
+one. Life can be simple, sometimes.
 
-LyoKICogY3Jvc3MtbGluay5jCiAqCiAqIFVzZXJzcGFjZSB0ZXN0IHByb2dyYW0gKFhlbm9tYWkg
-bmF0aXZlIHNraW4pIGZvciBSVERNLWJhc2VkIFVBUlQgZHJpdmVycwogKiBDb3B5cmlnaHQgMjAw
-NSBieSBKb2VyZyBMYW5nZW5iZXJnIDxqb2VyZ2VsNzVAZ214Lm5ldD4KICoKICogVXBkYXRlcyBi
-eSBKYW4gS2lzemthIDxqYW4ua2lzemthQHdlYi5kZT4KICoKICogVGhpcyBwcm9ncmFtIGlzIGZy
-ZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkKICogaXQg
-dW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJs
-aXNoZWQgYnkKICogdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbjsgZWl0aGVyIHZlcnNpb24g
-MiBvZiB0aGUgTGljZW5zZSwgb3IKICogKGF0IHlvdXIgb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lv
-bi4KICoKICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQg
-d2lsbCBiZSB1c2VmdWwsCiAqIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dCBldmVu
-IHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mCiAqIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZP
-UiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUKICogR05VIEdlbmVyYWwgUHVibGljIExp
-Y2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4KICoKICogWW91IHNob3VsZCBoYXZlIHJlY2VpdmVkIGEg
-Y29weSBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UKICogYWxvbmcgd2l0aCB0aGlz
-IHByb2dyYW07IGlmIG5vdCwgd3JpdGUgdG8gdGhlIEZyZWUgU29mdHdhcmUKICogRm91bmRhdGlv
-biwgSW5jLiwgNjc1IE1hc3MgQXZlLCBDYW1icmlkZ2UsIE1BIDAyMTM5LCBVU0EuCiAqLwojaW5j
-bHVkZSA8c3RkaW8uaD4KI2luY2x1ZGUgPHNpZ25hbC5oPgojaW5jbHVkZSA8dW5pc3RkLmg+CiNp
-bmNsdWRlIDxzeXMvbW1hbi5oPgojaW5jbHVkZSA8c3RyaW5nLmg+CiNpbmNsdWRlIDxzdGRsaWIu
-aD4KI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+CiNpbmNsdWRlIDxuYXRpdmUvdGltZXIuaD4KCiNp
-bmNsdWRlIDxydGRtL3J0c2VyaWFsLmg+CgojZGVmaW5lIE1BSU5fUFJFRklYICAgIm1haW4gOiAi
-CiNkZWZpbmUgV1RBU0tfUFJFRklYICAid3JpdGVfdGFzazogIgovLyNkZWZpbmUgUlRBU0tfUFJF
-RklYICAicmVhZF90YXNrOiAiCgojZGVmaW5lIFdSSVRFX0ZJTEUgICAgInJ0c2VyMCIKCmludCB3
-cml0ZV9mZCA9IC0xOwoKI2RlZmluZSBTVEFURV9GSUxFX09QRU5FRCAgICAgICAgIDEKI2RlZmlu
-ZSBTVEFURV9UQVNLX0NSRUFURUQgICAgICAgIDIKCnVuc2lnbmVkIGludCB3cml0ZV9zdGF0ZSA9
-IDA7CgovKiAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tcy1tcy11cy1ucyAqLwpSVElNRSB3
-cml0ZV90YXNrX3BlcmlvZF9ucyA9ICAgIDEwMDAwMDAwMGxsdTsKUlRfVEFTSyB3cml0ZV90YXNr
-OwoKc3RhdGljIGNvbnN0IHN0cnVjdCBydHNlcl9jb25maWcgcmVhZF9jb25maWcgPSB7CgkuY29u
-ZmlnX21hc2sgICAgICAgPSAweEZGRkYsCgkuYmF1ZF9yYXRlICAgICAgICAgPSAxMTUyMDAsCgku
-cGFyaXR5ICAgICAgICAgICAgPSBSVFNFUl9ERUZfUEFSSVRZLAoJLmRhdGFfYml0cyAgICAgICAg
-ID0gUlRTRVJfREVGX0JJVFMsCgkuc3RvcF9iaXRzICAgICAgICAgPSBSVFNFUl9ERUZfU1RPUEIs
-CgkuaGFuZHNoYWtlICAgICAgICAgPSBSVFNFUl9ERUZfSEFORCwKCS5maWZvX2RlcHRoICAgICAg
-ICA9IFJUU0VSX0RFRl9GSUZPX0RFUFRILAoJLnJ4X3RpbWVvdXQgICAgICAgID0gUlRTRVJfREVG
-X1RJTUVPVVQsCgkudHhfdGltZW91dCAgICAgICAgPSBSVFNFUl9ERUZfVElNRU9VVCwKCS5ldmVu
-dF90aW1lb3V0ICAgICA9IDEwMDAwMDAwMDAsIC8qIDEgcyAqLwoJLnRpbWVzdGFtcF9oaXN0b3J5
-ID0gUlRTRVJfUlhfVElNRVNUQU1QX0hJU1RPUlksCgkuZXZlbnRfbWFzayAgICAgICAgPSBSVFNF
-Ul9FVkVOVF9SWFBFTkQsCn07CgpzdGF0aWMgY29uc3Qgc3RydWN0IHJ0c2VyX2NvbmZpZyB3cml0
-ZV9jb25maWcgPSB7CgkuY29uZmlnX21hc2sgICAgICAgPSBSVFNFUl9TRVRfQkFVRCB8IFJUU0VS
-X1NFVF9USU1FU1RBTVBfSElTVE9SWSwKCS5iYXVkX3JhdGUgICAgICAgICA9IDExNTIwMCwKCS50
-aW1lc3RhbXBfaGlzdG9yeSA9IFJUU0VSX0RFRl9USU1FU1RBTVBfSElTVE9SWSwKCS8qIHRoZSBy
-ZXN0IGltcGxpY2l0ZWx5IHJlbWFpbnMgZGVmYXVsdCAqLwp9OwoKc3RhdGljIGludCBjbG9zZV9m
-aWxlKCBpbnQgZmQsIGNoYXIgKm5hbWUpCnsKCWludCBlcnIsIGk9MDsKCQoJZG8gewoJCWkrKzsK
-CQllcnIgPSBydF9kZXZfY2xvc2UoZmQpOwoJCXN3aXRjaCAoZXJyKSB7CgkJY2FzZSAtRUFHQUlO
-OgoJCQlwcmludGYoTUFJTl9QUkVGSVggIiVzIC0+IEVBR0FJTiAoJWQgdGltZXMpXG4iLAoJCQkg
-ICAgICAgbmFtZSwgaSk7CgkJCXJ0X3Rhc2tfc2xlZXAoNTAwMDApOyAvKiB3YWl0IDUwdXMgKi8K
-CQkJYnJlYWs7CgkJY2FzZSAwOgoJCQlwcmludGYoTUFJTl9QUkVGSVggIiVzIC0+IGNsb3NlZFxu
-IiwgbmFtZSk7CgkJCWJyZWFrOwoJCWRlZmF1bHQ6CgkJCXByaW50ZihNQUlOX1BSRUZJWCAiJXMg
-LT4gJXNcbiIsIG5hbWUsCgkJCSAgICAgICBzdHJlcnJvcigtZXJyKSk7CgkJCWJyZWFrOwoJCX0K
-CX0gd2hpbGUgKGVyciA9PSAtRUFHQUlOICYmIGkgPCAxMCk7CgoJcmV0dXJuIGVycjsKfQoKdm9p
-ZCBjbGVhbnVwX2FsbCh2b2lkKQp7CglpZiAod3JpdGVfc3RhdGUgJiBTVEFURV9GSUxFX09QRU5F
-RCkgewoJCWNsb3NlX2ZpbGUod3JpdGVfZmQsIFdSSVRFX0ZJTEUgIiAod3JpdGUpIik7CgkJd3Jp
-dGVfc3RhdGUgJj0gflNUQVRFX0ZJTEVfT1BFTkVEOwoJfQoJCglpZiAod3JpdGVfc3RhdGUgJiBT
-VEFURV9UQVNLX0NSRUFURUQpIHsKCQlwcmludGYoTUFJTl9QUkVGSVggImRlbGV0ZSB3cml0ZV90
-YXNrXG4iKTsKCQlydF90YXNrX2RlbGV0ZSgmd3JpdGVfdGFzayk7CgkJd3JpdGVfc3RhdGUgJj0g
-flNUQVRFX1RBU0tfQ1JFQVRFRDsKCX0KCQp9Cgp2b2lkIGNhdGNoX3NpZ25hbChpbnQgc2lnKQp7
-CgljbGVhbnVwX2FsbCgpOwoJcHJpbnRmKE1BSU5fUFJFRklYICJleGl0XG4iKTsKCXJldHVybjsK
-fQoKLy92b2lkIHdyaXRlX3Rhc2tfcHJvYyh2b2lkICphcmcpewp2b2lkIHdyaXRlX3Rhc2tfcHJv
-Yyh2b2lkICphcmcpewpjaGFyKiBteVN0cmluZzE9YXJnOwovL3ByaW50ZigiJXNcbiIsbXlTdHJp
-bmcxKTsKCWludCBlcnI7Ci8vCVJUSU1FIHdyaXRlX3RpbWU7CglpbnQgd3JpdGVfdGltZTsKCXNz
-aXplX3Qgc3ogPSBzaXplb2YoUlRJTUUpOwoJc3NpemVfdCB3cml0dGVuID0gMDsKCWludCBjb3Vu
-dGVyPTA7CgoJZXJyID0gcnRfdGFza19zZXRfcGVyaW9kaWMoTlVMTCwgVE1fTk9XLAoJCQkJICAg
-cnRfdGltZXJfbnMydGlja3Mod3JpdGVfdGFza19wZXJpb2RfbnMpKTsKCWlmIChlcnIpIHsKCQlw
-cmludGYoV1RBU0tfUFJFRklYICJlcnJvciBvbiBzZXQgcGVyaW9kaWMsICVzXG4iLAoJCSAgICAg
-ICBzdHJlcnJvcigtZXJyKSk7CgkJZ290byBleGl0X3dyaXRlX3Rhc2s7Cgl9CgoJd2hpbGUgKGNv
-dW50ZXI9PTApIHsKCQllcnIgPSBydF90YXNrX3dhaXRfcGVyaW9kKE5VTEwpOwoJCWlmIChlcnIp
-IHsKCQkJcHJpbnRmKFdUQVNLX1BSRUZJWAoJCQkgICAgICAgImVycm9yIG9uIHJ0X3Rhc2tfd2Fp
-dF9wZXJpb2QsICVzXG4iLAoJCQkgICAgICAgc3RyZXJyb3IoLWVycikpOwoJCQlicmVhazsKCQl9
-CgkKCQkvL3dyaXRlX3RpbWUgPSBydF90aW1lcl9yZWFkKCk7CgkJLy93cml0ZV90aW1lID0gMTsK
-CQkKCS8vCWNoYXIgKm15c3RyaW5nYSA9ICJFTlxyXG4iOwoJLy8JY2hhciAqbXlzdHJpbmdiID0g
-IlYwXHJcbiI7CgkJLy9pbnQgdGVzdD0zOwoJCXdyaXR0ZW4gPSBydF9kZXZfd3JpdGUod3JpdGVf
-ZmQsIG15U3RyaW5nMSwgc3RybGVuKG15U3RyaW5nMSkpOwovLwkJd3JpdHRlbiA9IHJ0X2Rldl93
-cml0ZSh3cml0ZV9mZCwgbXlzdHJpbmdiLCBzdHJsZW4obXlzdHJpbmdiKSk7CgkJaWYgKHdyaXR0
-ZW4gPCAwICkgewoJCQlwcmludGYoV1RBU0tfUFJFRklYICJlcnJvciBvbiBydF9kZXZfd3JpdGUs
-ICVzXG4iLAoJCQkgICAgICAgc3RyZXJyb3IoLWVycikpOwoJCQlicmVhazsKCQl9IGVsc2UgaWYg
-KHdyaXR0ZW4gIT0gc3opIHsKLy8JCQlwcmludGYoV1RBU0tfUFJFRklYICJvbmx5ICVkIC8gJWQg
-Ynl0ZSB0cmFuc21pdHRlZFxuIiwKLy8JCQkgICAgICAgd3JpdHRlbiwgc3opOwoJCQlicmVhazsK
-CQl9Cgljb3VudGVyKys7Cgl9CglleGl0KDApOwogZXhpdF93cml0ZV90YXNrOgoJaWYgKCh3cml0
-ZV9zdGF0ZSAmIFNUQVRFX0ZJTEVfT1BFTkVEKSAmJgoJICAgIGNsb3NlX2ZpbGUod3JpdGVfZmQs
-IFdSSVRFX0ZJTEUgIiAod3JpdGUpIikgPT0gMCkKCQl3cml0ZV9zdGF0ZSAmPSB+U1RBVEVfRklM
-RV9PUEVORUQ7CgovLwlwcmludGYoV1RBU0tfUFJFRklYICJleGl0XG4iKTsKfQoKCmludCBtYWlu
-KGludCBhcmdjICwgY2hhciAqYXJndltdKXsKCWludCBlcnIgPSAwOwogICAgICAgIC8vcHJpbnRm
-KCIlc1xuIixhcmd2WzFdKTsKCWNoYXIgKm15U3RyaW5nID0gYXJndlsxXTsKCS8vcHJpbnRmKCIl
-c1xuIixteVN0cmluZyk7CgovL3ByaW50ZigiJXNcbiIsbXlTdHJpbmcpOwovL2NoYXIgZmluYWxT
-dHJpbmcgPSBzdHJjYXQoIGNoYXIgKm15U3RyaW5nLCBjaGFyICpjciApOwpjaGFyICpmaW5hbFN0
-cmluZyA9IChjaGFyKikgbWFsbG9jKHNpemVvZihjaGFyKSooc3RybGVuKG15U3RyaW5nKSszKSk7
-CnNwcmludGYoZmluYWxTdHJpbmcsICIlc1xyXG4iLCBteVN0cmluZyk7Ci8vCglzaWduYWwoU0lH
-VEVSTSwgY2F0Y2hfc2lnbmFsKTsKCXNpZ25hbChTSUdJTlQsIGNhdGNoX3NpZ25hbCk7CgoJLyog
-bm8gbWVtb3J5LXN3YXBwaW5nIGZvciB0aGlzIHByb2dyYW1tICovCgltbG9ja2FsbChNQ0xfQ1VS
-UkVOVCB8IE1DTF9GVVRVUkUpOwoKCS8qIG9wZW4gcnRzZXIwICovCgl3cml0ZV9mZCA9IHJ0X2Rl
-dl9vcGVuKCBXUklURV9GSUxFLCAwKTsKCWlmICh3cml0ZV9mZCA8IDApIHsKCQlwcmludGYoTUFJ
-Tl9QUkVGSVggImNhbid0IG9wZW4gJXMgKHdyaXRlKSwgJXNcbiIsIFdSSVRFX0ZJTEUsCgkJICAg
-ICAgIHN0cmVycm9yKC13cml0ZV9mZCkpOwoJCWdvdG8gZXJyb3I7Cgl9Cgl3cml0ZV9zdGF0ZSB8
-PSBTVEFURV9GSUxFX09QRU5FRDsKLy8JcHJpbnRmKE1BSU5fUFJFRklYICJ3cml0ZS1maWxlIG9w
-ZW5lZFxuIik7CgoJLyogd3JpdGluZyB3cml0ZS1jb25maWcgKi8KCWVyciA9IHJ0X2Rldl9pb2N0
-bCh3cml0ZV9mZCwgUlRTRVJfUlRJT0NfU0VUX0NPTkZJRywgJndyaXRlX2NvbmZpZyk7CglpZiAo
-ZXJyKSB7CgkJcHJpbnRmKE1BSU5fUFJFRklYICJlcnJvciB3aGlsZSBSVFNFUl9SVElPQ19TRVRf
-Q09ORklHLCAlc1xuIiwKCQkgICAgICAgc3RyZXJyb3IoLWVycikpOwoJCWdvdG8gZXJyb3I7Cgl9
-Ci8vCXByaW50ZihNQUlOX1BSRUZJWCAid3JpdGUtY29uZmlnIHdyaXR0ZW5cbiIpOwoKCS8qIGNy
-ZWF0ZSB3cml0ZV90YXNrICovCgllcnIgPSBydF90YXNrX2NyZWF0ZSgmd3JpdGVfdGFzaywgIndy
-aXRlX3Rhc2siLCAwLCA1MCwgMCk7CglpZiAoZXJyKSB7CgkJcHJpbnRmKE1BSU5fUFJFRklYICJm
-YWlsZWQgdG8gY3JlYXRlIHdyaXRlX3Rhc2ssICVzXG4iLAoJCSAgICAgICBzdHJlcnJvcigtZXJy
-KSk7CgkJZ290byBlcnJvcjsKCX0KCXdyaXRlX3N0YXRlIHw9IFNUQVRFX1RBU0tfQ1JFQVRFRDsK
-Ly8JcHJpbnRmKE1BSU5fUFJFRklYICJ3cml0ZS10YXNrIGNyZWF0ZWRcbiIpOwoKCS8qIHN0YXJ0
-IHdyaXRlX3Rhc2sgKi8KLy8JcHJpbnRmKE1BSU5fUFJFRklYICJzdGFydGluZyB3cml0ZS10YXNr
-XG4iKTsKCS8vZXJyID0gcnRfdGFza19zdGFydCgmd3JpdGVfdGFzaywgJndyaXRlX3Rhc2tfcHJv
-YywgTlVMTCk7CgllcnIgPSBydF90YXNrX3N0YXJ0KCZ3cml0ZV90YXNrLCAmd3JpdGVfdGFza19w
-cm9jLCBmaW5hbFN0cmluZyk7CQoKCWlmIChlcnIpIHsKCQlwcmludGYoTUFJTl9QUkVGSVggImZh
-aWxlZCB0byBzdGFydCB3cml0ZV90YXNrLCAlc1xuIiwKCQkgICAgICAgc3RyZXJyb3IoLWVycikp
-OwoJCWdvdG8gZXJyb3I7Cgl9CgoJcGF1c2UoKTsKCXJldHVybiAwOwoKIGVycm9yOgoJY2xlYW51
-cF9hbGwoKTsKCXJldHVybiBlcnI7Cn0K
-------=_Part_20669_772258.1189525046675--
+Jan
+
+
+
+--------------enigE432646EA472675C2C23BA70
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFG5vKQniDOoMHTA+kRAjoUAJkByIV8zkmF3MZajxnhS41viyOShgCeI0lE
+EOvEdqnQhfCOKK0EcexNORQ=
+=XzkW
+-----END PGP SIGNATURE-----
+
+--------------enigE432646EA472675C2C23BA70--
 
