@@ -1,54 +1,58 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46FF81BA.1020506@domain.hid>
-References: <46F9167F.20008@domain.hid> <1190756271.26427.0.camel@domain.hid>
-	<46FA26ED.4070505@domain.hid>  <46FF78DF.7090104@domain.hid>
-	<1191149545.5989.7.camel@domain.hid>  <46FF81BA.1020506@domain.hid>
-Content-Type: text/plain
-Date: Sun, 30 Sep 2007 21:52:09 +0200
-Message-Id: <1191181929.5989.33.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Non-APIC setup broken for 2.4-SVN?
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Date: Tue, 11 Sep 2007 03:52:15 -0700 (PDT)
+From: poornima r <rpoornar@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Message-ID: <747825.19128.qm@domain.hid>
+Subject: [Adeos-main] Adeos to Linux domain data communication
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-On Sun, 2007-09-30 at 13:00 +0200, Jan Kiszka wrote:
-> > Do you work with 2.6.22 baseline, or the latest stable update?
-> 
-> 2.6.22.7 and .23-rc8. Both hang hard when I play with the backlight
-> keys
-> of my Fujitsu-Siemens Lifebook,
+Hello,
 
-Hey, shameless plug, you have been caught. :o)
+I am working on PPC boards (MPC 860).
+I have patched
+Adeos(adeos-ipipe-2.6.18-ppc-1.5-01.patch)
+to my vanilla kernel linux-2.6.18.
+My requirement are 
+1. A domain servicing critical interrupts and 
+2. Adeos to Linux domain communication
 
-> > Grmff... Do you run with your smp_processor_id() instrumentation in?
-> 
-> Yes, but I suspect this is just a symptom of some severe memory
-> corruption that (also?) hits I-pipe data structures.
+I could implement the first requirement by creating a 
+test domain where my interrupts are getting serviced
+as provided in the below link
+http://www.captain.at/adeos-ipipe-jitter-latency-test.php
 
-Unlikely, but a timing-dependent issue may explain this behaviour as
-well.
 
->  I just put in some
-> different instrumentation, and that warning is gone, the box just
-> hangs
-> hard at a different point. Very unfriendly.
-> 
-> Jan
-> 
--- 
-Philippe.
+But for the second requirement I went through all the
+API services provided by Adeos but, dint find any APIs
+ providing data communication services between Adeos
+and Linux domains. Is there any method to implement
+the above similar to pipes in Xenomai (I am not using
+Xenomai in my current implementation).
+
+But when went through Adeos related papers and
+documents, I found that Adeos is mainly used for
+harware sharing among multiple OSes or domains but
+alone does not provide tasking, communication, etc. So
+do you think     
+can we implement communication mechanism similar to
+xenomai pipes for Adeos domain and Linux domain
+communication or is it worth using Xenomai?     
+
+Thanks & Regards,
+Poornima
+
+
+      ____________________________________________________________________________________
+Shape Yahoo! in your own image.  Join our Network Research Panel today!   http://surveylink.yahoo.com/gmrs/yahoo_panel_invite.asp?a=7 
 
 
 
