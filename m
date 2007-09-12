@@ -1,7 +1,7 @@
-Message-ID: <2ff1a98a0709120932x80374eaj2d4f7f6aa4a42150@domain.hid>
-Date: Wed, 12 Sep 2007 18:32:17 +0200
+Message-ID: <2ff1a98a0709120933t43a8636g32b61652aea163b1@domain.hid>
+Date: Wed, 12 Sep 2007 18:33:53 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1ce16a2c0709120702m1d4cc503vb045f3d2e0814d67@domain.hid>
+In-Reply-To: <1ce16a2c0709120922t50ead4ep695f2bf1b061c57c@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
@@ -13,6 +13,7 @@ References: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>
 	<1ce16a2c0709110837r52eedac7vcc970d5c3b4e2d53@domain.hid>
 	<46E6F290.9090901@domain.hid>
 	<1ce16a2c0709120702m1d4cc503vb045f3d2e0814d67@domain.hid>
+	<1ce16a2c0709120922t50ead4ep695f2bf1b061c57c@domain.hid>
 Subject: Re: [Xenomai-help] adding PCI support to 16550A.c
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -27,33 +28,18 @@ To: Bachman Kharazmi <bahkha@domain.hid>
 Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
 On 9/12/07, Bachman Kharazmi <bahkha@domain.hid> wrote:
-> > You can copy this code almost unmodified into an application and compile
-> > it against the Xenomai POSIX skin. The serial port configuration apart
-> > (same under Linux, though), it will open "rtser<whatever>", even if
-> > given like "/dev/rtser...", and work on that port as if it where a Linux
-> > one. Life can be simple, sometimes.
->
-> Simple? ;)
-> I've tried to write a c-program which basiclly should open the device
-> rtser0 and write 100x to it and then close.
->
-> The simple program can be found here: http://pastebin.ca/693873
->
-> I've connected the serial cable to a reading terminal, but there's no
-> data at all, when I run the binary. :/
+> another example which confuse me:
+> ##
+> void write_task_proc(void *arg){
+>         int err;
+>         RTIME write_time;
+>         ssize_t sz = sizeof(RTIME);
+>         ssize_t written = 0;
+>         err = rt_task_set_periodic(NULL,
+> TM_NOW,rt_timer_ns2ticks(write_task_period_ns));
 
-You are missing a call to rt_task_shadow. Note that with the POSIX
-skin, this would not happen, because the main thread is automatically
-shadowed.
-
->
-> /Bachman
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+How much is writ_task_period_ns ? If it is 10000000011, then you
+should wait around 10 s before "test2" is displayed.
 
 
 -- 
