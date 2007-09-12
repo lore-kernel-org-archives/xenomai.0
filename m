@@ -1,14 +1,19 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46DE59D6.1040107@domain.hid>
-References: <46DE59D6.1040107@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Date: Wed, 05 Sep 2007 11:16:01 +0200
-Message-Id: <1188983761.28092.278.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] pb sharing xeno heap data with std kernel module
-Reply-To: rpm@xenomai.org
+Message-ID: <2ff1a98a0709120932x80374eaj2d4f7f6aa4a42150@domain.hid>
+Date: Wed, 12 Sep 2007 18:32:17 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <1ce16a2c0709120702m1d4cc503vb045f3d2e0814d67@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <1ce16a2c0709100614u3f23fce9yd2be767406fa536a@domain.hid>
+	<46E58BE4.9090109@domain.hid>
+	<1ce16a2c0709101142r6cf2d624oe443807575eadcfa@domain.hid>
+	<46E59235.2060506@domain.hid>
+	<1ce16a2c0709110837r52eedac7vcc970d5c3b4e2d53@domain.hid>
+	<46E6F290.9090901@domain.hid>
+	<1ce16a2c0709120702m1d4cc503vb045f3d2e0814d67@domain.hid>
+Subject: Re: [Xenomai-help] adding PCI support to 16550A.c
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,36 +23,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?St=E9phane?= ANCELOT <sancelot@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Bachman Kharazmi <bahkha@domain.hid>
+Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
 
-On Wed, 2007-09-05 at 09:25 +0200, St=E9phane ANCELOT wrote:
-> Hi,
->=20
-> I have setted up a shared heap between a kernel module and an user space
-> app.
->=20
-> However another "std" kernel model would need a ptr to some data in it .
->=20
-> rt_heap are virtual adresses I suppose.
->=20
-> Is there a way to give a phys pointer to the other kernel module  ?
->=20
+On 9/12/07, Bachman Kharazmi <bahkha@domain.hid> wrote:
+> > You can copy this code almost unmodified into an application and compile
+> > it against the Xenomai POSIX skin. The serial port configuration apart
+> > (same under Linux, though), it will open "rtser<whatever>", even if
+> > given like "/dev/rtser...", and work on that port as if it where a Linux
+> > one. Life can be simple, sometimes.
+>
+> Simple? ;)
+> I've tried to write a c-program which basiclly should open the device
+> rtser0 and write 100x to it and then close.
+>
+> The simple program can be found here: http://pastebin.ca/693873
+>
+> I've connected the serial cable to a reading terminal, but there's no
+> data at all, when I run the binary. :/
 
-You should rather store offsets to data from the heap start address
-instead of pointers, and compose pointers using the (base, offset) pair
-when dereferencing data within this space.
+You are missing a call to rt_task_shadow. Note that with the POSIX
+skin, this would not happen, because the main thread is automatically
+shadowed.
 
-> Best Regards
-> Steph
->=20
->=20
+>
+> /Bachman
+>
 > _______________________________________________
 > Xenomai-help mailing list
 > Xenomai-help@domain.hid
 > https://mail.gna.org/listinfo/xenomai-help
---=20
-Philippe.
+>
 
 
+-- 
+                                               Gilles Chanteperdrix
 
