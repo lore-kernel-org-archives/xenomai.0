@@ -1,12 +1,15 @@
-Message-ID: <46EB8390.2010206@domain.hid>
-Date: Sat, 15 Sep 2007 09:02:40 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5C41ED58F432D5CF131794A9"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [Resent][PATCH] fix doxygen complaints
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <200709071127.17913.peter.soetens@domain.hid>
+References: <200709071127.17913.peter.soetens@domain.hid>
+Content-Type: text/plain
+Date: Sat, 15 Sep 2007 20:52:59 +0200
+Message-Id: <1189882379.25006.181.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4 lock-ups
+	and OOPSes
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,230 +19,157 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-core <xenomai@xenomai.org>
+To: Peter Soetens <peter.soetens@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5C41ED58F432D5CF131794A9
-Content-Type: multipart/mixed;
- boundary="------------090302080006000402080608"
+On Fri, 2007-09-07 at 11:27 +0200, Peter Soetens wrote:
+> Just in case you hooked off the long discussion about the issues we found from
+> Xenomai 2.3.2 on:
+> 
+>   o We are using the xeno_native skin, create Xeno tasks and semaphores, but 
+> have strong indications that the crashes are caused by the memory allocation 
+> scheme of Xenomai in combination with task creation/deletion
+>   o We found two ways to break Xenomai, causing a 'Killed' (rt_task_delete) 
+> and causing an OOPS (rt_task_join).
+>   o They happen on 2.6.20 and 2.6.22 kernels
+>   o On the 2.3 branch, r2429 works, r2433 causes the faults. The patch is 
+> small, and in the ChangLog: 
+> 
 
-This is a multi-part message in MIME format.
---------------090302080006000402080608
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Please try this patch against v2.3.x. A double free issue on a task TCB
+already scheduled for memory release was causing all sorts of troubles,
+basically trashing the system heap afterwards:
 
-Hi Philippe,
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(revision 2990)
++++ ChangeLog	(revision 2992)
+@@ -1,3 +1,19 @@
++2007-09-15  Philippe Gerum  <rpm@xenomai.org>
++
++	* ksrc/skins/vrtx/syscall.c (__sc_tecreate): 
++	* ksrc/skins/vxworks/syscall.c (__wind_task_init): 
++	* ksrc/skins/native/syscall.c (__rt_task_create): Protect against
++	duplicate TCB memory release (first issued by the deletion hook)
++	upon task creation error.
++	
++	* ksrc/skins/native/syscall.c (__rt_task_create): Make sure we
++	attempt to release the TCB memory after any failure to shadow the
++	task.
++
++	* ksrc/skins/native/task.c (rt_task_create): Get out faster from
++	the error case by calling xnpod_delete_thread() upon registration
++	failure.
++
+ 2007-09-04  Johan Borkhuis <j.borkhuis@domain.hid>
+ 
+ 	* ksrc/nucleus/pod.c: Make the watchdog timeout value configurable.
+Index: ksrc/skins/vrtx/syscall.c
+===================================================================
+--- ksrc/skins/vrtx/syscall.c	(revision 2990)
++++ ksrc/skins/vrtx/syscall.c	(revision 2992)
+@@ -86,6 +86,8 @@
+ 		goto done;
+ 	}
+ 
++	xnthread_clear_state(&task->threadbase, XNZOMBIE);
++
+ 	tid =
+ 	    sc_tecreate_inner(task, NULL, tid, prio, mode, 0, 0, NULL, 0, &err);
+ 
+@@ -98,7 +100,7 @@
+ 		err = xnshadow_map(&task->threadbase, u_completion);
+ 	}
+ 
+-	if (err)
++	if (err && !xnthread_test_state(&task->threadbase, XNZOMBIE))
+ 		xnfree(task);
+ 
+       done:
+Index: ksrc/skins/vxworks/syscall.c
+===================================================================
+--- ksrc/skins/vxworks/syscall.c	(revision 2990)
++++ ksrc/skins/vxworks/syscall.c	(revision 2992)
+@@ -111,6 +111,8 @@
+ 		return -ENOMEM;
+ 	}
+ 
++	xnthread_clear_state(&task->threadbase, XNZOMBIE);
++
+ 	/* Force FPU support in user-space. This will lead to a no-op if
+ 	   the platform does not support it. */
+ 
+@@ -132,7 +134,7 @@
+ 			xnshadow_signal_completion(u_completion, err);
+ 	}
+ 
+-	if (err)
++	if (err && !xnthread_test_state(&task->threadbase, XNZOMBIE))
+ 		xnfree(task);
+ 
+ 	return err;
+Index: ksrc/skins/native/task.c
+===================================================================
+--- ksrc/skins/native/task.c	(revision 2990)
++++ ksrc/skins/native/task.c	(revision 2992)
+@@ -286,7 +286,7 @@
+ 				       &xnthread_handle(&task->thread_base),
+ 				       NULL);
+ 		if (err)
+-			rt_task_delete(task);
++			xnpod_delete_thread(&task->thread_base);
+ 		else if (!*name)
+ 			/* /proc/xenomai/sched will dump no name for the anonymous
+ 			   task, but the registry still has a stable reference
+Index: ksrc/skins/native/syscall.c
+===================================================================
+--- ksrc/skins/native/syscall.c	(revision 2990)
++++ ksrc/skins/native/syscall.c	(revision 2992)
+@@ -125,8 +125,8 @@
+ 	char name[XNOBJECT_NAME_LEN];
+ 	struct rt_arg_bulk bulk;
+ 	RT_TASK_PLACEHOLDER ph;
++	RT_TASK *task = NULL;
+ 	int err, prio, mode;
+-	RT_TASK *task;
+ 
+ 	/* Completion descriptor our parent thread is pending on -- may be NULL. */
+ 	u_completion = (xncompletion_t __user *)__xn_reg_arg2(regs);
+@@ -170,6 +170,8 @@
+ 		goto fail;
+ 	}
+ 
++	xnthread_clear_state(&task->thread_base, XNZOMBIE);
++
+ 	/* Force FPU support in user-space. This will lead to a no-op if
+ 	   the platform does not support it. */
+ 
+@@ -183,13 +185,21 @@
+ 				  sizeof(ph));
+ 		err = xnshadow_map(&task->thread_base, u_completion);
+ 	} else {
+-		xnfree(task);
+ 		/* Unblock and pass back error code. */
+ fail:
+ 		if (u_completion)
+ 			xnshadow_signal_completion(u_completion, err);
+ 	}
+ 
++	/* Task memory could have been released by an indirect call to
++	 * the deletion hook, after xnpod_delete_thread() has been
++	 * issued from rt_task_create() (e.g. upon registration
++	 * error). We avoid double memory release when the XNZOMBIE
++	 * flag is raised, meaning the deletion hook has run, and the
++	 * TCB memory is already scheduled for release. */
++	if (err && task != NULL && !xnthread_test_state(&task->thread_base, XNZOMBIE))
++		xnfree(task);
++
+ 	return err;
+ }
+ 
 
-that one appears to have dropped under the table.
+-- 
+Philippe.
 
-Gilles once remarked that the line breaks in a few prototypes for
-doxygen comments used to confuse certain doxygen versions. I cannot
-reproduce this issue, but I can change the breaks if preferred.
 
-Jan
-
---------------090302080006000402080608
-Content-Type: text/x-patch;
- name="doxy-fixes.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="doxy-fixes.patch"
-
----
- doc/doxygen/Doxyfile-common.in |    3 ++-
- ksrc/arch/generic/hal.c        |   32 ++++++++++++++++++--------------
- ksrc/skins/posix/clock.c       |    4 ++--
- 3 files changed, 22 insertions(+), 17 deletions(-)
-
-Index: xenomai/ksrc/skins/posix/clock.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/skins/posix/clock.c
-+++ xenomai/ksrc/skins/posix/clock.c
-@@ -139,10 +139,10 @@ int clock_gettime(clockid_t clock_id, st
-  *
-  * This allow setting the CLOCK_REALTIME clock.
-  *
-- * @param clock_id, the id of the clock to be set, only CLOCK_REALTIME i=
-s
-+ * @param clock_id the id of the clock to be set, only CLOCK_REALTIME is=
-
-  * supported.
-  *
-- * @param tp, the address of a struct timespec specifying the new date.
-+ * @param tp the address of a struct timespec specifying the new date.
-  *
-  * @retval 0 on success;
-  * @retval -1 with @a errno set if:
-Index: xenomai/ksrc/arch/generic/hal.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/arch/generic/hal.c
-+++ xenomai/ksrc/arch/generic/hal.c
-@@ -173,7 +173,7 @@ int rthal_irq_request(unsigned irq,
-=20
- /**
-  * @fn int rthal_irq_release(unsigned irq)
-- *                          =20
-+ *
-  * @brief Uninstall a real-time interrupt handler.
-  *
-  * Uninstalls an interrupt handler previously attached using the
-@@ -208,7 +208,7 @@ int rthal_irq_release(unsigned irq)
-=20
- /**
-  * @fn int rthal_irq_host_request(unsigned irq,rthal_irq_host_handler_t =
-handler,char *name,void *dev_id)
-- *                          =20
-+ *
-  * @brief Install a shared Linux interrupt handler.
-  *
-  * Installs a shared interrupt handler in the Linux domain for the
-@@ -244,7 +244,7 @@ int rthal_irq_release(unsigned irq)
-=20
- /**
-  * @fn int rthal_irq_host_release (unsigned irq,void *dev_id)
-- *                          =20
-+ *
-  * @brief Uninstall a shared Linux interrupt handler.
-  *
-  * Uninstalls a shared interrupt handler from the Linux domain for the
-@@ -274,7 +274,7 @@ int rthal_irq_release(unsigned irq)
-=20
- /**
-  * @fn int rthal_irq_host_pend (unsigned irq)
-- *                          =20
-+ *
-  * @brief Propagate an IRQ event to Linux.
-  *
-  * Causes the given IRQ to be propagated down to the Adeos pipeline to
-@@ -304,13 +304,13 @@ int rthal_irq_host_pend(unsigned irq)
-=20
- /**
-  * @fn int rthal_irq_affinity (unsigned irq,cpumask_t cpumask,cpumask_t =
-*oldmask)
-- *                          =20
-+ *
-  * @brief Set/Get processor affinity for external interrupt.
-  *
-  * On SMP systems, this service ensures that the given interrupt is
-  * preferably dispatched to the specified set of processors. The
-  * previous affinity mask is returned by this service.
-- *=20
-+ *
-  * @param irq The interrupt source whose processor affinity is
-  * affected by the operation. Only external interrupts can have their
-  * affinity changed/queried, thus virtual interrupt numbers allocated
-@@ -320,7 +320,7 @@ int rthal_irq_host_pend(unsigned irq)
-  * representing the new affinity for this interrupt. A zero value
-  * cause this service to return the current affinity mask without
-  * changing it.
-- *=20
-+ *
-  * @param oldmask If non-NULL, a pointer to a memory area which will
-  * bve overwritten by the previous affinity mask used for this
-  * interrupt source, or a zeroed mask if an error occurred.  This
-@@ -365,7 +365,7 @@ int rthal_irq_affinity(unsigned irq, cpu
-=20
- /**
-  * @fn int rthal_trap_catch (rthal_trap_handler_t handler)
-- *                          =20
-+ *
-  * @brief Installs a fault handler.
-  *
-  * The HAL attempts to invoke a fault handler whenever an uncontrolled
-@@ -927,7 +927,7 @@ unsigned long long __rthal_generic_full_
-=20
- /**
-  * @fn int rthal_irq_enable(unsigned irq)
-- *                          =20
-+ *
-  * @brief Enable an interrupt source.
-  *
-  * Enables an interrupt source at PIC level. Since Adeos masks and
-@@ -958,7 +958,7 @@ unsigned long long __rthal_generic_full_
-=20
- /**
-  * @fn int rthal_irq_disable(unsigned irq)
-- *                          =20
-+ *
-  * @brief Disable an interrupt source.
-  *
-  * Disables an interrupt source at PIC level. After this call has
-@@ -983,8 +983,10 @@ unsigned long long __rthal_generic_full_
-  * - Any domain context.
-  */
-=20
--/*!=20
-- * \fn int rthal_timer_request(void (*tick_handler) (void), void (*mode_=
-emul)(int mode, void *tdev), int (*tick_emul)(unsigned long delay, void *=
-tdev), int cpu)
-+/**
-+ * \fn int rthal_timer_request(void (*tick_handler)(void),
-+ *             void (*mode_emul)(enum clock_event_mode mode, struct ipip=
-e_tick_device *tdev),
-+ *             int (*tick_emul)(unsigned long delay, struct ipipe_tick_d=
-evice *tdev), int cpu)
-  * \brief Grab the hardware timer.
-  *
-  * rthal_timer_request() grabs and tunes the hardware timer in oneshot
-@@ -1033,8 +1035,8 @@ unsigned long long __rthal_generic_full_
-  * - Linux domain context.
-  */
-=20
--/*!=20
-- * \fn void rthal_timer_release(void)
-+/**
-+ * \fn void rthal_timer_release(int cpu)
-  * \brief Release the hardware timer.
-  *
-  * Releases the hardware timer, thus reverting the effect of a
-@@ -1042,6 +1044,8 @@ unsigned long long __rthal_generic_full_
-  * is shared with Linux, a periodic setup suitable for the Linux
-  * kernel will be reset.
-  *
-+ * @param cpu The CPU number the timer was grabbed from.
-+ *
-  * Environments:
-  *
-  * This service can be called from:
-Index: xenomai/doc/doxygen/Doxyfile-common.in
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/doc/doxygen/Doxyfile-common.in
-+++ xenomai/doc/doxygen/Doxyfile-common.in
-@@ -690,7 +690,8 @@ PREDEFINED             =3D DOXYGEN_CPP \
-         CONFIG_XENO_OPT_POSIX_INTR \
-         CONFIG_XENO_OPT_RTAI_FIFO \
-         CONFIG_XENO_OPT_RTAI_SEM \
--        CONFIG_XENO_OPT_RTAI_SHM
-+        CONFIG_XENO_OPT_RTAI_SHM \
-+        CONFIG_GENERIC_CLOCKEVENTS
-=20
- # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then=
-=20
- # this tag can be used to specify a list of macro names that should be e=
-xpanded.=20
-
---------------090302080006000402080608--
-
---------------enig5C41ED58F432D5CF131794A9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFG64OTniDOoMHTA+kRAt6TAJ9DOdPn0X3u4K5kgtyB/TtjFLnT0QCeJXUp
-6q/shtARxluI7rzwJaYkwGE=
-=8ATl
------END PGP SIGNATURE-----
-
---------------enig5C41ED58F432D5CF131794A9--
 
