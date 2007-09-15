@@ -1,14 +1,13 @@
-Message-ID: <46EB8A11.1060605@domain.hid>
-Date: Sat, 15 Sep 2007 09:30:25 +0200
+Message-ID: <46EB8F11.2010009@domain.hid>
+Date: Sat, 15 Sep 2007 09:51:45 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <747825.19128.qm@domain.hid>
-In-Reply-To: <747825.19128.qm@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig6F272BA854663F9C169B5C3B"
+	boundary="------------enigC96A92922AC13BB321F8DA7F"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] Adeos to Linux domain data communication
+Subject: [Adeos-main] [Resent][RFC-PATCH] Instrument smp_processor_id /wrt
+	illicit usage
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,65 +16,107 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: poornima r <rpoornar@domain.hid>
-Cc: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6F272BA854663F9C169B5C3B
+--------------enigC96A92922AC13BB321F8DA7F
+Content-Type: multipart/mixed;
+ boundary="------------040606020104040905000004"
+
+This is a multi-part message in MIME format.
+--------------040606020104040905000004
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-poornima r wrote:
-> Hello,
->=20
-> I am working on PPC boards (MPC 860).
-> I have patched
-> Adeos(adeos-ipipe-2.6.18-ppc-1.5-01.patch)
-> to my vanilla kernel linux-2.6.18.
-> My requirement are=20
-> 1. A domain servicing critical interrupts and=20
-> 2. Adeos to Linux domain communication
->=20
-> I could implement the first requirement by creating a=20
-> test domain where my interrupts are getting serviced
-> as provided in the below link
-> http://www.captain.at/adeos-ipipe-jitter-latency-test.php
->=20
->=20
-> But for the second requirement I went through all the
-> API services provided by Adeos but, dint find any APIs
->  providing data communication services between Adeos
-> and Linux domains. Is there any method to implement
-> the above similar to pipes in Xenomai (I am not using
-> Xenomai in my current implementation).
+This is still in my local queue, don't recall anymore when we last
+discussed it and if there was some issue remaining.
 
-Adeos/I-pipe is not implementing such services in order to remain lean.
-It is considered the job of the Adeos user (like Xenomai or your own
-domains) to handle this. What Adeos provides are means to stall as many
-domains along the pipeline as required to execute critical sections like
-for implementing interdomain communication services.
-
->=20
-> But when went through Adeos related papers and
-> documents, I found that Adeos is mainly used for
-> harware sharing among multiple OSes or domains but
-> alone does not provide tasking, communication, etc. So
-> do you think    =20
-> can we implement communication mechanism similar to
-> xenomai pipes for Adeos domain and Linux domain
-> communication or is it worth using Xenomai?    =20
-
-That depends on how much more high-level services you may want to use
-(now or in the future). From a certain point on, re-implementing things
-becomes silly. If this is just about a basic pipe-like IPC for a simple
-scenario like yours, it could make sense to write your own variant,
-skipping all other services of the Xenomai core that may remain
-unused on your target anyway (and their overhead).
+Anyway, here is a rebased set to detect calls of smp_processor_id() from
+illicit contexts (non-root) on archs that bother about this. Only i386
+is cared about so far, x86_64 and PowerPC should be treated similarly,
+other (future) SMP-arch would arm the check automatically. Yet another
+safety bag for porting I-pipe.
 
 Jan
 
+--------------040606020104040905000004
+Content-Type: text/x-patch;
+ name="instrument-smp_processor_id.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="instrument-smp_processor_id.patch"
 
---------------enig6F272BA854663F9C169B5C3B
+---
+ lib/smp_processor_id.c |   20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+Index: linux-2.6.22-ipipe/lib/smp_processor_id.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.22-ipipe.orig/lib/smp_processor_id.c
++++ linux-2.6.22-ipipe/lib/smp_processor_id.c
+@@ -10,11 +10,27 @@
+ unsigned int debug_smp_processor_id(void)
+ {
+ 	unsigned long preempt_count =3D preempt_count();
+-	int this_cpu =3D raw_smp_processor_id();
++	int this_cpu =3D ipipe_processor_id();
+ 	cpumask_t this_mask;
+=20
+-	if (!ipipe_root_domain_p)
++#ifdef CONFIG_IPIPE
++	if (!ipipe_root_domain_p) {
++#ifndef IPIPE_STACK_INVARIANT_CPUID
++		if (test_bit(IPIPE_NOSTACK_FLAG, &ipipe_current_domain->
++						 cpudata[this_cpu].status)) {
++			ipipe_trace_panic_freeze();
++			printk(KERN_ERR "BUG: using smp_processor_id() over "
++			       "non-Linux stack. I-pipe domain: %s\n",
++			       ipipe_current_domain->name);
++			print_symbol("caller is %s\n",
++				     (long)__builtin_return_address(0));
++			dump_stack();
++			ipipe_trace_panic_dump();
++		}
++#endif /* !IPIPE_STACK_INVARIANT_CPUID */
+ 		goto out;
++	}
++#endif /* CONFIG_IPIPE */
+=20
+ 	if (likely(preempt_count))
+ 		goto out;
+
+--------------040606020104040905000004
+Content-Type: text/x-patch;
+ name="instrument-smp_processor_id-i386.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="instrument-smp_processor_id-i386.patch"
+
+---
+ include/asm-i386/ipipe.h |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6.22-ipipe/include/asm-i386/ipipe.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.22-ipipe.orig/include/asm-i386/ipipe.h
++++ linux-2.6.22-ipipe/include/asm-i386/ipipe.h
+@@ -38,6 +38,7 @@
+ #include <asm/ptrace.h>
+=20
+ #define ipipe_processor_id()   raw_smp_processor_id()
++#define IPIPE_STACK_INVARIANT_CPUID
+=20
+ #define prepare_arch_switch(next)		\
+ do {						\
+
+--------------040606020104040905000004--
+
+--------------enigC96A92922AC13BB321F8DA7F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -84,10 +125,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFG64oRniDOoMHTA+kRAnMWAJ9jgnv3Euk8Oy79seZCML8iDT8SWACeND+V
-JWa5NsxBYSNb1QTGwYHEILo=
-=sUL7
+iD8DBQFG648RniDOoMHTA+kRAus/AJ4o83ThK/FfuOjm8MjJtoNy38T+WwCeM6VB
+C47WAC7wtYTGY4pf+paMAug=
+=84yI
 -----END PGP SIGNATURE-----
 
---------------enig6F272BA854663F9C169B5C3B--
+--------------enigC96A92922AC13BB321F8DA7F--
 
