@@ -1,12 +1,12 @@
-Message-ID: <46EB8FF1.7070408@domain.hid>
-Date: Sat, 15 Sep 2007 09:55:29 +0200
+Message-ID: <46ECF430.9000402@domain.hid>
+Date: Sun, 16 Sep 2007 11:15:28 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig67CDCA31375CC3611EFE143F"
+	boundary="------------enigD3EC19EF47BA00A4C2928F3E"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [Resent][PATCH] allow hibernation of I-pipe kernels
+Subject: [Adeos-main] [PATCH] i386: remove another useless hunk
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,77 +15,71 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+To: adeos-main <adeos-main@gna.org>
+Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig67CDCA31375CC3611EFE143F
+--------------enigD3EC19EF47BA00A4C2928F3E
 Content-Type: multipart/mixed;
- boundary="------------050002090908030204090100"
+ boundary="------------080703020006040102030001"
 
 This is a multi-part message in MIME format.
---------------050002090908030204090100
+--------------080703020006040102030001
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-I'm using this patch since ages on my notebook. Would be nice to have
-this available by default.
+With the introduction of
+
+--- a/arch/i386/boot/compressed/Makefile
++++ b/arch/i386/boot/compressed/Makefile
+@@ -9,6 +9,7 @@
+ EXTRA_AFLAGS   :=3D -traditional
+
+ LDFLAGS_vmlinux :=3D -T
++CFLAGS :=3D $(subst -pg,,$(CFLAGS))
+ CFLAGS_misc.o +=3D -fPIC
+ hostprogs-y    :=3D relocs
+
+quite some time ago the dummy mcount function in compressed/misc.c
+became redundant. Let's remove this dead code.
 
 Jan
 
---------------050002090908030204090100
+--------------080703020006040102030001
 Content-Type: text/x-patch;
- name="hard-irq-disable-on-suspend-resume.patch"
+ name="cleanup-tracer-i386.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="hard-irq-disable-on-suspend-resume.patch"
+ filename="cleanup-tracer-i386.patch"
 
 ---
- kernel/power/swsusp.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/i386/boot/compressed/misc.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
-Index: linux-2.6.22-ipipe/kernel/power/swsusp.c
+Index: linux-2.6.22-ipipe/arch/i386/boot/compressed/misc.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.22-ipipe.orig/kernel/power/swsusp.c
-+++ linux-2.6.22-ipipe/kernel/power/swsusp.c
-@@ -278,6 +278,7 @@ int swsusp_suspend(void)
- 		return error;
+--- linux-2.6.22-ipipe.orig/arch/i386/boot/compressed/misc.c
++++ linux-2.6.22-ipipe/arch/i386/boot/compressed/misc.c
+@@ -23,12 +23,6 @@
+  * This means that it is not safe to place pointers in static structures=
+=2E
+  */
 =20
- 	local_irq_disable();
-+	local_irq_disable_hw_cond();
- 	/* At this point, device_suspend() has been called, but *not*
- 	 * device_power_down(). We *must* device_power_down() now.
- 	 * Otherwise, drivers for some devices (e.g. interrupt controllers)
-@@ -299,6 +300,7 @@ int swsusp_suspend(void)
- 	 */
- 	device_power_up();
-  Enable_irqs:
-+	local_irq_enable_hw_cond();
- 	local_irq_enable();
- 	return error;
- }
-@@ -308,6 +310,7 @@ int swsusp_resume(void)
- 	int error;
-=20
- 	local_irq_disable();
-+	local_irq_disable_hw_cond();
- 	/* NOTE:  device_power_down() is just a suspend() with irqs off;
- 	 * it has no special "power things down" semantics
- 	 */
-@@ -334,6 +337,7 @@ int swsusp_resume(void)
- 	restore_processor_state();
- 	touch_softlockup_watchdog();
- 	device_power_up();
-+	local_irq_enable_hw_cond();
- 	local_irq_enable();
- 	return error;
- }
+-#ifdef CONFIG_IPIPE_TRACE_MCOUNT
+-void __attribute__ ((no_instrument_function)) mcount(void)
+-{
+-}
+-#endif
+-
+ /*
+  * Getting to provable safe in place decompression is hard.
+  * Worst case behaviours need to be analized.
 
---------------050002090908030204090100--
+--------------080703020006040102030001--
 
---------------enig67CDCA31375CC3611EFE143F
+--------------enigD3EC19EF47BA00A4C2928F3E
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -94,10 +88,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFG64/xniDOoMHTA+kRAj6SAJ9+mk2n3NSjk10kk90Pg6E9yDjy5ACfaTkr
-vQ8qWz2NHJu4zn0wSqovfoA=
-=62ka
+iD8DBQFG7PQ1niDOoMHTA+kRAu1pAJ0dixMtisgZasIn5zhb3nunTNJvOQCeMvk6
+1B89AszJaPla8dUvyoIHBhs=
+=Se9h
 -----END PGP SIGNATURE-----
 
---------------enig67CDCA31375CC3611EFE143F--
+--------------enigD3EC19EF47BA00A4C2928F3E--
 
