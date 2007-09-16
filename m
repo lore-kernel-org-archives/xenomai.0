@@ -1,12 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-Content-Type: text/plain
-Date: Sun, 16 Sep 2007 18:52:14 +0200
-Message-Id: <1189961534.25006.205.camel@domain.hid>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Xenomai v2.3.4
-Reply-To: rpm@xenomai.org
+Message-ID: <18157.27836.667782.514635@domain.hid>
+Date: Sun, 16 Sep 2007 19:49:48 +0200
+In-Reply-To: <1189882379.25006.181.camel@domain.hid>
+References: <200709071127.17913.peter.soetens@domain.hid>
+	<1189882379.25006.181.camel@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4
+	lock-ups	and OOPSes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,50 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
+Philippe Gerum wrote:
+ > 
+ > Please try this patch against v2.3.x. A double free issue on a task TCB
+ > already scheduled for memory release was causing all sorts of troubles,
+ > basically trashing the system heap afterwards:
 
-Here is the latest release from the stable tree.  Several Adeos
-patches have been updated due to a nasty bug that may lock out hw
-interrupts unexpectedly when dumping the pipeline trace buffers
-(CONFIG_IPIPE_TRACE=y) using the /proc interface; update is strongly
-recommended if you rely on the tracer for debugging. Short log
-follows:
-
-	[nucleus]
-
-	* Make the watchdog timeout value configurable
-	* Fix build with CONFIG_XENO_OPT_RPIDISABLED=n
-	* Fix shared interrupt handling.
-
-	[native, vxworks, vrtx]
-
-	* Fix double TCB memory release upon task mapping error.
-
-	[can]
-
-	* Fix race upon socket list update.
-
-	[powerpc]
-
-	* Make sure rthal_thread_switch() is properly paired with
-	  Linux's switch_to() (return value fix for ppc64).
-	* Adeos update (I-pipe 2.6.20-1.6-04, 2.6.21-1.6-04)
-
-	[arm]
-
-	* Adeos update (I-pipe 2.6.20-1.7-06).
-
-	[i386]
-
-	* Adeos update (I-pipe 2.6.20-1.8-08).
-
-See the ChangeLog for details.
-
-http://download.gna.org/xenomai/stable/xenomai-2.3.4.tar.bz2
+Is not there anything similar needed for the posix skin ?
 
 -- 
-Philippe.
 
 
+					    Gilles Chanteperdrix.
 
