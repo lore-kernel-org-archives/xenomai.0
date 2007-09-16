@@ -1,14 +1,11 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: trem <tremyfr@domain.hid>
+Date: Sun, 16 Sep 2007 20:10:56 +0200
+Message-ID: <fcjrji$dk1$1@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18157.27836.667782.514635@domain.hid>
-Date: Sun, 16 Sep 2007 19:49:48 +0200
-In-Reply-To: <1189882379.25006.181.camel@domain.hid>
-References: <200709071127.17913.peter.soetens@domain.hid>
-	<1189882379.25006.181.camel@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4
-	lock-ups	and OOPSes
+Sender: news <news@domain.hid>
+Subject: [Xenomai-core] simple example for rtdm
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,19 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
- > 
- > Please try this patch against v2.3.x. A double free issue on a task TCB
- > already scheduled for memory release was causing all sorts of troubles,
- > basically trashing the system heap afterwards:
+Hi
 
-Is not there anything similar needed for the posix skin ?
+I've written a little exemple for rtdm. It uses open, close, read, write
+ioctl and 3 kind of buffer (local, device, global). This is an alpha
+release, so I'll be pleased to get some feedback.
 
--- 
+you can find it here :
+http://zarb.org/~trem/tut03-skeleton-drv.c
+http://zarb.org/~trem/tut03-skeleton-app.c
+http://zarb.org/~trem/Makefile
 
+regards,
+trem
 
-					    Gilles Chanteperdrix.
 
