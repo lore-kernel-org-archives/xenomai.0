@@ -1,5 +1,5 @@
 From: Peter Soetens <peter.soetens@domain.hid>
-Date: Mon, 17 Sep 2007 14:55:49 +0200
+Date: Mon, 17 Sep 2007 15:59:44 +0200
 References: <200709071127.17913.peter.soetens@domain.hid>
 	<1189882379.25006.181.camel@domain.hid>
 In-Reply-To: <1189882379.25006.181.camel@domain.hid>
@@ -8,7 +8,7 @@ Content-Type: text/plain;
   charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <200709171455.49748.peter.soetens@domain.hid>
+Message-Id: <200709171559.44742.peter.soetens@domain.hid>
 Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4 lock-ups
 	and OOPSes
 List-Id: "Xenomai life and development \(bug reports, patches,
@@ -40,9 +40,11 @@ On Saturday 15 September 2007 20:52:59 Philippe Gerum wrote:
 > already scheduled for memory release was causing all sorts of troubles,
 > basically trashing the system heap afterwards:
 
-Thanks, we'll try, test and report ASAP (= somewhere this week.)
+Andy just confirmed that this patch fixes his issues !
 
+Thanks a lot,
 Peter
+
 -- 
 Peter Soetens -- FMTC -- <http://www.fmtc.be>
 
