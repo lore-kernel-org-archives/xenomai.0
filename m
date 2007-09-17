@@ -1,17 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <18157.27836.667782.514635@domain.hid>
+From: Peter Soetens <peter.soetens@domain.hid>
+Date: Mon, 17 Sep 2007 14:55:49 +0200
 References: <200709071127.17913.peter.soetens@domain.hid>
 	<1189882379.25006.181.camel@domain.hid>
-	<18157.27836.667782.514635@domain.hid>
-Content-Type: text/plain
-Date: Sun, 16 Sep 2007 21:31:27 +0200
-Message-Id: <1189971087.25006.210.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <1189882379.25006.181.camel@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4
-	lock-ups	and OOPSes
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200709171455.49748.peter.soetens@domain.hid>
+Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4 lock-ups
+	and OOPSes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,28 +20,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On Sun, 2007-09-16 at 19:49 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > 
->  > Please try this patch against v2.3.x. A double free issue on a task TCB
->  > already scheduled for memory release was causing all sorts of troubles,
->  > basically trashing the system heap afterwards:
-> 
-> Is not there anything similar needed for the posix skin ?
-> 
+On Saturday 15 September 2007 20:52:59 Philippe Gerum wrote:
+> On Fri, 2007-09-07 at 11:27 +0200, Peter Soetens wrote:
+> > Just in case you hooked off the long discussion about the issues we found
+> > from Xenomai 2.3.2 on:
+> >
+> >   o We are using the xeno_native skin, create Xeno tasks and semaphores,
+> > but have strong indications that the crashes are caused by the memory
+> > allocation scheme of Xenomai in combination with task creation/deletion
+> >   o We found two ways to break Xenomai, causing a 'Killed'
+> > (rt_task_delete) and causing an OOPS (rt_task_join).
+> >   o They happen on 2.6.20 and 2.6.22 kernels
+> >   o On the 2.3 branch, r2429 works, r2433 causes the faults. The patch is
+> > small, and in the ChangLog:
+>
+> Please try this patch against v2.3.x. A double free issue on a task TCB
+> already scheduled for memory release was causing all sorts of troubles,
+> basically trashing the system heap afterwards:
 
-pthread_create() does allocate the TCB itself, and properly releases it
-upon error while creating the thread, so the syscall wrapper does not
-have to free any TCB memory by itself, which is a prerequisite to enter
-the double release situation. There is no possibility to run the
-deletion hook indirectly on behalf of pthread_create() either, so I
-think it's safe.
+Thanks, we'll try, test and report ASAP (= somewhere this week.)
 
+Peter
 -- 
-Philippe.
-
-
+Peter Soetens -- FMTC -- <http://www.fmtc.be>
 
