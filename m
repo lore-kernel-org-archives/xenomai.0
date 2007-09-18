@@ -1,16 +1,14 @@
-From: Peter Soetens <peter.soetens@domain.hid>
-Date: Mon, 17 Sep 2007 15:59:44 +0200
-References: <200709071127.17913.peter.soetens@domain.hid>
-	<1189882379.25006.181.camel@domain.hid>
-In-Reply-To: <1189882379.25006.181.camel@domain.hid>
+Message-ID: <46F04DF0.60500@domain.hid>
+Date: Wed, 19 Sep 2007 00:15:12 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <200709171559.44742.peter.soetens@domain.hid>
-Subject: Re: [Xenomai-core] [FIX] Summary: Xenomai 2.3.2 and 2.4 lock-ups
-	and OOPSes
+References: <fcjrji$dk1$1@domain.hid>
+In-Reply-To: <fcjrji$dk1$1@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig9724CCEFB3CFDD169C53E199"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] simple example for rtdm
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,31 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: trem <tremyfr@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Saturday 15 September 2007 20:52:59 Philippe Gerum wrote:
-> On Fri, 2007-09-07 at 11:27 +0200, Peter Soetens wrote:
-> > Just in case you hooked off the long discussion about the issues we found
-> > from Xenomai 2.3.2 on:
-> >
-> >   o We are using the xeno_native skin, create Xeno tasks and semaphores,
-> > but have strong indications that the crashes are caused by the memory
-> > allocation scheme of Xenomai in combination with task creation/deletion
-> >   o We found two ways to break Xenomai, causing a 'Killed'
-> > (rt_task_delete) and causing an OOPS (rt_task_join).
-> >   o They happen on 2.6.20 and 2.6.22 kernels
-> >   o On the 2.3 branch, r2429 works, r2433 causes the faults. The patch is
-> > small, and in the ChangLog:
->
-> Please try this patch against v2.3.x. A double free issue on a task TCB
-> already scheduled for memory release was causing all sorts of troubles,
-> basically trashing the system heap afterwards:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig9724CCEFB3CFDD169C53E199
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Andy just confirmed that this patch fixes his issues !
+trem wrote:
+> Hi
+>=20
+> I've written a little exemple for rtdm. It uses open, close, read, writ=
+e
+> ioctl and 3 kind of buffer (local, device, global). This is an alpha
+> release, so I'll be pleased to get some feedback.
+>=20
+> you can find it here :
+> http://zarb.org/~trem/tut03-skeleton-drv.c
+> http://zarb.org/~trem/tut03-skeleton-app.c
+> http://zarb.org/~trem/Makefile
 
-Thanks a lot,
-Peter
+Thanks once again for your effort. I'm sorry that I cannot go into
+details soon, so just a minor comment from the first glance: please fix
+the coding style to kernel style.
 
--- 
-Peter Soetens -- FMTC -- <http://www.fmtc.be>
+Jan
+
+PS: Didn't you also once post a patch for the existing tut02? That's
+probably still hanging around in no-man's land, right?
+
+
+--------------enig9724CCEFB3CFDD169C53E199
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFG8E3wniDOoMHTA+kRAsTQAJ9wvLETFd6sd7C3DoFsnawIpRIm/ACeJmu8
+tiFAOc0kWDjFn1uaTW8F3b4=
+=+l4p
+-----END PGP SIGNATURE-----
+
+--------------enig9724CCEFB3CFDD169C53E199--
 
