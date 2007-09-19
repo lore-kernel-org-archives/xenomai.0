@@ -1,15 +1,20 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <353969d40709180729s54307285i983eb7cc24c90642@domain.hid>
-References: <353969d40709180729s54307285i983eb7cc24c90642@domain.hid>
-Content-Type: text/plain
-Date: Tue, 18 Sep 2007 20:08:50 +0200
-Message-Id: <1190138931.15100.22.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Can't create more than one watchdog
-	under	vxworks skin
-Reply-To: rpm@xenomai.org
+Message-ID: <23820.194.114.62.37.1190188945.squirrel@domain.hid>
+In-Reply-To: <2ff1a98a0708160731k5eefd6b2i417b05b6d329e481@domain.hid>
+References: <61839.194.114.62.68.1187258167.squirrel@domain.hid>
+	<2ff1a98a0708160300r79a717ebt7541c1d6e3da6687@domain.hid>
+	<11886.194.114.62.68.1187258877.squirrel@domain.hid>
+	<18116.9932.592597.831501@domain.hid>
+	<56493.194.114.62.68.1187265227.squirrel@domain.hid>
+	<2ff1a98a0708160639k555fbb48p98a13892e30e5b02@domain.hid>
+	<21067.194.114.62.68.1187272557.squirrel@domain.hid>
+	<2ff1a98a0708160701w17dcf324jb9cb31843d69ca60@domain.hid>
+	<4760.194.114.62.68.1187274071.squirrel@domain.hid>
+	<2ff1a98a0708160731k5eefd6b2i417b05b6d329e481@domain.hid>
+Date: Wed, 19 Sep 2007 10:02:25 +0200 (CEST)
+From: "Nadym Salem" <Kaiman@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/mixed;boundary="----=_20070919100225_45911"
+Subject: Re: [Xenomai-help] latency problems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,56 +24,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Guillaume Gaudonville <guillaume.gaudonville@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, 2007-09-18 at 16:29 +0200, Guillaume Gaudonville wrote:
-> Hi,
-> 
-> I use Xenomai since a few time. I have to port an application
-> running under VxWorks on Linux. This application uses a lot of
-> watchdog
-> to delay job it has to do.
-> 
-> When I use the function wdCreate under the VxWorks skin (in User
-> Space), 
-> I am not able to create more than 1 watchdog. I watched to the
-> function implementation in 
-> user space and I saw that when I call wdCreate, a task is created with
-> the name: wdserver.
-> 
-> When I call wdCreate a second time, it returns me 0 because he can't
-> create 
-> another task with the same name (wdServer). But my watchdog seems to
-> be created in
-> kernel space because I can see it
-> in /proc/xenomai/registry/vxworks/watchdog.
-> 
-> Is it a mistake? If not, what is the reason for this behaviour? 
-> 
+------=_20070919100225_45911
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-The current implementation is definitely silly. It should create one
-server for all outstanding watchdogs.
+On Thu, August 16, 2007 16:31, Gilles Chanteperdrix wrote:
+> On 8/16/07, Nadym Salem <Kaiman@domain.hid> wrote:
+>> On Thu, August 16, 2007 16:01, Gilles Chanteperdrix wrote:
+>> > Aha, this probably means that your chipset is not supporte, could yo=
+u
+>> > run lspci and send us the output ?
+>> it is attached.
+> Could you try to apply the attached patch to xenomai sources ? You
+> will then have to recompile your xenomai-patched kernel.
 
-> I have modified the user space library to create a task of name
-> wdserver<WDOG_ID>,
-> and it seems to work fine. Is it correct?
-> 
-> I think a better solution would be to have only one task to manage all
-> the wathdog but I don't 
-> have a lot of time to implement it. Maybe in a few weeks.
-> 
-> Thanks for your help.
-> 
-> -- 
-> Guillaume Gaudonville
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Hmm, I have a new (quite old) machine now and installed Xenomai 2.3.3,
+having the same problem as before. The SMI workaround doesn't appear in
+the kernel log at all. Last time you gave me a "patch" for smi.c after
+which the system at least tried to start the smi workaround. Is there
+another possibility like that for my other machine ? I attached the outpu=
+t
+of lspci.
+
+tx in advance,
+
+greets, Nadym
+
+PS: Could it be, that this machine doesn't have SMIs at all ?
+
+------=_20070919100225_45911
+Content-Type: text/plain; name="lspci.out"
+Content-Disposition: attachment; filename="lspci.out"
+Content-Transfer-Encoding: quoted-printable
+
+00:00.0 Host bridge: VIA Technologies, Inc. P4M266 Host Bridge
+00:01.0 PCI bridge: VIA Technologies, Inc. VT8633 [Apollo Pro266 AGP]
+00:09.0 Ethernet controller: Intel Corporation 82541PI Gigabit Ethernet C=
+ontroller (rev 05)
+00:0b.0 CardBus bridge: Ricoh Co Ltd RL5c475 (rev 81)
+00:11.0 ISA bridge: VIA Technologies, Inc. VT8235 ISA Bridge
+00:11.1 IDE interface: VIA Technologies, Inc. VT82C586A/B/VT82C686/A/B/VT=
+823x/A/C PIPC Bus Master IDE (rev 06)
+00:11.5 Multimedia audio controller: VIA Technologies, Inc. VT8233/A/8235=
+/8237 AC97 Audio Controller (rev 50)
+00:12.0 Ethernet controller: VIA Technologies, Inc. VT6102 [Rhine-II] (re=
+v 74)
+01:00.0 VGA compatible controller: S3 Inc. VT8375 [ProSavage8 KM266/KL266=
+]
+02:00.0 Class ff00: Unknown device 1974:0005 (rev 01)
+------=_20070919100225_45911--
 
 
 
