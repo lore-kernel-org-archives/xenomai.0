@@ -1,13 +1,11 @@
-Message-ID: <15570.194.114.62.37.1190205583.squirrel@domain.hid>
-In-Reply-To: <2ff1a98a0709190519i233cb94dq5e26fafb33e07262@domain.hid>
-References: <31254.194.114.62.37.1190202620.squirrel@domain.hid>
-	<2ff1a98a0709190519i233cb94dq5e26fafb33e07262@domain.hid>
-Date: Wed, 19 Sep 2007 14:39:43 +0200 (CEST)
-From: "Nadym Salem" <Kaiman@domain.hid>
+Message-ID: <1ce16a2c0709190643l31348293xc5bdd95c3c0680c7@domain.hid>
+Date: Wed, 19 Sep 2007 15:43:28 +0200
+From: "Bachman Kharazmi" <bahkha@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] SMI on other than intel chipsets
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Subject: [Xenomai-help] write to pipe
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +15,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On Wed, September 19, 2007 14:19, Gilles Chanteperdrix wrote:
+Hi.
+I've successfully got a pipe working with a loadable kernel module
+that rpm attached in previous email.
 
->> still having my latency problems, I have some general question about t=
-he
->> SMI problems.
->> The SMI workaround only works with intel chipsets, because of lack of
->> documentation by other vendors, right ?
-> I am pretty sure we can find VIA chipsets documentation, the SMI
-> workaround only works for Intel chipset because it is the only one
-> implemented, but you could implement the workaround for other
-> chipsets.
+I can write to /dev/rtp0 by simply 'echo foo > /dev/rtp0'
 
-Ok, I misunderstood Jan in this point...
+I do also write to serial in the same task.
+The write section to write to pipe and write on rtser0 in my module.c
+looks like:
+rt_pipe_receive(&pipe_desc, &msgin, TM_INFINITE);
+rt_pipe_alloc(&pipe_desc,P_MSGSIZE(msgin));
+err=rt_dev_write(fd, P_MSGPTR(msgin), P_MSGSIZE(msgin));
+rt_pipe_flush(&pipe_desc,0);
+rt_pipe_free(&pipe_desc,msgin);
 
->> Does that mean, that Xenomai can only work as a realtime system either
->> with intel chipsets or with older boards not having the SMI ?
-> SMI already existed on pentium II, so the question is not the board
-> age, but rather the choices made by the board manufacturer to use or
-> not to use SMI.
+What I want to is that I want to write data quickly to the pipe, which
+should buffer the written data to it.
+Then the periodic module.c(kernel module) task should get the data
+from the pipe and write it out every period.
 
-Ok, tx for information. Should be easier to chose an intel board :)
+This way I can assure that the is a buffer where the data get stored
+first, and then it's periodically written out. Predictable...
 
-Greets, Nadym
+Anyhow my problem at the moment is that when I do write to the device
+file /dev/rtp0 quickly this get messed.
 
+For example my java code which writes int:s 1..100 as quick as
+possible to the devicefile.
+
+If I run that java file all I get out from my kernel module which read
+the pipe is maybe  "\0x00" which means only the first added int.
+
+Of course this is not the behavior I'm looking for. :/
+
+My java test code:
+public class testa {
+
+	private static FileOutputStream fos;
+	public static void main(String[] args) {
+		try {
+			fos = new FileOutputStream(new File("/dev/rtp0"));
+		} catch (Exception e) {
+		}
+		for (int i = 0; i < 100; i++) {
+			try {
+				fos.write(i);
+				fos.flush();
+			//	Thread.sleep(500);
+			} catch (Exception e) {
+			}
+		}
+		try{
+		fos.close();
+		}
+		catch (Exception e){
+		}
+		}
+	}
+
+By the way, if I comment in the sleep everything works. Buf I don't
+want to do that of course. I want the rttask(module) in kernelspace to
+pick from a already available buffer.
+
+I'm very grateful for any hints.
+Bachman
 
