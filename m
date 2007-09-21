@@ -1,13 +1,12 @@
-Message-ID: <46F3C8E5.1080503@domain.hid>
-Date: Fri, 21 Sep 2007 15:36:37 +0200
-From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-References: <200709201549.13035.lepalom@domain.hid>	<200709210910.37620.lepalom@domain.hid>	<46F38435.4050209@domain.hid>
-	<200709211451.21712.lepalom@domain.hid>
-In-Reply-To: <200709211451.21712.lepalom@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Comedi driver for use with xenomai
+Message-ID: <18164.5365.820554.634410@domain.hid>
+Date: Fri, 21 Sep 2007 21:01:09 +0200
+In-Reply-To: <OF3EF80531.231E36EB-ONC125735D.002FAC4D-C125735D.0032AD8D@datacon.at>
+References: <OF3EF80531.231E36EB-ONC125735D.002FAC4D-C125735D.0032AD8D@datacon.at>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,38 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Leopold Palomo-Avellaneda <lepalom@domain.hid>
+To: juergen.lanner@domain.hid
 Cc: xenomai@xenomai.org
 
-Leopold Palomo-Avellaneda wrote:
-> A Divendres 21 Setembre 2007 10:43, Anders Blomdell va escriure:
->> Leopold Palomo Avellaneda wrote:
->>> A Divendres 21 Setembre 2007 00:36, Alexis Berlemont va escriure:
->>>> Which driver is it ?
->>> the jr3_pci. It's a pci card, with a dsp to read the signal from a force
->>> sensor.
->>> http://www.comedi.org/cgi-bin/viewcvs.cgi/comedi/comedi/drivers/jr3_pci.c
->>> ?rev=1.5&view=log
->> After October 20 and Alexis gets some real drivers ported to his new
->> framework, I can take a look at it.
-> 
-> I'm sorry, but I don't understand the sentence. Well, I understand that I have 
-> to wait at last to middle of November? No problem. My system now it too 
-> complex to me to need it immediately. I just ask it to take one way or 
-> another.
-20 October is due to other projects that will occupy me until then.
-I'll also need some working examples from Alexis before I'll invest time in this
-project (it's so much easier to modify an existing driver than to write one from
-scratch).
+juergen.lanner@domain.hid wrote:
+ > 
+ > 
+ > Hi there!
+ > 
+ > Sorry for the newbie question, but I am stuck here ...
+ > I get this message every time I try to run e.g. latency test on my system.
+ > 
+ > What do I wrong?
+ > 
+ > I use
+ > Ubuntu 7.04 desktop
+ > Kernel 2.6.20.19 from www.kernel.org
+ > Xenomai 2.3.3
+ > adeos-ipipe-2.6.20-i386-1.8-08.patch
+ > 
+ > I already saw
+ > (...)
+ > running: cat /proc/interrupts
+ >            CPU0
+ >   0:    7243712    XT-PIC-XT        timer, rthal_broadcast_timer
+ >   1:         30    XT-PIC-XT        i8042
+ >   2:          0    XT-PIC-XT        cascade
+ >   5:     544285    XT-PIC-XT        uhci_hcd:usb1, eth3,
+ > i915@domain.hid
+ >   7:      18259    XT-PIC-XT        ehci_hcd:usb3
+ >   8:          3    XT-PIC-XT        rtc
+ >   9:   17584667    XT-PIC-XT        eth0
+ >  12:        196    XT-PIC-XT        i8042
+ >  14:      10992    XT-PIC-XT        ide0
+ >  15:       7236    XT-PIC-XT        uhci_hcd:usb2, eth1, eth2
+ > NMI:       3198
+ > LOC:    7243618
+ > ERR:          0
+ > MIS:          0
 
-Regards
-
-Anders
+The conclusion of vicki problem was that he had the APIC enabled in
+kernel configuration whereas his hardware had no APIC. Are you sure you
+are not running into the same issue ? From /proc/interrupts contents, it
+looks like you are not using APIC, so, check that it is not enabled in
+kernel configuration.
 
 -- 
-Anders Blomdell                  Email: anders.blomdell@domain.hid
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
+
+
+					    Gilles Chanteperdrix.
 
