@@ -1,13 +1,13 @@
-Message-ID: <46F38435.4050209@domain.hid>
-Date: Fri, 21 Sep 2007 10:43:33 +0200
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <2ff1a98a0709210157p52a020a9h76166ce5120d3a75@domain.hid>
+Date: Fri, 21 Sep 2007 10:57:28 +0200
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <1ce16a2c0709201043m1a05664alf4b5ce6a5ede5a44@domain.hid>
 MIME-Version: 1.0
-References: <200709201549.13035.lepalom@domain.hid>	<200709210036.51949.berlemont.hauw@domain.hid>
-	<200709210910.37620.lepalom@domain.hid>
-In-Reply-To: <200709210910.37620.lepalom@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Comedi driver for use with xenomai
+Content-Disposition: inline
+References: <1ce16a2c0709201043m1a05664alf4b5ce6a5ede5a44@domain.hid>
+Subject: Re: [Xenomai-help] iterate received data from pipe
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,27 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: lepalom@domain.hid
-Cc: xenomai@xenomai.org
+To: Bachman Kharazmi <bahkha@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Leopold Palomo Avellaneda wrote:
-> A Divendres 21 Setembre 2007 00:36, Alexis Berlemont va escriure:
->> Which driver is it ?
-> 
-> the jr3_pci. It's a pci card, with a dsp to read the signal from a force 
-> sensor.
-> http://www.comedi.org/cgi-bin/viewcvs.cgi/comedi/comedi/drivers/jr3_pci.c?rev=1.5&view=log
-After October 20 and Alexis gets some real drivers ported to his new framework,
-I can take a look at it.
+On 9/20/07, Bachman Kharazmi <bahkha@domain.hid> wrote:
+> Hi,
+> What I try to do is to iterate through  received() data from a pipe.
+> and break and printout at every '\n' (dec 10)
+>
+> I've tried to do an inplementation of this in my module.c, but it
+> doesn't really work.
+> I would be grateful if anyone could give me hints about what I'm
+> missing or where to do look for examples that show this.
+>
+> here's what I'm doing in my periodic task.
 
-Regards
+Hi,
 
-Anders
+reading the program you show us, I do not understand either what you
+program is trying to do or what it really does. However, one thing is
+obvious: you do not know much about the C programming language. You
+should try and learn the C language before you use it. Unfortunately,
+our ressources are limited, on this mailing list, we help xenomai
+users to install and use Xenomai, I am sorry, we do not have time to
+teach the C language. So, I suggest you to show your program on a
+forum devoted to C beginners and come back here when you have problems
+with Xenomai API.
+
+Regards.
 
 -- 
-Anders Blomdell                  Email: anders.blomdell@domain.hid
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
+                                               Gilles Chanteperdrix
 
