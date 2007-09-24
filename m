@@ -1,10 +1,14 @@
-Message-ID: <46F777EE.3060100@domain.hid>
-Date: Mon, 24 Sep 2007 10:40:14 +0200
-From: Benjamin ZORES <benjamin.zores@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Adeos PowerPC patch differences
+Content-Type: text/plain;
+	charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 24 Sep 2007 12:12:06 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB023D2124@domain.hid>
+In-Reply-To: <46F777EE.3060100@domain.hid>
+References: <46F777EE.3060100@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: [Xenomai-core] RTCAN (MSCAN) doesn't compile on latest Denx 2.6.23
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,18 +20,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-Hello Philippe (or any that can provide me with some infos),
+Hi,
 
-I've seen you've commited a patch for Adeos on upcoming 2.6.23
-based on DENX tree.
+I have cross compiled Xenomai latest trunk (Adeos-1.7) for the Denx
+2.6.23 tree for a PowerPC5200 arch, and the only annoyance I can see is
+that MSCAN driver for Xenomai is not compiling because of missing
+defines/enums in asm-powerpc/mpc52xx.h in comparision to
+asm-ppc/mpc52xx.h.
 
-Can you tell me what are the main differences between the Adeos 1.7
-and 2.0 series from a functionnal point of view ?
-Is Xenomai 2.4-rc3 supposed to work as good on both series ?
-And is the DENX patch specific to DENX tree or can it be applied/used
-from vanilla kernel tree ?
+Looking at the included socket-can mscan driver, things seem to have
+changed quite a bit since the socketcan has been ported to
+RTCAN/Xenomai.
 
-Regards,
+Wolfgang, Jan, is the MSCAN RT driver just needing the appropriate
+defines inside asm-powerpc/mpc52xx.h or or does the driver itself need
+changes ? How does the socketcan MSCAN driver come along without these ?
 
-Ben
+
+Best regards,
+
+Daniel Schnell.=20
+
 
