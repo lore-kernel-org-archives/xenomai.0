@@ -1,14 +1,14 @@
-Message-ID: <46F8A992.2070500@domain.hid>
-Date: Tue, 25 Sep 2007 08:24:18 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <899865CA54E4444DAF2E3639C04C5F4805ED19@domain.hid>
-In-Reply-To: <899865CA54E4444DAF2E3639C04C5F4805ED19@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig5F137AF0FC3F344D88F25964"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [RFC] Fast Context Switch Extension for ARM Linux
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <46F777EE.3060100@domain.hid>
+References: <46F777EE.3060100@domain.hid>
+Content-Type: text/plain
+Date: Tue, 25 Sep 2007 20:25:35 +0100
+Message-Id: <1190748335.22323.11.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Adeos PowerPC patch differences
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,48 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richard.cochran@domain.hid>
+To: Benjamin ZORES <benjamin.zores@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig5F137AF0FC3F344D88F25964
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2007-09-24 at 10:40 +0200, Benjamin ZORES wrote:
+> Hello Philippe (or any that can provide me with some infos),
+> 
+> I've seen you've commited a patch for Adeos on upcoming 2.6.23
+> based on DENX tree.
+> 
+> Can you tell me what are the main differences between the Adeos 1.7
+> and 2.0 series from a functionnal point of view ?
 
-Richard Cochran wrote:
->> -----Original Message----- From: Gilles Chanteperdrix >=20
->> The feature was already dropped, it is deprecated in ARMv6.
->=20
-> Doesn't ARMv6 have a new cache design based on physical addresses?
->=20
-> I thought I saw this somewhere...
+Basically none.
 
-Just grabbed this:
+The point of the I-pipe/powerpc 2.0 series on top of 2.6.22+ is:
+1) to introduce the flat interrupt log, and also reduce the cache
+footprints of the pipeline.
+2) to merge the 32 and 64bit supports into a single patch, which should
+put both on par with respect to the maintenance effort (e.g. we may not
+release the 32bit side while the 64bit one is lagging behind anymore, so
+we now have a pretty good incentive to keep the 64bit side in shape).
 
-"Version 6 now supports physically tagged caches, reducing software
-overhead on context switches."
+The 1.7 series is a backport of the flat interrupt log and cache
+footprints optimizations to 2.6.20/32bit, so that people having deployed
+the older I-pipe series/Xenomai don't have to upgrade to 2.6.22+ to get
+those improvements.
 
-[http://www.simplemachines.it/doc/ARMv6_Architecture.pdf]
+> Is Xenomai 2.4-rc3 supposed to work as good on both series ?
 
-But does this mean this layout is optional or mandatory for ARMv6
-integrators?
+Yes. I have tested 2.6.22-DENX over two Freescale boards, namely mpc52xx
+and mpc8548, using this very same setup. Btw, you will need to pick
+2.0-01 which landed today in the repo, since I fixed a couple of issues
+(one being serious) there.
 
-Jan
+> And is the DENX patch specific to DENX tree or can it be applied/used
+> from vanilla kernel tree ?
+> 
+
+It should apply to the vanilla tree without too much fuss, but the
+reference tree for the I-pipe/powerpc work is the DENX one, AFAIC.
+
+> Regards,
+> 
+> Ben
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+-- 
+Philippe.
 
 
---------------enig5F137AF0FC3F344D88F25964
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFG+KmTniDOoMHTA+kRAkxYAJ4ghoM1ueZPNwFNEgEHs62+Bb8zkgCZAaZ1
-WEITU0byFOA93CWNfVwREFk=
-=ZN86
------END PGP SIGNATURE-----
-
---------------enig5F137AF0FC3F344D88F25964--
 
