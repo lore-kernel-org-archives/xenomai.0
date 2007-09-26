@@ -1,14 +1,10 @@
-Message-ID: <353969d40709260858w3e1e30bbr58492008e8ca28ae@domain.hid>
-Date: Wed, 26 Sep 2007 17:58:20 +0200
-From: "Guillaume Gaudonville" <guillaume.gaudonville@domain.hid>
-In-Reply-To: <353969d40709260447l1b64e966hb500f8d3c0d4a0a@domain.hid>
+Message-ID: <46FA850A.8040201@domain.hid>
+Date: Wed, 26 Sep 2007 18:12:58 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; 
-	boundary="----=_Part_8531_5025864.1190822300740"
-References: <353969d40709260127s1c7fb5c6necdcf3591abc90f4@domain.hid>
-	<46FA26C0.5050606@domain.hid>
-	<353969d40709260447l1b64e966hb500f8d3c0d4a0a@domain.hid>
-Subject: Re: [Xenomai-core] new features for 16550A driver
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [BUG] sep-related oops on 2.6.20
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,179 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Xenomai-core@domain.hid
 
-------=_Part_8531_5025864.1190822300740
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_8532_2930431.1190822300740"
+Hi,
 
-------=_Part_8532_2930431.1190822300740
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+[  765.881682] general protection fault: 0000 [#2]
+[  765.881686] SMP 
+[  765.881692] Modules linked in: xeno_timerbench sky2 xeno_rtdm xeno_native xeno_nucleus ipv6 binfmt_misc rfcomm l2cap bluetooth i915 drm ppdev capability commoncap dock button video sbs battery i2c_ec i2c_core ac af_packet nls_utf8 ntfs sbp2 lp fuse usbhid hid snd_hda_intel snd_hda_codec snd_pcm_oss snd_mixer_oss snd_pcm snd_seq_dummy snd_seq_oss tsdev snd_seq_midi joydev snd_rawmidi snd_seq_midi_event snd_seq evdev snd_timer snd_seq_device pcmcia ehci_hcd irda iTCO_wdt iTCO_vendor_support ohci1394 sdhci uhci_hcd parport_pc parport ata_generic generic piix ieee1394 intel_agp agpgart mmc_core usbcore serio_raw yenta_socket rsrc_nonstatic pcmcia_core pcspkr psmouse shpchp pci_hotplug crc_ccitt snd soundcore snd_page_alloc ext3 jbd mbcache sr_mod cdrom sd_mod sg ata_piix ahci libata scsi_mod fan
+[  765.881825] CPU:    1
+[  765.881826] EIP:    0060:[<c01032eb>]    Not tainted VLI
+[  765.881827] EFLAGS: 00010246   (2.6.20 #10)
+[  765.881835] EIP is at sysenter_exit+0x13/0x18
+[  765.881839] eax: 00000000   ebx: b7dda374   ecx: b7dda2b0   edx: ffffe410
+[  765.881843] esi: 0000267f   edi: b7dda374   ebp: 00000000   esp: eada3fb8
+[  765.881846] ds: 007b   es: 007b   ss: 0068
+[  765.881851] Process sampling-14203 (pid: 14205, ti=eada2000 task=dfe52070 task.ti=eada2000)
+[  765.881854] Stack: b7dda374 b7f81f1c 00000000 0000267f b7dda374 b7dda2d8 00000000 0801007b 
+[  765.881869]        ffff007b c0100033 0801022b ffffe410 00000073 00000206 b7dda2b0 0000007b 
+[  765.881882]        5a5a5a5a a55a5a5a 
+[  765.881887] Call Trace:
+[  765.881890]  [<c010462f>] show_trace_log_lvl+0x1f/0x40
+[  765.881896]  [<c0104701>] show_stack_log_lvl+0xb1/0xe0
+[  765.881902]  [<c01048f4>] show_registers+0x1c4/0x340
+[  765.881907]  [<c0104b97>] die+0x127/0x280
+[  765.881912]  [<c0105d69>] do_general_protection+0x199/0x1d0
+[  765.881917]  [<c0113444>] __ipipe_handle_exception+0x84/0x1b0
+[  765.881925]  [<c02efccd>] error_code+0x81/0x90
+[  765.881931]  =======================
+[  765.881933] Code: 0c bc 04 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 6d 01 00 00 e8 e8 fc 00 00 8b 44 24 18 8b 54 24 2c 8b 4c 24 38 31 ed 8e 6c 24 24 fb <0f> 35 8d 76 00 50 fc 0f a8 06 1e 50 55 57 56 52 51 53 ba 7b 00 
+[  765.882012] EIP: [<c01032eb>] sysenter_exit+0x13/0x18 SS:ESP 0068:eada3fb8
 
-I've attached the patch drafts. It works fine for me. it prepare the work to
-implement the other iflag values as describe in man tcsetattr.
+Any bells ringing for someone?
 
-2007/9/26, Guillaume Gaudonville <guillaume.gaudonville@domain.hid>:
->
->
->
-> 2007/9/26, Jan Kiszka <jan.kiszka@domain.hid>:
-> >
-> > Guillaume Gaudonville wrote:
-> > > Hello,
-> > >
-> > > I'm working on a project which aims at porting an application
-> > > running under VxWorks to Linux. This application uses the serial
-> > > port.
-> > >
-> > > I would like to add an ioctl or a field in the config structure
-> > > to permit to strip or not the parity bit of each byte on reception.
-> > This
-> > > feature is implemented on Linux and VxWorks.
-> > >
-> > > Is it something I can do and then submit to Xenomai or your driver is
-> > only
-> > > an example and will never be improved?
-> >
-> > The driver is far from being just an example, it's used in real
-> > applications.
->
->
-> It was just to be sure... I'm using it for a real application.
->
-> If your feature is useful and doesn't turn the existing code upside
-> > down, it will surely be considered for merging.
-> >
-> > >
-> > > I think that I will have more feature to add to the driver, that's why
-> > I'm
-> > > asking this.
-> >
-> > I don't want to exclude anything (specifically as long as I haven't seen
-> > some patch yet), but I also don't want to overload the driver over the
-> > time with corner-case features. We need a good balance.
-> >
-> > But we first of all need more details about what you plan to add, what
-> > application scenario is behind it, why you need the driver to implement
-> > the feature, and what impact it may have on the code. You are welcome to
-> >
-> > elaborate on this or, even better, post some patch drafts here.
->
->
-> I don't  know  which  features  I'll need. For the ISTRIP feature the goal
-> is only to
-> remove the eigth'th bit of every byte received: I've got a VxWorks
-> application which communicate
-> with an external clock on the serial port. The clock uses the parity bit
-> but my application
-> do not. In the original code an ioctl was done to say the serial driver to
-> remove the parity bit on
-> reception. This feature is also offered under Linux and seems to be posix
-> (man tcsetattr, search ISTRIP).
-> In order to reduce the code modifications, I would like to implement it in
-> the driver.
->
-> If so, I think the better way would be to add a field in the rtser_config
-> struct, do you agree? And then depending
-> upon this field to apply a mask (0x7f) to the character in the interrupt
-> handler rt_16550_rx_interrupt() or only
-> to the characters passed to user space depending upon what is done in
-> other driver.
-> to reproduce the same behaviour).
->
-> Jan
-> >
-> > --
-> > Siemens AG, Corporate Technology, CT SE 2
-> > Corporate Competence Center Embedded Linux
-> >
->
->
->
-> --
-> Guillaume Gaudonville
-> E-mail: guillaume.gaudonville@domain.hid
->
+This happens only with --enable-x86-sep, not when going via int80 into the kernel. Setup is 2.6.20 with ipipe-1.8-08 (I switched back from 2.6.20.20 to exclude issues due to my adopted patch) and Xenomai trunk. To trigger this, I have to run "latency -c1" (-c0 doesn't cause this) and switch between X and text mode (which triggers some hw-related latencies, still meditating over this correlation...).
 
-
+Jan
 
 -- 
-Guillaume Gaudonville
-E-mail: guillaume.gaudonville@domain.hid
-
-------=_Part_8532_2930431.1190822300740
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-I&#39;ve attached the patch drafts. It works fine for me. it prepare the work to<br>implement the other iflag values as describe in man tcsetattr.<br><br><div><span class="gmail_quote">2007/9/26, Guillaume Gaudonville &lt;
-<a href="mailto:guillaume.gaudonville@domain.hid">guillaume.gaudonville@domain.hid</a>&gt;:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<br><br><div><span class="gmail_quote">2007/9/26, Jan Kiszka &lt;<a href="mailto:jan.kiszka@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">jan.kiszka@domain.hid</a>&gt;:</span><span class="q">
-<blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-Guillaume Gaudonville wrote:<br>&gt; Hello,<br>&gt;<br>&gt; I&#39;m working on a project which aims at porting an application<br>&gt; running under VxWorks to Linux. This application uses the serial<br>&gt; port.<br>&gt;
-<br>
-&gt; I would like to add an ioctl or a field in the config structure<br>&gt; to permit to strip or not the parity bit of each byte on reception. This<br>&gt; feature is implemented on Linux and VxWorks.<br>&gt;<br>&gt; Is it something I can do and then submit to Xenomai or your driver is only
-<br>&gt; an example and will never be improved?<br><br>The driver is far from being just an example, it&#39;s used in real<br>applications.</blockquote></span><div><br>It was just to be sure... I&#39;m using it for a real application.
-<br></div><span class="q"><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">If your feature is useful and doesn&#39;t turn the existing code upside
-<br>down, it will surely be considered for merging.
-<br><br>&gt;<br>&gt; I think that I will have more feature to add to the driver, that&#39;s why I&#39;m<br>&gt; asking this.<br><br>I don&#39;t want to exclude anything (specifically as long as I haven&#39;t seen<br>some patch yet), but I also don&#39;t want to overload the driver over the
-<br>time with corner-case features. We need a good balance.<br><br>But we first of all need more details about what you plan to add, what<br>application scenario is behind it, why you need the driver to implement<br>the feature, and what impact it may have on the code. You are welcome to
-<br>elaborate on this or, even better, post some patch drafts here.</blockquote></span><div><br>I don&#39;t&nbsp; know&nbsp; which&nbsp; features&nbsp; I&#39;ll need. For the ISTRIP feature the goal is only to<br>remove the eigth&#39;th bit of every byte received: I&#39;ve got a VxWorks application which communicate
-<br>with an external clock on the serial port. The clock uses the parity bit but my application<br>do not. In the original code an ioctl was done to say the serial driver to remove the parity bit on<br>reception. This feature is also offered under Linux and seems to be posix (man tcsetattr, search ISTRIP).
-<br>In order to reduce the code modifications, I would like to implement it in the driver.<br><br>If so, I think the better way would be to add a field in the rtser_config struct, do you agree? And then depending<br>upon this field to apply a mask (0x7f) to the character in the interrupt handler rt_16550_rx_interrupt() or only
-<br>to the characters passed to user space depending upon what is done in other driver.<br>to reproduce the same behaviour).<br></div><span class="q"><br><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-
-Jan<br><br>--<br>Siemens AG, Corporate Technology, CT SE 2<br>Corporate Competence Center Embedded Linux<br></blockquote></span></div><br><br clear="all"><div><span class="e" id="q_11541a4db7d79f28_7"><br>-- <br>Guillaume Gaudonville
-<br>E-mail: <a href="mailto:guillaume.gaudonville@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">
-guillaume.gaudonville@domain.hid</a>
-</span></div></blockquote></div><br><br clear="all"><br>-- <br>Guillaume Gaudonville<br>E-mail: <a href="mailto:guillaume.gaudonville@domain.hid">guillaume.gaudonville@domain.hid</a>
-
-------=_Part_8532_2930431.1190822300740--
-
-------=_Part_8531_5025864.1190822300740
-Content-Type: text/x-diff; name="16550A_istrip_iflag.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="16550A_istrip_iflag.patch"
-X-Attachment-Id: f_f720mp1i
-
-SW5kZXg6IGtzcmMvZHJpdmVycy9zZXJpYWwvMTY1NTBBLmMKPT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQotLS0ga3NyYy9k
-cml2ZXJzL3NlcmlhbC8xNjU1MEEuYwkocsOpdmlzaW9uIDI3NjUpCisrKyBrc3JjL2RyaXZlcnMv
-c2VyaWFsLzE2NTUwQS5jCShjb3BpZSBkZSB0cmF2YWlsKQpAQCAtMTUzLDcgKzE1MywxMCBAQCBz
-dGF0aWMgaW5saW5lIGludCBydF8xNjU1MF9yeF9pbnRlcnJ1cHQoCiAJZG8gewogCQljID0gcnRf
-MTY1NTBfcmVnX2luKG1vZGUsIGJhc2UsIFJIUik7CS8qIHJlYWQgaW5wdXQgY2hhciAqLwogCi0J
-CWN0eC0+aW5fYnVmW2N0eC0+aW5fdGFpbF0gPSBjOworCQlpZiAodGVzdGJpdHMoY3R4LT5jb25m
-aWcuaWZsYWdzLCBSVFNFUl9JRkxBR19JU1RSSVApKQorCQkJY3R4LT5pbl9idWZbY3R4LT5pbl90
-YWlsXSA9IGMgJiAweDdmOworCQllbHNlCisJCQljdHgtPmluX2J1ZltjdHgtPmluX3RhaWxdID0g
-YzsKIAkJaWYgKGN0eC0+aW5faGlzdG9yeSkKIAkJCWN0eC0+aW5faGlzdG9yeVtjdHgtPmluX3Rh
-aWxdID0gKnRpbWVzdGFtcDsKIAkJY3R4LT5pbl90YWlsID0gKGN0eC0+aW5fdGFpbCArIDEpICYg
-KElOX0JVRkZFUl9TSVpFIC0gMSk7CkBAIC00MjYsNiArNDI5LDEwIEBAIHN0YXRpYyBpbnQgcnRf
-MTY1NTBfc2V0X2NvbmZpZyhzdHJ1Y3QgcnQKIAkJcnRkbV9sb2NrX3B1dF9pcnFyZXN0b3JlKCZj
-dHgtPmxvY2ssIGxvY2tfY3R4KTsKIAl9CiAKKwlpZiAodGVzdGJpdHMoY29uZmlnLT5jb25maWdf
-bWFzaywgUlRTRVJfU0VUX0lGTEFHUykpIHsKKwkJY3R4LT5jb25maWcuaWZsYWdzID0gY29uZmln
-LT5pZmxhZ3M7CisJfQorCiAJcmV0dXJuIGVycjsKIH0KIApJbmRleDogaW5jbHVkZS9ydGRtL3J0
-c2VyaWFsLmgKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PQotLS0gaW5jbHVkZS9ydGRtL3J0c2VyaWFsLmgJKHLDqXZpc2lv
-biAyNzY1KQorKysgaW5jbHVkZS9ydGRtL3J0c2VyaWFsLmgJKGNvcGllIGRlIHRyYXZhaWwpCkBA
-IC0xODQsNiArMTg0LDcgQEAKICNkZWZpbmUgUlRTRVJfU0VUX1RJTUVPVVRfRVZFTlQJCTB4MDQw
-MAogI2RlZmluZSBSVFNFUl9TRVRfVElNRVNUQU1QX0hJU1RPUlkJMHgwODAwCiAjZGVmaW5lIFJU
-U0VSX1NFVF9FVkVOVF9NQVNLCQkweDEwMDAKKyNkZWZpbmUgUlRTRVJfU0VUX0lGTEFHUwkJMHgy
-MDAwCiAvKiogQH0gKi8KIAogCkBAIC0yMzgsNiArMjM5LDE1IEBACiAjZGVmaW5lIFJUU0VSX0JS
-RUFLX1NFVAkJCTB4MDEKIAogCisvKiEKKyAqIEBhbmNob3IgUlRTRVJfSUZMQUdfeHh4ICAgQG5h
-bWUgUlRTRVJfSUZMQUdfeHh4CisgKiBJbnB1dCBiZWhhdmlvdXIgKHdoZW4gdXNlZCBldmVyeSBi
-aXRzIHdpbGwgYmUgc2V0IGJ5IHRoZSBpb2N0bCBjb21tYW5kKQorICogQHsgKi8KKyNkZWZpbmUg
-UlRTRVJfSUZMQUdfTk9ORQkJMHgwMAorI2RlZmluZSBSVFNFUl9JRkxBR19JU1RSSVAJCTB4MDEK
-KyNkZWZpbmUgUlRTRVJfSUZMQUdfREVGQVVMVAkJMHgwMAorCisKIC8qKgogICogU2VyaWFsIGRl
-dmljZSBjb25maWd1cmF0aW9uCiAgKi8KQEAgLTI4MCw2ICsyOTAsMTEgQEAgdHlwZWRlZiBzdHJ1
-Y3QgcnRzZXJfY29uZmlnIHsKIAkvKiogZXZlbnQgbWFzayB0byBiZSB1c2VkIHdpdGggQHJlZiBS
-VFNFUl9SVElPQ19XQUlUX0VWRU5ULCBzZWUKIAkgKiAgQHJlZiBSVFNFUl9FVkVOVF94eHggKi8K
-IAlpbnQJCWV2ZW50X21hc2s7CisKKwkvKiogaW5wdXQgZmxhZ3MsIHNlZSBAcmVmIFJUU0VSX0lG
-TEFHX3h4eCwgUlRTRVJfSUZMQUdfSVNUUklQIGlzCisJICogIHRoZSBvbmx5IG9uZSBzdXBwb3J0
-ZWQgZm9yIHRoZSBtb21lbnQgKHdoZW4gdXNlZCBldmVyeSBiaXRzCisJICogIG11c3QgYmUgc2V0
-IGFjY29yZGluZyB0byB0aGUgZGVzaXJlZCBjb25maWd1cmF0aW9uKSovCisJaW50CQlpZmxhZ3M7
-CiB9IHJ0c2VyX2NvbmZpZ190OwogCiAvKioK
-------=_Part_8531_5025864.1190822300740--
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
