@@ -1,10 +1,15 @@
-Message-ID: <46FA850A.8040201@domain.hid>
-Date: Wed, 26 Sep 2007 18:12:58 +0200
+Message-ID: <46FA8D23.6010203@domain.hid>
+Date: Wed, 26 Sep 2007 18:47:31 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [BUG] sep-related oops on 2.6.20
+References: <353969d40709260127s1c7fb5c6necdcf3591abc90f4@domain.hid>	
+	<46FA26C0.5050606@domain.hid>	
+	<353969d40709260447l1b64e966hb500f8d3c0d4a0a@domain.hid>
+	<353969d40709260858w3e1e30bbr58492008e8ca28ae@domain.hid>
+In-Reply-To: <353969d40709260858w3e1e30bbr58492008e8ca28ae@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] new features for 16550A driver
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,43 +19,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: Guillaume Gaudonville <guillaume.gaudonville@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Hi,
+Guillaume Gaudonville wrote:
+> I've attached the patch drafts. It works fine for me. it prepare the wo=
+rk to
+> implement the other iflag values as describe in man tcsetattr.
+>=20
 
-[  765.881682] general protection fault: 0000 [#2]
-[  765.881686] SMP 
-[  765.881692] Modules linked in: xeno_timerbench sky2 xeno_rtdm xeno_native xeno_nucleus ipv6 binfmt_misc rfcomm l2cap bluetooth i915 drm ppdev capability commoncap dock button video sbs battery i2c_ec i2c_core ac af_packet nls_utf8 ntfs sbp2 lp fuse usbhid hid snd_hda_intel snd_hda_codec snd_pcm_oss snd_mixer_oss snd_pcm snd_seq_dummy snd_seq_oss tsdev snd_seq_midi joydev snd_rawmidi snd_seq_midi_event snd_seq evdev snd_timer snd_seq_device pcmcia ehci_hcd irda iTCO_wdt iTCO_vendor_support ohci1394 sdhci uhci_hcd parport_pc parport ata_generic generic piix ieee1394 intel_agp agpgart mmc_core usbcore serio_raw yenta_socket rsrc_nonstatic pcmcia_core pcspkr psmouse shpchp pci_hotplug crc_ccitt snd soundcore snd_page_alloc ext3 jbd mbcache sr_mod cdrom sd_mod sg ata_piix ahci libata scsi_mod fan
-[  765.881825] CPU:    1
-[  765.881826] EIP:    0060:[<c01032eb>]    Not tainted VLI
-[  765.881827] EFLAGS: 00010246   (2.6.20 #10)
-[  765.881835] EIP is at sysenter_exit+0x13/0x18
-[  765.881839] eax: 00000000   ebx: b7dda374   ecx: b7dda2b0   edx: ffffe410
-[  765.881843] esi: 0000267f   edi: b7dda374   ebp: 00000000   esp: eada3fb8
-[  765.881846] ds: 007b   es: 007b   ss: 0068
-[  765.881851] Process sampling-14203 (pid: 14205, ti=eada2000 task=dfe52070 task.ti=eada2000)
-[  765.881854] Stack: b7dda374 b7f81f1c 00000000 0000267f b7dda374 b7dda2d8 00000000 0801007b 
-[  765.881869]        ffff007b c0100033 0801022b ffffe410 00000073 00000206 b7dda2b0 0000007b 
-[  765.881882]        5a5a5a5a a55a5a5a 
-[  765.881887] Call Trace:
-[  765.881890]  [<c010462f>] show_trace_log_lvl+0x1f/0x40
-[  765.881896]  [<c0104701>] show_stack_log_lvl+0xb1/0xe0
-[  765.881902]  [<c01048f4>] show_registers+0x1c4/0x340
-[  765.881907]  [<c0104b97>] die+0x127/0x280
-[  765.881912]  [<c0105d69>] do_general_protection+0x199/0x1d0
-[  765.881917]  [<c0113444>] __ipipe_handle_exception+0x84/0x1b0
-[  765.881925]  [<c02efccd>] error_code+0x81/0x90
-[  765.881931]  =======================
-[  765.881933] Code: 0c bc 04 00 fb 8b 4d 08 66 f7 c1 ff fe 0f 85 6d 01 00 00 e8 e8 fc 00 00 8b 44 24 18 8b 54 24 2c 8b 4c 24 38 31 ed 8e 6c 24 24 fb <0f> 35 8d 76 00 50 fc 0f a8 06 1e 50 55 57 56 52 51 53 ba 7b 00 
-[  765.882012] EIP: [<c01032eb>] sysenter_exit+0x13/0x18 SS:ESP 0068:eada3fb8
+...
 
-Any bells ringing for someone?
+>=20
+> Index: ksrc/drivers/serial/16550A.c
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- ksrc/drivers/serial/16550A.c	(r=C3=A9vision 2765)
+> +++ ksrc/drivers/serial/16550A.c	(copie de travail)
+> @@ -153,7 +153,10 @@ static inline int rt_16550_rx_interrupt(
+>  	do {
+>  		c =3D rt_16550_reg_in(mode, base, RHR);	/* read input char */
+> =20
+> -		ctx->in_buf[ctx->in_tail] =3D c;
+> +		if (testbits(ctx->config.iflags, RTSER_IFLAG_ISTRIP))
+> +			ctx->in_buf[ctx->in_tail] =3D c & 0x7f;
+> +		else
+> +			ctx->in_buf[ctx->in_tail] =3D c;
 
-This happens only with --enable-x86-sep, not when going via int80 into the kernel. Setup is 2.6.20 with ipipe-1.8-08 (I switched back from 2.6.20.20 to exclude issues due to my adopted patch) and Xenomai trunk. To trigger this, I have to run "latency -c1" (-c0 doesn't cause this) and switch between X and text mode (which triggers some hw-related latencies, still meditating over this correlation...).
+OK, things become clearer.
+
+Question: Switching parity checking on in the hardware does not work/is=20
+no option for you? Shouldn't that clear the parity information as well?
+
+>  		if (ctx->in_history)
+>  			ctx->in_history[ctx->in_tail] =3D *timestamp;
+>  		ctx->in_tail =3D (ctx->in_tail + 1) & (IN_BUFFER_SIZE - 1);
+> @@ -426,6 +429,10 @@ static int rt_16550_set_config(struct rt
+>  		rtdm_lock_put_irqrestore(&ctx->lock, lock_ctx);
+>  	}
+> =20
+> +	if (testbits(config->config_mask, RTSER_SET_IFLAGS)) {
+> +		ctx->config.iflags =3D config->iflags;
+> +	}
+> +
+>  	return err;
+>  }
+> =20
+> Index: include/rtdm/rtserial.h
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> --- include/rtdm/rtserial.h	(r=C3=A9vision 2765)
+> +++ include/rtdm/rtserial.h	(copie de travail)
+> @@ -184,6 +184,7 @@
+>  #define RTSER_SET_TIMEOUT_EVENT		0x0400
+>  #define RTSER_SET_TIMESTAMP_HISTORY	0x0800
+>  #define RTSER_SET_EVENT_MASK		0x1000
+> +#define RTSER_SET_IFLAGS		0x2000
+>  /** @} */
+> =20
+> =20
+> @@ -238,6 +239,15 @@
+>  #define RTSER_BREAK_SET			0x01
+> =20
+> =20
+> +/*!
+> + * @anchor RTSER_IFLAG_xxx   @name RTSER_IFLAG_xxx
+> + * Input behaviour (when used every bits will be set by the ioctl comm=
+and)
+> + * @{ */
+> +#define RTSER_IFLAG_NONE		0x00
+> +#define RTSER_IFLAG_ISTRIP		0x01
+> +#define RTSER_IFLAG_DEFAULT		0x00
+> +
+> +
+>  /**
+>   * Serial device configuration
+>   */
+> @@ -280,6 +290,11 @@ typedef struct rtser_config {
+>  	/** event mask to be used with @ref RTSER_RTIOC_WAIT_EVENT, see
+>  	 *  @ref RTSER_EVENT_xxx */
+>  	int		event_mask;
+> +
+> +	/** input flags, see @ref RTSER_IFLAG_xxx, RTSER_IFLAG_ISTRIP is
+> +	 *  the only one supported for the moment (when used every bits
+> +	 *  must be set according to the desired configuration)*/
+> +	int		iflags;
+>  } rtser_config_t;
+> =20
+>  /**
+
+The patch looks very clean, no question! Assuming my attempt above to=20
+use the hardware for this is nonsense, I then wonder if the feature is=20
+worth the additional conditional branch + another potential cache miss=20
+(for ctx->config.iflags) inside the critical reception path.
+
+This is precisely that question of balance: Is the extension of some=20
+broader interest? Do we need it inside the driver (I see no reason yet=20
+why the application cannot do the masking, and we are not forced into=20
+compatibility with termios)? And does the extension impact critical paths=
+?
 
 Jan
 
--- 
+--=20
 Siemens AG, Corporate Technology, CT SE 2
 Corporate Competence Center Embedded Linux
 
