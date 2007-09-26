@@ -1,14 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46F777EE.3060100@domain.hid>
-References: <46F777EE.3060100@domain.hid>
-Content-Type: text/plain
-Date: Tue, 25 Sep 2007 20:25:35 +0100
-Message-Id: <1190748335.22323.11.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Adeos PowerPC patch differences
-Reply-To: rpm@xenomai.org
+Message-ID: <353969d40709260127s1c7fb5c6necdcf3591abc90f4@domain.hid>
+Date: Wed, 26 Sep 2007 10:27:09 +0200
+From: "Guillaume Gaudonville" <guillaume.gaudonville@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_6391_11671028.1190795229483"
+Subject: [Xenomai-core]  new features for 16550A driver
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,57 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Benjamin ZORES <benjamin.zores@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Xenomai-core@domain.hid
 
-On Mon, 2007-09-24 at 10:40 +0200, Benjamin ZORES wrote:
-> Hello Philippe (or any that can provide me with some infos),
-> 
-> I've seen you've commited a patch for Adeos on upcoming 2.6.23
-> based on DENX tree.
-> 
-> Can you tell me what are the main differences between the Adeos 1.7
-> and 2.0 series from a functionnal point of view ?
+------=_Part_6391_11671028.1190795229483
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Basically none.
+Hello,
 
-The point of the I-pipe/powerpc 2.0 series on top of 2.6.22+ is:
-1) to introduce the flat interrupt log, and also reduce the cache
-footprints of the pipeline.
-2) to merge the 32 and 64bit supports into a single patch, which should
-put both on par with respect to the maintenance effort (e.g. we may not
-release the 32bit side while the 64bit one is lagging behind anymore, so
-we now have a pretty good incentive to keep the 64bit side in shape).
+I'm working on a project which aims at porting an application
+running under VxWorks to Linux. This application uses the serial
+port.
 
-The 1.7 series is a backport of the flat interrupt log and cache
-footprints optimizations to 2.6.20/32bit, so that people having deployed
-the older I-pipe series/Xenomai don't have to upgrade to 2.6.22+ to get
-those improvements.
+I would like to add an ioctl or a field in the config structure
+to permit to strip or not the parity bit of each byte on reception. This
+feature is implemented on Linux and VxWorks.
 
-> Is Xenomai 2.4-rc3 supposed to work as good on both series ?
+Is it something I can do and then submit to Xenomai or your driver is only
+an example and will never be improved?
 
-Yes. I have tested 2.6.22-DENX over two Freescale boards, namely mpc52xx
-and mpc8548, using this very same setup. Btw, you will need to pick
-2.0-01 which landed today in the repo, since I fixed a couple of issues
-(one being serious) there.
+I think that I will have more feature to add to the driver, that's why I'm
+asking this.
 
-> And is the DENX patch specific to DENX tree or can it be applied/used
-> from vanilla kernel tree ?
-> 
-
-It should apply to the vanilla tree without too much fuss, but the
-reference tree for the I-pipe/powerpc work is the DENX one, AFAIC.
-
-> Regards,
-> 
-> Ben
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
-Philippe.
+Guillaume Gaudonville
+E-mail: guillaume.gaudonville@domain.hid
 
+------=_Part_6391_11671028.1190795229483
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Hello,<br><br>I&#39;m working on a project which aims at porting an application<br>running under VxWorks to Linux. This application uses the serial<br>port.<br><br>I would like to add an ioctl or a field in the config structure
+<br>to permit to strip or not the parity bit of each byte on reception. This<br>feature is implemented on Linux and VxWorks.<br><br>Is it something I can do and then submit to Xenomai or your driver is only<br>an example and will never be improved?
+<br clear="all"><br>I think that I will have more feature to add to the driver, that&#39;s why I&#39;m asking this.<br><br>-- <br>Guillaume Gaudonville<br>E-mail: <a href="mailto:guillaume.gaudonville@domain.hid" target="_blank" onclick="return top.js.OpenExtLink(window,event,this)">
+guillaume.gaudonville@domain.hid
+</a>
+
+------=_Part_6391_11671028.1190795229483--
 
