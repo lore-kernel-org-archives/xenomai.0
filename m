@@ -1,14 +1,12 @@
-Message-ID: <46E07430.2060309@domain.hid>
-Date: Thu, 06 Sep 2007 23:42:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <46FEE3D6.1090003@domain.hid>
+Date: Sat, 29 Sep 2007 19:46:30 -0400
+From: Brian Zenowich <bz@domain.hid>
 MIME-Version: 1.0
-References: <46DFD2EA.6000202@domain.hid>
-In-Reply-To: <46DFD2EA.6000202@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig72D8EB50F577CDAA2478654D"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RTDM
+References: <46FED989.6000402@domain.hid>
+In-Reply-To: <46FED989.6000402@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Functional difference between tty and xterm?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,61 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig72D8EB50F577CDAA2478654D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Nevermind. Adding "Option NoAccel True" to xorg.conf (i810 driver) fixed 
+it. I thought this was just to reduce latencies. I didn't realize I 
+couldn't even access my CAN card without it!
 
-Patrick wrote:
-> Hy,
->=20
-> I don't understand the difference between rtdm function and standard fu=
-nction.
-> For exemple what is the diffrence between rtdm_printk and printk=20
+Thanks,
 
-Technically? None these days (printk is provided RT-safe by
-Adeos/I-pipe), but it documents that the message may be printed from RT
-context. And who know if some future RTDM implementation may not have to
-differentiate internally again...
+-Brian Z.
 
-> or rtdm_malloc=20
-> and malloc ?
-
-You mean kmalloc (malloc is user space only)? rtdm_malloc provides
-memory from a dedicated pool (dedicated to Xenomai, excluding Linux) and
-uses a predictable allocator (as long as the memory usage pattern is
-predictable). kmalloc is non-deterministic, and is shared with the whole
-Linux kernel.
-
->=20
-> I am developping an RT driver so I must simply used only functions rtdm=
- ?
-
-Regarding the two services above: Depends on the context. If they run in
-non-RT driver cleanup or device instantiation context, you should
-continue to use standard Linux services. Just for usage from RT contexts
-(tasks, IRQ handlers (please don't allocate memory in the latter
-context, though...)) switch to those RTDM variants.
-
-Jan
-
-
---------------enig72D8EB50F577CDAA2478654D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFG4HQwniDOoMHTA+kRApgQAJkBf9Q19v86W0E8G2hwoYJJv6FWlgCggk9X
-yOdExdfUqUpk6VtsMiN5FZE=
-=m8Vf
------END PGP SIGNATURE-----
-
---------------enig72D8EB50F577CDAA2478654D--
+Brian Zenowich wrote:
+> Hello,
+> 
+> I am using kernel 2.6.20.14 with Xenomai 2.3.1 and the Peak CAN driver 
+> 6.4. This is the only combination I can get to coexist peacefully. I 
+> have tried 20.18/2.3.3 and 22.9/2.4rc3 but the former fails xeno-test, 
+> and the latter hangs on boot when loading the Peak driver.
+> 
+> I have a Core2 Duo. Kernel SMP is enabled. SMI/ACPI/APM is all 
+> configured to make Xenomai happy. User-space Xenomai was NOT configured 
+> with --enable-smp.
+> 
+> My ncurses-based program runs well from the tty (as root), but if I 
+> 'startx' and try to run my program from an xterm window (still as root), 
+> it hangs the machine at the moment it calls CAN_Init(). CAN_Init() is 
+> essentially a call to rt_dev_open("/dev/pcan0", 0_RDWR). I am using a 
+> PCI CAN card.
+> 
+> I am able to launch my program from the tty, then switch to a new tty 
+> and startx from there. If I switch back to my program's tty, it is still 
+> humming along.
+> 
+> Do you have any thoughts as to what is the difference (from a Xenomai 
+> user-space program's point of view) between running in a tty and running 
+> in an xterm?
+> 
+> Why would the rt_dev_open() call work from a tty, but not in an xterm?
+> 
+> Thanks for any insight you might have,
+> 
+> -Brian Z.
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
