@@ -1,14 +1,14 @@
-Message-ID: <46FFC58E.1030700@domain.hid>
-Date: Sun, 30 Sep 2007 17:49:34 +0200
+Message-ID: <46FFC5FE.5080406@domain.hid>
+Date: Sun, 30 Sep 2007 17:51:26 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <db67beef0709261544q2e6e454wf07ccacd4f77f1e4@domain.hid>
-In-Reply-To: <db67beef0709261544q2e6e454wf07ccacd4f77f1e4@domain.hid>
+References: <1ce16a2c0709261252o67cebde3q8cf03a0d21a27288@domain.hid>
+In-Reply-To: <1ce16a2c0709261252o67cebde3q8cf03a0d21a27288@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC79C90F5FC7FEE711BEFF69B"
+	boundary="------------enig04389E508A76167C98EDE9B4"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Shared interrupt :(
+Subject: Re: [Xenomai-help] rtdm driver development
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,62 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: bite <anonimo.passante@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Bachman Kharazmi <bahkha@domain.hid>
+Cc: Xenomai <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC79C90F5FC7FEE711BEFF69B
+--------------enig04389E508A76167C98EDE9B4
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-bite wrote:
-> Hi, this is my first post, I'm using Xenomai since a few days, I beg yo=
-ur
-> pardon if my question has already been answered.
+Bachman Kharazmi wrote:
+> Hi
+> I've implemented a ringbuffer which will buffer strings between a
+> pipe-read-task=3D>[buffer]=3D>rtdm-rtserial-writetask
 >=20
-> My problem is not directly related to Xenomai, but it prevents me from =
-using
-> Xenomai (as well as any other kind of realtime extension, I think).
+> The buffer has been implemented in userland and it works.
+> But in kernelspace (everything in a loaded in a kernel-module) things
+> doesn't work. It's the put(token) which doesn't work.
+> The function is put(char* c){ ... }
 >=20
-> The point is: I have a PCI axis control board and with Xenomai I can us=
-e it
-> well on some kind of hardware.
+> I've heard that there's an address difference. But how do I handle that=
+?
 >=20
-> On a different machine, the irq of this board happens to be shared with=
- an
-> usb irq, and I get lots of problems there. Erratic behaviour, pc hangin=
-g and
-> killed cats.
+> http://www.xenomai.org/documentation/trunk/html/api/group__util.html#g9=
+ce418051ccb7dd2366128efb8674262
+> is rtdm_strncpy_from_user() something I should use?
 >=20
-> Things do not change if I include I_PROPAGATE in the interrupt mode fla=
-gs.
+> exactlly what is: rtdm_user_info_t *  else than a pointer?
+> Where do I declare it? There's no clickable link in the api for that th=
+at type..
 >=20
-> I recompiled the kernel with IO_APIC and LOCAL_APIC set, but what happe=
-ns
-> then is just that the conflicting interrupts both move together, hand i=
-n
-> hand, from the same irq 9 to the same irq 18 :) Shame!
->=20
-> Is there any known solution for this embarrassing problem? Somebody
-> suggested me to put the board in a different PCI slot, but unluckily I
-> cannot do so because of a geometric constraint.
+> The description sais: "User information pointer as passed to the
+> invoked device operation handler"
+> ...
 
-This is really a FAQ in this list, and if I weren't too busy, I would
-now take the chance and hack up a wiki page on this. Please browse the
-mailing list archives for the shared irq topic. And if you (anyone else
-is invited as well) would like to do us a favour, put what you find into
-a new wiki FAQ page on xenomai.org so that we can simply cite it on
-future postings like this. :)
+Please have a look at xenomai/examples/rtdm/driver-api. Those tutorial
+may give you some ideas. Feel free to suggest better descriptions of
+that field above.
 
 Jan
 
-PS: If you stumble over the RT-IRQ-stub-for-Linux-devices approach in
-the archive: I have some idea to ease the development, but it is stalled
-due the limited time to work it out. If you feel like you need such a
-stub, I can tell you more, just ask again.
 
-
---------------enigC79C90F5FC7FEE711BEFF69B
+--------------enig04389E508A76167C98EDE9B4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -82,10 +67,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFG/8WOniDOoMHTA+kRAkN7AKCE41g0Pek/1DhvhD2+FQYliCMY7wCdF2qC
-xa1zfF2oz+QSTeLvirL4Kfo=
-=T0zs
+iD8DBQFG/8X+niDOoMHTA+kRAu6ZAJ0fsiERdjhpGr2V6Tcw+SGJm2zDgACeNAVd
+5sQTV1GmTQJfCi64ZALKsuY=
+=f2O6
 -----END PGP SIGNATURE-----
 
---------------enigC79C90F5FC7FEE711BEFF69B--
+--------------enig04389E508A76167C98EDE9B4--
 
