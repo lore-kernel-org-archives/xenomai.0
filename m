@@ -1,14 +1,14 @@
-Message-ID: <1ce16a2c0709300923g339c6760hecd76a78a2c6424e@domain.hid>
-Date: Sun, 30 Sep 2007 18:23:28 +0200
-From: "Bachman Kharazmi" <bahkha@domain.hid>
-In-Reply-To: <46FFC5FE.5080406@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <14637422.1190889662020.JavaMail.ngmail@domain.hid>
+References: <14637422.1190889662020.JavaMail.ngmail@domain.hid>
+Content-Type: text/plain
+Date: Sun, 30 Sep 2007 18:59:40 +0200
+Message-Id: <1191171580.5989.20.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <1ce16a2c0709261252o67cebde3q8cf03a0d21a27288@domain.hid>
-	<46FFC5FE.5080406@domain.hid>
-Subject: Re: [Xenomai-help] rtdm driver development
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai maintenance and latest kernel versions
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,61 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "M. Koehrer" <mathias_koehrer@domain.hid>
+Cc: xenomai@xenomai.org
 
-I've _solved_ my problem since a few days.
-My code is available here: http://bachman.tor.lindesign.se/mthesis/code/comm/
-What it does is that it makes it possible to write to a rtp0 device
-file which then handles the periodic push and write to a rtser0.
+On Thu, 2007-09-27 at 12:41 +0200, M. Koehrer wrote:
+> Hi everybody,
+> 
+> I have a question concerning the maintenance versions of Xenomai.
+> Currently, the maintenance releases (e.g. 2.3.3) contain fixes of Xenomai and no new features.
+> That is fine so far. However, I wonder if it could possible to support the latest kernel series
+> (now 2.6.22) with the maintenance version aswell. That means, no new features, just a new 
+> adeos patch that fits to kernel 2.6.22 and Xenomai 2.3.x.
+> Something like a adeos-ipipe-2.6.22-i386-1.8-06.patch.
+> In our use case, we use always the latest PC technology for high speed real time simulation systems.
+> For some PC components (e.g. ACPI stuff, some onboard NICs etc.) we should use the latest
+> kernel.
+> I am very happy with the functional state we have with Xenomai 2.3.3, but I want to use this
+> functionality with the latest kernel.
+> Is there any way to get that?!?
+> 
+> Thanks for any response on that.
+> 
 
-Questions which still remain.
--Are there any problems setting a high value for the pipe task?
-#define TASK_STKSZ_PIPETASK  50000
+In short, you would be on your own here: 
+https://mail.gna.org/public/xenomai-help/2007-06/msg00180.html
 
-I use it when creating the task:
-rt_task_create(&task3,"kernel_task3",TASK_STKSZ_PIPETASK,TASK_PRIO_PIPETASK,TASK_MODE);
-Is it the size of data that the pipe can handle before it gets filled?
+> Regards
+> 
+> Mathias
+> 
+-- 
+Philippe.
 
--Can I write data to the pipe( /dev/rtp0 ) using the outputstream from
-java without any delays? In the example testa.java I do that, but I'm
-working on getting that working from a data-generating thread. so that
-there will be a continues quick write to the device.
 
--When is a outputstream.flush() needed? Is that after every single
-command or just once at the end when all write():s are done?
-
-/Bachman
-
-On 30/09/2007, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Bachman Kharazmi wrote:
-> > Hi
-> > I've implemented a ringbuffer which will buffer strings between a
-> > pipe-read-task=>[buffer]=>rtdm-rtserial-writetask
-> >
-> > The buffer has been implemented in userland and it works.
-> > But in kernelspace (everything in a loaded in a kernel-module) things
-> > doesn't work. It's the put(token) which doesn't work.
-> > The function is put(char* c){ ... }
-> >
-> > I've heard that there's an address difference. But how do I handle that?
-> >
-> > http://www.xenomai.org/documentation/trunk/html/api/group__util.html#g9ce418051ccb7dd2366128efb8674262
-> > is rtdm_strncpy_from_user() something I should use?
-> >
-> > exactlly what is: rtdm_user_info_t *  else than a pointer?
-> > Where do I declare it? There's no clickable link in the api for that that type..
-> >
-> > The description sais: "User information pointer as passed to the
-> > invoked device operation handler"
-> > ...
->
-> Please have a look at xenomai/examples/rtdm/driver-api. Those tutorial
-> may give you some ideas. Feel free to suggest better descriptions of
-> that field above.
->
-> Jan
->
->
->
 
