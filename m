@@ -1,16 +1,11 @@
-Message-ID: <471F7693.5080602@domain.hid>
-Date: Wed, 24 Oct 2007 18:45:07 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-Id: <200710011212.l91CCO7w006791@domain.hid>
+From: "Patrick" <kpa_info@domain.hid>
+Date: Mon, 1 Oct 2007 14:12:26 +0200
 MIME-Version: 1.0
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0B47622@domain.hid>	
-	<471F6533.2090603@domain.hid>
-	<2ff1a98a0710240925l7f97aacalb2da02f3240303a5@domain.hid>
-In-Reply-To: <2ff1a98a0710240925l7f97aacalb2da02f3240303a5@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai on Xscale (Linux 2.6.20)
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_001A_01C80435.186D4050"
+In-Reply-To: <2ff1a98a0710010238v47eb1778tfc6779285116c64b@domain.hid>
+Subject: [Xenomai-core] ARM compiling error
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,66 +15,359 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: ROSSIER Daniel <Daniel.Rossier@domain.hid>, xenomai@xenomai.org
+To: 'xenomai-core' <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
-> On 10/24/07, Philippe Gerum <rpm@xenomai.org> wrote:
->> ROSSIER Daniel wrote:
->>> Hi all,
->>>
->>> I've found a bug in arch/arm/xenomai/switch.S which solved the problem below. It actually comes from the iWMMXT (Intel Wireless MMX) coprocessor which is an extension of the ARM core in Xscale processor (and of course which is not available in the AT91 series ;-).
->>>
->>> When a thread switch occurs, rthal_thread_switch(in arch/arm/xenomai/switch.S) is called to perform switching of registers and stacks between threads. The PXA version must also perform a switch of MMX registers by invoking iwmmxt_task_switch(in arch/arm/kernel/iwmmxt.S). This is done in rthal_task_switch() as well.
->>>
->>> However, between Linux 2.6.15 and Linux 2.6.20, the general scheme of low-level task switching procedure changed a little bit: it is now relying on a call chain notifier-based mechanism. Therefore, the iwmmxt_task_switch() function has been updated since the function is called now from the notifier, and not directly from  __switch_to() as in 2.6.15. And the ipipe (ARM) patch did not take into account that.. and it fails.
->>>
->>> So, as a first workaround, I simply duplicated the iwmmxt_task_switch() function making the version (from 2.6.15) proprietary to ipipe by renaming to iwmmxt_task_switch_from_ipipe(), and modified arch/arm/xenomai/switch.S accordingly (be careful, switch.S is a symlink and actually belongs to Xenomai tree (ksrc/arch/arm).
->>>
->>> It seems to work so far, but further tests are needed (and will be done).
->>>
->>> I attached a patch to be applied in the (xenomai-patched) Linux tree.
->>> (Linux 2.6.20, xenomai from today svn).
->>>
->> Task switching is not I-pipe's business, and we should refrain from
->> recycling code from older kernel versions into recent ones. AFAICS, we
->> only need to conform to some new internal API. Food for thought below:
->>
->> --- ksrc/arch/arm/switch.S      (revision 3095)
->> +++ ksrc/arch/arm/switch.S      (working copy)
->> @@ -18,6 +18,7 @@
->>   */
->>
->>  #include <linux/linkage.h>
->> +#include <linux/version.h>
->>  #include <asm/assembler.h>
->>  #include <asm/asm-offsets.h>
->>
->> @@ -86,7 +87,13 @@
->>      VFPFMXR FPEXC, r4
->>  #endif
->>  #if defined(CONFIG_IWMMXT)
->> +#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
->> +    mr      r0, r2
->>      bl      iwmmxt_task_switch
->> +    mr      r2, r0
->> +#else
->> +    bl      iwmmxt_task_switch
->> +#endif
->>  #elif defined(CONFIG_CPU_XSCALE)
->>      add     r4, r2, #40                     @ cpu_context_save->extra
->>      ldmib   r4, {r4, r5}
-> 
-> By greping THREAD_NOTIFY_SWITCH there appear to be other functions
-> which should be called upon task switch.
-> 
+This is a multi-part message in MIME format.
 
-It looks like per-platform/per-feature stuff. In any case we can't iron
-the notifier loop (and the leaf code called) to make it usable in
-primary mode. So I'm afraid we likely need to deal with the few platform
-dependent spots in our own switch code, since we know which
-platform/feature we want to support.
+------=_NextPart_000_001A_01C80435.186D4050
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
--- 
-Philippe.
+Hy,
+
+ 
+
+I install Xenomai 2.3.4 for ARM on 2.6.20 kernel. The prepare-kernel script
+work well.
+
+When I compiling my kernel I have the error message above:
+
+ 
+
+  CC      kernel/xenomai/arch/generic/hal.o
+
+  LD      kernel/xenomai/arch/generic/xeno_hal.o
+
+  LD      kernel/xenomai/arch/generic/built-in.o
+
+  LD      kernel/xenomai/arch/built-in.o
+
+  CC      kernel/xenomai/nucleus/heap.o
+
+  CC      kernel/xenomai/nucleus/intr.o
+
+kernel/xenomai/nucleus/intr.c:60: warning: 'xnirqs' defined but not used
+
+  CC      kernel/xenomai/nucleus/module.o
+
+  CC      kernel/xenomai/nucleus/pod.o
+
+  CC      kernel/xenomai/nucleus/synch.o
+
+  CC      kernel/xenomai/nucleus/thread.o
+
+  CC      kernel/xenomai/nucleus/timer.o
+
+  CC      kernel/xenomai/nucleus/shadow.o
+
+In file included from kernel/xenomai/nucleus/shadow.c:56:
+
+include/asm/xenomai/bits/shadow.h: In function 'xnarch_local_syscall':
+
+include/asm/xenomai/bits/shadow.h:180: error: 'struct <anonymous>' has no
+member named 'counter'
+
+include/asm/xenomai/bits/shadow.h:181: error: 'struct <anonymous>' has no
+member named 'mask'
+
+include/asm/xenomai/bits/shadow.h:182: error: 'struct <anonymous>' has no
+member named 'last_cnt'
+
+include/asm/xenomai/bits/shadow.h:183: error: 'struct <anonymous>' has no
+member named 'tsc'
+
+make[3]: *** [kernel/xenomai/nucleus/shadow.o] Erreur 1
+
+make[2]: *** [kernel/xenomai/nucleus] Erreur 2
+
+make[1]: *** [kernel/xenomai] Erreur 2
+
+make: *** [kernel] Erreur 2
+
+ 
+
+ 
+
+Do you have a solution for fix this problem?
+
+ 
+
+Thanks in advance
+
+ 
+
+Patrick
+
+
+------=_NextPart_000_001A_01C80435.186D4050
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 69.6pt 70.85pt 69.6pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoPlainText><font size=3D2 face=3DVerdana><span lang=3DFR-CH
+style=3D'font-size:10.0pt;font-family:Verdana'>Hy,<o:p></o:p></span></fon=
+t></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DFR-CH
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'><o:p>&nbsp;</o=
+:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'>I install =
+Xenomai
+2.3.4 for ARM on 2.6.20 kernel. The prepare-kernel script work =
+well.<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'>When I =
+compiling my
+kernel I have the error message above:<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:10.0pt;color:black'><o:p>&nbsp;</o:p></span></font></p=
+>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DDE-CH style=3D'font-size:8.0pt;color:black'>&nbsp; =
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+kernel/xenomai/arch/generic/hal.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DDE-CH style=3D'font-size:8.0pt;color:black'>&nbsp; =
+LD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+kernel/xenomai/arch/generic/xeno_hal.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DDE-CH style=3D'font-size:8.0pt;color:black'>&nbsp; =
+LD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+kernel/xenomai/arch/generic/built-in.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DDE-CH style=3D'font-size:8.0pt;color:black'>&nbsp; =
+LD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+kernel/xenomai/arch/built-in.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DDE-CH style=3D'font-size:8.0pt;color:black'>&nbsp; =
+</span></font><font
+size=3D1 color=3Dblack><span lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+kernel/xenomai/nucleus/heap.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/intr.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>kernel/xenomai/nucleus/intr.c:60:
+warning: &#8216;xnirqs&#8217; defined but not =
+used<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/module.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/pod.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/synch.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/thread.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/timer.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>&nbsp;
+CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+kernel/xenomai/nucleus/shadow.o<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>In file included from
+kernel/xenomai/nucleus/shadow.c:56:<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>include/asm/xenomai/bits/shadow.h:
+In function =
+&#8216;xnarch_local_syscall&#8217;:<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>include/asm/xenomai/bits/shadow.h:1=
+80:
+error: &#8216;struct &lt;anonymous&gt;&#8217; has no member named
+&#8216;counter&#8217;<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>include/asm/xenomai/bits/shadow.h:1=
+81:
+error: &#8216;struct &lt;anonymous&gt;&#8217; has no member named
+&#8216;mask&#8217;<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>include/asm/xenomai/bits/shadow.h:1=
+82:
+error: &#8216;struct &lt;anonymous&gt;&#8217; has no member named
+&#8216;last_cnt&#8217;<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'>include/asm/xenomai/bits/shadow.h:1=
+83:
+error: &#8216;struct &lt;anonymous&gt;&#8217; has no member named
+&#8216;tsc&#8217;<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>make[3]: ***
+[kernel/xenomai/nucleus/shadow.o] Erreur 1<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>make[2]: ***
+[kernel/xenomai/nucleus] Erreur 2<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>make[1]: *** =
+[kernel/xenomai]
+Erreur 2<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB style=3D'font-size:8.0pt;color:black'>make: *** [kernel] =
+Erreur 2<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'><o:p>&nbsp;</o:p></span></font></p>=
+
+
+<p class=3DMsoPlainText><font size=3D1 color=3Dblack face=3D"Courier =
+New"><span
+lang=3DEN-GB =
+style=3D'font-size:8.0pt;color:black'><o:p>&nbsp;</o:p></span></font></p>=
+
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'>Do you have a =
+solution
+for fix this problem?<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'><o:p>&nbsp;</o=
+:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'>Thanks in =
+advance<o:p></o:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'><o:p>&nbsp;</o=
+:p></span></font></p>
+
+<p class=3DMsoPlainText><font size=3D2 color=3Dblack =
+face=3DVerdana><span lang=3DEN-GB
+style=3D'font-size:10.0pt;font-family:Verdana;color:black'>Patrick<o:p></=
+o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_001A_01C80435.186D4050--
+
 
