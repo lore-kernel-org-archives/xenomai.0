@@ -1,11 +1,10 @@
-Message-ID: <470206D8.7070509@domain.hid>
-Date: Tue, 02 Oct 2007 10:52:40 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <470207F8.1010309@domain.hid>
+Date: Tue, 02 Oct 2007 10:57:28 +0200
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
 References: <4701E7FE.4090406@domain.hid> <4701FBE2.7010309@domain.hid>
-	<470202BA.4070206@domain.hid>
-In-Reply-To: <470202BA.4070206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <4701FBE2.7010309@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] rt usb
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,39 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai-help@domain.hid
 
-Roland Tollenaar wrote:
-> Hi Jan,
-> 
->>> Is any documentation available which clarifies why usb is a problem 
->>> and how big the problem is (perhaps I can risk it?:) )
+Jan Kiszka wrote:
+> Roland Tollenaar wrote:
+>> Hi,
 >>
->> No longer at hand (a former student of mine did his diploma thesis 
->> about usb4rt). 
-> Pity.
+>> I was just wondering whether any work was going on for real-time usb?
+>>
+>> This would enable the use of PCI adaptors over USB so that PCI-IO cards 
+>> (like the peak-can card) can be used from laptops. CAN over USB is also 
+>> rather valuable.
 > 
->> Generally, there is no real show-stopper, we "just" need a 
->> real-time-aware stack that provides appropriate API (e.g. to 
+> http://developer.berlios.de/projects/usb4rt
+> https://gna.org/projects/usb20rt
 > 
-> So, if I run CAN over USB from a rt thread there is a chance that even 
-> though it is not rt-safe, it may not screw up latency?
+> Both projects are generally not directly usable and are currently in a 
+> dormant state.
 > 
-> I realize that this will seem pointless and is technically incorrect but 
->  if for example the USB device is not addressed by any other processes, 
-> what is the chance that I will have problems?
+>> Is any documentation available which clarifies why usb is a problem and 
+>> how big the problem is (perhaps I can risk it?:) )
+> 
+> No longer at hand (a former student of mine did his diploma thesis about 
+> usb4rt). Generally, there is no real show-stopper, we "just" need a 
+> real-time-aware stack that provides appropriate API (e.g. to 
+> preallocated required resources) and that is bug-free... :)
+One problem with USB is the inherent 1ms(full speed)/125us(high speed) cycles,
+which (AFAICT) prohibits closing a control loop any faster than that. On top of
+that at least some USB I/O-cards (somewhat off-topic, since post was about CAN
+over USB) tend to pack multiple values into one USB-packet, which leads to
+larger delays.
 
-The things is just as with RTnet vs. standard Linux networking: You need 
-a stack like the mentioned ones to provide rt-safe access to the USB 
-hardware. For CAN (e.g. the Peak dongle), you then need a high-level USB 
-driver that connects the RT-USB and RT-CAN stacks. But there is no point 
-in trying to tunnel your USB requests through the Linux USB stack, I 
-case you meant this.
+I would investigate Ethernet-CAN gateways, perhaps brew my own using
+http://www.hitex.com/str9-comstick/
 
-Jan
+/Anders
+
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
 
