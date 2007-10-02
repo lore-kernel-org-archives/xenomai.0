@@ -1,13 +1,11 @@
-Message-ID: <2ff1a98a0710020211r15932aafheffb53d55a7d1691@domain.hid>
-Date: Tue, 2 Oct 2007 11:11:48 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <200710020904.l9294G6p027811@domain.hid>
+Message-Id: <200710021123.l92BNDsQ005097@domain.hid>
+From: "Patrick" <kpa_info@domain.hid>
+Date: Tue, 2 Oct 2007 13:23:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <6EB3AFE7F3632E4BA457E506E6DAF4F61451A2@domain.hid>
-	<200710020904.l9294G6p027811@domain.hid>
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: 
 Subject: Re: [Xenomai-help] rt_task crash kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,36 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+
+
+-----Message d'origine-----
+De=A0: Patrick [mailto:kpa_info@domain.hid
+Envoy=E9=A0: mardi, 2. octobre 2007 12:46
+=C0=A0: 'Gilles Chanteperdrix'
+Objet=A0: RE: [Xenomai-help] rt_task crash kernel
+
+Yes, I have tried with latency -p 1000 and the issues is the same.
+
+-----Message d'origine-----
+De=A0: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+Envoy=E9=A0: mardi, 2. octobre 2007 11:46
+=C0=A0: Patrick
+Cc=A0: xenomai-core
+Objet=A0: Re: [Xenomai-help] rt_task crash kernel
 
 On 10/2/07, Patrick <kpa_info@domain.hid> wrote:
 >
 >
 >
 >
-> Hi,
->
->
->
-> I'm using Xenomai 2.3.4 with 2.6.20 kernel on an ARM PXA270 board.
->
-> The installation was executed successfully.
->
->
->
-> Now I'm trying to insert a small test module (source code is attached) but the kernel crashes on rt_task_start().
->
-> I have tried the same module on another x86 machine and there is no problem.
->
-> I have tried with or without rt_task_set_periodic in aperiodic and periodic timer mode but the result is the same.
->
->
->
-> Do you have an idea?
+> Yes, I have tried with bin/latency user space application and the =
+system
+> crashes.
 
-Do you observe the same behaviour with the latency test ?
+latency appears to crash on ARM when launched with the default 100us
+period, the system is just too busy. Do you observe the crash with a 1
+ms period ?
 
--- 
+--=20
                                                Gilles Chanteperdrix
+
 
