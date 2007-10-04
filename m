@@ -1,13 +1,14 @@
+Message-ID: <47055EBB.6060300@domain.hid>
+Date: Thu, 04 Oct 2007 23:44:27 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18181.15818.772625.155922@domain.hid>
-Date: Thu, 4 Oct 2007 21:23:54 +0200
-In-Reply-To: <200710040856.l948uFto029224@domain.hid>
-References: <2ff1a98a0710030812p6539f24fqc394a4b4eae9ff36@domain.hid>
-	<200710040856.l948uFto029224@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] rt_task crash kernel
+References: <7289437c0710030717y7c65f127m8207bc37d192e28e@domain.hid>
+In-Reply-To: <7289437c0710030717y7c65f127m8207bc37d192e28e@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC121AB7C69750C83156C70BC"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] RTDM question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,47 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: xenomai@xenomai.org
+To: Perrine Martignoni <perrmart@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Patrick wrote:
- > Hi,
- >=20
- > I have tryed to compile the 2.6.20 kernel without eabi but the issue=
- is the
- > same: the kernel crashes when I insert the module.
- >=20
- > Thanks for your help.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC121AB7C69750C83156C70BC
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Ok, so I have not broken the EABI stuff.
+Perrine Martignoni wrote:
+> Hello,
+>=20
+> I ask me some questions about RTDM module. Can we open several times th=
+e
+> same driver ? And have several DEV_FILE
+> I have understood that we don't manage the number Major and Minor. So I=
 
-=46rom now on, if you want to work with this new patch, you will have to
-debug it yourself. Of course, we will provide some help on this list.
+> don't see how it works to do that.
 
-There are two ways you can go:
-- either you bisect in the Adeos patches to see which patch introduced
-  the bug (all I-pipe patches should work with Xenomai v2.3.4, except
-  specifically 1.7-05);
-- either you try and debug the crash. Hopefully, the kernel tries to
-  print something before it dies, so what you can do is modify printk s=
-o
-  that it does a vsnprintf and uses the printascii function (in order t=
-o
-  have a working printascii, you have to enable low-level debugging
-  functions in the kernel configuration "kernel hacking"
-  section). Then, if you succeed, you will have to try to use the trace=
-r
-  to understand what happens.
+You mean that the same driver source is handling multiple RTDM devices?
+That is perfectly feasible, just look at the 16550A driver. But we
+should also have some tutorial on this soon, check those two files
+waiting to be merged into SVN:
 
-This reminds me, last time we solved such a bug on ARM, the "schedule"
-function ended up called in a loop in Xenomai domain. To detect this,
-enable I-pipe debugging in kernel configuration and select the "Check
-for illicit cross-domain calls" option.
+http://zarb.org/~trem/tut03-skeleton-drv.c
+http://zarb.org/~trem/tut03-skeleton-app.c
 
-Good luck if you decide to debug this new patch.
-
---=20
+Jan
 
 
-=09=09=09=09=09    Gilles Chanteperdrix.
+--------------enigC121AB7C69750C83156C70BC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHBV69niDOoMHTA+kRAny/AJoD4vLeVRl+7IsMbTIxTbKBfjUN0gCfaLiD
+SHHUs5bWcG3OtE1QkBiQzMQ=
+=O94v
+-----END PGP SIGNATURE-----
+
+--------------enigC121AB7C69750C83156C70BC--
 
