@@ -1,14 +1,14 @@
-Message-ID: <47055EBB.6060300@domain.hid>
-Date: Thu, 04 Oct 2007 23:44:27 +0200
+Message-ID: <470563EE.9000406@domain.hid>
+Date: Fri, 05 Oct 2007 00:06:38 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <7289437c0710030717y7c65f127m8207bc37d192e28e@domain.hid>
-In-Reply-To: <7289437c0710030717y7c65f127m8207bc37d192e28e@domain.hid>
+References: <7289437c0710040254t676bf4u2615d5d794e82045@domain.hid>
+In-Reply-To: <7289437c0710040254t676bf4u2615d5d794e82045@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigC121AB7C69750C83156C70BC"
+	boundary="------------enigA01806AA21872B2C11969B41"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RTDM question
+Subject: Re: [Xenomai-help] IRQ managment with RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,32 +22,28 @@ To: Perrine Martignoni <perrmart@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC121AB7C69750C83156C70BC
+--------------enigA01806AA21872B2C11969B41
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
 Perrine Martignoni wrote:
 > Hello,
 >=20
-> I ask me some questions about RTDM module. Can we open several times th=
-e
-> same driver ? And have several DEV_FILE
-> I have understood that we don't manage the number Major and Minor. So I=
+> I would like to know how we configure interrupts in falling edge or ris=
+ing
+> edge with RTDM.
+> I have to rewrite a linux driver in RTDM module and I don't find the
+> equivalent of IRQF_TRIGGER_FALLING.
 
-> don't see how it works to do that.
-
-You mean that the same driver source is handling multiple RTDM devices?
-That is perfectly feasible, just look at the 16550A driver. But we
-should also have some tutorial on this soon, check those two files
-waiting to be merged into SVN:
-
-http://zarb.org/~trem/tut03-skeleton-drv.c
-http://zarb.org/~trem/tut03-skeleton-app.c
+There is no such thing in RTDM. You can use set_irq_type() for this,
+like some Linux drivers do as well. But the cleaner approach indeed seem
+to be to let RTDM manage the flags (and check if there conflicts in case
+of shared IRQs). Will put it on the todo list, but not with a high prio.
 
 Jan
 
 
---------------enigC121AB7C69750C83156C70BC
+--------------enigA01806AA21872B2C11969B41
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -56,10 +52,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.6 (MingW32)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
 
-iD8DBQFHBV69niDOoMHTA+kRAny/AJoD4vLeVRl+7IsMbTIxTbKBfjUN0gCfaLiD
-SHHUs5bWcG3OtE1QkBiQzMQ=
-=O94v
+iD8DBQFHBWPuniDOoMHTA+kRAh9NAJoDjl3OhhCZRS3uSmN2qgaaWkBsdACeJkbn
+B/MoMrnzS08/PUKBHogNOng=
+=b7pM
 -----END PGP SIGNATURE-----
 
---------------enigC121AB7C69750C83156C70BC--
+--------------enigA01806AA21872B2C11969B41--
 
