@@ -1,118 +1,105 @@
-Message-ID: <47228277.40800@domain.hid>
-Date: Sat, 27 Oct 2007 02:12:39 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <47226B5E.2050303@domain.hid> <47227713.9020804@domain.hid>
-In-Reply-To: <47227713.9020804@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig808F22234F577D4175B543FE"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] I-pipe/i386 for 2.6.24-rc1 - x86/x86_64 merge to
- come
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <470611FA.30103@domain.hid>
+References: <4705ED3B.4070600@domain.hid>
+	<2ff1a98a0710050130j7e0db84dq838aab0417c8bd3f@domain.hid>
+	<4705FE04.7000909@domain.hid> <1191576011.20623.114.camel@domain.hid>
+	<470611FA.30103@domain.hid>
+Content-Type: text/plain
+Date: Fri, 05 Oct 2007 16:02:57 +0200
+Message-Id: <1191592977.20623.142.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] awful latencies (~110us)
+Reply-To: rpm@xenomai.org
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: CHABAL David <david.chabal@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig808F22234F577D4175B543FE
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2007-10-05 at 12:29 +0200, CHABAL David wrote:
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> The I-pipe/i386 has been ported to 2.6.24-rc1, so that we could swallo=
-w
->> the i386/x86_64 merge which just happened upstream, without having to
->> fiddle at the same time with the slew of other core changes which will=
+> : func     -114   ipipe_check_context (boomerang_start_xmit)
+> : func     -114   issue_and_wait (boomerang_start_xmit)
+> : func     -114   iowrite16 (issue_and_wait)
+> : func     -113!  ioread16 (issue_and_wait)
+> :|begin     -84   common_interrupt (ioread16)
 
->> hit the street before 2.6.24 is released. You need the latest trunk/ t=
-o
->> configure Xenomai for this kernel properly, or at least update those t=
-wo
->> files:
->>
->> - scripts/prepare_kernel.sh
->> - ksrc/arch/i386/Kconfig.
->>
->> Please check if this patch runs your x86 hw reasonably well, while I'm=
+The Vortex driver does some brute force polling on the slow path, when
+the adapter does not acknowledge the last command sent fast enough. It
+seems your CPU is burning a lot of horsepower idling on this loop.
 
->> busy merging ksrc/arch/{i386, x86_64} on the Xenomai side. The plan is=
+> :|func      -83   __ipipe_handle_irq (common_interrupt)
+> :|func      -83   __ipipe_ack_irq (__ipipe_handle_irq)
+> :|func      -82   __ipipe_ack_level_irq (__ipipe_ack_irq)
+> :|func      -82   mask_and_ack_8259A (__ipipe_ack_level_irq)
+> :|func      -82+  __ipipe_spin_lock_irqsave (mask_and_ack_8259A)
+> :|func      -78   __ipipe_spin_unlock_irqrestore (mask_and_ack_8259A)
+> :|func      -78   __ipipe_dispatch_wired (__ipipe_handle_irq)
+> :|func      -77   xnintr_clock_handler (__ipipe_dispatch_wired)
+> :|func      -77   xnintr_irq_handler (xnintr_clock_handler)
+> :|func      -77   xnpod_announce_tick (xnintr_irq_handler)
+> :|func      -76   xntimer_do_tick_aperiodic (xnpod_announce_tick)
+> :|func      -76   xnthread_periodic_handler
+> (xntimer_do_tick_aperiodic)
+> :|func      -76   xnpod_resume_thread (xnthread_periodic_handler)
+> :|[ 3937]   -75+  xnpod_resume_thread (xnthread_periodic_handler)
+> :|func      -72   xnpod_schedule (xnintr_irq_handler)
+> :|[ 3497]   -72+  xnpod_schedule (xnintr_irq_handler)
+> :|func      -71   __switch_to (xnpod_schedule)
+> :|[ 3937]   -70   xnpod_schedule (xnpod_suspend_thread)
+> :|func      -70   __ipipe_restore_pipeline_head
+> (xnpod_wait_thread_period)
+> :|end       -69+  __ipipe_restore_pipeline_head
+> (xnpod_wait_thread_period)
+> :|begin     -63   common_interrupt (__ipipe_restore_pipeline_head)
+> :|func      -62   __ipipe_handle_irq (common_interrupt)
+> :|func      -62   __ipipe_ack_irq (__ipipe_handle_irq)
+> :|func      -62   __ipipe_ack_level_irq (__ipipe_ack_irq)
+> :|func      -61   mask_and_ack_8259A (__ipipe_ack_level_irq)
+> :|func      -61!  __ipipe_spin_lock_irqsave (mask_and_ack_8259A)
+> :|func      -40   __ipipe_spin_unlock_irqrestore (mask_and_ack_8259A)
 
->> to have a unified x86* tree for Xenomai 2.4 which has to work with all=
+20 us spent acknowledging the interrupt is damned slow. Any "spurious
+8259A interrupt" message haunting your kernel log so far?
 
->> supported kernel releases, including 2.6.24. Yes, I know we are in -rc=
+The sampling task is properly rescheduled after ~15us since the timer
+interrupt receipt, problem is that other interrupts are preempting the
+awaken task again and again before it has a chance to run. I wonder if
+something fishy is not going on with the fast timer acknowledge, or the
+network card. Could you:
 
->> phase, but such merge should mostly reshuffle the directory layout, an=
-d
->> not the implementation per se, otherwise, it will have to wait for 2.5=
-=2E
->=20
-> [While building the new toy...] Hmm, I'm not a big fan of this schedule=
-=2E
-> Unless we want to delay Xenomai 2.4 for even more months, we will not b=
-e
-> able to develop the unification against any stable kernel (the
-> unification is not yet done with 2.6.24-rc1!).
->=20
-> *IF* such an internal refactoring of Xenomai is actually that
-> straightforward, why not postpone it until some later 2.4 release? I
-> would rather prefer to role out something matured, also
-> build-system-wise, now instead of risking to generate new regressions.
-> But to make concreter: Do you plan to just create hal_32.c and hal_64.c=
-,
-> or do you then also want to merge both into hal.c?
->=20
->> At the end of the day (i.e. sometime during the v2.4 maintenance cycle=
-),
->> we should have the I-pipe/x86_64 merged with the I-pipe/i386 support,
->> leading to the I-pipe/x86-2.0 series, on top of 2.6.24, and all of tha=
-t
->> usable with a unified ia32/64 Xenomai support, which is basically what=
+- send us the output of /proc/interrupts
+- try the patch below which should prevent any acknowledge nesting
+errors at PIC level, 
 
->> we already have now on the powerpc side of the universe.
->>
->> http://download.gna.org/adeos/patches/v2.6/i386/adeos-ipipe-2.6.24-rc1=
--i386-1.10-11.patch
->>
->> PS: slightly tested here. Looks ok, sun is still shining, birds are
->> still singing, hardware is not burning - yet.
->>
->=20
-> Will let you know the result from my box soon.
+--- arch/i386/kernel/i8259.c~	2007-09-16 16:54:34.000000000 +0200
++++ arch/i386/kernel/i8259.c	2007-10-05 15:47:41.000000000 +0200
+@@ -176,11 +176,9 @@
+ 		goto spurious_8259A_irq;
+ #ifdef CONFIG_IPIPE
+ 	if (irq == 0) {
+-	    /* Fast timer ack -- don't mask (unless supposedly
+-	      spurious) */
+-	    outb(0x20,PIC_MASTER_CMD);
+-	    spin_unlock_irqrestore(&i8259A_lock, flags);
+-	    return;
++		outb(0x60,PIC_MASTER_CMD);	/* 'Specific EOI to master */
++		spin_unlock_irqrestore(&i8259A_lock, flags);
++		return;
+ 	}
+ #endif /* CONFIG_IPIPE */
+ 	cached_irq_mask |= irqmask;
 
-Appears to work fine here as well, including SMP. Just one oddity so
-far: /sys/module/xeno_nucleus is missing, thus a way to tune module
-parameters of the built-in nucleus. xeno_hal or xeno_native, e.g., are
-there. Strange.
-
-But beyond this, I really like 2.6.24 - my new notebook finally
-generates sound with its built-in speakers! 8)
-
-Jan
+-- 
+Philippe.
 
 
---------------enig808F22234F577D4175B543FE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHIoJ6niDOoMHTA+kRAig9AJ9NV3OwGCUlUSQghknIbq7nCe2YaQCfanAQ
-SISdrAxIUzle7LJRO71dzYY=
-=ewhj
------END PGP SIGNATURE-----
-
---------------enig808F22234F577D4175B543FE--
 
