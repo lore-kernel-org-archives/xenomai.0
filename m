@@ -1,14 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <46ECF430.9000402@domain.hid>
-References: <46ECF430.9000402@domain.hid>
-Content-Type: text/plain
-Date: Thu, 04 Oct 2007 10:14:05 +0200
-Message-Id: <1191485645.20623.32.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] [PATCH] i386: remove another useless hunk
-Reply-To: rpm@xenomai.org
+Date: Sat, 6 Oct 2007 00:10:48 +0200 (CEST)
+From: Nicholas Mc Guire <der.herr@domain.hid>
+Message-ID: <Pine.LNX.4.60.0710060009350.2074@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Subject: [Adeos-main] RTLWS9 Call for Participation
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,31 +12,64 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
-
-On Sun, 2007-09-16 at 11:15 +0200, Jan Kiszka wrote:
-> With the introduction of
-> 
-> --- a/arch/i386/boot/compressed/Makefile
-> +++ b/arch/i386/boot/compressed/Makefile
-> @@ -9,6 +9,7 @@
->  EXTRA_AFLAGS   := -traditional
-> 
->  LDFLAGS_vmlinux := -T
-> +CFLAGS := $(subst -pg,,$(CFLAGS))
->  CFLAGS_misc.o += -fPIC
->  hostprogs-y    := relocs
-> 
-> quite some time ago the dummy mcount function in compressed/misc.c
-> became redundant. Let's remove this dead code.
-
-Merged, thanks.
-
-> 
-> Jan
--- 
-Philippe.
+To: adeos-main@gna.org
 
 
+
+
+
+                         9th Real-Time Linux Workshop
+
+                                    and
+
+               The CELF Embedded Linux Conference - Europe 2007
+
+                                joint sessions
+
+
+                              November 2-4, 2007
+                     Institute for Measurement Technology
+                      Johannes Kepler University of Linz
+
+
+                             Call for Participation
+
+    Following  the  meetings  of  developers  and  users at the previous 8
+    successful  real-time Linux workshops held in Vienna, Orlando, Milano,
+    Boston, and Valencia, Singapur, Lille, and Lanzhou the Real-Time Linux
+    Workshop  for  2007  will  come  back  to  Europa and be combined with
+    ELC-E(Embedded Linux Conference - Europe), to be held at the Institute
+    for  Measurement  Technology,  Johannes  Kepler  University  of  Linz,
+    Austria.  Embedded  and real-time Linux is continuously growing player
+    in  the  embedded  appliance  market  world  wide. Embedded systems in
+    automation  control, measurement and multimedia have been continuously
+    moving  towards  32bit  systems,  opening the door for the use of full
+    featured  OS  like  GNU/Linux  on  COTS  based systems. With real-time
+    capabilities  being  a common demand for embedded systems the soft and
+    hard  real-time  variants  are an important extension to the versatile
+    GNU/Linux  GPOS.  A  special focus will be on industrial case studies.
+
+
+Details at:
+
+  http://www.realtimelinuxfoundation.org/events/rtlws-2007/ws.html
+
+  http://www.celinux.org/elc_europe07/elc_europe_index.html
+
+Agenda at:
+
+  http://www.realtimelinuxfoundation.org/events/rtlws-2007/agenda.html
+
+  http://www.celinux.org/elc_europe07/sessions.html
+
+Registration for both ELC-E and RTLWS9 at:
+
+  http://www.realtimelinuxfoundation.org/events/rtlws-2007/ws.html
+
+
+The ELC-E and RTLWS9 organization committee
+
+
+thx!
+hofrat
 
