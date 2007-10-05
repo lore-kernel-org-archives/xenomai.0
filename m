@@ -1,13 +1,12 @@
-Message-ID: <470563EE.9000406@domain.hid>
-Date: Fri, 05 Oct 2007 00:06:38 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <7289437c0710050018r3eed443bi7fe66a0d9b238e04@domain.hid>
+Date: Fri, 5 Oct 2007 09:18:22 +0200
+From: "Perrine Martignoni" <perrmart@domain.hid>
+In-Reply-To: <470563EE.9000406@domain.hid>
 MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_14086_14468821.1191568702448"
 References: <7289437c0710040254t676bf4u2615d5d794e82045@domain.hid>
-In-Reply-To: <7289437c0710040254t676bf4u2615d5d794e82045@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA01806AA21872B2C11969B41"
-Sender: jan.kiszka@domain.hid
+	<470563EE.9000406@domain.hid>
 Subject: Re: [Xenomai-help] IRQ managment with RTDM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,44 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Perrine Martignoni <perrmart@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA01806AA21872B2C11969B41
+------=_Part_14086_14468821.1191568702448
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Perrine Martignoni wrote:
-> Hello,
->=20
-> I would like to know how we configure interrupts in falling edge or ris=
-ing
-> edge with RTDM.
-> I have to rewrite a linux driver in RTDM module and I don't find the
-> equivalent of IRQF_TRIGGER_FALLING.
+I can use set_irq_type() just before rtdm_irq_request() ?
+I don't use shared IRQs, so I wouldn't have any problem.
 
-There is no such thing in RTDM. You can use set_irq_type() for this,
-like some Linux drivers do as well. But the cleaner approach indeed seem
-to be to let RTDM manage the flags (and check if there conflicts in case
-of shared IRQs). Will put it on the todo list, but not with a high prio.
+On 10/5/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+>
+> Perrine Martignoni wrote:
+> > Hello,
+> >
+> > I would like to know how we configure interrupts in falling edge or
+> rising
+> > edge with RTDM.
+> > I have to rewrite a linux driver in RTDM module and I don't find the
+> > equivalent of IRQF_TRIGGER_FALLING.
+>
+> There is no such thing in RTDM. You can use set_irq_type() for this,
+> like some Linux drivers do as well. But the cleaner approach indeed seem
+> to be to let RTDM manage the flags (and check if there conflicts in case
+> of shared IRQs). Will put it on the todo list, but not with a high prio.
+>
+> Jan
+>
+>
+>
 
-Jan
+------=_Part_14086_14468821.1191568702448
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+I can use set_irq_type() just before rtdm_irq_request() ?<br>I don&#39;t use shared IRQs, so I wouldn&#39;t have any problem.<br><br><div><span class="gmail_quote">On 10/5/07, <b class="gmail_sendername">Jan Kiszka</b> &lt;
+<a href="mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt; wrote:</span><blockquote class="gmail_quote" style="border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">Perrine Martignoni wrote:
+<br>&gt; Hello,<br>&gt;<br>&gt; I would like to know how we configure interrupts in falling edge or rising<br>&gt; edge with RTDM.<br>&gt; I have to rewrite a linux driver in RTDM module and I don&#39;t find the<br>&gt; equivalent of IRQF_TRIGGER_FALLING.
+<br><br>There is no such thing in RTDM. You can use set_irq_type() for this,<br>like some Linux drivers do as well. But the cleaner approach indeed seem<br>to be to let RTDM manage the flags (and check if there conflicts in case
+<br>of shared IRQs). Will put it on the todo list, but not with a high prio.<br><br>Jan<br><br><br></blockquote></div><br>
 
---------------enigA01806AA21872B2C11969B41
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHBWPuniDOoMHTA+kRAh9NAJoDjl3OhhCZRS3uSmN2qgaaWkBsdACeJkbn
-B/MoMrnzS08/PUKBHogNOng=
-=b7pM
------END PGP SIGNATURE-----
-
---------------enigA01806AA21872B2C11969B41--
+------=_Part_14086_14468821.1191568702448--
 
