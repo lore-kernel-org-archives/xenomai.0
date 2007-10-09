@@ -1,19 +1,10 @@
-Resent-Message-ID: <18187.11689.796009.250597@domain.hid>
-Resent-To: xenomai@xenomai.org
+Message-ID: <470B32F0.6030601@domain.hid>
+Date: Tue, 09 Oct 2007 09:51:12 +0200
+From: Johan Borkhuis <j.borkhuis@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18186.42065.560821.557825@domain.hid>
-Errors-To: linux-arm-bounces+gilles.chanteperdrix=gmail.com+gilles.chanteperdrix=gmail.com@domain.hid
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <305035a40709140817q452ca77dude2af88ce6fc3dd9@domain.hid>
-References: <515338.44993.qm@domain.hid>
-	<80b317760709110456k2ef95162t19d833da7c5781de@domain.hid>
-	<46E699C6.80609@domain.hid>
-	<305035a40709140817q452ca77dude2af88ce6fc3dd9@domain.hid>
-Date: Tue, 09 Oct 2007 00:28:46 -0700 (PDT)
-Subject: Re: [Xenomai-core] RTOS porting on ARM
-Reply-To: xenomai@xenomai.org
+Content-Type: multipart/mixed; boundary="------------000508060508010608040503"
+Subject: [Xenomai-core] [PATCH] documentation: rtdm functions available in
+	user space
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -23,78 +14,444 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gregory CLEMENT <gclement00@domain.hid>
-Cc: linux-arm@domain.hid, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-gclement00 at gmail.com (Gregory CLEMENT) wrote:
- > 2007/9/11, Bill Gatliff <bgat@domain.hid>:
- > > Richard Genoud wrote:
- > > >>   For an industrial control application, i need to port an RTOS pn ARM9 specifically, cirrus logic based ARM. Can anyone suggest me the chances of porting RT Linux on this ARM core. if not any other RTOS please.
- > > >>
- > > >
- > > > Hi !
- > > >
- > > > we've started to port xenomai and RTAI to arm9 (AT91RM9200 & AT91SAM926x)
- > > >
- > > > you can download the patches here :
- > > > http://www.adeneo.adetelgroup.com/srt/adeneoen/flb/show?location.id:=1452
- > > >
- > > > Richard.
- > > >
- > >
- > > Xenomai already supports the AT91RM9200.
- > 
- > Indeed and now Xenomai supports also AT91SAM9260,  AT91SAM9261 and
- > AT91SAM9263 as our patches are now in adeos.
+This is a multi-part message in MIME format.
+--------------000508060508010608040503
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
+When checking the documentation I found that a lot of rtdm functions are 
+indicated as available in user space, but AFAIK these functions are  
+only available in kernel space or interrupt contect.
+The documentation is generated using ksrc/skin/rtdm/drvlib.c. Below is a 
+patch file that corrects this.
 
-I have found this mail by chance with Google, and could not leave it
-unanswered.
+(I did not check other documentation to see if there are more functions 
+defined for use in user space)
 
-First, let me clarify the situation of Xenomai ARM port. It is a
-collective work which was started more that two years ago, long before
-you (Adeneo) got some interest about it. What you did was merely to
-copy/paste the AT91RM9200 port I did to get it to run on
-AT91SAM926x. So, please do not let people believe that you are the
-authors of this port. And, by the way, ARM ports of RTAI existed for
-even more time.
-
- > 
- > For RTAI we have now a working systeme with have better max latency
- > than Xenomai ( 50us instead of around 100us for Xenomai). I plan to
- > update the patches on our site with this new version and communicate
- > on it on RTAI list as soon as I have some free time.
-
-A good place for discussing about these figures would have been Xenomai
-mailing list, a place where we could have answered you immediately. Are
-you sure you are not comparing Xenomai user-space scheduling latency
-with RTAI kernel-space scheduling latency ?
-
-Please follow up on xenomai@xenomai.org
-
- > 
- > And to answer to first question there is a porting guide for
- > adeos/xenomai for arm which explain what you have to do for porting
- > adeos/Xenomai for a new ARM based SOC.
- > And in a near futur I hope ther will be the same kinf of documentation for RTAI.
- > 
- > -- 
- > Gregory CLEMENT
- > Adeneo
- > 2, chemin du Ruisseau - BP21
- > 69136 Ecully Cedex
- > France
- > Tel : +33-4 72 18 08 40
+Kind regards,
+    Johan Borkhuis
 
 
--- 
+--------------000508060508010608040503
+Content-Type: text/plain;
+ name="xeno.diff"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="xeno.diff"
 
+diff -r -u /opt/eldk/ppc_85xx/usr/src/org/xenomai-2.3.2/ksrc/skins/rtdm/drvlib.c /opt/eldk/ppc_85xx/usr/src/xenomai-2.3.2/ksrc/skins/rtdm/drvlib.c
+--- /opt/eldk/ppc_85xx/usr/src/org/xenomai-2.3.2/ksrc/skins/rtdm/drvlib.c	2007-04-19 16:01:52.000000000 +0200
++++ /opt/eldk/ppc_85xx/usr/src/xenomai-2.3.2/ksrc/skins/rtdm/drvlib.c	2007-10-09 09:32:26.000000000 +0200
+@@ -67,7 +67,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -106,7 +105,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -160,7 +158,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -180,7 +177,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -200,7 +196,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -221,7 +216,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: always, unless a timer overrun occured.
+  */
+@@ -240,7 +234,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -256,7 +249,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -284,7 +276,6 @@
+  * This service can be called from:
+  *
+  * - Kernel module initialization/cleanup code
+- * - User-space task (non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -330,7 +321,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: always.
+  */
+@@ -370,7 +360,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: always, unless the specified time already passed.
+  */
+@@ -419,7 +408,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine (should be avoided or kept short)
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never (except due to external interruptions).
+  */
+@@ -517,7 +505,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -542,7 +529,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -576,7 +562,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -598,7 +583,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -622,7 +606,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -666,7 +649,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -709,7 +691,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -783,7 +764,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -821,7 +801,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -854,7 +833,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -884,7 +862,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -930,7 +907,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1002,7 +978,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1046,7 +1021,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1078,7 +1052,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1097,7 +1070,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1125,7 +1097,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1167,7 +1138,6 @@
+  * This service can be called from:
+  *
+  * - Kernel-based task
+- * - User-space task (RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1264,7 +1234,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1285,7 +1254,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1305,7 +1273,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1325,7 +1292,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1361,7 +1327,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1378,7 +1343,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1396,7 +1360,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never in real-time context, possible in non-real-time
+  * environments.
+@@ -1555,7 +1518,6 @@
+  * This service can be called from:
+  *
+  * - Kernel module initialization/cleanup code
+- * - User-space task (non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1620,7 +1582,6 @@
+  * This service can be called from:
+  *
+  * - Kernel module initialization/cleanup code
+- * - User-space task (non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1659,7 +1620,6 @@
+  * This service can be called from:
+  *
+  * - Kernel module initialization/cleanup code
+- * - User-space task (non-RT)
+  *
+  * Rescheduling: possible.
+  */
+@@ -1699,7 +1659,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine (consider the overhead!)
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never in real-time context, possible in non-real-time
+  * environments.
+@@ -1721,7 +1680,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine (consider the overhead!)
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1739,7 +1697,6 @@
+  * - Kernel module initialization/cleanup code
+  * - Interrupt service routine (consider the overhead!)
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1762,7 +1719,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1786,7 +1742,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1815,7 +1770,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1845,7 +1799,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1874,7 +1827,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1904,7 +1856,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1935,7 +1886,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
+@@ -1954,7 +1904,6 @@
+  *
+  * - Kernel module initialization/cleanup code
+  * - Kernel-based task
+- * - User-space task (RT, non-RT)
+  *
+  * Rescheduling: never.
+  */
 
-					    Gilles Chanteperdrix.
-
--------------------------------------------------------------------
-List admin: http://lists.arm.linux.org.uk/mailman/listinfo/linux-arm
-FAQ:        http://www.arm.linux.org.uk/mailinglists/faq.php
-Etiquette:  http://www.arm.linux.org.uk/mailinglists/etiquette.php
+--------------000508060508010608040503--
 
