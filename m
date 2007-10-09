@@ -1,9 +1,9 @@
-Date: Sat, 6 Oct 2007 00:10:48 +0200 (CEST)
-From: Nicholas Mc Guire <der.herr@domain.hid>
-Message-ID: <Pine.LNX.4.60.0710060009350.2074@domain.hid>
+Message-ID: <470BB2DE.7030800@domain.hid>
+Date: Tue, 09 Oct 2007 18:57:02 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: [Adeos-main] RTLWS9 Call for Participation
+Content-Type: multipart/mixed; boundary="------------030500070908070001040105"
+Subject: [Adeos-main] [RFC][PATCH] i386: report unhandled non-root faults
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,63 +13,68 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
+Cc: Philippe Gerum <rpm@xenomai.org>
+
+This is a multi-part message in MIME format.
+--------------030500070908070001040105
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+
+This patch was part of my endeavour to understand the vmalloc-pinning
+issue. It catches the theoretically impossible case that there is a bug
+inside the I-pipe core. That bug may cause a fault over a non-root
+domain AND that domain may not show any interest in the fault. Linux is
+called then, and things fall apart.
+
+As the patch adds code to the fault handler's hot-patch, I decided to
+make the check depend on CONFIG_IPIPE_DEBUG. It's i386 only, but porting
+it to other archs should be straightforward.
+
+My feeling is that this safety belt can be useful again for bugs we will
+surely invent in the future. :)
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
+
+--------------030500070908070001040105
+Content-Type: text/x-patch;
+ name="catch-non-root-faults.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="catch-non-root-faults.patch"
+
+---
+ arch/i386/kernel/ipipe.c |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+Index: linux-2.6.22.9/arch/i386/kernel/ipipe.c
+===================================================================
+--- linux-2.6.22.9.orig/arch/i386/kernel/ipipe.c
++++ linux-2.6.22.9/arch/i386/kernel/ipipe.c
+@@ -642,8 +642,17 @@ fastcall int __ipipe_handle_exception(st
+ #endif /* CONFIG_KGDB */
+ 
+ 	if (!ipipe_trap_notify(vector, regs)) {
+-		__ipipe_exptr handler = __ipipe_std_extable[vector];
+-		handler(regs,error_code);
++#ifdef CONFIG_IPIPE_DEBUG
++		if (!ipipe_root_domain_p) {
++			/* Fix up domain so that Linux can handle this. */
++			ipipe_current_domain = ipipe_root_domain;
++			ipipe_trace_panic_freeze();
++			printk(KERN_ERR "BUG: Unhandled exception over domain"
++					" %s - switching to ROOT\n",
++					ipipe_current_domain->name);
++		}
++#endif /* CONFIG_IPIPE_DEBUG */
++		__ipipe_std_extable[vector](regs, error_code);
+ 		local_irq_restore(flags);
+ 		__fixup_if(regs);
+ 		return 0;
 
 
-
-
-
-                         9th Real-Time Linux Workshop
-
-                                    and
-
-               The CELF Embedded Linux Conference - Europe 2007
-
-                                joint sessions
-
-
-                              November 2-4, 2007
-                     Institute for Measurement Technology
-                      Johannes Kepler University of Linz
-
-
-                             Call for Participation
-
-    Following  the  meetings  of  developers  and  users at the previous 8
-    successful  real-time Linux workshops held in Vienna, Orlando, Milano,
-    Boston, and Valencia, Singapur, Lille, and Lanzhou the Real-Time Linux
-    Workshop  for  2007  will  come  back  to  Europa and be combined with
-    ELC-E(Embedded Linux Conference - Europe), to be held at the Institute
-    for  Measurement  Technology,  Johannes  Kepler  University  of  Linz,
-    Austria.  Embedded  and real-time Linux is continuously growing player
-    in  the  embedded  appliance  market  world  wide. Embedded systems in
-    automation  control, measurement and multimedia have been continuously
-    moving  towards  32bit  systems,  opening the door for the use of full
-    featured  OS  like  GNU/Linux  on  COTS  based systems. With real-time
-    capabilities  being  a common demand for embedded systems the soft and
-    hard  real-time  variants  are an important extension to the versatile
-    GNU/Linux  GPOS.  A  special focus will be on industrial case studies.
-
-
-Details at:
-
-  http://www.realtimelinuxfoundation.org/events/rtlws-2007/ws.html
-
-  http://www.celinux.org/elc_europe07/elc_europe_index.html
-
-Agenda at:
-
-  http://www.realtimelinuxfoundation.org/events/rtlws-2007/agenda.html
-
-  http://www.celinux.org/elc_europe07/sessions.html
-
-Registration for both ELC-E and RTLWS9 at:
-
-  http://www.realtimelinuxfoundation.org/events/rtlws-2007/ws.html
-
-
-The ELC-E and RTLWS9 organization committee
-
-
-thx!
-hofrat
+--------------030500070908070001040105--
 
