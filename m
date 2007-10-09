@@ -1,20 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <2ff1a98a0710080145x2317ebc4ga4974a17abf22bdf@domain.hid>
-References: <46F9167F.20008@domain.hid> <46FA26ED.4070505@domain.hid>
-	<46FF78DF.7090104@domain.hid> <1191149545.5989.7.camel@domain.hid>
-	<46FF81BA.1020506@domain.hid> <46FF8BB9.9080207@domain.hid>
-	<1191156133.5989.17.camel@domain.hid> <46FFC139.60905@domain.hid>
-	<2ff1a98a0710010204x60178291u9633e61a89d49921@domain.hid>
-	<4709DD41.3030306@domain.hid>
-	<2ff1a98a0710080145x2317ebc4ga4974a17abf22bdf@domain.hid>
-Content-Type: text/plain
-Date: Tue, 09 Oct 2007 11:11:01 +0200
-Message-Id: <1191921061.22917.72.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <470B4688.6010808@domain.hid>
+Date: Tue, 09 Oct 2007 11:14:48 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <515338.44993.qm@domain.hid>	<80b317760709110456k2ef95162t19d833da7c5781de@domain.hid>	<46E699C6.80609@domain.hid>	<305035a40709140817q452ca77dude2af88ce6fc3dd9@domain.hid>
+	<18186.42065.560821.557825@domain.hid>
+In-Reply-To: <18186.42065.560821.557825@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] crashing 2.6.22
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-core] RTOS porting on ARM
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,42 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 2007-10-08 at 10:45 +0200, Gilles Chanteperdrix wrote:
-> > Ooops. By reading all my mails, I would have avoided reinventing
-> this
-> > wheel on my own. Your patch is almost what I posted yesterday to fix
-> the
-> > vmalloc issue.
-> >
-> > Looks like we no longer need the last hunk of it on recent kernels,
-> right?
+Gilles Chanteperdrix wrote:
+> gclement00 at gmail.com (Gregory CLEMENT) wrote:
+>  > 
+>  > For RTAI we have now a working systeme with have better max latency
+>  > than Xenomai ( 50us instead of around 100us for Xenomai). I plan to
+>  > update the patches on our site with this new version and communicate
+>  > on it on RTAI list as soon as I have some free time.
 > 
-> Yes, it fixes an issue which was fixed a long time ago.
-> 
-Yeah, my mistake. I've postponed this patch and forgot to push it
-forward again after the testing period in my cooker. Sorry about that.
+> A good place for discussing about these figures would have been Xenomai
+> mailing list, a place where we could have answered you immediately. Are
+> you sure you are not comparing Xenomai user-space scheduling latency
+> with RTAI kernel-space scheduling latency ?
 
-> > Jan
-> >
-> > PS: We should really consider using bug trackers for Adeos and
-> Xenomai!
-> > I have a few (minor) patches hanging around as well, but things
-> quickly
-> > get lost when bigger problems pop up.
-> 
-> We have bug trackers, the point is think about using them.
+Me too asked Gregory for some discussion on this long ago but received
+no response.
 
-Indeed. We even have patch trackers we could activate. Either we use
-them, or any patch sent for inclusion should be posted in a separate
-mail to the -core list, with a [PATCH] header. I'm sometimes missing
-them because they are part of a lengthy conversation, buried under lots
-of mail I could fast-forward a bit aggressively.
-> 
+Anyway, the critical thing beyond latencies remains *maintenance*. If
+someone decides to apply I-pipe on RTAI *and* doesn't forget to
+contribute to the mandatory bits of the Adeos project, work actively
+within that community (test new versions and report results, track down
+bugs, port to new kernels releases, etc.), anyone would benefit in the
+end. BTW, that would surely stimulate discussions about differing
+numbers on both sides as well.
+
+Jan
+
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
