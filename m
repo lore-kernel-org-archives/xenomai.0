@@ -1,14 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <44D6D942646F9E43B7CFFFD3F250EDCD08E9A5@domain.hid>
-References: <44D6D942646F9E43B7CFFFD3F250EDCD08E9A5@domain.hid>
-Content-Type: text/plain
-Date: Tue, 09 Oct 2007 15:33:25 +0200
-Message-Id: <1191936805.22917.104.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <470C72E4.3020705@domain.hid>
+Date: Wed, 10 Oct 2007 08:36:20 +0200
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] Semaphore creation problem in user-space
-Reply-To: rpm@xenomai.org
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: [Xenomai-help] userspace/kernelspace
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,58 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: MEYLAN Jean-philippe <Jean-philippe.Meylan@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-On Tue, 2007-10-09 at 15:10 +0200, MEYLAN Jean-philippe wrote:
-> Hi,
-> 
-> I'm trying to make a Xenomai target for Mathwork's Real Time Workshop
-> Embedded Coder and I need to embed the generated code in an user-space
-> application. My problem is that I cannot create semaphores correctly.
-> rt_sem_create() returns me the -17 value instead of 0 or one of the
-> error codes described in the documentation. I cannot figure what is
-> the cause of the problem.
-> 
-> This problem appears in the small code I've put in attachment.
-> 
-> Have you any idea of what I'm doing wrong ?
+Hi,
 
--17 is -EEXIST. We use (negative) standard POSIX code to report all
-error statuses (i.e. see asm-generic/errno-base.h).
+This may be a weird question, but how compatible is the userspace of one
+xenamoai release to the kernel space of a later xenomai release.
 
-Your sema4 has already been registered. Either your app mis-generates
-semaphore names, or you more likely restarted the application which
-tried to register the same semaphores anew, with a pre-2.4 Xenomai
-version. i.e. Xenomai automatically removes real-time objects created by
-exited applications only since 2.4-rc1.
+I.e. if I have an application compiled against xenomai 2.3.1 kernel
+2.6.16 for example and three years down the line I want to run the
+binary of that application on a machine featuring kernel 2.6.22 and say
+xenomai 2.4.7. What are the odds that it will work?
 
-A quick hack to work around the auto-cleanup issue with 2.3.x is to use
-a pattern like this:
+And if that will not work, what are the odds that the application can
+simply be recompiled with no changes to the code against the new
+combination?
 
-	RT_SEM desc;
+Kind regards,
 
-	if (rt_bind_sem(&desc, some_name, TM_NONBLOCK) == 0) {
-	    rt_delete_sem(&desc);
-
-	err = rt_sem_create(&desc, some_name, ...)
-
-Not pretty, but works.
-
-> 
-> Thanks in advance for your reply.
-> 
-> Best regards,
-> 
-> Jean-Philippe
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
--- 
-Philippe.
+Roland
 
 
 
