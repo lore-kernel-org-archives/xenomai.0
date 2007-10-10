@@ -1,5 +1,5 @@
-Message-ID: <305035a40710092312l7bfcc3cj87da86693a657f6@domain.hid>
-Date: Wed, 10 Oct 2007 08:12:00 +0200
+Message-ID: <305035a40710092312h64dc118fk56df93b8ee06090a@domain.hid>
+Date: Wed, 10 Oct 2007 08:12:08 +0200
 From: "Gregory CLEMENT" <gclement00@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
