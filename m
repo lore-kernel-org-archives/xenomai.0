@@ -1,14 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0B47607@domain.hid>
+Message-ID: <470E5724.3000100@domain.hid>
+Date: Thu, 11 Oct 2007 19:02:28 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
 References: <FDBBB5CC70676540B3EF7CFE83FD94E0B47607@domain.hid>
-Content-Type: text/plain
-Date: Thu, 11 Oct 2007 19:00:00 +0200
-Message-Id: <1192122000.6118.21.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0B47607@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
 Subject: Re: [Xenomai-core] Xenomai on Xscale (Linux 2.6.20)
-Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,7 +19,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2007-10-11 at 18:35 +0200, ROSSIER Daniel wrote:
+ROSSIER Daniel wrote:
 > Hi everyone,
 > 
 > I'm taking over the original thread from Patrick concerning the port of
@@ -46,45 +44,14 @@ On Thu, 2007-10-11 at 18:35 +0200, ROSSIER Daniel wrote:
 > read_seqbegin_irqsave(), then the boot process is going ahead (I got a
 > suspicious error like "I-pipe: Detected illicit call from domain
 > 'Xenomai' " but it might well be normal with such a modification.
-> 
-> I checked with the code from a 2.6.15 kernel, and it is basically the
-> same structure.
-> 
-> Any idea about the cause of this problem?
-> 
 
-That's typical of someone from the real-time (Xenomai) domain spuriously
-calling into this routine, which is illegal.
+Please post the full oops about that "illicit call". It may point to an
+otherwise hidden invalid usage of Linux services over the Xenomai domain
+and explain the lock-up.
 
-The usual scenario for the lockup to happen is:
-- Linux task A calls into some code grabbing the xtime lock for writing
-- Xenomai preempts task A before it releases the seqlock, e.g. to
-process an interrupt
-- some code on behalf of the Xenomai IRQ handler calls into
-do_gettimeofday, which is wrong
-- the culprit gets a reader lock sequence token, which will never match
-the quiescent state. This will cause an infinite loop, since task A
-can't get out the critical section to put the sequence in a quiescent
-state again, until the Xenomai code relinquishes the CPU. Catch #22.
+Jan
 
-You likely need to chase the code who triggers the "Detected illicit
-domain" message, likely in some code also calling do_gettimeofday().
-
-> I checked the timer IRQs and other pipeline activity, and everything
-> seems to be OK. By the way, if I disable the nucleus, Linux is working
-> properly (timer not being stolen by I-pipe).
-> 
-> Thanks in advance for any help.
-> 
-> Cheers
-> Daniel
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
