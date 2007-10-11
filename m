@@ -1,11 +1,12 @@
-Message-ID: <470DCFD2.1000908@domain.hid>
-Date: Thu, 11 Oct 2007 09:25:06 +0200
-From: Johan Borkhuis <j.borkhuis@domain.hid>
+Message-ID: <28758238.1192087500738.JavaMail.ngmail@domain.hid>
+Date: Thu, 11 Oct 2007 09:25:00 +0200 (CEST)
+From: "M. Koehrer" <mathias_koehrer@domain.hid>
+In-Reply-To: <470CADD7.8090207@domain.hid>
 MIME-Version: 1.0
-References: <470CB974.6040605@domain.hid>
-In-Reply-To: <470CB974.6040605@domain.hid>
-Content-Type: multipart/mixed; boundary="------------030407000700010908090907"
-Subject: Re: [Xenomai-help] Passing data from device init to open function
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+References: <470CADD7.8090207@domain.hid> 447E9383.8090403@domain.hid
+Subject: Re: [Xenomai-help] [RTnet-users] compactPCI LAN Chip Support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,81 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: rolandtollenaar@domain.hid, rwatollenaar@domain.hid, jan.kiszka@domain.hid, xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------030407000700010908090907
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Hi Roland,=20
+> I have a machine with the following chip:
+>=20
+> Intel 82541PI
+>=20
+> and have found the below reply of yours to an email of someone else
+> asking the exact same question. However this was quite long ago and the
+> e1000 seems to have evolved. So my question is: is above chip supported?
+>=20
+> Is there a list on the web that can help me convert device IDs to chip
+> types?
+>=20
+There is a file pci.ids (on Debian based system in /usr/share/misc) that co=
+ntains
+a list with PCI IDs and corresponding textual representation.
+Or try the "online" version of this on=20
+http://pciids.sourceforge.net/
+For the Intel 82541PI the PCI Vendor:Device ID pair is 8086:107c which is s=
+upported by rtnet.
 
-This is something I try to avoid (replying to my own messages), but I'll 
-do it this time.
+Regards
 
-Johan Borkhuis wrote:
-> Hello,
->
-> I am facing the following problem. During device initialization I am 
-> filling a structure with device specific data. This structure is 
-> provided to the Linux driver using pci_set_drvdata. Now I want my 
-> Xenomai driver to have access to this data as well.
->   
+Mathias
 
-I made a fix for the problem I described, but I would also like to 
-propose a change to the rtdm_device structure.
-
-What I did to solve this problem is add the following statement to my 
-device initialization function (the PCI probe function) after the 
-pci_set_drvdata:
-
-    MyDevice *unit;
-    ....
-    pci_set_drvdata(dev, unit);
-    my_rtdm_device.device_id = (int)dev;
-
-In my ops-functions I can now use the following statement to access the 
-device data:
-
-int myrtdm_open_nrt(struct rtdm_dev_context    *context,
-                 rtdm_user_info_t              *user_info,
-                 int                            oflags)
-{
-    MyDevice *unit = pci_get_drvdata((struct pci_dev 
-*)context->device->device_id);
-
-This does work, but only as long as sizeof(int) == sizeof(<pointer>), 
-which is true on 32 bit systems, but not on 64 bit systems. So I would 
-like to add an extra pointer field to the rtdm_device structure, 
-pointing to some device-data to allow this to work on both 32 and 64 bit 
-systems.
-
-I attached a diff-file containing a patch to rtdm_driver.h that makes 
-this change.
-
-Kind regards,
-    Johan Borkhuis
+--=20
+Mathias Koehrer
+mathias_koehrer@domain.hid
 
 
---------------030407000700010908090907
-Content-Type: text/plain;
- name="xeno.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline;
- filename="xeno.diff"
-
-diff -u -r org/xenomai-2.3.2/include/rtdm/rtdm_driver.h xenomai-2.3.2/include/rtdm/rtdm_driver.h
---- org/xenomai-2.3.2/include/rtdm/rtdm_driver.h	2007-02-19 15:09:49.000000000 +0100
-+++ xenomai-2.3.2/include/rtdm/rtdm_driver.h	2007-10-11 09:15:36.000000000 +0200
-@@ -428,6 +428,9 @@
-     /** Driver definable device ID */
-     int                             device_id;
- 
-+    /** Driver definable device data */
-+    void                            *device_data;
-+
-     /** Data stored by RTDM inside a registered device (internal use only) */
-     struct rtdm_dev_reserved        reserved;
- };
-
-
---------------030407000700010908090907--
+Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
+ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
+Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
+f=FCr clevere Doppel-Sparer, nur  34,95 =80  inkl. DSL- und ISDN-Grundgeb=
+=FChr!
+http://www.arcor.de/rd/emf-dsl-2
 
