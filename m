@@ -1,9 +1,9 @@
-Message-ID: <470BB2DE.7030800@domain.hid>
-Date: Tue, 09 Oct 2007 18:57:02 +0200
+Message-ID: <470E1FD6.2030607@domain.hid>
+Date: Thu, 11 Oct 2007 15:06:30 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------030500070908070001040105"
-Subject: [Adeos-main] [RFC][PATCH] i386: report unhandled non-root faults
+Content-Type: multipart/mixed; boundary="------------090704050702010604040909"
+Subject: [Adeos-main] [PATCH 1/4] tracer: cleanup critical paths
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,22 +16,13 @@ To: adeos-main@gna.org
 Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is a multi-part message in MIME format.
---------------030500070908070001040105
+--------------090704050702010604040909
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
 
-This patch was part of my endeavour to understand the vmalloc-pinning
-issue. It catches the theoretically impossible case that there is a bug
-inside the I-pipe core. That bug may cause a fault over a non-root
-domain AND that domain may not show any interest in the fault. Linux is
-called then, and things fall apart.
-
-As the patch adds code to the fault handler's hot-patch, I decided to
-make the check depend on CONFIG_IPIPE_DEBUG. It's i386 only, but porting
-it to other archs should be straightforward.
-
-My feeling is that this safety belt can be useful again for bugs we will
-surely invent in the future. :)
+for_each_online_cpu is not free of function calls on SMP, thus causes
+false NMI noise in the tracer log (due to tracer recursions). Switch to
+some plain loop instead.
 
 Jan
 
@@ -39,42 +30,40 @@ Jan
 Siemens AG, Corporate Technology, CT SE 2
 Corporate Competence Center Embedded Linux
 
---------------030500070908070001040105
+--------------090704050702010604040909
 Content-Type: text/x-patch;
- name="catch-non-root-faults.patch"
+ name="cleanup-critical-tracer-paths.patch"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline;
- filename="catch-non-root-faults.patch"
+ filename="cleanup-critical-tracer-paths.patch"
 
 ---
- arch/i386/kernel/ipipe.c |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ kernel/ipipe/tracer.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Index: linux-2.6.22.9/arch/i386/kernel/ipipe.c
+Index: linux-2.6.22.9/kernel/ipipe/tracer.c
 ===================================================================
---- linux-2.6.22.9.orig/arch/i386/kernel/ipipe.c
-+++ linux-2.6.22.9/arch/i386/kernel/ipipe.c
-@@ -642,8 +642,17 @@ fastcall int __ipipe_handle_exception(st
- #endif /* CONFIG_KGDB */
+--- linux-2.6.22.9.orig/kernel/ipipe/tracer.c
++++ linux-2.6.22.9/kernel/ipipe/tracer.c
+@@ -252,7 +252,7 @@ __ipipe_trace_freeze(int cpu_id, struct 
+ 	active = __ipipe_get_free_trace_path(active, cpu_id);
  
- 	if (!ipipe_trap_notify(vector, regs)) {
--		__ipipe_exptr handler = __ipipe_std_extable[vector];
--		handler(regs,error_code);
-+#ifdef CONFIG_IPIPE_DEBUG
-+		if (!ipipe_root_domain_p) {
-+			/* Fix up domain so that Linux can handle this. */
-+			ipipe_current_domain = ipipe_root_domain;
-+			ipipe_trace_panic_freeze();
-+			printk(KERN_ERR "BUG: Unhandled exception over domain"
-+					" %s - switching to ROOT\n",
-+					ipipe_current_domain->name);
-+		}
-+#endif /* CONFIG_IPIPE_DEBUG */
-+		__ipipe_std_extable[vector](regs, error_code);
- 		local_irq_restore(flags);
- 		__fixup_if(regs);
- 		return 0;
+ 	/* check if this is the first frozen path */
+-	for_each_online_cpu(i) {
++	for (i = 0; i < NR_CPUS; i++) {
+ 		if ((i != cpu_id) &&
+ 		    (trace_paths[i][frozen_path[i]].end >= 0))
+ 			tp->end = -1;
+@@ -515,7 +515,7 @@ int ipipe_trace_max_reset(void)
+ 
+ 	flags = __ipipe_global_path_lock();
+ 
+-	for_each_online_cpu(cpu_id) {
++	for (cpu_id = 0; cpu_id < NR_CPUS; cpu_id++) {
+ 		path = &trace_paths[cpu_id][max_path[cpu_id]];
+ 
+ 		if (path->dump_lock) {
 
 
---------------030500070908070001040105--
+--------------090704050702010604040909--
 
