@@ -1,12 +1,12 @@
-Message-ID: <28758238.1192087500738.JavaMail.ngmail@domain.hid>
-Date: Thu, 11 Oct 2007 09:25:00 +0200 (CEST)
-From: "M. Koehrer" <mathias_koehrer@domain.hid>
-In-Reply-To: <470CADD7.8090207@domain.hid>
+Message-ID: <470E2867.6060508@domain.hid>
+Date: Thu, 11 Oct 2007 15:43:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <200710081033.l98AXowG014053@domain.hid>
+In-Reply-To: <200710081033.l98AXowG014053@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-References: <470CADD7.8090207@domain.hid> 447E9383.8090403@domain.hid
-Subject: Re: [Xenomai-help] [RTnet-users] compactPCI LAN Chip Support
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] SPI driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,41 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid, rwatollenaar@domain.hid, jan.kiszka@domain.hid, xenomai@xenomai.org
+To: Patrick <kpa_info@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Roland,=20
-> I have a machine with the following chip:
->=20
-> Intel 82541PI
->=20
-> and have found the below reply of yours to an email of someone else
-> asking the exact same question. However this was quite long ago and the
-> e1000 seems to have evolved. So my question is: is above chip supported?
->=20
-> Is there a list on the web that can help me convert device IDs to chip
-> types?
->=20
-There is a file pci.ids (on Debian based system in /usr/share/misc) that co=
-ntains
-a list with PCI IDs and corresponding textual representation.
-Or try the "online" version of this on=20
-http://pciids.sourceforge.net/
-For the Intel 82541PI the PCI Vendor:Device ID pair is 8086:107c which is s=
-upported by rtnet.
+Patrick wrote:
+> Hy,
+> 
+>  
+> 
+> Does anybody have a real-time SPI driver for xenomai ?
+> 
+> I search one for arm pxa270 but if it's for another machine it's not a
+> problem.
+> 
 
-Regards
+Already found this link? It's also referenced by xenomai.org.
 
-Mathias
+http://www.rcode.net/blog/tlaurenzo/2007/04/14/xenomai-rt-spi-driver-for-blackfin/
 
---=20
-Mathias Koehrer
-mathias_koehrer@domain.hid
+HTH,
+Jan
 
-
-Viel oder wenig? Schnell oder langsam? Unbegrenzt surfen + telefonieren
-ohne Zeit- und Volumenbegrenzung? DAS TOP ANGEBOT F=DCR ALLE NEUEINSTEIGER
-Jetzt bei Arcor: g=FCnstig und schnell mit DSL - das All-Inclusive-Paket
-f=FCr clevere Doppel-Sparer, nur  34,95 =80  inkl. DSL- und ISDN-Grundgeb=
-=FChr!
-http://www.arcor.de/rd/emf-dsl-2
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
