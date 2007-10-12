@@ -1,13 +1,13 @@
-Message-ID: <2ff1a98a0710120543j4dfc38d6u226eafc95e933b96@domain.hid>
-Date: Fri, 12 Oct 2007 14:43:28 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <470F687D.5060501@domain.hid>
+Message-ID: <470F6CA5.4010008@domain.hid>
+Date: Fri, 12 Oct 2007 14:46:29 +0200
+From: Daniel Rossier <daniel.rossier@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <FDBBB5CC70676540B3EF7CFE83FD94E0B47607@domain.hid>	
+	<470E5724.3000100@domain.hid> <470F5F24.4020306@domain.hid>
+	<2ff1a98a0710120534i5c6c5768od843412b07fe46ed@domain.hid>
+In-Reply-To: <2ff1a98a0710120534i5c6c5768od843412b07fe46ed@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <FDBBB5CC70676540B3EF7CFE83FD94E0B47607@domain.hid>
-	<1192122000.6118.21.camel@domain.hid> <470F687D.5060501@domain.hid>
 Subject: Re: [Xenomai-core] Xenomai on Xscale (Linux 2.6.20)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -18,66 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniel Rossier <daniel.rossier@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/12/07, Daniel Rossier <daniel.rossier@domain.hid> wrote:
-> Philippe Gerum wrote:
-> >  On Thu, 2007-10-11 at 18:35 +0200, ROSSIER Daniel wrote:
-> > > Hi everyone,
-> > >
-> > > I'm taking over the original thread from Patrick concerning the
-> > > port of Xenomai on Xscale with Linux 2.6.20. Briefly summarized,
-> > > the boot process actually freezes after a while right after the
-> > > nucleus has been started.
-> > >
-> > > I've investigated the issue over the last hours, and I came up with
-> > > the following conclusion: it seems that the problem is due to a
-> > > endless loop in do_gettimeofday in arch/arm/kernel/time.c. Here is
-> > > the code:
-> > >
-> > > "... do { seq = read_seqbegin_irqsave(&xtime_lock, flags); usec =
-> > > system_timer->offset(); sec = xtime.tv_sec; usec += xtime.tv_nsec /
-> > > 1000; } while (read_seqretry_irqrestore(&xtime_lock, seq, flags));
-> > > ..."
-> > >
-> > > If I remove the do { } while loop with the call to
-> > > read_seqbegin_irqsave(), then the boot process is going ahead (I
-> > > got a suspicious error like "I-pipe: Detected illicit call from
-> > > domain 'Xenomai' " but it might well be normal with such a
-> > > modification.
-> > >
-> > > I checked with the code from a 2.6.15 kernel, and it is basically
-> > > the same structure.
-> > >
-> > > Any idea about the cause of this problem?
-> > >
-> >
-> >  That's typical of someone from the real-time (Xenomai) domain
-> >  spuriously calling into this routine, which is illegal.
-> >
-> >  The usual scenario for the lockup to happen is: - Linux task A calls
-> >  into some code grabbing the xtime lock for writing - Xenomai preempts
-> >  task A before it releases the seqlock, e.g. to process an interrupt -
-> >  some code on behalf of the Xenomai IRQ handler calls into
-> >  do_gettimeofday, which is wrong - the culprit gets a reader lock
-> >  sequence token, which will never match the quiescent state. This will
-> >  cause an infinite loop, since task A can't get out the critical
-> >  section to put the sequence in a quiescent state again, until the
-> >  Xenomai code relinquishes the CPU. Catch #22.
-> >
-> >  You likely need to chase the code who triggers the "Detected illicit
-> >  domain" message, likely in some code also calling do_gettimeofday().
-> >
+Gilles Chanteperdrix wrote:
+>  On 10/12/07, Daniel Rossier <daniel.rossier@domain.hid> wrote:
+> > Jan Kiszka wrote:
+> >> ROSSIER Daniel wrote:
+> >>> Hi everyone,
+> >>>
+> >>> I'm taking over the original thread from Patrick concerning the
+> >>>  port of Xenomai on Xscale with Linux 2.6.20. Briefly
+> >>> summarized, the boot process actually freezes after a while
+> >>> right after the nucleus has been started.
+> >>>
+> >>> I've investigated the issue over the last hours, and I came up
+> >>> with the following conclusion: it seems that the problem is due
+> >>> to a endless loop in do_gettimeofday in arch/arm/kernel/time.c.
+> >>> Here is the code:
+> >>>
+> >>> "... do { seq = read_seqbegin_irqsave(&xtime_lock, flags); usec
+> >>> = system_timer->offset(); sec = xtime.tv_sec; usec +=
+> >>> xtime.tv_nsec / 1000; } while
+> >>> (read_seqretry_irqrestore(&xtime_lock, seq, flags)); ..."
+> >>>
+> >>> If I remove the do { } while loop with the call to
+> >>> read_seqbegin_irqsave(), then the boot process is going ahead
+> >>> (I got a suspicious error like "I-pipe: Detected illicit call
+> >>> from domain 'Xenomai' " but it might well be normal with such a
+> >>>  modification.
+> >> Please post the full oops about that "illicit call". It may point
+> >> to an otherwise hidden invalid usage of Linux services over the
+> >> Xenomai domain and explain the lock-up.
+> > Sure; here is the output message: " I-pipe: Detected illicit call
+> > from domain 'Xenomai' into a service reserved for domain 'Linux'
+> > and below. [<c0027328>] (show_stack+0x0/0x40) from [<c005d590>]
+> > (ipipe_check_context+0x88/0xa4) [<c005d508>]
+> > (ipipe_check_context+0x0/0xa4) from [<c002d9e4>]
+> > (__ipipe_mach_set_dec+0x24/0x7c) r5 = 54503BD0  r4 = 00003029
+> > [<c002d9c0>] (__ipipe_mach_set_dec+0x0/0x7c) from [<c00681e0>]
+> > (xntimer_do_tick_aperiodic+0x2f4/0x33c) r4 = 00003029
 >
-> Ok I'll do it. What I find weird is that the the do_gettimeofday() is
-> called by xnpod_start_timer(kernel/xenomai/nucleus/pod.c). It is
+>  This does not make sense, __ipipe_mach_set_dec is a very simple
+>  function that should not trigger this illicit call.
+>
 
-xnpod_start_timer is called at module initialization time or by
-threads running in secondary mode, so, calling do_gettimeofday should
-not cause any problem. xnpod_start_timer documentation states this
-very clearly.
+Exactly Gilles! Now I solved this bug. Having a look at the 
+__ipipe_mach_set_dec() showed me
+an invokation to write_seqlock(&xtime_lock) !! I don't know why...
 
--- 
-                                               Gilles Chanteperdrix
+As Philippe said, it is not allowed. I changed with 
+local_irq_save_hw(flags) (as it is in the 2.6.15) and there is no 
+deadlock anymore...
+
+Unfortunately, it still freezes a bit later, but I can go forward. I'll 
+be reporting my investigations.
+
+Thanks a lot
+Daniel
+
+
 
