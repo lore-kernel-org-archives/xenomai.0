@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <470DECC9.6010102@domain.hid>
-References: <470DECC9.6010102@domain.hid>
-Content-Type: text/plain
-Date: Fri, 12 Oct 2007 17:52:07 +0200
-Message-Id: <1192204327.6499.144.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core]
-	[PATCH]	adeos-ipipe-2.6.23-powerpc-DENX-2.0-01.patch
-Reply-To: rpm@xenomai.org
+Message-ID: <470FD0AC.6040700@domain.hid>
+Date: Fri, 12 Oct 2007 21:53:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <470E8BFE.4070804@domain.hid>
+	<1192179524.5149.23.camel@domain.hid>	<470F3B03.1040501@domain.hid>
+	<20071012110054.GA26325@domain.hid>
+In-Reply-To: <20071012110054.GA26325@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF6CD9E4FB2A9ABEE0C6148FF"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PATCH] fix hw-timer setup/cleanup for i386
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,30 +20,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: Stelian Pop <stelian@domain.hid>
+Cc: Xenomai-core@domain.hid
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF6CD9E4FB2A9ABEE0C6148FF
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Stelian Pop wrote:
+> # Automatically generated make config: don't edit
+> # Linux kernel version: 2.6.22.9-xeno
+> # Fri Oct 12 11:45:32 2007
+> #
+=2E..
+> # CONFIG_X86_UP_APIC is not set
+
+As long as APIC is off...
+
+> CONFIG_HPET_TIMER=3Dy
+
+=2E..HPET_TIMER must be off as well. Otherwise, Linux may actually pick u=
+p
+the HPET which block the PIT for Xenomai usage.
+
+Philippe, can we merge my patch to detect this conflict?
+
+Jan
 
 
-Hi Wolfgang,
+--------------enigF6CD9E4FB2A9ABEE0C6148FF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-On Thu, 2007-10-11 at 11:28 +0200, Wolfgang Grandegger wrote:
-> Hello,
-> 
-> attached is a patch for "arch/powerpc" for the DENX GIT tree 
-> linux-2.6-denx version 2.6.23. It should replace the patch 
-> adeos-ipipe-2.6.23-rc5-powerpc-DENX-2.0-01.patch. It just needed 
-> adaption for the renaming of head_4xx.S to head_40x.S in 
-> arch/powerpc/kernel/.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-Great, thanks. I'm going to merge the latest updates from the generic
-I-pipe tree into your patch and roll the result out asap.
+iD8DBQFHD9CwniDOoMHTA+kRAuITAJ4sIkNalyT6XItQq3WWO5mzSlZzxgCcCBEu
+HWCV8fXYNIdbxTsRuuIjlpY=
+=eruF
+-----END PGP SIGNATURE-----
 
-Btw, do you know if 2.6.23-DENX runs the PA-SEMI properly? Last time I
-checked (a month ago actually), -rc5 had some issues booting an Electra
-board due to upstream changes.
-
--- 
-Philippe.
-
-
+--------------enigF6CD9E4FB2A9ABEE0C6148FF--
 
