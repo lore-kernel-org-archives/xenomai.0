@@ -1,12 +1,18 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18192.65086.370530.147036@domain.hid>
-Date: Sat, 13 Oct 2007 19:19:58 +0200
-In-Reply-To: <4710E252.8050405@domain.hid>
-References: <4710E252.8050405@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] [minor BUG] ARM: __check_kvm_seq undefined
+From: Stelian Pop <stelian@domain.hid>
+In-Reply-To: <4710F486.40403@domain.hid>
+References: <470E8BFE.4070804@domain.hid> <1192179524.5149.23.camel@domain.hid>
+	<470F3B03.1040501@domain.hid>	<20071012110054.GA26325@domain.hid>
+	<470FD0AC.6040700@domain.hid> <470FD795.9070008@domain.hid>
+	<20071012215152.GA17187@domain.hid>
+	<1192226314.6499.174.camel@domain.hid>	<1192285734.8592.4.camel@domain.hid>
+	<4710D953.1030604@domain.hid> <20071013161211.GB24909@domain.hid>
+	<4710F486.40403@domain.hid>
+Content-Type: text/plain; charset=utf-8
+Date: Sat, 13 Oct 2007 22:55:10 +0200
+Message-Id: <1192308910.5097.1.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] [PATCH] fix hw-timer setup/cleanup for i386
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,21 +23,18 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+Cc: Xenomai-core@domain.hid
 
-Jan Kiszka wrote:
- > Hi Gilles,
- > 
- > building the nucleus (SVN head) as a module for ARM (2.6.20.20,
- > ipipe-1.7-06) fails due to undefined __check_kvm_seq. Not sure is anyone
- > will choose such a setup on embedded systems, but who knows... Is this
- > symbol actually required or just accidentally included?
+Le samedi 13 octobre 2007 =C3=A0 18:38 +0200, Jan Kiszka a =C3=A9crit :
 
-It seems this symbol is used by switch_mm, so, we should export it in
-the I-pipe patch.
+> Your IP is probably associated to some DSL access, and a lot of
+> providers block such senders categorically due to all the spam robots
+> running on hijacked user PCs.
 
--- 
+No, my mail server has a fixed IP and is sitting somewhere in a
+datacenter, it shouldn't be in a dynamic-IP-DSL-provider range.
 
+--=20
+Stelian Pop <stelian@domain.hid>
 
-					    Gilles Chanteperdrix.
 
