@@ -1,12 +1,12 @@
-Message-ID: <47123669.8000008@domain.hid>
-Date: Sun, 14 Oct 2007 17:31:53 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig16DD6D010B013E52FDBEFB2A"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH] Fix cleanup of timebase proc entries
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Tue, 16 Oct 2007 10:50:31 +0200
+Message-Id: <1192524631.6045.23.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Xenomai v2.4-rc4
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,133 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig16DD6D010B013E52FDBEFB2A
-Content-Type: multipart/mixed;
- boundary="------------090301050303050708080806"
 
-This is a multi-part message in MIME format.
---------------090301050303050708080806
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Here is the fourth candidate release for the v2.4.x branch. With the
+v2.3.x maintenance cycle soon coming to an end after nearly a year since
+it has started, v2.4 is going to be our next stable branch for quite
+some time, so I would suggest that you make sure it can run your
+favourite board(s) _now_.
 
-Let's see how this works out: I've started to post my patches also to
-the bug tracker at gna.org.
+	[nucleus]
 
-This one here fixes the broken cleanup of timerstat proc entries. Not
-sure if I have caused the whole problem, but at least significant parts
-of it. :-]
+	* Fix /proc support for timebases.
 
-Jan
+	[posix]
 
---------------090301050303050708080806
-Content-Type: text/x-patch;
- name="fix-timebase-proc-cleanup.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="fix-timebase-proc-cleanup.patch"
+	* Fix random hang in per-process cleanup code.
 
----
- ChangeLog                  |    5 +++++
- include/nucleus/timebase.h |    2 +-
- ksrc/nucleus/module.c      |   20 ++++++--------------
- 3 files changed, 12 insertions(+), 15 deletions(-)
+	[native]
 
-Index: xenomai/ChangeLog
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ChangeLog
-+++ xenomai/ChangeLog
-@@ -1,3 +1,8 @@
-+2007-10-14  Jan Kiszka <jan.kiszka@domain.hid>
-+
-+	* include/nucleus/timebase.h, ksrc/nucleus/modules.c: Fix cleanup of
-+	timebase proc entries.
-+
- 2007-10-11  Johan Borkhuis  <j.borkhuis@domain.hid>
-=20
- 	* include/rtdm/rtdm_driver.h: Add private data pointer to rtdm_device
-Index: xenomai/include/nucleus/timebase.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/nucleus/timebase.h
-+++ xenomai/include/nucleus/timebase.h
-@@ -363,7 +363,7 @@ do {						\
-=20
- #define xntbase_umount()			\
- do {						\
--	xnpod_declare_tbase_proc(&nktbase);	\
-+	xnpod_discard_tbase_proc(&nktbase);	\
- 	removeq(&nktimebaseq, &nktbase.link);	\
- } while (0)
-=20
-Index: xenomai/ksrc/nucleus/module.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/ksrc/nucleus/module.c
-+++ xenomai/ksrc/nucleus/module.c
-@@ -1082,18 +1082,10 @@ void xnpod_delete_proc(void)
- 	remove_proc_entry("latency", rthal_proc_root);
- 	remove_proc_entry("sched", rthal_proc_root);
- #ifdef CONFIG_XENO_OPT_STATS
--	{
--		xnholder_t *holder;
--		xntbase_t *tbase;
--
--		for (holder =3D getheadq(&nktimebaseq);
--		     holder !=3D NULL; holder =3D nextq(&nktimebaseq, holder)) {
--			tbase =3D link2tbase(holder);
--			remove_proc_entry(tbase->name, tmstat_proc_root);
--		}
--		remove_proc_entry("timerstat", rthal_proc_root);
--		remove_proc_entry("stat", rthal_proc_root);
--	}
-+	/* All timebases must have been deregistered now. */
-+	XENO_ASSERT(NUCLEUS, !getheadq(&nktimebaseq), ;);
-+	remove_proc_entry("timerstat", rthal_proc_root);
-+	remove_proc_entry("stat", rthal_proc_root);
- #endif /* CONFIG_XENO_OPT_STATS */
- #if defined(CONFIG_SMP) && XENO_DEBUG(NUCLEUS)
- 	remove_proc_entry("lock", rthal_proc_root);
-@@ -1242,6 +1234,8 @@ void __exit __xeno_sys_exit(void)
- 	xnshadow_cleanup();
- #endif /* CONFIG_XENO_OPT_PERVASIVE */
-=20
-+	xntbase_umount();
-+
- #if defined(__KERNEL__) &&  defined(CONFIG_PROC_FS)
- 	xnpod_delete_proc();
- #endif /* __KERNEL__ && CONFIG_PROC_FS */
-@@ -1260,8 +1254,6 @@ void __exit __xeno_sys_exit(void)
- #endif /* CONFIG_LTT */
- #endif /* __KERNEL__ */
-=20
--	xntbase_umount();
--
- 	if (nkmsgbuf)
- 		xnarch_free_host_mem(nkmsgbuf, XNPOD_FATAL_BUFSZ);
-=20
+	* Fix double free issue upon failure to create a new task.
 
---------------090301050303050708080806--
+	[vxworks]
 
---------------enig16DD6D010B013E52FDBEFB2A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+	* Fix implementation of watchdog support in user-space.
+	* Fix double free issue upon failure to create a new task.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+	[vrtx]
 
-iD4DBQFHEjZsniDOoMHTA+kRAqijAJ9U2Tq1Zx30n/lTrneatDNCmQrvEgCWJ5+8
-fVAmZjdTtWYt1Gl1ERJIuw==
-=yORK
------END PGP SIGNATURE-----
+	* Fix double free issue upon failure to create a new task.
 
---------------enig16DD6D010B013E52FDBEFB2A--
+	[rtdm]
+
+	* Add private data pointer to the rtdm_device structure.
+
+	[can]
+
+	* Support new resource management of arch/powerpc tree properly.
+	* Fix handling of the "port" module parameter.
+
+	[testsuite]
+
+	* Prevent overflow in timer handler test.
+	* Close race window in timer setup code.
+
+	[powerpc]
+
+	* Update Adeos support for 2.6.20.
+	* Upgrade Adeos support to 2.6.23.
+
+	[i386]
+
+	* SMI: Detect ICH-4 chipsets.
+	* Sanitize calibration code.
+	* Fix timer setup code (mostly for GENERIC_CLOCKEVENTS, but not only).
+ 	* Upgrade Adeos support to 2.6.23.
+
+	[x86_64]
+
+	* SMI: Detect ICH-4 chipsets.
+	* Sanitize calibration code.
+ 	* Upgrade Adeos support to 2.6.23.
+
+http://download.gna.org/xenomai/testing/xenomai-2.4-rc4.tar.bz2
+
+-- 
+Philippe.
+
+
 
