@@ -1,13 +1,12 @@
-Message-ID: <2ff1a98a0710160745h60034016s75412af9c7195d4e@domain.hid>
-Date: Tue, 16 Oct 2007 16:45:07 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <470C72E4.3020705@domain.hid>
+Message-ID: <47151926.8060806@domain.hid>
+Date: Tue, 16 Oct 2007 22:03:50 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <470C72E4.3020705@domain.hid>
-Subject: Re: [Xenomai-help] userspace/kernelspace
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: [Xenomai-help] RTCAN halfsize PC, PCI backplane,
+	parallel port and...
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,36 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rolandtollenaar@domain.hid
-Cc: Xenomai-help@domain.hid
+To: Xenomai-help@domain.hid
 
-On 10/10/07, Roland Tollenaar <rwatollenaar@domain.hid> wrote:
-> Hi,
->
-> This may be a weird question, but how compatible is the userspace of one
-> xenamoai release to the kernel space of a later xenomai release.
+Hi,
 
-There are two compatibilities:
-- for ABI compability between kernel and user-space, there is an ABI
-revision built-in Xenomai, which forbids running too recent Xenomai
-libraries with old kernel-space support;
-- for interface compatibility between applications and user-space
-libraries, Xenomai user-space libraries are versioned.
+Firstly RTCAN has been functioning perfectly over the parallel port of a 
+number of machines I have run it on. At the moment I am testing a 
+halfsize PC with PCI backplane which has a parallel port linked from a 
+COM port adapter as PCI card. Bios set to EPP mode irq 7 and address 
+0x378. The standard.
 
->
-> I.e. if I have an application compiled against xenomai 2.3.1 kernel
-> 2.6.16 for example and three years down the line I want to run the
-> binary of that application on a machine featuring kernel 2.6.22 and say
-> xenomai 2.4.7. What are the odds that it will work?
->
-> And if that will not work, what are the odds that the application can
-> simply be recompiled with no changes to the code against the new
-> combination?
+On calling modprobe xeno_can_peak_dng.ko type=epp io=0x378 irq=7 the 
+result is
 
-We try to make things as much compatible as possible, so recompiling
-should work. Sometimes, however, the API evolve, in this case, the
-file ksrc/skins/*/API.CHANGES is updated.
+FATAL: Error inserting xeno_can_peak_dng: No such device.
 
--- 
-                                               Gilles Chanteperdrix
+Since I call this with a script I use on all other machines I am surely 
+not doing something wrong. Before I start hollering at the vendor about 
+his LPT card, is there a problem from the driver's point of view working 
+with an LPT port over PCI?
+
+Yes yes, the next step WILL be to use the peak PCI card.
+
+Kind regards,
+
+Roland
 
