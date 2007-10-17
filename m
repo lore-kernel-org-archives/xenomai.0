@@ -1,11 +1,15 @@
 From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <47163AE0.8040106@domain.hid>
+References: <4714F580.7030403@domain.hid>
+	<2ff1a98a0710161040n772fb76cv86d69312c4b853b2@domain.hid>
+	<47163AE0.8040106@domain.hid>
 Content-Type: text/plain
-Date: Wed, 17 Oct 2007 19:18:12 +0200
-Message-Id: <1192641492.5973.67.camel@domain.hid>
+Date: Wed, 17 Oct 2007 19:29:36 +0200
+Message-Id: <1192642176.5973.68.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: [Xenomai-core] Xenomai/Blackfin upgrade
+Subject: Re: [Xenomai-core] [RFC][PATCH] Enforce nkaffinity unconditionally
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,21 +20,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-core@domain.hid
 
+On Wed, 2007-10-17 at 18:40 +0200, Jan Kiszka wrote:
+> Gilles Chanteperdrix wrote:
+> > On 10/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
+> >> Hi,
+> >>
+> >> aft
+> >> Any concerns about the (yet untested) attached patch?
+> > 
+> > Well... Thanks for working in my stead. I had a look a the posix
+> > situation but could not find the place in the code where the
+> affinity
+> > was set for user-space posix threads.
+> > 
+> > But when looking at the way nkaffinity worked, I wondered why it was
+> > not set globally with a cpus_and on the tasks affinity. So, I
+> > basically agree with your patch (if it does what I think it does).
+> 
+> Tested, and I can confirm it works as it should do. Philippe, please
+> apply.
 
-Our Blackfin port has just been upgraded to the latest 2.6.23. The other
-good news is that we have now rebased this work over mainline kernels.
-The I-pipe patch below is an all-in-one, supporting the bf533, bf537 and
-bf561 dual core boards. Any Xenomai version from 2.3.2 and on can be
-used (albeit pre 2.4-rc4 will require to fix the default calibration
-value by hand for the bf561).
-
-If you happen to have any of these boards at hand, and really don't know
-how to spend geek time these days, please give this a try and send some
-feedback.
-
-http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-2.6.23-bf5xx-1.7-00.patch
+Merged, thanks.
 
 -- 
 Philippe.
