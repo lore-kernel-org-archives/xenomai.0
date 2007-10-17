@@ -1,13 +1,12 @@
-Message-ID: <47163AE0.8040106@domain.hid>
-Date: Wed, 17 Oct 2007 18:40:00 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4714F580.7030403@domain.hid>
-	<2ff1a98a0710161040n772fb76cv86d69312c4b853b2@domain.hid>
-In-Reply-To: <2ff1a98a0710161040n772fb76cv86d69312c4b853b2@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+Content-Type: text/plain
+Date: Wed, 17 Oct 2007 19:18:12 +0200
+Message-Id: <1192641492.5973.67.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC][PATCH] Enforce nkaffinity unconditionally
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: [Xenomai-core] Xenomai/Blackfin upgrade
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,49 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> On 10/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
->> Hi,
->>
->> after looking at the reason for the nkaffinity-vs.-POSIX issue [1]
->> again, I came to the conclusion that there is no way to apply the
->> current global affinity scheme on the POSIX skin. This scheme goes like
->> this:
->>  - If the user provides whatever thread affinity _explicitly_, use this
->>    one.
->>  - If the user doesn't do so, apply the global nkaffinity.
->>
->> In kernel space, is is simple to differentiate between both cases,
->> because all affinity fiddling for all skins go through Xenomai's hands.
->> But for the user space POSIX skin, we rely on the task affinity that is
->>  set using standard Linux services, and that one has no "dirty-bit" to
->> tell both scenarios apart.
->>
->> So my conclusion is that we should rather apply the nkaffinity always,
->> ie. logically AND it with the desired (or default) affinity. The
->> system's default behaviour will still be the same compared to earlier
->> Xenomai versions, as nkaffinity is ALL_CPUS by default. I also think
->> this behaviour is easier to understand for the user than the current
->> approach.
->>
->> Any concerns about the (yet untested) attached patch?
-> 
-> Well... Thanks for working in my stead. I had a look a the posix
-> situation but could not find the place in the code where the affinity
-> was set for user-space posix threads.
-> 
-> But when looking at the way nkaffinity worked, I wondered why it was
-> not set globally with a cpus_and on the tasks affinity. So, I
-> basically agree with your patch (if it does what I think it does).
 
-Tested, and I can confirm it works as it should do. Philippe, please apply.
+Our Blackfin port has just been upgraded to the latest 2.6.23. The other
+good news is that we have now rebased this work over mainline kernels.
+The I-pipe patch below is an all-in-one, supporting the bf533, bf537 and
+bf561 dual core boards. Any Xenomai version from 2.3.2 and on can be
+used (albeit pre 2.4-rc4 will require to fix the default calibration
+value by hand for the bf561).
 
-Jan
+If you happen to have any of these boards at hand, and really don't know
+how to spend geek time these days, please give this a try and send some
+feedback.
+
+http://download.gna.org/adeos/patches/v2.6/blackfin/adeos-ipipe-2.6.23-bf5xx-1.7-00.patch
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
