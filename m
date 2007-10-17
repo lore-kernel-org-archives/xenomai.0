@@ -1,5 +1,5 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4715C70F.4040501@domain.hid>
+In-Reply-To: <1192610471.5973.4.camel@domain.hid>
 References: <4705ED3B.4070600@domain.hid>
 	<2ff1a98a0710050130j7e0db84dq838aab0417c8bd3f@domain.hid>
 	<4705FE04.7000909@domain.hid> <1191576011.20623.114.camel@domain.hid>
@@ -8,9 +8,10 @@ References: <4705ED3B.4070600@domain.hid>
 	<470F7F2E.3020206@domain.hid>  <470F82FF.9020701@domain.hid>
 	<1192203284.6499.135.camel@domain.hid>  <470F978B.1000005@domain.hid>
 	<1192207431.6499.161.camel@domain.hid>  <4715C70F.4040501@domain.hid>
+	<1192610471.5973.4.camel@domain.hid>
 Content-Type: text/plain
-Date: Wed, 17 Oct 2007 10:43:11 +0200
-Message-Id: <1192610591.5973.6.camel@domain.hid>
+Date: Wed, 17 Oct 2007 10:56:58 +0200
+Message-Id: <1192611418.5973.10.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
@@ -28,37 +29,40 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: CHABAL David <david.chabal@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2007-10-17 at 10:25 +0200, CHABAL David wrote:
-> 2.KSYM_SYMBOL_LEN
-> ==================
->    CC      kernel/ipipe/tracer.o
-> kernel/ipipe/tracer.c: In function ?__ipipe_rd_trigger?:
-> kernel/ipipe/tracer.c:1209: warning: implicit declaration of function 
-> ?sprint_symbol?
-> kernel/ipipe/tracer.c: In function ?__ipipe_wr_trigger?:
-> kernel/ipipe/tracer.c:1227: error: ?KSYM_SYMBOL_LEN? undeclared (first 
-> use in this function)
-> kernel/ipipe/tracer.c:1227: error: (Each undeclared identifier is 
-> reported only once
-> kernel/ipipe/tracer.c:1227: error: for each function it appears in.)
-> kernel/ipipe/tracer.c:1227: warning: unused variable ?buf?
-> make[2]: *** [kernel/ipipe/tracer.o] Error 1
+On Wed, 2007-10-17 at 10:41 +0200, Philippe Gerum wrote:
+> On Wed, 2007-10-17 at 10:25 +0200, CHABAL David wrote:
+> 
+> > I met some problems after applying adeos-ipipe-2.6.20-i386-1.10-06.patch
+> > (sorry, if I post on the wrong mailing-list)
+> > 
+> 
+> The most recent patch for the 2.6.20 series is 1.10-08.
+> 
+> > 1. entry.S
+> > ==========
+> > [root@domain.hid linux-2.6.20]# make
+> >    CHK     include/linux/version.h
+> >    CHK     include/linux/utsrelease.h
+> >    CHK     include/linux/compile.h
+> > dnsdomainname: Unknown host
+> >    AS      arch/i386/kernel/entry.o
+> > arch/i386/kernel/entry.S: Assembler messages:
+> > arch/i386/kernel/entry.S:307: Error: invalid character '_' in mnemonic
+> > arch/i386/kernel/entry.S:398: Error: invalid character '_' in mnemonic
+> > arch/i386/kernel/entry.S:444: Error: invalid character '_' in mnemonic
+> > arch/i386/kernel/entry.S:536: Error: invalid character '_' in mnemonic
+> > make[1]: *** [arch/i386/kernel/entry.o] Error 1
+> > make: *** [arch/i386/kernel] Error 2
+> > 
 > 
 
-This one is a tracer issue. Will fix.
+> Make sure to disable CONFIG_PARAVIRT.
+> 
 
-> Analysis:
-> KSYM_SYMBOL_LEN only defined on 2.6.22 ?
-> 
-> Solution:
-> I replace it by 128 (don't ask me why...).
-> 
-> 
-> I post my new results as soon as the kernel is built.
-> 
-> David
-> 
-> 
+Yeah, right. Forget about this, the code is utterly wrong, and we should
+not undef the macro, indeed. Let's try differently to avoid name
+clashes. 1.10-09 is on its way.
+
 -- 
 Philippe.
 
