@@ -1,13 +1,10 @@
-Message-ID: <2ff1a98a0710161040n772fb76cv86d69312c4b853b2@domain.hid>
-Date: Tue, 16 Oct 2007 19:40:56 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4714F580.7030403@domain.hid>
+Message-Id: <200710171629.l9HGTgsc023152@domain.hid>
+From: "Patrick" <kpa_info@domain.hid>
+Date: Wed, 17 Oct 2007 18:29:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <4714F580.7030403@domain.hid>
-Subject: Re: [Xenomai-core] [RFC][PATCH] Enforce nkaffinity unconditionally
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_002F_01C810EB.B233D740"
+Subject: [Xenomai-core] Xenomai on PXA
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,43 +14,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: 'xenomai-core' <xenomai@xenomai.org>
 
-On 10/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Hi,
->
-> after looking at the reason for the nkaffinity-vs.-POSIX issue [1]
-> again, I came to the conclusion that there is no way to apply the
-> current global affinity scheme on the POSIX skin. This scheme goes like
-> this:
->  - If the user provides whatever thread affinity _explicitly_, use this
->    one.
->  - If the user doesn't do so, apply the global nkaffinity.
->
-> In kernel space, is is simple to differentiate between both cases,
-> because all affinity fiddling for all skins go through Xenomai's hands.
-> But for the user space POSIX skin, we rely on the task affinity that is
->  set using standard Linux services, and that one has no "dirty-bit" to
-> tell both scenarios apart.
->
-> So my conclusion is that we should rather apply the nkaffinity always,
-> ie. logically AND it with the desired (or default) affinity. The
-> system's default behaviour will still be the same compared to earlier
-> Xenomai versions, as nkaffinity is ALL_CPUS by default. I also think
-> this behaviour is easier to understand for the user than the current
-> approach.
->
-> Any concerns about the (yet untested) attached patch?
+This is a multi-part message in MIME format.
 
-Well... Thanks for working in my stead. I had a look a the posix
-situation but could not find the place in the code where the affinity
-was set for user-space posix threads.
+------=_NextPart_000_002F_01C810EB.B233D740
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-But when looking at the way nkaffinity worked, I wondered why it was
-not set globally with a cpus_and on the tasks affinity. So, I
-basically agree with your patch (if it does what I think it does).
+Hi,
 
--- 
-                                               Gilles Chanteperdrix
+ 
+
+Has anyone successfully installed and used xenomai on PXA machine? 
+
+If so, can you please tell me which version of xenomai & adios was used, and
+which version linux kernel you used ?
+
+I know that version 2.3.1 of xenomai with kernel 2.6.15 works, and that
+version 2.3.4 with kernel 2.6.20 does not work, but between two?
+
+I'm trying to find out at which versions things break. 
+
+ 
+
+Thank you and best regards,
+
+ 
+
+Patrick
+
+
+------=_NextPart_000_002F_01C810EB.B233D740
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Dus-ascii">
+<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:Arial;
+	color:windowtext;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Hi,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Has anyone successfully installed and used =
+xenomai on
+PXA machine? <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>If so, can you please tell me which version of
+xenomai &amp; adios was used, and which version linux kernel you used =
+?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I know that version 2.3.1 of xenomai with =
+kernel 2.6.15
+works, and that version 2.3.4 with kernel 2.6.20 does not work, but =
+between
+two?<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>I&#8217;m trying to find out at which versions =
+things
+break. <o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Thank you and best =
+regards,<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
+style=3D'font-size:
+10.0pt;font-family:Arial'>Patrick<o:p></o:p></span></font></p>
+
+</div>
+
+</body>
+
+</html>
+
+------=_NextPart_000_002F_01C810EB.B233D740--
+
 
