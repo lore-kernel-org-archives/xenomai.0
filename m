@@ -1,16 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <47163AE0.8040106@domain.hid>
-References: <4714F580.7030403@domain.hid>
-	<2ff1a98a0710161040n772fb76cv86d69312c4b853b2@domain.hid>
-	<47163AE0.8040106@domain.hid>
-Content-Type: text/plain
-Date: Wed, 17 Oct 2007 19:29:36 +0200
-Message-Id: <1192642176.5973.68.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [RFC][PATCH] Enforce nkaffinity unconditionally
-Reply-To: rpm@xenomai.org
+Message-ID: <4717C642.6030002@domain.hid>
+Date: Thu, 18 Oct 2007 22:46:58 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig85B714EF530D9FE7E61E01CF"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] xnsched_resched_p test in hisyscall
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -20,33 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On Wed, 2007-10-17 at 18:40 +0200, Jan Kiszka wrote:
-> Gilles Chanteperdrix wrote:
-> > On 10/16/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >> Hi,
-> >>
-> >> aft
-> >> Any concerns about the (yet untested) attached patch?
-> > 
-> > Well... Thanks for working in my stead. I had a look a the posix
-> > situation but could not find the place in the code where the
-> affinity
-> > was set for user-space posix threads.
-> > 
-> > But when looking at the way nkaffinity worked, I wondered why it was
-> > not set globally with a cpus_and on the tasks affinity. So, I
-> > basically agree with your patch (if it does what I think it does).
-> 
-> Tested, and I can confirm it works as it should do. Philippe, please
-> apply.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig85B714EF530D9FE7E61E01CF
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Merged, thanks.
+Hi Philippe,
 
--- 
-Philippe.
+what's the point about
+
+	if (xnsched_resched_p())
+		xnpod_schedule();
+
+at the beginning of do_hisyscall_event() [1]? Could you provide a
+comment for the background of this hunk? Or can we even remove it?
+
+Jan
+
+[1]http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/shadow.=
+c?v=3DSVN-trunk#1870
 
 
+--------------enig85B714EF530D9FE7E61E01CF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHF8ZFniDOoMHTA+kRAqVfAJ4q6egJ2ehmxRLOaHvylPmx9aLnDACfafDP
+Xw4OvEw/FaUtUIMBzbROjlA=
+=PqLe
+-----END PGP SIGNATURE-----
+
+--------------enig85B714EF530D9FE7E61E01CF--
 
