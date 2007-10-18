@@ -1,14 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <47178DFA.5040703@domain.hid>
-References: <47178DFA.5040703@domain.hid>
-Content-Type: text/plain
-Date: Thu, 18 Oct 2007 19:01:02 +0200
-Message-Id: <1192726862.5884.57.camel@domain.hid>
-Mime-Version: 1.0
+From: Paul <paul_c@domain.hid>
+Date: Thu, 18 Oct 2007 21:16:25 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] Latest x86_64 seems to require a fix
-Reply-To: rpm@xenomai.org
+Content-Disposition: inline
+Message-Id: <200710182116.25461.paul_c@domain.hid>
+Subject: [Adeos-main] 2.6.23 x86_64 broken for SMP ?
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,30 +15,14 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Pierangelo Masarati <masarati@domain.hid>
-Cc: adeos-main@gna.org
-
-On Thu, 2007-10-18 at 18:46 +0200, Pierangelo Masarati wrote:
-> Dear ADEOS users,
-> 
-> it seems that a "local_irq_disable_hw();" is required before "return 1;"
-> in __ipipe_syscall_root() in the latest patches (e.g. the 1.2 series),
-> otherwise user-space applications could fail badly.
-> 
-
-Indeed. Fixed, thanks.
-
-> Sincerely, p.
-> 
-> 
-> 
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
-Philippe.
+To: adeos-main@gna.org
 
 
+Attempting to compile on x86_64 with SMP enabled, getting quite a few failures 
+cetered around ipipe_declare_cpuid being undeclared in 
+arch/x86_64/kernel/ipipe.c. Should we be including ipipe_compat.h or 
+following the lead set in arch/i386/kernel/ipipe.c ?
+
+
+Regards, Paul.
 
