@@ -1,25 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <47162E66.1080406@domain.hid>
-References: <4705ED3B.4070600@domain.hid>
-	<2ff1a98a0710050130j7e0db84dq838aab0417c8bd3f@domain.hid>
-	<4705FE04.7000909@domain.hid> <1191576011.20623.114.camel@domain.hid>
-	<470611FA.30103@domain.hid> <1191592977.20623.142.camel@domain.hid>
-	<470A26BC.506@domain.hid> <1192015852.22917.197.camel@domain.hid>
-	<470F7F2E.3020206@domain.hid>  <470F82FF.9020701@domain.hid>
-	<1192203284.6499.135.camel@domain.hid>  <470F978B.1000005@domain.hid>
-	<1192207431.6499.161.camel@domain.hid>  <4715C70F.4040501@domain.hid>
-	<1192610471.5973.4.camel@domain.hid>  <4715CE15.10202@domain.hid>
-	<1192612658.5973.11.camel@domain.hid>  <47160AD3.4090109@domain.hid>
-	<1192628763.5973.16.camel@domain.hid>  <471621C8.9070006@domain.hid>
-	<1192634673.5973.33.camel@domain.hid>  <47162E66.1080406@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Date: Wed, 17 Oct 2007 18:05:58 +0200
-Message-Id: <1192637158.5973.51.camel@domain.hid>
-Mime-Version: 1.0
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] awful latencies (~110us)
-Reply-To: rpm@xenomai.org
+Date: Thu, 18 Oct 2007 14:11:19 +0200
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E016387F8@domain.hid>
+From: "Thomas Necker" <thomas.necker@domain.hid>
+Subject: [Xenomai-help] xnpod_announce_tick when migrating from 2.3 to 2.4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -29,59 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: CHABAL David <david.chabal@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2007-10-17 at 17:46 +0200, CHABAL David wrote:
-> Philippe Gerum a =E9crit :
-> > On Wed, 2007-10-17 at 16:52 +0200, CHABAL David wrote:
-> >>> Grmmff... I think the PIC on this box has some deep troubles; please =
-try
-> >>> this patch, in replacement of the previous ipipe_trace_special
-> >>> instrumentation:
-> >>>
-> >>
-> >> RTD|       8.348|      10.387|      43.647|       0|       6.098|=20
-> >> 80.440
-> >> ---|------------|------------|------------|--------|------------------=
--------
-> >> RTS|       6.098|      10.020|      80.440|       0|    00:17:20/00:17=
-:20
-> >> [root@domain.hid bin]#
-> >>
-> >>
-> >> IRQ handling takes 17=B5s in the worst case.
-> >>
-> >> It takes a long time to write 3 poor bytes...
-> >>
-> >=20
-> > Indeed. Each outb to the ISA bus should be somewhere in the 1-2.5 us
-> > range depending on the hw, maybe a bit higher in case of contention, but
-> > not that much.
-> >=20
-> >> May be is it a SMI problem ??? (Globally disable SMI is on)
-> >>
-> >=20
-> > It's less likely with an ICH-2 chipset.
-> >=20
-> > I see that CONFIG_IDEDMA_PCI_AUTO is disabled. Any reason not to use PCI
-> > DMA when available for IDE drives with your hw?
-> >=20
->=20
-> I read this about DMA:
-> http://www.rtai.dk/cgi-bin/gratiswiki.pl?DMA_And_Jitter
->=20
+Hello
 
-As usual, usage of DMA in real-time situations is a trade-off, and
-should be evaluated within the context of the hw at hand. DMA does bus
-mastering, but OTOH, forcing PIO raises native Linux latencies, which
-also has some drawbacks for real-time kernels implementing RT/non-RT
-mode transitions for tasks like Xenomai and RTAI do. For this reason,
-you may want to try switching PCI DMA on for your platform, until it
-does prove bad latency-wise.
+I'm trying to migrate our software from 2.3 to 2.4 and I'm struggling
+with the new timebase concept.
+Here is how it works in 2.3:
+- I have a small kernel module that calls xnpod_stop_timer and then
+xnpod_start_timer with a handling function of my own.
+- This handling function does some housekeeping and then calls
+xnpod_announce_tick to trigger the nucleus (and eventually the pSOS
+skin).
+This is basically what Philippe suggested about a year ago.
+Now, all these functions are gone in 2.4, how's the best way to do
+something similar now?
+I couldn't figure out how the new timebase concept can be used for that.
+Thanks in advance.
 
---=20
-Philippe.
-
-
+Regards,
+Thomas
 
