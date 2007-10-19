@@ -1,18 +1,14 @@
-Message-ID: <2ff1a98a0710010223k1304739w2321e83c6e060ca3@domain.hid>
-Date: Mon, 1 Oct 2007 11:23:56 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4700BB1C.8040007@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <46F9167F.20008@domain.hid> <46FA26ED.4070505@domain.hid>
-	<46FF78DF.7090104@domain.hid> <1191149545.5989.7.camel@domain.hid>
-	<46FF81BA.1020506@domain.hid> <46FF8BB9.9080207@domain.hid>
-	<1191156133.5989.17.camel@domain.hid> <46FFC139.60905@domain.hid>
-	<2ff1a98a0710010204x60178291u9633e61a89d49921@domain.hid>
-	<4700BB1C.8040007@domain.hid>
-Subject: Re: [Xenomai-core] crashing 2.6.22
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 19 Oct 2007 09:41:42 +0200
+Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0999445@domain.hid>
+In-Reply-To: <4717D8AC.8000900@domain.hid>
+References: <4717D8AC.8000900@domain.hid>
+From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
+Subject: Re: [Xenomai-core] LTTng for Xenomai - next round
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -22,82 +18,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: jan.kiszka@domain.hid, xenomai-core <xenomai@xenomai.org>
 
-On 10/1/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> Gilles Chanteperdrix wrote:
-> > On 9/30/07, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> >> Philippe Gerum wrote:
-> >>> On Sun, 2007-09-30 at 13:42 +0200, Jan Kiszka wrote:
-> >>>> Jan Kiszka wrote:
-> >>>>> Philippe Gerum wrote:
-> >>>>>> On Sun, 2007-09-30 at 12:22 +0200, Jan Kiszka wrote:
-> >>>> ...
-> >>>>>>>  And a third
-> >>>>>>> one only gives me "Detected illicit call from domain Xenomai" before the
-> >>>>>>> box reboots. :(
-> >>>>>> Grmff... Do you run with your smp_processor_id() instrumentation in?
-> >>>>> Yes, but I suspect this is just a symptom of some severe memory
-> >>>>> corruption that (also?) hits I-pipe data structures. I just put in some
-> >>>>> different instrumentation, and that warning is gone, the box just hangs
-> >>>>> hard at a different point. Very unfriendly.
-> >>>> Hah! Got some crash log by hacking a raw printk-to-uart:
-> >>>>
-> >>>> [...]
-> >>>> <6>Xenomai: starting RTDM services.
-> >>>> <6>NET: Registered protocol family 10
-> >>>> <6>lo: Disabled Privacy Extensions
-> >>>> <6>ADDRCONF(NETDEV_UP): eth0: link is not ready
-> >>>> <3>I-pipe: Detected illicit call from domain 'Xenomai'
-> >>>> <3>        into a service reserved for domain 'Linux' and below.
-> >>>>        f3a6bc18 00000000 00000000 c05dad6c f3a6bc3c c0105fc3 c03513c7 c05dc100
-> >>>>        00000009 f3a6bc54 c01479cb c03592f8 c0357ae2 c035e069 f3a6bc88 f3a6bc70
-> >>>>        c0127224 c0111df8 00000000 f3a6bd74 00000000 f3a6bd74 f3a6bc80 c012727f
-> >>>> Call Trace:
-> >>>>  [<c010520f>] show_trace_log_lvl+0x1f/0x40
-> >>>>  [<c01052e1>] show_stack_log_lvl+0xb1/0xe0
-> >>>>  [<c0105fc3>] show_stack+0x33/0x40
-> >>>>  [<c01479cb>] ipipe_check_context+0x7b/0x90
-> >>>>  [<c0127224>] __atomic_notifier_call_chain+0x24/0x60
-> >>>>  [<c012727f>] atomic_notifier_call_chain+0x1f/0x30
-> >>>>  [<c0131e02>] notify_die+0x32/0x40
-> >>>>  [<c0105d29>] do_invalid_op+0x59/0xa0
-> >>>>  [<c0111d0b>] __ipipe_handle_exception+0x7b/0x144
-> >>>>  [<c02dfaeb>] error_code+0x6f/0x7c
-> >>> Wow. Why that?
-> >>>
-> >>>>  [<c0111d13>] __ipipe_handle_exception+0x83/0x144
-> >>>>  [<c02dfaeb>] error_code+0x6f/0x7c
-> >>> And this? We should not get any exception over an IPI3 handler. I guess
-> >>> the double fault may be explained by this root cause.
-> >>>
-> >>>>  [<c01117df>] __ipipe_handle_irq+0x4f/0x140
-> >>>>  [<c0104c5e>] ipipe_ipi3+0x26/0x40
-> >>> Our LAPIC timer vector. Are you running full modular or statically btw?
-> >> Fully modular. Compiling the nucleus in makes the lock-up move to
-> >> another, once again invisible spot.
-> >>
-> >> I nailed down the fault address in the scenario above. It's in the
-> >> nucleus module, at the first byte of xntimer_tick_aperiodic. Are we
-> >> loosing module text pages over the time? This functions must have been
-> >> executed before as the timer was armed while I collected the
-> >> /proc/modules and then triggered the crash.
-> >
-> > There is a pending issue about vmalloced areas, which I completely forgot:
-> > https://mail.gna.org/public/xenomai-core/2007-02/msg00138.html
-> >
->
-> Would this explain my problems which are already visible without any
-> Xenomai application running (and also without unloading the modules
-> again, to answer Philippe's question)? Hell, I would love to find the
-> reason here, debugging this stuff stopped being fun a long time ago...
+> -----Original Message-----
+> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
+> Sent: vendredi, 19. octobre 2007 00:06
+> To: xenomai-core
+> Cc: ROSSIER Daniel
+> Subject: LTTng for Xenomai - next round
+>=20
+> Hi,
+>=20
+> LTTng is becoming interesting again: Mathieu uploaded a back-port to
+> 2.6.23.1 yesterday which is already implementing the scheme that is
+> intended to be submitted upstream.
+>=20
+> What changed for us?
+>=20
+>  - We now have a recent patch basis for the kernel again.
+>=20
+>  - The instrumentation process was significantly simplified: No more
+>    facility registration, no more probe modules, no more XML file
+>    hacking - it's all derived from the trace points now! Some example:
+>=20
+>    trace_mark(kernel_timer_itimer_expired, "pid %d", sig->tsk->pid);
+>               ^----^ ^------------------^   ^----^
+>              facility     trace point    argument name
+>                name          name          and type
+>=20
+> I rebased the patches over I-pipe for i386 (see attached patches and
+> extended series description), and I also started to rework the Xenomai
+> patch. The diffstat of the latter is fairly telling:
+>=20
+>  include/nucleus/ltt.h   |  111 +---------------------------
+>  ksrc/nucleus/Config.in  |    9 --
+>  ksrc/nucleus/Kconfig    |   36 ---------
+>  ksrc/nucleus/Makefile   |    3
+>  ksrc/nucleus/intr.c     |   19 ++--
+>  ksrc/nucleus/ltt.c      |  186
+---------------------------------------
+> ---------
+>  ksrc/nucleus/module.c   |    7 -
+>  ksrc/nucleus/pod.c      |  102 ++++++++++++++++----------
+>  ksrc/nucleus/shadow.c   |   43 +++++++----
+>  ksrc/nucleus/synch.c    |   19 +++-
+>  ksrc/nucleus/timebase.c |    6 -
+>  11 files changed, 125 insertions(+), 416 deletions(-)
+>=20
+> You see, no more ltt.c, i.e. no more probe module!
+>=20
+> At this point, we are already able to use the services of "lttv -m
+> textDump" or lttv-gui to display traces from Xenomai kernels as event
+> lists. Yes, I tried this, and it works! (Hint: Don't forget to ltt-
+> armall your trace points before trying to collect data...)
+>=20
+> Yet to be done:
+>=20
+>  - Finish the xnltt_log_event refactoring (half done, pod.c is missing
+>    yet - with ~30 trace point)
+>=20
+>  - Port and update the Xenomai extension over latest lttv.
+>=20
+> Well, I'm not looking for work, I'm looking for workers :). Anyone
+> interested and available to help with the open topics? Daniel...?
 
-It would explain bugs involving a race between task creation and
-vmalloc/ioremap. But the bug would only happen with Xenomai tasks
-running,
-otherwise, the vmalloced/ioremaped area would be mapped lazily as usual.
+Sounds very good :-) I will see if we can contribute. Jean-Philippe is
+working on a comparison between Xenomai and RTOS-32 for=20
+a x86 target system (diploma work) and is currently about to install the
+pretty old version (2.6.17) of xenoltt. I will see with him if it makes
+sense to migrate to the latest version, at this point of his work.
 
--- 
-                                               Gilles Chanteperdrix
+>=20
+> Jan
+
+
+Daniel
 
