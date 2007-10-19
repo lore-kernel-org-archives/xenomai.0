@@ -1,14 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <4718651D.9070602@domain.hid>
+Date: Fri, 19 Oct 2007 10:04:45 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 19 Oct 2007 09:41:42 +0200
-Message-ID: <FDBBB5CC70676540B3EF7CFE83FD94E0999445@domain.hid>
-In-Reply-To: <4717D8AC.8000900@domain.hid>
-References: <4717D8AC.8000900@domain.hid>
-From: "ROSSIER Daniel" <Daniel.Rossier@domain.hid>
-Subject: Re: [Xenomai-core] LTTng for Xenomai - next round
+References: <4717C642.6030002@domain.hid> <1192764423.6252.4.camel@domain.hid>
+In-Reply-To: <1192764423.6252.4.camel@domain.hid>
+Content-Type: multipart/mixed; boundary="------------020104080207000805040208"
+Subject: [Xenomai-core] [PATCH] avoid resched test on syscall entry (was:
+ xnsched_resched_p test in hisyscall)
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,79 +16,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: jan.kiszka@domain.hid, xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-> -----Original Message-----
-> From: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid]
-> Sent: vendredi, 19. octobre 2007 00:06
-> To: xenomai-core
-> Cc: ROSSIER Daniel
-> Subject: LTTng for Xenomai - next round
->=20
-> Hi,
->=20
-> LTTng is becoming interesting again: Mathieu uploaded a back-port to
-> 2.6.23.1 yesterday which is already implementing the scheme that is
-> intended to be submitted upstream.
->=20
-> What changed for us?
->=20
->  - We now have a recent patch basis for the kernel again.
->=20
->  - The instrumentation process was significantly simplified: No more
->    facility registration, no more probe modules, no more XML file
->    hacking - it's all derived from the trace points now! Some example:
->=20
->    trace_mark(kernel_timer_itimer_expired, "pid %d", sig->tsk->pid);
->               ^----^ ^------------------^   ^----^
->              facility     trace point    argument name
->                name          name          and type
->=20
-> I rebased the patches over I-pipe for i386 (see attached patches and
-> extended series description), and I also started to rework the Xenomai
-> patch. The diffstat of the latter is fairly telling:
->=20
->  include/nucleus/ltt.h   |  111 +---------------------------
->  ksrc/nucleus/Config.in  |    9 --
->  ksrc/nucleus/Kconfig    |   36 ---------
->  ksrc/nucleus/Makefile   |    3
->  ksrc/nucleus/intr.c     |   19 ++--
->  ksrc/nucleus/ltt.c      |  186
----------------------------------------
-> ---------
->  ksrc/nucleus/module.c   |    7 -
->  ksrc/nucleus/pod.c      |  102 ++++++++++++++++----------
->  ksrc/nucleus/shadow.c   |   43 +++++++----
->  ksrc/nucleus/synch.c    |   19 +++-
->  ksrc/nucleus/timebase.c |    6 -
->  11 files changed, 125 insertions(+), 416 deletions(-)
->=20
-> You see, no more ltt.c, i.e. no more probe module!
->=20
-> At this point, we are already able to use the services of "lttv -m
-> textDump" or lttv-gui to display traces from Xenomai kernels as event
-> lists. Yes, I tried this, and it works! (Hint: Don't forget to ltt-
-> armall your trace points before trying to collect data...)
->=20
-> Yet to be done:
->=20
->  - Finish the xnltt_log_event refactoring (half done, pod.c is missing
->    yet - with ~30 trace point)
->=20
->  - Port and update the Xenomai extension over latest lttv.
->=20
-> Well, I'm not looking for work, I'm looking for workers :). Anyone
-> interested and available to help with the open topics? Daniel...?
+This is a multi-part message in MIME format.
+--------------020104080207000805040208
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-Sounds very good :-) I will see if we can contribute. Jean-Philippe is
-working on a comparison between Xenomai and RTOS-32 for=20
-a x86 target system (diploma work) and is currently about to install the
-pretty old version (2.6.17) of xenoltt. I will see with him if it makes
-sense to migrate to the latest version, at this point of his work.
+Philippe Gerum wrote:
+> On Thu, 2007-10-18 at 22:46 +0200, Jan Kiszka wrote:
+>> Hi Philippe,
+>>
+>> what's the point about
+>>
+>> 	if (xnsched_resched_p())
+>> 		xnpod_schedule();
+>>
+>> at the beginning of do_hisyscall_event() [1]? Could you provide a
+>> comment for the background of this hunk? Or can we even remove it?
+> 
+> No, we can't. It's a Blackfin-specific thing in disguise actually, so we
+> may make this code conditional through some arch-dependent wrapper
+> though.
+> http://www.rts.uni-hannover.de/xenomai/lxr/source/include/asm-blackfin/bits/pod.h#141
+> 
 
->=20
-> Jan
+Something like the attached patch?
 
+Jan
 
-Daniel
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
+
+--------------020104080207000805040208
+Content-Type: text/x-patch;
+ name="add-xnarch_hisyscall_entry.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="add-xnarch_hisyscall_entry.patch"
+
+---
+ include/asm-blackfin/system.h |    7 +++++++
+ include/asm-generic/system.h  |    4 ++++
+ ksrc/nucleus/shadow.c         |    3 +--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+Index: xenomai/include/asm-blackfin/system.h
+===================================================================
+--- xenomai.orig/include/asm-blackfin/system.h
++++ xenomai/include/asm-blackfin/system.h
+@@ -95,6 +95,13 @@ static inline void xnarch_free_host_mem 
+     kfree(chunk);
+ }
+ 
++static inline void xnarch_hisyscall_entry(void)
++{
++	if (xnsched_resched_p())
++		xnpod_schedule();
++}
++#define xnarch_hisyscall_entry	xnarch_hisyscall_entry
++
+ #ifdef __cplusplus
+ }
+ #endif
+Index: xenomai/include/asm-generic/system.h
+===================================================================
+--- xenomai.orig/include/asm-generic/system.h
++++ xenomai/include/asm-generic/system.h
+@@ -410,6 +410,10 @@ static inline int xnarch_remap_io_page_r
+     return wrap_remap_io_page_range(vma,from,to,size,prot);
+ }
+ 
++#ifndef xnarch_hisyscall_entry
++static inline void xnarch_hisyscall_entry(void)	{ }
++#endif
++
+ #ifdef __cplusplus
+ }
+ #endif
+Index: xenomai/ksrc/nucleus/shadow.c
+===================================================================
+--- xenomai.orig/ksrc/nucleus/shadow.c
++++ xenomai/ksrc/nucleus/shadow.c
+@@ -1878,8 +1878,7 @@ static inline int do_hisyscall_event(uns
+ 	if (!xnpod_active_p())
+ 		goto no_skin;
+ 
+-	if (xnsched_resched_p())
+-		xnpod_schedule();
++	xnarch_hisyscall_entry();
+ 
+ 	p = current;
+ 	thread = xnshadow_thread(p);
+
+--------------020104080207000805040208--
 
