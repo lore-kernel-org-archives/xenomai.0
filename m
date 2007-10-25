@@ -1,12 +1,11 @@
-Message-Id: <200710260938.l9Q9cwPM018603@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Fri, 26 Oct 2007 11:38:59 +0200
+Message-ID: <472112E2.90008@domain.hid>
+Date: Thu, 25 Oct 2007 15:04:18 -0700
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <18208.54980.748005.291295@domain.hid>
-Subject: Re: [Xenomai-help] Event flag from ISR
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] xeno-test failed to open benchmark device,
+ code -19 at t1 and t2 # latency
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,60 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 Hi,
 
-The 20us are just the ISR duration; the latency time is not included.
+I built 2.6.22.10 linux kernel -i386 with xenomai 2.4-rc4 and
+adeos-ipipe-2.6.22-i386-1.10-09.patch.
 
-Thanks
+I checked enable SMI workaround, uncheck frequency scaling, uncheck ACPI
+and uncheck APM.
 
-Patrick
+I ran xeno-test and get the following failed message:
 
------Message d'origine-----
-De=A0: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Envoy=E9=A0: jeudi, 25. octobre 2007 19:48
-=C0=A0: Patrick
-Cc=A0: xenomai@xenomai.org
-Objet=A0: Re: [Xenomai-help] Event flag from ISR
+Thu Oct 25 13:17:02 PDT 2007
+running: ./run -- -sh -T 120 -t1 # latency
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel periodic task
+== All results in microseconds
+latency: failed to open benchmark device, code -19
+(modprobe xeno_timerbench?)
 
-Patrick wrote:
- > Hi all,
- >=20
- > =20
- >=20
- > I am using a RT event flag structure to start a task from an ISR.
- >=20
- > The task waits on rt_event_wait and when the IRQ occurs the ISR =
-executes
- > rt_event_signal (the ISR code only clears the flag and calls
- > rt_event_signal).
- >=20
- > I'm using an oscilloscope to measure the length of the ISR and the =
-first
- > occurrence lasts about 20us and all the next occurrences last about =
-4us.
- >=20
- > =20
- >=20
- > My question is why the first ISR is so long?
- >=20
- > =20
- >=20
- > For information I use xenomai 2.4 rc4 on ARM pxa270 machine with =
-2.6.20
- > kernel.=20
+Thu Oct 25 13:17:04 PDT 2007
+running: ./run -- -sh -T 120 -t2 # latency
+*
+*
+* Type ^C to stop this application.
+*
+*
+== Sampling period: 100 us
+== Test mode: in-kernel timer handler
+== All results in microseconds
+latency: failed to open benchmark device, code -19
+(modprobe xeno_timerbench?)
 
-Typical worst case interrupt latency on ARM is around 50 us, so 20 us is
-not that long. What you are observing is probably a cache effect. In
-this case, you should observe 20us after each user-space context switch
-since on ARM, cache is flushed at each user-space context switch.
+Could you help me to solve the issue?
 
-
---=20
-
-
-					    Gilles Chanteperdrix.
-
+Thank you,
+Dennis
 
