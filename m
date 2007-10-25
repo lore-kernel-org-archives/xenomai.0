@@ -1,15 +1,10 @@
-Message-ID: <47210488.9060908@domain.hid>
-Date: Thu, 25 Oct 2007 23:03:04 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4721048B.3040703@domain.hid>
+Date: Thu, 25 Oct 2007 17:03:07 -0400
+From: "Steven A. Falco" <sfalco@domain.hid>
 MIME-Version: 1.0
-References: <4720F828.1030200@domain.hid> <4720FB07.10606@domain.hid>
-	<4720FE77.2020302@domain.hid>
-In-Reply-To: <4720FE77.2020302@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Proposed arch/powerpc/sysdev/uic.c patch
-Reply-To: rpm@xenomai.org
+Subject: [Xenomai-core] Compile-time patch for mm_struct
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,43 +14,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> Steven A. Falco wrote:
->>> I applied the uic patch:
->>>
->>> diff --git a/arch/powerpc/sysdev/uic.c b/arch/powerpc/sysdev/uic.c
->>> index eeb38e2..5a38086 100644
->>> --- a/arch/powerpc/sysdev/uic.c
->>> +++ b/arch/powerpc/sysdev/uic.c
->>> @@ -48,7 +48,7 @@ struct uic {
->>>     int index;
->>>     int dcrbase;
->>>
->>> -    spinlock_t lock;
->>> +    ipipe_spinlock_t lock;
->>>
->>>     /* The remapper for this UIC */
->>>     struct irq_host    *irqhost;
->>>
->>> However, this would not compile because of a type mismatch.  I have
->>> added the attached patch, and it now compiles and runs.  But I'm not
->>> sure if this is the right way to fix it.  Comments?
->>>
->> This will work for the purpose of running an I-pipe enabled kernel, but
->> would fail with CONFIG_IPIPE disabled. Since we need to provide both,
->> I'm going to work on the proper patch for fixing the issue both ways.
->> Still, your patch will work as expected for running Xenomai.
-> 
-> To be consequent, we would have to wrap spin_lock_init just like the
-> other operations. Suggestion (not really tested):
->
+I needed the following patch to fix a forward reference (caught by gcc 4.1.1).  I posted this as part of an earlier discussion, but I then realized that it might be overlooked, so I'm reposting it as a new thread:
 
-Thanks. I have committed a tested variant.
+--- /home/sfalco/ipipe.h	2007-10-25 12:59:12.000000000 -0400
++++ include/linux/ipipe.h	2007-10-25 12:59:23.000000000 -0400
+@@ -31,6 +31,8 @@
+ #include <linux/ipipe_compat.h>
+ #include <asm/ipipe.h>
+ 
++struct mm_struct;
++
+ #ifdef CONFIG_IPIPE
+ 
+ #define IPIPE_VERSION_STRING	IPIPE_ARCH_STRING
 
--- 
-Philippe.
 
