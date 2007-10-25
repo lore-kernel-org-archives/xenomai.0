@@ -1,13 +1,12 @@
-Message-ID: <4720D526.5010803@domain.hid>
-Date: Thu, 25 Oct 2007 19:40:54 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB266@domain.hid>
-	<4720C9ED.8070402@domain.hid> <4720D056.1010403@domain.hid>
-In-Reply-To: <4720D056.1010403@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problems building Xenomai 2.4-rc4 and linux2.6.23
+Message-ID: <18208.54980.748005.291295@domain.hid>
+Date: Thu, 25 Oct 2007 19:47:48 +0200
+In-Reply-To: <200710251535.l9PFZYpF021256@domain.hid>
+References: <200710251535.l9PFZYpF021256@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] Event flag from ISR
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,105 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org
+To: Patrick <kpa_info@domain.hid>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
->> Fillod Stephane wrote:
->>> Robert Gubler wrote:
->>> [...]
->>>>    AS      arch/i386/boot/compressed/head.o
->>>>    CC      arch/i386/boot/compressed/misc.o 
->>>> In file included from include/linux/ipipe_base.h:29,
->>>>                   from include/linux/kernel.h:17,
->>>>                   from include/asm/system.h:4,
->>>>                   from include/asm/processor.h:18, 
->>>>                   from include/asm/thread_info.h:16,
->>>>                   from include/linux/thread_info.h:21,
->>>>                   from include/linux/preempt.h:9,
->>>>                   from include/linux/spinlock.h:49, 
->>>>                   from include/linux/vmalloc.h:4,
->>>>                   from arch/i386/boot/compressed/misc.c:14:
->>>> include/asm/ipipe_base.h:26:25: error: irq_vectors.h: No such file or
->>>> directory
->>>> make[2]: *** [arch/i386/boot/compressed/misc.o] Error 1
->>>> make[1]: *** [arch/i386/boot/compressed/vmlinux] Error 2
->>>> make: *** [bzImage] Error 2
->>> I had the same issue with this setup(*). It went away when I switched 
->>> the subarch from CONFIG_X86_GENERICARCH (default with FC) to CONFIG_X86_PC.
->>>
->>> setup:
->>> linux-2.6.23.1.tar.bz2
->>> xenomai-2.4-rc4.tar.bz2
->>> adeos-ipipe-2.6.23-i386-1.10-10.patch
->>>
->>> If you do need GENERICARCH, you can tweak arch/i386/boot/compressed/Makefile
->>> and add -I${yourlinuxabsolutepath}/include/asm-i386/mach-default to CFLAGS.
->> The attached patch fixes it (failed to find the time for posting it
->> earlier, sorry). Philippe, we do need my original version here, mflags-y
->> is not enough (actually, it is not needed now).
-> 
-> The proper fix is the one below. Forcing mach-default as your patch does
-> would prevent the per-platform overrides to happen for some headers,
-> like irq_vectors.h. We do need the contents of mflags-y to be passed to
-> the leaf Makefile, verbatim. It's only a matter of proper quoting of
-> theisvariable when running make recursively, actually.
-> 
-> diff --git a/arch/i386/boot/Makefile b/arch/i386/boot/Makefile
-> index f78f5fe..4e6a230 100644
-> --- a/arch/i386/boot/Makefile
-> +++ b/arch/i386/boot/Makefile
-> @@ -94,7 +94,7 @@ $(obj)/setup.bin: $(obj)/setup.elf FORCE
->  	$(call if_changed,objcopy)
-> 
->  $(obj)/compressed/vmlinux: FORCE
-> -	$(Q)$(MAKE) $(build)=$(obj)/compressed mflags-y=$(mflags-y)
-> IMAGE_OFFSET=$(IMAGE_OFFSET) $@
-> +	$(Q)$(MAKE) $(build)=$(obj)/compressed mflags-y="$(mflags-y)"
-> IMAGE_OFFSET=$(IMAGE_OFFSET) $@
-> 
->  # Set this if you want to pass append arguments to the
-> zdisk/fdimage/isoimage kernel
->  FDARGS =
-> {rpm@xenomai.org} git diff arch/i386
-> diff --git a/arch/i386/Makefile b/arch/i386/Makefile
-> index 3b17aed..1fc6175 100644
-> --- a/arch/i386/Makefile
-> +++ b/arch/i386/Makefile
-> @@ -128,7 +128,7 @@ all: bzImage
->  zImage zlilo zdisk: KBUILD_IMAGE := arch/i386/boot/zImage
-> 
->  zImage bzImage: vmlinux
-> -	$(Q)$(MAKE) $(build)=$(boot) mflags-y=$(mflags-y) $(KBUILD_IMAGE)
-> +	$(Q)$(MAKE) $(build)=$(boot) mflags-y="$(mflags-y)" $(KBUILD_IMAGE)
-> 
->  compressed: zImage
-> 
-> diff --git a/arch/i386/boot/Makefile b/arch/i386/boot/Makefile
-> index f78f5fe..4e6a230 100644
-> --- a/arch/i386/boot/Makefile
-> +++ b/arch/i386/boot/Makefile
-> @@ -94,7 +94,7 @@ $(obj)/setup.bin: $(obj)/setup.elf FORCE
->  	$(call if_changed,objcopy)
-> 
->  $(obj)/compressed/vmlinux: FORCE
-> -	$(Q)$(MAKE) $(build)=$(obj)/compressed mflags-y=$(mflags-y)
-> IMAGE_OFFSET=$(IMAGE_OFFSET) $@
-> +	$(Q)$(MAKE) $(build)=$(obj)/compressed mflags-y="$(mflags-y)"
-> IMAGE_OFFSET=$(IMAGE_OFFSET) $@
-> 
->  # Set this if you want to pass append arguments to the
-> zdisk/fdimage/isoimage kernel
->  FDARGS =
-> 
+Patrick wrote:
+ > Hi all,
+ > 
+ >  
+ > 
+ > I am using a RT event flag structure to start a task from an ISR.
+ > 
+ > The task waits on rt_event_wait and when the IRQ occurs the ISR executes
+ > rt_event_signal (the ISR code only clears the flag and calls
+ > rt_event_signal).
+ > 
+ > I'm using an oscilloscope to measure the length of the ISR and the first
+ > occurrence lasts about 20us and all the next occurrences last about 4us.
+ > 
+ >  
+ > 
+ > My question is why the first ISR is so long?
+ > 
+ >  
+ > 
+ > For information I use xenomai 2.4 rc4 on ARM pxa270 machine with 2.6.20
+ > kernel. 
 
-Ack, it's cleaner. Still, the actual problem is the for boot/compressed/
-unneeded, but probably unavoidable indirect inclusion of ipipe_base.h.
+Typical worst case interrupt latency on ARM is around 50 us, so 20 us is
+not that long. What you are observing is probably a cache effect. In
+this case, you should observe 20us after each user-space context switch
+since on ARM, cache is flushed at each user-space context switch.
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+
+
+					    Gilles Chanteperdrix.
 
