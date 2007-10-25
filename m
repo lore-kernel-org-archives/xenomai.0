@@ -1,10 +1,12 @@
-Message-Id: <200710251535.l9PFZYpF021256@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Thu, 25 Oct 2007 17:35:33 +0200
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_005F_01C8172D.7275D070"
-Subject: [Xenomai-help] Event flag from ISR
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 25 Oct 2007 18:43:37 +0200
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB266@domain.hid>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-help] Problems building Xenomai 2.4-rc4 and linux2.6.23
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,167 +16,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Robert Gubler <rgubler@domain.hid>, xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Robert Gubler wrote:
+[...]
+>=A0=A0 AS=A0=A0=A0=A0=A0=A0arch/i386/boot/compressed/head.o
+>=A0=A0 CC=A0=A0=A0=A0=A0=A0arch/i386/boot/compressed/misc.o=20
+> In file included from include/linux/ipipe_base.h:29,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/linux/kernel.h:17,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/asm/system.h:4,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/asm/processor.h:18,=20
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/asm/thread_info.h:16,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/linux/thread_info.h:21,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/linux/preempt.h:9,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/linux/spinlock.h:49,=20
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+include/linux/vmalloc.h:4,
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0from =
+arch/i386/boot/compressed/misc.c:14:
+> include/asm/ipipe_base.h:26:25: error: irq_vectors.h: No such file or
+> directory
+> make[2]: *** [arch/i386/boot/compressed/misc.o] Error 1
+> make[1]: *** [arch/i386/boot/compressed/vmlinux] Error 2
+> make: *** [bzImage] Error 2
 
-------=_NextPart_000_005F_01C8172D.7275D070
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+I had the same issue with this setup(*). It went away when I switched=20
+the subarch from CONFIG_X86_GENERICARCH (default with FC) to =
+CONFIG_X86_PC.
 
-Hi all,
+setup:
+linux-2.6.23.1.tar.bz2
+xenomai-2.4-rc4.tar.bz2
+adeos-ipipe-2.6.23-i386-1.10-10.patch
 
- 
+If you do need GENERICARCH, you can tweak =
+arch/i386/boot/compressed/Makefile
+and add -I${yourlinuxabsolutepath}/include/asm-i386/mach-default to =
+CFLAGS.
 
-I am using a RT event flag structure to start a task from an ISR.
+BTW, I had also to patch include/asm-i386/mach-default/mach_time.h,
+adding a missing #include <linux/bcd.h> for BCD macros.
 
-The task waits on rt_event_wait and when the IRQ occurs the ISR executes
-rt_event_signal (the ISR code only clears the flag and calls
-rt_event_signal).
-
-I'm using an oscilloscope to measure the length of the ISR and the first
-occurrence lasts about 20us and all the next occurrences last about 4us.
-
- 
-
-My question is why the first ISR is so long?
-
- 
-
-For information I use xenomai 2.4 rc4 on ARM pxa270 machine with 2.6.20
-kernel. 
-
- 
-
-Thanks in advance,
-
- 
-
-Patrick
-
-
-------=_NextPart_000_005F_01C8172D.7275D070
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns=3D"http://www.w3.org/TR/REC-html40">
-
-<head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dus-ascii">
-<meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
-<style>
-<!--
- /* Style Definitions */
- p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman";}
-a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal;
-	font-family:Arial;
-	color:windowtext;}
-span.EmailStyle18
-	{mso-style-type:personal-reply;
-	font-family:Arial;
-	color:navy;}
-@page Section1
-	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
-div.Section1
-	{page:Section1;}
--->
-</style>
-
-</head>
-
-<body lang=3DFR link=3Dblue vlink=3Dpurple>
-
-<div class=3DSection1>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DFR-CH =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Hi all,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DFR-CH =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>I am using a RT event flag structure to start =
-a task
-from an ISR.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>The task waits on rt_event_wait and when the =
-IRQ
-occurs the ISR executes rt_event_signal (the ISR code only clears the =
-flag and
-calls rt_event_signal).<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>I&#8217;m using an oscilloscope to measure the =
-length
-of the ISR and the first occurrence lasts about 20us and all the next =
-occurrences
-last about 4us.<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>My question is why the first ISR is so =
-long?<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>For information I use xenomai 2.4 rc4 on ARM =
-pxa270
-machine with 2.6.20 kernel. <o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Thanks in =
-advance,<o:p></o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
-
-<p class=3DMsoNormal><font size=3D2 face=3DArial><span lang=3DEN-GB =
-style=3D'font-size:
-10.0pt;font-family:Arial'>Patrick<o:p></o:p></span></font></p>
-
-</div>
-
-</body>
-
-</html>
-
-------=_NextPart_000_005F_01C8172D.7275D070--
-
+--=20
+Stephane
 
