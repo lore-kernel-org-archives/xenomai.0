@@ -1,14 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <200710182116.25461.paul_c@domain.hid>
-References: <200710182116.25461.paul_c@domain.hid>
-Content-Type: text/plain
-Date: Fri, 19 Oct 2007 05:38:12 +0200
-Message-Id: <1192765092.6252.8.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Adeos-main] 2.6.23 x86_64 broken for SMP ?
-Reply-To: rpm@xenomai.org
+Message-ID: <4722469B.8000000@domain.hid>
+Date: Fri, 26 Oct 2007 21:57:15 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigA52B22246E164467921F888E"
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] fix copy_from_user evaluation
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -17,35 +15,65 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: adeos-main@gna.org
+To: adeos-main@gna.org
+Cc: Philippe Gerum <rpm@xenomai.org>
 
-On Thu, 2007-10-18 at 21:16 +0100, Paul wrote:
-> Attempting to compile on x86_64 with SMP enabled, getting quite a few failures 
-> cetered around ipipe_declare_cpuid being undeclared in 
-> arch/x86_64/kernel/ipipe.c.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigA52B22246E164467921F888E
+Content-Type: multipart/mixed;
+ boundary="------------040809060502070805040602"
 
-It seems I forgot to compile with IPIPE_COMPAT off before releasing...
-Sorry for that. This one should be ok:
+This is a multi-part message in MIME format.
+--------------040809060502070805040602
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-http://download.gna.org/adeos/patches/v2.6/x86_64/adeos-ipipe-2.6.23-x86_64-1.2-05.patch
+/me produced a nop here.
 
-> Should we be including ipipe_compat.h or 
-> following the lead set in arch/i386/kernel/ipipe.c ?
-> 
+Jan
 
-We really want to get rid of the ipipe_get/lock_cpu constructs, so i386
-should be followed.
+--------------040809060502070805040602
+Content-Type: text/x-patch;
+ name="tracer-fix-copy_from_user-evaluation.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="tracer-fix-copy_from_user-evaluation.patch"
 
-> 
-> Regards, Paul.
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
--- 
-Philippe.
+---
+ kernel/ipipe/tracer.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+Index: linux-2.6.23.1-xeno/kernel/ipipe/tracer.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23.1-xeno.orig/kernel/ipipe/tracer.c
++++ linux-2.6.23.1-xeno/kernel/ipipe/tracer.c
+@@ -1229,7 +1229,7 @@ static int __ipipe_wr_trigger(struct fil
+=20
+ 	if (count > sizeof(buf) - 1)
+ 		count =3D sizeof(buf) - 1;
+-	if (copy_from_user(buf, buffer, count) < 0)
++	if (copy_from_user(buf, buffer, count))
+ 		return -EFAULT;
+ 	buf[count] =3D 0;
+ 	if (buf[count-1] =3D=3D '\n')
 
+--------------040809060502070805040602--
+
+--------------enigA52B22246E164467921F888E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHIkacniDOoMHTA+kRAui4AJ9XuhYVdJFhZNIeIt5upxaY6FNF0QCeKsZ2
+af9WUBW7H526YI+6TR8BZS4=
+=ChFO
+-----END PGP SIGNATURE-----
+
+--------------enigA52B22246E164467921F888E--
 
