@@ -1,15 +1,14 @@
-Message-ID: <47219808.9090703@domain.hid>
-Date: Fri, 26 Oct 2007 09:32:24 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4721A628.6040908@domain.hid>
+Date: Fri, 26 Oct 2007 10:32:40 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4721048B.3040703@domain.hid> <472105E2.4040801@domain.hid>
-	<472108F1.6060007@domain.hid> <47210A44.7060203@domain.hid>
-In-Reply-To: <47210A44.7060203@domain.hid>
+References: <4720F828.1030200@domain.hid>
+	<4720FB07.10606@domain.hid>	<4720FE77.2020302@domain.hid>
+	<47210488.9060908@domain.hid>
+In-Reply-To: <47210488.9060908@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Compile-time patch for mm_struct
-Reply-To: rpm@xenomai.org
+Subject: Re: [Xenomai-core] Proposed arch/powerpc/sysdev/uic.c patch
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,37 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Steven A. Falco" <sfalco@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Steven A. Falco wrote:
-> Thank you very much.  I hate to make extra work for you - is there a git
-> repository for adeos-ipipe that I should be pulling from?
-> 
-
-git://www.denx.de/git/ipipe-2.6
-
->     Steve
-> 
-> 
-> Philippe Gerum wrote:
+Philippe Gerum wrote:
+> Jan Kiszka wrote:
 >> Philippe Gerum wrote:
->>   
 >>> Steven A. Falco wrote:
->>>     
->>>> I needed the following patch to fix a forward reference (caught by gcc 4.1.1).  I posted this as part of an earlier discussion, but I then realized that it might be overlooked, so I'm reposting it as a new thread:
+>>>> I applied the uic patch:
 >>>>
->>>>       
->>> Thanks. This one was caught a few days back and only recently merged. I guess
->>> it's time to roll out a new 2.6.23/powerpc I-pipe patch.
->>>
->>>     
+>>>> diff --git a/arch/powerpc/sysdev/uic.c b/arch/powerpc/sysdev/uic.c
+>>>> index eeb38e2..5a38086 100644
+>>>> --- a/arch/powerpc/sysdev/uic.c
+>>>> +++ b/arch/powerpc/sysdev/uic.c
+>>>> @@ -48,7 +48,7 @@ struct uic {
+>>>>     int index;
+>>>>     int dcrbase;
+>>>>
+>>>> -    spinlock_t lock;
+>>>> +    ipipe_spinlock_t lock;
+>>>>
+>>>>     /* The remapper for this UIC */
+>>>>     struct irq_host    *irqhost;
+>>>>
+>>>> However, this would not compile because of a type mismatch.  I have
+>>>> added the attached patch, and it now compiles and runs.  But I'm not
+>>>> sure if this is the right way to fix it.  Comments?
+>>>>
+>>> This will work for the purpose of running an I-pipe enabled kernel, but
+>>> would fail with CONFIG_IPIPE disabled. Since we need to provide both,
+>>> I'm going to work on the proper patch for fixing the issue both ways.
+>>> Still, your patch will work as expected for running Xenomai.
+>> To be consequent, we would have to wrap spin_lock_init just like the
+>> other operations. Suggestion (not really tested):
 >>
->> http://download.gna.org/adeos/patches/v2.6/powerpc/adeos-ipipe-2.6.23-powerpc-DENX-2.0-03.patch
->>
->>   
+> 
+> Thanks. I have committed a tested variant.
 
+The additional #ifdef CONFIG_IPIPE for spin_lock_init should be
+redundant, in theory. What makes it necessary in practice?
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
