@@ -1,68 +1,58 @@
-Message-ID: <2ff1a98a0710050130j7e0db84dq838aab0417c8bd3f@domain.hid>
-Date: Fri, 5 Oct 2007 10:30:22 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <4705ED3B.4070600@domain.hid>
+Message-ID: <472352F6.4000409@domain.hid>
+Date: Sat, 27 Oct 2007 17:02:14 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <0B45E93C5FF65740AEAE690BF3848B7A4AB267@domain.hid>
+In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB267@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <4705ED3B.4070600@domain.hid>
-Subject: Re: [Xenomai-help] awful latencies (~110us)
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai v2.4-rc4: freeze with RTAI skin,
+ fine with other skins
+Reply-To: rpm@xenomai.org
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: CHABAL David <david.chabal@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Fillod Stephane <stephane.fillod@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 10/5/07, CHABAL David <david.chabal@domain.hid> wrote:
-> Hello all,
->
-> My box is a Pentium III 733 Mhz/256Mo with Linux 2.6.20 and Xenomai 2.3.3.
->
-> When I run the latency test included in the testsuite, I get some
-> horrible results like:
->
-> RTT|  00:01:04  (periodic user-mode task, 100 us period, priority 99)
-> RTH|-----lat min|-----lat avg|-----lat max|-overrun|----lat best|---lat
-> worst
-> RTD|       4.640|      12.243|      80.454|       0|       3.716|
-> 110.990
-> RTD|       8.652|      13.133|      86.014|       0|       3.716|     ...
-> RTD|       4.050|      13.324|      89.186|       0|       3.716|
-> 110.990
-> ---|------------|------------|------------|--------|-------------------------
-> RTS|       3.716|      11.499|     110.990|       0|    00:01:22/00:01:22
->
-> I expect about 30us.
->
-> I have tried many kernel configurations without significant results
-> (always about 120us).
->
-> - BIOS USB Legacy is disabled.
-> - idle=pool is added to the boot line.
-It is idle=poll, not idle=pool
+Fillod Stephane wrote:
+> Philippe Gerum wrote:
+>> Fillod Stephane wrote:
+>>> For the legacy RTAI application to load, the attached patch was
+>>> necessary.
+>>> The patch against ksrc/skins/rtai/shm.c is somewhat defeating the
+>>> purpose
+>>> of a lower XNCORE_PAGE_SIZE, so a better fix might be expected.
+>>>
+>> This one should prevent -EINVAL from being returned. Hopefully.
+> 
+> Nope, it doesn't :-(
+> Most probably because still (hdrsize + 2 * pagesize > heapsize).
+> 
 
-> - linux kernel is minimalist
+This rounding was missing too. We need the previous one for kernel local
+ heaps, and the one below to meet the stricter PAGE_SIZE constraint for
+shareable heaps.
 
-You should enable ACPI except the ACPI "processor" module.
+--- ksrc/nucleus/heap.c	(revision 3095)
++++ ksrc/nucleus/heap.c	(working copy)
+@@ -1103,7 +1103,7 @@
+ 	spl_t s;
+ 	int err;
 
-> - Ipipe/xenomai debug features have a minor impact
-> - sometimes, the latency is negative.
->
-> I have noticed a better latency (max: ~31us) with the network disabled
-> (ifdown eth0), and a deterioration immediatly after typing ifup (~120us,
-> like above).  (Usually, I connect this box through Exceed. I have other
-> PC with Xenomai and it is without consequence on their latency tests).
+-	heapsize = PAGE_ALIGN(heapsize);
++	heapsize = xnheap_rounded_size(heapsize, PAGE_SIZE);
+ 	heapbase = __alloc_and_reserve_heap(heapsize, memflags);
 
-I do not know what is Exceed, but if you are running an X-server, you
-may try the noaccel option, as explained in the TROUBLESHOOTING guide.
+ 	if (!heapbase)
 
 -- 
-                                               Gilles Chanteperdrix
+Philippe.
 
