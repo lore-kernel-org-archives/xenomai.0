@@ -1,15 +1,15 @@
-Message-ID: <4723122D.3070002@domain.hid>
-Date: Sat, 27 Oct 2007 12:25:49 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <47234083.4000602@domain.hid>
+Date: Sat, 27 Oct 2007 15:43:31 +0200
 MIME-Version: 1.0
-References: <472112E2.90008@domain.hid>
-In-Reply-To: <472112E2.90008@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig4D8BF302F10498258F4C99D9"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] xeno-test failed to open benchmark device,
- code -19 at t1 and t2 # latency
+References: <e4ef24880710261838l4d1961a5s8117d116be499cee@domain.hid>	<e4ef24880710262040r718b58f7xa2e5f89156d9024b@domain.hid>	<e4ef24880710262126g658f3f7ci534ca13df32b2e0e@domain.hid>
+	<4723118D.9060807@domain.hid> <472326E6.9080103@domain.hid>
+	<47232A0C.60705@domain.hid>
+In-Reply-To: <47232A0C.60705@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+From: Roland Tollenaar <rwatollenaar@domain.hid>
+Subject: Re: [Xenomai-help] [RTnet-users] RTNet in non-TDMA mode?
+Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,74 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dennis Nguyen <dennisnguy@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4D8BF302F10498258F4C99D9
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+>> between RTdevices and non-RT devices crash the system? And whether I
+>> understand correctly that later versions (2.4 up?) of xenomai do not
+>> have the problem of the freezing system at least.?
+> 
+> Since Xenomai 2.3, actually, no system is supposed to "crash" anymore
+> when IRQ conflicts between the domains arise. But if you loose, e.g.,
+> your USB keyboard or your serial console or whatever input device due to
+> a conflict, you may get the impression of a crash. However, if anyone
+> suspects that something else happens on his system, please report the
+> findings to the Xenomai mailing list!
 
-Dennis Nguyen wrote:
-> Hi,
->=20
-> I built 2.6.22.10 linux kernel -i386 with xenomai 2.4-rc4 and
-> adeos-ipipe-2.6.22-i386-1.10-09.patch.
->=20
-> I checked enable SMI workaround, uncheck frequency scaling, uncheck ACP=
-I
-> and uncheck APM.
->=20
-> I ran xeno-test and get the following failed message:
->=20
-> Thu Oct 25 13:17:02 PDT 2007
-> running: ./run -- -sh -T 120 -t1 # latency
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> *
-> =3D=3D Sampling period: 100 us
-> =3D=3D Test mode: in-kernel periodic task
-> =3D=3D All results in microseconds
-> latency: failed to open benchmark device, code -19
-> (modprobe xeno_timerbench?)
->=20
-> Thu Oct 25 13:17:04 PDT 2007
-> running: ./run -- -sh -T 120 -t2 # latency
-> *
-> *
-> * Type ^C to stop this application.
-> *
-> *
-> =3D=3D Sampling period: 100 us
-> =3D=3D Test mode: in-kernel timer handler
-> =3D=3D All results in microseconds
-> latency: failed to open benchmark device, code -19
-> (modprobe xeno_timerbench?)
->=20
-> Could you help me to solve the issue?
+The systems I have found to "crash" all used PS/2 input device and 
+normal VGA monitor. Generally a freeze is initiated by some grafical 
+action in X after starting rtnet. dmesg will tell me that there is a 
+shared IRQ, and in some cases it will disable it. In the latter case the 
+system does not freeze but I still have to find another IRQ address. 
+When there is a shared interrupt then there might be a freeze. If it 
+does not freeze immediately it never freezes and the shared IRQ is no 
+problem. For a while I thought there was only a problem with the VGA 
+device and the rtnet card so if I kept those two off the same IRQ there 
+would be no problem. On other machines this theory was brutally smashed.
+Sorry I cannot be more specific here since all problems in the end are 
+"solved".
 
-What does the kernel log say (=3D>dmesg) when you manually insert the
-module (=3D>modprobe xeno_timerbench)? Do you still have versioning
-conflicts with your modules (as reported on rtnet-users)?
+Hmm, I am just considering that since I use live linux it may be that 
+the conflict was between the rtnet card and a USBport that gives access 
+to the usbstick(s).
 
-Jan
+But my question remains -purely out of interest- why non-rt devices and 
+rt devices can _fundamentally_ not share an IRQ?
+
+kind
+
+regards,
+
+Roland.
 
 
---------------enig4D8BF302F10498258F4C99D9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHIxItniDOoMHTA+kRAlrjAJ0UlqafBrwdI+M/niJHe1PficF/oQCePa9h
-GrBhLXnNgLbwSfZ1ZTARM5Y=
-=U66M
------END PGP SIGNATURE-----
-
---------------enig4D8BF302F10498258F4C99D9--
+> 
+> Jan
+> 
 
