@@ -1,5 +1,6 @@
-Message-ID: <472396E1.6030800@domain.hid>
-Date: Sat, 27 Oct 2007 21:52:01 +0200
+Message-ID: <47246A1A.7040909@domain.hid>
+Date: Sun, 28 Oct 2007 11:53:14 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <e4ef24880710261838l4d1961a5s8117d116be499cee@domain.hid>	
 	<e4ef24880710262040r718b58f7xa2e5f89156d9024b@domain.hid>	
@@ -10,11 +11,11 @@ References: <e4ef24880710261838l4d1961a5s8117d116be499cee@domain.hid>
 	<47238BD7.1040501@domain.hid>
 	<e4ef24880710271217y2e0f6712t331bfcaac0e2a691@domain.hid>
 In-Reply-To: <e4ef24880710271217y2e0f6712t331bfcaac0e2a691@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-From: Roland Tollenaar <rwatollenaar@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4DCAB9532774E66C29F7D830"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] [RTnet-users] RTNet in non-TDMA mode?
-Reply-To: rolandtollenaar@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,62 +26,108 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Robert Gubler <rgubler@domain.hid>
-Cc: Xenomai-help@domain.hid, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai-help@domain.hid
 
->     IRQs are incoming (to the kernel/CPU) signals IIUC. I imagine that at
->     the end of these incoming IRQ's sit ISRs just waiting for IRQ and ready
->     to respond to it in whatever manner they usually do. If this
->     understanding is correct (which it probably is not) then I would not be
->     able to conceive of a reason why the IRQ could not be passed on to the
->     NON RT interrupt service routine after it has been handled by the
->     RT-ISR. But I reiterate that my understanding of these things is as
->     sketchy as my interest to improve the sketchiness is big. :) 
-> 
-> 
-> I think the problem is once the RT-ISR passes it to the NON-RT ISR  
-> there are no real guarantees for how long Linux (its device driver, most 
-> likely) will hold on to the interrupt.  This is problematic if it is 
-This corresponds to what I have understood of what happens when a 
-rt-thread makes an excursion to the the non-RT world. So there may be 
-truth in what you say. Only, what I then don't understand is this: There 
-is no problem with the non-RT-ISR doing its thing under normal (read no 
-IRQ sharing) circumstances. So I would not see why passing the IRQ to 
-the non-RT-ISR once the RT-ISR has done its job would be any different 
-to the situation where there is no sharing. The situation is IMHO not 
-analogous to the "excursion" of a RT thread into non-rt world as would 
-be the case for example if a rt-thread called a non-rt-safe driver. IOW 
-passing on an IRQ does not imply that a rt-thread steps into non-rt 
-world. Rather it jsut gives the non-RT world the opportunity to respond 
-to its devices as it would have naturally done without a problem when it 
-gets its IRQ outside xenomai's realm. I assume (due to the fact that the 
-rt-monitored IRQ's can be found in /proc/xenomai/irq IIRC) that the rest 
-of the IRQ's are not filtered/censured through adeos.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4DCAB9532774E66C29F7D830
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Maybe the explanation is as follows: There is no problem to the point 
-where the nonRT-ISR gets and responds to the IRQ. But what happens if 
-,during the execution of the non-RT-ISR after it has been passed the 
-IRQ, the RTdevice evokes another IRQ? Then adeos must give this IRQ to 
-the RT-ISR and give it precedence over the Non-RT-ISR. If the non-RT-ISR 
-is atomic or non-pre-emptible (not sure that is not the same thing or 
-that I am not talking out of my hat here) this might be a problem. But 
-again  I would not see why this is then not a problem  under the 
-aforementioned "normal" circumstances. So I remain confused.
+Robert Gubler wrote:
+> On 10/27/07, Roland Tollenaar <rwatollenaar@domain.hid> wrote:
+>> Hi Rob,
+>>
+>> Thanks for this response.
+>>
+>>>     But my question remains -purely out of interest- why non-rt devic=
+es
+>> and
+>>>     rt devices can _fundamentally_ not share an IRQ?
+>>>
+>>>
+>>>
+>>> My understanding is adeos-ipipe/xenomai provide an interrupt abstract=
+ion
+>>> layer underneath Linux.  If there is more than one consumer of an
+>>> interrupt it has to be copied/forwarded to all those that need it.  I=
+f
+>>> an IRQ is shared with an RT application, and the Linux kernel I would=
 
-Roland.
+>>> imagine this would create some level of indeterministic RT software.
+>=20
+>=20
+> IRQs are incoming (to the kernel/CPU) signals IIUC. I imagine that at
+>> the end of these incoming IRQ's sit ISRs just waiting for IRQ and read=
+y
+>> to respond to it in whatever manner they usually do. If this
+>> understanding is correct (which it probably is not) then I would not b=
+e
+>> able to conceive of a reason why the IRQ could not be passed on to the=
 
-> And now for the obligatory I-don't-really-know-what-I'm-talking-about 
+>> NON RT interrupt service routine after it has been handled by the
+>> RT-ISR. But I reiterate that my understanding of these things is as
+>> sketchy as my interest to improve the sketchiness is big. :)
+>=20
+>=20
+> I think the problem is once the RT-ISR passes it to the NON-RT ISR  the=
+re
+> are no real guarantees for how long Linux (its device driver, most like=
+ly)
+> will hold on to the interrupt.  This is problematic if it is causing
+> scheduling deadlines to be missed.   Its probably not an issue with sha=
+red
+> interrupts between multiple RT applications because (1) the RT apps usi=
+ng it
+> are (hopefully) written with understanding it is in a real-time context=
+;
+> this is good peace of mind.  And (2) there is probably some fancy inter=
+rupt
+> masking or priority going on between RT-shared interrupts that make it =
+more
+> deterministic.
+>=20
+> And now for the obligatory I-don't-really-know-what-I'm-talking-about
 > disclaimer again:
-
-
-
-> 
-> I am new to these packages, so hopefully I am not providing 
-> misinformation on its functionality.
-> 
+>=20
+> I am new to these packages, so hopefully I am not providing misinformat=
+ion
+> on its functionality.
+>=20
 > :)
-> 
-> -Rob
-> 
->  
-> 
+
+You're providing very accurate explanations in fact! And if you or
+Roland things have the impression that the related FAQ entry on
+xenomai.org is not the clear, please enhance it!
+
+One further note on why it is hard to handle cross-domain-shared IRQs:
+For the non-RT user, you always need a minimal (and, of course,
+deterministic) IRQ handling stub in the RT domain that shut ups the IRQ
+at device level and then forward it for later handling to the non-RT
+domain. We a) have no really smart way for forwarding the IRQ at the
+moment (*) and we b) would then still have to maintain those
+hardware-specific stubs, which we cannot do for each and every Linux
+driver out there.
+
+Jan
+
+(*) You currently need an additional virtual IRQ. Reusing the Adeos
+pipeline with the same IRQ line is a yet unimplemented idea of mine for
+a smarter alternative.
+
+
+--------------enig4DCAB9532774E66C29F7D830
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHJGoaniDOoMHTA+kRAshaAJ98Go9l6ywxhFeT6CKSXKjnqCxu8ACfStqx
+x1/lj2kZFBNvbCXuhtcO7m4=
+=mPAs
+-----END PGP SIGNATURE-----
+
+--------------enig4DCAB9532774E66C29F7D830--
 
