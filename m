@@ -1,14 +1,13 @@
-Message-ID: <4725FDB7.9050703@domain.hid>
-Date: Mon, 29 Oct 2007 16:35:19 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1193675423.47260a9f317e3@domain.hid>
+Date: Mon, 29 Oct 2007 17:30:23 +0100
+From: garryt <garryt@domain.hid>
+References: <1193662459.4725d7fbcf9e6@domain.hid>
+	<2ff1a98a0710290638i7204c9f7pfe4a26ecbe07af9f@domain.hid>
+In-Reply-To: <2ff1a98a0710290638i7204c9f7pfe4a26ecbe07af9f@domain.hid>
 MIME-Version: 1.0
-References: <20071029152344.11243.qmail@domain.hid>
-In-Reply-To: <20071029152344.11243.qmail@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] task suspending while starting the task
-Reply-To: rpm@xenomai.org
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] imx1 port.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,23 +17,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: poornima r <rpoornar@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: garryt <garryt@domain.hid>, xenomai@xenomai.org
 
-poornima r wrote:
->  
-> Hello,
-> 
-> I am working on powerPC board latest Xenomai stable version.
-> I am communicating between two kernel(queue1.c and queue2.c)modules
-> using Message queues.The queue descriptor is shared between the two
-> kernel modules by using EXPORT_SYMBOL(queue_desc).
-> The data is sent to the user space(read.c) through message pipes.
-> This program runs fine somtimes but sometimes the task gets suspended
-> while starting the task.
+Hello,
 
-dmesg output?
+Selon Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
 
--- 
-Philippe.
+> On 10/29/07, garryt <garryt@domain.hid> wrote:
+> > Hello all,
+> >
+> > I had time to try again adeos+xenomai on a imx1 board. (i know this i=
+s
+> quite
+> > old).
+>
+> Thanks. The imx port should be integrated in the next I-pipe patch.
+>
+> >
+> > This looks stable, i have been testing for several hours.
+> >
+> > I have followed the wiki documentation and performed some tests with
+> xeno-test +
+> > ping flooding on this board, again i have no other *similar* board to
+> compare
+> > results with, but here they are.
+> >
+> > I wonder if the difference between user-mode and in-kernel mode shoul=
+d be
+> as
+> > much as this...
+>
+> From the tests I have seen so far, except those published by Adeneo,
+> there is always a great difference between user-mode an kernel-mode.
+> This is the price to pay for the comfort of user-space on ARM.
+>
+> >
+> > By the way enabling ipipe tracer increase response time by a factor 2=
+! is
+> this
+> > ok with such HW ?
+>
+> I guess so.
+>
+> >
+> > I have attached the patch if someone is interested in, any remarks
+> regarding
+> > this are welcome.
+>
+> There is something suspicious, it is the loop:
+>
+>  		do {
+>  			write_seqlock(&xtime_lock);
+>  			timer_tick();
+> +#ifdef CONFIG_IPIPE
+> +			last_jiffy_time +=3D LATCH;
+> +#endif				/*  CONFIG_IPIPE */
+>  			write_sequnlock(&xtime_lock);
+>  			IMX_TCMP(TIMER_BASE) +=3D evt_diff;
+>   	    } while (unlikely((int32_t) (IMX_TCMP(TIMER_BASE)
+>  					- IMX_TCN(TIMER_BASE)) < 0));
+>
+> First, you should not touch IMX_TCMP(TIMER_BASE) in the loop, this is
+> done by __ipipe_mach_set_dec.
+>
+> Second, with the current version of the I-pipe, the do/while loop
+> should be disabled when CONFIG_IPIPE is enabled. However, this is
+> going to change in the next version of I-pipe because of the so-called
+> "flat log" optimization, but I think IMX_TCMP(TIMER_BASE) should be
+> replaced with last_jiffy_time, because IMX_TCMP(TIMER_BASE) is the
+> date of the previous hardware timer tick, but the previous hardware
+> timer tick is not necessarily Linux timer previous tick. Anyway, I
+> will try and fix this and send a patch for testing.
+>
+
+Please correct me if i am wrong, this will help, my understanding from th=
+e
+comment in the function (in 1.7-06.patch), was that if another domain (xe=
+nomai)
+has stolen the timer we should do nothing neither ack it (already done), =
+nor
+reprogram the timer in linux interrupt handler...just run timer_tick. (sh=
+ould i
+used time_lock)
+
+I though that if we enter the loop this means that the timer programming =
+is
+still held by linux not xenomai.
+
+
+> >
+> >
+> > All tests have been performed with xeno-test +  ping flooding the boa=
+rd.
+>
+> For a load that give worse figures, run the calibrator
+> http://www.cwi.nl/~manegold/Calibrator
+>
+>
+> --
+>                                                Gilles Chanteperdrix
+>
+
+
 
