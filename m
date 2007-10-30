@@ -1,16 +1,15 @@
-Message-ID: <472741E2.9040206@domain.hid>
-Date: Tue, 30 Oct 2007 15:38:26 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
+Date: Tue, 30 Oct 2007 16:04:45 +0100
+References: <200709201549.13035.lepalom@domain.hid>
+	<200710301524.43681.lepalom@domain.hid> <472740DE.2040908@domain.hid>
+In-Reply-To: <472740DE.2040908@domain.hid>
 MIME-Version: 1.0
-References: <47266BC6.7060807@domain.hid> <4726EB6E.8020207@domain.hid>
-	<4726F05F.3060105@domain.hid>
-In-Reply-To: <4726F05F.3060105@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF809DF59249FE577A2AF556E"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] build kernel missing  System.map, vmlinuz,
- initrd when using $xenomai_root/configure --enable-x86-sep
+Message-Id: <200710301604.45488.lepalom@domain.hid>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Disposition: inline
+Subject: Re: [Xenomai-help] Comedi driver for use with xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,42 +19,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Dennis Nguyen <dennisnguy@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF809DF59249FE577A2AF556E
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+A Dimarts 30 Octubre 2007, Jan Kiszka va escriure:
+> Leopold Palomo-Avellaneda wrote:
+> > A Dilluns 29 Octubre 2007, Alexis Berlemont va escriure:
+> >> Hi,
+> >>
+> >>> some time ago we wrote about the avalaible of the jr3_pci driver. The
+> >>> option to have someone at the end of October. So, how is it?
+> >>
+> >> A pre-version is available in the svn branch "comedi-rtdm-dev". You will
+> >> find in "comedi_drivers/misc_drivers", the driver jr3_pci.
+> >>
+> >> The source code was ported from the original Comedi project (as the API
+> >> has changed). Unfortunately, It is not tested (no hardware available).
+> >
+> > Ok, I have download, compiled and installed. I'm using xenomai 2.4-rc4.
+> > All have compiled without any problem. Howeber I don't know how to use
+> > it.
+> >
+> > If I try to install the modules:
+> >
+> > insmod comedi.ko
+> >
+> > no problem
+> >
+> > but if I do:
+> >  insmod ./comedi_drivers/misc_drivers/jr3pci.ko
+> >
+> > I got
+> >
+> > insmod: error inserting './comedi_drivers/misc_drivers/jr3pci.ko': -1
+> > Unknown symbol in module
+> >
+> >
+> > where the dmesg says:
+> >
+> > jr3pci: no version for "comedi_add_drv" found: kernel tainted.
+> > jr3pci: Unknown symbol release_firmware
+> > jr3pci: Unknown symbol device_unregister
+> > jr3pci: Unknown symbol request_firmware
+> > jr3pci: Unknown symbol device_register
+> > jr3pci: Unknown symbol release_firmware
+> > jr3pci: Unknown symbol device_unregister
+> > jr3pci: Unknown symbol request_firmware
+> > jr3pci: Unknown symbol device_register
+> >
+> > and now I'm blocked ....
+>
+> modprobe firmware?
 
-Dennis Nguyen wrote:
-> Yes, I used make install after run $xenomai/configure --enable-x86-sep.=
-=20
-> Sorry, I forgot to mention in the previous email
-> I could not get the System.map. vxlimux, and initrd.
-> Also make clean, make menuconfig would not work after that.
-> The message was: make: *** No rule to make target 'clean'. Stop.
-> I have to remove the kernel and start over.
+$:/usr/src/xenomai-comedi-rtdm-dev$ sudo modprobe firmware
+FATAL: Module firmware not found.
 
-You need to run make install in the kernel directory. The other
-"install" is for user land libs, tools, etc.
+> >>> It could be possible to have it for xenomai-2.4?
+> >>
+> >> So far, the only way to get the driver sources  is through subversion. A
+> >> great amount of work (development, test,...) must be achieved before
+> >> considering an official release.
+> >
+> > ok
+> >
+> > I should help if I want this driver working with xenomai ....
+> >
+> > Regards,
+> >
+> > Leo
+> >
+> > PS use me as betatester of the driver, so if told me any test that I
+> > could do.
+>
+> Nice to see that this train is about to gain more passengers! :)
 
-Jan
+:-)
 
-
---------------enigF809DF59249FE577A2AF556E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHJ0HiniDOoMHTA+kRAvKNAJ9rAAFg57Gf7rXjd7ztVBL0pqSWlwCdF0DI
-hJTv9WSjmPWfZ+z3wK9vQh8=
-=mmln
------END PGP SIGNATURE-----
-
---------------enigF809DF59249FE577A2AF556E--
+Leo
 
