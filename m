@@ -1,14 +1,12 @@
-Message-ID: <4726F2F5.3060206@domain.hid>
-Date: Tue, 30 Oct 2007 10:01:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <472630A3.7020802@domain.hid> <472649BF.50909@domain.hid>
-In-Reply-To: <472649BF.50909@domain.hid>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] make xenomai/serial/16550A module error
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01C81AD6.7469A79E"
+Date: Tue, 30 Oct 2007 09:23:07 -0000
+Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB025E41E8@domain.hid>
+In-Reply-To: <1192524631.6045.23.camel@domain.hid>
+References: <1192524631.6045.23.camel@domain.hid>
+From: "Daniel Schnell" <daniel.schnell@domain.hid>
+Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.4-rc4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +16,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Dennis Nguyen wrote:
->> I tried to build linux kernel 2.6.20.10 with xenomai 2.3.4 with serial=20
->> 16550A Module (I selected serial 16550A as a M).=20
->> (adeos-ipipe-2.6.20-i386-1.10-10.patch)
->>
->> I had an error:
->>    CC [M]  drivers/xenomai/serial/16550A.o
->> drivers/xenomai/serial/16550A.c: In function =91rt_16550_open=92:
->> drivers/xenomai/serial/16550A.c:448: error: incompatible types in assign=
-ment
->> make[3]: *** [drivers/xenomai/serial/16550A.o] Error 1
->> make[2]: *** [drivers/xenomai/serial] Error 2
->> make[1]: *** [drivers/xenomai] Error 2
->> make: *** [drivers] Error 2
->> [root@domain.hid linux-2.6.20.10]#
->>
->> Any suggestion please?
->=20
-> So far for "please use the latest patch". :-/
->=20
-> Some assumption of the 2.3.x branch about what is when defined became
-> invalid with ipipe-1.10-10, attached patch fixes it. Philippe, please app=
-ly.
->=20
+This is a multi-part message in MIME format.
 
-Merged, thanks.
+------_=_NextPart_001_01C81AD6.7469A79E
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-> Jan
->=20
+Hi,
+
+We tested xenomai 2.4-rc4 on a MPC5200B board and a Denx 2.6.23 kernel
+and for us it runs very stable. In contrary to 2.4.25 + Xenomai 2.3.x
+debugging applications on 2.4-rc4 with a recent gdb works very well
+multithreaded, either locally or remote.
+
+However we think there might be a problem with pthread_cond_timedwait()
+in the POSIX skin.
+It seems that after return of ETIMEOUT the mutex is not acquired again
+by the function automatically as stated by the standard, so that an
+additional pthread_mutex_lock() is necessary. Otherwise a subsequent
+call to pthread_cond_timedwait() would return EPERM, which is the case
+if the mutex is not owned by the calling thread.
+
+The attached code illustrates this behaviour. Replacing #if 1 with #if 0
+will cause the behaviour to show up. Furthermore #if 0 will cause a
+segmentation fault, which seems to be xenomai related.
+
+Compiling without Xenomai (just with native glibc 2.5) shows expected
+behaviour.
+
+Best regards,
+
+Daniel Schnell.
 
 
---=20
-Philippe.
+
+
+
+Philippe Gerum wrote:
+> Here is the fourth candidate release for the v2.4.x branch. With the
+> v2.3.x maintenance cycle soon coming to an end after nearly a year
+> since it has started, v2.4 is going to be our next stable branch for
+> quite some time, so I would suggest that you make sure it can run
+> your favourite board(s) _now_.   =20
+
+------_=_NextPart_001_01C81AD6.7469A79E
+Content-Type: application/octet-stream;
+	name="xenopthreadtest.cpp"
+Content-Transfer-Encoding: base64
+Content-Description: xenopthreadtest.cpp
+Content-Disposition: attachment;
+	filename="xenopthreadtest.cpp"
+
+LyoqCiAgICBAZmlsZSA8ZmlsZW5hbWU+CgogICAgPGI+CiAgICBDb3B5cmlnaHQgKGMpIDIwMDcg
+TWFyZWwgSGYuIAogICAgUHJvcHJpZXRhcnkgbWF0ZXJpYWwsIGFsbCByaWdodHMgcmVzZXJ2ZWQs
+IHVzZSBvciBkaXNjbG9zdXJlIGZvcmJpZGRlbi4KICAgIDwvYj4KKi8KCiNpbmNsdWRlIDxzdGRp
+by5oPgojaW5jbHVkZSA8c3RkbGliLmg+CgojaW5jbHVkZSAieGVub3B0aHJlYWR0ZXN0X3ByaXYu
+aCIKI2luY2x1ZGUgInhlbm9wdGhyZWFkdGVzdC5oIgoKCi8vIGRlZmluZXMgLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
+CgovLyBtYWNyb3MgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgoKLy8gZm9yd2FyZCBkZWNsYXJhdGlvbnMgLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKCi8vIHR5
+cGVkZWZzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0KCgovLyBnbG9iYWwgdmFyaWFibGVzIC0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgoKLy8gbG9jYWwgcHJv
+dG90eXBlcyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQoKCi8vIGZ1bmN0aW9ucyBjbGFzc2VzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCgojaW5jbHVkZSA8ZXJybm8uaD4K
+I2luY2x1ZGUgPHVuaXN0ZC5oPgojaW5jbHVkZSA8c3lzL3R5cGVzLmg+CiNpbmNsdWRlIDxzeXMv
+bW1hbi5oPgojaW5jbHVkZSA8c3lzL3N0YXQuaD4KI2luY2x1ZGUgPGZjbnRsLmg+CiNpbmNsdWRl
+IDxzdGRpby5oPgojaW5jbHVkZSA8cHRocmVhZC5oPgojaW5jbHVkZSA8bXF1ZXVlLmg+CgojZGVm
+aW5lIE1fVVUgX19hdHRyaWJ1dGVfXygodW51c2VkKSkKCmludCBjb3VudGVyOwppbnQga2VlcGdv
+aW5nOwpwdGhyZWFkX2NvbmRfdCBjb25kdmFyOwpwdGhyZWFkX211dGV4X3QgbXV0ZXg7CnB0aHJl
+YWRfdCBwcm9kdWNlcjsKcHRocmVhZF90IGNvbnN1bWVyOwpwdGhyZWFkX2F0dHJfdCB0X2F0dHI7
+Cgp2b2lkICogcHJvZHVjZXJfZih2b2lkICopOwp2b2lkICogY29uc3VtZXJfZih2b2lkICopOwoK
+aW50IGluaXRfdmFycyh2b2lkKQp7CiAgICBjb3VudGVyID0gMDsKICAgIGtlZXBnb2luZyA9IDE7
+CgogICAgaWYocHRocmVhZF9jb25kX2luaXQoJmNvbmR2YXIsIE5VTEwpICE9IDApCiAgICB7CiAg
+ICAgICAgcHJpbnRmKCJGYWlsZWQgdG8gaW5pdCBjb25kaXRpb24gdmFyaWFibGVcbiIpOwogICAg
+ICAgIHJldHVybiAtMTsKICAgIH0KCiAgICBpZihwdGhyZWFkX211dGV4X2luaXQoJm11dGV4LCBO
+VUxMKSAhPSAwKQogICAgewogICAgICAgIHByaW50ZigiRmFpbGVkIHRvIGluaXQgbXV0ZXhcbiIp
+OwogICAgICAgIHJldHVybiAtMTsKICAgIH0KCiAgICBpZihwdGhyZWFkX2F0dHJfaW5pdCgmdF9h
+dHRyKSAhPSAwKQogICAgewogICAgICAgIHByaW50ZigiRmFpbGVkIHRvIGluaXQgdGhyZWFkIGF0
+dHJpYnV0ZVxuIik7CiAgICAgICAgcmV0dXJuIC0xOwogICAgfQoKICAgIGlmKGdldHVpZCgpID09
+IDApCiAgICB7CiAgICAgICAgc3RydWN0IHNjaGVkX3BhcmFtIHNwOwogICAgICAgIHNwLnNjaGVk
+X3ByaW9yaXR5ID0gMDsKICAgICAgICBpZihwdGhyZWFkX2F0dHJfc2V0c2NoZWRwb2xpY3koJnRf
+YXR0ciwgU0NIRURfRklGTykgIT0gMCkKICAgICAgICB7CiAgICAgICAgICAgIHByaW50ZigiVW5h
+YmxlIHRvIHNldCBzY2hlZF9wcmlvcml0eS5cbiIpOwogICAgICAgICAgICByZXR1cm4gLTE7CiAg
+ICAgICAgfQoKICAgICAgICBpZihwdGhyZWFkX2F0dHJfc2V0c2NoZWRwYXJhbSgmdF9hdHRyLCAm
+c3ApICE9IDApCiAgICAgICAgewogICAgICAgICAgICBwcmludGYoIlVuYWJsZSB0byBzZXQgc2No
+ZWRwYXJhbVxuIik7CiAgICAgICAgICAgIHJldHVybiAtMTsKICAgICAgICB9CiAgICB9CiAgICBl
+bHNlCiAgICB7CiAgICAgICAgcHJpbnRmKCJOb3Qgcm9vdCB1bmFibGUgdG8gc2V0IHVwIFJUIHNj
+aGVkdWxpbmdcbiIpOwogICAgfQoKICAgIHJldHVybiAwOwp9CgppbnQgbWFpbihpbnQgYXJnYyBN
+X1VVLCBjaGFyICoqIGFyZ3YgTV9VVSkKewogICAgbWxvY2thbGwoIE1DTF9DVVJSRU5UIHwgTUNM
+X0ZVVFVSRSk7CgogICAgaWYoaW5pdF92YXJzKCkgIT0gMCkKICAgIHsKICAgICAgICByZXR1cm4g
+LTE7CiAgICB9CgogICAgaWYocHRocmVhZF9jcmVhdGUoJnByb2R1Y2VyLCAmdF9hdHRyLCBwcm9k
+dWNlcl9mLCBOVUxMKSAhPSAwKQogICAgewogICAgICAgIHByaW50ZigiVW5hYmxlIHRvIGNyZWF0
+ZSBwcm9kdWNlciB0aHJlYWRcbiIpOwogICAgICAgIHJldHVybiAtMTsKICAgIH0KCiAgICBpZihw
+dGhyZWFkX2NyZWF0ZSgmY29uc3VtZXIsICZ0X2F0dHIsIGNvbnN1bWVyX2YsIE5VTEwpICE9IDAp
+CiAgICB7CiAgICAgICAgcHJpbnRmKCJVbmFibGUgdG8gY3JlYXRlIGNvbnN1bWVyIHRocmVhZFxu
+Iik7IAogICAgICAgIHJldHVybiAtMTsKICAgIH0KCiAgICBwdGhyZWFkX2pvaW4ocHJvZHVjZXIs
+IE5VTEwpOwogICAgcHRocmVhZF9qb2luKGNvbnN1bWVyLCBOVUxMKTsKCiAgICBtdW5sb2NrYWxs
+KCk7CgogICAgcmV0dXJuIDA7Cn0KCnZvaWQgKiBwcm9kdWNlcl9mKHZvaWQgKiBhcmcgTV9VVSkK
+ewogICAgaW50IGk9MDsKCiAgICBwcmludGYoIlByb2R1Y2VyIHN0YXJ0ZWRcbiIpOwoKICAgIHdo
+aWxlIChrZWVwZ29pbmcpCiAgICB7CiAgICAgICAgaWYoaSAhPSAzKQogICAgICAgICAgICBzbGVl
+cCgxKTsKICAgICAgICBlbHNlCiAgICAgICAgICAgIHNsZWVwKDYpOyAvKiBGb3JjZSBhIHRpbWVv
+dXQgZm9yIHRoZSBjb25zdW1lciAqLwoKICAgICAgICBwcmludGYoIlByb2R1Y2luZyAlZFxuIiwg
+aSsxKTsKICAgICAgICBwdGhyZWFkX211dGV4X2xvY2soJm11dGV4KTsKICAgICAgICBjb3VudGVy
+Kys7CiAgICAgICAga2VlcGdvaW5nID0gaSsrIDwgOSA/IDEgOiAwOwogICAgICAgIHB0aHJlYWRf
+Y29uZF9zaWduYWwoJmNvbmR2YXIpOwogICAgICAgIHB0aHJlYWRfbXV0ZXhfdW5sb2NrKCZtdXRl
+eCk7CiAgICB9CgogICAgcHJpbnRmKCJQcm9kdWNlciBsZWF2aW5nXG4iKTsKICAgIHJldHVybiBO
+VUxMOwp9Cgp2b2lkICogY29uc3VtZXJfZih2b2lkICogYXJnIE1fVVUpCnsKICAgIHN0cnVjdCB0
+aW1lc3BlYyB0bzsKICAgIGludCB0b3RhbCA9IDA7CiAgICBwcmludGYoIkNvbnN1bWVyIHN0YXJ0
+ZWRcbiIpOwoKICAgIGNsb2NrX2dldHRpbWUoQ0xPQ0tfUkVBTFRJTUUsICZ0byk7CiAgICB0by50
+dl9zZWMgKz0gNTsKCiAgICBwdGhyZWFkX211dGV4X2xvY2soJm11dGV4KTsKCiAgICBpbnQgZXJy
+OwogICAgd2hpbGUoIChrZWVwZ29pbmcgPT0gMSkgfHwgKGNvdW50ZXIgPiAwKSkKICAgIHsKCiAg
+ICAgICAgZXJyID0gcHRocmVhZF9jb25kX3RpbWVkd2FpdCgmY29uZHZhciwgJm11dGV4LCAmdG8p
+OwoKICAgICAgICBzd2l0Y2goZXJyKQogICAgICAgIHsKICAgICAgICAgICAgY2FzZSAwOgogICAg
+ICAgICAgICAgICAgd2hpbGUoY291bnRlcikKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAg
+ICAgICAgICBwcmludGYoIkNvbnN1bWluZyAlZCBbdG90YWwgJWRdIFxuIiwgY291bnRlci0tLCAr
+K3RvdGFsKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGNsb2NrX2dldHRpbWUo
+Q0xPQ0tfUkVBTFRJTUUsICZ0byk7CiAgICAgICAgICAgICAgICB0by50dl9zZWMgKz0gNTsKICAg
+ICAgICAgICAgICAgIGJyZWFrOwogICAgICAgICAgICBjYXNlIEVUSU1FRE9VVDoKICAgICAgICAg
+ICAgICAgIHByaW50ZigiVGltZWRvdXRcbiIpOwogICAgICAgICAgICAgICAgY2xvY2tfZ2V0dGlt
+ZShDTE9DS19SRUFMVElNRSwgJnRvKTsKICAgICAgICAgICAgICAgIHRvLnR2X3NlYyArPSA1Owoj
+aWYgMQojICAgICAgICAgICAgICAgaWZkZWYgX19YRU5PX18KICAgICAgICAgICAgICAgIHB0aHJl
+YWRfbXV0ZXhfbG9jaygmbXV0ZXgpOwojICAgICAgICAgICAgICAgZW5kaWYKI2VuZGlmCiAgICAg
+ICAgICAgICAgICBicmVhazsKICAgICAgICAgICAgZGVmYXVsdDoKICAgICAgICAgICAgICAgIHBy
+aW50ZigiR290IGFuIEVQRVJNIGVycm9yXG4iKTsKICAgICAgICAgICAgICAgIGtlZXBnb2luZyA9
+IDA7CiAgICAgICAgfQogICAgfQoKICAgIGlmIChlcnIgIT0gRVBFUk0pCiAgICB7CiAgICAgICAg
+cHRocmVhZF9tdXRleF91bmxvY2soJm11dGV4KTsKICAgIH0KCiAgICBwcmludGYoIkNvbnN1bWVy
+IGxlYXZpbmdcbiIpOwoKICAgIHJldHVybiBOVUxMOwp9Cg==
+
+------_=_NextPart_001_01C81AD6.7469A79E--
 
