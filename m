@@ -1,11 +1,13 @@
-Date: Tue, 30 Oct 2007 09:40:41 +0100
-From: =?iso-8859-15?Q?Carsten_Spie=DF?= <mail@domain.hid>
-Message-ID: <1078761341.20071030094041@domain.hid>
+Message-ID: <4726F05F.3060105@domain.hid>
+Date: Tue, 30 Oct 2007 00:50:39 -0800
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="----------901E01211761DFDF"
-Subject: [Xenomai-help] how to stop a runaway task
-Reply-To: =?iso-8859-15?Q?Carsten_Spie=DF?= <mail@domain.hid>
+References: <47266BC6.7060807@domain.hid> <4726EB6E.8020207@domain.hid>
+In-Reply-To: <4726EB6E.8020207@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] build kernel missing  System.map, vmlinuz,
+ initrd when using $xenomai_root/configure --enable-x86-sep
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,101 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-------------901E01211761DFDF
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: quoted-printable
+Yes, I used make install after run $xenomai/configure --enable-x86-sep.  
+Sorry, I forgot to mention in the previous email
+I could not get the System.map. vxlimux, and initrd.
+Also make clean, make menuconfig would not work after that.
+The message was: make: *** No rule to make target 'clean'. Stop.
+I have to remove the kernel and start over.
+Thanks,
+Dennis
 
-Hello,
-
-i'm running Xenomai 2.3.2 on a PPC target with Linux 2.4.25 kernel.
-I trying to programm a supervising task, that detects a runaway task
-and suspend it.
-
-My aproach was to make a high priority periodic task to look if
-the low prio task is running correctly and suspend it when it detects
-failure.
-But this approach didn't work, the higer prio task isn't called unless
-the lower prio task gives up cpu (by calling e.g. rt_task_yield or
-nanosleep) (see attached demo source)
-
-When not being cooperative (removing the rt_task_yield in the demo)
-my system is reset after some seconds.
-
-Why isn't my supervising task scheduled?
-
-Tanks for help, regards
-
-Carsten
---=20
-Dipl.-Ing. Carsten Spie=DF
-Softwareentwicklung - Beratung - Schulung
-Lauterlech 39d
-D-86152 Augsburg
-Tel.: +49(821)15 999 765
-Fax.: +49(821)15 999 767
-mailto://mail@domain.hid
-http://www.carsten-spiess.de
-
-------------901E01211761DFDF
-Content-Type: application/octet-stream;
- name="demo.c"
-Content-transfer-encoding: base64
-Content-Disposition: attachment;
- filename="demo.c"
-
-I2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8bmF0aXZlL3Rhc2suaD4NCiNpbmNsdWRl
-IDxzaWduYWwuaD4NCiNpbmNsdWRlIDxzeXMvbW1hbi5oPg0KDQpzdGF0aWMgaW50IGNvdW50
-Ow0KDQpzdGF0aWMgUlRfVEFTSyBpZF9sb3c7DQpzdGF0aWMgUlRfVEFTSyBpZF9oaWdoOw0K
-DQojZGVmaW5lIExPV19QUklPIDUNCiNkZWZpbmUgSElHSF9QUklPIDEwDQoNCnZvaWQgaW5p
-dF90YXNrKGludCBuKTsNCg0Kdm9pZCBydW5hd2F5X3Rhc2sodm9pZCogZHVtbXkpDQp7DQog
-ICBpbnQgaTsNCiAgIHN0cnVjdCB0aW1lc3BlYyB0c3RhcnQ7DQogICBzdHJ1Y3QgdGltZXNw
-ZWMgdHBlcmlvZDsNCiAgIA0KICAgdHN0YXJ0LnR2X3NlYyA9IDA7DQogICB0c3RhcnQudHZf
-bnNlYyA9IDA7DQogICB0cGVyaW9kLnR2X3NlYyA9IDA7DQogICB0cGVyaW9kLnR2X25zZWMg
-PSAxNjAwMDsgIC8vIHplaXQgaW4gbnMsIHJlc2V0IGJlaSA8MTYgtXMgDQoNCiAgIHByaW50
-ZigicnVuYXdheSB0YXNrXG4iKTsNCg0KICAgd2hpbGUgKDEpDQogICB7DQovLyAgICAgIHNs
-ZWVwKDEpOw0KLy8gICAgICBuYW5vc2xlZXAoJnRwZXJpb2QsJnRzdGFydCk7DQogICAgICBy
-dF90YXNrX3lpZWxkKCk7DQogICAgICBmb3IoaT0wO2k8NTAwMDA7aSsrKWNvdW50Kys7DQog
-ICB9DQp9DQoNCnZvaWQgc3VwZXJ2aXNvcl90YXNrKHZvaWQqIGR1bW15KQ0Kew0KICAgdW5z
-aWduZWQgbG9uZyBuT3ZlcnJ1bjsNCiAgIFJUSU1FICAgdGljaywgdGlja19vbGQ7DQogICAN
-CiAgIGludCBzdGVwID0gMDsNCiAgIGludCBsb29wID0gMDsNCg0KICAgaWYgKHJ0X3Rhc2tf
-c2V0X3BlcmlvZGljKCZpZF9oaWdoLFRNX05PVywgcnRfdGltZXJfbnMydGlja3MoNTAwMDAw
-KSkgPT0gMCkNCiAgIHsNCiAgICAgIHByaW50Zigic3VwZXJ2aXNvciB0YXNrXG4iKTsNCg0K
-ICAgICAgdGlja19vbGQgPSBydF90aW1lcl90c2MoKTsNCiAgICAgIHdoaWxlICgxKQ0KICAg
-ICAgew0KICAgICAgICAgLy9uYW5vc2xlZXAoJnRwZXJpb2QsJnRzdGFydCk7DQogICAgICAg
-ICBpZiAocnRfdGFza193YWl0X3BlcmlvZCgmbk92ZXJydW4pICE9IDApDQogICAgICAgICAg
-ICBwcmludGYoInN1cGVydmlzb3IgdGFzayBvdmVycnVuICVsdVxuIiwgbk92ZXJydW4pOw0K
-DQogICAgICAgICB0aWNrID0gcnRfdGltZXJfdHNjKCk7DQogICAgICAgICANCiAgICAgICAg
-IGxvb3AgKys7DQogICAgICAgICBzd2l0Y2ggKHN0ZXApDQogICAgICAgICB7DQogICAgICAg
-ICBjYXNlIDA6DQogICAgICAgICAgICBpZihsb29wID4gMTAwKQ0KICAgICAgICAgICAgew0K
-ICAgICAgICAgICAgICAgbG9vcCA9IDA7DQogICAgICAgICAgICAgICBzdGVwID0gMTsNCiAg
-ICAgICAgICAgICAgIGluaXRfdGFzayhMT1dfUFJJTyk7DQogICAgICAgICAgICB9DQogICAg
-ICAgICAgICBicmVhazsNCiAgICAgICAgIGNhc2UgMToNCiAgICAgICAgICAgIGlmKGxvb3Ag
-PiAyMDApDQogICAgICAgICAgICB7DQogICAgICAgICAgICAgICBsb29wID0gMDsNCiAgICAg
-ICAgICAgICAgIHN0ZXAgPSAyOw0KICAgICAgICAgICAgICAgcnRfdGFza19zdXNwZW5kKCZp
-ZF9sb3cpOw0KICAgICAgICAgICAgICAgcHJpbnRmKCJjb3VudCA9ICVkICVsdSAlbGx1XG4i
-LCBjb3VudCxuT3ZlcnJ1bix0aWNrLXRpY2tfb2xkKTsNCiAgICAgICAgICAgIH0NCiAgICAg
-ICAgICAgIGJyZWFrOw0KICAgICAgICAgY2FzZSAyOg0KICAgICAgICAgICAgaWYobG9vcCA+
-IDIwKQ0KICAgICAgICAgICAgew0KICAgICAgICAgICAgICAgbG9vcCA9IDA7DQogICAgICAg
-ICAgICAgICBzdGVwID0gMTsNCiAgICAgICAgICAgICAgIHJ0X3Rhc2tfcmVzdW1lKCZpZF9s
-b3cpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICB9DQog
-ICAgICAgICB0aWNrX29sZCA9IHRpY2s7DQogICAgICB9DQogICB9DQp9DQoNCnZvaWQgaW5p
-dF90YXNrKGludCBwcmlvKQ0Kew0KICAgc3dpdGNoIChwcmlvKQ0KICAgew0KICAgY2FzZSBM
-T1dfUFJJTzoNCiAgICAgIHJ0X3Rhc2tfY3JlYXRlKCZpZF9sb3csICJydW5hd2F5IiwgODE5
-MixwcmlvLCAwKTsNCiAgICAgIHJ0X3Rhc2tfc3RhcnQoJmlkX2xvdyxydW5hd2F5X3Rhc2ss
-MCk7DQogICAgICBicmVhazsNCiAgIGNhc2UgSElHSF9QUklPOg0KICAgICAgcnRfdGFza19j
-cmVhdGUoJmlkX2hpZ2gsICJzdXBlcnZpc29yIiwgODE5MixwcmlvLCAwKTsNCiAgICAgIHJ0
-X3Rhc2tfc3RhcnQoJmlkX2hpZ2gsc3VwZXJ2aXNvcl90YXNrLDApOw0KICAgICAgYnJlYWs7
-DQogICB9DQp9DQoNCnZvaWQgaW5pdF9zaWduYWxzKHNpZ3NldF90ICptYXNrKQ0Kew0KICAg
-c2lnZW1wdHlzZXQobWFzayk7DQogICBzaWdhZGRzZXQobWFzayxTSUdJTlQpOw0KICAgc2ln
-YWRkc2V0KG1hc2ssU0lHVEVSTSk7DQogICBzaWdhZGRzZXQobWFzayxTSUdIVVApOw0KICAg
-c2lnYWRkc2V0KG1hc2ssU0lHQUxSTSk7DQoNCiAgIHB0aHJlYWRfc2lnbWFzayhTSUdfQkxP
-Q0ssIG1hc2ssIE5VTEwpOw0KfQ0KDQppbnQgbWFpbihpbnQgYWMsIGNoYXIgKmF2W10pDQp7
-DQogICBzaWdzZXRfdCBtYXNrOw0KICAgaW50IHNpZzsNCg0KICAgbWxvY2thbGwoTUNMX0NV
-UlJFTlR8TUNMX0ZVVFVSRSk7DQogICBjb3VudCA9IDA7DQogICANCiAgIGluaXRfc2lnbmFs
-cygmbWFzayk7DQogICBpbml0X3Rhc2soSElHSF9QUklPKTsNCiAgIA0KICAgc2lnd2FpdCgm
-bWFzaywgJnNpZyk7DQoNCiAgIHJldHVybiAwOw0KfQ0K
-------------901E01211761DFDF--
-
+Jan Kiszka wrote:
+> Dennis Nguyen wrote:
+>   
+>> I followed the README from xenomai to build kernel+xenomai:
+>> -prepare-kernel.sh ...
+>> cd $linux_tree
+>> make menuconfig
+>> make bzImage modules
+>> make modules_install
+>>     
+>
+> make install?
+>
+>   
+>> When ever I used $xenomai_root/configure --enable-x86-sep, It won't 
+>> create System.map vmlinux, and initrd under/boot.
+>>
+>> I used different combo kernel linux-2.6.20.10 with xenomai-2.3.4.
+>> kernel linux-2.6.22.10 with xenomai-2.4-rc4.
+>> kernel linux-2.6.22.10 with xenomai 2.4-rc5.
+>> The result for the System.map vmlinux, and initrd under /boot are the 
+>> same.  If I do not used the configure --enable-x86-sep then the files 
+>> built under /boot.
+>>
+>> Any suggestion please,
+>> Thanks
+>> Dennis
+>>     
+>
+> Jan
+>
+>   
 
