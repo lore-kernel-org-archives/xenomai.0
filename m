@@ -1,14 +1,12 @@
+Message-ID: <2ff1a98a0710300247q3df99efbybb4ad9a03b7fdf6@domain.hid>
+Date: Tue, 30 Oct 2007 10:47:06 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB025E41E8@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18215.45291.872538.68005@domain.hid>
-Date: Tue, 30 Oct 2007 23:32:11 +0100
-In-Reply-To: <DD39B5C3F4963040ADC9768BE7E430CB025E424A@is-hdq-exchange.marel.net>
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_1571_4903056.1193737626250"
 References: <1192524631.6045.23.camel@domain.hid>
 	<DD39B5C3F4963040ADC9768BE7E430CB025E41E8@domain.hid>
-	<2ff1a98a0710300247q3df99efbybb4ad9a03b7fdf6@domain.hid>
-	<DD39B5C3F4963040ADC9768BE7E430CB025E424A@is-hdq-exchange.marel.net>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai v2.4-rc4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -22,28 +20,37 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Daniel Schnell <daniel.schnell@domain.hid>
 Cc: xenomai@xenomai.org
 
-Daniel Schnell wrote:
- > Gilles Chanteperdrix wrote:
- > > On 10/30/07, Daniel Schnell <daniel.schnell@domain.hid> wrote:
- > >> However we think there might be a problem with
- > >> pthread_cond_timedwait() in the POSIX skin.
- > >> It seems that after return of ETIMEOUT the mutex is not acquired
- > >> again by the function automatically
- > > 
- > > Ok, do you still observe the same behaviour with the attached patch ?
- > 
- > No, this patch fixes the issues. Thanks.
- > 
- > 
- > Was the segmentation fault corelated to that fix or is it still waiting
- > somewhere ?
+------=_Part_1571_4903056.1193737626250
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-The segmentatino fault was due to a cleanup handler "pthread_cleanup_push"ed by
-__wrap_pthread_cond_timedwait that was not pthread_cleanup_poped in the
-error case.
+On 10/30/07, Daniel Schnell <daniel.schnell@domain.hid> wrote:
+> However we think there might be a problem with pthread_cond_timedwait()
+> in the POSIX skin.
+> It seems that after return of ETIMEOUT the mutex is not acquired again
+> by the function automatically
+
+Ok, do you still observe the same behaviour with the attached patch ?
 
 -- 
+                                               Gilles Chanteperdrix
 
+------=_Part_1571_4903056.1193737626250
+Content-Type: application/octet-stream;
+ name=xeno-posix-save-mutex-recursion-count-upon-timeout.diff
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_f8e8jtxb
+Content-Disposition: attachment;
+ filename=xeno-posix-save-mutex-recursion-count-upon-timeout.diff
 
-					    Gilles Chanteperdrix.
+SW5kZXg6IGtzcmMvc2tpbnMvcG9zaXgvc3lzY2FsbC5jCj09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLS0tIGtzcmMvc2tp
+bnMvcG9zaXgvc3lzY2FsbC5jCShyw6l2aXNpb24gMzEzMykKKysrIGtzcmMvc2tpbnMvcG9zaXgv
+c3lzY2FsbC5jCShjb3BpZSBkZSB0cmF2YWlsKQpAQCAtMTU0OSw3ICsxNTQ5LDcgQEAKIAl9CiAK
+IAotCWlmICghZXJyIHx8IGVyciA9PSBFSU5UUikKKwlpZiAoIWVyciB8fCBlcnIgPT0gRUlOVFIg
+fHwgZXJyID09IEVUSU1FRE9VVCkKIAkJX194bl9jb3B5X3RvX3VzZXIoY3VyciwgKHZvaWQgX191
+c2VyICopIF9feG5fcmVnX2FyZzMocmVncyksCiAJCQkJICAmY291bnQsIHNpemVvZihjb3VudCkp
+OwogCg==
+------=_Part_1571_4903056.1193737626250--
 
