@@ -1,13 +1,14 @@
-Message-ID: <4726F05F.3060105@domain.hid>
-Date: Tue, 30 Oct 2007 00:50:39 -0800
-From: Dennis Nguyen <dennisnguy@domain.hid>
+Message-ID: <4726F2B5.5000307@domain.hid>
+Date: Tue, 30 Oct 2007 10:00:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <47266BC6.7060807@domain.hid> <4726EB6E.8020207@domain.hid>
-In-Reply-To: <4726EB6E.8020207@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] build kernel missing  System.map, vmlinuz,
- initrd when using $xenomai_root/configure --enable-x86-sep
+References: <1078761341.20071030094041@domain.hid>
+In-Reply-To: <1078761341.20071030094041@domain.hid>
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] how to stop a runaway task
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +18,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: =?ISO-8859-15?Q?Carsten_Spie=DF?= <mail@domain.hid>
+Cc: xenomai@xenomai.org
 
-Yes, I used make install after run $xenomai/configure --enable-x86-sep.  
-Sorry, I forgot to mention in the previous email
-I could not get the System.map. vxlimux, and initrd.
-Also make clean, make menuconfig would not work after that.
-The message was: make: *** No rule to make target 'clean'. Stop.
-I have to remove the kernel and start over.
-Thanks,
-Dennis
+Carsten Spie=DF wrote:
+> Hello,
+>=20
+> i'm running Xenomai 2.3.2 on a PPC target with Linux 2.4.25 kernel.
+> I trying to programm a supervising task, that detects a runaway task
+> and suspend it.
+>=20
+> My aproach was to make a high priority periodic task to look if
+> the low prio task is running correctly and suspend it when it detects
+> failure.
+> But this approach didn't work, the higer prio task isn't called unless
+> the lower prio task gives up cpu (by calling e.g. rt_task_yield or
+> nanosleep) (see attached demo source)
 
-Jan Kiszka wrote:
-> Dennis Nguyen wrote:
->   
->> I followed the README from xenomai to build kernel+xenomai:
->> -prepare-kernel.sh ...
->> cd $linux_tree
->> make menuconfig
->> make bzImage modules
->> make modules_install
->>     
->
-> make install?
->
->   
->> When ever I used $xenomai_root/configure --enable-x86-sep, It won't 
->> create System.map vmlinux, and initrd under/boot.
->>
->> I used different combo kernel linux-2.6.20.10 with xenomai-2.3.4.
->> kernel linux-2.6.22.10 with xenomai-2.4-rc4.
->> kernel linux-2.6.22.10 with xenomai 2.4-rc5.
->> The result for the System.map vmlinux, and initrd under /boot are the 
->> same.  If I do not used the configure --enable-x86-sep then the files 
->> built under /boot.
->>
->> Any suggestion please,
->> Thanks
->> Dennis
->>     
->
-> Jan
->
->   
+This would basically say that the core does not give any real-time
+guarantee. Please send some demo code showing this.
+
+>=20
+> When not being cooperative (removing the rt_task_yield in the demo)
+> my system is reset after some seconds.
+>=20
+> Why isn't my supervising task scheduled?
+>=20
+
+Try enabling the nucleus watchdog (Xenomai debug options). It does kill
+runaway tasks. If this works on your setup, then your code must be
+wrong. If it does not trigger, then we need to understand why  -- there
+is one case where it may not trigger, but this does not involve any
+breakage in task management.
+
+> Tanks for help, regards
+>=20
+> Carsten
+>=20
+>=20
+> ------------------------------------------------------------------------
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+
+--=20
+Philippe.
 
