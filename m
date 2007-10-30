@@ -1,15 +1,14 @@
-From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Date: Tue, 30 Oct 2007 16:04:45 +0100
-References: <200709201549.13035.lepalom@domain.hid>
-	<200710301524.43681.lepalom@domain.hid> <472740DE.2040908@domain.hid>
-In-Reply-To: <472740DE.2040908@domain.hid>
+Date: Tue, 30 Oct 2007 10:53:18 +0100
+From: =?iso-8859-15?Q?Carsten_Spie=DF?= <mail@domain.hid>
+Message-ID: <1935435350.20071030105318@domain.hid>
+In-Reply-To: <4726F2B5.5000307@domain.hid>
+References: <1078761341.20071030094041@domain.hid>
+	<4726F2B5.5000307@domain.hid>
 MIME-Version: 1.0
-Message-Id: <200710301604.45488.lepalom@domain.hid>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-  charset="iso-8859-1"
-Content-Disposition: inline
-Subject: Re: [Xenomai-help] Comedi driver for use with xenomai
+Content-Type: multipart/mixed;
+ boundary="----------AA56BE1BF16F4D"
+Subject: Re: [Xenomai-help] how to stop a runaway task
+Reply-To: =?iso-8859-15?Q?Carsten_Spie=DF?= <mail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,81 +18,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-A Dimarts 30 Octubre 2007, Jan Kiszka va escriure:
-> Leopold Palomo-Avellaneda wrote:
-> > A Dilluns 29 Octubre 2007, Alexis Berlemont va escriure:
-> >> Hi,
-> >>
-> >>> some time ago we wrote about the avalaible of the jr3_pci driver. The
-> >>> option to have someone at the end of October. So, how is it?
-> >>
-> >> A pre-version is available in the svn branch "comedi-rtdm-dev". You will
-> >> find in "comedi_drivers/misc_drivers", the driver jr3_pci.
-> >>
-> >> The source code was ported from the original Comedi project (as the API
-> >> has changed). Unfortunately, It is not tested (no hardware available).
-> >
-> > Ok, I have download, compiled and installed. I'm using xenomai 2.4-rc4.
-> > All have compiled without any problem. Howeber I don't know how to use
-> > it.
-> >
-> > If I try to install the modules:
-> >
-> > insmod comedi.ko
-> >
-> > no problem
-> >
-> > but if I do:
-> >  insmod ./comedi_drivers/misc_drivers/jr3pci.ko
-> >
-> > I got
-> >
-> > insmod: error inserting './comedi_drivers/misc_drivers/jr3pci.ko': -1
-> > Unknown symbol in module
-> >
-> >
-> > where the dmesg says:
-> >
-> > jr3pci: no version for "comedi_add_drv" found: kernel tainted.
-> > jr3pci: Unknown symbol release_firmware
-> > jr3pci: Unknown symbol device_unregister
-> > jr3pci: Unknown symbol request_firmware
-> > jr3pci: Unknown symbol device_register
-> > jr3pci: Unknown symbol release_firmware
-> > jr3pci: Unknown symbol device_unregister
-> > jr3pci: Unknown symbol request_firmware
-> > jr3pci: Unknown symbol device_register
-> >
-> > and now I'm blocked ....
->
-> modprobe firmware?
+------------AA56BE1BF16F4D
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-$:/usr/src/xenomai-comedi-rtdm-dev$ sudo modprobe firmware
-FATAL: Module firmware not found.
+Hello Philippe,
 
-> >>> It could be possible to have it for xenomai-2.4?
-> >>
-> >> So far, the only way to get the driver sources  is through subversion. A
-> >> great amount of work (development, test,...) must be achieved before
-> >> considering an official release.
-> >
-> > ok
-> >
-> > I should help if I want this driver working with xenomai ....
-> >
-> > Regards,
-> >
-> > Leo
-> >
-> > PS use me as betatester of the driver, so if told me any test that I
-> > could do.
->
-> Nice to see that this train is about to gain more passengers! :)
+>> But this approach didn't work, the higer prio task isn't called unless
+>> the lower prio task gives up cpu (by calling e.g. rt_task_yield or
+>> nanosleep) (see attached demo source)
+> This would basically say that the core does not give any real-time
+> guarantee.
+I hope this is not the case.
+> Please send some demo code showing this.
+I've attached it, please remove the rt_task_yield to see the effect.
+>> 
+>> When not being cooperative (removing the rt_task_yield in the demo)
+>> my system is reset after some seconds.
+>> 
+>> Why isn't my supervising task scheduled?
+>> 
 
-:-)
+> Try enabling the nucleus watchdog (Xenomai debug options). It does kill
+> runaway tasks.
+O.k. i will try this.
 
-Leo
+> If this works on your setup, then your code must be
+> wrong. If it does not trigger, then we need to understand why  -- there
+> is one case where it may not trigger, but this does not involve any
+> breakage in task management.
+
+Regards Carsten
+------------AA56BE1BF16F4D
+Content-Type: application/octet-stream;
+ name="demo.c"
+Content-transfer-encoding: base64
+Content-Disposition: attachment;
+ filename="demo.c"
+
+I2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8bmF0aXZlL3Rhc2suaD4NCiNpbmNsdWRl
+IDxzaWduYWwuaD4NCiNpbmNsdWRlIDxzeXMvbW1hbi5oPg0KDQpzdGF0aWMgaW50IGNvdW50
+Ow0KDQpzdGF0aWMgUlRfVEFTSyBpZF9sb3c7DQpzdGF0aWMgUlRfVEFTSyBpZF9oaWdoOw0K
+DQojZGVmaW5lIExPV19QUklPIDUNCiNkZWZpbmUgSElHSF9QUklPIDEwDQoNCnZvaWQgaW5p
+dF90YXNrKGludCBuKTsNCg0Kdm9pZCBydW5hd2F5X3Rhc2sodm9pZCogZHVtbXkpDQp7DQog
+ICBpbnQgaTsNCiAgIHN0cnVjdCB0aW1lc3BlYyB0c3RhcnQ7DQogICBzdHJ1Y3QgdGltZXNw
+ZWMgdHBlcmlvZDsNCiAgIA0KICAgdHN0YXJ0LnR2X3NlYyA9IDA7DQogICB0c3RhcnQudHZf
+bnNlYyA9IDA7DQogICB0cGVyaW9kLnR2X3NlYyA9IDA7DQogICB0cGVyaW9kLnR2X25zZWMg
+PSAxNjAwMDsgIC8vIHplaXQgaW4gbnMsIHJlc2V0IGJlaSA8MTYgtXMgDQoNCiAgIHByaW50
+ZigicnVuYXdheSB0YXNrXG4iKTsNCg0KICAgd2hpbGUgKDEpDQogICB7DQovLyAgICAgIHNs
+ZWVwKDEpOw0KLy8gICAgICBuYW5vc2xlZXAoJnRwZXJpb2QsJnRzdGFydCk7DQogICAgICBy
+dF90YXNrX3lpZWxkKCk7DQogICAgICBmb3IoaT0wO2k8NTAwMDA7aSsrKWNvdW50Kys7DQog
+ICB9DQp9DQoNCnZvaWQgc3VwZXJ2aXNvcl90YXNrKHZvaWQqIGR1bW15KQ0Kew0KICAgdW5z
+aWduZWQgbG9uZyBuT3ZlcnJ1bjsNCiAgIFJUSU1FICAgdGljaywgdGlja19vbGQ7DQogICAN
+CiAgIGludCBzdGVwID0gMDsNCiAgIGludCBsb29wID0gMDsNCg0KICAgaWYgKHJ0X3Rhc2tf
+c2V0X3BlcmlvZGljKCZpZF9oaWdoLFRNX05PVywgcnRfdGltZXJfbnMydGlja3MoNTAwMDAw
+KSkgPT0gMCkNCiAgIHsNCiAgICAgIHByaW50Zigic3VwZXJ2aXNvciB0YXNrXG4iKTsNCg0K
+ICAgICAgdGlja19vbGQgPSBydF90aW1lcl90c2MoKTsNCiAgICAgIHdoaWxlICgxKQ0KICAg
+ICAgew0KICAgICAgICAgLy9uYW5vc2xlZXAoJnRwZXJpb2QsJnRzdGFydCk7DQogICAgICAg
+ICBpZiAocnRfdGFza193YWl0X3BlcmlvZCgmbk92ZXJydW4pICE9IDApDQogICAgICAgICAg
+ICBwcmludGYoInN1cGVydmlzb3IgdGFzayBvdmVycnVuICVsdVxuIiwgbk92ZXJydW4pOw0K
+DQogICAgICAgICB0aWNrID0gcnRfdGltZXJfdHNjKCk7DQogICAgICAgICANCiAgICAgICAg
+IGxvb3AgKys7DQogICAgICAgICBzd2l0Y2ggKHN0ZXApDQogICAgICAgICB7DQogICAgICAg
+ICBjYXNlIDA6DQogICAgICAgICAgICBpZihsb29wID4gMTAwKQ0KICAgICAgICAgICAgew0K
+ICAgICAgICAgICAgICAgbG9vcCA9IDA7DQogICAgICAgICAgICAgICBzdGVwID0gMTsNCiAg
+ICAgICAgICAgICAgIGluaXRfdGFzayhMT1dfUFJJTyk7DQogICAgICAgICAgICB9DQogICAg
+ICAgICAgICBicmVhazsNCiAgICAgICAgIGNhc2UgMToNCiAgICAgICAgICAgIGlmKGxvb3Ag
+PiAyMDApDQogICAgICAgICAgICB7DQogICAgICAgICAgICAgICBsb29wID0gMDsNCiAgICAg
+ICAgICAgICAgIHN0ZXAgPSAyOw0KICAgICAgICAgICAgICAgcnRfdGFza19zdXNwZW5kKCZp
+ZF9sb3cpOw0KICAgICAgICAgICAgICAgcHJpbnRmKCJjb3VudCA9ICVkICVsdSAlbGx1XG4i
+LCBjb3VudCxuT3ZlcnJ1bix0aWNrLXRpY2tfb2xkKTsNCiAgICAgICAgICAgIH0NCiAgICAg
+ICAgICAgIGJyZWFrOw0KICAgICAgICAgY2FzZSAyOg0KICAgICAgICAgICAgaWYobG9vcCA+
+IDIwKQ0KICAgICAgICAgICAgew0KICAgICAgICAgICAgICAgbG9vcCA9IDA7DQogICAgICAg
+ICAgICAgICBzdGVwID0gMTsNCiAgICAgICAgICAgICAgIHJ0X3Rhc2tfcmVzdW1lKCZpZF9s
+b3cpOw0KICAgICAgICAgICAgfQ0KICAgICAgICAgICAgYnJlYWs7DQogICAgICAgICB9DQog
+ICAgICAgICB0aWNrX29sZCA9IHRpY2s7DQogICAgICB9DQogICB9DQp9DQoNCnZvaWQgaW5p
+dF90YXNrKGludCBwcmlvKQ0Kew0KICAgc3dpdGNoIChwcmlvKQ0KICAgew0KICAgY2FzZSBM
+T1dfUFJJTzoNCiAgICAgIHJ0X3Rhc2tfY3JlYXRlKCZpZF9sb3csICJydW5hd2F5IiwgODE5
+MixwcmlvLCAwKTsNCiAgICAgIHJ0X3Rhc2tfc3RhcnQoJmlkX2xvdyxydW5hd2F5X3Rhc2ss
+MCk7DQogICAgICBicmVhazsNCiAgIGNhc2UgSElHSF9QUklPOg0KICAgICAgcnRfdGFza19j
+cmVhdGUoJmlkX2hpZ2gsICJzdXBlcnZpc29yIiwgODE5MixwcmlvLCAwKTsNCiAgICAgIHJ0
+X3Rhc2tfc3RhcnQoJmlkX2hpZ2gsc3VwZXJ2aXNvcl90YXNrLDApOw0KICAgICAgYnJlYWs7
+DQogICB9DQp9DQoNCnZvaWQgaW5pdF9zaWduYWxzKHNpZ3NldF90ICptYXNrKQ0Kew0KICAg
+c2lnZW1wdHlzZXQobWFzayk7DQogICBzaWdhZGRzZXQobWFzayxTSUdJTlQpOw0KICAgc2ln
+YWRkc2V0KG1hc2ssU0lHVEVSTSk7DQogICBzaWdhZGRzZXQobWFzayxTSUdIVVApOw0KICAg
+c2lnYWRkc2V0KG1hc2ssU0lHQUxSTSk7DQoNCiAgIHB0aHJlYWRfc2lnbWFzayhTSUdfQkxP
+Q0ssIG1hc2ssIE5VTEwpOw0KfQ0KDQppbnQgbWFpbihpbnQgYWMsIGNoYXIgKmF2W10pDQp7
+DQogICBzaWdzZXRfdCBtYXNrOw0KICAgaW50IHNpZzsNCg0KICAgbWxvY2thbGwoTUNMX0NV
+UlJFTlR8TUNMX0ZVVFVSRSk7DQogICBjb3VudCA9IDA7DQogICANCiAgIGluaXRfc2lnbmFs
+cygmbWFzayk7DQogICBpbml0X3Rhc2soSElHSF9QUklPKTsNCiAgIA0KICAgc2lnd2FpdCgm
+bWFzaywgJnNpZyk7DQoNCiAgIHJldHVybiAwOw0KfQ0K
+------------AA56BE1BF16F4D--
+
 
