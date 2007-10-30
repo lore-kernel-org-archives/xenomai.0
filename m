@@ -1,14 +1,13 @@
-Message-ID: <4727107E.5040408@domain.hid>
-Date: Tue, 30 Oct 2007 12:07:42 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <b054e88e0710300348w27eec304hecd5dbed4e189b54@domain.hid>
-In-Reply-To: <b054e88e0710300348w27eec304hecd5dbed4e189b54@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] Xenomai on Efika board
-Reply-To: rpm@xenomai.org
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 30 Oct 2007 16:07:17 +0100
+Message-ID: <0B45E93C5FF65740AEAE690BF3848B7A4AB26C@rennsmail04.eu.thmulti.com>
+From: "Fillod Stephane" <stephane.fillod@domain.hid>
+Subject: Re: [Xenomai-core] Xenomai v2.4-rc4: freeze with RTAI skin,
+	fine with other skins
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,42 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Giammarco Zacheo <g.zacheo@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
 
-Giammarco Zacheo wrote:
-> Does anybody ever tried to port Xenomai on a Efika board?
-> 
-> http://www.genesippc.com/efika.php
-> 
-> It is a freescale powerpc based board, with some patches to make linux
-> work on it. I have read some emails on the net talking about RTAI, so
-> what about Xenomai?
+Philippe Gerum wrote:
+[...]
+>This rounding was missing too. We need the previous one for kernel
+local
+> heaps, and the one below to meet the stricter PAGE_SIZE constraint for
+> shareable heaps.
 >
-
-Xenomai is known to work fine on mpc52xx-based boards. It was actually
-the first powerpc hardware we ever supported (on an IceCube, at that time).
-
-> Is is realistic that the adeos patch blindly work on the already patched kernel?
+>--- ksrc/nucleus/heap.c	(revision 3095)
+>+++ ksrc/nucleus/heap.c	(working copy)
+>@@ -1103,7 +1103,7 @@
+> 	spl_t s;
+> 	int err;
 >
+>-	heapsize =3D PAGE_ALIGN(heapsize);
+>+	heapsize =3D xnheap_rounded_size(heapsize, PAGE_SIZE);
+> 	heapbase =3D __alloc_and_reserve_heap(heapsize, memflags);
+>
+> 	if (!heapbase)
 
-It is at least realistic on a DENX kernel, since this is our reference
-tree for the powerpc arch, and all recent Adeos patches against the
-powerpc/ tree support the lite5200b. If your kernel tree comes from some
-other vendor/manufacturer, then, you may have some failed hunks to sort
-out manually, but there should not be any showstopper.
-
-> Thank you
-> 
-> Giammarco
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
-> 
+Nope, still doesn't in -rc5  :-(
+Most probably because it should be at least _2_ times the page size.
 
 
--- 
-Philippe.
+The following patch missed the -rc5, can it please make it for -rc6?
+
+--- ksrc/skins/rtai/task.c	29 Oct 2007 08:45:27 -0000	1.3
++++ ksrc/skins/rtai/task.c	30 Oct 2007 15:04:08 -0000
+@@ -139,6 +139,9 @@
+	task->body =3D body;
+	task->sigfn =3D sigfn;
+
++	if (xnarch_cpus_empty(task->affinity))
++		task->affinity =3D XNPOD_ALL_CPUS;
++
+	xnlock_get_irqsave(&nklock, s);
+
+	err =3D xnpod_start_thread(&task->thread_base, XNSUSP,    /*
+Suspend on startup. */
+
+--=20
+Stephane
 
