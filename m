@@ -1,103 +1,70 @@
-Message-ID: <472F5990.5000408@domain.hid>
-Date: Mon, 05 Nov 2007 18:57:36 +0100
+Message-ID: <47270861.8090500@domain.hid>
+Date: Tue, 30 Oct 2007 11:33:05 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E1Ioj7Q-0004EI-JX@subversion.gna.org>	<472E3758.3060304@domain.hid>
-	<18222.15424.494628.332671@domain.hid>
-In-Reply-To: <18222.15424.494628.332671@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1078761341.20071030094041@domain.hid>
+	<4726F2B5.5000307@domain.hid>
+	<1935435350.20071030105318@domain.hid>
+In-Reply-To: <1935435350.20071030105318@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] [Xenomai-commits] r3147 - __xn_access_ok changes
+Subject: Re: [Xenomai-help] how to stop a runaway task
 Reply-To: rpm@xenomai.org
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?ISO-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->  > [Let's discuss this without bothering users :)]
->  > 
->  > Philippe Gerum wrote:
->  > > Author: rpm
->  > > Date: Sun Nov  4 18:18:39 2007
->  > > New Revision: 3147
->  > > 
->  > > URL: http://svn.gna.org/viewcvs/xenomai?rev=3147&view=rev
->  > > Log:
->  > > Make __xn_access_ok() return false for addresses lower than the natural page size.
->  > > 
->  > > Modified:
->  > >     trunk/ChangeLog
->  > >     trunk/include/asm-x86/syscall_32.h
->  > >     trunk/include/asm-x86/syscall_64.h
->  > 
->  > Could it be that you meant "PAGE_SIZE" instead of "PAGE_OFFSET"? Because
->  > the current version is "slightly" broken, tagging any address in user
->  > land as invalid.
->  > 
+Carsten Spie=DF wrote:
+> Hello Philippe,
+>=20
+>>> But this approach didn't work, the higer prio task isn't called unless
+>>> the lower prio task gives up cpu (by calling e.g. rt_task_yield or
+>>> nanosleep) (see attached demo source)
+>> This would basically say that the core does not give any real-time
+>> guarantee.
+> I hope this is not the case.
+>> Please send some demo code showing this.
+> I've attached it, please remove the rt_task_yield to see the effect.
+>>> When not being cooperative (removing the rt_task_yield in the demo)
+>>> my system is reset after some seconds.
 
-Another example that committing last minute "fixes" before leaving for a 
-trip is just as safe as checking for your parachute _after_ you jumped 
-out of the plane. Fixed the trivial way for now. Sorry for this.
+This works fine on 2.4-rc4/x86-2.6.22 here, so I need to switch to a
+similar ppc configuration to try reproducing it. More news later. Please
+send your kernel .config for 2.4.25 in the meantime.
 
->  > And if this test was meant to catch NULL page accesses early, is the
->  > intention to cope with all those current i-pipe patches that do not yet
->  > include the discussed domain switch on non-root faults? If yes, this
->  > test would be a workaround for legacy code and should not become default
->  > (pure overhead for later versions).
-> 
-> We can reduce the overhead of the two tests by testing 
-> (unsigned long) (addr - PAGE_SIZE) < (PAGE_OFFSET - PAGE_SIZE)
-> 
+>>>
+>>> Why isn't my supervising task scheduled?
+>>>
+>=20
+>> Try enabling the nucleus watchdog (Xenomai debug options). It does kill
+>> runaway tasks.
+> O.k. i will try this.
 
-Yep. I'd rather keep the reference to the actual task's segment limit in 
-this expression though, instead of hardcoding PAGE_OFFSET.
+You will have to remove the printf() from the low prio task for the
+nucleus watchdog to detect the runaway situation, otherwise, your task
+would be considered as being under the control of the Linux scheduler
+until it issues a blocking Xenomai syscall (which it never does), and
+therefore escape the watchdog detection. That's the particular case I
+was talking about.
 
-Aside of this, we should not need to pass the current task pointer to 
-each and every syscall anymore, so we may rely on the original uaccess code.
-
-__xn_access_ok was there to allow for passing the task pointer
-explicitly in order to test the address range against the task's segment
-limit, at times when Adeos would switch the underlying stack to some
-private, non-Linux one.
-
-With modern I-pipe, domains don't have any private stack, but simply
-reuse the current one, which means that any task running a syscall
-over the Xenomai domain may always be referenced by "current", including
-on archs using the stack pointer trick to determine this value.
-
-I'll do this change early in the 2.5 series; it's too late for 2.4.
-
-This said, we'll still need __xn_access_ok from now on, to pre-test the 
-address for obvious spuriousness, like the NULL case which started this 
-discussion.
-
->  > 
->  > Last question: We need this for the other archs as well, don't we?
->  > 
-
-True. We also badly need to add the fixup code to the I-pipe for those 
-archs.
-
->  > Jan
->  > 
->  > _______________________________________________
->  > Xenomai-core mailing list
->  > Xenomai-core@domain.hid
->  > https://mail.gna.org/listinfo/xenomai-core
-> 
-> 
+>=20
+>> If this works on your setup, then your code must be
+>> wrong. If it does not trigger, then we need to understand why  -- there
+>> is one case where it may not trigger, but this does not involve any
+>> breakage in task management.
+>=20
+> Regards Carsten
 
 
-
-
+--=20
+Philippe.
 
