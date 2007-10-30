@@ -1,14 +1,10 @@
-Message-ID: <47274A14.6060500@domain.hid>
-Date: Tue, 30 Oct 2007 07:13:24 -0800
+Message-ID: <47279853.9050704@domain.hid>
+Date: Tue, 30 Oct 2007 13:47:15 -0700
 From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-References: <47266BC6.7060807@domain.hid> <4726EB6E.8020207@domain.hid>
-	<4726F05F.3060105@domain.hid> <472741E2.9040206@domain.hid>
-In-Reply-To: <472741E2.9040206@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] build kernel missing  System.map, vmlinuz,
- initrd when using $xenomai_root/configure --enable-x86-sep
+Subject: [Xenomai-help] Xenomai loading module error when running xero-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,30 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai-help <xenomai@xenomai.org>
 
-Thanks Jan,
-It worked,
-I need to use the $xenomai_root/configure in a build directory which 
-separated from $kernel_tree.
-Regards,
+Hello,
+I'm using linux kernel i386 2.6.20.10, xenomai 2.4-rc5, 
+adeos-ipipe-2.6.20-i386-1.10.10.patch.
+I got errors when running xenoo-test:
+FATAL: Error inserting xeno_nucleus 
+(/lib/modules/2.6.20.10/kernel/kernel/xenomai/nucleus/xeno_nucleus.ko): 
+No such device
+WARNING: Error inserting xeno_nucleus 
+(/lib/modules/2.6.20.10/kernel/kernel/xenomai/nucleus/xeno_nucleus.ko): 
+No such device
+FATAL: Error inserting xeno_posix 
+(/lib/modules/2.6.20.10/kernel/kernel/xenomai/skins/posix/xeno_posix.ko): 
+Unknown symbol in module, or unknown parameter (see dmesg)
+Xenomai: POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+(modprobe xeno_posix?)
+ERROR: Module xeno_posix does not exist in /proc/modules
+ERROR: Module xeno_nucleus does not exist in /proc/modules
+I checked the xeno_nucleus.ko and  xeno_posix.ko files in the 
+directories and they were there.
+Any suggestion please?
+I had other PC which run exactly configuration (I copied the .config) 
+and the test done successful.
+Thanks,
 Dennis
-
-Jan Kiszka wrote:
-> Dennis Nguyen wrote:
->   
->> Yes, I used make install after run $xenomai/configure --enable-x86-sep. 
->> Sorry, I forgot to mention in the previous email
->> I could not get the System.map. vxlimux, and initrd.
->> Also make clean, make menuconfig would not work after that.
->> The message was: make: *** No rule to make target 'clean'. Stop.
->> I have to remove the kernel and start over.
->>     
->
-> You need to run make install in the kernel directory. The other
-> "install" is for user land libs, tools, etc.
->
-> Jan
->   
 
