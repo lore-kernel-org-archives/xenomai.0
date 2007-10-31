@@ -1,15 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <47285666.4080108@domain.hid>
+Date: Wed, 31 Oct 2007 11:18:14 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Wed, 31 Oct 2007 09:39:15 -0000
-Message-ID: <DD39B5C3F4963040ADC9768BE7E430CB025E454B@is-hdq-exchange.marel.net>
-In-Reply-To: <FDBBB5CC70676540B3EF7CFE83FD94E0E30519@domain.hid>
-References: <200710301203.l9UC3esT009573@domain.hid><2ff1a98a0710300629v5df42d78sf6c4795f1c4e782b@domain.hid>
-	<FDBBB5CC70676540B3EF7CFE83FD94E0E30519@domain.hid>
-From: "Daniel Schnell" <daniel.schnell@domain.hid>
-Subject: Re: [Xenomai-help] RT, nonRT communication
+References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E0172B790@domain.hid>
+In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E0172B790@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-help] xntbase_get_jiffies in user space?
+Reply-To: rpm@xenomai.org
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,35 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ROSSIER Daniel <Daniel.Rossier@domain.hid>
+To: Thomas Necker <thomas.necker@domain.hid>
 Cc: xenomai@xenomai.org
 
-ROSSIER Daniel wrote:
+Thomas Necker wrote:
+> A few weeks ago I was asking about a global variable available that just
+> counts the system ticks (for pSOS skin) and that could be read by the
+> application. Philippe suggested xntbase_get_jiffies for that purpose.
+> Now it seems to me that this function can only be called in kernel
+> space. Is that correct? And if so, is there a way to get this
+> information in user space? Basically I want to get rid of kernel code in
+> this context completely if possible.
+>
 
-> .....
->=20
-> I guess there is a misunderstanding of "main thread" here. The main
-> thread should actually not be a xenomai thread since it belongs to a
-> non-RT application. Patrick is actually using the Qt framework on a
-> PXA device which of course is not a RT-domain application. The thing
-> is that the Qt application should somehow retrieve some data issued
-> from RT-application. Currently the Qt application is starting a
-> Xenomai thread - by doing an extern "c" invokation from Qt - and the
-> data list is shared between the main (qt-)thread (non-RT) and the
-> Xenomai thread; that's why Patrick wanted to use a mutex. But indeed,
-> as far as I know, it will be not possible to do that since the
-> waiting queues on sync objects as mutex are managed differently
-> (dealing with linux threads on the one hand, with Xenomai threads on
-> the other hand) between the RT and non-RT domains. So the question
-> would be: how can data be exchanged in a safe way between a non-RT
-> domain and a RT-domain?             =20
+The pSOS skin supports tm_get() which converts the current count of
+jiffies to calendar date and time, but this may not be handy for your
+calculations.
 
-We are using Posix message queues and/or shared memory.
+The other option would be to extend this skin with a Xenomai-specific
+syscall returning this value, in a similar way than tm_getm(), which
+returns the TSC converted to nanoseconds.
 
-Works for either way.
+> Thomas
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
 
 
-Best regards,
-
-Daniel.
+-- 
+Philippe.
 
