@@ -1,16 +1,12 @@
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18216.56022.667006.119955@domain.hid>
-Date: Wed, 31 Oct 2007 20:43:18 +0100
-In-Reply-To: <1963009588.20071031182042@domain.hid>
-References: <1078761341.20071030094041@domain.hid>
-	<4726F2B5.5000307@domain.hid>
-	<1935435350.20071030105318@domain.hid>
-	<47270861.8090500@domain.hid>
-	<1963009588.20071031182042@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18216.57598.559447.478769@domain.hid>
+Date: Wed, 31 Oct 2007 21:09:34 +0100
+In-Reply-To: <20071031154106.29f66afc@domain.hid>
+References: <20071031154106.29f66afc@domain.hid>
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] how to stop a runaway task
+Subject: Re: [Xenomai-help] rt_task_inquire and NULL 2nd arg
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,39 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
+To: Daniel Simon <Daniel.Simon@domain.hid>
 Cc: xenomai@xenomai.org
 
-Carsten Spie=DF wrote:
- > Hello Philippe,
- >=20
- >=20
- > > You will have to remove the printf() from the low prio task for the
- > > nucleus watchdog to detect the runaway situation, otherwise, your task
- > > would be considered as being under the control of the Linux scheduler
- > > until it issues a blocking Xenomai syscall (which it never does), and
- > > therefore escape the watchdog detection. That's the particular case I
- > > was talking about.
- > Meanwhile i got my sample code running:
- > When removing the printf it works fine.
- > So for me it looks like a problem when a task is switched to secondary
- > domain.
- > Is there a way to force a thread to switch back to primary domain?
- >=20
- > Now i unsuccesfully tried to get a posix skin variant running.
- > (my real app is based on pthread)
- > Since i only can use signals to suspend a posix thread (correct me if
- > i'm wrong) i run in the same problem with the secondary domain.
+Daniel Simon wrote:
+ > Hello all,
+ > 
+ > I am testing some former programs with xenomai-2.4-rc4/kernel-2.6.23.1/pentiumM;
+ > 
+ > Calling rt_task_inquire(Id, NULL) with a null second argument now
+ > freezes or reboots the pc...
+ > 
+ > I had no problem with this call with a former (2.3.1) xenomai version. Is it a
+ > known behaviour?
 
-Sorry, I wrote the previous answer without reading your previous
-mails. If you are trying to suspend a task from another task, then
-SIGSTOP is the only solution. Now, for the problem you have with
-secondary mode switches, it is probably a bug, so you should not design
-your application around this bug, it should work, and actually works on
-other platforms.
+the rt_task_inquire system call checks that the "info" pointer points to
+a piece of writable memory and returns -EFAULT otherwise. So, what you
+should get is a segmentation fault, no freeze or reboot. Actually, I
+have tested a small test which segfaults as expected. Could you provide
+us with the simple test that causes a freeze or reboot ?
 
-
---=20
+-- 
 
 
 					    Gilles Chanteperdrix.
