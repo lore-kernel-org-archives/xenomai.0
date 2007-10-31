@@ -1,10 +1,15 @@
-Message-ID: <ff1d78710710310723i4d9c31fcjed65091be91c34eb@domain.hid>
-Date: Wed, 31 Oct 2007 15:23:08 +0100
-From: "Steven Kauffmann" <steven.kauffmann@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_2414_27149629.1193840588827"
-Subject: [Xenomai-help] RTDM interrupt questions
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 31 Oct 2007 15:33:43 +0100
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E0172BA3F@esealmw118.eemea.ericsson.se>
+In-Reply-To: <47285858.3030204@domain.hid>
+References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E0172B790@domain.hid>
+	<47285666.4080108@domain.hid> <47285858.3030204@domain.hid>
+From: "Thomas Necker" <thomas.necker@domain.hid>
+Subject: Re: [Xenomai-help] xntbase_get_jiffies in user space?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,57 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-------=_Part_2414_27149629.1193840588827
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> >=20
+> > The other option would be to extend this skin with a=20
+> Xenomai-specific=20
+> > syscall returning this value, in a similar way than=20
+> tm_getm(), which=20
+> > returns the TSC converted to nanoseconds.
+> >=20
+>=20
+> Like the attached patch does.
 
-Hi
+Thanks for the quick patch. It seems necessary to change the call
+ticks =3D xntbase_get_jiffies(&psos_tbase)
+to
+ticks =3D xntbase_get_jiffies(psos_tbase)
+in syscall.c for the patch to work.
+Will this change become part of the regular Xenomai release?
 
-I'm writing a RTDM driver that works with a PCI FPGA card. This card
-generates an interrupt when its calculation is done. To deal with interrupts
-I have to know the interrupt line number. I found this in Linux device
-drivers:
-
-result = pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &my_irq);
-
-The result is 10, but the result of lspci -v is:
-
-01:01.0 Bridge: Teradyne Inc Unknown device fa56
-        Subsystem: Unknown device 0004:0299
-        Flags: medium devsel, IRQ 22
-        Memory at fc000000 (32-bit, non-prefetchable) [size=32M]
-
-So the interrupt line number is now 22. If I use this interrupt line number
-in the function rtdm_irq_request, than the interrupt handler is working.
-When I use the interrupt line number received from the read_config_byte
-function nothing happens.
-In linux device drivers they write that the value of PCI_INTERRUPT_LINE is
-guaranteed to be the right one, but why is it not working?
-
-The intention of the driver is that an user space application writes some
-data to the PCI card, the card does something with it. The user space
-application have to wait until an interrupt occures, than it reads the
-result from the PCI card. How can the driver informs the user space
-application that an interrupt occurred?
-
-thanks in advance
-
-Steven
-
-------=_Part_2414_27149629.1193840588827
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-Hi<br><br>I&#39;m writing a RTDM driver that works with a PCI FPGA card. This card generates an interrupt when its calculation is done. To deal with interrupts I have to know the interrupt line number. I found this in Linux device drivers: 
-<br><br>result = pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &amp;my_irq);<br>
-<br>The result is 10, but the result of lspci -v is:<br><br>01:01.0 Bridge: Teradyne Inc Unknown device fa56<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Subsystem: Unknown device 0004:0299<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Flags: medium devsel, IRQ 22<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Memory at fc000000 (32-bit, non-prefetchable) [size=32M]
-<br><br>So the interrupt line number is now 22. If I use this interrupt line number in the function rtdm_irq_request, than the interrupt handler is working. When I use the interrupt line number received from the read_config_byte function nothing happens.
-<br>In linux device drivers they write that the value of PCI_INTERRUPT_LINE is guaranteed to be the right one, but why is it not working?<br><br>The intention of the driver is that an user space application writes some data to the PCI card, the card does something with it. The user space application have to wait until an interrupt occures, than it reads the result from the PCI card. How can the driver informs the user space application that an interrupt occurred?
-<br><br>thanks in advance<br><br>Steven<br><br><br>
-
-------=_Part_2414_27149629.1193840588827--
+Thomas
 
