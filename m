@@ -1,44 +1,30 @@
+Date: Thu, 1 Nov 2007 09:54:51 +0100
+From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
+Message-ID: <20071101085451.GA19856@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18216.54223.558805.510728@domain.hid>
-Date: Wed, 31 Oct 2007 20:13:19 +0100
-In-Reply-To: <25dd9bf10710311139k35626c86n569cca9fe3a40d5a@domain.hid>
-References: <25dd9bf10710311139k35626c86n569cca9fe3a40d5a@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Adeos-main] Adoes on EPC9302, ARM,Cirrus Logic
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Subramani Venkatesh <subbu31mani@domain.hid>
-Cc: adeos-main@gna.org
+Content-Disposition: inline
+Subject: [Xenomai-core] linux-2.6.23 adeos arm patch
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-Subramani Venkatesh wrote:
- > Hi,
- > I just completed ADEOS porting on EPC9302, Circus Logic Board, I could
- > successfully register Xenomai domain and could run periodic timer with
- > 100uS.
- > I request someone to suggest me the test applications that I am suppose to
- > use for successfull release to open source.
+Hello Gilles,
 
-Good news. What version of the adeos patch ?
+I'm currently working in a custom board based on the AT91SAM9260
+processor. 
+I've seen your answer (https://mail.gna.org/public/xenomai-core/2007-09/msg00062.html), 
+and I would like to know about the upgrading state to 2.6.23 kernel version. I've a AT91SAM9260-EK 
+development board, so if you need testing help, let me know.
 
-You can run the xeno-test script during a long period of time. Use
-calibrator (*) with ping flood for load generation, and launch xeno-test
-with a -T parameter longer than the default 120 s.
-
-(*) calibrator: http://www.cwi.nl/~manegold/Calibrator
-
-You can also send us the patch for review, there are always small
-details that need to be fixed before an inclusion in the adeos patch.
-
--- 
-
-
-					    Gilles Chanteperdrix.
+Regards,
+	Juan Antonio  
 
