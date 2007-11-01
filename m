@@ -1,12 +1,15 @@
-Message-Id: <200711011004.lA1A40qV005239@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Thu, 1 Nov 2007 11:04:00 +0100
+Message-ID: <4729AED3.20200@domain.hid>
+Date: Thu, 01 Nov 2007 11:47:47 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <18216.16434.853914.993008@domain.hid>
-Subject: Re: [Xenomai-help] RT, nonRT communication
+References: <47279853.9050704@domain.hid>
+In-Reply-To: <47279853.9050704@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigDFD35C46E90CEC1FFB397D6F"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] Xenomai loading module error when running
+	xero-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,34 +19,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Dennis Nguyen <dennisnguy@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigDFD35C46E90CEC1FFB397D6F
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Do I have to use --posix-cflags and --posix-ldflags together with the
---xeno-cflags and --xeno-ldflags or are they exclusive?
+Dennis Nguyen wrote:
+> Hello,
+> I'm using linux kernel i386 2.6.20.10, xenomai 2.4-rc5,=20
+> adeos-ipipe-2.6.20-i386-1.10.10.patch.
+> I got errors when running xenoo-test:
+> FATAL: Error inserting xeno_nucleus=20
+> (/lib/modules/2.6.20.10/kernel/kernel/xenomai/nucleus/xeno_nucleus.ko):=
+=20
+> No such device
 
-Patrick
+Please have a look at the kernel messaged (e.g. via dmesg), then follow
+the suggestions given there. I would bet it's a local APIC configuration
+issue...
 
-
------Message d'origine-----
-De=A0: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Envoy=E9=A0: mercredi, 31. octobre 2007 09:44
-=C0=A0: ROSSIER Daniel
-Cc=A0: Patrick; xenomai@xenomai.org
-Objet=A0: RE: [Xenomai-help] RT, nonRT communication
-
-[...]
-
-As soon as you compile your application with the flags returned by
-xeno-config --posix-cflags and xeno-config --posix-ldflags, it really
-becomes an RT application where all threads are real-time threads. The
-only way to create a non real-time thread in such an application is by
-calling __real_pthread_create.
-
---=20
+Jan
 
 
-					    Gilles Chanteperdrix.
+--------------enigDFD35C46E90CEC1FFB397D6F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD4DBQFHKa7TniDOoMHTA+kRAtMSAJ44Teg/9XpmNQkwNuJOx55/+bUfcQCYiT24
+Hsm5ijMh8rbXjZ1FBx7j4w==
+=LkfN
+-----END PGP SIGNATURE-----
+
+--------------enigDFD35C46E90CEC1FFB397D6F--
 
