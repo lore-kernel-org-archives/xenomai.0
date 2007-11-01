@@ -1,11 +1,12 @@
-Message-Id: <200711011546.lA1FkDVY014154@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Thu, 1 Nov 2007 16:46:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <200711011233.lA1CX9wf032489@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <18217.63620.673826.481658@domain.hid>
+Date: Thu, 1 Nov 2007 17:02:12 +0100
+In-Reply-To: <200711011546.lA1FkDVY014154@domain.hid>
+References: <200711011233.lA1CX9wf032489@domain.hid>
+	<200711011546.lA1FkDVY014154@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Subject: Re: [Xenomai-help] RT, nonRT communication
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,94 +17,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-
-Hi all,
-
-I found what was causing the problem (compiling with g++), it's simply =
-that
-the struct initialization is not g++ compatible :
-
- __attribute__((weak)) struct __xn_tscinfo __xn_tscinfo =3D {
-         .type =3D -1
- };
-
-should be :
-
-__attribute__((weak)) struct __xn_tscinfo __xn_tscinfo =3D {
-         type : -1
- };
-
-I tested this with g++ and gcc versions 4.1.2 and it compiles correctly.
-
-Patrick
-
------Message d'origine-----
-De=A0: xenomai-help-bounces@domain.hid =
-[mailto:xenomai-help-bounces@domain.hid] De
-la part de Patrick
-Envoy=E9=A0: jeudi, 1. novembre 2007 13:33
-=C0=A0: jan.kiszka@domain.hid
-Cc=A0: xenomai@xenomai.org
-Objet=A0: Re: [Xenomai-help] RT, nonRT communication
-
-Ok. I use Xenomai 2.4-rc4 with adeos 1.7-06 for arm with 2.6.20 kernel.
-And the compiler output:
-
-/usr/local/qtopiarm/bin/qmake -unix -o Makefile gui.pro
-arm-linux-gnueabi-g++ -c -pipe -O2 -Wall -W -D_REENTRANT -D_GNU_SOURCE
--D_REENTRANT -D__XENO__ -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_NETWORK_LIB
--DQT_CORE_LIB -DQT_SHARED =
--I/usr/local/qtopiarm/mkspecs/qws/linux-arm-g++
--I. -I/usr/local/qtopiarm/include/QtCore
--I/usr/local/qtopiarm/include/QtCore =
--I/usr/local/qtopiarm/include/QtNetwork
--I/usr/local/qtopiarm/include/QtNetwork =
--I/usr/local/qtopiarm/include/QtGui
--I/usr/local/qtopiarm/include/QtGui -I/usr/local/qtopiarm/include -I.
--I/usr/xenomai/include -I/usr/xenomai/include/posix -Iprotlib -I. -I. -o
-main.o main.cpp
-/usr/xenomai/include/asm/xenomai/syscall.h:235: error: expected
-primary-expression before =91.=92 token
-make: *** [main.o] Erreur 1
-
-
-Thanks
-
-Patrick
-
------Message d'origine-----
-De=A0: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-Envoy=E9=A0: jeudi, 1. novembre 2007 12:23
-=C0=A0: Patrick
-Cc=A0: 'Gilles Chanteperdrix'; xenomai@xenomai.org
-Objet=A0: Re: [Xenomai-help] RT, nonRT communication
+To: Patrick <kpa_info@domain.hid>
+Cc: xenomai@xenomai.org
 
 Patrick wrote:
-> I have tried to compile my QT application with --posix-cflags and
-> --posix-ldflags but without success. I have a compilation error in
-syscall.h
-> :
->=20
-> /usr/xenomai/include/asm/xenomai/syscall.h:235: error: expected
-> primary-expression before =91.=92 Token
->=20
-> I think it's because QT is C++ application so it uses g++ and not gcc. =
-And
-> Xenomai is not intended to be compiled with C++ compiler.
+ > Hi all,
+ > 
+ > I found what was causing the problem (compiling with g++), it's simply that
+ > the struct initialization is not g++ compatible :
+ > 
+ >  __attribute__((weak)) struct __xn_tscinfo __xn_tscinfo = {
+ >          .type = -1
+ >  };
+ > 
+ > should be :
+ > 
+ > __attribute__((weak)) struct __xn_tscinfo __xn_tscinfo = {
+ >          type : -1
+ >  };
+ > 
+ > I tested this with g++ and gcc versions 4.1.2 and it compiles correctly.
 
-It _is_ intended and _is_ being used with C++. This doesn't exclude
-regressions or arch-specific bugs in the headers though. What version,
-what arch are you using? Can you post the full (related) compiler =
-output?
+...but is fragile, if we are not trying to initialize the structure
+first member, g++ says:
+sorry, unimplemented: non-trivial designated initializers not supported
 
-Jan
+So, we are better off do it the C++ way.
+
+-- 
 
 
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
-
+					    Gilles Chanteperdrix.
 
