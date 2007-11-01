@@ -1,73 +1,47 @@
-Message-ID: <47381AC0.6020502@domain.hid>
-Date: Mon, 12 Nov 2007 10:20:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <47373B12.7020808@domain.hid>	<47373CB9.2010104@domain.hid>
-	<18231.25399.331189.714344@domain.hid>
-In-Reply-To: <18231.25399.331189.714344@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] x86_64: problems with syscall tracing?
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <18218.11615.84587.108100@domain.hid>
+Date: Thu, 1 Nov 2007 20:47:43 +0100
+In-Reply-To: <319998474.20071101204059@domain.hid>
+References: <1078761341.20071030094041@domain.hid>
+	<4726F2B5.5000307@domain.hid>
+	<1935435350.20071030105318@domain.hid>
+	<47270861.8090500@domain.hid>
+	<1963009588.20071031182042@domain.hid>
+	<18216.56022.667006.119955@domain.hid>
+	<753656844.20071101093838@domain.hid>
+	<18217.64851.619168.909923@domain.hid>
+	<319998474.20071101204059@domain.hid>
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Subject: Re: [Xenomai-help] how to stop a runaway task
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
->  > Jan Kiszka wrote:
->  > > Philippe,
->  > > 
->  > > you recently said there is a bug in the x86_64 support when syscall
->  > > tracing is enabled. Now I think I stepped on it as well: In order to
->  > > validate my APIC frequency patches for that arch, I wanted to use LTTng
->  > > there. But as soon as I start the trace, the latency test fails to run,
->  > > prematurely exiting due to a segfault.
->  > 
->  > Exactly what Gilles sees on his box too, latency segfaulting at startup.
->  > On mine, the kernel does not even boot.
->  > 
->  >  Gdb and the kernel say that user
->  > > land jumped to address 0, I just yet failed to find out where they come
->  > > from. I strongly assume LTTng enables syscall tracing, because its
->  > > entry/exit instrumentations are inside the hook function
->  > > (syscall_trace_entry/leave).
->  > > 
->  > > Do you have any further details on your tracing issue? Does may
->  > > observation correlates with yours?
->  > 
->  > Quite frankly, I did not dig the issue that far yet, but yes, my first
->  > impression is that something is broken in the syscall return path (or
->  > entry?), and it shows when the return path to user-space is diverted in
->  > some way, either for security auditing, or likely for tracing like
->  > you've just reported.
-> 
-> From what I have read in some comments, the syscall auditing function
-> kmallocs some memory that is kfreed on syscall return. Obviously, this
-> can not work with Xenomai.
-> 
+Carsten Spie=DF wrote:
+ >  Hello Gilles,
+ >=20
+ > > Read Philippe's answer again:
+ > > https://mail.gna.org/public/xenomai-help/2007-10/msg00166.html
+ > Hmm.., sorry, but i dont see what you mean.
+ > Carsten
 
-Just a short update on this: Right before going mad over this bug, I
-recalled some posting on ltt-dev by Mathieu Desnoyers about x86_64 and
-some syscall tracing race. With this patch [1] applied, things work
-again as they should! Then I followed his thread on LKML and tried the
-second version of the patch [2], but that one does not work for us. Now
-I wonder (but didn't analyse yet) if the first patch just moves some
-race window around or actually fixes the bug for us?
+It means that the bug you observed can not be confirmed on other
+platforms, so depends probably on the kernel/I-pipe patch version
+combination you use, and that Philippe is trying to find a platform
+where it can be reproduced so as to be able to solve it.
 
-Jan
+--=20
 
-[1]http://listserv.shafik.org/pipermail/ltt-dev/2007-October/002519.html
-[2]http://lkml.org/lkml/2007/10/28/160
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+					    Gilles Chanteperdrix.
 
