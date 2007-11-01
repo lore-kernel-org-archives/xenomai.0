@@ -1,10 +1,10 @@
-Date: Thu, 1 Nov 2007 09:54:51 +0100
-From: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
-Message-ID: <20071101085451.GA19856@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [Xenomai-core] linux-2.6.23 adeos arm patch
+Message-Id: <BA1EF7AD-D2D3-491F-AB3D-A5AB1AAEEB89@domain.hid>
+From: Bruno Rouchouse <brouchouse@domain.hid>
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v912)
+Date: Thu, 1 Nov 2007 12:09:53 +0100
+Subject: [Xenomai-core] Xenomai web site under maintenance
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,17 +14,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, xenomai@xenomai.org
 
-Hello Gilles,
+Hi all,
 
-I'm currently working in a custom board based on the AT91SAM9260
-processor. 
-I've seen your answer (https://mail.gna.org/public/xenomai-core/2007-09/msg00062.html), 
-and I would like to know about the upgrading state to 2.6.23 kernel version. I've a AT91SAM9260-EK 
-development board, so if you need testing help, let me know.
+it shouldn't be long...
+
+Sorry for the inconvenience.
 
 Regards,
-	Juan Antonio  
+
+--Bruno Rouchouse
 
