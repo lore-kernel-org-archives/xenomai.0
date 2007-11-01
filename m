@@ -1,9 +1,7 @@
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18217.64851.619168.909923@domain.hid>
-Date: Thu, 1 Nov 2007 17:22:43 +0100
-In-Reply-To: <753656844.20071101093838@domain.hid>
+Date: Thu, 1 Nov 2007 20:40:59 +0100
+From: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
+Message-ID: <319998474.20071101204059@domain.hid>
+In-Reply-To: <18217.64851.619168.909923@domain.hid>
 References: <1078761341.20071030094041@domain.hid>
 	<4726F2B5.5000307@domain.hid>
 	<1935435350.20071030105318@domain.hid>
@@ -11,8 +9,12 @@ References: <1078761341.20071030094041@domain.hid>
 	<1963009588.20071031182042@domain.hid>
 	<18216.56022.667006.119955@domain.hid>
 	<753656844.20071101093838@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+	<18217.64851.619168.909923@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] how to stop a runaway task
+Reply-To: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,29 +24,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Carsten Spie=DF wrote:
- > Hello Gilles,
- >=20
- > > If you are trying to suspend a task from another task, then
- > > SIGSTOP is the only solution.
- > O.k., this will lead me again to use rt_task_* instead of pthread_*
- > (i don't like signals at all)
- >=20
- > > Now, for the problem you have with secondary mode switches,
- > > it is probably a bug,
- > Is it a known bug? Can someone confirm it? (I can provide sample code)
- > Is there already a fix for it?
- > If not, how to debug such things?
- > (until now, i'm only working on the user mode side)
+ Hello Gilles,
 
-Read Philippe's answer again:
-https://mail.gna.org/public/xenomai-help/2007-10/msg00166.html
-
+> Read Philippe's answer again:
+> https://mail.gna.org/public/xenomai-help/2007-10/msg00166.html
+Hmm.., sorry, but i dont see what you mean.
+Carsten
 --=20
+Dipl.-Ing. Carsten Spie=DF
+Softwareentwicklung - Beratung - Schulung
+Lauterlech 39d
+D-86152 Augsburg
+Tel.: +49(821)15 999 765
+Fax.: +49(821)15 999 767
+mailto://mail@domain.hid
+http://www.carsten-spiess.de
 
 
-					    Gilles Chanteperdrix.
+
 
