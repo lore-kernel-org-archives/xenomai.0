@@ -1,12 +1,10 @@
+Message-ID: <fd6a47a90711020421u6c5a6dadqff4864eec6aa188@domain.hid>
+Date: Fri, 2 Nov 2007 12:21:18 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <18217.63866.887680.896250@domain.hid>
-Date: Thu, 1 Nov 2007 17:06:18 +0100
-In-Reply-To: <20071101085451.GA19856@domain.hid>
-References: <20071101085451.GA19856@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-core] linux-2.6.23 adeos arm patch
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_4823_17596577.1194002478283"
+Subject: [Xenomai-core] Registering MSI interrupt with Xenomai fails
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -16,26 +14,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Juan Antonio Garcia Redondo <juan-antonio.garcia@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Juan Antonio Garcia Redondo wrote:
- > Hello Gilles,
- > 
- > I'm currently working in a custom board based on the AT91SAM9260
- > processor. 
- > I've seen your answer (https://mail.gna.org/public/xenomai-core/2007-09/msg00062.html), 
- > and I would like to know about the upgrading state to 2.6.23 kernel version. I've a AT91SAM9260-EK 
- > development board, so if you need testing help, let me know.
- > 
- > Regards,
- > 	Juan Antonio  
+------=_Part_4823_17596577.1194002478283
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-I am currently working on an updated version of the 2.6.20 patch. 2.6.23
-will be my next target.
+We have a driver that operates on a PCIe card. The card has IRQ17. If we use
+it like that (IO-APIC-fasteoi), interrupt registration using
+rtdm_irq_request works correctly. (We also use rtdm_irq_enable afterwards,
+but it seems that the request already enables the interrupt.)
 
--- 
+However, if we redefine our interrupt as MSI using pci_enable_msi(),
+rtdm_irq_request freezes the machine. (After pci_enable_msi, the new
+interrupt vector is 218 and /proc/interrupts correctly reports
+PCI-MSI-edge.)
+
+We have another MSI-enabled card in the system (network card controlled by
+Linux) and this one works correctly. So I suspect that the Ipipe is clear
+and the bug must reside in Xenomai.
+
+I've been adding printk instrumentation throughout the Ipipe, Xenomai and
+RTDM, but the problem is that possibly the contents of the kernel log do not
+make it to the terminal upon the freeze (no oops, no panic). Is there any
+way of efficiently debugging this ?
+
+Linux 2.6.23
+Adeos 1.10-11
+Xenomai SVN Rev. 3146
+
+Thanks,
 
 
-					    Gilles Chanteperdrix.
+Jeroen.
+
+------=_Part_4823_17596577.1194002478283
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div>We have a driver that operates on a PCIe card. The card has IRQ17. If we use it like that (IO-APIC-fasteoi), interrupt registration using rtdm_irq_request works correctly. (We also use rtdm_irq_enable afterwards, but it seems that the request already enables the interrupt.)
+</div>
+<div>&nbsp;</div>
+<div>However, if we redefine our interrupt as MSI using pci_enable_msi(), rtdm_irq_request freezes the machine. (After pci_enable_msi, the new interrupt vector is 218 and /proc/interrupts correctly reports PCI-MSI-edge.)
+</div>
+<div>&nbsp;</div>
+<div>We have another MSI-enabled card in the system (network card controlled by Linux) and this one works correctly. So I suspect that the Ipipe is clear and the bug must reside in Xenomai.</div>
+<div>&nbsp;</div>
+<div>I&#39;ve been&nbsp;adding&nbsp;printk instrumentation throughout the Ipipe, Xenomai and RTDM, but the problem is that possibly the contents of the kernel log do not make it to the terminal upon the freeze (no oops, no panic). Is there any way of efficiently debugging this ?
+</div>
+<div>&nbsp;</div>
+<div>Linux 2.6.23</div>
+<div>Adeos 1.10-11</div>
+<div>Xenomai SVN Rev. 3146</div>
+<div>&nbsp;</div>
+<div>Thanks,</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div>
+
+------=_Part_4823_17596577.1194002478283--
 
