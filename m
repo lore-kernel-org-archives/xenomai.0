@@ -1,20 +1,10 @@
+Message-ID: <472B242F.4020805@domain.hid>
+Date: Fri, 02 Nov 2007 14:20:47 +0100
+From: lastella raffaele <dunkelnacht@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Message-ID: <18218.11615.84587.108100@domain.hid>
-Date: Thu, 1 Nov 2007 20:47:43 +0100
-In-Reply-To: <319998474.20071101204059@domain.hid>
-References: <1078761341.20071030094041@domain.hid>
-	<4726F2B5.5000307@domain.hid>
-	<1935435350.20071030105318@domain.hid>
-	<47270861.8090500@domain.hid>
-	<1963009588.20071031182042@domain.hid>
-	<18216.56022.667006.119955@domain.hid>
-	<753656844.20071101093838@domain.hid>
-	<18217.64851.619168.909923@domain.hid>
-	<319998474.20071101204059@domain.hid>
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Subject: Re: [Xenomai-help] how to stop a runaway task
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] Rtnet - rtt-sender
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,24 +14,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?iso-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Carsten Spie=DF wrote:
- >  Hello Gilles,
- >=20
- > > Read Philippe's answer again:
- > > https://mail.gna.org/public/xenomai-help/2007-10/msg00166.html
- > Hmm.., sorry, but i dont see what you mean.
- > Carsten
-
-It means that the bug you observed can not be confirmed on other
-platforms, so depends probably on the kernel/I-pipe patch version
-combination you use, and that Philippe is trying to find a platform
-where it can be reproduced so as to be able to solve it.
-
---=20
-
-
-					    Gilles Chanteperdrix.
+Hi, I'm an Italian student in Computer Science Engineering and I'm
+working with Xenomai and Rtnet for a graduation thesis in Telematics. I
+must use Rtnet in a wireless scenario with a Ralink RT2500 chipset. My
+work aims to modify the driver in order to ensure that the transmission
+of packets is successfully done after a certain amount of time using
+real time tasks and disabling the transmission interrupts. I'm using the
+rtt-sender provided with the RTnet suite and I've seen that, disabling
+the transmission interrupts, the sender can't free the sockets and gives
+the following message:  socket busy - waiting...
+There's a way to free or close in any case the sockets ? I must modify
+the sender or the driver program?
+Thanks 
 
