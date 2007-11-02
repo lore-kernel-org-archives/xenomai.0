@@ -1,10 +1,13 @@
-Message-ID: <472B242F.4020805@domain.hid>
-Date: Fri, 02 Nov 2007 14:20:47 +0100
-From: lastella raffaele <dunkelnacht@domain.hid>
+Message-ID: <472B315C.4040809@domain.hid>
+Date: Fri, 02 Nov 2007 06:17:00 -0800
+From: Dennis Nguyen <dennisnguy@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <47279853.9050704@domain.hid> <4729AED3.20200@domain.hid>
+In-Reply-To: <4729AED3.20200@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Rtnet - rtt-sender
+Subject: Re: [Xenomai-help] Xenomai loading module error when running
+	xero-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,18 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hi, I'm an Italian student in Computer Science Engineering and I'm
-working with Xenomai and Rtnet for a graduation thesis in Telematics. I
-must use Rtnet in a wireless scenario with a Ralink RT2500 chipset. My
-work aims to modify the driver in order to ensure that the transmission
-of packets is successfully done after a certain amount of time using
-real time tasks and disabling the transmission interrupts. I'm using the
-rtt-sender provided with the RTnet suite and I've seen that, disabling
-the transmission interrupts, the sender can't free the sockets and gives
-the following message:  socket busy - waiting...
-There's a way to free or close in any case the sockets ? I must modify
-the sender or the driver program?
-Thanks 
+
+
+Jan Kiszka wrote:
+> Dennis Nguyen wrote:
+>   
+>> Hello,
+>> I'm using linux kernel i386 2.6.20.10, xenomai 2.4-rc5, 
+>> adeos-ipipe-2.6.20-i386-1.10.10.patch.
+>> I got errors when running xenoo-test:
+>> FATAL: Error inserting xeno_nucleus 
+>> (/lib/modules/2.6.20.10/kernel/kernel/xenomai/nucleus/xeno_nucleus.ko): 
+>> No such device
+>>     
+>
+> Please have a look at the kernel messaged (e.g. via dmesg), then follow
+> the suggestions given there. I would bet it's a local APIC configuration
+> issue...
+>
+> Jan
+>
+>   
+Hi Jan,
+You are right, the problem related to APIC. I set -lapic=1 to boot 
+param. I also enabled-x86-sep and enable-x86-tsp while configure xenomai 
+in build_root. It happened on a Intel Pentium III  650 MHz.
+Thanks for your help,
+Dennis
 
