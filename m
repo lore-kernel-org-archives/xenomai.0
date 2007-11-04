@@ -1,10 +1,14 @@
-Message-Id: <C46506B0-FC87-46CE-9FEE-F6E031CB95C9@domain.hid>
-From: Bruno Rouchouse <brouchouse@domain.hid>
-Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
-Content-Transfer-Encoding: 7bit
-Mime-Version: 1.0 (Apple Message framework v912)
-Date: Sun, 4 Nov 2007 02:32:58 +0100
-Subject: [Xenomai-core] About Xenomai test framework and publishing
+Message-ID: <472E3758.3060304@domain.hid>
+Date: Sun, 04 Nov 2007 22:19:20 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <E1Ioj7Q-0004EI-JX@subversion.gna.org>
+In-Reply-To: <E1Ioj7Q-0004EI-JX@subversion.gna.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig7A4C1AFA71237DD4F64D2F6C"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-commits] r3147 - __xn_access_ok changes
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,42 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi all,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig7A4C1AFA71237DD4F64D2F6C
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-FYI:
+[Let's discuss this without bothering users :)]
 
-as I mentioned to Philippe yesterday, the initiative concerning  
-Xenomai test framework and test campaign in order to publish results  
-on our website is not dead! Unfortunately my Xenomai bandwidth is  
-limited and it is not going very fast :/
+Philippe Gerum wrote:
+> Author: rpm
+> Date: Sun Nov  4 18:18:39 2007
+> New Revision: 3147
+>=20
+> URL: http://svn.gna.org/viewcvs/xenomai?rev=3D3147&view=3Drev
+> Log:
+> Make __xn_access_ok() return false for addresses lower than the natural=
+ page size.
+>=20
+> Modified:
+>     trunk/ChangeLog
+>     trunk/include/asm-x86/syscall_32.h
+>     trunk/include/asm-x86/syscall_64.h
 
-I worked on it during the past few days and I am currently finishing  
-implementing a quick and dirty tcl script that will allow to generate  
-automatically gnuplot diagrams from the latency test results.
+Could it be that you meant "PAGE_SIZE" instead of "PAGE_OFFSET"? Because
+the current version is "slightly" broken, tagging any address in user
+land as invalid.
 
-I am jointly working on another script to automatically determine  
-static memory overhead induced by Xenomai. Nothing complicated, just a  
-way to automate compilation process of a kernel with and without  
-Xenomai to determine the overhead.
+And if this test was meant to catch NULL page accesses early, is the
+intention to cope with all those current i-pipe patches that do not yet
+include the discussed domain switch on non-root faults? If yes, this
+test would be a workaround for legacy code and should not become default
+(pure overhead for later versions).
 
-I plan to edit a wiki page soon in order to give some ideas about what  
-this framework could be and also to summarize the different ideas that  
-will hopefully be raised on the mailing list from discussions about  
-this topic.
+Last question: We need this for the other archs as well, don't we?
 
-I will take the risk to make suggestions first to produce the first  
-draft, you'll have the right to shoot when I'm finished ;)
-
-I should be back within a week to give you some more news about it.
-
-Cheers!
-
---
-Bruno Rouchouse
-brouchouse@domain.hid
-
+Jan
 
 
+--------------enig7A4C1AFA71237DD4F64D2F6C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
+
+iD8DBQFHLjdYniDOoMHTA+kRAtl0AJ9byNYA4EeXcJgfgMVsAtdThYiGLQCaA8gV
+T5BKgNs80r7wOCrg2fAG4Mw=
+=Ybaw
+-----END PGP SIGNATURE-----
+
+--------------enig7A4C1AFA71237DD4F64D2F6C--
 
