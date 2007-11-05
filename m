@@ -1,70 +1,93 @@
-Message-ID: <47270861.8090500@domain.hid>
-Date: Tue, 30 Oct 2007 11:33:05 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <fd6a47a90711051114i2ee37cf1p565f81542cfa570a@domain.hid>
+Date: Mon, 5 Nov 2007 20:14:07 +0100
+From: "Jeroen Van den Keybus" <jeroen.vandenkeybus@domain.hid>
+In-Reply-To: <fd6a47a90711031236g7415be6fn3a6d838846e082ef@domain.hid>
 MIME-Version: 1.0
-References: <1078761341.20071030094041@domain.hid>
-	<4726F2B5.5000307@domain.hid>
-	<1935435350.20071030105318@domain.hid>
-In-Reply-To: <1935435350.20071030105318@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-help] how to stop a runaway task
-Reply-To: rpm@xenomai.org
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_10576_12056519.1194290047178"
+References: <fd6a47a90711020421u6c5a6dadqff4864eec6aa188@domain.hid>
+	<472B0EED.40209@domain.hid>
+	<fd6a47a90711020549u5630ec9cgda7042c8c6c0f10a@domain.hid>
+	<fd6a47a90711020636t73e357d5ub9cbca0675adc1d7@domain.hid>
+	<fd6a47a90711020730m662abcc9q69fcb4f87ad470cc@domain.hid>
+	<472B3B5C.9010002@domain.hid>
+	<fd6a47a90711031042j568938fev22c3b5a6f99d8e17@domain.hid>
+	<472CBBAC.7030403@domain.hid>
+	<fd6a47a90711031236g7415be6fn3a6d838846e082ef@domain.hid>
+Subject: Re: [Xenomai-core] Registering MSI interrupt with Xenomai fails
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: =?ISO-8859-1?Q?Carsten_Spie=DF?= <mail@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rpm@xenomai.org
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Carsten Spie=DF wrote:
-> Hello Philippe,
->=20
->>> But this approach didn't work, the higer prio task isn't called unless
->>> the lower prio task gives up cpu (by calling e.g. rt_task_yield or
->>> nanosleep) (see attached demo source)
->> This would basically say that the core does not give any real-time
->> guarantee.
-> I hope this is not the case.
->> Please send some demo code showing this.
-> I've attached it, please remove the rt_task_yield to see the effect.
->>> When not being cooperative (removing the rt_task_yield in the demo)
->>> my system is reset after some seconds.
+------=_Part_10576_12056519.1194290047178
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-This works fine on 2.4-rc4/x86-2.6.22 here, so I need to switch to a
-similar ppc configuration to try reproducing it. More news later. Please
-send your kernel .config for 2.4.25 in the meantime.
+>
+> Could there be any reason why e.g. a pci_config_read_dword() call would
+> fail in Xenomai context (because when still in the module probe code, I
+> can perform the call correctly - in both cases I checked the
+> dev->bus->ops->read/write pointers and they are identical) ?
+>
 
->>>
->>> Why isn't my supervising task scheduled?
->>>
->=20
->> Try enabling the nucleus watchdog (Xenomai debug options). It does kill
->> runaway tasks.
-> O.k. i will try this.
+Today I moved the Xenomai ISR registration (rtdm_request_irq)) from the RTDM
+open method (rtdm_dev_open) to the module probe code (dev_probe). Then the
+registration works, but not always. Upon frequent insmod- and rmmodding, I
+still can make the machine freeze.
 
-You will have to remove the printf() from the low prio task for the
-nucleus watchdog to detect the runaway situation, otherwise, your task
-would be considered as being under the control of the Linux scheduler
-until it issues a blocking Xenomai syscall (which it never does), and
-therefore escape the watchdog detection. That's the particular case I
-was talking about.
-
->=20
->> If this works on your setup, then your code must be
->> wrong. If it does not trigger, then we need to understand why  -- there
->> is one case where it may not trigger, but this does not involve any
->> breakage in task management.
->=20
-> Regards Carsten
+I'm now more or less lost and open to any ideas...
 
 
---=20
-Philippe.
+Jeroen.
+
+
+BTW: In the process of removing all instrumentation, I inadvertently
+upgraded to SVN head (3149), after which no Xenomai process could be run
+anymore (Binding failed. Bad address.). I solved that temporarily by
+reverting to my original 3146.
+
+
+>
+>
+> Jeroen.
+>
+
+------=_Part_10576_12056519.1194290047178
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<div>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>Could there be any reason why&nbsp;e.g. a pci_config_read_dword()&nbsp;call would fail in Xenomai context&nbsp;(because when still in the module probe code, I can&nbsp;perform the call correctly - in both cases I checked the dev-&gt;bus-&gt;ops-&gt;read/write pointers and they are identical) ? 
+</div></blockquote>
+<div>&nbsp;</div>
+<div>Today I moved the Xenomai ISR registration (rtdm_request_irq)) from&nbsp;the RTDM open method (rtdm_dev_open) to the module probe code&nbsp;(dev_probe). Then the registration works, but not always. Upon frequent insmod- and rmmodding, I still can make the machine freeze.
+</div>
+<div>&nbsp;</div>
+<div>I&#39;m now more or less lost and open to any ideas...</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>Jeroen.</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>BTW: In the process of removing all instrumentation, I&nbsp;inadvertently upgraded to SVN head (3149), after which no Xenomai process could be run anymore (Binding failed. Bad address.). I solved that temporarily by reverting to my original 3146.
+</div>
+<div>&nbsp;</div>
+<blockquote class="gmail_quote" style="PADDING-LEFT: 1ex; MARGIN: 0px 0px 0px 0.8ex; BORDER-LEFT: #ccc 1px solid">
+<div>
+<div><span class="sg">&nbsp;</span></div>
+<div>&nbsp;</div>
+<div>Jeroen.</div></div></blockquote></div><br>
+
+------=_Part_10576_12056519.1194290047178--
 
