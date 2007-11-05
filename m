@@ -1,14 +1,10 @@
-Message-ID: <2ff1a98a0711050846v4eee925ag40743f8908b7b5f2@domain.hid>
-Date: Mon, 5 Nov 2007 17:46:41 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <2ff1a98a0711050834m5f5a70e1t74e49722a84a6551@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+From: Matt Kelsey <mattkelsey@domain.hid>
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <OF7AA2B50F.2763501F-ONC125738A.0058C081-C125738A.00597EAF@philips.com>
-	<2ff1a98a0711050834m5f5a70e1t74e49722a84a6551@domain.hid>
-Subject: Re: [Xenomai-help] calling posix functions in vxworks application
+Date: Mon, 05 Nov 2007 11:43:03 -0600
+Message-Id: <1194284583.5882.10.camel@domain.hid>
+Mime-Version: 1.0
+Subject: [Xenomai-help] Xenomai adeos patch for 2.6.16.11 kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,34 +14,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "A.J.W. van Lievenoogen" <a.j.w.van.lievenoogen@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/5/07, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> On 11/5/07, A.J.W. van Lievenoogen <a.j.w.van.lievenoogen@domain.hid> wrote:
-> >
-> >
-> > I'm trying to port a vxworks application to xenomai.
-> >  Some calls in this application are posix calls (which are supported by
-> > vxworks) for example the clock_gettime function.
-> >  This function in xenomai is implemented in the posix skin but not in the
-> > vxworks skin.
-> >  Can I still somehow use these functions in the posix skin while I'm using
-> > others in the VxWorks skin?
-> >
-> >  the only functions I mis from vxworks are clock_gettime and localtime_r so
-> > if I can't use both skins simultaneously is there a way to work around that
-> > for these functions?
->
-> Yes you can use the posix skin and the vxworks skin at the same time.
-> You will simply have to use both xeno-config --xeno-* and xeno-config
-> --posix-* when compiling. Note that there is no xenomai version of
-> localtime_r, but from its description it should run in real-time with
-> no modification.
+Greetings,
+I am updating a project built on the 2.6.10 Linux kernel with fusion
+0.9.1 to the Freescale provided 2.6.16.11 kernel with MPC5200b specific
+patches (lite5200b).  I see that adeos patches are available for kernel
+versions 2.6.14 and 2.6.18.  
+Can anyone offer advise on how I might bridge the gap here?  Is it
+possible to adjust either of the available adeos patches to fit my
+Freescale supported version or would it be better to update my 2.6.16.11
+kernel to a adoes supported version( i.e. 2.6.18).  
+Any advise on how to accomplish this by these or other means would be
+appreciated.
 
-No, wait. localtime_r needs to access time zone information. So, I am
-not sure it will work without any switch to secondary mode.
+Thanks for your help,
 
--- 
-                                               Gilles Chanteperdrix
+Matt
 
