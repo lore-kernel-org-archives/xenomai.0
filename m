@@ -1,67 +1,49 @@
-Message-Id: <200710301203.l9UC3esT009573@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Tue, 30 Oct 2007 13:03:42 +0100
+Message-ID: <2ff1a98a0711060209n19cd268dw122f4accfd30921b@domain.hid>
+Date: Tue, 6 Nov 2007 11:09:06 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <f48df4840711060101w4f444247rcfd574e78b29425d@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] RT, nonRT communication
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+References: <C46506B0-FC87-46CE-9FEE-F6E031CB95C9@domain.hid>
+	<2ff1a98a0711050704s51a976cp96257f2712bd15ff@domain.hid>
+	<f48df4840711050730t4309e500p715314c77caa28bb@domain.hid>
+	<2ff1a98a0711050749n4237a818p5838896f84dc9dc8@domain.hid>
+	<2ff1a98a0711051123l1348ed85se7a46ab420276346@domain.hid>
+	<18224.10799.628508.676548@domain.hid>
+	<f48df4840711060101w4f444247rcfd574e78b29425d@domain.hid>
+Subject: Re: [Xenomai-core] About Xenomai test framework and publishing
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Bruno Rouchouse <brouchouse@domain.hid>
+Cc: xenomai@xenomai.org
 
-Ok, so if I understand I can't use a pthread_mutex between the main =
-thread
-and a rt_task ?
-If I want use pthread_mutex between another pthread and a rt_task, must =
-the
-pthred be running with SCHED_OTHER ? This value is the default value for
-pthread !
+On Nov 6, 2007 10:01 AM, Bruno Rouchouse <brouchouse@domain.hid> wrote:
+> Hi Gilles,
+>
+> I did manage to start the script and get everything downloaded but nothing
+> got compiled indeed.
+>
+> I'll try again tonight with your updated version.
+>
+> Thanks.
 
-Thank's
+Note that if you want to compile i386 code on an x86_64, you will have
+some difficulties, you will need to define a pseudo cross-compilation
+script (say x86-32-gcc) which will simply contain:
+ gcc -m32 ${1+"$@"}
 
------Message d'origine-----
-De=A0: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Envoy=E9=A0: mardi, 30. octobre 2007 10:52
-=C0=A0: Patrick
-Cc=A0: xenomai@xenomai.org
-Objet=A0: Re: [Xenomai-help] TR: RT, nonRT communication
+And call this script instead of gcc in the BX_CCS variable of the
+bx_config script of the apropriate configurations.
 
-On 10/30/07, Patrick <kpa_info@domain.hid> wrote:
->
->
->
->
-> Hi,
->
->
->
-> Is it possible to share a pthread_mutex between a rt task and a linux
-> pthread ?
-
-No, it is not possible
-
->
-> My two tasks must share resources and I must protect them against
-concurrent
-> access.
->
-> If pthread_mutex is not the correct way to do it can you tell me how =
-to
-> achieve this ?
-
-The way to handle these border line cases is to make your linux
-pthread a xenomai thread running with the SCHED_OTHER scheduling
-policy. Note that the main thread already has this property.
-
---=20
+-- 
                                                Gilles Chanteperdrix
-
 
