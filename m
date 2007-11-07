@@ -1,11 +1,14 @@
-Message-ID: <4731CFA4.1030503@domain.hid>
-Date: Wed, 07 Nov 2007 15:45:56 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 7 Nov 2007 16:44:37 +0100
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23E@esealmw118.eemea.ericsson.se>
+In-Reply-To: <4731CFA4.1030503@domain.hid>
 References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
-In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<4731CFA4.1030503@domain.hid>
+From: "Markus Osterried" <markus.osterried@domain.hid>
 Subject: Re: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -16,15 +19,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Markus Osterried <markus.osterried@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai-core@domain.hid
+
+Sorry for being intrusive.
+I've already done a quick and dirty bug fix, so final bug fix is not
+urgent.
+Just wanted to know about time schedule.
+
+Markus
+
+
+
+-----Original Message-----
+From: Jan Kiszka [mailto:jan.kiszka@domain.hid
+Sent: Mittwoch, 7. November 2007 15:46
+To: Markus Osterried
+Cc: Philippe Gerum; Xenomai-core@domain.hid
+Subject: Re: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
 
 Markus Osterried wrote:
 > Hello,
-> 
+>=20
 > two months ago I reported a problem with rtdm_iomap_to_user().
 > Philippe acknowledged the problem and promised to submit a bug fix.
-> Unfortunately, till now I don't have seen this bug fix, or have
+> Unfortunately, till now I don't have seen this bug fix, or have=20
 > overlooked it?
 
 Please post your bugs to our bugtracker on gna.org if you feel like it
@@ -43,7 +62,7 @@ in asm-generic/wrappers.h.
 
 Jan
 
--- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+--
+Siemens AG, Corporate Technology, CT SE 2 Corporate Competence Center
+Embedded Linux
 
