@@ -1,11 +1,12 @@
-Content-class: urn:content-classes:message
+Message-ID: <4731CFA4.1030503@domain.hid>
+Date: Wed, 07 Nov 2007 15:45:56 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C8214A.7E53FE0F"
-Date: Wed, 7 Nov 2007 15:28:41 +0100
-Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
-From: "Markus Osterried" <markus.osterried@domain.hid>
-Subject: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
+References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
+In-Reply-To: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -15,66 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Markus Osterried <markus.osterried@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-This is a multi-part message in MIME format.
+Markus Osterried wrote:
+> Hello,
+> 
+> two months ago I reported a problem with rtdm_iomap_to_user().
+> Philippe acknowledged the problem and promised to submit a bug fix.
+> Unfortunately, till now I don't have seen this bug fix, or have
+> overlooked it?
 
-------_=_NextPart_001_01C8214A.7E53FE0F
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Please post your bugs to our bugtracker on gna.org if you feel like it
+is getting/already got lost. Everyone is busy, and I'm afraid this
+particular issue remained unfixed unintentionally.
 
-Hello,
+> Can you please give me a hint about the roadmap?
 
-two months ago I reported a problem with rtdm_iomap_to_user().
-Philippe acknowledged the problem and promised to submit a bug fix.
-Unfortunately, till now I don't have seen this bug fix, or have
-overlooked it?
-Can you please give me a hint about the roadmap?
-Thanks.
+This is surely a must-fix for both 2.4 and the next 2.3 releases, we are
+only lacking the patch. Unless Philippe is able to come out with
+something over the next, say, two days, I would suggest to develop a fix
+along his original suggestions on your own. As far as I understood, we
+need an arch-specific wrapper for io-remapping in
+include/asm-powerps/wrappers.h and awareness for this specific solution
+in asm-generic/wrappers.h.
 
-Markus
+Jan
 
-
-------_=_NextPart_001_01C8214A.7E53FE0F
-Content-Type: text/html;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Dus-ascii">
-<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
-6.5.7652.24">
-<TITLE>rtdm_iomap_to_user() with PowerPC</TITLE>
-</HEAD>
-<BODY>
-<!-- Converted from text/rtf format -->
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Hello,</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">two months ago I reported a problem =
-with rtdm_iomap_to_user().</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Philippe acknowledged the problem and =
-promised to submit a bug fix.</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Unfortunately, till now I don't have =
-seen this bug fix, or have overlooked it?</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Can you please give me a hint about =
-the roadmap?</FONT>
-
-<BR><FONT SIZE=3D2 FACE=3D"Arial">Thanks.</FONT>
-</P>
-
-<P><FONT SIZE=3D2 FACE=3D"Arial">Markus</FONT>
-</P>
-
-</BODY>
-</HTML>
-------_=_NextPart_001_01C8214A.7E53FE0F--
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
