@@ -1,20 +1,11 @@
-Message-ID: <2ff1a98a0711060455i6f752f74i2314d35818624432@domain.hid>
-Date: Tue, 6 Nov 2007 13:55:51 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <f48df4840711060422m169d636r874b6f7e25a86f0@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <C46506B0-FC87-46CE-9FEE-F6E031CB95C9@domain.hid>
-	<2ff1a98a0711050704s51a976cp96257f2712bd15ff@domain.hid>
-	<f48df4840711050730t4309e500p715314c77caa28bb@domain.hid>
-	<2ff1a98a0711050749n4237a818p5838896f84dc9dc8@domain.hid>
-	<2ff1a98a0711051123l1348ed85se7a46ab420276346@domain.hid>
-	<18224.10799.628508.676548@domain.hid>
-	<f48df4840711060409q2f9c8c36k4c124acd4be8394e@domain.hid>
-	<f48df4840711060422m169d636r874b6f7e25a86f0@domain.hid>
-Subject: Re: [Xenomai-core] About Xenomai test framework and publishing
+Content-Type: multipart/alternative;
+	boundary="----_=_NextPart_001_01C8214A.7E53FE0F"
+Date: Wed, 7 Nov 2007 15:28:41 +0100
+Message-ID: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
+From: "Markus Osterried" <markus.osterried@domain.hid>
+Subject: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,19 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bruno Rouchouse <brouchouse@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Nov 6, 2007 1:22 PM, Bruno Rouchouse <brouchouse@domain.hid> wrote:
-> Gilles,
->
-> don't pay attention to my previous email, I managed to download the file.
->
-> Thanks.
+This is a multi-part message in MIME format.
 
-In case it matters I have done a chmod a+r
+------_=_NextPart_001_01C8214A.7E53FE0F
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+two months ago I reported a problem with rtdm_iomap_to_user().
+Philippe acknowledged the problem and promised to submit a bug fix.
+Unfortunately, till now I don't have seen this bug fix, or have
+overlooked it?
+Can you please give me a hint about the roadmap?
+Thanks.
+
+Markus
 
 
--- 
-                                               Gilles Chanteperdrix
+------_=_NextPart_001_01C8214A.7E53FE0F
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.5.7652.24">
+<TITLE>rtdm_iomap_to_user() with PowerPC</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Hello,</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">two months ago I reported a problem =
+with rtdm_iomap_to_user().</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Philippe acknowledged the problem and =
+promised to submit a bug fix.</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Unfortunately, till now I don't have =
+seen this bug fix, or have overlooked it?</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Can you please give me a hint about =
+the roadmap?</FONT>
+
+<BR><FONT SIZE=3D2 FACE=3D"Arial">Thanks.</FONT>
+</P>
+
+<P><FONT SIZE=3D2 FACE=3D"Arial">Markus</FONT>
+</P>
+
+</BODY>
+</HTML>
+------_=_NextPart_001_01C8214A.7E53FE0F--
 
