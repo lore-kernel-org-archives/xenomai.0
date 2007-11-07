@@ -1,15 +1,15 @@
 From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Date: Wed, 7 Nov 2007 16:12:10 +0100
-References: <200709201549.13035.lepalom@domain.hid>
-	<200711061102.13154.lepalom@domain.hid> <4731D205.9020004@domain.hid>
-In-Reply-To: <4731D205.9020004@domain.hid>
+Date: Wed, 7 Nov 2007 18:59:32 +0100
+References: <200711061807.26236.lepalom@domain.hid>
+	<200711071500.23914.lepalom@domain.hid> <4731CAE5.5080401@domain.hid>
+In-Reply-To: <4731CAE5.5080401@domain.hid>
 MIME-Version: 1.0
-Message-Id: <200711071612.11444.lepalom@domain.hid>
-Content-Transfer-Encoding: quoted-printable
+Message-Id: <200711071859.33094.lepalom@domain.hid>
+Content-Transfer-Encoding: 7bit
 Content-Type: text/plain;
-  charset="utf-8"
+  charset="iso-8859-1"
 Content-Disposition: inline
-Subject: Re: [Xenomai-help] Comedi driver for use with xenomai
+Subject: [Xenomai-help] IRQ issues in xenomai and rtnet
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,345 +20,97 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, mathias_koehrer@domain.hid
 
-A Dimecres 07 Novembre 2007, Jan Kiszka va escriure:
-> Leopold Palomo-Avellaneda wrote:
-> > A Dimarts 06 Novembre 2007, Alexis Berlemont va escriure:
-> >> Hi
-> >>
-> >>> And after, the jr3 driver, but I got with dmesg:
-> >>>
-> >>> jr3pci: module license 'unspecified' taints kernel.
-> >>> jr3pci: no version for "comedi_add_drv" found: kernel tainted.
-> >>> jr3pci: Unknown symbol device_unregister
-> >>> jr3pci: Unknown symbol device_register
-> >>>
-> >>>
-> >>> so, I cannot load the driver. What I'm doing grong?
-> >>
-> >> Oops. My fault. Fixed in subversion.
-> >>
-> >> Please update.
-> >
-> > done, but when I do:
-> > sudo insmod comedi_drivers/misc_drivers/jr3pci.ko
-> >
-> > I got a console hangs, with no response and the dmesg says:
-> > jr3pci: no version for "comedi_add_drv" found: kernel tainted.
-> > comedi_add_drv: name=3Djr3_pci
-> > comedi_lct_drv: name=3Djr3_pci
-> >
-> >
-> > Now, I'm still blocked ....
->
-> Are you sure the (re-)build was clean? I haven't checked the comedi
-> branch recently for changes and/or problems with the build system, but
-> this used to work fine for me - once. :)
->
-make distclean;
-svn uptade;
-svn status;
-=2E/configure -with-xeno-install-path=3D/usr --with-linux-dir=3D/usr/src/li=
-nux-headers-2.6.22-xenomai-2.4-rc5
+Hi,
 
-make
+following the Jan Kiszka propose I move this thread to the xenomai list. 
+Making some kind of resume I have this situation:
 
-all normal but:
+- Mobo Gigabyte M61P-S3 with bios updated (nVidia nForce 430 chipset, amd64)
+- two old network intel e100 cards PCI
+- one jr3 sensor capture PCI
+- running a debian etch amd64 port with several kernels 2.6.22, rtai, xenomai, 
+debian. The box _must_ boot with noapic in the grub because not hangs trying 
+with the hd controller :-(
 
-=2E....
- CC [M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_kcore/comedi_transfer.o
-/usr/src/xenomai-comedi-rtdm-dev/comedi_kcore/comedi_transfer.c: In=20
-function =E2=80=98comedi_ioctl_poll=E2=80=99:
-/usr/src/xenomai-comedi-rtdm-dev/comedi_kcore/comedi_transfer.c:834: warnin=
-g:=20
-cast from pointer to integer of different size
-
-=2E.....
-make[4]: Entering directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-  CC=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_te=
-st_fake.o
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_te=
-stfake.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-WARNING: "comedi_rm_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_cleanup_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_drv_evt_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_drv_get_cmd"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_drv_memcpy_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_get_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_check_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_drv_add_subd"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_init_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-WARNING: "comedi_add_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testfa=
-ke.ko]=20
-undefined!
-
-make[4]: Entering directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-  CC=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_te=
-st_loop.o
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_te=
-stloop.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-WARNING: "comedi_drv_evt_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_rm_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_cleanup_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_drv_evt_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_drv_memcpy_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_get_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_drv_memcpy_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_check_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_drv_add_subd"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_init_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
-WARNING: "comedi_add_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_testlo=
-op.ko]=20
-undefined!
- =20
-CC      /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi=
-_testloop.mod.o
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers/comedi_te=
-stloop.ko
-make[4]: Leaving directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-make[3]: Leaving directory=20
-`/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/test_drivers'
-Making all in ni_drivers
-
-=2E.......
+- running a debian etch amd64 port with several kernels 2.6.23, xenomai, 
+debian. The box boot with apic :-)
 
 
-make[4]: Entering directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-  CC [M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/pcimio=
-=2Eo
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/pcimio.c: In=20
-function =E2=80=98pcimio_attach=E2=80=99:
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/pcimio.c:780:=20
-warning: =E2=80=98deprecated_irq_flag=E2=80=99 is deprecated (declared at=20
-include/linux/interrupt.h:66)
+the kernel config is based on a standard debian config and the xenomai part is 
+based on the faq. The only issue that I have realised some minutes ago have 
+been that Shared interrupts is disable (but Jan Kiszka have pointed that it 
+does not produce hangs.
+
+I have selected in the bios that each pci slot htat has a ethernet has a 
+specific irq, but when I load a rtnet driver, it assigns another irq. Making 
+more test, now with 2.6.23 the irq assigned in bios more or less i maintained 
+but still _again_ when load the rtnet driver, the box hangs ...
+
+I must put a irq specific for each card if not the kernel doesn't boot or I 
+put irq auto and irqpoll in the kenel options. With this configuration I can 
+configure the cards:
 
 
-=2E...........................
+palomo@domain.hid$ sudo ./sbin/rtroute
+Host Routing Table
+Hash    Destination     HW Address              Device
+3F      10.0.1.255      FF:FF:FF:FF:FF:FF       rteth1
+3F      10.0.0.255      FF:FF:FF:FF:FF:FF       rteth0
 
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-WARNING: "comedi_drv_global_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_free_irq"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_evt_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_get_irq"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "range_bipolar10"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_set_irq"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_rm_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_cleanup_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_error_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_check_global_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_stop_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_error_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_global_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_evt_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_get_cmd"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_memcpy_put"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_check_global_get"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_get_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_request_irq"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_check_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_add_subd"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_init_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_drv_get_nbchan"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
-WARNING: "comedi_add_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko]=20
-undefined!
- =20
-CC      /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimi=
-o.mod.o
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers/ni_pcimio.ko
-make[4]: Leaving directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-make[3]: Leaving directory=20
-`/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/ni_drivers'
-Making all in misc_drivers
-make[3]: Entering directory=20
-`/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers'
-make[4]: Entering directory `/usr/src/xenomai-comedi-rtdm-dev'
-make[4]: Leaving directory `/usr/src/xenomai-comedi-rtdm-dev'
-make[4]: Entering directory `/usr/src/linux-headers-2.6.22-xenomai-2.4-rc5'
-  CC=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3_pci.o
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3_pci.c: In=
-=20
-function =E2=80=98jr3_pci_attach=E2=80=99:
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3_pci.c:778:=
-=20
-warning: format =E2=80=98%x=E2=80=99 expects type =E2=80=98unsigned int=E2=
-=80=99, but argument 2 has=20
-type =E2=80=98long unsigned int=E2=80=99
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3_pci.c:858:=
-=20
-warning: cast from pointer to integer of different size
-/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3_pci.c:858:=
-=20
-warning: cast from pointer to integer of different size
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.o
-  Building modules, stage 2.
-  MODPOST 1 modules
-WARNING: "comedi_rm_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
-WARNING: "comedi_cleanup_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
-WARNING: "comedi_get_time"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
-WARNING: "comedi_get_dev"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
-WARNING: "comedi_init_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
-WARNING: "comedi_add_drv"=20
-[/usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko]=20
-undefined!
- =20
-CC      /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci=
-=2Emod.o
-  LD=20
-[M]  /usr/src/xenomai-comedi-rtdm-dev/comedi_drivers/misc_drivers/jr3pci.ko
+and the system doesn't hang ...
 
 
+So, any ideas about it?
 
-=2E..........................................
+Best regards,
 
-
-sudo insmod comedi_kcore/comedi.ko  =20
-
-ok
-sudo modprobe firmware_class
-
-ok
-
-sudo insmod comedi_drivers/misc_drivers/jr3pci.ko
-=2E.....
-jr3pci: no version for "comedi_add_drv" found: kernel tainted.
-comedi_add_drv: name=3Djr3_pci
-comedi_lct_drv: name=3Djr3_pci
-
-console blocked ....
-
-Regards,
+and very thanks for all your effort,
 
 Leo
+
+A Dimecres 07 Novembre 2007, Jan Kiszka va escriure:
+
+> Leopold Palomo-Avellaneda wrote:
+> > A Dimecres 07 Novembre 2007, Karl Reichert va escriure:
+> > [...]
+> >
+> >>> the _same_ card was working with rtnet (not xenomai but rtai) in a
+> >>> configuration that I had in another box.
+> >>
+> >> That's what I mean, the card is not the problem. The problem is the
+> >> current setup, so as a result it is not working. But of course not the
+> >> card is the one to blame. ...
+> >
+> > are you working for intel? ;-)
+> >
+> > no, I'm joking.
+> >
+> > Sadly, I have tested the same configuration with a rtai kernel and I got
+> > the same hang :-( Also, the network card got the same irq in rtai ...
+>
+> IRQ issues are generally I-pipe issues. And RTAI uses (almost) the same
+> I-pipe patch as Xenomai, thus shares the same bugs until they are fixed
+> upstream. Generally.
+>
+> There are currently a few fixes floating around on Adeos-main, and we
+> (Xenomai) have some new report probably regarding MSI. As I think I have
+> seen something about MSI in your config as well, could you try to
+> disable CONFIG_PCI_MSI to check if at least the hangs disappears (given,
+> of course, IRQs line will then not be in conflict again)? Also can you
+> try (unless you already do so) with the latest I-pipe patch for, say,
+> 2.6.23.x?
+>
+> Another hint regard IRQ conflict avoidance: If RTnet (or RT hardware in
+> general) shares some line with a Linux device you may not depend upon
+> (Firewire? USB?), just unload the related Linux drivers. Of course, this
+> doesn't fly if it is your main IDE/SATA device...
+>
+> Note that this IRQ stuff is most likely not RTnet business, so it would
+> be good to move the thread over to Xenomai.
+>
+> Jan
+
+
 
