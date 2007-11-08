@@ -1,16 +1,14 @@
-Message-ID: <4732CE02.3060908@domain.hid>
-Date: Thu, 08 Nov 2007 09:51:14 +0100
+Message-ID: <4732D076.4070806@domain.hid>
+Date: Thu, 08 Nov 2007 10:01:42 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23C@esealmw118.eemea.ericsson.se>
-	<4731CFA4.1030503@domain.hid>
-	<E5E9C6CC7DC8844A8DA7A9EFE7B5350E08F23E@esealmw118.eemea.ericsson.se>
-	<4731E311.7060406@domain.hid>
-In-Reply-To: <4731E311.7060406@domain.hid>
+References: <4717D8AC.8000900@domain.hid>	<FDBBB5CC70676540B3EF7CFE83FD94E0999445@domain.hid>	<4718670D.6000008@domain.hid>	<472ED13D.4050703@domain.hid>	<472ED274.9070205@domain.hid>
+	<4732C455.6060900@domain.hid>
+In-Reply-To: <4732C455.6060900@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] rtdm_iomap_to_user() with PowerPC
+Subject: Re: [Xenomai-core] LTTng for Xenomai - next round
 Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
@@ -22,31 +20,36 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Markus Osterried <markus.osterried@domain.hid>, Xenomai-core@domain.hid
+Cc: xenomai-core <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Markus Osterried wrote:
->> Sorry for being intrusive.
->> I've already done a quick and dirty bug fix, so final bug fix is not
->> urgent.
->> Just wanted to know about time schedule.
+> Jan Kiszka wrote:
+>> Jan Kiszka wrote:
+>>> Jan Kiszka wrote:
+>>>> ...
+>>>> Regarding the instrumentation: My latest Xenomai patch changed the
+>>>> marker arguments even more away from your original patch. Not looking at
+>>>> the plugin for this, I may have removed useful information. Please let
+>>>> us know what you would like to see in the trace points so that this part
+>>>> can quickly stabilise, maybe even go into the next Xenomai release.
+>>> I decided to accelerate the core instrumentation as it looks like I will
+>>> need it sooner than expected. So here comes another version of the
+>>> Xenomai-part of the patch series, changing the following:
+>>>
+>>>  - Full conversion to trace_mark, no intermediate xnltt_log_event
+>>>    anymore. Unsupported kernel versions are caught by the wrapping layer
+>>>    instead. Thus, also ltt.h is obsolete now (bootstrap run is required
+>>>    for user land).
+>> Just realised: As usual, this patch nicely breaks the simulator (what is
+>> trace_mark?). Will fix with the next submission later today or tomorrow.
+>>
 > 
-> At least 2.4 is near, but I guess another 2.3 release will follow as
-> well (due to recently accumulated fixes). So the time is right to pick
-> this up again.
-> 
-> And although Philippe said he would fix this one on his own, this does
-> not have to mean no one else would be able to provide an equivalent fix
-> as well and he wouldn't be happy to save the otherwise required time... :)
-> 
+> Here comes v6 of instrumentation patch. It fixes the simulator build +
+> another build error when periodic timing was disabled.
+>
 
-Indeed. Quite frankly, the bug report is patiently pending in my queue,
-so it was not lost, but I just had no time to address this seriously.
-Have everything converge to roll out 2.4 drains much of my Xenomai time,
-so I tend to put the non-critical issues on the back burner for now,
-especially if they might break things in subtle ways.
-Since there is a work around for this issue, and the final fix may make
-it to any stable branch once 2.4 is out, I've postponed the latter.
+Ok, we want this in for -rc6 I think, so that we can build over it asap.
+ Will merge, thanks.
 
 -- 
 Philippe.
