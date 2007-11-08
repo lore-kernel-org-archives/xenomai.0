@@ -1,10 +1,14 @@
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4733A2B8.8070100@domain.hid>
+Date: Fri, 09 Nov 2007 00:58:48 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+References: <473391B0.5040809@domain.hid>
+In-Reply-To: <473391B0.5040809@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-ID: <18227.38764.158695.121660@domain.hid>
-Date: Fri, 9 Nov 2007 00:10:36 +0100
-Subject: [Xenomai-core] ipipe_pin_range_globally.
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] User space drivers on PPC440
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -14,23 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Steven A. Falco" <sfalco@domain.hid>
+Cc: xenomai@xenomai.org
 
+Steven A. Falco wrote:
+> The rt_misc_get_io_region() has the "start" argument as an unsigned 
+> long.  On the PPC440, we have a 36-bit address space, where the I/O 
+> registers are generally above the 4GB area.  For example, the UART is at 
+> address 0x1ef600300.
+> 
+> The Linux request_region call has "start" typed as a resource_size_t, 
+> which is a u64 on the PPC440 (i.e. CONFIG_RESOURCES_64BIT is set even 
+> though this is a 23-bit processor).
+> 
+> Is this something that should be handled by xeno-config?  It could 
+> append a CFLAG indicating the size of a resource.
 
-Hi,
+Or use a 64bit long unconditionally, to keep the same kernel-based
+implementation, since there is no performance issue for this call. In
+any case, we need to fix the API before 2.4 final is out -- which will
+also affect the ABI, but it already changed during the 2.4 development
+phase anyway.
 
-In the process of updating the I-pipe patch for ARM, I have written
-ipipe_pin_range_globally. But now that I look at the place where
-ipipe_pin_range_globally is called, I see that it is called only upon
-memory mapping in the vmalloc area, should not it be called also when
-memory is unmapped ? Or maybe we should add an
-ipipe_unpin_range_globally ?
+> 
+>     Steve
+> 
+> 
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+> 
 
-It would allow me to remove this check_kvm_seq stuff in the middle of
-switch_mm when CONFIG_IPIPE is enabled.
 
 -- 
-
-
-					    Gilles Chanteperdrix.
+Philippe.
 
