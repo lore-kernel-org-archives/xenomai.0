@@ -1,14 +1,12 @@
-Message-ID: <2ff1a98a0711080617r1ca5f300n9bb963fb1dadc08e@domain.hid>
-Date: Thu, 8 Nov 2007 15:17:59 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <0B45E93C5FF65740AEAE690BF3848B7A4AB283@domain.hid>
+Message-ID: <4733535E.4070700@domain.hid>
+Date: Thu, 08 Nov 2007 19:20:14 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <4732C546.90602@domain.hid>
+In-Reply-To: <4732C546.90602@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-References: <0B45E93C5FF65740AEAE690BF3848B7A4AB283@domain.hid>
-Subject: Re: [Xenomai-core] [PATCH] Wrong -lpthread/-lrt order in
-	testsuite/clocktest/Makefile.am ?
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] Testing LTTng: first insights
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,49 +16,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Fillod Stephane <stephane.fillod@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On Nov 8, 2007 3:10 PM, Fillod Stephane <stephane.fillod@domain.hid> wrote:
-> Hi,
->
-> Testing xenomai-2.4-rc5, I've encountered the following link error:
->
-> powerpc-linux-uclibc-gcc -Wl,--wrap -Wl,pthread_create ....
-> -Wl,--wrap -Wl,mmap -Wl,--wrap -Wl,munmap -o clocktest
-> clocktest-clocktest.o  ../../skins/posix/.libs/libpthread_rt.a -lpthread
-> -lrt
-> .../powerpc-linux-uclibc/lib/libpthread.so: undefined reference to
-> `__wrap_mmap'
-> .../powerpc-linux-uclibc/lib/librt.so: undefined reference to
-> `__wrap_close'
-> .../powerpc-linux-uclibc/lib/libpthread.so: undefined reference to
-> `__wrap_munmap'
-> collect2: ld returned 1 exit status
-> gmake[4]: *** [clocktest] Error 1
-> $ powerpc-linux-uclibc-gcc --version
-> powerpc-linux-uclibc-gcc (GCC) 3.4.3
-> $ powerpc-linux-uclibc-ld --version
-> GNU ld version 2.16.90.0.1 20050408
->
-> If I swap the order of libpthread_rt.a and -lpthread -lrt, the link
-> succeeds.
-> I guess it has to do with the fact that a library which provides symbols
-> has to be after in the link order of a module which needs them.
-> Is it still okay with regard to pthread function wrapping?
+Jan Kiszka wrote:
+> ...
+> Xenomai is loaded at this time but not yet used. Linux runs in tickless
+> highres mode and obviously had programmed the host timer to fire here.
+> But instead of one timer IRQ (233) + its handling, we see an additional
+> early shot (about 3 =B5s too early here - the longer the timer is
+> programmed in advance, the larger the error gets) before the xntimer
+> finally expires. But at the same time, /proc/xenomai/latency reports
+> 1000 (1 =B5s). So there must be more discrepancy between TSC and APIC
+> timebases, no? Well, nothing critical, but at least suboptimal, maybe
+> pointing at some hidden minor bug. Once time permits, I will check the
+> APIC frequency and the delay calculation on my box and compare it to
+> what Linux uses.
 
-No, libpthread_rt.a uses symbols defined by libpthread.so and
-librt.so, so, they should be after. What you are observing is likely
-an issue with regard to --wrap with static libraries.
+Looks like Xenomai is using an inaccurate APIC frequency (probably since
+ages): 10.383 MHz on one of my boxes vs. 10.39591 MHz according to
+Linux' calibration ( (1,000,000,000 ns * clock_event_device.mult) >>
+clock_event_device.shift ), which is based on the PM-timer. As the real
+frequency is higher, the APIC fires earlier than we want to. Consider,
+e.g., the 4 ms host tick period =3D> 5 =B5s too early! This correlates wi=
+th
+my LTTng traces.
 
-The solution to this problem is to either use the dynamic
-libpthread_rt.so, or to do the link edit in two stages:
-first stage with libpthread_rt.a and all the --wrap
-second stage with -lpthread and -lrt without all the --wrap
+I will try to fix this issue by extending the ipipe_request_tickdev
+interface so that it returns also the frequency of the requested tick
+device - as long as Xenomai 2.4 is not released, such an API breakage
+should not cause any hassle IMHO.
 
-Unfortunately, the behaviour of --wrap with static libraries is not
-the same on all platforms.
+(At this chance, I will also try to kill clock_event_device.delta. I
+think I have a nicer approach...)
 
--- 
-                                               Gilles Chanteperdrix
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
