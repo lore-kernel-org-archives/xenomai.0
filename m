@@ -1,17 +1,14 @@
-Message-ID: <473493CB.4080701@domain.hid>
-Date: Fri, 09 Nov 2007 18:07:23 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0711090902u5b940ed0w3ab34f6e1a040f46@domain.hid>
+Date: Fri, 9 Nov 2007 18:02:39 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <473484C6.6050101@domain.hid>
 MIME-Version: 1.0
-References: <472F6C17.2070100@domain.hid>
-	<472F6DAD.20308@domain.hid>	<472F990A.2030209@domain.hid>
-	<473006D8.4080808@domain.hid> <47302D55.9050808@domain.hid>
-	<47339C53.5010700@domain.hid> <4734677E.6010904@domain.hid>
-	<47348EE0.5020007@domain.hid>
-In-Reply-To: <47348EE0.5020007@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main] [PATCH] i386: switch to root domain
- on unhandled non-root faults
+Content-Disposition: inline
+References: <473391B0.5040809@domain.hid> <4733A2B8.8070100@domain.hid>
+	<47344759.4020505@domain.hid> <473484C6.6050101@domain.hid>
+Subject: Re: [Xenomai-core] User space drivers on PPC440
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -21,69 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: rpm@xenomai.org
-Cc: adeos-main@gna.org, Xenomai-core@domain.hid
+To: "Steven A. Falco" <sfalco@domain.hid>
+Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> Jan Kiszka wrote:
-> 
->> Well, this is practically your original version. I still don't see why
->> we want debug code in production setups (WARN_ON, e.g., doesn't work
->> this way either),
-> 
-> Do you actually leave CONFIG_IPIPE_DEBUG on in production setups?
+On Nov 9, 2007 5:03 PM, Steven A. Falco <sfalco@domain.hid> wrote:
+>
+>  Your patch makes sense.
+>
+>  I have some results, but I'm not sure I understand what they mean.  I've
+> attached the test program that I am using.  Here is what it outputs:
+>
+>  bash-3.00# ./o2
+>  Trying to free nonexistent resource <0000000000000000-00000000c0000001>
+>  get leds: -16 Device or resource busy
+>  put leds: 0 Success
+>
+>  Trying to free nonexistent resource <0000000000000000-ffffffffffffffff>
+>  get low_mem: -16 Device or resource busy
+>  put low_mem: 0 Success
+>
+>  I am a little unclear on request_resource() - the return code is backwards
+> of what I would have expected.  Looking at examples in the kernel, it
+> appears that request_resource() returns EBUSY when things go well, and it
+> returns 0 when things go badly.  Like I said, that seems backwards, but I
+> guess it makes sense - EBUSY apparently means that the resource is _now_
+> busy?
 
-Not /me, but your patch drags in the the full warning message even
-without CONFIG_IPIPE_DEBUG - if I virtually apply the patch correctly.
+request_region returns a pointer to a struct resource, and NULL if the
+resource is already reserved.
 
-> 
->> and I still don't understand why you want to report
->> user faults as kernel bugs.
->>
-> 
-> This is a red herring: we are currently in a situation where such
-> messages would be actual kernel issues because some APIs are sloppy wrt
-> kernel/user copies, this is the point.
-> 
->> If you want to spot skin issues, just grep for __xn_copy_to/from_user or
->> __xn_strncpy_from_user and check for missing return code evaluations.
->> Really, that's nothing we need runtime checks in I-pipe for.
->>
-> 
-> It's a _debug_ tool until everything is fixed, because we have loads of
-> APIs to fix for untested copy_from/to_user, and anything out-of-tree
-> code may have used the same way. It's merely a conditional and passive
-> check, far away from the hot path, which is there "just in case". The
-> same way you may run with the domain context checker enabled although
-> you may be reasonably confident that having some context mismatch still
-> hiding in the Xenomai core is currently unlikely -- but you know nothing
-> about what may be going on out-of-tree.
-> 
-> This feature is mainly aimed at API writers, not users. Additionally,
-
-If you want to support API writer: Let us tag __xn_copy* with
-__must_check - _that_ would be the right tool for pointing out remaining
-issues, not some runtime warning that a) only triggers if the user
-stumbled over it and b) causes false positives for those skin which
-already behave nicely.
-
-> not everyone is going to switch to 2.4 with the ironed kernel/user copy
-> code overnight, so we want this code in 2.6.20/x86 too, so that at
-> least, we may tell people to upgrade their I-pipe patch if need be, then
-> switch CONFIG_IPIPE_DEBUG on to trap those trivial issues, including
-> over past 2.3.x releases. At least, we could tell them how and where to
-> fix their code.
-> 
-> At worst, the message will never trigger because all bugous spots will
-> have been addressed within the skins during the next stable releases:
-> fine. Otherwise, we will have more information to chase such kind of bugs.
-
-Nope, it will trigger also after the skins are converted. This is what
-makes it inappropriate IMHO.
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
