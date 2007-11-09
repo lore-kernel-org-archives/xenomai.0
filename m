@@ -1,13 +1,15 @@
-Message-ID: <4738DB4D.1020703@domain.hid>
-Date: Tue, 13 Nov 2007 00:01:33 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <473492EF.6090309@domain.hid>
+Date: Fri, 09 Nov 2007 18:03:43 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3D21E8C3FEA2364A1013EF39"
-Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [RFC][PATCH 5/5] Report ignored __xn_copy_*_user
-	return codes
+References: <473391B0.5040809@domain.hid> <4733A2B8.8070100@domain.hid>
+	<47344759.4020505@domain.hid> <473484C6.6050101@domain.hid>
+In-Reply-To: <473484C6.6050101@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] User space drivers on PPC440
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,181 +19,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: "Steven A. Falco" <sfalco@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3D21E8C3FEA2364A1013EF39
-Content-Type: multipart/mixed;
- boundary="------------000808050906010106000407"
+Steven A. Falco wrote:
+> Your patch makes sense.
+> 
+> I have some results, but I'm not sure I understand what they mean.  I've
+> attached the test program that I am using.  Here is what it outputs:
+> 
+> bash-3.00# ./o2
+> Trying to free nonexistent resource <0000000000000000-00000000c0000001>
+> get leds: -16 Device or resource busy
+> put leds: 0 Success
+> 
+> Trying to free nonexistent resource <0000000000000000-ffffffffffffffff>
+> get low_mem: -16 Device or resource busy
+> put low_mem: 0 Success
 
-This is a multi-part message in MIME format.
---------------000808050906010106000407
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Actually, we should define rt_misc_put_io_region() as a void routine,
+since the kernel does not return any status from release_region(). At
+this chance, I've fixed this, since returning 0 albeit a failure message
+is dumped to the kernel log upon error is disturbing.
 
-As recently suggested, this patch arms the __must_check logic behind
-__xn_copy_to_user, __xn_copy_from_user (not on i386 due to lacking
-instrumentation of Linux service), __xn_strncpy_from_user.
+> 
+> I am a little unclear on request_resource() - the return code is
+> backwards of what I would have expected.  Looking at examples in the
+> kernel, it appears that request_resource() returns EBUSY when things go
+> well, and it returns 0 when things go badly.  Like I said, that seems
+> backwards, but I guess it makes sense - EBUSY apparently means that the
+> resource is _now_ busy?
+>
 
-This patch is only intended to point out what remains to be addressed,
-the huge number of warnings make it unsuited form a merge at this -rc sta=
-ge.
+request_resource() should return a valid resource descriptor address
+upon success, which Xenomai converts to zero. Conversely, -EBUSY is
+returned if request_region() sends us back a NULL value, since this is
+how check_region() behaves.
 
-Jan
+> Anyway, following the kernel examples, my program considers a non-zero
+> return as success.  At that point I release the region.  If instead, I
+> get a zero return, then I treat that as a failure, and don't release the
+> region.
+> 
+> The part I don't understand is why I get the "Trying to free nonexistent
+> resource" messages.  Since I am getting an EBUSY, I thought that meant I
+> owned the resource, and that I should release it...
+> 
 
---------------000808050906010106000407
-Content-Type: text/x-patch;
- name="must_check-xn_copy.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="must_check-xn_copy.patch"
+I suspect request_region() did actually fail.
 
----
- include/asm-generic/wrappers.h |    4 ++++
- include/asm-x86/hal.h          |    4 ++++
- include/asm-x86/hal_32.h       |    2 --
- include/asm-x86/hal_64.h       |    4 ----
- include/asm-x86/syscall_32.h   |   11 ++++-------
- include/asm-x86/syscall_64.h   |   11 ++++-------
- 6 files changed, 16 insertions(+), 20 deletions(-)
+> Also, the addresses printed above are a bit strange.  For example, I
+> would have thought that instead of
+> "<0000000000000000-00000000c0000001>", it would print
+> "<00000001c0000000-00000001c0000013>".  Perhaps that is a clue - maybe
+> the start and length are not being passed correctly.
+> 
+> One more question.  It appears that if my program crashes, that the
+> region will never be released.  So, the normal behavior of an exiting
+> process freeing all its resources doesn't seem to be guaranteed.
+> 
 
-Index: xenomai/include/asm-x86/hal.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86/hal.h
-+++ xenomai/include/asm-x86/hal.h
-@@ -46,4 +46,8 @@ extern enum rthal_ktimer_mode rthal_ktim
- #include "hal_64.h"
- #endif
-=20
-+long __must_check rthal_strncpy_from_user(char *dst,
-+					  const char __user *src,
-+					  long count);
-+
- #endif /* !_XENO_ASM_X86_HAL_H */
-Index: xenomai/include/asm-x86/hal_32.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86/hal_32.h
-+++ xenomai/include/asm-x86/hal_32.h
-@@ -222,8 +222,6 @@ static inline void rthal_setup_oneshot_a
-=20
- #endif /* !__cplusplus */
-=20
--long rthal_strncpy_from_user(char *dst, const char __user * src, long co=
-unt);
--
- void rthal_latency_above_max(struct pt_regs *regs);
-=20
- #endif /* !_XENO_ASM_X86_HAL_32_H */
-Index: xenomai/include/asm-x86/hal_64.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86/hal_64.h
-+++ xenomai/include/asm-x86/hal_64.h
-@@ -138,8 +138,4 @@ static inline void rthal_setup_oneshot_a
-=20
- #endif /* !__cplusplus */
-=20
--long rthal_strncpy_from_user(char *dst,
--			     const char __user *src,
--			     long count);
--
- #endif /* !_XENO_ASM_X86_HAL_64_H */
-Index: xenomai/include/asm-x86/syscall_32.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86/syscall_32.h
-+++ xenomai/include/asm-x86/syscall_32.h
-@@ -47,13 +47,10 @@
- #define __xn_mux_op(regs)     ((__xn_reg_mux(regs) >> 24) & 0xff)
-=20
- /* Our own set of copy-to/from-user macros which must bypass
--   might_sleep() checks. The caller cannot fault and is expected to
--   have checked for bad range before using the copy macros, so we
--   should not have to care about the result. */
--#define __xn_copy_from_user(task,dstP,srcP,n)  \
--    ({ int __err__ =3D __copy_from_user_inatomic(dstP,srcP,n); __err__; =
-})
--#define __xn_copy_to_user(task,dstP,srcP,n)  \
--    ({ int __err__ =3D __copy_to_user_inatomic(dstP,srcP,n); __err__; })=
+As a matter of fact, we track all common objects like sema4s, mutexes,
+queues, and so on, but not I/O regions. Consider this as an illustration
+of our absolute laziness, since we do have the proper infrastructure to
+handle I/O regions in the auto-cleanup process too.
 
-+   might_sleep() checks. The caller is expected to have checked
-+   for bad range before using the copy macros. */
-+#define __xn_copy_from_user(task,dstP,srcP,n)  __copy_from_user_inatomic=
-(dstP,srcP,n)
-+#define __xn_copy_to_user(task,dstP,srcP,n)    __copy_to_user_inatomic(d=
-stP,srcP,n)
- #define __xn_put_user(task,src,dstP)           __put_user(src,dstP)
- #define __xn_get_user(task,dst,srcP)           __get_user(dst,srcP)
- #define __xn_strncpy_from_user(task,dstP,srcP,n)    wrap_strncpy_from_us=
-er(dstP,srcP,n)
-Index: xenomai/include/asm-x86/syscall_64.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-x86/syscall_64.h
-+++ xenomai/include/asm-x86/syscall_64.h
-@@ -47,13 +47,10 @@
- #define __xn_mux_op(regs)     ((__xn_reg_mux(regs) >> 24) & 0xff)
-=20
- /* Our own set of copy-to/from-user macros which must bypass
--   might_sleep() checks. The caller cannot fault and is expected to
--   have checked for bad range before using the copy macros, so we
--   should not have to care about the result. */
--#define __xn_copy_from_user(task,dstP,srcP,n)  \
--    ({ int __err__ =3D __copy_from_user_inatomic(dstP,srcP,n); __err__; =
-})
--#define __xn_copy_to_user(task,dstP,srcP,n)  \
--    ({ int __err__ =3D __copy_to_user_inatomic(dstP,srcP,n); __err__; })=
+>     Steve
+> 
+> 
+> Philippe Gerum wrote:
+>> Philippe Gerum wrote:
+>>   
+>>> Steven A. Falco wrote:
+>>>     
+>>>> The rt_misc_get_io_region() has the "start" argument as an unsigned 
+>>>> long.  On the PPC440, we have a 36-bit address space, where the I/O 
+>>>> registers are generally above the 4GB area.  For example, the UART is at 
+>>>> address 0x1ef600300.
+>>>>
+>>>> The Linux request_region call has "start" typed as a resource_size_t, 
+>>>> which is a u64 on the PPC440 (i.e. CONFIG_RESOURCES_64BIT is set even 
+>>>> though this is a 23-bit processor).
+>>>>
+>>>> Is this something that should be handled by xeno-config?  It could 
+>>>> append a CFLAG indicating the size of a resource.
+>>>>       
+>>> Or use a 64bit long unconditionally, to keep the same kernel-based
+>>> implementation, since there is no performance issue for this call. In
+>>> any case, we need to fix the API before 2.4 final is out -- which will
+>>> also affect the ABI, but it already changed during the 2.4 development
+>>> phase anyway.
+>>>
+>>>     
+>>
+>> Does this patch work for you?
+>>
+>>   
 
-+   might_sleep() checks. The caller is expected to have checked
-+   for bad range before using the copy macros. */
-+#define __xn_copy_from_user(task,dstP,srcP,n)	__copy_from_user_inatomic(=
-dstP,srcP,n)
-+#define __xn_copy_to_user(task,dstP,srcP,n)	__copy_to_user_inatomic(dstP=
-,srcP,n)
- #define __xn_put_user(task,src,dstP)		__put_user(src,dstP)
- #define __xn_get_user(task,dst,srcP)		__get_user(dst,srcP)
- #define __xn_strncpy_from_user(task,dstP,srcP,n) rthal_strncpy_from_user=
-(dstP,srcP,n)
-Index: xenomai/include/asm-generic/wrappers.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- xenomai.orig/include/asm-generic/wrappers.h
-+++ xenomai/include/asm-generic/wrappers.h
-@@ -183,6 +183,10 @@ void show_stack(struct task_struct *task
- #define __deprecated  __attribute__((deprecated))
- #endif
-=20
-+#ifndef __must_check
-+#define __must_check
-+#endif
-+
- #else /* LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,5,0) */
-=20
- #define compat_module_param_array(name, type, count, perm) \
 
---------------000808050906010106000407--
-
---------------enig3D21E8C3FEA2364A1013EF39
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
-
-iD8DBQFHONtNniDOoMHTA+kRAhRlAJ9Lwnwp3/eqCOvCukPaUPBGeY6mxgCeNOic
-3KRmOdI2DZXp2lEflPyEsNs=
-=WnZG
------END PGP SIGNATURE-----
-
---------------enig3D21E8C3FEA2364A1013EF39--
+-- 
+Philippe.
 
