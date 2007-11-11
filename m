@@ -1,13 +1,17 @@
-Message-ID: <4739B1DC.4030705@domain.hid>
-Date: Tue, 13 Nov 2007 15:17:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <47373B92.1050008@domain.hid>
+Date: Sun, 11 Nov 2007 18:27:46 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>
-In-Reply-To: <2ff1a98a0711130556j58141e80yc0bca6b574fad7e9@domain.hid>
+References: <473391B0.5040809@domain.hid> <4733A2B8.8070100@domain.hid>
+	<47344759.4020505@domain.hid> <473484C6.6050101@domain.hid>
+	<473492EF.6090309@domain.hid> <4734995E.7090105@domain.hid>
+	<4735DC17.1070003@domain.hid>
+In-Reply-To: <4735DC17.1070003@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] local_irq_save/local_irq_restore in real-time
- interrupt handler and slab corruption.
+Sender: Philippe Gerum <philippe.gerum@domain.hid>
+Subject: Re: [Xenomai-core] User space drivers on PPC440
+Reply-To: rpm@xenomai.org
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,39 +21,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Hi,
+Philippe Gerum wrote:
+> Steven A. Falco wrote:
+>> Solved.  As you pointed out, Xenomai inverts the returned value from
+>> request_region.  So, that was a bug in my application.
+>>
+>> However, turns out that instead of request_region, I have to use
+>> request_mem_region.  This is because the I/O region only goes up to
+>> 2^32, but the mem region goes up to 2^64.
+>>
+>> So, attached is a patch to add two new syscalls: rt_misc_get_mem_region
+>> and rt_misc_put_mem_region.
+>>
 > 
-> I am chasing a slab corruption bug which happens on a Xenomai+RTnet
-> enabled box under heavy non real-time network load (which passes
-> through rtnet and rtmac_vnic to Linux which does NAT and resend it to
-> another rtmac_vnic). When reading some I-pipe tracer traces, I
-> remarked that I forgot to replace a local_irq_save/local_irq_restore
-> with local_irq_save_hw/local_irq_restore_hw in a real-time interrupt
-> handler. I fixed this bug, and the slab corruption seems to be gone.
-
-Hope you mean rtdm_lock_irqsave/irqrestore instead. Otherwise Xenomai's
-domain state would not be updated appropriately - which is at least unclean.
-
-BTW, CONFIG_IPIPE_DEBUG_CONTEXT should have caught this bug as well.
-
+> Thanks. At this chance, I've reworked the I/O region support to
+> introduce descriptors, so that this API conforms to the
+> one-descriptor-per-object rule commonly followed by other services from
+> the native skin. I've merged your MMIO support on top of this. The added
+> bonus is that auto-cleanup upon process exit becomes available with I/O
+> regions too, since we now have the proper descriptor to hold the cleanup
+> data.
 > 
-> So, my question is: is it possible ? I mean, if local_irq_restore in
-> the real-time interrupt handler calls __ipipe_sync_stage, the root
-> domain is not stalled, so there should be no problem Linux-wise
-> playing root domain interrupts, I would rather expect the I-pipe state
-> to be jammed (after all, we are probably reentering functions that
-> should not be reentered), not Linux state.
+> The calls supporting this scheme are named rt_io_get_region, and
+> rt_io_put_region, taking a RT_IOREGION object descriptor to hold the
+> internal resource information. The rt_misc_io_get/put_region API is now
+> deprecated starting with 2.4-rc6, albeit still available to allow for
+> smooth transition; one will only get a warning as a reminder to upgrade
+> to the new calls when using the old ones. e.g.
+> 
+> RT_IOREGION iorn;
+> 
+> rt_io_get_region(&iorn, label, start, len, IORN_IOPORT)
+> is equivalent to calling:
+> rt_misc_get_io_region(start, len, label)
+> 
+> the same way,
+> 
+> rt_io_get_region(&iorn, label, start, len, IORN_MEMORY)
 
-If I grab it correctly ATM, __ipipe_sync_stage() does not check for the
-domain stall bits, it assumes the caller has done so. Thus,
+s,IORN_MEMORY,IORN_IOMEM,
 
-Jan
+(for consistency reason with Linux's naming scheme)
+
+> is equivalent to calling:
+> rt_misc_get_mem_region(start, len, label)
+> 
+> Conversely,
+> 
+> rt_io_put_region(&iorn)
+> is equivalent to calling:
+> rt_misc_put_io/mem_region(start, len)
+> 
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+Philippe.
 
