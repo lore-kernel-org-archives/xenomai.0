@@ -1,13 +1,12 @@
-Message-ID: <4738DBA6.8020608@domain.hid>
-Date: Tue, 13 Nov 2007 00:03:02 +0100
+Message-ID: <47373B12.7020808@domain.hid>
+Date: Sun, 11 Nov 2007 18:25:38 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF641D43E357AF5AAF6CBB1B1"
+	boundary="------------enig16433DDCE62B40486EB12211"
 Sender: jan.kiszka@domain.hid
-Subject: [Xenomai-core] [PATCH 1/2] i386: report timer frequency on tickdev
-	take-over
+Subject: [Xenomai-core] x86_64: problems with syscall tracing?
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -17,103 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: adeos-main@gna.org
-Cc: Xenomai-core@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF641D43E357AF5AAF6CBB1B1
-Content-Type: multipart/mixed;
- boundary="------------070304080502000701050900"
-
-This is a multi-part message in MIME format.
---------------070304080502000701050900
-Content-Type: text/plain; charset=ISO-8859-15
+--------------enig16433DDCE62B40486EB12211
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Here comes my favourite approach to report the frequency of the timer
-that an I-pipe user takes over: via the very same API. This patch
-extends ipipe_request_tickdev by a pointer to a variable that shall
-receive the timer frequency as the hijacked clock_event_device carries it=
-=2E
+Philippe,
 
-This is the most generic, future-proof, and clean approach IMHO, because
-it doesn't assume anything about the tickdev selection the user may make
-when requesting the device.
+you recently said there is a bug in the x86_64 support when syscall
+tracing is enabled. Now I think I stepped on it as well: In order to
+validate my APIC frequency patches for that arch, I wanted to use LTTng
+there. But as soon as I start the trace, the latency test fails to run,
+prematurely exiting due to a segfault. Gdb and the kernel say that user
+land jumped to address 0, I just yet failed to find out where they come
+from. I strongly assume LTTng enables syscall tracing, because its
+entry/exit instrumentations are inside the hook function
+(syscall_trace_entry/leave).
+
+Do you have any further details on your tracing issue? Does may
+observation correlates with yours?
 
 Jan
 
---------------070304080502000701050900
-Content-Type: text/x-patch;
- name="report-tickdev-freq-i386.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline;
- filename="report-tickdev-freq-i386.patch"
 
----
- include/linux/ipipe_tickdev.h |    2 +-
- kernel/ipipe/core.c           |    5 ++++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-Index: linux-2.6.23-ipipe/include/linux/ipipe_tickdev.h
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.23-ipipe.orig/include/linux/ipipe_tickdev.h
-+++ linux-2.6.23-ipipe/include/linux/ipipe_tickdev.h
-@@ -46,7 +46,7 @@ int ipipe_request_tickdev(const char *de
- 					  struct ipipe_tick_device *tdev),
- 			  int (*emutick)(unsigned long evt,
- 					 struct ipipe_tick_device *tdev),
--			  int cpu);
-+			  int cpu, unsigned long *tick_freq);
-=20
- void ipipe_release_tickdev(int cpu);
-=20
-Index: linux-2.6.23-ipipe/kernel/ipipe/core.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.23-ipipe.orig/kernel/ipipe/core.c
-+++ linux-2.6.23-ipipe/kernel/ipipe/core.c
-@@ -123,10 +123,11 @@ int ipipe_request_tickdev(const char *de
- 					  struct ipipe_tick_device *tdev),
- 			  int (*emutick)(unsigned long delta,
- 					 struct ipipe_tick_device *tdev),
--			  int cpu)
-+			  int cpu, unsigned long *tick_freq)
- {
- 	struct ipipe_tick_device *itd;
- 	struct tick_device *slave;
-+	unsigned long long freq;
- 	unsigned long flags;
- 	int status;
-=20
-@@ -170,6 +171,8 @@ int ipipe_request_tickdev(const char *de
- 	itd->emul_set_tick =3D emutick;
- 	itd->real_set_mode =3D slave->evtdev->set_mode;
- 	itd->real_set_tick =3D slave->evtdev->set_next_event;
-+	freq =3D (1000000000ULL * slave->evtdev->mult) >> slave->evtdev->shift;=
-
-+	*tick_freq =3D (unsigned long)freq;
- 	slave->evtdev->set_mode =3D __ipipe_set_tick_mode;
- 	slave->evtdev->set_next_event =3D __ipipe_set_next_tick;
- 	status =3D slave->evtdev->mode;
-
---------------070304080502000701050900--
-
---------------enigF641D43E357AF5AAF6CBB1B1
+--------------enig16433DDCE62B40486EB12211
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.6 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+Version: GnuPG v1.4.5 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHONumniDOoMHTA+kRAlZiAJ9xjSU2yl97/iD0+HvZ+o6uLqgzigCfTO8F
-H5SYv5u2bcTZSVw4nE7pGLM=
-=Z3aT
+iD4DBQFHNzsWniDOoMHTA+kRAtTKAJ498UJeVqBPKBIAdG/Xd6thWnYz1gCXWW+m
+NsuiHnXgQ3c+xbkNL0B+pg==
+=nhqT
 -----END PGP SIGNATURE-----
 
---------------enigF641D43E357AF5AAF6CBB1B1--
+--------------enig16433DDCE62B40486EB12211--
 
