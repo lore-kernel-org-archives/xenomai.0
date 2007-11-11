@@ -1,13 +1,12 @@
-Message-ID: <4732C3C0.1090704@domain.hid>
-Date: Thu, 08 Nov 2007 09:07:28 +0100
+Message-ID: <47373D04.90308@domain.hid>
+Date: Sun, 11 Nov 2007 18:33:56 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigB47BFAC21081E00299517F42"
+	boundary="------------enigC30E49D95186B537B1F67F1F"
 Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] janitorial: use dump_stack instead of
-	show_stack
+Subject: [Adeos-main] [PATCH] reset trace when setting new trigger
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,46 +19,51 @@ To: adeos-main <adeos-main@gna.org>
 Cc: Philippe Gerum <rpm@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB47BFAC21081E00299517F42
+--------------enigC30E49D95186B537B1F67F1F
 Content-Type: multipart/mixed;
- boundary="------------050308080800010702010600"
+ boundary="------------000709010709030207080403"
 
 This is a multi-part message in MIME format.
---------------050308080800010702010600
+--------------000709010709030207080403
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
+For convenience: When the user sets a new triggering point via
+/proc/ipipe/trace/trigger, also reset the currently frozen path so that
+the new trigger can fire ASAP.
 
---------------050308080800010702010600
+Jan
+
+--------------000709010709030207080403
 Content-Type: text/x-patch;
- name="use-dump_stack.patch"
+ name="reset-trace-on-new-trigger.patch"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline;
- filename="use-dump_stack.patch"
+ filename="reset-trace-on-new-trigger.patch"
 
 ---
- kernel/ipipe/core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/ipipe/tracer.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-Index: linux-2.6.23-ipipe/kernel/ipipe/core.c
+Index: linux-2.6.23.1-xeno_64/kernel/ipipe/tracer.c
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- linux-2.6.23-ipipe.orig/kernel/ipipe/core.c
-+++ linux-2.6.23-ipipe/kernel/ipipe/core.c
-@@ -1575,7 +1575,7 @@ void ipipe_check_context(struct ipipe_do
- 	       KERN_ERR "        into a service reserved for domain '%s' and "
- 			"below.\n",
- 	       ipipe_current_domain->name, border_ipd->name);
--	show_stack(NULL, NULL);
-+	dump_stack();
- 	ipipe_trace_panic_dump();
- }
-=20
+--- linux-2.6.23.1-xeno_64.orig/kernel/ipipe/tracer.c
++++ linux-2.6.23.1-xeno_64/kernel/ipipe/tracer.c
+@@ -1244,6 +1244,8 @@ static int __ipipe_wr_trigger(struct fil
+ 	/* invalidate the current range before setting a new one */
+ 	trigger_end =3D 0;
+ 	wmb();
++	ipipe_trace_frozen_reset();
++
+ 	/* set new range */
+ 	trigger_begin =3D begin;
+ 	wmb();
 
---------------050308080800010702010600--
+--------------000709010709030207080403--
 
---------------enigB47BFAC21081E00299517F42
+--------------enigC30E49D95186B537B1F67F1F
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -68,10 +72,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v1.4.5 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
 
-iD8DBQFHMsPFniDOoMHTA+kRAq3cAJ4yQAFNtlLI/0rJnElZLE5XMuiL4QCffS90
-Utkg25WeuHe9e/P0aPYoUrw=
-=ZJtq
+iD8DBQFHNz0EniDOoMHTA+kRAhaAAJ4lRVh3Iyi9qY5pVrXVZ0EptSOs1ACeJBZm
+lynpX7I5pk6HvRc2WWHsAjc=
+=r4GX
 -----END PGP SIGNATURE-----
 
---------------enigB47BFAC21081E00299517F42--
+--------------enigC30E49D95186B537B1F67F1F--
 
