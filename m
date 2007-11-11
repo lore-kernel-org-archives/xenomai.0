@@ -1,11 +1,13 @@
 Content-class: urn:content-classes:message
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="----_=_NextPart_001_01C823FA.D2EE0352"
-Date: Sat, 10 Nov 2007 17:35:56 -0700
-Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3285C8@domain.hid>
+	boundary="----_=_NextPart_001_01C823FD.4DDE4372"
+Date: Sat, 10 Nov 2007 17:53:41 -0700
+Message-ID: <51CAD0CE1504444DBE77CBBE51A0135D3285C9@domain.hid>
+In-Reply-To: <51CAD0CE1504444DBE77CBBE51A0135D3285C8@domain.hid>
+References: <51CAD0CE1504444DBE77CBBE51A0135D3285C8@domain.hid>
 From: "Steven Seeger" <sseeger@domain.hid>
-Subject: [Xenomai-help] more geode issues
+Subject: Re: [Xenomai-help] more geode issues
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,10 +22,37 @@ To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
 
-------_=_NextPart_001_01C823FA.D2EE0352
+------_=_NextPart_001_01C823FD.4DDE4372
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+
+Just to let everyone know, select() still locks up on me with 2.6.22.2
+and revision 3169.
+
+=20
+
+All I'm doing is opening up a pipe in linux and select() on it for
+reading, and then opening up that pipe on the realtime side. Then, I hit
+control-C. I load the program again and it locks up when I hit control-C
+again. This won't happen the 2nd time if I unload and reload the
+nucleus.
+
+=20
+
+Steven
+
+=20
+
+________________________________
+
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
+On Behalf Of Steven Seeger
+Sent: Saturday, November 10, 2007 5:36 PM
+To: xenomai@xenomai.org
+Subject: [Xenomai-help] more geode issues
+
+=20
 
 I'm trying to get 2.6.23 to work with rc5. I've also tried trunk. I'm
 noticing the following behavior:
@@ -74,19 +103,28 @@ to use this email address... but oh well. :-)
 =20
 
 
-------_=_NextPart_001_01C823FA.D2EE0352
+------_=_NextPart_001_01C823FD.4DDE4372
 Content-Type: text/html;
 	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
 xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
 xmlns=3D"http://www.w3.org/TR/REC-html40">
 
 <head>
-<meta http-equiv=3DContent-Type content=3D"text/html; =
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
 charset=3Dus-ascii">
 <meta name=3DGenerator content=3D"Microsoft Word 11 (filtered medium)">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
 <style>
 <!--
  /* Font Definitions */
@@ -96,6 +134,9 @@ charset=3Dus-ascii">
 @font-face
 	{font-family:"MS Mincho";
 	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
 @font-face
 	{font-family:"\@MS Mincho";
 	panose-1:2 2 6 9 4 2 5 8 3 4;}
@@ -112,9 +153,13 @@ a:visited, span.MsoHyperlinkFollowed
 	{color:purple;
 	text-decoration:underline;}
 span.EmailStyle17
-	{mso-style-type:personal-compose;
+	{mso-style-type:personal;
 	font-family:Arial;
 	color:windowtext;}
+span.EmailStyle18
+	{mso-style-type:personal-reply;
+	font-family:Arial;
+	color:navy;}
 @page Section1
 	{size:8.5in 11.0in;
 	margin:1.0in 1.25in 1.0in 1.25in;}
@@ -128,6 +173,78 @@ div.Section1
 <body lang=3DEN-US link=3Dblue vlink=3Dpurple>
 
 <div class=3DSection1>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'>Just to let everyone know, select() =
+still
+locks up on me with 2.6.22.2 and revision =
+3169.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'>All I&#8217;m doing is opening up a =
+pipe
+in linux and select() on it for reading, and then opening up that pipe =
+on the
+realtime side. Then, I hit control-C. I load the program again and it =
+locks up
+when I hit control-C again. This won&#8217;t happen the 2<sup>nd</sup> =
+time if
+I unload and reload the nucleus.<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'><o:p>&nbsp;</o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'>Steven<o:p></o:p></span></font></p>
+
+<p class=3DMsoNormal><font size=3D2 color=3Dnavy face=3DArial><span =
+style=3D'font-size:
+10.0pt;font-family:Arial;color:navy'><o:p>&nbsp;</o:p></span></font></p>
+
+<div style=3D'border:none;border-left:solid blue 1.5pt;padding:0in 0in =
+0in 4.0pt'>
+
+<div>
+
+<div class=3DMsoNormal align=3Dcenter style=3D'text-align:center'><font =
+size=3D3
+face=3D"Times New Roman"><span style=3D'font-size:12.0pt'>
+
+<hr size=3D2 width=3D"100%" align=3Dcenter tabindex=3D-1>
+
+</span></font></div>
+
+<p class=3DMsoNormal><b><font size=3D2 face=3DTahoma><span =
+style=3D'font-size:10.0pt;
+font-family:Tahoma;font-weight:bold'>From:</span></font></b><font =
+size=3D2
+face=3DTahoma><span style=3D'font-size:10.0pt;font-family:Tahoma'> =
+xenomai-help-bounces@domain.hid
+[mailto:xenomai-help-bounces@domain.hid] <b><span =
+style=3D'font-weight:bold'>On
+Behalf Of </span></b>Steven Seeger<br>
+<b><span style=3D'font-weight:bold'>Sent:</span></b> Saturday, November =
+10, 2007
+5:36 PM<br>
+<b><span style=3D'font-weight:bold'>To:</span></b> =
+xenomai@xenomai.org<br>
+<b><span style=3D'font-weight:bold'>Subject:</span></b> [Xenomai-help] =
+more geode
+issues</span></font><o:p></o:p></p>
+
+</div>
+
+<p class=3DMsoNormal><font size=3D3 face=3D"Times New Roman"><span =
+style=3D'font-size:
+12.0pt'><o:p>&nbsp;</o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -153,8 +270,8 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
 font-family:Arial'>Tickless system, one shot, TSC, geode 2cx200hr timer, =
-and
-high res timers.<o:p></o:p></span></font></p>
+and high
+res timers.<o:p></o:p></span></font></p>
 
 <p class=3DMsoNormal><font size=3D2 face=3DArial><span =
 style=3D'font-size:10.0pt;
@@ -236,9 +353,11 @@ font-family:Arial'><o:p>&nbsp;</o:p></span></font></p>
 
 </div>
 
+</div>
+
 </body>
 
 </html>
 
-------_=_NextPart_001_01C823FA.D2EE0352--
+------_=_NextPart_001_01C823FD.4DDE4372--
 
