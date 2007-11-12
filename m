@@ -1,14 +1,10 @@
-Message-ID: <4738C3AA.5040207@domain.hid>
-Date: Mon, 12 Nov 2007 22:20:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <e4ef24880711121452p631a5e05ud7ada7595fd1f4e3@domain.hid>
+Date: Mon, 12 Nov 2007 15:52:05 -0700
+From: "Robert Gubler" <rgubler@domain.hid>
 MIME-Version: 1.0
-References: <200711121400.lACE0Q7w015963@domain.hid>
-In-Reply-To: <200711121400.lACE0Q7w015963@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig813B711CE53E68AEB61B335F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] RT, nonRT communication
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_22753_10054260.1194907925730"
+Subject: [Xenomai-help] Time critical tasks
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,47 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick <kpa_info@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig813B711CE53E68AEB61B335F
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+------=_Part_22753_10054260.1194907925730
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Patrick wrote:
-> Hi,
->=20
-> I have another error when I try to compile Xenomai with g++ :
->=20
-> /usr/xenomai/include/native/task.h:292: error: expected =91,=92 or =91.=
-=2E.=92 before
-> =91protected=92
+Hello,
 
-There is no "protected" text pattern in that file, not even in Xenomai
-files task.h includes.
+I have a task that is very time critical.  I used the xenomai/bin/latency
+program to get an idea of my worst case latency; its about 30 us.  Is there
+a facility in POSIX or the POSIX skin, that will allow me to account for
+this worst case latency? Does clock_nanosleep() provides this?  Essentially
+I'd like to wake up 30 us before the deadline and turn off interrupts, and
+do a spin lock until the deadline is reached.
 
-Are you sure that you do not drag in some third-party preprocessor
-definition that replaces something happened to be used in Xenomai
-headers? Try g++ with "-E" to check what the compiler tries to crunch
-(or post a simple test case as Gilles requested).
+-Rob
 
-Jan
+------=_Part_22753_10054260.1194907925730
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+Hello,<br><br>I have a task that is very time critical.&nbsp; I used the xenomai/bin/latency program to get an idea of my worst case latency; its about 30 us.&nbsp; Is there a facility in POSIX or the POSIX skin, that will allow me to account for this worst case latency? Does clock_nanosleep() provides this?&nbsp; Essentially I&#39;d like to wake up 30 us before the deadline and turn off interrupts, and do a spin lock until the deadline is reached.
+<br><br>-Rob<br>
 
---------------enig813B711CE53E68AEB61B335F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.5 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org
-
-iD8DBQFHOMOtniDOoMHTA+kRAtvXAJ99f3qnkZiripT321zb7OFMEjDDdACfTGYe
-nxyf8Pfw7BBlHXZPzWE6PHE=
-=1Cdl
------END PGP SIGNATURE-----
-
---------------enig813B711CE53E68AEB61B335F--
+------=_Part_22753_10054260.1194907925730--
 
