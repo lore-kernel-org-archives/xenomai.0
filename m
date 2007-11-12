@@ -1,80 +1,44 @@
-Message-ID: <47389B04.7040700@domain.hid>
-Date: Mon, 12 Nov 2007 19:27:16 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <2ff1a98a0711120748y1dd6e3a7je7fac0908c590c7d@domain.hid>
+Date: Mon, 12 Nov 2007 16:48:55 +0100
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <200711121400.lACE0Q7w015963@domain.hid>
 MIME-Version: 1.0
-References: <fd6a47a90711120739n11b803cfy8bc4b8b09a995fef@domain.hid>	
-	<4738839E.8020203@domain.hid>	
-	<fd6a47a90711120911q34d2fba5w22683bd06598b150@domain.hid>	
-	<47388CA0.6070405@domain.hid>	
-	<fd6a47a90711120936m6c8eb691na49fae868b803470@domain.hid>	
-	<4738945D.2030503@domain.hid>
-	<fd6a47a90711121010k2fa1f393u10f3692f2a3b4bd7@domain.hid>
-In-Reply-To: <fd6a47a90711121010k2fa1f393u10f3692f2a3b4bd7@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Long execution time inside
-	__ipipe_unstall_iret_root()
-List-Id: "Xenomai life and development \(bug reports, patches,
-	discussions\)" <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Disposition: inline
+References: <4729B715.9060706@domain.hid>
+	<200711121400.lACE0Q7w015963@domain.hid>
+Subject: Re: [Xenomai-help] RT, nonRT communication
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Patrick <kpa_info@domain.hid>
+Cc: xenomai@xenomai.org, jan.kiszka@domain.hid
 
-Jeroen Van den Keybus wrote:
->> Ouch, this shouldn't be allowed in user space! WBINVD is a privileged
->> instruction. Do we leak privileges to user land??? Please check if your
->> execution mode (privilege ring) is correct there.
-> 
-> 
-> No, I rather meant a kernel-mode program that was controlled from the user
-> space. Sorry for upsetting you.
+On Nov 12, 2007 3:00 PM, Patrick <kpa_info@domain.hid> wrote:
+>
+> Hi,
+>
+> I have another error when I try to compile Xenomai with g++ :
+>
+> /usr/xenomai/include/native/task.h:292: error: expected ',' or '...' before
+> 'protected'
+>
+> I have tried to include this file with and without extern "C" but the issue
+> is the same.
+>
+> Do you have an idea ?
 
-Puh... fine, the world is round again. :)
+Please post some example code that we can compile, because simply
+#including <native/task.h> in a C++ program works here.
 
-> 
-> But indeed, wbinvd is devastating if you can execute it, causing
->> typically around 300 us latencies, at worst even milliseconds
->> (cache-size and state dependent)!
-> 
-> 
-> If I recall correctly, some of the Linux AGP GART drivers use(d?) it.
-
-Yep, some only require this during setup (while MTRR reconfig e.g.),
-others also use it during runtime of X - making your graphical system a
-real-time killer.
-
-> 
-> This raises another interesting question: to what extent is the x86 actually
-> a viable and dependable realtime platform, with its SMI's and highly
-> uncontrollable caching architecture ? How would VT-based solutions compare ?
-
-No surprise: x86 is a real-time minefield. Actually, I have been told
-that PCI Express also requires cache flushes before starting DMA
-transactions, but I haven't checked this yet.
-
-Regarding fun with virtualisation over RT:
-
-http://thread.gmane.org/gmane.comp.emulators.kvm.devel/8520/focus=8540
-(There are even more threads about this, and some light at the end of
-this tunnel, also for Intel. Check the archive.)
-
-This reminds me that I still need to post my experimental kvm-over-ipipe
-patch for VMX (yet Intel only, no AMD at hand :( ).
-
-> (BTW Intel should really have implemented a feature to use parts of the
-> cache as SRAM.)
-
-Ack.
-
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT SE 2
-Corporate Competence Center Embedded Linux
+                                               Gilles Chanteperdrix
 
