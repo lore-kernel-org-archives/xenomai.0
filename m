@@ -1,15 +1,13 @@
-Message-ID: <473492EF.6090309@domain.hid>
-Date: Fri, 09 Nov 2007 18:03:43 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4738DBA6.8020608@domain.hid>
+Date: Tue, 13 Nov 2007 00:03:02 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <473391B0.5040809@domain.hid> <4733A2B8.8070100@domain.hid>
-	<47344759.4020505@domain.hid> <473484C6.6050101@domain.hid>
-In-Reply-To: <473484C6.6050101@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Sender: Philippe Gerum <philippe.gerum@domain.hid>
-Subject: Re: [Xenomai-core] User space drivers on PPC440
-Reply-To: rpm@xenomai.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF641D43E357AF5AAF6CBB1B1"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [PATCH 1/2] i386: report timer frequency on tickdev
+	take-over
 List-Id: "Xenomai life and development \(bug reports, patches,
 	discussions\)" <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,104 +17,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Steven A. Falco" <sfalco@domain.hid>
-Cc: xenomai@xenomai.org
+To: adeos-main@gna.org
+Cc: Xenomai-core@domain.hid
 
-Steven A. Falco wrote:
-> Your patch makes sense.
-> 
-> I have some results, but I'm not sure I understand what they mean.  I've
-> attached the test program that I am using.  Here is what it outputs:
-> 
-> bash-3.00# ./o2
-> Trying to free nonexistent resource <0000000000000000-00000000c0000001>
-> get leds: -16 Device or resource busy
-> put leds: 0 Success
-> 
-> Trying to free nonexistent resource <0000000000000000-ffffffffffffffff>
-> get low_mem: -16 Device or resource busy
-> put low_mem: 0 Success
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF641D43E357AF5AAF6CBB1B1
+Content-Type: multipart/mixed;
+ boundary="------------070304080502000701050900"
 
-Actually, we should define rt_misc_put_io_region() as a void routine,
-since the kernel does not return any status from release_region(). At
-this chance, I've fixed this, since returning 0 albeit a failure message
-is dumped to the kernel log upon error is disturbing.
+This is a multi-part message in MIME format.
+--------------070304080502000701050900
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> I am a little unclear on request_resource() - the return code is
-> backwards of what I would have expected.  Looking at examples in the
-> kernel, it appears that request_resource() returns EBUSY when things go
-> well, and it returns 0 when things go badly.  Like I said, that seems
-> backwards, but I guess it makes sense - EBUSY apparently means that the
-> resource is _now_ busy?
->
+Here comes my favourite approach to report the frequency of the timer
+that an I-pipe user takes over: via the very same API. This patch
+extends ipipe_request_tickdev by a pointer to a variable that shall
+receive the timer frequency as the hijacked clock_event_device carries it=
+=2E
 
-request_resource() should return a valid resource descriptor address
-upon success, which Xenomai converts to zero. Conversely, -EBUSY is
-returned if request_region() sends us back a NULL value, since this is
-how check_region() behaves.
+This is the most generic, future-proof, and clean approach IMHO, because
+it doesn't assume anything about the tickdev selection the user may make
+when requesting the device.
 
-> Anyway, following the kernel examples, my program considers a non-zero
-> return as success.  At that point I release the region.  If instead, I
-> get a zero return, then I treat that as a failure, and don't release the
-> region.
-> 
-> The part I don't understand is why I get the "Trying to free nonexistent
-> resource" messages.  Since I am getting an EBUSY, I thought that meant I
-> owned the resource, and that I should release it...
-> 
+Jan
 
-I suspect request_region() did actually fail.
+--------------070304080502000701050900
+Content-Type: text/x-patch;
+ name="report-tickdev-freq-i386.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline;
+ filename="report-tickdev-freq-i386.patch"
 
-> Also, the addresses printed above are a bit strange.  For example, I
-> would have thought that instead of
-> "<0000000000000000-00000000c0000001>", it would print
-> "<00000001c0000000-00000001c0000013>".  Perhaps that is a clue - maybe
-> the start and length are not being passed correctly.
-> 
-> One more question.  It appears that if my program crashes, that the
-> region will never be released.  So, the normal behavior of an exiting
-> process freeing all its resources doesn't seem to be guaranteed.
-> 
+---
+ include/linux/ipipe_tickdev.h |    2 +-
+ kernel/ipipe/core.c           |    5 ++++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-As a matter of fact, we track all common objects like sema4s, mutexes,
-queues, and so on, but not I/O regions. Consider this as an illustration
-of our absolute laziness, since we do have the proper infrastructure to
-handle I/O regions in the auto-cleanup process too.
+Index: linux-2.6.23-ipipe/include/linux/ipipe_tickdev.h
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23-ipipe.orig/include/linux/ipipe_tickdev.h
++++ linux-2.6.23-ipipe/include/linux/ipipe_tickdev.h
+@@ -46,7 +46,7 @@ int ipipe_request_tickdev(const char *de
+ 					  struct ipipe_tick_device *tdev),
+ 			  int (*emutick)(unsigned long evt,
+ 					 struct ipipe_tick_device *tdev),
+-			  int cpu);
++			  int cpu, unsigned long *tick_freq);
+=20
+ void ipipe_release_tickdev(int cpu);
+=20
+Index: linux-2.6.23-ipipe/kernel/ipipe/core.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- linux-2.6.23-ipipe.orig/kernel/ipipe/core.c
++++ linux-2.6.23-ipipe/kernel/ipipe/core.c
+@@ -123,10 +123,11 @@ int ipipe_request_tickdev(const char *de
+ 					  struct ipipe_tick_device *tdev),
+ 			  int (*emutick)(unsigned long delta,
+ 					 struct ipipe_tick_device *tdev),
+-			  int cpu)
++			  int cpu, unsigned long *tick_freq)
+ {
+ 	struct ipipe_tick_device *itd;
+ 	struct tick_device *slave;
++	unsigned long long freq;
+ 	unsigned long flags;
+ 	int status;
+=20
+@@ -170,6 +171,8 @@ int ipipe_request_tickdev(const char *de
+ 	itd->emul_set_tick =3D emutick;
+ 	itd->real_set_mode =3D slave->evtdev->set_mode;
+ 	itd->real_set_tick =3D slave->evtdev->set_next_event;
++	freq =3D (1000000000ULL * slave->evtdev->mult) >> slave->evtdev->shift;=
 
->     Steve
-> 
-> 
-> Philippe Gerum wrote:
->> Philippe Gerum wrote:
->>   
->>> Steven A. Falco wrote:
->>>     
->>>> The rt_misc_get_io_region() has the "start" argument as an unsigned 
->>>> long.  On the PPC440, we have a 36-bit address space, where the I/O 
->>>> registers are generally above the 4GB area.  For example, the UART is at 
->>>> address 0x1ef600300.
->>>>
->>>> The Linux request_region call has "start" typed as a resource_size_t, 
->>>> which is a u64 on the PPC440 (i.e. CONFIG_RESOURCES_64BIT is set even 
->>>> though this is a 23-bit processor).
->>>>
->>>> Is this something that should be handled by xeno-config?  It could 
->>>> append a CFLAG indicating the size of a resource.
->>>>       
->>> Or use a 64bit long unconditionally, to keep the same kernel-based
->>> implementation, since there is no performance issue for this call. In
->>> any case, we need to fix the API before 2.4 final is out -- which will
->>> also affect the ABI, but it already changed during the 2.4 development
->>> phase anyway.
->>>
->>>     
->>
->> Does this patch work for you?
->>
->>   
++	*tick_freq =3D (unsigned long)freq;
+ 	slave->evtdev->set_mode =3D __ipipe_set_tick_mode;
+ 	slave->evtdev->set_next_event =3D __ipipe_set_next_tick;
+ 	status =3D slave->evtdev->mode;
 
+--------------070304080502000701050900--
 
--- 
-Philippe.
+--------------enigF641D43E357AF5AAF6CBB1B1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iD8DBQFHONumniDOoMHTA+kRAlZiAJ9xjSU2yl97/iD0+HvZ+o6uLqgzigCfTO8F
+H5SYv5u2bcTZSVw4nE7pGLM=
+=Z3aT
+-----END PGP SIGNATURE-----
+
+--------------enigF641D43E357AF5AAF6CBB1B1--
 
