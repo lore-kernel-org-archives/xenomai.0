@@ -1,11 +1,11 @@
 From: Leopold Palomo-Avellaneda <lepalom@domain.hid>
-Date: Mon, 12 Nov 2007 10:22:37 +0100
+Date: Mon, 12 Nov 2007 10:25:29 +0100
 References: <200709201549.13035.lepalom@domain.hid>
 	<200711090037.14484.lepalom@domain.hid>
 	<200711120155.17967.berlemont.hauw@domain.hid>
 In-Reply-To: <200711120155.17967.berlemont.hauw@domain.hid>
 MIME-Version: 1.0
-Message-Id: <200711121022.38035.lepalom@domain.hid>
+Message-Id: <200711121025.29720.lepalom@domain.hid>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain;
   charset="iso-8859-15"
@@ -38,13 +38,18 @@ A Dilluns 12 Novembre 2007, Alexis Berlemont va escriure:
 > task insmod.
 >
 > Fixed in svn. Please update.
->
 
-great!!!
+updated, compiled, executed and no problem :-)
 
-Also I forgot to say that I have a different idm file of the firware of the 
-card ...
+jr3pci: no version for "comedi_add_drv" found: kernel tainted.
+comedi_add_drv: name=jr3_pci
+comedi_lct_drv: name=jr3_pci
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+ 8469 palomo    20   0 45200 4080 2912 R    1  0.2   0:00.04 top
+    1 root      20   0  6128  692  568 S    0  0.0   0:01.10 init
+    2 root      15  -5     0    0    0 S    0  0.0   0:00.00 kthreadd
+
 
 Leo
-
 
