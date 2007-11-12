@@ -1,70 +1,80 @@
-Message-Id: <200711121400.lACE0Q7w015963@domain.hid>
-From: "Patrick" <kpa_info@domain.hid>
-Date: Mon, 12 Nov 2007 15:00:28 +0100
+Message-ID: <47389B04.7040700@domain.hid>
+Date: Mon, 12 Nov 2007 19:27:16 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4729B715.9060706@domain.hid>
-Subject: Re: [Xenomai-help] RT, nonRT communication
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <fd6a47a90711120739n11b803cfy8bc4b8b09a995fef@domain.hid>	
+	<4738839E.8020203@domain.hid>	
+	<fd6a47a90711120911q34d2fba5w22683bd06598b150@domain.hid>	
+	<47388CA0.6070405@domain.hid>	
+	<fd6a47a90711120936m6c8eb691na49fae868b803470@domain.hid>	
+	<4738945D.2030503@domain.hid>
+	<fd6a47a90711121010k2fa1f393u10f3692f2a3b4bd7@domain.hid>
+In-Reply-To: <fd6a47a90711121010k2fa1f393u10f3692f2a3b4bd7@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Long execution time inside
+	__ipipe_unstall_iret_root()
+List-Id: "Xenomai life and development \(bug reports, patches,
+	discussions\)" <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jeroen Van den Keybus <jeroen.vandenkeybus@domain.hid>
+Cc: Xenomai-core@domain.hid
 
+Jeroen Van den Keybus wrote:
+>> Ouch, this shouldn't be allowed in user space! WBINVD is a privileged
+>> instruction. Do we leak privileges to user land??? Please check if your
+>> execution mode (privilege ring) is correct there.
+> 
+> 
+> No, I rather meant a kernel-mode program that was controlled from the user
+> space. Sorry for upsetting you.
 
-Hi,
+Puh... fine, the world is round again. :)
 
-I have another error when I try to compile Xenomai with g++ :
+> 
+> But indeed, wbinvd is devastating if you can execute it, causing
+>> typically around 300 us latencies, at worst even milliseconds
+>> (cache-size and state dependent)!
+> 
+> 
+> If I recall correctly, some of the Linux AGP GART drivers use(d?) it.
 
-/usr/xenomai/include/native/task.h:292: error: expected =91,=92 or =
-=91...=92 before
-=91protected=92
+Yep, some only require this during setup (while MTRR reconfig e.g.),
+others also use it during runtime of X - making your graphical system a
+real-time killer.
 
-I have tried to include this file with and without extern "C" but the =
-issue
-is the same.
+> 
+> This raises another interesting question: to what extent is the x86 actually
+> a viable and dependable realtime platform, with its SMI's and highly
+> uncontrollable caching architecture ? How would VT-based solutions compare ?
 
-Do you have an idea ?
+No surprise: x86 is a real-time minefield. Actually, I have been told
+that PCI Express also requires cache flushes before starting DMA
+transactions, but I haven't checked this yet.
 
-Thanks in advance=20
+Regarding fun with virtualisation over RT:
 
-Patrick
+http://thread.gmane.org/gmane.comp.emulators.kvm.devel/8520/focus=8540
+(There are even more threads about this, and some light at the end of
+this tunnel, also for Intel. Check the archive.)
 
------Message d'origine-----
-De=A0: jan.kiszka@domain.hid [mailto:jan.kiszka@domain.hid
-Envoy=E9=A0: jeudi, 1. novembre 2007 12:23
-=C0=A0: Patrick
-Cc=A0: 'Gilles Chanteperdrix'; xenomai@xenomai.org
-Objet=A0: Re: [Xenomai-help] RT, nonRT communication
+This reminds me that I still need to post my experimental kvm-over-ipipe
+patch for VMX (yet Intel only, no AMD at hand :( ).
 
->Patrick wrote:
->> I have tried to compile my QT application with --posix-cflags and
->> --posix-ldflags but without success. I have a compilation error in
->syscall.h
->> :
->>=20
->> /usr/xenomai/include/asm/xenomai/syscall.h:235: error: expected
->> primary-expression before =91.=92 Token
->>=20
->> I think it's because QT is C++ application so it uses g++ and not =
-gcc.
->> And Xenomai is not intended to be compiled with C++ compiler.
->
->It _is_ intended and _is_ being used with C++. This doesn't exclude
->regressions or arch-specific bugs in the headers though. What version,
->what arch are you using? Can you post the full (related) compiler =
-output?
->
->Jan
->
-Ok. I use Xenomai 2.4-rc4 with adeos 1.7-06 for arm with 2.6.20 kernel.
+> (BTW Intel should really have implemented a feature to use parts of the
+> cache as SRAM.)
 
+Ack.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT SE 2
+Corporate Competence Center Embedded Linux
 
